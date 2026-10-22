@@ -39,6 +39,7 @@ public class WatchdogApp extends Application {
     /** A theme push or reset forgets the crashes, so a fixed config gets a fresh start. */
     static void clear(Context ctx) {
         if (!ctx.getResources().getBoolean(R.bool.crash_watchdog)) return;
-        ctx.getSharedPreferences(PREFS, MODE_PRIVATE).edit().remove(KEY).apply();
+        // commit(), not apply(): a theme push restarts the launcher right away, and a queued write could be lost.
+        ctx.getSharedPreferences(PREFS, MODE_PRIVATE).edit().remove(KEY).commit();
     }
 }
