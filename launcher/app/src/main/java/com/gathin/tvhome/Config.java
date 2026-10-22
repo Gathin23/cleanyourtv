@@ -570,13 +570,15 @@ final class Config {
             if (!"absent".equals(token)) editor.remove("columns").remove("animations")
                     .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
                     .remove(DOCK_OPACITY_KEY);
-            editor.putString(THEME_SIGNATURE_KEY, signature).commit();
-            if (!"absent".equals(token)) WatchdogApp.clear(ctx);
+            // Forget the crashes only once the new signature is stored; if that write fails, every start would
+            // see an unset signature and clear the counter again, and safe mode could never begin.
+            boolean stored = editor.putString(THEME_SIGNATURE_KEY, signature).commit();
+            if (stored && !"absent".equals(token)) WatchdogApp.clear(ctx);
         } else if (!seen.equals(signature)) {
-            choices.edit().remove("columns").remove("animations").remove("advanced_effects")
+            boolean stored = choices.edit().remove("columns").remove("animations").remove("advanced_effects")
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
                     .putString(THEME_SIGNATURE_KEY, signature).commit();
-            WatchdogApp.clear(ctx);
+            if (stored) WatchdogApp.clear(ctx);
         }
     }
 
