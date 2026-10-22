@@ -65,4 +65,5 @@
         <item quantity="other">%1$d Apps</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="safe_mode">Abgesicherter Modus nach wiederholten Abstürzen: Theme und Extras sind aus. Ein korrigiertes Theme senden oder tools/theme.sh --reset ausführen, um ihn zu verlassen.</string>
 </resources>

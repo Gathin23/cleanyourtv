@@ -93,4 +93,5 @@
         <item quantity="other">%1$dটি অ্যাপ</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="safe_mode">বারবার ক্র্যাশের পর নিরাপদ মোড: থিম ও এক্সট্রা বন্ধ। ঠিক করা থিম পুশ করুন বা বের হতে tools/theme.sh --reset চালান।</string>
 </resources>

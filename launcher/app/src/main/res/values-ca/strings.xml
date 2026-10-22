@@ -103,4 +103,5 @@
     <string name="race_live">%1$s · en directe</string>
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
+    <string name="safe_mode">Mode segur després de tancaments inesperats repetits: el tema i els extres estan desactivats. Envia un tema corregit o executa tools/theme.sh --reset per sortir-ne.</string>
 </resources>

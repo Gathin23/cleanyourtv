@@ -3,6 +3,11 @@
 If the launcher crashes three times within five minutes, the next start is in **safe mode**. It exists so a
 bad theme or an optional feature cannot keep a crash loop going on the screen you need to fix things from.
 
+## Turning it on
+
+It is off by default. Set `crash_watchdog` to `true` in `config.xml` (a build setting) to switch it on. With it off, no
+crash handler is installed and nothing about crashes is stored or read.
+
 ## What it does
 
 - A default uncaught-exception handler (installed in `WatchdogApp`) writes the time of each crash to a small

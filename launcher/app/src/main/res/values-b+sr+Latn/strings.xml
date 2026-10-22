@@ -70,4 +70,5 @@
         <item quantity="other">%1$d aplikacija</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="safe_mode">Bezbedan režim nakon ponovljenih rušenja: tema i dodaci su isključeni. Pošaljite ispravljenu temu ili pokrenite tools/theme.sh --reset da biste izašli.</string>
 </resources>

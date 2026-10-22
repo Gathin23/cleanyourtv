@@ -94,4 +94,5 @@
         <item quantity="other">%1$d aplikací</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="safe_mode">Nouzový režim po opakovaných pádech: motiv a doplňky jsou vypnuté. Odešlete opravený motiv nebo spusťte tools/theme.sh --reset a režim opustíte.</string>
 </resources>

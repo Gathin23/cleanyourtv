@@ -108,4 +108,5 @@
     <string name="race_live">%1$s · בשידור חי</string>
     <string name="race_finished">הדגל המשובץ</string>
     <string name="last_opened">נפתח לאחרונה %1$s</string>
+    <string name="safe_mode">מצב בטוח לאחר קריסות חוזרות: ערכת הנושא והתוספות כבויות. שלחו ערכת נושא מתוקנת או הריצו tools/theme.sh --reset כדי לצאת.</string>
 </resources>

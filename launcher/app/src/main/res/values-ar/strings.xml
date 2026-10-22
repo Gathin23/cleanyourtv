@@ -92,4 +92,5 @@
         <item quantity="other">%1$d تطبيق</item>
     </plurals>
     <string name="greeting_with_name">%1$s، %2$s</string>
+    <string name="safe_mode">الوضع الآمن بعد تعطل متكرر: السمة والإضافات متوقفة. أرسل سمة مصححة أو شغّل tools/theme.sh --reset للخروج منه.</string>
 </resources>

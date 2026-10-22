@@ -15,6 +15,7 @@ public class WatchdogApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (!getResources().getBoolean(R.bool.crash_watchdog)) return;
         final Thread.UncaughtExceptionHandler previous = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler((thread, error) -> {
             try {
@@ -30,12 +31,14 @@ public class WatchdogApp extends Application {
     }
 
     static boolean safeMode(Context ctx) {
+        if (!ctx.getResources().getBoolean(R.bool.crash_watchdog)) return false;
         SharedPreferences p = ctx.getSharedPreferences(PREFS, MODE_PRIVATE);
         return CrashWatchdog.safeMode(CrashWatchdog.parse(p.getString(KEY, null)), System.currentTimeMillis());
     }
 
     /** A theme push or reset forgets the crashes, so a fixed config gets a fresh start. */
     static void clear(Context ctx) {
+        if (!ctx.getResources().getBoolean(R.bool.crash_watchdog)) return;
         ctx.getSharedPreferences(PREFS, MODE_PRIVATE).edit().remove(KEY).apply();
     }
 }

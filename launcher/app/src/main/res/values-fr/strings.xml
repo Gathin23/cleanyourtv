@@ -88,4 +88,5 @@
         <item quantity="other">%1$d applications</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="safe_mode">Mode sans échec après des plantages répétés : le thème et les extras sont désactivés. Envoyez un thème corrigé ou lancez tools/theme.sh --reset pour en sortir.</string>
 </resources>

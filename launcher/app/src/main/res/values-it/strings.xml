@@ -99,4 +99,5 @@
     <string name="race_live">%1$s · in diretta</string>
     <string name="race_finished">Bandiera a scacchi</string>
     <string name="last_opened">Ultima apertura: %1$s</string>
+    <string name="safe_mode">Modalità provvisoria dopo arresti anomali ripetuti: tema ed extra sono disattivati. Invia un tema corretto o esegui tools/theme.sh --reset per uscirne.</string>
 </resources>
