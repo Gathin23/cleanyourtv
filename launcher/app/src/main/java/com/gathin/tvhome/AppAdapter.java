@@ -622,28 +622,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         h.card.setVisibility(View.VISIBLE);
         h.card.setFocusable(true);
-        h.card.setNextFocusUpId(R.id.btnInputs);
-        h.card.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                if (ctx instanceof Activity) {
-                    View btnInputs = ((Activity) ctx).findViewById(R.id.btnInputs);
-                    if (btnInputs != null && btnInputs.getVisibility() == View.VISIBLE) {
-                        btnInputs.requestFocus();
-                        return true;
-                    }
-                    View btnWifi = ((Activity) ctx).findViewById(R.id.btnWifi);
-                    if (btnWifi != null && btnWifi.getVisibility() == View.VISIBLE) {
-                        btnWifi.requestFocus();
-                        return true;
-                    }
-                    View btnSettings = ((Activity) ctx).findViewById(R.id.btnSettings);
-                    if (btnSettings != null && btnSettings.getVisibility() == View.VISIBLE) {
-                        btnSettings.requestFocus();
-                        return true;
-                    }
-                }
-            }
-            return false;
+        h.card.setNextFocusUpId(R.id.weatherPill);
+        h.card.setOnKeyListener((view, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode != KeyEvent.KEYCODE_DPAD_UP && keyCode != KeyEvent.KEYCODE_DPAD_DOWN
+                    && keyCode != KeyEvent.KEYCODE_DPAD_LEFT && keyCode != KeyEvent.KEYCODE_DPAD_RIGHT) return false;
+            int pos = h.getBindingAdapterPosition();
+            return listener != null && pos != RecyclerView.NO_POSITION && listener.onTileVerticalKey(pos, keyCode);
         });
         h.name.setText(e.name);
         h.name.setVisibility(View.GONE);
@@ -699,6 +684,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         try {
             ctx.startActivity(i);
             if (cinematic) LastOpened.record(ctx, e.pkg);
+            if (ctx instanceof MainActivity) {
+                ((MainActivity) ctx).setLastOpenedApp(e.pkg);
+            }
             if (advancedEffects && ctx instanceof Activity) {
                 ((Activity) ctx).overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
             }
@@ -779,7 +767,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     int positionOf(String key) {
         if (key == null) return -1;
         for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).component.flattenToShortString().equals(key)) return i;
+            if (items.get(i).component.flattenToShortString().equals(key) || items.get(i).pkg.equals(key)) return i;
         }
         return -1;
     }

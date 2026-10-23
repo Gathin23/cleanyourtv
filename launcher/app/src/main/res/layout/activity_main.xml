@@ -180,12 +180,48 @@
                 <TextView android:id="@+id/tabApp" android:layout_width="0dp" android:layout_height="0dp" />
             </LinearLayout>
 
-            <!-- First layer left side: Clustered Date/Time + Weather Pill -->
+            <!-- First layer left side: Date and Time -->
             <LinearLayout
-                android:id="@+id/topLeftCluster"
+                android:id="@+id/dateTimeBlock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:gravity="start">
+
+                <TextClock
+                    android:id="@+id/clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:format12Hour="h:mm a"
+                    android:format24Hour="HH:mm"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:letterSpacing="0.02"
+                    android:includeFontPadding="false" />
+
+                <TextClock
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:format12Hour="@string/date_format_home"
+                    android:format24Hour="@string/date_format_home"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:letterSpacing="0.10"
+                    android:textAllCaps="true" />
+            </LinearLayout>
+
+            <!-- First layer right side: Unified Action Cluster (Weather, Inputs, Wifi, Settings) -->
+            <LinearLayout
+                android:id="@+id/topButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:gravity="center_vertical"
                 android:clipChildren="false"
@@ -193,44 +229,11 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:id="@+id/dateTimeBlock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="start">
-
-                    <TextClock
-                        android:id="@+id/clock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:format12Hour="h:mm a"
-                        android:format24Hour="HH:mm"
-                        android:textColor="#FFFFFFFF"
-                        android:textSize="20sp"
-                        android:fontFamily="@font/inter_medium"
-                        android:letterSpacing="0.02"
-                        android:includeFontPadding="false" />
-
-                    <TextClock
-                        android:id="@+id/date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:format12Hour="@string/date_format_home"
-                        android:format24Hour="@string/date_format_home"
-                        android:textColor="#99FFFFFF"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/inter_regular"
-                        android:letterSpacing="0.10"
-                        android:textAllCaps="true" />
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/weatherPill"
                     style="@style/TopButtonBase"
                     android:layout_width="wrap_content"
                     android:layout_height="42dp"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="0dp"
                     android:paddingStart="14dp"
                     android:paddingEnd="16dp"
                     android:gravity="center_vertical"
@@ -286,23 +289,11 @@
                         android:duplicateParentState="true"
                         android:text="Bekasi" />
                 </LinearLayout>
-            </LinearLayout>
-
-            <!-- First layer right side: Quick Action Buttons (Inputs, Wifi, Settings) -->
-            <LinearLayout
-                android:id="@+id/topButtons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/btnInputs"
                     style="@style/TopButtonIcon"
+                    android:layout_marginStart="10dp"
                     android:contentDescription="@string/inputs"
                     android:drawableStart="@drawable/ic_input"
                     android:nextFocusLeft="@+id/weatherPill"

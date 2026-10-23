@@ -170,6 +170,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView appsGrid;
     private AllAppsAdapter allAppsAdapter;
     private boolean isAppsTab = false;
+    private View weatherPill;
     private View btnInputs;
     private TextView btnWifi;
     /** The network pill's icon as last set, so a refresh that changes nothing does not lay the top bar out again. */
@@ -299,6 +300,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private View wallpaperScrim;
     private boolean wallpaperShowingA = false;
     private String currentWallpaperPkg = "";
+    private String lastOpenedAppPackage = null;
+
+    public void setLastOpenedApp(String pkg) {
+        this.lastOpenedAppPackage = pkg;
+    }
 
     private static final long WEATHER_REFRESH_INTERVAL_MS = 15 * 60 * 1000L; // 15 minutes (900 seconds)
 
@@ -671,7 +677,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
-        View weatherPill = findViewById(R.id.weatherPill);
+        weatherPill = findViewById(R.id.weatherPill);
         ImageView weatherIcon = findViewById(R.id.weatherIcon);
         TextView weatherTemp = findViewById(R.id.weatherTemp);
         TextView weatherDot = findViewById(R.id.weatherDot);
@@ -680,20 +686,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
+                SoundManager.getInstance(MainActivity.this).playBack();
+                focusTile(lastFocused % COLUMNS);
+                return true;
+            }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Back to the dock tile Up came from, not wherever the focus finder lands.
                 focusTile(lastFocused % COLUMNS);
                 return true;
             }
-            int firstRightButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (v.getId() == firstRightButton && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                if (v.getId() == R.id.weatherPill) {
+                    // Left from weather moves focus to the last dock item (Vidio)!
+                    int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
+                    focusTile(lastDockPos);
+                    return true;
+                }
+                if (v.getId() == R.id.btnInputs && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
                     weatherPill.requestFocus();
                     return true;
                 }
-                if (v.getId() == R.id.weatherPill) return true;
                 return false;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
@@ -796,16 +811,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onNewIntent(intent);
         if (openLauncherSettingsIfAsked(intent)) return;
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
-        grid.scrollToPosition(0);
-        lastFocused = 0;
-        lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
         currentWallpaperPkg = "";
+
+        // Return focus to the latest opened app if available!
+        if (lastOpenedAppPackage != null) {
+            int pos = adapter.positionOf(lastOpenedAppPackage);
+            if (pos >= 0) {
+                lastFocused = pos;
+                lastFocusedKey = lastOpenedAppPackage;
+            }
+        }
+
         if (stopped) {
             rebuildOnResume = true;
         } else {
-            // Still on screen (the quick panel was over it, or Home was already in front): the tiles are current,
-            // so only go back to the first one; rebuilding would replay the entrance animation for nothing.
-            grid.post(() -> focusTile(0));
+            final int posToFocus = lastFocused;
+            grid.post(() -> focusTile(posToFocus));
         }
     }
 
@@ -1166,8 +1187,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         SoundManager.getInstance(this).handleKeyEvent(event);
+        int code = event.getKeyCode();
+        if (code == KeyEvent.KEYCODE_SETTINGS
+                || code == KeyEvent.KEYCODE_MENU
+                || code == 83 /* TCL Google TV remote settings button */) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                showSettingsMenu();
+            }
+            return true;
+        }
+        if (code == KeyEvent.KEYCODE_TV_INPUT
+                || code == KeyEvent.KEYCODE_TV
+                || code == KeyEvent.KEYCODE_WINDOW) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                showInputs();
+            }
+            return true;
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            int code = event.getKeyCode();
             if ((code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) && isAppsTab) {
                 selectHomeTab();
                 return true;
@@ -1177,7 +1214,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!reordering) return super.dispatchKeyEvent(event);
         if (dockEditing) return dispatchDockEdit(event);
         boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
-        int code = event.getKeyCode();
         boolean ok = code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
                 || code == KeyEvent.KEYCODE_NUMPAD_ENTER;
         boolean back = code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE;
@@ -2552,13 +2588,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusLibrary();
                 return true;
             }
+            // In the dock, navigating right from the last app moves directly to weather!
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && position < COLUMNS) {
+                int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
+                if (position == lastDockPos) {
+                    if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                        weatherPill.requestFocus();
+                        return true;
+                    }
+                }
+            }
             // In the dock, the last app is the row's end: the empty slots after it take no focus.
             int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
             return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
+            if (position < COLUMNS) {
+                // Dock row: moving UP always focuses weather pill!
+                if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                    weatherPill.requestFocus();
+                    return true;
+                }
+                return false;          // dock row fallback: let focus move to the top bar
+            }
             target = position - COLUMNS;
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
@@ -3059,6 +3112,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Dropdown menu under the Inputs pill: HDMI ports (with connection state), AV and Live TV. */
     private void showInputs() {
+        if (openPopup != null) openPopup.dismiss();
         // A configured source panel and no Live TV row to offer next to it: the panel is the whole menu.
         // The BYINTEK U4 needs this, as its TvInputManager lists three HDMI ports and an AV input it doesn't have.
         if (!sourcePanelService.isEmpty() && liveTvIntent() == null) {
@@ -3428,6 +3482,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Keep a normal Settings click for the TV; the launcher's choices live behind hold OK. */
     private void showSettingsMenu() {
+        if (openPopup != null) openPopup.dismiss();
         View anchor = findViewById(R.id.btnSettings);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);

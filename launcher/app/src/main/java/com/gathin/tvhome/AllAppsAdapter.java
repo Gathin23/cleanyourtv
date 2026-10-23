@@ -291,6 +291,9 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
             if (item.isLeanback) intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
             try {
                 ctx.startActivity(intent);
+                if (ctx instanceof MainActivity) {
+                    ((MainActivity) ctx).setLastOpenedApp(item.pkg);
+                }
             } catch (Exception e) {
                 Toast.makeText(ctx, "Cannot open " + item.label, Toast.LENGTH_SHORT).show();
             }
