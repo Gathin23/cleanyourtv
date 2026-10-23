@@ -4,6 +4,7 @@
     <string name="inputs">Inputs</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Settings</string>
+    <string name="safe_mode">Safe mode after repeated crashes: theme and extras are off. Push a fixed theme, or run tools/theme.sh --reset, to leave it.</string>
     <string name="choose_input">Inputs</string>
     <string name="connected">Connected</string>
     <string name="standby">Standby</string>
