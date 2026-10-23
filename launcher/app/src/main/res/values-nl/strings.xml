@@ -106,5 +106,4 @@
     <string name="race_live">%1$s · live</string>
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
-    <string name="safe_mode">Veilige modus na herhaalde crashes: thema en extra\'s staan uit. Stuur een gecorrigeerd thema of voer tools/theme.sh --reset uit om te stoppen.</string>
 </resources>

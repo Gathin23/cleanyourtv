@@ -93,5 +93,4 @@
     <string name="tile_add_to_dock">Lisää telakkaan</string>
     <string name="tile_replace_in_dock">Korvaa toisella sovelluksella</string>
     <string name="dock_edit_pick_place">Valitse telakan paikka tälle sovellukselle ja paina OK. Takaisin peruuttaa.</string>
-    <string name="safe_mode">Vikasietotila toistuvien kaatumisten jälkeen: teema ja lisät ovat pois päältä. Lähetä korjattu teema tai suorita tools/theme.sh --reset poistuaksesi.</string>
 </resources>

@@ -108,5 +108,4 @@
     <string name="race_live">%1$s · ao vivo</string>
     <string name="race_finished">Bandeira quadriculada</string>
     <string name="last_opened">Aberto %1$s</string>
-    <string name="safe_mode">Modo seguro após falhas repetidas: o tema e os extras estão desligados. Envie um tema corrigido ou execute tools/theme.sh --reset para sair.</string>
 </resources>

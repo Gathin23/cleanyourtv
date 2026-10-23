@@ -116,5 +116,4 @@
     <string name="race_countdown_days">%1$d ngày %2$d giờ</string>
     <string name="last_opened">Mở lần cuối %1$s</string>
     <string name="tile_move">Di chuyển</string>
-    <string name="safe_mode">Chế độ an toàn sau nhiều lần lỗi liên tiếp: giao diện và tiện ích bổ sung đã tắt. Đẩy giao diện đã sửa hoặc chạy tools/theme.sh --reset để thoát.</string>
 </resources>
