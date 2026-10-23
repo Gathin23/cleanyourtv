@@ -19,15 +19,33 @@ does.
   row that opens Accessibility settings (Settings > System > Accessibility > Bedtime Lock). Behind the code: on or
   off, the hours (Up and Down move them by 15 minutes), the TV Settings switch, a new code, and a test.
 
+## Phone unlock (optional)
+
+Off until you turn it on behind the code. Then, at night on the lock with nothing typed, **Back** asks on your
+phones: each phone subscribed to the lock's private channel in the free [ntfy](https://ntfy.sh) app (Android and
+iPhone) gets "The TV asks to be unlocked" with **Unlock** and **Not now**. Unlock lifts the lock as the code would;
+the phones then get a short note that it was handled. A request waits up to 5 minutes, and a new one can go out
+every 2 minutes.
+
+- **Setup:** turn on Phone unlock; the settings show a channel name like `bedtime-k7q2…`. In the ntfy app on each
+  phone, subscribe to that name on `ntfy.sh`. **Send a test to the phones** checks it.
+- **Who gets it:** every phone subscribed to the channel, so keep the name private. **New channel** replaces it;
+  the old name stops working and the phones subscribe again.
+- **How the answer comes back:** the buttons post a one-time token to a second channel no phone subscribes to,
+  which the lock reads every 3 seconds while its request waits, and at no other time. An answer for an older
+  request, or without the token, is ignored. The code keeps working without a network.
+
 ## Permissions
 
 | Permission | Why |
 |---|---|
 | Accessibility service (`BIND_ACCESSIBILITY_SERVICE`, turned on by the owner) | To see which app comes to the front, so the lock can cover it. It asks for window changes only: it does not read what is on screen and does not filter keys. |
+| `INTERNET` | Phone unlock only, while it is on: the request and the answer through ntfy.sh, and the settings' test. Nothing goes online while no request waits. |
 
-No other permission: no network, no account, no telemetry, no ads. The code is stored only as a salted SHA-256 in
-the app's own storage (backups are off). The service keeps one timer, for the next start or end of the locked
-hours, and a receiver for the screen turning off and on.
+No account, no telemetry, no ads. What ntfy.sh sees: the channel names, "The TV asks to be unlocked" with the time,
+and the one-time tokens. The code is stored only as a salted SHA-256 in the app's own storage (backups are off).
+The service keeps one timer, for the next start or end of the locked hours, and a receiver for the screen turning
+off and on.
 
 ## Build and install
 

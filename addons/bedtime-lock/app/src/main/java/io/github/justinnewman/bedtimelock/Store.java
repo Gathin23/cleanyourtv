@@ -59,6 +59,27 @@ final class Store {
         p.edit().putBoolean("protect_settings", on).apply();
     }
 
+    /** The private ntfy channel for phone unlock while it is on, else null. The name is kept when it is turned off. */
+    String phoneChannel() {
+        return p.getBoolean("phone_on", false) ? p.getString("phone_channel", null) : null;
+    }
+
+    boolean phoneOn() {
+        return phoneChannel() != null;
+    }
+
+    /** Turn phone unlock on (making a channel the first time) or off. */
+    void setPhoneOn(boolean on) {
+        SharedPreferences.Editor e = p.edit().putBoolean("phone_on", on);
+        if (on && !p.contains("phone_channel")) e.putString("phone_channel", PhoneUnlock.newChannel());
+        e.apply();
+    }
+
+    /** A new channel: the phones subscribe again, and the old name stops working. */
+    void newPhoneChannel() {
+        p.edit().putString("phone_channel", PhoneUnlock.newChannel()).apply();
+    }
+
     boolean unlocked() {
         return p.getBoolean("unlocked", false);
     }

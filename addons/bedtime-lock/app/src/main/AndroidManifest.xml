@@ -4,7 +4,9 @@
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
-    <!-- No permissions. The lock is an accessibility service the owner turns on in Settings > Accessibility. -->
+    <!-- The lock is an accessibility service the owner turns on in Settings > Accessibility. INTERNET is for the
+         optional phone unlock only (ntfy), used while an unlock request waits and for the settings' test. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="false"

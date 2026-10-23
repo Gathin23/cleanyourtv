@@ -37,5 +37,18 @@
         <TextView android:id="@+id/changePin" style="@style/Row" android:text="@string/row_change_pin" />
         <TextView android:id="@+id/service" style="@style/Row" />
         <TextView android:id="@+id/test" style="@style/Row" android:text="@string/row_test" />
+        <TextView android:id="@+id/phone" style="@style/Row" />
+        <TextView android:id="@+id/phoneTest" style="@style/Row" android:text="@string/row_phone_test" />
+        <TextView android:id="@+id/phoneNew" style="@style/Row" android:text="@string/row_phone_new" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/phoneInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textColor="#CCFFFFFF"
+        android:textIsSelectable="false"
+        android:textSize="16sp"
+        android:visibility="gone" />
 </LinearLayout>

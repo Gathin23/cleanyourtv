@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * The owner's screen. The first run asks for a new PIN twice; after that the PIN opens the settings: the locked
@@ -105,6 +107,22 @@ public final class SettingsActivity extends Activity {
         });
         findViewById(R.id.test).setOnClickListener(v -> startActivity(new Intent(this, LockActivity.class)
                 .putExtra(LockActivity.EXTRA_REASON, LockActivity.TEST)));
+        findViewById(R.id.phone).setOnClickListener(v -> {
+            store.setPhoneOn(!store.phoneOn());
+            render();
+        });
+        findViewById(R.id.phoneTest).setOnClickListener(v -> {
+            String channel = store.phoneChannel();
+            if (channel == null) return;
+            PhoneUnlock once = new PhoneUnlock(channel, null);
+            once.tell(getString(R.string.phone_test_text));
+            once.shutdown();
+            Toast.makeText(this, R.string.phone_test_sent, Toast.LENGTH_SHORT).show();
+        });
+        findViewById(R.id.phoneNew).setOnClickListener(v -> {
+            store.newPhoneChannel();
+            render();
+        });
         render();
         findViewById(R.id.enabled).requestFocus();
     }
@@ -117,6 +135,14 @@ public final class SettingsActivity extends Activity {
         ((TextView) findViewById(R.id.protect)).setText(getString(R.string.row_settings, store.protectSettings() ? on : off));
         ((TextView) findViewById(R.id.service)).setText(serviceOn() ? R.string.row_service_on : R.string.row_service_off);
         ((TextView) findViewById(R.id.note)).setText(editing != null ? R.string.editing_hint : R.string.unlocked_note);
+        String channel = store.phoneChannel();
+        ((TextView) findViewById(R.id.phone)).setText(getString(R.string.row_phone, channel != null ? on : off));
+        int shown = channel != null ? View.VISIBLE : View.GONE;
+        findViewById(R.id.phoneTest).setVisibility(shown);
+        findViewById(R.id.phoneNew).setVisibility(shown);
+        TextView info = findViewById(R.id.phoneInfo);
+        info.setVisibility(shown);
+        if (channel != null) info.setText(getString(R.string.phone_info, channel));
     }
 
     private boolean serviceOn() {

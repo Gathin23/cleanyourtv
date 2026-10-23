@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.format.DateFormat;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -29,6 +30,8 @@ public final class LockActivity extends Activity {
     private TextView title;
     private TextView message;
     private int reason;
+    /** Phone unlock (ntfy), when the owner turned it on; null otherwise. */
+    private PhoneUnlock phone;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -40,7 +43,47 @@ public final class LockActivity extends Activity {
         ViewGroup cells = findViewById(R.id.cells);
         pad = new PinPad(cells, this::onPin);
         cells.requestFocus();
+        String channel = store.phoneChannel();
+        if (channel != null) phone = new PhoneUnlock(channel, new PhoneUnlock.Listener() {
+            @Override
+            public void onAnswer(boolean unlock) {
+                if (unlock) {
+                    phone.tell(getString(R.string.told_unlocked));
+                    store.succeeded();
+                    store.setUnlocked();
+                    finish();
+                } else {
+                    phone.tell(getString(R.string.told_not_now));
+                    message.setText(R.string.not_now);
+                }
+            }
+
+            @Override
+            public void onFailed() {
+                message.setText(R.string.phone_failed);
+            }
+        });
         apply(getIntent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (phone != null) phone.shutdown();
+    }
+
+    /** Back at night with nothing typed: ask on the parents' phones, at most once every two minutes. */
+    private void askPhones() {
+        long now = System.currentTimeMillis();
+        long left = PhoneUnlock.cooldownLeft(now);
+        if (phone.pending()) {
+            message.setText(R.string.asked);
+        } else if (left > 0) {
+            message.setText(getString(R.string.asked_recently, (int) ((left + 999) / 1000)));
+        } else {
+            phone.ask(getString(R.string.request_text, time(this, Store.minuteNow())));
+            message.setText(R.string.asked);
+        }
     }
 
     @Override
@@ -56,18 +99,21 @@ public final class LockActivity extends Activity {
                 : getString(R.string.locked_until, time(this, store.until())));
         message.setText("");
         pad.clear();
+        findViewById(R.id.ask).setVisibility(phone != null && reason == NIGHT ? View.VISIBLE : View.GONE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         main.postDelayed(recheck, 30_000L);
+        if (phone != null) phone.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         main.removeCallbacks(recheck);
+        if (phone != null) phone.stop();
     }
 
     /** The locked hours ended while this was on screen. */
@@ -84,6 +130,7 @@ public final class LockActivity extends Activity {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             if (event.getAction() == KeyEvent.ACTION_UP) {
                 if (pad.started()) pad.clear();
+                else if (reason == NIGHT && phone != null) askPhones();
                 else if (reason != NIGHT) leave();
             }
             return true;
