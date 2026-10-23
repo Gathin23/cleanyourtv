@@ -686,26 +686,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusTile(lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE)
-                    ? R.id.weatherPill
-                    : (btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId());
-            int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
-            int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
+            int firstRightButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (v.getId() == R.id.btnInputs && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                if (v.getId() == firstRightButton && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
                     weatherPill.requestFocus();
                     return true;
                 }
-                return v.getId() == leftButton;
+                if (v.getId() == R.id.weatherPill) return true;
+                return false;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 if (v.getId() == R.id.weatherPill) {
-                    if (btnInputs.getVisibility() == View.VISIBLE) btnInputs.requestFocus();
-                    else btnWifi.requestFocus();
+                    View rightTarget = btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton();
+                    rightTarget.requestFocus();
                     return true;
                 }
-                return v.getId() == rightButton;
+                if (v.getId() == R.id.btnSettings) return true;
+                return false;
             }
             return false;
         };
@@ -801,12 +799,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.scrollToPosition(0);
         lastFocused = 0;
         lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
+        currentWallpaperPkg = "";
         if (stopped) {
             rebuildOnResume = true;
         } else {
             // Still on screen (the quick panel was over it, or Home was already in front): the tiles are current,
             // so only go back to the first one; rebuilding would replay the entrance animation for nothing.
-            grid.post(() -> focusTile(adapter.appCount() > 1 ? 1 : 0));
+            grid.post(() -> focusTile(0));
         }
     }
 
@@ -935,9 +934,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (showStats) startStats();
         sky.update();
         wallpaperPlayer.start();
-        ImageView currentWp = wallpaperShowingA ? dockWallpaperA : dockWallpaperB;
-        if (currentWp != null && currentWp.getVisibility() == View.VISIBLE && currentWp.getAlpha() > 0.5f) {
-            startKenBurnsEffect(currentWp, lastFocused % COLUMNS);
+        // Force wallpaper sync with the currently focused dock app on resume
+        if (dockRow && adapter != null && adapter.appCount() > 0) {
+            int pos = lastFocused % COLUMNS;
+            String pkg = adapter.packageAt(pos);
+            if (pkg != null) {
+                updateDockWallpaper(pkg, pos, true);
+            }
         }
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && diya != null) {
@@ -1059,6 +1062,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         hero.animate().cancel();
         ambient.animate().cancel();
         heroArt.animate().cancel();
+        if (dockWallpaperA != null) dockWallpaperA.animate().cancel();
+        if (dockWallpaperB != null) dockWallpaperB.animate().cancel();
         handler.removeCallbacks(minuteTick);
         stopStats();
         stopKenBurnsEffect();
@@ -1979,8 +1984,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Cross-fades to the cinematic show wallpaper attached to the focused dock app with a smooth Ken Burns animation.
      */
     private void updateDockWallpaper(String pkg, int position) {
+        updateDockWallpaper(pkg, position, false);
+    }
+
+    private void updateDockWallpaper(String pkg, int position, boolean force) {
         if (pkg == null) return;
-        if (pkg.equals(currentWallpaperPkg)) return;
+        if (!force && pkg.equals(currentWallpaperPkg)) return;
         currentWallpaperPkg = pkg;
         Integer resId = DOCK_WALLPAPERS.get(pkg);
         if (resId == null) {
@@ -2022,23 +2031,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final ImageView outgoing = wallpaperShowingA ? dockWallpaperA : dockWallpaperB;
         wallpaperShowingA = !wallpaperShowingA;
 
+        incoming.animate().cancel();
+        outgoing.animate().cancel();
+
         incoming.setImageResource(resId);
         incoming.setVisibility(View.VISIBLE);
 
         if (animations && !reducedMotion && outgoing.getVisibility() == View.VISIBLE && outgoing.getAlpha() > 0.05f) {
-            ObjectAnimator.ofFloat(incoming, "alpha", 0f, 1f).setDuration(400).start();
-            ObjectAnimator fadeOut = ObjectAnimator.ofFloat(outgoing, "alpha", outgoing.getAlpha(), 0f);
-            fadeOut.setDuration(400);
-            fadeOut.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    outgoing.setScaleX(1.0f);
-                    outgoing.setScaleY(1.0f);
-                    outgoing.setTranslationX(0f);
-                    outgoing.setTranslationY(0f);
-                }
-            });
-            fadeOut.start();
+            incoming.setAlpha(0f);
+            incoming.animate()
+                    .alpha(1f)
+                    .setDuration(350)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                    .start();
+            outgoing.animate()
+                    .alpha(0f)
+                    .setDuration(350)
+                    .withEndAction(() -> {
+                        outgoing.setAlpha(0f);
+                        outgoing.setScaleX(1.0f);
+                        outgoing.setScaleY(1.0f);
+                        outgoing.setTranslationX(0f);
+                        outgoing.setTranslationY(0f);
+                    })
+                    .start();
         } else {
             incoming.setAlpha(1f);
             outgoing.setAlpha(0f);
@@ -2646,7 +2662,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             grid.scrollToPosition(pos);
             grid.post(() -> {
                 RecyclerView.ViewHolder h = grid.findViewHolderForAdapterPosition(pos);
-                if (h != null) h.itemView.findViewById(R.id.card).requestFocus();
+                if (h != null) {
+                    View card = h.itemView.findViewById(R.id.card);
+                    if (card != null) {
+                        if (card.isFocused()) onTileFocused(pos, card);
+                        else card.requestFocus();
+                    }
+                }
             });
             return;
         }
@@ -2659,10 +2681,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 pendingFocusScroll = null;
                 RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(pos);
                 View target = h != null ? h.itemView.findViewById(R.id.card) : rv.getChildAt(0);
-                if (target != null) target.requestFocus();
+                if (target != null) {
+                    if (target.isFocused()) onTileFocused(pos, target);
+                    else target.requestFocus();
+                }
             }
         };
         grid.addOnScrollListener(pendingFocusScroll);
+        grid.post(() -> {
+            RecyclerView.ViewHolder h = grid.findViewHolderForAdapterPosition(pos);
+            if (h != null) {
+                cancelPendingFocusScroll();
+                View target = h.itemView.findViewById(R.id.card);
+                if (target != null) {
+                    if (target.isFocused()) onTileFocused(pos, target);
+                    else target.requestFocus();
+                }
+            }
+        });
         grid.smoothScrollToPosition(pos);
     }
 
