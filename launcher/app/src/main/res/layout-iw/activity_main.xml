@@ -184,6 +184,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="9dp"
+                    android:gravity="right"
                     android:orientation="vertical">
 
                     <!-- Shamsi date ("27 Mehr 1405"), shown when shamsi_date is on. -->

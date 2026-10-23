@@ -185,6 +185,14 @@
     <!-- Show the Solar Hijri (Shamsi) date used in Iran and Afghanistan, e.g. "27 Mehr 1405", above the
          Gregorian date. -->
     <bool name="shamsi_date">false</bool>
+    <!-- Optional Hebrew date beside the Gregorian date and Jewish holiday greetings. Both are off.
+         Theme JSON accepts the same keys. A valid manual location is required for offline sunset rollover.
+         No location permission or network request. Approximate display, not religious timing guidance. -->
+    <bool name="hebrew_date">false</bool>
+    <bool name="jewish_holiday_greetings">false</bool>
+    <!-- auto: IL country (or Hebrew without a country) uses Israel; other countries use Diaspora.
+         Override with israel or diaspora when the app language does not reflect the desired schedule. -->
+    <string name="jewish_holiday_region" translatable="false">auto</string>
 
     <!-- A name after the greeting: "Mr. Trịnh" shows GOOD MORNING, MR. TRỊNH. Empty: the greeting alone. -->
     <string name="greeting_name" translatable="false"></string>

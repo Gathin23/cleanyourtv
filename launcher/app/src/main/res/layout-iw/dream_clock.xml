@@ -63,7 +63,7 @@
             android:textColor="#8CFFFFFF"
             android:textSize="18sp"
             android:fontFamily="@string/font_regular"
-            android:letterSpacing="0.14"
+            android:letterSpacing="0"
             android:textAllCaps="true" />
     </LinearLayout>
 </FrameLayout>

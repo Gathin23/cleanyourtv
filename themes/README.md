@@ -70,6 +70,9 @@ A new key needs one there in the same pull request.
 | `app_library_selection` | bool | OK toggles Home checkmarks in the library; checked apps first, both groups alphabetized. Hiding keeps focus on the adjacent next app (previous at the end). Requires `app_library`; `false` preserves the standard open/long-press behavior |
 | `library_apps` | list of package names | Packages pre-seeded into the App library's "added" set at startup (config.xml `library_apps`, or a theme's `config.json`). They show on Home as if the owner had added them in the App library UI, and stay removable there (a removed one stays hidden); empty (off) by default |
 | `shamsi_date` | bool | Show the Solar Hijri date above the Gregorian one |
+| `hebrew_date` | bool | Off by default; show the Hebrew calendar date below the Gregorian one. Requires the manual location described below for offline sunset rollover |
+| `jewish_holiday_greetings` | bool | Off by default; replace the normal greeting during major Jewish holidays, their eves, Hanukkah, Purim (including Shushan Purim) and Shabbat. An explicit festival-theme greeting has priority |
+| `jewish_holiday_region` | string | `auto` (default): country `IL` uses Israel, other countries use Diaspora; Hebrew without a country uses Israel. Override with `israel` or `diaspora` |
 | `greeting_name` | string | A name after the greeting, e.g. `"Mr. Trịnh"` for GOOD MORNING, MR. TRỊNH; empty for the greeting alone |
 | `module_cards` | bool | Look for module cards and ask about them (`true`); `false` turns the feature off |
 | `reduced_motion` | bool | Calmer motion for weak GPUs: the highlight slides without bouncing and settles within 5 frames, every animation lasts 90 ms or less, names, the top shelf, the glow and the highlight appear instead of fading, and there is no tile entrance (`false` by default) |
@@ -200,3 +203,34 @@ Open a PR with a new folder here containing:
 Then add a row to the table above with the screenshot, the same way as the others. Keep the dock list
 generic (the big streaming apps) unless the theme is for a specific TV, and say which TV you tried it on
 in the PR description.
+
+### Optional Hebrew date and Jewish holiday greetings
+
+Both switches are independent and off by default. Enable them explicitly in `config.xml` or a theme's
+`config.json`, and set the existing `latitude` and `longitude` build resources in `config.xml`
+to manual coordinates for the TV's city (themes cannot move the configured location). The TV calculates sunset offline with the existing solar helper and
+uses Android's built-in Hebrew calendar (no added dependency or permission). The Hebrew date advances at
+that sunset in the TV's time zone; keep its time zone correct. The calculation is approximate and is for
+this date/greeting display, not candle-lighting, Havdalah or other religious timing guidance.
+
+`jewish_holiday_region` follows the app locale's country, not GPS or the TV's network. A country is more
+specific than language (for example, Hebrew/US uses Diaspora and English/Israel uses Israel). Use an explicit
+region override if the app locale does not describe the schedule you observe. With no available sunset the
+optional date and holiday greeting are omitted; the Gregorian date and normal greeting stay available.
+The greeting switch affects Home; the date switch also affects the clock screensaver. Hebrew formatting follows the selected locale;
+other languages use ICU's localized Hebrew-calendar month names. Existing explicit festival greetings win.
+
+Calendar validation uses [Hebcal's converter and holiday API](https://www.hebcal.com/home/developer-apis)
+on the development computer only; the launcher never calls them.
+
+The Gregorian date stays on top of the optional Hebrew date. Hebrew years omit the thousands prefix
+(for example תשפ״ז); day-number and Adar I/II marks remain intact. Shemini Atzeret and Simchat Torah use
+the same general holiday greeting in Israel and the Diaspora, while their observed dates still differ.
+
+With greetings enabled, priority is: an explicit festival-theme greeting, today’s Jewish holiday,
+a holiday beginning the following Hebrew day (holiday eve), Shabbat, then the normal time-of-day greeting.
+Shabbat follows the same sunset-based date: Friday sunset through Saturday sunset (approximate display,
+not Havdalah timing). Holiday-eve greetings use the upcoming holiday’s wording. The optional date pair
+uses the same 14sp regular font with no added letter spacing on both lines, with a 6dp downward offset.
+
+The clock screensaver also shows the Gregorian date followed by a comma, a space and the Hebrew date when `hebrew_date` is enabled. Both Home dates share their font, size and color.
