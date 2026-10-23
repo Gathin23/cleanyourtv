@@ -45,6 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
+            android:visibility="gone"
             android:text="@string/rows_below_dock_label"
             android:textColor="#FFFFFFFF"
             android:textSize="20sp" />
@@ -53,6 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:visibility="gone"
             android:orientation="horizontal">
 
             <TextView android:id="@+id/rows0" style="@style/SettingsColumnChoice" android:text="0" />

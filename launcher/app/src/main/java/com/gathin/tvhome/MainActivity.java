@@ -1,6 +1,9 @@
 package com.gathin.tvhome;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -14,6 +17,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -36,6 +40,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -615,7 +620,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs = findViewById(R.id.btnInputs);
         View btnSettings = findViewById(R.id.btnSettings);
         btnInputs.setOnClickListener(v -> showInputs());
-        btnWifi.setOnClickListener(v -> openNetworkPill());
+        btnWifi.setOnClickListener(v -> showWifiMenu());
         btnWifi.setOnLongClickListener(v -> {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
@@ -1380,6 +1385,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroName.setText(title);
         if (heroDots != null) heroDots.setVisibility(View.GONE);
         hideAppStats();
+        // Point 7: When user navigates to top bar (inputs, wifi, settings), transition wallpaper to apple neon wallpaper
+        currentWallpaperPkg = "top_bar";
+        setSpecificWallpaper(R.drawable.wallpaper_top_bar, 0);
+
         if (animations && !reducedMotion) {
             float density = getResources().getDisplayMetrics().density;
             hero.setTranslationY(24f * density);
@@ -1454,77 +1463,82 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // Horizontal PS5 carousel scrolling:
             // Slot 1 (X_focus) is the fixed anchor for any focused app from index 1 onwards.
             // Position 0 aligns at slot 0 (X = 0).
-            float slotStep = (54f + 12f) * density;
-            int targetX = (position == 0) ? 0 : Math.round(slotStep);
+            showHero(position);
 
-            int[] cardLoc = new int[2];
-            card.getLocationInWindow(cardLoc);
-            int[] gridLoc = new int[2];
-            grid.getLocationInWindow(gridLoc);
-            int[] rootLoc = new int[2];
-            root.getLocationInWindow(rootLoc);
+            card.post(() -> {
+                if (!card.isFocused()) return;
 
-            int currentX = cardLoc[0] - gridLoc[0];
-            int dx = currentX - targetX;
+                float slotStep = (54f + 12f) * density;
+                int targetX = (position == 0) ? 0 : Math.round(slotStep);
 
-            Rect r = tileRect;
-            r.set(0, 0, card.getWidth(), card.getHeight());
-            root.offsetDescendantRectToMyCoords(card, r);
+                int[] cardLoc = new int[2];
+                card.getLocationInWindow(cardLoc);
+                int[] gridLoc = new int[2];
+                grid.getLocationInWindow(gridLoc);
+                int[] rootLoc = new int[2];
+                root.getLocationInWindow(rootLoc);
 
-            int cardW = Math.round(92 * density);
-            int cardH = Math.round(92 * density);
-            float glassW = cardW + 2 * pad;
-            float glassH = cardH + 2 * pad;
+                int currentX = cardLoc[0] - gridLoc[0];
+                int dx = (position <= 1 && grid.computeHorizontalScrollOffset() == 0) ? 0 : (currentX - targetX);
 
-            ViewGroup.LayoutParams lp = glass.getLayoutParams();
-            if (lp.width != (int) glassW || lp.height != (int) glassH) {
-                lp.width = (int) glassW;
-                lp.height = (int) glassH;
-                glass.setLayoutParams(lp);
-                glass.setRadius(18f * density);
-            }
+                Rect r = tileRect;
+                r.set(0, 0, card.getWidth(), card.getHeight());
+                root.offsetDescendantRectToMyCoords(card, r);
 
-            int accent = cinematic && !festive ? adapter.ambientColorAt(position) : 0;
-            if (accent != glassAccent) {
-                glassAccent = accent;
-                glass.setAccent(accent);
-            }
+                int cardW = Math.round(92 * density);
+                int cardH = Math.round(92 * density);
+                float glassW = cardW + 2 * pad;
+                float glassH = cardH + 2 * pad;
 
-            float targetGlassX = (r.left - dx) - pad;
-            float targetGlassY = r.top - pad;
+                ViewGroup.LayoutParams lp = glass.getLayoutParams();
+                if (lp.width != (int) glassW || lp.height != (int) glassH) {
+                    lp.width = (int) glassW;
+                    lp.height = (int) glassH;
+                    glass.setLayoutParams(lp);
+                    glass.setRadius(18f * density);
+                }
 
-            springX.cancel();
-            springY.cancel();
-            glass.animate().cancel();
+                int accent = cinematic && !festive ? adapter.ambientColorAt(position) : 0;
+                if (accent != glassAccent) {
+                    glassAccent = accent;
+                    glass.setAccent(accent);
+                }
 
-            if (!glassShown) {
-                glass.setTranslationX(targetGlassX);
-                glass.setTranslationY(targetGlassY);
-                glass.setAlpha(1f);
-                glassShown = true;
-            } else {
-                if (animations && !reducedMotion) {
-                    glass.animate()
-                            .translationX(targetGlassX)
-                            .translationY(targetGlassY)
-                            .setDuration(260)
-                            .setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f))
-                            .start();
-                } else {
+                float targetGlassX = (r.left - dx) - pad;
+                float targetGlassY = r.top - pad;
+
+                springX.cancel();
+                springY.cancel();
+                glass.animate().cancel();
+
+                if (!glassShown) {
                     glass.setTranslationX(targetGlassX);
                     glass.setTranslationY(targetGlassY);
-                }
-            }
-
-            if (Math.abs(dx) > (int) (2 * density)) {
-                grid.stopScroll();
-                if (!animations || reducedMotion) {
-                    grid.scrollBy(dx, 0);
+                    glass.setAlpha(1f);
+                    glassShown = true;
                 } else {
-                    grid.smoothScrollBy(dx, 0, new android.view.animation.DecelerateInterpolator(1.8f), 280);
+                    if (animations && !reducedMotion) {
+                        glass.animate()
+                                .translationX(targetGlassX)
+                                .translationY(targetGlassY)
+                                .setDuration(260)
+                                .setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f))
+                                .start();
+                    } else {
+                        glass.setTranslationX(targetGlassX);
+                        glass.setTranslationY(targetGlassY);
+                    }
                 }
-            }
-            showHero(position);
+
+                if (Math.abs(dx) > (int) (2 * density)) {
+                    grid.stopScroll();
+                    if (!animations || reducedMotion) {
+                        grid.scrollBy(dx, 0);
+                    } else {
+                        grid.smoothScrollBy(dx, 0, new android.view.animation.DecelerateInterpolator(1.8f), 280);
+                    }
+                }
+            });
         } else {
             // Below the dock (or in a plain grid) the glow follows the tile without the big name; letting it
             // fade out left the grid on plain black.
@@ -1891,6 +1905,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
 
+        setSpecificWallpaper(resId, position);
+    }
+
+    private void setSpecificWallpaper(int resId, int direction) {
         if (dockWallpaperA == null || dockWallpaperB == null) return;
 
         final ImageView incoming = wallpaperShowingA ? dockWallpaperB : dockWallpaperA;
@@ -1898,22 +1916,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         wallpaperShowingA = !wallpaperShowingA;
 
         incoming.setImageResource(resId);
-        incoming.animate().cancel();
-        outgoing.animate().cancel();
-        if (wallpaperScrim != null) wallpaperScrim.animate().cancel();
+        incoming.setVisibility(View.VISIBLE);
 
-        if (animations && !reducedMotion && outgoing.getVisibility() == View.VISIBLE && outgoing.getAlpha() > 0.1f) {
-            incoming.setAlpha(0f);
-            incoming.setVisibility(View.VISIBLE);
-            incoming.animate().alpha(1f).setDuration(400).start();
-            outgoing.animate().alpha(0f).setDuration(400).withEndAction(() -> {
-                outgoing.setScaleX(1.0f);
-                outgoing.setScaleY(1.0f);
-                outgoing.setTranslationX(0f);
-                outgoing.setTranslationY(0f);
-            }).start();
+        if (animations && !reducedMotion && outgoing.getVisibility() == View.VISIBLE && outgoing.getAlpha() > 0.05f) {
+            ObjectAnimator.ofFloat(incoming, "alpha", 0f, 1f).setDuration(400).start();
+            ObjectAnimator fadeOut = ObjectAnimator.ofFloat(outgoing, "alpha", outgoing.getAlpha(), 0f);
+            fadeOut.setDuration(400);
+            fadeOut.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    outgoing.setScaleX(1.0f);
+                    outgoing.setScaleY(1.0f);
+                    outgoing.setTranslationX(0f);
+                    outgoing.setTranslationY(0f);
+                }
+            });
+            fadeOut.start();
         } else {
-            incoming.setVisibility(View.VISIBLE);
             incoming.setAlpha(1f);
             outgoing.setAlpha(0f);
             outgoing.setScaleX(1.0f);
@@ -1926,7 +1945,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             wallpaperScrim.setAlpha(1f);
         }
 
-        startKenBurnsEffect(incoming, position);
+        startKenBurnsEffect(incoming, direction);
     }
 
     // ---- Ken Burns cinematic wallpaper animation ------------------------------------------------
@@ -3103,14 +3122,156 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     // ---- launcher settings and module cards -------------------------------------------------------
 
+    private void showWifiMenu() {
+        if (openPopup != null) openPopup.dismiss();
+        View anchor = findViewById(R.id.btnWifi);
+        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        PopupWindow popup = glassPopup(panel, (int) (260 * density));
+
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        String connectedSsid = null;
+        if (wm != null) {
+            try {
+                WifiInfo info = wm.getConnectionInfo();
+                if (info != null && info.getSSID() != null) {
+                    connectedSsid = info.getSSID().replace("\"", "");
+                    if ("<unknown ssid>".equalsIgnoreCase(connectedSsid)) connectedSsid = null;
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        List<ScanResult> scanList = new ArrayList<>();
+        if (wm != null) {
+            try {
+                List<ScanResult> raw = wm.getScanResults();
+                if (raw != null) {
+                    Set<String> seen = new HashSet<>();
+                    for (ScanResult sr : raw) {
+                        if (sr.SSID != null && !sr.SSID.isEmpty() && !seen.contains(sr.SSID)) {
+                            seen.add(sr.SSID);
+                            scanList.add(sr);
+                        }
+                    }
+                    Collections.sort(scanList, (a, b) -> b.level - a.level);
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        if (connectedSsid != null) {
+            String label = "✓  " + connectedSsid + " (Connected)";
+            addSettingsMenuRow(rows, popup, label, () -> open(systemIntent(Settings.ACTION_WIFI_SETTINGS)));
+        }
+
+        int count = 0;
+        for (ScanResult sr : scanList) {
+            if (connectedSsid != null && sr.SSID.equals(connectedSsid)) continue;
+            String signal = sr.level > -60 ? "●●●" : (sr.level > -75 ? "●●○" : "●○○");
+            String label = sr.SSID + "  (" + signal + ")";
+            addSettingsMenuRow(rows, popup, label, () -> open(systemIntent(Settings.ACTION_WIFI_SETTINGS)));
+            count++;
+            if (count >= 6) break;
+        }
+
+        if (connectedSsid == null && scanList.isEmpty()) {
+            addSettingsMenuRow(rows, popup, "Wi-Fi (Disconnected)", () -> open(systemIntent(Settings.ACTION_WIFI_SETTINGS)));
+        }
+
+        addSettingsMenuRow(rows, popup, getString(R.string.wifi) + " Settings", () -> open(systemIntent(Settings.ACTION_WIFI_SETTINGS)));
+
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        popup.setWidth(Math.max((int) (260 * density), panel.getMeasuredWidth()));
+        dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar)
+                ? Gravity.START : Gravity.END);
+        if (rows.getChildCount() > 0) {
+            rows.getChildAt(0).requestFocus();
+        }
+    }
+
+    private void showLauncherSettingsModal() {
+        if (openPopup != null) openPopup.dismiss();
+        View anchor = findViewById(R.id.btnSettings);
+        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        PopupWindow popup = glassPopup(panel, (int) (320 * density));
+
+        // Backdrop blur/dim scrim
+        View heroScrim = findViewById(R.id.heroScrim);
+        if (heroScrim != null) {
+            heroScrim.setVisibility(View.VISIBLE);
+            heroScrim.animate().alpha(0.75f).setDuration(240).start();
+        }
+        popup.setOnDismissListener(() -> {
+            if (openPopup == popup) openPopup = null;
+            if (heroScrim != null) {
+                heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
+            }
+        });
+
+        SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        Config config = Config.load(this);
+
+        // Columns row (4 -> 5 -> 6 -> 7 -> 4)
+        int currentCols = config.columns;
+        String colsLabel = getString(R.string.columns_label) + ": " + currentCols;
+        addSettingsMenuRow(rows, popup, colsLabel, () -> {
+            int nextCols = currentCols >= 7 ? 4 : currentCols + 1;
+            choices.edit().putInt("columns", nextCols).apply();
+            recreate();
+        });
+
+        // Animations row
+        boolean anims = config.animations;
+        String animLabel = "Animations: " + (anims ? getString(R.string.on) : getString(R.string.off));
+        addSettingsMenuRow(rows, popup, animLabel, () -> {
+            boolean next = !anims;
+            choices.edit().putBoolean("animations", next)
+                    .putBoolean("advanced_effects", next && config.advancedEffects).apply();
+            reloadApps(false);
+        });
+
+        // Advanced effects row
+        boolean adv = config.animations && config.advancedEffects;
+        String advLabel = "Advanced effects: " + (adv ? getString(R.string.on) : getString(R.string.off));
+        addSettingsMenuRow(rows, popup, advLabel, () -> {
+            boolean next = !adv;
+            choices.edit().putBoolean("advanced_effects", next).apply();
+            reloadApps(false);
+        });
+
+        // Follow theme (reset choices)
+        addSettingsMenuRow(rows, popup, R.string.follow_theme, () -> {
+            choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY)
+                    .remove("animations").remove("advanced_effects")
+                    .remove(Config.WALLPAPER_CHOICE_KEY).apply();
+            recreate();
+        });
+
+        // Default home
+        addSettingsMenuRow(rows, popup, R.string.home_settings, () -> {
+            Toast.makeText(this, R.string.home_settings_help, Toast.LENGTH_LONG).show();
+            open(new Intent(Settings.ACTION_HOME_SETTINGS));
+        });
+
+        // TV system settings
+        addSettingsMenuRow(rows, popup, R.string.tv_settings, () -> open(systemIntent(Settings.ACTION_SETTINGS)));
+
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        popup.setWidth(Math.max((int) (320 * density), panel.getMeasuredWidth()));
+        dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar)
+                ? Gravity.START : Gravity.END);
+        if (rows.getChildCount() > 0) {
+            rows.getChildAt(0).requestFocus();
+        }
+    }
+
     /** Keep a normal Settings click for the TV; the launcher's choices live behind hold OK. */
     private void showSettingsMenu() {
         View anchor = findViewById(R.id.btnSettings);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (200 * density));
-        addSettingsMenuRow(rows, popup, R.string.launcher_settings, () -> startActivityForResult(
-                new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+        addSettingsMenuRow(rows, popup, R.string.launcher_settings, this::showLauncherSettingsModal);
         addSettingsMenuRow(rows, popup, R.string.tv_settings, () -> open(systemIntent(Settings.ACTION_SETTINGS)));
         if (moduleCards) addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
         if (dockRow) addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
@@ -3124,6 +3285,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, int title, Runnable action) {
+        addSettingsMenuRow(rows, popup, getString(title), action);
+    }
+
+    private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, String title, Runnable action) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         row.findViewById(R.id.icon).setVisibility(View.GONE);
         row.findViewById(R.id.dot).setVisibility(View.GONE);
