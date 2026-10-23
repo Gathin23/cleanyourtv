@@ -66,7 +66,10 @@ import android.view.SoundEffectConstants;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -84,8 +87,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -98,6 +105,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.json.JSONObject;
 
 /**
  * tvOS style home: black, a pinned dock row, an app grid, and one glass highlight that springs between tiles.
@@ -285,6 +293,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
     private ImageView dockWallpaperA;
     private ImageView dockWallpaperB;
+    private ValueAnimator kbAnimatorA;
+    private ValueAnimator kbAnimatorB;
+    private boolean dockHidden = false;
     private View wallpaperScrim;
     private boolean wallpaperShowingA = false;
     private String currentWallpaperPkg = "";
@@ -647,6 +658,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
+        View weatherPill = findViewById(R.id.weatherPill);
+        ImageView weatherIcon = findViewById(R.id.weatherIcon);
+        TextView weatherTemp = findViewById(R.id.weatherTemp);
+        TextView weatherDot = findViewById(R.id.weatherDot);
+        TextView weatherCity = findViewById(R.id.weatherCity);
+
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
@@ -661,6 +678,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (v.getId() == firstButton) {
+                    if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                        weatherPill.requestFocus();
+                        return true;
+                    }
                     int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
                     focusTile(lastDockPos);
                     return true;
@@ -674,6 +695,41 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
+
+        if (weatherPill != null) {
+            weatherPill.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return true;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    focusTile(lastFocused % COLUMNS);
+                    return true;
+                }
+                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                    if (btnInputs.getVisibility() == View.VISIBLE) btnInputs.requestFocus();
+                    else firstTopButton().requestFocus();
+                    return true;
+                }
+                return false;
+            });
+            weatherPill.setOnClickListener(v -> showWeatherModal());
+            weatherPill.setOnFocusChangeListener((view, focused) -> {
+                if (advancedEffects) {
+                    view.animate()
+                            .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
+                            .setDuration(160).start();
+                }
+                int color = focused ? 0xFF111111 : 0xFFFFFFFF;
+                if (weatherIcon != null) weatherIcon.setColorFilter(color);
+                if (weatherTemp != null) weatherTemp.setTextColor(color);
+                if (weatherDot != null) weatherDot.setTextColor(color);
+                if (weatherCity != null) weatherCity.setTextColor(color);
+
+                if (focused) {
+                    showTopBarHero(getString(R.string.weather));
+                }
+            });
+        }
+        fetchWeatherAsync(false);
         for (View button : new View[]{btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
             button.setOnFocusChangeListener((view, focused) -> {
                 if (advancedEffects) {
@@ -1363,6 +1419,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onBackPressed() {
         SoundManager.getInstance(this).playBack();
+        View currentFocus = getCurrentFocus();
+        if (currentFocus != null && (currentFocus.getId() == R.id.btnInputs
+                || currentFocus.getId() == R.id.btnWifi
+                || currentFocus.getId() == R.id.btnSettings
+                || currentFocus.getId() == R.id.weatherPill
+                || currentFocus.getId() == R.id.btnReorder
+                || currentFocus.getId() == R.id.btnLibraryTop)) {
+            focusTile(lastFocused % COLUMNS);
+            return;
+        }
         // Home screen: Back goes nowhere.
     }
 
@@ -1379,8 +1445,48 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Throwable ignored) {}
     }
 
+    private void hideDock() {
+        if (dockHidden) return;
+        dockHidden = true;
+        if (grid != null) {
+            if (animations && !reducedMotion) {
+                float density = getResources().getDisplayMetrics().density;
+                grid.animate().cancel();
+                grid.animate()
+                        .alpha(0f)
+                        .translationY(30f * density)
+                        .setDuration(240)
+                        .setInterpolator(new AccelerateInterpolator(1.5f))
+                        .start();
+            } else {
+                grid.setAlpha(0f);
+            }
+        }
+        hideGlass();
+    }
+
+    private void showDock() {
+        if (!dockHidden) return;
+        dockHidden = false;
+        if (grid != null) {
+            if (animations && !reducedMotion) {
+                grid.animate().cancel();
+                grid.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(280)
+                        .setInterpolator(new DecelerateInterpolator(1.8f))
+                        .start();
+            } else {
+                grid.setAlpha(1f);
+                grid.setTranslationY(0f);
+            }
+        }
+    }
+
     private void showTopBarHero(String title) {
         if (hero == null || heroName == null) return;
+        hideDock();
         hero.animate().cancel();
         heroName.setText(title);
         if (heroDots != null) heroDots.setVisibility(View.GONE);
@@ -1445,6 +1551,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocused(int position, View card) {
+        showDock();
         lastFocused = position;
         lastFocusedKey = adapter.keyAt(position);
         // Focus restored before the first layout (cold start): the tile has no size yet, and the glass
@@ -1952,80 +2059,88 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void startKenBurnsEffect(ImageView iv, int direction) {
         if (iv == null) return;
-        iv.animate().cancel();
 
-        float density = getResources().getDisplayMetrics().density;
-        final float startScale;
-        final float targetScale;
+        // Cancel previous animator on this ImageView
+        if (iv == dockWallpaperA && kbAnimatorA != null) {
+            kbAnimatorA.cancel();
+            kbAnimatorA = null;
+        } else if (iv == dockWallpaperB && kbAnimatorB != null) {
+            kbAnimatorB.cancel();
+            kbAnimatorB = null;
+        }
+
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        float panXDist = 0.02f * width;
+        float panYDist = 0.02f * height;
+
         final float targetX;
         final float targetY;
-
         switch (Math.abs(direction) % 4) {
-            case 0: // Zoom in & drift top-left (cinematic gentle speed)
-                startScale = 1.0f;
-                targetScale = 1.09f;
-                targetX = -20f * density;
-                targetY = -12f * density;
+            case 0:
+                targetX = -panXDist;
+                targetY = -panYDist;
                 break;
-            case 1: // Start zoomed, drift bottom-right & zoom out
-                startScale = 1.08f;
-                targetScale = 1.01f;
-                targetX = 18f * density;
-                targetY = 12f * density;
+            case 1:
+                targetX = panXDist;
+                targetY = panYDist;
                 break;
-            case 2: // Zoom in & drift top-right
-                startScale = 1.0f;
-                targetScale = 1.09f;
-                targetX = 20f * density;
-                targetY = -12f * density;
+            case 2:
+                targetX = panXDist;
+                targetY = -panYDist;
                 break;
             case 3:
-            default: // Start zoomed, drift bottom-left
-                startScale = 1.08f;
-                targetScale = 1.01f;
-                targetX = -18f * density;
-                targetY = 12f * density;
+            default:
+                targetX = -panXDist;
+                targetY = panYDist;
                 break;
         }
 
-        iv.setScaleX(startScale);
-        iv.setScaleY(startScale);
+        final float scaleFrom = 1.02f;
+        final float scaleTo = 1.10f;
+
+        iv.setScaleX(scaleFrom);
+        iv.setScaleY(scaleFrom);
         iv.setTranslationX(0f);
         iv.setTranslationY(0f);
 
-        iv.animate()
-                .scaleX(targetScale)
-                .scaleY(targetScale)
-                .translationX(targetX)
-                .translationY(targetY)
-                .setDuration(12_000)
-                .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
-                .withEndAction(() -> {
-                    if (iv.getVisibility() == View.VISIBLE && iv.getAlpha() > 0.5f) {
-                        iv.animate()
-                                .scaleX(startScale)
-                                .scaleY(startScale)
-                                .translationX(0f)
-                                .translationY(0f)
-                                .setDuration(12_000)
-                                .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
-                                .withEndAction(() -> startKenBurnsEffect(iv, direction + 1))
-                                .start();
-                    }
-                })
-                .start();
+        ValueAnimator va = ValueAnimator.ofFloat(0f, 1f);
+        va.setDuration(22_000L);
+        va.setInterpolator(new AccelerateDecelerateInterpolator());
+        va.setRepeatMode(ValueAnimator.REVERSE);
+        va.setRepeatCount(ValueAnimator.INFINITE);
+        va.addUpdateListener(anim -> {
+            float f = (float) anim.getAnimatedValue();
+            iv.setScaleX(scaleFrom + (scaleTo - scaleFrom) * f);
+            iv.setScaleY(scaleFrom + (scaleTo - scaleFrom) * f);
+            iv.setTranslationX(targetX * f);
+            iv.setTranslationY(targetY * f);
+        });
+
+        if (iv == dockWallpaperA) {
+            kbAnimatorA = va;
+        } else {
+            kbAnimatorB = va;
+        }
+        va.start();
     }
 
     private void stopKenBurnsEffect() {
+        if (kbAnimatorA != null) {
+            kbAnimatorA.cancel();
+            kbAnimatorA = null;
+        }
+        if (kbAnimatorB != null) {
+            kbAnimatorB.cancel();
+            kbAnimatorB = null;
+        }
         if (dockWallpaperA != null) {
-            dockWallpaperA.animate().cancel();
             dockWallpaperA.setScaleX(1.0f);
             dockWallpaperA.setScaleY(1.0f);
             dockWallpaperA.setTranslationX(0f);
             dockWallpaperA.setTranslationY(0f);
         }
         if (dockWallpaperB != null) {
-            dockWallpaperB.animate().cancel();
             dockWallpaperB.setScaleX(1.0f);
             dockWallpaperB.setScaleY(1.0f);
             dockWallpaperB.setTranslationX(0f);
@@ -3282,6 +3397,153 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar)
                 ? Gravity.START : Gravity.END);
         rows.getChildAt(0).requestFocus();
+    }
+
+    private void updateWeatherUi(String city, int temp, int code) {
+        TextView tvCity = findViewById(R.id.weatherCity);
+        TextView tvTemp = findViewById(R.id.weatherTemp);
+        ImageView ivIcon = findViewById(R.id.weatherIcon);
+
+        if (tvCity != null) tvCity.setText(city);
+        if (tvTemp != null) tvTemp.setText(temp + "°C");
+        if (ivIcon != null) {
+            int iconRes;
+            if (code == 0) iconRes = R.drawable.ic_weather_sunny;
+            else if (code >= 1 && code <= 3) iconRes = R.drawable.ic_weather_partly_cloudy;
+            else if (code >= 45 && code <= 48) iconRes = R.drawable.ic_weather_cloudy;
+            else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) iconRes = R.drawable.ic_weather_rain;
+            else if (code >= 95) iconRes = R.drawable.ic_weather_thunder;
+            else iconRes = R.drawable.ic_weather_partly_cloudy;
+            ivIcon.setImageResource(iconRes);
+        }
+    }
+
+    private void fetchWeatherAsync(boolean force) {
+        SharedPreferences sp = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        long lastUpdate = sp.getLong("weather_last_ts", 0L);
+        long now = System.currentTimeMillis();
+
+        // Always show cached values first
+        updateWeatherUi(
+                sp.getString("weather_city", "Bekasi"),
+                sp.getInt("weather_temp", 28),
+                sp.getInt("weather_code", 2)
+        );
+
+        if (!force && (now - lastUpdate < 30 * 60 * 1000L)) {
+            return;
+        }
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                String city = sp.getString("weather_city", "Bekasi");
+                double lat = -6.2348;
+                double lon = 106.9896;
+
+                // 1. IP Geolocation via ipwho.is
+                try {
+                    URL ipUrl = new URL("https://ipwho.is/");
+                    HttpURLConnection ipConn = (HttpURLConnection) ipUrl.openConnection();
+                    ipConn.setConnectTimeout(4000);
+                    ipConn.setReadTimeout(4000);
+                    if (ipConn.getResponseCode() == 200) {
+                        BufferedReader br = new BufferedReader(new InputStreamReader(ipConn.getInputStream()));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = br.readLine()) != null) sb.append(line);
+                        br.close();
+                        JSONObject json = new JSONObject(sb.toString());
+                        if (json.optBoolean("success", false)) {
+                            city = json.optString("city", city);
+                            lat = json.optDouble("latitude", lat);
+                            lon = json.optDouble("longitude", lon);
+                        }
+                    }
+                    ipConn.disconnect();
+                } catch (Throwable ignored) {}
+
+                // 2. Weather via Open-Meteo
+                URL weatherUrl = new URL(String.format(Locale.US,
+                        "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&current_weather=true",
+                        lat, lon));
+                HttpURLConnection wConn = (HttpURLConnection) weatherUrl.openConnection();
+                wConn.setConnectTimeout(4000);
+                wConn.setReadTimeout(4000);
+                if (wConn.getResponseCode() == 200) {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(wConn.getInputStream()));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) sb.append(line);
+                    br.close();
+                    JSONObject json = new JSONObject(sb.toString());
+                    JSONObject cur = json.optJSONObject("current_weather");
+                    if (cur != null) {
+                        double t = cur.optDouble("temperature", 28.0);
+                        int tempInt = (int) Math.round(t);
+                        int code = cur.optInt("weathercode", 2);
+
+                        sp.edit()
+                                .putString("weather_city", city)
+                                .putInt("weather_temp", tempInt)
+                                .putInt("weather_code", code)
+                                .putLong("weather_last_ts", System.currentTimeMillis())
+                                .apply();
+
+                        final String finalCity = city;
+                        runOnUiThread(() -> updateWeatherUi(finalCity, tempInt, code));
+                    }
+                }
+                wConn.disconnect();
+            } catch (Throwable ignored) {}
+        });
+    }
+
+    private void showWeatherModal() {
+        if (openPopup != null) openPopup.dismiss();
+        View anchor = findViewById(R.id.weatherPill);
+        if (anchor == null) return;
+        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        PopupWindow popup = glassPopup(panel, (int) (280 * density));
+
+        View heroScrim = findViewById(R.id.heroScrim);
+        if (heroScrim != null) {
+            heroScrim.setVisibility(View.VISIBLE);
+            heroScrim.animate().alpha(0.75f).setDuration(240).start();
+        }
+        popup.setOnDismissListener(() -> {
+            if (openPopup == popup) openPopup = null;
+            if (heroScrim != null) {
+                heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
+            }
+        });
+
+        SharedPreferences sp = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        String city = sp.getString("weather_city", "Bekasi");
+        int temp = sp.getInt("weather_temp", 28);
+        int code = sp.getInt("weather_code", 2);
+
+        String condition;
+        if (code == 0) condition = "Clear Sky";
+        else if (code <= 3) condition = "Partly Cloudy";
+        else if (code <= 48) condition = "Overcast / Fog";
+        else if (code <= 82) condition = "Rain / Showers";
+        else if (code >= 95) condition = "Thunderstorm";
+        else condition = "Partly Cloudy";
+
+        addSettingsMenuRow(rows, popup, city + " • " + temp + "°C", () -> {});
+        addSettingsMenuRow(rows, popup, "Status: " + condition, () -> {});
+        addSettingsMenuRow(rows, popup, R.string.refresh_weather, () -> {
+            fetchWeatherAsync(true);
+            Toast.makeText(this, "Refreshing weather...", Toast.LENGTH_SHORT).show();
+        });
+
+        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        popup.setWidth(Math.max((int) (280 * density), panel.getMeasuredWidth()));
+        dropIn(popup, panel, anchor, Gravity.START);
+        if (rows.getChildCount() > 0) {
+            rows.getChildAt(0).requestFocus();
+        }
     }
 
     private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, int title, Runnable action) {

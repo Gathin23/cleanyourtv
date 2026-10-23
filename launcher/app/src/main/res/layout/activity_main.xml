@@ -170,56 +170,78 @@
                 android:layout_height="0dp"
                 android:visibility="gone" />
 
-            <!-- First layer left side: horizontal tab Home and App (hidden) -->
+            <!-- Hidden tabs preserved for legacy bindings -->
             <LinearLayout
                 android:id="@+id/topTabs"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone">
+                <TextView android:id="@+id/tabHome" android:layout_width="0dp" android:layout_height="0dp" />
+                <TextView android:id="@+id/tabApp" android:layout_width="0dp" android:layout_height="0dp" />
+            </LinearLayout>
+
+            <!-- First layer left side: Location and Weather Widget (PS5 / tvOS style) -->
+            <LinearLayout
+                android:id="@+id/weatherPill"
+                style="@style/TopButtonBase"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="42dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="0dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp"
                 android:gravity="center_vertical"
-                android:clipChildren="false"
-                android:clipToPadding="false"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:focusable="true"
+                android:clickable="true"
+                android:nextFocusRight="@+id/btnInputs"
+                android:nextFocusDown="@+id/grid"
+                android:contentDescription="@string/weather">
+
+                <ImageView
+                    android:id="@+id/weatherIcon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_weather_partly_cloudy"
+                    android:tint="@drawable/pill_text"
+                    android:contentDescription="@string/weather"
+                    android:duplicateParentState="true"
+                    android:importantForAccessibility="no" />
 
                 <TextView
-                    android:id="@+id/tabHome"
+                    android:id="@+id/weatherTemp"
                     android:layout_width="wrap_content"
-                    android:layout_height="42dp"
-                    android:gravity="center"
-                    android:text="Home"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/inter_medium"
-                    android:letterSpacing="0.02"
-                    android:textColor="@drawable/tab_item_text"
-                    android:focusable="false"
-                    android:clickable="false"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
-                    android:background="@drawable/tab_item_bg"
-                    android:nextFocusRight="@+id/tabApp"
-                    android:nextFocusDown="@+id/grid" />
-
-                <TextView
-                    android:id="@+id/tabApp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="42dp"
-                    android:gravity="center"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="App"
-                    android:textSize="16sp"
                     android:fontFamily="@font/inter_medium"
-                    android:letterSpacing="0.02"
-                    android:textColor="@drawable/tab_item_text"
-                    android:focusable="false"
-                    android:clickable="false"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
-                    android:background="@drawable/tab_item_bg"
-                    android:nextFocusLeft="@+id/tabHome"
-                    android:nextFocusRight="@+id/btnInputs"
-                    android:nextFocusDown="@+id/appsGrid" />
+                    android:textColor="@drawable/pill_text"
+                    android:textSize="15sp"
+                    android:duplicateParentState="true"
+                    android:text="28°C" />
+
+                <TextView
+                    android:id="@+id/weatherDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:fontFamily="@font/inter_medium"
+                    android:textColor="@drawable/pill_text"
+                    android:alpha="0.5"
+                    android:textSize="12sp"
+                    android:duplicateParentState="true"
+                    android:text="•" />
+
+                <TextView
+                    android:id="@+id/weatherCity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:textColor="@drawable/pill_text"
+                    android:textSize="15sp"
+                    android:duplicateParentState="true"
+                    android:text="Bekasi" />
             </LinearLayout>
 
             <!-- First layer container (only logos for Inputs, Wifi, Settings beside Clock & Date) -->
@@ -239,6 +261,7 @@
                     style="@style/TopButtonIcon"
                     android:contentDescription="@string/inputs"
                     android:drawableStart="@drawable/ic_input"
+                    android:nextFocusLeft="@+id/weatherPill"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView
