@@ -82,7 +82,10 @@ public final class LockActivity extends Activity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-            if (event.getAction() == KeyEvent.ACTION_UP && reason != NIGHT) leave();
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+                if (pad.started()) pad.clear();
+                else if (reason != NIGHT) leave();
+            }
             return true;
         }
         int wait = store.secondsToWait(System.currentTimeMillis());

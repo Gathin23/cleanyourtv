@@ -38,6 +38,8 @@
         <TextView style="@style/Cell" />
         <TextView style="@style/Cell" />
         <TextView style="@style/Cell" />
+        <TextView style="@style/Cell" />
+        <TextView style="@style/Cell" />
     </LinearLayout>
 
     <TextView

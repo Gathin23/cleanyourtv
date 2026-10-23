@@ -4,11 +4,10 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.Arrays;
-
 /**
- * Four digit boxes driven by the remote: a number key types a digit and moves on; Up and Down pick the digit in the
- * current box, Right or OK moves on, Left goes back. The fourth digit hands the PIN to the listener.
+ * Six boxes that fill with dots. Every key that types a digit (Pin.digitOf: number keys, or the arrows and OK on the
+ * phone-keypad layout) adds one dot and nothing else, so the screen never shows which key it was. Delete takes the
+ * last one back; the sixth hands the code to the listener.
  */
 final class PinPad {
     interface Listener {
@@ -16,9 +15,8 @@ final class PinPad {
     }
 
     private final TextView[] cells = new TextView[Pin.LENGTH];
-    private final int[] digits = new int[Pin.LENGTH];
+    private final StringBuilder typed = new StringBuilder(Pin.LENGTH);
     private final Listener listener;
-    private int at;
 
     PinPad(ViewGroup row, Listener listener) {
         for (int i = 0; i < Pin.LENGTH; i++) cells[i] = (TextView) row.getChildAt(i);
@@ -27,54 +25,41 @@ final class PinPad {
     }
 
     void clear() {
-        Arrays.fill(digits, -1);
-        at = 0;
+        typed.setLength(0);
         render();
     }
 
-    /** True when the key belongs to the PIN pad (both its down and its up), so the caller passes nothing on. */
+    /** Whether anything has been typed, so Back can clear it instead of leaving. */
+    boolean started() {
+        return typed.length() > 0;
+    }
+
+    /** True when the key belongs to the pad (both its down and its up), so the caller passes nothing on. */
     boolean onKey(KeyEvent event) {
-        int code = event.getKeyCode();
-        int typed = Pin.digitOf(code);
-        boolean ours = typed >= 0 || code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN
-                || code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DPAD_RIGHT
-                || code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
-                || code == KeyEvent.KEYCODE_NUMPAD_ENTER || code == KeyEvent.KEYCODE_DEL;
-        if (!ours) return false;
-        if (event.getAction() != KeyEvent.ACTION_DOWN) return true;
-        if (typed >= 0) {
-            digits[at] = typed;
-            next();
-        } else if (code == KeyEvent.KEYCODE_DPAD_UP) {
-            digits[at] = Pin.up(digits[at]);
-        } else if (code == KeyEvent.KEYCODE_DPAD_DOWN) {
-            digits[at] = Pin.down(digits[at]);
-        } else if (code == KeyEvent.KEYCODE_DPAD_LEFT || code == KeyEvent.KEYCODE_DEL) {
-            if (digits[at] < 0 && at > 0) at--;
-            digits[at] = -1;
-        } else if (digits[at] >= 0) {
-            next();
+        int digit = Pin.digitOf(event.getKeyCode());
+        boolean delete = event.getKeyCode() == KeyEvent.KEYCODE_DEL;
+        if (digit < 0 && !delete) return false;
+        if (event.getAction() != KeyEvent.ACTION_DOWN || event.getRepeatCount() > 0) return true;
+        if (delete) {
+            if (typed.length() > 0) typed.setLength(typed.length() - 1);
+            render();
+            return true;
         }
-        render();
+        typed.append(digit);
+        if (typed.length() < Pin.LENGTH) {
+            render();
+            return true;
+        }
+        String pin = typed.toString();
+        clear();
+        listener.onPin(pin);
         return true;
     }
 
-    private void next() {
-        if (at < Pin.LENGTH - 1) {
-            at++;
-            return;
-        }
-        StringBuilder pin = new StringBuilder(Pin.LENGTH);
-        for (int d : digits) pin.append(d);
-        clear();
-        listener.onPin(pin.toString());
-    }
-
-    /** The box being entered shows its digit while Up and Down pick it; the boxes before it show a dot. */
     private void render() {
         for (int i = 0; i < Pin.LENGTH; i++) {
-            cells[i].setSelected(i == at);
-            cells[i].setText(digits[i] < 0 ? "" : i == at ? String.valueOf(digits[i]) : "•");
+            cells[i].setSelected(i == typed.length());
+            cells[i].setText(i < typed.length() ? "•" : "");
         }
     }
 }

@@ -18,8 +18,8 @@
     </style>
 
     <style name="Cell">
-        <item name="android:layout_width">64dp</item>
-        <item name="android:layout_height">76dp</item>
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">68dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:background">@drawable/cell</item>

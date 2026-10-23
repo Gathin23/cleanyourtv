@@ -132,7 +132,11 @@ public final class SettingsActivity extends Activity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (stage != ROWS) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) return super.dispatchKeyEvent(event);
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (!pad.started()) return super.dispatchKeyEvent(event);
+                if (event.getAction() == KeyEvent.ACTION_UP) pad.clear();
+                return true;
+            }
             if (stage == VERIFY && store.secondsToWait(System.currentTimeMillis()) > 0) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     message.setText(getString(R.string.wait_seconds,
