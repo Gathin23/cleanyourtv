@@ -499,8 +499,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float density = ctx.getResources().getDisplayMetrics().density;
 
         ViewGroup.LayoutParams cardLp = h.card.getLayoutParams();
-        int targetCardW = focused ? Math.round(92 * density) : Math.round(50 * density);
-        int targetCardH = Math.round(52 * density);
+        int targetCardW = focused ? Math.round(92 * density) : Math.round(54 * density);
+        int targetCardH = focused ? Math.round(92 * density) : Math.round(54 * density);
         if (cardLp != null && (cardLp.width != targetCardW || cardLp.height != targetCardH)) {
             cardLp.width = targetCardW;
             cardLp.height = targetCardH;
@@ -508,37 +508,35 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         FrameLayout.LayoutParams bannerLp = (FrameLayout.LayoutParams) h.banner.getLayoutParams();
+        Drawable small = getSmallIcon(e.pkg, e.label);
+        Drawable iconToShow = small != null ? small : (e.banner != null ? e.banner : e.icon);
+
         if (focused) {
             bannerLp.width = FrameLayout.LayoutParams.MATCH_PARENT;
             bannerLp.height = FrameLayout.LayoutParams.MATCH_PARENT;
-            bannerLp.gravity = Gravity.NO_GRAVITY;
+            bannerLp.gravity = Gravity.CENTER;
             h.banner.setLayoutParams(bannerLp);
-            h.banner.setOutlineProvider(null);
-            h.banner.setClipToOutline(false);
+
+            final int cornerRadius = Math.round(18 * density);
+            h.banner.setOutlineProvider(new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius);
+                }
+            });
+            h.banner.setClipToOutline(true);
             h.banner.setBackground(null);
             h.banner.setPadding(0, 0, 0, 0);
-            h.banner.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            if (e.banner != null) {
-                h.banner.setImageDrawable(e.banner);
-                h.banner.setVisibility(View.VISIBLE);
-                h.icon.setVisibility(View.GONE);
-                h.label.setVisibility(View.GONE);
-            } else {
-                h.banner.setImageDrawable(null);
-                h.banner.setVisibility(View.GONE);
-                h.icon.setImageDrawable(e.icon);
-                h.icon.setVisibility(View.VISIBLE);
-                h.label.setText(e.label);
-                h.label.setVisibility(View.VISIBLE);
-            }
-            h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
-        } else {
-            // Unfocused: uniform size, border radius, and white container for Apple TV
-            Drawable small = getSmallIcon(e.pkg, e.label);
-            Drawable iconToShow = small != null ? small : (e.icon != null ? e.icon : e.banner);
+            h.banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-            int iconSize = Math.round(50 * density);
-            int cornerRadius = Math.round(14 * density);
+            h.banner.setImageDrawable(iconToShow);
+            h.banner.setVisibility(View.VISIBLE);
+            h.icon.setVisibility(View.GONE);
+            h.label.setVisibility(View.GONE);
+            h.card.setBackground(null);
+        } else {
+            int iconSize = Math.round(54 * density);
+            final int cornerRadius = Math.round(14 * density);
 
             bannerLp.width = iconSize;
             bannerLp.height = iconSize;
@@ -552,7 +550,6 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             });
             h.banner.setClipToOutline(true);
-
             h.banner.setBackground(null);
             h.banner.setPadding(0, 0, 0, 0);
 
@@ -811,7 +808,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     float focusScale() {
-        return FOCUS_SCALE;
+        return 1.0f;
     }
 
     /** A vivid colour sampled from the app's banner (or icon), cached per entry; a card's accent when it set one. */
@@ -867,9 +864,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return Color.HSVToColor(hsv);
     }
 
-    /** Corner radius for a tile of this width: 16dp at the design width, proportionally less when smaller. */
+    /** Corner radius for a tile of this width: PS5 rounded squares. */
     static float cornerRadius(int tileWidthPx, float density) {
-        return 16f * density * Math.min(1f, tileWidthPx / (DESIGN_W_DP * density));
+        return tileWidthPx > 70 * density ? 18f * density : 14f * density;
     }
 
     static final class Holder extends RecyclerView.ViewHolder {

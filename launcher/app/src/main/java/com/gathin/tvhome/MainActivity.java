@@ -473,7 +473,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         FrameLayout.LayoutParams gridLp = (FrameLayout.LayoutParams) grid.getLayoutParams();
         if (gridLp != null) {
-            gridLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            gridLp.width = ViewGroup.LayoutParams.MATCH_PARENT;
             gridLp.gravity = Gravity.START | Gravity.TOP;
             grid.setLayoutParams(gridLp);
         }
@@ -492,9 +492,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                 if (!glassShown) return;
+                glassTargetX -= dx;
                 glassTargetY -= dy;
                 glassScrollShift -= dy;
+                glass.setTranslationX(glass.getTranslationX() - dx);
                 glass.setTranslationY(glass.getTranslationY() - dy);
+            }
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    refitGlass();
+                }
             }
         });
 
@@ -683,7 +692,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         // Not after recreate(): the launch intent survives it and would open the settings again.
         if (savedInstanceState == null) openLauncherSettingsIfAsked(getIntent());
-        grid.post(() -> focusTile(0));
+        grid.post(() -> focusTile(adapter.appCount() > 1 ? 1 : 0));
     }
 
     private boolean openLauncherSettingsIfAsked(Intent intent) {
@@ -711,7 +720,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             // Still on screen (the quick panel was over it, or Home was already in front): the tiles are current,
             // so only go back to the first one; rebuilding would replay the entrance animation for nothing.
-            grid.post(() -> focusTile(0));
+            grid.post(() -> focusTile(adapter.appCount() > 1 ? 1 : 0));
         }
     }
 
@@ -1400,15 +1409,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         View item = (View) card.getParent();
         if (dockRow && position < COLUMNS) {
-            // Dock: park it at the bottom of the screen and show the top shelf for this app.
-            int decoratedTop = item.getTop() - (int) (6 * density);
-            int dy = decoratedTop - grid.getPaddingTop();
-            // A 1px mismatch used to start a scroll on every dock move. Only scroll when the row is
-            // actually off; reduced motion does it in one jump so it does not fight the highlight.
-            boolean scroll = Math.abs(dy) > (int) (8 * density);
-            if (scroll) {
-                if (!animations || reducedMotion) grid.scrollBy(0, dy);
-                else grid.smoothScrollBy(0, dy);
+            // Horizontal PS5 carousel scrolling:
+            // Slot 1 (X_focus) is the fixed anchor for any focused app from index 1 onwards.
+            // Position 0 aligns at slot 0 (X = 0).
+            float slotStep = (54f + 12f) * density;
+            int targetX = (position == 0) ? 0 : Math.round(slotStep);
+
+            int[] cardLoc = new int[2];
+            card.getLocationInWindow(cardLoc);
+            int[] gridLoc = new int[2];
+            grid.getLocationInWindow(gridLoc);
+            int currentX = cardLoc[0] - gridLoc[0];
+            int dx = currentX - targetX;
+
+            if (Math.abs(dx) > (int) (2 * density)) {
+                if (!animations || reducedMotion) grid.scrollBy(dx, 0);
+                else grid.smoothScrollBy(dx, 0);
             }
             showHero(position);
         } else {
@@ -1428,13 +1444,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
         if (card == null || card.getWidth() <= 0 || !card.isFocused()) return;
-        float pad = 6f * density;
-        float scale = adapter.focusScale();
-        int w = (int) (card.getWidth() * scale + 2 * pad);
-        int h = (int) (card.getHeight() * scale + 2 * pad);
-        if (!glassShown || card.getWidth() != glassCardW || glass.getWidth() != w || glass.getHeight() != h) {
-            onTileFocused(pos, card);
-        }
+        onTileFocused(pos, card);
     }
 
     // ---- bottom-left title (PS5 style: stuck to bottom-left with status dots above) --------------

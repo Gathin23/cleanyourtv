@@ -9,10 +9,10 @@
 
     <FrameLayout
         android:id="@+id/card"
-        android:layout_width="145dp"
-        android:layout_height="81dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_gravity="start|top"
-        android:background="@drawable/tile_bg"
+        android:background="@null"
         android:focusable="true"
         android:clickable="true">
 

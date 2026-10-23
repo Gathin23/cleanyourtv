@@ -43,42 +43,16 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
             outRect.top = (int) (6 * density);
             outRect.bottom = (int) (12 * density);
             if (pos < dockSize - 1) {
-                outRect.right = (int) (8 * density);
+                outRect.right = (int) (12 * density);
+            } else {
+                // Trailing clearance so the last app can scroll all the way to slot 1
+                outRect.right = (int) (parent.getWidth() > 0 ? parent.getWidth() : 1920);
             }
         }
     }
 
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        boolean any = false;
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View child = parent.getChildAt(i);
-            int pos = parent.getChildAdapterPosition(child);
-            if (pos < 0 || pos >= dockSize) continue;
-            RecyclerView.ViewHolder vh = parent.getChildViewHolder(child);
-            View card = vh instanceof AppAdapter.Holder ? ((AppAdapter.Holder) vh).card : child.findViewById(R.id.card);
-            if (card == null || card.getVisibility() != View.VISIBLE) continue;
-            float l = child.getLeft() + card.getLeft();
-            float t = child.getTop() + card.getTop() + child.getTranslationY();
-            float r = l + card.getWidth();
-            float b = t + card.getHeight();
-            if (!any) {
-                rect.set(l, t, r, b);
-                any = true;
-            } else {
-                rect.union(l, t, r, b);
-            }
-        }
-        if (!any) return;
-        float padX = 14 * density;
-        float padY = 10 * density;
-        rect.left -= padX;
-        rect.right += padX;
-        rect.top -= padY;
-        rect.bottom += padY;
-        rect.bottom += namesRoom;
-        float radius = 24 * density;
-        c.drawRoundRect(rect, radius, radius, band);
-        c.drawRoundRect(rect, radius, radius, edge);
+        // Container dock removed for authentic PS5 floating shelf style
     }
 }
