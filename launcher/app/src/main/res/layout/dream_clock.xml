@@ -1,119 +1,378 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Screensaver (ClockDream & ClockActivity): clean full-screen photo slideshow, no phone frame, no clock or date. -->
+<!-- Islamic Prayer Reminder Screensaver: OLED black background, big green circle timer, live countdown, and prayer schedule -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FF000000">
 
-    <!-- Slide Layer A for crossfade -->
-    <FrameLayout
-        android:id="@+id/dreamSlideA"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-        <!-- Ambient dimmed background for portrait photos -->
-        <ImageView
-            android:id="@+id/dreamAmbientA"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
-
-        <!-- Scrim to darken ambient background -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#B3000000" />
-
-        <!-- Pure photo (fitCenter: preserves original aspect ratio, zero stretching) -->
-        <ImageView
-            android:id="@+id/dreamPhotoA"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter" />
-    </FrameLayout>
-
-    <!-- Slide Layer B for crossfade -->
-    <FrameLayout
-        android:id="@+id/dreamSlideB"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/dreamAmbientB"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#B3000000" />
-
-        <ImageView
-            android:id="@+id/dreamPhotoB"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter" />
-    </FrameLayout>
-
-    <!-- Fallback ambient glow & drifting clock (used when no personal photos in screensaver/) -->
-    <View
-        android:id="@+id/dreamAmbient"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
+    <!-- Top Left: Subtle current time and full date -->
     <LinearLayout
-        android:id="@+id/dreamContent"
+        android:id="@+id/dreamTopLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:baselineAligned="true">
-
-            <TextClock
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:format12Hour="h:mm"
-                android:format24Hour="HH:mm"
-                android:textColor="#E6FFFFFF"
-                android:textSize="120sp"
-                android:fontFamily="@font/inter_extralight"
-                android:letterSpacing="-0.04"
-                android:includeFontPadding="false" />
-
-            <TextClock
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:format12Hour="a"
-                android:format24Hour=""
-                android:textColor="#99FFFFFF"
-                android:textSize="22sp"
-                android:fontFamily="@font/inter_medium"
-                android:letterSpacing="0.08"
-                android:textAllCaps="true" />
-        </LinearLayout>
+        android:layout_gravity="top|start"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical">
 
         <TextClock
+            android:id="@+id/dreamClockHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="4dp"
+            android:format12Hour="HH:mm"
+            android:format24Hour="HH:mm"
+            android:textColor="#CCFFFFFF"
+            android:textSize="26sp"
+            android:fontFamily="@font/inter_semibold"
+            android:includeFontPadding="false" />
+
+        <TextClock
+            android:id="@+id/dreamDateHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:format12Hour="@string/date_format"
             android:format24Hour="@string/date_format"
-            android:textColor="#8CFFFFFF"
-            android:textSize="18sp"
-            android:fontFamily="@font/inter_regular"
-            android:letterSpacing="0.14"
+            android:textColor="#73FFFFFF"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter_medium"
+            android:letterSpacing="0.08"
             android:textAllCaps="true" />
+    </LinearLayout>
+
+    <!-- Top Right: City location badge -->
+    <LinearLayout
+        android:id="@+id/dreamTopRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="44dp"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/pill_bg"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
+
+        <View
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/pill_prayer_active" />
+
+        <TextView
+            android:id="@+id/tvDreamCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bekasi • Jawa Barat"
+            android:textColor="#E2E8F0"
+            android:textSize="13sp"
+            android:fontFamily="@font/inter_medium" />
+    </LinearLayout>
+
+    <!-- Centered Content: Circle Timer + Schedule Row (guaranteed no overlap) -->
+    <LinearLayout
+        android:id="@+id/prayerScreensaverContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Big Green Circular Timer (320dp x 320dp) -->
+        <FrameLayout
+            android:layout_width="320dp"
+            android:layout_height="320dp"
+            android:layout_gravity="center_horizontal">
+
+            <com.gathin.tvhome.PrayerCircleTimerView
+                android:id="@+id/prayerCircleTimer"
+                android:layout_width="320dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center" />
+
+            <!-- Centered Details Inside Circle -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <!-- Header / Next solat badge e.g. "MENUJU SOLAT" -->
+                <TextView
+                    android:id="@+id/tvSolatPre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MENUJU SHOLAT"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:letterSpacing="0.18"
+                    android:textAllCaps="true" />
+
+                <!-- Next Prayer Name: e.g. "SUBUH" / "ZUHUR" -->
+                <TextView
+                    android:id="@+id/tvSolatNextName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="SUBUH"
+                    android:textColor="#FFFFFF"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/inter_semibold"
+                    android:letterSpacing="0.08"
+                    android:textAllCaps="true" />
+
+                <!-- Inside Countdown HH:MM:SS: e.g. "00:30:00" -->
+                <TextView
+                    android:id="@+id/tvSolatCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="00:30:00"
+                    android:textColor="#FFFFFF"
+                    android:textSize="44sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:letterSpacing="0.02"
+                    android:includeFontPadding="false" />
+
+                <!-- Next Prayer Target Time: e.g. "Pukul 04:11 WIB" -->
+                <TextView
+                    android:id="@+id/tvSolatTargetTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Pukul 04:11 WIB"
+                    android:textColor="#CBD5E1"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:letterSpacing="0.04" />
+
+                <!-- Interval Progress Info: e.g. "Isya → Subuh" -->
+                <TextView
+                    android:id="@+id/tvSolatInterval"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/pill_prayer_inactive"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="Isya → Subuh"
+                    android:textColor="#94A3B8"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/inter_regular" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Bottom Schedule Row: 5 Daily Prayers -->
+        <LinearLayout
+            android:id="@+id/prayerScheduleRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Subuh -->
+                <LinearLayout
+                    android:id="@+id/pillSubuh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_prayer_inactive"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/lblSubuh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Subuh "
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_medium" />
+
+                    <TextView
+                        android:id="@+id/timeSubuh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="04:11"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_semibold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="1dp" />
+
+                <!-- Dzuhur -->
+                <LinearLayout
+                    android:id="@+id/pillDzuhur"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_prayer_inactive"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/lblDzuhur"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dzuhur "
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_medium" />
+
+                    <TextView
+                        android:id="@+id/timeDzuhur"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11:40"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_semibold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="1dp" />
+
+                <!-- Ashar -->
+                <LinearLayout
+                    android:id="@+id/pillAshar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_prayer_inactive"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/lblAshar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ashar "
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_medium" />
+
+                    <TextView
+                        android:id="@+id/timeAshar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="14:50"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_semibold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="1dp" />
+
+                <!-- Maghrib -->
+                <LinearLayout
+                    android:id="@+id/pillMaghrib"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_prayer_inactive"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/lblMaghrib"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Maghrib "
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_medium" />
+
+                    <TextView
+                        android:id="@+id/timeMaghrib"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="17:48"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_semibold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="1dp" />
+
+                <!-- Isya -->
+                <LinearLayout
+                    android:id="@+id/pillIsya"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_prayer_inactive"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/lblIsya"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Isya "
+                        android:textColor="#94A3B8"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_medium" />
+
+                    <TextView
+                        android:id="@+id/timeIsya"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18:58"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/inter_semibold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Footer note -->
+            <TextView
+                android:id="@+id/tvPrayerFooter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Jadwal Sholat Kemenag RI • Kota Bekasi (WIB)"
+                android:textColor="#475569"
+                android:textSize="11sp"
+                android:fontFamily="@font/inter_regular"
+                android:letterSpacing="0.06" />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
