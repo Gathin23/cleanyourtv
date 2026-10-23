@@ -376,6 +376,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sourcePanelAction = cfg.sourcePanelAction;
 
         SoundManager.getInstance(this); // Pre-warm low-latency PS5 sound effects
+        silenceSystemSoundEffects();
+        getWindow().getDecorView().setSoundEffectsEnabled(false);
+        disableViewSoundEffects(getWindow().getDecorView());
 
         root = findViewById(R.id.root);
         root.setBackgroundColor(cfg.backgroundColor);
@@ -452,6 +455,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View v) {
                 v.setAlpha(tileAlpha(grid.getChildAdapterPosition(v)));
+                disableViewSoundEffects(v);
             }
 
             @Override
@@ -492,17 +496,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                 if (!glassShown) return;
-                glassTargetX -= dx;
+                if (!dockRow || lastFocused >= COLUMNS) {
+                    glassTargetX -= dx;
+                    glass.setTranslationX(glass.getTranslationX() - dx);
+                }
                 glassTargetY -= dy;
                 glassScrollShift -= dy;
-                glass.setTranslationX(glass.getTranslationX() - dx);
                 glass.setTranslationY(glass.getTranslationY() - dy);
             }
 
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView rv, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    refitGlass();
+                    if (!dockRow || lastFocused >= COLUMNS) {
+                        refitGlass();
+                    }
                 }
             }
         });
@@ -817,6 +825,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        silenceSystemSoundEffects();
+        disableViewSoundEffects(getWindow().getDecorView());
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
@@ -1334,6 +1344,24 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Home screen: Back goes nowhere.
     }
 
+    private void silenceSystemSoundEffects() {
+        try {
+            android.media.AudioManager am = (android.media.AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (am != null) am.unloadSoundEffects();
+        } catch (Throwable ignored) {}
+    }
+
+    private void disableViewSoundEffects(View v) {
+        if (v == null) return;
+        v.setSoundEffectsEnabled(false);
+        if (v instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) v;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                disableViewSoundEffects(vg.getChildAt(i));
+            }
+        }
+    }
+
     // ---- glass highlight -------------------------------------------------------------------------
 
     @Override
@@ -1371,43 +1399,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
             return;
         }
-        // Tile rect in root coordinates, using layout positions (ignores the scale animation).
-        Rect r = tileRect;
-        r.set(0, 0, card.getWidth(), card.getHeight());
-        root.offsetDescendantRectToMyCoords(card, r);
+
         float pad = 6f * density;        // matches GlassView's glow inset
         float scale = adapter.focusScale();
-        float w = card.getWidth() * scale + 2 * pad;
-        float h = card.getHeight() * scale + 2 * pad;
-        float x = r.exactCenterX() - w / 2f;
-        float y = r.exactCenterY() - h / 2f - (advancedEffects ? 4f * density : 0f);
 
-        ViewGroup.LayoutParams lp = glass.getLayoutParams();
-        if (lp.width != (int) w || lp.height != (int) h || card.getWidth() != glassCardW) {
-            lp.width = (int) w;
-            lp.height = (int) h;
-            glass.setLayoutParams(lp);
-            // GlassView draws its slab inset by pad, i.e. exactly over the zoomed tile: same corners as the tile.
-            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * scale);
-        }
-        glassCardW = card.getWidth();
-        glassTargetX = x;
-        glassTargetY = y;
-        // Cinematic shelf: the highlight glows in the dock app's colour, plain white in the grid.
-        int accent = cinematic && !festive && position < COLUMNS ? adapter.ambientColorAt(position) : 0;
-        if (cinematic && !festive && accent != glassAccent) {
-            glassAccent = accent;
-            glass.setAccent(accent);
-        }
-        springX.cancel();
-        springY.cancel();
-        glass.setTranslationX(x);
-        glass.setTranslationY(y);
-        if (!glassShown) {
-            glass.setAlpha(1f);
-            glassShown = true;
-        }
-        View item = (View) card.getParent();
         if (dockRow && position < COLUMNS) {
             // Horizontal PS5 carousel scrolling:
             // Slot 1 (X_focus) is the fixed anchor for any focused app from index 1 onwards.
@@ -1419,19 +1414,106 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             card.getLocationInWindow(cardLoc);
             int[] gridLoc = new int[2];
             grid.getLocationInWindow(gridLoc);
+            int[] rootLoc = new int[2];
+            root.getLocationInWindow(rootLoc);
+
             int currentX = cardLoc[0] - gridLoc[0];
             int dx = currentX - targetX;
 
+            int cardW = Math.round(92 * density);
+            int cardH = Math.round(92 * density);
+            float glassW = cardW + 2 * pad;
+            float glassH = cardH + 2 * pad;
+
+            ViewGroup.LayoutParams lp = glass.getLayoutParams();
+            if (lp.width != (int) glassW || lp.height != (int) glassH) {
+                lp.width = (int) glassW;
+                lp.height = (int) glassH;
+                glass.setLayoutParams(lp);
+                glass.setRadius(18f * density);
+            }
+
+            int accent = cinematic && !festive ? adapter.ambientColorAt(position) : 0;
+            if (accent != glassAccent) {
+                glassAccent = accent;
+                glass.setAccent(accent);
+            }
+
+            float targetGlassX = (gridLoc[0] - rootLoc[0]) + targetX - pad;
+            float targetGlassY = (cardLoc[1] - rootLoc[1]) - pad;
+
+            springX.cancel();
+            springY.cancel();
+            glass.animate().cancel();
+
+            if (!glassShown) {
+                glass.setTranslationX(targetGlassX);
+                glass.setTranslationY(targetGlassY);
+                glass.setAlpha(1f);
+                glassShown = true;
+            } else {
+                if (animations && !reducedMotion) {
+                    glass.animate()
+                            .translationX(targetGlassX)
+                            .translationY(targetGlassY)
+                            .setDuration(260)
+                            .setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f))
+                            .start();
+                } else {
+                    glass.setTranslationX(targetGlassX);
+                    glass.setTranslationY(targetGlassY);
+                }
+            }
+
             if (Math.abs(dx) > (int) (2 * density)) {
-                if (!animations || reducedMotion) grid.scrollBy(dx, 0);
-                else grid.smoothScrollBy(dx, 0);
+                grid.stopScroll();
+                if (!animations || reducedMotion) {
+                    grid.scrollBy(dx, 0);
+                } else {
+                    grid.smoothScrollBy(dx, 0, new android.view.animation.DecelerateInterpolator(1.8f), 280);
+                }
             }
             showHero(position);
         } else {
             // Below the dock (or in a plain grid) the glow follows the tile without the big name; letting it
             // fade out left the grid on plain black.
+            Rect r = tileRect;
+            r.set(0, 0, card.getWidth(), card.getHeight());
+            root.offsetDescendantRectToMyCoords(card, r);
+            float w = card.getWidth() * scale + 2 * pad;
+            float h = card.getHeight() * scale + 2 * pad;
+            float x = r.exactCenterX() - w / 2f;
+            float y = r.exactCenterY() - h / 2f - (advancedEffects ? 4f * density : 0f);
+
+            ViewGroup.LayoutParams lp = glass.getLayoutParams();
+            if (lp.width != (int) w || lp.height != (int) h || card.getWidth() != glassCardW) {
+                lp.width = (int) w;
+                lp.height = (int) h;
+                glass.setLayoutParams(lp);
+                // GlassView draws its slab inset by pad, i.e. exactly over the zoomed tile: same corners as the tile.
+                glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * scale);
+            }
+            glassCardW = card.getWidth();
+            glassTargetX = x;
+            glassTargetY = y;
+            // Cinematic shelf: the highlight glows in the dock app's colour, plain white in the grid.
+            int accent = cinematic && !festive && position < COLUMNS ? adapter.ambientColorAt(position) : 0;
+            if (cinematic && !festive && accent != glassAccent) {
+                glassAccent = accent;
+                glass.setAccent(accent);
+            }
+            springX.cancel();
+            springY.cancel();
+            glass.setTranslationX(x);
+            glass.setTranslationY(y);
+            if (!glassShown) {
+                glass.setAlpha(1f);
+                glassShown = true;
+            }
+
             showGlowOnly(position);
             // Scroll just enough so the whole glass (not only the tile) is visible.
+            View item = (View) card.getParent();
             revealRect.set(0, -(int) pad * 2, item.getWidth(), item.getHeight() + (int) pad);
             grid.requestChildRectangleOnScreen(item, revealRect, reducedMotion);
         }
@@ -1441,6 +1523,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void refitGlass() {
         if (isDestroyed() || adapter.appCount() == 0 || libraryFocusPending) return;
         int pos = Math.max(0, Math.min(lastFocused, adapter.appCount() - 1));
+        if (dockRow && pos < COLUMNS) return;
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
         if (card == null || card.getWidth() <= 0 || !card.isFocused()) return;
@@ -1808,30 +1891,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final float targetY;
 
         switch (Math.abs(direction) % 4) {
-            case 0: // Zoom in & drift top-left (dynamic speed)
+            case 0: // Zoom in & drift top-left (cinematic gentle speed)
                 startScale = 1.0f;
-                targetScale = 1.12f;
-                targetX = -28f * density;
-                targetY = -18f * density;
+                targetScale = 1.09f;
+                targetX = -20f * density;
+                targetY = -12f * density;
                 break;
             case 1: // Start zoomed, drift bottom-right & zoom out
-                startScale = 1.12f;
-                targetScale = 1.02f;
-                targetX = 26f * density;
-                targetY = 16f * density;
+                startScale = 1.08f;
+                targetScale = 1.01f;
+                targetX = 18f * density;
+                targetY = 12f * density;
                 break;
             case 2: // Zoom in & drift top-right
                 startScale = 1.0f;
-                targetScale = 1.12f;
-                targetX = 28f * density;
-                targetY = -16f * density;
+                targetScale = 1.09f;
+                targetX = 20f * density;
+                targetY = -12f * density;
                 break;
             case 3:
             default: // Start zoomed, drift bottom-left
-                startScale = 1.12f;
-                targetScale = 1.02f;
-                targetX = -24f * density;
-                targetY = 18f * density;
+                startScale = 1.08f;
+                targetScale = 1.01f;
+                targetX = -18f * density;
+                targetY = 12f * density;
                 break;
         }
 
@@ -1845,7 +1928,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .scaleY(targetScale)
                 .translationX(targetX)
                 .translationY(targetY)
-                .setDuration(7_000)
+                .setDuration(12_000)
                 .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
                 .withEndAction(() -> {
                     if (iv.getVisibility() == View.VISIBLE && iv.getAlpha() > 0.5f) {
@@ -1854,7 +1937,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                                 .scaleY(startScale)
                                 .translationX(0f)
                                 .translationY(0f)
-                                .setDuration(7_000)
+                                .setDuration(12_000)
                                 .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
                                 .withEndAction(() -> startKenBurnsEffect(iv, direction + 1))
                                 .start();

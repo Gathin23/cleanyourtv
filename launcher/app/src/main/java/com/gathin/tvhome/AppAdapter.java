@@ -606,6 +606,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLibraryAt(position)) return;
         Holder h = (Holder) holder;
+        h.itemView.setSoundEffectsEnabled(false);
+        h.card.setSoundEffectsEnabled(false);
         Entry e = items.get(position);
         if (e.kind == Entry.EMPTY) {
             // A free dock slot keeps its place in the row and the band, but shows nothing and takes no focus.
@@ -888,9 +890,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                boolean reducedMotion, float restNameAlpha) {
             super(v);
             this.adapter = adapter;
+            v.setSoundEffectsEnabled(false);
             card = v.findViewById(R.id.card);
+            card.setSoundEffectsEnabled(false);
             cardBackground = card.getBackground();
             banner = v.findViewById(R.id.banner);
+            banner.setSoundEffectsEnabled(false);
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
@@ -928,22 +933,40 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 float scale = adapter.focusScale();
                 float s = focused ? scale : 1.0f;
                 float a = 1.0f;
-                view.setScaleX(s);
-                view.setScaleY(s);
+                if (animations && !reducedMotion && adapter.dockRow && pos < adapter.dockSize) {
+                    if (focused) {
+                        view.setScaleX(0.85f);
+                        view.setScaleY(0.85f);
+                        view.animate()
+                                .scaleX(1.0f)
+                                .scaleY(1.0f)
+                                .translationZ(8f * density)
+                                .setDuration(260)
+                                .setInterpolator(new DecelerateInterpolator(1.8f))
+                                .start();
+                    } else {
+                        view.setScaleX(1.15f);
+                        view.setScaleY(1.15f);
+                        view.animate()
+                                .scaleX(1.0f)
+                                .scaleY(1.0f)
+                                .translationZ(0f)
+                                .setDuration(220)
+                                .setInterpolator(new DecelerateInterpolator(1.8f))
+                                .start();
+                    }
+                } else {
+                    view.setScaleX(s);
+                    view.setScaleY(s);
+                }
                 view.setAlpha(a);
                 view.setTranslationY(0f);
-                view.setTranslationZ(0f);
                 banner.setScaleX(1f);
                 banner.setScaleY(1f);
                 name.setAlpha(0f);
                 name.setTranslationY(0f);
                 if (focused && listener != null && pos != RecyclerView.NO_POSITION) {
                     listener.onTileFocused(pos, view);
-                    view.post(() -> {
-                        if (view.isFocused() && listener != null) {
-                            listener.onTileFocused(pos, view);
-                        }
-                    });
                 }
             });
         }
