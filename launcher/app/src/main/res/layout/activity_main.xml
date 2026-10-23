@@ -180,71 +180,43 @@
                 <TextView android:id="@+id/tabApp" android:layout_width="0dp" android:layout_height="0dp" />
             </LinearLayout>
 
-            <!-- First layer left side: Location and Weather Widget (PS5 / tvOS style) -->
+            <!-- First layer left side: sleek clock and date (ambient info) -->
             <LinearLayout
-                android:id="@+id/weatherPill"
-                style="@style/TopButtonBase"
+                android:id="@+id/dateTimeBlock"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="0dp"
-                android:paddingStart="14dp"
-                android:paddingEnd="16dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:focusable="true"
-                android:clickable="true"
-                android:nextFocusRight="@+id/btnInputs"
-                android:nextFocusDown="@+id/grid"
-                android:contentDescription="@string/weather">
+                android:orientation="vertical"
+                android:gravity="start">
 
-                <ImageView
-                    android:id="@+id/weatherIcon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_weather_partly_cloudy"
-                    android:tint="@drawable/pill_text"
-                    android:contentDescription="@string/weather"
-                    android:duplicateParentState="true"
-                    android:importantForAccessibility="no" />
-
-                <TextView
-                    android:id="@+id/weatherTemp"
+                <TextClock
+                    android:id="@+id/clock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:format12Hour="h:mm a"
+                    android:format24Hour="HH:mm"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="20sp"
                     android:fontFamily="@font/inter_medium"
-                    android:textColor="@drawable/pill_text"
-                    android:textSize="15sp"
-                    android:duplicateParentState="true"
-                    android:text="28°C" />
+                    android:letterSpacing="0.02"
+                    android:includeFontPadding="false" />
 
-                <TextView
-                    android:id="@+id/weatherDot"
+                <TextClock
+                    android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginEnd="6dp"
-                    android:fontFamily="@font/inter_medium"
-                    android:textColor="@drawable/pill_text"
-                    android:alpha="0.5"
-                    android:textSize="12sp"
-                    android:duplicateParentState="true"
-                    android:text="•" />
-
-                <TextView
-                    android:id="@+id/weatherCity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_medium"
-                    android:textColor="@drawable/pill_text"
-                    android:textSize="15sp"
-                    android:duplicateParentState="true"
-                    android:text="Bekasi" />
+                    android:layout_marginTop="2dp"
+                    android:format12Hour="@string/date_format_home"
+                    android:format24Hour="@string/date_format_home"
+                    android:textColor="#99FFFFFF"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:letterSpacing="0.10"
+                    android:textAllCaps="true" />
             </LinearLayout>
 
-            <!-- First layer container (only logos for Inputs, Wifi, Settings beside Clock & Date) -->
+            <!-- First layer right side: Unified Action Center (Weather pill, Inputs, Wifi, Settings) -->
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"
@@ -256,12 +228,74 @@
                 android:clipToPadding="false"
                 android:orientation="horizontal">
 
+                <LinearLayout
+                    android:id="@+id/weatherPill"
+                    style="@style/TopButtonBase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:nextFocusRight="@+id/btnInputs"
+                    android:nextFocusDown="@+id/grid"
+                    android:contentDescription="@string/weather">
+
+                    <ImageView
+                        android:id="@+id/weatherIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_weather_partly_cloudy"
+                        android:tint="@drawable/pill_text"
+                        android:contentDescription="@string/weather"
+                        android:duplicateParentState="true"
+                        android:importantForAccessibility="no" />
+
+                    <TextView
+                        android:id="@+id/weatherTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/inter_medium"
+                        android:textColor="@drawable/pill_text"
+                        android:textSize="15sp"
+                        android:duplicateParentState="true"
+                        android:text="28°C" />
+
+                    <TextView
+                        android:id="@+id/weatherDot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="6dp"
+                        android:fontFamily="@font/inter_medium"
+                        android:textColor="@drawable/pill_text"
+                        android:alpha="0.5"
+                        android:textSize="12sp"
+                        android:duplicateParentState="true"
+                        android:text="•" />
+
+                    <TextView
+                        android:id="@+id/weatherCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_medium"
+                        android:textColor="@drawable/pill_text"
+                        android:textSize="15sp"
+                        android:duplicateParentState="true"
+                        android:text="Bekasi" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/btnInputs"
                     style="@style/TopButtonIcon"
                     android:contentDescription="@string/inputs"
                     android:drawableStart="@drawable/ic_input"
                     android:nextFocusLeft="@+id/weatherPill"
+                    android:nextFocusRight="@+id/btnWifi"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView
@@ -269,6 +303,8 @@
                     style="@style/TopButtonIcon"
                     android:contentDescription="@string/wifi"
                     android:drawableStart="@drawable/ic_wifi"
+                    android:nextFocusLeft="@+id/btnInputs"
+                    android:nextFocusRight="@+id/btnSettings"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView
@@ -292,41 +328,8 @@
                     style="@style/TopButtonIcon"
                     android:contentDescription="@string/settings"
                     android:drawableStart="@drawable/ic_settings"
+                    android:nextFocusLeft="@+id/btnWifi"
                     android:nextFocusDown="@+id/grid" />
-
-                <!-- Beside that: small sleek clock and date -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical"
-                    android:gravity="end">
-
-                    <TextClock
-                        android:id="@+id/clock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:format12Hour="h:mm a"
-                        android:format24Hour="HH:mm"
-                        android:textColor="#FFFFFFFF"
-                        android:textSize="18sp"
-                        android:fontFamily="@font/inter_medium"
-                        android:letterSpacing="0.02"
-                        android:includeFontPadding="false" />
-
-                    <TextClock
-                        android:id="@+id/date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:format12Hour="@string/date_format_home"
-                        android:format24Hour="@string/date_format_home"
-                        android:textColor="#99FFFFFF"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/inter_regular"
-                        android:letterSpacing="0.10"
-                        android:textAllCaps="true" />
-                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
 

@@ -686,72 +686,59 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusTile(lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
+            int firstButton = (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE)
+                    ? R.id.weatherPill
+                    : (btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId());
             int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
+
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                if (v.getId() == firstButton) {
-                    if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
-                        weatherPill.requestFocus();
-                        return true;
-                    }
-                    int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
-                    focusTile(lastDockPos);
+                if (v.getId() == R.id.btnInputs && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                    weatherPill.requestFocus();
                     return true;
                 }
                 return v.getId() == leftButton;
             }
-            return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                if (v.getId() == R.id.weatherPill) {
+                    if (btnInputs.getVisibility() == View.VISIBLE) btnInputs.requestFocus();
+                    else btnWifi.requestFocus();
+                    return true;
+                }
+                return v.getId() == rightButton;
+            }
+            return false;
         };
+        if (weatherPill != null) {
+            weatherPill.setOnKeyListener(pillKeys);
+            weatherPill.setOnClickListener(v -> showWeatherModal());
+        }
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
 
-        if (weatherPill != null) {
-            weatherPill.setOnKeyListener((v, keyCode, event) -> {
-                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return true;
-                if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    focusTile(lastFocused % COLUMNS);
-                    return true;
-                }
-                if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (btnInputs.getVisibility() == View.VISIBLE) btnInputs.requestFocus();
-                    else firstTopButton().requestFocus();
-                    return true;
-                }
-                return false;
-            });
-            weatherPill.setOnClickListener(v -> showWeatherModal());
-            weatherPill.setOnFocusChangeListener((view, focused) -> {
-                if (advancedEffects) {
-                    view.animate()
-                            .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
-                            .setDuration(160).start();
-                }
-                int color = focused ? 0xFF111111 : 0xFFFFFFFF;
-                if (weatherIcon != null) weatherIcon.setColorFilter(color);
-                if (weatherTemp != null) weatherTemp.setTextColor(color);
-                if (weatherDot != null) weatherDot.setTextColor(color);
-                if (weatherCity != null) weatherCity.setTextColor(color);
-
-                if (focused) {
-                    showTopBarHero(getString(R.string.weather));
-                }
-            });
-        }
         fetchWeatherAsync(false);
-        for (View button : new View[]{btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
+        for (View button : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
+            if (button == null) continue;
             button.setOnFocusChangeListener((view, focused) -> {
                 if (advancedEffects) {
                     view.animate()
                             .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
                             .setDuration(160).start();
                 }
+                if (view == weatherPill) {
+                    int color = focused ? 0xFF111111 : 0xFFFFFFFF;
+                    if (weatherIcon != null) weatherIcon.setColorFilter(color);
+                    if (weatherTemp != null) weatherTemp.setTextColor(color);
+                    if (weatherDot != null) weatherDot.setTextColor(color);
+                    if (weatherCity != null) weatherCity.setTextColor(color);
+                }
                 if (focused) {
-                    if (view == btnInputs) {
+                    if (view == weatherPill) {
+                        showTopBarHero(getString(R.string.weather));
+                    } else if (view == btnInputs) {
                         showTopBarHero(getString(R.string.inputs));
                     } else if (view == btnWifi) {
                         showTopBarHero(getString(R.string.wifi));
