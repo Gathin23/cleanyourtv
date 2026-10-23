@@ -30,17 +30,20 @@ final class PhoneUnlock {
 
         /** The request could not be sent (no network, server down). */
         void onFailed();
+
+        /** WAIT_MS passed with no answer. */
+        void onExpired();
     }
 
     static final String SERVER = "https://ntfy.sh";
+    /** How long a request waits for an answer, and how long before the next may go out. */
     static final long WAIT_MS = 5 * 60_000L;
-    static final long COOLDOWN_MS = 2 * 60_000L;
     private static final long EVERY_MS = 3_000L;
     private static final int TIMEOUT_MS = 10_000;
     private static final int MAX_BYTES = 64 * 1024;
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    /** When the last request went out, for the cooldown; kept for the process. */
+    /** When the last request went out, for the wait before the next; kept for the process. */
     private static long lastAsk;
 
     private final ExecutorService io = Executors.newSingleThreadExecutor();
@@ -68,10 +71,16 @@ final class PhoneUnlock {
         return channel + "-reply";
     }
 
-    /** Milliseconds before another request may go out; 0 when one may. */
+    /** Milliseconds before another request may go out (the whole WAIT_MS after one, answered or not); 0 when one may. */
     static long cooldownLeft(long now) {
-        long left = lastAsk + COOLDOWN_MS - now;
+        long left = lastAsk + WAIT_MS - now;
         return lastAsk == 0 || left <= 0 ? 0 : left;
+    }
+
+    /** "4:59" for the countdown on the lock. */
+    static String clock(long ms) {
+        long seconds = (ms + 999) / 1000;
+        return seconds / 60 + ":" + (seconds % 60 < 10 ? "0" : "") + seconds % 60;
     }
 
     boolean pending() {
@@ -96,16 +105,17 @@ final class PhoneUnlock {
             } catch (IOException e) {
                 main.post(() -> {
                     token = null;
+                    lastAsk = 0;   // nothing reached the phones, so Back may try again at once
                     listener.onFailed();
                 });
             }
         });
     }
 
-    /** Keep reading answers while the request still waits (after the lock comes back on screen). */
+    /** Keep reading answers while the request still waits (after the lock comes back on screen), or report it lapsed. */
     void resume() {
         main.removeCallbacks(pollTask);
-        if (pending()) main.post(pollTask);
+        if (token != null) main.post(pollTask);
     }
 
     void stop() {
@@ -134,7 +144,10 @@ final class PhoneUnlock {
 
     private void poll() {
         if (!pending()) {
-            token = null;
+            if (token != null) {
+                token = null;
+                listener.onExpired();
+            }
             return;
         }
         String wanted = token;

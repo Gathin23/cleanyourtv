@@ -42,4 +42,12 @@ public class PhoneUnlockTest {
     public void noCooldownBeforeTheFirstRequest() {
         assertEquals(0, PhoneUnlock.cooldownLeft(System.currentTimeMillis()));
     }
+
+    @Test
+    public void theCountdownReadsMinutesAndSeconds() {
+        assertEquals("5:00", PhoneUnlock.clock(PhoneUnlock.WAIT_MS));
+        assertEquals("4:59", PhoneUnlock.clock(299_000));
+        assertEquals("0:09", PhoneUnlock.clock(8_500));
+        assertEquals("0:01", PhoneUnlock.clock(1));
+    }
 }

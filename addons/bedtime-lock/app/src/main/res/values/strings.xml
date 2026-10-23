@@ -34,7 +34,9 @@
     <string name="ask_hint">Back: ask on the phones</string>
     <string name="request_text">The TV asks to be unlocked (%1$s).</string>
     <string name="asked">Asked on the phones. Waiting for an answer.</string>
-    <string name="asked_recently">Asked already. You can ask again in %1$d seconds.</string>
+    <string name="ask_waiting">Asked on the phones: %1$s left</string>
+    <string name="ask_again_in">Ask again in %1$s</string>
+    <string name="no_answer">No answer from the phones.</string>
     <string name="not_now">Not now.</string>
     <string name="phone_failed">Could not reach the phones. Check the TV\'s internet connection.</string>
     <string name="told_unlocked">The TV is unlocked.</string>

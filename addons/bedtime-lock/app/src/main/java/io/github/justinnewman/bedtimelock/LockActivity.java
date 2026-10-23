@@ -25,6 +25,7 @@ public final class LockActivity extends Activity {
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Runnable recheck = this::recheck;
+    private final Runnable countdownTask = this::countdown;
     private Store store;
     private PinPad pad;
     private TextView title;
@@ -62,6 +63,11 @@ public final class LockActivity extends Activity {
             public void onFailed() {
                 message.setText(R.string.phone_failed);
             }
+
+            @Override
+            public void onExpired() {
+                message.setText(R.string.no_answer);
+            }
         });
         apply(getIntent());
     }
@@ -72,18 +78,31 @@ public final class LockActivity extends Activity {
         if (phone != null) phone.shutdown();
     }
 
-    /** Back at night with nothing typed: ask on the parents' phones, at most once every two minutes. */
+    /**
+     * Back at night with nothing typed: ask on the parents' phones. Back stays off for the next WAIT_MS, answered or
+     * not, and the line under the boxes counts it down.
+     */
     private void askPhones() {
-        long now = System.currentTimeMillis();
-        long left = PhoneUnlock.cooldownLeft(now);
-        if (phone.pending()) {
-            message.setText(R.string.asked);
-        } else if (left > 0) {
-            message.setText(getString(R.string.asked_recently, (int) ((left + 999) / 1000)));
-        } else {
-            phone.ask(getString(R.string.request_text, time(this, Store.minuteNow())));
-            message.setText(R.string.asked);
+        if (PhoneUnlock.cooldownLeft(System.currentTimeMillis()) > 0) return;
+        phone.ask(getString(R.string.request_text, time(this, Store.minuteNow())));
+        message.setText(R.string.asked);
+        countdown();
+    }
+
+    /** The ask line: the time the request still waits, the time before the next, or the hint. Every second. */
+    private void countdown() {
+        main.removeCallbacks(countdownTask);
+        if (phone == null || reason != NIGHT) return;
+        TextView ask = findViewById(R.id.ask);
+        long left = PhoneUnlock.cooldownLeft(System.currentTimeMillis());
+        if (left <= 0) {
+            ask.setText(R.string.ask_hint);
+            ask.setAlpha(1f);
+            return;
         }
+        ask.setText(getString(phone.pending() ? R.string.ask_waiting : R.string.ask_again_in, PhoneUnlock.clock(left)));
+        ask.setAlpha(0.5f);
+        main.postDelayed(countdownTask, 1_000L);
     }
 
     @Override
@@ -107,12 +126,14 @@ public final class LockActivity extends Activity {
         super.onResume();
         main.postDelayed(recheck, 30_000L);
         if (phone != null) phone.resume();
+        countdown();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         main.removeCallbacks(recheck);
+        main.removeCallbacks(countdownTask);
         if (phone != null) phone.stop();
     }
 
