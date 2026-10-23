@@ -1461,7 +1461,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         hero.animate().cancel();
         ambient.animate().cancel();
         fillHero(position, label);
-        hero.setAlpha(1f);
+
+        if (animations && !reducedMotion && changed) {
+            float density = getResources().getDisplayMetrics().density;
+            hero.setTranslationY(24f * density);
+            hero.setAlpha(0f);
+            hero.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(320)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f))
+                    .start();
+        } else {
+            hero.setTranslationY(0f);
+            hero.setAlpha(1f);
+        }
+
         if (ambientGlow) {
             setAmbient(color);
             ambient.setAlpha(1f);
@@ -1753,13 +1768,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         outgoing.animate().cancel();
         if (wallpaperScrim != null) wallpaperScrim.animate().cancel();
 
-        incoming.setVisibility(View.VISIBLE);
-        incoming.setAlpha(1f);
-        outgoing.setAlpha(0f);
-        outgoing.setScaleX(1.0f);
-        outgoing.setScaleY(1.0f);
-        outgoing.setTranslationX(0f);
-        outgoing.setTranslationY(0f);
+        if (animations && !reducedMotion && outgoing.getVisibility() == View.VISIBLE && outgoing.getAlpha() > 0.1f) {
+            incoming.setAlpha(0f);
+            incoming.setVisibility(View.VISIBLE);
+            incoming.animate().alpha(1f).setDuration(400).start();
+            outgoing.animate().alpha(0f).setDuration(400).withEndAction(() -> {
+                outgoing.setScaleX(1.0f);
+                outgoing.setScaleY(1.0f);
+                outgoing.setTranslationX(0f);
+                outgoing.setTranslationY(0f);
+            }).start();
+        } else {
+            incoming.setVisibility(View.VISIBLE);
+            incoming.setAlpha(1f);
+            outgoing.setAlpha(0f);
+            outgoing.setScaleX(1.0f);
+            outgoing.setScaleY(1.0f);
+            outgoing.setTranslationX(0f);
+            outgoing.setTranslationY(0f);
+        }
         if (wallpaperScrim != null) {
             wallpaperScrim.setVisibility(View.VISIBLE);
             wallpaperScrim.setAlpha(1f);
@@ -1781,30 +1808,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final float targetY;
 
         switch (Math.abs(direction) % 4) {
-            case 0: // Zoom in & drift top-left
+            case 0: // Zoom in & drift top-left (dynamic speed)
                 startScale = 1.0f;
-                targetScale = 1.08f;
-                targetX = -16f * density;
-                targetY = -10f * density;
+                targetScale = 1.12f;
+                targetX = -28f * density;
+                targetY = -18f * density;
                 break;
-            case 1: // Start slightly zoomed, drift bottom-right & zoom out
-                startScale = 1.07f;
-                targetScale = 1.01f;
-                targetX = 14f * density;
-                targetY = 8f * density;
+            case 1: // Start zoomed, drift bottom-right & zoom out
+                startScale = 1.12f;
+                targetScale = 1.02f;
+                targetX = 26f * density;
+                targetY = 16f * density;
                 break;
             case 2: // Zoom in & drift top-right
                 startScale = 1.0f;
-                targetScale = 1.07f;
-                targetX = 16f * density;
-                targetY = -8f * density;
+                targetScale = 1.12f;
+                targetX = 28f * density;
+                targetY = -16f * density;
                 break;
             case 3:
-            default: // Start slightly zoomed, drift bottom-left
-                startScale = 1.07f;
+            default: // Start zoomed, drift bottom-left
+                startScale = 1.12f;
                 targetScale = 1.02f;
-                targetX = -12f * density;
-                targetY = 10f * density;
+                targetX = -24f * density;
+                targetY = 18f * density;
                 break;
         }
 
@@ -1818,7 +1845,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 .scaleY(targetScale)
                 .translationX(targetX)
                 .translationY(targetY)
-                .setDuration(22_000)
+                .setDuration(7_000)
                 .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
                 .withEndAction(() -> {
                     if (iv.getVisibility() == View.VISIBLE && iv.getAlpha() > 0.5f) {
@@ -1827,9 +1854,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                                 .scaleY(startScale)
                                 .translationX(0f)
                                 .translationY(0f)
-                                .setDuration(22_000)
+                                .setDuration(7_000)
                                 .setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
-                                .withEndAction(() -> startKenBurnsEffect(iv, direction))
+                                .withEndAction(() -> startKenBurnsEffect(iv, direction + 1))
                                 .start();
                     }
                 })
@@ -1907,7 +1934,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         appStats.setVisibility(View.VISIBLE);
         appStats.animate().cancel();
         applyAppStats(s);
-        appStats.setAlpha(1f);
+
+        if (animations && !reducedMotion && changed) {
+            float density = getResources().getDisplayMetrics().density;
+            appStats.setTranslationY(24f * density);
+            appStats.setAlpha(0f);
+            appStats.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(320)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f))
+                    .start();
+        } else {
+            appStats.setTranslationY(0f);
+            appStats.setAlpha(1f);
+        }
     }
 
     private void hideAppStats() {
