@@ -527,7 +527,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.banner.setClipToOutline(true);
             h.banner.setBackground(null);
             h.banner.setPadding(0, 0, 0, 0);
-            h.banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            h.banner.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             h.banner.setImageDrawable(iconToShow);
             h.banner.setVisibility(View.VISIBLE);
@@ -553,7 +553,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.banner.setBackground(null);
             h.banner.setPadding(0, 0, 0, 0);
 
-            h.banner.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            h.banner.setScaleType(ImageView.ScaleType.CENTER_CROP);
             h.banner.setImageDrawable(iconToShow);
             h.banner.setVisibility(View.VISIBLE);
             h.icon.setVisibility(View.GONE);
@@ -933,23 +933,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 float scale = adapter.focusScale();
                 float s = focused ? scale : 1.0f;
                 float a = 1.0f;
+                view.setScaleX(1.0f);
+                view.setScaleY(1.0f);
                 if (animations && !reducedMotion && adapter.dockRow && pos < adapter.dockSize) {
                     if (focused) {
-                        view.setScaleX(0.85f);
-                        view.setScaleY(0.85f);
                         view.animate()
-                                .scaleX(1.0f)
-                                .scaleY(1.0f)
                                 .translationZ(8f * density)
                                 .setDuration(260)
                                 .setInterpolator(new DecelerateInterpolator(1.8f))
                                 .start();
                     } else {
-                        view.setScaleX(1.15f);
-                        view.setScaleY(1.15f);
                         view.animate()
-                                .scaleX(1.0f)
-                                .scaleY(1.0f)
                                 .translationZ(0f)
                                 .setDuration(220)
                                 .setInterpolator(new DecelerateInterpolator(1.8f))

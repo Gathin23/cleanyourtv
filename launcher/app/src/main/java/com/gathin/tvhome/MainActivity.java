@@ -620,7 +620,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
         });
-        btnSettings.setOnClickListener(v -> open(systemIntent(Settings.ACTION_SETTINGS)));
+        btnSettings.setOnClickListener(v -> showSettingsMenu());
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
         btnReorder.setVisibility(cfg.reorderButton ? View.VISIBLE : View.GONE);
@@ -656,6 +656,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (v.getId() == firstButton) {
+                    int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
+                    focusTile(lastDockPos);
                     return true;
                 }
                 return v.getId() == leftButton;
@@ -667,12 +669,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
-        if (advancedEffects) {
-            for (View button : new View[]{btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
-                button.setOnFocusChangeListener((view, focused) -> view.animate()
-                        .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
-                        .setDuration(160).start());
-            }
+        for (View button : new View[]{btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
+            button.setOnFocusChangeListener((view, focused) -> {
+                if (advancedEffects) {
+                    view.animate()
+                            .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
+                            .setDuration(160).start();
+                }
+                if (focused) {
+                    if (view == btnInputs) {
+                        showTopBarHero(getString(R.string.inputs));
+                    } else if (view == btnWifi) {
+                        showTopBarHero(getString(R.string.wifi));
+                    } else if (view == btnSettings) {
+                        showTopBarHero(getString(R.string.settings));
+                    } else if (view == btnReorder) {
+                        showTopBarHero(getString(R.string.reorder));
+                    } else if (view == btnLibraryTop) {
+                        showTopBarHero(getString(R.string.app_library));
+                    }
+                }
+            });
         }
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
 
@@ -1346,9 +1363,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void silenceSystemSoundEffects() {
         try {
-            android.media.AudioManager am = (android.media.AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            if (am != null) am.unloadSoundEffects();
+            android.provider.Settings.System.putInt(getContentResolver(),
+                    android.provider.Settings.System.SOUND_EFFECTS_ENABLED, 0);
         } catch (Throwable ignored) {}
+        try {
+            android.media.AudioManager am = (android.media.AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (am != null) {
+                am.unloadSoundEffects();
+            }
+        } catch (Throwable ignored) {}
+    }
+
+    private void showTopBarHero(String title) {
+        if (hero == null || heroName == null) return;
+        hero.animate().cancel();
+        heroName.setText(title);
+        if (heroDots != null) heroDots.setVisibility(View.GONE);
+        hideAppStats();
+        if (animations && !reducedMotion) {
+            float density = getResources().getDisplayMetrics().density;
+            hero.setTranslationY(24f * density);
+            hero.setAlpha(0f);
+            hero.setVisibility(View.VISIBLE);
+            hero.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(320)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f))
+                    .start();
+        } else {
+            hero.setTranslationY(0f);
+            hero.setAlpha(1f);
+            hero.setVisibility(View.VISIBLE);
+        }
     }
 
     private void disableViewSoundEffects(View v) {
@@ -1420,6 +1467,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int currentX = cardLoc[0] - gridLoc[0];
             int dx = currentX - targetX;
 
+            Rect r = tileRect;
+            r.set(0, 0, card.getWidth(), card.getHeight());
+            root.offsetDescendantRectToMyCoords(card, r);
+
             int cardW = Math.round(92 * density);
             int cardH = Math.round(92 * density);
             float glassW = cardW + 2 * pad;
@@ -1439,8 +1490,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 glass.setAccent(accent);
             }
 
-            float targetGlassX = (gridLoc[0] - rootLoc[0]) + targetX - pad;
-            float targetGlassY = (cardLoc[1] - rootLoc[1]) - pad;
+            float targetGlassX = (r.left - dx) - pad;
+            float targetGlassY = r.top - pad;
 
             springX.cancel();
             springY.cancel();
@@ -3060,6 +3111,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         PopupWindow popup = glassPopup(panel, (int) (200 * density));
         addSettingsMenuRow(rows, popup, R.string.launcher_settings, () -> startActivityForResult(
                 new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+        addSettingsMenuRow(rows, popup, R.string.tv_settings, () -> open(systemIntent(Settings.ACTION_SETTINGS)));
         if (moduleCards) addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
         if (dockRow) addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
         addSettingsMenuRow(rows, popup, R.string.reorder, this::toggleReorder);

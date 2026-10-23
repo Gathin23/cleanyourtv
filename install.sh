@@ -214,6 +214,7 @@ fi
 # 5. Grant Permissions & Launch
 echo -e "${BLUE}Granting Usage Stats permission for screen time...${NC}"
 adb -s "$TARGET_DEVICE" shell appops set com.gathin.tvhome GET_USAGE_STATS allow || true
+adb -s "$TARGET_DEVICE" shell settings put system sound_effects_enabled 0 2>/dev/null || true
 
 # 6. Screensaver Setup
 HAS_PHOTOS=$(find "$SCRIPT_DIR/screensaver" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.heic" -o -iname "*.webp" \) 2>/dev/null | head -n 1 || true)

@@ -22,6 +22,7 @@ if [ -n "$CONNECTED_DEVICE" ]; then
     echo "Installing $APK..."
     adb -s "$CONNECTED_DEVICE" install -r "$APK"
     adb -s "$CONNECTED_DEVICE" shell appops set com.gathin.tvhome GET_USAGE_STATS allow
+    adb -s "$CONNECTED_DEVICE" shell settings put system sound_effects_enabled 0 2>/dev/null || true
     echo "Starting launcher..."
     adb -s "$CONNECTED_DEVICE" shell am force-stop com.gathin.tvhome
     adb -s "$CONNECTED_DEVICE" shell am start -n com.gathin.tvhome/.MainActivity
