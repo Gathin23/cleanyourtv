@@ -33,8 +33,14 @@ public final class LockService extends AccessibilityService {
     /** The package last seen at the front, other than this app and system overlays. */
     private String front;
 
+    /**
+     * New hours that no longer cover now also end a night unlock; otherwise it would carry into the next night,
+     * since the timer only checks again when the new hours start.
+     */
     static void reschedule() {
-        if (running != null) running.schedule();
+        if (running == null) return;
+        if (!running.store.nightNow()) running.store.endNightUnlock();
+        running.schedule();
     }
 
     @Override

@@ -20,7 +20,7 @@
     <string name="row_settings">Also lock TV Settings at any hour: %1$s</string>
     <string name="row_change_pin">Change the code</string>
     <string name="row_service_on">Lock helper: on</string>
-    <string name="row_service_off">Lock helper is off: turn on Bedtime Lock in Accessibility</string>
+    <string name="row_service_off">Lock helper: off (turn it on)</string>
     <string name="row_test">Try the lock now</string>
     <string name="on">On</string>
     <string name="off">Off</string>

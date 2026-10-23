@@ -37,10 +37,12 @@ public final class SettingsActivity extends Activity {
         else showPin(VERIFY, 0);
     }
 
+    /** Brought back after standby (from the app list, or the TV waking on this screen): the PIN again. */
     @Override
     protected void onResume() {
         super.onResume();
-        if (stage == ROWS) render();
+        if (stage != VERIFY && store.hasPin() && !store.settingsOpen()) showPin(VERIFY, 0);
+        else if (stage == ROWS) render();
     }
 
     private void showPin(int which, int note) {
