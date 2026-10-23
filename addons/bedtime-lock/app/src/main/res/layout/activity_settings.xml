@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF05060C"
+    android:orientation="vertical"
+    android:paddingStart="96dp"
+    android:paddingTop="56dp"
+    android:paddingEnd="96dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="#FFFFFFFF"
+        android:textSize="34sp" />
+
+    <TextView
+        android:id="@+id/note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/unlocked_note"
+        android:textColor="#99FFFFFF"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="560dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/enabled" style="@style/Row" />
+        <TextView android:id="@+id/from" style="@style/Row" />
+        <TextView android:id="@+id/until" style="@style/Row" />
+        <TextView android:id="@+id/protect" style="@style/Row" />
+        <TextView android:id="@+id/changePin" style="@style/Row" android:text="@string/row_change_pin" />
+        <TextView android:id="@+id/service" style="@style/Row" />
+        <TextView android:id="@+id/test" style="@style/Row" android:text="@string/row_test" />
+    </LinearLayout>
+</LinearLayout>

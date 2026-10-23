@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bedtime Lock</string>
+    <string name="service_label">Bedtime Lock</string>
+    <string name="service_description">Covers the screen with a PIN prompt during the locked hours you set in Bedtime Lock, and on TV Settings if you choose. It only sees which app comes to the front, not what is on screen, and does not read keys.</string>
+
+    <string name="locked_until">Locked until %1$s</string>
+    <string name="settings_locked">TV Settings need the PIN</string>
+    <string name="owner_check">Enter the PIN to change Bedtime Lock</string>
+    <string name="create_pin">Choose a 4-digit PIN</string>
+    <string name="repeat_pin">Enter the same PIN again</string>
+    <string name="pin_hint">Number keys, or Up and Down to pick each digit, Right or OK for the next</string>
+    <string name="wrong_pin">Wrong PIN</string>
+    <string name="pins_differ">The two PINs were not the same. Choose one again.</string>
+    <string name="wait_seconds">Too many tries. Wait %1$d seconds.</string>
+
+    <string name="row_enabled">Lock at night: %1$s</string>
+    <string name="row_from">From %1$s</string>
+    <string name="row_until">Until %1$s</string>
+    <string name="row_settings">Also lock TV Settings at any hour: %1$s</string>
+    <string name="row_change_pin">Change PIN</string>
+    <string name="row_service_on">Lock helper: on</string>
+    <string name="row_service_off">Lock helper is off: turn on Bedtime Lock in Accessibility</string>
+    <string name="row_test">Try the lock now</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="editing_hint">Up and Down change the time by 15 minutes; OK when done</string>
+    <string name="unlocked_note">Unlocked until the TV goes to standby.</string>
+</resources>

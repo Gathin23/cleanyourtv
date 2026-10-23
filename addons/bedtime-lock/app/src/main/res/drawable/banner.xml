@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a crescent moon and a padlock on a night sky. Drawn for this add-on, no third-party art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF101634" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFF4D35E"
+        android:pathData="M128,40a50,50 0,1 0,52 72a40,40 0,1 1,-52 -72z" />
+    <path android:fillColor="#00000000" android:strokeColor="#FFFFFFFF" android:strokeWidth="9"
+        android:pathData="M196,92v-16a18,18 0,0 1,36 0v16" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M184,90h60a6,6 0,0 1,6 6v38a6,6 0,0 1,-6 6h-60a6,6 0,0 1,-6 -6v-38a6,6 0,0 1,6 -6z" />
+    <path android:fillColor="#FF101634" android:pathData="M214,108m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0" />
+</vector>
