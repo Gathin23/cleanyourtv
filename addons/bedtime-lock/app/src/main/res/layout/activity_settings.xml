@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Two columns, so every row fits a 960x540 dp TV screen without scrolling: the lock on the left, phone unlock on
+     the right. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FF05060C"
     android:orientation="vertical"
-    android:paddingStart="96dp"
-    android:paddingTop="56dp"
-    android:paddingEnd="96dp">
+    android:paddingStart="64dp"
+    android:paddingTop="48dp"
+    android:paddingEnd="64dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,35 +22,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="14dp"
         android:text="@string/unlocked_note"
         android:textColor="#99FFFFFF"
         android:textSize="15sp" />
 
     <LinearLayout
-        android:layout_width="560dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <TextView android:id="@+id/enabled" style="@style/Row" />
-        <TextView android:id="@+id/from" style="@style/Row" />
-        <TextView android:id="@+id/until" style="@style/Row" />
-        <TextView android:id="@+id/protect" style="@style/Row" />
-        <TextView android:id="@+id/changePin" style="@style/Row" android:text="@string/row_change_pin" />
-        <TextView android:id="@+id/service" style="@style/Row" />
-        <TextView android:id="@+id/test" style="@style/Row" android:text="@string/row_test" />
-        <TextView android:id="@+id/phone" style="@style/Row" />
-        <TextView android:id="@+id/phoneTest" style="@style/Row" android:text="@string/row_phone_test" />
-        <TextView android:id="@+id/phoneNew" style="@style/Row" android:text="@string/row_phone_new" />
+        <LinearLayout
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView android:id="@+id/enabled" style="@style/Row" />
+            <TextView android:id="@+id/from" style="@style/Row" />
+            <TextView android:id="@+id/until" style="@style/Row" />
+            <TextView android:id="@+id/protect" style="@style/Row" />
+            <TextView android:id="@+id/changePin" style="@style/Row" android:text="@string/row_change_pin" />
+            <TextView android:id="@+id/service" style="@style/Row" />
+            <TextView android:id="@+id/test" style="@style/Row" android:text="@string/row_test" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView android:id="@+id/phone" style="@style/Row" />
+            <TextView android:id="@+id/phoneTest" style="@style/Row" android:text="@string/row_phone_test" />
+            <TextView android:id="@+id/phoneNew" style="@style/Row" android:text="@string/row_phone_new" />
+
+            <TextView
+                android:id="@+id/phoneInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="4dp"
+                android:textColor="#CCFFFFFF"
+                android:textSize="16sp"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/phoneInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textColor="#CCFFFFFF"
-        android:textIsSelectable="false"
-        android:textSize="16sp"
-        android:visibility="gone" />
 </LinearLayout>

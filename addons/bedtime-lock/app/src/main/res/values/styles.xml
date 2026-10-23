@@ -6,8 +6,10 @@
 
     <style name="Row">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">54dp</item>
-        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:background">@drawable/row</item>
         <item name="android:focusable">true</item>
         <item name="android:gravity">center_vertical</item>
