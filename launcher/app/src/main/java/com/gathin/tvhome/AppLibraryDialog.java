@@ -135,7 +135,12 @@ final class AppLibraryDialog {
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setOutsideTouchable(true);
         popup.setAnimationStyle(0);
-        popup.setOnDismissListener(() -> { dismissActions(); stopHighlight(); dismissed.run(); });
+        popup.setOnDismissListener(() -> {
+            SoundManager.getInstance(activity).playBack();
+            dismissActions();
+            stopHighlight();
+            dismissed.run();
+        });
     }
 
     void close() { dismissActions(); popup.dismiss(); }

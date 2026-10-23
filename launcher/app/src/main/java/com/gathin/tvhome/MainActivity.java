@@ -300,12 +300,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean wallpaperShowingA = false;
     private String currentWallpaperPkg = "";
 
+    private static final long WEATHER_REFRESH_INTERVAL_MS = 15 * 60 * 1000L; // 15 minutes (900 seconds)
+
     private final Handler handler = new Handler(Looper.getMainLooper());
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
         public void onAvailable(@NonNull Network network) {
             handler.post(MainActivity.this::updateWifiLabel);
+            handler.post(() -> fetchWeatherAsync(false));
         }
 
         @Override
@@ -362,11 +365,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updateGreeting();
             updateRace();
             updateWifiLabel();
+            checkWeatherAutoRefresh();
             sky.update();
             wallpaperPlayer.update();
             handler.postDelayed(this, MINUTE_MS);
         }
     };
+
+    private void checkWeatherAutoRefresh() {
+        SharedPreferences sp = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        long lastUpdate = sp.getLong("weather_last_ts", 0L);
+        long now = System.currentTimeMillis();
+        if (now - lastUpdate >= WEATHER_REFRESH_INTERVAL_MS) {
+            fetchWeatherAsync(false);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -3173,6 +3186,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         FrameLayout container = new FrameLayout(this) {
             @Override
             public boolean dispatchKeyEvent(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    setTag(Boolean.TRUE);
+                    SoundManager.getInstance(MainActivity.this).playBack();
+                }
                 SoundManager.getInstance(MainActivity.this).handleKeyEvent(event);
                 return super.dispatchKeyEvent(event);
             }
@@ -3184,6 +3201,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         popup.setAnimationStyle(0);
         popup.setElevation(0f);
         popup.setOnDismissListener(() -> {
+            if (container.getTag() == null) {
+                SoundManager.getInstance(MainActivity.this).playBack();
+            }
             if (openPopup == popup) openPopup = null;
         });
         openPopup = popup;
@@ -3317,6 +3337,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             heroScrim.animate().alpha(0.75f).setDuration(240).start();
         }
         popup.setOnDismissListener(() -> {
+            if (panel.getTag() == null) {
+                SoundManager.getInstance(MainActivity.this).playBack();
+            }
             if (openPopup == popup) openPopup = null;
             if (heroScrim != null) {
                 heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
@@ -3512,6 +3535,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             heroScrim.animate().alpha(0.75f).setDuration(240).start();
         }
         popup.setOnDismissListener(() -> {
+            if (panel.getTag() == null) {
+                SoundManager.getInstance(MainActivity.this).playBack();
+            }
             if (openPopup == popup) openPopup = null;
             if (heroScrim != null) {
                 heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
@@ -3557,6 +3583,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         row.findViewById(R.id.status).setVisibility(View.GONE);
         ((TextView) row.findViewById(R.id.title)).setText(title);
         row.setOnClickListener(v -> {
+            if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
             popup.dismiss();
             action.run();
         });
@@ -3571,6 +3598,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             boolean activate = pressed[0];
             pressed[0] = false;
             if (activate) {
+                if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
                 popup.dismiss();
                 action.run();
             }

@@ -23,6 +23,7 @@ public final class SoundManager {
     private volatile boolean loadedNav = false;
     private volatile boolean loadedEnter = false;
     private volatile boolean loadedBack = false;
+    private volatile boolean pendingBack = false;
 
     private long lastNavTime = 0;
     private long lastEnterTime = 0;
@@ -57,10 +58,18 @@ public final class SoundManager {
                     .build();
 
             soundPool.setOnLoadCompleteListener((pool, sampleId, status) -> {
+                Log.i(TAG, "onLoadComplete: sampleId=" + sampleId + " status=" + status
+                        + " (nav=" + soundNav + ", enter=" + soundEnter + ", back=" + soundBack + ")");
                 if (status == 0) {
                     if (sampleId == soundNav) loadedNav = true;
                     else if (sampleId == soundEnter) loadedEnter = true;
-                    else if (sampleId == soundBack) loadedBack = true;
+                    else if (sampleId == soundBack) {
+                        loadedBack = true;
+                        if (pendingBack) {
+                            pendingBack = false;
+                            soundPool.play(soundBack, 1.0f, 1.0f, 2, 0, 1.0f);
+                        }
+                    }
                 }
             });
 
@@ -111,8 +120,12 @@ public final class SoundManager {
         long now = SystemClock.uptimeMillis();
         if (now - lastBackTime < 180) return; // debounce
         lastBackTime = now;
+        Log.i(TAG, "playBack invoked: loadedBack=" + loadedBack + " soundBack=" + soundBack);
         if (loadedBack) {
-            soundPool.play(soundBack, 1.0f, 1.0f, 2, 0, 1.0f);
+            int streamId = soundPool.play(soundBack, 1.0f, 1.0f, 2, 0, 1.0f);
+            Log.i(TAG, "playBack played streamId=" + streamId);
+        } else {
+            pendingBack = true;
         }
     }
 
