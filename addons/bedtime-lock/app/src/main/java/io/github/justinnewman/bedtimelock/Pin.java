@@ -6,8 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * The code: six digits, typed with the number keys or with the arrows and OK on the phone-keypad layout (Up 2,
- * Left 4, OK 5, Right 6, Down 8), so a remote without number keys can enter it and the screen shows only dots.
+ * The code: six digits, typed with the number keys or with the arrows and OK (Up 1, Right 3, OK 5, Left 7,
+ * Down 9), so a remote without number keys can enter it and the screen shows only dots.
  * It is kept only as a salted SHA-256, never as typed, and tries are rate-limited.
  */
 final class Pin {
@@ -39,18 +39,18 @@ final class Pin {
     }
 
     /**
-     * The digit a key types, or -1: the number row, the numeric keypad, and the arrows and OK where a phone keypad
-     * has them (Up 2, Left 4, OK 5, Right 6, Down 8).
+     * The digit a key types, or -1: the number row, the numeric keypad, and the arrows and OK as odd digits
+     * (Up 1, Right 3, OK 5, Left 7, Down 9).
      */
     static int digitOf(int keyCode) {
         if (keyCode >= 7 && keyCode <= 16) return keyCode - 7;          // KEYCODE_0 .. KEYCODE_9
         if (keyCode >= 144 && keyCode <= 153) return keyCode - 144;     // KEYCODE_NUMPAD_0 .. KEYCODE_NUMPAD_9
         switch (keyCode) {
-            case 19: return 2;                                          // KEYCODE_DPAD_UP
-            case 21: return 4;                                          // KEYCODE_DPAD_LEFT
+            case 19: return 1;                                          // KEYCODE_DPAD_UP
+            case 22: return 3;                                          // KEYCODE_DPAD_RIGHT
             case 23: case 66: case 160: return 5;                       // DPAD_CENTER, ENTER, NUMPAD_ENTER
-            case 22: return 6;                                          // KEYCODE_DPAD_RIGHT
-            case 20: return 8;                                          // KEYCODE_DPAD_DOWN
+            case 21: return 7;                                          // KEYCODE_DPAD_LEFT
+            case 20: return 9;                                          // KEYCODE_DPAD_DOWN
             default: return -1;
         }
     }

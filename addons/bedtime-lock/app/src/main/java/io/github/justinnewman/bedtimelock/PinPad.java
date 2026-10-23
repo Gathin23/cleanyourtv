@@ -5,8 +5,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * Six boxes that fill with dots. Every key that types a digit (Pin.digitOf: number keys, or the arrows and OK on the
- * phone-keypad layout) adds one dot and nothing else, so the screen never shows which key it was. Delete takes the
+ * Six boxes that fill with dots. Every key that types a digit (Pin.digitOf: number keys, or the arrows and OK as
+ * odd digits) adds one dot and nothing else, so the screen never shows which key it was. Delete takes the
  * last one back; the sixth hands the code to the listener.
  */
 final class PinPad {

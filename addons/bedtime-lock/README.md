@@ -8,7 +8,7 @@ does.
 ![The lock at night](screenshot.jpg)
 
 - **A 6-digit code that the screen never shows.** Number keys type their digit; a remote without them uses the
-  arrows and OK on the phone-keypad layout: Up 2, Left 4, OK 5, Right 6, Down 8. Every press adds the same dot, so
+  arrows and OK as odd digits: Up 1, Right 3, OK 5, Left 7, Down 9. Every press adds the same dot, so
   someone watching the screen learns nothing but how many presses were made. Back clears a half-typed code.
 - **The right code unlocks until the TV goes to standby**, or until the locked hours end, whichever comes first.
   Then the lock is back. Five wrong tries in a row mean a one-minute wait.

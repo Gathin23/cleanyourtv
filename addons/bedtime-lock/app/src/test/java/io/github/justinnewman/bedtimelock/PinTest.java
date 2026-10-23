@@ -11,10 +11,10 @@ import org.junit.Test;
 public class PinTest {
     @Test
     public void onlySixDigitsAreACode() {
-        assertTrue(Pin.valid("248652"));
-        assertFalse(Pin.valid("24865"));
-        assertFalse(Pin.valid("2486521"));
-        assertFalse(Pin.valid("24a652"));
+        assertTrue(Pin.valid("137951"));
+        assertFalse(Pin.valid("13795"));
+        assertFalse(Pin.valid("1379511"));
+        assertFalse(Pin.valid("13a951"));
         assertFalse(Pin.valid(null));
     }
 
@@ -35,13 +35,13 @@ public class PinTest {
     }
 
     @Test
-    public void theArrowsAndOkTypeThePhoneKeypadDigits() {
-        assertEquals(2, Pin.digitOf(19));     // DPAD_UP
-        assertEquals(4, Pin.digitOf(21));     // DPAD_LEFT
+    public void theArrowsAndOkTypeOddDigits() {
+        assertEquals(1, Pin.digitOf(19));     // DPAD_UP
+        assertEquals(3, Pin.digitOf(22));     // DPAD_RIGHT
         assertEquals(5, Pin.digitOf(23));     // DPAD_CENTER
         assertEquals(5, Pin.digitOf(66));     // ENTER
-        assertEquals(6, Pin.digitOf(22));     // DPAD_RIGHT
-        assertEquals(8, Pin.digitOf(20));     // DPAD_DOWN
+        assertEquals(7, Pin.digitOf(21));     // DPAD_LEFT
+        assertEquals(9, Pin.digitOf(20));     // DPAD_DOWN
     }
 
     @Test

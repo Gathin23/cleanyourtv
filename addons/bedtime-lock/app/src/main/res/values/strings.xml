@@ -9,7 +9,7 @@
     <string name="owner_check">Enter the code to change Bedtime Lock</string>
     <string name="create_pin">Choose a 6-digit code</string>
     <string name="repeat_pin">Enter the same code again</string>
-    <string name="pin_hint">Number keys, or Up 2 · Left 4 · OK 5 · Right 6 · Down 8. Back clears.</string>
+    <string name="pin_hint">Number keys, or Up 1 · Right 3 · OK 5 · Left 7 · Down 9. Back clears.</string>
     <string name="wrong_pin">Wrong code</string>
     <string name="pins_differ">The two codes were not the same. Choose one again.</string>
     <string name="wait_seconds">Too many tries. Wait %1$d seconds.</string>
