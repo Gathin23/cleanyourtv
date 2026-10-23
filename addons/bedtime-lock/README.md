@@ -72,7 +72,11 @@ Then open it from the app list to choose the PIN and turn the helper on.
 
 ## Tested on
 
-Hisense 75U75N (`hengshan`, MediaTek), Google TV 12 / Android 12, firmware `STT2.230310.002`.
+Hisense 75U75N (`hengshan`, MediaTek), Google TV 12 / Android 12, firmware `STT2.230310.002`: setup, the lock
+over Home when the hours start, the code with the arrows, TV Settings behind the code, standby ending both unlocks,
+and the request view with its countdown (sent to a channel no phone was subscribed to). With the helper on, a held
+volume key still ramps through an HDMI-CEC soundbar. Not yet tried there: an answer from a real phone, and the lock
+over an HDMI input.
 
 ## Maintainer
 
