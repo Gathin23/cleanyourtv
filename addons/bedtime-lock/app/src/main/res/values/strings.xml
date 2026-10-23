@@ -31,13 +31,15 @@
     <string name="phone_test_text">Test from Bedtime Lock: phone unlock is set up.</string>
     <string name="phone_test_sent">Test sent.</string>
 
-    <string name="ask_hint">Back: ask on the phones</string>
+    <string name="ask_hint">Back: send unlock request</string>
     <string name="request_text">The TV asks to be unlocked (%1$s).</string>
-    <string name="asked">Asked on the phones. Waiting for an answer.</string>
-    <string name="ask_waiting">Asked on the phones: %1$s left</string>
+    <string name="ask_waiting">Unlock request sent: %1$s left</string>
     <string name="ask_again_in">Ask again in %1$s</string>
-    <string name="no_answer">No answer from the phones.</string>
-    <string name="not_now">Not now.</string>
+    <string name="request_sent">Unlock request sent to the phones</string>
+    <string name="request_hint_code">Right: enter the code</string>
+    <string name="request_hint_ready">Back: send unlock request · Right: enter the code</string>
+    <string name="no_answer">No answer from the phones</string>
+    <string name="not_now">Not now</string>
     <string name="phone_failed">Could not reach the phones. Check the TV\'s internet connection.</string>
     <string name="told_unlocked">The TV is unlocked.</string>
     <string name="told_not_now">Not now was sent to the TV.</string>

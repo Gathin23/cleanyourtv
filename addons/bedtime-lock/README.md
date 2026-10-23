@@ -21,11 +21,13 @@ does.
 
 ## Phone unlock (optional)
 
-Off until you turn it on behind the code. Then, at night on the lock with nothing typed, **Back** asks on your
-phones: each phone subscribed to the lock's private channel in the free [ntfy](https://ntfy.sh) app (Android and
-iPhone) gets "The TV asks to be unlocked" with **Unlock** and **Not now**. Unlock lifts the lock as the code would;
-the phones then get a short note that it was handled. A request waits up to 5 minutes, counted down under the
-code boxes; Back stays off for those 5 minutes, answered or not, so it cannot be used to keep asking. If the
+Off until you turn it on behind the code. Then, at night on the lock with nothing typed, **Back** sends an unlock
+request and shows its status with a countdown; **Right** goes back to the code (a number key does too, typing its
+digit), and Back shows the request again. Each phone subscribed to the lock's private channel in the free
+[ntfy](https://ntfy.sh) app (Android and iPhone) gets "The TV asks to be unlocked" with **Unlock** and **Not now**.
+Unlock lifts the lock as the code would; the phones then get a short note that it was handled. A request waits up to
+5 minutes, counted down on screen; no new request goes out in those 5 minutes, answered or not, so Back cannot be
+used to keep asking. If the
 request could not be sent (no network), Back works again at once.
 
 - **Setup:** turn on Phone unlock; the settings show a channel name like `bedtime-k7q2…`. In the ntfy app on each
