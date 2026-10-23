@@ -6,6 +6,12 @@
             <corners android:radius="21dp" />
         </shape>
     </item>
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#F5FFFFFF" />
+            <corners android:radius="21dp" />
+        </shape>
+    </item>
     <!-- Reorder button while reorder mode is on (focus is on the tiles then). -->
     <item android:state_activated="true">
         <shape android:shape="rectangle">

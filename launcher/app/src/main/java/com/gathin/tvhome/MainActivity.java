@@ -20,6 +20,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -171,8 +172,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private AllAppsAdapter allAppsAdapter;
     private boolean isAppsTab = false;
     private View weatherPill;
+    private ImageView weatherIcon;
+    private TextView weatherTemp;
+    private TextView weatherDot;
+    private TextView weatherCity;
     private View btnInputs;
     private TextView btnWifi;
+    private View btnSettings;
     /** The network pill's icon as last set, so a refresh that changes nothing does not lay the top bar out again. */
     private int wifiIcon;
     /** The pills have been filled in once; later resumes refresh them after the first frame. */
@@ -648,7 +654,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
 
         btnInputs = findViewById(R.id.btnInputs);
-        View btnSettings = findViewById(R.id.btnSettings);
+        btnSettings = findViewById(R.id.btnSettings);
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> showWifiMenu());
         btnWifi.setOnLongClickListener(v -> {
@@ -678,10 +684,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
         weatherPill = findViewById(R.id.weatherPill);
-        ImageView weatherIcon = findViewById(R.id.weatherIcon);
-        TextView weatherTemp = findViewById(R.id.weatherTemp);
-        TextView weatherDot = findViewById(R.id.weatherDot);
-        TextView weatherCity = findViewById(R.id.weatherCity);
+        weatherIcon = findViewById(R.id.weatherIcon);
+        weatherTemp = findViewById(R.id.weatherTemp);
+        weatherDot = findViewById(R.id.weatherDot);
+        weatherCity = findViewById(R.id.weatherCity);
 
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
@@ -736,32 +742,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (View button : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
             if (button == null) continue;
             button.setOnFocusChangeListener((view, focused) -> {
-                if (advancedEffects) {
-                    view.animate()
-                            .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
-                            .setDuration(160).start();
-                }
-                if (view == weatherPill) {
-                    int color = focused ? 0xFF111111 : 0xFFFFFFFF;
-                    if (weatherIcon != null) weatherIcon.setColorFilter(color);
-                    if (weatherTemp != null) weatherTemp.setTextColor(color);
-                    if (weatherDot != null) weatherDot.setTextColor(color);
-                    if (weatherCity != null) weatherCity.setTextColor(color);
-                }
                 if (focused) {
-                    if (view == weatherPill) {
-                        showTopBarHero(getString(R.string.weather));
-                    } else if (view == btnInputs) {
-                        showTopBarHero(getString(R.string.inputs));
-                    } else if (view == btnWifi) {
-                        showTopBarHero(getString(R.string.wifi));
-                    } else if (view == btnSettings) {
-                        showTopBarHero(getString(R.string.settings));
-                    } else if (view == btnReorder) {
-                        showTopBarHero(getString(R.string.reorder));
-                    } else if (view == btnLibraryTop) {
-                        showTopBarHero(getString(R.string.app_library));
-                    }
+                    setPillHighlighted(view, true);
+                } else if (!view.isSelected()) {
+                    setPillHighlighted(view, false);
                 }
             });
         }
@@ -1196,14 +1180,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             return true;
         }
-        if (code == KeyEvent.KEYCODE_TV_INPUT
-                || code == KeyEvent.KEYCODE_TV
-                || code == KeyEvent.KEYCODE_WINDOW) {
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                showInputs();
-            }
-            return true;
-        }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) && isAppsTab) {
                 selectHomeTab();
@@ -1551,6 +1527,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.setTranslationY(0f);
             hero.setAlpha(1f);
             hero.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setPillHighlighted(View view, boolean highlighted) {
+        if (view == null) return;
+        view.setSelected(highlighted);
+        boolean active = highlighted || view.isFocused();
+        int tintColor = active ? 0xFF111111 : 0xFFFFFFFF;
+        if (view instanceof TextView) {
+            TextView tv = (TextView) view;
+            tv.setTextColor(tintColor);
+            tv.setCompoundDrawableTintList(ColorStateList.valueOf(tintColor));
+        }
+        if (view == weatherPill) {
+            if (weatherIcon != null) weatherIcon.setColorFilter(tintColor);
+            if (weatherTemp != null) weatherTemp.setTextColor(tintColor);
+            if (weatherDot != null) weatherDot.setTextColor(tintColor);
+            if (weatherCity != null) weatherCity.setTextColor(tintColor);
+        }
+        if (advancedEffects) {
+            view.animate()
+                    .scaleX(active ? 1.04f : 1f)
+                    .scaleY(active ? 1.04f : 1f)
+                    .setDuration(160).start();
+        }
+        if (active) {
+            if (view == weatherPill) {
+                showTopBarHero(getString(R.string.weather));
+            } else if (view == btnInputs) {
+                showTopBarHero(getString(R.string.inputs));
+            } else if (view == btnWifi) {
+                showTopBarHero(getString(R.string.wifi));
+            } else if (view == btnSettings) {
+                showTopBarHero(getString(R.string.settings));
+            } else if (view == btnReorder) {
+                showTopBarHero(getString(R.string.reorder));
+            } else if (view == btnLibraryTop) {
+                showTopBarHero(getString(R.string.app_library));
+            }
         }
     }
 
@@ -3120,12 +3135,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         View anchor = findViewById(R.id.btnInputs);
+        setPillHighlighted(anchor, true);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
 
         // Compact: as wide as the Inputs pill (a touch wider so "HDMI 1" fits), hanging right below it.
         int width = Math.max(anchor.getWidth(), (int) (150 * density));
         final PopupWindow popup = glassPopup(panel, width);
+        popup.setOnDismissListener(() -> {
+            if (panel.getTag() == null && (popup.getContentView() == null || popup.getContentView().getTag() == null)) {
+                SoundManager.getInstance(MainActivity.this).playBack();
+            }
+            if (openPopup == popup) openPopup = null;
+            anchor.requestFocus();
+            setPillHighlighted(anchor, false);
+        });
 
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         boolean sawNonHdmi = false;
@@ -3326,8 +3350,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             dot.setVisibility(View.GONE);
         }
         row.setOnClickListener(v -> {
+            if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
             popup.dismiss();
-            action.run();
+            v.post(action::run);
         });
         rows.addView(row);
     }
@@ -3337,9 +3362,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showWifiMenu() {
         if (openPopup != null) openPopup.dismiss();
         View anchor = findViewById(R.id.btnWifi);
+        setPillHighlighted(anchor, true);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (260 * density));
+        popup.setOnDismissListener(() -> {
+            if (panel.getTag() == null && (popup.getContentView() == null || popup.getContentView().getTag() == null)) {
+                SoundManager.getInstance(MainActivity.this).playBack();
+            }
+            if (openPopup == popup) openPopup = null;
+            anchor.requestFocus();
+            setPillHighlighted(anchor, false);
+        });
 
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         String connectedSsid = null;
@@ -3400,9 +3434,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    private void showLauncherSettingsModal() {
+    /** Show all launcher and TV settings directly in one clean glass popup. */
+    private void showSettingsMenu() {
         if (openPopup != null) openPopup.dismiss();
         View anchor = findViewById(R.id.btnSettings);
+        setPillHighlighted(anchor, true);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (320 * density));
@@ -3414,13 +3450,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             heroScrim.animate().alpha(0.75f).setDuration(240).start();
         }
         popup.setOnDismissListener(() -> {
-            if (panel.getTag() == null) {
+            if (panel.getTag() == null && (popup.getContentView() == null || popup.getContentView().getTag() == null)) {
                 SoundManager.getInstance(MainActivity.this).playBack();
             }
             if (openPopup == popup) openPopup = null;
             if (heroScrim != null) {
                 heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
             }
+            if (!reordering && !dockEditing) {
+                anchor.requestFocus();
+            }
+            setPillHighlighted(anchor, false);
         });
 
         SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
@@ -3454,13 +3494,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             reloadApps(false);
         });
 
-        // Follow theme (reset choices)
-        addSettingsMenuRow(rows, popup, R.string.follow_theme, () -> {
-            choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY)
-                    .remove("animations").remove("advanced_effects")
-                    .remove(Config.WALLPAPER_CHOICE_KEY).apply();
-            recreate();
-        });
+        // Edit dock
+        if (dockRow) {
+            addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
+        }
+
+        // Reorder apps
+        addSettingsMenuRow(rows, popup, R.string.reorder, this::toggleReorder);
+
+        // Module cards
+        if (moduleCards) {
+            addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
+        }
 
         // Default home
         addSettingsMenuRow(rows, popup, R.string.home_settings, () -> {
@@ -3471,6 +3516,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // TV system settings
         addSettingsMenuRow(rows, popup, R.string.tv_settings, () -> open(systemIntent(Settings.ACTION_SETTINGS)));
 
+        // Follow theme (reset choices)
+        addSettingsMenuRow(rows, popup, R.string.follow_theme, () -> {
+            choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY)
+                    .remove("animations").remove("advanced_effects")
+                    .remove(Config.WALLPAPER_CHOICE_KEY).apply();
+            recreate();
+        });
+
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (320 * density), panel.getMeasuredWidth()));
         dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar)
@@ -3480,24 +3533,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    /** Keep a normal Settings click for the TV; the launcher's choices live behind hold OK. */
-    private void showSettingsMenu() {
-        if (openPopup != null) openPopup.dismiss();
-        View anchor = findViewById(R.id.btnSettings);
-        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
-        LinearLayout rows = panel.findViewById(R.id.rows);
-        PopupWindow popup = glassPopup(panel, (int) (200 * density));
-        addSettingsMenuRow(rows, popup, R.string.launcher_settings, this::showLauncherSettingsModal);
-        addSettingsMenuRow(rows, popup, R.string.tv_settings, () -> open(systemIntent(Settings.ACTION_SETTINGS)));
-        if (moduleCards) addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
-        if (dockRow) addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
-        addSettingsMenuRow(rows, popup, R.string.reorder, this::toggleReorder);
-        panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
-        // Hebrew puts Settings at the left of the header: grow the menu inward from it.
-        dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar)
-                ? Gravity.START : Gravity.END);
-        rows.getChildAt(0).requestFocus();
+    private void showLauncherSettingsModal() {
+        showSettingsMenu();
     }
 
     private void updateWeatherUi(String city, int temp, int code) {
@@ -3516,6 +3553,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             else if (code >= 95) iconRes = R.drawable.ic_weather_thunder;
             else iconRes = R.drawable.ic_weather_partly_cloudy;
             ivIcon.setImageResource(iconRes);
+        }
+        if (weatherPill != null) {
+            setPillHighlighted(weatherPill, weatherPill.isFocused() || weatherPill.isSelected());
         }
     }
 
@@ -3603,6 +3643,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openPopup != null) openPopup.dismiss();
         View anchor = findViewById(R.id.weatherPill);
         if (anchor == null) return;
+        setPillHighlighted(anchor, true);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (280 * density));
@@ -3613,13 +3654,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             heroScrim.animate().alpha(0.75f).setDuration(240).start();
         }
         popup.setOnDismissListener(() -> {
-            if (panel.getTag() == null) {
+            if (panel.getTag() == null && (popup.getContentView() == null || popup.getContentView().getTag() == null)) {
                 SoundManager.getInstance(MainActivity.this).playBack();
             }
             if (openPopup == popup) openPopup = null;
             if (heroScrim != null) {
                 heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
             }
+            anchor.requestFocus();
+            setPillHighlighted(anchor, false);
         });
 
         SharedPreferences sp = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
@@ -3663,7 +3706,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         row.setOnClickListener(v -> {
             if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
             popup.dismiss();
-            action.run();
+            v.post(action::run);
         });
         // The OK-up after opening the menu must not activate its first row.
         final boolean[] pressed = {false};
@@ -3678,7 +3721,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (activate) {
                 if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
                 popup.dismiss();
-                action.run();
+                v.post(action::run);
             }
             return true;
         });
@@ -3784,9 +3827,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showModuleCardsNow() {
         View anchor = findViewById(R.id.btnSettings);
+        setPillHighlighted(anchor, true);
         View panel = getLayoutInflater().inflate(R.layout.popup_cards, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         final PopupWindow popup = glassPopup(panel, (int) (400 * density));
+        popup.setOnDismissListener(() -> {
+            if (openPopup == popup) openPopup = null;
+            anchor.requestFocus();
+            setPillHighlighted(anchor, false);
+        });
         List<Cards.Card> listed = new ArrayList<>(cards);
         Collections.sort(listed, Cards::byLabel);
         for (Cards.Card card : listed) {
