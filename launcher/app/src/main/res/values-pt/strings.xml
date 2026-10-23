@@ -18,7 +18,7 @@
     <string name="offline">Sem conexão</string>
     <string name="not_available">Não disponível nesta TV</string>
     <string name="cant_open">Não foi possível abrir %1$s</string>
-    <string name="date_format">EEEE  d \'de\' MMMM</string>
+    <string name="date_format">yyyy EEEE  d \'de\' MMMM</string>
     <string name="date_format_home">EEEE\nd \'de\' MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Memória %1$d MB livres</string>

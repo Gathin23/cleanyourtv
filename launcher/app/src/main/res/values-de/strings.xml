@@ -18,7 +18,7 @@
     <string name="offline">Offline</string>
     <string name="not_available">Auf diesem TV nicht verfügbar</string>
     <string name="cant_open">%1$s lässt sich nicht öffnen</string>
-    <string name="date_format">EEEE, d. MMMM</string>
+    <string name="date_format">yyyy EEEE, d. MMMM</string>
     <!-- Two lines next to the clock: the long German weekday and month names do not fit on one. -->
     <string name="date_format_home">EEEE\nd. MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>

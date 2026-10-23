@@ -18,7 +18,7 @@
     <string name="offline">غير متصل</string>
     <string name="not_available">غير متاح على هذا التلفاز</string>
     <string name="cant_open">تعذّر فتح %1$s</string>
-    <string name="date_format">EEEE  d MMMM</string>
+    <string name="date_format">yyyy EEEE  d MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">الذاكرة %1$d م.ب متاحة</string>
     <string name="stats_storage">التخزين %1$s متاح</string>

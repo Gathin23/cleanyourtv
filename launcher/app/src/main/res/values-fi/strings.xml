@@ -19,7 +19,7 @@
     <string name="not_available">Ei käytettävissä tässä televisiossa</string>
     <string name="cant_open">Ei voitu avata: %1$s</string>
     <!-- Finnish: "tiistaina 20. lokakuuta"; the weekday comes out in the essive form. -->
-    <string name="date_format">EEEE d. MMMM</string>
+    <string name="date_format">yyyy EEEE d. MMMM</string>
     <string name="dream_name">Kello</string>
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN pois päältä</string>

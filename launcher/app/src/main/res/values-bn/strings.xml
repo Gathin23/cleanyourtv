@@ -19,7 +19,7 @@
     <string name="not_available">এই টিভিতে এভাইলেবল নেই</string>
     <string name="cant_open">%1$s খোলা যাচ্ছে না</string>
     <!-- "মঙ্গলবার, ২০ অক্টোবর"; Android writes the numbers in Bangla digits. -->
-    <string name="date_format">EEEE, d MMMM</string>
+    <string name="date_format">yyyy EEEE, d MMMM</string>
     <string name="stats_cpu">সিপিইউ %1$d%%</string>
     <string name="stats_memory">মেমরি %1$d MB খালি</string>
     <string name="stats_storage">স্টোরেজ %1$s খালি</string>

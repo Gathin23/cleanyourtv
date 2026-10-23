@@ -18,7 +18,7 @@
     <string name="offline">Hors ligne</string>
     <string name="not_available">Indisponible sur cette TV</string>
     <string name="cant_open">Impossible d\'ouvrir %1$s</string>
-    <string name="date_format">EEEE d MMMM</string>
+    <string name="date_format">yyyy EEEE d MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Mémoire %1$d Mo libres</string>
     <string name="stats_storage">Stockage %1$s libre</string>

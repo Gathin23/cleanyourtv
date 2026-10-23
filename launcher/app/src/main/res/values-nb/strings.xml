@@ -18,7 +18,7 @@
     <string name="offline">Frakoblet</string>
     <string name="not_available">Ikke tilgjengelig på denne TV-en</string>
     <string name="cant_open">Kan ikke åpne %1$s</string>
-    <string name="date_format">EEEE d. MMMM</string>
+    <string name="date_format">yyyy EEEE d. MMMM</string>
     <string name="stats_cpu">Prosessor %1$d%%</string>
     <string name="stats_memory">Minne: %1$d MB ledig</string>
     <string name="stats_storage">Lagring: %1$s ledig</string>

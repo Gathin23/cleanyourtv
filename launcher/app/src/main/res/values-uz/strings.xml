@@ -18,7 +18,7 @@
     <string name="offline">Internet yoʻq</string>
     <string name="not_available">Bu televizorda mavjud emas</string>
     <string name="cant_open">%1$s ochilmadi</string>
-    <string name="date_format">EEEE  d-MMMM</string>
+    <string name="date_format">yyyy EEEE  d-MMMM</string>
     <string name="stats_cpu">Protsessor %1$d%%</string>
     <string name="stats_memory">Xotira: %1$d MB boʻsh</string>
     <string name="stats_storage">Disk: %1$s boʻsh</string>

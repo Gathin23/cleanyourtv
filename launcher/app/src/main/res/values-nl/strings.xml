@@ -18,7 +18,7 @@
     <string name="offline">Offline</string>
     <string name="not_available">Niet beschikbaar op deze tv</string>
     <string name="cant_open">Kan %1$s niet openen</string>
-    <string name="date_format">EEEE d MMMM</string>
+    <string name="date_format">yyyy EEEE d MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Geheugen %1$d MB vrij</string>
     <string name="stats_storage">Opslag %1$s vrij</string>

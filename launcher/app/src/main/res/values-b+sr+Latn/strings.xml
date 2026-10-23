@@ -18,7 +18,7 @@
     <string name="offline">Nema mreže</string>
     <string name="not_available">Nije dostupno na ovom televizoru</string>
     <string name="cant_open">Nije moguće otvoriti %1$s</string>
-    <string name="date_format">EEEE, d. MMMM</string>
+    <string name="date_format">yyyy EEEE, d. MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Memorija %1$d MB slobodno</string>
     <string name="stats_storage">Skladište %1$s slobodno</string>

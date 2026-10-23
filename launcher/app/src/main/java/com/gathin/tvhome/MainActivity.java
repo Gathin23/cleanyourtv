@@ -6,6 +6,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.usage.StorageStats;
 import android.app.usage.StorageStatsManager;
@@ -76,6 +77,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -737,6 +739,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
+
+        SharedPreferences spWeather = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        String cachedTz = spWeather.getString("weather_timezone", null);
+        if (cachedTz != null) {
+            syncTimezone(cachedTz);
+        }
 
         fetchWeatherAsync(false);
         for (View button : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
@@ -3537,6 +3545,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showSettingsMenu();
     }
 
+    private void syncTimezone(String tzId) {
+        if (tzId == null || tzId.isEmpty()) return;
+        TextClock clock = findViewById(R.id.clock);
+        TextClock date = findViewById(R.id.date);
+        if (clock != null) clock.setTimeZone(tzId);
+        if (date != null) date.setTimeZone(tzId);
+        try {
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (am != null) am.setTimeZone(tzId);
+        } catch (Throwable ignored) {}
+    }
+
     private void updateWeatherUi(String city, int temp, int code) {
         TextView tvCity = findViewById(R.id.weatherCity);
         TextView tvTemp = findViewById(R.id.weatherTemp);
@@ -3598,6 +3618,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                             city = json.optString("city", city);
                             lat = json.optDouble("latitude", lat);
                             lon = json.optDouble("longitude", lon);
+                            JSONObject tzObj = json.optJSONObject("timezone");
+                            if (tzObj != null) {
+                                String tzId = tzObj.optString("id", null);
+                                if (tzId != null && !tzId.isEmpty()) {
+                                    sp.edit().putString("weather_timezone", tzId).apply();
+                                    runOnUiThread(() -> syncTimezone(tzId));
+                                }
+                            }
                         }
                     }
                     ipConn.disconnect();

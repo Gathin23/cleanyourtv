@@ -18,7 +18,7 @@
     <string name="offline">אין חיבור לרשת</string>
     <string name="not_available">לא זמין בטלוויזיה זו</string>
     <string name="cant_open">לא ניתן לפתוח את %1$s</string>
-    <string name="date_format">EEEE  d בMMMM</string>
+    <string name="date_format">yyyy EEEE  d בMMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">זיכרון %1$d MB פנוי</string>
     <string name="stats_storage">אחסון %1$s פנוי</string>

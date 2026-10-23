@@ -18,7 +18,7 @@
     <string name="offline">Нет сети</string>
     <string name="not_available">Недоступно на этом телевизоре</string>
     <string name="cant_open">Не удалось открыть %1$s</string>
-    <string name="date_format">EEEE, d MMMM</string>
+    <string name="date_format">yyyy EEEE, d MMMM</string>
     <string name="date_format_home">EEEE\nd MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Память %1$d МБ свободно</string>

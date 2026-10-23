@@ -18,7 +18,7 @@
     <string name="offline">Offline</string>
     <string name="not_available">Not available on this TV</string>
     <string name="cant_open">Can\'t open %1$s</string>
-    <string name="date_format">EEEE  d MMMM</string>
+    <string name="date_format">EEEE, d MMMM yyyy</string>
     <!-- Date next to the clock on Home; a locale can split it over two lines with \n. -->
     <string name="date_format_home" translatable="false">@string/date_format</string>
     <string name="stats_cpu">CPU %1$d%%</string>

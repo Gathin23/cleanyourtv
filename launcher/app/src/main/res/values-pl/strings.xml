@@ -18,7 +18,7 @@
     <string name="offline">Brak sieci</string>
     <string name="not_available">Niedostępne na tym telewizorze</string>
     <string name="cant_open">Nie można otworzyć: %1$s</string>
-    <string name="date_format">EEEE  d MMMM</string>
+    <string name="date_format">yyyy EEEE  d MMMM</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Pamięć %1$d MB wolne</string>
     <string name="stats_storage">Miejsce %1$s wolne</string>

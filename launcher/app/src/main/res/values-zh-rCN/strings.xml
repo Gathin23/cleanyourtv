@@ -32,7 +32,7 @@
     <string name="offline">未连接网络</string>
     <string name="not_available">此电视不支持该功能</string>
     <string name="cant_open">无法打开 %1$s</string>
-    <string name="date_format">M月d日 EEEE</string>
+    <string name="date_format">yyyy年M月d日 EEEE</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">内存剩余 %1$d MB</string>
     <string name="stats_storage">存储剩余 %1$s</string>
