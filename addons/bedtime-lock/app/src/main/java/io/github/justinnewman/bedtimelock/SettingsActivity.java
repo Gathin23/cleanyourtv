@@ -14,7 +14,8 @@ import android.widget.Toast;
 /**
  * The owner's screen. The first run asks for a new PIN twice; after that the PIN opens the settings: the locked
  * hours, on or off, whether TV Settings need the PIN at any hour, a new PIN, the helper's state and a test of the lock.
- * Entering the PIN here also opens TV Settings until standby, so the helper can be turned on from the link below.
+ * The PIN is asked every time the screen opens or comes back from another app, whatever was unlocked elsewhere.
+ * Entering it here also opens TV Settings until standby, so the helper can be turned on from the link below.
  */
 public final class SettingsActivity extends Activity {
     private static final int VERIFY = 0, CREATE = 1, REPEAT = 2, ROWS = 3;
@@ -27,22 +28,33 @@ public final class SettingsActivity extends Activity {
     private TextView message;
     /** The time row Up and Down are changing, or null. */
     private TextView editing;
+    /** The screen went out of sight (another app, Home, standby): the PIN again when it comes back. */
+    private boolean left;
+    /** The test lock was opened from here: coming back after it took the right PIN does not ask again. */
+    private boolean testing;
 
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
         store = new Store(this);
-        if (!store.hasPin()) showPin(CREATE, 0);
-        else if (store.settingsOpen()) showRows();
-        else showPin(VERIFY, 0);
+        showPin(store.hasPin() ? VERIFY : CREATE, 0);
     }
 
-    /** Brought back after standby (from the app list, or the TV waking on this screen): the PIN again. */
     @Override
     protected void onResume() {
         super.onResume();
-        if (stage != VERIFY && store.hasPin() && !store.settingsOpen()) showPin(VERIFY, 0);
+        boolean ask = left && stage != VERIFY && store.hasPin() && !(testing && LockActivity.testPassed);
+        left = false;
+        testing = false;
+        LockActivity.testPassed = false;
+        if (ask) showPin(VERIFY, 0);
         else if (stage == ROWS) render();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!isChangingConfigurations()) left = true;
     }
 
     private void showPin(int which, int note) {
@@ -107,8 +119,11 @@ public final class SettingsActivity extends Activity {
                 startActivity(new Intent(Settings.ACTION_SETTINGS));
             }
         });
-        findViewById(R.id.test).setOnClickListener(v -> startActivity(new Intent(this, LockActivity.class)
-                .putExtra(LockActivity.EXTRA_REASON, LockActivity.TEST)));
+        findViewById(R.id.test).setOnClickListener(v -> {
+            testing = true;
+            LockActivity.testPassed = false;
+            startActivity(new Intent(this, LockActivity.class).putExtra(LockActivity.EXTRA_REASON, LockActivity.TEST));
+        });
         findViewById(R.id.phone).setOnClickListener(v -> {
             store.setPhoneOn(!store.phoneOn());
             render();

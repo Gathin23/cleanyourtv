@@ -7,8 +7,8 @@ import java.util.Calendar;
 
 /**
  * Everything the lock keeps, in the app's own preferences (backups are off). "unlocked" (the PIN at the lock) and
- * "settings_open" (the PIN in front of TV Settings or this app) both last until the TV goes to standby; "unlocked"
- * also ends with the locked hours.
+ * "settings_open" (the PIN in front of TV Settings, or in this app's settings) both last until the TV goes to
+ * standby; "unlocked" also ends with the locked hours. Neither opens this app's settings: those ask every time.
  */
 final class Store {
     private final SharedPreferences p;

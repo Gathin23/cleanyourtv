@@ -17,7 +17,8 @@ does.
   app removed from Settings without it.
 - **Setup:** open Bedtime Lock from the app list, choose the code (twice), then turn the lock helper on with the
   row that opens Accessibility settings (Settings > System > Accessibility > Bedtime Lock). Behind the code: on or
-  off, the hours (Up and Down move them by 15 minutes), the TV Settings switch, a new code, and a test.
+  off, the hours (Up and Down move them by 15 minutes), the TV Settings switch, a new code, and a test. These
+  settings ask for the code every time they open or come back from another app, even when the TV is unlocked.
 
 ## Phone unlock (optional)
 
