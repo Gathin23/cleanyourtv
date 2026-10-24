@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToIntFunction;
+import java.util.regex.Pattern;
 
 /**
  * Remote buttons that only the stock launcher answered, for InputKeyService and HomeKeyService: app_keys
@@ -36,6 +37,10 @@ final class RemoteKeys {
 
     /** The app_keys target that opens the input switcher, as "scan:365:inputs". */
     static final String INPUTS = "inputs";
+
+    /** Pre-compiled regex patterns to avoid re-compiling Patterns on every entry during key parsing. */
+    private static final Pattern NUMERIC_KEY = Pattern.compile("[0-9]{1,6}");
+    private static final Pattern KEYCODE_KEY = Pattern.compile("KEYCODE_[A-Z0-9_]+");
 
     private RemoteKeys() { }
 
@@ -61,9 +66,9 @@ final class RemoteKeys {
             if (parts.length != 2 || parts[1].trim().isEmpty()) continue;
             String key = parts[0].trim();
             int code;
-            if (key.matches("[0-9]{1,6}")) {
+            if (NUMERIC_KEY.matcher(key).matches()) {
                 code = Integer.parseInt(key);
-            } else if (key.matches("KEYCODE_[A-Z0-9_]+")) {
+            } else if (KEYCODE_KEY.matcher(key).matches()) {
                 code = names.applyAsInt(key);   // keyCodeFromString takes digits only from API 29, names always
             } else {
                 continue;
@@ -114,7 +119,7 @@ final class RemoteKeys {
             String[] parts = entry.split(":", 3);
             if (parts.length != 3 || !parts[0].trim().equals("scan") || parts[2].trim().isEmpty()) continue;
             String code = parts[1].trim();
-            if (!code.matches("[0-9]{1,6}")) continue;
+            if (!NUMERIC_KEY.matcher(code).matches()) continue;
             int scan = Integer.parseInt(code);
             if (scan > 0) keys.put(scan, parts[2].trim());
         }
