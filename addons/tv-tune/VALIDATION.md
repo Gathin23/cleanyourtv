@@ -205,3 +205,30 @@ serials, account information or private device names.
   Acceptance was not performed. No license hashes were fabricated, no protection
   bypassed and no APK produced. Full Android build/lint remain unverified in this run
   pending the owner's decision on that agreement; this is not an application test failure.
+
+### Android build completed after SDK approval, 2026-10-24
+
+The owner explicitly approved the linked Android SDK License Agreement. Only that
+agreement was accepted in the isolated cloud toolchain; the preceding license gate
+is now resolved. No additional agreement, physical-device access or security bypass
+was needed.
+
+- JDK 17, Gradle 8.9, SDK platform 34/build-tools 34.0.0:
+  `testReleaseUnitTest lintRelease assembleRelease` **passed** in 59 seconds,
+  53 tasks executed. This supersedes the earlier build-not-run limitation.
+- Gradle JUnit XML: eleven tests, zero failures, zero errors, zero skipped.
+- Android lint: zero errors and five warnings: large vector (`VectorRaster`), fixed
+  landscape (`DiscouragedApi`), two unused strings (`UnusedResources`) and programmatic
+  View constructor (`ViewConstructor`). No suppressions or rule changes were added.
+  The target-age warning from the historical run was not emitted in this run.
+- Built APK inspection: `io.github.kalt2212.tvtune`, minSdk 26/targetSdk 34, leanback
+  activity and zero requested permissions. Size: 29,440 bytes. The local test APK was
+  moved outside the repository before general checks; no APK was committed, deployed
+  or made available as a public download.
+- No application source change was needed for this build. Web remains version 0.1.3
+  at source commit `41a0c3c8ad7c68102105b10674eea727574e0c05` and its verified deployment.
+- This build is not emulator, real-TV, phone-camera or reference-instrument evidence.
+  The real-TV screenshot and physical acceptance gates remain unchanged.
+- Post-build regression run: JavaScript 42/42 and syntax checks passed; complete Python
+  suite 747 tests, 743 passed, three skipped, one missing-real-TV-screenshot failure.
+  No APK remained under addons and no repository evidence gate was relaxed.
