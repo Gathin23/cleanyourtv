@@ -19,15 +19,19 @@ public final class SoundManager {
     private int soundNav = 0;
     private int soundEnter = 0;
     private int soundBack = 0;
+    private int soundStartup = 0;
 
     private volatile boolean loadedNav = false;
     private volatile boolean loadedEnter = false;
     private volatile boolean loadedBack = false;
+    private volatile boolean loadedStartup = false;
     private volatile boolean pendingBack = false;
+    private volatile boolean pendingStartup = false;
 
     private long lastNavTime = 0;
     private long lastEnterTime = 0;
     private long lastBackTime = 0;
+    private long lastStartupTime = 0;
 
     private boolean enabled = true;
 
@@ -59,7 +63,7 @@ public final class SoundManager {
 
             soundPool.setOnLoadCompleteListener((pool, sampleId, status) -> {
                 Log.i(TAG, "onLoadComplete: sampleId=" + sampleId + " status=" + status
-                        + " (nav=" + soundNav + ", enter=" + soundEnter + ", back=" + soundBack + ")");
+                        + " (nav=" + soundNav + ", enter=" + soundEnter + ", back=" + soundBack + ", startup=" + soundStartup + ")");
                 if (status == 0) {
                     if (sampleId == soundNav) loadedNav = true;
                     else if (sampleId == soundEnter) loadedEnter = true;
@@ -69,6 +73,12 @@ public final class SoundManager {
                             pendingBack = false;
                             soundPool.play(soundBack, 1.0f, 1.0f, 2, 0, 1.0f);
                         }
+                    } else if (sampleId == soundStartup) {
+                        loadedStartup = true;
+                        if (pendingStartup) {
+                            pendingStartup = false;
+                            playStartup();
+                        }
                     }
                 }
             });
@@ -76,6 +86,7 @@ public final class SoundManager {
             soundNav = soundPool.load(context, R.raw.navigation, 1);
             soundEnter = soundPool.load(context, R.raw.enter, 1);
             soundBack = soundPool.load(context, R.raw.back, 1);
+            soundStartup = soundPool.load(context, R.raw.startup, 1);
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize SoundPool", e);
         }
@@ -166,6 +177,24 @@ public final class SoundManager {
         return false;
     }
 
+    public void playStartup() {
+        if (!enabled || soundPool == null) return;
+        Log.i(TAG, "playStartup invoked: loadedStartup=" + loadedStartup + " soundStartup=" + soundStartup);
+        if (loadedStartup) {
+            long now = SystemClock.uptimeMillis();
+            if (now - lastStartupTime < 4000) {
+                Log.d(TAG, "playStartup debounced (played recently)");
+                return;
+            }
+            lastStartupTime = now;
+            int streamId = soundPool.play(soundStartup, 1.0f, 1.0f, 3, 0, 1.0f);
+            Log.i(TAG, "playStartup played streamId=" + streamId);
+        } else {
+            Log.i(TAG, "playStartup queued (waiting for onLoadComplete)");
+            pendingStartup = true;
+        }
+    }
+
     public synchronized void release() {
         if (soundPool != null) {
             try {
@@ -175,6 +204,8 @@ public final class SoundManager {
             loadedNav = false;
             loadedEnter = false;
             loadedBack = false;
+            loadedStartup = false;
+            pendingStartup = false;
         }
     }
 }

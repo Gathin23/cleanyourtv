@@ -51,10 +51,12 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
 import android.os.storage.StorageManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -405,6 +407,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             updateClockVisibility();
         }
     };
+
+    private static boolean coldBootStartupPlayed = false;
+    private static boolean wasScreenOff = false;
+
+    private final IntentFilter screenFilter = new IntentFilter();
+    private final BroadcastReceiver screenStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) return;
+            String action = intent.getAction();
+            Log.d("TvHome", "screenStateReceiver action: " + action);
+            if (Intent.ACTION_SCREEN_OFF.equals(action)) {
+                wasScreenOff = true;
+            } else if (Intent.ACTION_SCREEN_ON.equals(action) || Intent.ACTION_USER_PRESENT.equals(action)) {
+                triggerStartupSoundIfWaking();
+            }
+        }
+    };
+
+    private void triggerStartupSoundIfWaking() {
+        if (wasScreenOff) {
+            wasScreenOff = false;
+            Log.i("TvHome", "TV turned on / waking from standby -> triggering startup sound");
+            handler.postDelayed(() -> SoundManager.getInstance(MainActivity.this).playStartup(), 350);
+        }
+    }
     private final Runnable minuteTick = new Runnable() {
         @Override
         public void run() {
@@ -454,6 +482,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         silenceSystemSoundEffects();
         getWindow().getDecorView().setSoundEffectsEnabled(false);
         disableViewSoundEffects(getWindow().getDecorView());
+
+        screenFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        screenFilter.addAction(Intent.ACTION_SCREEN_ON);
+        screenFilter.addAction(Intent.ACTION_USER_PRESENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(screenStateReceiver, screenFilter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(screenStateReceiver, screenFilter);
+        }
+
+        if (savedInstanceState == null && !coldBootStartupPlayed) {
+            coldBootStartupPlayed = true;
+            handler.postDelayed(() -> SoundManager.getInstance(MainActivity.this).playStartup(), 400);
+        }
 
         root = findViewById(R.id.root);
         root.setBackgroundColor(cfg.backgroundColor);
@@ -974,6 +1016,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        triggerStartupSoundIfWaking();
         silenceSystemSoundEffects();
         disableViewSoundEffects(getWindow().getDecorView());
         // A festival that started or ended while Home was in the background: rebuild with or without it.
@@ -1171,6 +1214,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(clockCheck);
         stopped = true;
         rebuildOnResume = true;
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (pm != null && !pm.isInteractive()) {
+            wasScreenOff = true;
+        }
     }
 
     /**
@@ -1208,6 +1255,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        try {
+            unregisterReceiver(screenStateReceiver);
+        } catch (Exception ignored) {}
         SoundManager.getInstance(this).release();
         statsExecutor.shutdown();
         wallpaperPlayer.close();
