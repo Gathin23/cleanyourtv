@@ -124,6 +124,45 @@ def index_notes(root):
     return notes
 
 
+def index_entries(root):
+    """The device notes under the "no tested list yet" heading, as {note: [page line numbers]}.
+
+    Line numbers, not just names: two entries for one note read as two different TVs, and the older
+    of the two is the one that stops being maintained. A link inside a fenced block in the section is
+    not an entry (it is a command or an example), and neither is a note the table above links.
+    """
+    page = Path(root) / "examples" / "README.md"
+    if not page.is_file():
+        return {}
+    prefix = "../docs/devices/"
+    entries, inside, fenced = {}, False, False
+    for number, line in enumerate(page.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        if not inside:
+            inside = NOTE_INDEX_HEADING in line
+            continue
+        if line.startswith("## "):
+            break
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        # One line naming the same note twice ("[TCL 55C728](../docs/devices/x.md), 55C728: ...") is
+        # one entry, so a line is counted once whatever the number of links on it.
+        for target in dict.fromkeys(destinations(line)):
+            if target.startswith(EXTERNAL):
+                continue
+            local = unquote(target.split("#")[0])
+            if local.startswith(prefix):
+                entries.setdefault(local[len(prefix):], []).append(number)
+    return entries
+
+
+def notes_listed_twice(entries):
+    """The notes a page lists more than once, with the lines each one is on."""
+    return {note: lines for note, lines in entries.items() if len(lines) > 1}
+
+
 def own_list(root, note):
     """The list a note claims for its own model - examples/<the note's file name>/debloat.txt - when it links one.
 
@@ -350,6 +389,80 @@ class NoteFiledWithItsListTest(unittest.TestCase):
                 encoding="utf-8")
             self.assertEqual(["fpd-cg50-c3.md"], index_notes(root))
             self.assertEqual([], index_notes_with_their_own_list(root))
+
+
+class NoteIndexOneEntryTest(unittest.TestCase):
+    """One entry per note under the "no tested list yet" heading.
+
+    A merge that keeps both sides of a conflicting hunk leaves the old entry next to the new one, and
+    the page then offers the same TV twice: the reader picks either, and the copy that is not being
+    updated is the one they can land on. c7af946d repaired two of these by hand; this is the rule
+    behind that repair, so the next union cannot leave another pair.
+    """
+
+    def test_each_note_is_listed_once(self):
+        entries = index_entries(ROOT)
+        self.assertGreaterEqual(len(entries), 20, "the notes index was not read")
+        twice = notes_listed_twice(entries)
+        message = "\n".join(
+            f"docs/devices/{note} is listed on lines {', '.join(str(n) for n in lines)} of "
+            f"examples/README.md: one entry per note, in the newer text"
+            for note, lines in sorted(twice.items()))
+        self.assertEqual({}, twice, message)
+
+    # --- the reader, against pages written here, so the test above cannot pass by reading nothing ---
+
+    @staticmethod
+    def _page(tmp, body):
+        root = Path(tmp)
+        (root / "examples").mkdir(parents=True)
+        (root / "examples" / "README.md").write_text(
+            f"{NOTE_INDEX_HEADING} live in [`docs/devices/`](../docs/devices/):\n\n{body}", encoding="utf-8")
+        return root
+
+    def test_a_note_listed_twice_is_reported_with_both_lines(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): the newer text.\n"
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): the older text.\n")
+            twice = notes_listed_twice(index_entries(root))
+            self.assertEqual({"tcl-55c728.md": [3, 4]}, twice)
+
+    def test_a_note_listed_once_is_quiet(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): a note.\n"
+                              "- [Sharp 32FI4EA](../docs/devices/sharp-32fi4ea.md): another note.\n")
+            self.assertEqual({}, notes_listed_twice(index_entries(root)))
+
+    def test_two_links_to_one_note_on_one_line_are_one_entry(self):
+        # "[55C728](../docs/devices/tcl-55c728.md) (55C728, G05)" names the note twice on one line.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md), `55C728`, "
+                              "[the same note](../docs/devices/tcl-55c728.md): one set of notes.\n")
+            self.assertEqual({"tcl-55c728.md": [3]}, index_entries(root))
+
+    def test_a_path_in_a_fenced_block_is_not_an_entry(self):
+        # The section explains where these notes live; a command in it is not an index entry.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "```\ncat ../docs/devices/tcl-55c728.md\n```\n\n"
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): a note.\n")
+            self.assertEqual({"tcl-55c728.md": [7]}, index_entries(root))
+
+    def test_a_row_above_the_heading_is_not_an_entry(self):
+        # A list's row links its own note too; only the entries under the heading are the index.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "examples").mkdir(parents=True)
+            (root / "examples" / "README.md").write_text(
+                "| `tcl-g05-google-tv/` | TCL G05 | Google TV 11 | see "
+                "[the 55C728 note](../docs/devices/tcl-55c728.md) |\n"
+                f"{NOTE_INDEX_HEADING} live in [`docs/devices/`](../docs/devices/):\n\n"
+                "- [Sharp 32FI4EA](../docs/devices/sharp-32fi4ea.md): a note.\n",
+                encoding="utf-8")
+            self.assertEqual({"sharp-32fi4ea.md": [4]}, index_entries(root))
 
 
 if __name__ == "__main__":
