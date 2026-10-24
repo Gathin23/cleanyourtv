@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a grid of tiles, one lifted out. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#2A3442" android:pathData="M60,50h50v30h-50zM120,50h50v30h-50zM60,90h50v30h-50zM120,90h50v30h-50zM180,90h50v30h-50z" />
+    <path android:fillColor="#8AB4F8" android:pathData="M190,34h60v36h-60z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:fillColor="#00000000" android:pathData="M60,140h170" />
+</vector>
