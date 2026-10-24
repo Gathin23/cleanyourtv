@@ -1,0 +1,68 @@
+# JVC UK 4K Android TV (built by MTC, product MTCMSD6886UK, codename sadang, MediaTek m7322), Android TV 11 (API 30),
+# firmware RTO8.250915.001, security patch 2025-07-01, 1.4 GB RAM, 1920x1080. UK unit.
+# Fingerprint: JVC/MTCMSD6886UK/sadang:11/RTO8.250915.001/14107831:user/release-keys
+# Same MTC board and firmware build as examples/hitachi-65qledsm20 (bangbae), with the UK Freeview Play
+# layer instead of Anoki; same JVC firmware family as examples/mtc-uk-2k-android-tv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/jvc-uk-4k-sadang/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/jvc-uk-4k-sadang/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (the scripts' default). Live TV: com.mediatek.wwtv.tvcenter.
+#
+# KEEP, even though the names look like bloat (checked on this TV):
+# - fusion.android.tv.demo: receives TV_INPUT_BUTTON and CONNECT_INPUT (the remote's Input key) and runs
+#   Bluetooth accessory pairing, as on examples/hitachi-65qledsm20. examples/mtc-uk-2k-android-tv disables
+#   it; on this board, don't.
+# - com.google.android.leanbacklauncher.partnercustomizer: see the comment at the end of the list.
+# - com.airoha.btd (Bluetooth chip), com.google.android.tv.remote.service, every com.mediatek.* (Live TV,
+#   tuner, inputs), Gboard, Play Store, Play Services, com.google.android.tungsten.setupwraith.
+# - Factory and test packages (com.mediatek.mtc.factory, mediatek.factorymenu.ui, com.mediatek.testpq):
+#   never touched, never opened.
+# - Assistant (katniss) and the Ambient screensaver (backdrop), by choice.
+#
+# Status: disabled in five batches on one TV on 2026-10-21, with a reboot the same evening, then three
+# days of daily use and about 30 reboots. Home, the remote's app buttons, HDMI inputs and Live TV all work.
+#
+# Notes from this TV:
+# - The Freeview Play apps come back enabled at every boot (Freeview Play certification), so they are not
+#   listed. That covers every uk.co.freeview.* package (iPlayer, ITVX, Channel 4, My5, U, STV, BBC Sounds,
+#   Watch Free UK, Legend) and the tifbridge, mdsclient and fvpconfigauth plumbing. They were disabled once
+#   and were back after the next boot. Hide them in the launcher instead. On
+#   examples/mtc-uk-2k-android-tv they shipped disabled.
+# - Live TV opens by itself at every power-on, whatever app is Home. LiveTVLauncher in TvServices.apk
+#   (com.mediatek.tv.agent.LiveTVLauncher) starts it on a Freeview Play set: vendor.mtk.tif.fvp=1, HbbTV
+#   FVP support and an MTK country of GBR. No setting turns it off. Waking the TV with the remote's Netflix
+#   key skips it. A home screen that is direct-boot aware can take over again within 2-4 seconds. The flag
+#   has to be on the activity: this firmware ignores it on <application>.
+# - Settings -> Channel -> Channels -> "Channel Scan" starts a scan as soon as OK is pressed, with no
+#   confirmation. Don't press OK there while exploring.
+# - Location can only be turned on together with Google Location Accuracy. Without Location, apps can't
+#   read the Wi-Fi network's name.
+
+# Batch 1: telemetry and background services
+com.google.android.feedback                      # Google feedback and crash reports
+com.google.android.apps.nbu.smartconnect.tv      # data meter and data-saver VPN service
+com.google.android.syncadapters.calendar         # Google Calendar sync
+com.android.printspooler                         # printing
+
+# Batch 2: preloaded apps
+com.google.android.play.games
+com.google.android.youtube.tvmusic               # YouTube Music
+com.google.android.videos                        # Google TV / Play Movies
+
+# Batch 3: casting, by choice (phones can no longer cast to the TV)
+com.google.android.apps.mediashell               # Chromecast built-in
+
+# Batch 4: the Freeview Play broadband guide. The aerial tuner and its own guide are separate and keep working
+com.mediatek.tv.freeviewplay                     # Freeview Play TV Guide
+
+# Batch 5: stock home and its rows, after the new launcher took Home
+com.google.android.tvlauncher
+com.google.android.tvrecommendations             # recommendation rows
+
+# Disabled on this TV too, but left out of the list: com.google.android.leanbacklauncher.partnercustomizer
+# (JVC rows and tiles on the stock home). examples/hitachi-65qledsm20, on the same board and build, and
+# examples/chiq-ai-pont keep it, because com.mediatek.tv.service can crash-loop after a reboot without its
+# tvlauncher.widget provider, and the Input key stops working. Nothing visible went wrong here, but nobody
+# checked logcat for it, so it stays enabled until someone does.
