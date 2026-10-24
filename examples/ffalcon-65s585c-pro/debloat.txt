@@ -1,7 +1,9 @@
 # FFalcon (雷鸟) 鹤6 PRO 65S585C Pro (China), device tcl_mt5879_cn, MediaTek MT9653 (reported as mt5879),
 # Android 11 (SDK 30), build RQ3A.210705.001 / 2026012200 (2026-01-22), 3.7 GB RAM, armeabi-v7a only.
 # Same platform and the same firmware build as examples/tcl-q10g-pro/; read that list's notes first
-# (ADB via 本机信息 + UP DOWN LEFT RIGHT, no third-party launcher, no sideloading).
+# (ADB via 本机信息 + UP DOWN LEFT RIGHT). A third-party launcher DOES install on this firmware,
+# through a short packageinstaller window, and can be made the cold-boot Home:
+# see docs/devices/tcl-mt5879-cn-launcher.md.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/ffalcon-65s585c-pro/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/ffalcon-65s585c-pro/debloat.txt com.tcl.cyberui
