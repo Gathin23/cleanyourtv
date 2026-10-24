@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 const base = new URL(process.argv[2] ?? 'https://tv-tune-kalt2212.vercel.app/');
 if (base.protocol !== 'https:' || base.username || base.password) throw Error('Use a public HTTPS URL without credentials');
 const root = new URL('../', import.meta.url);
-const paths = ['index.html', 'styles.css', 'cover.svg', 'src/app.js', 'src/capture.js', 'src/patterns.js', 'src/probe.js'];
+const paths = ['index.html', 'styles.css', 'cover.svg', 'src/app.js', 'src/capture.js', 'src/patterns.js', 'src/probe.js', 'src/qr.js', 'src/vendor/qrcodegen.js'];
 const expected = paths.map(path => ({ path, local: new URL(path, root) }));
 expected.push({ path: 'LICENSE', local: new URL('../../../../LICENSE', import.meta.url) });
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');

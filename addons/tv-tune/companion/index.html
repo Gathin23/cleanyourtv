@@ -71,7 +71,9 @@
   <main id="tv-view" hidden aria-label="TV pattern presenter">
     <div class="tv-heading"><a href="?" aria-label="Back to TV Tune">TV Tune</a><span>SDR · sRGB · 8-bit · 0–255</span></div>
     <button id="handoff-toggle" class="button secondary tv-handoff-toggle" aria-controls="handoff-panel" aria-expanded="false" data-en="Phone link">Enlace al móvil</button>
-    <section id="handoff-panel" class="tv-handoff" aria-label="Phone handoff" hidden>
+    <section id="handoff-panel" class="tv-handoff" aria-labelledby="qr-status" hidden>
+      <img id="phone-qr" alt="QR" hidden>
+      <p id="qr-status" role="status" aria-live="polite"></p>
       <p data-en="Open this patch on your phone">Abre este patrón en tu móvil</p>
       <p id="handoff-patch"></p>
       <a id="phone-link" href="#">Enlace al móvil</a>

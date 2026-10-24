@@ -122,8 +122,8 @@ its card. The app remains an ordinary leanback app if its card is hidden.
 
 ## Try the phone/browser experiment
 
-The [companion source](companion/index.html) is dependency-free static HTML, CSS and
-JavaScript. Node 20+ is used only for its tests. From `companion/`:
+The [companion source](companion/index.html) is static HTML, CSS and JavaScript, with a locally vendored
+MIT QR encoder ([provenance and reproduction](companion/THIRD_PARTY.md)). Node 20+ is used only for its tests. From `companion/`:
 
 ```sh
 npm test
@@ -138,9 +138,14 @@ The default UI is Spanish. There are no npm dependencies or build step.
 
 ### Keep the same patch when moving between screens
 
-The web presenter provides a phone link for the currently selected patch. Opening
+The web presenter provides a phone link and locally generated QR for the currently
+selected patch. Scan the QR with the phone’s normal camera app to avoid typing.
+No QR service receives the link; rendering runs entirely in the browser. Opening
 its handoff panel pauses the pattern so the instructions cannot cover an active
-uniform patch. Close it and resume the pattern before comparing/capturing. The phone
+uniform patch. The QR includes a four-module white border; keep the whole square
+visible when scanning. If a long self-hosted URL cannot fit, the manual link remains
+available. Synthetic decoding tests do not establish physical TV/iPhone scannability.
+Close it and resume the pattern before comparing/capturing. The phone
 view can open that same patch on a display. Links preserve English/Spanish and use
 an allowlisted patch ID in the URL fragment, for example `#patch=grey-128`.
 The fragment is not part of the HTTP request sent to the hosting provider.
@@ -154,6 +159,19 @@ Unknown patch IDs fall back safely to the default patch.
 Copy is an explicit action and never reads the clipboard. If clipboard writing is
 unavailable, use the visible link instead. Clipboard synchronisation or sending the
 link with another app follows the owner's device settings and choices.
+
+For independent synthetic QR decoding (all 11 patches × both languages, multiple
+sizes and rotation), optional test-only dependencies can be kept outside the project:
+
+```sh
+QR_VERIFY_DEPENDENCIES=$(mktemp -d)
+npm install --prefix "$QR_VERIFY_DEPENDENCIES" --ignore-scripts --no-audit --no-fund --no-save --registry=https://registry.npmjs.org jsqr@1.4.0 @resvg/resvg-js@2.6.2
+QR_VERIFY_DEPENDENCIES="$QR_VERIFY_DEPENDENCIES" node test/qr-decode.mjs
+```
+
+Run these commands from `companion/`. jsQR (Apache-2.0) independently decodes the
+actual SVG rasterised by resvg (MPL-2.0). Neither tool is shipped to the website.
+This is synthetic image decoding, not a physical TV/phone scanning test.
 
 With the local server running and the optional `agent-browser` CLI available, run
 `bash addons/tv-tune/companion/test/browser-smoke.sh` from the repository root. It uses

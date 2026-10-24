@@ -1,3 +1,4 @@
+import { qrSvg } from './qr.js';
 import { inspectCapabilities, exportReport } from './probe.js';
 import { createCameraController, captureFrames, pixelSample, sampleRegion, previewRegion } from './capture.js';
 import { PATCHES, presenterState, patchRectangle, patchFromFragment, patchLink } from './patterns.js';
@@ -32,7 +33,7 @@ else setupPhone();
 function setupPresenter() {
   document.body.dataset.view = 'tv'; $('phone-view').hidden = true; $('tv-view').hidden = false;
   const state = presenterState(performance.now());
-  let handoffOpen = false;
+  let handoffOpen = false, qrUrl = null;
   const setHandoffOpen = open => {
     handoffOpen = open; $('handoff-panel').hidden = !open;
     $('handoff-toggle').setAttribute('aria-expanded', String(open));
@@ -48,6 +49,18 @@ function setupPresenter() {
     const phoneUrl = handoffUrl.href;
     if ($('phone-link').href !== phoneUrl) $('handoff-status').textContent = '';
     $('phone-link').href = phoneUrl; $('phone-link').textContent = phoneUrl;
+    if (handoffOpen && qrUrl !== phoneUrl) {
+      qrUrl = phoneUrl;
+      try {
+        $('phone-qr').src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg(phoneUrl))}`;
+        $('phone-qr').hidden = false;
+        $('qr-status').textContent = say('Escanea con el móvil para abrir este patrón.', 'Scan with your phone to open this patch.');
+      } catch {
+        $('phone-qr').hidden = true;
+        $('phone-qr').src = '';
+        $('qr-status').textContent = say('QR no disponible: usa el enlace de abajo.', 'QR unavailable: use the link below.');
+      }
+    }
     $('handoff-patch').textContent = `${patch.id} · RGB ${patch.rgb.join(' / ')}`;
     Object.assign($('tv-patch').style, { width: `${rect.size}px`, height: `${rect.size}px`,
       left: `${rect.left}px`, top: `${rect.top}px`, backgroundColor: state.paused ? '#252525' : `rgb(${patch.rgb.join(',')})` });
@@ -55,7 +68,7 @@ function setupPresenter() {
     $('tv-code').textContent = state.paused ? say('Pulsa una tecla para volver.', 'Press a key to resume.') : `RGB ${patch.rgb.join(' / ')} · ${innerWidth} × ${innerHeight}`;
     $('tv-status').textContent = say('Confirmación manual en el móvil · Sin sincronización automática', 'Manually confirm the ID on the phone · No automatic synchronisation');
   };
-  const move = delta => { setHandoffOpen(false); state.move(delta, performance.now()); render(); rememberPatch('tv'); };
+  const move = delta => { if (handoffOpen && $('handoff-panel').contains(document.activeElement)) $('handoff-toggle').focus(); setHandoffOpen(false); state.move(delta, performance.now()); render(); rememberPatch('tv'); };
   $('handoff-toggle').addEventListener('click', () => {
     setHandoffOpen(!handoffOpen); state.pause(); render();
   });

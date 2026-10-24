@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import * as capture from '../src/capture.js';
 import * as probe from '../src/probe.js';
 import * as patterns from '../src/patterns.js';
+import { qrSvg } from '../src/qr.js';
 
 // DOM/event simulation for application wiring, not browser or physical-camera evidence.
 function app(view = 'phone', language = 'en', fragment = '', clipboard) {
@@ -13,7 +14,8 @@ function app(view = 'phone', language = 'en', fragment = '', clipboard) {
       this.clientWidth = 640; this.clientHeight = 480; this.classList = { toggle() {} }; this.attributes = {}; }
     append() {} replaceChildren() {} observe() {} disconnect() {}
     setAttribute(name, value) { this.attributes[name] = value; }
-    focus(options) { this.focusOptions = options; this.focuses = (this.focuses || 0) + 1; }
+    contains(element) { return element === this || element?.parentElement === this; }
+    focus(options) { document.activeElement = this; this.focusOptions = options; this.focuses = (this.focuses || 0) + 1; }
     scrollIntoView() { this.scrolls = (this.scrolls || 0) + 1; }
     querySelector() { return new Element(); }
     click() { if (!this.disabled) this.dispatchEvent(new Event('click')); }
@@ -22,6 +24,7 @@ function app(view = 'phone', language = 'en', fragment = '', clipboard) {
   const get = id => { if (!elements.has(id)) elements.set(id, new Element()); return elements.get(id); };
   get('tv-return').href = readFileSync(new URL('../index.html', import.meta.url), 'utf8').match(/class="tv-heading"><a href="([^"]+)"/)[1];
   get('brand').href = readFileSync(new URL('../index.html', import.meta.url), 'utf8').match(/class="brand" href="([^"]+)"/)[1];
+  get('phone-link').parentElement = get('handoff-panel'); get('copy-phone-link').parentElement = get('handoff-panel');
   get('handoff-panel').hidden = true; get('results').hidden = true; get('capture').disabled = true;
   const video = get('preview'); video.parentElement = new Element();
   Object.assign(video, { videoWidth: 640, videoHeight: 480, readyState: 4, currentTime: 0,
@@ -45,7 +48,7 @@ function app(view = 'phone', language = 'en', fragment = '', clipboard) {
   });
   const replacements = [];
   const history = { state: null, replaceState(state, title, path) { replacements.push(path); location.href = new URL(path, location.href).href; } };
-  const scope = { ...probe, ...capture, ...patterns, captureFrames, document, window, Element,
+  const scope = { ...probe, ...capture, ...patterns, qrSvg, captureFrames, document, window, Element,
     navigator: { mediaDevices, clipboard }, isSecureContext: true, location, history,
     performance: { now: () => clock }, innerWidth: 1920, innerHeight: 1080,
     setInterval: fn => { intervals.set(++intervalId, fn); return intervalId; }, clearInterval: id => intervals.delete(id),
@@ -287,4 +290,54 @@ test('escape_closes_handoff_and_restores_focus_to_toggle', () => {
   assert.equal(a.get('handoff-toggle').focuses, 1);
   assert.equal(a.get('tv-patch-id').textContent, 'Paused');
   assert.equal(a.location.hash, '#patch=red');
+});
+
+
+test('QR is generated only for an open paused handoff and updates with the patch', () => {
+  const a = app('tv', 'en', '#patch=red');
+  assert.equal(a.get('phone-qr').src, undefined);
+  a.get('handoff-toggle').click();
+  const red = a.get('phone-qr').src;
+  assert.equal(red, `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg(a.get('phone-link').href))}`);
+  assert.equal(a.get('phone-qr').hidden, false);
+  assert.equal(a.get('tv-patch').hidden, true);
+  assert.equal(a.get('tv-patch-id').textContent, 'Paused');
+  a.advance(1000); assert.equal(a.get('phone-qr').src, red);
+  a.location.hash = '#patch=blue'; a.window.dispatchEvent(new Event('hashchange'));
+  assert.notEqual(a.get('phone-qr').src, red);
+  assert.equal(a.get('phone-qr').src, `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg(a.get('phone-link').href))}`);
+  a.get('handoff-toggle').click();
+  assert.equal(a.get('handoff-panel').hidden, true);
+  assert.equal(a.get('tv-patch-id').textContent, 'Paused');
+});
+
+test('an oversized self-hosted path keeps the manual phone link without a stale QR', () => {
+  const a = app('tv'); a.get('handoff-toggle').click();
+  a.location.href = 'https://example.test/' + 'x'.repeat(1200) + '?view=tv&lang=en#patch=blue';
+  a.window.dispatchEvent(new Event('hashchange'));
+  assert.equal(a.get('phone-qr').hidden, true);
+  assert.match(a.get('qr-status').textContent, /use the link/i);
+  assert.match(a.get('phone-link').href, /#patch=blue$/);
+  assert.equal(a.get('tv-patch').hidden, true);
+});
+
+
+test('arrow navigation closes QR and restores focus outside the hidden panel', () => {
+  const a = app('tv'); a.get('handoff-toggle').click();
+  a.get('phone-link').focus();
+  const event = new Event('keydown', { cancelable: true });
+  Object.defineProperty(event, 'key', { value: 'ArrowRight' });
+  a.document.dispatchEvent(event);
+  assert.equal(a.get('handoff-panel').hidden, true);
+  assert.equal(a.get('handoff-toggle').focuses, 1);
+  assert.equal(a.get('tv-patch').hidden, false);
+});
+
+
+test('closing QR via external controls does not steal their focus', () => {
+  const a = app('tv'); a.get('handoff-toggle').click();
+  a.get('next').focus(); a.get('next').click();
+  assert.equal(a.document.activeElement, a.get('next'));
+  assert.equal(a.get('handoff-toggle').focuses, undefined);
+  assert.equal(a.get('handoff-panel').hidden, true);
 });

@@ -31,7 +31,7 @@ test('companion keeps restrictive connections and local page assets', () => {
 });
 
 test('shipped modules do not add application networking or upload APIs', () => {
-  for (const file of ['app', 'capture', 'patterns', 'probe']) {
+  for (const file of ['app', 'capture', 'patterns', 'probe', 'qr', 'vendor/qrcodegen']) {
     assert.doesNotMatch(read(`../src/${file}.js`), /\b(?:fetch|XMLHttpRequest|WebSocket|EventSource|sendBeacon|RTCPeerConnection)\s*\(/,
       `Review privacy documentation before adding networking to ${file}`);
   }

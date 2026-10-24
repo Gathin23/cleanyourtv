@@ -299,3 +299,22 @@ Visual desktop inspection at 1180×757 found no horizontal overflow or active-pa
 obstruction. Forced clipboard denial, mobile viewport, camera capture and a fresh
 automated accessibility audit were not run in this cloud browser; its documented
 API lacks those simulation/viewport controls. No physical-phone scanning is claimed.
+
+## Local QR handoff, companion 0.2.1 (2026-10-24)
+
+The web TV handoff panel now renders the current fragment-only phone link as a
+local QR, while hiding and pausing the measurement patch. No QR service, runtime
+CDN, new permission or Android change is involved. Manual links remain available,
+including when an unusually long self-hosted URL exceeds the encoder's bounded
+capacity. Phone arrival still requires explicit patch confirmation and camera start.
+The pinned MIT encoder and reproduction instructions are documented in
+`companion/THIRD_PARTY.md`; its license remains in the deployed source.
+
+Pre-publication verification: 65/65 JavaScript tests, syntax checks and diff checks
+passed. Independent jsQR decoding passed all 154 synthetic cases: 11 patches × two
+languages × seven image variants (matrix, SVG rasterization, multiple sizes and
+rotation), plus a blank-image negative control. Reproduce with the optional
+`companion/test/qr-decode.mjs` instructions. These checks do not prove physical TV
+or iPhone scanning. Full Python suite: 747 tests, 743 passed, three skipped, one
+failure for the unchanged missing real-TV screenshot gate. Android was unchanged;
+its earlier successful build/lint/unit-test evidence is not a fresh build claim.
