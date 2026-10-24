@@ -118,10 +118,10 @@
                     android:id="@+id/tvSolatNextName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:text="SUBUH"
                     android:textColor="#FFFFFF"
-                    android:textSize="30sp"
+                    android:textSize="32sp"
                     android:fontFamily="@font/inter_semibold"
                     android:letterSpacing="0.08"
                     android:textAllCaps="true" />
@@ -131,41 +131,13 @@
                     android:id="@+id/tvSolatCountdown"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="4dp"
                     android:text="00:30:00"
                     android:textColor="#FFFFFF"
-                    android:textSize="44sp"
+                    android:textSize="48sp"
                     android:fontFamily="@font/inter_medium"
                     android:letterSpacing="0.02"
                     android:includeFontPadding="false" />
-
-                <!-- Next Prayer Target Time: e.g. "Pukul 04:11 WIB" -->
-                <TextView
-                    android:id="@+id/tvSolatTargetTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Pukul 04:11 WIB"
-                    android:textColor="#CBD5E1"
-                    android:textSize="13sp"
-                    android:fontFamily="@font/inter_medium"
-                    android:letterSpacing="0.04" />
-
-                <!-- Interval Progress Info: e.g. "Isya → Subuh" -->
-                <TextView
-                    android:id="@+id/tvSolatInterval"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/pill_prayer_inactive"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:text="Isya → Subuh"
-                    android:textColor="#94A3B8"
-                    android:textSize="11sp"
-                    android:fontFamily="@font/inter_regular" />
             </LinearLayout>
         </FrameLayout>
 
@@ -360,18 +332,6 @@
                         android:fontFamily="@font/inter_semibold" />
                 </LinearLayout>
             </LinearLayout>
-
-            <!-- Footer note -->
-            <TextView
-                android:id="@+id/tvPrayerFooter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Jadwal Sholat Kemenag RI • Kota Bekasi (WIB)"
-                android:textColor="#475569"
-                android:textSize="11sp"
-                android:fontFamily="@font/inter_regular"
-                android:letterSpacing="0.06" />
         </LinearLayout>
     </LinearLayout>
 

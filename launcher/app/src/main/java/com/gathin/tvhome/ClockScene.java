@@ -37,8 +37,6 @@ final class ClockScene {
     private final PrayerCircleTimerView circleTimer;
     private final TextView tvNextName;
     private final TextView tvCountdown;
-    private final TextView tvTargetTime;
-    private final TextView tvInterval;
 
     // Bottom schedule pills
     private final LinearLayout pillSubuh;
@@ -84,8 +82,6 @@ final class ClockScene {
         circleTimer = root.findViewById(R.id.prayerCircleTimer);
         tvNextName = root.findViewById(R.id.tvSolatNextName);
         tvCountdown = root.findViewById(R.id.tvSolatCountdown);
-        tvTargetTime = root.findViewById(R.id.tvSolatTargetTime);
-        tvInterval = root.findViewById(R.id.tvSolatInterval);
 
         pillSubuh = root.findViewById(R.id.pillSubuh);
         pillDzuhur = root.findViewById(R.id.pillDzuhur);
@@ -135,14 +131,6 @@ final class ClockScene {
 
         if (tvCountdown != null) {
             tvCountdown.setText(interval.countdownStr);
-        }
-
-        if (tvTargetTime != null) {
-            tvTargetTime.setText("Pukul " + interval.nextPrayerTimeStr + " WIB");
-        }
-
-        if (tvInterval != null) {
-            tvInterval.setText(interval.previousPrayerName + " → " + interval.nextPrayerName);
         }
 
         // Update times in schedule bar
