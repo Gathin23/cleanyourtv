@@ -44,6 +44,45 @@
 # NavigationActivity logs "onStop with slideoutState=false, finishing to prevent stuck menu" before the navigation
 # request is sent. Back at 1.0, Settings opens again with all 57 packages still disabled.
 
+# Additional AFTKRT / karat unit: Fire TV Stick 4K Max 2nd gen, Fire OS 8.1.7.4 (RS8174.3648N),
+# Android 11 / SDK 30, system incremental 0031877644420, boot-image fingerprint incremental 0031877644288,
+# kernel 5.10.43-android12-9-ge1cb3cb5ad98, armeabi-v7a app userspace. Report updated 2026-10-24.
+# Only the 22 packages recorded below were disabled without root on this unit, not the full 8.1.8.5 list.
+# Their state persisted through two instrumented reboot checks. On 2026-10-24 the owner also reported
+# continued trouble-free use and working configuration after reboot; duration is owner-reported, not timed.
+# Stock Home, native Settings, Appstore, keyboard, remote/Bluetooth, accounts, Alexa, casting, OTA and
+# screensaver services were retained during this no-root cleanup. Privacy Settings and Featured Content
+# autoplay were turned off through the native menus. Resolution stayed Auto and animation scales stayed stock;
+# the 0.5 animation issue above was not independently reproduced on this older build.
+# Amazon Kids, Amazon Music and Luna are owner choices; keep them if used. No measured speedup or playback/DRM
+# resolution claim. No third-party Home configuration is part of this report.
+# Every entry below already exists in the active list, so these commented records do not change what the
+# shared list disables. On 8.1.7.4, review the other active entries separately rather than treating them as tested.
+# Exact 22-package subset applied on the 8.1.7.4 unit:
+# com.amazon.tv.acr
+# com.amazon.hybridadidservice
+# com.amazon.shoptv.firetv.client
+# com.amazon.ceviche
+# com.amazon.dp.logger
+# com.amazon.client.metrics.api
+# com.amazon.tv.easyupgrade
+# com.amazon.perfc
+# com.amazon.tahoe
+# com.amazon.sneakpeek
+# com.amazon.storm.lightning.tutorial
+# com.amazon.wirelessmetrics.service
+# com.amazon.device.telemetry.emitter
+# com.amazon.minitv.android.app
+# com.amazon.tmm.tutorial
+# com.amazon.tv.developer.dataservice
+# com.amazon.kso.blackbird
+# com.amazon.shoptv.client
+# com.amazon.tv.releasenotes
+# com.amazon.gamehub
+# com.amazon.perfcollection
+# com.amazon.bueller.music
+#
+
 # Amazon telemetry, metrics, logs, usage and location reporting
 com.amazon.client.metrics.api
 # com.amazon.device.metrics                # protected by Fire OS
