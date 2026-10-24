@@ -1,0 +1,24 @@
+# Lista de paquetes a deshabilitar de forma segura en Haier MatrixTV BE (Android 14)
+# Todos los paquetes se deshabilitan con "pm disable-user --user 0", NUNCA se desinstalan.
+# 100% reversible con restore_haier.ps1
+
+# Telemetría y servicios IoT de Haier
+com.haierubic.usmartdevice
+com.haier.tvhousekeeper
+com.haier.emanual
+
+# Publicidad, recomendaciones patrocinadas y promociones en la pantalla de inicio
+com.haier.oemtabprovider
+com.haier.apps
+com.mediatek.android.leanbacklauncher.partnercustomizer
+com.google.android.partnersetup
+
+# Modos demo de tienda en segundo plano
+fusion.android.tv.demo
+
+# Telemetría de diagnóstico y crash reports
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Servicios pesados en segundo plano no requeridos
+com.google.android.play.games
