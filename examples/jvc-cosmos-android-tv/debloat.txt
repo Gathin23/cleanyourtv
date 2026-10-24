@@ -1,0 +1,64 @@
+# JVC (Vestel) Cosmos, Android TV 11 — Spain-market unit, same firmware as examples/toshiba-cosmos-android-tv
+# ro.product.model=Cosmos  ro.product.name=Cosmos170  ro.product.device=yeoksam  brand/manufacturer=Vestel
+# Fingerprint: Vestel/Cosmos170/yeoksam:11/RTOC.251019.001/14296264:user/release-keys
+# SDK 30, MediaTek, ro.config.low_ram=true, ro.adb.secure=1.
+#
+# The JVC badge does not decide the list: this set matches the Toshiba Cosmos fingerprint exactly, not
+# examples/jvc-android-tv-menlo (Jvc/BARTU_Jvc/menlo), which is a different Vestel board.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/jvc-cosmos-android-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/jvc-cosmos-android-tv/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher. Live TV app: com.mediatek.wwtv.tvcenter (never disable).
+#
+# Differences from the Toshiba Cosmos list:
+# - fusion.android.tv.demo is KEPT: on this unit it is the only receiver of
+#   com.mstar.android.intent.action.TV_INPUT_BUTTON (the remote's Input key), as on jvc-android-tv-menlo.
+# - Owner keeps YouTube, YouTube Music, Prime Video, Google Assistant (katniss), the USB media player,
+#   Chromecast (mediashell) and updates (com.vestel.tv.servicepatch, com.vestel.tv.rcupdater).
+# - Adds the harmless background services and the Vestel "speed up" cleaner from jvc-android-tv-menlo.
+#
+# Keep also: every com.mediatek.*, mediatek.factorymenu.ui, com.vestel.tv.service / backlight /
+# keycontroller / eib, com.vestel.overlay.*, com.google.android.tungsten.setupwraith, Play Store,
+# Play Services, Gboard, TTS. The uk.co.freeview.* pack ships already disabled on Spain-market units.
+#
+# Status: disabled in three batches on one TV on 2026-10-21 (the last block after launcher/ took Home), with
+# screenshots between batches; nothing came back after a reboot. Checked on the real remote by the owner:
+# Home, Input, the Netflix/YouTube/Prime buttons and Settings all work; Inputs menu lists HDMI 1-4, AV, VGA,
+# YPbPr and Live TV. Hours of real use, not days: treat it as a starting point.
+#
+# Quirks on this unit: screencap -p to /sdcard works (unlike jvc-android-tv-menlo); `cmd dreams` cannot start
+# the screensaver from the shell; location is off, so the launcher's network pill shows "Wi-Fi", not the SSID.
+
+# --- Vestel telemetry, cleaner and auto-installs ---
+com.vestel.vestelreporter                     # Vestel analytics/telemetry uploader
+com.vestel.tv.speedup                         # "speed up" cleaner
+android.autoinstalls.config.vestel.cosmos     # partner auto-preinstall config
+com.mstar.android.tv.disclaimercustomization  # disclaimer screen used only by first-run setup
+
+# --- Google services nobody asked for ---
+com.google.android.feedback                   # crash/feedback uploader to Google
+com.google.android.partnersetup               # partner/OEM attribution
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar      # calendar sync, on a TV
+com.google.android.videos                     # Google TV / Play Movies storefront (owner's choice)
+com.google.android.play.games                 # Play Games
+com.google.android.apps.nbu.smartconnect.tv   # Smart Connect
+com.mediatek.tv.freeviewplay                  # Freeview Play (UK) integration, dead weight in Spain
+
+# --- Background services nobody needs on a TV ---
+com.android.printspooler
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.providers.calendar
+com.android.dynsystem                         # Dynamic System Updates
+com.android.cts.ctsshim                       # Android test shim
+com.android.cts.priv.ctsshim                  # Android test shim
+
+# --- Only once launcher/ owns Home ---
+com.google.android.tvrecommendations          # home-screen recommendation rows
+com.google.android.leanbacklauncher.partnercustomizer  # partner rows/channels for the stock launcher
+com.google.android.backdrop                   # ambient screensaver (launcher's ClockDream replaces it)
+com.google.android.tvlauncher                 # disable LAST; disable.sh skips it until another app answers HOME
