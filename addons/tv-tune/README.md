@@ -38,6 +38,16 @@ reports its render size, which need not match the panel's physical pixel grid.
 Select and verify an SDR path before tonal checks. Android/OEM processing is not
 instrument-verified. Other inputs, picture presets, games and HDR need separate tests.
 
+## The companion is optional
+
+The installed Android app completes all five visual checks, records outcomes and
+keeps the local checklist/notes without a phone, account, browser or internet
+connection. Its separate phone-experiment entry is optional; using it is not a
+prerequisite for the TV-side guide. The app does not contact the companion or
+check whether it is available. The public web preview can be unavailable without
+preventing the installed TV guide from working. Building/downloading the source
+and optional browser companion is separate from offline use of the Android app.
+
 ## Permissions
 
 **Android app: none.** No `INTERNET`, camera, microphone, accessibility, overlay,
@@ -48,14 +58,42 @@ local checklist removes the app's saved observations and notes only.
 
 **Web companion:** asks the browser for camera permission only after Start camera.
 It explicitly requests no audio and releases tracks on Stop, background or exit.
-Camera images stay in browser memory. There is no backend, image upload, pairing
-server, analytics or storage of frames. Its content policy blocks network connections
-from scripts. Loading the page/assets still requires access to its hosting origin.
+Camera images stay in browser memory. The application has no data-collection backend,
+image upload, pairing server, analytics code or persistent storage of frames. Its
+content policy blocks script-initiated connections (`connect-src 'none'`). This does
+not prevent the initial document and static assets from being requested over HTTPS.
 
 The optional JSON download requires reviewing the report first. It allowlists camera
 control modes, render dimensions/frame rate, patch ID and numerical capture statistics.
 It excludes raw images, device/group IDs, camera labels, user agent, URLs and addresses.
 Inspect the preview before sharing even this limited information.
+
+### What is sent, and where
+
+- **Opening the public companion:** the browser requests the HTML, CSS, JavaScript
+  modules and artwork from `https://tv-tune-kalt2212.vercel.app/`, hosted by Vercel.
+  Vercel receives ordinary request metadata such as the connecting IP address,
+  requested URL (including the language/view query), and browser-supplied HTTP
+  headers. Hosting may process access/security logs. “No image uploads” does not
+  mean “no data is sent.” No retention period or zero-host-logging claim is made;
+  see [Vercel's privacy notice](https://vercel.com/legal/privacy-notice).
+- **Starting the camera and capturing:** permission is requested locally through
+  the browser, with audio disabled. Video frames and derived capture statistics
+  are processed in that browser. TV Tune does not send frames, patch selections,
+  camera capabilities or capture statistics to Vercel, GitHub or a pairing server.
+  It does not connect the phone to the TV; matching the patch is manual.
+- **Reviewing/downloading a report:** the JSON is created locally as a browser Blob
+  and downloaded only after Review and Download. Downloading is not an upload or
+  automatic share. The browser chooses its download destination, which may be
+  cloud-synchronised under the owner’s device settings. Any later sharing of that
+  file is a separate action by its owner.
+- **Following Source code or Read the proposal:** these optional links open GitHub,
+  which receives the normal navigation request. They use `noopener noreferrer`;
+  the companion does not attach captured data to the link.
+- **Self-hosting:** the chosen hosting origin receives page/asset requests instead
+  of the public Vercel origin. The same distinction between local capture processing
+  and ordinary hosting traffic applies. No third-party fonts or analytics are
+  included in the shipped page.
 
 ## Build from source
 

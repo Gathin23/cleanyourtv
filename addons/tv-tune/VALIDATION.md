@@ -232,3 +232,23 @@ was needed.
 - Post-build regression run: JavaScript 42/42 and syntax checks passed; complete Python
   suite 747 tests, 743 passed, three skipped, one missing-real-TV-screenshot failure.
   No APK remained under addons and no repository evidence gate was relaxed.
+
+### Maintainer feedback reconciliation, 2026-10-24
+
+[Maintainer comment](https://github.com/Gathin23/cleanyourtv/discussions/1140#discussioncomment-19163702)
+asks for the independent module card, explicit web data destinations and optional
+phone use with standalone TV checks. The manifest/module card and TV guide already
+satisfy the architectural boundaries; the README now states the offline/optional
+behaviour and separates Vercel HTTP request metadata from local camera processing,
+reviewed JSON downloads and optional GitHub navigation. It makes no zero-host-log
+or hosting-retention promise.
+
+Three new source-contract tests guard the Android permission/module-card boundary,
+static same-origin assets/CSP and absence of application networking/upload APIs.
+They are not a runtime traffic audit or a guarantee about provider logs. Existing
+export allowlist tests still cover exclusion of private fields. No runtime assets
+or Android implementation changed; web 0.1.3 does not need redeployment.
+
+JavaScript: 45/45 passed. Full Python suite: 747 tests, 743 passed, three skipped,
+one expected missing-real-TV-screenshot failure. The invitation to submit when ready
+is not a screenshot waiver; no PR was opened and no new Discussion reply was posted.
