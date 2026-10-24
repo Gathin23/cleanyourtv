@@ -304,5 +304,7 @@ Notes for models that have no tested list yet live in [`docs/devices/`](../docs/
 - [waipu.tv Stick](../docs/devices/waipu-tv-stick.md) (SEI Robotics `SEI700WP`, Amlogic, Android 11 `RTT0.211009.001.6958`): the firmware refuses every `pm disable*` ("This command is illegal!"), so eight packages are suspended and background-restricted instead; the launcher installs and survives a reboot, but the waipu app (the stock Home) comes up over it after a cold boot and cannot be stopped; the vendor key handler keeps the waipu-thek, Netflix and YouTube buttons working.
 - [Wanbo T6 Max](../docs/devices/wanbo-t6-max.md), Android 9 / SDK 28, firmware `20220419`: single-session three-package report, ADB advertised on 3333, stock Home and setupwraith kept enabled with a non-key-filtering window-change redirect, input-player package and explicit physical-test/reboot limits; no several-day debloat list.
 
+- [Acer AR55AR2851UDFL 55\"](../docs/devices/acer-ar55ar2851udfl.md), India, SCBC `R4` / Realtek `rtd2851m`, Android TV 14 `UKR1.260308` / `3272`: second unit near the AR55AR2851UDPRO example; 11 owner-approved packages disabled, Home and key functions checked after two warm reboots and one owner-reported full power-off; two days of testing, with package-state verification and longer follow-up pending, so no example list yet.
+
 To add your TV, see [CONTRIBUTING.md](../CONTRIBUTING.md). The quickest way to get a list is to
 run the prompt in [PROMPT.md](../PROMPT.md) and copy the packages your assistant disabled.
