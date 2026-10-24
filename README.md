@@ -541,8 +541,12 @@ and a wallpaper.
 <details>
 <summary><b>Launcher settings and the default home</b></summary>
 
-- Click **Settings** for the TV's own settings. Hold OK on it and choose **Launcher settings**, or click it
-  straight away with `launcher_settings_button`. The launcher's own page has these rows, top to bottom:
+- Click **Settings** for the TV's own settings. Hold OK on it for its menu: **Launcher settings** (with
+  `launcher_settings_button` a click opens those instead and the menu leaves the row out), **Native settings**
+  where the TV ships a settings app of its own beside Android's - Xiaomi China, TCL/FFALCON and Fire OS are
+  in `settings_fallback_components` - because that app holds pages Android's has no row for, such as
+  Xiaomi's Account & Security with the ADB switch; **Module cards** with `module_cards`; **Edit dock** with
+  `dock_row`; and **Reorder apps**. The launcher's own page has these rows, top to bottom:
   - **Reorder apps**, only with `launcher_settings_button`: OK picks an app up, the arrows move it, Back
     places it, and Back again finishes.
   - **Apps per row** 4, 5, 6 or 7; **Rows below dock** 0 to 3, how many rows of tiles stay visible under the
