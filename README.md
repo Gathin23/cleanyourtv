@@ -223,7 +223,7 @@ Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, JMGO, Magcubic, Portroni
 | Philips Google TV TA7 (TPV, PH3M_AL_T32, MediaTek), Brazil | Google TV 14 |
 | Philips R8G Google TV (MOKA, whitefield, Realtek RTD2851F), US | Google TV 14 |
 | Philips Smart 4K TV (Skyworth, eleonas, MediaTek), India | Google TV 14 |
-| Philips TPM191E (TP Vision, PH9M_EA_5599, MediaTek mt5887), Europe | Android TV 12 |
+| Philips TPM191E / 50PUS8505 (TP Vision, PH9M_EA_5599, MediaTek MT5887), Europe | Android TV 12 |
 | Polytron 2K (WLTV POLYTRON2K, hayward; Hisense/CVTE board, MediaTek mt5867), Indonesia | Android TV 11 |
 | Portronics Beem 470 Smart LED Projector (Allwinner H713, 1 GB), India | Android 11 |
 | PRISM+ Q65 Ultra 2026 QLED 4K AI Google TV (R10G, PRISMPLUS_FFM, MOKA, Realtek RTD2875 SoC, RTD6748 platform) | Google TV 14 |
