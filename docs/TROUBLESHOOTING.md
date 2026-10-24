@@ -757,6 +757,8 @@ handled go dead, the same trade without a `settings` write. Write back the exact
 printed; the empty list also unbinds TalkBack. Bisect, keycodes and limits:
 [the G09 note](devices/tcl-55p71b-g09-key-repeat.md).
 
+A [Sony KD-55X9000H PA-firmware follow-up](devices/sony-kd-55x9000h.md#later-remote-key-follow-up-24-october-2026) on Android 12 reproduced the same filter/repeat conflict with a personal fork. Its simultaneous kernel/callback capture saw held Volume in hardware but neither Volume direction in the helper. A separate saved-layout experiment retained Apps and native Volume without key filtering; it requires that fork's companion and Library entry, reserves an application-launch category, and has not been tested across restart/sleep/reconnect. It is not a stock upstream option.
+
 ## One app refuses to play while the rest of the TV is online
 
 An ad-blocking Private DNS is a common addition and the resolver answering is not proof that playback
