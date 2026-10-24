@@ -1,0 +1,67 @@
+# TCL 43A30 sold in Indonesia: reports as "Smart TV Pro", device G09, product G09_4K_GB, Amlogic T5M (t5m),
+# Google TV on Android 12 (SDK 31), firmware STT2.230203.001.AS24 release-keys, security patch 2025-12-05, 2 GB RAM.
+# TCL software label on the box/menu: V8-0013T02-LF1V157.0008111. Same firmware as examples/tcl-g09-google-tv,
+# from which this list is copied; the owner keeps Chromecast, the USB media player and the phone remote service.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43a30-g09-id/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43a30-g09-id/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV app: com.tcl.tv. Inputs: com.tcl.tvinput.
+# Applied in one run on 2026-10-23 with screenshots after the debloat, after the launcher install and after
+# a reboot (Home came back to the launcher, Wi-Fi stayed, the Inputs menu lists HDMI 1-3, AV and Live TV).
+# Tested one day so far, shorter than CONTRIBUTING.md asks; the owner will report anything that breaks.
+#
+
+# TCL telemetry and analytics
+com.tcl.ttvs                           # TCL BI/awareness/identifier services; see the README on TvSettings without it
+com.tcl.logkit                         # log capture and upload
+com.tcl.interactive                    # TCL TIAS background service
+com.google.android.feedback
+# com.graymatrix.did                     # device analytics (data app; on the AS23 unit)   [KEPT: not installed on this unit]
+# com.mirakulo.astrotv.service is Ginga, the ISDB-Tb broadcast interactive-TV engine (AstroTVService,
+# com.tcl.tv.ginga.PERMISSION), not analytics. TvSettings reads Enable_ginga=false on this set, so it
+# frees nothing here; where Ginga is on, disabling it turns broadcasters' interactive apps off.
+com.mirakulo.astrotv.service           # Ginga (ISDB-Tb broadcast apps), not analytics
+
+# TCL content, ads and promos
+com.tcl.channelplus                    # TCL Live FAST channels, also removes them from Live TV
+com.tcl.waterfall.overseas             # TCL content "waterfall" recommendations
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.messagebox                     # TCL pushed messages and promos
+android.autoinstalls.config.google.gtvpai  # partner auto-installs
+# com.tcl.smartlink.core                 # bundles a silent app installer   [KEPT: not installed on this unit]
+
+# Background services
+com.tcl.guard                          # TGuard: device-use tracking, memory cleaner
+com.tcl.smartalexa                     # Alexa client (AS23 unit; keep it if you use Alexa)
+com.tcl.useragreement                  # EULA/privacy screens (AS23 unit)
+com.tcl.initsetup                      # TCL first-run setup incl. SambaTV ACR hooks; re-enable before rescanning channels
+com.tcl.usercenter                     # TCL account sign-in
+com.tcl.exhibit                        # store demo
+com.tcl.esticker                       # store demo stickers
+com.tcl.hotelmenu                      # hotel mode
+# com.google.android.tv.remote.service pairs phone remote apps (_androidtvremote2._tcp, 6466 pairing,
+# 6467 remote) and bridges the physical remote's mic (docs/TROUBLESHOOTING.md). A phone's virtual-remote.kl
+# has no Settings/Info/Guide/Menu or channel keys: those presses arrive as KEYCODE_UNKNOWN.
+# com.google.android.tv.remote.service   # phone remote apps and the mic too; pm enable restores it   [KEPT: phone remote app + mic (owner uses it)]
+
+# Preloaded apps
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide
+com.tcl.gamebar                        # re-enable for the console game-mode overlay
+com.tcl.UpdatePeripheral               # re-enable to update a TCL soundbar
+com.tcl.hearaid                        # hearing test / volume adaptation
+com.google.android.marvin.talkback
+com.google.android.play.games
+com.google.android.videos              # Google TV / Play Movies storefront
+com.google.android.youtube.tvmusic
+com.google.android.apps.tv.dreamx      # ambient screensaver; use the launcher's Clock screensaver
+
+# Off by choice
+# com.google.android.apps.mediashell     # Chromecast built-in   [KEPT: Chromecast built-in (owner uses it)]
+# com.tcl.ui_mediaCenter                 # USB media player   [KEPT: USB media player (owner uses it)]
+
+# Second Home claimant: disable it once the new launcher is Home (disable.sh checks the Wi-Fi owner first)
+com.google.android.tungsten.setupwraith  # setup wizard, claims HOME after launcherx is disabled

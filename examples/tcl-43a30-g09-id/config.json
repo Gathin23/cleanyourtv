@@ -1,0 +1,23 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "in.startv.hotstar.dplus.tv",
+    "com.vidio.android.tv",
+    "id.visionplus.android.atv"
+  ],
+  "hidden_apps": [
+    "com.tcl.tv",
+    "com.tcl.suspension",
+    "com.plexapp.android",
+    "com.tcl.browser",
+    "com.xiaomi.smarthome.tv.global4",
+    "com.tcl.dashboard",
+    "com.ophion.serpento"
+  ],
+  "live_tv_package": "com.tcl.tv",
+  "columns": 6,
+  "rows_below_dock": 0,
+  "key_filter": false
+}
