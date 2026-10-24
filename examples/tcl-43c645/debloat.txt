@@ -5,6 +5,9 @@
 #   TCL 60C635 (product G03_4K_GB, device BeyondTV4), Realtek rtd288o, 2 GB, security patch 2024-12-05,
 #   Spain, Wi-Fi. Every group except 3, com.tcl.android.webview and com.tcl.keyhelp, plus launcherx,
 #   tested 2026-10-20.
+#   TCL 50C635 (product G03_4K_GB, device BeyondTV4), Realtek rtd288o, 2 GB, build RP1A.200622.001 (AR11),
+#   Spain, Ethernet. Groups 1, 1b, 2 except webview/keyhelp, 4, launcherx, AdGuard Private DNS,
+#   tested 2026-10-24.
 # List derived from examples/tcl-65c725 (same Android 11 TCL platform), checked against both units' packages.
 #
 # 43C645: applied in three batches with a screenshot after each: Ethernet stayed up, Home and the D-pad, the

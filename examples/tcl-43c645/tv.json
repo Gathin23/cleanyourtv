@@ -1,6 +1,6 @@
 {
-  "tv": "TCL 43C645 (Smart TV Pro, Realtek RTD2851 / R51MT05, V8-R51MT05-LF1V652); also TCL 60C635 (G03_4K_GB, Realtek rtd288o), Spain",
+  "tv": "TCL 43C645 (Smart TV Pro, Realtek RTD2851 / R51MT05, V8-R51MT05-LF1V652); also TCL 50C635 / 60C635 (G03_4K_GB, Realtek rtd288o), Spain",
   "os": "Google TV launcher on Android TV 11",
   "brand": "TCL",
-  "notes": "TCL BI/TTVS/logkit analytics, promos and content rows, TCL Live FAST channels, Google partner plumbing, setupwraith (takes HOME once the stock launcher is off), unused preloads; voice assistant, firmware updater and Miracast off by choice; Chromecast kept; Netflix/YouTube/Prime buttons fixed with app_keys 4062/4065/4099, TCL (4020) and gear (4077) buttons open Settings; config.json, build-and-install and restore scripts; tested on a real unit of each model"
+  "notes": "TCL BI/TTVS/logkit analytics, promos and content rows, TCL Live FAST channels, Google partner plumbing, setupwraith (takes HOME once the stock launcher is off), unused preloads; voice assistant, firmware updater and Miracast off by choice; Chromecast kept; Netflix/YouTube/Prime buttons fixed with app_keys 4062/4065/4099, TCL (4020) and gear (4077) buttons open Settings; config.json, build-and-install and restore scripts; tested on real 43\", 50\" and 60\" units"
 }

@@ -1,13 +1,14 @@
-# TCL G03 / BeyondTV4 (Google TV 11): 43C645, 60C635
+# TCL G03 / BeyondTV4 (Google TV 11): 43C645, 50C635, 60C635
 
 One list for TCL's G03 / BeyondTV4 firmware `V8-R51MT05-LF1V652` (`AR11`), the same build as
-`docs/devices/tcl-75c63b.md`. Both TVs report `ro.product.model` `Smart TV Pro`.
+`docs/devices/tcl-75c63b.md`. All units report `ro.product.model` `Smart TV Pro`.
 
 ## Tested models
 
 | Model | Tested | SoC / RAM | Network | Groups applied |
 |---|---|---|---|---|
 | TCL 43C645 | 2026-10-19 | Realtek RTD2851 / R51MT05 | Ethernet | 1, 1b, 2, 3 |
+| TCL 50C635 (`G03_4K_GB`, Spain) | 2026-10-24 | Realtek `rtd288o`, 2 GB | Ethernet | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, plus launcherx via `build-and-install.sh` |
 | TCL 60C635 (`G03_4K_GB`, Spain) | 2026-10-20 | Realtek `rtd288o`, 2 GB | Wi-Fi | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, 5, plus launcherx via `build-and-install.sh` |
 
 Groups 4 and 5 have not been run on a 43C645 yet, nor group 3, webview or keyhelp on a 60C635.
