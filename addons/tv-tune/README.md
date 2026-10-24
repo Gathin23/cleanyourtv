@@ -136,6 +136,25 @@ On that computer, open `http://127.0.0.1:8765/` for the phone-style interface,
 `?view=tv` for the manually controlled presenter, and `?lang=en` for English.
 The default UI is Spanish. There are no npm dependencies or build step.
 
+### Keep the same patch when moving between screens
+
+The web presenter provides a phone link for the currently selected patch. Opening
+its handoff panel pauses the pattern so the instructions cannot cover an active
+uniform patch. Close it and resume the pattern before comparing/capturing. The phone
+view can open that same patch on a display. Links preserve English/Spanish and use
+an allowlisted patch ID in the URL fragment, for example `#patch=grey-128`.
+The fragment is not part of the HTTP request sent to the hosting provider.
+
+A link selects a patch; it does not pair devices, track later changes on the TV,
+start the camera or confirm what the camera sees. Always compare the visible patch
+ID/RGB on both screens and confirm manually before capture. A previously copied
+link remains a snapshot of the patch selected when copied, not a live connection.
+Unknown patch IDs fall back safely to the default patch.
+
+Copy is an explicit action and never reads the clipboard. If clipboard writing is
+unavailable, use the visible link instead. Clipboard synchronisation or sending the
+link with another app follows the owner's device settings and choices.
+
 With the local server running and the optional `agent-browser` CLI available, run
 `bash addons/tv-tune/companion/test/browser-smoke.sh` from the repository root. It uses
 a separate synthetic camera session and verifies sampling-frame alignment, capture,

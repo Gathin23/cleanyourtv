@@ -1,20 +1,30 @@
 import { inspectCapabilities, exportReport } from './probe.js';
 import { createCameraController, captureFrames, pixelSample, sampleRegion, previewRegion } from './capture.js';
-import { PATCHES, presenterState, patchRectangle } from './patterns.js';
+import { PATCHES, presenterState, patchRectangle, patchFromFragment, patchLink } from './patterns.js';
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search), english = params.get('lang') === 'en';
 const say = (es, en) => english ? en : es;
+const homeLinks = [...document.querySelectorAll('a[href="?"]')];
+const tvLinks = [...document.querySelectorAll('.tv-link')];
+let selectedPatch = patchFromFragment(location.hash);
+const updateLinks = patch => {
+  selectedPatch = patch;
+  homeLinks.forEach(link => { link.href = patchLink('phone', english, patch.id); });
+  tvLinks.forEach(link => { link.href = patchLink('tv', english, patch.id); });
+};
+const rememberPatch = view => {
+  try { history.replaceState(history.state, '', patchLink(view, english, selectedPatch.id)); } catch { /* Handoff still works without history access. */ }
+};
 if (english) {
   document.documentElement.lang = 'en';
   document.querySelectorAll('[data-en]').forEach(element => { element.textContent = element.dataset.en; });
 }
 $('language').textContent = english ? 'ES' : 'EN';
 $('language').addEventListener('click', () => {
-  params.set('lang', english ? 'es' : 'en'); location.search = params.toString();
+  location.href = patchLink(params.get('view'), !english, selectedPatch.id);
 });
-document.querySelectorAll('.tv-link').forEach(link => { if (english) link.href = '?view=tv&lang=en'; });
-document.querySelectorAll('a[href="?"]').forEach(link => { if (english) link.href = '?lang=en'; });
+updateLinks(selectedPatch);
 
 if (params.get('view') === 'tv') setupPresenter();
 else setupPhone();
@@ -22,15 +32,49 @@ else setupPhone();
 function setupPresenter() {
   document.body.dataset.view = 'tv'; $('phone-view').hidden = true; $('tv-view').hidden = false;
   const state = presenterState(performance.now());
+  let handoffOpen = false;
+  const setHandoffOpen = open => {
+    handoffOpen = open; $('handoff-panel').hidden = !open;
+    $('handoff-toggle').setAttribute('aria-expanded', String(open));
+    $('handoff-toggle').textContent = open ? say('Cerrar enlace', 'Close link') : say('Enlace al móvil', 'Phone link');
+  };
+  state.index = PATCHES.indexOf(selectedPatch);
   const render = () => {
     const patch = PATCHES[state.index], rect = patchRectangle(innerWidth, innerHeight);
+    updateLinks(patch);
+    $('tv-patch').hidden = handoffOpen;
+    const handoffUrl = new URL(patchLink('phone', english, patch.id), location.href);
+    handoffUrl.username = ''; handoffUrl.password = '';
+    const phoneUrl = handoffUrl.href;
+    if ($('phone-link').href !== phoneUrl) $('handoff-status').textContent = '';
+    $('phone-link').href = phoneUrl; $('phone-link').textContent = phoneUrl;
+    $('handoff-patch').textContent = `${patch.id} · RGB ${patch.rgb.join(' / ')}`;
     Object.assign($('tv-patch').style, { width: `${rect.size}px`, height: `${rect.size}px`,
       left: `${rect.left}px`, top: `${rect.top}px`, backgroundColor: state.paused ? '#252525' : `rgb(${patch.rgb.join(',')})` });
     $('tv-patch-id').textContent = state.paused ? say('En pausa', 'Paused') : patch.id;
     $('tv-code').textContent = state.paused ? say('Pulsa una tecla para volver.', 'Press a key to resume.') : `RGB ${patch.rgb.join(' / ')} · ${innerWidth} × ${innerHeight}`;
     $('tv-status').textContent = say('Confirmación manual en el móvil · Sin sincronización automática', 'Manually confirm the ID on the phone · No automatic synchronisation');
   };
-  const move = delta => { state.move(delta, performance.now()); render(); };
+  const move = delta => { setHandoffOpen(false); state.move(delta, performance.now()); render(); rememberPatch('tv'); };
+  $('handoff-toggle').addEventListener('click', () => {
+    setHandoffOpen(!handoffOpen); state.pause(); render();
+  });
+  const restorePatch = () => {
+    state.index = PATCHES.indexOf(patchFromFragment(location.hash));
+    state.pause(); render();
+  };
+  window.addEventListener('hashchange', restorePatch);
+  window.addEventListener('popstate', restorePatch);
+  $('copy-phone-link').addEventListener('click', async () => {
+    const link = $('phone-link').href;
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(link);
+      if ($('phone-link').href === link) $('handoff-status').textContent = say('Enlace copiado para este patrón. No se actualiza si cambias de patrón.', 'Link copied for this patch. It will not update if you change patches.');
+    } catch {
+      if ($('phone-link').href === link) $('handoff-status').textContent = say('Selecciona y copia el enlace visible, o ábrelo. La copia automática no está disponible.', 'Select and copy the visible link, or open it. Automatic copying is unavailable.');
+    }
+  });
   $('previous').addEventListener('click', () => move(-1));
   $('next').addEventListener('click', () => move(1));
   $('fullscreen').addEventListener('click', async () => {
@@ -43,7 +87,8 @@ function setupPresenter() {
     const directions = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 };
     if (event.key in directions) { event.preventDefault(); move(directions[event.key]); }
     else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); move(0); }
-    else if (event.key === 'Escape' && !document.fullscreenElement) location.href = english ? '?lang=en' : '?';
+    else if (event.key === 'Escape' && handoffOpen) { setHandoffOpen(false); render(); $('handoff-toggle').focus(); }
+    else if (event.key === 'Escape' && !document.fullscreenElement) location.href = patchLink('phone', english, selectedPatch.id);
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { state.pause(); render(); } });
   window.addEventListener('resize', render);
@@ -54,12 +99,19 @@ function setupPresenter() {
   window.addEventListener('pagehide', () => {
     clearInterval(interval); interval = null; state.pause(); render();
   });
-  window.addEventListener('pageshow', startTimer);
+  window.addEventListener('pageshow', () => {
+    if (patchFromFragment(location.hash).id !== selectedPatch.id) restorePatch();
+    startTimer();
+  });
   startTimer();
   render();
 }
 
 function setupPhone() {
+  $('camera-jump').addEventListener('click', event => {
+    event.preventDefault(); $('camera-section').scrollIntoView();
+    $('camera-section').focus({ preventScroll: true });
+  });
   let ready = false, capturing = false, abort = null, report = null;
   const preview = $('preview'), canvas = document.createElement('canvas');
   const previewBox = preview.parentElement, reticle = previewBox.querySelector('.reticle');
@@ -119,7 +171,8 @@ function setupPhone() {
     const option = document.createElement('option'); option.value = patch.id; option.textContent = `${patch.id} · RGB ${patch.rgb.join('/')}`;
     $('patch').append(option);
   }
-  $('patch').value = 'grey-128';
+  $('patch').value = selectedPatch.id;
+  $('confirm').checked = false;
   $('start').addEventListener('click', () => { void controller.start(preview); });
   const stop = () => { abort?.abort(); capturing = false; controller.stop(); $('confirm').checked = false; updateButtons(); };
   $('stop').addEventListener('click', stop);
@@ -130,7 +183,20 @@ function setupPhone() {
     }
     updateButtons();
   });
-  $('patch').addEventListener('change', () => { abort?.abort(); $('confirm').checked = false; report = null; $('results').hidden = true; updateButtons(); });
+  const changePatch = () => {
+    abort?.abort(); $('confirm').checked = false; report = null;
+    $('results').hidden = true; $('report-preview').hidden = true; $('download').disabled = true;
+    const patch = PATCHES.find(p => p.id === $('patch').value) || PATCHES[4];
+    $('patch').value = patch.id; updateLinks(patch); updateButtons();
+    status(say('Patrón seleccionado. Comprueba el ID y RGB en la tele y confirma antes de capturar.', 'Patch selected. Check the ID and RGB on the TV and confirm before capturing.'));
+  };
+  $('patch').addEventListener('change', () => { changePatch(); rememberPatch('phone'); });
+  const restorePatch = () => {
+    if (location.hash === '#camera-section') return;
+    $('patch').value = patchFromFragment(location.hash).id; changePatch();
+  };
+  window.addEventListener('hashchange', restorePatch);
+  window.addEventListener('popstate', restorePatch);
   $('capture').addEventListener('click', async () => {
     if (!ready || capturing || !$('confirm').checked || !context) return;
     capturing = true; abort = new AbortController(); const signal = abort.signal;
@@ -178,7 +244,7 @@ function setupPhone() {
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
   window.addEventListener('pagehide', () => { stop(); resizeObserver?.disconnect(); });
-  window.addEventListener('pageshow', () => { resizeObserver?.observe(previewBox); updateOverlay(); });
+  window.addEventListener('pageshow', () => { restorePatch(); resizeObserver?.observe(previewBox); updateOverlay(); });
   if (!isSecureContext || !navigator.mediaDevices?.getUserMedia) {
     $('start').disabled = true;
     status(!isSecureContext ? errors.secure_origin_required : errors.camera_unavailable, true);

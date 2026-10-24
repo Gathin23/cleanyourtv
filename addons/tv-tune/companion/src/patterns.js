@@ -30,3 +30,19 @@ export function patchRectangle(width, height) {
   const size = Math.min(Math.sqrt(width * height * 0.1), width, height);
   return { size, left: (width - size) / 2, top: (height - size) / 2 };
 }
+
+/** Fragment-only handoff: patch choice is never added to an HTTP query. */
+export function patchFromFragment(fragment = '') {
+  const params = new URLSearchParams(String(fragment).replace(/^#/, ''));
+  const ids = params.getAll('patch');
+  return (ids.length === 1 && PATCHES.find(patch => patch.id === ids[0])) || PATCHES[4];
+}
+
+/** Build a same-page path from allowlisted values, never arbitrary URL parameters. */
+export function patchLink(view, english, patchId) {
+  const patch = PATCHES.find(p => p.id === patchId) || PATCHES[4];
+  const query = new URLSearchParams();
+  if (view === 'tv') query.set('view', 'tv');
+  if (english) query.set('lang', 'en');
+  return `?${query}#patch=${patch.id}`;
+}

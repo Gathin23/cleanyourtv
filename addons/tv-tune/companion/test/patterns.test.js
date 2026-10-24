@@ -29,3 +29,15 @@ test('normal_tv_patch_occupies_ten_percent_of_the_render_surface', () => {
   assert.equal(rect.top + rect.size / 2, 540);
   assert.throws(() => patchRectangle(0, 100), /size/i);
 });
+
+test('fragment_handoff_accepts_only_one_known_patch_and_never_echoes_unknown_data', async () => {
+  const p = await import('../src/patterns.js');
+  for (const patch of PATCHES) assert.equal(p.patchFromFragment(`#patch=${patch.id}`).id, patch.id);
+  for (const hash of ['', '#camera-section', '#patch=unknown', '#patch=red&patch=blue', '#patch=%E0%A4%A', '#patch=<script>']) {
+    assert.equal(p.patchFromFragment(hash).id, 'grey-128');
+  }
+  assert.equal(p.patchLink('phone', true, 'red'), '?lang=en#patch=red');
+  assert.equal(p.patchLink('tv', false, 'blue'), '?view=tv#patch=blue');
+  assert.equal(p.patchLink('tv', true, 'https://evil.example/'), '?view=tv&lang=en#patch=grey-128');
+  assert.equal(p.patchLink('phone', false, 'black'), '?#patch=black');
+});

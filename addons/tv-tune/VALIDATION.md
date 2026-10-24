@@ -252,3 +252,36 @@ or Android implementation changed; web 0.1.3 does not need redeployment.
 JavaScript: 45/45 passed. Full Python suite: 747 tests, 743 passed, three skipped,
 one expected missing-real-TV-screenshot failure. The invitation to submit when ready
 is not a screenshot waiver; no PR was opened and no new Discussion reply was posted.
+
+### Patch handoff milestone (web 0.2.0)
+
+- TV and phone links now carry one allowlisted patch ID in the URL fragment and
+  preserve language. The receiving phone preselects the patch without starting its
+  camera or confirming the observed TV. Fragment data is not sent in HTTP requests.
+- The presenter exposes a copyable phone link. Copy is user-triggered, never reads
+  the clipboard and has a visible-link fallback; stale copy completion cannot claim
+  the newly selected patch was copied. Generated links strip credentials and unknown
+  query fields from self-hosted URLs. A copied link is a snapshot, not synchronisation.
+- Opening the handoff panel pauses/hides the uniform patch. Closing it leaves the
+  presenter paused until explicitly resumed, avoiding instruction overlap with an
+  active patch. History/fragment changes invalidate capture confirmation and cancel
+  in-flight capture. Jumping to the camera section does not erase the chosen patch.
+- Initial feature tests failed on the prior implementation. Regression coverage also
+  catches anchor navigation resetting the patch, malformed/duplicate IDs, history
+  races, clipboard denial and handoff-panel state. DOM simulations are not camera
+  or rendered-layout evidence. Pure modules retain 100% line / 93.38% branch coverage;
+  dynamically executed application DOM wiring is excluded from that coverage figure.
+- Android application code is unchanged; its prior verified build/lint result applies.
+  No Android permissions, launcher changes, backend or new runtime dependencies.
+
+Catalogue preparation: a non-mutating merge simulation against upstream main
+`eb0131a32fd8567086f39002f1782f7c1b078ca6` found an add-on-table conflict caused by our
+new row bordering an upstream edit. Moving only the unchanged TV Tune row after
+Weather resolves that conflict in the simulation. No upstream merge was performed,
+no unrelated rows were changed, and the real-TV tested-on/screenshot gate remains.
+
+Pre-publication checks: 59/59 JavaScript/source-contract tests and syntax/shell checks
+passed. Full Python suite: 747 tests, 743 passed, three skipped, one expected failure
+for the missing real-TV screenshot. Independent review found no remaining blocking
+issues. Keyboard focus is preserved when jumping to camera controls or closing the
+handoff panel with Escape. Live browser verification is recorded after deployment.

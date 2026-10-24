@@ -9,6 +9,15 @@ export AGENT_BROWSER_ARGS='--use-fake-device-for-media-stream,--use-fake-ui-for-
 browser() { agent-browser --session "$tv_tune_session" "$@"; }
 trap 'browser close >/dev/null 2>&1 || true' EXIT
 
+browser open "$tv_tune_base/?view=tv&lang=en#patch=blue"
+browser eval '(() => { if(document.querySelector("#tv-patch-id").textContent!=="blue")throw Error("Presenter ignored patch fragment");const link=new URL(document.querySelector("#phone-link").href);if(link.hash!=="#patch=blue"||link.searchParams.has("patch"))throw Error("Patch must stay in fragment");return "Patch-specific presenter link is fragment-only"; })()'
+browser click '#handoff-toggle'
+browser eval '(() => { if(!document.querySelector("#tv-patch").hidden||document.querySelector("#tv-patch-id").textContent!=="Paused")throw Error("Handoff chrome covers an active patch");return "Handoff hides and pauses measurement field"; })()'
+browser click '#phone-link'
+browser wait '#start'
+browser eval '(() => { if(document.querySelector("#patch").value!=="blue"||document.querySelector("#confirm").checked||document.querySelector("#preview").srcObject)throw Error("Unsafe or mismatched phone handoff");return "Phone preselects blue without camera or confirmation"; })()'
+browser click '#camera-jump'
+browser eval '(() => { if(location.hash!=="#patch=blue"||document.querySelector("#patch").value!=="blue")throw Error("Camera section jump lost patch");return "Camera section preserves patch"; })()'
 browser open "$tv_tune_base/?lang=en"
 browser eval '(() => { if (document.querySelector("#preview").srcObject) throw Error("Camera started without consent"); return "No automatic camera start"; })()'
 browser click '#start'
