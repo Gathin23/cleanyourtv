@@ -140,9 +140,10 @@ serials, account information or private device names.
   is an application test failure or a browser pass. No physical camera or TV was used.
 - The initial Python run without adb-shell discovered 744 tests (739 passed, four
   skipped, one screenshot failure). After installing tools/requirements.txt in an
-  isolated environment, the complete suite ran 747 tests: 734 passed, twelve skipped
-  and one failed for the missing real-TV screenshot. Sandbox socket restrictions
-  and optional trace prerequisites explain skips; no test was weakened.
+  isolated environment, then adding Pillow for optional image checks, the final
+  suite ran 747 tests: 743 passed, three skipped and one failed for the missing
+  real-TV screenshot. Skips were the main-branch-only model count, a non-loopback
+  network-interface check and an optional recorded Perfetto trace. No test was weakened.
 - [MEASUREMENT_PLAN.md](MEASUREMENT_PLAN.md) adds a proposed reference-instrument
   protocol with held-out data, uncertainty and preregistered engineering limits.
   No study was performed and no accuracy or automatic-correction claim was added.
@@ -156,3 +157,21 @@ serials, account information or private device names.
   and approximately 10% patch area. Fullscreen did not enter in that environment.
   Synthetic camera configuration and automated accessibility injection were not
   available, so the prior full browser smoke/accessibility results were not rerun.
+
+### Web 0.1.2 publication verification
+
+- Code commit: `75b65a21a72a74414d7f803db0a77dbe810070b1`, verified as the remote
+  `feat/tv-tune` head after an atomic expected-head update.
+- Production deployment: `dpl_J12NxTRQ4uMUvkSpCsN7gvaskaKg`, READY, with
+  https://tv-tune-kalt2212.vercel.app/ assigned and no alias error.
+- Only the seven public static assets and repository MIT LICENSE were deployed.
+  Every public response returned 200 over normal HTTPS and matched source SHA-256,
+  without authentication, cookies or protection bypass.
+- GitHub reported zero workflow runs, check runs and commit statuses for this commit;
+  this is no CI evidence, not a green CI result.
+- Cloud Chromium confirmed Enter-based patch navigation and actual browser Back
+  restoration: the presenter returned Paused and resumed the preserved patch without
+  advancing. This was actual UI/navigation, not injected page events.
+- Live inactivity protection passed after actual Back restoration: resumed grey-192
+  at 11:48:21 UTC and observed Paused at 11:50:45 UTC, without clock/event injection.
+  This validates timeout behaviour in that cloud browser, not physical TV operation.
