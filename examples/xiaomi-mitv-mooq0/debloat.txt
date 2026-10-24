@@ -5,8 +5,12 @@
 # here disabled the same, and the "optional, by choice" mirroring/media apps below were additionally
 # disabled (wfdsinkhelperservice, milinkservice, smartshare, mitvplus, videos, youtube.tvmusic,
 # mediaexplorer, videoplayer) with Netflix/YouTube/VieON still playing afterwards. On that unit the
-# remote's Input/Source button sends KEYCODE_MEDIA_RECORD (kernel KEY_RECORD), not KEYCODE_TV, so the
-# launcher's InputKeyService must handle KEYCODE_MEDIA_RECORD for the Input button to open the menu.
+# remote's Input/Source button sends KEYCODE_MEDIA_RECORD (kernel KEY_RECORD), not KEYCODE_TV, so
+# InputKeyService does not catch it by default. To make the button open the launcher's Inputs menu, list
+# 130 (KEYCODE_MEDIA_RECORD) in input_key_keycodes and turn handle_view_inputs on (config.xml, or
+# "input_key_keycodes": [130], "handle_view_inputs": true in a theme's config.json), then build with
+# INPUT_KEY_SERVICE=1. Checked on the firmware 5135 unit: pressed inside another app, the button opens
+# the launcher's Inputs menu (Home comes to the front first).
 #
 # ---- Android TV 11 variant: Xiaomi Mi TV P1 43" (MiTV-MOOQ0, croods, EU) ----
 # Firmware RTM4.220307.164.8835 (2026-10). The selected subset was applied and the TV remained
