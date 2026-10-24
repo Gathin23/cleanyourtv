@@ -1,0 +1,76 @@
+# TCL G08_4K_GB ("Smart TV Pro", 4K), Google TV, Android 14 / SDK 34, firmware UTT2.250416.001 AU02
+# Region: zh-TW. 154 packages installed, none disabled at the time this list was written.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g08-4k-gb/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g08-4k-gb/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# This TV needs TWO packages disabled before the custom launcher can own the Home key,
+# plus one role grant. See the LAUNCHER REPLACEMENT section at the bottom.
+
+# --- TCL telemetry / analytics -------------------------------------------------
+com.tcl.logkit                         # TCL logging + telemetry
+
+# --- Google telemetry / ads ----------------------------------------------------
+com.google.android.feedback            # "send feedback" service
+com.google.android.partnersetup        # carrier/partner customisation on first boot
+com.android.adservices.api             # Privacy Sandbox ads API (no use on a TV)
+com.android.ondevicepersonalization.services   # on-device ad personalisation
+com.android.federatedcompute.services  # federated learning (telemetry)
+
+# --- TCL content rows, promos, demo/store apps ---------------------------------
+com.tcl.waterfall.overseas             # TCL content waterfall / recommendation feed
+com.tcl.dashboard                      # TCL dashboard
+com.tcl.exhibit                        # "T-Exhibition" store/demo app
+com.tcl.tv.tclhome_passive             # passive home content
+com.tcl.partnercustomizer              # partner skin/customisation
+com.tcl.interactive                    # TCL interactive services
+com.tcl.channelplus                    # TCL channel promo
+com.tcl.esticker                       # stickers
+com.tcl.ocean.instructions             # e-manual / instructions
+com.tcl.repairguide                    # repair guide
+com.tcl.t_solo                         # "listen alone" Bluetooth mode
+com.tcl.hotelmenu                      # hotel mode menu
+com.tcl.useragreement                  # EULA screen
+tv.mopa.ginga                          # Ginga interactive-TV middleware (Brazil only)
+
+# --- Streaming apps not used (confirmed) ---------------------------------------
+com.netflix.ninja
+com.netflix.tokenmanager
+com.amazon.amazonvideo.livingroom
+
+# --- Casting: AirPlay kept, everything else off --------------------------------
+com.tcl.miracast                       # Miracast
+com.tcl.magiconnectfree                # TCL MagicConnect screen mirroring
+com.google.android.tv.remote.service   # Google TV phone-app virtual remote
+# KEPT on purpose: com.tcl.airplay2, com.mediatek.AirplayAPK, com.mediatek.airplaydaemon
+
+# --- Voice assistant not used (confirmed) --------------------------------------
+com.tcl.eva                            # TCL voice assistant. Note: this TV has no Google
+                                       # Assistant (com.google.android.katniss is not installed).
+
+# --- Android modules with no purpose on a TV -----------------------------------
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.uwb.resources              # no UWB radio
+com.android.cameraextensions           # no camera
+com.android.printspooler               # no printing
+com.android.wallpaperbackup
+com.google.android.syncadapters.calendar   # calendar sync
+
+# --- LAUNCHER REPLACEMENT (required on this firmware) --------------------------
+# The stock Google TV launcher.
+com.google.android.apps.tv.launcherx
+#
+# ALSO REQUIRED: com.google.android.tungsten.setupwraith
+#   Its RecoveryActivity declares CATEGORY_HOME with priority=1, deliberately just above the
+#   default (0), so it beats any third-party launcher. On this firmware none of the normal
+#   routes work: `cmd package set-home-activity` returns Success but is a no-op, the manifest's
+#   android:priority is ignored for third-party apps (PM still reports 0 even with 1000 in the
+#   APK), and `cmd role add-role-holder android.app.role.HOME` succeeds without affecting HOME
+#   resolution. Disabling only the RecoveryActivity component is refused by the shell
+#   (SecurityException). Disabling the whole package is the only way, and it makes the custom
+#   launcher the sole HOME candidate.
+#   Re-enable it with `pm enable com.google.android.tungsten.setupwraith` before a factory
+#   reset or before re-running the Google TV setup wizard.
+com.google.android.tungsten.setupwraith

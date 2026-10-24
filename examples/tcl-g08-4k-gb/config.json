@@ -1,0 +1,15 @@
+{
+  "dock_apps": [
+    "hami.androidtv",
+    "com.google.android.youtube.tv",
+    "com.tcl.ui_mediaCenter",
+    "com.android.vending"
+  ],
+  "hidden_apps": [
+    "com.android.tv.settings",
+    "com.tcl.guard",
+    "com.tcl.suspension"
+  ],
+  "live_tv_package": "com.tcl.tv",
+  "columns": 4
+}
