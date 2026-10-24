@@ -253,6 +253,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean started;
     /** Rebuild the tiles on the way back to Home only when apps changed meanwhile (TileRefresh). */
     private final TileRefresh tileRefresh = new TileRefresh();
+    /** A Home press whose first-tile focus has to wait until the window gains focus (HomeFocus). */
+    private final HomeFocus homeFocus = new HomeFocus();
     /** PackageManager's change counter at the last rebuild, to catch a package broadcast that never arrived. */
     private int packageSequence;
     /** The Inputs or Module cards dropdown while one is open, so onPause can close it. */
@@ -882,12 +884,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.scrollToPosition(0);
         lastFocused = 0;
         lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
-        if (stopped) {
-            tileRefresh.onHomeAgain();
-        } else {
+        if (homeFocus.onHomeIntent(stopped, hasWindowFocus())) {
             // Still on screen (the quick panel was over it, or Home was already in front): the tiles are current,
             // so only go back to the first one; rebuilding would replay the entrance animation for nothing.
             grid.post(() -> focusTile(0));
+        } else {
+            // Stopped, or the window has no focus yet (an external source picker was over it): the
+            // refocus on resume can run before the window regains focus, and the previously focused
+            // view, such as the Inputs pill, then wins focus back (#1204). Keep the refocus, and let
+            // onWindowFocusChanged put the focus on the first tile once the window has focus.
+            tileRefresh.onHomeAgain();
         }
     }
 
@@ -1130,6 +1136,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         stopStats();
         if (diya != null) diya.stop();
         cancelPendingFocusScroll();
+        homeFocus.onPause();
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
         if (cardPrompt != null) cardPrompt.dismiss();
         if (appLibrary != null) appLibrary.close();
@@ -1174,6 +1181,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (hasFocus) {
             startPendingSettingsReorder();
             if (libraryFocusPending && appLibrary == null) focusLibrary();
+            if (homeFocus.onWindowFocusChanged(hasFocus)) focusTile(0);
             showCardPrompt();
         }
     }
