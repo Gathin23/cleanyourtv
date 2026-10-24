@@ -1,6 +1,5 @@
 package com.gathin.tvhome;
 
-import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -457,11 +456,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         grid = findViewById(R.id.grid);
         rtlAppGrid = getResources().getBoolean(R.bool.rtl_app_grid);
+        final int rowsBelowDock = cfg.rowsBelowDock;
+        final boolean dockTitle = cfg.dockTitle;
         // Mirror only the app grid; the header and other locales keep their own layouts.
         grid.setLayoutManager(new GridLayoutManager(this, COLUMNS) {
             @Override
             protected boolean isLayoutRTL() {
                 return rtlAppGrid;
+            }
+
+            @Override
+            public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                int w = getWidth(), h = getHeight();
+                if (w > 0 && h > 0) {
+                    updateGridPadding(w, h, rowsBelowDock, dockTitle, appLibraryEnabled);
+                }
+                super.onLayoutChildren(recycler, state);
             }
 
             /**
@@ -504,7 +514,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View v) {
-                v.setAlpha(tileAlpha(grid.getChildAdapterPosition(v)));
+                if (reordering || v.getAlpha() != 1f) {
+                    v.setAlpha(tileAlpha(grid.getChildAdapterPosition(v)));
+                }
             }
 
             @Override
@@ -527,27 +539,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // tvOS layout: push the dock row towards the bottom of the screen, leaving room for
         // rows_below_dock grid rows under it; the rest of the grid stays below until you press Down.
-        int rowsBelowDock = cfg.rowsBelowDock;
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            int h = b - t;
-            // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
-            int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
-            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow, density);
-            int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
-            int dockRow = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);   // item height plus DockDecoration offsets
-            int gridRows = itemH * rowsBelowDock;
-            // Keep the hero below the header when the library is enabled on a short screen,
-            // even when the theme requests an extra visible row below the dock.
-            int shelfClearance = cfg.appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
-            int want = Math.max(shelfClearance, h - dockRow - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
-            // Where the rows cannot fit even at the smallest tile (3 rows with the title on), the title keeps its
-            // room above the dock and the last rows run off the bottom instead of the title drawing over the clock.
-            if (MainActivity.this.dockRow && cfg.dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
-            // No dock to push down: the grid starts at the top, with room for the first row's zoom and glass.
-            if (!MainActivity.this.dockRow) want = (int) (AppAdapter.TOP_ROOM_DP * density);
-            if (grid.getPaddingTop() != want) {
-                grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
-            }
+            int tileW = updateGridPadding(r - l, b - t, rowsBelowDock, dockTitle, appLibraryEnabled);
             // Cold start or column count > 4: the first focus can run before the grid has its final width or
             // padding, leaving the glass at the XML design size until a key is pressed.
             grid.post(this::refitGlass);
@@ -762,6 +755,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
         return true;
+    }
+
+    private int updateGridPadding(int w, int h, int rowsBelowDock, boolean dockTitle, boolean appLibrary) {
+        int inner = w - grid.getPaddingLeft() - grid.getPaddingRight();
+        int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, dockTitle, dockRow, density);
+        int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
+        int dockRowH = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);
+        int gridRows = itemH * rowsBelowDock;
+        int shelfClearance = appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
+        int want = Math.max(shelfClearance, h - dockRowH - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
+        if (dockRow && dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
+        if (!dockRow) want = (int) (AppAdapter.TOP_ROOM_DP * density);
+        if (grid.getPaddingTop() != want) {
+            grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
+        }
+        sizeGlass(tileW);
+        return tileW;
+    }
+
+    /** Pre-sizes the glass highlight to the tile size so the first focus never triggers a root requestLayout(). */
+    private void sizeGlass(int tileW) {
+        if (tileW <= 0) return;
+        float pad = 6f * density;
+        float scale = adapter.focusScale();
+        int w = (int) (tileW * scale + 2 * pad);
+        int h = (int) (AppAdapter.tileHeightPx(tileW) * scale + 2 * pad);
+        ViewGroup.LayoutParams lp = glass.getLayoutParams();
+        if (lp.width != w || lp.height != h) {
+            lp.width = w;
+            lp.height = h;
+            glass.setLayoutParams(lp);
+            glass.setRadius(AppAdapter.cornerRadius(tileW, density) * scale);
+        }
     }
 
     private boolean openLauncherSettingsIfAsked(Intent intent) {
@@ -1670,7 +1696,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * the grid stay readable over the artwork. One small bitmap stretched over the screen, like the glow.
      */
     private Drawable scrimDrawable() {
-        int w = 480, h = 270;
+        int w = 128, h = 72;
         Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
         boolean rtl = getResources().getBoolean(R.bool.rtl_menu_bar);
@@ -1682,7 +1708,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 new int[]{0x00060406, 0x00060406, 0xDB060406, 0xFF060406}, new float[]{0f, 0.28f, 0.58f, 0.76f},
                 Shader.TileMode.CLAMP));
         canvas.drawRect(0, 0, w, h, paint);
+        Bitmap hw = bmp.copy(Bitmap.Config.HARDWARE, false);
+        if (hw != null) {
+            bmp.recycle();
+            bmp = hw;
+        }
         BitmapDrawable scrim = new BitmapDrawable(getResources(), bmp);
+        scrim.setFilterBitmap(true);
         scrim.setGravity(Gravity.FILL);
         return scrim;
     }
@@ -1777,8 +1809,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambientColor = color;
         BitmapDrawable glow = (BitmapDrawable) ambient.getBackground();
         if (glow == null) {
-            int w = 480;
-            int h = 270;
+            int w = 128;
+            int h = 72;
             Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bmp);
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -1812,7 +1844,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         Shader.TileMode.CLAMP));
             }
             canvas.drawRect(0, 0, w, h, paint);
+            Bitmap hw = bmp.copy(Bitmap.Config.HARDWARE, false);
+            if (hw != null) {
+                bmp.recycle();
+                bmp = hw;
+            }
             glow = new BitmapDrawable(getResources(), bmp);
+            glow.setFilterBitmap(true);
             glow.setGravity(Gravity.FILL);
             ambient.setBackground(glow);
         }
@@ -1829,7 +1867,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         ambient.animate().alpha(1f).setDuration(180).start();
-        ambientAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), ambientColor, color);
+        ambientAnimator = ValueAnimator.ofArgb(ambientColor, color);
         ambientAnimator.setDuration(360);
         ambientAnimator.addUpdateListener(animation -> setAmbient((int) animation.getAnimatedValue()));
         ambientAnimator.start();

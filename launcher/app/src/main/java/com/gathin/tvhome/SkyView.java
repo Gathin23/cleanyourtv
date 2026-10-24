@@ -36,8 +36,8 @@ public class SkyView extends View {
         return false;
     }
 
-    private static final int TEX_W = 480;
-    private static final int TEX_H = 270;
+    private static final int TEX_W = 128;
+    private static final int TEX_H = 72;
 
     /** Opacity of the whole backdrop, 0 to 255, from sky_intensity. */
     private int intensity;
@@ -113,6 +113,7 @@ public class SkyView extends View {
 
         if (drawable == null) {
             drawable = new BitmapDrawable(getResources(), texture);
+            drawable.setFilterBitmap(true);
             drawable.setGravity(Gravity.FILL);
             setBackground(drawable);
         }
