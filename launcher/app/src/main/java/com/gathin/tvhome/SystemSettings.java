@@ -6,18 +6,25 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
-/** The standard settings intent, or, when nothing usable answers it, the first vendor settings entry
- *  from settings_fallback_components that is installed (Xiaomi China, TCL / FFALCON, Fire OS). */
+/** The standard settings intent, or, when nothing usable answers it (or it resolves to a CTS
+ *  compliance stub), the first vendor settings entry from settings_fallback_components that is
+ *  installed (Xiaomi China, TCL / FFALCON, Fire OS). */
 final class SystemSettings {
     private SystemSettings() {}
+
+    // Fire OS and vendor ROMs (Xiaomi HyperOS / PatchWall) resolve standard settings actions
+    // to a CTS compliance stub that opens nothing or a bare AOSP menu; treat them as missing
+    // so the vendor fallback runs.
+    private static final String[] STUB_ACTIVITIES = {
+        "CTSDummy",
+        "com.android.tv.settings.MainSettings"
+    };
 
     static Intent intent(Context context, String action) {
         PackageManager pm = context.getPackageManager();
         Intent standard = new Intent(action);
         ResolveInfo resolved = pm.resolveActivity(standard, PackageManager.MATCH_DEFAULT_ONLY);
-        // Fire OS resolves the standard actions to a CTS compliance stub that opens nothing;
-        // treat it as missing so the vendor fallback runs.
-        if (resolved != null && !resolved.activityInfo.name.contains("CTSDummy")) return standard;
+        if (resolved != null && !isStub(resolved)) return standard;
 
         for (String value : context.getResources().getStringArray(R.array.settings_fallback_components)) {
             ComponentName component = ComponentName.unflattenFromString(value);
@@ -25,11 +32,21 @@ final class SystemSettings {
             // Explicit resolveActivity() always succeeds, so check the package exists instead.
             try {
                 pm.getPackageInfo(component.getPackageName(), 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                continue;
+                return new Intent().setComponent(component);
+            } catch (PackageManager.NameNotFoundException ignored) {
             }
-            return new Intent().setComponent(component);
         }
         return standard;
+    }
+
+    private static boolean isStub(ResolveInfo resolved) {
+        if (resolved == null || resolved.activityInfo == null || resolved.activityInfo.name == null) {
+            return false;
+        }
+        String name = resolved.activityInfo.name;
+        for (String stub : STUB_ACTIVITIES) {
+            if (name.contains(stub)) return true;
+        }
+        return false;
     }
 }
