@@ -16,7 +16,10 @@
 #   standby, so the TV drops off the network until it is woken.
 # - mitv.service is the core MiTV service: do not touch it. The owner chose to drop payment, Mi Home,
 #   Mi Video, the voice assistant and every casting receiver but AirPlay (in com.xiaomi.mitv.smartshare).
-#   The app store and com.mitv.videoplayer (USB files) stay.
+#   The app store and com.mitv.videoplayer (USB files) stay. It registers TvService, which Xiaomi's own
+#   Settings reads the hardware configuration through; with it disabled, Settings freezes for 20-30 s and
+#   then crashes the Sound page (#1310). Why:
+#   docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
 # - com.xiaomi.mitv.remotecontroller.service looped at 100-190% CPU and flooded logd (~490 MB in
 #   30 min): its relay host is gone, so it is disabled below. ES File Explorer ran DLNA and a WebView
 #   in the background; it is replaced by Material Files (F-Droid, me.zhanghai.android.files).

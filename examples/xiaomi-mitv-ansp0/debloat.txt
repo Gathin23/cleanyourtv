@@ -27,7 +27,10 @@
 #   Settings -> 账号与安全 (Account & Security) -> ADB 调试 after each power cycle.
 # - `pm disable-user` is accepted for the shell user on this build (unlike MiTV-ANTL0, which needs
 #   `pm hide`).
-# - mitv.service is the core MiTV service: do not touch it.
+# - mitv.service is the core MiTV service: do not touch it. It registers TvService, which Xiaomi's own
+#   Settings reads the hardware configuration through; with it disabled, Settings freezes for 20-30 s and
+#   then crashes the Sound page (#1310). Why:
+#   docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
 # - Voice: disabling voicecontrol, wakeupservice, the Mico MQTT service and the two Mi Home
 #   packages also stops an external Xiao Ai speaker from controlling the TV (its "turn the TV
 #   off" command). Verified both ways on this set; see the Voice group below.

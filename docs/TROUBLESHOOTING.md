@@ -781,3 +781,58 @@ When you report how an app does on your TV, say how far it got, because each ste
 own: installed, opened, usable with the physical remote, signed in, and played a title with sound.
 Reaching the login screen is not playback. Quote the app's full error code (Netflix's `UI-800-3`,
 for example) rather than "doesn't work", since that is what the app's own help pages look up (#1008).
+
+## Xiaomi CN firmware: Settings freezes or crashes after the debloat
+
+On China-market Xiaomi firmware the settings app is Xiaomi's own (`com.xiaomi.mitv.settings`), and it
+reads the TV's hardware configuration from the `TvService` system service that `mitv.service` registers.
+Disable that package and Settings breaks while everything else on the TV keeps working: opening it
+freezes for 20-30 s and drops back to Home (an ANR, not a reboot), and pressing Down twice from the
+first page, Network -> Display -> Sound, crashes it outright. Seen on a MiTV-ASTP0 (`mulan`, Android 9,
+SDK 28, Amlogic/droidlogic, 1.5 GB RAM; the version string says HyperOS 2, the base is still Android 9)
+in [issue #1310](https://github.com/Gathin23/cleanyourtv/issues/1310), whose report could not quote
+`ro.build.display.id`: that firmware closes network ADB on every reboot.
+
+The crash log names the cause:
+
+```sh
+tools/tv.py "logcat -b events -d | grep am_crash"
+# java.lang.NumberFormatException, For input string: "NULL"   <- SoundView.init, Integer.valueOf
+```
+
+`SoundView.init` parses a value it got from `mitv.common.ConfigurationManager` with no guard, and with
+the service gone that manager retries ten times half a second apart, gives up and hands back the literal
+string `NULL`:
+
+```
+ConfigurationManager: getService() 0..9, service = null
+ConfigurationManagerDefaultImpl: service null return
+```
+
+So it is neither the Settings app nor the debloat in general. `mitv.service` is `/system/app/TvService`,
+a PERSISTENT app whose `TvApplication.onCreate` starts `TvServer`, the thing that registers the service:
+
+```sh
+tools/tv.py "service list | grep -i tvservice"   # TvService: [mitv.internal.ITvService]
+```
+
+Keep the package. Every settings page that reads a hardware value then stalls about 5 s, and the one
+page that parses the answer crashes. The China-market lists here already say not to touch it; this is
+why.
+
+**Re-enabling the package on its own does not bring Settings back.** The service is registered at boot
+and the disabled package's PERSISTENT process starts anyway, so nothing looks different after
+`pm enable` and it is easy to conclude the debloat was innocent - the reporter lost a day to exactly
+that. Start the service by hand instead:
+
+```sh
+tools/tv.py "pm enable mitv.service"
+tools/tv.py "am startservice -n mitv.service/.TvServer"
+tools/tv.py "service list | grep -i tvservice"      # expect: TvService: [mitv.internal.ITvService]
+```
+
+A restart registers it too, and on that firmware the restart also turns network ADB off while the switch
+that turns it back on sits inside the Settings app that is broken: have ADB open before the reboot, or
+count on reaching Settings by hand. `examples/xiaomi-mitv-aesp0` is the one list here that disables the
+package (its second set, in daily use since 21 Oct 2026); carrying that line to a set whose settings app
+is Xiaomi's takes Settings with it.

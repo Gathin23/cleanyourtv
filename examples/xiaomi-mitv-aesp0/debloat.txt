@@ -61,6 +61,11 @@ com.tcl.browser
 com.xiaomo.tv.milegal                       # Xiaomi privacy-policy screen (sic, "xiaomo"); nothing else uses it
 
 # Xiaomi services (second set)
+# mitv.service registers the TvService system service that Xiaomi's own settings app reads the hardware
+# configuration from. Disabled on a China-market set whose settings app is com.xiaomi.mitv.settings it
+# freezes Settings for 20-30 s and then crashes it (#1310); the second set has run with the line below
+# disabled in daily use since 21 Oct 2026. Why, and how to put the service back without a reboot:
+# docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
 mitv.service                                # MiTV service framework for the rows removed above
 com.mitv.download.service                   # PatchWall download service
 com.mitv.videoplayer                        # stock Mi video player; comment out if you use it
