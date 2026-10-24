@@ -64,6 +64,7 @@ share their TV's list afterwards, follow [`docs/workflows/tv-list.md`](docs/work
 | `PROMPT.md` | The prompt people paste into their agent. Brand-neutral; safety rules live here. |
 | `README.md` | Front page, with the TV table (generated from `examples/*/tv.json` by `tools/gen_tables.py`) and the Tools table. `README.zh-CN.md` and `README.vi.md` are translations. |
 | `CONTRIBUTING.md` | The contributor guide for people. "Where does my idea go?" is the routing table. |
+| `docs/DOS-AND-DONTS.md` | Why PRs came back or were closed, by area (lists, switches, themes, add-ons, tools), each with an example PR. |
 | `SECURITY.md` | Private vulnerability reporting. |
 | `SHOWCASE.md` | Projects built on this repo that live in their own repositories. |
 | `CODE_OF_CONDUCT.md` | Includes the rule against publishing device identifiers, Wi-Fi names and IPs. |

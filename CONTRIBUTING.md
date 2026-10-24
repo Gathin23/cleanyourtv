@@ -17,6 +17,9 @@ The launcher stays small on purpose, so pick the smallest home that fits:
 
 Everything merged into `themes/` and `addons/` shows up on [cleanyour.tv/addons](https://cleanyour.tv/addons).
 
+Before you open a pull request, skim [Do's and don'ts](docs/DOS-AND-DONTS.md): the reasons PRs most often come
+back for changes, each with an example.
+
 ## 1. Add your TV model
 
 Every brand ships different bloat. If you ran the prompt (or did it by hand) on a TV that isn't in
