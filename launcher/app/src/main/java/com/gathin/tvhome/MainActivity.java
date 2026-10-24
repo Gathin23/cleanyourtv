@@ -3615,6 +3615,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             reloadApps(false);
         });
 
+        // Screensaver choice: "solat" (Countdown Solat) vs "clock" (Clocks)
+        String currentScreensaverType = choices.getString("screensaver_type", "solat");
+        final boolean[] isSolatScreensaver = {"solat".equals(currentScreensaverType)};
+        addSettingsToggleRow(rows, "Screensaver: " + (isSolatScreensaver[0] ? "Countdown Solat" : "Clocks"), () -> {
+            isSolatScreensaver[0] = !isSolatScreensaver[0];
+            String nextType = isSolatScreensaver[0] ? "solat" : "clock";
+            choices.edit().putString("screensaver_type", nextType).apply();
+            return "Screensaver: " + (isSolatScreensaver[0] ? "Countdown Solat" : "Clocks");
+        });
+
         // Edit dock
         if (dockRow) {
             addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
@@ -3641,7 +3651,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addSettingsMenuRow(rows, popup, R.string.follow_theme, () -> {
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY)
                     .remove("animations").remove("advanced_effects")
-                    .remove(Config.WALLPAPER_CHOICE_KEY).apply();
+                    .remove(Config.WALLPAPER_CHOICE_KEY)
+                    .remove("screensaver_type").apply();
             recreate();
         });
 
@@ -3835,6 +3846,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    private void addSettingsToggleRow(LinearLayout rows, String title, java.util.function.Supplier<String> onToggle) {
+        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
+        row.findViewById(R.id.icon).setVisibility(View.GONE);
+        row.findViewById(R.id.dot).setVisibility(View.GONE);
+        row.findViewById(R.id.status).setVisibility(View.GONE);
+        TextView tvTitle = row.findViewById(R.id.title);
+        tvTitle.setText(title);
+        Runnable toggle = () -> {
+            SoundManager.getInstance(MainActivity.this).playEnter();
+            String newTitle = onToggle.get();
+            if (newTitle != null) tvTitle.setText(newTitle);
+        };
+        row.setOnClickListener(v -> toggle.run());
+        final boolean[] pressed = {false};
+        row.setOnKeyListener((v, code, event) -> {
+            if (code != KeyEvent.KEYCODE_DPAD_CENTER && code != KeyEvent.KEYCODE_ENTER) return false;
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() == 0) pressed[0] = true;
+                return true;
+            }
+            if (pressed[0]) {
+                pressed[0] = false;
+                toggle.run();
+            }
+            return true;
+        });
+        rows.addView(row);
+    }
+
     private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, int title, Runnable action) {
         addSettingsMenuRow(rows, popup, getString(title), action);
     }
@@ -3845,10 +3885,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         row.findViewById(R.id.dot).setVisibility(View.GONE);
         row.findViewById(R.id.status).setVisibility(View.GONE);
         ((TextView) row.findViewById(R.id.title)).setText(title);
+        View root = findViewById(R.id.root);
         row.setOnClickListener(v -> {
             if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
             popup.dismiss();
-            v.post(action::run);
+            if (root != null) root.post(action::run);
+            else action.run();
         });
         // The OK-up after opening the menu must not activate its first row.
         final boolean[] pressed = {false};
@@ -3863,7 +3905,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (activate) {
                 if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
                 popup.dismiss();
-                v.post(action::run);
+                if (root != null) root.post(action::run);
+                else action.run();
             }
             return true;
         });
