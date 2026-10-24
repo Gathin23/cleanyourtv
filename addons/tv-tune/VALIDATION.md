@@ -352,3 +352,19 @@ blocking issues. The dependency-complete Python environment ran the comparable
 screenshot. A separate system-Python run discovered 744 tests with four skips
 because `adb_shell` was absent; it is not the full dependency-complete baseline.
 No Android, launcher, workflow, permission or runtime dependency changes occurred.
+
+Publication verified: code `adc30fd23d9c3191de7c47283855366f425cff1c`, production
+`dpl_AaDWwLKFBgmznK5WpPZaDnJTwj3y` READY with public alias assigned. All ten allowed
+files (nine static assets plus MIT LICENSE) matched source SHA-256 over public HTTPS.
+GitHub reported no check runs for this commit, not a CI pass.
+
+Live cloud Chromium checks passed English/Spanish camera-off capability and
+last-observed rows, visible non-continuous/no-lock explanations, and missing-camera
+error recovery in both languages without permission grants. Start remained enabled;
+Stop and capture stayed disabled. Desktop 1180×757 layout was readable without
+horizontal overflow. QR regression passed: the actual Spanish red browser screenshot
+independently decoded to the correct patch link, with the patch paused/hidden.
+Active-camera readiness transitions were tested through mocks, not physical capture;
+mobile viewport and a full accessibility audit were not run. No additional defect
+was found in the reviewed bounded workflows. Real-TV D-pad/visual evidence and
+reference-instrument validation remain separate, unresolved external gates.
