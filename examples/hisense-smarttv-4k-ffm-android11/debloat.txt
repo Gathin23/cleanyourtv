@@ -37,9 +37,10 @@
 # - Its remote differs from the SmartRC below: Disney+ is keycode 607 (scancode 418) and Peacock 608
 #   (scancode 421); YouTube 293, Prime Video 295 and the gear 83 (scancode 598) match. The firmware logs
 #   every press as "WindowManager: interceptKeyTq keycode=... scancode=...".
-# - HomeKeyService never bound on this unit (it stayed under "Binding services" in dumpsys accessibility,
-#   with nothing in logcat), so settings_key_keycodes did nothing. The gear works through InputKeyService
-#   instead: app_keys 83:com.android.tv.settings.
+# - HomeKeyService did not bind in the first session (it stayed under "Binding services" in dumpsys
+#   accessibility, with nothing in logcat), so settings_key_keycodes did nothing; in a later session it bound
+#   normally, cause unknown. Mapping the gear through InputKeyService works either way:
+#   app_keys 83:com.android.tv.settings.
 # - With InputKeyService bound, holding volume moves it one step
 #   (docs/devices/tcl-55p71b-g09-key-repeat.md).
 
