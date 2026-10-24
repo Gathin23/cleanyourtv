@@ -213,3 +213,33 @@ Do not treat this report as an uninstall list. A custom dashboard can limit its 
 without removing applications or risking HDMI, remote-control or streaming functionality.
 The custom Tizen application belongs in a separate repository; this note does not add Tizen support
 to `tools/` or make the Android launcher installable on Samsung firmware.
+
+## NU7405 (2018): the same picture on an older set, checked on 2026-10-24
+
+A third owner's read-only check from a Mac on the same network, with nothing changed on the TV and
+Developer Mode off. Only `GET /api/v2/` on 8001 and TCP connections were used.
+
+| Field | Observed value |
+|---|---|
+| Retail model | UE50NU7405, 50" NU7400 series, 2018, Spain |
+| Model string (`/api/v2/`) | `18_KANTME_UHD` |
+| System | Tizen; the API returned `Unknown` for the firmware version |
+| API | `version` 2.0.25, `TokenAuthSupport: true`, `developerMode: 0` |
+| Network | Wi-Fi |
+
+| Port | NU7405 result | Verification | Limits |
+|---|---|---|---|
+| 8001 | open | HTTP `GET /api/v2/` returned model metadata | Remote-control websocket not tested |
+| 8002 | open | TCP connection | TLS endpoint not read |
+| 8080 | open | TCP connection | Service not identified |
+| 9080 | closed | Connection refused | Open on the AU8000 |
+| 9197 | open | TCP connection | Service not identified independently |
+| 7678 | open | TCP connection | Service not identified independently |
+| 5555 | closed | Connection refused | No ADB on retail firmware |
+| 26101 | closed | Connection refused | Developer Mode off |
+
+Three years older than the AU8000, the set answers the same way: no ADB, no shell and no `sdb`, so
+the lists in `examples/` and the launcher do not apply to it either. The TV did not answer SSDP
+discovery from the Mac and was found only by scanning the subnet for 8001, 9197 and 7678.
+The `/api/v2/` reply also carries the DUID, the Wi-Fi MAC, the access point's MAC, the IP address and
+the name given to the TV; leave those out of anything you publish.
