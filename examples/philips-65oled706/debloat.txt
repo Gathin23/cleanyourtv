@@ -44,6 +44,32 @@
 # about 780 MB stock, about 1.1 GB with this list and the launcher.
 #
 # Kept on purpose (owner's choice): Google Assistant (katniss), Play-Fi, IP control, DLNA, YouTube, Prime Video.
+#
+# Second unit: Philips 55OLED706/12 (55"), Poland, on Wi-Fi. Same board, same build 21029, security patch
+# 2025-10-01. Applied with tools/disable.ps1 in small batches on 2026-10-24, a screenshot and a 30 s idle-log check
+# after each, and checked with the real remote the same day; not yet lived with for days. No replacement launcher.
+# - Already disabled at the factory, as on the French unit: the UK Freeview apps and org.droidtv.aurora (left as
+#   the factory set it). YouTube Music and Apple TV were enabled here. The saved Wi-Fi network belonged to
+#   android.uid.system, not to setupwraith (kept anyway).
+# - The disable scripts skip two entries of this list on this firmware: org.droidtv.usagelogger and
+#   org.droidtv.demome both ask for TV_INPUT_HARDWARE (#321). demome was kept. usagelogger holds INTERNET of its
+#   own, and with the rest of this list applied its ErrEvLogSvc process logged "bindToNetvLoggerService: null
+#   ResolveInfo" about every 10 s (not seen before the list), so it was disabled afterwards with TVINPUT_ALLOW=1:
+#   the retry stopped, and Live TV, channel changes, the SOURCES drawer and the HDMI picture still worked.
+# - Not disabled from this list: com.netflix.ninja (owner's choice) and com.google.android.tvrecommendations (the
+#   stock launcher stays Home).
+# - Disabled on top of this list, none of them used by the owner (labels from the 50PUS8517 list where it has
+#   them): org.droidtv.tv.frameworklogger (as in philips-65pml9506), the gallery apps nettvapp1814 (ARTE),
+#   nettvapp5326 (Toon Goggles), nettvapp5512 (Fishing TV) and nettvapp20004410 (Couchplay Games),
+#   org.droidtv.android.fitness (Fitness Buddy, starts at boot), two Polish VOD apps pl.canalplus.tvod.atv and
+#   com.tvp.vodtv.tv (never launched; the second was installed by the Philips gallery), com.mgmedia.androidApp
+#   (CHILI), com.ted.android.tv, tv.wuaki.apptv (Rakuten TV), com.dsi.ant.service.socket and
+#   com.dsi.ant.plugins.antplus (ANT+ fitness sensors, never launched), com.google.android.youtube.tvmusic,
+#   com.google.android.apps.tachyon (Google Meet) and com.phorus.playfi.softap (Play-Fi itself was not touched).
+# - After a reboot all 38 were still disabled and nothing came back. No retry loop in a 30 s idle log.
+# - The stock launcher keeps a "Google Play Movies & TV" tile in Favourite apps after com.google.android.videos is
+#   disabled, also after a reboot; hold OK on it to remove it.
+# - Free memory at idle (dumpsys meminfo, the two readings straddle a reboot): 674 MB before, 867 MB after.
 
 # TP Vision + Google telemetry. Disable candeebug and gel together (gel runs in candeebug's process).
 org.droidtv.candeebug                     # "DAC" analytics uploader
