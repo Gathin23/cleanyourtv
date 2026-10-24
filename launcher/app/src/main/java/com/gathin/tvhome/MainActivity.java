@@ -284,6 +284,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private AppLibraryDialog appLibrary;
     private boolean appLibrarySelection;
     private boolean libraryFocusPending;
+    /** VIEW_INPUTS arrived on a laid-out Home: the Inputs menu opens once this window is resumed and focused. */
+    private boolean inputsPending;
+    private boolean resumed;
     private RecyclerView.OnScrollListener pendingFocusScroll;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -842,8 +845,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View anchor = topMenu ? findViewById(R.id.btnSettings) : btnInputs;
         if (anchor.getVisibility() != View.VISIBLE) return true;
         if (anchor.isLaidOut()) {
-            anchor.requestFocus();
-            showInputs();
+            // On Home the request starts over a resumed Home: onPause closes any popup and the window is not
+            // focused yet, so a menu opened right here is lost (#1053). Open it once resumed and focused.
+            inputsPending = true;
+            if (resumed && hasWindowFocus()) openPendingInputs();
             return true;
         }
         // Cold start: the popup anchors to the pill (or the gear), so wait for the first layout.
@@ -859,6 +864,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
         return true;
+    }
+
+    private void openPendingInputs() {
+        if (!inputsPending) return;
+        inputsPending = false;
+        View anchor = topMenu ? findViewById(R.id.btnSettings) : btnInputs;
+        if (isFinishing() || anchor.getVisibility() != View.VISIBLE) return;
+        anchor.requestFocus();
+        showInputs();
     }
 
     private boolean openLauncherSettingsIfAsked(Intent intent) {
@@ -908,6 +922,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        resumed = true;
+        if (inputsPending && hasWindowFocus()) root.post(this::openPendingInputs);
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
             recreate();
@@ -1119,6 +1135,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onPause() {
         super.onPause();
+        resumed = false;
         root.removeCallbacks(showIdleClock);
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
@@ -1173,6 +1190,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             startPendingSettingsReorder();
+            if (inputsPending && resumed) root.post(this::openPendingInputs);
             if (libraryFocusPending && appLibrary == null) focusLibrary();
             showCardPrompt();
         }
