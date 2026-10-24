@@ -156,6 +156,10 @@ Launcher
   A button the TV logs as `KEY_UNKNOWN` or `KEY_PROGRAM` cannot be matched by keycode, since every
   unmapped button shares it: read the scancode with `getevent -lt` and use `settings_key_scancodes`,
   which only `config.xml` carries (a theme can set keycodes, not scancodes).
+- After the first reboot with the new Home, check what the TV opens at power-on
+  (`logcat -b events -d | grep wm_set_resumed_activity`). If the firmware puts the Live TV app on screen by
+  itself, ask me which I want to land on, Home or Live TV: Home is `power_on_home` with HOME_KEY_SERVICE=1,
+  Live TV is `boot_to_live_tv` (`config.xml` or the theme). Never set both.
 - On Android 11 and newer the launcher must declare `<queries>` for `android.intent.category.LEANBACK_LAUNCHER`,
   or package visibility silently hides every app and the grid comes up empty; target a recent SDK, some
   Google TV 14 sets refuse older targets at install.

@@ -197,6 +197,14 @@
          straight back here. A theme's config.json can set it too. Leave empty to omit. -->
     <string name="stock_home_redirect" translatable="false"></string>
 
+    <!-- For TVs whose firmware opens the Live TV app (live_tv_package) by itself at every power-on, with no setting
+         to change it (Changhong / Homwee boards start com.mediatek.wwtv.tvcenter from its own boot receiver, which
+         adb cannot disable on Android 14). While nobody has pressed a key yet after boot or after the screen turns
+         on, HomeKeyService (HOME_KEY_SERVICE=1) sends a Live TV window back to Home; the first key hands control
+         to the user, so opening Live TV on purpose is never undone. The opposite of boot_to_live_tv, and ignored
+         when that is on. A theme's config.json can set it too. Off by default. -->
+    <bool name="power_on_home">false</bool>
+
     <!-- Show the Solar Hijri (Shamsi) date used in Iran and Afghanistan, e.g. "27 Mehr 1405", above the
          Gregorian date. -->
     <bool name="shamsi_date">false</bool>
