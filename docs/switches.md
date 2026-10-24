@@ -42,3 +42,4 @@ the rules. Keys from before this rule are on its wanted list; a screenshot for o
 | `single_row` | <img src="switches/single_row.jpg" width="320" alt="single_row on a TV"> |
 | `dock_band_all` | <img src="switches/single_row.jpg" width="320" alt="dock_band_all on a TV"> |
 | `uniform_tiles` | <img src="switches/uniform_tiles.jpg" width="320" alt="uniform_tiles on a TV"> |
+| `boot_app_redirect` | <img src="switches/boot_app_redirect.jpg" width="320" alt="boot_app_redirect on a TV"> |
