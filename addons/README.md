@@ -9,6 +9,7 @@ the core bigger or change how it behaves. You install an add-on only if you want
 
 | Add-on | What it does | Author | Tested on | Permissions | Screenshot |
 |---|---|---|---|---|---|
+| [TV Tune](tv-tune/) | Offline picture-setup guide and a separate phone-camera capture experiment; development preview | [@kalt2212](https://github.com/kalt2212) | Physical TV validation pending | None in Android app; browser camera in optional companion | Real-TV screenshot pending |
 | [Frigate Glance](frigate-glance/) | Frigate camera pop-ups over whatever is playing | [NickLD](https://github.com/NickLD) | TCL 65Q650G | overlay, accessibility (card keys), network, foreground service | wanted |
 | [Capacity Stats](capacity-stats/) | Available/total and used/total RAM; available/total storage | [lionlev21](https://github.com/lionlev21) | Android TV 12 (model private) | None | wanted |
 | [Weather](weather/) | The weather for one city: now, US air quality and the next three days, from Open-Meteo (no key) | [@Sumyabazar1](https://github.com/Sumyabazar1) | Hisense SmartTV 4K FFM (lushan), Google TV 12 | `INTERNET` | <img src="weather/screenshot.jpg" width="240" alt="Weather on a TV"> |
