@@ -1,5 +1,5 @@
 import { inspectCapabilities, exportReport } from './probe.js';
-import { createCameraController, captureFrames, pixelSample } from './capture.js';
+import { createCameraController, captureFrames, pixelSample, sampleRegion, previewRegion } from './capture.js';
 import { PATCHES, presenterState, patchRectangle } from './patterns.js';
 
 const $ = id => document.getElementById(id);
@@ -37,6 +37,8 @@ function setupPresenter() {
     move(0);
   });
   document.addEventListener('keydown', event => {
+    if ((event.key === 'Enter' || event.key === ' ') && event.target instanceof Element &&
+      event.target.closest('button,a,input,select,textarea,[contenteditable]')) return;
     const directions = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 };
     if (event.key in directions) { event.preventDefault(); move(directions[event.key]); }
     else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); move(0); }
@@ -52,6 +54,18 @@ function setupPresenter() {
 function setupPhone() {
   let ready = false, capturing = false, abort = null, report = null;
   const preview = $('preview'), canvas = document.createElement('canvas');
+  const previewBox = preview.parentElement, reticle = previewBox.querySelector('.reticle');
+  const updateOverlay = () => {
+    reticle.hidden = true;
+    if (!ready || !preview.videoWidth || !preview.videoHeight || !previewBox.clientWidth || !previewBox.clientHeight) return;
+    const region = previewRegion(preview.videoWidth, preview.videoHeight, previewBox.clientWidth, previewBox.clientHeight);
+    Object.assign(reticle.style, Object.fromEntries(Object.entries(region).map(([key, value]) => [key, `${value}px`])));
+    reticle.hidden = false;
+  };
+  preview.addEventListener('resize', updateOverlay);
+  const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(updateOverlay) : null;
+  resizeObserver?.observe(previewBox);
+  window.addEventListener('resize', updateOverlay);
   canvas.width = 96; canvas.height = 96;
   const context = canvas.getContext('2d', { willReadFrequently: true });
   const errors = {
@@ -71,6 +85,7 @@ function setupPhone() {
   const controller = createCameraController({ mediaDevices: navigator.mediaDevices, secureContext: isSecureContext,
     onChange(state) {
       ready = state.status === 'ready';
+      updateOverlay();
       if (state.status !== 'ready') { abort?.abort(); $('confirm').checked = false; }
       $('preview-placeholder').hidden = ready;
       updateButtons();
@@ -106,8 +121,8 @@ function setupPhone() {
     updateButtons(); status(say('Capturando. Mantén el móvil quieto…', 'Capturing. Hold the phone still…'));
     try {
       const quality = await captureFrames({ video: preview, signal, readFrame() {
-        const width = preview.videoWidth, height = preview.videoHeight;
-        context.drawImage(preview, width * 0.4, height * 0.4, width * 0.2, height * 0.2, 0, 0, 96, 96);
+        const region = sampleRegion(preview.videoWidth, preview.videoHeight);
+        context.drawImage(preview, region.x, region.y, region.width, region.height, 0, 0, 96, 96);
         return pixelSample(context.getImageData(0, 0, 96, 96).data);
       } });
       if (signal.aborted || !ready) return;
@@ -142,7 +157,7 @@ function setupPhone() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
-  window.addEventListener('pagehide', stop);
+  window.addEventListener('pagehide', () => { stop(); resizeObserver?.disconnect(); });
   if (!isSecureContext || !navigator.mediaDevices?.getUserMedia) {
     $('start').disabled = true;
     status(!isSecureContext ? errors.secure_origin_required : errors.camera_unavailable, true);

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createCameraController, captureFrames, pixelSample } from '../src/capture.js';
+import { createCameraController, captureFrames, pixelSample, sampleRegion, previewRegion } from '../src/capture.js';
 
 function camera() {
   const track = { stopped: false, stop() { this.stopped = true; }, addEventListener() {},
@@ -88,4 +88,24 @@ test('a_video_with_no_decoded_frames_fails_instead_of_hanging', async () => {
   const v = video(); v.readyState = 0; let clock = 0;
   await assert.rejects(captureFrames({ video: v, now: () => clock, limitMs: 200,
     wait: async () => { clock += 100; }, readFrame: () => { throw new Error('must not read'); } }), /frame/i);
+});
+test('sampling_overlay_matches_landscape_letterboxing', () => {
+  assert.deepEqual(sampleRegion(1280, 720), { x: 512, y: 288, width: 256, height: 144 });
+  assert.deepEqual(previewRegion(1280, 720, 640, 480), { left: 256, top: 204, width: 128, height: 72 });
+});
+test('sampling_overlay_matches_portrait_pillarboxing', () => {
+  assert.deepEqual(previewRegion(720, 1280, 640, 480), { left: 293, top: 192, width: 54, height: 96 });
+});
+test('unknown_video_dimensions_cannot_create_a_sampling_overlay', () => {
+  assert.throws(() => sampleRegion(0, 480), /geometry/i);
+  assert.throws(() => previewRegion(640, 480, NaN, 480), /geometry/i);
+});
+test('camera_report_reads_current_settings_after_stream_reconfiguration', async () => {
+  const c = camera(); let width = 640;
+  c.track.getSettings = () => ({ width, height: 480, exposureMode: 'continuous' });
+  const controller = createCameraController({ secureContext: true,
+    mediaDevices: { getUserMedia: async () => c.stream } });
+  await controller.start(video()); width = 720;
+  assert.equal(controller.observations().settings.width, 720);
+  controller.stop();
 });

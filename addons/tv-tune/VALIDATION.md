@@ -5,16 +5,15 @@ universal-compatibility or automatic-correction claim is made.
 
 ## Automated and local checks
 
-- **JavaScript:** 26 tests pass for capability interpretation, numerical aggregates,
-  invalid frames, privacy allowlists, camera lifecycle and pattern navigation.
+- **JavaScript:** 30 tests pass for capability interpretation, numerical aggregates,
+  invalid frames, privacy allowlists, camera lifecycle, sampling geometry and pattern navigation.
   The initial missing behaviours were observed failing before implementation.
   Coverage of the three loaded pure modules (`probe`, `capture`, `patterns`) is
-  100% of lines and 92.37% of branches. This does not include browser DOM wiring.
+  100% of lines and 91.49% of branches. This does not include browser DOM wiring.
 - **Android:** eleven JVM tests pass for explicit session start, state/restore, invalid outcomes,
   patch bounds and inactivity. Missing behaviours were observed failing first.
   `testReleaseUnitTest lintRelease assembleRelease` completed successfully with
   JDK 17 / SDK 34. The APK was inspected as a leanback app with no requested permissions.
-  Final verification details are recorded below when the complete review is finished.
 - **Browser:** Chromium with explicitly simulated camera devices completed Start →
   Confirm patch → Capture → Review report. A 45-frame report was produced with
   clipping/variation observations and `colourMeasurementValidated: false`.
@@ -23,6 +22,8 @@ universal-compatibility or automatic-correction claim is made.
   a 455.36-pixel square (10% of surface area) and the expected RGB code.
   The reproducible `companion/test/browser-smoke.sh` also verified the downloaded JSON,
   a fresh patch confirmation after Stop and the absence of horizontal mobile overflow.
+  Keyboard activation of Next, fullscreen (Enter and Space) and the return link are
+  covered after reproducing and fixing intercepted button activation.
 - **Accessibility:** both automated WCAG A/AA passes reported zero violations;
   manual-review items included the silent camera preview and report-region semantics.
   Report-region semantics were corrected before the second check. An automated audit does not
@@ -49,6 +50,17 @@ universal-compatibility or automatic-correction claim is made.
   test and a merge-ready submission. No mockup is substituted for it.
 
 ## Review and build notes
+
+An independent whole-branch review found two important issues: intercepted keyboard
+activation and a sampling frame that did not account for video letterboxing. Both
+were reproduced before their fixes. The frame now maps the same central 20% of the
+decoded video that capture reads, and the instructions require the uniform patch to
+  cover the entire sampling frame. Geometry tests and the browser smoke check cover
+  landscape and portrait video, including an actual synthetic-stream reconfiguration;
+  the downloaded report contains the updated dimensions.
+
+The full repository suite ran 747 tests: 735 passed, 11 skipped and one failed because
+the required real-TV screenshot is absent. That evidence gate remains open.
 
 Android Lint reports zero errors and six warnings: SDK34 target age, large TV banner
 vector, landscape orientation, two unused strings and a programmatic View constructor.

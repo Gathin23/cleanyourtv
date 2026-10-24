@@ -96,8 +96,9 @@ The default UI is Spanish. There are no npm dependencies or build step.
 
 With the local server running and the optional `agent-browser` CLI available, run
 `bash addons/tv-tune/companion/test/browser-smoke.sh` from the repository root. It uses
-a separate synthetic camera session and verifies capture, JSON download, Stop, mobile
-overflow, accessibility and TV patch navigation. It prints a temporary directory with
+a separate synthetic camera session and verifies sampling-frame alignment, capture,
+JSON download, Stop, mobile overflow, accessibility and keyboard-operated TV controls.
+It prints a temporary directory with
 its evidence and never uses a physical camera. `bash -n` checks the script's syntax.
 
 For an already built/installed app on a disposable **English-language emulator**,
@@ -112,8 +113,8 @@ camera capture. Deploy these static files to a trusted HTTPS host you control, o
 use a separately approved development HTTPS setup. This contribution does not create
 a hosted service, install certificates or weaken browser security.
 
-Select the same patch ID on the TV and phone, aim the rear camera so the patch covers
-the sampling frame, confirm the ID and start a capture. Confirmation is manual;
+Select the same patch ID on the TV and phone, aim the rear camera so the uniform patch
+covers the entire sampling frame, confirm the ID and start a capture. Confirmation is manual;
 the TV and phone are not synchronised. Up to 45 distinct decoded video frames are
 sampled over at most five seconds. No frozen preview is counted as new frames.
 

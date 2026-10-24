@@ -13,11 +13,13 @@ browser open "$tv_tune_base/?lang=en"
 browser eval '(() => { if (document.querySelector("#preview").srcObject) throw Error("Camera started without consent"); return "No automatic camera start"; })()'
 browser click '#start'
 browser wait --text 'Camera active'
+browser eval '(() => { const v=document.querySelector("#preview"),box=v.parentElement,reticle=box.querySelector(".reticle").getBoundingClientRect(),scale=Math.min(box.clientWidth/v.videoWidth,box.clientHeight/v.videoHeight);if(Math.abs(reticle.width-v.videoWidth*scale*0.2)>1||Math.abs(reticle.height-v.videoHeight*scale*0.2)>1)throw Error("Reticle does not represent sampled video pixels");return "Landscape sampling overlay verified"; })()'
+browser eval '(async () => { const v=document.querySelector("#preview"),track=v.srcObject.getVideoTracks()[0];await track.applyConstraints({width:{exact:720},height:{exact:1280}});for(let i=0;i<40&&(v.videoWidth!==720||v.videoHeight!==1280);i++)await new Promise(r=>setTimeout(r,50));await new Promise(requestAnimationFrame);const box=v.parentElement,b=box.getBoundingClientRect(),r=box.querySelector(".reticle").getBoundingClientRect(),scale=Math.min(box.clientWidth/v.videoWidth,box.clientHeight/v.videoHeight),w=v.videoWidth*scale*0.2,h=v.videoHeight*scale*0.2;if(v.videoWidth!==720||v.videoHeight!==1280||Math.abs(r.width-w)>1||Math.abs(r.height-h)>1||Math.abs(r.left-b.left-box.clientLeft-(box.clientWidth-w)/2)>1||Math.abs(r.top-b.top-box.clientTop-(box.clientHeight-h)/2)>1)throw Error("Portrait sampling overlay did not follow decoded video");return "Portrait sampling overlay position and size verified"; })()'
 browser check '#confirm'
 browser click '#capture'
 browser wait --text 'Capture finished'
 browser click '#review'
-browser eval '(() => { const r = JSON.parse(document.querySelector("#report-preview").textContent); if (r.quality.sampleCount !== 45 || r.colourMeasurementValidated !== false) throw Error("Invalid capture report"); return "45 simulated frames, no calibration claim"; })()'
+browser eval '(() => { const r = JSON.parse(document.querySelector("#report-preview").textContent); if (r.quality.sampleCount !== 45 || r.colourMeasurementValidated !== false || r.capabilities.settings.width !== 720 || r.capabilities.settings.height !== 1280) throw Error("Invalid capture report"); return "45 simulated frames, current dimensions, no calibration claim"; })()'
 browser download '#download' "$tv_tune_output/report.json"
 node --input-type=module -e 'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.status!=="experimental"||r.colourMeasurementValidated!==false||!r.quality)throw Error("Invalid downloaded report"); console.log("Downloaded aggregate report verified");' "$tv_tune_output/report.json"
 browser click '#stop'
@@ -32,5 +34,19 @@ browser set viewport 1920 1080
 browser press ArrowRight
 browser eval '(() => { const e=document.querySelector("#tv-patch"),r=e.getBoundingClientRect();if(document.querySelector("#tv-patch-id").textContent!=="grey-192"||getComputedStyle(e).backgroundColor!=="rgb(192, 192, 192)"||Math.abs(r.width*r.height-207360)>50)throw Error("Incorrect TV patch");return "TV patch ID, RGB and area verified"; })()'
 browser screenshot "$tv_tune_output/tv-browser.png"
+browser focus '#next'
+browser press Enter
+browser eval '(() => { if(document.querySelector("#tv-patch-id").textContent!=="grey-240")throw Error("Enter did not activate focused Next button");return "Focused Next activates with Enter"; })()'
+browser focus '#fullscreen'
+browser press Enter
+browser eval '(() => { if(!document.fullscreenElement)throw Error("Enter did not activate fullscreen");return "Fullscreen activates with Enter"; })()'
+browser press Escape
+browser focus '#fullscreen'
+browser press Space
+browser eval '(() => { if(!document.fullscreenElement)throw Error("Space did not activate fullscreen");return "Fullscreen activates with Space"; })()'
+browser press Escape
+browser focus '.tv-heading a'
+browser press Enter
+browser wait '#start'
 browser errors
 printf 'Browser verification artifacts: %s\n' "$tv_tune_output"

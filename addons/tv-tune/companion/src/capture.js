@@ -1,4 +1,18 @@
 import { summariseSamples } from './probe.js';
+export function sampleRegion(width, height) {
+  if (![width, height].every(value => Number.isFinite(value) && value > 0)) throw new Error('Invalid video geometry');
+  return { x: width * 0.4, y: height * 0.4, width: width * 0.2, height: height * 0.2 };
+}
+
+/** Map sampled pixels into a centred object-fit:contain preview, including its bars. */
+export function previewRegion(width, height, containerWidth, containerHeight) {
+  const region = sampleRegion(width, height);
+  if (![containerWidth, containerHeight].every(value => Number.isFinite(value) && value > 0)) throw new Error('Invalid preview geometry');
+  const scale = Math.min(containerWidth / width, containerHeight / height);
+  return { left: (containerWidth - width * scale) / 2 + region.x * scale,
+    top: (containerHeight - height * scale) / 2 + region.y * scale,
+    width: region.width * scale, height: region.height * scale };
+}
 
 /** Owns every requested stream, including streams whose permission resolves late. */
 export function createCameraController({ mediaDevices, secureContext, onChange = () => {} } = {}) {
@@ -28,7 +42,7 @@ export function createCameraController({ mediaDevices, secureContext, onChange =
       if (!track) throw new Error('No video track');
       let capabilities;
       try { capabilities = track.getCapabilities?.(); } catch { /* Optional browser API. */ }
-      observed = { secureContext: true, mediaAvailable: true, capabilities, settings: track.getSettings?.() ?? {} };
+      observed = { secureContext: true, mediaAvailable: true, capabilities };
       track.addEventListener('ended', () => { if (current === generation) stop(); });
       video.srcObject = acquired;
       await video.play();
@@ -43,7 +57,13 @@ export function createCameraController({ mediaDevices, secureContext, onChange =
       return false;
     }
   }
-  return { start, stop, observations: () => observed };
+  function observations() {
+    if (!stream) return {};
+    let settings = {};
+    try { settings = stream.getVideoTracks()[0]?.getSettings?.() ?? {}; } catch { /* Optional browser API. */ }
+    return { ...observed, settings };
+  }
+  return { start, stop, observations };
 }
 
 export function pixelSample(pixels) {
