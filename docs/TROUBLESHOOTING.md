@@ -781,3 +781,32 @@ When you report how an app does on your TV, say how far it got, because each ste
 own: installed, opened, usable with the physical remote, signed in, and played a title with sound.
 Reaching the login screen is not playback. Quote the app's full error code (Netflix's `UI-800-3`,
 for example) rather than "doesn't work", since that is what the app's own help pages look up (#1008).
+
+## The router's domain rules stop applying to the TV after Private DNS
+
+Private DNS in hostname mode sends every lookup over DNS-over-TLS straight to the resolver, past the
+router's own DNS. A router that filters or routes traffic by domain through its resolver - podkop and its
+forks on OpenWrt, mihomo/Clash in fake-IP mode, a VPN subscription with domain lists, Pi-hole or AdGuard
+Home - then never sees the TV's lookups, and its rules stop applying to the TV without any error. On a TCL
+Smart TV Pro (G05, Android 11, `AR2101`/`AR28`) behind such a router, with `dns.adguard-dns.com` in
+hostname mode, the TV got real addresses instead of the router's fake-IP range (198.18.0.0/15), so traffic
+the router would have sent through its tunnel went out directly: services that only work through that
+route broke or slowed down, and the resolver itself answered `127.0.0.1` for `api.themoviedb.org` (#1385).
+
+To tell, compare the address the TV gets with the router's answer for the same host:
+
+```sh
+tools/tv.py 'ping -c1 -W1 <host>'     # the first line shows the address the TV resolved
+nslookup <host> <router ip>           # on the computer: what the router answers
+```
+
+A fake-IP or other router-made answer next to a real address on the TV means Private DNS is going around
+the router. Then either set the mode back, so the TV asks the router again, and block ads on the router
+instead (most of these setups can):
+
+```sh
+tools/tv.py 'settings put global private_dns_mode opportunistic'
+```
+
+or keep Private DNS and accept that the router's domain rules no longer cover the TV. Write down which one
+you chose, so the next "this one service is slow on the TV" does not start from scratch.
