@@ -28,6 +28,7 @@
     <string name="home_settings">選擇預設主畫面</string>
     <string name="home_settings_help">選擇原本的主畫面即可停止使用 CleanYourTV 當主畫面，要切回來時選 CleanYourTV。原本的桌面必須仍是啟用狀態，如果被安裝腳本停用了，請先用還原腳本啟用；電視也必須有系統的主畫面選擇頁。</string>
     <string name="launcher_settings">桌面設定</string>
+    <string name="launcher_version">桌面版本 %1$s</string>
     <string name="columns_label">每列 app 數量</string>
     <string name="dock_opacity_label">Dock 列不透明度</string>
     <string name="animations_state">動畫效果：%1$s</string>

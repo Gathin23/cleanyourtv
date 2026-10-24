@@ -144,5 +144,14 @@
             style="@style/SettingsRow"
             android:layout_marginTop="18dp"
             android:text="@string/tv_settings" />
+
+        <TextView
+            android:id="@+id/launcherVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
+            android:textColor="#FFACB8C1"
+            android:textSize="14sp" />
     </LinearLayout>
 </ScrollView>

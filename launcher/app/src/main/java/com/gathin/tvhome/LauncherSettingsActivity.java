@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -139,6 +140,13 @@ public final class LauncherSettingsActivity extends Activity {
         });
         findViewById(R.id.tvSettingsChoice).setOnClickListener(v ->
                 open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
+        try {
+            String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            ((TextView) findViewById(R.id.launcherVersion)).setText(
+                    getString(R.string.launcher_version, version));
+        } catch (PackageManager.NameNotFoundException e) {
+            ((TextView) findViewById(R.id.launcherVersion)).setVisibility(View.GONE);
+        }
         refresh();
         if (config.launcherSettingsButton) reorderChoice.requestFocus();
         else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();
