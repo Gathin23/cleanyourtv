@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.UserManager;
 import android.content.pm.PackageManager;
@@ -58,6 +59,10 @@ public class HomeKeyService extends AccessibilityService {
     private final Set<String> stockHome = new HashSet<>();
     /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter, or before the unlock. */
     private GamepadPassthrough gamepads;
+    /** Screen-off receiver while guard_off_in_standby is set; null otherwise. */
+    private BroadcastReceiver standbyExit;
+    /** disableSelf is how this service leaves for standby, not the user turning it off. */
+    private boolean steppingOut;
 
     @Override
     protected void onServiceConnected() {
@@ -95,8 +100,35 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         stopWaitingForUnlock();
+        if (standbyExit != null) {
+            try {
+                unregisterReceiver(standbyExit);
+            } catch (RuntimeException ignored) {
+            }
+            standbyExit = null;
+        }
         if (gamepads != null) gamepads.stop();
         super.onDestroy();
+    }
+
+    /** Some TCL boards never wake from the remote while this helper stays bound with the screen off. */
+    private void armStandbyExit() {
+        if (standbyExit != null || !GuardKeep.offInStandby(this)) return;
+        standbyExit = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (!Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) return;
+                leaveForStandby();
+            }
+        };
+        registerReceiver(standbyExit, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        PowerManager power = getSystemService(PowerManager.class);
+        if (power != null && !power.isInteractive()) leaveForStandby();
+    }
+
+    private void leaveForStandby() {
+        steppingOut = true;
+        GuardKeep.stepOut(this);
     }
 
     private void loadConfig() {
@@ -125,6 +157,7 @@ public class HomeKeyService extends AccessibilityService {
             setServiceInfo(info);
         }
         if (!stockHome.isEmpty()) probeAtBoot();
+        armStandbyExit();
         holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
         holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
         // gamepad_passthrough, off by default. Only with key_filter on: off, the service never filters keys.
@@ -179,7 +212,7 @@ public class HomeKeyService extends AccessibilityService {
     /** Unbound by Android: the user turned the helper off, so Home doesn't put it back (ServiceRepair). */
     @Override
     public boolean onUnbind(Intent intent) {
-        if (repairRecord) ServiceRepair.disconnected(this, getClass());
+        if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
         return super.onUnbind(intent);
     }
 
