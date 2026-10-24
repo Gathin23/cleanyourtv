@@ -7,7 +7,11 @@ glow. On any other Android TV home it is an ordinary app.
 
 ![Brightness in night mode at 40 %, warm, over its own settings](screenshot.jpg)
 
-Opening it shows one list, worked with the remote alone:
+A remote button mapped to its quick bar (the launcher's `app_keys`:
+`hold:191:io.github.maxhayim.brightness/.QuickActivity` puts it on a held Netflix button) opens a small bar at
+the bottom over whatever is playing: Left/Right step the brightness, OK closes it. `.NightToggleActivity` in its
+place switches night mode in one press; Sleep Timer's bedtime button uses it too. The tile and the card open the
+settings, one list worked with the remote alone:
 
 | Row | What it does |
 |---|---|
