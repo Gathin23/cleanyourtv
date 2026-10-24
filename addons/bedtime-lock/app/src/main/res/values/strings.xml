@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bedtime Lock</string>
+    <string name="service_label">Bedtime Lock</string>
+    <string name="service_description">Covers the screen with a code prompt during the locked hours you set in Bedtime Lock, and on TV Settings if you choose. It only sees which app comes to the front, not what is on screen, and does not read keys.</string>
+
+    <string name="locked_until">Locked until %1$s</string>
+    <string name="settings_locked">TV Settings need the code</string>
+    <string name="owner_check">Enter the code to change Bedtime Lock</string>
+    <string name="create_pin">Choose a 6-digit code</string>
+    <string name="repeat_pin">Enter the same code again</string>
+    <string name="pin_hint">Number keys, or Up 1 · Right 3 · OK 5 · Left 7 · Down 9. Back clears.</string>
+    <string name="wrong_pin">Wrong code</string>
+    <string name="pins_differ">The two codes were not the same. Choose one again.</string>
+    <string name="wait_seconds">Too many tries. Wait %1$d seconds.</string>
+
+    <string name="row_enabled">Lock at night: %1$s</string>
+    <string name="row_from">From %1$s</string>
+    <string name="row_until">Until %1$s</string>
+    <string name="row_settings">Also lock TV Settings at any hour: %1$s</string>
+    <string name="row_change_pin">Change the code</string>
+    <string name="row_service_on">Lock helper: on</string>
+    <string name="row_service_off">Lock helper: off (turn it on)</string>
+    <string name="row_test">Try the lock now</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="row_phone">Phone unlock: %1$s</string>
+    <string name="row_phone_test">Send a test to the phones</string>
+    <string name="row_phone_new">New channel (the phones subscribe again)</string>
+    <string name="phone_info">In the ntfy app on each phone, subscribe to %1$s on ntfy.sh.</string>
+    <string name="phone_test_text">Test from Bedtime Lock: phone unlock is set up.</string>
+    <string name="phone_test_sent">Test sent.</string>
+
+    <string name="ask_hint">Back: send unlock request</string>
+    <string name="request_text">The TV asks to be unlocked (%1$s).</string>
+    <string name="ask_waiting">Unlock request sent: %1$s left</string>
+    <string name="ask_again_in">Ask again in %1$s</string>
+    <string name="request_sent">Unlock request sent to the phones</string>
+    <string name="request_hint_code">Right: enter the code</string>
+    <string name="request_hint_ready">Back: send unlock request · Right: enter the code</string>
+    <string name="no_answer">No answer from the phones</string>
+    <string name="not_now">Not now</string>
+    <string name="phone_failed">Could not reach the phones. Check the TV\'s internet connection.</string>
+    <string name="told_unlocked">The TV is unlocked.</string>
+    <string name="told_not_now">Not now was sent to the TV.</string>
+
+    <string name="editing_hint">Up and Down change the time by 15 minutes; OK when done</string>
+    <string name="unlocked_note">Unlocked until the TV goes to standby.</string>
+</resources>
