@@ -12,6 +12,7 @@
     <string name="more">15 more minutes</string>
     <string name="now">Turn off now</string>
     <string name="service_label">Sleep Timer</string>
+    <string name="quick_hint">◀ ▶ pick a time   OK close</string>
     <string name="service_description">Only puts the TV in standby when the Sleep Timer ends. It does not read the screen.</string>
 
     <style name="Warning" parent="android:Theme.DeviceDefault.NoActionBar">

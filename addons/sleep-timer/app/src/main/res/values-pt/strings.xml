@@ -13,4 +13,5 @@
     <string name="now">Desligar agora</string>
     <string name="service_label">Desligar</string>
     <string name="service_description">Só põe a TV em espera quando o timer do Desligar acaba. Não lê a tela.</string>
+    <string name="quick_hint">◀ ▶ escolher o tempo   OK fechar</string>
 </resources>
