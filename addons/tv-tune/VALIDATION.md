@@ -184,3 +184,24 @@ serials, account information or private device names.
 - Four new source/DOM regressions cover both links in English and Spanish. All
   42 JavaScript/source-contract tests pass, along with syntax and shell checks.
   These are software checks, not additional physical-camera or panel evidence.
+- Web 0.1.3 source `41a0c3c8ad7c68102105b10674eea727574e0c05` is published in
+  production deployment `dpl_G7mCHB9TEKmagjwZoqybyZLWaeh6` (READY, public alias assigned).
+  All seven static assets and LICENSE again matched source SHA-256 without auth.
+- Actual cloud-browser round trips passed: English presenter → phone → Home retains
+  English; switching to Spanish and presenter → phone retains Spanish. External
+  source/proposal links are unchanged. Independent patch review found no blockers.
+- GitHub had no workflow runs or check runs for this source commit; no green CI is claimed.
+
+### Android cloud toolchain follow-up
+
+- Downloaded official JDK 17, Gradle 8.9 and Android SDK archives into isolated cloud
+  tooling directories. All eleven existing JVM tests passed again with actual JDK 17
+  javac/runtime. No global configuration, device connection or launcher change.
+- Gradle resolved AGP 8.5.2 dependencies from official repositories with normal TLS
+  verification using the environment's existing Java truststore.
+- Full `testReleaseUnitTest lintRelease assembleRelease` stopped before task execution:
+  Android SDK Platform 34 installation required acceptance of the
+  [Android SDK License Agreement](https://developer.android.com/studio/terms).
+  Acceptance was not performed. No license hashes were fabricated, no protection
+  bypassed and no APK produced. Full Android build/lint remain unverified in this run
+  pending the owner's decision on that agreement; this is not an application test failure.
