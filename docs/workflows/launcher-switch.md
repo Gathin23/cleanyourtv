@@ -8,7 +8,10 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
    that a theme can set it, defaulting to off (`false`, `0` or the current behaviour).
 2. Read it in `launcher/app/src/main/java/com/gathin/tvhome/Config.java`, from the resource and from the
    theme JSON, the way existing keys such as `show_stats` are read.
-3. Add a row to the Keys table in `themes/README.md`.
+3. Add a row to the Keys table in `themes/README.md`, and the key's screenshot row in `docs/switches.md`
+   (`docs/switches/<key>.jpg`, from a real TV with the key on: 16:9, under 300 KB, personal things blurred);
+   `tests/test_switches.py` refuses a Keys row without one, so the two go in the same pull request and the
+   site's Switches tab picks it up from there.
 4. If it adds a row to Launcher settings, put its strings in `launcher/app/src/main/res/values/strings.xml`
    and every `values-*` folder.
 5. With the key off, nothing new runs: no receiver, no service, no write, no permission grant in the install
