@@ -206,6 +206,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** App of the last focused tile, so focus follows it when the app list changes. */
     private static String lastFocusedKey;
     private float density;
+    private int rowsBelowDock;
+    private boolean dockTitle;
+    private int loadedTileWidth;
     /** Module cards (res/values/config.xml, module_cards): discovered on resume, shown only after the owner's Show. */
     private boolean moduleCards;
     /** config settings_key_keycodes / settings_key_panel, so the Settings button works on Home without HomeKeyService. */
@@ -320,6 +323,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // Updates send REMOVED followed by ADDED; keep the tile until the new APK is ready.
             if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())
                     && intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return;
+            Uri data = intent.getData();
+            if (data != null && adapter != null) adapter.invalidatePackage(data.getSchemeSpecificPart());
             // In the background this only marks the tiles stale; onResume rebuilds them once.
             if (!tileRefresh.onPackagesChanged()) return;
             reloadApps(false);
@@ -454,6 +459,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         vpnApp = cfg.vpnApp;
         moduleCards = cfg.moduleCards;
         hiddenApps = new HashSet<>(cfg.hiddenApps);
+        rowsBelowDock = cfg.rowsBelowDock;
+        dockTitle = cfg.dockTitle;
 
         grid = findViewById(R.id.grid);
         rtlAppGrid = getResources().getBoolean(R.bool.rtl_app_grid);
@@ -551,6 +558,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // Cold start or column count > 4: the first focus can run before the grid has its final width or
             // padding, leaving the glass at the XML design size until a key is pressed.
             grid.post(this::refitGlass);
+            if (started && loadedTileWidth > 0 && tileW != loadedTileWidth) reloadTiles();
         });
 
         // Keep the glass glued to its tile while the grid scrolls.
@@ -956,7 +964,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** True when PackageManager reports apps changed since the last rebuild (one binder call). */
     private boolean packagesChangedSinceRebuild() {
         ChangedPackages changed = getPackageManager().getChangedPackages(packageSequence);
-        return changed != null && !changed.getPackageNames().isEmpty();
+        if (changed == null || changed.getPackageNames().isEmpty()) return false;
+        for (String pkg : changed.getPackageNames()) adapter.invalidatePackage(pkg);
+        return true;
     }
 
     private int currentPackageSequence(int since) {
@@ -983,10 +993,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER), 0);
         cards = moduleCards ? CardFeature.run(() -> Cards.discover(this, hiddenApps,
                 () -> Cards.load(Cards.storeFile(this)), leanback), none) : none;
-        adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none), leanback);
+        int tileW = AppAdapter.tileWidthPx(gridInnerWidth(), grid.getHeight(), COLUMNS, rowsBelowDock, dockTitle,
+                dockRow, density);
+        loadedTileWidth = tileW;
+        adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none), leanback,
+                tileW, AppAdapter.tileHeightPx(tileW));
         lastFocusedKey = returnKey;
         lastFocused = returnSlot;
         packageSequence = currentPackageSequence(packageSequence);
+    }
+
+    private int gridInnerWidth() {
+        if (grid.getWidth() > 0) return grid.getWidth() - grid.getPaddingLeft() - grid.getPaddingRight();
+        int w = getResources().getDisplayMetrics().widthPixels;
+        for (View v = grid; v != null; v = v.getParent() instanceof View ? (View) v.getParent() : null) {
+            w -= v.getPaddingStart() + v.getPaddingEnd();
+            if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams m = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                w -= m.getMarginStart() + m.getMarginEnd();
+            }
+            if (v == root) break;
+        }
+        return w;
     }
 
     /**
