@@ -1,0 +1,74 @@
+# TCL 55L8, China (codename x32a0, Amlogic TL1 platform), Android 9, build PPR1.180610.011.20210121
+# (kernel 4.9.113, 2021-01-21), 1.5 GB RAM, ~3.9 GB /data. No Google services. Tested 2026-10-23/24.
+# Stock launcher: com.tcl.cyberui. Live TV / DTV-HDMI: com.tcl.tv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55l8-x32a0-cn/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55l8-x32a0-cn/debloat.txt com.tcl.cyberui
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: Settings -> System -> System Info page, press UP DOWN LEFT RIGHT on the remote (as on
+# ffalcon-r34a0-cn; one pass was enough here). The toggle persists across reboots, but adbd only
+# opens port 5555 about two minutes AFTER the home screen appears - a refused connect right
+# after boot is the slow adbd, not a reset switch.
+# First-time auth quirk: the "Allow USB debugging?" dialog never appeared while the set was up
+# (dozens of reconnect cycles, switch off/on, held-open connections all failed to show it). It
+# appeared on the first connect after a power-cycle reboot (unplug 10 s, replug, wait for the
+# port, connect once and keep it open). Once accepted, every later connect is silent.
+#
+# pm disable-user --user 0 works from the shell on this build (unlike the Android 5.1
+# ffalcon-r34a0-cn), so tools/disable.sh and tools/restore.sh apply as-is; disable-user was
+# spot-checked on com.android.tcl.messagebox. The rest of this list was applied as
+# `pm uninstall -k --user 0` (same visible effect on this firmware; per-package undo:
+# `cmd package install-existing <pkg>`), reboot-checked twice.
+# Third-party launcher NOT attempted: the HOME signature gate documented on other China TCL sets
+# (ffalcon-r34a0-cn, tcl-ak30a5, tcl-q10g-pro) likely refuses it. Stock CyberUI stays.
+#
+# Measured on this 1.5 GB set: MemFree 96 -> 261 MB, MemAvailable 673 -> 769 MB, /data 74% -> 65%
+# (~340 MB, incl. `pm trim-caches`); window/transition/animator scales set to 0.5.
+#
+# Kept on purpose: cyberui (the only HOME), com.tcl.tv (DTV/HDMI), settings, usercenter, sogou
+# IME (the keyboard), the iFlytek voice family (voice remote), miracast +
+# MultiScreenInteraction_TV (casting), local players (videoplayer/imageplayer/audioplayer/
+# ui_mediaCenter), factory.view (holds the ADB toggle page), com.cibn.tv (the only third-party
+# app, in use), browser and weixin (inert, not running). sitatvservice is a native daemon
+# (~25 MB RSS), not a package - pm cannot touch it.
+
+# Boot ad and push-ad channels
+com.tcl.bootadservice                    # full-screen ad before Home
+com.tcl.c2dm.client                      # TCL push channel (ad popups)
+com.android.tcl.messagebox               # image-message popup receiver
+
+# Telemetry and diagnostics
+com.tcl.bi                               # analytics / behaviour reporting
+com.tcl.usagestats                       # usage statistics
+com.tcl.tvhealthcheck                    # diagnostics uploader
+com.tcl.healthinfo                       # health/diagnostic reporting
+com.tcl.TFDS.service                     # fault/log collection
+com.tcl.xian.StartandroidService         # idle-time reporting / ad download
+com.tcl.common.terminalmanagerplus       # remote terminal management
+
+# "Security" / cleaner apps; a 1.5 GB set is faster without them
+com.tcl.tvweishi                         # TV guard / cleaner
+com.tcl.securityapp                      # persistent scanner; it respawns on force-stop while
+                                         # installed, so the reboot after disabling is the final state
+
+# Content preloads (owner's choice)
+com.tcl.appreciate.art                   # art screensaver, ~160 MB PSS while showing: the largest
+                                         # single win on this set
+com.tcl.appmarket2                       # app store
+com.tcl.walleve                          # home recommendation feed. On r34a0 this is the 小T voice
+                                         # framework; here the iFlytek voice processes run without it
+                                         # and the CyberUI home is fine (verified across reboots)
+com.tcl.vod                              # TCL VOD
+com.golive.cinema                        # GoLive cinema preload
+com.tcl.tshop                            # TV shopping mall
+com.tcl.gamecenter                       # game center
+com.tcl.ffkaraoke                        # karaoke preload
+com.tcl.ffeducation                      # education preload
+com.tencent.qqmusictv                    # QQ Music TV preload
+com.example.tvcapture                    # leftover dev example app
+
+# Updaters, off by choice: re-enable all three to take a firmware update
+com.tcl.versionUpdateApp
+com.snm.upgrade
+com.tcl.matrix.installer                 # silent-install channel

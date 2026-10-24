@@ -112,7 +112,7 @@ Anything running **Android TV** or **Google TV**.
 
 Tested lists from contributors, one folder per model in [`examples/`](examples/):
 
-**TCL** 57 · **Sony** 31 · **Xiaomi** 28 · **Philips** 12 · **Hisense** 9 · **Skyworth** 9 · **Amazon Fire TV** 7 ·
+**TCL** 58 · **Sony** 31 · **Xiaomi** 28 · **Philips** 12 · **Hisense** 9 · **Skyworth** 9 · **Amazon Fire TV** 7 ·
 **Thomson** 4 · **BenQ** 3 · **Google** 3 · **OnePlus** 3 · **Panasonic** 3 · **CHiQ** 2 · **FFalcon** 2 · **Haier** 2 ·
 **Hitachi** 2 · **Kalley** 2 · **Motorola** 2 · **Nokia** 2 · **NVIDIA Shield** 2 · **onn** 2 · **Redmi** 2 ·
 **SHARP** 2 · **Toshiba** 2 · **Vu** 2 ·
@@ -295,6 +295,7 @@ Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, JMGO, Magcubic, Portronics, Stel
 | TCL 55C745, 2023 (G08, G08_4K_GB, MediaTek tcl9618) | Google TV 14 |
 | TCL 55C815 (2020, Europe/Denmark, BeyondTV2, Realtek rtd285o) | Android TV 11 |
 | TCL 55EP640 (Greece, BeyondTV, Realtek RTD2851 / rtd285o, AR04) | Android TV 11 |
+| TCL 55L8 (China, x32a0, Amlogic TL1, PPR1.180610.011.20210121), 1.5 GB | Android 9 |
 | TCL 55P638 (Smart TV, BeyondTV4) | Android TV 11 |
 | TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P) | Google TV 12 |
 | TCL 55P8LS QD-Mini LED, Vietnam (G10, G10_4K_GB_32BIT, Realtek rtd6748) | Google TV 12 |
