@@ -1,5 +1,7 @@
 # Xiaomi MiTV-MOOR2 (codename venom), Google TV / Android 11, firmware RTM5.220609.003.2674
 # MediaTek chipset.
+# For Home routing on .1300 with launcherx and setupwraith kept enabled, see README.md.
+# That report does not validate this .2674 package list on .1300.
 #
 # Package names that differ from the repo defaults on this firmware:
 #   stock launcher   com.google.android.apps.tv.launcherx   (NOT com.google.android.tvlauncher)
