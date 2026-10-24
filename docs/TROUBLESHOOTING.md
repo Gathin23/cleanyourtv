@@ -629,6 +629,14 @@ reads `[TclAppBoot]:forbid bind service ComponentInfo{com.gathin.tvhome/com.gath
 and whose `appops get` names the op `AUTO_START`: use the name `appops get` prints. When reporting, give the
 model, build, current user and the relevant redacted lines, not the raw dump.
 
+On a TCL Smart TV Pro (`G05`, Android 11, `AR2101`), the same permission was set through
+**Safety Guard → Permission Shield → Auto Launch Permission**. Temporarily set **Auto manager** to
+**Closed**, set the reference launcher's entry to **Opened**, then restore the original
+**Auto manager** setting. After a reboot,
+`APP_AUTO_START` read `allow` and HomeKeyService was bound without an ADB repair. See the
+[G05 startup-permission check](devices/tcl-55c728-g05-4k-gb.md#further-g05-unit-startup-permission-with-stock-home-retained)
+for the steps, verification and undo; this has not been retested on the G03 or G08 units above.
+
 ## SHIELD TV phone app connects, but no key does anything
 
 On an NVIDIA SHIELD, the SHIELD TV phone app finds the box and connects, but the D-pad, OK, Back and
