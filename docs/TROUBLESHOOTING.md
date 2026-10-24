@@ -317,7 +317,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   details). With file-based encryption (`getprop ro.crypto.type` says `file`) Android starts Home before
   the first unlock, and only a direct-boot-aware activity can start then. Most firmwares have a
   `FallbackHome` that stands in until the unlock; some, like this CVTE board, do not, and then boot
-  never completes. This repo's launcher is direct-boot-aware; most other launchers are not. Check both
+  never completes. This repo's launcher is only partly direct-boot-aware: `HomeKeyService` declares
+  the flag, so Android binds it while the user is still locked, and `MainActivity`, the activity that
+  answers HOME, does not declare it. The second command below therefore prints
+  `PARTIALLY_DIRECT_BOOT_AWARE` for this launcher and cannot say whether Home exists before the
+  unlock; on a set with no `FallbackHome`, the first command is the one that decides. Check both
   before disabling the stock launcher:
   ```sh
   tools/tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
@@ -328,9 +332,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   whose stock launcher declares a HOME priority it can print `Success` and change nothing, with the Home
   role already naming the new launcher while Home still opens the stock one, so read the resolver instead
   (`tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'`).
-  When it keeps naming the stock launcher, the set is debloat-only until someone runs these two checks on
-  that exact board (Thomson 40FG2S14W, Expressluck `nagata`, Android TV 14 `UKNV.260317.001`,
-  [notes](devices/thomson-40fg2s14w.md)).
+  When it keeps naming the stock launcher, the set is debloat-only until a boot with the stock launcher
+  disabled has been tried on that exact board - which does not mean the launcher is unusable there: it
+  still opens from the app list and runs, with Home left where it is. The two checks have been run on the
+  Thomson 40FG2S14W (Expressluck `nagata`, Android TV 14 `UKNV.260317.001`) and both fallbacks are there,
+  but that boot has not been tried ([notes](devices/thomson-40fg2s14w.md),
+  [#1350](https://github.com/Gathin23/cleanyourtv/issues/1350)).
 - **Stuck on the boot animation after the launcher change, ADB gone** (JVC LT-43N7115, CVTE
   `TP.SK706S.PC822`, Android 11, [#741](https://github.com/Gathin23/cleanyourtv/discussions/741)): the stock
   launcher `com.cvte.tv.launcher.space` was disabled and a remote-key helper enabled before one reboot.
