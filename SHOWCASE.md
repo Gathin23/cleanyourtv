@@ -8,6 +8,22 @@ Nothing here is reviewed or maintained by this repo. Read the project's own READ
 it was built on, and treat it the way you'd treat any app you sideload. Each row links to the
 project's own issue tracker.
 
+**Before you install anything from this page.** A home screen is the app your TV opens most, and some
+of these projects ask for far more than the reference launcher does:
+
+- Build it from the linked tag or commit, not from whatever the branch says today, and prefer that over
+  a prebuilt APK.
+- Read its `AndroidManifest.xml` for `android.permission.INTERNET`, `BIND_ACCESSIBILITY_SERVICE` (it can
+  read the screen and filter remote keys), `RECEIVE_BOOT_COMPLETED`, `REQUEST_INSTALL_PACKAGES`, and any
+  code that talks to ADB or Wireless debugging. If the row does not declare one of these and the
+  manifest has it, don't install it, and open an issue here.
+- Before you install an update, check that its signing certificate matches the one you have:
+  `apksigner verify --print-certs app.apk`. A changed certificate on an "update" is a red flag.
+- Turn network ADB off when you're done, whatever you installed, and check it with
+  `tools/adb-closed.py <tv ip>`.
+
+Capability labels in a row are declared by the project's author and are not verified here.
+
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
 81 projects so far.
@@ -174,10 +190,21 @@ Open a pull request that adds one row to the section that fits (home screen, for
 other platform; if you're not sure, pick one and say so), and your TV's brand to the index above.
 A tutorial or write-up goes under Guides as one line. The rules are short:
 
-- It is open source, and the link goes to a repository or branch people can read and build.
+- It is open source, and the link goes to a repository people can read and build.
+- The main link points to a tag or a commit, so the row describes something fixed. You can link the
+  project's home page as well. To list a newer version, send a one-line PR with the new tag.
 - It says which TV or platform it was built and tested on.
-- It does not collect data or phone home beyond what it says on its own README.
+- It declares its sensitive capabilities at the end of its cell, as `Declares: none` or any of
+  `network`, `accessibility`, `boot`, `adb`, `self-update`, `installs-apps`, `lan-listener`, with what
+  each is used for.
+- It does not collect data or phone home beyond what it declares and what its own README says.
+- An APK link sits next to a tagged source release, with the SHA-256 or the signing certificate
+  fingerprint published in that release.
 - It is yours, or you have the author's blessing to list it.
+
+A row can be removed without discussion if its repository disappears or changes owner, or if its
+declared capabilities turn out to be incomplete. Report that in an issue, or privately through
+[SECURITY.md](SECURITY.md) if it looks deliberate.
 
 A screenshot in the PR description is appreciated and will be linked from the row. If the project
 is a fork of this repo, say what it changes; if it is something new made from `PROMPT.md`, say so,
