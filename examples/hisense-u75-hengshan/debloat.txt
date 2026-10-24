@@ -5,6 +5,9 @@
 # Second unit: Hisense 75U75N, US market, same device and build (STT2.230310.002). This list applied
 # there except com.hisense.odinbrowser (kept by that owner); README.md has its remote's button codes
 # and notes, config.json its dock.
+# Third unit: Hisense 55U7N, same device and build, reported 2026-10-24 (#1326): the volume ramp goes the
+# same way with HomeKeyService alone and no CEC soundbar, so that trade is the board's, not the soundbar's.
+# README.md carries it.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan/debloat.txt com.google.android.apps.tv.launcherx

@@ -2,5 +2,5 @@
   "tv": "Hisense U75 / 75U75N (hengshan, MediaTek), Latin America and US",
   "os": "Google TV 12",
   "brand": "Hisense",
-  "notes": "Vtp_ACR content recognition, VIDAA Channels Plus + content tab, Family Moment, store/hotel/factory, DeviceAssistant cleaner, Ginga broadcast middleware, Google PAI auto-installs; OTA, casting and all streaming apps kept by choice; smartsense/AIoT family must stay (Recovery risk); 75U75N (US) second unit: remote button codes, a dock `config.json`, and why a key helper costs the volume ramp with a CEC soundbar"
+  "notes": "Vtp_ACR content recognition, VIDAA Channels Plus + content tab, Family Moment, store/hotel/factory, DeviceAssistant cleaner, Ginga broadcast middleware, Google PAI auto-installs; OTA, casting and all streaming apps kept by choice; smartsense/AIoT family must stay (Recovery risk); 75U75N (US) second unit: remote button codes, a dock `config.json`, and why a key helper costs the volume ramp with or without a CEC soundbar"
 }

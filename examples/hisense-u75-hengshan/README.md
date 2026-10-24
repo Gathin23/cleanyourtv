@@ -1,7 +1,8 @@
 # Hisense U75 / 75U75N (hengshan), Google TV 12
 
 Notes for the `hengshan` board, firmware `STT2.230310.002`. The first list came from a Latin America U75; the
-75U75N notes are from a US unit (one owner, from 2026-10-22).
+75U75N notes are from a US unit (one owner, from 2026-10-22); a 55U7N report of 2026-10-24 (#1326) confirms the
+board, the build and the volume trade below.
 
 ## Live TV and inputs
 
@@ -35,8 +36,12 @@ answer it. `config.json` maps all five for `HomeKeyService` (`HOME_KEY_SERVICE=1
 settings panel and the app buttons their apps.
 
 That costs the volume ramp. With the helper bound, holding volume steps once per press. With a CEC soundbar
-the log shows why: the accessibility filter hands volume keys to the window policy, which sends the CEC step and
-consumes them, so nothing repeats. The log and the choices are in
+the 75U75N's log shows why: the accessibility filter hands volume keys to the window policy, which sends the CEC
+step and consumes them, so nothing repeats. The soundbar is what that unit's log explains, not what the loss
+needs: a 55U7N on the same board and build steps once per press with `HomeKeyService` alone and no soundbar in the
+report (#1326), and its log repeats the app-button rows above (`GlobalKeyReceiver` receives 295, 607 and 606 with
+launcherx disabled and nothing opens). Its held-key capture was not taken, so the CEC step is unproven there. The
+log and the choices are in
 [the key-repeat note](../../docs/devices/tcl-55p71b-g09-key-repeat.md). Re-enabling launcherx to answer the
 buttons takes Home back on this firmware. The 75U75N owner kept the ramp and runs without the helper.
 

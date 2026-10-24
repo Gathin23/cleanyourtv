@@ -724,7 +724,7 @@ network, which is why the closing step in [README](../README.md#questions-people
 Hold volume up or down and the volume moves one step per press instead of ramping. The remote may be
 fine and so may the debloat: the ramp is back the moment no key-filtering accessibility service is bound,
 and `getevent -lt` shows whether the repeat still arrives from the remote while the button is held. On a
-TCL 55P71B Pro (`G09`, Google TV 12, `STT2.230203.001.AS23`) it was all or nothing - `HomeKeyService`
+TCL 55P71B Pro (`G09`, Google TV 12, `STT2.230203.001.AS23`, #763) it was all or nothing - `HomeKeyService`
 alone, `InputKeyService` alone and both together all broke it, with `settings put secure
 enabled_accessibility_services ''` plus `accessibility_enabled 0` restoring it. The dumps show
 `capabilities=8` (`CAPABILITY_CAN_FILTER_KEY_EVENTS`), so the platform routes every key through a filter
@@ -735,10 +735,15 @@ alone (#944), where the empty list was not tried because it also unhooks the but
 installed for. An onn 4K Streaming Box (`YOC`, Google TV 14, `URO4.260304.011.B1.15051976`) does the same with
 `HomeKeyService` alone; there `key_filter` false (config.xml or a theme) brought the repeat back with the helper
 still bound, so a helper kept for something other than keys need not cost it. A Hisense 75U75N (`hengshan`,
-Google TV 12, `STT2.230310.002`) with a CEC soundbar does it with `HomeKeyService` alone, and its log shows where
-the repeat goes: the filter hands volume keys to the window policy first, Hisense's policy sends the CEC step and
-consumes the key, so no helper sees it and nothing repeats (the G09 note has the log). Check the state first, do
-not rewrite it blind:
+Google TV 12, `STT2.230310.002`) with `HomeKeyService` alone does it too, and its log shows where the repeat goes:
+the filter hands volume keys to the window policy first, Hisense's policy sends the CEC step and consumes the key,
+so no helper sees it and nothing repeats (the G09 note has the log). The soundbar is not the condition: that unit
+had one, while a 55U7N on the same board and build steps once per press with `HomeKeyService` alone and no soundbar
+in its report (#1326), so the CEC step is one unit's account of a key the policy takes, not the cause. The 55U7N
+also shows where that board's app buttons go: with launcherx disabled Hisense's own `GlobalKeyReceiver` receives
+295, 607 and 606 and nothing opens, so only a helper answers them
+([the hengshan notes](../examples/hisense-u75-hengshan/README.md)); its held-key capture was not taken. Check the
+state first, do not rewrite it blind:
 
 ```sh
 tools/tv.py 'settings get secure enabled_accessibility_services'
