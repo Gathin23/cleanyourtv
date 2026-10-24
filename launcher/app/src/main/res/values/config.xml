@@ -169,7 +169,8 @@
          EV_KEY code, in hex). A scancode entry wins over a keycode. In place of a package, "input:<input id>"
          switches to that TV input, e.g. scan:227:input:com.tcl.tvinput/.passthroughinput.TvPassThroughService/HW1413744640
          for HDMI 3 on a TCL Smart TV Pro; the ids are in `tools/tv.py 'dumpsys tv_input'` (hdmi_port=N under
-         TvInputHardwareInfo). Prefix an entry with "hold:" for the same button's long press:
+         TvInputHardwareInfo). "package/.Activity" opens that activity instead of the app's launcher entry, e.g.
+         hold:191:io.github.maxhayim.brightness/.QuickActivity for an add-on's quick bar. Prefix an entry with "hold:" for the same button's long press:
          "hold:KEYCODE_BUTTON_8:org.xbmc.kodi" opens Kodi when held for half a second, while the unprefixed entry
          still opens on a tap; "hold:scan:490:..." works for scancodes. A key with only a hold entry does nothing
          on a tap. A listed app that is not installed leaves the button doing nothing. Leave empty to omit. -->

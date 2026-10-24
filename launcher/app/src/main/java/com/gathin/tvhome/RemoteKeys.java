@@ -3,9 +3,12 @@ package com.gathin.tvhome;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvContract;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 
 import java.util.ArrayList;
@@ -21,8 +24,10 @@ import java.util.function.ToIntFunction;
  * "KEYCODE_BUTTON_3:com.google.android.youtube.tv", or a scancode as "scan:490:com.wbd.hbomax". A "hold:"
  * prefix makes an entry the long-press action instead: "hold:KEYCODE_BUTTON_8:org.xbmc.kodi" opens Kodi when
  * that button is held for HOLD_MS, while the unprefixed entry still opens on a tap; "hold:scan:490:..." does
- * the same for a scancode. One set of maps for both services; whichever filters the key first consumes it.
- * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app.
+ * the same for a scancode. One set of maps for both services; Android hands a key to every service that filters,
+ * so both may call handle() for one event, and it answers each press once.
+ * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app, and one of
+ * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say).
  */
 final class RemoteKeys {
 
@@ -129,14 +134,42 @@ final class RemoteKeys {
         return holds;
     }
 
+    /** Created on first use: building it while the class loads breaks the JVM tests. */
+    private static Handler handler;
+    private static Runnable pendingHold;
     /**
-     * Consumes a key mapped by either list. On release it opens the hold app after HOLD_MS, otherwise the normal
-     * one; false means neither list has this key, so the caller can pass it on.
+     * Presses are told apart by KeyEvent.getDownTime(): the press whose hold is pending, the one whose hold fired
+     * and the one that already launched. Both services get every event, so each press is answered once.
+     */
+    private static long armedDownTime = -1, firedDownTime = -1, launchedDownTime = -1;
+
+    /**
+     * Consumes a key mapped by either list: the hold app opens once the button has been down for HOLD_MS, the
+     * normal one on an earlier release. False means neither list has this key, so the caller can pass it on.
      */
     static boolean handle(Context ctx, KeyEvent event, String app, String holdApp) {
         if (app == null && holdApp == null) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            launch(ctx, target(app, holdApp, event.getEventTime() - event.getDownTime()));
+        long downTime = event.getDownTime();
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (holdApp == null || event.getRepeatCount() != 0 || (pendingHold != null && armedDownTime == downTime)) return true;
+            if (handler == null) handler = new Handler(Looper.getMainLooper());
+            if (pendingHold != null) handler.removeCallbacks(pendingHold);
+            armedDownTime = downTime;
+            pendingHold = () -> {
+                pendingHold = null;
+                firedDownTime = downTime;
+                launch(ctx, holdApp);
+            };
+            handler.postDelayed(pendingHold, HOLD_MS);
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            if (pendingHold != null && armedDownTime == downTime) {
+                handler.removeCallbacks(pendingHold);
+                pendingHold = null;
+            }
+            if (downTime != firedDownTime && downTime != launchedDownTime && !event.isCanceled()) {
+                launchedDownTime = downTime;
+                launch(ctx, target(app, holdApp, event.getEventTime() - downTime));
+            }
         }
         return true;
     }
@@ -154,9 +187,17 @@ final class RemoteKeys {
     }
 
     /** Opens an app from a remote button: its TV entry if it has one, else its phone entry. An "input:<id>" target
-     *  switches to that TV input (an HDMI port) instead. */
+     *  switches to that TV input (an HDMI port) instead; a "package/.Activity" target opens that activity. */
     static void launch(Context ctx, String pkg) {
         if (pkg == null) return;
+        ComponentName activity = pkg.indexOf('/') > 0 ? ComponentName.unflattenFromString(pkg) : null;
+        if (activity != null) {
+            try {
+                ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException | SecurityException ignored) {
+            }
+            return;
+        }
         String inputId = inputId(pkg);
         if (inputId != null) {
             // The same passthrough URI the Inputs menu opens, which the Live TV app handles.
