@@ -30,7 +30,10 @@ public final class SettingsActivity extends Activity {
     private TextView editing;
     /** The screen went out of sight (another app, Home, standby): the PIN again when it comes back. */
     private boolean left;
-    /** The test lock was opened from here: coming back after it took the right PIN does not ask again. */
+    /**
+     * The test lock was opened from here: coming back after it was closed from itself (the right PIN or Back) does not
+     * ask again; Home or anything else that leaves it does.
+     */
     private boolean testing;
 
     @Override
@@ -43,10 +46,10 @@ public final class SettingsActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        boolean ask = left && stage != VERIFY && store.hasPin() && !(testing && LockActivity.testPassed);
+        boolean ask = left && stage != VERIFY && store.hasPin() && !(testing && LockActivity.testClosed);
         left = false;
         testing = false;
-        LockActivity.testPassed = false;
+        LockActivity.testClosed = false;
         if (ask) showPin(VERIFY, 0);
         else if (stage == ROWS) render();
     }
@@ -121,7 +124,7 @@ public final class SettingsActivity extends Activity {
         });
         findViewById(R.id.test).setOnClickListener(v -> {
             testing = true;
-            LockActivity.testPassed = false;
+            LockActivity.testClosed = false;
             startActivity(new Intent(this, LockActivity.class).putExtra(LockActivity.EXTRA_REASON, LockActivity.TEST));
         });
         findViewById(R.id.phone).setOnClickListener(v -> {

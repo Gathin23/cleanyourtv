@@ -23,8 +23,8 @@ import java.util.Calendar;
 public final class LockActivity extends Activity {
     static final String EXTRA_REASON = "reason";
     static final int NIGHT = 0, SETTINGS = 1, TEST = 2;
-    /** The test lock took the right PIN; SettingsActivity reads and clears it on its way back. */
-    static boolean testPassed;
+    /** The test lock was closed from itself (the right PIN or Back); SettingsActivity reads and clears it. */
+    static boolean testClosed;
 
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Runnable recheck = this::recheck;
@@ -231,7 +231,7 @@ public final class LockActivity extends Activity {
         store.succeeded();
         if (reason == SETTINGS) store.setSettingsOpen();
         else if (reason == NIGHT) store.setUnlocked();
-        else testPassed = true;
+        else testClosed = true;
         finish();
     }
 
@@ -240,6 +240,8 @@ public final class LockActivity extends Activity {
         if (reason == SETTINGS) {
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } else if (reason == TEST) {
+            testClosed = true;
         }
         finish();
     }
