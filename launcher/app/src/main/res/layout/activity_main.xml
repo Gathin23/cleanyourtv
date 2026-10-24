@@ -226,6 +226,7 @@
                 android:gravity="center_vertical"
                 android:clipChildren="false"
                 android:clipToPadding="false"
+                android:descendantFocusability="afterDescendants"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -361,7 +362,10 @@
                 android:clipChildren="false"
                 android:overScrollMode="never"
                 android:scrollbars="none"
-                android:descendantFocusability="afterDescendants" />
+                android:descendantFocusability="afterDescendants"
+                android:focusable="true">
+                <requestFocus />
+            </androidx.recyclerview.widget.RecyclerView>
 
             <!-- App page: 5-column grid for ALL apps -->
             <androidx.recyclerview.widget.RecyclerView

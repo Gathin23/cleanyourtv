@@ -708,9 +708,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (v.getId() == R.id.weatherPill) {
-                    // Left from weather moves focus to the last dock item (Vidio)!
-                    int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
-                    focusTile(lastDockPos);
                     return true;
                 }
                 if (v.getId() == R.id.btnInputs && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
@@ -721,8 +718,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
                 if (v.getId() == R.id.weatherPill) {
-                    View rightTarget = btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton();
-                    rightTarget.requestFocus();
+                    View rightTarget = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton();
+                    if (rightTarget != null) rightTarget.requestFocus();
                     return true;
                 }
                 if (v.getId() == R.id.btnSettings) return true;
@@ -752,8 +749,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             button.setOnFocusChangeListener((view, focused) -> {
                 if (focused) {
                     setPillHighlighted(view, true);
-                } else if (!view.isSelected()) {
-                    setPillHighlighted(view, false);
+                } else {
+                    boolean popupOpen = (openPopup != null && view.isSelected());
+                    if (!popupOpen) {
+                        view.setSelected(false);
+                        setPillHighlighted(view, false);
+                    }
                 }
             });
         }
@@ -947,6 +948,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (showStats) startStats();
         sky.update();
         wallpaperPlayer.start();
+        // Ensure all top pills are clean and unfocused when returning to Home
+        for (View b : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
+            if (b != null) {
+                b.setSelected(false);
+                setPillHighlighted(b, false);
+            }
+        }
         // Force wallpaper sync with the currently focused dock app on resume
         if (dockRow && adapter != null && adapter.appCount() > 0) {
             int pos = lastFocused % COLUMNS;
@@ -954,6 +962,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (pkg != null) {
                 updateDockWallpaper(pkg, pos, true);
             }
+            grid.post(() -> focusTile(pos));
         }
         handler.postDelayed(minuteTick, MINUTE_MS);
         if (festive && diya != null) {
@@ -1180,6 +1189,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     public boolean dispatchKeyEvent(KeyEvent event) {
         SoundManager.getInstance(this).handleKeyEvent(event);
         int code = event.getKeyCode();
+        if (code == KeyEvent.KEYCODE_TV_INPUT || code == KeyEvent.KEYCODE_TV || code == 178 || code == 170) {
+            for (View b : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
+                if (b != null) {
+                    b.setSelected(false);
+                    setPillHighlighted(b, false);
+                }
+            }
+        }
         if (code == KeyEvent.KEYCODE_SETTINGS
                 || code == KeyEvent.KEYCODE_MENU
                 || code == 83 /* TCL Google TV remote settings button */) {
@@ -2611,16 +2628,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusLibrary();
                 return true;
             }
-            // In the dock, navigating right from the last app moves directly to weather!
-            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && position < COLUMNS) {
-                int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
-                if (position == lastDockPos) {
-                    if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
-                        weatherPill.requestFocus();
-                        return true;
-                    }
-                }
-            }
             // In the dock, the last app is the row's end: the empty slots after it take no focus.
             int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
             return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
@@ -2628,12 +2635,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
-                // Dock row: moving UP always focuses weather pill!
-                if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
-                    weatherPill.requestFocus();
+                // Dock row: moving UP focuses top action pills (Inputs/Settings), NEVER auto-focusing weather!
+                View topTarget = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton();
+                if (topTarget != null) {
+                    topTarget.requestFocus();
                     return true;
                 }
-                return false;          // dock row fallback: let focus move to the top bar
+                return true;
             }
             target = position - COLUMNS;
         } else {
@@ -3155,8 +3163,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 SoundManager.getInstance(MainActivity.this).playBack();
             }
             if (openPopup == popup) openPopup = null;
-            anchor.requestFocus();
+            anchor.setSelected(false);
             setPillHighlighted(anchor, false);
+            focusTile(lastFocused % COLUMNS);
         });
 
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -3379,8 +3388,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 SoundManager.getInstance(MainActivity.this).playBack();
             }
             if (openPopup == popup) openPopup = null;
-            anchor.requestFocus();
+            anchor.setSelected(false);
             setPillHighlighted(anchor, false);
+            focusTile(lastFocused % COLUMNS);
         });
 
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -3465,10 +3475,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (heroScrim != null) {
                 heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
             }
-            if (!reordering && !dockEditing) {
-                anchor.requestFocus();
-            }
+            anchor.setSelected(false);
             setPillHighlighted(anchor, false);
+            if (!reordering && !dockEditing) {
+                focusTile(lastFocused % COLUMNS);
+            }
         });
 
         SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
@@ -3575,7 +3586,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ivIcon.setImageResource(iconRes);
         }
         if (weatherPill != null) {
-            setPillHighlighted(weatherPill, weatherPill.isFocused() || weatherPill.isSelected());
+            setPillHighlighted(weatherPill, weatherPill.isFocused() || (openPopup != null && weatherPill.isSelected()));
         }
     }
 
@@ -3689,8 +3700,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (heroScrim != null) {
                 heroScrim.animate().alpha(0f).setDuration(240).withEndAction(() -> heroScrim.setVisibility(View.GONE)).start();
             }
-            anchor.requestFocus();
+            anchor.setSelected(false);
             setPillHighlighted(anchor, false);
+            focusTile(lastFocused % COLUMNS);
         });
 
         SharedPreferences sp = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
@@ -3861,8 +3873,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final PopupWindow popup = glassPopup(panel, (int) (400 * density));
         popup.setOnDismissListener(() -> {
             if (openPopup == popup) openPopup = null;
-            anchor.requestFocus();
+            anchor.setSelected(false);
             setPillHighlighted(anchor, false);
+            focusTile(lastFocused % COLUMNS);
         });
         List<Cards.Card> listed = new ArrayList<>(cards);
         Collections.sort(listed, Cards::byLabel);
