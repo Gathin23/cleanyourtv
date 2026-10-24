@@ -46,8 +46,15 @@ function setupPresenter() {
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { state.pause(); render(); } });
   window.addEventListener('resize', render);
-  const interval = setInterval(() => { state.tick(performance.now()); render(); }, 1000);
-  window.addEventListener('pagehide', () => clearInterval(interval), { once: true });
+  let interval = null;
+  const startTimer = () => {
+    if (interval === null) interval = setInterval(() => { state.tick(performance.now()); render(); }, 1000);
+  };
+  window.addEventListener('pagehide', () => {
+    clearInterval(interval); interval = null; state.pause(); render();
+  });
+  window.addEventListener('pageshow', startTimer);
+  startTimer();
   render();
 }
 
@@ -115,7 +122,13 @@ function setupPhone() {
   $('start').addEventListener('click', () => { void controller.start(preview); });
   const stop = () => { abort?.abort(); capturing = false; controller.stop(); $('confirm').checked = false; updateButtons(); };
   $('stop').addEventListener('click', stop);
-  $('confirm').addEventListener('change', updateButtons);
+  $('confirm').addEventListener('change', () => {
+    if (!$('confirm').checked && capturing) {
+      abort?.abort();
+      status(say('Captura cancelada. Confirma de nuevo el ID del patrón.', 'Capture cancelled. Confirm the patch ID again.'));
+    }
+    updateButtons();
+  });
   $('patch').addEventListener('change', () => { abort?.abort(); $('confirm').checked = false; report = null; $('results').hidden = true; updateButtons(); });
   $('capture').addEventListener('click', async () => {
     if (!ready || capturing || !$('confirm').checked || !context) return;
@@ -164,6 +177,7 @@ function setupPhone() {
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
   window.addEventListener('pagehide', () => { stop(); resizeObserver?.disconnect(); });
+  window.addEventListener('pageshow', () => { resizeObserver?.observe(previewBox); updateOverlay(); });
   if (!isSecureContext || !navigator.mediaDevices?.getUserMedia) {
     $('start').disabled = true;
     status(!isSecureContext ? errors.secure_origin_required : errors.camera_unavailable, true);

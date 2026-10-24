@@ -136,6 +136,13 @@ pixels in any frame or variation above two 8-bit codes trigger heuristic warning
 These are capture-quality heuristics, not accuracy thresholds. Endpoint warnings can
 be expected for intentionally black/white fields. A stable image can still be wrong.
 
+## Measurement research
+
+[MEASUREMENT_PLAN.md](MEASUREMENT_PLAN.md) defines the proposed camera-control,
+reference-instrument, held-out accuracy and reversible-correction gates. It includes
+predeclared engineering targets, not achieved results. Browser/DOM simulations and
+emulator checks cannot satisfy those gates.
+
 ## Before a merge-ready contribution
 
 The new-add-on rules require a **real-TV** `screenshot.jpg` (16:9 JPEG, at most 300 KB)

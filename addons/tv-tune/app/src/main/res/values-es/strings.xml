@@ -44,7 +44,7 @@
     <string name="saved_original">Valores originales: %1$s</string>
     <string name="no_notes">No se han anotado valores</string>
     <string name="fields_title">Experimento de captura con móvil</string>
-    <string name="fields_body">Usa estos ID con el experimento web incluido en el código del add-on. Sirve esa página mediante HTTPS de confianza para usar la cámara de un iPhone o Android. Esta versión no tiene emparejamiento automático ni servicio alojado. Comprueba la captura, no la precisión del color.</string>
+    <string name="fields_body">Abre https://tv-tune-kalt2212.vercel.app/ en el navegador del teléfono. Selecciona el mismo ID y los códigos RGB mostrados en esta TV y confírmalos en el teléfono antes de capturar. Cubre todo el marco de muestreo de la cámara con el campo uniforme. La coincidencia es manual: no hay emparejamiento automático ni sincronización. Comprueba la captura, no la precisión del color.</string>
     <string name="open_fields">Mostrar campos del experimento</string>
     <string name="field_hint">Izquierda / Derecha: campo · OK: etiquetas · Atrás: salir</string>
     <string name="pattern_hint">OK: ocultar / mostrar etiquetas · Atrás: instrucciones</string>

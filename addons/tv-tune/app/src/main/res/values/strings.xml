@@ -45,7 +45,7 @@
     <string name="saved_original">Original values: %1$s</string>
     <string name="no_notes">No values recorded</string>
     <string name="fields_title">Phone capture experiment</string>
-    <string name="fields_body">Use these patch IDs with the companion web experiment included in this add-on’s source. Host that page on trusted HTTPS to use an iPhone or Android camera. There is no automatic pairing or hosted service in this release. It checks capture quality, not colour accuracy.</string>
+    <string name="fields_body">On your phone, open https://tv-tune-kalt2212.vercel.app/ in a browser. Select the same patch ID and RGB codes shown on this TV, then confirm them on the phone before capturing. Cover the entire camera sampling frame with the uniform patch. Matching is manual: there is no automatic pairing or synchronisation. This checks capture quality, not colour accuracy.</string>
     <string name="open_fields">Show experiment fields</string>
     <string name="field_hint">Left / Right: patch · OK: labels · Back: exit</string>
     <string name="pattern_hint">OK: hide / show labels · Back: instructions</string>

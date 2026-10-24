@@ -113,3 +113,46 @@ serials, account information or private device names.
 - [ ] Confirm manual patch ID, sample distinct frames and inspect report before export.
 - [ ] Compare with an independent reference instrument before interpreting RGB as colour.
 - [ ] Validate a separate device pair before any cross-model or cross-brand support claim.
+
+### Cloud simulation follow-up, 2026-10-24 (web 0.1.2)
+
+- Fresh checkout matched remote `37aea7e7552af633908f6a9ad679f72c80a9907f`;
+  baseline public assets and LICENSE matched source over unauthenticated HTTPS.
+- New deterministic DOM/event simulations reproduced two failures before fixes:
+  withdrawing patch confirmation during capture still generated a confirmed report,
+  and restoring the TV presenter after pagehide left its inactivity timer stopped.
+  The capture now aborts on withdrawal; presenter restoration owns exactly one timer.
+  A third failing regression showed that the phone sampling-frame ResizeObserver
+  was not reattached after restoration; pageshow now reattaches and refreshes it.
+  These simulations exercise production wiring with fake DOM/media/clock objects;
+  they are not Chromium, Safari, camera-sensor or panel evidence.
+- Android English/Spanish phone-field instructions now point to the public companion,
+  require manual patch ID/RGB matching and retain the no-pairing/accuracy limitations.
+  Source-contract tests cover both languages and exact parity of all eleven Android
+  and web patch IDs/RGB triples. XML parsing passed for all eight Android XML files;
+  the manifest still requests no permissions or services.
+- All eleven existing pure-Java JUnit tests passed using Eclipse ECJ with Java 17
+  target on the available Java 21 runtime. This is not a Gradle Android build.
+  Full Android build/lint and emulator UI were not rerun: SDK/adb/emulator are absent,
+  and Gradle's JVM dependency bootstrap failed with a network-unreachable error.
+- Local Chromium launch was blocked by the execution sandbox before UI testing;
+  the attempted supported escalation failed during sandbox setup. Neither result
+  is an application test failure or a browser pass. No physical camera or TV was used.
+- The initial Python run without adb-shell discovered 744 tests (739 passed, four
+  skipped, one screenshot failure). After installing tools/requirements.txt in an
+  isolated environment, the complete suite ran 747 tests: 734 passed, twelve skipped
+  and one failed for the missing real-TV screenshot. Sandbox socket restrictions
+  and optional trace prerequisites explain skips; no test was weakened.
+- [MEASUREMENT_PLAN.md](MEASUREMENT_PLAN.md) adds a proposed reference-instrument
+  protocol with held-out data, uncertainty and preregistered engineering limits.
+  No study was performed and no accuracy or automatic-correction claim was added.
+
+- Final JavaScript/source-contract suite: 38/38 pass; syntax checks and both browser
+  script shell checks pass. Pure modules have 100% line and 92.91% branch coverage;
+  this coverage excludes the dynamically executed app DOM wiring. Independent diff
+  review found no blocking issues.
+- Cloud Chromium UI checks on the baseline verified English page/presenter loading,
+  graceful camera-unavailable handling, Enter/arrow patch navigation, expected RGB
+  and approximately 10% patch area. Fullscreen did not enter in that environment.
+  Synthetic camera configuration and automated accessibility injection were not
+  available, so the prior full browser smoke/accessibility results were not rerun.

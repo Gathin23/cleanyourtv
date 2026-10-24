@@ -30,4 +30,32 @@ browser eval '(async () => {
   }
 })()'
 browser eval '(() => { if(document.querySelector("#controls-state").textContent!=="Camera off")throw Error("Stopped camera retains an active-controls label");return "Stopped camera controls are explicitly inactive"; })()'
+browser click '#start'
+browser wait --text 'Camera active'
+browser eval '(async () => {
+  const byId=id=>document.getElementById(id);
+  byId("confirm").checked=true;byId("confirm").dispatchEvent(new Event("change"));
+  byId("capture").click();
+  byId("confirm").checked=false;byId("confirm").dispatchEvent(new Event("change"));
+  await new Promise(resolve=>setTimeout(resolve,150));
+  if(!byId("results").hidden||!byId("camera-status").textContent.includes("cancelled"))throw Error("Withdrawal did not cancel capture");
+  byId("confirm").checked=true;byId("confirm").dispatchEvent(new Event("change"));
+  if(byId("capture").disabled)throw Error("Capture cannot recover after renewed confirmation");
+  byId("stop").click();return "Withdrawing confirmation cancels capture and allows a fresh attempt";
+})()'
+browser open "$tv_tune_base/?view=tv&lang=en"
+browser eval '(async () => {
+  const original=performance.now.bind(performance);let offset=0;
+  Object.defineProperty(performance,"now",{configurable:true,value:()=>original()+offset});
+  try {
+    for(let i=0;i<2;i++) {
+      window.dispatchEvent(new PageTransitionEvent("pagehide",{persisted:true}));
+      window.dispatchEvent(new PageTransitionEvent("pageshow",{persisted:true}));
+      document.getElementById("next").click();offset+=120001;
+      await new Promise(resolve=>setTimeout(resolve,1100));
+      if(document.getElementById("tv-patch-id").textContent!=="Paused")throw Error("Restored presenter lost inactivity protection");
+    }
+    return "Simulated page restoration preserves inactivity protection across repeated visits";
+  } finally { delete performance.now; }
+})()'
 browser errors

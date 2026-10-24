@@ -4,7 +4,7 @@ set -euo pipefail
 
 tv_tune_base="${1:-http://127.0.0.1:8765}"
 tv_tune_session="tv-tune-smoke-$$"
-tv_tune_output=$(mktemp -d /private/tmp/tv-tune-browser.XXXXXX)
+tv_tune_output=$(mktemp -d "${TMPDIR:-/tmp}/tv-tune-browser.XXXXXX")
 export AGENT_BROWSER_ARGS='--use-fake-device-for-media-stream,--use-fake-ui-for-media-stream'
 browser() { agent-browser --session "$tv_tune_session" "$@"; }
 trap 'browser close >/dev/null 2>&1 || true' EXIT
