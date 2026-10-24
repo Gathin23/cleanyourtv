@@ -4,7 +4,7 @@
 # string rather than ro.product.model.
 #
 # Apply:   TV_HOST=<projector ip> tools/disable.sh examples/portronics-beem-470/debloat.txt
-# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/portronics-beem-470/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/portronics-beem-470/debloat.txt com.htc.htclauncherhighenglishd08
 # Everything is DISABLED, not uninstalled. Comment out anything you use.
 #
 # Tested on a retail unit: Wi-Fi, HDMI input switching, Netflix, JioHotstar, Prime Video, VLC,

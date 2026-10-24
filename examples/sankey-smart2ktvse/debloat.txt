@@ -61,6 +61,6 @@ com.whaletv.launcher           # Original Whale TV launcher
 # - MENU+1147 does NOT work on SMART2KTVSE model (tested, nothing appears)
 # - To enable ADB: Install Activity Launcher app from USB, use it to access
 #   hidden Android Settings -> Developer options -> enable USB debugging
-# - To restore everything: tools/restore.sh examples/sankey-smart2ktvse/debloat.txt
+# - To restore everything: tools/restore.sh examples/sankey-smart2ktvse/debloat.txt com.whaletv.launcher
 # - Stock launcher package: com.whaletv.launcher
 # - Live TV package: com.zeasn.livetv

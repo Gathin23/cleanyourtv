@@ -4,7 +4,7 @@
 # "AI PONT" platform is sold as CHiQ (see the CHiQ DVB93CQ example in PR #10).
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-e55-735/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-e55-735/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-e55-735/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER).
