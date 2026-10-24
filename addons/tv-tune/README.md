@@ -8,6 +8,10 @@ the launcher, system settings, picture controls or debloat procedure.
 Physical-TV validation, a real-TV screenshot and physical-phone capture are pending.
 This is not a calibrated colour meter or universal automatic calibration tool.
 
+**[Open the public web companion](https://tv-tune-kalt2212.vercel.app/)** — a contributor-hosted
+development preview over HTTPS, with Spanish and English interfaces. No account is needed.
+The Android add-on remains source-built; the web preview is not an official project release.
+
 ![Original TV Tune artwork, not a device screenshot](companion/cover.svg)
 
 The design was discussed in [Discussion #1140](https://github.com/Gathin23/cleanyourtv/discussions/1140).
@@ -107,11 +111,19 @@ welcome focus, preparation, all five checks, Back, summary and experiment fields
 using D-pad events only. It resets only TV Tune's own data, refuses physical-device
 serials and saves screenshots in a temporary directory. These remain emulator evidence.
 
-**A physical phone needs a trusted HTTPS origin of its own.** Its `localhost` is the
+To check cancellation/restart behaviour with a synthetic camera, run
+`bash addons/tv-tune/companion/test/lifecycle-smoke.sh` from the repository root.
+Both browser scripts accept a base URL as their first argument, including the public
+preview URL. `node addons/tv-tune/companion/test/publication-check.mjs <https-url>`
+checks access without authentication and compares every deployed asset with local source.
+
+**A physical phone needs a trusted HTTPS origin.** Use the public preview above or your
+own deployment. Its `localhost` is the
 phone, not the computer. A computer's LAN HTTP address will not enable iPhone/Safari
 camera capture. Deploy these static files to a trusted HTTPS host you control, or
-use a separately approved development HTTPS setup. This contribution does not create
-a hosted service, install certificates or weaken browser security.
+use a separately approved development HTTPS setup. The source build does not install
+certificates or weaken browser security. The public preview serves only static files:
+the hosting provider receives ordinary page requests, while frames stay in the browser.
 
 Select the same patch ID on the TV and phone, aim the rear camera so the uniform patch
 covers the entire sampling frame, confirm the ID and start a capture. Confirmation is manual;

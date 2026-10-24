@@ -51,6 +51,23 @@ universal-compatibility or automatic-correction claim is made.
 
 ## Review and build notes
 
+### Public companion, 2026-10-24
+
+- URL: https://tv-tune-kalt2212.vercel.app/ — public contributor-hosted development preview.
+- Web version: 0.1.1; deployed source commit: `15721fb690a3a4963e5bc9c39b86ed17943e3c51`.
+- Production deployment `dpl_3hMMU61FD7SPEk7JS21vZ6cZrpub` reached READY; static build completed
+  in 48 ms. No backend, analytics, image upload or authentication was added.
+- All seven static app assets and the MIT licence were retrieved over normally validated
+  HTTPS without cookies, credentials or a deployment bypass; their SHA-256 hashes matched source.
+- Both browser scripts passed against the public URL, including the synthetic 45-frame
+  capture, portrait/landscape frame geometry, JSON download, Stop, keyboard/fullscreen,
+  mobile overflow and automated accessibility checks. Physical-device validation is still pending.
+- First improvements reproduced before their fixes: an old cancelled capture could unlock
+  a new one, and Stop left an active-controls label. The deterministic lifecycle smoke test
+  now verifies both behaviours on the local server and public site. Unit tests remain 30/30.
+
+### Independent review and native build
+
 An independent whole-branch review found two important issues: intercepted keyboard
 activation and a sampling frame that did not account for video letterboxing. Both
 were reproduced before their fixes. The frame now maps the same central 20% of the
