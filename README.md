@@ -57,6 +57,7 @@ before touching anything you might use.
 |---|---|
 | **A computer** | Use the prompt with a coding assistant: the three steps below. |
 | **Only an Android phone** | Use the community-built [Clean Your TV app](https://cleanyour.tv/app) by [@udhaykumarbala](https://github.com/udhaykumarbala): connect, analyse, clean, in about five minutes. No laptop, no coding agent. |
+| **Only the TV** (an iPhone, no computer) | Install the community-built [CleanTV by VGS](https://github.com/vgscity/vgs-cleantv) on the TV itself (Downloader app, then its APK) and run it with the remote: it connects to the TV's own ADB and cleans that TV. Vietnamese and English. |
 
 With a computer, you need it on the same Wi-Fi as the TV and a coding assistant with shell access.
 
