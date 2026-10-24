@@ -3,7 +3,7 @@ const CONTROLS = ['exposureMode', 'whiteBalanceMode', 'focusMode'];
 const WARNINGS = ['insufficient_frames', 'clipping_observed', 'temporal_variation'];
 const bounded = (value, min, max) => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 
-/** Report observed public camera controls, never colourimetric accuracy. */
+/** Keep advertised manual capability separate from allowlisted observed settings. */
 export function inspectCapabilities({ secureContext = false, mediaAvailable = false,
   capabilities, settings = {} } = {}) {
   const manualControls = CONTROLS.filter(name => Array.isArray(capabilities?.[name]) && capabilities[name].includes('manual'));
@@ -16,8 +16,8 @@ export function inspectCapabilities({ secureContext = false, mediaAvailable = fa
   if (!secureContext) limitations.push('secure_origin_required');
   if (!mediaAvailable) limitations.push('camera_api_unavailable');
   if (!CONTROLS.some(name => Array.isArray(capabilities?.[name]))) limitations.push('camera_controls_unknown');
-  if (safeSettings.exposureMode && safeSettings.exposureMode !== 'manual') limitations.push('automatic_exposure');
-  if (safeSettings.whiteBalanceMode && safeSettings.whiteBalanceMode !== 'manual') limitations.push('automatic_white_balance');
+  if (['continuous', 'single-shot'].includes(safeSettings.exposureMode)) limitations.push('automatic_exposure');
+  if (['continuous', 'single-shot'].includes(safeSettings.whiteBalanceMode)) limitations.push('automatic_white_balance');
   return { secureContext: secureContext === true, cameraAvailable: secureContext === true && mediaAvailable === true,
     manualControls, settings: safeSettings, source: 'processed-video', colourMeasurementValidated: false, limitations };
 }
@@ -66,11 +66,17 @@ function sanitiseQuality(quality) {
 export function exportReport(observations = {}) {
   const patchId = typeof observations.patchId === 'string' && /^(black|white|red|green|blue|grey-(8|32|64|128|192|240))$/.test(observations.patchId)
     ? observations.patchId : null;
+  const capabilities = inspectCapabilities(observations.capabilities), quality = sanitiseQuality(observations.quality);
+  // Only compare known values on both boundaries. Missing data is not an observed change.
+  const before = inspectCapabilities({ settings: observations.settingsBeforeCapture }).settings;
+  if (quality && Object.keys(before).some(name => Object.hasOwn(capabilities.settings, name) &&
+    before[name] !== capabilities.settings[name])) quality.warnings.push('camera_settings_changed');
   return { format: 'tv-tune-compatibility-v1', status: 'experimental', source: 'processed-video',
     colourMeasurementValidated: false, patchId,
     presentation: observations.presentationConfirmed === true ? 'manually-confirmed' : 'unconfirmed',
-    capabilities: inspectCapabilities(observations.capabilities), quality: sanitiseQuality(observations.quality),
+    capabilities, quality,
     limitations: ['Not a calibration profile.', 'No absolute colour or luminance accuracy has been established.',
       'Patch identity is manually confirmed, not synchronised with the TV.',
+      'Only settings exposed at capture start and end can be compared; matching or unknown settings do not establish a camera lock.',
       'Stable camera video does not establish colour accuracy or absence of display flicker.'] };
 }

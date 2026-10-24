@@ -155,6 +155,20 @@ function setupPhone() {
     $('stop').disabled = !ready && !capturing && $('start').disabled === false;
   };
   const status = (message, error = false) => { $('camera-status').textContent = message; $('camera-status').classList.toggle('error', error); };
+  const modeRows = { exposureMode: 'exposure-state', whiteBalanceMode: 'white-balance-state', focusMode: 'focus-state' };
+  const showCameraReadiness = observations => {
+    const observation = inspectCapabilities(observations);
+    const labels = { exposureMode: say('exposición', 'exposure'), whiteBalanceMode: say('balance de blancos', 'white balance'), focusMode: say('enfoque', 'focus') };
+    const modes = { manual: say('Manual', 'Manual'), continuous: say('Continuo (automático)', 'Continuous (automatic)'),
+      'single-shot': say('Automático puntual', 'Single-shot (automatic)'), none: say('Ninguno indicado', 'None reported') };
+    $('controls-state').textContent = observation.manualControls.length
+      ? observation.manualControls.map(name => labels[name]).join(', ')
+      : say('No indicada / desconocida', 'Not reported / unknown');
+    for (const [name, id] of Object.entries(modeRows)) {
+      $(id).textContent = modes[observation.settings[name]] ?? say('Desconocido / no expuesto', 'Unknown / not exposed');
+    }
+    return observation;
+  };
   const controller = createCameraController({ mediaDevices: navigator.mediaDevices, secureContext: isSecureContext,
     onChange(state) {
       ready = state.status === 'ready';
@@ -163,6 +177,7 @@ function setupPhone() {
         abort?.abort(); $('confirm').checked = false;
         $('controls-state').textContent = state.status === 'requesting'
           ? say('Esperando permiso', 'Awaiting permission') : say('Cámara apagada', 'Camera off');
+        for (const id of Object.values(modeRows)) $(id).textContent = $('controls-state').textContent;
       }
       $('preview-placeholder').hidden = ready;
       updateButtons();
@@ -171,11 +186,7 @@ function setupPhone() {
         status(say('Esperando permiso para usar la cámara…', 'Waiting for camera permission…'));
       } else if (state.status === 'error') status(errors[state.error] ?? errors.preview_failed, true);
       else if (ready) {
-        const observation = inspectCapabilities(controller.observations());
-        const labels = { exposureMode: say('exposición', 'exposure'), whiteBalanceMode: say('balance de blancos', 'white balance'), focusMode: say('enfoque', 'focus') };
-        $('controls-state').textContent = observation.manualControls.length
-          ? `${say('Manual disponible', 'Manual available')}: ${observation.manualControls.map(name => labels[name]).join(', ')}`
-          : say('No disponibles o no expuestos', 'Unavailable or not exposed');
+        showCameraReadiness(controller.observations());
         status(say('Cámara activa. Confirma el ID del patrón antes de capturar.', 'Camera active. Confirm the patch ID before capturing.'));
       } else status(say('La cámara está apagada.', 'The camera is off.'));
     }
@@ -217,13 +228,16 @@ function setupPhone() {
     report = null; $('results').hidden = true; $('download').disabled = true; $('report-preview').hidden = true;
     updateButtons(); status(say('Capturando. Mantén el móvil quieto…', 'Capturing. Hold the phone still…'));
     try {
+      const settingsBeforeCapture = showCameraReadiness(controller.observations()).settings;
       const quality = await captureFrames({ video: preview, signal, readFrame() {
         const region = sampleRegion(preview.videoWidth, preview.videoHeight);
         context.drawImage(preview, region.x, region.y, region.width, region.height, 0, 0, 96, 96);
         return pixelSample(context.getImageData(0, 0, 96, 96).data);
       } });
       if (signal.aborted || !ready) return;
-      report = exportReport({ patchId, presentationConfirmed: true, capabilities: controller.observations(), quality });
+      const observations = controller.observations();
+      showCameraReadiness(observations);
+      report = exportReport({ patchId, presentationConfirmed: true, capabilities: observations, settingsBeforeCapture, quality });
       $('frame-count').textContent = String(quality.sampleCount);
       $('duration').textContent = `${(quality.durationMs / 1000).toFixed(2)} s`;
       $('deviation').textContent = Math.max(...quality.stdDevRgb).toFixed(2);
@@ -231,10 +245,12 @@ function setupPhone() {
       const messages = {
         insufficient_frames: say('Hay pocos fotogramas distintos. Repite la prueba con buena iluminación y la cámara activa.', 'Too few distinct frames. Repeat with the camera active and suitable lighting.'),
         clipping_observed: say('Se han observado píxeles en los extremos del rango. Comprueba el patrón y la exposición.', 'Some pixels reached the code endpoints. Check the patch and exposure.'),
-        temporal_variation: say('La señal ha variado durante la captura. Revisa movimiento, exposición y parpadeo.', 'The signal varied during capture. Check movement, exposure and flicker.')
+        temporal_variation: say('La señal ha variado durante la captura. Revisa movimiento, exposición y parpadeo.', 'The signal varied during capture. Check movement, exposure and flicker.'),
+        camera_settings_changed: say('Los ajustes de cámara difieren entre las observaciones inicial y final. Esto puede afectar a la muestra.', 'Camera settings differed between the start and end observations. This may affect the sample.')
       };
-      const notes = quality.warnings.length ? quality.warnings.map(code => messages[code]) :
+      const notes = report.quality.warnings.length ? report.quality.warnings.map(code => messages[code]) :
         [say('No se han activado las alertas de variación o recorte en esta muestra. Esto no demuestra precisión del color.', 'No variation or clipping warning was triggered in this sample. This does not establish colour accuracy.')];
+      notes.push(say('Los ajustes solo se leen al inicio y al final de la captura. Los valores iguales o desconocidos no demuestran un bloqueo de cámara.', 'Settings are read only at capture start and end. Matching or unknown settings do not establish a camera lock.'));
       notes.forEach(message => { const li = document.createElement('li'); li.textContent = message; $('warnings').append(li); });
       $('results').hidden = false;
       status(say('Captura terminada. Revisa las observaciones y el informe.', 'Capture finished. Review the observations and report.'));

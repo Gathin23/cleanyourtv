@@ -335,3 +335,20 @@ blue links. This supplements the 154 generated-image checks, but is still softwa
 rendering, not physical TV/phone scanning. Narrow viewport layout was reviewed in
 CSS only; physical glare/distortion, optical scanning and camera measurements were
 not run. The real-TV contribution gate is unchanged; no upstream PR was opened.
+
+## Camera-readiness clarity, companion 0.2.2 (2026-10-24)
+
+Advertised manual capability is now separate from last-observed exposure, white
+balance and focus modes. Missing browser settings are unknown, not inferred manual
+or automatic. The UI explains that modes are sampled at camera start and capture
+boundaries, not continuously. Known allowlisted start/end differences add a
+`camera_settings_changed` warning; matching or unknown snapshots do not prove a
+camera lock. No controls are applied and the v1 report structure is unchanged.
+
+Ten new regression failures were observed before implementation. Final companion
+checks: 76/76 tests, syntax and diff checks passed; independent review found no
+blocking issues. The dependency-complete Python environment ran the comparable
+747-test suite: 743 passed, three skipped, one failure for the missing real-TV
+screenshot. A separate system-Python run discovered 744 tests with four skips
+because `adb_shell` was absent; it is not the full dependency-complete baseline.
+No Android, launcher, workflow, permission or runtime dependency changes occurred.

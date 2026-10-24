@@ -64,7 +64,9 @@ content policy blocks script-initiated connections (`connect-src 'none'`). This 
 not prevent the initial document and static assets from being requested over HTTPS.
 
 The optional JSON download requires reviewing the report first. It allowlists camera
-control modes, render dimensions/frame rate, patch ID and numerical capture statistics.
+control modes, render dimensions/frame rate, exposure time/ISO when exposed, patch ID
+and numerical capture statistics. Capture-boundary comparisons use only these already
+allowlisted settings; identifiers and unrecognised values cannot trigger a change warning.
 It excludes raw images, device/group IDs, camera labels, user agent, URLs and addresses.
 Inspect the preview before sharing even this limited information.
 
@@ -210,6 +212,27 @@ endpoint pixels and available controls. Fewer than 15 frames, more than 1% endpo
 pixels in any frame or variation above two 8-bit codes trigger heuristic warnings.
 These are capture-quality heuristics, not accuracy thresholds. Endpoint warnings can
 be expected for intentionally black/white fields. A stable image can still be wrong.
+
+### Camera readiness is observation, not a lock
+
+The web companion (0.2.2) separates **manual capability reported by the browser**
+from **observed exposure, white-balance and focus modes**. An advertised manual
+capability does not mean it is active. Modes absent from `getSettings()`, including
+when the API is unavailable or throws, are explicitly shown as unknown/not exposed.
+`none` is not labelled automatic. These are browser-reported settings, not verified
+physical camera behaviour; TV Tune does not apply constraints or change/lock controls.
+See the [W3C camera settings definition](https://www.w3.org/TR/image-capture/#mediatracksettings-section).
+
+Settings are read when the camera starts and immediately before/after a successful
+capture, not monitored continuously. The existing `tv-tune-compatibility-v1` report
+keeps `capabilities.manualControls` as advertised support and `capabilities.settings`
+as the final allowlisted observation. Its quality warnings may additionally include
+`camera_settings_changed` when at least one known mode or numeric setting differs
+between capture boundaries. Missing/unrecognised values on either side are not
+counted as an observed change. Equal snapshots can miss intervening changes; unknown
+or matching values do not prove a manual lock, stability throughout the capture,
+optical calibration or colour accuracy. Reports continue to describe processed video
+and always keep `colourMeasurementValidated: false`.
 
 ## Measurement research
 

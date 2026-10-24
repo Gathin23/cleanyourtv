@@ -52,7 +52,14 @@
             <div class="step-label capture-step"><span>2</span><h3 data-en="Hold still and check">Mantén el móvil quieto</h3></div>
             <p class="description" data-en="We sample the centre of the camera preview for up to five seconds. Your phone keeps the images in memory.">Tomamos muestras del centro de la cámara durante un máximo de cinco segundos. Las imágenes permanecen en la memoria del móvil.</p>
             <button id="capture" class="button primary full-width" disabled data-en="Check capture">Comprobar captura</button>
-            <dl class="capabilities"><div><dt data-en="Camera controls">Controles de cámara</dt><dd id="controls-state" data-en="Pending">Pendiente</dd></div><div><dt data-en="Measurement">Medición</dt><dd class="amber" data-en="Colour accuracy not validated">Precisión del color no validada</dd></div></dl>
+            <dl class="capabilities">
+              <div><dt data-en="Manual capability reported">Capacidad manual indicada</dt><dd id="controls-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Last observed exposure">Última exposición observada</dt><dd id="exposure-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Last observed white balance">Último balance de blancos observado</dt><dd id="white-balance-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Last observed focus">Último enfoque observado</dt><dd id="focus-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Measurement">Medición</dt><dd class="amber" data-en="Colour accuracy not validated">Precisión del color no validada</dd></div>
+            </dl>
+            <p class="description" data-en="Modes are read when the camera starts and at capture start/end, not continuously. Manual capability does not mean manual mode is active. TV Tune does not change or lock camera controls.">Los modos se leen al iniciar la cámara y al inicio/final de la captura, no continuamente. La capacidad manual no significa que el modo manual esté activo. TV Tune no cambia ni bloquea los controles de cámara.</p>
           </div>
         </div>
       </section>

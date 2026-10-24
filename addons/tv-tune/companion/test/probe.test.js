@@ -91,3 +91,56 @@ test('export_does_not_accept_a_caller_supplied_colour_validation_claim', () => {
   assert.equal(report.patchId, null);
   assert.equal(report.quality, null);
 });
+
+
+test('export_warns_only_for_differences_in_observed_allowlisted_settings', () => {
+  for (const [name, before, after] of [
+    ['exposureMode', 'manual', 'continuous'], ['whiteBalanceMode', 'single-shot', 'manual'],
+    ['focusMode', 'continuous', 'none'], ['width', 640, 720], ['height', 480, 1280],
+    ['frameRate', 30, 25], ['exposureTime', 100, 200], ['iso', 100, 200]
+  ]) {
+    const report = exportReport({ settingsBeforeCapture: { [name]: before },
+      capabilities: { settings: { [name]: after } }, quality: summariseSamples(stable()) });
+    assert.deepEqual(report.quality.warnings, ['camera_settings_changed'], name);
+    assert.equal(report.format, 'tv-tune-compatibility-v1');
+    assert.equal(report.colourMeasurementValidated, false);
+  }
+});
+
+test('missing_invalid_or_matching_settings_do_not_establish_a_change_or_lock', () => {
+  for (const [before, after] of [[{}, {}], [{ exposureMode: 'manual' }, {}],
+    [{}, { exposureMode: 'manual' }], [{ exposureMode: 'manual' }, { exposureMode: 'manual' }],
+    [{ iso: NaN }, { iso: 100 }], [{ focusMode: 'private' }, { focusMode: 'manual' }]]) {
+    const report = exportReport({ settingsBeforeCapture: before,
+      capabilities: { settings: after }, quality: summariseSamples(stable()) });
+    assert.deepEqual(report.quality.warnings, []);
+    assert.ok(report.limitations.some(text => /start and end/.test(text) && /lock/.test(text)));
+  }
+});
+
+test('settings_comparison_cannot_export_identifiers_or_trust_a_caller_change_warning', () => {
+  const before = { exposureMode: 'manual', deviceId: 'DO_NOT_EXPORT_BEFORE', groupId: 'DO_NOT_EXPORT_BEFORE',
+    label: 'DO_NOT_EXPORT_BEFORE', url: 'DO_NOT_EXPORT_BEFORE', focusDistance: 2 };
+  const after = { exposureMode: 'manual', deviceId: 'DO_NOT_EXPORT_AFTER', groupId: 'DO_NOT_EXPORT_AFTER',
+    label: 'DO_NOT_EXPORT_AFTER', url: 'DO_NOT_EXPORT_AFTER', focusDistance: 3 };
+  const quality = { ...summariseSamples(stable()), warnings: ['camera_settings_changed', 'DO_NOT_EXPORT_WARNING'] };
+  const report = exportReport({ settingsBeforeCapture: before, capabilities: { settings: after }, quality });
+  assert.equal(JSON.stringify(report).includes('DO_NOT_EXPORT'), false);
+  assert.deepEqual(report.capabilities.settings, { exposureMode: 'manual' });
+  assert.deepEqual(report.quality.warnings, []);
+  assert.deepEqual(quality.warnings, ['camera_settings_changed', 'DO_NOT_EXPORT_WARNING'], 'do not mutate input');
+  assert.equal('settingsBeforeCapture' in report, false);
+});
+
+test('none_or_unknown_modes_are_not_labelled_automatic', () => {
+  for (const value of ['none', undefined, 'unrecognised']) {
+    const result = inspectCapabilities({ settings: { exposureMode: value, whiteBalanceMode: value } });
+    assert.equal(result.limitations.includes('automatic_exposure'), false);
+    assert.equal(result.limitations.includes('automatic_white_balance'), false);
+  }
+  for (const value of ['continuous', 'single-shot']) {
+    const result = inspectCapabilities({ settings: { exposureMode: value, whiteBalanceMode: value } });
+    assert.ok(result.limitations.includes('automatic_exposure'));
+    assert.ok(result.limitations.includes('automatic_white_balance'));
+  }
+});

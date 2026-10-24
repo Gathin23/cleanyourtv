@@ -10,9 +10,10 @@ import { qrSvg } from '../src/qr.js';
 function app(view = 'phone', language = 'en', fragment = '', clipboard) {
   class Element extends EventTarget {
     constructor() { super(); this.style = {}; this.dataset = {}; this.hidden = false;
-      this.disabled = false; this.checked = false; this.textContent = ''; this.value = '';
+      this.disabled = false; this.checked = false; this.textContent = ''; this.value = ''; this.children = [];
       this.clientWidth = 640; this.clientHeight = 480; this.classList = { toggle() {} }; this.attributes = {}; }
-    append() {} replaceChildren() {} observe() {} disconnect() {}
+    append(...children) { this.children.push(...children); }
+    replaceChildren(...children) { this.children = children; } observe() {} disconnect() {}
     setAttribute(name, value) { this.attributes[name] = value; }
     contains(element) { return element === this || element?.parentElement === this; }
     focus(options) { document.activeElement = this; this.focusOptions = options; this.focuses = (this.focuses || 0) + 1; }
@@ -55,7 +56,7 @@ function app(view = 'phone', language = 'en', fragment = '', clipboard) {
     ResizeObserver };
   const source = readFileSync(new URL('../src/app.js', import.meta.url), 'utf8').replace(/^import .*;\n/gm, '');
   new Function(...Object.keys(scope), source)(...Object.values(scope));
-  return { get, document, window, intervals, waits, observedBoxes, location, replacements, advance: ms => { clock += ms; for (const tick of intervals.values()) tick(); } };
+  return { get, track, document, window, intervals, waits, observedBoxes, location, replacements, advance: ms => { clock += ms; for (const tick of intervals.values()) tick(); } };
 }
 const flush = () => new Promise(resolve => setImmediate(resolve));
 
@@ -340,4 +341,117 @@ test('closing QR via external controls does not steal their focus', () => {
   assert.equal(a.document.activeElement, a.get('next'));
   assert.equal(a.get('handoff-toggle').focuses, undefined);
   assert.equal(a.get('handoff-panel').hidden, true);
+});
+
+
+// Camera API doubles expose browser capabilities/settings; the real app and capture loop run.
+test('manual_capability_does_not_replace_observed_camera_modes', async () => {
+  const a = app();
+  a.track.getCapabilities = () => ({ exposureMode: ['manual', 'continuous'],
+    whiteBalanceMode: ['manual'], focusMode: ['manual', 'single-shot'] });
+  a.track.getSettings = () => ({ exposureMode: 'continuous', whiteBalanceMode: 'manual' });
+  a.get('start').click(); await flush();
+  assert.match(a.get('controls-state').textContent, /exposure.*white balance.*focus/);
+  assert.equal(a.get('exposure-state').textContent, 'Continuous (automatic)');
+  assert.equal(a.get('white-balance-state').textContent, 'Manual');
+  assert.equal(a.get('focus-state').textContent, 'Unknown / not exposed');
+  assert.equal(a.get('capture').disabled, true, 'observing modes must not confirm the patch');
+  a.get('stop').click();
+  for (const id of ['exposure-state', 'white-balance-state', 'focus-state']) {
+    assert.equal(a.get(id).textContent, 'Camera off', 'stopped camera must not retain a current mode');
+  }
+});
+
+test('missing_throwing_and_unrecognised_settings_are_explicitly_unknown', async () => {
+  for (const getSettings of [undefined, () => { throw Error('private settings error'); },
+    () => ({ exposureMode: 'private-device-name', whiteBalanceMode: null, focusMode: {} })]) {
+    const a = app(); a.track.getSettings = getSettings;
+    a.track.getCapabilities = () => ({ exposureMode: ['manual'] });
+    a.get('start').click(); await flush();
+    for (const id of ['exposure-state', 'white-balance-state', 'focus-state']) {
+      assert.equal(a.get(id).textContent, 'Unknown / not exposed');
+    }
+    a.get('stop').click();
+  }
+});
+
+test('observed_modes_work_without_capabilities_and_use_spanish_labels', async () => {
+  const a = app('phone', 'es');
+  a.track.getCapabilities = () => { throw Error('unsupported'); };
+  a.track.getSettings = () => ({ exposureMode: 'single-shot', whiteBalanceMode: 'none', focusMode: 'manual' });
+  a.get('start').click(); await flush();
+  assert.equal(a.get('controls-state').textContent, 'No indicada / desconocida');
+  assert.equal(a.get('exposure-state').textContent, 'Automático puntual');
+  assert.equal(a.get('white-balance-state').textContent, 'Ninguno indicado');
+  assert.equal(a.get('focus-state').textContent, 'Manual');
+  a.get('stop').click();
+});
+
+test('capture_refreshes_observed_modes_at_both_boundaries_and_warns_on_differences', async () => {
+  const a = app();
+  // Reuse the same settings object to catch a retained live reference instead of a snapshot.
+  const settings = { exposureMode: 'manual', whiteBalanceMode: 'manual', focusMode: 'manual', iso: 100 };
+  a.track.getSettings = () => settings;
+  a.get('start').click(); await flush();
+  assert.equal(a.get('exposure-state').textContent, 'Manual');
+  settings.exposureMode = 'continuous';
+  a.get('confirm').checked = true; a.get('confirm').dispatchEvent(new Event('change')); a.get('capture').click();
+  assert.equal(a.get('exposure-state').textContent, 'Continuous (automatic)');
+  settings.exposureMode = 'manual'; settings.iso = 200;
+  for (let i = 0; i < 50 && a.waits.length; i++) { a.waits.shift()(); await flush(); }
+  assert.equal(a.get('exposure-state').textContent, 'Manual');
+  assert.equal(a.get('results').hidden, false);
+  a.get('review').click();
+  const report = JSON.parse(a.get('report-preview').textContent);
+  assert.ok(report.quality.warnings.includes('camera_settings_changed'));
+  assert.ok(a.get('warnings').children.some(item => /settings differed.*start and end/i.test(item.textContent)));
+  assert.equal(report.capabilities.settings.iso, 200);
+  assert.equal(report.colourMeasurementValidated, false);
+  a.get('stop').click();
+});
+
+test('unchanged_or_unexposed_modes_never_claim_a_verified_camera_lock', async () => {
+  for (const settings of [{}, { exposureMode: 'manual', whiteBalanceMode: 'manual', focusMode: 'manual' }]) {
+    const a = app(); a.track.getSettings = () => settings;
+    a.get('start').click(); await flush(); a.get('confirm').checked = true;
+    a.get('confirm').dispatchEvent(new Event('change')); a.get('capture').click();
+    for (let i = 0; i < 50 && a.waits.length; i++) { a.waits.shift()(); await flush(); }
+    a.get('review').click();
+    const report = JSON.parse(a.get('report-preview').textContent);
+    assert.equal(report.quality.warnings.includes('camera_settings_changed'), false);
+    assert.ok(a.get('warnings').children.some(item => /do not establish.*lock/i.test(item.textContent)));
+    a.get('stop').click();
+  }
+});
+
+test('settings_disappearing_during_capture_become_unknown_without_a_false_change_warning', async () => {
+  const a = app();
+  a.track.getSettings = () => ({ exposureMode: 'manual', whiteBalanceMode: 'manual', focusMode: 'manual' });
+  a.get('start').click(); await flush(); a.get('confirm').checked = true;
+  a.get('confirm').dispatchEvent(new Event('change')); a.get('capture').click();
+  a.track.getSettings = () => { throw Error('no longer exposed'); };
+  for (let i = 0; i < 50 && a.waits.length; i++) { a.waits.shift()(); await flush(); }
+  assert.equal(a.get('focus-state').textContent, 'Unknown / not exposed');
+  a.get('review').click();
+  const report = JSON.parse(a.get('report-preview').textContent);
+  assert.equal(report.quality.warnings.includes('camera_settings_changed'), false);
+  assert.deepEqual(report.capabilities.settings, {});
+  a.get('stop').click();
+});
+
+test('cancelled_capture_settings_do_not_leak_into_the_next_capture', async () => {
+  const a = app(); a.track.getSettings = () => ({ exposureMode: 'manual', iso: 100 });
+  a.get('start').click(); await flush();
+  const confirm = () => { a.get('confirm').checked = true; a.get('confirm').dispatchEvent(new Event('change')); };
+  confirm(); a.get('capture').click(); a.get('stop').click();
+  a.track.getSettings = () => ({ exposureMode: 'continuous', iso: 200 });
+  a.get('start').click(); await flush(); confirm(); a.get('capture').click();
+  for (let i = 0; i < 60 && a.waits.length; i++) { a.waits.shift()(); await flush(); }
+  a.get('review').click();
+  const report = JSON.parse(a.get('report-preview').textContent);
+  assert.equal(report.quality.warnings.includes('camera_settings_changed'), false);
+  assert.equal(report.capabilities.settings.exposureMode, 'continuous');
+  assert.equal(a.get('exposure-state').textContent, 'Continuous (automatic)');
+  assert.equal(report.quality.sampleCount, 45);
+  a.get('stop').click();
 });
