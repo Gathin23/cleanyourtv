@@ -772,10 +772,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnLibraryTop.setOnKeyListener(pillKeys);
 
         SharedPreferences spWeather = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
-        String cachedTz = spWeather.getString("weather_timezone", null);
-        if (cachedTz != null) {
-            syncTimezone(cachedTz);
-        }
+        String cachedTz = spWeather.getString("weather_timezone", "Asia/Jakarta");
+        syncTimezone(cachedTz);
 
         fetchWeatherAsync(false);
         for (View button : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
@@ -1617,9 +1615,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroName.setText(title);
         if (heroDots != null) heroDots.setVisibility(View.GONE);
         hideAppStats();
-        // Point 7: When user navigates to top bar (inputs, wifi, settings), transition wallpaper to apple neon wallpaper
-        currentWallpaperPkg = "top_bar";
-        setSpecificWallpaper(R.drawable.wallpaper_top_bar, 0);
+
+        if (ambient != null) {
+            ambient.animate().cancel();
+            ambient.animate().alpha(0f).setDuration(200).start();
+        }
+        if (heroArt != null) {
+            heroArt.animate().cancel();
+            heroArt.animate().alpha(0f).setDuration(200).start();
+        }
+
+        // Only transition wallpaper when first entering the top bar, preventing wallpaper glitches between pills
+        if (!"top_bar".equals(currentWallpaperPkg)) {
+            currentWallpaperPkg = "top_bar";
+            setSpecificWallpaper(R.drawable.wallpaper_top_bar, 0);
+        }
 
         if (animations && !reducedMotion) {
             float density = getResources().getDisplayMetrics().density;
@@ -2213,6 +2223,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         outgoing.setScaleY(1.0f);
                         outgoing.setTranslationX(0f);
                         outgoing.setTranslationY(0f);
+                        outgoing.setImageDrawable(null);
                     })
                     .start();
         } else {
@@ -2222,6 +2233,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             outgoing.setScaleY(1.0f);
             outgoing.setTranslationX(0f);
             outgoing.setTranslationY(0f);
+            outgoing.setImageDrawable(null);
         }
         if (wallpaperScrim != null) {
             wallpaperScrim.setVisibility(View.VISIBLE);

@@ -197,6 +197,8 @@ final class ClockScene {
         SharedPreferences sp = context.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
         String screensaverType = sp.getString("screensaver_type", "solat");
         boolean isSolat = "solat".equals(screensaverType);
+        String tzId = sp.getString("weather_timezone", "Asia/Jakarta");
+        syncTimeZones(root, tzId);
 
         stopCallbacks();
 
@@ -254,6 +256,18 @@ final class ClockScene {
         handler.removeCallbacks(tickDrift);
         handler.removeCallbacks(tickSlide);
         handler.removeCallbacks(tickClock);
+    }
+
+    private void syncTimeZones(View view, String tzId) {
+        if (view == null || tzId == null) return;
+        if (view instanceof android.widget.TextClock) {
+            ((android.widget.TextClock) view).setTimeZone(tzId);
+        } else if (view instanceof android.view.ViewGroup) {
+            android.view.ViewGroup vg = (android.view.ViewGroup) view;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                syncTimeZones(vg.getChildAt(i), tzId);
+            }
+        }
     }
 
     // ---- Prayer UI -------------------------------------------------------------
