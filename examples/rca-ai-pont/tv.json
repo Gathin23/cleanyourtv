@@ -1,6 +1,6 @@
 {
-  "tv": "RCA AI PONT SA (Changhong, redwood, ISDB92RC; also sold as realme 40-inch and AIWA AW32B4SMG)",
+  "tv": "RCA AI PONT SA (Changhong, redwood, ISDB92RC; also sold as realme 40-inch, AIWA AW32B4SMG and ERGO DVB92YC)",
   "os": "Android 14",
   "brand": "RCA",
-  "notes": "Homwee store/tools (incl. chtvmanager) and installers, Anoki ACR, FAST channels (re-enabled by firmware at boot); keep partnercustomizer (crash-loops tv.service); 1 GB; AIWA variant notes (updaters kept, Live TVx back at every boot, config.json)"
+  "notes": "Homwee store/tools (incl. chtvmanager) and installers, Anoki ACR, FAST channels (re-enabled by firmware at boot); keep partnercustomizer (crash-loops tv.service); 1 GB; AIWA variant notes (updaters kept, Live TVx back at every boot, config.json); ERGO variant notes (Live TV at every power-on, power_on_home)"
 }
