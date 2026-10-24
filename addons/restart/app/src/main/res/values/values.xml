@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Restart</string>
+    <string name="title">Restart the TV?</string>
+    <string name="body">The TV turns off and starts again. Anything playing stops.</string>
+    <string name="restart">Restart</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_service">The Restart accessibility service is not running yet. Wait a moment, or run the install script.</string>
+    <string name="service_label">Restart</string>
+    <string name="service_description">Opens the power menu and presses Restart, only after you choose Restart in this app. Reads the system power menu for a few seconds then, nothing else.</string>
+
+    <style name="Prompt" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>

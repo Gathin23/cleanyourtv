@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">重新启动</string>
+    <string name="title">要重新启动电视吗？</string>
+    <string name="body">电视会关闭后再重新开机，正在播放的内容会停止。</string>
+    <string name="restart">重新启动</string>
+    <string name="cancel">取消</string>
+    <string name="no_service">“重新启动”无障碍服务尚未运行。请稍候再试，或运行安装脚本。</string>
+    <string name="service_label">重新启动</string>
+    <string name="service_description">仅在你于此应用选择“重新启动”后，打开电源菜单并按下“重新启动”。只会在那几秒内读取系统电源菜单，不读取其他内容。</string>
+</resources>
