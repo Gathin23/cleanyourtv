@@ -1,5 +1,7 @@
 # TCL 50DP660 (50DP660*, product "Percee TV", MediaTek MT5658 / board mt5891, armv7), Europe.
 # Android TV 8.0 (API 26), firmware V8-T658T01-LF1V602, build OTT1.180130.001.
+# Second unit: TCL L49C2US (49-inch C2 series, same product "Percee TV", device tcl_eu, board mt5891,
+#   firmware V8-T658T01-LF1V570, build OTT1.180130.001, security patch 2020-07-05, ~2 GB RAM).
 # Checked on a real TV; this list was applied and survived several reboots.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-50dp660/debloat.txt
@@ -30,39 +32,64 @@
 #   com.google.android.apps.mediashell  Google Cast receiver - keep it if you cast
 #   com.google.android.backdrop         ambient screensaver
 
-# Stock launcher and its recommendation rows, replaced by launcher/
+# Stock launcher, setup wizard and recommendation rows, replaced by launcher/
 com.google.android.tvlauncher
+# com.google.android.tungsten.setupwraith    # setup wizard; disable to save RAM if phone casting is unused (L49C2US V570)
 com.google.android.tvrecommendations
 com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher        # legacy Leanback launcher stub (L49C2US V570)
 
-# Google media and voice - this set has no microphone
+# Google media, voice and accessibility - this set has no microphone
 com.google.android.videos                  # Play Movies
 com.google.android.play.games
 com.google.android.katniss                 # Assistant / voice search, runs two processes
 com.google.android.speech.pumpkin          # speech recognition engine, see the note at the bottom
+com.google.android.tts                     # Google TTS engine; re-enable if you use TalkBack (L49C2US V570)
+com.google.android.marvin.talkback         # TalkBack screen reader; re-enable if needed (L49C2US V570)
 
 # TCL content, mirroring, updaters and bundled players
 com.tcl.MultiScreenInteraction_TV          # MagiConnect screen mirroring
 com.tcl.partnercustomizer                  # "T-Channel" content tiles on the stock home
 com.tcl.smartalexa                         # Alexa bridge, persistent - see the note at the bottom
 com.tcl.versionUpdateApp                   # OTA updater; re-enable to check for firmware updates
-com.tcl.ui_mediaCenter                     # media centre plus USB scanning
+com.tcl.ui_mediaCenter                     # media centre plus USB scanning (comment out to keep TCL USB player)
 com.tcl.xian.StartandroidService           # TCL start-up service
 com.tcl.appmarket2                         # TCL app store (21.2 MB APK)
 com.tcl.esticker                           # retail demo stickers
 com.tcl.tvweishi                           # "cleaner" widget
 com.tcl.m                                  # MenuHelp
 com.tcl.eletronicpolicy                    # e-warranty sheet
-com.tcl.videoplayer
-com.tcl.audioplayer
-com.tcl.imageplayer
+com.tcl.videoplayer                        # comment out to keep TCL USB video player
+com.tcl.audioplayer                        # comment out to keep TCL USB audio player
+com.tcl.imageplayer                        # comment out to keep TCL USB picture player
 com.tcl.pvr.pvrplayer
 
-# ODM leftovers and third-party preloads
+# ODM leftovers, background sync/storage providers and third-party preloads
 android.autoinstalls.config.tcl.device
 com.example.copydatatotv                   # factory test app, persistent
 com.example.tvcapture                      # factory test app
 tv.wuaki.apptv                             # Rakuten TV
+# com.google.android.inputmethod.pinyin      # Google Pinyin Chinese IME (optional; L49C2US V570; com.tcl.inputmethod.international kept)
+# com.iqt.iqqijni.tv.gp.pro                  # iQQi Chinese IME (optional; L49C2US V570; com.tcl.inputmethod.international kept)
+com.google.android.music                   # Google Play Music (defunct, L49C2US V570)
+com.google.android.tvtutorials             # TV tutorials (L49C2US V570)
+com.google.android.tv.bugreportsender      # Bug report sender (L49C2US V570)
+com.google.android.feedback                # Google feedback (L49C2US V570)
+com.google.android.syncadapters.calendar   # Calendar sync adapter (L49C2US V570)
+com.google.android.syncadapters.contacts   # Contacts sync adapter (L49C2US V570)
+com.android.providers.calendar             # Calendar storage provider (L49C2US V570)
+com.android.providers.contacts             # Contacts storage provider (L49C2US V570)
+com.android.providers.userdictionary       # User dictionary provider (L49C2US V570)
+com.google.android.backuptransport         # Google cloud backup transport (L49C2US V570)
+com.google.android.onetimeinitializer      # Google one-time initializer (L49C2US V570)
+com.google.android.partnersetup            # Google partner setup (L49C2US V570)
+com.android.dreams.basic                   # Basic Colors screensaver (L49C2US V570)
+com.android.printspooler                   # Print spooler service (L49C2US V570)
+com.google.android.sss                     # Second Screen Setup (L49C2US V570)
+com.google.android.sss.authbridge          # Second Screen Setup auth bridge (L49C2US V570)
+# com.google.android.backdrop              # Chromecast Ambient / Backdrop screensaver (optional; disabled on L49C2US V570)
+# com.netflix.ninja                        # Netflix preload (optional; disabled on L49C2US V570)
+# com.mediatek.partner.netflix             # MediaTek Netflix launch service (optional; disabled on L49C2US V570)
 
 # Two quirks worth knowing when the list does less than it says:
 #
