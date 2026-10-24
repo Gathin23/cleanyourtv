@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A dark screen with a play mark. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#0E1A14" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#163026" android:pathData="M70,36h180a12,12 0,0 1,12 12v84a12,12 0,0 1,-12 12h-180a12,12 0,0 1,-12 -12v-84a12,12 0,0 1,12 -12z" />
+    <path android:fillColor="#3DDC97" android:pathData="M146,68 L186,90 L146,112 Z" />
+</vector>

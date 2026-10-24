@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stay Awake</string>
+    <string name="hint">Keeps the screen on while music or video is playing. The sleep timer and screensaver run again when playback stops.</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="turn_on">Turn on</string>
+    <string name="turn_off">Turn off</string>
+    <string name="channel_name">Stay Awake</string>
+    <string name="notification_text">Watching for music or video</string>
+</resources>
