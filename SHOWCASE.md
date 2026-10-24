@@ -10,7 +10,7 @@ project's own issue tracker.
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-81 projects so far.
+82 projects so far.
 
 ## Home screens built as their own app
 
@@ -39,6 +39,7 @@ This repo's launcher with new looks or features, often tuned for one TV. Good pl
 
 | Project | What it is | Built on | By |
 |---|---|---|---|
+| [Atmosphere TV](https://github.com/parzival-xol/atmosphere-tv) ([screenshot](https://raw.githubusercontent.com/parzival-xol/atmosphere-tv/1b176c78fe6739ed173e5b268b278d09df2c9e4b/docs/images/weather-home.png), [issues](https://github.com/parzival-xol/atmosphere-tv/issues)) | A weather-first fork with painted cloud, rain and snow animation, app-color crossfades, Home/Back that clear selection, expanding top-bar labels and tile rearranging. Network: Open-Meteo weather and ipwho.is approximate-location fallback while Home is visible | Hisense SmartTV 4K FFM (`songshan`), Android 11 | [parzival-xol](https://github.com/parzival-xol) |
 | [Offline ZIP theme library](https://github.com/DipsySu/cleanyourtv/tree/dipsy/personal-theme-showcase) ([screenshots](https://github.com/DipsySu/cleanyourtv/blob/dipsy/personal-theme-showcase/docs/personal-themes.md)) | A fork with offline ZIP imports and on-TV theme switching: Soft Glow, Mario Odyssey, Animal Crossing and Zelda, with matching cards and headers. Keeps saved app order and manual layout choices. Requires this fork's APK; no Internet permission or telemetry | Xiaomi MiTV-MFTR0, Android 11 | [DipsySu](https://github.com/DipsySu) |
 | [LiquiTvOs](https://github.com/purnavikas/cleanyourtv/tree/liquitvos) ([how it works](https://github.com/purnavikas/cleanyourtv/blob/liquitvos/LIQUITVOS.md), [screenshot](https://github.com/purnavikas/cleanyourtv/blob/liquitvos/docs/liquitvos/controls.jpg)) | A tvOS-inspired Liquid Glass fork with a six-column dock, an expanding app grid with cached wallpaper blur, floating Control Center, circular launcher-profile selection and local Pictures wallpaper shuffle. No internet permission or telemetry; native shortcuts depend on firmware | Sony BRAVIA 4K VH22, Android TV 12 | [purnavikas](https://github.com/purnavikas) |
 | [HDMI input visibility](https://github.com/midhatn/cleanyourtv/tree/feature/hdmi-input-visibility) ([guide](https://github.com/midhatn/cleanyourtv/blob/feature/hdmi-input-visibility/docs/hdmi-visibility.md), [screenshot](https://raw.githubusercontent.com/midhatn/cleanyourtv/24da0cb1478b4bb98bdc8b8bf9f15ff4226f043c/docs/images/hdmi-visibility-connected.png)) | Optional hiding of inactive bare HDMI ports, with live updates and retained focus in the open Inputs menu. Known CEC devices stay selectable. Uses firmware-reported activity, not physical cable detection; no network permission | HAAM HM4K75S11TND (R4), Android TV 11 | [midhatn](https://github.com/midhatn) |
@@ -151,7 +152,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **FPT Play:** [TV Remote](https://github.com/HoangTran0410/tv-remote)
 - **Haier:** [cleanyourtv for Haier](https://github.com/abuhasanrumi/cleanyourtv-haier)
 - **HAAM:** [HDMI input visibility](https://github.com/midhatn/cleanyourtv/tree/feature/hdmi-input-visibility)
-- **Hisense:** [Android 5.1 Hisense adapter](https://github.com/Drmufeng/cleanyourtv/tree/adapter/android-5.1), [Hisense 55U6K: reorder and weather](https://github.com/vlaship/cleanyourtv/tree/hisense-55u6k), [Hisense FFM: weather, gear and Recent apps](https://github.com/Sumyabazar1/cleanyourtv/blob/hisense-ffm/HISENSE_FFM.md), [Hisense restyle](https://github.com/YouLop009/tv-vibehack/tree/style-modifications)
+- **Hisense:** [Atmosphere TV](https://github.com/parzival-xol/atmosphere-tv), [Android 5.1 Hisense adapter](https://github.com/Drmufeng/cleanyourtv/tree/adapter/android-5.1), [Hisense 55U6K: reorder and weather](https://github.com/vlaship/cleanyourtv/tree/hisense-55u6k), [Hisense FFM: weather, gear and Recent apps](https://github.com/Sumyabazar1/cleanyourtv/blob/hisense-ffm/HISENSE_FFM.md), [Hisense restyle](https://github.com/YouLop009/tv-vibehack/tree/style-modifications)
 - **Insignia:** [Insignia Clean Home](https://github.com/yjack-coder/insignia-clean-home)
 - **LG:** [Clean Your TV — LG webOS](https://github.com/Razdva122/clean-your-tv-lg-webos), [CleanYourTV for LG webOS](https://github.com/lasharor/cleanyourtv-WebOS), [webOS launcher](https://github.com/OmkarK97/webos-vibehack)
 - **Motorola:** [TV Motorola Launcher](https://github.com/kartikcool15/tv-motorola-launcher)
