@@ -1,0 +1,10 @@
+{
+  "live_tv_package": "com.sony.dtv.tvx",
+  "dock_apps": [
+    "com.android.vending",
+    "com.sony.dtv.tvx",
+    "com.sony.dtv.tvxlauncher.programguide",
+    "com.sony.dtv.timers"
+  ],
+  "columns": 4
+}
