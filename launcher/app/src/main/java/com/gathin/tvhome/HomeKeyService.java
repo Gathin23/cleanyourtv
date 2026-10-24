@@ -58,6 +58,12 @@ public class HomeKeyService extends AccessibilityService {
     private BroadcastReceiver unlockReceiver;
     /** The stock launcher's HOME activities (stock_home_redirect), disabled ones included. */
     private final Set<String> stockHome = new HashSet<>();
+    /** Categories a vendor home may declare instead of CATEGORY_HOME; Coocaa OS uses the last two (#1351). */
+    static final String[] STOCK_HOME_CATEGORIES = {
+            Intent.CATEGORY_HOME,
+            "android.intent.category.HOME.CC",
+            "android.intent.category.HOME.CC_MAIN",
+    };
     /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter, or before the unlock. */
     private GamepadPassthrough gamepads;
 
@@ -117,10 +123,24 @@ public class HomeKeyService extends AccessibilityService {
         RemoteKeys.applyKeyFilter(this, config.keyFilter);
         stockHome.clear();
         if (!config.stockHomeRedirect.isEmpty()) {
-            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(config.stockHomeRedirect);
-            for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
-                stockHome.add(ri.activityInfo.name);
+            // Coocaa OS declares its home under HOME.CC / HOME.CC_MAIN and never under CATEGORY_HOME, so a
+            // CATEGORY_HOME-only lookup comes back empty and the whole redirect silently does nothing (#1351).
+            for (String category : STOCK_HOME_CATEGORIES) {
+                Intent home = new Intent(Intent.ACTION_MAIN).addCategory(category).setPackage(config.stockHomeRedirect);
+                for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
+                    stockHome.add(ri.activityInfo.name);
+                }
             }
+            // The activity the firmware actually shows at boot may declare no home category at all; on Coocaa
+            // it is named only by persist.service.homepage.cls, paired with persist.service.homepage.pkg
+            // (#1351). Add it only when that package is the stock package: the class itself
+            // (com.coocaa.homepage.vast.HomePageActivity) does not start with the stock package
+            // (com.tianci.movieplatform), so a class-prefix check would miss it.
+            String bootHome = bootHomeActivity(
+                    systemProperty("persist.service.homepage.pkg"),
+                    systemProperty("persist.service.homepage.cls"),
+                    config.stockHomeRedirect);
+            if (bootHome != null) stockHome.add(bootHome);
         }
         // home_key_service.xml subscribes to no events, so the redirect asks for window changes only when it is on.
         AccessibilityServiceInfo info = getServiceInfo();
@@ -212,6 +232,25 @@ public class HomeKeyService extends AccessibilityService {
             startActivity(new Intent(this, ProbeActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
         } catch (ActivityNotFoundException | SecurityException ignored) {
+        }
+    }
+
+    /** The boot home activity, or null when the firmware names none for this stock package. The package
+     *  property is the check, not the class prefix: a vendor home class need not live under its package. */
+    static String bootHomeActivity(String homepagePkg, String homepageCls, String stockPackage) {
+        if (homepagePkg == null || homepageCls == null || stockPackage == null) return null;
+        if (homepagePkg.isEmpty() || homepageCls.isEmpty()) return null;
+        return homepagePkg.equals(stockPackage) ? homepageCls : null;
+    }
+
+    /** android.os.SystemProperties is hidden but readable; empty when this firmware refuses it. */
+    private static String systemProperty(String key) {
+        try {
+            Object value = Class.forName("android.os.SystemProperties")
+                    .getMethod("get", String.class).invoke(null, key);
+            return value == null ? "" : value.toString();
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return "";
         }
     }
 
