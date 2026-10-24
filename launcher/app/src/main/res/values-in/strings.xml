@@ -38,7 +38,7 @@
     <string name="advanced_effects">Efek Lanjut</string>
     <string name="advanced_effects_state">Efek lanjut: %1$s</string>
     <string name="advanced_effects_warning">Menambah tile terangkat, zoom ikon, dan transisi warna yang halus. Dapat menambah penggunaan memori; perbedaan aktual tergantung TV Anda.</string>
-    <string name="follow_theme">Ikuti tema (atur ulang pilihan di TV)</string>
+    <string name="follow_theme">Reset tema launcher</string>
     <string name="follow_theme_hint">Menggunakan tema saat ini atau pengaturan tata letak dan gerakan bawaan. Memasang atau mengatur ulang tema juga menghapus pilihan di TV Anda.</string>
     <string name="tv_settings">Setelan Sistem TV</string>
     <string name="quick_picture">Tampilan</string>

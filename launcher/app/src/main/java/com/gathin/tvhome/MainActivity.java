@@ -3603,7 +3603,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             boolean next = !anims;
             choices.edit().putBoolean("animations", next)
                     .putBoolean("advanced_effects", next && config.advancedEffects).apply();
-            reloadApps(false);
+            recreate();
         });
 
         // Advanced effects row
@@ -3612,7 +3612,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addSettingsMenuRow(rows, popup, advLabel, () -> {
             boolean next = !adv;
             choices.edit().putBoolean("advanced_effects", next).apply();
-            reloadApps(false);
+            recreate();
         });
 
         // Screensaver choice: "solat" (Countdown Solat) vs "clock" (Clocks)
@@ -3633,21 +3633,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Reorder apps
         addSettingsMenuRow(rows, popup, R.string.reorder, this::toggleReorder);
 
-        // Module cards
-        if (moduleCards) {
-            addSettingsMenuRow(rows, popup, R.string.module_cards, this::showModuleCards);
-        }
-
-        // Default home
-        addSettingsMenuRow(rows, popup, R.string.home_settings, () -> {
-            Toast.makeText(this, R.string.home_settings_help, Toast.LENGTH_LONG).show();
-            open(new Intent(Settings.ACTION_HOME_SETTINGS));
-        });
-
         // TV system settings
         addSettingsMenuRow(rows, popup, R.string.tv_settings, () -> open(systemIntent(Settings.ACTION_SETTINGS)));
 
-        // Follow theme (reset choices)
+        // Reset theme launcher (reset choices)
         addSettingsMenuRow(rows, popup, R.string.follow_theme, () -> {
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY)
                     .remove("animations").remove("advanced_effects")

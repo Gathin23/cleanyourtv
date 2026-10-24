@@ -219,26 +219,42 @@ When you build with `./install.sh` or `./gradlew assembleDebug`, all wallpapers 
 
 ---
 
-### 2. 📸 How to Add Screensaver Photos
-The screensaver automatically adapts depending on whether you add personal photos:
-- **With Personal Photos**: A smooth, non-burning photo slideshow with original aspect ratio preservation (portrait photos get subtle blurred ambient borders, landscape photos fit full screen).
-- **Without Photos (Default Screensaver Fallback)**: Automatically displays CleanYourTV's signature screensaver — a clean floating clock and date drifting across a pitch-black screen over a color-shifting radial ambient glow.
+### 2. 🌙 Dual Screensaver: Countdown Solat & Clocks / Slideshow
+CleanYourTV includes a dual-mode OLED screensaver that can be toggled on-the-fly directly from the Settings menu:
 
-1. **Place your photos (Optional)**: Drop any personal photos (Apple `.HEIC`, `.JPG`, `.PNG`, `.WEBP`) into the `screensaver/` folder.
-   > [!NOTE]
-   > **Privacy Guarantee**: The `screensaver/` folder is tracked with a guide, but photo files inside are strictly in `.gitignore`. Your personal photos will **never** be committed to Git or uploaded to GitHub.
-2. **Sync to TV**:
-   - **Automatic**: When running `./install.sh`, it will detect any photos in `screensaver/` and ask:
-     ```
-     Detected personal photos in screensaver/ folder. Sync screensaver photos to TV (/sdcard/Screensaver/)? (Y/n)
-     ```
-     *(If no photos are found, it skips this step and keeps CleanYourTV's default screensaver active).*
-   - **Standalone Script**: You can also run `./tools/sync-screensaver.sh` anytime. It converts HEIC to baseline JPEG, optimizes dimensions to 1080p (reducing size by ~85% to prevent TV RAM crashes), and uploads them to `/sdcard/Screensaver/`.
-   - **USB Method (Zero PC)**: You can copy photos to a USB flash drive and paste them into `/sdcard/Screensaver/` on your TV using any TV file manager (e.g. X-plore).
+<p align="center">
+  <img src="docs/screensaver-solat.png" alt="Countdown Solat Screensaver" width="48%">
+  <img src="docs/screensaver-clock.png" alt="Clocks Screensaver" width="48%">
+</p>
+
+<p align="center">
+  <img src="docs/screensaver-settings-menu.png" alt="Settings Menu Screensaver Toggle" width="60%">
+</p>
+
+#### Available Screensaver Modes:
+1. **Countdown Solat (Islamic Prayer Reminder — Default)**:
+   - **OLED Pitch Black**: Pure `#000000` background to conserve energy and eliminate backlight bleed.
+   - **Circular Countdown Timer**: Large animated progress ring indicating elapsed time in the current prayer window and live countdown (`HH:mm:ss`) to the next prayer.
+   - **Schedule Bar**: Clean bottom pills showing daily prayer times (**Subuh**, **Dzuhur**, **Ashar**, **Maghrib**, **Isya**) with the upcoming prayer highlighted in glowing emerald.
+   - **Location & Time**: Live top-left clock/date and top-right city badge (Bekasi • Jawa Barat).
+   - **Anti-Burn-In Protection**: Automatically drifts the countdown container every 60 seconds by randomized pixel offsets to prevent OLED/microLED image retention.
+
+2. **Clocks / Photo Slideshow**:
+   - **With Personal Photos**: Smooth crossfade photo slideshow preserving aspect ratios with subtle blurred ambient backdrops.
+   - **Without Photos**: Minimalist floating typography clock with animated color-shifting radial ambient glow drifting smoothly across the display.
+
+#### How to Toggle Screensavers on TV:
+1. Press the **Settings / Menu** button on your remote (or click the gear icon in the top bar).
+2. Highlight **Screensaver: Countdown Solat** (or **Screensaver: Clocks**).
+3. Press **OK / Enter** on your remote to instantly switch modes in-place.
 
 ---
 
-### 3. 🔊 Authentic PS5 UI Sound Effects (Beeps & Clicks)
+### 3. 📸 How to Add Personal Photos (For Clocks / Slideshow Mode)
+
+---
+
+### 4. 🔊 Authentic PS5 UI Sound Effects (Beeps & Clicks)
 The launcher includes an ultra-low-latency `SoundPool` engine playing official PlayStation 5 console UI sound effects:
 
 | Action | Audio File | Trigger |
@@ -254,7 +270,7 @@ The launcher includes an ultra-low-latency `SoundPool` engine playing official P
 
 ---
 
-### 4. 📱 Handling "Outside" Apps & Missing Default Apps
+### 5. 📱 Handling "Outside" Apps & Missing Default Apps
 
 #### What if a default dock app is NOT installed on the TV?
 *(e.g. HBO Max is listed in the dock, but the TV doesn't have it installed)*
@@ -271,7 +287,7 @@ The launcher includes an ultra-low-latency `SoundPool` engine playing official P
 
 ---
 
-### 4. 🔄 How to Rollback / Restore Stock Launcher
+### 6. 🔄 How to Rollback / Restore Stock Launcher
 Rolling back is completely safe and takes less than 15 seconds:
 
 - **From TV (Zero PC Required)**:
