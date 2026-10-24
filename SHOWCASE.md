@@ -10,7 +10,7 @@ project's own issue tracker.
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-81 projects so far.
+82 projects so far.
 
 ## Home screens built as their own app
 
@@ -82,6 +82,7 @@ This repo's launcher with new looks or features, often tuned for one TV. Good pl
 | [CleanYourTV: Frutiger Aero](https://github.com/SadmanYasar/cleanyourtv/tree/frutiger-aero-edition) ([screenshot](https://raw.githubusercontent.com/SadmanYasar/cleanyourtv/frutiger-aero-edition/docs/showcase/home.png)) | A 2000s Frutiger Aero skeuomorphic fork: aquatic water-globe backdrop, seamless frosted-glass dock shelf, and custom high-resolution squircle banners with zero black letterboxing | Xiaomi Mi Box 4 (MDZ-22-AB), Android TV 9 | [SadmanYasar](https://github.com/SadmanYasar) |
 | [小米电视4S 75寸 L75M5-4S（MiTV4-ANSM0），Android 6.0.1](https://github.com/qqwersde/my-tv-signal-android6) ([issues](https://github.com/qqwersde/my-tv-signal-android6/issues)) | An Android 6.0.1 (API 23) launcher for the 小米电视4S 75寸 L75M5-4S (MiTV4-ANSM0); no internet permission. See [docs/devices/xiaomi-mitv4-ansm0.md](docs/devices/xiaomi-mitv4-ansm0.md). | 小米电视4S 75寸 L75M5-4S (MiTV4-ANSM0, xmen), Android 6.0.1, firmware 20.3.6.2057 | [qqwersde](https://github.com/qqwersde) |
 | [Xmen Android 6 port](https://github.com/yukunwu/cleanyourtv/tree/xmen-android6/ports/xmen-android6) ([issues](https://github.com/yukunwu/cleanyourtv/issues), [screenshot](https://raw.githubusercontent.com/yukunwu/cleanyourtv/2db3b0bc5685e1f84018a190aad89312fc646bf5/home.jpg)) | An experimental API 23 port with Java/API fallbacks, legacy Xiaomi app discovery, the native input picker and an opt-in accessibility/UsageStats Home fallback that can briefly show stock Home before returning; stock Home stays enabled, no internet permission. One software reboot verified; cold power-on, physical remote and playback remain unverified | Xiaomi MiTV4-ANSM0 (xmen), Android 6.0.1 | [yukunwu](https://github.com/yukunwu) |
+| [Glance line and crimson glass on a Changhong](https://github.com/bayhaqy/cleanyourtv/blob/main/my-tv/README.md) ([screenshot](https://raw.githubusercontent.com/bayhaqy/cleanyourtv/main/my-tv/screenshots/02-home.jpg)) | A fork with one glance line under the clock: weather and US AQI from Open-Meteo, the next prayer with a countdown (Aladhan, KEMENAG method), RAM and free/total storage; the location stays in an ignored `local.properties`. Adds the INTERNET permission, used only while Home is on screen. Also a crimson glass-dock theme with a generated wallpaper, a TV Care add-on and a curated free IPTV playlist for TV Hub | Changhong 43" (Skyworth shibuya), Android TV 11 | [bayhaqy](https://github.com/bayhaqy) |
 
 ## Screensavers and add-ons
 
@@ -145,6 +146,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 
 - **Amazon Fire TV:** [CleanYourTV on Fire OS](https://github.com/GaneshVarma1/cleanyourtv/tree/fire-tv-launcher-settings-fix), [Fire OS 6 Home watcher](https://github.com/ljis120301/tv-vibehack/tree/fire-tv-support), [Fire OS 7 fast Home](https://github.com/andrewsaad/fire-tv-cleanup), [Fire TV Glass](https://github.com/ivantrj/firetv-glass-launcher), [fire-tv-cleanup](https://github.com/itsmeterrylin/fire-tv-cleanup), [Home Return and weather moods on a Fire TV](https://github.com/bansiman/cleanyourtv/tree/my-tv)
 - **BenQ:** [Navigation sounds](https://github.com/rocavence/tv-vibehack/tree/nav-sounds)
+- **Changhong:** [Glance line and crimson glass on a Changhong](https://github.com/bayhaqy/cleanyourtv/blob/main/my-tv/README.md)
 - **Chromecast with Google TV:** [Cast Fix](https://github.com/thayford/castfix), [Weather Clock](https://github.com/matyivagyok/weatherclock-tv)
 - **Baron (CloudWalker OS):** [Baron Home](https://github.com/sethihq/baron-tv)
 - **Formovie:** [CleanTV by VGS](https://github.com/vgscity/vgs-cleantv), [Homelab companion](https://github.com/epochcoder/cleanyourtv/tree/main/companion)
