@@ -54,6 +54,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.SoundEffectConstants;
@@ -306,6 +307,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             openStartAppOnWake();
         }
     };
+    /** prompt_remote_pairing: prompt to pair a remote if no external input device is connected. */
+    private boolean promptRemotePairing;
+    private boolean remotePairingPrompted;
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
     private Set<String> hiddenApps = Collections.emptySet();
     /** library_excluded_apps: packages the App library catalogue never offers. */
@@ -498,6 +502,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         liveTvInputId = cfg.liveTvInputId;
         appLibraryEnabled = cfg.appLibrary;
         tileMenuEnabled = cfg.tileMenu;
+        promptRemotePairing = cfg.promptRemotePairing;
         inputAction = cfg.inputAction;
         inputSources = cfg.inputSources;
         inputUriScheme = cfg.inputUriScheme;
@@ -1120,6 +1125,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 break;
         }
         if (openLiveTvAfterBoot()) return;
+        if (checkRemotePairingPrompt()) return;
         updateGreeting();
         updatePanel();
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
@@ -3293,6 +3299,72 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (i != null || liveTvAction.isEmpty()) return i;
         Intent byAction = new Intent(liveTvAction).setPackage(liveTvPkg);
         return getPackageManager().resolveActivity(byAction, 0) != null ? byAction : null;
+    }
+
+    /**
+     * When prompt_remote_pairing is on (config.xml / theme), checks whether any physical external
+     * remote, keyboard, or gamepad is connected. If none is found, launches the system remote pairing wizard.
+     * Only prompts once per session to avoid looping if the user dismisses the pairing screen.
+     */
+    private boolean checkRemotePairingPrompt() {
+        if (!promptRemotePairing || remotePairingPrompted) return false;
+        remotePairingPrompted = true;
+        if (hasConnectedRemoteOrKeyboard()) return false;
+        return launchRemotePairingWizard();
+    }
+
+    static boolean isRemoteOrKeyboard(int sources, boolean isExternal, boolean isVirtual) {
+        if (isVirtual || !isExternal) return false;
+        return (sources & InputDevice.SOURCE_DPAD) != 0 ||
+               (sources & InputDevice.SOURCE_KEYBOARD) != 0 ||
+               (sources & InputDevice.SOURCE_GAMEPAD) != 0;
+    }
+
+    static boolean hasConnectedRemoteOrKeyboard() {
+        int[] ids = InputDevice.getDeviceIds();
+        for (int id : ids) {
+            InputDevice dev = InputDevice.getDevice(id);
+            if (dev == null) continue;
+            boolean isExternal = true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                isExternal = dev.isExternal();
+            }
+            if (isRemoteOrKeyboard(dev.getSources(), isExternal, dev.isVirtual())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean launchRemotePairingWizard() {
+        // 1. Xiaomi / Google TV pairing activity (shows animated remote pairing instructions)
+        Intent repair = new Intent("com.google.android.tvsetup.app.REPAIR_REMOTE")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (getPackageManager().resolveActivity(repair, 0) != null) {
+            try {
+                startActivity(repair);
+                return true;
+            } catch (ActivityNotFoundException ignored) {}
+        }
+        // 2. Standard Android TV accessory pairing
+        Intent connect = new Intent("com.google.android.intent.action.CONNECT_INPUT")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (getPackageManager().resolveActivity(connect, 0) != null) {
+            try {
+                startActivity(connect);
+                return true;
+            } catch (ActivityNotFoundException ignored) {}
+        }
+        // 3. Fallback Bluetooth settings
+        Intent bt = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (getPackageManager().resolveActivity(bt, 0) != null) {
+            try {
+                startActivity(bt);
+                return true;
+            } catch (ActivityNotFoundException ignored) {}
+        }
+        return false;
     }
 
     /** The TV's own source-selection panel, for TVs that have no TvInputManager (TCL Android TV 9): a
