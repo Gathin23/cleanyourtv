@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  App launch: the new app enters.
+  Starts at 60% opacity and 0.96 scale, then blooms into full-screen — matching the
+  scale the focused tile was at, so the app feels like it expands out of the tile.
+-->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@android:interpolator/decelerate_cubic"
-    android:duration="200">
-    <alpha android:fromAlpha="0.65" android:toAlpha="1.0" />
-    <scale android:fromXScale="0.97" android:toXScale="1.0"
-        android:fromYScale="0.97" android:toYScale="1.0"
+    android:interpolator="@android:interpolator/decelerate_quint"
+    android:duration="240">
+    <alpha android:fromAlpha="0.6" android:toAlpha="1.0" />
+    <scale android:fromXScale="0.96" android:toXScale="1.0"
+        android:fromYScale="0.96" android:toYScale="1.0"
         android:pivotX="50%" android:pivotY="50%" />
 </set>

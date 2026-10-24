@@ -361,4 +361,15 @@
          colour washes down from the top edge and fades to black, brightest along the top). The cinematic shelf
          keeps its own glow. Can also be set with "glow_style": "horizon" in a theme's config.json. -->
     <string name="glow_style" translatable="false">radial</string>
+
+    <!-- Apple Glass multi-layer glass material. 1 = original single-layer glass (default); 2 = an additional angled
+         fill layer, a diagonal specular strip and a corner radial glow for a deeper material look.
+         Can also be set with "glass_depth_layers": 2 in a theme's config.json. -->
+    <integer name="glass_depth_layers">1</integer>
+
+    <!-- Focus anticipation: the tile briefly squashes to 0.96x before springing to full focus size, giving a
+         physical "coiling" feel. Only active when animations and advanced_effects are both on. Off by default;
+         a theme can set "focus_anticipation": true. -->
+    <bool name="focus_anticipation">false</bool>
+
 </resources>

@@ -202,6 +202,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean reducedMotion;
     /** The focus zoom may overshoot (config.xml, focus_overshoot). */
     private final boolean focusOvershoot;
+    /** Apple Glass focus anticipation: tile squashes before expanding (config.xml, focus_anticipation). */
+    private final boolean focusAnticipation;
     /** Package to the action its tile sends instead of the start screen (config.xml, launch_actions). */
     private final Map<String, String> launchActions;
     /** Hold OK opens the activity's tile menu (config.xml, tile_menu); false opens App info, as before. */
@@ -224,6 +226,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.showLibrary = cfg.appLibrary;
         this.reducedMotion = cfg.reducedMotion;
         this.focusOvershoot = cfg.focusOvershoot;
+        this.focusAnticipation = cfg.animations && cfg.advancedEffects && cfg.focusAnticipation;
         this.rowsBelowDock = cfg.rowsBelowDock;
         this.dockTitle = cfg.dockTitle;
         this.dockRow = cfg.dockRow;
@@ -402,7 +405,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             v.setPadding(v.getPaddingLeft(), pad, v.getPaddingRight(), pad);
         }
         name.setLayoutParams(nameLp);
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot, focusAnticipation);
     }
 
     @Override
@@ -687,9 +690,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** Alpha of the name while the tile is not focused (always_show_names). */
         final float restNameAlpha;
         final boolean overshoot;
+        /** True when focus_anticipation is enabled: tile briefly squashes before expanding on focus. */
+        final boolean anticipation;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
-               boolean reducedMotion, float restNameAlpha, boolean overshoot) {
+               boolean reducedMotion, float restNameAlpha, boolean overshoot, boolean anticipation) {
             super(v);
             card = v.findViewById(R.id.card);
             cardBackground = card.getBackground();
@@ -702,6 +707,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.reducedMotion = reducedMotion;
             this.restNameAlpha = restNameAlpha;
             this.overshoot = overshoot;
+            this.anticipation = anticipation;
 
             final float density = v.getResources().getDisplayMetrics().density;
             card.setOutlineProvider(new ViewOutlineProvider() {
@@ -750,11 +756,35 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // left there the name overlaps the zoomed tile.
                     // Only on focus: snapping it back to -6dp while it fades out would jump it up over the tile.
                     if (focused) name.setTranslationY(density * 4f);
+                } else if (focused && anticipation && advancedEffects) {
+                    // Apple Glass focus anticipation: tile briefly squashes (coiling) then springs to focus size.
+                    // Phase 1 — squash (50 ms, decelerate)
+                    view.animate()
+                            .scaleX(Motion.ANTICIPATION_SQUASH).scaleY(Motion.ANTICIPATION_SQUASH)
+                            .setDuration(Motion.ANTICIPATION_MS)
+                            .setInterpolator(new DecelerateInterpolator())
+                            .withEndAction(() -> {
+                                // Phase 2 — expand to focus scale with overshoot
+                                view.animate()
+                                        .scaleX(s).scaleY(s)
+                                        .translationY(-4f * density)
+                                        .translationZ(8f * density)
+                                        .setDuration(Motion.ANTICIPATION_EXPAND_MS)
+                                        .setInterpolator(new OvershootInterpolator(overshoot ? 0.8f : 0f))
+                                        .withLayer().start();
+                                banner.animate().scaleX(1.035f).scaleY(1.035f).setDuration(280).start();
+                            }).start();
+                    name.animate().alpha(1f)
+                            .translationY(density * 4f)
+                            .setDuration(Motion.NAME_IN_MS)
+                            .setStartDelay(Motion.ANTICIPATION_MS)
+                            .start();
                 } else {
                     view.animate().scaleX(s).scaleY(s)
                             .translationY(focused && advancedEffects ? -4f * density : 0f)
                             .translationZ(focused && advancedEffects ? 8f * density : 0f)
-                            .setDuration(advancedEffects ? (focused ? 220 : 170) : (focused ? 260 : 180))
+                            .setDuration(advancedEffects ? (focused ? Motion.FOCUS_IN_MS : Motion.FOCUS_OUT_MS)
+                                    : (focused ? 260 : 180))
                             .setInterpolator(focused && !overshoot ? new DecelerateInterpolator(1.5f)
                                     : new OvershootInterpolator(focused ? (advancedEffects ? 0.7f : 1.6f) : 0f))
                             .withLayer().start();
@@ -764,7 +794,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                     name.animate().alpha(focused ? 1f : restNameAlpha)
                             .translationY(focused ? density * 4f : -density * 6f)
-                            .setDuration(220).start();
+                            .setDuration(Motion.NAME_IN_MS).start();
                 }
                 int pos = getBindingAdapterPosition();
                 if (focused && listener != null && pos != RecyclerView.NO_POSITION) {

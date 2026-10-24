@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Tile entrance animation — Apple Glass quality.
+  Tiles rise from 12dp below (shallow, not the original 22%) and fade in with a light scale,
+  using a snappy decelerate curve that mirrors Apple TV OS tile appearance.
+  Duration is 380 ms: long enough to feel deliberate, short enough to stay brisk.
+-->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@android:interpolator/decelerate_cubic"
-    android:duration="420">
+    android:interpolator="@android:interpolator/decelerate_quint"
+    android:duration="380">
     <alpha android:fromAlpha="0.0" android:toAlpha="1.0" />
-    <translate android:fromYDelta="22%" android:toYDelta="0%" />
+    <translate android:fromYDelta="10%" android:toYDelta="0%" />
     <scale
-        android:fromXScale="0.94" android:toXScale="1.0"
-        android:fromYScale="0.94" android:toYScale="1.0"
+        android:fromXScale="0.96" android:toXScale="1.0"
+        android:fromYScale="0.96" android:toYScale="1.0"
         android:pivotX="50%" android:pivotY="50%" />
 </set>

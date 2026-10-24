@@ -396,6 +396,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);
         if (festive) glass.setAccent(festival.accentColor());
+        glass.setDepthLayers(cfg.glassDepthLayers);
         ambient = findViewById(R.id.ambient);
         // The glow is one bitmap, so its alpha can be applied while drawing it. Otherwise every frame of
         // a fade renders it into a full-screen offscreen buffer first.
@@ -582,10 +583,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 Motion.reduce(s);
             } else if (!focusOvershoot) {
                 // Critically damped: glides straight onto the tile without swinging past it.
-                s.setSpring(new SpringForce().setStiffness(advancedEffects ? 520f : 440f).setDampingRatio(1f));
+                // Use the Gentle preset (smooth, non-bouncy) for a fluid Apple Glass feel.
+                Motion.applyGentle(s);
             } else {
-                s.setSpring(new SpringForce().setStiffness(advancedEffects ? 320f : 260f)
-                        .setDampingRatio(advancedEffects ? 0.76f : 0.58f));
+                // Bouncy preset: a gentle overshoot matching Apple TV's spring settle.
+                Motion.applyBouncy(s);
             }
         }
 
