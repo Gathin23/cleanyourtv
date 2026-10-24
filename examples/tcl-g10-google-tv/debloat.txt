@@ -54,6 +54,11 @@
 #   package has APP_AUTO_START (docs/TROUBLESHOOTING.md). Run `appops write-settings` after
 #   `appops set com.gathin.tvhome APP_AUTO_START allow`: app-ops are saved lazily, and a plain
 #   `reboot` drops the change. Confirmed on the C69B over three reboots.
+# - The remote's mic button needs com.google.android.tv.remote.service, which is commented out below: a
+#   press starts AtvSearchAssistantService inside that package, so with the package disabled the button
+#   does nothing (no key on any /dev/input/event*) and logcat says the service is "not found".
+#   `pm enable com.google.android.tv.remote.service` brings voice back without a reboot. Confirmed on a
+#   43T6C (G10, Realtek, build STT2.230203.001); the phone-remote app pairing needs it too. (#1441)
 
 # TCL content, ads and promos
 com.tcl.tv.plus                        # TCL TV+ content app
@@ -77,7 +82,7 @@ android.autoinstalls.config.google.gtvpai
 com.google.android.feedback
 com.google.android.marvin.talkback
 com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks above
-com.google.android.tv.remote.service   # Google TV phone-app remote
+# com.google.android.tv.remote.service # phone-app remote, and the remote mic's bridge: see quirks above
 
 # Optional: uncomment what you don't use
 # Tested on the Netherlands 43P69K; telemetry shipped enabled there, unlike the original US unit.

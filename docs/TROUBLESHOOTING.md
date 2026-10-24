@@ -377,9 +377,13 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   list keeps both now; the lists that still disable `com.google.android.tv.remote.service` are
   `rca-ai-pont`, `sharp-aquos-tve21f`, `sony-bravia-4k-gb-us`, `sony-xbr-65x900f`,
   `sony-xbr-x900e`, `tcl-32s5k`, `tcl-40s5400a`, `tcl-55s470g`, `tcl-beyondtv2-android-11`,
-  `tcl-g09-google-tv`, `tcl-g10-google-tv`, `xgimi-horizon-s-pro`, `xgimi-mogo-3-pro` and
-  `xiaomi-mi-box-s`. Those TVs haven't been tested for this, but any of them whose remote has a
-  microphone may show the same symptom.
+  `tcl-g09-google-tv`, `xgimi-horizon-s-pro`, `xgimi-mogo-3-pro` and `xiaomi-mi-box-s`. Those TVs
+  haven't been tested for this, but any of them whose remote has a microphone may show the same
+  symptom. The G10 list has since been tested from the other side: on a 43T6C (G10, Realtek, build
+  `STT2.230203.001`) a mic press with `com.google.android.tv.remote.service` disabled logs `Unable to
+  start service Intent { act=...AtvSearchAssistantService ... } U=0: not found` — that service lives in
+  the package — and re-enabling only it, with every other line applied, brought the button back, so
+  `tcl-g10-google-tv` keeps it now.
 - **Casting from a phone fails with "Untrusted device" after setupwraith is disabled**, seen on
   Chromecast with Google TV HD (`boreal`) on Google TV 14 build UTTC.250917.004, the build the
   `examples/google-chromecast-gtv-4k/` list was made on. YouTube on the phone says "Untrusted device.
