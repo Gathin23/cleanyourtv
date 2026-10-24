@@ -2426,6 +2426,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             else if (hour < 12) res = R.string.good_morning;
             else if (hour < 21) res = R.string.good_afternoon;
             else res = R.string.good_night;
+        } else if ("da".equals(lang)) {
+            // Danish day parts: "God morgen" until 11, then "God formiddag" to noon.
+            if (hour < 5) res = R.string.good_night;
+            else if (hour < 11) res = R.string.good_morning;
+            else if (hour < 12) res = R.string.good_forenoon;
+            else if (hour < 18) res = R.string.good_afternoon;
+            else if (hour < 22) res = R.string.good_evening;
+            else res = R.string.good_night;
         } else {
             if (hour < 5) res = R.string.good_night;
             else if (hour < 12) res = R.string.good_morning;
