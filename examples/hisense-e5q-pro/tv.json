@@ -2,5 +2,5 @@
   "tv": "Hisense E5Q Pro (VIDAA_TV, MediaTek MT9653), China",
   "os": "Android TV 11",
   "brand": "Hisense",
-  "notes": "China VIDAA firmware, the conservative subset of `vidda-mt9653/` (same build): ad SDK/service, push, telemetry, store/hotel/demo and preloaded content; stock launcher `com.jamdeo.tv.vod` and Live TV `com.jamdeo.tv.livetv` kept, OTA kept; 18 packages"
+  "notes": "China VIDAA firmware, the conservative subset of `vidda-mt9653/` (same build): ad SDK/service, push, telemetry, store/hotel/demo and preloaded content; stock launcher `com.jamdeo.tv.vod` and Live TV `com.jamdeo.tv.livetv` kept, OTA kept; 18 packages; [55E5Q-PRO ADB and factory-mode guide](hisense-e5q-pro/README.md)"
 }
