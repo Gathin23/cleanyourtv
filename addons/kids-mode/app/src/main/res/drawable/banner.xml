@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: building blocks and a padlock. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FF6B6B" android:pathData="M60,96h48v48h-48z" />
+    <path android:fillColor="#4ECDC4" android:pathData="M112,96h48v48h-48z" />
+    <path android:fillColor="#FFC83D" android:pathData="M86,44h48v48h-48z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M206,96h56v44h-56z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="7" android:fillColor="#00000000" android:pathData="M218,96v-14a16,16 0 0 1 32,0v14" />
+    <path android:fillColor="#101418" android:pathData="M230,110h8v16h-8z" />
+</vector>

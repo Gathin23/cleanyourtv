@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A padlock for the Grown-ups tile. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp" android:height="54dp"
+    android:viewportWidth="96" android:viewportHeight="54">
+    <path android:fillColor="#FFC83D" android:pathData="M36,24h24v20h-24z" />
+    <path android:strokeColor="#FFC83D" android:strokeWidth="4" android:fillColor="#00000000" android:pathData="M41,24v-6a7,7 0 0 1 14,0v6" />
+    <path android:fillColor="#14213D" android:pathData="M46,31h4v7h-4z" />
+</vector>

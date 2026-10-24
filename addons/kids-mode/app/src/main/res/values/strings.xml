@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kids Mode</string>
+    <string name="guard_name">Kids Mode guard</string>
+    <string name="guard_description">While Kids Mode is on, sends any app that isn\'t on the kids\' screen back to it. It sees only which app is in front, never what is on screen or which keys are pressed.</string>
+</resources>
