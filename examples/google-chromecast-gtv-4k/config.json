@@ -1,0 +1,13 @@
+{
+  "dock_apps": [
+    "com.plexapp.android",
+    "com.google.android.youtube.tv",
+    "hami.androidtv",
+    "com.netflix.ninja"
+  ],
+  "hidden_apps": [
+    "com.android.tv.settings"
+  ],
+  "live_tv_package": "",
+  "columns": 4
+}
