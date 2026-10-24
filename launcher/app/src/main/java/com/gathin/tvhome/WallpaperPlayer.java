@@ -36,6 +36,14 @@ final class WallpaperPlayer {
     private final int backgroundColor;
     private final List<File> files;
     private final long interval;
+    /**
+     * wallpaper_rotation_seconds under a minute: Home's minute tick is too slow, so this player posts its own change
+     * while Home is shown (start) and drops it when Home goes (stop). The time of the last change stays in memory
+     * instead of being written to the preferences every few seconds.
+     */
+    private final boolean ownTimer;
+    private long changedAt;
+    private final Runnable timerTick = this::update;
     private final String order;
     private final SharedPreferences preferences;
     private final ExecutorService decoder = Executors.newSingleThreadExecutor();
@@ -66,7 +74,8 @@ final class WallpaperPlayer {
         this.root = root;
         backgroundColor = config.backgroundColor;
         files = new ArrayList<>(config.wallpapers);
-        interval = config.wallpaperRotationMinutes * 60_000L;
+        interval = WallpaperRotation.intervalMillis(config.wallpaperRotationMinutes, config.wallpaperRotationSeconds);
+        ownTimer = WallpaperRotation.ownTimer(interval);
         bitmapConfig = config.wallpaperTrueColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
         // The dim is painted into the picture (decode), so no full-screen shade layer is drawn on every frame.
         dimColor = config.wallpaperDim > 0 ? (config.wallpaperDim * 255 / 100) << 24 : 0;
@@ -116,6 +125,7 @@ final class WallpaperPlayer {
                 root.setBackground(null);
                 displayed = first.getName();
                 showCaption(false);
+                changedAt = System.currentTimeMillis();
                 if (!displayed.equals(previous)) {
                     preferences.edit().putString("image", displayed)
                             .putLong("changed", System.currentTimeMillis()).apply();
@@ -135,6 +145,15 @@ final class WallpaperPlayer {
 
     void stop() {
         active = false;
+        if (ownTimer) root.removeCallbacks(timerTick);
+    }
+
+    /** The own timer's next change, counted from the last one so a slow decode does not stretch the interval. */
+    private void scheduleNext() {
+        root.removeCallbacks(timerTick);
+        if (ownTimer && active && !closed && files.size() > 1) {
+            root.postDelayed(timerTick, WallpaperRotation.delay(changedAt, System.currentTimeMillis(), interval));
+        }
     }
 
     /** Drops the wallpaper texture when Home is hidden and Android asks the process to free memory. */
@@ -162,6 +181,7 @@ final class WallpaperPlayer {
     void close() {
         active = false;
         closed = true;
+        root.removeCallbacks(timerTick);
         decoder.shutdownNow();
     }
 
@@ -171,11 +191,14 @@ final class WallpaperPlayer {
         // A picture outside the time of day's group (the group changed) is replaced at once, not after the interval.
         List<File> playable = playable();
         File selected = WallpaperRotation.find(playable, previous);
-        long changed = preferences.getLong("changed", 0);
+        long changed = ownTimer ? changedAt : preferences.getLong("changed", 0);
         if (selected == null || WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
             selected = WallpaperRotation.pick(playable, previous, order, random);
         }
-        if (selected == null || selected.getName().equals(displayed)) return;
+        if (selected == null || selected.getName().equals(displayed)) {
+            scheduleNext();
+            return;
+        }
         File next = selected;
         loading = true;
         decoder.execute(() -> {
@@ -195,10 +218,15 @@ final class WallpaperPlayer {
                 show(bitmap);
                 displayed = next.getName();
                 showCaption(true);
-                if (!displayed.equals(previous) || changed == 0) {
+                changedAt = System.currentTimeMillis();
+                if (ownTimer) {
+                    // Only the picture's name, so Home opens on it again; not the time, every few seconds.
+                    if (!displayed.equals(previous)) preferences.edit().putString("image", displayed).apply();
+                } else if (!displayed.equals(previous) || changed == 0) {
                     preferences.edit().putString("image", displayed)
                             .putLong("changed", System.currentTimeMillis()).apply();
                 }
+                scheduleNext();
             });
         });
     }

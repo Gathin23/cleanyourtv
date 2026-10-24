@@ -85,4 +85,21 @@ final class WallpaperRotation {
     static boolean due(long previous, long now, long interval) {
         return interval > 0 && (previous == 0 || now < previous || now - previous >= interval);
     }
+
+    /** wallpaper_rotation_seconds wins over wallpaper_rotation_minutes when set; 0 for no rotation. */
+    static long intervalMillis(int minutes, int seconds) {
+        if (seconds > 0) return seconds * 1000L;
+        return minutes > 0 ? minutes * 60_000L : 0;
+    }
+
+    /** Home's tick comes once a minute, so a shorter interval needs WallpaperPlayer's own timer. */
+    static boolean ownTimer(long interval) {
+        return interval > 0 && interval < 60_000L;
+    }
+
+    /** How long the own timer waits before the next change: what is left of the interval, at least a quarter second. */
+    static long delay(long changed, long now, long interval) {
+        if (changed <= 0 || now < changed) return interval;
+        return Math.max(250L, interval - (now - changed));
+    }
 }

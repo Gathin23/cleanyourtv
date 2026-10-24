@@ -77,11 +77,14 @@ A new key needs one there in the same pull request.
 | `app_library_selection` | bool | OK toggles Home checkmarks in the library; checked apps first, both groups alphabetized. Hiding keeps focus on the adjacent next app (previous at the end). Requires `app_library`; `false` preserves the standard open/long-press behavior |
 | `library_apps` | list of package names | Packages pre-seeded into the App library's "added" set at startup (config.xml `library_apps`, or a theme's `config.json`). They show on Home as if the owner had added them in the App library UI, and stay removable there (a removed one stays hidden); empty (off) by default |
 | `shamsi_date` | bool | Show the Solar Hijri date above the Gregorian one |
-| `lunar_date` | bool | Show the lunisolar date under the Gregorian one, e.g. `LUNAR 13/9 · YEAR OF THE HORSE`, or `13/9 ÂM LỊCH · BÍNH NGỌ` in Vietnamese; a leap month is marked. Off by default |
+| `lunar_date` | bool | Show the lunisolar date under the Gregorian one, e.g. `LUNAR 13/9 · YEAR OF THE HORSE`, or `ÂM LỊCH 13/9 · BÍNH NGỌ` in Vietnamese; a leap month is marked (`1/2 NHUẬN`). Computed with Hồ Ngọc Đức's algorithm, not ICU's ChineseCalendar, which counts in Beijing time. Off by default |
 | `lunar_utc_offset` | 0 to 14 | Hours east of UTC the lunar calendar is computed for: `7` is the Vietnamese calendar, `8` the Chinese one; they differ by a day now and then (and by a month in 1985). Unset: 7 when the TV is in Vietnamese, 8 otherwise |
 | `greeting_name` | string | A name after the greeting, e.g. `"Mr. Trịnh"` for GOOD MORNING, MR. TRỊNH; empty for the greeting alone |
 | `show_greeting` | bool | The greeting above the clock (`true` by default); `false` hides it |
 | `header_white` | bool | The date and the line between the clock and the date in the clock's full white instead of dimmed (`false` by default) |
+| `greeting_text` | string | A fixed line in place of the time-of-day greeting, e.g. `"Nhà mình"`; a festival's greeting still wins while it runs. Empty keeps the greeting (default) |
+| `date_below_clock` | bool | The date, and the lunar date with `lunar_date`, on their own lines under the clock in smaller type, without the line beside the clock; the gaps between the greeting, the digits and the date lines are equal, and the top-right buttons centre on the digits (`false` by default) |
+| `hide_apps_until_down` | bool | Home shows no apps, only the wallpaper and the header, like a photo frame. Down or OK slides the dock and the grid up with a dock tile focused; Up goes to the top buttons; Back and every return to Home from an app hide the apps again, and Home pressed on Home toggles them; reorder mode shows them (`false` by default) |
 | `module_cards` | bool | Look for module cards and ask about them (`true`); `false` turns the feature off |
 | `reduced_motion` | bool | Calmer motion for weak GPUs: the highlight slides without bouncing and settles within 5 frames, every animation lasts 90 ms or less, names, the top shelf, the glow and the highlight appear instead of fading, and there is no tile entrance (`false` by default) |
 | `boot_to_live_tv` | bool | Open the Live TV app (`live_tv_package`) on the first Home after the TV starts, once per boot |
@@ -97,6 +100,7 @@ A new key needs one there in the same pull request.
 | `sky_intensity` | 0 to 100 | Time-of-day backdrop: a dark gradient that follows the clock, 0 hides it (default) |
 | `wallpaper` | bool | Show the theme's picture, `wallpaper.jpg` or its `wallpapers/` collection (`true`), or draw neither (`false`) |
 | `wallpaper_rotation_minutes` | 0 to 1440 | Rotate images in the theme's `wallpapers/` folder at this interval; 0 keeps the single-image behaviour. A negative or non-numeric value is ignored, and 0 means "no rotation", not "every minute" |
+| `wallpaper_rotation_seconds` | 0 to 86400 | The same rotation in seconds, e.g. `5` for a photo frame; it wins over `wallpaper_rotation_minutes` when set. Under a minute the wallpaper keeps its own timer while Home is shown and stops it when Home is left. 0 is off (default) |
 | `wallpaper_order` | `shuffle` or `sequential` | How a collection advances. `shuffle` (the default, and what launchers did before this key existed) avoids repeating the current picture; `sequential` walks the folder in filename order and wraps at the end. An unknown value falls back to `shuffle` |
 | `wallpaper_dim` | 0 to 90 | Black overlay over wallpaper images, in percent; 0 by default and no shade view at all |
 | `dock_opacity` | 30 to 100 | Opacity of the dock's band, in percent, so a wallpaper shows through it; 100 by default (the cinematic shelf keeps its own translucent band). Launcher settings on the TV offers 100, 70, 50 or 30, which wins until the next theme push or Follow theme |
@@ -149,6 +153,11 @@ For a wallpaper collection, place JPEG, PNG or WebP files in the theme’s `wall
 ```json
 { "wallpaper": true, "wallpaper_rotation_minutes": 30, "wallpaper_dim": 40, "wallpaper_order": "sequential" }
 ```
+
+Right after the TV starts, Home can come up before its storage is readable: it then has the theme's settings
+(from a copy it keeps) but none of its pictures. When a collection is set to rotate and no picture could be
+read, Home looks again every 3 seconds for 2 minutes and rebuilds itself as soon as the pictures are there,
+instead of staying black until the next restart.
 
 The last displayed picture is remembered on the TV, so a restart or reboot resumes from it rather than
 starting over at the first image in `sequential` mode. Missing an interval while the TV is asleep or

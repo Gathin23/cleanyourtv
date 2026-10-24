@@ -35,6 +35,10 @@ the rules. Keys from before this rule are on its wanted list; a screenshot for o
 | `top_bar_apps` | <img src="switches/top_bar_apps.jpg" width="320" alt="top_bar_apps on a TV"> |
 | `show_greeting` | <img src="switches/show_greeting.jpg" width="320" alt="show_greeting on a TV"> |
 | `header_white` | <img src="switches/header_white.jpg" width="320" alt="header_white on a TV"> |
+| `greeting_text` | <img src="switches/date_below_clock.jpg" width="320" alt="greeting_text on a TV"> |
+| `date_below_clock` | <img src="switches/date_below_clock.jpg" width="320" alt="date_below_clock with lunar_date on a TV"> |
+| `hide_apps_until_down` | <img src="switches/hide_apps_until_down.jpg" width="320" alt="hide_apps_until_down on a TV"> |
+| `wallpaper_rotation_seconds` | <img src="switches/hide_apps_until_down.jpg" width="320" alt="wallpaper_rotation_seconds on a TV"> |
 | `clock_wallpaper` | <img src="switches/clock_wallpaper.jpg" width="320" alt="clock_wallpaper on a TV"> |
 | `clock_wallpaper_dim` | <img src="switches/clock_wallpaper.jpg" width="320" alt="clock_wallpaper_dim on a TV"> |
 | `clock_glow` | <img src="switches/clock_glow.jpg" width="320" alt="clock_glow on a TV"> |

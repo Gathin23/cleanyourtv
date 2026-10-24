@@ -61,6 +61,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -192,6 +193,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean shamsi;
     /** greeting_name: said after the greeting, which is shown in capitals. */
     private String greetingName = "";
+    /** greeting_text: a fixed line in place of the time-of-day greeting; empty keeps the greeting. */
+    private String greetingText = "";
+    /** hide_apps_until_down: the key logic (null when off), the invisible view holding focus, and the grid's wrapper. */
+    private AppsGate appsGate;
+    private View appsGateView;
+    private View gridWrap;
+    /** Home was fully covered (onStop) since the last resume: the next resume hides the apps again. */
+    private boolean appsReturnHidden;
+    /** After a boot with the theme's pictures still unreadable (WallpaperRetry): when the first look was scheduled. */
+    private long wallpaperRetryStart;
+    private final Runnable wallpaperRetry = this::retryWallpapers;
     /** Optional time-of-day backdrop (config.xml, sky_intensity); 0 keeps it hidden. */
     private SkyView sky;
     private String vpnApp;
@@ -415,6 +427,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the theme's background, so launch looks the same.
         getWindow().setBackgroundDrawable(null);
         wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
+        if (WallpaperRetry.needed(cfg.wallpaperRotating, cfg.wallpapers.size())) {
+            wallpaperRetryStart = SystemClock.elapsedRealtime();
+            handler.postDelayed(wallpaperRetry, WallpaperRetry.INTERVAL_MS);
+        }
         sky = findViewById(R.id.sky);
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);
@@ -479,6 +495,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         lunarOffset = Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault());
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
+        greetingText = cfg.greetingText;
         if (shamsi) {
             shamsiDate.setVisibility(View.VISIBLE);
             TextView date = findViewById(R.id.date);
@@ -486,6 +503,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lunarDate.setTextSize(11f);
             date.setPadding(0, (int) (4 * density), 0, 0);
         }
+        if (cfg.dateBelowClock) setUpDateBelowClock();
         vpnApp = cfg.vpnApp;
         moduleCards = cfg.moduleCards;
         hiddenApps = new HashSet<>(cfg.hiddenApps);
@@ -782,6 +800,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
+        if (cfg.hideAppsUntilDown) setUpAppsGate();
 
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
@@ -883,7 +902,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         lastFocused = 0;
         lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
         if (stopped) {
-            tileRefresh.onHomeAgain();
+            tileRefresh.onHomeAgain();   // onResume follows, and with hide_apps_until_down hides the apps there
+        } else if (appsGate != null) {
+            // hide_apps_until_down: Home pressed on Home brings the apps up, or puts them away when they are up.
+            if (appsGate.onHomeAgain() == AppsGate.Action.REVEAL) revealApps(true);
+            else hideApps(true);
         } else {
             // Still on screen (the quick panel was over it, or Home was already in front): the tiles are current,
             // so only go back to the first one; rebuilding would replay the entrance animation for nothing.
@@ -922,6 +945,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         restartIdleClock();
         promptsPaused = false;
+        // hide_apps_until_down: every return to Home from an app starts as the photo frame again. Only after onStop:
+        // Home pressed on Home also passes through onResume, right after onNewIntent toggled the apps.
+        if (appsGate != null && !reordering && appsReturnHidden) hideApps(false);
+        appsReturnHidden = false;
         if (grid.getAdapter() == null) grid.setAdapter(adapter);   // dropped by onTrimMemory
         switch (tileRefresh.onResume(packagesChangedSinceRebuild())) {
             case REBUILD:
@@ -1143,6 +1170,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         unregisterReceiver(timeReceiver);
         handler.removeCallbacks(clockCheck);
         stopped = true;
+        appsReturnHidden = true;
         tileRefresh.onStop();
     }
 
@@ -1182,6 +1210,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(packageReceiver);
+        handler.removeCallbacks(wallpaperRetry);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -1225,6 +1254,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (handleSettingsKey(event)) return true;
+        if (appsGate != null && !reordering) {
+            switch (appsGate.onKey(event.getKeyCode(), event.getAction(), getCurrentFocus() == appsGateView)) {
+                case CONSUME:
+                    return true;
+                case REVEAL:
+                    revealApps(true);
+                    return true;
+                case FOCUS_TOP:
+                    firstTopButton().requestFocus();
+                    return true;
+                case HIDE:
+                    hideApps(true);
+                    return true;
+                default:
+                    break;
+            }
+        }
         if (tileMenuEnabled && !reordering && openPopup == null && cardPrompt == null
                 && event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
             int position = focusedTilePosition();
@@ -1303,6 +1349,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The start shared by reorder and edit-dock mode. False when there is nothing to move. */
     private boolean beginReorder() {
         if (adapter.movableCount() < 2) return false;
+        // hide_apps_until_down: the tiles being sorted must be on screen.
+        if (appsGate != null && appsGate.hidden()) revealApps(false);
         // Before the reload below: once it has dropped the empty slots, the dock row also shows grid apps.
         dockInSession = new HashSet<>();
         dockedAtStart = adapter.dockFilled();
@@ -2405,6 +2453,154 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /**
+     * date_below_clock: the date column leaves the clock's row for its own lines under it, in smaller type and
+     * without the divider. Once laid out, the gaps between the greeting, the clock's digits, the date and the lunar
+     * date are made equal (measured between the ink, not the text boxes), and the top-right buttons are centred on
+     * the digits. LayoutParams changed inside onLayoutChange are ignored by the RelativeLayout, so they are posted
+     * to the next frame, and only when they differ (which also ends the loop the new layout starts).
+     */
+    private void setUpDateBelowClock() {
+        TextView clock = findViewById(R.id.clock);
+        TextView date = findViewById(R.id.date);
+        ViewGroup clockRow = (ViewGroup) clock.getParent();
+        LinearLayout dateColumn = (LinearLayout) date.getParent();
+        LinearLayout block = (LinearLayout) clockBlock;
+        View topButtons = findViewById(R.id.topButtons);
+        findViewById(R.id.clockDivider).setVisibility(View.GONE);
+        clockRow.removeView(dateColumn);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMarginStart(Math.round(4 * density));   // as the greeting: in line with the clock's first digit
+        block.addView(dateColumn, block.indexOfChild(clockRow) + 1, lp);
+        date.setTextSize(12f);
+        lunarDate.setTextSize(12f);
+        shamsiDate.setTextSize(13f);
+        int fallbackGap = Math.round(10 * density);
+        block.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> v.post(() -> {
+            if (isDestroyed() || clock.getHeight() == 0) return;
+            int clockTop = clockRow.getTop() + clock.getTop();
+            int digitsTop = clockTop + inkTop(clock, "0123456789");
+            int digitsBottom = clockTop + inkBottom(clock, "0123456789");
+            int gap = greeting.getVisibility() == View.VISIBLE && greeting.getHeight() > 0
+                    ? digitsTop - (greeting.getTop() + inkBottom(greeting, "H")) : fallbackGap;
+            if (gap <= 0) gap = fallbackGap;
+            // Under the clock row: the first line shown in the date column, then the lunar date under the date.
+            TextView first = shamsiDate.getVisibility() == View.VISIBLE ? shamsiDate : date;
+            int belowClock = clockRow.getHeight() - (clock.getTop() + inkBottom(clock, "0123456789"));
+            setTopMargin(dateColumn, HeaderLayout.marginForGap(gap, belowClock, first.getTop() + inkTop(first, "H")));
+            if (lunarDate.getVisibility() == View.VISIBLE) {
+                int belowDate = date.getHeight() - inkBottom(date, "H");
+                setTopMargin(lunarDate, HeaderLayout.marginForGap(gap, belowDate, inkTop(lunarDate, "H")));
+            }
+            // The buttons' row centred on the digits, which now sit well above the bottom of the taller left block.
+            RelativeLayout.LayoutParams tlp = (RelativeLayout.LayoutParams) topButtons.getLayoutParams();
+            int top = HeaderLayout.centredTop(block.getTop() + digitsTop, block.getTop() + digitsBottom,
+                    topButtons.getHeight()) - block.getTop();
+            if (tlp.getRule(RelativeLayout.ALIGN_TOP) != R.id.leftBlock || tlp.topMargin != top || tlp.bottomMargin != 0) {
+                tlp.removeRule(RelativeLayout.ALIGN_BOTTOM);
+                tlp.addRule(RelativeLayout.ALIGN_TOP, R.id.leftBlock);
+                tlp.topMargin = top;
+                tlp.bottomMargin = 0;
+                topButtons.setLayoutParams(tlp);
+            }
+        }));
+    }
+
+    /**
+     * hide_apps_until_down: an invisible focusable view holds the focus while the apps are away, and the grid blocks
+     * focus into its tiles, so neither the focus finder nor a restored focus can land on a tile nobody sees.
+     */
+    private void setUpAppsGate() {
+        appsGate = new AppsGate(true);
+        gridWrap = (View) grid.getParent();
+        appsGateView = new View(this);
+        appsGateView.setFocusable(true);
+        appsGateView.setDefaultFocusHighlightEnabled(false);
+        appsGateView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        root.addView(appsGateView, new FrameLayout.LayoutParams(1, 1));
+        hideApps(false);
+    }
+
+    /** The dock and the grid slide away and the focus goes to the invisible gate. */
+    private void hideApps(boolean animate) {
+        if (appsGate == null) return;
+        appsGate.hide();
+        grid.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+        appsGateView.requestFocus();
+        hideGlass();
+        hideHero();
+        float away = root.getHeight() > 0 ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
+        gridWrap.animate().cancel();
+        if (animate && animations && !reducedMotion) {
+            gridWrap.animate().translationY(away).alpha(0f).setDuration(260).start();
+        } else {
+            gridWrap.setTranslationY(away);
+            gridWrap.setAlpha(0f);
+        }
+    }
+
+    /** The dock and the grid slide up; with {@code focus} a dock tile takes the focus (the one last used). */
+    private void revealApps(boolean focus) {
+        if (appsGate == null) return;
+        appsGate.show();
+        grid.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+        gridWrap.animate().cancel();
+        boolean slide = animations && !reducedMotion;
+        if (focus) {
+            focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
+            // The glass is placed where the tile ends up; keep it out of sight until the tiles get there.
+            if (slide && glassShown) {
+                glass.animate().cancel();
+                glass.setAlpha(0f);
+            }
+        }
+        if (slide) {
+            gridWrap.animate().translationY(0f).alpha(1f).setDuration(320)
+                    .setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
+                        if (glassShown) glass.animate().alpha(1f).setDuration(120).start();
+                    }).start();
+        } else {
+            gridWrap.setTranslationY(0f);
+            gridWrap.setAlpha(1f);
+        }
+    }
+
+    /** WallpaperRetry: look for the theme's pictures again; rebuild Home once one is readable, give up after a while. */
+    private void retryWallpapers() {
+        if (isFinishing() || isDestroyed()) return;
+        File dir = Config.dir(this);
+        if (dir != null && !WallpaperRotation.images(new File(dir, "wallpapers")).isEmpty()) {
+            recreate();
+            return;
+        }
+        if (WallpaperRetry.again(SystemClock.elapsedRealtime() - wallpaperRetryStart)) {
+            handler.postDelayed(wallpaperRetry, WallpaperRetry.INTERVAL_MS);
+        }
+    }
+
+    /** Sets a view's top margin, only when it changes, so a layout pass it starts does not start another. */
+    private static void setTopMargin(View view, int margin) {
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        if (p.topMargin == margin) return;
+        p.topMargin = margin;
+        view.setLayoutParams(p);
+    }
+
+    /** Distance from a text view's top to the top of {@code sample}'s ink on its first line. */
+    private static int inkTop(TextView view, String sample) {
+        Rect ink = new Rect();
+        view.getPaint().getTextBounds(sample, 0, sample.length(), ink);
+        return view.getBaseline() + ink.top;
+    }
+
+    /** Distance from a text view's top to the bottom of {@code sample}'s ink on its first line. */
+    private static int inkBottom(TextView view, String sample) {
+        Rect ink = new Rect();
+        view.getPaint().getTextBounds(sample, 0, sample.length(), ink);
+        return view.getBaseline() + ink.bottom;
+    }
+
     private void updateGreeting() {
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         int res;
@@ -2434,9 +2630,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             else res = R.string.good_night;
         }
         String festiveGreeting = festive ? festival.greetingText(getResources()) : "";
+        String fixedGreeting = GreetingText.fixed(festiveGreeting, greetingText);
         if (!festiveGreeting.isEmpty()) {
             greeting.setText(festiveGreeting);
             greeting.setTextColor(liftTowardsWhite(festival.accentColor(), 0.25f));
+        } else if (fixedGreeting != null) {
+            greeting.setText(fixedGreeting);
+            greeting.setTextColor(greetingColor);
         } else {
             greeting.setText(greetingName.isEmpty() ? getString(res)
                     : getString(R.string.greeting_with_name, getString(res), greetingName));

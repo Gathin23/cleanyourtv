@@ -210,6 +210,18 @@
     <!-- The date and the line between the clock and the date in the clock's full white instead of dimmed. Can also be
          set with "header_white" in a theme. -->
     <bool name="header_white">false</bool>
+    <!-- A fixed line in place of the time-of-day greeting, e.g. "Nhà mình". Empty keeps the greeting. Can also be set
+         with "greeting_text" in a theme. -->
+    <string name="greeting_text" translatable="false"></string>
+    <!-- The date (and the lunar date) on lines under the clock in smaller type, without the line beside the clock; the
+         top-right buttons centre on the clock's digits. Can also be set with "date_below_clock" in a theme. -->
+    <bool name="date_below_clock">false</bool>
+    <!-- Home shows no apps until Down or OK slides the dock and the grid up; Back and every return to Home hide them
+         again, and Home pressed on Home toggles them. For a photo-frame Home. Can also be set with "hide_apps_until_down" in a theme. -->
+    <bool name="hide_apps_until_down">false</bool>
+    <!-- Rotate the theme's wallpapers/ every this many seconds instead of wallpaper_rotation_minutes; 0 is off. Can also
+         be set with "wallpaper_rotation_seconds" in a theme. -->
+    <integer name="wallpaper_rotation_seconds">0</integer>
     <!-- Optional VPN app the network pill opens (hold the pill for Wi-Fi settings), e.g. the package of the
          VPN you use. Empty: the pill opens Wi-Fi settings. The green VPN badge shows for any VPN either way;
          with an app set here, a red "VPN off" badge also shows while no VPN is up. -->

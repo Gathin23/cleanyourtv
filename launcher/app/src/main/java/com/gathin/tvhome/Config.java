@@ -236,6 +236,16 @@ final class Config {
     final boolean singleRow;
     /** With single_row, the band runs behind every app in the row, not only the dock apps (config.xml, dock_band_all). */
     final boolean dockBandAll;
+    /** A fixed line in place of the time-of-day greeting (config.xml, greeting_text); empty keeps the greeting. */
+    final String greetingText;
+    /** The date lines under the clock in smaller type, no divider; the top buttons centre on the digits (date_below_clock). */
+    final boolean dateBelowClock;
+    /** Home shows no apps until Down or OK (config.xml, hide_apps_until_down); see AppsGate. */
+    final boolean hideAppsUntilDown;
+    /** Seconds between wallpapers (config.xml, wallpaper_rotation_seconds); 0 leaves wallpaperRotationMinutes in charge. */
+    final int wallpaperRotationSeconds;
+    /** A rotating collection is configured, whether or not its pictures could be read at start (see WallpaperRetry). */
+    final boolean wallpaperRotating;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -250,7 +260,14 @@ final class Config {
                    List<RaceWeekend.Race> raceCalendar, boolean cinematicHome, boolean ambientGlow, boolean appGlow, boolean fadeRows, int homeIdleClockMinutes,
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
-                   Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset) {
+                   Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset,
+                   String greetingText, boolean dateBelowClock, boolean hideAppsUntilDown, int wallpaperRotationSeconds,
+                   boolean wallpaperRotating) {
+        this.greetingText = greetingText;
+        this.dateBelowClock = dateBelowClock;
+        this.hideAppsUntilDown = hideAppsUntilDown;
+        this.wallpaperRotationSeconds = wallpaperRotationSeconds;
+        this.wallpaperRotating = wallpaperRotating;
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -455,6 +472,10 @@ final class Config {
         String glassStyle = res.getString(R.string.glass_style);
         boolean singleRow = res.getBoolean(R.bool.single_row);
         boolean dockBandAll = res.getBoolean(R.bool.dock_band_all);
+        String greetingText = res.getString(R.string.greeting_text).trim();
+        boolean dateBelowClock = res.getBoolean(R.bool.date_below_clock);
+        boolean hideAppsUntilDown = res.getBoolean(R.bool.hide_apps_until_down);
+        int rotationSeconds = Math.max(0, res.getInteger(R.integer.wallpaper_rotation_seconds));
         boolean applied = false;
 
         File dir = dir(ctx);
@@ -550,6 +571,10 @@ final class Config {
             dockBandAll = bool(json, "dock_band_all", dockBandAll);
             glowStyle = string(json, "glow_style", glowStyle);
             glassStyle = string(json, "glass_style", glassStyle);
+            greetingText = string(json, "greeting_text", greetingText);
+            dateBelowClock = bool(json, "date_below_clock", dateBelowClock);
+            hideAppsUntilDown = bool(json, "hide_apps_until_down", hideAppsUntilDown);
+            rotationSeconds = integer(json, "wallpaper_rotation_seconds", rotationSeconds, 0, 86_400);
         }
         // A top-bar app is moved there, not copied: it leaves the grid.
         for (String pkg : topBarApps) if (!hidden.contains(pkg)) hidden.add(pkg);
@@ -578,7 +603,8 @@ final class Config {
         // An unknown order must not silently change how an existing collection rotates.
         if (!WallpaperRotation.validOrder(wallpaperOrder)) wallpaperOrder = WallpaperRotation.ORDER_SHUFFLE;
         List<File> wallpapers = new ArrayList<>();
-        if (rotationMinutes > 0 && dir != null && wallpaperEnabled) {
+        boolean rotating = (rotationMinutes > 0 || rotationSeconds > 0) && wallpaperEnabled;
+        if (rotating && dir != null) {
             wallpapers.addAll(WallpaperRotation.images(new File(dir, "wallpapers")));
         }
         if (wallpapers.isEmpty() && wallpaper != null) wallpapers.add(wallpaper);
@@ -605,7 +631,8 @@ final class Config {
                 Math.max(0, Math.min(100, skyIntensity)), settingsKeycodes, settingsKeyPanel, restoreKeyServices, wallpaperEnabled, wallpaper,
                 wallpapers, rotationMinutes, wallpaperDim, dockOpacity, wallpaperOrder, applied,
                 festival, inputKeycodes, appKeys, stockHomeRedirect, json == null ? Collections.emptyList() : raceCalendar(json), cinematic, ambientGlow, appGlow, fadeRows,
-                Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding, cinematicDots, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough, consumeVolumeKeys, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper, Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset);
+                Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding, cinematicDots, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough, consumeVolumeKeys, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper, Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
+                greetingText, dateBelowClock, hideAppsUntilDown, rotationSeconds, rotating && chosen == null);
     }
 
     /**
