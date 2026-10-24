@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 65OLED907/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), UK",
+  "os": "Android TV 11",
+  "brand": "Philips",
+  "notes": "First **Wi-Fi** unit on this board: the `philips-50pus8517/`, `philips-55oled707/` and `philips-65oled706/` lists were all written on Ethernet, which is why the setupwraith advice for the board had never been checked against a wireless set (here the saved network's `cname=` is `android.uid.system:1000`, not setupwraith, so it would be safe -- it is still left out); DAC/GEL analytics, usage logging, Top Picks and its backend, NetTV store and its silent installer, retail demo, Play auto-installs, HD+ pages, Market Feedback and partner attribution; streaming apps, Ambilight, Play-Fi, DLNA, Alexa, TalkBack and setupwraith kept; voice and IP control off by choice; `usagelogger` and `demome` are TV_INPUT_HARDWARE false positives here (neither serves `TvInputService`) and are applied with `TVINPUT_ALLOW=1`; reboot-checked"
+}
