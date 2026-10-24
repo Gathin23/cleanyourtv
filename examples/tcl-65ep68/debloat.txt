@@ -1,0 +1,88 @@
+# TCL 65EP68 (Europe; product/device and ro.product.model "BeyondTV"; board RTD2851, ro.hardware
+# rtd285o; client type TCL-EU-RT2851-S1), Android TV 11 (API 30), build PPR1.180610.011, incremental
+# AR06, software V8-R851T02-LF1V722, security patch 2022-09-05. 3840x2160 panel, but the Android TV
+# UI is drawn at 1920x1080 (wm size) at 320 dpi (wm density), as on other Realtek RTD2851 sets.
+# Fingerprint: TCL/BeyondTV/BeyondTV:11/PPR1.180610.011/AR06:user/release-keys
+#
+# Tested on 24 October 2026 on one set, applied in three batches with a reboot between the second and
+# the third. Nothing came back after the reboot. NOT yet lived with for days.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65ep68/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65ep68/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (Home priority 2).
+# Live TV: com.tcl.tv (.TVActivity). It is also the ONLY app on this firmware that answers the channel
+# MIME type (android.intent.action.VIEW with vnd.android.cursor.item/channel), which is how the
+# launcher's Inputs menu opens an HDMI or AV port. Disabled, the ports still list but opening one does
+# nothing, so it stays enabled and is only hidden from the grid (examples/tcl-65ep68/config.json).
+# com.tcl.tvinput carries both the HDMI/AV passthrough input and the tuner input, so it stays too.
+#
+# Already disabled from the factory on this set, so not listed below: the 15 uk.co.freeview.* UK
+# catch-up apps, com.tcl.gallery, com.tcl.notereminder, com.tcl.smartalexa, com.tcl.usercenter,
+# au.com.stan.and, tv.wuaki.apptv, com.google.android.apps.nbu.smartconnect.tv.
+#
+# Kept deliberately (system-relevant or the owner uses it): com.tcl.tvinput, com.tcl.tv,
+# com.tcl.autopair (Bluetooth remote pairing), com.tcl.xian.StartandroidService (device
+# authentication), com.tcl.guard, com.tcl.settings, com.tcl.providers.config, com.tcl.systemserver,
+# com.tcl.keycustomfunctionservice (FallbackHome), com.tcl.overlay.systemui,
+# com.tcl.inputmethod.international, com.tcl.initsetup (setupwizard action hook),
+# com.tcl.factory.view (never started, never disabled),
+# com.tcl.versionUpdateApp (firmware updater: TCL's OTA servers no longer answer for this platform,
+# so it is kept for the Settings menu, not for updates), com.google.android.tungsten.setupwraith
+# (owns the saved Wi-Fi network, so tools/disable.sh skips it anyway), com.google.android.gms,
+# com.google.android.gsf, com.android.vending, com.google.android.tv.remote.service (the phone
+# remote), and the Nordic streaming apps no.nrk.tv, no.tv2.sumo, no.get.play.tv and
+# allente.b2c.tvclient. allente.b2c.tvclient declares no LEANBACK_LAUNCHER activity, so it never
+# appears as a tile.
+
+# TCL telemetry and content feed
+com.tcl.bi                             # analytics / telemetry service
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.dashboard                      # TCL dashboard / promo surface
+com.tcl.waterfall.overseas             # waterfall promo rows on the home screen
+com.tcl.overseasappshow                # promotes preloaded apps
+com.tcl.partnercustomizer              # partner-driven home screen customisation
+com.tcl.esticker                       # stickers/decoration on the home screen
+com.tcl.copydatatotv                   # "copy my data to the TV" helper
+com.tcl.common.shortcutmenu            # its own shortcut menu overlay
+com.tcl.messagebox                     # TCL message / promo inbox
+com.tcl.useragreement                  # consent / privacy screen
+
+# Google content rows, ads and background odds and ends
+com.google.android.tvrecommendations   # recommendation rows: the ad surface on Android TV
+com.google.android.backdrop            # Backdrop photo-stream screensaver
+com.google.android.feedback            # feedback collector
+com.google.android.play.games          # Play Games
+com.google.android.partnersetup        # RLZ client ID (attribution/tracking)
+com.google.android.onetimeinitializer  # one-off first-boot initialiser
+com.google.android.syncadapters.calendar  # calendar sync adapter
+com.google.android.marvin.talkback     # screen reader
+com.google.android.tts                 # text-to-speech
+android.autoinstalls.config.tcl.device # Play Auto Install stub (preload installer)
+
+# Off by choice on this set: the voice assistant and its microphone. Comment out to keep the remote's
+# voice button working.
+com.tcl.assistant
+com.tcl.micmanager
+com.google.android.katniss
+com.google.android.tv.assistant
+
+# Off by choice: casting and screen mirroring. Comment out if you cast from a phone; Chromecast is
+# com.google.android.apps.mediashell and also answers the Cast ports 8008/8009/8443.
+com.google.android.apps.mediashell
+com.tcl.miracast
+com.tcl.MultiScreenInteraction_TV
+
+# Off by choice: the TCL USB media player. Unused on a set driven from an HDMI input.
+com.tcl.ui_mediaCenter
+
+# Off by choice: every streaming app except the Nordic ones the owner uses.
+com.amazon.amazonvideo.livingroom
+com.disney.disneyplus
+com.hbo.hbonow
+com.netflix.ninja
+tv.pluto.android
+com.google.android.videos
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
