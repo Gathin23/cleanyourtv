@@ -86,7 +86,11 @@ function setupPhone() {
     onChange(state) {
       ready = state.status === 'ready';
       updateOverlay();
-      if (state.status !== 'ready') { abort?.abort(); $('confirm').checked = false; }
+      if (state.status !== 'ready') {
+        abort?.abort(); $('confirm').checked = false;
+        $('controls-state').textContent = state.status === 'requesting'
+          ? say('Esperando permiso', 'Awaiting permission') : say('Cámara apagada', 'Camera off');
+      }
       $('preview-placeholder').hidden = ready;
       updateButtons();
       if (state.status === 'requesting') {
@@ -143,7 +147,9 @@ function setupPhone() {
       status(say('Captura terminada. Revisa las observaciones y el informe.', 'Capture finished. Review the observations and report.'));
     } catch {
       if (!signal.aborted) status(say('No se han podido obtener fotogramas válidos. Reinicia la cámara y repite la captura.', 'No usable frames were obtained. Restart the camera and capture again.'), true);
-    } finally { capturing = false; updateButtons(); }
+    } finally {
+      if (abort?.signal === signal) { capturing = false; abort = null; updateButtons(); }
+    }
   });
   $('review').addEventListener('click', () => {
     if (!report) return;
