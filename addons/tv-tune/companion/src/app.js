@@ -14,6 +14,7 @@ $('language').addEventListener('click', () => {
   params.set('lang', english ? 'es' : 'en'); location.search = params.toString();
 });
 document.querySelectorAll('.tv-link').forEach(link => { if (english) link.href = '?view=tv&lang=en'; });
+document.querySelectorAll('a[href="?"]').forEach(link => { if (english) link.href = '?lang=en'; });
 
 if (params.get('view') === 'tv') setupPresenter();
 else setupPhone();

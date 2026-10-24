@@ -48,5 +48,9 @@ browser press Escape
 browser focus '.tv-heading a'
 browser press Enter
 browser wait '#start'
+browser eval '(() => { if(document.documentElement.lang!=="en"||document.querySelector("#start").textContent!=="Start camera")throw Error("Presenter return lost the selected language");return "Presenter return preserves English"; })()'
+browser click '.brand'
+browser wait '#start'
+browser eval '(() => { if(document.documentElement.lang!=="en")throw Error("Home link lost the selected language");return "Home link preserves English"; })()'
 browser errors
 printf 'Browser verification artifacts: %s\n' "$tv_tune_output"

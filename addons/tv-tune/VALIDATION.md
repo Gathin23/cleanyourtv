@@ -175,3 +175,12 @@ serials, account information or private device names.
 - Live inactivity protection passed after actual Back restoration: resumed grey-192
   at 11:48:21 UTC and observed Paused at 11:50:45 UTC, without clock/event injection.
   This validates timeout behaviour in that cloud browser, not physical TV operation.
+
+### Language handoff follow-up (web 0.1.3)
+
+- Reproduced English resetting to Spanish through the presenter return link and
+  phone brand/home link. Both own-home links now retain English; Spanish remains
+  the default. External links and the explicit language switch are unchanged.
+- Four new source/DOM regressions cover both links in English and Spanish. All
+  42 JavaScript/source-contract tests pass, along with syntax and shell checks.
+  These are software checks, not additional physical-camera or panel evidence.

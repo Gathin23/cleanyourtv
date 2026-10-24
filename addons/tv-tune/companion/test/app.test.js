@@ -6,7 +6,7 @@ import * as probe from '../src/probe.js';
 import * as patterns from '../src/patterns.js';
 
 // DOM/event simulation for application wiring, not browser or physical-camera evidence.
-function app(view = 'phone') {
+function app(view = 'phone', language = 'en') {
   class Element extends EventTarget {
     constructor() { super(); this.style = {}; this.dataset = {}; this.hidden = false;
       this.disabled = false; this.checked = false; this.textContent = ''; this.value = '';
@@ -17,12 +17,14 @@ function app(view = 'phone') {
   }
   const elements = new Map();
   const get = id => { if (!elements.has(id)) elements.set(id, new Element()); return elements.get(id); };
+  get('tv-return').href = readFileSync(new URL('../index.html', import.meta.url), 'utf8').match(/class="tv-heading"><a href="([^"]+)"/)[1];
+  get('brand').href = readFileSync(new URL('../index.html', import.meta.url), 'utf8').match(/class="brand" href="([^"]+)"/)[1];
   get('results').hidden = true; get('capture').disabled = true;
   const video = get('preview'); video.parentElement = new Element();
   Object.assign(video, { videoWidth: 640, videoHeight: 480, readyState: 4, currentTime: 0,
     play: async () => {}, srcObject: null });
   const document = Object.assign(new EventTarget(), { documentElement: new Element(), body: new Element(),
-    getElementById: get, querySelectorAll: () => [], createElement: () => Object.assign(new Element(), {
+    getElementById: get, querySelector: selector => { assert.equal(selector, '.tv-heading a'); return get('tv-return'); }, querySelectorAll: selector => selector === 'a[href="?"]' ? [get('tv-return'), get('brand')] : [], createElement: () => Object.assign(new Element(), {
       getContext: () => ({ drawImage() {}, getImageData: () => ({ data: new Uint8ClampedArray([128,128,128,255]) }) }) }) });
   const window = new EventTarget(), intervals = new Map(), waits = [];
   const observedBoxes = new Set();
@@ -34,7 +36,7 @@ function app(view = 'phone') {
   const captureFrames = options => capture.captureFrames({ ...options, now: () => clock,
     wait: () => new Promise(resolve => waits.push(() => { clock += 70; video.currentTime += 0.07; resolve(); })) });
   const scope = { ...probe, ...capture, ...patterns, captureFrames, document, window, Element,
-    navigator: { mediaDevices }, isSecureContext: true, location: { search: view === 'tv' ? '?view=tv&lang=en' : '?lang=en' },
+    navigator: { mediaDevices }, isSecureContext: true, location: { search: view === 'tv' ? `?view=tv&lang=${language}` : `?lang=${language}` },
     performance: { now: () => clock }, innerWidth: 1920, innerHeight: 1080,
     setInterval: fn => { intervals.set(++intervalId, fn); return intervalId; }, clearInterval: id => intervals.delete(id),
     ResizeObserver };
@@ -115,4 +117,20 @@ test('phone_restores_sampling_overlay_observer_after_back_forward_navigation', (
     a.window.dispatchEvent(new Event('pageshow'));
     assert.equal(a.observedBoxes.size, 1, 'restored preview must be watched for parent size changes');
   }
+});
+
+
+test('presenter_return_link_preserves_english_selection', () => {
+  assert.equal(app('tv', 'en').get('tv-return').href, '?lang=en');
+});
+test('presenter_return_link_retains_spanish_default', () => {
+  assert.equal(app('tv', 'es').get('tv-return').href, '?');
+});
+
+
+test('phone_brand_home_link_preserves_english_selection', () => {
+  assert.equal(app('phone', 'en').get('brand').href, '?lang=en');
+});
+test('phone_brand_home_link_retains_spanish_default', () => {
+  assert.equal(app('phone', 'es').get('brand').href, '?');
 });
