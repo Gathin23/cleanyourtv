@@ -10,7 +10,7 @@ project's own issue tracker.
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-81 projects so far.
+82 projects so far.
 
 ## Home screens built as their own app
 
@@ -96,6 +96,7 @@ Small apps and scripts that run next to the launcher (or any launcher) and do on
 | [Homelab companion](https://github.com/epochcoder/cleanyourtv/tree/main/companion) ([how it works](https://github.com/epochcoder/cleanyourtv/blob/main/companion/README.md), [screenshots](https://raw.githubusercontent.com/epochcoder/cleanyourtv/d8454d32f53ad47b5f45ba1adfff7353e5c5c9b7/companion/docs/homelab.jpg)) | One app next to the launcher for a self-hosted homelab, with tabs for a Homepage dashboard, one search across Radarr and Sonarr that adds a film or show with one press, qBittorrent downloads named the way Sonarr and Radarr know them, the next two weeks of both calendars, and every setting edited with the remote or pushed from a computer. Its Immich screensaver crossfades recent photos with a slow zoom, pairs portraits side by side and captions the place, date and people, in the manner of Google Photos' ambient mode. Network only to the servers you configure, plus the public poster hosts the Sonarr and Radarr lookups point to; the launcher keeps no network permission | Formovie Laser 4K projector, Android TV 14 | [epochcoder](https://github.com/epochcoder) ([issues](https://github.com/epochcoder/cleanyourtv/issues)) |
 | [3D Pipes: XP Screensaver for Android TV](https://github.com/TheWombRaider/pipes-tv) | The classic 3D Pipes screensaver, rebuilt from the original's published rules and checked against 184 scenes of the real one: a single pipe growing one whole segment at a time, a mix of elbows and ball joints, the 16 classic materials, the rare Utah teapot, a level camera that turns with each scene, and the small-square clear. No internet permission. TCL sets need one app-op (`AUTO_START`) before the system will start a sideloaded screensaver | TCL 75T7 (G08), Google TV 14 | [TheWombRaider](https://github.com/TheWombRaider) |
 | [Weather Clock](https://github.com/matyivagyok/weatherclock-tv) | A screensaver that adds the weather to the launcher's clock: the thin clock and date centred over the ambient glow, with the current conditions, high and low, "feels like" and the next three days from Open-Meteo (no key). Location is automatic from the IP address (ipwho.is, geojs.io as fallback) or a city picked by hand; it only runs while the screensaver is on | Chromecast with Google TV HD, Google TV 14 | [matyivagyok](https://github.com/matyivagyok) |
+| [Forslag](https://github.com/modist/forslag) ([screenshot](https://raw.githubusercontent.com/modist/forslag/eb58ef5ad2a2bcf838ff6daa24e35bd9ce4bc8eb/screenshot.jpg)) | What is in your own streaming subscriptions right now, as an app with a module card: a row of movies and one of series, most popular first, with genre tabs. Titles come from TMDb (your own free key), and in Denmark DRTV and Viaplay come from their own undocumented catalogue APIs; OK opens the title itself on Netflix, Disney+, HBO Max, DRTV and Viaplay (Netflix and Disney+ ids from Wikidata; HBO Max, and titles Wikidata lacks, from Movie of the Night with an optional key of your own). Network: TMDb, Wikidata, DRTV, Viaplay and Movie of the Night only; no ads, no telemetry | Philips 2021/22 UHD Android TV (PH1M_EA_9970A), Android 11 | [modist](https://github.com/modist) |
 
 ## Tools and companion apps
 
@@ -157,7 +158,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Motorola:** [TV Motorola Launcher](https://github.com/kartikcool15/tv-motorola-launcher)
 - **MYO:** [MYO Launcher](https://github.com/faustinoaq/myo-launcher)
 - **NVIDIA Shield:** [Vibe Launcher](https://github.com/maydings/vibe-launcher)
-- **Philips:** [Cosy Home](https://github.com/oliverjwroberts/cosy-home-tv), [Moving aurora behind Home](https://github.com/mrk1987/cleanyourtv/tree/aurora)
+- **Philips:** [Cosy Home](https://github.com/oliverjwroberts/cosy-home-tv), [Moving aurora behind Home](https://github.com/mrk1987/cleanyourtv/tree/aurora), [Forslag](https://github.com/modist/forslag)
 - **Polytron:** [Glass and day/night on a Polytron](https://github.com/andikatuluspangestu/cleanyourtv/tree/polytron-glass-launcher)
 - **Sharp:** [Akhter & Ruby TV](https://github.com/arakaneserohingya/ahkter-tv-remake), [Home Deck](https://github.com/glidiandev/home-deck), [KIDŌ](https://github.com/glidiandev/kido)
 - **Skyworth / Coocaa:** [coocaa-home-shim](https://github.com/VincentYe123/coocaa-home-shim), [TV Motorola Launcher](https://github.com/kartikcool15/tv-motorola-launcher)
