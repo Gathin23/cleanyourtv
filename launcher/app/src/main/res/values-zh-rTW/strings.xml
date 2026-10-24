@@ -79,6 +79,8 @@
     <string name="library_remove_shortcut">從主畫面移除</string>
     <string name="library_open">開啟</string>
     <string name="library_app_info">應用程式資訊</string>
+    <string name="app_off">關閉 %1$s</string>
+    <string name="app_details">應用程式詳細資料</string>
     <string name="library_save_failed">無法儲存捷徑</string>
     <string name="library_recent">新安裝 · 新增至主畫面</string>
     <string name="library_hint_add">按下以新增至主畫面 · 長按以顯示選項</string>

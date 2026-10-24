@@ -206,6 +206,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Map<String, String> launchActions;
     /** Hold OK opens the activity's tile menu (config.xml, tile_menu); false opens App info, as before. */
     private final boolean tileMenu;
+    /** Hold OK on these packages opens Off and App details (config.xml, app_off_packages). */
+    private final Set<String> appOffPackages;
     /** Tile names and bundled banners that replace the app's own (config.xml, app_labels and app_banners). */
     private final Map<String, String> appLabels, appBanners;
     private final List<Entry> items = new ArrayList<>();
@@ -231,6 +233,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.cinematic = cfg.cinematicHome;
         this.launchActions = cfg.launchActions;
         this.tileMenu = cfg.tileMenu;
+        this.appOffPackages = new HashSet<>(cfg.appOffPackages);
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
@@ -452,7 +455,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
-            if (tileMenu) {
+            if (tileMenu || appOffPackages.contains(e.pkg)) {
                 int pos = h.getBindingAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION) listener.onTileLongPress(pos, v);
                 return true;

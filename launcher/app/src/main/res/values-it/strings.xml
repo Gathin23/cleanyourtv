@@ -84,6 +84,8 @@
     <string name="library_remove_shortcut">Rimuovi da Home</string>
     <string name="library_open">Apri</string>
     <string name="library_app_info">Info app</string>
+    <string name="app_off">Chiudi %1$s</string>
+    <string name="app_details">Dettagli app</string>
     <string name="library_save_failed">Impossibile salvare il collegamento</string>
     <string name="library_recent">Nuova · Aggiungi a Home</string>
     <string name="library_hint_add">Premi per aggiungere a Home · Tieni premuto per le opzioni</string>

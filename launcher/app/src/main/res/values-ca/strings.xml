@@ -52,6 +52,8 @@
     <string name="library_remove_shortcut">Elimina de l’inici</string>
     <string name="library_open">Obre</string>
     <string name="library_app_info">Informació de l’aplicació</string>
+    <string name="app_off">Tanca %1$s</string>
+    <string name="app_details">Detalls de l’aplicació</string>
     <string name="library_save_failed">No s’ha pogut desar la drecera</string>
     <string name="library_recent">Nova · Afegeix a l’inici</string>
     <string name="library_hint_add">Prem per afegir a Inici · Mantén per a opcions</string>

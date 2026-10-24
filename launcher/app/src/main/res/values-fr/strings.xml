@@ -79,6 +79,8 @@
     <string name="library_remove_shortcut">Retirer de l’accueil</string>
     <string name="library_open">Ouvrir</string>
     <string name="library_app_info">Infos sur l’application</string>
+    <string name="app_off">Arrêter %1$s</string>
+    <string name="app_details">Détails de l’application</string>
     <string name="library_save_failed">Impossible d’enregistrer le raccourci</string>
     <string name="library_recent">Nouvelle · Ajouter à l’accueil</string>
     <string name="library_hint_add">Appuyer : ajouter à Accueil · Maintenir : options</string>

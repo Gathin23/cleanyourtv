@@ -105,6 +105,8 @@
     <string name="library_remove_shortcut">Прибрати з головного екрана</string>
     <string name="library_open">Відкрити</string>
     <string name="library_app_info">Про застосунок</string>
+    <string name="app_off">Вимкнути %1$s</string>
+    <string name="app_details">Про застосунок</string>
     <string name="library_save_failed">Не вдалося зберегти ярлик</string>
     <string name="library_recent">Новий · Додати на головний екран</string>
     <string name="library_hint_add">Натиснути: додати на головний екран · Утримати: опції</string>

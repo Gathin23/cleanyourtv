@@ -54,6 +54,8 @@
     <string name="library_remove_shortcut">นำออกจากหน้าหลัก</string>
     <string name="library_open">เปิด</string>
     <string name="library_app_info">ข้อมูลแอป</string>
+    <string name="app_off">ปิด %1$s</string>
+    <string name="app_details">รายละเอียดแอป</string>
     <string name="library_save_failed">บันทึกทางลัดไม่สำเร็จ</string>
     <string name="library_recent">ใหม่ · เพิ่มในหน้าหลัก</string>
     <string name="library_hint_add">กดเพื่อเพิ่มที่หน้าหลัก · กดค้างเพื่อดูตัวเลือก</string>

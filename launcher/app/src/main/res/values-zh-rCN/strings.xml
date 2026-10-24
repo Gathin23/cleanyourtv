@@ -55,6 +55,8 @@
     <string name="library_remove_shortcut">从主屏幕移除</string>
     <string name="library_open">打开</string>
     <string name="library_app_info">应用信息</string>
+    <string name="app_off">关闭 %1$s</string>
+    <string name="app_details">应用详情</string>
     <string name="library_save_failed">无法保存快捷方式</string>
     <string name="library_recent">新安装 · 添加到主屏幕</string>
     <string name="library_hint_add">按下添加到主屏幕 · 长按查看选项</string>

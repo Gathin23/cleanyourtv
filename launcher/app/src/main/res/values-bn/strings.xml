@@ -84,6 +84,8 @@
     <string name="library_remove_shortcut">হোম থেকে সরান</string>
     <string name="library_open">খুলুন</string>
     <string name="library_app_info">অ্যাপের তথ্য</string>
+    <string name="app_off">%1$s বন্ধ</string>
+    <string name="app_details">অ্যাপের বিবরণ</string>
     <string name="library_save_failed">শর্টকাটটি সেভ করা যায়নি</string>
     <string name="library_recent">নতুন · হোমে যোগ করুন</string>
     <string name="library_hint_add">হোমে যোগ করতে চাপুন · অপশনের জন্য চেপে ধরে রাখুন</string>

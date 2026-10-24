@@ -29,6 +29,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
+import android.media.AudioManager;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
@@ -215,6 +218,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean reducedMotion;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
     private boolean dockRow;
+    /** Packages whose long-press menu is Off and App details (config.xml, app_off_packages). */
+    private Set<String> appOffPackages = Collections.emptySet();
     /** The highlight springs past its target (config.xml, focus_overshoot); false goes straight there. */
     private boolean focusOvershoot;
     /** Festive skin from the theme (see Festival); applied while it is active today. */
@@ -368,6 +373,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         advancedEffects = cfg.animations && cfg.advancedEffects;
         reducedMotion = cfg.reducedMotion;
         dockRow = cfg.dockRow;
+        appOffPackages = new HashSet<>(cfg.appOffPackages);
         focusOvershoot = cfg.focusOvershoot;
         festival = cfg.festival;
         festive = festival.active(LocalDate.now());
@@ -2983,25 +2989,40 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (200 * density));
-        if (dockRow && position < adapter.movableCount()) {
-            boolean inDock = position < COLUMNS;
-            addSettingsMenuRow(rows, popup, inDock ? R.string.tile_replace_in_dock : R.string.tile_add_to_dock,
-                    () -> startDockEditFor(key, inDock));
+        if (appOffPackages.contains(pkg)) {
+            String label = pkg;
+            try {
+                PackageManager pm = getPackageManager();
+                label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString();
+            } catch (PackageManager.NameNotFoundException ignored) {
+            }
+            String name = label;
+            if (MediaPlaying.started(this)) {
+                addSettingsMenuRow(rows, popup, getString(R.string.app_off, name), () -> stopAppPlayback(pkg));
+            }
+            addSettingsMenuRow(rows, popup, R.string.app_details, () -> open(new Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + pkg))));
+        } else {
+            if (dockRow && position < adapter.movableCount()) {
+                boolean inDock = position < COLUMNS;
+                addSettingsMenuRow(rows, popup, inDock ? R.string.tile_replace_in_dock : R.string.tile_add_to_dock,
+                        () -> startDockEditFor(key, inDock));
+            }
+            if (position < adapter.movableCount()) addSettingsMenuRow(rows, popup, R.string.tile_move, () -> {
+                if (!beginReorder()) return;
+                int at = adapter.positionOf(key);   // beginReorder can rebuild the tiles
+                if (at < 0) return;
+                focusTile(at);
+                pickUp(at);
+                Toast.makeText(this, R.string.reorder_hint, Toast.LENGTH_LONG).show();
+            });
+            if (appLibraryEnabled) addSettingsMenuRow(rows, popup, R.string.library_remove_shortcut, () -> {
+                if (LibraryApps.save(this, pkg, false)) reloadApps(false);
+                else Toast.makeText(this, R.string.library_save_failed, Toast.LENGTH_LONG).show();
+            });
+            addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(new Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + pkg))));
         }
-        if (position < adapter.movableCount()) addSettingsMenuRow(rows, popup, R.string.tile_move, () -> {
-            if (!beginReorder()) return;
-            int at = adapter.positionOf(key);   // beginReorder can rebuild the tiles
-            if (at < 0) return;
-            focusTile(at);
-            pickUp(at);
-            Toast.makeText(this, R.string.reorder_hint, Toast.LENGTH_LONG).show();
-        });
-        if (appLibraryEnabled) addSettingsMenuRow(rows, popup, R.string.library_remove_shortcut, () -> {
-            if (LibraryApps.save(this, pkg, false)) reloadApps(false);
-            else Toast.makeText(this, R.string.library_save_failed, Toast.LENGTH_LONG).show();
-        });
-        addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(new Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + pkg))));
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
         // Dock tiles sit near the bottom of the screen: open the menu above the tile when it would not fit below.
@@ -3022,7 +3043,39 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rows.getChildAt(0).requestFocus();
     }
 
+    /**
+     * Pause this app. A pause key goes to whoever is playing, and taking audio focus makes that
+     * app release the sound.
+     */
+    private void stopAppPlayback(String pkg) {
+        AudioManager audio = (AudioManager) getSystemService(AUDIO_SERVICE);
+        long now = SystemClock.uptimeMillis();
+        for (int key : new int[] {KeyEvent.KEYCODE_MEDIA_PAUSE, KeyEvent.KEYCODE_MEDIA_STOP}) {
+            KeyEvent down = new KeyEvent(now, now, KeyEvent.ACTION_DOWN, key, 0);
+            KeyEvent up = new KeyEvent(now, now, KeyEvent.ACTION_UP, key, 0);
+            audio.dispatchMediaKeyEvent(down);
+            audio.dispatchMediaKeyEvent(up);
+            Intent button = new Intent(Intent.ACTION_MEDIA_BUTTON).setPackage(pkg);
+            button.putExtra(Intent.EXTRA_KEY_EVENT, down);
+            sendBroadcast(button);
+            button.putExtra(Intent.EXTRA_KEY_EVENT, up);
+            sendBroadcast(button);
+        }
+        AudioFocusRequest focus = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build())
+                .build();
+        audio.requestAudioFocus(focus);
+        handler.postDelayed(() -> audio.abandonAudioFocusRequest(focus), 600);
+    }
+
     private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, int title, Runnable action) {
+        addSettingsMenuRow(rows, popup, getText(title), action);
+    }
+
+    private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, CharSequence title, Runnable action) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         row.findViewById(R.id.icon).setVisibility(View.GONE);
         row.findViewById(R.id.dot).setVisibility(View.GONE);

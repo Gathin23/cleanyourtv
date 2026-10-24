@@ -67,6 +67,8 @@
     <string name="library_remove_shortcut">Remover da tela inicial</string>
     <string name="library_open">Abrir</string>
     <string name="library_app_info">Informações do app</string>
+    <string name="app_off">Desligar %1$s</string>
+    <string name="app_details">Detalhes do app</string>
     <string name="library_save_failed">Não foi possível salvar o atalho</string>
     <string name="library_recent">Novo · Adicionar à tela inicial</string>
     <string name="library_hint_add">Pressione para adicionar à tela inicial · Segure para ver opções</string>

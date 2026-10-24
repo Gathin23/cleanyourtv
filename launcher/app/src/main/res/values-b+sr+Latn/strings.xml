@@ -60,6 +60,8 @@
     <string name="library_remove_shortcut">Ukloni sa početnog ekrana</string>
     <string name="library_open">Otvori</string>
     <string name="library_app_info">Informacije o aplikaciji</string>
+    <string name="app_off">Isključi %1$s</string>
+    <string name="app_details">Detalji aplikacije</string>
     <string name="library_save_failed">Prečica nije sačuvana</string>
     <string name="library_recent">Novo · Dodaj na početni ekran</string>
     <string name="library_hint_add">Pritisni za početni ekran · Zadrži za opcije</string>

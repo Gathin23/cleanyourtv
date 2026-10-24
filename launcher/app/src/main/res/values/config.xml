@@ -255,6 +255,9 @@
          app_library) and App info. false keeps the old behaviour: holding OK opens the app's App info page.
          Can also be set with "tile_menu": true in a theme's config.json. -->
     <bool name="tile_menu">false</bool>
+    <!-- Hold OK on these apps opens Off and App details. Off pauses that app's playback. An empty list
+         keeps holding OK as App info. A theme can set app_off_packages. -->
+    <string-array name="app_off_packages" />
 
     <!-- Grid rows left visible under the dock on the home screen. 0 = dock sits at the very bottom. Tiles shrink if
          the dock, its title and this many rows would not otherwise fit the screen height. -->
