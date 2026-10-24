@@ -318,3 +318,20 @@ rotation), plus a blank-image negative control. Reproduce with the optional
 or iPhone scanning. Full Python suite: 747 tests, 743 passed, three skipped, one
 failure for the unchanged missing real-TV screenshot gate. Android was unchanged;
 its earlier successful build/lint/unit-test evidence is not a fresh build claim.
+
+Publication verified: code `c54166590919bd0f199322d98cce8aa004bd64bc`, production
+`dpl_5yMkr2w8EBbahFY5A45ySY5JhDUL` READY with the public alias assigned. All nine
+static app assets plus MIT LICENSE matched source hashes over unauthenticated HTTPS.
+GitHub reported zero check runs for this exact commit; local tests are not CI.
+Independent final diff review found no remaining blockers after a keyboard-focus
+regression was fixed and covered by tests.
+
+Live cloud Chromium verification passed visible QR rendering, pause/hide behaviour,
+repeated Next with retained button focus, QR replacement after changing patch,
+Escape focus restoration with the pattern still paused, and phone arrival with
+camera off and confirmation unchecked. Independent jsQR decoding of three actual
+1180×757 browser screenshots returned exact English red, English green and Spanish
+blue links. This supplements the 154 generated-image checks, but is still software
+rendering, not physical TV/phone scanning. Narrow viewport layout was reviewed in
+CSS only; physical glare/distortion, optical scanning and camera measurements were
+not run. The real-TV contribution gate is unchanged; no upstream PR was opened.
