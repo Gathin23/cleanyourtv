@@ -32,6 +32,10 @@ lives in `/sdcard/Android/data/com.ts.launcher/files/config.json`.
 
 An accessibility redirect from FallbackHome is not a durable alternative on this set: see Standby.
 
+A second MiTV-MTEQ0, on HyperOS `22.6.27.2363`, read the allowlist itself out of
+`MitvConfigParser`'s logcat and found which package really answers the settings button:
+[`xiaomi-mitv-mteq0/xiaomi-mitv-mteq0.md`](xiaomi-mitv-mteq0/xiaomi-mitv-mteq0.md).
+
 ## Standby force-stops third-party apps
 
 Pressing Power puts the set into `xiaoai_mode` (screen off). Two seconds later

@@ -14,6 +14,10 @@ not: `http(s)`, `mailto:`, `data:`, a bare `#anchor`, and the insides of fenced 
 path is an example rather than a link. Anchors are ignored: `note.md#section` still points at the
 file, and a heading's slug is GitHub's, not ours.
 
+The files are read below docs/devices/ rather than one level: a note that displays screenshots sits
+in a folder of its own beside them, and docs/devices/xiaomi-mitv-mteq0/xiaomi-mitv-mteq0.md was such
+a note and was linked from nothing, which reading one level could not see.
+
 The examples table is generated from each folder's tv.json (tools/gen_tables.py), so the links in a
 tv.json's "tv" and "notes" count as links on examples/README.md: a list PR is checked before its row is
 generated.
@@ -95,19 +99,28 @@ def referenced(root):
     return out
 
 
+def note_files(root):
+    """(relative path, path) for every file under docs/devices/, in a stable order.
+
+    The walk goes below docs/devices/ because a note may sit in a folder of its own beside the
+    screenshots it shows (docs/devices/xiaomi-mitv-mteq0/ holds two PNGs and the note that displays
+    them), and reading one level missed exactly such a note. The build folders are pruned for the
+    reason markdown_files() prunes them.
+    """
+    root = Path(root)
+    out = []
+    for dirpath, dirnames, filenames in os.walk(root / NOTES):
+        dirnames[:] = sorted(name for name in dirnames if name not in SKIP)
+        for name in sorted(filenames):
+            path = Path(dirpath) / name
+            out.append((os.path.relpath(path, root).replace(os.sep, "/"), path))
+    return sorted(out)
+
+
 def unlinked_notes(root):
     """Repository-relative paths of the files under docs/devices/ that no markdown file links to."""
-    root = Path(root)
     linked = referenced(root)
-    out = []
-    for name in sorted(os.listdir(root / NOTES)):
-        path = root / NOTES / name
-        if not path.is_file():
-            continue
-        rel = f"{NOTES}/{name}"
-        if rel not in linked:
-            out.append(rel)
-    return out
+    return [rel for rel, _ in note_files(root) if rel not in linked]
 
 
 # The heading that opens examples/README.md's list of device reports that have no list of their own.
@@ -275,6 +288,59 @@ class DeviceNotesLinkedTest(unittest.TestCase):
             (root / "venv" / "lib" / "third-party.md").write_text(
                 "[note](../../docs/devices/note.md)\n", encoding="utf-8")
             self.assertEqual([f"{NOTES}/note.md"], unlinked_notes(root))
+
+    def test_a_note_in_a_folder_of_its_own_is_reported(self):
+        # A note that shows screenshots sits beside them; reading one level never saw it.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax").mkdir(parents=True)
+            (root / NOTES / "baymax" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / "README.md").write_text("[notes](docs/devices/baymax/other.md)\n", encoding="utf-8")
+            self.assertEqual([f"{NOTES}/baymax/note.md"], unlinked_notes(root))
+
+    def test_a_note_in_a_folder_that_is_linked_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax").mkdir(parents=True)
+            (root / NOTES / "baymax" / "note.md").write_text(
+                "# Note\n\n![the menu](menu.png)\n", encoding="utf-8")
+            (root / NOTES / "baymax" / "menu.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            (root / NOTES / "board.md").write_text(
+                "# Board\n\nSecond unit: [the vendor settings record](baymax/note.md).\n", encoding="utf-8")
+            (root / "README.md").write_text("[board](docs/devices/board.md)\n", encoding="utf-8")
+            self.assertEqual([], unlinked_notes(root))
+
+    def test_a_screenshot_in_a_note_folder_is_reported_when_nothing_shows_it(self):
+        # A picture nobody links is the same stray file a note is.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax").mkdir(parents=True)
+            (root / NOTES / "baymax" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / NOTES / "baymax" / "menu.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            (root / "README.md").write_text("[notes](docs/devices/baymax/note.md)\n", encoding="utf-8")
+            self.assertEqual([f"{NOTES}/baymax/menu.png"], unlinked_notes(root))
+
+    def test_nested_note_folders_are_walked_to_the_bottom(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "a" / "b").mkdir(parents=True)
+            (root / NOTES / "a" / "b" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / "README.md").write_text("[notes](docs/devices/a/b/note.md)\n", encoding="utf-8")
+            (root / NOTES / "a" / "b" / "deep.md").write_text("# Deep\n", encoding="utf-8")
+            self.assertEqual([f"{NOTES}/a/b/deep.md"], unlinked_notes(root))
+
+    def test_a_build_folder_inside_a_note_folder_is_skipped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax" / "build").mkdir(parents=True)
+            (root / NOTES / "baymax" / "build" / "out.md").write_text("# Out\n", encoding="utf-8")
+            (root / NOTES / "baymax" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / "README.md").write_text("[notes](docs/devices/baymax/note.md)\n", encoding="utf-8")
+            self.assertEqual([], unlinked_notes(root))
+
+    def test_the_walk_reads_every_note_in_the_tree(self):
+        # So the sweep above cannot pass by walking a folder that has moved or emptied.
+        self.assertGreaterEqual(len(note_files(ROOT)), 50, "the docs/devices walk read too few files")
 
 
 class NoteFiledWithItsListTest(unittest.TestCase):
