@@ -285,3 +285,17 @@ passed. Full Python suite: 747 tests, 743 passed, three skipped, one expected fa
 for the missing real-TV screenshot. Independent review found no remaining blocking
 issues. Keyboard focus is preserved when jumping to camera controls or closing the
 handoff panel with Escape. Live browser verification is recorded after deployment.
+
+Web 0.2.0 publication: code `839917198586b17087f623e8bb42765addbce26a`, production
+`dpl_3UzvU2KJZqG61vtjEu7iHXrfNfoo` READY with the public alias assigned. All seven
+static app assets and MIT LICENSE matched source SHA-256 over unauthenticated HTTPS.
+GitHub reported no check runs for this commit, not a green CI result.
+
+Cloud Chromium live QA passed red/blue deep links, matching RGB, English/Spanish
+handoffs, invalid-ID fallback, camera-off/unconfirmed arrival, camera-section jump,
+phone selection updating TV links, paused/hidden pattern with handoff open and Escape
+focus restoration. Copy reported success and the manual link remained available.
+Visual desktop inspection at 1180×757 found no horizontal overflow or active-patch
+obstruction. Forced clipboard denial, mobile viewport, camera capture and a fresh
+automated accessibility audit were not run in this cloud browser; its documented
+API lacks those simulation/viewport controls. No physical-phone scanning is claimed.
