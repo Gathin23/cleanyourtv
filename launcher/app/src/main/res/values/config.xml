@@ -35,7 +35,7 @@
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
          to that package instead, and the app starts normally. Leave empty to omit. -->
-    <string name="live_tv_action" translatable="false"></string>
+    <string name="live_tv_action" translatable="false">android.intent.action.MAIN</string>
 
     <!-- Tiles that open a screen of the app instead of its start screen: "package=action", sent to that package.
          A tile whose action no longer resolves opens the app normally. MagentaTV's program guide:
@@ -61,8 +61,8 @@
          activity, for sets whose panel is a dialog (BYINTEK U4). With no Live TV app either, the Inputs pill
          opens the panel directly instead of a menu. Leave empty to omit. -->
     <!-- TCL RT2851: TCL's own source menu service (per examples/tcl-beyondtv-rt2851/debloat.txt). -->
-    <string name="source_panel_service" translatable="false">com.tcl.sourcemananger/com.tcl.insrc.ShowWindowService</string>
-    <string name="source_panel_action" translatable="false">com.tcl.insrc.SHOW_WINDOW</string>
+    <string name="source_panel_service" translatable="false"></string>
+    <string name="source_panel_action" translatable="false"></string>
 
     <!-- Inputs menu: HDMI and AV rows normally open with ACTION_VIEW on the input's channel URI, which the
          Live TV app handles. Where nothing answers that, this action is sent with the same URI instead
@@ -80,11 +80,16 @@
          settings panel) on scancode 240 (KEY_UNKNOWN), the scancode several TCL buttons share. Find the keycode
          with `tools/tv.py 'logcat -v time -s InputReader:D'` while pressing the button. Leave empty to omit. -->
     <integer-array name="settings_key_keycodes">
+        <item>4077</item>
+        <item>4020</item>
+        <item>4056</item>
+        <item>83</item>
+        <item>82</item>
     </integer-array>
     <!-- What those Settings buttons open: false, the TV's Settings; true, a small glass panel at the top right
          with TV settings, Display, Network, Apps (re-enable an app) and Launcher settings, over whatever is on screen.
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
-    <bool name="settings_key_panel">false</bool>
+    <bool name="settings_key_panel">true</bool>
 
     <!-- More remote buttons that open the input switcher, by Android keycode (INPUT_KEY_SERVICE=1
          build-and-install.sh; KEYCODE_TV always does). For buttons only a disabled app answered: the Xiaomi
@@ -92,6 +97,8 @@
          app each such "global key" was routed to. Check with the real remote: keys injected over ADB never
          reach InputKeyService. Leave empty to omit. -->
     <integer-array name="input_key_keycodes">
+        <item>178</item>
+        <item>170</item>
     </integer-array>
     <!-- Remote buttons that open an app, as "keycode:package" or "KEYCODE_NAME:package" (INPUT_KEY_SERVICE=1 or
          HOME_KEY_SERVICE=1; both read this one list, and a theme's config.json can set it too). On Google TV the

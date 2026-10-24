@@ -118,6 +118,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static final int LAUNCHER_SETTINGS_REQUEST = 42;
     /** Sent by QuickSettingsActivity: open Launcher settings from here so Home rebuilds when they close. */
     static final String ACTION_LAUNCHER_SETTINGS = "com.gathin.tvhome.action.LAUNCHER_SETTINGS";
+    static final String ACTION_TOGGLE_SETTINGS = "com.gathin.tvhome.action.TOGGLE_SETTINGS";
+    static final String ACTION_TOGGLE_INPUTS = "com.gathin.tvhome.action.TOGGLE_INPUTS";
+
+    private final BroadcastReceiver remoteKeyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) return;
+            setResultCode(Activity.RESULT_OK);
+            String action = intent.getAction();
+            if (ACTION_TOGGLE_SETTINGS.equals(action)) {
+                if (openPopup != null) {
+                    openPopup.dismiss();
+                    openPopup = null;
+                } else {
+                    if (btnSettings != null) {
+                        btnSettings.requestFocus();
+                    }
+                    showSettingsMenu();
+                }
+            } else if (ACTION_TOGGLE_INPUTS.equals(action)) {
+                if (openPopup != null) {
+                    openPopup.dismiss();
+                    openPopup = null;
+                } else {
+                    if (btnInputs != null) {
+                        btnInputs.requestFocus();
+                    }
+                    showInputs();
+                }
+            }
+        }
+    };
     /** Tiles per row and dock slots (res/values/config.xml, columns). Set in onCreate. */
     static int COLUMNS = 4;
     private boolean rtlAppGrid;
@@ -708,6 +740,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
                 if (v.getId() == R.id.weatherPill) {
+                    int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
+                    focusTile(lastDockPos);
                     return true;
                 }
                 if (v.getId() == R.id.btnInputs && weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
@@ -802,6 +836,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if (intent != null) {
+            if (ACTION_TOGGLE_SETTINGS.equals(intent.getAction())) {
+                if (openPopup != null) {
+                    openPopup.dismiss();
+                    openPopup = null;
+                } else {
+                    if (btnSettings != null) {
+                        btnSettings.requestFocus();
+                    }
+                    showSettingsMenu();
+                }
+                return;
+            }
+            if (ACTION_TOGGLE_INPUTS.equals(intent.getAction())) {
+                if (openPopup != null) {
+                    openPopup.dismiss();
+                    openPopup = null;
+                } else {
+                    if (btnInputs != null) {
+                        btnInputs.requestFocus();
+                    }
+                    showInputs();
+                }
+                return;
+            }
+        }
         if (openLauncherSettingsIfAsked(intent)) return;
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
         currentWallpaperPkg = "";
@@ -965,6 +1025,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             grid.post(() -> focusTile(pos));
         }
         handler.postDelayed(minuteTick, MINUTE_MS);
+        IntentFilter remoteKeysFilter = new IntentFilter();
+        remoteKeysFilter.addAction(ACTION_TOGGLE_SETTINGS);
+        remoteKeysFilter.addAction(ACTION_TOGGLE_INPUTS);
+        registerReceiver(remoteKeyReceiver, remoteKeysFilter);
         if (festive && diya != null) {
             diya.start();
             LocalDate today = LocalDate.now();
@@ -1095,6 +1159,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cardPrompt != null) cardPrompt.dismiss();
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
+        try {
+            unregisterReceiver(remoteKeyReceiver);
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -1190,18 +1257,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         SoundManager.getInstance(this).handleKeyEvent(event);
         int code = event.getKeyCode();
         if (code == KeyEvent.KEYCODE_TV_INPUT || code == KeyEvent.KEYCODE_TV || code == 178 || code == 170) {
-            for (View b : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
-                if (b != null) {
-                    b.setSelected(false);
-                    setPillHighlighted(b, false);
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (openPopup != null) {
+                    openPopup.dismiss();
+                    openPopup = null;
+                } else {
+                    if (btnInputs != null) {
+                        btnInputs.requestFocus();
+                    }
+                    showInputs();
                 }
             }
+            return true;
         }
         if (code == KeyEvent.KEYCODE_SETTINGS
                 || code == KeyEvent.KEYCODE_MENU
-                || code == 83 /* TCL Google TV remote settings button */) {
+                || code == 83 /* TCL Google TV remote settings button */
+                || code == 4077 /* TCL/Realtek remote settings button */
+                || code == 4020
+                || code == 4056) {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                showSettingsMenu();
+                if (openPopup != null) {
+                    openPopup.dismiss();
+                    openPopup = null;
+                } else {
+                    if (btnSettings != null) {
+                        btnSettings.requestFocus();
+                    }
+                    showSettingsMenu();
+                }
             }
             return true;
         }
@@ -2628,14 +2712,27 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 focusLibrary();
                 return true;
             }
-            // In the dock, the last app is the row's end: the empty slots after it take no focus.
+            // In the dock, navigating right from the last app moves to the weather icon!
+            if (forward && position < COLUMNS) {
+                int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
+                if (position == lastDockPos) {
+                    if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                        weatherPill.requestFocus();
+                        return true;
+                    }
+                }
+            }
             int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
             return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) {
-                // Dock row: moving UP focuses top action pills (Inputs/Settings), NEVER auto-focusing weather!
+                // Dock row: moving UP focuses weather icon first!
+                if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                    weatherPill.requestFocus();
+                    return true;
+                }
                 View topTarget = btnInputs != null && btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton();
                 if (topTarget != null) {
                     topTarget.requestFocus();
@@ -3144,12 +3241,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Dropdown menu under the Inputs pill: HDMI ports (with connection state), AV and Live TV. */
     private void showInputs() {
         if (openPopup != null) openPopup.dismiss();
-        // A configured source panel and no Live TV row to offer next to it: the panel is the whole menu.
-        // The BYINTEK U4 needs this, as its TvInputManager lists three HDMI ports and an AV input it doesn't have.
-        if (!sourcePanelService.isEmpty() && liveTvIntent() == null) {
-            openSourcePanel();
-            return;
-        }
         View anchor = findViewById(R.id.btnInputs);
         setPillHighlighted(anchor, true);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
@@ -3304,9 +3395,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         FrameLayout container = new FrameLayout(this) {
             @Override
             public boolean dispatchKeyEvent(KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    setTag(Boolean.TRUE);
-                    SoundManager.getInstance(MainActivity.this).playBack();
+                int code = event.getKeyCode();
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE
+                            || code == KeyEvent.KEYCODE_TV_INPUT || code == KeyEvent.KEYCODE_TV || code == 178 || code == 170
+                            || code == KeyEvent.KEYCODE_SETTINGS || code == KeyEvent.KEYCODE_MENU
+                            || code == 83 || code == 4077 || code == 4020 || code == 4056) {
+                        setTag(Boolean.TRUE);
+                        SoundManager.getInstance(MainActivity.this).playBack();
+                        if (openPopup != null) {
+                            openPopup.dismiss();
+                            openPopup = null;
+                        }
+                        return true;
+                    }
                 }
                 SoundManager.getInstance(MainActivity.this).handleKeyEvent(event);
                 return super.dispatchKeyEvent(event);

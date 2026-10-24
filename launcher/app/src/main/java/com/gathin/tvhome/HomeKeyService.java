@@ -23,6 +23,7 @@ public class HomeKeyService extends AccessibilityService {
     /** Remote buttons that should open Settings (config.xml, settings_key_scancodes and settings_key_keycodes). */
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
+    private int[] inputKeycodes = new int[0];
     private boolean settingsPanel;
     /** app_keys, the same map InputKeyService reads, for setups that run only this service. */
     private Map<Integer, String> appKeys = Collections.emptyMap();
@@ -36,14 +37,23 @@ public class HomeKeyService extends AccessibilityService {
         Config config = Config.load(this);
         settingsKeycodes = config.settingsKeycodes;
         settingsPanel = config.settingsKeyPanel;
+        inputKeycodes = config.inputKeycodes;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
     }
 
     private boolean isSettingsKey(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
+        int kc = event.getKeyCode();
+        if (kc == KeyEvent.KEYCODE_SETTINGS || kc == 4077 || kc == 4020 || kc == 4056 || kc == 83 || kc == KeyEvent.KEYCODE_MENU) return true;
         for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
         for (int code : settingsKeycodes) if (event.getKeyCode() == code) return true;
+        return false;
+    }
+
+    private boolean isInputKey(KeyEvent event) {
+        int kc = event.getKeyCode();
+        if (kc == KeyEvent.KEYCODE_TV || kc == KeyEvent.KEYCODE_TV_INPUT || kc == 178 || kc == 170) return true;
+        for (int code : inputKeycodes) if (kc == code) return true;
         return false;
     }
 
@@ -58,9 +68,33 @@ public class HomeKeyService extends AccessibilityService {
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
         if (isSettingsKey(event)) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : new Intent(Settings.ACTION_SETTINGS);
-                startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                Intent toggle = new Intent(MainActivity.ACTION_TOGGLE_SETTINGS).setPackage(getPackageName());
+                sendOrderedBroadcast(toggle, null, new android.content.BroadcastReceiver() {
+                    @Override
+                    public void onReceive(android.content.Context context, Intent intent) {
+                        if (getResultCode() != android.app.Activity.RESULT_OK) {
+                            Intent open = settingsPanel ? new Intent(HomeKeyService.this, QuickSettingsActivity.class)
+                                    : new Intent(Settings.ACTION_SETTINGS);
+                            startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        }
+                    }
+                }, null, android.app.Activity.RESULT_CANCELED, null, null);
+            }
+            return true;
+        }
+        if (isInputKey(event)) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                Intent toggle = new Intent(MainActivity.ACTION_TOGGLE_INPUTS).setPackage(getPackageName());
+                sendOrderedBroadcast(toggle, null, new android.content.BroadcastReceiver() {
+                    @Override
+                    public void onReceive(android.content.Context context, Intent intent) {
+                        if (getResultCode() != android.app.Activity.RESULT_OK) {
+                            startActivity(new Intent(HomeKeyService.this, MainActivity.class)
+                                    .setAction(MainActivity.ACTION_TOGGLE_INPUTS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        }
+                    }
+                }, null, android.app.Activity.RESULT_CANCELED, null, null);
             }
             return true;
         }
