@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">בית</string>
+    <string name="continue_watching">המשך צפייה</string>
+    <string name="watch_cant_open">לא ניתן לפתוח את התוכנית</string>
     <string name="inputs">כניסות</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">הגדרות</string>

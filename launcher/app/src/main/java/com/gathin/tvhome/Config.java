@@ -264,6 +264,11 @@ final class Config {
     final boolean singleRow;
     /** With single_row, the band runs behind every app in the row, not only the dock apps (config.xml, dock_band_all). */
     final boolean dockBandAll;
+    final int dockLowerDp;
+    final boolean headerRight;
+    final boolean headerDateFirst;
+    final boolean watchNext;
+    final boolean watchNextNetworkArt;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -279,7 +284,7 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait) {
+                   int openOnStartNetworkWait, int dockLowerDp, boolean headerRight, boolean headerDateFirst, boolean watchNext, boolean watchNextNetworkArt) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -387,6 +392,11 @@ final class Config {
         this.clockGlow = clockGlow;
         this.singleRow = singleRow;
         this.dockBandAll = dockBandAll;
+        this.dockLowerDp = dockLowerDp;
+        this.headerRight = headerRight;
+        this.headerDateFirst = headerDateFirst;
+        this.watchNext = watchNext;
+        this.watchNextNetworkArt = watchNextNetworkArt;
         this.glowStyle = glowStyle(glowStyle);
         this.wallpaperCaptions = wallpaperCaptions;
         this.glassStyle = glassStyle(glassStyle);
@@ -512,6 +522,11 @@ final class Config {
         String glassStyle = res.getString(R.string.glass_style);
         boolean singleRow = res.getBoolean(R.bool.single_row);
         boolean dockBandAll = res.getBoolean(R.bool.dock_band_all);
+        int dockLowerDp = res.getInteger(R.integer.dock_lower_dp);
+        boolean headerRight = res.getBoolean(R.bool.header_right);
+        boolean headerDateFirst = res.getBoolean(R.bool.header_date_first);
+        boolean watchNext = res.getBoolean(R.bool.watch_next);
+        boolean watchNextNetworkArt = res.getBoolean(R.bool.watch_next_network_art);
         boolean applied = false;
 
         File dir = dir(ctx);
@@ -619,6 +634,11 @@ final class Config {
             clockGlow = bool(json, "clock_glow", clockGlow);
             singleRow = bool(json, "single_row", singleRow);
             dockBandAll = bool(json, "dock_band_all", dockBandAll);
+            dockLowerDp = integer(json, "dock_lower_dp", dockLowerDp, 0, 28);
+            headerRight = bool(json, "header_right", headerRight);
+            headerDateFirst = bool(json, "header_date_first", headerDateFirst);
+            watchNext = bool(json, "watch_next", watchNext);
+            watchNextNetworkArt = bool(json, "watch_next_network_art", watchNextNetworkArt);
             glowStyle = string(json, "glow_style", glowStyle);
             glassStyle = string(json, "glass_style", glassStyle);
         }
@@ -682,7 +702,8 @@ final class Config {
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)));
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), dockLowerDp, headerRight, headerDateFirst,
+                watchNext, watchNextNetworkArt);
     }
 
     /**

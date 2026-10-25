@@ -102,6 +102,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
 
     private static final int LAUNCHER_SETTINGS_REQUEST = 42;
+    private static final int WATCH_PERMISSION_REQUEST = 43;
     /** Sent by QuickSettingsActivity: open Launcher settings from here so Home rebuilds when they close. */
     static final String ACTION_LAUNCHER_SETTINGS = "com.gathin.tvhome.action.LAUNCHER_SETTINGS";
     /** The system input switcher, forwarded here by InputsRequestActivity while handle_view_inputs is on. */
@@ -243,6 +244,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean dockRow;
     /** config single_row: every app in the dock's row, scrolling sideways, no grid below. */
     private boolean singleRow;
+    private boolean watchNextEnabled;
+    private boolean watchNextNetworkArt;
+    private List<WatchNextReader.Item> watchNextItems = Collections.emptyList();
+    private int watchFocusIndex;
+    private volatile int watchReadGeneration;
+    private int dockLowerDp;
+    private int dockReturnColumn;
     /** The highlight springs past its target (config.xml, focus_overshoot); false goes straight there. */
     private boolean focusOvershoot;
     /** Festive skin from the theme (see Festival); applied while it is active today. */
@@ -440,6 +448,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         reducedMotion = cfg.reducedMotion;
         dockRow = cfg.dockRow;
         singleRow = cfg.singleRow;
+        watchNextEnabled = cfg.watchNext && cfg.dockRow && !cfg.singleRow;
+        watchNextNetworkArt = watchNextEnabled && cfg.watchNextNetworkArt
+                && checkSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
+        dockLowerDp = cfg.dockLowerDp;
         focusOvershoot = cfg.focusOvershoot;
         festival = cfg.festival;
         festive = festival.active(LocalDate.now());
@@ -498,6 +510,47 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!cfg.dockTitle) hero.setVisibility(View.GONE);
         greeting = findViewById(R.id.greeting);
         clockBlock = findViewById(R.id.leftBlock);
+        if (cfg.headerRight) {
+            RelativeLayout.LayoutParams clockParams = (RelativeLayout.LayoutParams) clockBlock.getLayoutParams();
+            clockParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            clockParams.removeRule(RelativeLayout.ALIGN_PARENT_START);
+            clockParams.removeRule(RelativeLayout.START_OF);
+            clockParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+            clockParams.addRule(RelativeLayout.END_OF, R.id.topButtons);
+            clockParams.leftMargin = Math.round(16 * density);
+            clockParams.rightMargin = 0;
+            clockBlock.setLayoutParams(clockParams);
+            if (!getResources().getBoolean(R.bool.rtl_menu_bar)) {
+                LinearLayout clockRow = (LinearLayout) ((ViewGroup) clockBlock).getChildAt(1);
+                LinearLayout.LayoutParams rowParams = (LinearLayout.LayoutParams) clockRow.getLayoutParams();
+                rowParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                rowParams.gravity = Gravity.END;
+                clockRow.setLayoutParams(rowParams);
+                View dateColumn = clockRow.getChildAt(clockRow.getChildCount() - 1);
+                LinearLayout.LayoutParams dateParams = (LinearLayout.LayoutParams) dateColumn.getLayoutParams();
+                dateParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                dateParams.weight = 0;
+                dateColumn.setLayoutParams(dateParams);
+                if (cfg.headerDateFirst) {
+                    View divider = findViewById(R.id.clockDivider);
+                    clockRow.removeView(dateColumn);
+                    clockRow.removeView(divider);
+                    clockRow.addView(dateColumn, 0);
+                    clockRow.addView(divider, 1);
+                }
+            }
+            greeting.setGravity(Gravity.RIGHT);
+            LinearLayout topButtons = findViewById(R.id.topButtons);
+            RelativeLayout.LayoutParams buttonParams = (RelativeLayout.LayoutParams) topButtons.getLayoutParams();
+            buttonParams.removeRule(RelativeLayout.ALIGN_PARENT_END);
+            buttonParams.addRule(RelativeLayout.ALIGN_PARENT_START);
+            topButtons.setLayoutParams(buttonParams);
+            int shadow = Color.argb(220, 0, 0, 0);
+            for (int id : new int[]{R.id.clock, R.id.ampm, R.id.date, R.id.shamsiDate,
+                    R.id.lunarDate, R.id.greeting, R.id.stats}) {
+                ((TextView) findViewById(id)).setShadowLayer(4 * density, 0, 2 * density, shadow);
+            }
+        }
         greetingColor = greeting.getCurrentTextColor();
         if (!cfg.showGreeting) greeting.setVisibility(View.GONE);
         if (cfg.headerWhite) {
@@ -524,6 +577,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnWifi = findViewById(R.id.btnWifi);
         shamsiDate = findViewById(R.id.shamsiDate);
         stats = findViewById(R.id.stats);
+        if (cfg.headerRight) {
+            RelativeLayout.LayoutParams statsParams = (RelativeLayout.LayoutParams) stats.getLayoutParams();
+            statsParams.removeRule(RelativeLayout.ALIGN_START);
+            statsParams.addRule(RelativeLayout.ALIGN_END, R.id.leftBlock);
+            stats.setLayoutParams(statsParams);
+            stats.setGravity(Gravity.RIGHT);
+        }
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
         raceKicker = findViewById(R.id.raceKicker);
@@ -614,7 +674,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
         ((GridLayoutManager) grid.getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override public int getSpanSize(int position) { return !singleRow && adapter != null && adapter.isLibraryAt(position) ? COLUMNS : 1; }
+            @Override public int getSpanSize(int position) {
+                return !singleRow && adapter != null
+                        && (adapter.isLibraryAt(position) || adapter.watchPosition() == position) ? COLUMNS : 1;
+            }
         });
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
@@ -668,6 +731,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // A single row never shows the names under its tiles (the title above the row names the app), so the
             // 7dp gap and 22dp label item_app.xml keeps for them would only lift the row: sit it that much lower.
             if (singleRow && !cfg.alwaysShowNames) want += (int) (29 * density);
+            if (MainActivity.this.dockRow && !singleRow && rowsBelowDock == 0) want += Math.round(dockLowerDp * density);
             if (grid.getPaddingTop() != want) {
                 grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
                 // A vertical grid parks the dock on the new padding line by scrolling (onTileFocused); a sideways
@@ -1044,6 +1108,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        if (watchNextEnabled) {
+            if (checkSelfPermission(WatchNextReader.PERMISSION) == PackageManager.PERMISSION_GRANTED) {
+                refreshWatchNext();
+            } else {
+                if (!watchNextItems.isEmpty()) {
+                    watchNextItems = Collections.emptyList();
+                    adapter.setWatchNext(watchNextItems);
+                    reloadApps(false);
+                }
+                if (!getSharedPreferences("watch_next", MODE_PRIVATE).getBoolean("requested", false)) {
+                    getSharedPreferences("watch_next", MODE_PRIVATE).edit().putBoolean("requested", true).apply();
+                    handler.post(() -> requestPermissions(new String[]{WatchNextReader.PERMISSION}, WATCH_PERMISSION_REQUEST));
+                }
+            }
+        }
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1213,6 +1292,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onPause() {
         super.onPause();
         resumed = false;
+        watchReadGeneration++;
         root.removeCallbacks(showIdleClock);
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
@@ -1232,6 +1312,58 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cardPrompt != null) cardPrompt.dismiss();
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grants) {
+        super.onRequestPermissionsResult(requestCode, permissions, grants);
+        if (requestCode == WATCH_PERMISSION_REQUEST && grants.length > 0
+                && grants[0] == PackageManager.PERMISSION_GRANTED) refreshWatchNext();
+    }
+
+    private void refreshWatchNext() {
+        final int generation = ++watchReadGeneration;
+        new Thread(() -> {
+            List<WatchNextReader.Item> found = WatchNextReader.items(getApplicationContext());
+            handler.post(() -> {
+                if (generation != watchReadGeneration || isFinishing() || isDestroyed()) return;
+                if (!sameWatchItems(watchNextItems, found)) {
+                    watchNextItems = found;
+                    watchFocusIndex = Math.min(watchFocusIndex, Math.max(0, found.size() - 1));
+                    adapter.setWatchNext(found);
+                    reloadApps(false);
+                }
+                if (watchNextNetworkArt) loadWatchArtwork(generation, watchNextItems);
+            });
+        }, "watch-next-read").start();
+    }
+
+    private void loadWatchArtwork(int generation, List<WatchNextReader.Item> items) {
+        new Thread(() -> {
+            for (int index = 0; index < items.size(); index++) {
+                if (generation != watchReadGeneration) return;
+                WatchNextReader.Item item = items.get(index);
+                if (item.artwork != null) continue;
+                Bitmap image = WatchNextReader.remoteArtwork(item.artUri);
+                if (image == null) continue;
+                final int cardIndex = index;
+                handler.post(() -> {
+                    if (generation != watchReadGeneration || isFinishing() || isDestroyed()
+                            || watchNextItems != items) return;
+                    item.artwork = image;
+                    RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(adapter.watchPosition());
+                    if (holder == null) return;
+                    View card = AppAdapter.watchCardAt(holder.itemView, cardIndex);
+                    if (card != null) AppAdapter.bindWatchArtwork(card, item);
+                });
+            }
+        }, "watch-next-art").start();
+    }
+
+    private static boolean sameWatchItems(List<WatchNextReader.Item> a, List<WatchNextReader.Item> b) {
+        if (a.size() != b.size()) return false;
+        for (int i = 0; i < a.size(); i++) if (!a.get(i).sameContent(b.get(i))) return false;
+        return true;
     }
 
     @Override
@@ -1408,8 +1540,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockInSession = new HashSet<>();
         dockedAtStart = adapter.dockFilled();
         for (int i = 0; i < Math.min(dockedAtStart, adapter.movableCount()); i++) dockInSession.add(adapter.keyAt(i));
+        boolean hadWatch = adapter.hasWatchNext();
         adapter.setReordering(true);
-        if (adapter.hasEmptySlots()) reloadTiles();   // every position must hold a tile that can move
+        if (adapter.hasEmptySlots() || hadWatch) reloadTiles();   // every position must hold a tile that can move
         reordering = true;
         orderAtStart = adapter.movableKeys();
         glass.setAccent(REORDER_ACCENT);
@@ -1577,7 +1710,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 Toast.makeText(this, R.string.reorder_not_saved, Toast.LENGTH_SHORT).show();
             }
         }
-        if (fillDockLeavesSlots) reloadTiles();   // the empty dock slots left out while reordering come back
+        if (fillDockLeavesSlots || !watchNextItems.isEmpty()) reloadTiles();
     }
 
     /**
@@ -2325,6 +2458,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             return !forward && position == 0;
         }
+        int watch = adapter.watchPosition();
+        if (watch >= 0 && keyCode == KeyEvent.KEYCODE_DPAD_DOWN && position < COLUMNS) {
+            dockReturnColumn = position;
+            watchFocusIndex = 0;
+            focusTile(watch);
+            grid.playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
+            return true;
+        }
+        if (watch >= 0 && keyCode == KeyEvent.KEYCODE_DPAD_UP
+                && position > watch && position <= watch + COLUMNS) {
+            focusTile(watch);
+            grid.playSoundEffect(SoundEffectConstants.NAVIGATION_UP);
+            return true;
+        }
+        int logical = watch >= 0 && position > watch ? position - 1 : position;
+        int logicalCount = count - (watch >= 0 ? 1 : 0);
         // Horizontal: swallow the key at a row's ends so focus never wraps to the next row or
         // escapes up into the top bar. Mid-row moves fall through to the default focus search.
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
@@ -2334,26 +2483,64 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return true;
             }
             // In the dock, the last app is the row's end: the empty slots after it take no focus.
-            int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
-            return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
+            int rowCount = logical < COLUMNS ? Math.min(logicalCount, adapter.dockFilled()) : logicalCount;
+            return GridNavigation.atHorizontalEdge(logical, rowCount, COLUMNS,
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
-            target = position - COLUMNS;
+            if (logical < COLUMNS) return false;          // dock row: let focus move to the top bar
+            target = logical - COLUMNS;
         } else {
-            int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
-            if (position >= lastRowStart) {
+            int lastRowStart = ((logicalCount - 1) / COLUMNS) * COLUMNS;
+            if (logical >= lastRowStart) {
                 if (adapter.isLibraryAt(count)) focusLibrary();
                 return true;
             }
-            target = Math.min(position + COLUMNS, count - 1);
+            target = Math.min(logical + COLUMNS, logicalCount - 1);
         }
-        focusTile(target);
+        focusTile(watch >= 0 && target >= watch ? target + 1 : target);
         // The default focus search clicks for Left/Right; Up/Down are handled here, so click for them too.
         grid.playSoundEffect(keyCode == KeyEvent.KEYCODE_DPAD_UP
                 ? SoundEffectConstants.NAVIGATION_UP : SoundEffectConstants.NAVIGATION_DOWN);
         return true;
+    }
+
+    @Override public void onWatchFocused(int position, int index) {
+        if (position < 0) return;
+        watchFocusIndex = index;
+        lastFocused = position;
+        lastFocusedKey = null;
+        hideGlass();
+        hideHero();
+        RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
+        if (holder != null) {
+            View card = AppAdapter.watchCardAt(holder.itemView, index);
+            holder.itemView.getDrawingRect(revealRect);
+            grid.requestChildRectangleOnScreen(holder.itemView, revealRect, reducedMotion);
+            if (card != null) card.playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
+        }
+    }
+
+    @Override public boolean onWatchKey(int keyCode, int index) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            int next = index + (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
+            if (next >= 0 && next < adapter.watchCount()) {
+                watchFocusIndex = next;
+                focusTile(adapter.watchPosition());
+            }
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            focusTile(dockReturnColumn);
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            int next = adapter.watchPosition() + 1;
+            if (next < adapter.appCount()) focusTile(next);
+            else if (adapter.isLibraryAt(adapter.appCount())) focusLibrary();
+            return true;
+        }
+        return false;
     }
 
     @Override public void onLibraryFocused() {
@@ -2451,8 +2638,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override public void onLibraryUp() {
         if (adapter.appCount() == 0) { firstTopButton().requestFocus(); return; }
-        int lastRow = ((adapter.appCount() - 1) / COLUMNS) * COLUMNS;
-        focusTile(Math.min(lastRow + lastFocused % COLUMNS, adapter.appCount() - 1));
+        int watch = adapter.watchPosition();
+        int logicalCount = adapter.appCount() - (watch >= 0 ? 1 : 0);
+        int lastRow = ((logicalCount - 1) / COLUMNS) * COLUMNS;
+        int column = (watch >= 0 && lastFocused > watch ? lastFocused - 1 : lastFocused) % COLUMNS;
+        int target = Math.min(lastRow + column, logicalCount - 1);
+        focusTile(watch >= 0 && target >= watch ? target + 1 : target);
     }
 
     private void focusLibrary() {
@@ -2512,9 +2703,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final int pos = adapter.focusablePosition(Math.max(0, Math.min(position, adapter.appCount() - 1)));
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         if (vh != null) {
-            View card = vh.itemView.findViewById(R.id.card);
+            View card = focusTarget(vh, pos);
+            if (card == null) return;
             // Already focused (e.g. back from an app): no focus change fires, so restore the glass by hand.
-            if (card.isFocused()) onTileFocused(pos, card);
+            if (card.isFocused()) {
+                if (pos == adapter.watchPosition()) onWatchFocused(pos, watchFocusIndex);
+                else onTileFocused(pos, card);
+            }
             else card.requestFocus();
             return;
         }
@@ -2523,7 +2718,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             grid.scrollToPosition(pos);
             grid.post(() -> {
                 RecyclerView.ViewHolder h = grid.findViewHolderForAdapterPosition(pos);
-                if (h != null) h.itemView.findViewById(R.id.card).requestFocus();
+                View target = focusTarget(h, pos);
+                if (target != null) target.requestFocus();
             });
             return;
         }
@@ -2535,12 +2731,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (pendingFocusScroll != this) return;
                 pendingFocusScroll = null;
                 RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(pos);
-                View target = h != null ? h.itemView.findViewById(R.id.card) : rv.getChildAt(0);
+                View target = h != null ? focusTarget(h, pos) : rv.getChildAt(0);
                 if (target != null) target.requestFocus();
             }
         };
         grid.addOnScrollListener(pendingFocusScroll);
         grid.smoothScrollToPosition(pos);
+    }
+
+    private View focusTarget(RecyclerView.ViewHolder holder, int position) {
+        if (holder == null) return null;
+        if (position == adapter.watchPosition())
+            return AppAdapter.watchCardAt(holder.itemView,
+                    Math.min(watchFocusIndex, adapter.watchCount() - 1));
+        return holder.itemView.findViewById(R.id.card);
     }
 
     // ---- top bar ---------------------------------------------------------------------------------

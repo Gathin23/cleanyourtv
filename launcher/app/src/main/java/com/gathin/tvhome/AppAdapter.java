@@ -28,6 +28,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +59,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         boolean onTileVerticalKey(int position, int keyCode);
 
         void onLibraryRequested();
+        void onWatchFocused(int position, int index);
+        boolean onWatchKey(int keyCode, int index);
         void onLibraryFocused();
         /** Hold OK on a tile: the activity shows the tile menu (move, remove from Home, app info). */
         void onTileLongPress(int position, View card);
@@ -66,7 +70,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static final class Entry {
-        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3;
+        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3, WATCH = 4;
 
         final int kind;
         final String label;
@@ -80,6 +84,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         int ambient;
         /** uniform_tiles card fill, top and bottom colour; null until sampled from the icon. */
         int[] backdrop;
+        final WatchNextReader.Item watch;
 
         Entry(String label, ComponentName component, Drawable banner, Drawable icon) {
             this(APP, label, component, banner, icon, null, 0);
@@ -94,6 +99,19 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.icon = icon;
             this.name = caption == null ? label : label + " \u00B7 " + caption;
             this.ambient = accent;
+            this.watch = null;
+        }
+
+        Entry(Context context, WatchNextReader.Item watch) {
+            this.kind = WATCH;
+            this.label = watch.title;
+            this.component = new ComponentName(context, "watch-next");
+            this.pkg = watch.packageName;
+            this.banner = null;
+            this.icon = null;
+            this.name = watch.title;
+            this.ambient = 0;
+            this.watch = watch;
         }
     }
 
@@ -221,6 +239,40 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     private final List<Entry> items = new ArrayList<>();
+    private List<WatchNextReader.Item> watchNext = Collections.emptyList();
+    private int watchPosition = -1;
+
+    void setWatchNext(List<WatchNextReader.Item> items) { watchNext = new ArrayList<>(items); }
+    int watchPosition() { return watchPosition; }
+    boolean hasWatchNext() { return watchPosition >= 0; }
+    int watchCount() { return watchNext.size(); }
+
+    static View watchCardAt(View row, int index) {
+        LinearLayout cards = row.findViewById(R.id.watchCards);
+        return cards != null && index >= 0 && index < cards.getChildCount() ? cards.getChildAt(index) : null;
+    }
+
+    static void bindWatchArtwork(View card, WatchNextReader.Item item) {
+        ImageView art = card.findViewById(R.id.watchArt);
+        View fallback = card.findViewById(R.id.watchFallback);
+        if (item.artwork != null) {
+            art.setVisibility(View.VISIBLE);
+            fallback.setVisibility(View.GONE);
+            art.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            art.setImageBitmap(item.artwork);
+        } else {
+            art.setImageDrawable(null);
+            art.setVisibility(View.GONE);
+            fallback.setVisibility(View.VISIBLE);
+            TextView source = card.findViewById(R.id.watchSource);
+            try {
+                source.setText(card.getContext().getPackageManager().getApplicationLabel(
+                        card.getContext().getPackageManager().getApplicationInfo(item.packageName, 0)));
+            } catch (PackageManager.NameNotFoundException ignored) {
+                source.setText(item.packageName);
+            }
+        }
+    }
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
         this.ctx = ctx;
@@ -340,6 +392,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
         }
+        watchPosition = -1;
+        if (!watchNext.isEmpty() && dockRow && !singleRow && !reordering) {
+            watchPosition = Math.min(dockSize, fresh.size());
+            fresh.add(watchPosition, new Entry(ctx, watchNext.get(0)));
+        }
         items.clear();
         items.addAll(fresh);
         notifyDataSetChanged();
@@ -392,12 +449,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Lets go of every tile and its artwork (Home is in the background and memory is short). */
     void clear() {
         items.clear();
+        watchPosition = -1;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == 2) {
+            View row = LayoutInflater.from(ctx).inflate(R.layout.row_watch_next, parent, false);
+            return new RecyclerView.ViewHolder(row) { };
+        }
         if (viewType == 1) {
             View row = LayoutInflater.from(ctx).inflate(R.layout.row_app_library, parent, false);
             View button = row.findViewById(R.id.btnLibrary);
@@ -458,6 +520,39 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLibraryAt(position)) return;
+        if (position == watchPosition) {
+            View row = holder.itemView;
+            LinearLayout cards = row.findViewById(R.id.watchCards);
+            cards.removeAllViews();
+            for (int index = 0; index < watchNext.size(); index++) {
+                WatchNextReader.Item item = watchNext.get(index);
+                View card = LayoutInflater.from(ctx).inflate(R.layout.row_watch_card, cards, false);
+                ((TextView) card.findViewById(R.id.watchTitle)).setText(item.title);
+                TextView episode = card.findViewById(R.id.watchEpisode);
+                episode.setText(item.episode);
+                episode.setVisibility(item.episode.isEmpty() ? View.GONE : View.VISIBLE);
+                ProgressBar progress = card.findViewById(R.id.watchProgress);
+                progress.setVisibility(item.progress >= 0 ? View.VISIBLE : View.GONE);
+                if (item.progress >= 0) progress.setProgress(item.progress);
+                bindWatchArtwork(card, item);
+                card.setContentDescription(ctx.getString(R.string.continue_watching) + ", "
+                        + item.title + (item.episode.isEmpty() ? "" : ", " + item.episode));
+                card.setOnClickListener(v -> {
+                    try { ctx.startActivity(item.intent); }
+                    catch (Exception ignored) {
+                        Toast.makeText(ctx, R.string.watch_cant_open, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                final int cardIndex = index;
+                card.setOnFocusChangeListener((v, focused) -> {
+                    if (focused) listener.onWatchFocused(holder.getBindingAdapterPosition(), cardIndex);
+                });
+                card.setOnKeyListener((v, key, event) -> event.getAction() == KeyEvent.ACTION_DOWN
+                        && listener.onWatchKey(key, cardIndex));
+                cards.addView(card);
+            }
+            return;
+        }
         Holder h = (Holder) holder;
         Entry e = items.get(position);
         if (e.kind == Entry.EMPTY) {
@@ -569,7 +664,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     boolean isLibraryAt(int position) { return showLibrary && position == items.size(); }
 
-    @Override public int getItemViewType(int position) { return isLibraryAt(position) ? 1 : 0; }
+    @Override public int getItemViewType(int position) { return isLibraryAt(position) ? 1 : position == watchPosition ? 2 : 0; }
 
     boolean containsPackage(String pkg) {
         for (Entry entry : items) if (entry.pkg.equals(pkg)) return true;
@@ -636,7 +731,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** Stable key for the app at a position (its component), or null. */
     String keyAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).component.flattenToShortString() : null;
+        return position >= 0 && position < items.size() && position != watchPosition
+                ? items.get(position).component.flattenToShortString() : null;
     }
 
     /** Position of the app with this key, or -1 when it is gone. */

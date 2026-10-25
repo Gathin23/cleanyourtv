@@ -52,6 +52,11 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `library_excluded_apps` | <img src="switches/library_excluded_apps.png" width="320" alt="library_excluded_apps on a TV: a CANDY Android TV DVB2K's App library catalogue, factory-menu packages excluded"> |
 | `date_below_clock` | <img src="switches/date_below_clock.jpg" width="320" alt="date_below_clock on a TV"> |
 | `locale` | <img src="switches/locale.jpg" width="320" alt="locale set to en on a TV whose system language is Vietnamese"> |
+| `header_right` | <img src="switches/tcl-home.jpg" width="320" alt="header_right on a TV"> |
+| `header_date_first` | <img src="switches/tcl-home.jpg" width="320" alt="header_date_first on a TV"> |
+| `dock_lower_dp` | <img src="switches/tcl-home.jpg" width="320" alt="dock_lower_dp on a TV"> |
+| `watch_next` | <img src="switches/tcl-watch-next.jpg" width="320" alt="watch_next on a TV"> |
+| `watch_next_network_art` | <img src="switches/tcl-watch-next.jpg" width="320" alt="watch_next_network_art on a TV"> |
 | `power_on_home` | <img src="switches/power_on_home.jpg" width="320" alt="power_on_home on a TV"> |
 | `home_long_press_home` | <img src="switches/home_long_press_home.jpg" width="320" alt="home_long_press_home on a TV"> |
 | `vpn_pill` | <img src="switches/vpn_pill.jpg" width="320" alt="vpn_pill on a TV"> <img src="switches/vpn_pill_rest.jpg" width="320" alt="vpn_pill at rest: the pill outlined in red, focus on a tile"> |

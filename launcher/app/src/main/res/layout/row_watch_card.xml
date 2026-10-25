@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/watchCard"
+    android:layout_width="212dp"
+    android:layout_height="match_parent"
+    android:layout_marginEnd="14dp"
+    android:background="@drawable/watch_card_bg"
+    android:focusable="true"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:padding="7dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:background="#302D32">
+
+        <ImageView
+            android:id="@+id/watchArt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@null" />
+
+        <LinearLayout
+            android:id="@+id/watchFallback"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_watch_play"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/watchSource"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#CCFFFFFF"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/watchTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textColor="#FFFFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="@string/font_medium" />
+
+    <TextView
+        android:id="@+id/watchEpisode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textColor="#CCFFFFFF"
+        android:textSize="12sp" />
+
+    <ProgressBar
+        android:id="@+id/watchProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="4dp"
+        android:max="100"
+        android:visibility="gone" />
+</LinearLayout>

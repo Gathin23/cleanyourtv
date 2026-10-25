@@ -24,6 +24,12 @@ android {
             // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
             signingConfig signingConfigs.debug
         }
+        // Only this explicit build variant may fetch HTTPS artwork published by Watch Next apps.
+        // The ordinary release APK has no INTERNET permission.
+        networkRelease {
+            initWith release
+            matchingFallbacks = ['release']
+        }
     }
 
     packagingOptions {

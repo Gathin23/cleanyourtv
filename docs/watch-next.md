@@ -48,3 +48,17 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that
 module's `AndroidManifest.xml`.
+
+## Continue watching row in this fork
+
+With `"watch_next": true` in a theme, Home asks for Android's TV-listings permission and shows visible, playable `CONTINUE` items below the dock. Left and Right browse items; Up returns to favourites and Down goes to the app grid. The row is hidden when permission is denied or no eligible items are visible. An app's own viewing history does not necessarily appear in Watch Next.
+
+The ordinary `release` APK has **no INTERNET permission**. It reads locally accessible poster art and otherwise shows a play placeholder. There is no polling or background service.
+
+To opt in to HTTPS poster artwork, build the separate variant from `launcher/`:
+
+```sh
+./gradlew --no-daemon testNetworkReleaseUnitTest lintNetworkRelease assembleNetworkRelease
+```
+
+Install `app/build/outputs/apk/networkRelease/app-networkRelease.apk`, then set both `"watch_next": true` and `"watch_next_network_art": true` in the theme. The Android `INTERNET` permission is declared only in this variant's manifest. Downloads use image URLs that apps publish to Watch Next, with HTTPS, size and timeout limits, and a small memory cache. The same theme setting on an ordinary `release` APK leaves network artwork disabled.
