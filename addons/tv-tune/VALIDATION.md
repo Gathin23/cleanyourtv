@@ -368,3 +368,67 @@ Active-camera readiness transitions were tested through mocks, not physical capt
 mobile viewport and a full accessibility audit were not run. No additional defect
 was found in the reviewed bounded workflows. Real-TV D-pad/visual evidence and
 reference-instrument validation remain separate, unresolved external gates.
+
+### Android TV emulator in the cloud VM, 2026-10-25
+
+This run used the assistant's isolated cloud VM, not an owner's computer or TV.
+The tested application source was `f99a5934a1ac2ec08e045686ec20681986440b3a`;
+no application or launcher code changed for these checks.
+
+- A fresh official JDK 17 / Gradle 8.9 / SDK 34 build completed
+  `testReleaseUnitTest lintRelease assembleRelease`: eleven JVM tests passed,
+  lint reported zero errors and the same five warnings, and the local test APK
+  was 29,440 bytes. Its SHA-256 was
+  `cbd43dc6f2ebccbc44f94f75c05dc8efa781a1789ab4f26abf52b4f621db86c1`.
+  The APK remains outside the repository and is not a public download.
+- Official Android Emulator 37.2.12 ran the Android TV API 31 x86 revision 4
+  image, Android 12 build `STT9.221129.002/9351024`, at 1280×720. ADB reported
+  television, leanback and leanback-only features, `ro.kernel.qemu=1` and
+  `sys.boot_completed=1`. Shell identity was uid 2000, not root.
+  The VM has no usable KVM; CPU emulation used `-accel off` and graphics used
+  SwiftShader. This is not a responsiveness or physical-device performance test.
+- The fresh API 31 boot took about twenty minutes and included a framework
+  Watchdog restart before TV Tune was installed. Retained logcat identifies
+  system_server's main thread waiting for `WindowManagerGlobalLock` during
+  `systemReady`/`resumeTopActivities`. It subsequently booted without disabling
+  the watchdog, SELinux, verification or authentication. This is an environment
+  startup event, not a TV Tune crash. An earlier API 34 boot was stopped before
+  completion; no API 34 application-runtime result is claimed.
+- The APK installed successfully and launched. The existing English-language
+  `companion/test/android-ui-smoke.mjs` assertions passed using injected D-pad
+  events: welcome focus, preparation, all five check/pattern screens,
+  pattern Back/Skip, checklist, experiment fields and return to welcome with Resume.
+  The original 20-second subprocess limit timed out during an initial UIAutomator dump call;
+  an external harness copy changed only its two timeouts to 120 seconds.
+  No assertion was removed. All five checklist outcomes were deliberately
+  Skipped; notes entry, mixed outcomes, deletion and persistence were not tested.
+- Native emulator screenshots of welcome, preparation, geometry, checklist
+  and a grey-192 field were inspected. Captures were 1280×720 with no private
+  identifiers. The other four guide patterns were traversed and checked for the
+  generic "Show pattern" accessibility description, not pixel-level pattern checks.
+- A separate D-pad traversal captured all eleven experiment fields. Every
+  central pixel matched its expected RGB triple exactly, and OCR matched all
+  displayed patch IDs/RGB labels. These are framebuffer app-code checks, not
+  emitted-light, SDR-path, camera or colour-accuracy measurements.
+- Additional field checks passed both selection bounds, an Up/Down sequence preserving the
+  selection, and OK hiding/restoring labels with byte-identical restoration.
+  The unlabelled blue patch was 304×304 pixels, with top-left at (488, 208) and
+  centre at (640, 360): 10.028% of the framebuffer, with black outside the patch.
+- A real elapsed-time inactivity observation, without input or clock injection,
+  found the pause screen after 126.03 seconds of observed guest uptime following
+  an active-red capture. The app's window held `KEEP_SCREEN_ON` while active and
+  cleared it while paused. OK restored red without advancing the selected field.
+  This establishes eventual timeout behaviour, not an exact timer-latency bound.
+- Injected Home left TV Tune paused and moved focus to the stock TV launcher.
+  Returning with `--activity-reorder-to-front` preserved the same activity token
+  and showed the paused screen; OK restored the selected green field. Window
+  dumps confirmed `KEEP_SCREEN_ON` was absent after Home and after Back to
+  instructions. This does not validate a physical remote or module-card integration.
+
+Fresh unchanged-source regressions also passed 76/76 JavaScript tests and syntax
+checks. The dependency-complete Python suite ran 747 tests: 743 passed, three
+skipped and the same missing-real-TV-screenshot test failed. That evidence gate
+was not relaxed. Emulator captures stay outside the repository; none is supplied
+as `screenshot.jpg`. No new SDK agreement beyond the previously approved
+`android-sdk-license`, physical-device access, upstream PR, APK publication,
+launcher change or web redeployment was involved.
