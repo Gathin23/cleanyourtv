@@ -1,0 +1,42 @@
+name: Standalone Android TV App CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x tv-app/gradlew
+
+      - name: Run Unit Tests
+        run: |
+          cd tv-app
+          ./gradlew test --no-daemon
+
+      - name: Build Debug APK
+        run: |
+          cd tv-app
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanyourtv-tv-debug-apk
+          path: tv-app/app/build/outputs/apk/debug/app-debug.apk

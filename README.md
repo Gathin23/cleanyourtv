@@ -875,3 +875,7 @@ The people whose work is in this repo:
 
 MIT, see [`LICENSE`](LICENSE). The Outfit typeface is under the SIL Open Font License, see
 `launcher/FONT-LICENSE-OFL.txt`.
+
+## CleanYourTV TV Edition (`tv-app`)
+
+CleanYourTV now includes a native, standalone Android TV application in `tv-app/`. It can be built and installed directly on TV devices for local package scanning, debloating review, baseline backup, and restoration.
