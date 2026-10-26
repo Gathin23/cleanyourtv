@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -220,6 +221,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean uniformTiles;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
+    final Typeface fontMedium;
+    final Typeface fontBody;
+    final ViewOutlineProvider cardOutline;
     private final List<Entry> items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -248,6 +252,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         this.uniformTiles = cfg.uniformTiles;
+        final float density = ctx.getResources().getDisplayMetrics().density;
+        this.fontMedium = UiFont.get(ctx, R.string.font_medium);
+        this.fontBody = UiFont.get(ctx, R.string.font_body);
+        this.cardOutline = new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
+            }
+        };
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -411,48 +424,54 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
             return new RecyclerView.ViewHolder(row) { };
         }
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
+        Context c = parent.getContext();
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
         int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
-        View card = v.findViewById(R.id.card);
-        ViewGroup.LayoutParams cardLp = card.getLayoutParams();
-        cardLp.width = w;
-        cardLp.height = h;
-        card.setLayoutParams(cardLp);
-        View name = v.findViewById(R.id.name);
-        ViewGroup.MarginLayoutParams nameLp = (ViewGroup.MarginLayoutParams) name.getLayoutParams();
-        nameLp.width = w;
-        nameLp.topMargin = h + Math.round((dockRow ? 7 : 4) * density);
-        if (!dockRow) {
-            // Compact spacing (COMPACT_ITEM_EXTRA_DP): 4dp item padding and a 20dp name instead of 8dp and 22dp.
-            nameLp.height = Math.round(20 * density);
-            int pad = Math.round(4 * density);
-            v.setPadding(v.getPaddingLeft(), pad, v.getPaddingRight(), pad);
-        }
-        name.setLayoutParams(nameLp);
+
+        FrameLayout v = new FrameLayout(c);
+        int padV = Math.round((dockRow ? 8 : 4) * density);
+        v.setPadding(0, padV, 0, padV);
+        v.setClipChildren(false);
+        v.setClipToPadding(false);
         // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
-        if (singleRow) v.getLayoutParams().width = inner / dockSize;
-        if (uniformTiles) {
-            // tvOS-style tile: a large centred mark, no caption inside the card.
-            View icon = v.findViewById(R.id.icon);
-            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
-            iconLp.width = iconLp.height = Math.round(h * ICON_SHARE);
-            iconLp.bottomMargin = 0;
-            icon.setLayoutParams(iconLp);
-        } else if (h < Math.round(DESIGN_H_DP * density)) {
-            // Shrunk tiles (e.g. 5 or 6 columns): scale icon and bottom margin proportionally with tile height so the label does not overlap the icon.
-            View icon = v.findViewById(R.id.icon);
-            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
-            float scale = (float) h / (DESIGN_H_DP * density);
-            iconLp.width = iconLp.height = Math.round(48f * density * scale);
-            iconLp.bottomMargin = Math.round(14f * density * scale);
-            icon.setLayoutParams(iconLp);
-            View label = v.findViewById(R.id.label);
-            label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
-        }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        v.setLayoutParams(new RecyclerView.LayoutParams(
+                singleRow ? inner / dockSize : ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        FrameLayout card = new FrameLayout(c);
+        card.setId(R.id.card);
+        card.setBackgroundResource(R.drawable.tile_bg);
+        card.setFocusable(true);
+        card.setClickable(true);
+        v.addView(card, new FrameLayout.LayoutParams(w, h, android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP));
+
+        ImageView banner = new ImageView(c);
+        banner.setId(R.id.banner);
+        banner.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        banner.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        card.addView(banner, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        TextView name = new TextView(c);
+        name.setId(R.id.name);
+        name.setIncludeFontPadding(false);
+        name.setGravity(android.view.Gravity.CENTER);
+        name.setSingleLine(true);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        name.setAlpha(0f);
+        name.setTranslationY(-6f * density);
+        name.setTextColor(0xF2FFFFFF);
+        name.setTextSize(14f);
+        name.setTypeface(fontMedium);
+        name.setLetterSpacing(0.02f);
+        FrameLayout.LayoutParams nameLp = new FrameLayout.LayoutParams(
+                w, Math.round((dockRow ? 22 : 20) * density),
+                android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.TOP);
+        nameLp.topMargin = h + Math.round((dockRow ? 7 : 4) * density);
+        v.addView(name, nameLp);
+        return new Holder(this, v, card, banner, name, h, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
     }
 
     @Override
@@ -466,7 +485,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.card.setFocusable(false);
             h.name.setVisibility(View.INVISIBLE);
             h.banner.setImageDrawable(null);
-            h.icon.setImageDrawable(null);
+            if (h.icon != null) h.icon.setImageDrawable(null);
             h.card.setOnClickListener(null);
             h.card.setOnLongClickListener(null);
             return;
@@ -497,9 +516,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (e.banner != null) {
             h.banner.setImageDrawable(e.banner);
             h.banner.setVisibility(View.VISIBLE);
-            h.icon.setVisibility(View.GONE);
-            h.label.setVisibility(View.GONE);
+            if (h.icon != null) h.icon.setVisibility(View.GONE);
+            if (h.label != null) h.label.setVisibility(View.GONE);
         } else {
+            h.ensureFallbackViews();
             h.banner.setImageDrawable(null);
             h.banner.setVisibility(View.GONE);
             h.icon.setImageDrawable(e.icon);
@@ -882,13 +902,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static final class Holder extends RecyclerView.ViewHolder {
-        final View card;
+        final AppAdapter adapter;
+        final FrameLayout card;
         /** item_app.xml's tile_bg: the dark card behind an icon tile, or behind a banner that has transparent parts. */
         final Drawable cardBackground;
         final ImageView banner;
-        final ImageView icon;
-        final TextView label;
+        ImageView icon;
+        TextView label;
         final TextView name;
+        final int cardHeight;
         final boolean animations;
         final boolean advancedEffects;
         final boolean reducedMotion;
@@ -898,15 +920,48 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** A dock tile: it grows in place without advanced_effects' lift, which reads as off-centre in the band (#2135). */
         boolean inDock;
 
-        Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
+        /** Lazily creates the fallback icon and label views only when a tile has no 16:9 banner. */
+        void ensureFallbackViews() {
+            if (icon != null) return;
+            Context c = card.getContext();
+            float d = c.getResources().getDisplayMetrics().density;
+            boolean shrunk = !adapter.uniformTiles && cardHeight < Math.round(DESIGN_H_DP * d);
+            float scale = shrunk ? (float) cardHeight / (DESIGN_H_DP * d) : 1f;
+            icon = new ImageView(c);
+            int size = adapter.uniformTiles ? Math.round(cardHeight * ICON_SHARE) : Math.round(48f * d * scale);
+            FrameLayout.LayoutParams iconLp = new FrameLayout.LayoutParams(size, size, android.view.Gravity.CENTER);
+            if (!adapter.uniformTiles) iconLp.bottomMargin = Math.round(14f * d * scale);
+            card.addView(icon, iconLp);
+
+            label = new TextView(c);
+            FrameLayout.LayoutParams labelLp = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
+            int padH = Math.round(10 * d);
+            label.setPadding(padH, 0, padH, Math.round((shrunk ? 4f : 8f) * d));
+            label.setGravity(android.view.Gravity.CENTER);
+            label.setSingleLine(true);
+            label.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            label.setTextColor(0xFFFFFFFF);
+            label.setTextSize(13f);
+            label.setTypeface(adapter.fontBody);
+            label.forceHasOverlappingRendering(false);
+            card.addView(label, labelLp);
+        }
+
+        Holder(AppAdapter adapter, View v, FrameLayout card, ImageView banner, TextView name, int cardHeight,
+               TileListener listener, boolean animations, boolean advancedEffects,
                boolean reducedMotion, float restNameAlpha, boolean overshoot) {
             super(v);
-            card = v.findViewById(R.id.card);
+            this.adapter = adapter;
+            v.forceHasOverlappingRendering(false);
+            this.card = card;
+            card.forceHasOverlappingRendering(false);
             cardBackground = card.getBackground();
-            banner = v.findViewById(R.id.banner);
-            icon = v.findViewById(R.id.icon);
-            label = v.findViewById(R.id.label);
-            name = v.findViewById(R.id.name);
+            this.banner = banner;
+            this.name = name;
+            name.forceHasOverlappingRendering(false);
+            this.cardHeight = cardHeight;
             this.animations = animations;
             this.advancedEffects = advancedEffects;
             this.reducedMotion = reducedMotion;
@@ -914,13 +969,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.overshoot = overshoot;
 
             final float density = v.getResources().getDisplayMetrics().density;
-            card.setOutlineProvider(new ViewOutlineProvider() {
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    // 16dp at the design width, scaled down with the tile so small tiles keep the same shape.
-                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
-                }
-            });
+            card.setOutlineProvider(adapter.cardOutline);
             card.setClipToOutline(true);
 
             card.setOnKeyListener((view, keyCode, event) -> {
