@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="card" type="id" />
+    <item name="banner" type="id" />
+    <item name="name" type="id" />
+</resources>
