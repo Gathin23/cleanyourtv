@@ -1,0 +1,53 @@
+# Telefunken SWTV-24AE-FHD (Skyworth OEM, device beomil, product SW11_TG, MediaTek mt5867), Tunisia
+# Google TV 14 (API 34), build UKN4.250714.138, security patch 2025-10-01, ~930 MB RAM.
+# Same board and build as examples/motorola-swtv-24ae-fhd (unit 1); this list follows it, plus the Assistant.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
+# Setup wizard: com.google.android.tungsten.setupwraith.
+# Live TV app: com.mediatek.wwtv.tvcenter. com.cltv.hybrid (the Motorola unit's Live TV) ships disabled on this
+#   set, as do fusion.android.tv.demo and com.google.android.youtube.tvmusic: nothing to do for those three.
+# HDMI and tuner inputs: com.mediatek.tvinput (kept; disable.sh skips it anyway).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/telefunken-swtv-24ae-fhd/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/telefunken-swtv-24ae-fhd/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Wi-Fi: on this unit the saved network belonged to android.uid.system, not setupwraith
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so disabling setupwraith kept the TV online. Check yours first.
+#
+# Home: with launcherx enabled, `cmd package set-home-activity` to the new launcher answered Success but Home kept
+# resolving to launcherx (STOCK_LAUNCHER=none), so the last two lines are what hands Home over on this set.
+# Install the new launcher first; disable.sh's Home guard keeps launcherx until another launcher can answer Home.
+#
+# Free memory (MemAvailable) went from about 205 MB to about 290 MB after the Skyworth and ad lines and a reboot.
+# Lived with from 26 October to 1 November 2026 (six days of daily use): nothing broke, nothing re-enabled.
+
+# Skyworth telemetry and activation
+com.smartdevice.recordactivation             # records first activation
+com.smartdevice.aftersale                    # "after-sale" service: boot + network receivers, can install APKs
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Android ad and personalisation services
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Skyworth content and recommendations
+com.smartdevice.recommendation               # recommendation rows and analytics
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects rows into the home screen
+
+# Bloatware / cleaners / manuals / unused
+com.Smartdevice.emanual                      # on-screen manual
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.smartdevice.dailymanage                  # TV Guard / cleaner
+com.smartdevice.myapp                        # Daily Key / app manager
+com.google.android.play.games                # Google Play Games
+
+# Assistant (owner's choice: the remote's mic button stops working)
+com.google.android.katniss                   # Google Assistant / voice search
+
+# Stock Google TV home and setup wizard
+# Disable only after installing and verifying the new launcher!
+com.google.android.tungsten.setupwraith      # setup wizard recovery activity claiming HOME
+com.google.android.apps.tv.launcherx         # stock Google TV launcher

@@ -1,0 +1,6 @@
+{
+  "tv": "Telefunken SWTV-24AE-FHD (Skyworth OEM, beomil, MediaTek mt5867), Tunisia",
+  "os": "Google TV 14",
+  "brand": "Telefunken",
+  "notes": "Same board and build (UKN4) as the Motorola SWTV-24AE-FHD list; Skyworth activation/after-sale trackers, ad services, recommendation rows, cleaners, Assistant off; Wi-Fi belonged to android.uid.system so setupwraith was safe; set-home-activity does not stick while launcherx is enabled; Live TV is `com.mediatek.wwtv.tvcenter` (`com.cltv.hybrid` ships disabled); reboot-checked"
+}
