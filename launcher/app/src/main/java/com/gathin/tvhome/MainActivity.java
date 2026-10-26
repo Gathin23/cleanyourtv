@@ -387,6 +387,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // Updates send REMOVED followed by ADDED; keep the tile until the new APK is ready.
             if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())
                     && intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) return;
+            Uri data = intent.getData();
+            if (data != null && adapter != null) adapter.invalidatePackage(data.getSchemeSpecificPart());
             // In the background this only marks the tiles stale; onResume rebuilds them once.
             if (!tileRefresh.onPackagesChanged()) return;
             reloadApps(false);
@@ -1146,7 +1148,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** True when PackageManager reports apps changed since the last rebuild (one binder call). */
     private boolean packagesChangedSinceRebuild() {
         ChangedPackages changed = getPackageManager().getChangedPackages(packageSequence);
-        return changed != null && !changed.getPackageNames().isEmpty();
+        if (changed == null || changed.getPackageNames().isEmpty()) return false;
+        for (String pkg : changed.getPackageNames()) adapter.invalidatePackage(pkg);
+        return true;
     }
 
     private int currentPackageSequence(int since) {
