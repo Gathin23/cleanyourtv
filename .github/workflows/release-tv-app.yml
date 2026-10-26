@@ -1,0 +1,43 @@
+name: Standalone Android TV App Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x tv-app/gradlew
+
+      - name: Build Release APK
+        run: |
+          cd tv-app
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Generate Checksum
+        run: |
+          cd tv-app/app/build/outputs/apk/release/
+          sha256sum app-release-unsigned.apk > app-release-unsigned.apk.sha256 || sha256sum app-release.apk > app-release.apk.sha256
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            tv-app/app/build/outputs/apk/release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#121212"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CleanYourTV — TV Edition"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvDeviceInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detecting TV Hardware &amp; Local ADB..."
+        android:textColor="#BBBBBB"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnScan"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:text="Scan Applications"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#1E88E5"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnRestore"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:text="Restore Disabled Apps"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#43A047"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnExport"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_weight="1"
+            android:text="Export Diagnostics"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#757575"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvAdbHelp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guide: To enable full cleanup capability on Android TV, go to Settings -> System -> About -> Click 'Build' 7 times. Then go to Developer Options -> enable Wireless Debugging."
+        android:textColor="#FFB74D"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:background="#263238"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Ready for scanning."
+        android:textColor="#E0E0E0"
+        android:textSize="14sp"
+        android:scrollbars="vertical"
+        android:background="#1E1E1E"
+        android:padding="12dp" />
+
+</LinearLayout>
