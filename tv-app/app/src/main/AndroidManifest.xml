@@ -23,7 +23,7 @@
         android:theme="@style/Theme.CleanYourTv">
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:icon="@drawable/ic_launcher"
             android:banner="@drawable/tv_banner"

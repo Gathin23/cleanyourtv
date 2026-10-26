@@ -11,8 +11,8 @@ import com.faizannazir.cleanyourtv.tv.engine.BackupRestoreEngine
 import com.faizannazir.cleanyourtv.tv.engine.SafetyRulesEngine
 import com.faizannazir.cleanyourtv.tv.model.AppCategory
 import com.faizannazir.cleanyourtv.tv.model.AppInfo
-import com.faizannazir.cleanyourtv.tv.model.CleanupBaseline
 import com.faizannazir.cleanyourtv.tv.model.DeviceInfo
+import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
 
@@ -26,6 +26,7 @@ class MainActivity : Activity() {
     private lateinit var backupRestoreEngine: BackupRestoreEngine
     private var currentDeviceInfo: DeviceInfo? = null
     private val scannedApps = mutableListOf<AppInfo>()
+    private val executor = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,48 +49,60 @@ class MainActivity : Activity() {
     }
 
     private fun initDiagnostics() {
-        val scanner = AdbDeviceScanner(this)
-        val info = scanner.scanLocalDevice()
-        currentDeviceInfo = info
+        tvDeviceInfo.text = "Detecting TV Hardware & Local ADB..."
+        executor.execute {
+            val scanner = AdbDeviceScanner(this)
+            val info = scanner.scanLocalDevice()
+            currentDeviceInfo = info
 
-        val infoText = "Device: ${info.manufacturer} ${info.model} | Android ${info.androidVersion} (SDK ${info.sdkInt})\n" +
-                "ADB Status: ${if (info.isAdbAuthorized) "Authorized (Port 5555)" else "Not Connected"}\n" +
-                "Note: ${info.adbDiagnosticMessage}"
-        tvDeviceInfo.text = infoText
+            val infoText = "Device: ${info.manufacturer} ${info.model} | Android ${info.androidVersion} (SDK ${info.sdkInt})\n" +
+                    "ADB Status: ${if (info.isAdbAuthorized) "Authorized (Port 5555)" else "Not Connected"}\n" +
+                    "Note: ${info.adbDiagnosticMessage}"
+
+            runOnUiThread {
+                tvDeviceInfo.text = infoText
+            }
+        }
     }
 
     private fun runScan() {
         scannedApps.clear()
-        val pm = packageManager
-        val installed = pm.getInstalledPackages(PackageManager.GET_META_DATA)
+        tvStatus.text = "Scanning installed applications..."
 
-        var protectedCount = 0
-        var optionalCount = 0
+        executor.execute {
+            val pm = packageManager
+            val installed = pm.getInstalledPackages(PackageManager.GET_META_DATA)
 
-        for (pkg in installed) {
-            val isSys = (pkg.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-            val label = pkg.applicationInfo.loadLabel(pm).toString()
-            val isEnabled = pkg.applicationInfo.enabled
+            var protectedCount = 0
+            var optionalCount = 0
 
-            val appInfo = safetyRulesEngine.classifyApp(pkg.packageName, label, isSys, isEnabled)
-            scannedApps.add(appInfo)
+            for (pkg in installed) {
+                val isSys = (pkg.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                val label = pkg.applicationInfo.loadLabel(pm).toString()
+                val isEnabled = pkg.applicationInfo.enabled
 
-            if (appInfo.category == AppCategory.PROTECTED) protectedCount++
-            if (appInfo.category == AppCategory.OPTIONAL) optionalCount++
+                val appInfo = safetyRulesEngine.classifyApp(pkg.packageName, label, isSys, isEnabled)
+                scannedApps.add(appInfo)
+
+                if (appInfo.category == AppCategory.PROTECTED) protectedCount++
+                if (appInfo.category == AppCategory.OPTIONAL) optionalCount++
+            }
+
+            val report = StringBuilder()
+            report.append("Scan Complete:\n")
+            report.append("- Total Installed Packages: ${scannedApps.size}\n")
+            report.append("- Protected Packages: $protectedCount\n")
+            report.append("- Removable / Cleanup Candidates: $optionalCount\n\n")
+
+            report.append("Detected Cleanup Candidates:\n")
+            scannedApps.filter { it.category == AppCategory.OPTIONAL }.forEach { app ->
+                report.append(" • [${app.packageName}] ${app.label} - ${app.recommendationReason}\n")
+            }
+
+            runOnUiThread {
+                tvStatus.text = report.toString()
+            }
         }
-
-        val report = StringBuilder()
-        report.append("Scan Complete:\n")
-        report.append("- Total Installed Packages: ${scannedApps.size}\n")
-        report.append("- Protected Packages: $protectedCount\n")
-        report.append("- Removable / Cleanup Candidates: $optionalCount\n\n")
-
-        report.append("Detected Cleanup Candidates:\n")
-        scannedApps.filter { it.category == AppCategory.OPTIONAL }.forEach { app ->
-            report.append(" • [${app.packageName}] ${app.label} - ${app.recommendationReason}\n")
-        }
-
-        tvStatus.text = report.toString()
     }
 
     private fun runRestore() {
@@ -109,5 +122,10 @@ class MainActivity : Activity() {
         val baseline = backupRestoreEngine.loadLatestBaseline()
         val json = backupRestoreEngine.exportReportJson(baseline)
         tvStatus.text = "Exported Local Diagnostic Baseline Report (JSON):\n\n$json"
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        executor.shutdown()
     }
 }
