@@ -20,7 +20,6 @@ class SafetyRulesEngine {
             "com.android.settings",
             "com.android.systemui",
             "com.tcl.settings",
-            "com.tcl.tv",
             "com.android.providers.telephony",
             "com.android.wifi.resources",
             "com.android.networkstack",
@@ -32,11 +31,39 @@ class SafetyRulesEngine {
         )
 
         val KNOWN_DEBLOAT_PATTERNS = mapOf(
+            // TCL Specific Bloatware & Telemetry
             "com.tcl.partnercustomizer" to Pair("TCL Partner Customizer bloatware", AppCategory.OPTIONAL),
             "com.tcl.tv.recommendations" to Pair("TCL recommendation telemetry", AppCategory.OPTIONAL),
             "com.tcl.shop" to Pair("TCL Store bloatware", AppCategory.OPTIONAL),
-            "com.amazon.amazonvideo.livingroom" to Pair("Amazon Prime Video", AppCategory.REVIEW_REQUIRED),
-            "com.netflix.ninja" to Pair("Netflix TV app", AppCategory.REVIEW_REQUIRED)
+            "com.tcl.suspension" to Pair("TCL Suspension & promotional overlay", AppCategory.OPTIONAL),
+            "com.tcl.guard" to Pair("TCL Guard background telemetry", AppCategory.OPTIONAL),
+            "com.tcl.dashboard" to Pair("TCL Dashboard / promo panel", AppCategory.OPTIONAL),
+            "com.tcl.tv" to Pair("TCL Live TV bloatware / default player", AppCategory.OPTIONAL),
+            "com.tcl.voice" to Pair("TCL Voice Assistant bloatware", AppCategory.OPTIONAL),
+            "com.tcl.useragreement" to Pair("TCL User Agreement prompt", AppCategory.OPTIONAL),
+            "com.tcl.messagebox" to Pair("TCL Promotional Notifications", AppCategory.OPTIONAL),
+            "com.tcl.videoplayer" to Pair("TCL Default Video Player bloatware", AppCategory.OPTIONAL),
+
+            // Google TV / Android TV Non-Essential Promos & Recommendations
+            "com.google.android.tv.recommendations" to Pair("Google TV recommendation recommendations channel", AppCategory.OPTIONAL),
+            "com.google.android.tv.adservices" to Pair("Google TV Ad Services telemetry", AppCategory.OPTIONAL),
+            "com.google.android.videos" to Pair("Google TV / Play Movies app", AppCategory.OPTIONAL),
+            "com.google.android.music" to Pair("Google Play Music legacy app", AppCategory.OPTIONAL),
+
+            // Pre-installed Third-Party Streaming / Promo Apps
+            "com.amazon.amazonvideo.livingroom" to Pair("Amazon Prime Video preinstall", AppCategory.OPTIONAL),
+            "com.netflix.ninja" to Pair("Netflix TV app preinstall", AppCategory.OPTIONAL),
+            "com.spotify.tv.android" to Pair("Spotify TV preinstall", AppCategory.OPTIONAL),
+            "com.disney.disneyplus" to Pair("Disney+ preinstall", AppCategory.OPTIONAL),
+            "com.hbo.hbonow" to Pair("HBO Max preinstall", AppCategory.OPTIONAL),
+            "com.zee5.player" to Pair("ZEE5 TV preinstall", AppCategory.OPTIONAL),
+            "com.mubi.mubi" to Pair("MUBI TV preinstall", AppCategory.OPTIONAL),
+            "com.plexapp.android" to Pair("Plex TV preinstall", AppCategory.OPTIONAL)
+        )
+
+        val BLOATWARE_KEYWORDS = listOf(
+            "partner", "customizer", "recommendation", "telemetry", "shop", "promo",
+            "advert", "analytics", "banner", "metrics", "tracker", "overlay"
         )
     }
 
@@ -59,7 +86,7 @@ class SafetyRulesEngine {
                 isSystem = isSystem,
                 isEnabled = isEnabled,
                 category = AppCategory.PROTECTED,
-                recommendationReason = "Essential core functionality or protected application",
+                recommendationReason = "Essential core system component (locked against accidental modification)",
                 confidenceLevel = ConfidenceLevel.HIGH,
                 safetyCategory = "Protected"
             )
@@ -75,32 +102,62 @@ class SafetyRulesEngine {
                 category = known.second,
                 recommendationReason = known.first,
                 confidenceLevel = ConfidenceLevel.HIGH,
-                safetyCategory = if (known.second == AppCategory.OPTIONAL) "Safe Cleanup Candidate" else "Review Required"
+                safetyCategory = "Safe Debloat Candidate"
             )
         }
 
-        if (isSystem) {
+        val lowerPkg = packageName.lowercase()
+        val lowerLabel = appLabel.lowercase()
+
+        if (BLOATWARE_KEYWORDS.any { lowerPkg.contains(it) || lowerLabel.contains(it) }) {
+            return AppInfo(
+                packageName = packageName,
+                label = appLabel,
+                isSystem = isSystem,
+                isEnabled = isEnabled,
+                category = AppCategory.OPTIONAL,
+                recommendationReason = "Detected promotional, telemetry, or partner bloatware pattern",
+                confidenceLevel = ConfidenceLevel.MEDIUM,
+                safetyCategory = "Safe Debloat Candidate"
+            )
+        }
+
+        if (!isSystem) {
+            return AppInfo(
+                packageName = packageName,
+                label = appLabel,
+                isSystem = false,
+                isEnabled = isEnabled,
+                category = AppCategory.OPTIONAL,
+                recommendationReason = "User-installed / non-essential app (removable/disableable)",
+                confidenceLevel = ConfidenceLevel.MEDIUM,
+                safetyCategory = "User Application"
+            )
+        }
+
+        // Non-protected system packages (TCL OEM additions, third party vendor bloat)
+        if (lowerPkg.startsWith("com.tcl.") || lowerPkg.startsWith("com.mediatek.tv.") || lowerPkg.startsWith("com.vendor.")) {
             return AppInfo(
                 packageName = packageName,
                 label = appLabel,
                 isSystem = true,
                 isEnabled = isEnabled,
-                category = AppCategory.ESSENTIAL,
-                recommendationReason = "System component without explicit debloat classification",
+                category = AppCategory.OPTIONAL,
+                recommendationReason = "Non-essential OEM system bloatware candidate",
                 confidenceLevel = ConfidenceLevel.MEDIUM,
-                safetyCategory = "System Component"
+                safetyCategory = "OEM System Bloat"
             )
         }
 
         return AppInfo(
             packageName = packageName,
             label = appLabel,
-            isSystem = false,
+            isSystem = true,
             isEnabled = isEnabled,
-            category = AppCategory.UNKNOWN,
-            recommendationReason = "User application / unknown component - default no action",
+            category = AppCategory.REVIEW_REQUIRED,
+            recommendationReason = "Review required before disabling system package",
             confidenceLevel = ConfidenceLevel.LOW,
-            safetyCategory = "Unknown"
+            safetyCategory = "Review Required"
         )
     }
 
