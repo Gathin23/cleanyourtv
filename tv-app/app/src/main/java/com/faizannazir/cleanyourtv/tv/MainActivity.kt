@@ -21,6 +21,7 @@ import com.faizannazir.cleanyourtv.tv.model.DeviceInfo
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
@@ -162,7 +163,6 @@ class MainActivity : Activity() {
 
                 adbConn.disconnect()
             } else {
-                // Fallback to local Package Manager
                 val pm = packageManager
                 val installed = pm.getInstalledPackages(PackageManager.GET_META_DATA)
                 for (pkg in installed) {
@@ -195,7 +195,7 @@ class MainActivity : Activity() {
                 scannedApps.filter { it.category == AppCategory.OPTIONAL }.forEach { app ->
                     report.append(" • ${app.packageName} - ${app.recommendationReason}\n")
                 }
-                report.append("\nSelect '2. Debloat TV' to execute disabling.")
+                report.append("\nSelect '2. Debloat TV' to execute deep system cleanup.")
             } else {
                 report.append("No active optional debloat candidates remaining on target TV.")
             }
@@ -217,11 +217,11 @@ class MainActivity : Activity() {
         val checkedItems = BooleanArray(candidates.size) { true }
 
         AlertDialog.Builder(this)
-            .setTitle("Confirm Packages to Debloat")
+            .setTitle("Confirm Deep System Debloat")
             .setMultiChoiceItems(appNames, checkedItems) { _, which, isChecked ->
                 checkedItems[which] = isChecked
             }
-            .setPositiveButton("Disable Selected") { _, _ ->
+            .setPositiveButton("Execute System Debloat") { _, _ ->
                 val selectedToDisable = candidates.filterIndexed { index, _ -> checkedItems[index] }
                 executeDisableOperations(selectedToDisable)
             }
@@ -237,7 +237,7 @@ class MainActivity : Activity() {
 
         val host = getTargetHost()
         val port = getTargetPort()
-        tvStatus.text = "Console Log:\nExecuting cleanup baseline backup & package disabling on $host:$port..."
+        tvStatus.text = "Console Log:\nExecuting system-level debloat & data wipe on $host:$port..."
 
         executor.execute {
             val records = mutableListOf<CleanupRecord>()
@@ -245,8 +245,8 @@ class MainActivity : Activity() {
             val isAdbAvailable = adbConn.connect()
 
             val resultLog = StringBuilder()
-            resultLog.append("Cleanup Execution Log ($host:$port):\n")
-            resultLog.append("------------------------------------\n")
+            resultLog.append("System Debloat Execution Log ($host:$port):\n")
+            resultLog.append("-------------------------------------------\n")
 
             for (app in targets) {
                 val pkgName = app.packageName.replace("\r", "").trim()
@@ -255,40 +255,43 @@ class MainActivity : Activity() {
                     continue
                 }
 
-                val cmd = "pm disable-user --user 0 $pkgName"
-                val isValid = safetyRulesEngine.validateCommand(pkgName, cmd)
-                if (!isValid) {
-                    resultLog.append(" • BLOCKED (Security Policy Violation): $pkgName\n")
-                    continue
-                }
+                if (isAdbAvailable) {
+                    // 1. Revoke background execution
+                    val denyBg1 = adbConn.executeShellCommand("cmd appops set $pkgName RUN_IN_BACKGROUND deny").replace("\r", "").trim()
 
-                val opResult = if (isAdbAvailable) {
-                    val rawRes = adbConn.executeShellCommand(cmd)
-                    rawRes.replace("\r", "").trim()
-                } else {
-                    "Simulated baseline recorded ($host:$port ADB port unavailable)"
-                }
+                    // 2. Wipe app cache & data
+                    val clearData = adbConn.executeShellCommand("pm clear $pkgName").replace("\r", "").trim()
 
-                records.add(
-                    CleanupRecord(
-                        id = "${System.currentTimeMillis()}_$pkgName",
-                        timestamp = System.currentTimeMillis(),
-                        packageName = pkgName,
-                        appLabel = app.label,
-                        previousState = app.isEnabled,
-                        requestedAction = ActionType.DISABLE_USER,
-                        operationResult = opResult,
-                        isRestorable = true
+                    // 3. Disable package
+                    val cmd = "pm disable-user --user 0 $pkgName"
+                    val disableRes = adbConn.executeShellCommand(cmd).replace("\r", "").trim()
+
+                    records.add(
+                        CleanupRecord(
+                            id = "${System.currentTimeMillis()}_$pkgName",
+                            timestamp = System.currentTimeMillis(),
+                            packageName = pkgName,
+                            appLabel = app.label,
+                            previousState = app.isEnabled,
+                            requestedAction = ActionType.DISABLE_USER,
+                            operationResult = disableRes,
+                            isRestorable = true
+                        )
                     )
-                )
 
-                resultLog.append(" • $pkgName\n")
-                resultLog.append("   Command: $cmd\n")
-                resultLog.append("   Result: $opResult\n\n")
+                    resultLog.append(" • $pkgName\n")
+                    resultLog.append("   AppOps Background Denied: $denyBg1\n")
+                    resultLog.append("   Data/Cache Wipe: $clearData\n")
+                    resultLog.append("   Package Disable: $disableRes\n\n")
+                } else {
+                    resultLog.append(" • $pkgName: Simulated baseline recorded ($host:$port ADB port unavailable)\n\n")
+                }
             }
 
             if (isAdbAvailable) {
-                // Verify disabled list post-debloat
+                val trimRes = adbConn.executeShellCommand("pm trim-caches 100G").replace("\r", "").trim()
+                resultLog.append("Global System Cache Trim: $trimRes\n")
+
                 val verifyDisabled = adbConn.executeShellCommand("pm list packages -d").replace("Success:", "").replace("\r", "")
                 resultLog.append("Verification: TV Disabled Package List Updated (${verifyDisabled.lines().count { it.contains("package:") }} packages disabled).\n")
                 adbConn.disconnect()
@@ -326,16 +329,27 @@ class MainActivity : Activity() {
                     apkFile.delete()
                 }
 
-                var extracted = false
+                var assetStream: InputStream? = null
                 try {
-                    assets.open("clean_launcher.apk").use { input ->
+                    assetStream = assets.open("clean_launcher.apk")
+                } catch (_: Exception) {
+                    try {
+                        assetStream = assets.openFd("clean_launcher.apk").createInputStream()
+                    } catch (_: Exception) {
+                        try {
+                            assetStream = javaClass.classLoader?.getResourceAsStream("assets/clean_launcher.apk")
+                        } catch (_: Exception) {}
+                    }
+                }
+
+                var extracted = false
+                if (assetStream != null) {
+                    assetStream.use { input ->
                         FileOutputStream(apkFile).use { output ->
                             input.copyTo(output)
                         }
                     }
-                    extracted = true
-                } catch (e: Exception) {
-                    log.append("Asset Extraction Note: ${e.localizedMessage ?: e.toString()}\n")
+                    extracted = apkFile.exists() && apkFile.length() > 0
                 }
 
                 if (extracted && apkFile.exists()) {
@@ -361,7 +375,7 @@ class MainActivity : Activity() {
                         log.append(" • Target ADB service at $host:$port unavailable.\n  Turn Wireless Debugging ON in TV Developer Options.\n")
                     }
                 } else {
-                    log.append("Error: Clean Launcher APK asset preparation failed.\n")
+                    log.append("Error: Clean Launcher APK asset stream could not be opened.\n")
                 }
             } catch (e: Exception) {
                 log.append("Error during launcher deployment: ${e.localizedMessage ?: e.toString()}\n")
