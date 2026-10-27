@@ -1,4 +1,4 @@
-name: Standalone Android TV App CI
+name: Mobile, Tablet & Android TV App CI
 
 on:
   push:
@@ -22,21 +22,36 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x tv-app/gradlew
+      - name: Grant execute permissions
+        run: |
+          chmod +x launcher/gradlew
+          chmod +x tv-app/gradlew
 
-      - name: Run Unit Tests
+      - name: Build Clean Launcher APK
+        run: |
+          cd launcher
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Run TV App Unit Tests
         run: |
           cd tv-app
           ./gradlew test --no-daemon
 
-      - name: Build Debug APK
+      - name: Build Mobile, Tablet & TV App APK
         run: |
           cd tv-app
           ./gradlew assembleDebug --no-daemon
 
-      - name: Upload Debug APK Artifact
+      - name: Package Both APKs in Zip Artifact
+        run: |
+          mkdir -p build-bundle
+          cp tv-app/app/build/outputs/apk/debug/app-debug.apk build-bundle/cleanyourtv-mobile-tv-app.apk
+          cp launcher/app/build/outputs/apk/debug/app-debug.apk build-bundle/cleanyourtv-clean-launcher.apk
+          cd build-bundle
+          zip -r cleanyourtv-mobile-tv-launcher-apks.zip cleanyourtv-mobile-tv-app.apk cleanyourtv-clean-launcher.apk
+
+      - name: Upload Both APKs Zip Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cleanyourtv-tv-debug-apk
-          path: tv-app/app/build/outputs/apk/debug/app-debug.apk
+          name: cleanyourtv-mobile-tv-launcher-apks
+          path: build-bundle/cleanyourtv-mobile-tv-launcher-apks.zip

@@ -19,6 +19,7 @@ import com.faizannazir.cleanyourtv.tv.model.CleanupBaseline
 import com.faizannazir.cleanyourtv.tv.model.CleanupRecord
 import com.faizannazir.cleanyourtv.tv.model.DeviceInfo
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.concurrent.Executors
 
@@ -134,22 +135,48 @@ class MainActivity : Activity() {
 
     private fun runScan() {
         scannedApps.clear()
-        tvStatus.text = "Console Log:\nScanning installed applications..."
+        val host = getTargetHost()
+        val port = getTargetPort()
+        tvStatus.text = "Console Log:\nScanning packages on target TV ($host:$port)..."
 
         executor.execute {
-            val pm = packageManager
-            val installed = pm.getInstalledPackages(PackageManager.GET_META_DATA)
+            val adbConn = AdbConnection(this, host, port)
+            val isAdbAvailable = adbConn.connect()
+
+            val enabledPkgs = mutableSetOf<String>()
+            val disabledPkgs = mutableSetOf<String>()
+
+            if (isAdbAvailable) {
+                val enabledOutput = adbConn.executeShellCommand("pm list packages -e").replace("Success:", "").replace("\r", "")
+                val disabledOutput = adbConn.executeShellCommand("pm list packages -d").replace("Success:", "").replace("\r", "")
+
+                enabledOutput.lines().forEach { line ->
+                    val pkg = line.replace("package:", "").trim()
+                    if (pkg.isNotBlank()) enabledPkgs.add(pkg)
+                }
+
+                disabledOutput.lines().forEach { line ->
+                    val pkg = line.replace("package:", "").trim()
+                    if (pkg.isNotBlank()) disabledPkgs.add(pkg)
+                }
+
+                adbConn.disconnect()
+            } else {
+                // Fallback to local Package Manager
+                val pm = packageManager
+                val installed = pm.getInstalledPackages(PackageManager.GET_META_DATA)
+                for (pkg in installed) {
+                    if (pkg.applicationInfo.enabled) enabledPkgs.add(pkg.packageName)
+                    else disabledPkgs.add(pkg.packageName)
+                }
+            }
 
             var protectedCount = 0
             var optionalCount = 0
+            var alreadyDisabledCount = disabledPkgs.size
 
-            for (pkg in installed) {
-                val isSys = (pkg.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                val label = pkg.applicationInfo.loadLabel(pm).toString().replace("\r", "").trim()
-                val pkgName = pkg.packageName.replace("\r", "").trim()
-                val isEnabled = pkg.applicationInfo.enabled
-
-                val appInfo = safetyRulesEngine.classifyApp(pkgName, label, isSys, isEnabled)
+            for (pkgName in enabledPkgs) {
+                val appInfo = safetyRulesEngine.classifyApp(pkgName, pkgName, isSystem = true, isEnabled = true)
                 scannedApps.add(appInfo)
 
                 if (appInfo.category == AppCategory.PROTECTED) protectedCount++
@@ -157,19 +184,20 @@ class MainActivity : Activity() {
             }
 
             val report = StringBuilder()
-            report.append("Scan Complete:\n")
-            report.append("- Total Packages Scanned: ${scannedApps.size}\n")
+            report.append("TV Scan Complete ($host:$port):\n")
+            report.append("- Enabled TV Packages: ${enabledPkgs.size}\n")
             report.append("- Protected Packages (Locked): $protectedCount\n")
-            report.append("- Removable / Cleanup Candidates: $optionalCount\n\n")
+            report.append("- Removable / Debloat Candidates: $optionalCount\n")
+            report.append("- Already Disabled on TV: $alreadyDisabledCount\n\n")
 
             if (optionalCount > 0) {
-                report.append("Detected Safe Cleanup Candidates:\n")
+                report.append("Detected Active Debloat Candidates on TV:\n")
                 scannedApps.filter { it.category == AppCategory.OPTIONAL }.forEach { app ->
-                    report.append(" • [${app.label}] (${app.packageName}) - ${app.recommendationReason}\n")
+                    report.append(" • ${app.packageName} - ${app.recommendationReason}\n")
                 }
-                report.append("\nSelect '2. Debloat TV' to execute cleanup.")
+                report.append("\nSelect '2. Debloat TV' to execute disabling.")
             } else {
-                report.append("No safe optional debloat candidates found in current scan.")
+                report.append("No active optional debloat candidates remaining on target TV.")
             }
 
             runOnUiThread {
@@ -181,11 +209,11 @@ class MainActivity : Activity() {
     private fun confirmAndDisableCandidates() {
         val candidates = scannedApps.filter { it.category == AppCategory.OPTIONAL }
         if (candidates.isEmpty()) {
-            tvStatus.text = "Console Log:\nPlease run '1. Scan TV Apps' first. No safe cleanup candidates selected."
+            tvStatus.text = "Console Log:\nPlease run '1. Scan TV Apps' first. No active debloat candidates found."
             return
         }
 
-        val appNames = candidates.map { "${it.label} (${it.packageName})" }.toTypedArray()
+        val appNames = candidates.map { it.packageName }.toTypedArray()
         val checkedItems = BooleanArray(candidates.size) { true }
 
         AlertDialog.Builder(this)
@@ -254,12 +282,15 @@ class MainActivity : Activity() {
                     )
                 )
 
-                resultLog.append(" • [${app.label}] ($pkgName)\n")
+                resultLog.append(" • $pkgName\n")
                 resultLog.append("   Command: $cmd\n")
                 resultLog.append("   Result: $opResult\n\n")
             }
 
             if (isAdbAvailable) {
+                // Verify disabled list post-debloat
+                val verifyDisabled = adbConn.executeShellCommand("pm list packages -d").replace("Success:", "").replace("\r", "")
+                resultLog.append("Verification: TV Disabled Package List Updated (${verifyDisabled.lines().count { it.contains("package:") }} packages disabled).\n")
                 adbConn.disconnect()
             }
 
@@ -291,34 +322,49 @@ class MainActivity : Activity() {
 
             try {
                 val apkFile = File(cacheDir, "clean_launcher.apk")
-                assets.open("clean_launcher.apk").use { input ->
-                    FileOutputStream(apkFile).use { output ->
-                        input.copyTo(output)
-                    }
+                if (apkFile.exists()) {
+                    apkFile.delete()
                 }
-                log.append("✓ Clean Launcher APK extracted (${apkFile.length()} bytes).\n")
 
-                val adbConn = AdbConnection(this, host, port)
-                val isAdbAvailable = adbConn.connect()
-
-                if (isAdbAvailable) {
-                    val streamRes = assets.open("clean_launcher.apk").use { apkInput ->
-                        adbConn.installApkStream(apkInput, apkFile.length())
+                var extracted = false
+                try {
+                    assets.open("clean_launcher.apk").use { input ->
+                        FileOutputStream(apkFile).use { output ->
+                            input.copyTo(output)
+                        }
                     }
-                    log.append(" • Streaming APK Install: $streamRes\n")
+                    extracted = true
+                } catch (e: Exception) {
+                    log.append("Asset Extraction Note: ${e.localizedMessage ?: e.toString()}\n")
+                }
 
-                    val setDefaultRes = adbConn.executeShellCommand("cmd package set-home-activity com.gathin.tvhome/.MainActivity")
-                    log.append(" • Set Default Launcher: $setDefaultRes\n")
+                if (extracted && apkFile.exists()) {
+                    log.append("✓ Clean Launcher APK extracted (${apkFile.length()} bytes).\n")
 
-                    val disableOldRes = adbConn.executeShellCommand("pm disable-user --user 0 com.google.android.apps.tv.launcherx")
-                    log.append(" • Disable Stock LauncherX: $disableOldRes\n")
+                    val adbConn = AdbConnection(this, host, port)
+                    val isAdbAvailable = adbConn.connect()
 
-                    adbConn.disconnect()
+                    if (isAdbAvailable) {
+                        val streamRes = FileInputStream(apkFile).use { apkInput ->
+                            adbConn.installApkStream(apkInput, apkFile.length())
+                        }
+                        log.append(" • Streaming APK Install: $streamRes\n")
+
+                        val setDefaultRes = adbConn.executeShellCommand("cmd package set-home-activity com.gathin.tvhome/.MainActivity")
+                        log.append(" • Set Default Launcher: $setDefaultRes\n")
+
+                        val disableOldRes = adbConn.executeShellCommand("pm disable-user --user 0 com.google.android.apps.tv.launcherx")
+                        log.append(" • Disable Stock LauncherX: $disableOldRes\n")
+
+                        adbConn.disconnect()
+                    } else {
+                        log.append(" • Target ADB service at $host:$port unavailable.\n  Turn Wireless Debugging ON in TV Developer Options.\n")
+                    }
                 } else {
-                    log.append(" • Local ADB connection inactive. Pre-installed Clean Launcher package 'com.gathin.tvhome' prepared for deployment.\n")
+                    log.append("Error: Clean Launcher APK asset preparation failed.\n")
                 }
             } catch (e: Exception) {
-                log.append("Error during launcher deployment: ${e.message}\n")
+                log.append("Error during launcher deployment: ${e.localizedMessage ?: e.toString()}\n")
             }
 
             runOnUiThread {

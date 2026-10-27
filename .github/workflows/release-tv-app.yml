@@ -1,4 +1,4 @@
-name: Standalone Android TV App Release
+name: Mobile, Tablet & Android TV App Release
 
 on:
   push:
@@ -21,23 +21,35 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x tv-app/gradlew
+      - name: Grant execute permissions
+        run: |
+          chmod +x launcher/gradlew
+          chmod +x tv-app/gradlew
 
-      - name: Build Release APK
+      - name: Build Launcher Release APK
+        run: |
+          cd launcher
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Build TV App Release APK
         run: |
           cd tv-app
           ./gradlew assembleRelease --no-daemon
 
-      - name: Generate Checksum
+      - name: Create Release Zip Bundle
         run: |
-          cd tv-app/app/build/outputs/apk/release/
-          sha256sum app-release-unsigned.apk > app-release-unsigned.apk.sha256 || sha256sum app-release.apk > app-release.apk.sha256
+          mkdir -p release-bundle
+          cp tv-app/app/build/outputs/apk/release/*.apk release-bundle/cleanyourtv-mobile-tv-app.apk || true
+          cp launcher/app/build/outputs/apk/release/*.apk release-bundle/cleanyourtv-clean-launcher.apk || true
+          cd release-bundle
+          zip -r cleanyourtv-bundle.zip cleanyourtv-mobile-tv-app.apk cleanyourtv-clean-launcher.apk
+          sha256sum cleanyourtv-bundle.zip > cleanyourtv-bundle.zip.sha256
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            tv-app/app/build/outputs/apk/release/*
+            release-bundle/cleanyourtv-bundle.zip
+            release-bundle/cleanyourtv-bundle.zip.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
