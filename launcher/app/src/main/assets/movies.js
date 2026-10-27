@@ -122,15 +122,18 @@ function posterCard(m, i){
   return c;
 }
 
-/* Selo FRESH: filme lançado há até 6 meses que já tem versão boa (WEB-DL, WEBRip ou BluRay em 1080p/4K)
-   no Torrentio. Se só houver gravação de cinema (CAM, TS), mostra CAM. Guardado por 6 h neste aparelho. */
+/* Selo (roseta 4K amarela / HD verde): filme lançado há até 6 meses que já tem versão boa (WEB-DL, WEBRip
+   ou BluRay em 1080p/4K) no Torrentio. Só gravação de cinema (CAM, TS) não ganha selo. Guardado por 6 h neste aparelho. */
 var FRESH_DAYS = 180, FRESH_TTL = 6 * 3600 * 1000, freshQ = [], freshBusy = 0, freshMem = {};
 function freshBadge(m, card){
   var y = parseInt(m.releaseInfo || m.year, 10), now = new Date().getFullYear();
   if (!y || y < now - 1) return;
   freshOf(m.id).then(function(f){
-    if (!f) return;
-    card.appendChild(el('span', 'fresh' + (f === 'CAM' ? ' cam' : ''), f === 'CAM' ? 'CAM' : 'FRESH ' + f));
+    if (!f || f === 'CAM') return;
+    var b = el('span', 'fresh' + (f === '4K' ? ' k4' : ''));
+    b.innerHTML = '<svg width="44" height="56" viewBox="0 0 48 62"><path class="rib" d="M12 34L4 56l9-3 5 8 7-20zM36 34l8 22-9-3-5 8-7-20z"/>' +
+      '<polygon class="ros" points="24.0,2.0 28.4,5.6 34.0,4.7 36.0,10.0 41.3,12.0 40.4,17.6 44.0,22.0 40.4,26.4 41.3,32.0 36.0,34.0 34.0,39.3 28.4,38.4 24.0,42.0 19.6,38.4 14.0,39.3 12.0,34.0 6.7,32.0 7.6,26.4 4.0,22.0 7.6,17.6 6.7,12.0 12.0,10.0 14.0,4.7 19.6,5.6"/><text x="24" y="27" text-anchor="middle">' + f + '</text></svg>';
+    card.appendChild(b);
   });
 }
 function freshOf(id){
