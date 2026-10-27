@@ -94,4 +94,8 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Şimdi canlı</string>
+    <string name="wifi_off">Wi-Fi off</string>
+    <string name="connecting">Connecting…</string>
+    <string name="wifi_sign_in">Sign in to Wi-Fi</string>
+    <string name="no_internet">No internet</string>
 </resources>

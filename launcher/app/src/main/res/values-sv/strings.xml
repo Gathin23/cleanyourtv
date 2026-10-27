@@ -121,4 +121,8 @@
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
+    <string name="wifi_off">Wi-Fi av</string>
+    <string name="connecting">Ansluter…</string>
+    <string name="wifi_sign_in">Logga in på Wi-Fi</string>
+    <string name="no_internet">Inget internet</string>
 </resources>

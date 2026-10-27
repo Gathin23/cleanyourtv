@@ -151,4 +151,8 @@
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Последний запуск: %1$s</string>
     <string name="game_live">Сейчас в эфире</string>
+    <string name="wifi_off">Wi-Fi off</string>
+    <string name="connecting">Connecting…</string>
+    <string name="wifi_sign_in">Sign in to Wi-Fi</string>
+    <string name="no_internet">No internet</string>
 </resources>

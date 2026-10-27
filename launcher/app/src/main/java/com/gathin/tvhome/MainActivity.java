@@ -37,6 +37,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.Uri;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -356,6 +357,52 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (wifiNoInternetTint != null) handler.post(MainActivity.this::updateWifiLabel);
         }
     };
+    /**
+     * network_status_icon: refreshes the pill on every network, VPNs included (the default-network callback sees only
+     * the VPN while one is up), and tracks when each came up so one still being checked reads Connecting.
+     */
+    private final ConnectivityManager.NetworkCallback statusCallback = new ConnectivityManager.NetworkCallback() {
+        @Override
+        public void onAvailable(@NonNull Network network) {
+            networkSeenAt.put(network, SystemClock.uptimeMillis());
+            refreshNetworkSoon();
+        }
+
+        @Override
+        public void onLost(@NonNull Network network) {
+            networkSeenAt.remove(network);
+            networkFlags.remove(network);
+            refreshNetworkSoon();
+        }
+
+        /** Signal strength changes land here too; only a change of internet check or login page refreshes. */
+        @Override
+        public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities caps) {
+            int flags = (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) ? 1 : 0)
+                    | (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL) ? 2 : 0);
+            Integer old = networkFlags.put(network, flags);
+            if (old == null || old != flags) refreshNetworkSoon();
+        }
+    };
+    /** When each network came up, so a new one still being checked shows Connecting, not No internet. */
+    private final Map<Network, Long> networkSeenAt = new HashMap<>();
+    private final Map<Network, Integer> networkFlags = new HashMap<>();
+    /** Android's internet check takes a few seconds; one that has not passed by then means no internet. */
+    private static final long NETWORK_CHECK_MS = 10_000;
+    /** A network being torn down (Wi-Fi switched off, a VPN stopped) is still listed for a moment after the event. */
+    private static final long NETWORK_SETTLE_MS = 2_000;
+    /** A connect or disconnect sends a burst of events: one refresh for the burst. */
+    private static final long NETWORK_BURST_MS = 300;
+    private final Runnable networkRefresh = this::updateWifiLabel;
+    /** The end of a new network's internet check, on a timer of its own so a burst does not cancel it. */
+    private final Runnable networkCheckDone = this::updateWifiLabel;
+
+    /** Refreshes the network pill once a burst of events is over, and again once the change has settled. */
+    private void refreshNetworkSoon() {
+        handler.removeCallbacks(networkRefresh);
+        handler.postDelayed(networkRefresh, NETWORK_BURST_MS);
+        handler.postDelayed(networkRefresh, NETWORK_SETTLE_MS);
+    }
     /** Shows the Inputs pill once the TV registers an input: at boot HDMI inputs can appear after Home is shown. */
     private final TvInputManager.TvInputCallback inputCallback = new TvInputManager.TvInputCallback() {
         @Override
@@ -794,6 +841,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnLibraryTop.setVisibility(cfg.libraryButton && cfg.appLibrary ? View.VISIBLE : View.GONE);
         addTopBarApps(cfg.topBarApps, cfg.launchActions);
         iconOnlyButtons = cfg.iconOnlyButtons;
+        networkStatusIcon = cfg.networkStatusIcon;
         topMenu = cfg.topMenu;
         wifiIconOnly = iconOnlyButtons && cfg.wifiLabelWidth <= 0;
         if (cfg.wifiStatusColor) {
@@ -896,6 +944,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .addTransportType(NetworkCapabilities.TRANSPORT_VPN)
                     .removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
                     .build(), vpnCallback);
+            if (networkStatusIcon) {
+                cm.registerNetworkCallback(new NetworkRequest.Builder()
+                        .removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN).build(), statusCallback, handler);
+                IntentFilter wifiFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+                wifiFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+                wifiFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+                wifiFilter.addAction(WifiManager.RSSI_CHANGED_ACTION);
+                registerReceiver(wifiReceiver, wifiFilter);
+            }
         }
         // Not after recreate(): the launch intent survives it and would open the settings again.
         if (savedInstanceState == null && !openLauncherSettingsIfAsked(getIntent())) openInputsIfAsked(getIntent());
@@ -1288,6 +1345,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cm != null) {
             cm.unregisterNetworkCallback(networkCallback);
             cm.unregisterNetworkCallback(vpnCallback);
+            if (networkStatusIcon) {
+                cm.unregisterNetworkCallback(statusCallback);
+                unregisterReceiver(wifiReceiver);
+                handler.removeCallbacks(networkRefresh);
+                handler.removeCallbacks(networkCheckDone);
+                networkSeenAt.clear();
+                networkFlags.clear();
+            }
         }
     }
 
@@ -2768,9 +2833,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // The diya's flame: 0 is out (offline), 1 to 4 follow the Wi-Fi signal, Ethernet burns steady at 4.
         int flame = 0;
         boolean steady = false;
+        // network_status_icon: what NetworkStatus needs besides online and validated.
+        boolean wifi = false, ethernet = false, captive = false, wifiEnabled = true, connecting = false;
+        int level = NetworkStatus.LEVELS - 1;
+        long checkingUntil = 0;
         try {
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            boolean wifi = false, ethernet = false;
+            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (networkStatusIcon) wifiEnabled = wm != null && wm.isWifiEnabled();
             // All networks, not just the active one: with a VPN up the active network is the VPN itself.
             for (Network net : cm != null ? cm.getAllNetworks() : new Network[0]) {
                 NetworkCapabilities caps = cm.getNetworkCapabilities(net);
@@ -2780,11 +2850,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     continue;
                 }
                 if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) continue;
+                // Wi-Fi switched off: its network is still listed while Android tears it down.
+                if (networkStatusIcon && !wifiEnabled && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) continue;
+                Long seen = networkSeenAt.get(net);
+                if (seen != null && !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                    checkingUntil = Math.max(checkingUntil, seen + NETWORK_CHECK_MS);
+                }
                 online = true;
                 // Android reached the internet through it; a captive portal stays unvalidated until login.
                 if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) validated = true;
+                if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)) captive = true;
                 if (caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) ethernet = true;
                 if (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) wifi = true;
+            }
+            WifiInfo info = wm != null && wifiEnabled && (wifi || networkStatusIcon) ? wm.getConnectionInfo() : null;
+            if (networkStatusIcon && !online && !ethernet) {
+                connecting = info != null && joining(info.getSupplicantState());
+            }
+            // Joined, and Android is still checking for internet: Connecting until it passes or the time is up.
+            long now = SystemClock.uptimeMillis();
+            if (networkStatusIcon && online && !validated && checkingUntil > now) {
+                connecting = true;
+                handler.removeCallbacks(networkCheckDone);
+                handler.postDelayed(networkCheckDone, checkingUntil - now);
             }
             if (!online) {
                 text = getString(R.string.offline);
@@ -2795,16 +2883,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 flame = 4;
                 steady = true;
             } else if (wifi) {
-                WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                WifiInfo info = wm != null ? wm.getConnectionInfo() : null;
                 String ssid = info != null ? info.getSSID() : null;
                 flame = info != null ? Math.max(1, Math.min(4, WifiManager.calculateSignalLevel(info.getRssi(), 5))) : 3;
+                if (info != null) level = WifiManager.calculateSignalLevel(info.getRssi(), NetworkStatus.LEVELS);
                 if (ssid != null) {
                     ssid = ssid.replace("\"", "").trim();
                     if (!ssid.isEmpty() && !ssid.contains("unknown") && !ssid.equals("0x")) text = ssid;
                 }
             }
         } catch (Exception ignored) {
+        }
+        if (networkStatusIcon) {
+            int state = NetworkStatus.of(wifiEnabled, online, ethernet, wifi, validated, captive, connecting);
+            icon = NetworkStatus.icon(state, level);
+            if (NetworkStatus.label(state) != 0) text = getString(NetworkStatus.label(state));
+            shownSignalLevel = level;
         }
         // With a VPN app configured, a VPN that is down matters too: show a red "VPN off" capsule then.
         boolean vpnDown = !vpn && online && !vpnApp.isEmpty();
@@ -2858,6 +2951,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
     }
+
+    /** Wi-Fi joining a network: the handshake, or joined and waiting for an address. */
+    private static boolean joining(SupplicantState state) {
+        switch (state) {
+            case ASSOCIATING:
+            case ASSOCIATED:
+            case AUTHENTICATING:
+            case FOUR_WAY_HANDSHAKE:
+            case GROUP_HANDSHAKE:
+            case COMPLETED:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /** config.xml network_status_icon. */
+    private boolean networkStatusIcon;
+    /** The Wi-Fi signal level the pill shows (NetworkStatus.LEVELS), so a signal change redraws it only on a new level. */
+    private int shownSignalLevel = -1;
+    /** Wi-Fi switched on or off, joining, leaving and signal changes, which no network callback reports. */
+    private final BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (WifiManager.RSSI_CHANGED_ACTION.equals(intent.getAction())) {
+                int rssi = intent.getIntExtra(WifiManager.EXTRA_NEW_RSSI, Integer.MIN_VALUE);
+                if (rssi == Integer.MIN_VALUE
+                        || WifiManager.calculateSignalLevel(rssi, NetworkStatus.LEVELS) == shownSignalLevel) return;
+            }
+            refreshNetworkSoon();
+        }
+    };
 
     /** config.xml icon_only_buttons. */
     private boolean iconOnlyButtons;

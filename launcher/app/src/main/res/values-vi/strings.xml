@@ -122,4 +122,8 @@
     <string name="last_opened">Mở lần cuối %1$s</string>
     <string name="tile_move">Di chuyển</string>
     <string name="game_live">Đang diễn ra</string>
+    <string name="wifi_off">Wi-Fi off</string>
+    <string name="connecting">Connecting…</string>
+    <string name="wifi_sign_in">Sign in to Wi-Fi</string>
+    <string name="no_internet">No internet</string>
 </resources>

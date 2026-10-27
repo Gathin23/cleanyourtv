@@ -111,4 +111,8 @@
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
     <string name="game_live">Hozir jonli</string>
+    <string name="wifi_off">Wi-Fi off</string>
+    <string name="connecting">Connecting…</string>
+    <string name="wifi_sign_in">Sign in to Wi-Fi</string>
+    <string name="no_internet">No internet</string>
 </resources>
