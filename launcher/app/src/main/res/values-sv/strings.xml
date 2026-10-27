@@ -121,4 +121,5 @@
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
+    <string name="dock_title_size_label">Storlek på titeln ovanför favoritraden</string>
 </resources>

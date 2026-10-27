@@ -97,4 +97,5 @@
     <string name="race_countdown_days">%1$dd %2$dt</string>
     <string name="last_opened">Sidst åbnet %1$s</string>
     <string name="game_live">Live nu</string>
+    <string name="dock_title_size_label">Dock title size</string>
 </resources>

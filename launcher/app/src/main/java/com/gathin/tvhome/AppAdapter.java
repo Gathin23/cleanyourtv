@@ -143,21 +143,27 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     static final float BOTTOM_ROOM_DP = 30;
     /** Room kept above the dock for the dock title (48sp hero name plus its 40dp gap) when dock_title is on. */
     static final float TITLE_ROOM_DP = 104;
+
+    /** TITLE_ROOM_DP for a dock title of this size: the name's line (about 7/6 of its size) grows, the gap stays. */
+    static float titleRoomDp(int titleSp) {
+        return TITLE_ROOM_DP + (titleSp - Config.DOCK_TITLE_SP) * 7f / 6f;
+    }
+
     /** dock_row false: room above the first row for its zoom and glass (MainActivity places the grid with it). */
     static final float TOP_ROOM_DP = 12;
 
     /**
      * Tile width that fits the columns across and, with rows_below_dock > 0, the dock (with its title above it,
-     * if shown) plus that many rows down the grid's height; the smaller wins. With rows_below_dock = 0, or before
-     * the grid has a height, only the width counts, as before. Without this, 2 or 3 rows below the dock did not
+     * if shown: titleRoomDp, else 0) plus that many rows down the grid's height; the smaller wins. With
+     * rows_below_dock = 0, or before the grid has a height, only the width counts, as before. Without this, 2 or 3 rows below the dock did not
      * fit: the dock was pushed to the top and its title drew over the clock. With dock_row false there is no band
      * or title to make room for: the first row plus rows_below_dock rows fit under a small top margin.
      */
-    static int tileWidthPx(int innerWidthPx, int gridHeightPx, int columns, int rowsBelowDock, boolean dockTitle,
-                           boolean dockRow, float density) {
+    static int tileWidthPx(int innerWidthPx, int gridHeightPx, int columns, int rowsBelowDock,
+                           float titleRoomDp, boolean dockRow, float density) {
         int w = tileWidthPx(innerWidthPx, columns, density);
         if (gridHeightPx <= 0 || rowsBelowDock <= 0) return w;
-        float reserved = (dockRow ? DOCK_EXTRA_DP + BOTTOM_ROOM_DP + (dockTitle ? TITLE_ROOM_DP : 0)
+        float reserved = (dockRow ? DOCK_EXTRA_DP + BOTTOM_ROOM_DP + titleRoomDp
                 : TOP_ROOM_DP + COMPACT_BOTTOM_ROOM_DP) * density;
         float perItem = (gridHeightPx - reserved) / (rowsBelowDock + 1);
         float tileH = perItem - (dockRow ? ITEM_EXTRA_DP : COMPACT_ITEM_EXTRA_DP) * density;
@@ -173,7 +179,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context ctx;
     private final int rowsBelowDock;
-    private final boolean dockTitle;
+    /** Room kept above the dock for its title (titleRoomDp), 0 without one. */
+    private final float titleRoom;
     /** The owner's saved order (reorder button, Order): key -> rank. Empty when there is none or it no longer applies. */
     private Map<String, Integer> savedRanks = Collections.emptyMap();
     /** Dock size recorded with the saved order (Order.docked), or -1: then dock_apps says which tiles are docked. */
@@ -237,7 +244,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.reducedMotion = cfg.reducedMotion;
         this.focusOvershoot = cfg.focusOvershoot;
         this.rowsBelowDock = cfg.rowsBelowDock;
-        this.dockTitle = cfg.dockTitle;
+        this.titleRoom = cfg.dockTitle ? titleRoomDp(cfg.dockTitleSp) : 0;
         this.dockRow = cfg.dockRow;
         this.singleRow = cfg.singleRow;
         this.restNameAlpha = cfg.alwaysShowNames ? 0.75f : 0f;
@@ -415,7 +422,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, titleRoom, dockRow, density), h = tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;

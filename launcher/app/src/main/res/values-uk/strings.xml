@@ -150,4 +150,5 @@
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Востаннє відкрито %1$s</string>
     <string name="game_live">Наживо зараз</string>
+    <string name="dock_title_size_label">Dock title size</string>
 </resources>

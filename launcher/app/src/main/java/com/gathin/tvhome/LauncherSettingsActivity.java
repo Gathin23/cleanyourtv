@@ -32,6 +32,9 @@ public final class LauncherSettingsActivity extends Activity {
     private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
+    private static final int[] TITLE_SIZES = {Config.DOCK_TITLE_SP_MIN, Config.DOCK_TITLE_SP, 60,
+            Config.DOCK_TITLE_SP_MAX};
+    private final TextView[] titleChoices = new TextView[TITLE_SIZES.length];
     private TextView wallpaperChoice;
     private TextView animationsChoice;
     private TextView advancedChoice;
@@ -40,6 +43,7 @@ public final class LauncherSettingsActivity extends Activity {
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
+    private int dockTitleSp;
     private boolean animations;
     private boolean advancedEffects;
 
@@ -58,6 +62,7 @@ public final class LauncherSettingsActivity extends Activity {
         columns = config.columns;
         rowsBelowDock = config.rowsBelowDock;
         dockOpacity = config.dockOpacity;
+        dockTitleSp = config.dockTitleSp;
         animations = config.animations;
         advancedEffects = config.animations && config.advancedEffects;
 
@@ -97,6 +102,18 @@ public final class LauncherSettingsActivity extends Activity {
                 refresh();
             });
         }
+        int[] titleIds = {R.id.title36, R.id.title48, R.id.title60, R.id.title72};
+        for (int i = 0; i < titleIds.length; i++) {
+            final int value = TITLE_SIZES[i];
+            titleChoices[i] = findViewById(titleIds[i]);
+            titleChoices[i].setOnClickListener(v -> {
+                if (dockTitleSp == value) return;
+                dockTitleSp = value;
+                choices.edit().putInt(Config.DOCK_TITLE_SIZE_KEY, value).apply();
+                changed();
+                refresh();
+            });
+        }
         // Mirror text alignment without globally opting the launcher into RTL. Numeric rows
         // still need explicit ordering in Android's no-supportsRtl compatibility mode.
         if (getResources().getBoolean(R.bool.rtl_menu_bar))
@@ -105,6 +122,7 @@ public final class LauncherSettingsActivity extends Activity {
             reverseRow(columnChoices);
             reverseRow(rowChoices);
             reverseRow(dockChoices);
+            reverseRow(titleChoices);
         }
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
@@ -140,11 +158,12 @@ public final class LauncherSettingsActivity extends Activity {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).commit();
+                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.DOCK_TITLE_SIZE_KEY).remove(OpenOnStart.KEY).commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
             dockOpacity = current.dockOpacity;
+            dockTitleSp = current.dockTitleSp;
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
             changed();
@@ -286,6 +305,9 @@ public final class LauncherSettingsActivity extends Activity {
         for (int i = 0; i < dockChoices.length; i++) {
             dockChoices[i].setSelected(dockOpacity == DOCK_OPACITIES[i]);
         }
+        for (int i = 0; i < titleChoices.length; i++) {
+            titleChoices[i].setSelected(dockTitleSp == TITLE_SIZES[i]);
+        }
         animationsChoice.setText(getString(R.string.animations_state,
                 getString(animations ? R.string.on : R.string.off)));
         advancedChoice.setText(getString(R.string.advanced_effects_state,
@@ -305,6 +327,7 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
+                || choices.contains(Config.DOCK_TITLE_SIZE_KEY)
                 || choices.contains(OpenOnStart.KEY);
     }
 

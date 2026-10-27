@@ -340,6 +340,10 @@
          whose state the TV cannot be trusted with stays. Off by default: every input is listed. Can also be set
          with "inputs_connected_only" in a theme. -->
     <bool name="inputs_connected_only">false</bool>
+    <!-- Size of the app name above the dock (the big title), in sp, 36 to 72. 48 is the launcher's own size; the
+         cinematic shelf scales its larger name by the same share. A theme can set it with "dock_title_size", and
+         Launcher settings offers 36, 48, 60 and 72. -->
+    <integer name="dock_title_size">48</integer>
     <!-- Names under every tile, not only the focused one: unfocused names stay dimmed, the focused one is full white.
          With dock_row the band grows down to hold the dock's names too. -->
     <bool name="always_show_names">false</bool>
