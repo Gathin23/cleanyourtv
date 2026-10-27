@@ -38,15 +38,24 @@ class SafetyRulesEngineTest {
     }
 
     @Test
-    fun testKnownDebloatClassification() {
+    fun testKnownTclDebloatClassification() {
         val info = engine.classifyApp("com.tcl.partnercustomizer", "Partner Customizer", true, true)
+        assertEquals(AppCategory.OPTIONAL, info.category)
+
+        val suspensionInfo = engine.classifyApp("com.tcl.suspension", "TCL Suspension", true, true)
+        assertEquals(AppCategory.OPTIONAL, suspensionInfo.category)
+    }
+
+    @Test
+    fun testOemSystemPackageClassification() {
+        val info = engine.classifyApp("com.tcl.guard", "TCL Guard", true, true)
         assertEquals(AppCategory.OPTIONAL, info.category)
     }
 
     @Test
-    fun testUnknownUserAppClassification() {
+    fun testUserAppClassificationIsOptional() {
         val info = engine.classifyApp("com.example.randomapp", "Random App", false, true)
-        assertEquals(AppCategory.UNKNOWN, info.category)
+        assertEquals(AppCategory.OPTIONAL, info.category)
     }
 
     @Test

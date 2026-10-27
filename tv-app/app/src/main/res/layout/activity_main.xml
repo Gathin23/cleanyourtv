@@ -34,37 +34,50 @@
         <Button
             android:id="@+id/btnScan"
             android:layout_width="0dp"
-            android:layout_height="64dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:text="Scan Applications"
+            android:text="1. Scan Apps"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:backgroundTint="#1E88E5"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnDisable"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:text="2. Disable Safe Candidates"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:backgroundTint="#E53935"
             android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/btnRestore"
             android:layout_width="0dp"
-            android:layout_height="64dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:text="Restore Disabled Apps"
+            android:text="3. Restore Disabled Apps"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
             android:backgroundTint="#43A047"
             android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/btnExport"
             android:layout_width="0dp"
-            android:layout_height="64dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:text="Export Diagnostics"
+            android:text="4. Export Report"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
             android:backgroundTint="#757575"
             android:textColor="#FFFFFF" />
     </LinearLayout>
@@ -73,9 +86,9 @@
         android:id="@+id/tvAdbHelp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guide: To enable full cleanup capability on Android TV, go to Settings -> System -> About -> Click 'Build' 7 times. Then go to Developer Options -> enable Wireless Debugging."
+        android:text="Standalone Mode: Disabling requires local Wireless Debugging on the TV (Settings -> Developer Options -> Wireless Debugging). If not active, CleanYourTV records baseline &amp; displays required ADB commands for execution."
         android:textColor="#FFB74D"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:padding="8dp"
         android:background="#263238"
         android:layout_marginBottom="12dp"/>
@@ -85,7 +98,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Ready for scanning."
+        android:text="Ready. Select '1. Scan Apps' to inspect packages."
         android:textColor="#E0E0E0"
         android:textSize="14sp"
         android:scrollbars="vertical"
