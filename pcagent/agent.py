@@ -57,6 +57,9 @@ DEFAULTS = {
     "launch_direct": {"1091500": ["Cyberpunk 2077\\bin\\x64\\Cyberpunk2077.exe", "--launcher-skip -skipStartScreen"]},
     # Launcher que pede clique: depois desse tempo a TV mostra o PC para você clicar.
     "launcher_wait_s": 40,
+    # Pasta de vídeos do PC servida para a TV como a fonte "Meu PC" (Séries\<série>\..., Filmes\...).
+    "media_root": r"D:\Series e Filmes",
+    "media_port": 8765,
     # Tempo para a TV firmar o sinal do HDMI antes de tirar a tela da Central de cima.
     "hdmi_settle_s": 3.5,
     "refresh_minutes": 10,
@@ -982,6 +985,12 @@ def main():
         return
     log.info("agent start")
     threading.Thread(target=refresher, daemon=True).start()
+    if CFG["media_root"] and os.path.isdir(CFG["media_root"]):
+        try:
+            import mediaserver      # add-on "Meu PC": os vídeos da pasta como fonte na TV
+            mediaserver.start(CFG["media_root"], os.path.join(HERE, "media_ids.json"), CFG["tv_host"], CFG["media_port"])
+        except Exception as e:
+            log.exception("meu pc: %s", e)
     listen()
 
 

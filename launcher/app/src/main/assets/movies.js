@@ -484,6 +484,8 @@ function drawCast(people){
 function initials(n){ return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w[0]; }).join('').toUpperCase(); }
 
 /* ---------- fontes ---------- */
+// Qualquer tecla na tela de fontes: a partir daí o foco é seu (as recomendações não puxam mais).
+document.addEventListener('keydown', function(){ if (window.page === 'sources') M.srcTouched = true; }, true);
 function openSources(){
   var d = M.detail; if (!d) return;
   var m = d.meta, isSeries = d.type === 'series';
@@ -492,7 +494,7 @@ function openSources(){
   // O botão dos detalhes passa a apontar para o episódio escolhido.
   if (isSeries && M.video) document.getElementById('dPlayLabel').textContent = 'Assistir T' + M.video.season + ':E' + (M.video.episode || M.video.number);
   M.streams = []; M.addonFilter = 'all'; M.qualFilter = 'all'; M.langFilter = 'all'; closeDrop();
-  M.recs = null; M.recsStarted = false; M.subsRaw = fetchSubsRaw(d.type, vid);
+  M.recs = null; M.recsStarted = false; M.recsFocused = false; M.srcTouched = false; M.subsRaw = fetchSubsRaw(d.type, vid);
   var req = ++M.req;
   document.getElementById('sArt').src = bigBg(m) || m.background || '';
   var poster = document.getElementById('sPoster'); poster.src = posterOf(m) || m.poster || '';
@@ -552,7 +554,7 @@ function parseStream(s, addon, ai){
   }
   // "DUAL" sozinho não é dublado (em anime costuma ser japonês + inglês): só conta em add-on brasileiro.
   var bhint = (s.behaviorHints && s.behaviorHints.bingeGroup) || '';
-  var dub = /dublad|pt-?br|portugu|🇧🇷|nacional/i.test(text + ' ' + bhint) || (/\bdual\b/i.test(text) && /^brazuca torrents$|bestcine/i.test(addon));
+  var dub = /dublad|pt-?br|portugu|🇧🇷|nacional/i.test(text + ' ' + bhint) || (/\bdual\b/i.test(text) && /^brazuca torrents$|bestcine|^meu pc$/i.test(addon));
   var lines = String(s.title || s.description || '').split('\n');
   var name = (s.behaviorHints && s.behaviorHints.filename) || lines.slice(0, 2).join(' · ') || s.name || 'Fonte';
   return {raw: s, addon: addon, color: ADDON_COLORS[ai % ADDON_COLORS.length], q: q, hdr: hdr, size: size, seeds: seeds ? +seeds : -1, dub: dub, name: name, torrent: !!s.infoHash};
@@ -591,6 +593,13 @@ function renderSources(done){
   list.slice(0, 80).forEach(function(s){ box.appendChild(srcRow(s, null)); });
   if (done && !M.recsStarted) { M.recsStarted = true; computeRecs(M.req); }
 
+  // Recomendações acabaram de chegar e você ainda não mexeu na lista: foco na primeira, lá no topo
+  // (a linha focada antes era só a primeira fonte que respondeu, e a lista foi reordenada).
+  if (showRecs && !M.recsFocused && !M.srcTouched && focusedKey) {
+    M.recsFocused = true;
+    var top = box.querySelector('.src.rec');
+    if (top) return focus(top);
+  }
   if (focusChip) {
     var again = document.querySelector('#sourcesPage .chip[data-val="' + focusChip + '"]');
     if (again) return focus(again);
@@ -1053,7 +1062,7 @@ function computeRecs(req){
     renderSources(true);
     return Promise.all(pick.map(probeStream));
   }).then(function(){
-    if (req !== M.req) return;
+    if (req !== M.req) { console.log('recs stale ' + req + ' ' + M.req); return; }
     var alive = function(s){ return s.torrent ? s.seeds >= 15 : s.alive === true; };
     var pool = M.streams.filter(alive).sort(function(a, b){ return baseScore(b) - baseScore(a); });
     var recs = [], used = [];
@@ -1067,6 +1076,9 @@ function computeRecs(req){
       if (!s.torrent) return 'link testado agora' + (s.ms ? ' (' + (s.ms / 1000).toFixed(1).replace('.', ',') + ' s)' : '') + ' · toca na TV';
       return s.seeds + ' pessoas compartilhando · abre no Stremio';
     }
+    // Arquivo do próprio PC (add-on "Meu PC" do programa Central de Jogos): sempre a primeira opção.
+    var mine = M.streams.filter(function(s){ return s.addon === 'Meu PC'; })[0];
+    add(mine, 'No seu PC', 'arquivo do seu computador · toca na TV');
     var same = sameVersion();
     if (same && (same.torrent || same.alive === true)) {
       var prev = loadVersion();
@@ -1079,8 +1091,9 @@ function computeRecs(req){
     var syncS = pool.filter(function(s){ return s.syncSub && !s.dub; })[0];
     add(syncS, 'Legenda sincronizada', syncS ? 'legenda PT-BR da mesma versão do arquivo' : '');
     M.recs = recs;
+    console.log('recs ' + recs.map(function(r){ return r.title + '=' + r.s.addon; }).join(' | '));
     renderSources(true);
-  });
+  }).catch(function(e){ console.log('recs failed: ' + (e && e.stack || e)); });
 }
 
 

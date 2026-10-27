@@ -1,1 +1,22 @@
-[{"name":"OpenSubtitles PRO","url":"https://opensubtitlesv3-pro.dexter21767.com/eyJsYW5ncyI6WyJwb3J0dWd1ZXNlLWJyIiwiZW5nbGlzaCJdLCJzb3VyY2UiOiJhbGwiLCJhaVRyYW5zbGF0ZWQiOnRydWUsImF1dG9BZGp1c3RtZW50Ijp0cnVlfQ==/manifest.json"},{"name":"OpenSubtitles","url":"https://opensubtitles-v3.strem.io/manifest.json"},{"name":"SubDL","url":"https://subdl.strem.top/eWVnT3hubUZIZDdneXdJRFNoZ0dveEJtWkUtWTIxZXQvQlJfUFQsRU4vaGlJbmNsdWRlLw==/manifest.json"},{"name":"SubHero","url":"https://subhero.chromeknight.dev/manifest.json"}]
+[
+ {
+  "name": "Meu PC",
+  "url": "http://192.168.15.9:8765/manifest.json"
+ },
+ {
+  "name": "OpenSubtitles PRO",
+  "url": "https://opensubtitlesv3-pro.dexter21767.com/eyJsYW5ncyI6WyJwb3J0dWd1ZXNlLWJyIiwiZW5nbGlzaCJdLCJzb3VyY2UiOiJhbGwiLCJhaVRyYW5zbGF0ZWQiOnRydWUsImF1dG9BZGp1c3RtZW50Ijp0cnVlfQ==/manifest.json"
+ },
+ {
+  "name": "OpenSubtitles",
+  "url": "https://opensubtitles-v3.strem.io/manifest.json"
+ },
+ {
+  "name": "SubDL",
+  "url": "https://subdl.strem.top/eWVnT3hubUZIZDdneXdJRFNoZ0dveEJtWkUtWTIxZXQvQlJfUFQsRU4vaGlJbmNsdWRlLw==/manifest.json"
+ },
+ {
+  "name": "SubHero",
+  "url": "https://subhero.chromeknight.dev/manifest.json"
+ }
+]
