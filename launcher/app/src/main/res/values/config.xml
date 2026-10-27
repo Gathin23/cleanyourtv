@@ -340,6 +340,11 @@
          whose state the TV cannot be trusted with stays. Off by default: every input is listed. Can also be set
          with "inputs_connected_only" in a theme. -->
     <bool name="inputs_connected_only">false</bool>
+    <!-- Focus never stops at an edge: the menus and Launcher settings wrap top to bottom; on Home, Left and Right go
+         round the top bar on its own and round the dock and the app rows in reading order, Up on the top bar goes to
+         the last row and Down on the last row to the top bar; the App library shelf wraps at its ends. Off by
+         default: focus stops at every edge. A theme can set "menu_wrap": true. -->
+    <bool name="menu_wrap">false</bool>
     <!-- Names under every tile, not only the focused one: unfocused names stay dimmed, the focused one is full white.
          With dock_row the band grows down to hold the dock's names too. -->
     <bool name="always_show_names">false</bool>

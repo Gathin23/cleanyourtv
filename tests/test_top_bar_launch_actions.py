@@ -10,7 +10,7 @@ class TopBarLaunchActionsTest(unittest.TestCase):
     def setUp(self):
         self.source = (JAVA / 'MainActivity.java').read_text()
         self.method = self.source.split('private void addTopBarApps(', 1)[1].split(
-            '@Override public void onLibraryUp()', 1)[0]
+            '@Override public void onLibraryKey(', 1)[0]
 
     def test_top_bar_passes_configured_actions_to_tested_selection_policy(self):
         self.assertIn('addTopBarApps(cfg.topBarApps, cfg.launchActions)', self.source)

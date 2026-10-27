@@ -243,6 +243,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean dockRow;
     /** config single_row: every app in the dock's row, scrolling sideways, no grid below. */
     private boolean singleRow;
+    /** config menu_wrap: focus goes round at an edge instead of stopping there. */
+    private boolean menuWrap;
     /** The highlight springs past its target (config.xml, focus_overshoot); false goes straight there. */
     private boolean focusOvershoot;
     /** Festive skin from the theme (see Festival); applied while it is active today. */
@@ -440,6 +442,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         reducedMotion = cfg.reducedMotion;
         dockRow = cfg.dockRow;
         singleRow = cfg.singleRow;
+        menuWrap = cfg.menuWrap;
         focusOvershoot = cfg.focusOvershoot;
         festival = cfg.festival;
         festive = festival.active(LocalDate.now());
@@ -834,21 +837,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
-        // jump to a tile far below when there is nothing in that direction.
+        // jump to a tile far below when there is nothing in that direction. With menu_wrap the ends go on instead:
+        // Up to the last row, and Left/Right round the bar itself, never down into the tiles.
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                if (menuWrap) {
+                    // The way Down came round: from the App library button when it is shown, else the last row.
+                    if (adapter.isLibraryAt(adapter.appCount())) focusLibrary();
+                    else focusLastRow();
+                    navigationClick(keyCode);
+                }
+                return true;
+            }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Back to the dock tile Up came from, not wherever the focus finder lands.
                 focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
                 return true;
             }
-            int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
+            int firstButton = startPill().getId();
             int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
             int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return v.getId() == leftButton;
-            return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
+            boolean atEnd = keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? v.getId() == leftButton
+                    : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
+            if (atEnd && menuWrap) {
+                findViewById(v.getId() == leftButton ? rightButton : leftButton).requestFocus();
+                navigationClick(keyCode);
+            }
+            return atEnd;
         };
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
@@ -1664,7 +1681,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         libraryFocusPending = false;
         libraryFromTopBar = false;
         libraryFromVpnPill = false;
-        appLibrary = new AppLibraryDialog(this, animations, reducedMotion, appLibrarySelection, libraryOkOpens, adapter::containsPackage, () -> reloadApps(false), () -> {
+        appLibrary = new AppLibraryDialog(this, animations, reducedMotion, appLibrarySelection, libraryOkOpens, menuWrap, adapter::containsPackage, () -> reloadApps(false), () -> {
             appLibrary = null;
             openPopup = null;
             if (libraryFromTopBar) {
@@ -2316,14 +2333,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // One row: Up leaves for the top bar, Down has nowhere to go, and Left/Right walk the whole row,
             // stopping at its two ends (the default focus search scrolls the row to the next tile).
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return false;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                wrapToTopBar(keyCode);
+                return true;
+            }
             boolean forward = rtlAppGrid ? keyCode == KeyEvent.KEYCODE_DPAD_LEFT : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
             int last = adapter.focusablePosition(count - 1);
             if (forward && position >= last) {
                 if (adapter.isLibraryAt(count)) focusLibrary();
+                else wrapTiles(true, keyCode);
                 return true;
             }
-            return !forward && position == 0;
+            if (forward || position != 0) return false;
+            wrapTiles(false, keyCode);
+            return true;
         }
         // Horizontal: swallow the key at a row's ends so focus never wraps to the next row or
         // escapes up into the top bar. Mid-row moves fall through to the default focus search.
@@ -2335,8 +2358,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             // In the dock, the last app is the row's end: the empty slots after it take no focus.
             int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
-            return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
-                    rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
+            if (!GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
+                    rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT)) return false;
+            if (!menuWrap) return true;
+            // menu_wrap: a row's end goes on to the next row's first tile, and the last tile back to the first.
+            int next = GridNavigation.step(position, forward, adapter.focusablePosition(count - 1),
+                    adapter.dockFilled(), COLUMNS);
+            if (next < 0) {
+                wrapTiles(forward, keyCode);
+            } else {
+                focusTile(next);
+                navigationClick(keyCode);
+            }
+            return true;
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
@@ -2345,6 +2379,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
             if (position >= lastRowStart) {
                 if (adapter.isLibraryAt(count)) focusLibrary();
+                else wrapToTopBar(keyCode);
                 return true;
             }
             target = Math.min(position + COLUMNS, count - 1);
@@ -2354,6 +2389,45 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.playSoundEffect(keyCode == KeyEvent.KEYCODE_DPAD_UP
                 ? SoundEffectConstants.NAVIGATION_UP : SoundEffectConstants.NAVIGATION_DOWN);
         return true;
+    }
+
+    /**
+     * menu_wrap past either end of Home's tiles, which keep to themselves: forward (after the last tile or the App
+     * library) to the first tile, back (before the first) to the last. Without menu_wrap focus stays put.
+     */
+    private void wrapTiles(boolean forward, int keyCode) {
+        if (!menuWrap) return;
+        if (forward) focusTile(0);
+        else if (adapter.isLibraryAt(adapter.appCount())) focusLibrary();
+        else focusLastTile();
+        navigationClick(keyCode);
+    }
+
+    /** menu_wrap: Down on the last row comes round to the top bar. */
+    private void wrapToTopBar(int keyCode) {
+        if (!menuWrap) return;
+        startPill().requestFocus();
+        navigationClick(keyCode);
+    }
+
+    private void focusLastTile() {
+        focusTile(adapter.focusablePosition(adapter.appCount() - 1));
+    }
+
+    /** The last row, in the column focus last had (Up from the top bar with menu_wrap). */
+    private void focusLastRow() {
+        int last = adapter.focusablePosition(adapter.appCount() - 1);
+        focusTile(singleRow ? lastFocused : Math.min(last / COLUMNS * COLUMNS + lastFocused % COLUMNS, last));
+    }
+
+    /** The top bar's first pill: Inputs, or the first button shown after it when it is hidden. */
+    private View startPill() {
+        return btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton();
+    }
+
+    /** The click a D-pad move makes, for moves made here rather than by the focus search. */
+    private void navigationClick(int keyCode) {
+        MenuWrap.click(grid, keyCode);
     }
 
     @Override public void onLibraryFocused() {
@@ -2449,10 +2523,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    @Override public void onLibraryUp() {
-        if (adapter.appCount() == 0) { firstTopButton().requestFocus(); return; }
-        int lastRow = ((adapter.appCount() - 1) / COLUMNS) * COLUMNS;
-        focusTile(Math.min(lastRow + lastFocused % COLUMNS, adapter.appCount() - 1));
+    @Override public void onLibraryKey(int keyCode) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+            if (adapter.appCount() == 0) { firstTopButton().requestFocus(); return; }
+            int lastRow = ((adapter.appCount() - 1) / COLUMNS) * COLUMNS;
+            focusTile(Math.min(lastRow + lastFocused % COLUMNS, adapter.appCount() - 1));
+            return;
+        }
+        if (!menuWrap) return;
+        // menu_wrap: the button is the tiles' last stop; forward goes round to the first tile, back to the last,
+        // and Down to the top bar.
+        boolean back = rtlAppGrid ? keyCode == KeyEvent.KEYCODE_DPAD_RIGHT : keyCode == KeyEvent.KEYCODE_DPAD_LEFT;
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            wrapToTopBar(keyCode);
+        } else if (back) {
+            focusLastTile();
+            navigationClick(keyCode);
+        } else {
+            wrapTiles(true, keyCode);
+        }
     }
 
     private void focusLibrary() {
@@ -2484,12 +2573,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 rv.removeOnScrollListener(this);
                 if (pendingFocusScroll != this) return;
                 pendingFocusScroll = null;
+                releaseGridFocus();
                 RecyclerView.ViewHolder footer = rv.findViewHolderForAdapterPosition(position);
                 if (footer != null && footer.itemView.findViewById(R.id.btnLibrary).requestFocus())
                     libraryFocusPending = false;
             }
         };
         grid.addOnScrollListener(pendingFocusScroll);
+        holdGridFocus();
         grid.smoothScrollToPosition(position);
     }
 
@@ -2499,6 +2590,36 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pendingFocusScroll = null;
             grid.stopScroll();
         }
+        releaseGridFocus();
+    }
+
+    /**
+     * menu_wrap jumps between the first and last tiles: the grid itself holds the focus while it scrolls there, or the
+     * focused tile would scroll off, be recycled, and hand the focus to the top bar. D-pad keys wait meanwhile.
+     */
+    private void holdGridFocus() {
+        if (!menuWrap || !grid.hasFocus()) return;
+        // The dock's big name goes with the tile it named, not once the scroll has landed on the far tile.
+        hideHero();
+        grid.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        grid.setOnKeyListener((v, keyCode, event) -> GridNavigation.isDpad(keyCode));
+        grid.requestFocus();
+        grid.postDelayed(gridFocusTimeout, 3000);
+    }
+
+    /** A scroll that never settles must not leave the keys waiting: hand the focus to a tile on screen. */
+    private final Runnable gridFocusTimeout = () -> {
+        cancelPendingFocusScroll();
+        View first = grid.getChildAt(0);
+        View card = first != null ? first.findViewById(R.id.card) : null;
+        if (card != null) card.requestFocus();
+    };
+
+    private void releaseGridFocus() {
+        if (grid.getDescendantFocusability() == ViewGroup.FOCUS_AFTER_DESCENDANTS) return;
+        grid.removeCallbacks(gridFocusTimeout);
+        grid.setOnKeyListener(null);
+        grid.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
     }
 
     private void focusTile(int position) {
@@ -2534,12 +2655,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 rv.removeOnScrollListener(this);
                 if (pendingFocusScroll != this) return;
                 pendingFocusScroll = null;
+                releaseGridFocus();
                 RecyclerView.ViewHolder h = rv.findViewHolderForAdapterPosition(pos);
                 View target = h != null ? h.itemView.findViewById(R.id.card) : rv.getChildAt(0);
                 if (target != null) target.requestFocus();
             }
         };
         grid.addOnScrollListener(pendingFocusScroll);
+        holdGridFocus();
         grid.smoothScrollToPosition(pos);
     }
 
@@ -3295,6 +3418,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             more.setOnClickListener(v -> {
                 for (View f : folded) f.setVisibility(View.VISIBLE);
                 rows.removeView(more);
+                if (menuWrap) MenuWrap.apply(rows);
                 for (View f : folded) {
                     if (f.isFocusable()) { f.requestFocus(); break; }
                 }
@@ -3377,6 +3501,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** Drop in: fade and unfold from the top edge, hanging under the anchor pill. */
     private void dropIn(PopupWindow popup, View panel, View anchor, int gravity) {
+        wrapRows(panel);
         panel.setAlpha(0f);
         panel.setPivotY(0f);
         panel.setScaleY(0.92f);
@@ -3384,6 +3509,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         popup.showAsDropDown(anchor, 0, (int) (10 * density), gravity);
         panel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(reducedMotion ? Motion.REDUCED_MS : 220)
                 .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
+    }
+
+    /** menu_wrap for a popup's rows (R.id.rows): Up on the first goes to the last, and Down on the last back. */
+    private void wrapRows(View panel) {
+        View rows = panel.findViewById(R.id.rows);
+        if (menuWrap && rows instanceof LinearLayout) MenuWrap.apply((LinearLayout) rows);
     }
 
     private View addSeparator(LinearLayout rows) {
@@ -3538,6 +3669,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             panel.setPivotY(height);
             panel.setScaleY(0.92f);
             panel.setTranslationY(8 * density);
+            wrapRows(panel);
             popup.showAtLocation(root, Gravity.NO_GRAVITY, at[0], Math.max(0, at[1] - gap - height));
             panel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(220)
                     .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
@@ -3646,14 +3778,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dialog.setOnDismissListener(d -> {
             if (cardPrompt == dialog) cardPrompt = null;
         });
-        // Left and Right move between the two buttons; Up and Down stay put; the ends don't wrap.
+        // Left and Right move between the two buttons; Up and Down stay put; the ends wrap only with menu_wrap.
         View.OnKeyListener keys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
-                return v.getId() == (rtl ? R.id.btnShow : R.id.btnKeep);
-            return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
-                    && v.getId() == (rtl ? R.id.btnKeep : R.id.btnShow);
+            boolean atEnd = keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? v.getId() == (rtl ? R.id.btnShow : R.id.btnKeep)
+                    : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == (rtl ? R.id.btnKeep : R.id.btnShow);
+            if (atEnd && menuWrap) (v == keep ? show : keep).requestFocus();
+            return atEnd;
         };
         keep.setOnKeyListener(keys);
         show.setOnKeyListener(keys);

@@ -9,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -42,6 +44,9 @@ public final class LauncherSettingsActivity extends Activity {
     private int dockOpacity;
     private boolean animations;
     private boolean advancedEffects;
+    /** menu_wrap: Up on the first row goes round to the last, and Down on the last to the first. */
+    private boolean menuWrap;
+    private ScrollView page;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -49,6 +54,8 @@ public final class LauncherSettingsActivity extends Activity {
         setContentView(R.layout.activity_launcher_settings);
         choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         Config config = Config.load(this);
+        menuWrap = config.menuWrap;
+        page = findViewById(R.id.page);
         View reorderChoice = findViewById(R.id.reorderChoice);
         reorderChoice.setVisibility(config.launcherSettingsButton ? View.VISIBLE : View.GONE);
         reorderChoice.setOnClickListener(v -> {
@@ -159,6 +166,23 @@ public final class LauncherSettingsActivity extends Activity {
         refresh();
         if (config.launcherSettingsButton) reorderChoice.requestFocus();
         else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int code = event.getKeyCode();
+        View focused = getCurrentFocus();
+        if (menuWrap && focused != null && event.getAction() == KeyEvent.ACTION_DOWN
+                && (code == KeyEvent.KEYCODE_DPAD_UP || code == KeyEvent.KEYCODE_DPAD_DOWN)) {
+            int direction = code == KeyEvent.KEYCODE_DPAD_UP ? View.FOCUS_UP : View.FOCUS_DOWN;
+            if (focused.focusSearch(direction) == null) {
+                // Nothing further that way: scroll to the other end, which also focuses its outermost row.
+                page.fullScroll(direction == View.FOCUS_UP ? View.FOCUS_DOWN : View.FOCUS_UP);
+                MenuWrap.click(page, code);
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     private void reverseRow(TextView[] views) {

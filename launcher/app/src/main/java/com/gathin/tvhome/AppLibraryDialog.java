@@ -84,6 +84,8 @@ final class AppLibraryDialog {
     private final boolean okOpens;
     private final boolean animations;
     private final boolean rtl;
+    /** menu_wrap: the shelf's ends and the action menu's ends go round. */
+    private final boolean wrap;
     private TextView instructions;
     private int totalApps;
     final PopupWindow popup;
@@ -147,13 +149,14 @@ final class AppLibraryDialog {
      *  setups are unaffected. See LibraryApps.excludedFromCatalog(). */
     private final Set<String> excludedApps;
 
-    AppLibraryDialog(Activity activity, boolean animations, boolean reducedMotion, boolean selectionMode, boolean okOpens, Predicate<String> onHome, Runnable changed, Runnable dismissed, Set<String> excludedApps) {
+    AppLibraryDialog(Activity activity, boolean animations, boolean reducedMotion, boolean selectionMode, boolean okOpens, boolean wrap, Predicate<String> onHome, Runnable changed, Runnable dismissed, Set<String> excludedApps) {
         this.activity = activity;
         this.animations = animations;
         this.rtl = activity.getResources().getBoolean(R.bool.rtl_app_grid);
         this.reducedMotion = reducedMotion;
         this.selectionMode = selectionMode;
         this.okOpens = okOpens && !selectionMode;
+        this.wrap = wrap;
         this.onHome = onHome;
         this.changed = changed;
         this.dismissed = dismissed;
@@ -434,6 +437,17 @@ final class AppLibraryDialog {
         });
     }
 
+    /** menu_wrap: scrolls the shelf to an app and focuses it once it is laid out. */
+    private void focusShelf(int position) {
+        RecyclerView shelf = catalog;
+        if (shelf == null) return;
+        shelf.scrollToPosition(position);
+        shelf.post(() -> {
+            RecyclerView.ViewHolder holder = shelf.findViewHolderForAdapterPosition(position);
+            if (holder != null) holder.itemView.requestFocus();
+        });
+    }
+
     private void dismissActions() {
         PopupWindow menu = actionPopup;
         actionPopup = null;
@@ -569,6 +583,7 @@ final class AppLibraryDialog {
         menuPanel.setPivotY(0f);
         menuPanel.setScaleY(0.92f);
         menuPanel.setTranslationY(-dp(8));
+        if (wrap) MenuWrap.apply(rows);
         menu.showAtLocation(activity.getWindow().getDecorView(), Gravity.TOP | Gravity.START, x, y);
         menuPanel.animate().alpha(1f).scaleY(1f).translationY(0f).setDuration(reducedMotion ? Motion.REDUCED_MS : 220)
                 .setInterpolator(new android.view.animation.DecelerateInterpolator(1.6f)).start();
@@ -584,11 +599,12 @@ final class AppLibraryDialog {
         row.findViewById(R.id.status).setVisibility(View.GONE);
         row.setOnClickListener(v -> action.run());
         rows.addView(row);
+        // The ends stop here, unless menu_wrap joins them (MenuWrap.apply in showActions).
         row.setOnKeyListener((v, key, event) -> {
             int index = rows.indexOfChild(v);
             return event.getAction() == KeyEvent.ACTION_DOWN && (key == KeyEvent.KEYCODE_DPAD_LEFT
-                    || key == KeyEvent.KEYCODE_DPAD_RIGHT || key == KeyEvent.KEYCODE_DPAD_UP && index == 0
-                    || key == KeyEvent.KEYCODE_DPAD_DOWN && index == rows.getChildCount() - 1);
+                    || key == KeyEvent.KEYCODE_DPAD_RIGHT || !wrap && (key == KeyEvent.KEYCODE_DPAD_UP && index == 0
+                    || key == KeyEvent.KEYCODE_DPAD_DOWN && index == rows.getChildCount() - 1));
         });
     }
 
@@ -678,11 +694,13 @@ final class AppLibraryDialog {
                 }
             });
             holder.itemView.setOnKeyListener((v, key, event) -> {
-                int index = holder.getBindingAdapterPosition();
-                return event.getAction() == KeyEvent.ACTION_DOWN && (key == KeyEvent.KEYCODE_DPAD_UP
-                        || key == KeyEvent.KEYCODE_DPAD_DOWN
-                        || (rtl ? key == KeyEvent.KEYCODE_DPAD_RIGHT : key == KeyEvent.KEYCODE_DPAD_LEFT) && index == 0
-                        || (rtl ? key == KeyEvent.KEYCODE_DPAD_LEFT : key == KeyEvent.KEYCODE_DPAD_RIGHT) && index == apps.size() - 1);
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                int index = holder.getBindingAdapterPosition(), last = apps.size() - 1;
+                int back = rtl ? KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT;
+                int ahead = rtl ? KeyEvent.KEYCODE_DPAD_LEFT : KeyEvent.KEYCODE_DPAD_RIGHT;
+                boolean atStart = key == back && index == 0, atEnd = key == ahead && index == last;
+                if (wrap && (atStart || atEnd) && last > 0) focusShelf(atStart ? last : 0);
+                return key == KeyEvent.KEYCODE_DPAD_UP || key == KeyEvent.KEYCODE_DPAD_DOWN || atStart || atEnd;
             });
         }
         @Override public int getItemCount() { return apps.size(); }

@@ -142,4 +142,17 @@ public class GridNavigationTest {
         }
         return false;
     }
+
+    @Test public void stepWalksTheTilesInReadingOrderAndEndsAtBothEnds() {
+        assertEquals(5, GridNavigation.step(4, true, 10, 8, 8));
+        assertEquals(3, GridNavigation.step(4, false, 10, 8, 8));
+        assertEquals(-1, GridNavigation.step(10, true, 10, 8, 8));
+        assertEquals(-1, GridNavigation.step(0, false, 10, 8, 8));
+    }
+
+    @Test public void stepSkipsTheEmptyDockSlots() {
+        // Three dock apps, five empty slots, the grid from 8.
+        assertEquals(8, GridNavigation.step(2, true, 12, 3, 8));
+        assertEquals(2, GridNavigation.step(8, false, 12, 3, 8));
+    }
 }
