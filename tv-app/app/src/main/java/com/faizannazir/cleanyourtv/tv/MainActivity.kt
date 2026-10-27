@@ -102,9 +102,9 @@ class MainActivity : Activity() {
             val ok = conn.connect()
 
             val infoText = if (ok) {
-                val modelRes = conn.executeShellCommand("getprop ro.product.model").replace("Success:", "").trim()
-                val mfrRes = conn.executeShellCommand("getprop ro.product.manufacturer").replace("Success:", "").trim()
-                val verRes = conn.executeShellCommand("getprop ro.build.version.release").replace("Success:", "").trim()
+                val modelRes = conn.executeShellCommand("getprop ro.product.model").replace("Success:", "").replace("\r", "").trim()
+                val mfrRes = conn.executeShellCommand("getprop ro.product.manufacturer").replace("Success:", "").replace("\r", "").trim()
+                val verRes = conn.executeShellCommand("getprop ro.build.version.release").replace("Success:", "").replace("\r", "").trim()
 
                 val model = if (modelRes.isNotBlank()) modelRes else "Android TV"
                 val mfr = if (mfrRes.isNotBlank()) mfrRes else "Smart TV"
@@ -145,10 +145,11 @@ class MainActivity : Activity() {
 
             for (pkg in installed) {
                 val isSys = (pkg.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                val label = pkg.applicationInfo.loadLabel(pm).toString()
+                val label = pkg.applicationInfo.loadLabel(pm).toString().replace("\r", "").trim()
+                val pkgName = pkg.packageName.replace("\r", "").trim()
                 val isEnabled = pkg.applicationInfo.enabled
 
-                val appInfo = safetyRulesEngine.classifyApp(pkg.packageName, label, isSys, isEnabled)
+                val appInfo = safetyRulesEngine.classifyApp(pkgName, label, isSys, isEnabled)
                 scannedApps.add(appInfo)
 
                 if (appInfo.category == AppCategory.PROTECTED) protectedCount++
@@ -164,7 +165,7 @@ class MainActivity : Activity() {
             if (optionalCount > 0) {
                 report.append("Detected Safe Cleanup Candidates:\n")
                 scannedApps.filter { it.category == AppCategory.OPTIONAL }.forEach { app ->
-                    report.append(" • [${app.packageName}] ${app.label} - ${app.recommendationReason}\n")
+                    report.append(" • [${app.label}] (${app.packageName}) - ${app.recommendationReason}\n")
                 }
                 report.append("\nSelect '2. Debloat TV' to execute cleanup.")
             } else {
@@ -220,29 +221,31 @@ class MainActivity : Activity() {
             resultLog.append("------------------------------------\n")
 
             for (app in targets) {
-                if (safetyRulesEngine.isProtected(app.packageName)) {
-                    resultLog.append(" • SKIPPED (Protected): ${app.packageName}\n")
+                val pkgName = app.packageName.replace("\r", "").trim()
+                if (safetyRulesEngine.isProtected(pkgName)) {
+                    resultLog.append(" • SKIPPED (Protected): $pkgName\n")
                     continue
                 }
 
-                val cmd = "pm disable-user --user 0 ${app.packageName}"
-                val isValid = safetyRulesEngine.validateCommand(app.packageName, cmd)
+                val cmd = "pm disable-user --user 0 $pkgName"
+                val isValid = safetyRulesEngine.validateCommand(pkgName, cmd)
                 if (!isValid) {
-                    resultLog.append(" • BLOCKED (Security Policy Violation): ${app.packageName}\n")
+                    resultLog.append(" • BLOCKED (Security Policy Violation): $pkgName\n")
                     continue
                 }
 
                 val opResult = if (isAdbAvailable) {
-                    adbConn.executeShellCommand(cmd)
+                    val rawRes = adbConn.executeShellCommand(cmd)
+                    rawRes.replace("\r", "").trim()
                 } else {
                     "Simulated baseline recorded ($host:$port ADB port unavailable)"
                 }
 
                 records.add(
                     CleanupRecord(
-                        id = "${System.currentTimeMillis()}_${app.packageName}",
+                        id = "${System.currentTimeMillis()}_$pkgName",
                         timestamp = System.currentTimeMillis(),
-                        packageName = app.packageName,
+                        packageName = pkgName,
                         appLabel = app.label,
                         previousState = app.isEnabled,
                         requestedAction = ActionType.DISABLE_USER,
@@ -251,7 +254,7 @@ class MainActivity : Activity() {
                     )
                 )
 
-                resultLog.append(" • [${app.label}] (${app.packageName})\n")
+                resultLog.append(" • [${app.label}] ($pkgName)\n")
                 resultLog.append("   Command: $cmd\n")
                 resultLog.append("   Result: $opResult\n\n")
             }
@@ -299,8 +302,10 @@ class MainActivity : Activity() {
                 val isAdbAvailable = adbConn.connect()
 
                 if (isAdbAvailable) {
-                    val installRes = adbConn.executeShellCommand("pm install -r ${apkFile.absolutePath}")
-                    log.append(" • ADB Install Result: $installRes\n")
+                    val streamRes = assets.open("clean_launcher.apk").use { apkInput ->
+                        adbConn.installApkStream(apkInput, apkFile.length())
+                    }
+                    log.append(" • Streaming APK Install: $streamRes\n")
 
                     val setDefaultRes = adbConn.executeShellCommand("cmd package set-home-activity com.gathin.tvhome/.MainActivity")
                     log.append(" • Set Default Launcher: $setDefaultRes\n")
@@ -343,7 +348,7 @@ class MainActivity : Activity() {
 
             for (cmd in accelCommands) {
                 val res = if (isAdbAvailable) {
-                    adbConn.executeShellCommand(cmd)
+                    adbConn.executeShellCommand(cmd).replace("\r", "").trim()
                 } else {
                     "Simulated execution ($host:$port ADB unavailable)"
                 }
@@ -392,7 +397,7 @@ class MainActivity : Activity() {
             for (record in plan) {
                 val cmd = "pm enable ${record.packageName}"
                 val opResult = if (isAdbAvailable) {
-                    adbConn.executeShellCommand(cmd)
+                    adbConn.executeShellCommand(cmd).replace("\r", "").trim()
                 } else {
                     "Restoration command recorded ($host:$port ADB unavailable)"
                 }

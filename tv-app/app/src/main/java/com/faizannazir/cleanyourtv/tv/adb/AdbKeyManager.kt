@@ -3,10 +3,6 @@ package com.faizannazir.cleanyourtv.tv.adb
 import android.content.Context
 import android.util.Base64
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -20,6 +16,7 @@ class AdbKeyManager(private val context: Context) {
     private val privateKeyFile = File(context.filesDir, "adb_priv.key")
     private val publicKeyFile = File(context.filesDir, "adb_pub.key")
 
+    @Synchronized
     fun getOrCreateKeyPair(): KeyPair {
         if (privateKeyFile.exists() && publicKeyFile.exists()) {
             try {
@@ -45,9 +42,16 @@ class AdbKeyManager(private val context: Context) {
     }
 
     fun signToken(token: ByteArray, keyPair: KeyPair): ByteArray {
-        val cipher = Cipher.getInstance("RSA/ECB/NoPadding")
-        cipher.init(Cipher.ENCRYPT_MODE, keyPair.private)
-        return cipher.doFinal(token)
+        return try {
+            val sig = Signature.getInstance("SHA1withRSA")
+            sig.initSign(keyPair.private)
+            sig.update(token)
+            sig.sign()
+        } catch (_: Exception) {
+            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+            cipher.init(Cipher.ENCRYPT_MODE, keyPair.private)
+            cipher.doFinal(token)
+        }
     }
 
     fun getAdbPublicKeyPayload(keyPair: KeyPair): ByteArray {
