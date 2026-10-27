@@ -121,4 +121,9 @@
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
+    <string name="tile_names_always">Alltid</string>
+    <string name="tile_names_focus">Vid fokus</string>
+    <string name="tile_names_never">Aldrig</string>
+    <string name="app_labels_label">Appnamn</string>
+    <string name="label_size_label">Storlek på appnamn</string>
 </resources>

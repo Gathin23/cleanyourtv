@@ -111,4 +111,9 @@
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
     <string name="game_live">Hozir jonli</string>
+    <string name="tile_names_always">Doim</string>
+    <string name="tile_names_focus">Fokusda</string>
+    <string name="tile_names_never">Hech qachon</string>
+    <string name="app_labels_label">Ilova nomlari</string>
+    <string name="label_size_label">App label size</string>
 </resources>

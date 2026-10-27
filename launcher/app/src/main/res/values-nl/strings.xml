@@ -112,4 +112,9 @@
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
     <string name="game_live">Nu live</string>
+    <string name="tile_names_always">Altijd</string>
+    <string name="tile_names_focus">Bij focus</string>
+    <string name="tile_names_never">Nooit</string>
+    <string name="app_labels_label">App-namen</string>
+    <string name="label_size_label">App label size</string>
 </resources>

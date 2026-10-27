@@ -43,6 +43,13 @@ final class Config {
     static final String ROWS_BELOW_DOCK_KEY = "rows_below_dock";
     static final String WALLPAPER_CHOICE_KEY = "wallpaper_choice";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
+    static final String TILE_NAMES_KEY = "tile_names";
+    static final String TILE_NAME_SIZE_KEY = "tile_name_size";
+    /** The names under the tiles, in sp: item_app.xml's size, and the default for tile_name_size. */
+    static final int TILE_NAME_SP = 14;
+    /** tile_name_size's range: 18 still fits the 22dp name line item_app.xml and AppAdapter.ITEM_EXTRA_DP keep. */
+    static final int TILE_NAME_SP_MIN = 10;
+    static final int TILE_NAME_SP_MAX = 18;
     /**
      * Counts the changes made in Launcher settings. Home remembers the count it was built with and rebuilds on
      * resume when it differs, however the settings were left (see MainActivity#onResume).
@@ -119,6 +126,10 @@ final class Config {
     final boolean launcherSettingsButton;
     /** Names under every tile, dimmed until focused (config.xml always_show_names); the dock band grows for them. */
     final boolean alwaysShowNames;
+    /** tile_names never: no name under any tile, focused or not (always is always_show_names). */
+    final boolean hideNames;
+    /** Size of the names under the tiles, in sp (theme tile_name_size, or Launcher settings' App label size row). */
+    final int tileNameSp;
     /** Reorder button in the top bar (config.xml reorder_button); the Settings long-press menu offers it either way. */
     final boolean reorderButton;
     /** Show the Wi-Fi/Ethernet pill in the top bar (config.xml, show_network_pill). */
@@ -279,7 +290,8 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait) {
+                   int openOnStartNetworkWait,
+                   boolean hideNames, int tileNameSp) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -332,6 +344,8 @@ final class Config {
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
         this.alwaysShowNames = alwaysShowNames;
+        this.hideNames = hideNames;
+        this.tileNameSp = tileNameSp;
         this.wallpaperTrueColor = wallpaperTrueColor;
         this.focusOvershoot = focusOvershoot;
         this.vpnApp = vpnApp;
@@ -456,6 +470,7 @@ final class Config {
         boolean showLibraryPill = res.getBoolean(R.bool.show_library_pill);
         int wifiLabelWidth = res.getInteger(R.integer.wifi_label_width);
         boolean alwaysShowNames = res.getBoolean(R.bool.always_show_names);
+        String tileNames = "";
         boolean wallpaperTrueColor = res.getBoolean(R.bool.wallpaper_true_color);
         boolean focusOvershoot = res.getBoolean(R.bool.focus_overshoot);
         boolean wallpaperCaptions = res.getBoolean(R.bool.wallpaper_captions);
@@ -564,6 +579,7 @@ final class Config {
             showLibraryPill = bool(json, "show_library_pill", showLibraryPill);
             wifiLabelWidth = integer(json, "wifi_label_width", wifiLabelWidth, 0, 300);
             alwaysShowNames = bool(json, "always_show_names", alwaysShowNames);
+            tileNames = string(json, TILE_NAMES_KEY, tileNames);
             wallpaperTrueColor = bool(json, "wallpaper_true_color", wallpaperTrueColor);
             focusOvershoot = bool(json, "focus_overshoot", focusOvershoot);
             wallpaperCaptions = bool(json, "wallpaper_captions", wallpaperCaptions);
@@ -644,6 +660,16 @@ final class Config {
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
         int dockOpacity = json == null ? 100 : integer(json, "dock_opacity", 100, 30, 100);
         dockOpacity = chosenDockOpacity(choices.getInt(DOCK_OPACITY_KEY, -1), dockOpacity);
+        // tile_names (theme, or Launcher settings' Tile names row) wins over always_show_names; unset leaves it alone.
+        tileNames = choices.getString(TILE_NAMES_KEY, tileNames);
+        if ("always".equals(tileNames) || "focus".equals(tileNames) || "never".equals(tileNames)) {
+            alwaysShowNames = "always".equals(tileNames);
+        }
+        boolean hideNames = "never".equals(tileNames);
+        int tileNameSp = json == null ? TILE_NAME_SP
+                : integer(json, TILE_NAME_SIZE_KEY, TILE_NAME_SP, TILE_NAME_SP_MIN, TILE_NAME_SP_MAX);
+        int chosenNameSp = choices.getInt(TILE_NAME_SIZE_KEY, -1);
+        if (chosenNameSp >= TILE_NAME_SP_MIN && chosenNameSp <= TILE_NAME_SP_MAX) tileNameSp = chosenNameSp;
         String wallpaperOrder = json == null ? WallpaperRotation.ORDER_SHUFFLE
                 : string(json, "wallpaper_order", WallpaperRotation.ORDER_SHUFFLE);
         // An unknown order must not silently change how an existing collection rotates.
@@ -682,7 +708,7 @@ final class Config {
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)));
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), hideNames, tileNameSp);
     }
 
     /**
@@ -726,12 +752,12 @@ final class Config {
             SharedPreferences.Editor editor = choices.edit();
             if (!"absent".equals(token)) editor.remove("columns").remove("animations")
                     .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
-                    .remove(DOCK_OPACITY_KEY);
+                    .remove(DOCK_OPACITY_KEY).remove(TILE_NAMES_KEY).remove(TILE_NAME_SIZE_KEY);
             editor.putString(THEME_SIGNATURE_KEY, signature).commit();
         } else if (!seen.equals(signature)) {
             choices.edit().remove("columns").remove("animations").remove("advanced_effects")
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
-                    .putString(THEME_SIGNATURE_KEY, signature).commit();
+                    .remove(TILE_NAMES_KEY).remove(TILE_NAME_SIZE_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
         }
     }
 

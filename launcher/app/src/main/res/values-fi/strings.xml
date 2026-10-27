@@ -112,4 +112,9 @@
     <string name="race_finished">Ruutulippu</string>
     <string name="last_opened">Viimeksi avattu %1$s</string>
     <string name="game_live">Käynnissä nyt</string>
+    <string name="tile_names_always">Aina</string>
+    <string name="tile_names_focus">Valittuna</string>
+    <string name="tile_names_never">Ei koskaan</string>
+    <string name="app_labels_label">Sovellusten nimet</string>
+    <string name="label_size_label">App label size</string>
 </resources>

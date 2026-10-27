@@ -98,4 +98,9 @@
     </plurals>
     <string name="greeting_with_name">%1$s، %2$s</string>
     <string name="game_live">مباشر الآن</string>
+    <string name="tile_names_always">دائمًا</string>
+    <string name="tile_names_focus">عند التحديد</string>
+    <string name="tile_names_never">أبدًا</string>
+    <string name="app_labels_label">أسماء التطبيقات</string>
+    <string name="label_size_label">App label size</string>
 </resources>

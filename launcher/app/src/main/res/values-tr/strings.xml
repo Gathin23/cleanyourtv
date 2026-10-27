@@ -94,4 +94,9 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Şimdi canlı</string>
+    <string name="tile_names_always">Her zaman</string>
+    <string name="tile_names_focus">Odakta</string>
+    <string name="tile_names_never">Asla</string>
+    <string name="app_labels_label">Uygulama adları</string>
+    <string name="label_size_label">App label size</string>
 </resources>

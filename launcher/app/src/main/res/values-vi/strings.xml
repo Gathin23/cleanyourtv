@@ -122,4 +122,9 @@
     <string name="last_opened">Mở lần cuối %1$s</string>
     <string name="tile_move">Di chuyển</string>
     <string name="game_live">Đang diễn ra</string>
+    <string name="tile_names_always">Luôn luôn</string>
+    <string name="tile_names_focus">Khi chọn</string>
+    <string name="tile_names_never">Không bao giờ</string>
+    <string name="app_labels_label">Tên ứng dụng</string>
+    <string name="label_size_label">App label size</string>
 </resources>

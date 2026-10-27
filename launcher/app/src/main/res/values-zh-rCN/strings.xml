@@ -147,4 +147,9 @@
     <string name="tile_move">移动</string>
     <string name="tile_replace_in_dock">替换为其他应用</string>
     <string name="game_live">直播中</string>
+    <string name="tile_names_always">始终</string>
+    <string name="tile_names_focus">聚焦时</string>
+    <string name="tile_names_never">从不</string>
+    <string name="app_labels_label">应用名称</string>
+    <string name="label_size_label">App label size</string>
 </resources>

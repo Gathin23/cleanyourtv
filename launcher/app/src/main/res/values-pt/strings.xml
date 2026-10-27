@@ -148,4 +148,9 @@
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
     <string name="game_live">Ao vivo agora</string>
+    <string name="tile_names_always">Sempre</string>
+    <string name="tile_names_focus">Ao focar</string>
+    <string name="tile_names_never">Nunca</string>
+    <string name="app_labels_label">Nomes dos apps</string>
+    <string name="label_size_label">App label size</string>
 </resources>

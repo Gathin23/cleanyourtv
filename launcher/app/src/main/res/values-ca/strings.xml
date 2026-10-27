@@ -109,4 +109,9 @@
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
     <string name="game_live">En directe</string>
+    <string name="tile_names_always">Sempre</string>
+    <string name="tile_names_focus">En el focus</string>
+    <string name="tile_names_never">Mai</string>
+    <string name="app_labels_label">Noms de les apps</string>
+    <string name="label_size_label">App label size</string>
 </resources>

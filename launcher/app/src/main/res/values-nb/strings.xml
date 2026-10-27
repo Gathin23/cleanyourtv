@@ -111,4 +111,9 @@
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
     <string name="game_live">Direkte nå</string>
+    <string name="tile_names_always">Alltid</string>
+    <string name="tile_names_focus">Ved fokus</string>
+    <string name="tile_names_never">Aldri</string>
+    <string name="app_labels_label">Appnavn</string>
+    <string name="label_size_label">App label size</string>
 </resources>

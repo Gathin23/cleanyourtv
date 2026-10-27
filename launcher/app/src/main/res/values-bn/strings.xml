@@ -99,4 +99,9 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">এখন সরাসরি</string>
+    <string name="tile_names_always">সবসময়</string>
+    <string name="tile_names_focus">ফোকাসে</string>
+    <string name="tile_names_never">কখনও না</string>
+    <string name="app_labels_label">অ্যাপের নাম</string>
+    <string name="label_size_label">App label size</string>
 </resources>

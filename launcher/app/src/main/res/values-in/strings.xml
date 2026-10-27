@@ -110,4 +110,9 @@
     <string name="race_finished">Bendera finis</string>
     <string name="last_opened">Terakhir dibuka %1$s</string>
     <string name="game_live">Langsung sekarang</string>
+    <string name="tile_names_always">Selalu</string>
+    <string name="tile_names_focus">Saat fokus</string>
+    <string name="tile_names_never">Tidak pernah</string>
+    <string name="app_labels_label">Label aplikasi</string>
+    <string name="label_size_label">App label size</string>
 </resources>

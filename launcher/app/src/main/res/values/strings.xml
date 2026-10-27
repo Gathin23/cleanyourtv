@@ -154,4 +154,9 @@
     <string name="last_opened">Last opened %1$s</string>
     <!-- game_day: a game on now, in the race panel. -->
     <string name="game_live">Live now</string>
+    <string name="tile_names_always">Always</string>
+    <string name="tile_names_focus">On focus</string>
+    <string name="tile_names_never">Never</string>
+    <string name="app_labels_label">App labels</string>
+    <string name="label_size_label">App label size</string>
 </resources>

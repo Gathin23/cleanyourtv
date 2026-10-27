@@ -32,6 +32,10 @@ public final class LauncherSettingsActivity extends Activity {
     private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
+    private static final String[] TILE_NAMES = {"always", "focus", "never"};
+    private final TextView[] namesChoices = new TextView[TILE_NAMES.length];
+    private static final int[] LABEL_SIZES = {12, Config.TILE_NAME_SP, 16, Config.TILE_NAME_SP_MAX};
+    private final TextView[] labelSizeChoices = new TextView[LABEL_SIZES.length];
     private TextView wallpaperChoice;
     private TextView animationsChoice;
     private TextView advancedChoice;
@@ -40,6 +44,8 @@ public final class LauncherSettingsActivity extends Activity {
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
+    private String tileNames;
+    private int tileNameSp;
     private boolean animations;
     private boolean advancedEffects;
 
@@ -58,6 +64,8 @@ public final class LauncherSettingsActivity extends Activity {
         columns = config.columns;
         rowsBelowDock = config.rowsBelowDock;
         dockOpacity = config.dockOpacity;
+        tileNames = tileNamesOf(config);
+        tileNameSp = config.tileNameSp;
         animations = config.animations;
         advancedEffects = config.animations && config.advancedEffects;
 
@@ -97,6 +105,30 @@ public final class LauncherSettingsActivity extends Activity {
                 refresh();
             });
         }
+        int[] namesIds = {R.id.namesAlways, R.id.namesFocus, R.id.namesNever};
+        for (int i = 0; i < namesIds.length; i++) {
+            final String value = TILE_NAMES[i];
+            namesChoices[i] = findViewById(namesIds[i]);
+            namesChoices[i].setOnClickListener(v -> {
+                if (value.equals(tileNames)) return;
+                tileNames = value;
+                choices.edit().putString(Config.TILE_NAMES_KEY, value).apply();
+                changed();
+                refresh();
+            });
+        }
+        int[] sizeIds = {R.id.labelSize12, R.id.labelSize14, R.id.labelSize16, R.id.labelSize18};
+        for (int i = 0; i < sizeIds.length; i++) {
+            final int value = LABEL_SIZES[i];
+            labelSizeChoices[i] = findViewById(sizeIds[i]);
+            labelSizeChoices[i].setOnClickListener(v -> {
+                if (tileNameSp == value) return;
+                tileNameSp = value;
+                choices.edit().putInt(Config.TILE_NAME_SIZE_KEY, value).apply();
+                changed();
+                refresh();
+            });
+        }
         // Mirror text alignment without globally opting the launcher into RTL. Numeric rows
         // still need explicit ordering in Android's no-supportsRtl compatibility mode.
         if (getResources().getBoolean(R.bool.rtl_menu_bar))
@@ -105,6 +137,8 @@ public final class LauncherSettingsActivity extends Activity {
             reverseRow(columnChoices);
             reverseRow(rowChoices);
             reverseRow(dockChoices);
+            reverseRow(namesChoices);
+            reverseRow(labelSizeChoices);
         }
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
@@ -140,11 +174,14 @@ public final class LauncherSettingsActivity extends Activity {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).commit();
+                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.TILE_NAMES_KEY).remove(Config.TILE_NAME_SIZE_KEY)
+                    .remove(OpenOnStart.KEY).commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
             dockOpacity = current.dockOpacity;
+            tileNames = tileNamesOf(current);
+            tileNameSp = current.tileNameSp;
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
             changed();
@@ -286,6 +323,12 @@ public final class LauncherSettingsActivity extends Activity {
         for (int i = 0; i < dockChoices.length; i++) {
             dockChoices[i].setSelected(dockOpacity == DOCK_OPACITIES[i]);
         }
+        for (int i = 0; i < namesChoices.length; i++) {
+            namesChoices[i].setSelected(TILE_NAMES[i].equals(tileNames));
+        }
+        for (int i = 0; i < labelSizeChoices.length; i++) {
+            labelSizeChoices[i].setSelected(tileNameSp == LABEL_SIZES[i]);
+        }
         animationsChoice.setText(getString(R.string.animations_state,
                 getString(animations ? R.string.on : R.string.off)));
         advancedChoice.setText(getString(R.string.advanced_effects_state,
@@ -305,7 +348,12 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
+                || choices.contains(Config.TILE_NAMES_KEY) || choices.contains(Config.TILE_NAME_SIZE_KEY)
                 || choices.contains(OpenOnStart.KEY);
+    }
+
+    private static String tileNamesOf(Config config) {
+        return config.hideNames ? "never" : config.alwaysShowNames ? "always" : "focus";
     }
 
     private void open(Intent intent) {

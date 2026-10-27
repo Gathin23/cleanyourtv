@@ -97,4 +97,9 @@
     <string name="race_countdown_days">%1$dd %2$dt</string>
     <string name="last_opened">Sidst åbnet %1$s</string>
     <string name="game_live">Live nu</string>
+    <string name="tile_names_always">Altid</string>
+    <string name="tile_names_focus">Ved fokus</string>
+    <string name="tile_names_never">Aldrig</string>
+    <string name="app_labels_label">Appnavne</string>
+    <string name="label_size_label">App label size</string>
 </resources>

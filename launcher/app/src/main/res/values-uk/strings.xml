@@ -150,4 +150,9 @@
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Востаннє відкрито %1$s</string>
     <string name="game_live">Наживо зараз</string>
+    <string name="tile_names_always">Завжди</string>
+    <string name="tile_names_focus">Під час вибору</string>
+    <string name="tile_names_never">Ніколи</string>
+    <string name="app_labels_label">Назви застосунків</string>
+    <string name="label_size_label">App label size</string>
 </resources>

@@ -95,4 +95,9 @@
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Dernière ouverture : %1$s</string>
     <string name="game_live">En direct</string>
+    <string name="tile_names_always">Toujours</string>
+    <string name="tile_names_focus">À la sélection</string>
+    <string name="tile_names_never">Jamais</string>
+    <string name="app_labels_label">Noms des apps</string>
+    <string name="label_size_label">App label size</string>
 </resources>

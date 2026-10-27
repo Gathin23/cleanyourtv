@@ -148,4 +148,9 @@
     <string name="race_countdown_days">%1$d ימ׳ %2$d שע׳</string>
     <string name="last_opened">פתיחה אחרונה: %1$s</string>
     <string name="game_live">בשידור חי עכשיו</string>
+    <string name="tile_names_always">תמיד</string>
+    <string name="tile_names_focus">בעת מיקוד</string>
+    <string name="tile_names_never">אף פעם</string>
+    <string name="app_labels_label">שמות אפליקציות</string>
+    <string name="label_size_label">גודל שמות האפליקציות</string>
 </resources>
