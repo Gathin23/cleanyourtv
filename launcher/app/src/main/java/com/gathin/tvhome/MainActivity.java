@@ -74,6 +74,7 @@ import androidx.annotation.NonNull;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -239,6 +240,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean settingsKeyPanel;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     private boolean reducedMotion;
+    /** reorder_motion, unless animations are off or reduced: the grid animates moves while reordering. */
+    private boolean reorderMotion;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
     private boolean dockRow;
     /** config single_row: every app in the dock's row, scrolling sideways, no grid below. */
@@ -438,6 +441,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
         reducedMotion = cfg.reducedMotion;
+        reorderMotion = cfg.reorderMotion && animations && !reducedMotion;
         dockRow = cfg.dockRow;
         singleRow = cfg.singleRow;
         focusOvershoot = cfg.focusOvershoot;
@@ -1410,6 +1414,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (int i = 0; i < Math.min(dockedAtStart, adapter.movableCount()); i++) dockInSession.add(adapter.keyAt(i));
         adapter.setReordering(true);
         if (adapter.hasEmptySlots()) reloadTiles();   // every position must hold a tile that can move
+        if (reorderMotion) grid.setItemAnimator(moveAnimator());
         reordering = true;
         orderAtStart = adapter.movableKeys();
         glass.setAccent(REORDER_ACCENT);
@@ -1556,6 +1561,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         drop();
         reordering = false;
         adapter.setReordering(false);
+        grid.setItemAnimator(null);
         glass.setAccent(festive ? festival.accentColor() : 0);
         btnReorder.setActivated(false);
         List<String> keys = adapter.movableKeys();
@@ -1626,6 +1632,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 : lm.getDecoratedTop(firstView) - grid.getPaddingTop();
         change.run();
         if (firstView != null) lm.scrollToPositionWithOffset(first, offset);
+    }
+
+    /** Reorder's slide: moves only, short, with no fades for the tiles rebound at the dock edge. */
+    private static DefaultItemAnimator moveAnimator() {
+        DefaultItemAnimator a = new DefaultItemAnimator();
+        a.setSupportsChangeAnimations(false);
+        a.setMoveDuration(160);
+        a.setAddDuration(0);
+        a.setRemoveDuration(0);
+        return a;
     }
 
     /**
