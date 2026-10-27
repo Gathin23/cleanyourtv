@@ -12,12 +12,22 @@
         android:layout_height="match_parent"
         android:alpha="0" />
 
+    <!-- Translucent window panel (no real blur: too heavy for the TV GPU). -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/window_panel" />
+
     <!-- Top shelf: the focused dock app's name, positioned above the dock in code. -->
     <TextView
         android:id="@+id/heroName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
+        android:layout_marginStart="72dp"
         android:alpha="0"
         android:textColor="#FFFFFFFF"
         android:textSize="48sp"
@@ -31,9 +41,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingStart="56dp"
-        android:paddingEnd="56dp"
-        android:paddingTop="26dp">
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"
+        android:paddingTop="44dp">
 
         <RelativeLayout
             android:layout_width="match_parent"

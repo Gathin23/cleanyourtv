@@ -1,0 +1,6 @@
+{
+  "dock_apps": ["com.google.android.youtube.tv", "com.sportzx.live", "com.stremio.one", "com.crunchyroll.crunchyroid"],
+  "hidden_apps": ["com.tcl.tv"],
+  "background_color": "#2A2F6B",
+  "wallpaper": true
+}

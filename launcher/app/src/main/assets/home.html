@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, user-scalable=no">
+<style>
+@font-face{font-family:'Hanken Grotesk';src:url('hanken.ttf');font-weight:100 900}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#2a2f6b}
+*{box-sizing:border-box}
+#stage{width:1920px;height:1080px;position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;font-family:'Hanken Grotesk',system-ui,sans-serif;color:#fff;background:#2a2f6b}
+#wall{position:absolute;inset:0;width:1920px;height:1080px;object-fit:cover}
+/* No backdrop blur: too heavy for the TV GPU. Slightly stronger tints stand in for it. */
+.win{background:rgba(28,30,84,0.62);border:1px solid rgba(255,255,255,0.26);box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),0 40px 100px rgba(0,0,0,0.35)}
+.card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.16);box-shadow:inset 0 1px 0 rgba(255,255,255,0.22)}
+.pill{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35)}
+/* Menu lateral: branco sólido, ícones lavanda (#7c6cf0). */
+.navpill{background:#fff;border:none;box-shadow:0 16px 40px rgba(0,0,0,0.35)}
+.nav svg{stroke:#7c6cf0}
+.f{outline:none;transition:transform .14s ease,box-shadow .14s ease,background-color .14s ease}
+h2{margin:0;font-size:24px;font-weight:700}
+
+/* Focus states */
+.nav.on{background:#7c6cf0;box-shadow:0 0 0 5px rgba(124,108,240,0.25)}
+.nav.on svg{stroke:#fff}
+.pillbtn.on,.tab.on{background:#fff !important;color:#0d253d !important;border-color:#fff !important}
+.pillbtn.on svg{stroke:#0d253d}
+.tile.on{border:4px solid #fff !important;box-shadow:0 0 0 7px rgba(255,255,255,0.2),0 16px 36px rgba(0,0,0,0.35) !important;transform:scale(1.04)}
+.row.on{background:rgba(255,255,255,0.22) !important;box-shadow:inset 0 0 0 2px #fff}
+.cta.on{box-shadow:0 0 0 4px #fff,0 0 0 9px rgba(255,255,255,0.3) !important;transform:scale(1.04)}
+
+.tab{height:56px;padding:0 24px;border-radius:28px;border:1px solid transparent;background:transparent;font-size:20px;font-weight:600;color:rgba(255,255,255,0.82);display:flex;align-items:center}
+.tab.sel{border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.2);box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);font-weight:700;color:#fff}
+.nav{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.nav.sel{background:rgba(124,108,240,0.12)}
+.nav.sel.on{background:#7c6cf0}
+.nav.sel.on svg{stroke:#fff}
+.dock{height:110px;border-radius:16px;border:1px solid rgba(255,255,255,0.3);box-shadow:inset 0 1px 0 rgba(255,255,255,0.4);font-size:26px;font-weight:700;letter-spacing:-0.4px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 8px}
+.row{width:100%;min-width:0;overflow:hidden;height:82px;border-radius:16px;background:rgba(255,255,255,0.05);display:flex;align-items:center;gap:16px;padding:0 16px 0 12px}
+.rowicon{flex:0 0 58px;height:58px;border-radius:12px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center}
+.rowtxt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px}
+.rowtxt b{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rowtxt span{font-size:15px;font-weight:500;color:rgba(255,255,255,0.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Assistidos: as linhas dividem a altura do card (entre 76 e 120 px) e a miniatura acompanha. */
+#recent .row{flex:1 1 0;height:auto;min-height:76px;max-height:120px;padding:8px 16px 8px 8px}
+#recent .thumb{flex:0 0 auto;height:100%;width:auto;aspect-ratio:16/10}
+.thumb{flex:0 0 104px;height:66px;border-radius:12px;position:relative;overflow:hidden;background:#2f2a5a}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb .pb{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,0.3)}
+.thumb .pf{position:absolute;left:0;bottom:0;height:4px;background:#533afd}
+/* Hero art: a cover fills the whole card; an app logo stays a framed card on the right. */
+#heroArt.card-art{position:absolute;right:48px;top:50%;transform:translateY(-50%);width:576px;height:324px;border-radius:16px;object-fit:cover;box-shadow:0 24px 60px rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.2)}
+#heroArt.full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#hero.full #heroShade{background:linear-gradient(90deg,rgba(10,14,36,0.92) 0%,rgba(10,14,36,0.7) 38%,rgba(10,14,36,0.15) 70%,rgba(10,14,36,0) 100%),linear-gradient(0deg,rgba(10,14,36,0.55) 0%,rgba(10,14,36,0) 45%) !important}
+.go{flex:0 0 40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center}
+/* Scroll viewports: the track moves with a transform, and padding leaves room for the focus ring and zoom. */
+.vp{overflow:hidden;margin:-16px;padding:16px;position:relative}
+.track{transition:transform .22s ease}
+#row{display:flex;gap:24px}
+#row .app{flex:0 0 286px;height:200px}
+#grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:24px}
+#grid .app{height:150px}
+.app{position:relative;border-radius:16px;overflow:hidden;background:#2c2850;border:1px solid rgba(255,255,255,0.18)}
+.app img.b{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.app img.i{position:absolute;left:50%;top:40%;width:72px;height:72px;transform:translate(-50%,-50%)}
+.app .cap{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 12px;background:linear-gradient(180deg,rgba(13,20,48,0) 0%,rgba(13,20,48,0.9) 60%);font-size:19px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Filmes e Séries */
+.clamp1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.imdb{height:30px;border-radius:8px;padding:0 8px;display:none;align-items:center;background:#F5C518;color:#1a1400;font-size:15px;font-weight:700}
+.ghero{height:320px !important;flex:0 0 320px !important}
+#gHeroArt{transition:opacity .35s}
+.mhero #gLogo{position:static;inset:auto;width:auto;height:auto;filter:drop-shadow(0 4px 18px rgba(0,0,0,0.55))}
+.gmeta{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:600;color:rgba(255,255,255,0.88)}
+.gmeta i{width:4px;height:4px;border-radius:2px;background:rgba(255,255,255,0.5)}
+.gsrc{height:28px;border-radius:14px;padding:0 12px;display:inline-flex;align-items:center;font-size:13px;font-weight:700;letter-spacing:.3px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.25)}
+.gsrc.steam{background:rgba(23,26,33,0.85)}
+.gsrc.hydra{background:rgba(124,108,240,0.85)}
+#gRecent .gcover{flex:0 0 167px;height:250px;position:relative;border-radius:14px;overflow:hidden;background:#2c2850;border:1px solid rgba(255,255,255,0.18)}
+#gAll .gcap{flex:0 0 278px;height:130px;position:relative;border-radius:14px;overflow:hidden;background:#22324f;border:1px solid rgba(255,255,255,0.18)}
+.gcover img,.gcap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gcover .gsrc{position:absolute;left:8px;top:8px;height:22px;font-size:11px;padding:0 8px}
+.gcover .cap,.gcap .cap{position:absolute;left:0;right:0;bottom:0;padding:30px 12px 10px;background:linear-gradient(180deg,rgba(10,14,36,0) 0%,rgba(10,14,36,0.92) 65%);display:flex;flex-direction:column;gap:2px}
+.gcover .cap b,.gcap .cap b{font-size:16px;font-weight:700}
+.gcap .cap span{font-size:13px;font-weight:500;color:rgba(255,255,255,0.8)}
+.gpc{height:40px;border-radius:20px;padding:0 16px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+.gpc .dot{width:8px;height:8px;border-radius:50%;background:#7c6cf0}
+.gpc.live .dot{background:#3ddc84;box-shadow:0 0 0 4px rgba(61,220,132,0.25)}
+.gopen{position:fixed;inset:0;z-index:50;background:#0a0e24;overflow:hidden}
+.gopen .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s;animation:gzoom 30s ease-out forwards}
+.gopen .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,10,30,0.92) 0%,rgba(8,10,30,0.55) 45%,rgba(8,10,30,0.15) 100%),linear-gradient(0deg,rgba(8,10,30,0.9) 0%,rgba(8,10,30,0) 50%)}
+.gopen .info{position:absolute;left:96px;bottom:96px;display:flex;flex-direction:column;gap:22px;max-width:760px}
+.gopen .load{display:flex;flex-direction:column;gap:18px;margin-top:18px}
+#gOpenLogo{max-width:560px;max-height:200px;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 6px 24px rgba(0,0,0,0.6))}
+#gOpenTitle{font-size:64px;font-weight:600;line-height:1.05;letter-spacing:-1px}
+.gopen .grow{display:flex;align-items:center;gap:18px;font-size:26px;font-weight:600}
+.gopen .gsub{font-size:19px;line-height:1.5;color:rgba(255,255,255,0.75)}
+.gopen .gbar{width:520px;height:8px;border-radius:4px;background:rgba(255,255,255,0.18);overflow:hidden}
+.gopen .gbar i{display:block;width:0;height:100%;border-radius:4px;background:#fff;transition:width .5s linear}
+.gopen .gpct{font-size:20px;font-weight:600;color:rgba(255,255,255,0.8);font-variant-numeric:tabular-nums;margin-left:auto}
+@keyframes gzoom{from{transform:scale(1)}to{transform:scale(1.08)}}
+.spin{width:34px;height:34px;border-radius:50%;border:4px solid rgba(255,255,255,0.25);border-top-color:#fff;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mhero{height:360px;flex:0 0 360px;position:relative;border-radius:24px;overflow:hidden;background:#2b2f3c;border:1px solid rgba(255,255,255,0.18)}
+.mhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mhero .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,14,36,0.92) 0%,rgba(10,14,36,0.65) 40%,rgba(10,14,36,0) 72%),linear-gradient(0deg,rgba(10,14,36,0.55) 0%,rgba(10,14,36,0) 45%)}
+.track[data-dir="h"]{display:flex;gap:20px}
+#mCont .cw{flex:0 0 384px;height:160px;position:relative;border-radius:16px;overflow:hidden;background:#22324f;border:1px solid rgba(255,255,255,0.18)}
+.cw img,.poster img,.ep img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cw .cap,.poster .cap{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 14px;background:linear-gradient(180deg,rgba(10,14,36,0) 0%,rgba(10,14,36,0.9) 60%);display:flex;flex-direction:column;gap:4px}
+.cw .cap b{font-size:19px;font-weight:700}
+.cw .cap span{font-size:14px;font-weight:500;color:rgba(255,255,255,0.8)}
+.bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,0.25)}
+.bar i{display:block;height:5px;background:#533afd}
+#mPop{height:100%}
+#mSearch{flex:1 1 auto;min-width:0;background:transparent;border:none;outline:none;color:inherit;font:inherit;padding:0}
+#mSearch::placeholder{color:rgba(255,255,255,0.75)}
+#mSearchBox.on #mSearch{color:#0d253d}
+#mSearchBox.on #mSearch::placeholder{color:rgba(13,37,61,0.7)}
+#mSearchBox.typing{background:#fff;color:#0d253d;border-color:#fff;box-shadow:0 0 0 6px rgba(255,255,255,0.3)}
+#mSearchBox.typing svg{stroke:#0d253d}
+#mSearchBox.typing #mSearch{color:#0d253d}
+#mGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:20px}
+#mGrid .poster{height:auto;aspect-ratio:2/3}
+.poster{flex:0 0 185px;height:100%;position:relative;border-radius:14px;overflow:hidden;background:#2c2850;border:1px solid rgba(255,255,255,0.18)}
+.poster .cap{padding:36px 12px 12px;font-size:16px;font-weight:700}
+.poster .score{position:absolute;left:12px;top:12px;height:26px;border-radius:13px;padding:0 8px;display:flex;align-items:center;background:rgba(10,14,36,0.6);font-size:13px;font-weight:700}
+.overlay{position:absolute;inset:0;border-radius:48px;overflow:hidden;z-index:2}
+.overlay .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#2b2f3c}
+.overlay .bgshade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,14,36,0.94) 0%,rgba(10,14,36,0.72) 38%,rgba(10,14,36,0.1) 70%),linear-gradient(0deg,rgba(10,14,36,0.96) 0%,rgba(10,14,36,0.6) 42%,rgba(10,14,36,0) 62%)}
+.overlay .inner{position:relative;height:100%;padding:32px;display:flex;flex-direction:column}
+.gpill{height:32px;border-radius:16px;padding:0 12px;display:flex;align-items:center;font-size:15px;font-weight:600;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22)}
+.season{height:44px;padding:0 18px;border-radius:22px;border:1px solid transparent;font-size:17px;font-weight:600;color:rgba(255,255,255,0.82);display:flex;align-items:center;flex:0 0 auto}
+.season.sel{border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.2);font-weight:700;color:#fff}
+.season.on{background:#fff !important;color:#0d253d !important}
+.ep{flex:0 0 280px;display:flex;flex-direction:column;gap:8px}
+.ep .th{height:150px;position:relative;border-radius:14px;overflow:hidden;background:#22324f;border:1px solid rgba(255,255,255,0.18)}
+.seen{position:absolute;right:10px;top:10px;width:30px;height:30px;border-radius:50%;background:#7c6cf0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.45)}
+.ep.watched .th img{opacity:0.55}
+.ep .th .bar,.poster .bar{position:absolute;left:10px;right:10px;bottom:10px;height:5px;border-radius:3px;background:rgba(255,255,255,0.3);overflow:hidden}
+.ep .th .bar i,.poster .bar i{display:block;height:100%;background:#7c6cf0}
+.ep .code{position:absolute;left:10px;top:10px;height:26px;border-radius:13px;padding:0 8px;display:flex;align-items:center;background:rgba(10,14,36,0.65);font-size:13px;font-weight:700}
+.ep b{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep.on{transform:none}
+.ep.on .th{border:4px solid #fff;box-shadow:0 0 0 7px rgba(255,255,255,0.2)}
+.ep.tile.on{border:none !important;box-shadow:none !important}
+.actor{flex:0 0 120px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.actor .av{width:92px;height:92px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:600}
+.actor b{font-size:15px;font-weight:700;line-height:1.2}
+.actor span:not(.av){font-size:13px;font-weight:500;color:rgba(255,255,255,0.75);line-height:1.2}
+.chip{height:48px;padding:0 18px;border-radius:24px;border:1px solid transparent;font-size:17px;font-weight:600;color:rgba(255,255,255,0.82);display:flex;align-items:center;gap:8px;flex:0 0 auto;white-space:nowrap}
+.chip.sel{border-color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.2);color:#fff;font-weight:700}
+.chip.q{padding:0 16px;font-weight:700;color:#fff;border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06)}
+.chip.q.sel{background:#fff;color:#0d253d;border-color:#fff}
+.chip.on{background:#fff !important;color:#0d253d !important;border-color:#fff !important}
+.src{flex:0 0 104px;height:104px;border-radius:18px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);display:flex;align-items:center;gap:20px;padding:0 20px}
+.src.on{border:4px solid #fff !important;background:rgba(255,255,255,0.18);box-shadow:0 0 0 7px rgba(255,255,255,0.18) !important;transform:none}
+.src .ql{flex:0 0 92px;height:64px;border-radius:14px;background:rgba(255,255,255,0.14);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.src .ql b{font-size:24px;font-weight:700}
+.src .ql span{font-size:12px;font-weight:700;letter-spacing:0.5px}
+.src .ql.k4{background:#F5C518;color:#0d253d}
+.src.on .ql{background:#fff;color:#0d253d}
+.src .body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+.src .body b{font-size:19px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src .tags{display:flex;gap:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.88)}
+.src .tags span{height:28px;border-radius:14px;padding:0 10px;display:flex;align-items:center;background:rgba(255,255,255,0.12);white-space:nowrap}
+.src .ad{flex:0 0 auto;max-width:260px;height:36px;border-radius:18px;padding:0 14px;display:flex;align-items:center;gap:8px;background:rgba(10,14,36,0.5);border:1px solid rgba(255,255,255,0.2);font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden}
+.src .ad i{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+.sel-btn{height:52px;padding:0 18px 0 20px;border-radius:26px;display:flex;align-items:center;gap:10px;font-size:17px;white-space:nowrap}
+.sel-btn .k{font-weight:500;color:rgba(255,255,255,0.75)}
+.sel-btn b{font-weight:700}
+.sel-btn.on .k{color:rgba(13,37,61,0.7)}
+.dropdown{position:absolute;bottom:68px;min-width:260px;border-radius:24px;padding:10px;display:flex;flex-direction:column;gap:6px;background:rgba(20,22,64,0.96);border:1px solid rgba(255,255,255,0.28);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 24px 60px rgba(0,0,0,0.5);z-index:5}
+.dropdown.down{bottom:auto;top:64px;max-height:620px;overflow:hidden}
+.dropdown .dlist{display:flex;flex-direction:column;gap:6px;transition:transform .15s ease}
+.dopt{height:52px;border-radius:16px;padding:0 18px;display:flex;align-items:center;gap:12px;font-size:18px;font-weight:600}
+.dopt .dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,0.6)}
+.dopt.sel .dot{background:#533afd;border-color:#533afd}
+.dopt .n{margin-left:auto;font-size:15px;font-weight:600;opacity:.7}
+.dopt.on{background:#fff;color:#0d253d}
+.dopt.on .dot{border-color:#0d253d}
+.dopt.on.sel .dot{background:#533afd;border-color:#533afd}
+.src.rec{flex:0 0 auto;height:auto;min-height:128px;padding:14px 20px;border:2px solid rgba(124,108,240,0.85);background:rgba(124,108,240,0.16)}
+.src .badge{display:flex;align-items:baseline;gap:12px;font-size:16px;font-weight:800;color:#cfc8ff;letter-spacing:0.3px}
+/* "Assistir agora": destaque em amarelo */
+.src.rec.top{border-color:#F5C518;background:rgba(245,197,24,0.12)}
+.src.rec.top .badge{color:#F5C518}
+.src .badge em{font-style:normal;font-weight:600;font-size:14px;color:rgba(255,255,255,0.75)}
+.src .tags span.ok{background:rgba(52,199,120,0.25);color:#bff3d4}
+.src .tags span.bad{background:rgba(234,34,97,0.25);color:#ffc2d4}
+#dEnd{position:absolute;left:32px;right:32px;bottom:32px;height:400px;border-radius:28px;padding:24px 28px;flex-direction:column;gap:14px;
+  background:rgba(20,22,64,0.94);border:1px solid rgba(255,255,255,0.26);box-shadow:inset 0 1px 0 rgba(255,255,255,0.35),0 24px 60px rgba(0,0,0,0.5);z-index:3}
+#dEndRow{height:300px}
+#dEndRow .poster{flex:0 0 200px;height:300px}
+.msg{font-size:19px;color:rgba(255,255,255,0.8);padding:12px 4px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="wall" src="wallpaper.jpg" alt="">
+
+  <!-- Navegação flutuante -->
+  <nav class="navpill" style="position:absolute;left:44px;top:294px;width:84px;border-radius:42px;padding:12px 0;display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div class="f nav sel" id="navHome" data-act="home" aria-label="Início">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></svg>
+    </div>
+    <div class="f nav" data-act="live" aria-label="Ao vivo">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+    </div>
+    <div class="f nav" id="navMovies" data-act="movies" aria-label="Filmes e Séries">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>
+    </div>
+    <div class="f nav" id="navGames" data-act="games" aria-label="Jogos">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7h11a4 4 0 0 1 3.9 4.9l-1.2 5.3a2.4 2.4 0 0 1-4.1 1.1L14 16h-4l-2.1 2.3a2.4 2.4 0 0 1-4.1-1.1l-1.2-5.3A4 4 0 0 1 6.5 7z"/><path d="M8 10v3M6.5 11.5h3"/><path d="M15.5 11h.01M17.5 13h.01"/></svg>
+    </div>
+    <div class="f nav" id="navApps" data-act="apps" aria-label="Apps">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>
+    </div>
+    <div class="f nav" data-act="inputs" aria-label="Entradas">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v5l-2 3H9l-2-3z"/><path d="M9.5 7V3.5M14.5 7V3.5"/><path d="M12 15v6"/></svg>
+    </div>
+    <div class="f nav" data-act="settings" aria-label="Configurações">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.830l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.830 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </nav>
+
+  <!-- Janela principal -->
+  <main class="win" style="position:absolute;left:168px;top:56px;width:1704px;height:968px;border-radius:48px;padding:32px;display:flex;flex-direction:column;gap:24px">
+
+    <header id="topbar" style="height:72px;display:flex;align-items:center;gap:24px">
+      <div class="f pill pillbtn" data-act="search" style="width:400px;height:64px;border-radius:32px;display:flex;align-items:center;gap:12px;padding:0 24px;color:rgba(255,255,255,0.85);font-size:20px;font-weight:500">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+        Buscar com o Assistente
+      </div>
+      <div style="flex:1 1 auto"></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.15">
+        <div id="clock" class="clockText" style="font-size:26px;font-weight:600;color:rgba(255,255,255,0.95)">--:--</div>
+        <div id="date" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.75)"></div>
+      </div>
+      <div class="f pill pillbtn" data-act="wifi" style="height:64px;border-radius:32px;padding:0 24px 0 20px;display:flex;align-items:center;gap:10px;font-size:18px;font-weight:600;max-width:280px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/></svg>
+        <span id="wifi" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Wi‑Fi</span>
+      </div>
+    </header>
+
+    <div id="homePage" class="page" style="flex:1 1 auto;min-height:0;display:flex;gap:24px">
+
+      <!-- Coluna esquerda -->
+      <div style="flex:0 0 400px;width:400px;min-width:0;max-width:400px;display:flex;flex-direction:column;gap:24px">
+        <section class="card" style="border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;height:28px">
+            <h2>Seus apps</h2>
+            <span style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.85);padding:4px 12px;border-radius:12px;background:rgba(255,255,255,0.08)">Fixados</span>
+          </div>
+          <div id="dock" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"></div>
+        </section>
+
+        <section class="card" style="flex:1 1 auto;min-height:0;min-width:0;overflow:hidden;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;height:28px">
+            <h2>Assistidos</h2>
+            <span style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.78)">Recentes</span>
+          </div>
+          <div id="recent" style="flex:1 1 auto;min-height:0;min-width:0;display:flex;flex-direction:column;gap:8px"></div>
+          <div id="recentEmpty" style="display:none;font-size:17px;line-height:1.5;color:rgba(255,255,255,0.75);padding:8px">Os vídeos e filmes que você assistir no YouTube, Stremio e outros apps aparecem aqui.</div>
+        </section>
+      </div>
+
+      <!-- Coluna direita -->
+      <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:24px">
+
+        <section id="hero" style="flex:1 1 auto;min-height:400px;position:relative;border-radius:16px;overflow:hidden;background-color:#2b2f3c;border:1px solid rgba(255,255,255,0.18);transition:background-color .3s">
+          <img id="heroArt" class="card-art" alt="">
+          <div id="heroShade" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,20,48,0.88) 0%,rgba(13,20,48,0.55) 40%,rgba(13,20,48,0) 60%)"></div>
+          <div class="pill" style="position:absolute;left:36px;top:32px;height:40px;border-radius:20px;padding:0 16px;display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700">
+            <span style="width:8px;height:8px;border-radius:50%;background:#533afd"></span>
+            <span id="heroTag">Continue assistindo</span>
+          </div>
+          <div style="position:absolute;left:44px;bottom:40px;width:560px;display:flex;flex-direction:column;gap:16px">
+            <h1 id="heroTitle" style="margin:0;font-size:60px;line-height:1.1;font-weight:300;letter-spacing:-1.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">YouTube</h1>
+            <p id="heroSub" style="margin:0;font-size:19px;line-height:1.5;color:rgba(255,255,255,0.86);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aperte OK para abrir</p>
+            <div id="heroBar" style="display:none;height:6px;width:420px;border-radius:3px;background:rgba(255,255,255,0.25);overflow:hidden"><div id="heroProg" style="height:6px;width:0;background:#533afd"></div></div>
+            <div style="display:flex;gap:12px;margin-top:4px">
+              <div class="f cta" id="heroOpen" data-act="hero" style="height:60px;padding:0 32px;border-radius:30px;background:#fff;color:#0d253d;font-size:20px;font-weight:700;display:flex;align-items:center;gap:12px;box-shadow:0 0 0 4px rgba(255,255,255,0.35)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0d253d"><path d="M7 4.5v15l12-7.5z"/></svg>
+                <span id="heroBtn">Continuar</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section style="flex:0 0 auto;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;height:32px">
+            <h2>Mais apps</h2>
+            <div class="f pill pillbtn" data-act="apps" style="height:36px;border-radius:18px;padding:0 16px;display:flex;align-items:center;font-size:15px;font-weight:600">Ver todos <span id="count" style="margin-left:6px;opacity:.8"></span></div>
+          </div>
+          <div class="vp" id="rowVp"><div id="row" class="track"></div></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Página Todos os apps -->
+    <div id="appsPage" class="page" style="display:none;flex:1 1 auto;min-height:0;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;height:48px">
+        <h1 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-0.256px">Todos os apps</h1>
+        <span id="count2" class="pill" style="height:40px;border-radius:20px;padding:0 16px;display:flex;align-items:center;font-size:16px;font-weight:600"></span>
+      </div>
+      <div class="vp" id="gridVp" style="flex:1 1 auto;min-height:0"><div id="grid" class="track"></div></div>
+    </div>
+
+    <!-- Filmes e Séries: catálogo -->
+    <div id="moviesPage" class="page" style="display:none;flex:1 1 auto;min-height:0;flex-direction:column;gap:16px;margin-top:-8px">
+      <div style="height:64px;flex:0 0 64px;display:flex;align-items:center;gap:24px">
+        <div class="f pill pillbtn" id="mSearchBox" data-mact="search" style="width:440px;height:60px;border-radius:30px;display:flex;align-items:center;gap:12px;padding:0 22px;font-size:19px;font-weight:500;color:rgba(255,255,255,0.85)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <input id="mSearch" type="search" placeholder="Buscar filmes, séries e animes" autocomplete="off" spellcheck="false" enterkeyhint="search" tabindex="-1">
+        </div>
+        <div style="display:flex;gap:4px" id="mTabs">
+          <div class="f tab sel" data-mact="type" data-type="all">Tudo</div>
+          <div class="f tab" data-mact="type" data-type="movie">Filmes</div>
+          <div class="f tab" data-mact="type" data-type="series">Séries</div>
+          <div class="f tab" data-mact="type" data-type="anime">Animes</div>
+        </div>
+        <div style="flex:1 1 auto"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.15">
+          <div class="clockText" style="font-size:26px;font-weight:600">--:--</div>
+          <div class="dateText" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.75)"></div>
+        </div>
+      </div>
+      <div id="mAll" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:16px">
+      <section id="mHero" class="mhero">
+        <img id="mHeroArt" alt="">
+        <div class="shade"></div>
+        <div style="position:absolute;left:48px;bottom:44px;width:760px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="pill" style="height:34px;border-radius:17px;padding:0 14px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:#533afd"></span>Em alta</span>
+            <span id="mHeroMeta" style="font-size:17px;font-weight:600;color:rgba(255,255,255,0.88)"></span>
+            <span id="mHeroImdb" class="imdb"></span>
+          </div>
+          <h1 id="mHeroTitle" class="clamp1" style="margin:0;font-size:64px;line-height:1.05;font-weight:300;letter-spacing:-1.6px">Carregando…</h1>
+          <p id="mHeroDesc" class="clamp2" style="margin:0;font-size:19px;line-height:1.5;color:rgba(255,255,255,0.86)"></p>
+          <div style="display:flex;gap:12px;margin-top:4px">
+            <div class="f cta" data-mact="heroPlay" style="height:60px;padding:0 32px;border-radius:30px;background:#fff;color:#0d253d;font-size:20px;font-weight:700;display:flex;align-items:center;gap:12px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#0d253d"><path d="M7 4.5v15l12-7.5z"/></svg>Assistir
+            </div>
+            <div class="f pill pillbtn" data-mact="heroInfo" style="height:60px;padding:0 24px;border-radius:30px;font-size:20px;font-weight:600;display:flex;align-items:center;gap:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.01"/></svg>Detalhes
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <h2>Continue assistindo</h2>
+          <span style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.78)">Do Nuvio e do Stremio</span>
+        </div>
+        <div class="vp" id="mContVp"><div id="mCont" class="track" data-dir="h"></div></div>
+        <div id="mContEmpty" style="display:none;height:160px;align-items:center;font-size:18px;color:rgba(255,255,255,0.75)">O que você assistir no Stremio ou no Nuvio aparece aqui.</div>
+      </section>
+      <section style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <h2 id="mRowTitle">Filmes populares</h2>
+          <span class="pill" style="height:32px;border-radius:16px;padding:0 14px;display:flex;align-items:center;font-size:14px;font-weight:600">Catálogo: Cinemeta</span>
+        </div>
+        <div class="vp" id="mPopVp" style="flex:1 1 auto;min-height:0"><div id="mPop" class="track" data-dir="h"></div></div>
+      </section>
+      </div>
+      <div id="mGridWrap" style="display:none;flex:1 1 auto;min-height:0;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:4">
+          <h2 id="mGridTitle" style="flex:1 1 auto">Filmes</h2>
+          <div class="f pill pillbtn sel-btn" id="gSortSel" data-mact="gmenu" data-kind="sort">
+            <span class="k">Ordenar</span><b id="gSortVal">Mais assistidos</b>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="f pill pillbtn sel-btn" id="gGenreSel" data-mact="gmenu" data-kind="genre">
+            <span class="k">Gênero</span><b id="gGenreVal">Todos</b>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <span id="mGridCount" class="pill" style="height:36px;border-radius:18px;padding:0 14px;display:flex;align-items:center;font-size:14px;font-weight:600"></span>
+          <div id="gDrop" class="dropdown down" style="display:none"></div>
+        </div>
+        <div class="vp" id="mGridVp" style="flex:1 1 auto;min-height:0"><div id="mGrid" class="track" data-cols="7"></div></div>
+      </div>
+    </div>
+
+    <!-- Jogos: biblioteca do PC -->
+    <div id="gamesPage" class="page" style="display:none;position:relative;flex:1 1 auto;min-height:0;flex-direction:column;gap:16px;margin-top:-8px">
+      <div style="height:64px;flex:0 0 64px;display:flex;align-items:center;gap:16px;position:relative;z-index:4">
+        <h1 style="margin:0;font-size:34px;font-weight:700;letter-spacing:-0.4px">Jogos</h1>
+        <span id="gPc" class="pill gpc"><span class="dot"></span><span id="gPcTxt">PC</span></span>
+        <div style="flex:1 1 auto"></div>
+        <div class="f pill pillbtn sel-btn" id="gHdmi" data-gact="hdmi"><span class="k">PC na entrada</span><b id="gHdmiVal">Escolher</b><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="f pill pillbtn" data-gact="refresh" aria-label="Atualizar" style="height:52px;width:52px;border-radius:26px;display:flex;align-items:center;justify-content:center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.9-3.9L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.9 3.9L21 15"/><path d="M21 20v-5h-5"/></svg>
+        </div>
+        <div id="gDrop" class="dropdown down" style="display:none"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;margin-left:8px">
+          <div class="clockText" style="font-size:26px;font-weight:600">--:--</div>
+          <div class="dateText" style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.75)"></div>
+        </div>
+      </div>
+      <section id="gHero" class="mhero ghero">
+        <img id="gHeroArt" alt="">
+        <div class="shade"></div>
+        <div style="position:absolute;left:48px;bottom:36px;width:760px;display:flex;flex-direction:column;gap:12px">
+          <img id="gLogo" alt="" style="display:none;max-width:420px;max-height:110px;object-fit:contain;object-position:left bottom;align-self:flex-start">
+          <h1 id="gTitle" class="clamp1" style="margin:0;font-size:56px;line-height:1.05;font-weight:300;letter-spacing:-1.4px">Seus jogos do PC</h1>
+          <div id="gMeta" class="gmeta"></div>
+          <p id="gDesc" class="clamp2" style="margin:0;font-size:18px;line-height:1.5;color:rgba(255,255,255,0.86)"></p>
+          <div style="display:flex;gap:12px;margin-top:2px">
+            <div class="f cta" id="gPlay" data-gact="play" style="height:58px;padding:0 30px;border-radius:29px;background:#fff;color:#0d253d;font-size:20px;font-weight:700;display:flex;align-items:center;gap:12px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#0d253d"><path d="M7 4.5v15l12-7.5z"/></svg><span id="gPlayTxt">Jogar na TV</span>
+            </div>
+            <div class="f pill pillbtn" id="gStop" data-gact="stop" style="display:none;height:58px;padding:0 24px;border-radius:29px;font-size:19px;font-weight:600;align-items:center;gap:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span>Devolver tela ao PC</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div id="gRows" style="flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:14px">
+        <section style="flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between"><h2>Jogados recentemente</h2></div>
+          <div class="vp" id="gRecentVp"><div id="gRecent" class="track" data-dir="h"></div></div>
+        </section>
+        <section style="flex:0 0 auto;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <h2>Biblioteca</h2>
+            <span id="gAllCount" class="pill" style="height:32px;border-radius:16px;padding:0 14px;display:flex;align-items:center;font-size:14px;font-weight:600"></span>
+          </div>
+          <div class="vp" id="gAllVp"><div id="gAll" class="track" data-dir="h"></div></div>
+        </section>
+      </div>
+      <div id="gEmpty" style="display:none;flex:1 1 auto;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;font-size:20px;line-height:1.5;color:rgba(255,255,255,0.8)">
+        <b style="font-size:26px;color:#fff">Seus jogos do PC aparecem aqui</b>
+        Deixe o programa Central de Jogos aberto no PC (ele inicia junto com o Windows).
+      </div>
+      <div id="gOpening" class="gopen" style="display:none">
+        <img id="gOpenBg" class="bg" alt="">
+        <div class="shade"></div>
+        <div class="info">
+          <img id="gOpenLogo" alt="">
+          <b id="gOpenTitle"></b>
+          <div class="load">
+            <div class="grow" style="width:520px"><div class="spin"></div><span id="gOpenState">Carregando o jogo…</span><span class="gpct" id="gOpenPct">0%</span></div>
+            <div class="gbar"><i id="gOpenBar"></i></div>
+          </div>
+          <span class="gsub" id="gOpenSub">O jogo aparece aqui assim que estiver pronto. Use o controle do PC para jogar.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filmes e Séries: detalhes -->
+    <div id="detailPage" class="page overlay" style="display:none">
+      <img id="dArt" class="bg" alt="">
+      <div class="bgshade"></div>
+      <div class="inner" style="gap:20px">
+        <div style="height:64px;flex:0 0 64px;display:flex;align-items:center;gap:16px">
+          <div class="f pill pillbtn" data-mact="back" style="height:64px;border-radius:32px;padding:0 24px 0 16px;display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Filmes e Séries
+          </div>
+          <div style="flex:1 1 auto"></div>
+          <div class="clockText" style="font-size:26px;font-weight:600">--:--</div>
+        </div>
+        <section id="dInfo" style="flex:1 1 auto;min-height:0;overflow:hidden;width:860px;padding:16px;margin:-16px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <span id="dKind" class="pill" style="height:32px;border-radius:16px;padding:0 12px;display:flex;align-items:center;font-size:14px;font-weight:700;letter-spacing:0.5px"></span>
+            <span id="dImdb" class="imdb"></span>
+            <span id="dMeta" style="font-size:17px;font-weight:600;color:rgba(255,255,255,0.88)"></span>
+          </div>
+          <img id="dLogo" alt="" style="display:none;max-width:520px;max-height:80px;object-fit:contain;object-position:left bottom">
+          <h1 id="dTitle" class="clamp1" style="margin:0;font-size:72px;line-height:1.02;font-weight:300;letter-spacing:-1.8px"></h1>
+          <div id="dGenres" style="display:flex;gap:8px"></div>
+          <p id="dDesc" class="clamp2" style="flex:0 0 auto;margin:0;font-size:19px;line-height:1.5;color:rgba(255,255,255,0.88)"></p>
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <div class="f cta" id="dPlay" data-mact="dPlay" style="height:60px;padding:0 32px;border-radius:30px;background:#fff;color:#0d253d;font-size:20px;font-weight:700;display:flex;align-items:center;gap:12px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#0d253d"><path d="M7 4.5v15l12-7.5z"/></svg><span id="dPlayLabel">Assistir</span>
+            </div>
+            <div class="f pill pillbtn" data-mact="nuvio" style="height:60px;padding:0 24px;border-radius:30px;font-size:20px;font-weight:600;display:flex;align-items:center;gap:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Abrir no Nuvio
+            </div>
+            <div class="f pill pillbtn" id="dTrailer" data-mact="trailer" style="height:60px;padding:0 24px;border-radius:30px;font-size:20px;font-weight:600;display:flex;align-items:center;gap:10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>Trailer
+            </div>
+          </div>
+        </section>
+        <section id="dEpisodes" style="flex:0 0 auto;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:16px">
+            <h2>Episódios</h2>
+            <div class="vp" id="dSeasonsVp" style="flex:1 1 auto"><div id="dSeasons" class="track" data-dir="h" style="display:flex;gap:4px"></div></div>
+          </div>
+          <div class="vp" id="dEpsVp"><div id="dEps" class="track" data-dir="h"></div></div>
+        </section>
+        <section style="flex:0 0 auto;display:flex;flex-direction:column;gap:12px">
+          <h2>Elenco</h2>
+          <div id="dCast" style="display:flex;gap:28px;overflow:hidden"></div>
+        </section>
+      </div>
+      <!-- Fim do filme/série: sugestões -->
+      <div id="dEnd" style="display:none">
+        <h2 id="dEndTitle"></h2>
+        <div class="vp" id="dEndVp"><div id="dEndRow" class="track" data-dir="h"></div></div>
+      </div>
+    </div>
+
+    <!-- Filmes e Séries: escolher fonte -->
+    <div id="sourcesPage" class="page overlay" style="display:none">
+      <img id="sArt" class="bg" alt="">
+      <div class="bgshade" style="background:rgba(10,14,36,0.84)"></div>
+      <div class="inner" style="flex-direction:row;gap:32px">
+        <aside style="flex:0 0 340px;display:flex;flex-direction:column;gap:20px">
+          <div class="f pill pillbtn" data-mact="back" style="align-self:flex-start;height:64px;border-radius:32px;padding:0 24px 0 16px;display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Voltar
+          </div>
+          <img id="sPoster" alt="" style="width:340px;height:440px;object-fit:cover;border-radius:20px;border:1px solid rgba(255,255,255,0.22);box-shadow:0 24px 60px rgba(0,0,0,0.45);background:#22324f">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div id="sTitle" class="clamp2" style="font-size:30px;font-weight:700;line-height:1.15"></div>
+            <div id="sSub" class="clamp2" style="font-size:18px;font-weight:600;color:rgba(255,255,255,0.85)"></div>
+          </div>
+          <div class="f pill pillbtn" id="sNuvioSide" data-mact="nuvio" style="align-self:flex-start;height:56px;padding:0 22px;border-radius:28px;font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>Escolher no Nuvio
+          </div>
+        </aside>
+        <section class="card" style="flex:1 1 auto;min-width:0;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:18px;background:rgba(28,30,84,0.55)">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <h1 style="margin:0;font-size:34px;font-weight:700;letter-spacing:-0.3px">Escolha a fonte</h1>
+            <span id="sCount" style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.78)"></span>
+          </div>
+          <div class="vp" id="sAddonsVp" style="flex:0 0 auto"><div id="sAddons" class="track" data-dir="h" style="display:flex;gap:6px"></div></div>
+          <div class="vp" id="sListVp" style="flex:1 1 auto;min-height:0"><div id="sList" class="track" data-cols="1" style="display:flex;flex-direction:column;gap:10px"></div></div>
+          <div style="flex:0 0 auto;display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.14);position:relative">
+            <div class="f pill pillbtn sel-btn" id="sQualSel" data-mact="dropdown" data-kind="qual">
+              <span class="k">Qualidade</span><b id="sQualVal">Todas</b>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+            </div>
+            <div class="f pill pillbtn sel-btn" id="sLangSel" data-mact="dropdown" data-kind="lang">
+              <span class="k">Idioma</span><b id="sLangVal">Todos</b>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+            </div>
+            <span style="font-size:15px;font-weight:500;color:rgba(255,255,255,0.72);flex:1 1 auto;text-align:right;padding-right:6px">Link direto toca na TV · Torrent abre no Stremio</span>
+            <div class="f pill pillbtn" id="sNuvioFoot" data-mact="nuvio" style="height:52px;padding:0 20px;border-radius:26px;font-size:17px;font-weight:600;display:flex;align-items:center">Escolher no Nuvio</div>
+            <div id="sDrop" class="dropdown" style="display:none"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<script>
+var DOCK = [
+  {pkg:'com.google.android.youtube.tv', label:'YouTube', bg:'#FF0033', fg:'#fff'},
+  {pkg:'com.sportzx.live', label:'SportzX', bg:'#0F7A45', fg:'#fff'},
+  {pkg:'com.stremio.one', label:'Stremio', bg:'#5B3FC4', fg:'#fff'},
+  {pkg:'com.nuvio.tv', label:'Nuvio', bg:'#3A1D6E', fg:'#fff'}
+];
+var BRAND = {}; DOCK.forEach(function(d){ BRAND[d.pkg] = d.bg; });
+var TINTS = ['#2c2850','#1c3f30','#4b3426','#432230','#22324f','#3b2a4f'];
+var apps = [], byPkg = {}, cur = null, page = 'home', resume = null;
+
+function tick(){
+  var d = new Date();
+  document.getElementById('clock').textContent = ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+  document.getElementById('date').textContent = d.toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+  var hm = ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2), dt = d.toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+  Array.prototype.forEach.call(document.querySelectorAll('.clockText'), function(x){ x.textContent = hm; });
+  Array.prototype.forEach.call(document.querySelectorAll('.dateText'), function(x){ x.textContent = dt; });
+}
+setInterval(tick, 10000); tick();
+
+function el(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html) e.innerHTML = html; return e; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function appTile(a, i){
+  var t = el('div', 'f tile app');
+  t.style.backgroundColor = TINTS[i % TINTS.length];
+  t.dataset.pkg = a.pkg;
+  if (a.banner) { var im = el('img', 'b'); im.src = a.banner; t.appendChild(im); }
+  else {
+    if (a.icon) { var ic = el('img', 'i'); ic.src = a.icon; t.appendChild(ic); }
+    t.appendChild(el('div', 'cap', esc(a.label)));
+  }
+  return t;
+}
+
+function reloadApps(){
+  try { apps = JSON.parse(TV.apps()); } catch (e) { apps = []; }
+  byPkg = {}; apps.forEach(function(a){ byPkg[a.pkg] = a; });
+  var dock = document.getElementById('dock'); dock.innerHTML = '';
+  var inDock = {};
+  DOCK.forEach(function(d){
+    if (!byPkg[d.pkg]) return;
+    inDock[d.pkg] = 1;
+    var b = byPkg[d.pkg].banner;
+    var t = el('div', 'f tile dock', b ? '' : esc(d.label));
+    t.style.background = d.bg; t.style.color = d.fg; t.dataset.pkg = d.pkg;
+    if (b) { var im = el('img'); im.src = b; im.alt = d.label; im.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover'; t.style.position = 'relative'; t.style.overflow = 'hidden'; t.style.padding = '0'; t.appendChild(im); }
+    dock.appendChild(t);
+  });
+  var row = document.getElementById('row'), grid = document.getElementById('grid');
+  row.innerHTML = ''; grid.innerHTML = '';
+  var n = 0;
+  apps.forEach(function(a, i){
+    grid.appendChild(appTile(a, i));
+    if (!inDock[a.pkg]) { row.appendChild(appTile(a, n)); n++; }
+  });
+  row.style.transform = ''; grid.style.transform = '';
+  document.getElementById('count').textContent = '(' + apps.length + ')';
+  document.getElementById('count2').textContent = apps.length + ' apps';
+  var w = TV.wifiName() || 'Conectado';
+  document.getElementById('wifi').textContent = w;
+  loadResume();
+  loadRecents();
+  if (!cur || !document.body.contains(cur)) focus(firstOf(page));
+}
+
+/* Hero: what to resume (media session, else last used app), else the first pinned app. */
+function loadResume(){
+  var r = null;
+  try { var j = TV.continueWatching(); r = j ? JSON.parse(j) : null; } catch (e) {}
+  if (r && !byPkg[r.pkg] && !r.play) r = null;
+  if (!r) { var first = DOCK.filter(function(d){ return byPkg[d.pkg]; })[0]; if (first) r = {kind:'none', pkg:first.pkg}; }
+  resume = r;
+  var tag = document.getElementById('heroTag'), title = document.getElementById('heroTitle'),
+      sub = document.getElementById('heroSub'), art = document.getElementById('heroArt'),
+      bar = document.getElementById('heroBar'), btn = document.getElementById('heroBtn');
+  if (!r) { title.textContent = 'Bem-vindo'; sub.textContent = ''; art.style.display = 'none'; bar.style.display = 'none'; return; }
+  var a = byPkg[r.pkg] || {label:'Player da TV', banner:''};
+  resume.next = r.play && window.mNextOf ? mNextOf(r) : null;
+  if (resume.next) {
+    tag.textContent = 'Próximo episódio';
+    title.textContent = r.title;
+    sub.textContent = resume.next.label;
+    btn.textContent = 'Assistir';
+    var cv = heroArtOf(r); setHeroArt(cv || a.banner, !!cv);
+    bar.style.display = 'none';
+  } else if (r.kind === 'media') {
+    tag.textContent = 'Continue assistindo';
+    title.textContent = r.title;
+    sub.textContent = a.label + (r.sub ? ' · ' + r.sub : '');
+    btn.textContent = 'Continuar';
+    var cover = heroArtOf(r), src = cover || a.banner;
+    setHeroArt(src, !!cover);
+    if (r.dur > 0 && r.pos > 0) {
+      bar.style.display = ''; document.getElementById('heroProg').style.width = Math.min(100, 100 * r.pos / r.dur) + '%';
+      var left = Math.round((r.dur - r.pos) / 60000);
+      if (left > 0) sub.textContent += ' · ' + left + ' min restantes';
+    } else bar.style.display = 'none';
+  } else {
+    tag.textContent = r.kind === 'app' ? 'Último app usado' : 'Em destaque';
+    title.textContent = a.label;
+    sub.textContent = 'Volte de onde parou';
+    btn.textContent = 'Abrir';
+    bar.style.display = 'none';
+    setHeroArt(a.banner, false);
+  }
+  document.getElementById('hero').style.backgroundColor = shade(BRAND[r.pkg] || '#3b2a4f');
+}
+/* Side list: the history after the hero's item, up to four. */
+function loadRecents(){
+  var list = [];
+  try { list = JSON.parse(TV.recents()); } catch (e) {}
+  list = list.filter(function(r){ return (byPkg[r.pkg] || r.play) && !(r.play && window.mFinishedMovie && mFinishedMovie(r)); });
+  if (window.mOnePerTitle) list = mOnePerTitle(list, resume && mTitleId(resume));
+  if (resume && resume.kind === 'media') list = list.filter(function(r){ return r.key !== resume.key; });
+  // Quantas linhas cabem no card (mínimo 76 px cada, 8 px entre elas).
+  var room = document.getElementById('recent').clientHeight;
+  var fit = room > 0 ? Math.max(1, Math.floor((room + 8) / (76 + 8))) : 4;
+  list = list.slice(0, fit);
+  var box = document.getElementById('recent'), was = cur && box.contains(cur) ? Array.prototype.indexOf.call(box.children, cur) : -1;
+  box.innerHTML = '';
+  document.getElementById('recentEmpty').style.display = list.length ? 'none' : '';
+  list.forEach(function(r){
+    var a = byPkg[r.pkg] || {label:'Player da TV', banner:''}, row = el('div', 'f row');
+    var nx = r.play && window.mNextOf && mNextOf(r);
+    if (nx) { row.dataset.act = 'next'; row.dataset.next = JSON.stringify(nx); }
+    else if (r.play) { row.dataset.act = 'play'; row.dataset.play = r.play; } else { row.dataset.pkg = r.pkg; row.dataset.title = r.title; }
+    var th = el('span', 'thumb'), src = artOf(r) || a.banner;
+    if (src) { var im = el('img'); im.onerror = function(){ if (a.banner && im.src !== a.banner) im.src = a.banner; }; im.src = src; th.appendChild(im); }
+    if (!nx && r.dur > 0 && r.pos > 0) { th.appendChild(el('span', 'pb')); var f = el('span', 'pf'); f.style.width = Math.min(100, 100 * r.pos / r.dur) + '%'; th.appendChild(f); }
+    row.appendChild(th);
+    var meta = nx ? 'Próximo episódio · ' + nx.label : a.label + (r.sub ? ' · ' + r.sub : '');
+    row.appendChild(el('span', 'rowtxt', '<b>' + esc(r.title) + '</b><span>' + esc(meta) + '</span>'));
+    row.appendChild(el('span', 'go', '<svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M7 4.5v15l12-7.5z"/></svg>'));
+    box.appendChild(row);
+  });
+  if (was >= 0) focus(box.children[Math.min(was, box.children.length - 1)] || firstOf('home'));
+}
+/* Best picture for a watched item: saved frame, the app's thumbnail link, or YouTube's thumbnail by video id. */
+/* Hero background: the title's large backdrop, YouTube's full-HD thumbnail, else the list picture. */
+function heroArtOf(r){
+  if (r.backdrop) return r.backdrop;
+  var yt = artOf(r);
+  if (yt.indexOf('i.ytimg.com') >= 0) return yt.replace('/hqdefault.jpg', '/maxresdefault.jpg');
+  return yt;
+}
+function artOf(r){
+  if (r.pkg === 'com.google.android.youtube.tv') {
+    var m = String(r.mediaId || '').match(/(?:v=|\/|^)([A-Za-z0-9_-]{11})(?:$|[&?#])/);
+    if (m) return 'https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg';
+  }
+  return r.art || r.artUrl || '';
+}
+function setHeroArt(src, full){
+  var art = document.getElementById('heroArt'), hero = document.getElementById('hero');
+  hero.classList.toggle('full', !!(src && full));
+  art.className = src && full ? 'full' : 'card-art';
+  art.onerror = null;
+  if (src && resume) {
+    var fallback = artOf(resume) || (byPkg[resume.pkg] || {}).banner;
+    art.onerror = function(){ art.onerror = null; if (fallback && art.src !== fallback) art.src = fallback; };
+  }
+  if (src) { art.src = src; art.style.display = ''; } else art.style.display = 'none';
+}
+function shade(hex){
+  var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255, k = 0.5;
+  return 'rgb(' + Math.round(r*k) + ',' + Math.round(g*k) + ',' + Math.round(b*k) + ')';
+}
+
+function firstOf(p){
+  if (p === 'apps') return document.querySelector('#grid .f');
+  if (p === 'movies') return document.querySelector('#moviesPage [data-mact="heroPlay"]');
+  if (p === 'games') return document.getElementById('gPlay');
+  if (p === 'detail') return document.getElementById('dPlay');
+  if (p === 'sources') return document.querySelector('#sList .f') || document.querySelector('#sourcesPage [data-mact="back"]');
+  return document.querySelector('#dock .f');
+}
+
+var PAGES = {home:'homePage', apps:'appsPage', movies:'moviesPage', games:'gamesPage', detail:'detailPage', sources:'sourcesPage'};
+var pageFocus = {};
+function showPage(p, keepFocus){
+  if (p === page) return;
+  pageFocus[page] = cur;
+  page = p;
+  for (var k in PAGES) document.getElementById(PAGES[k]).style.display = k === p ? (k === 'detail' || k === 'sources' ? 'block' : 'flex') : 'none';
+  document.getElementById('topbar').style.display = (p === 'home' || p === 'apps') ? 'flex' : 'none';
+  var navOf = {home:'navHome', apps:'navApps', movies:'navMovies', detail:'navMovies', sources:'navMovies', games:'navGames'};
+  ['navHome','navApps','navMovies','navGames'].forEach(function(id){ document.getElementById(id).classList.toggle('sel', navOf[p] === id); });
+  if (p === 'apps') document.getElementById('grid').style.transform = '';
+  if (p === 'movies' && window.mEnter) mEnter();
+  if (p === 'games' && window.gEnter) gEnter();
+  if (keepFocus === false) return;
+  var back = pageFocus[p];
+  focus(back && document.body.contains(back) && visible(back) ? back : firstOf(p));
+}
+
+function focus(e){
+  if (!e) return;
+  if (cur) cur.classList.remove('on');
+  cur = e; e.classList.add('on');
+  // Cada fileira/lista lembra o último item com foco, para voltar a ele.
+  if (e.parentNode && e.parentNode.classList && e.parentNode.classList.contains('track')) e.parentNode._last = e;
+  if (window.NAVLOG) console.log('nav -> ' + (e.id || (e.parentNode && e.parentNode.id ? e.parentNode.id + '[' + Array.prototype.indexOf.call(e.parentNode.children, e) + ']' : '') || e.dataset.mact || e.className) + ' ' + String(e.textContent).trim().slice(0, 30));
+  reveal(e);
+  if (window.gFocus) gFocus(e);
+}
+/* Ao entrar numa fileira vindo de fora: o último item em que você estava, senão o selecionado. */
+function entryOf(track, fallback){
+  var last = track._last;
+  if (last && last.parentNode === track && last.classList.contains('f')) return last;
+  return track.querySelector('.f.sel') || fallback || track.querySelector('.f');
+}
+
+/* Keep the focused tile fully inside its viewport by moving the track. */
+function reveal(e){
+  var track = e.parentNode; if (!track.classList || !track.classList.contains('track')) return;
+  var vp = track.parentNode, pad = 16;
+  var horiz = track.id === 'row' || track.dataset.dir === 'h';
+  var m = track.style.transform.match(/-?[\d.]+/);
+  var shift = m ? -parseFloat(m[0]) : 0;
+  var off = horiz ? e.offsetLeft : e.offsetTop, size = horiz ? e.offsetWidth : e.offsetHeight;
+  var view = (horiz ? vp.clientWidth : vp.clientHeight) - 2 * pad;
+  if (off < shift) shift = off;
+  else if (off + size > shift + view) shift = off + size - view;
+  var max = Math.max(0, (horiz ? track.scrollWidth : track.scrollHeight) - view);
+  shift = Math.max(0, Math.min(shift, max));
+  track.style.transform = horiz ? 'translateX(' + (-shift) + 'px)' : 'translateY(' + (-shift) + 'px)';
+}
+
+function rect(e){ return e.getBoundingClientRect(); }
+
+/* Spatial navigation over visible focusables; inside a track, plain neighbour steps. */
+function move(dir){
+  if (!cur) return focus(firstOf(page));
+  if (cur.parentNode.classList && cur.parentNode.classList.contains('track')) {
+    var sib = trackStep(cur, dir); if (sib === false) return; if (sib) return focus(sib);
+  }
+  // Caminhos fixos das telas (fontes, detalhes): vêm antes da busca pelo mais próximo.
+  var routed = window.mRoute && mRoute(cur, dir);
+  if (routed === false) return;
+  if (routed) return focus(routed);
+  var r = rect(cur), cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
+  var best = null, bestScore = 1e9, all = document.querySelectorAll('.f');
+  for (var i = 0; i < all.length; i++){
+    var e = all[i]; if (e === cur || !visible(e)) continue;
+    var q = rect(e), qx = (q.left + q.right) / 2, qy = (q.top + q.bottom) / 2, dx = qx - cx, dy = qy - cy, main, cross;
+    if (dir === 'L') { if (q.right > r.left + 2) continue; main = -dx; cross = Math.abs(dy); }
+    else if (dir === 'R') { if (q.left < r.right - 2) continue; main = dx; cross = Math.abs(dy); }
+    else if (dir === 'U') { if (q.bottom > r.top + 2) continue; main = -dy; cross = Math.abs(dx); }
+    else { if (q.top < r.bottom - 2) continue; main = dy; cross = Math.abs(dx); }
+    var score = main + cross * 2.2;
+    if (score < bestScore) { bestScore = score; best = e; }
+  }
+  if (best && best.parentNode && best.parentNode.classList && best.parentNode.classList.contains('track') && best.parentNode !== cur.parentNode) {
+    best = entryOf(best.parentNode, best);
+  }
+  if (best) focus(best);
+}
+/* Inside a track: the next tile, null to leave the track, false to stay put. */
+function trackStep(e, dir){
+  var track = e.parentNode, kids = Array.prototype.slice.call(track.children).filter(function(k){ return k.classList.contains('f'); }), i = kids.indexOf(e);
+  if (track.id === 'row' || track.dataset.dir === 'h') {
+    if (dir === 'L') return i > 0 ? kids[i-1] : null;
+    if (dir === 'R') return i < kids.length - 1 ? kids[i+1] : false;
+    return null;
+  }
+  // Lista de fontes: → leva direto aos seletores do rodapé.
+  if (track.id === 'sList' && dir === 'R') return document.getElementById('sQualSel');
+  var cols = +(track.dataset.cols || 6), lastRow = Math.floor((kids.length - 1) / cols), row = Math.floor(i / cols);
+  if (dir === 'L') return i % cols ? kids[i-1] : null;
+  if (dir === 'R') return (i % cols < cols - 1 && i + 1 < kids.length) ? kids[i+1] : false;
+  if (dir === 'D') return i + cols < kids.length ? kids[i+cols] : (row < lastRow ? kids[kids.length-1] : (cols === 1 ? null : false));
+  if (dir === 'U') return i - cols >= 0 ? kids[i-cols] : null;
+}
+/* On screen and, for track tiles, inside the viewport. */
+function visible(e){
+  var q = rect(e); if (!q.width) return false;
+  var t = e.parentNode;
+  if (t.classList && t.classList.contains('track')) {
+    var v = rect(t.parentNode);
+    if (q.right < v.left + 8 || q.left > v.right - 8 || q.bottom < v.top + 8 || q.top > v.bottom - 8) return false;
+  }
+  return true;
+}
+
+function act(e){
+  if (e.dataset.mact && window.mAct) return mAct(e);
+  if (e.dataset.gact && window.gAct) return gAct(e);
+  var a = e.dataset.act;
+  if (e.dataset.pkg) { if (e.dataset.title && window.setReturnFromTitle) setReturnFromTitle(e.dataset.title); return TV.launch(e.dataset.pkg); }
+  if (a === 'hero') {
+    if (resume && resume.next) { mPlayNext(resume.next); return; }
+    if (resume && resume.play) { if (window.setReturnFromPlay) setReturnFromPlay(resume.play); TV.playDirect(resume.play); }
+    else if (resume) { if (resume.title && window.setReturnFromTitle && /stremio|nuvio/.test(resume.pkg)) setReturnFromTitle(resume.title); TV.launch(resume.pkg); }
+    return;
+  }
+  if (a === 'next') { mPlayNext(JSON.parse(e.dataset.next)); return; }
+  if (a === 'play') { if (window.setReturnFromPlay) setReturnFromPlay(e.dataset.play); TV.playDirect(e.dataset.play); return; }
+  if (a === 'apps') return showPage('apps');
+  if (a === 'movies') return showPage('movies');
+  if (a === 'games') return showPage('games');
+  if (a === 'home') return showPage('home');
+  if (a === 'live') return TV.liveTv();
+  if (a === 'inputs') return TV.inputs();
+  if (a === 'settings') return TV.settings();
+  if (a === 'wifi') return TV.wifiSettings();
+  if (a === 'search') return TV.search();
+}
+
+var holdTimer = null, holdDone = false;
+document.addEventListener('keyup', function(ev){
+  if (!(ev.key === 'Enter' || ev.key === ' ' || ev.keyCode === 23)) return;
+  if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; if (!holdDone && cur) act(cur); }
+  holdDone = false;
+});
+document.addEventListener('keydown', function(ev){
+  var k = ev.key;
+  if (window.mModalKey && mModalKey(ev)) { ev.preventDefault(); return; }
+  if (document.activeElement && document.activeElement.id === 'mSearch') {
+    if (k === 'Enter' || k === 'ArrowDown' || k === 'ArrowUp' || ev.keyCode === 23) { ev.preventDefault(); window.mSearchDone && mSearchDone(k === 'ArrowDown' ? 'D' : (k === 'ArrowUp' ? 'U' : null)); }
+    return;
+  }
+  if (k === 'ArrowLeft') move('L');
+  else if (k === 'ArrowRight') move('R');
+  else if (k === 'ArrowUp') move('U');
+  else if (k === 'ArrowDown') move('D');
+  else if (k === 'Enter' || k === ' ' || ev.keyCode === 23) {
+    // Episódio/filme: segurar OK marca como assistido; soltar rápido abre como sempre.
+    if (cur && window.mToggleWatched && (cur.dataset.mact === 'episode' || (cur.dataset.mact === 'open' && cur.dataset.type === 'movie'))) {
+      var fire = function(){ clearTimeout(holdTimer); holdTimer = null; holdDone = true; mToggleWatched(cur); };
+      if (!holdTimer && !holdDone) holdTimer = setTimeout(fire, 700);
+      else if (holdTimer) fire();   // segunda descida antes de soltar = botão segurado (o WebView não marca repeat)
+    } else if (!ev.repeat) { if (cur) act(cur); }
+  }
+  else return;
+  ev.preventDefault();
+});
+
+function onBack(){
+  if (window.mModalBack && mModalBack()) return;
+  if (window.gModalBack && gModalBack()) return;
+  if (page === 'sources' || page === 'detail') return window.mBack && mBack();
+  if (page === 'movies' && window.mSearchClear && mSearchClear()) return;
+  if (page === 'apps' || page === 'movies' || page === 'games') return showPage('home');
+  document.getElementById('row').style.transform = '';
+  focus(firstOf('home'));
+}
+function goHome(){
+  // Tecla Home: Início sempre, sem voltar para o título nem abrir o próximo episódio.
+  window.returnTo = null; try { TV.pendingOpen(); } catch (e) {}
+  if (page !== "home") { if (window.M) M.req++; showPage("home", false); }
+  document.getElementById('row').style.transform = '';
+  focus(firstOf('home'));
+}
+function onHomeResume(){
+  tick(); loadResume(); loadRecents();
+  if (page === 'movies' && window.mEnter) mEnter();
+  if (!cur || !document.body.contains(cur) || !visible(cur)) focus(firstOf(page));
+  else cur.classList.add('on');
+  // Voltando de um player: página do título, próximo episódio ou tela de fim.
+  if (window.mResume) mResume();
+}
+
+reloadApps();
+</script>
+<script src="movies.js"></script>
+<script src="games.js"></script>
+</body>
+</html>

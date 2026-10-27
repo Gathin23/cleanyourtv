@@ -1,0 +1,34 @@
+[
+ {
+  "name": "WatchHub",
+  "url": "https://watchhub.strem.io/manifest.json"
+ },
+ {
+  "name": "Torrentio",
+  "url": "https://torrentio.strem.fun/manifest.json"
+ },
+ {
+  "name": "Torrentio Brazuca",
+  "url": "https://torrentio.strem.fun/brazuca/manifest.json"
+ },
+ {
+  "name": "TorrentsDB",
+  "url": "https://torrentsdb.com/manifest.json"
+ },
+ {
+  "name": "NoTorrent",
+  "url": "https://addon.notorrent2.workers.dev/manifest.json"
+ },
+ {
+  "name": "FrostStream",
+  "url": "https://froststream.cloutteam.com/manifest.json"
+ },
+ {
+  "name": "HdHub",
+  "url": "https://hdhub.thevolecitor.qzz.io/eyJ0b3Jib3giOiJ1bnNldCIsInF1YWxpdGllcyI6IjIxNjBwLDEwODBwLDcyMHAiLCJzb3J0IjoiZGVzYyJ9/manifest.json"
+ },
+ {
+  "name": "BestCine",
+  "url": "https://bestcine.dpdns.org/manifest.json"
+ }
+]

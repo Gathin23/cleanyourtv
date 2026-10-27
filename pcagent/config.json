@@ -1,0 +1,25 @@
+{
+  "tv_host": "192.168.15.10",
+  "tv_port": 5555,
+  "adb_key": "C:\\tvh\\tools\\adbkey\\adbkey",
+  "tv_resolution": [
+    1920,
+    1080,
+    60
+  ],
+  "tv_audio_name": "Smart TV Pro",
+  "tv_monitor_name": "Smart TV Pro",
+  "hydra_db": "C:\\Users\\Fred\\AppData\\Roaming\\hydralauncher\\hydra-db",
+  "game_roots": [
+    "D:\\Games",
+    "D:\\SteamLibrary\\steamapps\\common",
+    "C:\\Program Files (x86)\\Steam\\steamapps\\common",
+    "D:\\Rockstar Games",
+    "C:\\Program Files\\Rockstar Games",
+    "D:\\Epic Games"
+  ],
+  "skip_steam_apps": [
+    228980
+  ],
+  "refresh_minutes": 10
+}

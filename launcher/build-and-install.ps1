@@ -30,7 +30,7 @@ if (-not (Test-Path local.properties)) {
     "sdk.dir=$($sdk -replace '\\', '\\')" | Out-File -Encoding ascii local.properties
 }
 
-.\gradlew.bat assembleRelease -q --console=plain
+.\gradlew.bat assembleRelease --no-daemon -q --console=plain
 if ($LASTEXITCODE -ne 0) { throw 'Gradle build failed' }
 
 $py = '..\tools\venv\Scripts\python.exe'
@@ -63,15 +63,16 @@ $out = & $py -I ..\tools\tv.py 'pm install -r /data/local/tmp/tvhome.apk; rm -f 
 Write-Host $out
 if ("$out" -notmatch 'Success') { throw 'pm install failed; the stock launcher was left untouched' }
 # Android 9 only accepts a component here; Android 10+ also takes a bare package name.
-$out = & $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
+$out = & $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.WebHomeActivity'
 Write-Host $out
 if ("$out" -match 'Error') { throw 'could not set the new launcher as home; the stock launcher was left untouched' }
 @(
     'pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted',
+    'appops set com.gathin.tvhome SYSTEM_ALERT_WINDOW allow; echo overlay-allowed',
     'cmd package compile -m speed -f com.gathin.tvhome',
-    "am start -W -n com.gathin.tvhome/.MainActivity | grep -E '^(Status|Error)'",
+    "am start -W -n com.gathin.tvhome/.WebHomeActivity | grep -E '^(Status|Error)'",
     $disableStock,
-    'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
+    'cmd package set-home-activity --user 0 com.gathin.tvhome/.WebHomeActivity'
 ) | & $py -I ..\tools\tv.py --batch
 # Order matters, see build-and-install.sh: start the new launcher, disable the stock one, set the
 # preference last, then check where Home ended up and put the stock launcher back if it is not ours.

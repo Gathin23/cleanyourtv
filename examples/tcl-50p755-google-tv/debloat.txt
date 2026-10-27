@@ -1,0 +1,41 @@
+# TCL 50P755 4K Google TV (device G09), Android 12, STT2.230203.001.AS24. Based on tcl-g10-google-tv.
+# Undo: tools/restore.sh examples/tcl-50p755-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Kept on purpose: voice assistant, Chromecast/AirPlay, updates, USB media, game bar, TCL TV/inputs.
+
+# TCL content, ads and promos
+com.tcl.channelplus
+com.tcl.tv.tclhome_passive
+com.tcl.partnercustomizer
+com.tcl.interactive
+com.tcl.smartlink.core
+
+# Retail demo / store mode
+com.tcl.exhibit
+com.tcl.esticker
+
+# Preloaded junk
+com.tcl.ocean.instructions
+com.tcl.repairguide
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.marvin.talkback
+com.google.android.apps.tv.dreamx
+
+# Apps you don't use
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tvmusic
+com.google.android.videos
+
+# Setup wizard can steal Home after launcherx is disabled
+com.google.android.tungsten.setupwraith
+
+# Apps removidos a pedido (19/10)
+com.esaba.downloader                   # Downloader
+com.formulaone.production              # F1 TV
+com.wbd.stream                         # Max
+com.globo.globotv                      # Globoplay
+com.nbaimd.gametime.nba2011            # NBA
+com.mercadolibre.android.mplay_tv      # Mercado Play
+com.cbs.ca                             # Paramount+
+com.tcl.waterfall.overseas             # TCL Home (conteúdo TCL)
+com.disney.disneyplus                  # Disney+

@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, user-scalable=no">
+<style>
+@font-face{font-family:'Hanken Grotesk';src:url('hanken.ttf');font-weight:100 900}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}
+*{box-sizing:border-box}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;font-family:'Hanken Grotesk',system-ui,sans-serif;color:#fff}
+.glass{background:rgba(28,30,84,0.66);border:1px solid rgba(255,255,255,0.26);box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 30px 80px rgba(0,0,0,0.45)}
+.hidden{opacity:0;pointer-events:none}
+#chrome,#panel{transition:opacity .25s ease}
+
+/* Legenda: texto branco com contorno, sem faixa preta atrás */
+#sub{position:absolute;left:120px;right:120px;bottom:90px;text-align:center;transition:bottom .25s ease;pointer-events:none}
+#sub.up{bottom:330px}
+#sub span{display:inline-block;font-size:48px;line-height:1.3;font-weight:600;letter-spacing:0.2px;color:#fff;
+  text-shadow:0 0 4px #000,0 0 4px #000,2px 2px 3px #000,-2px -2px 3px #000,2px -2px 3px #000,-2px 2px 3px #000}
+
+#topshade{position:absolute;left:0;right:0;top:0;height:300px;background:linear-gradient(180deg,rgba(6,8,24,0.85) 0%,rgba(6,8,24,0) 100%)}
+#head{position:absolute;left:72px;top:56px;right:72px;display:flex;align-items:flex-start;gap:24px}
+#title{margin:0;font-size:56px;line-height:1.08;font-weight:300;letter-spacing:-1.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#subt{margin-top:8px;font-size:22px;font-weight:500;color:rgba(255,255,255,0.85)}
+#clock{margin-left:auto;font-size:30px;font-weight:600}
+#botshade{position:absolute;left:0;right:0;bottom:0;height:420px;background:linear-gradient(0deg,rgba(6,8,24,0.85) 0%,rgba(6,8,24,0) 100%)}
+
+#bar{position:absolute;left:72px;right:72px;bottom:56px;height:196px;border-radius:40px;padding:26px 36px;display:flex;flex-direction:column;gap:22px}
+.prog-row{display:flex;align-items:center;gap:24px;font-size:22px;font-weight:600}
+.prog-row span{min-width:110px}
+.prog-row span:last-child{text-align:right;color:rgba(255,255,255,0.8)}
+#prog{flex:1 1 auto;height:36px;display:flex;align-items:center;border-radius:18px;padding:0 6px}
+#prog .track{position:relative;width:100%;height:8px;border-radius:4px;background:rgba(255,255,255,0.22);transition:height .15s}
+#prog .track i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+#bufd{background:rgba(255,255,255,0.35)}
+#played{background:#533afd}
+#knob{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px rgba(83,58,253,0.35);opacity:0;transition:opacity .15s}
+#prog.on .track{height:12px}
+#prog.on #knob{opacity:1}
+#prog.on{background:rgba(255,255,255,0.08)}
+
+.btn-row{display:flex;align-items:center;gap:14px}
+.cbtn{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22);position:relative}
+.cbtn.big{width:84px;height:84px;background:rgba(255,255,255,0.18)}
+.cbtn small{position:absolute;font-size:12px;font-weight:700;bottom:16px}
+.pbtn{height:64px;border-radius:32px;padding:0 24px;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22);font-size:20px;font-weight:600;white-space:nowrap}
+.pbtn small{font-size:16px;font-weight:600;color:rgba(255,255,255,0.75);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.spacer{flex:1 1 auto}
+.f.on{background:#fff !important;color:#0d253d !important;border-color:#fff !important;box-shadow:0 0 0 6px rgba(255,255,255,0.25)}
+.f.on svg{stroke:#0d253d;fill:none}
+.f.on svg.fill{fill:#0d253d;stroke:none}
+.f.on small{color:rgba(13,37,61,0.75) !important}
+#prog.on{background:rgba(255,255,255,0.08) !important;box-shadow:none}
+
+#panel{position:absolute;right:72px;top:118px;bottom:276px;width:640px;border-radius:36px;padding:32px;display:flex;flex-direction:column;gap:18px}
+#panel h2{margin:0;font-size:32px;font-weight:700}
+#panelBody{flex:1 1 auto;min-height:0;overflow:hidden;position:relative}
+#list{display:flex;flex-direction:column;gap:10px;transition:transform .2s ease}
+.opt{min-height:68px;border-radius:20px;padding:12px 22px;display:flex;align-items:center;gap:14px;font-size:21px;font-weight:600;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14)}
+.opt .dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.6);flex:0 0 14px}
+.opt.sel .dot{background:#533afd;border-color:#533afd;box-shadow:0 0 0 4px rgba(83,58,253,0.3)}
+.opt.on .dot{border-color:#0d253d}
+.opt.on.sel .dot{background:#533afd;border-color:#533afd}
+.opt .lbl{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt .hint{font-size:15px;font-weight:600;color:rgba(255,255,255,0.65)}
+.opt.on .hint{color:rgba(13,37,61,0.7)}
+
+#syncBox{display:flex;flex-direction:column;gap:14px}
+#syncVal2{font-size:50px;font-weight:300;letter-spacing:-1px;text-align:center}
+#syncHint{font-size:18px;line-height:1.45;color:rgba(255,255,255,0.8);text-align:center}
+.sync-row{display:flex;gap:10px;justify-content:center}
+.sbtn{height:64px;min-width:96px;border-radius:32px;padding:0 18px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22)}
+
+.speak{margin-top:2px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.16);display:flex;flex-direction:column;gap:14px}
+.speak-t{font-size:20px;font-weight:700;text-align:center}
+.speak-line{font-size:23px;line-height:1.3;font-weight:600;text-align:center;min-height:30px;color:#e8e4ff}
+.speak-hint{font-size:16px;line-height:1.4;color:rgba(255,255,255,0.75);text-align:center}
+#skipBtn{position:absolute;right:72px;bottom:300px;height:72px;padding:0 30px;border-radius:36px;display:flex;align-items:center;gap:12px;
+  background:#fff;color:#0d253d;font-size:24px;font-weight:700;box-shadow:0 0 0 6px rgba(255,255,255,0.25),0 18px 40px rgba(0,0,0,0.5);transition:opacity .25s}
+#nextCard{position:absolute;right:72px;bottom:300px;width:520px;border-radius:32px;padding:26px 30px;display:flex;flex-direction:column;gap:10px;transition:opacity .25s}
+.nx-k{font-size:18px;font-weight:700;color:#cfc8ff;letter-spacing:.3px}
+.nx-t{font-size:30px;font-weight:300}
+.nx-row{display:flex;align-items:center;gap:16px;margin-top:6px}
+.nx-btn{height:60px;padding:0 26px;border-radius:30px;background:#fff;color:#0d253d;font-size:21px;font-weight:700;display:flex;align-items:center;box-shadow:0 0 0 6px rgba(255,255,255,0.25)}
+.nx-hint{font-size:16px;color:rgba(255,255,255,0.75)}
+#spinner{position:absolute;left:50%;top:50%;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;border:6px solid rgba(255,255,255,0.18);border-top-color:#fff;animation:spin 0.9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toast{position:absolute;left:50%;top:80px;transform:translateX(-50%);border-radius:28px;padding:16px 28px;font-size:21px;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sub"></div>
+  <div id="spinner"></div>
+
+  <div id="chrome" class="hidden">
+    <div id="topshade"></div>
+    <div id="botshade"></div>
+    <div id="head">
+      <div style="min-width:0">
+        <h1 id="title"></h1>
+        <div id="subt"></div>
+      </div>
+      <div id="clock"></div>
+    </div>
+    <div id="bar" class="glass">
+      <div class="prog-row">
+        <span id="cur">0:00</span>
+        <div id="prog" class="f" data-row="0"><div class="track"><i id="bufd"></i><i id="played"></i><b id="knob"></b></div></div>
+        <span id="dur">0:00</span>
+      </div>
+      <div class="btn-row">
+        <div class="f cbtn" data-row="1" data-a="back" aria-label="Voltar 10 segundos">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg><small>10</small>
+        </div>
+        <div class="f cbtn big" id="playBtn" data-row="1" data-a="toggle" aria-label="Reproduzir ou pausar">
+          <svg id="icPause" class="fill" width="34" height="34" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg id="icPlay" class="fill" width="34" height="34" viewBox="0 0 24 24" fill="#fff" style="display:none"><path d="M7 4.5v15l12-7.5z"/></svg>
+        </div>
+        <div class="f cbtn" data-row="1" data-a="fwd" aria-label="Avançar 10 segundos">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg><small>10</small>
+        </div>
+        <div class="spacer"></div>
+        <div class="f pbtn" data-row="1" data-a="subs">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4M13 15h4M7 11h10"/></svg>
+          Legendas <small id="subName">Desligada</small>
+        </div>
+        <div class="f pbtn" data-row="1" data-a="audio">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+          Áudio
+        </div>
+        <div class="f pbtn" data-row="1" data-a="sync">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>
+          Sincronia <small id="syncVal">0,0 s</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="panel" class="glass hidden">
+    <h2 id="panelTitle"></h2>
+    <div id="panelBody"></div>
+  </div>
+
+  <div id="toast" class="glass hidden"></div>
+
+  <!-- Pular abertura / Próximo episódio -->
+  <div id="skipBtn" class="hidden">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d253d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l8 7-8 7z"/><path d="M15 5v14"/></svg>
+    Pular abertura
+  </div>
+  <div id="nextCard" class="glass hidden">
+    <div class="nx-k">Próximo episódio</div>
+    <div class="nx-t" id="nextLine">Começa em 10</div>
+    <div class="nx-row">
+      <div id="nextGo" class="nx-btn">▶ Assistir agora</div>
+      <span class="nx-hint">Voltar para continuar aqui</span>
+    </div>
+  </div>
+</div>
+
+<script>
+var info = {}, subs = [], tracks = {audio: [], text: []};
+var st = {pos: 0, dur: 0, buf: 0, playing: false, loading: true, at: 0};
+var mode = {kind: 'off', idx: -1}, cues = null, cueIdx = 0, shownText = null, embeddedText = '';
+var offset = 0, scale = 1, panel = null, cur = null, hideTimer = null, loadingSub = {};
+var marks = [], target = null, refs = [], lastRef = '', refOn = false, autoDone = false, manualSync = false;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function fmt(ms){
+  ms = Math.max(0, Math.floor(ms / 1000));
+  var h = Math.floor(ms / 3600), m = Math.floor(ms / 60) % 60, s = ms % 60;
+  return (h ? h + ':' + ('0' + m).slice(-2) : m) + ':' + ('0' + s).slice(-2);
+}
+function fmtOff(ms){ var v = (ms / 1000).toFixed(1).replace('.', ','); return (ms > 0 ? '+' : '') + v + ' s'; }
+function toast(t){
+  var e = $('toast'); e.textContent = t; e.classList.remove('hidden');
+  clearTimeout(toast.t); toast.t = setTimeout(function(){ e.classList.add('hidden'); }, 2600);
+}
+function nowPos(){ return st.playing ? st.pos + (performance.now() - st.at) : st.pos; }
+
+/* ---------- estado vindo do player ---------- */
+window.onState = function(pos, dur, buf, playing, loading){
+  st = {pos: pos, dur: dur, buf: buf, playing: playing, loading: loading, at: performance.now()};
+  $('spinner').style.display = loading ? '' : 'none';
+  $('icPause').style.display = playing ? '' : 'none';
+  $('icPlay').style.display = playing ? 'none' : '';
+  if (!$('chrome').classList.contains('hidden')) drawProgress();
+  if (!playing && panel === null) showChrome(false);
+};
+function drawProgress(){
+  var d = st.dur || 1, p = nowPos();
+  $('played').style.width = Math.min(100, 100 * p / d) + '%';
+  $('bufd').style.width = Math.min(100, 100 * st.buf / d) + '%';
+  $('knob').style.left = Math.min(100, 100 * p / d) + '%';
+  $('cur').textContent = fmt(p);
+  $('dur').textContent = st.dur ? fmt(st.dur) : '--:--';
+}
+window.onTracks = function(){ try { tracks = JSON.parse(P.tracks()); } catch (e) {} if (!refOn) startRef(); if (panel === 'audio' || panel === 'subs') openPanel(panel, true); };
+
+/* ---------- legendas ---------- */
+function setSubText(html){
+  if (html === shownText) return;
+  shownText = html;
+  $('sub').innerHTML = html ? '<span>' + html + '</span>' : '';
+}
+function findCue(t){
+  if (!cues || !cues.length) return null;
+  // ponteiro que acompanha o vídeo; recomeça com busca binária quando houve salto
+  var c = cues[cueIdx];
+  if (!(c && c[0] <= t + 5000 && (cueIdx === 0 || cues[cueIdx - 1][1] <= t + 5000))) {
+    var lo = 0, hi = cues.length - 1;
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (cues[mid][1] <= t) lo = mid + 1; else hi = mid; }
+    cueIdx = lo;
+  }
+  while (cueIdx < cues.length - 1 && cues[cueIdx][1] <= t) cueIdx++;
+  c = cues[cueIdx];
+  return c && c[0] <= t && t < c[1] ? c[2] : null;
+}
+setInterval(function(){
+  if (mode.kind === 'addon') setSubText(findCue((nowPos() - offset) / scale));
+  else if (mode.kind === 'embedded') setSubText(embeddedText);
+  else setSubText(null);
+  if (!$('chrome').classList.contains('hidden') && st.playing) drawProgress();
+}, 100);
+window.onCue = function(text){
+  embeddedText = esc(text).replace(/\n/g, '<br>');
+  // Referência: a cada fala nova da legenda do vídeo, anota o momento.
+  if (refOn && mode.kind === 'addon' && text && text !== lastRef) {
+    refs.push(nowPos());
+    if (refs.length % 5 === 0) console.log('autosync pair t=' + Math.round(nowPos()/1000) + ' video="' + text.slice(0, 50) + '" legenda="' + String(shownText || '').replace(/<[^>]+>/g, ' ').slice(0, 50) + '"');
+    if (refs.length === 20 || refs.length === 35 || refs.length % 50 === 0) autoAlign();
+  }
+  lastRef = text;
+};
+
+function pickAddon(i){
+  P.selectText(-1, 0);
+  mode = {kind: 'addon', idx: i}; cues = null; cueIdx = 0;
+  $('subName').textContent = 'carregando…';
+  if (loadingSub[i] && loadingSub[i] !== 'loading') { cues = loadingSub[i]; $('subName').textContent = subs[i].label; startRef(); return; }
+  loadingSub[i] = 'loading';
+  P.loadSub(i, subs[i].url);
+}
+window.onSubLoaded = function(i, list){
+  if (!list || !list.length) {
+    loadingSub[i] = null;
+    if (mode.kind === 'addon' && mode.idx === i) {
+      // Tenta a próxima no mesmo idioma antes de desistir.
+      var next = -1;
+      subs.forEach(function(s, k){ if (next < 0 && k !== i && s.lang === subs[i].lang && loadingSub[k] !== null) next = k; });
+      if (next >= 0) return pickAddon(next);
+      toast('Não deu para abrir essa legenda. Escolha outra.');
+      mode = {kind: 'off', idx: -1}; $('subName').textContent = 'Desligada';
+    }
+    return;
+  }
+  loadingSub[i] = list;
+  if (mode.kind === 'addon' && mode.idx === i) { cues = list; cueIdx = 0; $('subName').textContent = subs[i].label; startRef(); }
+  if (panel === 'subs') openPanel('subs', true);
+};
+function pickEmbedded(t){
+  mode = {kind: 'embedded', idx: t.g + ':' + t.i}; cues = null; embeddedText = '';
+  P.selectText(t.g, t.i);
+  $('subName').textContent = 'No vídeo · ' + langName(t.lang, t.label);
+}
+function subsOff(){ mode = {kind: 'off', idx: -1}; cues = null; P.selectText(-1, 0); $('subName').textContent = 'Desligada'; }
+function langName(code, label){
+  var n = {'pt': 'Português', 'pt-BR': 'Português (BR)', 'por': 'Português', 'pob': 'Português (BR)', 'en': 'Inglês', 'eng': 'Inglês', 'es': 'Espanhol', 'spa': 'Espanhol', 'ja': 'Japonês', 'jpn': 'Japonês'}[code];
+  return label || n || code || 'Faixa';
+}
+
+/* ---------- controles ---------- */
+function showChrome(focusPlay){
+  var ch = $('chrome'), was = ch.classList.contains('hidden');
+  ch.classList.remove('hidden');
+  $('sub').classList.add('up');
+  drawProgress();
+  if (was && panel === null) focus(focusPlay === false && cur ? cur : $('playBtn'));
+  armHide();
+}
+function hideChrome(){
+  if (panel !== null) return;
+  $('chrome').classList.add('hidden');
+  $('sub').classList.remove('up');
+}
+function armHide(){
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(function(){ if (st.playing && panel === null) hideChrome(); }, 5000);
+}
+function focus(e){
+  if (!e) return;
+  if (cur) cur.classList.remove('on');
+  cur = e; e.classList.add('on');
+  if (e.parentNode && e.parentNode.id === 'list') scrollList(e);
+}
+function scrollList(e){
+  var list = e.parentNode, box = $('panelBody');
+  var m = list.style.transform.match(/-?[\d.]+/), shift = m ? -parseFloat(m[0]) : 0;
+  var top = e.offsetTop, bottom = top + e.offsetHeight, view = box.clientHeight;
+  if (top < shift) shift = top; else if (bottom > shift + view) shift = bottom - view;
+  list.style.transform = 'translateY(' + (-shift) + 'px)';
+}
+
+/* ---------- painéis ---------- */
+function openPanel(kind, keep){
+  panel = kind;
+  var body = $('panelBody'), keepIdx = keep && cur && cur.parentNode && cur.parentNode.id === 'list' ? Array.prototype.indexOf.call(cur.parentNode.children, cur) : -1;
+  $('panel').classList.remove('hidden');
+  if (kind === 'sync') return openSync();
+  $('panelTitle').textContent = kind === 'subs' ? 'Legendas' : 'Áudio';
+  var html = '<div id="list">', items = [];
+  if (kind === 'subs') {
+    items.push({label: 'Desligada', sel: mode.kind === 'off', act: function(){ subsOff(); }});
+    subs.forEach(function(s, i){
+      var state = loadingSub[i] === 'loading' ? 'carregando…' : (loadingSub[i] === null ? 'falhou' : '');
+      items.push({label: s.label, hint: state, sel: mode.kind === 'addon' && mode.idx === i, act: function(){ pickAddon(i); }});
+    });
+    (tracks.text || []).forEach(function(t){
+      items.push({label: 'No vídeo · ' + langName(t.lang, t.label), sel: mode.kind === 'embedded' && mode.idx === t.g + ':' + t.i, act: function(){ pickEmbedded(t); }});
+    });
+  } else {
+    (tracks.audio || []).forEach(function(t){
+      var ch = t.ch > 2 ? (t.ch === 6 ? '5.1' : t.ch === 8 ? '7.1' : t.ch + ' canais') : 'estéreo';
+      items.push({label: langName(t.lang, t.label), hint: ch, sel: t.sel, act: function(){ P.selectAudio(t.g, t.i); toast('Áudio: ' + langName(t.lang, t.label)); }});
+    });
+    if (!items.length) items.push({label: 'Só há uma faixa de áudio', sel: true, act: function(){}});
+  }
+  items.forEach(function(it, i){
+    html += '<div class="f opt' + (it.sel ? ' sel' : '') + '" data-i="' + i + '"><span class="dot"></span><span class="lbl">' + esc(it.label) + '</span>' + (it.hint ? '<span class="hint">' + esc(it.hint) + '</span>' : '') + '</div>';
+  });
+  body.innerHTML = html + '</div>';
+  openPanel.items = items;
+  var opts = body.querySelectorAll('.opt'), sel = body.querySelector('.opt.sel');
+  focus(keepIdx >= 0 && opts[keepIdx] ? opts[keepIdx] : (sel || opts[0]));
+}
+function openSync(){
+  $('panelTitle').textContent = 'Sincronia da legenda';
+  $('panelBody').innerHTML =
+    '<div id="syncBox">' +
+      '<div id="syncVal2">' + fmtOff(offset) + '</div>' +
+      '<div class="sync-row">' +
+        '<div class="f sbtn" data-d="-500">−0,5</div><div class="f sbtn" data-d="-100">−0,1</div>' +
+        '<div class="f sbtn" data-d="100">+0,1</div><div class="f sbtn" data-d="500">+0,5</div>' +
+      '</div>' +
+      '<div class="sync-row"><div class="f sbtn" data-d="0" style="min-width:200px">Zerar</div></div>' +
+      '<div id="syncHint">Legenda aparecendo <b>antes</b> da fala? Use <b>+</b>.<br>Aparecendo <b>depois</b>? Use <b>−</b>.' +
+      (mode.kind !== 'addon' ? '<br><br>Escolha uma legenda dos add-ons para ajustar.' : '') + '</div>' +
+      (mode.kind === 'addon' && cues ? '<div class="speak">' +
+        '<div class="speak-t">Sincronizar pela fala</div>' +
+        '<div id="speakLine" class="speak-line"></div>' +
+        '<div class="sync-row"><div class="f sbtn" data-d="hear" style="min-width:250px">Ouvi essa fala</div><div class="f sbtn" data-d="other">Outra</div></div>' +
+        '<div id="speakHint" class="speak-hint"></div>' +
+      '</div>' : '') +
+    '</div>';
+  pickTarget();
+  focus($('panelBody').querySelector(mode.kind === 'addon' && cues ? '[data-d="hear"]' : '[data-d="100"]'));
+}
+function closePanel(){
+  panel = null;
+  $('panel').classList.add('hidden');
+  showChrome(false);
+  focus(document.querySelector('.pbtn[data-a="subs"]'));
+  armHide();
+}
+function setOffset(v){
+  offset = v; cueIdx = 0;
+  P.saveOffset(offset);
+  $('syncVal').textContent = fmtOff(offset);
+  var e = $('syncVal2'); if (e) e.textContent = fmtOff(offset);
+}
+
+/* ---------- teclas ---------- */
+function seek(ms){
+  P.seekBy(ms);
+  st.pos = Math.max(0, nowPos() + ms); st.at = performance.now();
+  cueIdx = 0;
+  showChrome(false);
+  drawProgress();
+}
+function rowItems(r){ return Array.prototype.slice.call(document.querySelectorAll('#chrome .f[data-row="' + r + '"]')); }
+document.addEventListener('keydown', function(ev){
+  var k = ev.key, hidden = $('chrome').classList.contains('hidden') && panel === null;
+  if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', ' '].indexOf(k) < 0 && ev.keyCode !== 23) return;
+  ev.preventDefault();
+  if (hidden && (k === 'Enter' || k === ' ' || ev.keyCode === 23)) {
+    if (skipVisible()) return doSkip();
+    if (nextVisible()) return goNext();
+  }
+  if (hidden) {
+    if (k === 'ArrowLeft') return seek(-10000);
+    if (k === 'ArrowRight') return seek(10000);
+    if (k === 'Enter' || k === ' ' || ev.keyCode === 23) { P.toggle(); return showChrome(true); }
+    return showChrome(true);
+  }
+  armHide();
+  var enter = k === 'Enter' || k === ' ' || ev.keyCode === 23;
+  if (panel === 'sync') {
+    var btns = Array.prototype.slice.call(document.querySelectorAll('#panelBody .sbtn')), i = btns.indexOf(cur);
+    if (enter) {
+      if (cur.dataset.d === 'hear') return heard();
+      if (cur.dataset.d === 'other') return pickTarget(true);
+      var d = +cur.dataset.d;
+      manualSync = true;
+      if (d === 0) { scale = 1; P.saveScale(1); marks = []; setOffset(0); } else setOffset(offset + d);
+      return;
+    }
+    if (k === 'ArrowLeft' && i > 0 && i !== 4 && i !== 5) return focus(btns[i - 1]);
+    if (k === 'ArrowRight' && i < btns.length - 1 && i !== 3 && i !== 4) return focus(btns[i + 1]);
+    if (k === 'ArrowDown') { if (i <= 3) return focus(btns[4]); if (i === 4 && btns[5]) return focus(btns[5]); return; }
+    if (k === 'ArrowUp') { if (i >= 5) return focus(btns[4]); if (i === 4) return focus(btns[2]); return; }
+    return;
+  }
+  if (panel) {
+    var opts = Array.prototype.slice.call(document.querySelectorAll('#panelBody .opt')), j = opts.indexOf(cur);
+    if (enter && j >= 0) { openPanel.items[j].act(); openPanel(panel, true); return; }
+    if (k === 'ArrowDown' && j < opts.length - 1) return focus(opts[j + 1]);
+    if (k === 'ArrowUp' && j > 0) return focus(opts[j - 1]);
+    return;
+  }
+  var row = cur ? +cur.dataset.row : 1, items = rowItems(row), idx = items.indexOf(cur);
+  if (row === 0) {
+    if (k === 'ArrowLeft') return seek(-10000);
+    if (k === 'ArrowRight') return seek(10000);
+    if (k === 'ArrowDown') return focus($('playBtn'));
+    if (enter) { P.toggle(); return; }
+    return;
+  }
+  if (k === 'ArrowLeft' && idx > 0) return focus(items[idx - 1]);
+  if (k === 'ArrowRight' && idx < items.length - 1) return focus(items[idx + 1]);
+  if (k === 'ArrowUp') return focus($('prog'));
+  if (enter) {
+    var a = cur.dataset.a;
+    if (a === 'toggle') P.toggle();
+    else if (a === 'back') seek(-10000);
+    else if (a === 'fwd') seek(10000);
+    else openPanel(a);
+  }
+});
+window.onBack = function(){
+  if (nextVisible()) { nextDismissed = true; hideNext(); return; }
+  if (panel) return closePanel();
+  if (!$('chrome').classList.contains('hidden')) { hideChrome(); return; }
+  P.close();
+};
+
+/* ---------- início ---------- */
+try { info = JSON.parse(P.info()); } catch (e) {}
+subs = info.subs || [];
+offset = info.offset || 0;
+scale = info.scale || 1;
+$('syncVal').textContent = fmtOff(offset);
+$('title').textContent = info.title || '';
+$('subt').textContent = info.sub || '';
+setInterval(function(){ var d = new Date(); $('clock').textContent = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }, 10000);
+(function(){ var d = new Date(); $('clock').textContent = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); })();
+// Legenda em português do Brasil liga sozinha, se houver.
+(function(){
+  var pick = -1;
+  subs.forEach(function(s, i){ if (pick < 0 && s.lang === 'pt-BR') pick = i; });
+  subs.forEach(function(s, i){ if (pick < 0 && s.lang === 'pt') pick = i; });
+  // Fonte dublada: legenda fica desligada (dá para ligar em Legendas).
+  if (pick >= 0 && !info.dub) pickAddon(pick);
+})();
+showChrome(true);
+
+/* ---------- sincronizar pela fala ---------- */
+/* Próxima fala da legenda, pelo tempo atual (pula as que já passaram). */
+function pickTarget(skip){
+  var line = $('speakLine'); if (!line || !cues) return;
+  var tc = (nowPos() - offset) / scale, from = 0;
+  if (skip && target) from = cues.indexOf(target) + 1;
+  else { while (from < cues.length && cues[from][0] < tc + 1500) from++; }
+  target = cues[Math.min(from, cues.length - 1)];
+  line.innerHTML = target ? '“' + target[2] + '”' : '';
+  $('speakHint').textContent = marks.length
+    ? 'Ajustado. Para corrigir um atraso que aumenta, marque outra fala daqui a alguns minutos.'
+    : 'Quando ouvir essa fala, aperte OK em “Ouvi essa fala”.';
+}
+/* Você ouviu a fala alvo agora: encaixa a legenda nela. */
+function heard(){
+  if (!target) return;
+  var v = nowPos() - 300;            // tempo médio de reação
+  var c = target[0];
+  marks = marks.filter(function(m){ return Math.abs(m.v - v) > 60000; });
+  marks.push({c: c, v: v});
+  manualSync = true;
+  if (marks.length >= 2) {
+    var a = marks[marks.length - 2], b = marks[marks.length - 1];
+    var sc = (b.v - a.v) / (b.c - a.c);
+    if (Math.abs(b.v - a.v) > 180000 && sc > 0.95 && sc < 1.05) { scale = sc; P.saveScale(scale); }
+  }
+  setOffset(Math.round(v - scale * c));
+  toast(marks.length >= 2 && scale !== 1 ? 'Legenda ajustada (velocidade corrigida)' : 'Legenda ajustada à fala');
+  pickTarget(true);
+}
+
+/* ---------- sincronia automática pela legenda do vídeo ---------- */
+function startRef(){
+  refs = []; lastRef = ''; autoDone = false;
+  if (mode.kind !== 'addon' || !cues || manualSync) return;
+  var t = (tracks.text || [])[0];
+  if (!t) return;
+  // Prefere uma legenda embutida em inglês ou japonês (costumam ter o tempo certo do vídeo).
+  (tracks.text || []).forEach(function(x){ if (/^(en|eng|ja|jpn)/i.test(x.lang)) t = x; });
+  refOn = P.refText(t.g, t.i);
+  console.log('autosync reference track ' + t.lang + ' ' + t.label);
+}
+/* Acha o deslocamento que faz mais falas da legenda caírem junto das falas do vídeo. */
+function autoAlign(){
+  if (!cues || refs.length < 20 || manualSync) return;
+  var votes = {}, best = null, bestN = 0;
+  refs.forEach(function(r){
+    var guess = (r - offset) / scale;
+    cues.forEach(function(c){
+      if (Math.abs(c[0] - guess) > 90000) return;
+      var o = Math.round((r - scale * c[0]) / 100);
+      votes[o] = (votes[o] || 0) + 1;
+    });
+  });
+  Object.keys(votes).forEach(function(k){
+    var n = (votes[k] || 0) + (votes[+k - 1] || 0) + (votes[+k + 1] || 0);
+    if (n > bestN) { bestN = n; best = +k * 100; }
+  });
+  if (best === null) return;
+  // confere: quantas falas do vídeo têm uma da legenda a menos de 0,5 s
+  var countHits = function(off){
+    return refs.filter(function(r){
+      var tc = (r - off) / scale;
+      return cues.some(function(c){ return Math.abs(c[0] - tc) < 500; });
+    }).length;
+  };
+  var hits = countHits(best), baseHits = countHits(offset);
+  console.log('autosync baseline hits=' + baseHits);
+  // Só muda se o novo ajuste for claramente melhor que o atual (legenda já certa fica como está).
+  if (hits < baseHits + Math.max(3, refs.length * 0.15)) return;
+  console.log('autosync refs=' + refs.length + ' best=' + best + ' hits=' + hits + ' current=' + offset);
+  if (hits < Math.max(10, refs.length * 0.6)) return;
+  if (Math.abs(best - offset) < 250 && autoDone) return;
+  setOffset(best);
+  manualSync = false;
+  if (!autoDone) toast('Legenda sincronizada automaticamente (' + fmtOff(best) + ')');
+  autoDone = true;
+}
+
+/* ---------- pular abertura e próximo episódio ---------- */
+var skip = null, skipChosen = false, skipDone = {}, nextDismissed = false, nextTimer = null, nextLeft = 0;
+/* Escolhe, entre os tempos recebidos, o do arquivo com a mesma duração (AniSkip tem várias versões). */
+function chooseSkip(){
+  if (skipChosen || !st.dur) return;
+  skipChosen = true;
+  var list = info.skips || [], dur = st.dur / 1000, best = null, bd = 1e9;
+  list.forEach(function(x){ var d = x.len ? Math.abs(x.len - dur) : 0; if (d < bd) { bd = d; best = x; } });
+  if (best && (bd <= 90 || !best.len)) skip = best;
+  if (skip) console.log('skip times op=' + JSON.stringify(skip.op) + ' ed=' + JSON.stringify(skip.ed) + ' diff=' + Math.round(bd) + 's');
+  // Tempos fora deste arquivo não servem.
+  if (skip && skip.ed && skip.ed[0] > dur - 15) skip.ed = null;
+  if (skip && skip.op && skip.op[1] > dur / 2) skip.op = null;
+  if (!skip) skip = {};
+  // Sem tempos do AniSkip: descobrir pela legenda (precisa de uma carregada, mesmo desligada).
+  if ((!skip.op && isAnime()) || !skip.ed) {
+    var have = false;
+    for (var k in loadingSub) if (Array.isArray(loadingSub[k])) have = true;
+    var raw = subs.filter(function(x){ return x.url.indexOf('translate:') !== 0; })[0] || subs[0];
+    if (!have && raw) P.loadSub(900, raw.url.replace(/^translate:/, ''));
+  }
+}
+function isAnime(){ return (info.skips || []).length > 0; }
+/* Abertura = trecho de ~90 s sem falas no começo; créditos = trecho longo sem falas no fim. */
+var guessed = false;
+function guessFromCues(){
+  if (guessed || !skip || (skip.op || !isAnime()) && skip.ed) return;
+  var list = null;
+  for (var k in loadingSub) if (Array.isArray(loadingSub[k]) && loadingSub[k].length > 50) { list = loadingSub[k]; break; }
+  if (!list) return;
+  guessed = true;
+  var dur = st.dur / 1000, sp = [];
+  list.forEach(function(c){
+    if (/♪|♫/.test(c[2])) return;              // letra da música da abertura não conta como fala
+    sp.push([(c[0] * scale + offset) / 1000, (c[1] * scale + offset) / 1000]);
+  });
+  sp.sort(function(a, b){ return a[0] - b[0]; });
+  var gaps = [], last = 0;
+  sp.forEach(function(c){ if (c[0] - last > 0) gaps.push([last, c[0]]); last = Math.max(last, c[1]); });
+  gaps.push([last, dur]);
+  if (!skip.op && isAnime()) {
+    var g = gaps.filter(function(x){ return x[1] - x[0] >= 75 && x[0] < Math.min(420, dur / 3); })[0];
+    if (g) skip.op = [g[0] + (g[0] > 0 ? 0.5 : 0), Math.min(g[0] + 90, g[1] - 0.5)];
+  }
+  if (!skip.ed) {
+    var e = gaps.filter(function(x){ return x[1] - x[0] >= 60 && x[0] > dur - 300; })[0];
+    if (e) skip.ed = [e[0] + 1, e[1]];
+  }
+  console.log('skip guessed op=' + JSON.stringify(skip.op) + ' ed=' + JSON.stringify(skip.ed));
+}
+function skipVisible(){ return !$('skipBtn').classList.contains('hidden'); }
+function nextVisible(){ return !$('nextCard').classList.contains('hidden'); }
+function doSkip(){
+  if (!skip || !skip.op) return;
+  skipDone.op = true;
+  var to = skip.op[1] * 1000;
+  P.seekTo(to); st.pos = to; st.at = performance.now(); cueIdx = 0;
+  $('skipBtn').classList.add('hidden');
+}
+function goNext(){ clearInterval(nextTimer); P.next(); }
+function hideNext(){ clearInterval(nextTimer); nextTimer = null; $('nextCard').classList.add('hidden'); }
+function showNext(){
+  if (nextTimer || nextDismissed) return;
+  $('nextCard').classList.remove('hidden');
+  nextLeft = 10;
+  $('nextLine').textContent = 'Começa em ' + nextLeft;
+  nextTimer = setInterval(function(){
+    if (!st.playing) return;                  // pausado: a contagem espera
+    nextLeft--;
+    $('nextLine').textContent = 'Começa em ' + nextLeft;
+    if (nextLeft <= 0) goNext();
+  }, 1000);
+}
+setInterval(function(){
+  if (!st.dur) return;
+  chooseSkip();
+  guessFromCues();
+  var t = nowPos() / 1000;
+  // Pular abertura: durante a abertura (até 2 s antes do fim dela)
+  var inOp = skip && skip.op && !skipDone.op && t >= skip.op[0] && t < skip.op[1] - 2;
+  $('skipBtn').classList.toggle('hidden', !inOp);
+  // Próximo episódio: no começo dos créditos (AniSkip) ou nos 40 s finais
+  if (info.series) {
+    var start = skip && skip.ed && skip.ed[0] > 60 ? skip.ed[0] : st.dur / 1000 - 40;
+    if (t >= start && st.dur / 1000 - t > 3) showNext();
+    else if (t < start - 5 && nextVisible()) { hideNext(); nextDismissed = false; }
+  }
+}, 500);
+</script>
+</body>
+</html>

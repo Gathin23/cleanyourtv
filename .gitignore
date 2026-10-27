@@ -8,3 +8,13 @@ launcher/local.properties
 # your own TV's dumps (serial, android_id, device names) stay local
 backup/
 .DS_Store
+
+# minha TV: prints soltos, dumps e arquivos gerados ficam fora
+/*.png
+/*.txt
+/hanken.ttf
+dl/
+pcagent/venv/
+pcagent/agent.log
+pcagent/assets_cache.json
+

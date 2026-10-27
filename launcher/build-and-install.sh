@@ -72,9 +72,9 @@ esac
 printf '%s\n' \
   "pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted" \
   "cmd package compile -m speed -f com.gathin.tvhome" \
-  "am start -W -n com.gathin.tvhome/.MainActivity | grep -E '^(Status|Error)'" \
+  "am start -W -n com.gathin.tvhome/.WebHomeActivity | grep -E '^(Status|Error)'" \
   "$DISABLE_STOCK" \
-  "cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity" \
+  "cmd package set-home-activity --user 0 com.gathin.tvhome/.WebHomeActivity" \
   | "$PY" -I ../tools/tv.py --batch
 # Order matters: the new launcher is started before the stock one is disabled, and the home
 # preference is set after. Android drops the preference whenever the set of HOME apps changes, and
