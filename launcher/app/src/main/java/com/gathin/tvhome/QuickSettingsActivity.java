@@ -3,9 +3,11 @@ package com.gathin.tvhome;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +20,11 @@ import android.widget.Toast;
  * closes the panel.
  */
 public final class QuickSettingsActivity extends Activity {
+    /** The Settings pill's place on screen, when Home opens the panel (settings_pill_panel). */
+    static final String EXTRA_ANCHOR = "com.gathin.tvhome.extra.ANCHOR";
+    /** Gap under the pill, the same as the pill's own dropdown menus (MainActivity.dropIn). */
+    private static final int ANCHOR_GAP_DP = 10;
+
     @Override
     protected void attachBaseContext(android.content.Context base) {
         super.attachBaseContext(LauncherLocale.wrap(base));   // locale
@@ -38,6 +45,7 @@ public final class QuickSettingsActivity extends Activity {
             position.setMargins(inset, position.topMargin, 0, position.bottomMargin);
             panel.setLayoutParams(position);
         }
+        hangUnder(getIntent().getParcelableExtra(EXTRA_ANCHOR));
         findViewById(R.id.scrim).setOnClickListener(v -> finish());
         LinearLayout rows = findViewById(R.id.rows);
         addRow(rows, R.drawable.ic_settings, R.string.tv_settings, 0, SystemSettings.intent(this, Settings.ACTION_SETTINGS));
@@ -49,6 +57,20 @@ public final class QuickSettingsActivity extends Activity {
         addRow(rows, R.drawable.ic_home_settings, R.string.launcher_settings, 0,
                 new Intent(this, MainActivity.class).setAction(MainActivity.ACTION_LAUNCHER_SETTINGS));
         rows.getChildAt(0).requestFocus();
+    }
+
+    /** Opened from Home: hang the panel under the Settings pill, edge to edge with it. Over an app the layout stands. */
+    private void hangUnder(Rect pill) {
+        if (pill == null) return;
+        View panel = findViewById(R.id.panel);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) panel.getLayoutParams();
+        lp.topMargin = pill.bottom + Math.round(ANCHOR_GAP_DP * getResources().getDisplayMetrics().density);
+        if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
+            lp.leftMargin = pill.left;
+        } else {
+            lp.setMarginEnd(getResources().getDisplayMetrics().widthPixels - pill.right);
+        }
+        panel.setLayoutParams(lp);
     }
 
     /** Settings pressed again while the panel is up. */

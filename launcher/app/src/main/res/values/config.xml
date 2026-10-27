@@ -162,6 +162,9 @@
          with TV settings, Display, Network, Apps (re-enable an app) and Launcher settings, over whatever is on screen.
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
     <bool name="settings_key_panel">false</bool>
+    <!-- The Settings pill on Home opens that same glass panel instead of the TV's Settings, whose first row it
+         is. Off by default; a theme can set "settings_pill_panel": true. launcher_settings_button wins. -->
+    <bool name="settings_pill_panel">false</bool>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in

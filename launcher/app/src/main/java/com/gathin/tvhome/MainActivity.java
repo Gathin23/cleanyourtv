@@ -771,6 +771,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return true;
         });
         launcherSettingsButton = cfg.launcherSettingsButton;
+        settingsPillPanel = cfg.settingsPillPanel;
         if (launcherSettingsButton) {
             ((TextView) btnSettings).setText(R.string.launcher_settings);
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_home_settings_pill, 0, 0, 0);
@@ -778,6 +779,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnClickListener(v -> {
             if (launcherSettingsButton) startActivityForResult(
                     new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
+            else if (settingsPillPanel) openQuickSettings(btnSettings);
             else open(systemIntent(Settings.ACTION_SETTINGS));
         });
         btnReorder = findViewById(R.id.btnReorder);
@@ -2866,6 +2868,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** show_inputs_pill as configured: top_menu clears showInputsPill, so its Inputs row reads this. */
     private boolean showInputsMenuRow = true;
     private boolean launcherSettingsButton;
+    /** settings_pill_panel: the Settings pill opens the quick settings panel instead of the TV's Settings. */
+    private boolean settingsPillPanel;
     /** icon_only_buttons without wifi_label_width: the Wi-Fi pill shows no network name. */
     private boolean wifiIconOnly;
     /** config.xml wifi_status_color: the Wi-Fi icon's green while online and its usual pill colours; null while off. */
@@ -3083,6 +3087,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Exception e) {
             Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** The quick settings panel, hung under the Settings pill. */
+    private void openQuickSettings(View pill) {
+        int[] at = new int[2];
+        pill.getLocationOnScreen(at);
+        open(new Intent(this, QuickSettingsActivity.class).putExtra(QuickSettingsActivity.EXTRA_ANCHOR,
+                new Rect(at[0], at[1], at[0] + pill.getWidth(), at[1] + pill.getHeight())));
     }
 
     private void open(Intent i) {
