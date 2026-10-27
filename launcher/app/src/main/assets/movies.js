@@ -28,9 +28,18 @@ window.onFetch = function(id, ok, text){
   if (!ok) return cb(null);
   try { cb(JSON.parse(text)); } catch (e) { cb(null); }
 };
+/* Na memória ficam só as 200 respostas usadas por último; as outras voltam do cache em disco do Android. */
+var CACHE_MAX = 200, cacheN = 0;
 function cached(url){
-  if (M.cache[url]) return Promise.resolve(M.cache[url]);
-  return getJson(url).then(function(j){ if (j) M.cache[url] = j; return j; });
+  var hit = M.cache[url];
+  if (hit) { delete M.cache[url]; M.cache[url] = hit; return Promise.resolve(hit); }   // reinsere: vira a mais recente
+  return getJson(url).then(function(j){
+    if (j && !M.cache[url]) {
+      M.cache[url] = j;
+      if (++cacheN > CACHE_MAX) { delete M.cache[Object.keys(M.cache)[0]]; cacheN--; }
+    }
+    return j;
+  });
 }
 
 /* ---------- imagens ---------- */
