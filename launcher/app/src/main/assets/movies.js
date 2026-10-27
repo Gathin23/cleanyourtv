@@ -115,13 +115,13 @@ function posterCard(m, i){
 /* Abas Filmes, Séries e Animes: grade de pôsteres que carrega mais ao descer,
    com ordenação (catálogos do Cinemeta) e gênero. */
 var SORTS = [['top', 'Mais assistidos'], ['new', 'Lançamentos'], ['rating', 'Mais bem avaliados'], ['mine', 'Assistidos por você'],
-  ['svc:nfx', 'Top Netflix'], ['svc:amp', 'Top Prime Video'], ['svc:dnp', 'Top Disney+'], ['svc:hbm', 'Top HBO Max'], ['svc:atp', 'Top Apple TV+'], ['svc:cru', 'Top Crunchyroll']];
+  ['svc:nfx', 'Top Netflix'], ['svc:amp', 'Top Prime Video'], ['svc:dnp', 'Top Disney+'], ['svc:hbm', 'Top HBO Max'], ['svc:pmp', 'Top Paramount+'], ['svc:atp', 'Top Apple TV+'], ['svc:cru', 'Top Crunchyroll']];
 var SVC_ADDON = 'https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club';
 var GENRES = [['all', 'Todos'], ['Action', 'Ação'], ['Adventure', 'Aventura'], ['Animation', 'Animação'], ['Biography', 'Biografia'],
   ['Comedy', 'Comédia'], ['Crime', 'Crime'], ['Documentary', 'Documentário'], ['Drama', 'Drama'], ['Family', 'Família'],
   ['Fantasy', 'Fantasia'], ['History', 'História'], ['Horror', 'Terror'], ['Mystery', 'Mistério'], ['Romance', 'Romance'],
   ['Sci-Fi', 'Ficção científica'], ['Sport', 'Esporte'], ['Thriller', 'Suspense'], ['War', 'Guerra'], ['Western', 'Faroeste']];
-M.sort = 'top'; M.genre = 'all';
+M.sort = 'top'; M.genre = 'all'; M.stack = [];
 function label(list, v){ var o = list.filter(function(x){ return x[0] === v; })[0]; return o ? o[1] : ''; }
 function gridUrl(g){
   var ctype = g.type === 'anime' ? 'series' : g.type, parts = [];
@@ -349,6 +349,7 @@ function openDetail(type, id, from){
   document.getElementById('dTitle').textContent = 'Carregando…';
   ['dDesc', 'dMeta', 'dKind'].forEach(function(x){ document.getElementById(x).textContent = ''; });
   document.getElementById('dGenres').innerHTML = ''; document.getElementById('dCast').innerHTML = '';
+  document.getElementById('dRecs').style.display = 'none'; document.getElementById('dRecsRow').innerHTML = ''; mFocus(null);
   document.getElementById('dEps').innerHTML = ''; document.getElementById('dSeasons').innerHTML = '';
   document.getElementById('dArt').removeAttribute('src');
   document.getElementById('dLogo').style.display = 'none';
@@ -384,6 +385,7 @@ function renderDetail(){
   var hasTrailer = (m.trailerStreams && m.trailerStreams.length) || (m.trailers && m.trailers.length);
   document.getElementById('dTrailer').style.display = hasTrailer ? 'flex' : 'none';
   renderCast(m);
+  renderRecs(m, M.detail.type, M.detail.id);
   if (isSeries && seasons.length) {
     document.getElementById('dEpisodes').style.display = 'flex';
     renderSeasons(seasons);
@@ -523,6 +525,40 @@ function drawCast(people){
   if (!people.length) box.appendChild(el('span', 'msg', 'Elenco não informado.'));
   people.slice(0, 9).forEach(function(p, i){ if (p.photo) setAvatar(i, p.photo); });
 }
+/* Recomendados (abaixo do elenco): primeiro a mesma franquia (busca pelo nome sem "2", ": Capítulo…"),
+   depois o mesmo diretor e por fim os mais vistos que dividem mais gêneros com o título. */
+var JUNK_RX = /first look|making of|behind the|featurette|training|vizzed|untitled|assassin's code/i;
+function renderRecs(m, type, id){
+  var want = M.detail, box = document.getElementById('dRecs'), row = document.getElementById('dRecsRow');
+  var base = String(m.name || '').split(/[:\-–]/)[0].replace(/\s+(\d+|[IVX]+)$/, '').trim();
+  var genres = (m.genres || m.genre || []).filter(function(g){ return g !== 'Animation' || type === 'series'; });
+  var search = function(q){ return q ? cached(CINEMETA + '/catalog/' + type + '/top/search=' + encodeURIComponent(q) + '.json') : Promise.resolve(null); };
+  var byGenre = genres.slice(0, 2).map(function(g){ return cached(CINEMETA + '/catalog/' + type + '/top/genre=' + encodeURIComponent(g) + '.json'); });
+  Promise.all([search(base), search(type === 'movie' && (m.director || [])[0])].concat(byGenre)).then(function(r){
+    if (M.detail !== want) return;
+    var seen = {}, out = [], nb = norm(base);
+    seen[id] = 1;
+    var add = function(x){ if (!x || seen[x.id] || !x.poster || !x.releaseInfo || JUNK_RX.test(x.name)) return; seen[x.id] = 1; out.push(x); };
+    var metas = function(j){ return (j && j.metas) || []; };
+    metas(r[0]).filter(function(x){ return nb.length > 2 && norm(x.name).indexOf(nb) === 0; })
+      .sort(function(a, b){ return parseInt(a.releaseInfo) - parseInt(b.releaseInfo); }).forEach(add);
+    metas(r[1]).slice(0, 6).forEach(add);
+    var pool = [].concat.apply([], r.slice(2).map(metas)), score = function(x){
+      var gs = x.genres || x.genre || [];
+      return genres.filter(function(g){ return gs.indexOf(g) >= 0; }).length * 10 + (parseFloat(x.imdbRating) || 0);
+    };
+    pool.sort(function(a, b){ return score(b) - score(a); }).forEach(add);
+    row.innerHTML = ''; row.style.transform = '';
+    out.slice(0, 16).forEach(function(x, i){ row.appendChild(posterCard(x, i)); });
+    box.style.display = out.length ? 'flex' : 'none';
+  }).catch(function(){});
+}
+/* Os recomendados ficam abaixo da tela: com o foco neles, a página inteira sobe. */
+window.mFocus = function(e){
+  var inner = document.querySelector('#detailPage .inner'); if (!inner) return;
+  var on = !!(e && e.parentNode && e.parentNode.id === 'dRecsRow');
+  inner.style.transform = on ? 'translateY(' + (-(document.getElementById('dRecs').offsetHeight + 24)) + 'px)' : '';
+};
 function initials(n){ return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w[0]; }).join('').toUpperCase(); }
 
 /* ---------- fontes ---------- */
@@ -748,7 +784,11 @@ window.mAct = function(e){
     if (a === 'heroPlay' && M.hero.type === 'movie') waitDetail(openSources);
     return;
   }
-  if (a === 'open') return openDetail(e.dataset.type, e.dataset.id, 'movies');
+  if (a === 'open') {
+    // Aberto a partir dos recomendados: o Voltar retorna ao título anterior.
+    if (page === 'detail' && M.detail) M.stack.push({type: M.detail.type, id: M.detail.id}); else M.stack = [];
+    return openDetail(e.dataset.type, e.dataset.id, 'movies');
+  }
   if (a === 'resume' && e.dataset.next) { return mPlayNext(JSON.parse(e.dataset.next)); }
   if (a === 'resume' && e.dataset.play) { setReturnFromPlay(e.dataset.play); return TV.playDirect(e.dataset.play); }
   if (a === 'resume') {
@@ -789,6 +829,7 @@ function waitDetail(fn){
 }
 window.mBack = function(){
   if (page === 'sources') { M.req++; return showPage(M.detail && M.from !== 'skip' ? 'detail' : 'movies'); }
+  if (page === 'detail' && M.stack.length) { var b = M.stack.pop(); return openDetail(b.type, b.id, 'movies'); }
   if (page === 'detail') return showPage('movies');
   showPage('home');
 };
@@ -1264,6 +1305,7 @@ window.mRoute = function(c, dir){
   }
   if (page === 'detail') {
     var info = $('dInfo'), seasons = $('dSeasons'), eps = $('dEps');
+    var recs = $('dRecs').style.display !== 'none' && $('dRecsRow').querySelector('.f');
     var hasEps = $('dEpisodes').style.display !== 'none' && eps.querySelector('.f');
     var hdrBack = document.querySelector('#detailPage [data-mact="back"]');
     var epIn = function(){
@@ -1271,7 +1313,7 @@ window.mRoute = function(c, dir){
       return eps._last && eps._last.parentNode === eps ? eps._last : (curEp || eps.querySelector('.f'));
     };
     if (info.contains(c)) {
-      if (dir === 'D') return hasEps ? entryOf(seasons) : false;
+      if (dir === 'D') return hasEps ? entryOf(seasons) : (recs ? entryOf($('dRecsRow')) : false);
       if (dir === 'U') return hdrBack;
     }
     if (c === hdrBack && dir === 'D') return $('dPlay');
@@ -1281,6 +1323,10 @@ window.mRoute = function(c, dir){
     }
     if (c.parentNode === eps) {
       if (dir === 'U') return entryOf(seasons);
+      if (dir === 'D') return recs ? entryOf($('dRecsRow')) : false;
+    }
+    if (c.parentNode === $('dRecsRow')) {
+      if (dir === 'U') return hasEps ? epIn() : $('dPlay');
       if (dir === 'D') return false;
     }
   }
