@@ -373,8 +373,11 @@ function setOffset(v){
 
 /* ---------- teclas ---------- */
 function seek(ms){
-  P.seekBy(ms);
-  st.pos = Math.max(0, nowPos() + ms); st.at = performance.now();
+  // Alvo absoluto a partir da posição já pedida: vários toques seguidos somam mesmo com o vídeo
+  // ainda carregando (seekBy partia sempre da posição real, e 10 toques viravam 10 s).
+  var to = Math.max(0, Math.min(nowPos() + ms, st.dur ? st.dur - 1000 : 1e12));
+  P.seekTo(to);
+  st.pos = to; st.at = performance.now();
   cueIdx = 0;
   showChrome(false);
   drawProgress();

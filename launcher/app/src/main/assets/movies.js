@@ -1329,15 +1329,39 @@ function hideEnded(){
 /* ---------- abertura e encerramento (anime) pelo AniSkip ---------- */
 /* IMDb → MyAnimeList (ARM) → tempos no AniSkip. Devolve [{op:[s,e], ed:[s,e], len}] em segundos;
    o player escolhe a entrada com a duração do episódio. */
+/* Entradas do MyAnimeList que são temporadas de TV, em ordem de lançamento.
+ * O ARM também lista especiais e filmes (Black Clover: 33950 é um especial, a série é 34572),
+ * então a ordem dele não serve; o tipo e a data vêm do Kitsu. Guardado no aparelho: uma consulta por série. */
+function malSeasons(imdb){
+  var key = 'malTv:' + imdb;
+  try { var saved = JSON.parse(localStorage.getItem(key) || 'null'); if (saved && saved.length) return Promise.resolve(saved); } catch (e) {}
+  return cached('https://arm.haglund.dev/api/v2/imdb?id=' + imdb + '&include=myanimelist,kitsu').then(function(list){
+    list = (list || []).filter(function(x){ return x.myanimelist; });
+    var all = list.map(function(x){ return x.myanimelist; });
+    if (all.length < 2) return all;
+    return Promise.all(list.map(function(x){
+      if (!x.kitsu) return null;
+      return cached('https://kitsu.io/api/edge/anime/' + x.kitsu).then(function(r){ return r && r.data && r.data.attributes; }, function(){ return null; });
+    })).then(function(info){
+      var tv = list.map(function(x, i){ return {id: x.myanimelist, a: info[i]}; })
+        .filter(function(x){ return x.a && /^(TV|ONA)$/.test(x.a.subtype); })
+        .sort(function(a, b){ return String(a.a.startDate).localeCompare(String(b.a.startDate)); })
+        .map(function(x){ return x.id; });
+      if (!tv.length) return all;                        // Kitsu fora do ar: fica com a ordem do ARM
+      try { localStorage.setItem(key, JSON.stringify(tv)); } catch (e) {}
+      return tv;
+    });
+  });
+}
+
 function fetchSkips(d, v){
   var m = d.meta, genres = m.genres || m.genre || [];
   if (d.type !== 'series' || genres.indexOf('Animation') < 0 || !v) return Promise.resolve([]);
   var ep = v.episode || v.number;
-  var work = cached('https://arm.haglund.dev/api/v2/imdb?id=' + d.id + '&include=myanimelist').then(function(list){
-    // Uma entrada do MAL por temporada (na ordem do ARM): usar só a da temporada certa,
+  var si = (v.season || 1) - 1;
+  var work = malSeasons(d.id).then(function(all){
+    // Uma entrada do MAL por temporada: usar só a da temporada certa,
     // senão S2E5 pode receber os tempos de S1E5 (durações quase iguais).
-    var all = (list || []).map(function(x){ return x.myanimelist; }).filter(Boolean);
-    var si = (v.season || 1) - 1;
     var ids = all.length === 1 ? all : all[si] ? [all[si]] : [];
     return Promise.all(ids.map(function(mal){
       return cached('https://api.aniskip.com/v2/skip-times/' + mal + '/' + ep + '?types=op&types=ed&types=mixed-op&types=mixed-ed&episodeLength=0').then(function(r){
@@ -1354,5 +1378,5 @@ function fetchSkips(d, v){
   }).then(function(all){ return (all || []).filter(Boolean); });
   // Anime sem dados no AniSkip: um marcador vazio avisa o player para descobrir pela legenda.
   var mark = function(l){ return l && l.length ? l : [{anime: true}]; };
-  return Promise.race([work, new Promise(function(r){ setTimeout(function(){ r([]); }, 6000); })]).then(mark, function(){ return mark([]); });
+  return Promise.race([work, new Promise(function(r){ setTimeout(function(){ r([]); }, 9000); })]).then(mark, function(){ return mark([]); });
 }
