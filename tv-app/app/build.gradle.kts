@@ -17,6 +17,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    androidResources {
+        noCompress += "apk"
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
