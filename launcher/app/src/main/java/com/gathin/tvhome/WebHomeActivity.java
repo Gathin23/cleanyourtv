@@ -142,7 +142,7 @@ public class WebHomeActivity extends Activity {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if (level >= TRIM_MEMORY_RUNNING_LOW && web != null) {
+        if (level >= 10 && web != null) {   // 10 = TRIM_MEMORY_RUNNING_LOW (constante marcada como antiga)
             web.clearCache(false);          // só o cache em memória; o de disco (capas) fica
             android.util.Log.i("TvHome", "trim memory " + level);
         }

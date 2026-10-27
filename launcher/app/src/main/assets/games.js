@@ -175,6 +175,7 @@ function drawHero(g){
   gq('gDesc').textContent = g.desc || '';
   gq('gPlayTxt').textContent = isRun ? 'Voltar ao jogo' : (run ? 'Jogar este' : 'Jogar na TV');
   gq('gStop').style.display = run ? 'flex' : 'none';
+  gq('gClose').style.display = run ? 'flex' : 'none';
 }
 
 window.gAct = function(e){
@@ -185,6 +186,12 @@ window.gAct = function(e){
     return;
   }
   if (a === 'hdmi') return pickHdmi(e);
+  if (a === 'close') {
+    var run = running();
+    request({a: 'close'});
+    gToast('Fechando ' + (run ? run.title : 'o jogo') + '…');
+    return;
+  }
   if (a === 'stop') { request({a: 'restore'}); gToast('Devolvendo a tela ao PC…'); return; }
   if (a === 'refresh') { request({a: 'refresh'}); gToast('Atualizando a lista do PC…'); return; }
 };

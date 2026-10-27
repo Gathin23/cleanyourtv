@@ -726,6 +726,36 @@ threading.excepthook = lambda a: log.error("thread %s: %s", a.thread and a.threa
 
 
 RESTORE = threading.Event()
+CLOSE = threading.Event()        # "Fechar jogo" pelo controle remoto da TV
+
+
+def close_game(procs):
+    """Pede para o jogo fechar (como clicar no X); quem não fechar em 10 s é encerrado."""
+    pids = {p.pid for p in procs}
+    pid = wt.DWORD()
+
+    @ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
+    def cb(hwnd, _):
+        user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        if pid.value in pids and user32.IsWindowVisible(hwnd):
+            user32.PostMessageW(hwnd, 0x0010, 0, 0)     # WM_CLOSE
+        return True
+    user32.EnumWindows(cb, 0)
+    gone, alive = psutil.wait_procs(procs, timeout=10)
+    for p in alive:
+        log.info("terminating %s", p.info["name"])
+        try:
+            p.terminate()
+        except psutil.Error:
+            pass
+
+
+def tv_awake():
+    """False quando a TV foi desligada (fica em espera, mas o ADB continua respondendo)."""
+    try:
+        return "Awake" in TV.shell("dumpsys power | grep -m1 mWakefulness=")
+    except Exception:
+        return True       # sem resposta: não arrisca devolver a tela à toa
 
 
 def watch(g, t0, before, prev_audio, hdmi):
@@ -734,6 +764,9 @@ def watch(g, t0, before, prev_audio, hdmi):
     shown = False
     gone_since = None
     RESTORE.clear()
+    CLOSE.clear()
+    asleep_since = None
+    last_power = 0
 
     art = g.get("hero") or g.get("header") or ""
 
@@ -758,6 +791,20 @@ def watch(g, t0, before, prev_audio, hdmi):
     asked = 0
     while not RESTORE.is_set():
         procs = game_processes(t0)
+        if CLOSE.is_set() and procs:
+            CLOSE.clear()
+            log.info("close requested from TV: %s", [p.info["name"] for p in procs])
+            threading.Thread(target=close_game, args=(procs,), daemon=True).start()
+        # TV desligada no meio do jogo: devolve a imagem ao monitor (o jogo continua aberto).
+        if shown and time.time() - last_power > 5:
+            last_power = time.time()
+            if tv_awake():
+                asleep_since = None
+            else:
+                asleep_since = asleep_since or time.time()
+                if time.time() - asleep_since > 8:
+                    log.info("TV turned off: giving the screen back to the PC")
+                    break
         if procs:
             if not started:
                 log.info("game running: %s", [p.info["name"] for p in procs])
@@ -868,6 +915,8 @@ def handle(req):
     a = req.get("a")
     if a == "launch":
         threading.Thread(target=play, args=(req.get("id"), req.get("hdmi")), daemon=True).start()
+    elif a == "close":
+        CLOSE.set()
     elif a == "restore":
         RESTORE.set()
         if not _busy.locked():
