@@ -21,6 +21,7 @@ import com.faizannazir.cleanyourtv.tv.model.DeviceInfo
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
@@ -162,7 +163,6 @@ class MainActivity : Activity() {
 
                 adbConn.disconnect()
             } else {
-                // Fallback to local Package Manager
                 val pm = packageManager
                 val installed = pm.getInstalledPackages(PackageManager.GET_META_DATA)
                 for (pkg in installed) {
@@ -288,7 +288,6 @@ class MainActivity : Activity() {
             }
 
             if (isAdbAvailable) {
-                // Verify disabled list post-debloat
                 val verifyDisabled = adbConn.executeShellCommand("pm list packages -d").replace("Success:", "").replace("\r", "")
                 resultLog.append("Verification: TV Disabled Package List Updated (${verifyDisabled.lines().count { it.contains("package:") }} packages disabled).\n")
                 adbConn.disconnect()
@@ -326,16 +325,27 @@ class MainActivity : Activity() {
                     apkFile.delete()
                 }
 
-                var extracted = false
+                var assetStream: InputStream? = null
                 try {
-                    assets.open("clean_launcher.apk").use { input ->
+                    assetStream = assets.open("clean_launcher.apk")
+                } catch (_: Exception) {
+                    try {
+                        assetStream = assets.openFd("clean_launcher.apk").createInputStream()
+                    } catch (_: Exception) {
+                        try {
+                            assetStream = javaClass.classLoader?.getResourceAsStream("assets/clean_launcher.apk")
+                        } catch (_: Exception) {}
+                    }
+                }
+
+                var extracted = false
+                if (assetStream != null) {
+                    assetStream.use { input ->
                         FileOutputStream(apkFile).use { output ->
                             input.copyTo(output)
                         }
                     }
-                    extracted = true
-                } catch (e: Exception) {
-                    log.append("Asset Extraction Note: ${e.localizedMessage ?: e.toString()}\n")
+                    extracted = apkFile.exists() && apkFile.length() > 0
                 }
 
                 if (extracted && apkFile.exists()) {
@@ -361,7 +371,7 @@ class MainActivity : Activity() {
                         log.append(" • Target ADB service at $host:$port unavailable.\n  Turn Wireless Debugging ON in TV Developer Options.\n")
                     }
                 } else {
-                    log.append("Error: Clean Launcher APK asset preparation failed.\n")
+                    log.append("Error: Clean Launcher APK asset stream could not be opened.\n")
                 }
             } catch (e: Exception) {
                 log.append("Error during launcher deployment: ${e.localizedMessage ?: e.toString()}\n")
