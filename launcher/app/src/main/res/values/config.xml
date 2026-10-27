@@ -26,6 +26,15 @@
          the first grid apps, so the dock never shows a gap. false leaves them empty (#162); a theme can
          set "fill_dock": false. -->
     <bool name="fill_dock">true</bool>
+    <!-- Off by default. On: the dock holds the apps Home opens most, re-ranked every 8 hours (00:00, 08:00,
+         16:00); dock_apps fills it until enough is counted. Only launches from Home in the last 7 days count (not a
+         remote's app button), and only package names and launch times are kept, on the TV. A reorder of the dock
+         lasts until the ranking changes it. Can also be set with "dock_most_used": true in a theme. -->
+    <bool name="dock_most_used">false</bool>
+    <!-- Off by default. With dock_most_used: the whole grid follows the same 7-day ranking, not only the dock;
+         apps not opened in that time follow in their usual order. A reorder lasts until the ranking changes the
+         dock. Can also be set with "sort_by_use": true in a theme. -->
+    <bool name="sort_by_use">false</bool>
 
     <!-- Apps never shown as tiles (e.g. the Live TV app, which the Inputs menu already covers). -->
     <string-array name="hidden_apps">

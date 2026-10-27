@@ -320,6 +320,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private List<String> dockApps;
     /** fill_dock false: the dock can have empty slots, which reorder mode leaves out and restores afterwards. */
     private boolean fillDockLeavesSlots;
+    /** dock_most_used: a new period's ranking rebuilds Home (see onResume). */
+    private boolean dockMostUsed;
+    /** The period this Home's dock was ranked in: any component that loads the config saves a new ranking. */
+    private final long dockPeriod = MostUsed.period();
     /** Edit-dock mode (Settings menu): a reorder session that swaps one chosen app into one dock place. */
     private boolean dockEditing;
     /** Dock place being changed in edit-dock mode, or -1 while the place is still being chosen. */
@@ -641,6 +645,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         adapter = new AppAdapter(this, this, COLUMNS, cfg);
         dockApps = cfg.dockApps;
         fillDockLeavesSlots = !cfg.fillDock;
+        dockMostUsed = cfg.dockMostUsed;
         Order savedOrder = Order.load(Order.file(this));
         adapter.setSavedOrder(Order.ranks(savedOrder, dockApps), Order.docked(savedOrder, dockApps));
         grid.setAdapter(adapter);
@@ -1009,6 +1014,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // delivered their RESULT_OK; Home (the remote's button) clears them off this task and the result comes
         // back cancelled, so a new wallpaper or layout waited for the next process start.
         if (Config.settingsChanged(settingsRevision, settingsRevision())) {
+            recreate();
+            return;
+        }
+        if (dockMostUsed && dockPeriod != MostUsed.period()) {
             recreate();
             return;
         }

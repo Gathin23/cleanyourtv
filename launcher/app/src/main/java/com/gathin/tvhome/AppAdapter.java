@@ -46,7 +46,7 @@ import java.util.Set;
 /**
  * App tiles. The first {@link MainActivity#COLUMNS} positions are the pinned dock (favourites, fixed order,
  * then empty slots up to a full row, see {@link DockSlots}), then the module cards the owner chose to show
- * (by label), the rest is alphabetical.
+ * (by label), the rest is alphabetical; with sort_by_use the 7-day ranking orders the grid after the dock.
  */
 public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -192,6 +192,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean cinematic;
     /** Dock order (config.xml dock_apps, or a theme's config.json). */
     private final List<String> favourites;
+    /** sort_by_use: each ranked package's place in the 7-day ranking; empty while off. */
+    private final Map<String, Integer> usageRanks = new HashMap<>();
+    /** dock_most_used: a launch from Home is counted for the ranking (MostUsed). */
+    private final boolean dockMostUsed;
     /** Grid apps fill the dock slots dock_apps leaves free (config.xml, fill_dock). */
     private final boolean fillDock;
     /** Dock apps found at the last reload, and the empty slots after them. */
@@ -227,6 +231,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.listener = listener;
         this.dockSize = dockSize;
         this.favourites = cfg.dockApps;
+        for (int i = 0; i < cfg.usageOrder.size(); i++) usageRanks.putIfAbsent(cfg.usageOrder.get(i), i);
+        this.dockMostUsed = cfg.dockMostUsed;
         this.fillDock = cfg.fillDock;
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.libraryPreload = new HashSet<>(cfg.libraryApps);
@@ -321,6 +327,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 if (fb < 0) return -1;
                 return Integer.compare(fa, fb);
             }
+            Integer ua = usageRanks.get(a.pkg), ub = usageRanks.get(b.pkg);
+            if (ua != null || ub != null) return ua == null ? 1 : ub == null ? -1 : Integer.compare(ua, ub);
             // Cards come right after the configured dock apps, before the alphabetical grid.
             boolean ca = a.kind == Entry.CARD, cb = b.kind == Entry.CARD;
             if (ca != cb) return ca ? -1 : 1;
@@ -552,6 +560,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         try {
             ctx.startActivity(i);
             if (cinematic) LastOpened.record(ctx, e.pkg);
+            if (dockMostUsed) MostUsed.record(ctx, e.pkg);
             if (advancedEffects && !reducedMotion && ctx instanceof Activity) {
                 ((Activity) ctx).overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
             }
