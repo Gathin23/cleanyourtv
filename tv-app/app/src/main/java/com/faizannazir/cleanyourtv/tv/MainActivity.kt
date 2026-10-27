@@ -18,6 +18,8 @@ import com.faizannazir.cleanyourtv.tv.model.AppInfo
 import com.faizannazir.cleanyourtv.tv.model.CleanupBaseline
 import com.faizannazir.cleanyourtv.tv.model.CleanupRecord
 import com.faizannazir.cleanyourtv.tv.model.DeviceInfo
+import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
@@ -29,6 +31,7 @@ class MainActivity : Activity() {
     private lateinit var tvStatus: TextView
     private lateinit var btnScan: Button
     private lateinit var btnDisable: Button
+    private lateinit var btnInstallLauncher: Button
     private lateinit var btnFastBoot: Button
     private lateinit var btnRestore: Button
 
@@ -49,6 +52,7 @@ class MainActivity : Activity() {
         tvStatus = findViewById(R.id.tvStatus)
         btnScan = findViewById(R.id.btnScan)
         btnDisable = findViewById(R.id.btnDisable)
+        btnInstallLauncher = findViewById(R.id.btnInstallLauncher)
         btnFastBoot = findViewById(R.id.btnFastBoot)
         btnRestore = findViewById(R.id.btnRestore)
 
@@ -60,26 +64,30 @@ class MainActivity : Activity() {
         btnConnect.setOnClickListener { connectToRemoteTv() }
         btnScan.setOnClickListener { runScan() }
         btnDisable.setOnClickListener { confirmAndDisableCandidates() }
+        btnInstallLauncher.setOnClickListener { runInstallCleanLauncher() }
         btnFastBoot.setOnClickListener { runFastBootOptimization() }
         btnRestore.setOnClickListener { runRestore() }
     }
 
-    private fun getTargetHost(): String = etTvIp.text.toString().ifBlank { "127.0.0.1" }
-    private fun getTargetPort(): Int = etTvPort.text.toString().toIntOrNull() ?: 5555
+    private fun getTargetHost(): String = etTvIp.text.toString().trim().ifBlank { "127.0.0.1" }
+    private fun getTargetPort(): Int = etTvPort.text.toString().trim().toIntOrNull() ?: 5555
 
     private fun initDiagnostics() {
-        tvDeviceInfo.text = "Detecting TV Hardware & Local ADB..."
+        tvDeviceInfo.text = "Device Info: Scanning TV IP & Hardware..."
         executor.execute {
             val scanner = AdbDeviceScanner(this)
             val info = scanner.scanLocalDevice()
             currentDeviceInfo = info
 
-            val infoText = "Device: ${info.manufacturer} ${info.model} | Android ${info.androidVersion}\n" +
-                    "ADB Status: ${if (info.isAdbAuthorized) "Authorized (Port 5555)" else "Not Connected"}\n" +
-                    "Note: ${info.adbDiagnosticMessage}"
+            val infoText = "TV Model: ${info.manufacturer} ${info.model} | Android ${info.androidVersion}\n" +
+                    "Local Wi-Fi IP: ${info.localIpAddress}  |  Public IP: ${info.publicIpAddress}\n" +
+                    "ADB Status: ${if (info.isAdbAuthorized) "Authorized (Port 5555)" else "Wireless Debugging Needed"}"
 
             runOnUiThread {
                 tvDeviceInfo.text = infoText
+                if (info.localIpAddress != "127.0.0.1") {
+                    etTvIp.setText(info.localIpAddress)
+                }
             }
         }
     }
@@ -87,28 +95,46 @@ class MainActivity : Activity() {
     private fun connectToRemoteTv() {
         val host = getTargetHost()
         val port = getTargetPort()
-        tvStatus.text = "Connecting to TV at $host:$port via local Wireless ADB..."
+        tvStatus.text = "Console Log:\nConnecting to target TV at $host:$port..."
 
         executor.execute {
             val conn = AdbConnection(this, host, port)
             val ok = conn.connect()
-            if (ok) conn.disconnect()
 
-            val msg = if (ok) {
-                "Successfully connected to target TV at $host:$port."
+            val infoText = if (ok) {
+                val modelRes = conn.executeShellCommand("getprop ro.product.model").replace("Success:", "").trim()
+                val mfrRes = conn.executeShellCommand("getprop ro.product.manufacturer").replace("Success:", "").trim()
+                val verRes = conn.executeShellCommand("getprop ro.build.version.release").replace("Success:", "").trim()
+
+                val model = if (modelRes.isNotBlank()) modelRes else "Android TV"
+                val mfr = if (mfrRes.isNotBlank()) mfrRes else "Smart TV"
+                val ver = if (verRes.isNotBlank()) verRes else "Unknown"
+
+                "TV Model: $mfr $model | Android $ver\n" +
+                        "Target IP: $host:$port (Authorized)\n" +
+                        "Local Wi-Fi IP: ${currentDeviceInfo?.localIpAddress ?: "N/A"}  |  Public IP: ${currentDeviceInfo?.publicIpAddress ?: "N/A"}"
             } else {
-                "Connection failed to $host:$port. Ensure TV Wireless Debugging is ON and phone/tablet is on same Wi-Fi."
+                "TV Model: Disconnected / Authorization Pending\n" +
+                        "Target: $host:$port\n" +
+                        "Local Wi-Fi IP: ${currentDeviceInfo?.localIpAddress ?: "N/A"}  |  Public IP: ${currentDeviceInfo?.publicIpAddress ?: "N/A"}"
             }
 
+            if (ok) conn.disconnect()
+
             runOnUiThread {
-                tvStatus.text = msg
+                tvDeviceInfo.text = infoText
+                tvStatus.text = "Console Log:\n" + if (ok) {
+                    "✓ Successfully connected to $host:$port.\nTV details retrieved."
+                } else {
+                    "✗ Connection failed to $host:$port.\nEnsure Wireless Debugging is enabled on TV."
+                }
             }
         }
     }
 
     private fun runScan() {
         scannedApps.clear()
-        tvStatus.text = "Scanning installed applications..."
+        tvStatus.text = "Console Log:\nScanning installed applications..."
 
         executor.execute {
             val pm = packageManager
@@ -131,7 +157,7 @@ class MainActivity : Activity() {
 
             val report = StringBuilder()
             report.append("Scan Complete:\n")
-            report.append("- Total Installed Packages: ${scannedApps.size}\n")
+            report.append("- Total Packages Scanned: ${scannedApps.size}\n")
             report.append("- Protected Packages (Locked): $protectedCount\n")
             report.append("- Removable / Cleanup Candidates: $optionalCount\n\n")
 
@@ -154,7 +180,7 @@ class MainActivity : Activity() {
     private fun confirmAndDisableCandidates() {
         val candidates = scannedApps.filter { it.category == AppCategory.OPTIONAL }
         if (candidates.isEmpty()) {
-            tvStatus.text = "Please run '1. Scan TV Apps' first. No safe cleanup candidates selected."
+            tvStatus.text = "Console Log:\nPlease run '1. Scan TV Apps' first. No safe cleanup candidates selected."
             return
         }
 
@@ -176,13 +202,13 @@ class MainActivity : Activity() {
 
     private fun executeDisableOperations(targets: List<AppInfo>) {
         if (targets.isEmpty()) {
-            tvStatus.text = "No packages selected for disabling."
+            tvStatus.text = "Console Log:\nNo packages selected for disabling."
             return
         }
 
         val host = getTargetHost()
         val port = getTargetPort()
-        tvStatus.text = "Executing cleanup baseline backup & package disabling on $host:$port..."
+        tvStatus.text = "Console Log:\nExecuting cleanup baseline backup & package disabling on $host:$port..."
 
         executor.execute {
             val records = mutableListOf<CleanupRecord>()
@@ -250,10 +276,56 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun runInstallCleanLauncher() {
+        val host = getTargetHost()
+        val port = getTargetPort()
+        tvStatus.text = "Console Log:\nExtracting Clean Launcher APK & deploying to $host:$port..."
+
+        executor.execute {
+            val log = StringBuilder()
+            log.append("Clean Launcher Deployment Log ($host:$port):\n")
+            log.append("-------------------------------------------\n")
+
+            try {
+                val apkFile = File(cacheDir, "clean_launcher.apk")
+                assets.open("clean_launcher.apk").use { input ->
+                    FileOutputStream(apkFile).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+                log.append("✓ Clean Launcher APK extracted (${apkFile.length()} bytes).\n")
+
+                val adbConn = AdbConnection(this, host, port)
+                val isAdbAvailable = adbConn.connect()
+
+                if (isAdbAvailable) {
+                    val installRes = adbConn.executeShellCommand("pm install -r ${apkFile.absolutePath}")
+                    log.append(" • ADB Install Result: $installRes\n")
+
+                    val setDefaultRes = adbConn.executeShellCommand("cmd package set-home-activity com.gathin.tvhome/.MainActivity")
+                    log.append(" • Set Default Launcher: $setDefaultRes\n")
+
+                    val disableOldRes = adbConn.executeShellCommand("pm disable-user --user 0 com.google.android.apps.tv.launcherx")
+                    log.append(" • Disable Stock LauncherX: $disableOldRes\n")
+
+                    adbConn.disconnect()
+                } else {
+                    log.append(" • Local ADB connection inactive. Pre-installed Clean Launcher package 'com.gathin.tvhome' prepared for deployment.\n")
+                }
+            } catch (e: Exception) {
+                log.append("Error during launcher deployment: ${e.message}\n")
+            }
+
+            runOnUiThread {
+                tvStatus.text = log.toString()
+            }
+        }
+    }
+
     private fun runFastBootOptimization() {
         val host = getTargetHost()
         val port = getTargetPort()
-        tvStatus.text = "Executing Fast Boot & OS Acceleration suite on $host:$port..."
+        tvStatus.text = "Console Log:\nExecuting Fast Boot & OS Acceleration suite on $host:$port..."
 
         executor.execute {
             val adbConn = AdbConnection(this, host, port)
@@ -296,18 +368,18 @@ class MainActivity : Activity() {
     private fun runRestore() {
         val baseline = backupRestoreEngine.loadLatestBaseline()
         if (baseline == null) {
-            tvStatus.text = "No saved cleanup baseline found to restore."
+            tvStatus.text = "Console Log:\nNo saved cleanup baseline found to restore."
             return
         }
         val plan = backupRestoreEngine.generateRestorePlan(baseline)
         if (plan.isEmpty()) {
-            tvStatus.text = "All packages in baseline are already enabled or restored."
+            tvStatus.text = "Console Log:\nAll packages in baseline are already enabled or restored."
             return
         }
 
         val host = getTargetHost()
         val port = getTargetPort()
-        tvStatus.text = "Executing Restoration Plan (${plan.size} packages) on $host:$port..."
+        tvStatus.text = "Console Log:\nExecuting Restoration Plan (${plan.size} packages) on $host:$port..."
 
         executor.execute {
             val adbConn = AdbConnection(this, host, port)

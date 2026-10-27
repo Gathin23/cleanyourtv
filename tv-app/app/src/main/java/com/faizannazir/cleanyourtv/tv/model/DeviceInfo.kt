@@ -8,6 +8,8 @@ data class DeviceInfo(
     val androidVersion: String,
     val sdkInt: Int,
     val buildId: String,
+    val localIpAddress: String,
+    val publicIpAddress: String,
     val isAdbAuthorized: Boolean,
     val adbDiagnosticMessage: String
 ) : Serializable

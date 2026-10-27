@@ -15,12 +15,13 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CleanYourTV — Mobile, Tablet &amp; TV Edition"
+            android:text="CleanYourTV — Mobile &amp; TV Control Center"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="6dp" />
+            android:layout_marginBottom="12dp" />
 
+        <!-- Target Connection Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,28 +31,28 @@
             <EditText
                 android:id="@+id/etTvIp"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:layout_weight="2"
-                android:hint="TV IP (e.g. 127.0.0.1 or 192.168.1.50)"
+                android:hint="TV IP (e.g. 192.168.1.50)"
                 android:text="127.0.0.1"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#888888"
                 android:background="#222222"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:textSize="14sp"
                 android:layout_marginEnd="6dp" />
 
             <EditText
                 android:id="@+id/etTvPort"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:layout_weight="1"
                 android:hint="Port"
                 android:text="5555"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#888888"
                 android:background="#222222"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:textSize="14sp"
                 android:inputType="number"
                 android:layout_marginEnd="6dp" />
@@ -59,27 +60,47 @@
             <Button
                 android:id="@+id/btnConnect"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:layout_weight="1.2"
-                android:text="Connect"
+                android:text="Connect TV"
                 android:backgroundTint="#0288D1"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvDeviceInfo"
-            android:layout_width="wrap_content"
+        <!-- Connected TV Info Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Detecting Device &amp; Local ADB..."
-            android:textColor="#BBBBBB"
-            android:textSize="14sp"
-            android:layout_marginBottom="12dp" />
+            android:orientation="vertical"
+            android:background="#1E293B"
+            android:padding="12dp"
+            android:layout_marginBottom="14dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CONNECTED TV DETAILS"
+                android:textColor="#94A3B8"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tvDeviceInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Status: Disconnected / Ready to connect"
+                android:textColor="#E2E8F0"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Primary Actions Row 1 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="8dp">
 
             <Button
                 android:id="@+id/btnScan"
@@ -88,7 +109,7 @@
                 android:layout_weight="1"
                 android:text="1. Scan TV Apps"
                 android:layout_marginEnd="4dp"
-                android:backgroundTint="#1E88E5"
+                android:backgroundTint="#2563EB"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
 
@@ -99,55 +120,73 @@
                 android:layout_weight="1"
                 android:text="2. Debloat TV"
                 android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:backgroundTint="#E53935"
+                android:backgroundTint="#DC2626"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Secondary Actions Row 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/btnInstallLauncher"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:text="3. Deploy Clean Launcher"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="#9333EA"
+                android:textColor="#FFFFFF"
+                android:textSize="11sp" />
 
             <Button
                 android:id="@+id/btnFastBoot"
                 android:layout_width="0dp"
                 android:layout_height="54dp"
                 android:layout_weight="1"
-                android:text="3. Accelerate Boot &amp; OS"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:backgroundTint="#FB8C00"
+                android:text="4. Accelerate Boot Speed"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:backgroundTint="#D97706"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
             <Button
                 android:id="@+id/btnRestore"
                 android:layout_width="0dp"
                 android:layout_height="54dp"
                 android:layout_weight="1"
-                android:text="4. Restore TV"
+                android:text="5. Restore TV"
                 android:layout_marginStart="4dp"
-                android:backgroundTint="#43A047"
+                android:backgroundTint="#16A34A"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvAdbHelp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mobile/Tablet Mode: Connect phone/tablet to the same Wi-Fi as your TV. Enable 'Wireless Debugging' in TV Developer Options, enter TV IP above, and tap Connect to debloat and optimize OS remotely."
-            android:textColor="#FFB74D"
+            android:text="Mobile Remote Mode: Enter target TV IP address above and tap 'Connect TV'. Once connected, TV details will display in the card above and all 5 remote actions can be executed wirelessly."
+            android:textColor="#FDE047"
             android:textSize="12sp"
             android:padding="8dp"
-            android:background="#263238"
-            android:layout_marginBottom="10dp"/>
+            android:background="#1E293B"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:text="Ready. Connect to TV or tap '1. Scan TV Apps'."
-            android:textColor="#E0E0E0"
-            android:textSize="13sp"
+            android:text="Console Log:\nSelect an action above to begin."
+            android:textColor="#CBD5E1"
+            android:textSize="12sp"
             android:scrollbars="vertical"
-            android:background="#1E1E1E"
+            android:background="#0F172A"
             android:padding="10dp" />
 
     </LinearLayout>
