@@ -118,7 +118,55 @@ function posterCard(m, i){
   if (m.type !== 'series' && isWatched(m.id)) c.appendChild(checkMark());
   var pb = m.type !== 'series' && progressBar(m.id); if (pb) c.appendChild(pb);
   c.appendChild(el('div', 'cap', esc(m.name)));
+  if (m.type !== 'series' && !isWatched(m.id)) freshBadge(m, c);
   return c;
+}
+
+/* Selo FRESH: filme lançado há até 6 meses que já tem versão boa (WEB-DL, WEBRip ou BluRay em 1080p/4K)
+   no Torrentio. Se só houver gravação de cinema (CAM, TS), mostra CAM. Guardado por 6 h neste aparelho. */
+var FRESH_DAYS = 180, FRESH_TTL = 6 * 3600 * 1000, freshQ = [], freshBusy = 0, freshMem = {};
+function freshBadge(m, card){
+  var y = parseInt(m.releaseInfo || m.year, 10), now = new Date().getFullYear();
+  if (!y || y < now - 1) return;
+  freshOf(m.id).then(function(f){
+    if (!f) return;
+    card.appendChild(el('span', 'fresh' + (f === 'CAM' ? ' cam' : ''), f === 'CAM' ? 'CAM' : 'FRESH ' + f));
+  });
+}
+function freshOf(id){
+  if (freshMem[id]) return freshMem[id];
+  var key = 'fresh:' + id, saved = null;
+  try { saved = JSON.parse(localStorage.getItem(key)); } catch (e) {}
+  if (saved && Date.now() - saved.at < FRESH_TTL) return (freshMem[id] = Promise.resolve(saved.v));
+  freshMem[id] = new Promise(function(resolve){ freshQ.push({id: id, done: resolve}); freshPump(); }).then(function(v){
+    try { localStorage.setItem(key, JSON.stringify({v: v, at: Date.now()})); } catch (e) {}
+    return v;
+  });
+  return freshMem[id];
+}
+// Duas consultas por vez, para não disputar a rede com a navegação.
+function freshPump(){
+  while (freshBusy < 2 && freshQ.length) (function(job){
+    freshBusy++;
+    freshCheck(job.id).then(function(v){ job.done(v); }, function(){ job.done(null); }).then(function(){ freshBusy--; freshPump(); });
+  })(freshQ.shift());
+}
+function freshCheck(id){
+  return cached(CINEMETA + '/meta/movie/' + id + '.json').then(function(j){
+    var rel = j && j.meta && Date.parse(j.meta.released);
+    if (!rel || rel > Date.now() || Date.now() - rel > FRESH_DAYS * 864e5) return null;
+    return getJson('https://torrentio.strem.fun/stream/movie/' + id + '.json').then(function(r){
+      var best = null, cam = false;
+      ((r && r.streams) || []).forEach(function(x){
+        var t = (x.title || '') + ' ' + (x.name || '');
+        if (/(hd)?cam(rip)?|(hd)?ts|telesync|tc|telecine|scr(eener)?/i.test(t)) { cam = true; return; }
+        if (!/web-?dl|web-?rip|web|blu-?ray|bdrip|brrip|remux/i.test(t)) return;
+        var q = /2160p|4k|uhd/i.test(t) ? '4K' : /1080p/i.test(t) ? 'HD' : null;
+        if (q === '4K' || (q && !best)) best = q;
+      });
+      return best || (cam ? 'CAM' : null);
+    });
+  });
 }
 
 /* Abas Filmes, Séries e Animes: grade de pôsteres que carrega mais ao descer,
