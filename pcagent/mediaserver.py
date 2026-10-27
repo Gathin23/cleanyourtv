@@ -33,7 +33,8 @@ def _get(url):
 
 def clean_title(name):
     """'Star Wars - The Clone Wars 2ª Temporada 720p (2009) Dual Áudio BluRay -- By Lucas Firmo' -> 'Star Wars The Clone Wars'"""
-    t = re.split(r"\s--\s|\d+\s*ª\s*Temporada|\bS\d+\b|\(\d{4}\)|\b\d{3,4}p\b", name, flags=re.I)[0]
+    t = re.split(r"\s--\s|\d+\s*ª\s*Temporada|\bTemporada\s*\d+|\bSeason\s*\d+|\bS\d+\b|\(\d{4}\)|\b\d{3,4}p\b",
+                 name, flags=re.I)[0]
     t = re.sub(r"[_.\-]+", " ", t)
     return re.sub(r"\s+", " ", t).strip()
 
