@@ -288,6 +288,11 @@ public class WebHomeActivity extends Activity {
     class Bridge {
 
         @JavascriptInterface
+        public String version() {
+            try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception e) { return ""; }
+        }
+
+        @JavascriptInterface
         public String apps() {
             PackageManager pm = getPackageManager();
             Intent q = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);

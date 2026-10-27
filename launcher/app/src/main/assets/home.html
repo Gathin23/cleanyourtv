@@ -228,6 +228,7 @@ h2{margin:0;font-size:24px;font-weight:700}
   </nav>
 
   <!-- Janela principal -->
+  <div id="osVersion" style="position:absolute;right:52px;bottom:16px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.3px"></div>
   <main class="win" style="position:absolute;left:168px;top:56px;width:1704px;height:968px;border-radius:48px;padding:32px;display:flex;flex-direction:column;gap:24px">
 
     <header id="topbar" style="height:72px;display:flex;align-items:center;gap:24px">
@@ -926,6 +927,7 @@ function onHomeResume(){
 }
 
 reloadApps();
+try { var ov = TV.version(); if (ov) document.getElementById("osVersion").textContent = "BadarasOS v" + ov; } catch (e) {}
 </script>
 <script src="movies.js"></script>
 <script src="games.js"></script>

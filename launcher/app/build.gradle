@@ -2,6 +2,10 @@ plugins {
     id 'com.android.application'
 }
 
+def gitCommits() {
+    try { return 'git rev-list --count HEAD'.execute(null, rootDir).text.trim().toInteger() } catch (e) { return 1 }
+}
+
 android {
     namespace 'com.gathin.tvhome'
     compileSdk 34
@@ -10,8 +14,9 @@ android {
         applicationId 'com.gathin.tvhome'
         minSdk 26
         targetSdk 34
-        versionCode 4
-        versionName '2.3'
+        // Versão do BadarasOS: 1.0.<número de commits desde o início do projeto>, sobe sozinha a cada build.
+        versionCode gitCommits()
+        versionName "1.0.${gitCommits()}"
     }
 
     buildTypes {
