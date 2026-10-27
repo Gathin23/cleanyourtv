@@ -211,6 +211,17 @@
     <string-array name="app_keys" translatable="false">
     </string-array>
 
+    <!-- Remote buttons the owner can map to an app or an action on the TV, from Launcher settings > Remote buttons,
+         as "keycode=Label" (the keycode as in app_keys: logcat's InputReader lines or `getevent -lt` show it). A
+         choice made there replaces that keycode's app_keys tap entry (hold:, front: and scan: entries stay), and
+         Theme default goes back to it; the targets offered are Off (ignore), Inputs, Settings and every TV app.
+         Needs HOME_KEY_SERVICE=1. The Settings button (settings_key_keycodes) is answered before
+         app_keys and cannot be listed. For a TCL BT_RC833 remote: "4062=Netflix", "4099=Prime Video",
+         "190=YouTube", "4137=TCL Home", "4020=TCL Channel", "4159=Web". A theme's config.json can set it too.
+         Leave empty to hide the row (the default). -->
+    <string-array name="remap_buttons" translatable="false">
+    </string-array>
+
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
          com.xgimi.xrmservice does, on every one of its remote keys, power included (docs/TROUBLESHOOTING.md).
          Whenever that launcher's home screen comes up anyway, HomeKeyService (HOME_KEY_SERVICE=1) sends the TV

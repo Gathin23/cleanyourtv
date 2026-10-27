@@ -118,6 +118,13 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/remoteButtonsChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="18dp"
+            android:text="@string/remote_buttons_label"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/followThemeChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="18dp"

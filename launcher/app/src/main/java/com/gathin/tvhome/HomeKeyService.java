@@ -237,6 +237,14 @@ public class HomeKeyService extends AccessibilityService {
         }
     }
 
+    /** Launcher settings > Remote buttons saved a choice: take the new app_keys taps now, without a new binding. */
+    static void reloadAppKeys() {
+        HomeKeyService service = running;
+        if (service != null && service.unlockReceiver == null) {
+            service.appKeys = RemoteKeys.parseAppKeys(Config.load(service).appKeys);
+        }
+    }
+
     /** A tap's target: the "front:" entry while the button's own app is already in front, else the usual one. */
     private String inFront(Map<Integer, String> keys, Map<Integer, String> front, int code) {
         String target = keys.get(code);

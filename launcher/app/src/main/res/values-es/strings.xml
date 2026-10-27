@@ -145,4 +145,5 @@
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Abierta por última vez %1$s</string>
     <string name="game_live">En directo</string>
+    <string name="remote_buttons_label">Botones del mando</string>
 </resources>

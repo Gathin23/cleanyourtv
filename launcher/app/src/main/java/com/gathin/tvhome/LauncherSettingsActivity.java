@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /** Remote-friendly settings owned by the launcher; system settings stay one row away. */
 public final class LauncherSettingsActivity extends Activity {
@@ -37,6 +38,9 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView advancedChoice;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
+    private Map<Integer, String> buttons;
+    private List<String> remapButtons;
+    private Map<Integer, String> defaultAppKeys;
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
@@ -135,6 +139,14 @@ public final class LauncherSettingsActivity extends Activity {
             openOnStartChoice.setVisibility(View.VISIBLE);
             openOnStartChoice.setOnClickListener(v -> showOpenOnStartPicker());
         }
+        remapButtons = config.remapButtons;
+        defaultAppKeys = RemoteKeys.parseAppKeys(config.defaultAppKeys);
+        buttons = ButtonMap.buttons(remapButtons);
+        if (!buttons.isEmpty()) {
+            View remoteButtons = findViewById(R.id.remoteButtonsChoice);
+            remoteButtons.setVisibility(View.VISIBLE);
+            remoteButtons.setOnClickListener(v -> showRemoteButtons());
+        }
         followThemeChoice = findViewById(R.id.followThemeChoice);
         followThemeChoice.setOnClickListener(v -> {
             if (!hasOnTvChoices()) return;
@@ -205,17 +217,7 @@ public final class LauncherSettingsActivity extends Activity {
 
     /** Off, then every app with a TV entry point by name. Saved at once; it is read on the next boot. */
     private void showOpenOnStartPicker() {
-        PackageManager pm = getPackageManager();
-        List<String[]> apps = new ArrayList<>();
-        Intent tv = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
-        for (ResolveInfo r : pm.queryIntentActivities(tv, 0)) {
-            String pkg = r.activityInfo.packageName;
-            if (pkg.equals(getPackageName())) continue;
-            boolean seen = false;
-            for (String[] a : apps) seen |= a[1].equals(pkg);
-            if (!seen) apps.add(new String[]{r.loadLabel(pm).toString(), pkg});
-        }
-        Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
+        List<String[]> apps = tvApps();
         String[] labels = new String[apps.size() + 1];
         labels[0] = getString(R.string.off);
         String current = choices.getString(OpenOnStart.KEY, "");
@@ -237,6 +239,89 @@ public final class LauncherSettingsActivity extends Activity {
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
+    }
+
+    /** remap_buttons: each button with what it does now; picking one asks what it should do. */
+    private void showRemoteButtons() {
+        List<Integer> codes = new ArrayList<>(buttons.keySet());
+        Map<Integer, String> chosen = ButtonMap.choices(choices, remapButtons);
+        String[] rows = new String[codes.size()];
+        for (int i = 0; i < codes.size(); i++) {
+            String target = chosen.get(codes.get(i));
+            rows[i] = buttons.get(codes.get(i)) + ": " + targetLabel(target == null ? defaultTarget(codes.get(i)) : target);
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.remote_buttons_label)
+                .setItems(rows, (dialog, which) -> showButtonTargets(codes.get(which), chosen.get(codes.get(which))))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    /** Theme default, Off, Inputs, Settings, then every app with a TV entry point by name. Applies at once. */
+    private void showButtonTargets(int code, String current) {
+        List<String[]> targets = new ArrayList<>();
+        targets.add(new String[]{getString(R.string.wallpaper_theme_default) + " (" + targetLabel(defaultTarget(code)) + ")", null});
+        targets.add(new String[]{getString(R.string.off), ButtonMap.NOTHING});
+        targets.add(new String[]{getString(R.string.inputs), RemoteKeys.INPUTS});
+        targets.add(new String[]{getString(R.string.settings), "settings"});
+        targets.addAll(tvApps());
+        String[] labels = new String[targets.size()];
+        int checked = 0;
+        for (int i = 0; i < targets.size(); i++) {
+            labels[i] = targets.get(i)[0];
+            if (current != null && current.equals(targets.get(i)[1])) checked = i;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(buttons.get(code))
+                .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                    dialog.dismiss();
+                    String target = targets.get(which)[1];
+                    if (target == null) choices.edit().remove(ButtonMap.KEY_PREFIX + code).commit();
+                    else choices.edit().putString(ButtonMap.KEY_PREFIX + code, target).commit();
+                    HomeKeyService.reloadAppKeys();
+                    changed();   // Home reads app_keys too, while it is in front
+                    showRemoteButtons();
+                })
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> showRemoteButtons())
+                .show();
+    }
+
+    /** What the button does with no choice saved: its app_keys entry, else Off. */
+    private String defaultTarget(int code) {
+        String target = defaultAppKeys.get(code);
+        return target == null ? ButtonMap.NOTHING : target;
+    }
+
+    /** What a button target is called in the list: an action's name, or the app's. */
+    private String targetLabel(String target) {
+        switch (target) {
+            case ButtonMap.NOTHING: return getString(R.string.off);
+            case RemoteKeys.INPUTS: return getString(R.string.inputs);
+            case "settings": return getString(R.string.settings);
+            default:
+                try {
+                    PackageManager pm = getPackageManager();
+                    return pm.getApplicationLabel(pm.getApplicationInfo(target, 0)).toString();
+                } catch (PackageManager.NameNotFoundException e) {
+                    return target;
+                }
+        }
+    }
+
+    /** Label and package of every app with a TV entry point but this one, sorted by name. */
+    private List<String[]> tvApps() {
+        PackageManager pm = getPackageManager();
+        List<String[]> apps = new ArrayList<>();
+        Intent tv = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
+        for (ResolveInfo r : pm.queryIntentActivities(tv, 0)) {
+            String pkg = r.activityInfo.packageName;
+            if (pkg.equals(getPackageName())) continue;
+            boolean seen = false;
+            for (String[] a : apps) seen |= a[1].equals(pkg);
+            if (!seen) apps.add(new String[]{r.loadLabel(pm).toString(), pkg});
+        }
+        Collections.sort(apps, (a, b) -> a[0].compareToIgnoreCase(b[0]));
+        return apps;
     }
 
     /** The picked app's name, its package when it is gone, or Off. */

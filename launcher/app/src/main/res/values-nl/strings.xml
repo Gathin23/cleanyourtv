@@ -112,4 +112,5 @@
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
     <string name="game_live">Nu live</string>
+    <string name="remote_buttons_label">Knoppen afstandsbediening</string>
 </resources>

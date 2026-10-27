@@ -112,4 +112,5 @@
     <string name="race_finished">Ruutulippu</string>
     <string name="last_opened">Viimeksi avattu %1$s</string>
     <string name="game_live">Käynnissä nyt</string>
+    <string name="remote_buttons_label">Kaukosäätimen painikkeet</string>
 </resources>
