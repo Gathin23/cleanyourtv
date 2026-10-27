@@ -31,7 +31,6 @@ class SafetyRulesEngine {
         )
 
         val KNOWN_DEBLOAT_PATTERNS = mapOf(
-            // TCL Specific Bloatware & Telemetry
             "com.tcl.partnercustomizer" to Pair("TCL Partner Customizer bloatware", AppCategory.OPTIONAL),
             "com.tcl.tv.recommendations" to Pair("TCL recommendation telemetry", AppCategory.OPTIONAL),
             "com.tcl.shop" to Pair("TCL Store bloatware", AppCategory.OPTIONAL),
@@ -44,13 +43,11 @@ class SafetyRulesEngine {
             "com.tcl.messagebox" to Pair("TCL Promotional Notifications", AppCategory.OPTIONAL),
             "com.tcl.videoplayer" to Pair("TCL Default Video Player bloatware", AppCategory.OPTIONAL),
 
-            // Google TV / Android TV Non-Essential Promos & Recommendations
-            "com.google.android.tv.recommendations" to Pair("Google TV recommendation recommendations channel", AppCategory.OPTIONAL),
+            "com.google.android.tv.recommendations" to Pair("Google TV recommendation channel", AppCategory.OPTIONAL),
             "com.google.android.tv.adservices" to Pair("Google TV Ad Services telemetry", AppCategory.OPTIONAL),
             "com.google.android.videos" to Pair("Google TV / Play Movies app", AppCategory.OPTIONAL),
             "com.google.android.music" to Pair("Google Play Music legacy app", AppCategory.OPTIONAL),
 
-            // Pre-installed Third-Party Streaming / Promo Apps
             "com.amazon.amazonvideo.livingroom" to Pair("Amazon Prime Video preinstall", AppCategory.OPTIONAL),
             "com.netflix.ninja" to Pair("Netflix TV app preinstall", AppCategory.OPTIONAL),
             "com.spotify.tv.android" to Pair("Spotify TV preinstall", AppCategory.OPTIONAL),
@@ -135,7 +132,6 @@ class SafetyRulesEngine {
             )
         }
 
-        // Non-protected system packages (TCL OEM additions, third party vendor bloat)
         if (lowerPkg.startsWith("com.tcl.") || lowerPkg.startsWith("com.mediatek.tv.") || lowerPkg.startsWith("com.vendor.")) {
             return AppInfo(
                 packageName = packageName,
@@ -169,6 +165,7 @@ class SafetyRulesEngine {
                 actionCommand.startsWith("pm enable") ||
                 actionCommand.startsWith("pm list packages") ||
                 actionCommand.startsWith("getprop") ||
-                actionCommand.startsWith("dumpsys")
+                actionCommand.startsWith("dumpsys") ||
+                actionCommand.startsWith("settings put global")
     }
 }
