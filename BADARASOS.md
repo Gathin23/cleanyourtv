@@ -92,6 +92,10 @@ cd D:\BadarasOS; git add -A; git commit -m "..."; git push
 
 Atalho de teste na TV: `am start -n com.gathin.tvhome/.WebHomeActivity --es open "<cmd>"`. Exemplos de `<cmd>`: `games`, `tab:series`, `detail:series:tt123`, `ep:tt123:1:5:BestCine` e `sources:movie:tt123`.
 
+### Minha lista
+- **Marcar:** botão "Minha lista" nos detalhes de série ou filme; com o título já marcado, ele vira "Na minha lista". Aperte de novo para tirar.
+- **Ver:** aba "Minha lista" em Filmes e Séries, com o último marcado primeiro. "Mostrar" filtra por Tudo, Filmes, Séries ou Animes.
+- **Onde fica guardada:** nas preferências do app no Android (`mylist`), não na página, então limpar o cache da página não apaga a lista. Ela se perde só se o app for desinstalado.
+
 ## Ideias pendentes
-- **Minha lista:** séries e filmes marcados para assistir, com filtro.
 - **Otimizar outros jogos:** sob pedido, um por vez.

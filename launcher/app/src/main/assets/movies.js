@@ -139,11 +139,51 @@ function gridUrl(g){
   return CINEMETA + '/catalog/' + ctype + '/' + id + (parts.length ? '/' + parts.join('&') : '') + '.json';
 }
 function updateGridHeader(){
-  var t = M.type;
-  document.getElementById('mGridTitle').textContent = {movie: 'Filmes', series: 'Séries', anime: 'Animes'}[t] + ' · ' + label(SORTS, M.sort);
-  document.getElementById('gSortVal').textContent = label(SORTS, M.sort);
+  var t = M.type, mine = t === 'mylist';
+  document.getElementById('mGridTitle').textContent = mine ? 'Minha lista' + (M.listFilter !== 'all' ? ' · ' + label(LIST_FILTERS, M.listFilter) : '')
+    : {movie: 'Filmes', series: 'Séries', anime: 'Animes'}[t] + ' · ' + label(SORTS, M.sort);
+  document.querySelector('#gSortSel .k').textContent = mine ? 'Mostrar' : 'Ordenar';
+  document.getElementById('gSortVal').textContent = mine ? label(LIST_FILTERS, M.listFilter) : label(SORTS, M.sort);
   document.getElementById('gGenreVal').textContent = label(GENRES, M.genre);
-  document.getElementById('gGenreSel').style.display = (t === 'anime' || M.sort === 'mine') ? 'none' : '';
+  document.getElementById('gGenreSel').style.display = (mine || t === 'anime' || M.sort === 'mine') ? 'none' : '';
+}
+
+/* ---------- Minha lista: séries e filmes marcados para assistir (guardados no Android, não na página) ---------- */
+var LIST_FILTERS = [['all', 'Tudo'], ['movie', 'Filmes'], ['series', 'Séries'], ['anime', 'Animes']];
+M.listFilter = 'all';
+function myList(){ try { return JSON.parse(TV.myList()) || []; } catch (e) { return []; } }
+function inMyList(id){ return myList().some(function(x){ return x.id === id; }); }
+function isAnimeMeta(x){ return (x.genres || []).indexOf('Animation') >= 0 || (x.genres || []).indexOf('Anime') >= 0; }
+function toggleMyList(){
+  var d = M.detail; if (!d) return;
+  var m = d.meta, list = myList(), had = list.some(function(x){ return x.id === d.id; });
+  if (had) list = list.filter(function(x){ return x.id !== d.id; });
+  else list.unshift({type: d.type, id: d.id, name: m.name, poster: m.poster || '', genres: (m.genres || m.genre || []).slice(0, 6), at: Date.now()});
+  TV.saveMyList(JSON.stringify(list.slice(0, 500)));
+  drawListBtn();
+  toast(had ? 'Removido da Minha lista' : 'Adicionado à Minha lista');
+  if (M.type === 'mylist') loadGrid(true);       // a aba por trás já fica certa quando você voltar
+}
+function drawListBtn(){
+  var on = M.detail && inMyList(M.detail.id);
+  document.getElementById('dListLabel').textContent = on ? 'Na minha lista' : 'Minha lista';
+  document.getElementById('dListIco').setAttribute('d', on ? 'M5 12.5l4.5 4.5L19 7.5' : 'M12 5v14M5 12h14');
+  document.getElementById('dList').classList.toggle('on', !!on);
+}
+function loadMyList(){
+  var g = M.grid, grid = document.getElementById('mGrid'), f = M.listFilter;
+  g.done = true;
+  var list = myList().filter(function(x){
+    if (f === 'all') return true;
+    if (f === 'anime') return isAnimeMeta(x);
+    return x.type === f && (f !== 'series' || !isAnimeMeta(x));
+  });
+  grid.innerHTML = '';
+  list.forEach(function(x){ grid.appendChild(posterCard({type: x.type, id: x.id, name: x.name, poster: x.poster}, g.n++)); });
+  document.getElementById('mGridCount').textContent = g.n + (g.n === 1 ? ' título' : ' títulos');
+  if (!g.n) grid.innerHTML = '<div class="msg">' + (f === 'all'
+    ? 'Sua lista está vazia. Abra uma série ou um filme e escolha “Minha lista”.'
+    : 'Nada desse tipo na sua lista.') + '</div>';
 }
 function loadGrid(reset){
   var t = M.type, grid = document.getElementById('mGrid');
@@ -153,6 +193,7 @@ function loadGrid(reset){
     grid.innerHTML = '<div class="msg">Carregando…</div>'; grid.style.transform = '';
     document.getElementById('mGridCount').textContent = '';
     updateGridHeader();
+    if (t === 'mylist') return loadMyList();
     if (M.sort === 'mine') return loadMine();
   }
   var g = M.grid;
@@ -339,6 +380,7 @@ function renderDetail(){
   var g = document.getElementById('dGenres'); g.innerHTML = '';
   (m.genres || m.genre || []).slice(0, 4).forEach(function(x){ g.appendChild(el('span', 'gpill', esc(x))); });
   document.getElementById('dDesc').textContent = m.description || '';
+  drawListBtn();
   var hasTrailer = (m.trailerStreams && m.trailerStreams.length) || (m.trailers && m.trailers.length);
   document.getElementById('dTrailer').style.display = hasTrailer ? 'flex' : 'none';
   renderCast(m);
@@ -728,6 +770,10 @@ window.mAct = function(e){
   if (a === 'nuvio') return openInNuvio();
   if (a === 'addon') { M.addonFilter = e.dataset.val; return renderSources(true); }
   if (a === 'dropdown') return openDrop(e);
+  if (a === 'mylist') return toggleMyList();
+  if (a === 'gmenu' && M.type === 'mylist') {
+    return openMenu(e, 'gDrop', LIST_FILTERS, M.listFilter, function(v){ M.listFilter = v; loadGrid(true); });
+  }
   if (a === 'gmenu') {
     var isSort = e.dataset.kind === 'sort';
     return openMenu(e, 'gDrop', isSort ? SORTS : GENRES, isSort ? M.sort : M.genre, function(v){
@@ -787,6 +833,7 @@ window.debugOpen = function(s){
   if (p[0] === 'search') { showPage('movies'); searchInput().value = p.slice(1).join(':'); runSearch(searchInput().value); setTimeout(function(){ var f = document.querySelector('#mGrid .f'); if (f) focus(f); }, 4000); return; }
   if (p[0] === 'tab') { showPage('movies'); var t = document.querySelector('#mTabs [data-type="' + p[1] + '"]'); if (t) { focus(t); mAct(t); } return; }
   if (p[0] === 'detail') return openDetail(p[1], p[2], 'movies');
+  if (p[0] === 'listadd') { openDetail(p[1], p[2], 'movies'); waitDetail(function(){ if (!inMyList(p[2])) toggleMyList(); }); return; }
   if (p[0] === 'sources') { openDetail(p[1], p[2], 'movies'); waitDetail(openSources); }
 };
 

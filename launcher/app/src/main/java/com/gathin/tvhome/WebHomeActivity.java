@@ -509,6 +509,17 @@ public class WebHomeActivity extends Activity {
             }
         }
 
+        /** Minha lista: séries e filmes marcados para assistir, como JSON [{type,id,name,poster,genres,at}]. */
+        @JavascriptInterface
+        public String myList() {
+            return getSharedPreferences("mylist", MODE_PRIVATE).getString("items", "[]");
+        }
+
+        @JavascriptInterface
+        public void saveMyList(String json) {
+            getSharedPreferences("mylist", MODE_PRIVATE).edit().putString("items", json).apply();
+        }
+
         /** A file the PC agent pushes into files/ (games.json, game_status.json); "" when missing. */
         @JavascriptInterface
         public String pcFile(String name) {
