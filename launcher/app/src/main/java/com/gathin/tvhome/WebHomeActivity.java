@@ -285,6 +285,61 @@ public class WebHomeActivity extends Activity {
     }
 
     /** Methods called from home.html as TV.name(). Runs on a WebView binder thread. */
+    /* Buscas da página: no máximo 4 ao mesmo tempo (a TV engasga com dezenas de threads de uma vez). */
+    private static final java.util.concurrent.ExecutorService FETCH_POOL = java.util.concurrent.Executors.newFixedThreadPool(4);
+    private static volatile boolean cachePurged;
+    private static final long CACHE_TTL_MS = 6 * 60 * 60 * 1000L;
+    /* Só vai para o disco o que muda devagar: catálogos, detalhes, elenco, episódios. Fontes de vídeo (/stream/) nunca. */
+    private static final java.util.regex.Pattern CACHEABLE = java.util.regex.Pattern.compile(
+            "^https://(v3-cinemeta\\.strem\\.io|[^/]*baby-beamup\\.club|api\\.tvmaze\\.com|[a-z]+\\.wikipedia\\.org|kitsu\\.io|arm\\.haglund\\.dev)/");
+
+    private java.io.File cacheFile(String url) {
+        if (url.contains("/stream/") || !CACHEABLE.matcher(url).find()) return null;
+        try {
+            byte[] h = java.security.MessageDigest.getInstance("MD5").digest(url.getBytes("UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : h) sb.append(String.format("%02x", b));
+            java.io.File dir = new java.io.File(getCacheDir(), "fetch");
+            if (dir.mkdirs() || !cachePurged) {
+                // Uma vez por abertura: apaga o que tem mais de 3 dias, para a pasta não crescer sem fim.
+                cachePurged = true;
+                java.io.File[] old = dir.listFiles();
+                if (old != null) for (java.io.File o : old) if (System.currentTimeMillis() - o.lastModified() > 3 * CACHE_TTL_MS * 4) o.delete();
+            }
+            return new java.io.File(dir, sb.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static String readCache(java.io.File f) {
+        if (!f.isFile()) return null;
+        try (java.io.FileInputStream in = new java.io.FileInputStream(f)) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+            return out.toString("UTF-8");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static void writeCache(java.io.File f, String body) {
+        java.io.File tmp = new java.io.File(f.getPath() + ".tmp");
+        try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) {
+            out.write(body.getBytes("UTF-8"));
+        } catch (Exception e) {
+            return;
+        }
+        tmp.renameTo(f);
+    }
+
+    private void answerFetch(String id, boolean ok, String body) {
+        String js = "window.onFetch && onFetch(" + JSONObject.quote(id) + "," + ok + "," + JSONObject.quote(body) + ")";
+        runOnUiThread(() -> web.evaluateJavascript(js, null));
+    }
+
     class Bridge {
 
         @JavascriptInterface
@@ -406,9 +461,15 @@ public class WebHomeActivity extends Activity {
          */
         @JavascriptInterface
         public void fetch(String id, String url) {
-            new Thread(() -> {
+            FETCH_POOL.execute(() -> {
                 boolean ok = false;
                 String body = "";
+                java.io.File cf = cacheFile(url);
+                // Catálogos e detalhes guardados há menos de 6 h: responde do disco, sem rede.
+                if (cf != null && System.currentTimeMillis() - cf.lastModified() < CACHE_TTL_MS) {
+                    String hit = readCache(cf);
+                    if (hit != null) { answerFetch(id, true, hit); return; }
+                }
                 // The TV's resolver drops lookups under load; give each host a few tries before giving up.
                 for (int attempt = 0; attempt < 3; attempt++) {
                     try {
@@ -443,9 +504,16 @@ public class WebHomeActivity extends Activity {
                     body = String.valueOf(e.getMessage());
                     android.util.Log.w("WebHome", "fetch failed " + e + " " + url);
                 }
-                String js = "window.onFetch && onFetch(" + JSONObject.quote(id) + "," + ok + "," + JSONObject.quote(body) + ")";
-                runOnUiThread(() -> web.evaluateJavascript(js, null));
-            }, "fetch").start();
+                if (cf != null) {
+                    if (ok) writeCache(cf, body);
+                    else {
+                        // Sem internet: melhor a cópia antiga do que nada.
+                        String stale = readCache(cf);
+                        if (stale != null) { ok = true; body = stale; }
+                    }
+                }
+                answerFetch(id, ok, body);
+            });
         }
 
         /**
