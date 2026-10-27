@@ -27,6 +27,7 @@ class AdbConnection(
             socket = sock
 
             val outputStream = sock.getOutputStream()
+            val inputStream = DataInputStream(sock.getInputStream())
 
             val cnxnData = "host::\u0000".toByteArray(Charsets.UTF_8)
             val cnxnMsg = AdbMessage(AdbMessage.A_CNXN, 0x01000000, 4096, cnxnData)
@@ -91,6 +92,7 @@ class AdbConnection(
         return try {
             sock.soTimeout = 3000
             val outputStream = sock.getOutputStream()
+            val inputStream = DataInputStream(sock.getInputStream())
             val streamId = localStreamId++
 
             val openPayload = "shell:$command\u0000".toByteArray(Charsets.UTF_8)
