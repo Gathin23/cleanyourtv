@@ -68,4 +68,5 @@
     </plurals>
     <string name="greeting_with_name">%1$s %2$s</string>
     <string name="game_live">กำลังถ่ายทอดสด</string>
+    <string name="glow_strength_label">แสงโฟกัส</string>
 </resources>

@@ -71,4 +71,5 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Jetzt live</string>
+    <string name="glow_strength_label">Fokus-Leuchten</string>
 </resources>

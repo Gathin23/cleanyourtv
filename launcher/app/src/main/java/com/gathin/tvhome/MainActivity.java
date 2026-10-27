@@ -204,6 +204,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean showStats;
     /** config.xml inputs_connected_only: the Inputs menu lists only connected inputs, the rest behind "More inputs". */
     private boolean inputsConnectedOnly;
+    /** glow_strength as a 0-255 alpha for the glow behind the dock. */
+    private int glowAlpha = 255;
     private boolean shamsi;
     /** greeting_name: said after the greeting, which is shown in capitals. */
     private String greetingName = "";
@@ -536,6 +538,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
         inputsConnectedOnly = cfg.inputsConnectedOnly;
+        glowAlpha = Math.round(cfg.glowStrength * 2.55f);
         shamsi = cfg.shamsiDate;
         lunarDate = findViewById(R.id.lunarDate);
         lunar = cfg.lunarDate;
@@ -2033,6 +2036,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             canvas.drawRect(0, 0, w, h, paint);
             glow = new BitmapDrawable(getResources(), bmp);
             glow.setGravity(Gravity.FILL);
+            glow.setAlpha(glowAlpha);
             ambient.setBackground(glow);
         }
         // The default tint mode, SRC_IN, keeps the mask's alpha and takes the colour from the tint.

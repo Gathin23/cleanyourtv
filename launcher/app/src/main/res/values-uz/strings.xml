@@ -111,4 +111,5 @@
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
     <string name="game_live">Hozir jonli</string>
+    <string name="glow_strength_label">Fokus yogʻdusi</string>
 </resources>

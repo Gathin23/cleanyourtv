@@ -473,6 +473,9 @@
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a
          theme's config.json. -->
     <bool name="ambient_glow">true</bool>
+    <!-- How strong that glow is, 0 to 100: 100, the default, is unchanged and 0 hides it. Launcher settings offers
+         100, 70, 40 and 0; a theme can set "glow_strength". -->
+    <integer name="glow_strength">100</integer>
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
     <bool name="app_glow">false</bool>

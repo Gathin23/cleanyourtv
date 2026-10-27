@@ -43,6 +43,7 @@ final class Config {
     static final String ROWS_BELOW_DOCK_KEY = "rows_below_dock";
     static final String WALLPAPER_CHOICE_KEY = "wallpaper_choice";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
+    static final String GLOW_STRENGTH_KEY = "glow_strength";
     /**
      * Counts the changes made in Launcher settings. Home remembers the count it was built with and rebuilds on
      * resume when it differs, however the settings were left (see MainActivity#onResume).
@@ -194,6 +195,8 @@ final class Config {
     final int wallpaperDim;
     /** The dock band's opacity in percent (config.json dock_opacity, 30-100): below 100 the wallpaper shows through. */
     final int dockOpacity;
+    /** How strong the glow in the focused app's colour is, 0 to 100 (config.xml, theme or Launcher settings, glow_strength). */
+    final int glowStrength;
     /**
      * Playback order for a wallpaper collection: {@code sequential} or {@code shuffle}. Missing or
      * invalid values keep the historical shuffle so existing themes rotate exactly as before.
@@ -279,7 +282,7 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait) {
+                   int openOnStartNetworkWait, int glowStrength) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -353,6 +356,7 @@ final class Config {
         this.wallpaperRotationMinutes = wallpaperRotationMinutes;
         this.wallpaperDim = wallpaperDim;
         this.dockOpacity = dockOpacity;
+        this.glowStrength = glowStrength;
         this.wallpaperOrder = wallpaperOrder;
         this.overlayApplied = overlayApplied;
         this.festival = festival;
@@ -644,6 +648,9 @@ final class Config {
         int wallpaperDim = json == null ? 0 : integer(json, "wallpaper_dim", 0, 0, 90);
         int dockOpacity = json == null ? 100 : integer(json, "dock_opacity", 100, 30, 100);
         dockOpacity = chosenDockOpacity(choices.getInt(DOCK_OPACITY_KEY, -1), dockOpacity);
+        int glowDefault = res.getInteger(R.integer.glow_strength);
+        int glowStrength = json == null ? glowDefault : integer(json, "glow_strength", glowDefault, 0, 100);
+        glowStrength = chosenGlowStrength(choices.getInt(GLOW_STRENGTH_KEY, -1), glowStrength);
         String wallpaperOrder = json == null ? WallpaperRotation.ORDER_SHUFFLE
                 : string(json, "wallpaper_order", WallpaperRotation.ORDER_SHUFFLE);
         // An unknown order must not silently change how an existing collection rotates.
@@ -682,7 +689,7 @@ final class Config {
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)));
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), glowStrength);
     }
 
     /**
@@ -726,11 +733,12 @@ final class Config {
             SharedPreferences.Editor editor = choices.edit();
             if (!"absent".equals(token)) editor.remove("columns").remove("animations")
                     .remove("advanced_effects").remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY)
-                    .remove(DOCK_OPACITY_KEY);
+                    .remove(DOCK_OPACITY_KEY).remove(GLOW_STRENGTH_KEY);
             editor.putString(THEME_SIGNATURE_KEY, signature).commit();
         } else if (!seen.equals(signature)) {
             choices.edit().remove("columns").remove("animations").remove("advanced_effects")
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
+                    .remove(GLOW_STRENGTH_KEY)
                     .putString(THEME_SIGNATURE_KEY, signature).commit();
         }
     }
@@ -738,6 +746,11 @@ final class Config {
     /** The dock band opacity chosen in Launcher settings, or the theme's when none (or an out-of-range one) is saved. */
     static int chosenDockOpacity(int chosen, int theme) {
         return chosen >= 30 && chosen <= 100 ? chosen : theme;
+    }
+
+    /** The glow strength chosen in Launcher settings, or the theme's when none (or an out-of-range one) is saved. */
+    static int chosenGlowStrength(int chosen, int theme) {
+        return chosen >= 0 && chosen <= 100 ? chosen : theme;
     }
 
     private static String fileStamp(File file) {

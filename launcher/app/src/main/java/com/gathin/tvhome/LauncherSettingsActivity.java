@@ -32,6 +32,8 @@ public final class LauncherSettingsActivity extends Activity {
     private final TextView[] rowChoices = new TextView[4];
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
+    private static final int[] GLOW_STRENGTHS = {100, 70, 40, 0};
+    private final TextView[] glowChoices = new TextView[GLOW_STRENGTHS.length];
     private TextView wallpaperChoice;
     private TextView animationsChoice;
     private TextView advancedChoice;
@@ -40,6 +42,7 @@ public final class LauncherSettingsActivity extends Activity {
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
+    private int glowStrength;
     private boolean animations;
     private boolean advancedEffects;
 
@@ -58,6 +61,7 @@ public final class LauncherSettingsActivity extends Activity {
         columns = config.columns;
         rowsBelowDock = config.rowsBelowDock;
         dockOpacity = config.dockOpacity;
+        glowStrength = config.glowStrength;
         animations = config.animations;
         advancedEffects = config.animations && config.advancedEffects;
 
@@ -85,6 +89,18 @@ public final class LauncherSettingsActivity extends Activity {
                 refresh();
             });
         }
+        int[] glowIds = {R.id.glow100, R.id.glow70, R.id.glow40, R.id.glow0};
+        for (int i = 0; i < glowIds.length; i++) {
+            final int value = GLOW_STRENGTHS[i];
+            glowChoices[i] = findViewById(glowIds[i]);
+            glowChoices[i].setOnClickListener(v -> {
+                if (glowStrength == value) return;
+                glowStrength = value;
+                choices.edit().putInt(Config.GLOW_STRENGTH_KEY, value).apply();
+                changed();
+                refresh();
+            });
+        }
         int[] dockIds = {R.id.dock100, R.id.dock70, R.id.dock50, R.id.dock30};
         for (int i = 0; i < dockIds.length; i++) {
             final int value = DOCK_OPACITIES[i];
@@ -105,6 +121,7 @@ public final class LauncherSettingsActivity extends Activity {
             reverseRow(columnChoices);
             reverseRow(rowChoices);
             reverseRow(dockChoices);
+            reverseRow(glowChoices);
         }
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
@@ -140,11 +157,12 @@ public final class LauncherSettingsActivity extends Activity {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).commit();
+                    .remove(Config.DOCK_OPACITY_KEY).remove(Config.GLOW_STRENGTH_KEY).remove(OpenOnStart.KEY).commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
             dockOpacity = current.dockOpacity;
+            glowStrength = current.glowStrength;
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
             changed();
@@ -286,6 +304,9 @@ public final class LauncherSettingsActivity extends Activity {
         for (int i = 0; i < dockChoices.length; i++) {
             dockChoices[i].setSelected(dockOpacity == DOCK_OPACITIES[i]);
         }
+        for (int i = 0; i < glowChoices.length; i++) {
+            glowChoices[i].setSelected(glowStrength == GLOW_STRENGTHS[i]);
+        }
         animationsChoice.setText(getString(R.string.animations_state,
                 getString(animations ? R.string.on : R.string.off)));
         advancedChoice.setText(getString(R.string.advanced_effects_state,
@@ -305,6 +326,7 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
+                || choices.contains(Config.GLOW_STRENGTH_KEY)
                 || choices.contains(OpenOnStart.KEY);
     }
 
