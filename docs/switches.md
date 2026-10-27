@@ -46,6 +46,8 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `dock_band_all` | <img src="switches/single_row.jpg" width="320" alt="dock_band_all on a TV"> |
 | `uniform_tiles` | <img src="switches/uniform_tiles.jpg" width="320" alt="uniform_tiles on a TV"> |
 | `lunar_date` | <img src="switches/lunar_date.jpg" width="320" alt="lunar_date on a TV"> |
+| `tamil_date` | <img src="switches/tamil_date.jpg" width="320" alt="tamil_date on a TV"> |
+| `tamil_panchangam` | <img src="switches/tamil_panchangam.jpg" width="320" alt="tamil_panchangam on a TV"> |
 | `dock_band` | <img src="switches/dock_band.jpg" width="320" alt="dock_band on a TV"> |
 | `show_library_pill` | <img src="switches/show_library_pill.jpg" width="320" alt="show_library_pill on a TV"> |
 | `library_ok_opens` | <img src="switches/library_ok_opens.jpg" width="320" alt="library_ok_opens on a TV"> |

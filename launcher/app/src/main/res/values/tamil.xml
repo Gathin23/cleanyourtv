@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- tamil_date (config.json, off by default): the Tamil calendar date under the date, in Tamil script in every
+     locale, as a Tamil daily calendar prints it. -->
+<resources>
+    <string name="tamil_date_format" translatable="false">%1$s %2$d · %3$s</string>
+    <string-array name="tamil_months" translatable="false">
+        <item>சித்திரை</item><item>வைகாசி</item><item>ஆனி</item><item>ஆடி</item><item>ஆவணி</item><item>புரட்டாசி</item>
+        <item>ஐப்பசி</item><item>கார்த்திகை</item><item>மார்கழி</item><item>தை</item><item>மாசி</item><item>பங்குனி</item>
+    </string-array>
+    <string-array name="tamil_years" translatable="false">
+        <item>பிரபவ</item><item>விபவ</item><item>சுக்ல</item><item>பிரமோதூத</item><item>பிரசோற்பத்தி</item>
+        <item>ஆங்கீரச</item><item>ஸ்ரீமுக</item><item>பவ</item><item>யுவ</item><item>தாது</item>
+        <item>ஈஸ்வர</item><item>வெகுதானிய</item><item>பிரமாதி</item><item>விக்கிரம</item><item>விஷு</item>
+        <item>சித்திரபானு</item><item>சுபானு</item><item>தாரண</item><item>பார்த்திப</item><item>விய</item>
+        <item>சர்வஜித்</item><item>சர்வதாரி</item><item>விரோதி</item><item>விக்ருதி</item><item>கர</item>
+        <item>நந்தன</item><item>விஜய</item><item>ஜய</item><item>மன்மத</item><item>துன்முகி</item>
+        <item>ஹேவிளம்பி</item><item>விளம்பி</item><item>விகாரி</item><item>சார்வரி</item><item>பிலவ</item>
+        <item>சுபகிருது</item><item>சோபகிருது</item><item>குரோதி</item><item>விசுவாவசு</item><item>பராபவ</item>
+        <item>பிலவங்க</item><item>கீலக</item><item>சௌமிய</item><item>சாதாரண</item><item>விரோதகிருது</item>
+        <item>பரிதாபி</item><item>பிரமாதீச</item><item>ஆனந்த</item><item>ராட்சச</item><item>நள</item>
+        <item>பிங்கள</item><item>காளயுக்தி</item><item>சித்தார்த்தி</item><item>ரௌத்திரி</item><item>துன்மதி</item>
+        <item>துந்துபி</item><item>ருத்ரோத்காரி</item><item>ரக்தாட்சி</item><item>குரோதன</item><item>அட்சய</item>
+    </string-array>
+
+    <!-- tamil_panchangam (config.json, off by default): the daily calendar sheet under the clock. -->
+    <string-array name="tamil_weekdays" translatable="false">
+        <item>ஞாயிறு</item><item>திங்கள்</item><item>செவ்வாய்</item><item>புதன்</item><item>வியாழன்</item>
+        <item>வெள்ளி</item><item>சனி</item>
+    </string-array>
+    <!-- Prathamai to chathurdasi, then pournami and amavasai. -->
+    <string-array name="tamil_thithis" translatable="false">
+        <item>பிரதமை</item><item>துவிதியை</item><item>திருதியை</item><item>சதுர்த்தி</item><item>பஞ்சமி</item>
+        <item>சஷ்டி</item><item>சப்தமி</item><item>அஷ்டமி</item><item>நவமி</item><item>தசமி</item>
+        <item>ஏகாதசி</item><item>துவாதசி</item><item>திரயோதசி</item><item>சதுர்த்தசி</item>
+        <item>பௌர்ணமி</item><item>அமாவாசை</item>
+    </string-array>
+    <string-array name="tamil_nakshatrams" translatable="false">
+        <item>அசுவினி</item><item>பரணி</item><item>கார்த்திகை</item><item>ரோகிணி</item><item>மிருகசீரிடம்</item>
+        <item>திருவாதிரை</item><item>புனர்பூசம்</item><item>பூசம்</item><item>ஆயில்யம்</item><item>மகம்</item>
+        <item>பூரம்</item><item>உத்திரம்</item><item>அஸ்தம்</item><item>சித்திரை</item><item>சுவாதி</item>
+        <item>விசாகம்</item><item>அனுஷம்</item><item>கேட்டை</item><item>மூலம்</item><item>பூராடம்</item>
+        <item>உத்திராடம்</item><item>திருவோணம்</item><item>அவிட்டம்</item><item>சதயம்</item><item>பூரட்டாதி</item>
+        <item>உத்திரட்டாதி</item><item>ரேவதி</item>
+    </string-array>
+    <string-array name="hijri_months" translatable="false">
+        <item>முஹர்ரம்</item><item>ஸஃபர்</item><item>ரபியுல் அவ்வல்</item><item>ரபியுல் ஆகிர்</item>
+        <item>ஜமாதிலவல்</item><item>ஜமாதிலாகிர்</item><item>ரஜப்</item><item>ஷஃபான்</item><item>ரமலான்</item>
+        <item>ஷவ்வால்</item><item>துல்கஃதா</item><item>துல்ஹஜ்</item>
+    </string-array>
+    <!-- Hora lords in Chaldean order: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon. -->
+    <string-array name="tamil_horas" translatable="false">
+        <item>சனி</item><item>குரு</item><item>செவ்வாய்</item><item>சூரிய</item><item>சுக்ர</item><item>புதன்</item>
+        <item>சந்திர</item>
+    </string-array>
+    <string-array name="soolam_directions" translatable="false">
+        <item>கிழக்கு</item><item>மேற்கு</item><item>வடக்கு</item><item>தெற்கு</item>
+    </string-array>
+    <string-array name="soolam_remedies" translatable="false">
+        <item>தயிர்</item><item>வெல்லம்</item><item>பால்</item><item>தைலம்</item>
+    </string-array>
+    <!-- Morning, midday, evening, night. -->
+    <string-array name="panchangam_day_parts" translatable="false">
+        <item>காலை</item><item>பகல்</item><item>மாலை</item><item>இரவு</item>
+    </string-array>
+    <string name="panchangam_thithi" translatable="false">திதி</string>
+    <string name="panchangam_star" translatable="false">நட்சத்திரம்</string>
+    <!-- "பிரதமை 6.30 (காலை 8.38)", as the printed sheets give an end: name, nazhigai after sunrise, part of day, clock. -->
+    <string name="panchangam_until" translatable="false">%1$s %2$s (%3$s %4$s)</string>
+    <string name="panchangam_sunrise" translatable="false">சூரிய உதயம் %1$s</string>
+    <string name="panchangam_rahu" translatable="false">இராகு %1$s</string>
+    <string name="panchangam_kuligai" translatable="false">குளிகை %1$s</string>
+    <string name="panchangam_emagandam" translatable="false">எமகண்டம் %1$s</string>
+    <string name="panchangam_soolam" translatable="false">சூலம் %1$s · பரிகாரம் %2$s</string>
+    <string name="panchangam_hora" translatable="false">ஓரை</string>
+    <string name="panchangam_kicker" translatable="false">தமிழ் நாட்காட்டி · திருக்கணிதம் · சென்னை</string>
+</resources>

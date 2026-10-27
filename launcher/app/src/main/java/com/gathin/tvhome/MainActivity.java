@@ -189,6 +189,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView lunarDate;
     private boolean lunar;
     private int lunarOffset;
+    /** tamil_date: the Tamil calendar date under the date line. */
+    private TextView tamilDate;
+    private boolean tamil;
+    /** tamil_panchangam: the daily calendar sheet under the clock (absent from the Hebrew and Chinese layouts), and
+     *  the day it shows, so the minute tick redraws it only when the date changes. */
+    private View tamilSheet;
+    private java.time.LocalDate tamilSheetDay;
     private TextView stats;
     private List<RaceWeekend.Race> raceCalendar;
     private View racePanel;
@@ -541,6 +548,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         lunar = cfg.lunarDate;
         lunarOffset = Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault());
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
+        tamilDate = findViewById(R.id.tamilDate);
+        tamil = cfg.tamilDate;
+        if (tamil) tamilDate.setVisibility(View.VISIBLE);
+        tamilSheet = cfg.tamilPanchangam ? findViewById(R.id.tamilSheet) : null;
+        if (tamilSheet != null) tamilSheet.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
         if (shamsi) {
@@ -2606,6 +2618,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (shamsi) shamsiDate.setText(Shamsi.today(getResources()));
         if (lunar) lunarDate.setText(Lunar.today(getResources(), lunarOffset));
+        if (tamil) tamilDate.setText(Tamil.today(getResources()));
+        if (tamilSheet != null) showTamilSheet();
+    }
+
+    /** Fills the Tamil calendar sheet for today, once a day. */
+    private void showTamilSheet() {
+        java.time.LocalDate today = java.time.LocalDate.now(Tamil.IST);
+        if (today.equals(tamilSheetDay)) return;
+        tamilSheetDay = today;
+        Panchangam p = Panchangam.of(today);
+        ((TextView) findViewById(R.id.tamilSheetMonth)).setText(p.month(getResources()));
+        ((TextView) findViewById(R.id.tamilSheetDay)).setText(String.valueOf(p.tamil[2]));
+        ((TextView) findViewById(R.id.tamilSheetYear)).setText(p.yearAndWeekday(getResources()));
+        ((TextView) findViewById(R.id.tamilSheetBody)).setText(p.body(getResources()));
+        ((TextView) findViewById(R.id.tamilSheetTimes)).setText(p.times(getResources()));
     }
 
     // ---- race-weekend panel (a theme's race_calendar) -----------------------------------------------

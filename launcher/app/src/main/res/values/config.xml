@@ -243,6 +243,11 @@
     <bool name="shamsi_date">false</bool>
     <!-- Lunisolar (Vietnamese / Chinese / Korean) date under the date; config.json lunar_date, lunar_utc_offset (7, 8 or 9, default by locale). -->
     <bool name="lunar_date">false</bool>
+    <!-- Tamil calendar date in Tamil script under the date, e.g. "ஐப்பசி 10 · பராபவ"; config.json tamil_date. -->
+    <bool name="tamil_date">false</bool>
+    <!-- A Tamil daily calendar sheet under the clock: Tamil and Hijri dates, thithi and nakshatram with end times,
+         sunrise, Rahu, Kuligai, Emagandam, soolam and the good horas, for Chennai; config.json tamil_panchangam. -->
+    <bool name="tamil_panchangam">false</bool>
     <!-- The date (with the Shamsi and lunar lines) on its own line under the clock instead of beside it, for a top bar
          whose pills leave the date too little room. Can also be set with "date_below_clock" in a theme. -->
     <bool name="date_below_clock">false</bool>

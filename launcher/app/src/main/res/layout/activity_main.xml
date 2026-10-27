@@ -30,6 +30,109 @@
         android:layout_height="match_parent"
         android:alpha="0" />
 
+    <!-- Tamil daily calendar sheet (tamil_panchangam, see Panchangam): in the free space under the clock, laid out like a
+         printed sheet. Text only, set once a day; not focusable, so the D-pad never stops on it. No font is set: the
+         bundled ones have no Tamil letters, so the system's Tamil font draws it. -->
+    <LinearLayout
+        android:id="@+id/tamilSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_marginStart="56dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginTop="116dp"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="18dp"
+        android:background="@drawable/panchangam_card"
+        android:orientation="horizontal"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tamilSheetMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#E6FFFFFF"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/tamilSheetDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textColor="#FFFFFFFF"
+                android:textSize="52sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tamilSheetYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B3FFFFFF"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="#26FFFFFF" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <!-- Which reckoning the end times follow: thirukanitham, not the vakya most printed sheets use. -->
+            <TextView
+                android:id="@+id/tamilSheetKicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:text="@string/panchangam_kicker" />
+
+            <TextView
+                android:id="@+id/tamilSheetBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="7dp"
+                android:textColor="#E6FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="#26FFFFFF" />
+
+        <TextView
+            android:id="@+id/tamilSheetTimes"
+            android:layout_width="0dp"
+            android:layout_weight="1.2"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:lineSpacingExtra="7dp"
+            android:textColor="#CCFFFFFF"
+            android:textSize="13sp" />
+    </LinearLayout>
+
     <!-- Race-weekend panel (a theme's race_calendar, see RaceWeekend): in the free space under the clock,
          shown only from shortly before a weekend's first session until the race is over. Updated once a
          minute with the clock, never animated. -->
@@ -296,6 +399,20 @@
                             android:fontFamily="@string/font_regular"
                             android:letterSpacing="0.14"
                             android:textAllCaps="true"
+                            android:visibility="gone" />
+
+                        <!-- Tamil date ("ஐப்பசி 10 · பராபவ"), shown when tamil_date is on. No font set: the bundled ones
+                             have no Tamil letters, so the system's Tamil font draws it. -->
+                        <TextView
+                            android:id="@+id/tamilDate"
+                            android:gravity="left"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:textColor="#A6FFFFFF"
+                            android:textSize="15sp"
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
