@@ -27,6 +27,7 @@ public final class QuickSettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        ThemeFont.install(this, Config.load(this));
         setContentView(R.layout.activity_quick_settings);
         if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
             View panel = findViewById(R.id.panel);

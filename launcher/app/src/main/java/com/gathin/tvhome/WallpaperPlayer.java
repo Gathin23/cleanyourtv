@@ -223,6 +223,7 @@ final class WallpaperPlayer {
         } catch (Exception ignored) {
             // the system font is fine
         }
+        ThemeFont.style(text);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
         params.topMargin = Math.round(110 * dp);

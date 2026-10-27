@@ -359,6 +359,33 @@ class ThemePushTest(unittest.TestCase):
         self.assertIn("content delete --uri $uri/wallpapers", clear)
         self.assertNotIn("captions", clear, "the captions file is dropped on its own line, as in theme.sh")
 
+    def test_a_theme_font_is_put_like_the_wallpaper_and_dropped_without_one(self):
+        (self.theme / "font.ttf").write_bytes(b"\x00\x01\x00\x00ttf bytes")
+        result = self.run_theme(str(self.theme))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((self.device / "font.ttf").read_bytes(), b"\x00\x01\x00\x00ttf bytes")
+        put = self.command_for("font.ttf")
+        self.assertLess(put.index("content write"), put.index("cp "), put)
+        (self.theme / "font.ttf").unlink()
+        result = self.run_theme(str(self.theme))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((self.device / "font.ttf").exists(),
+                         "a theme without a font must not keep the last theme's")
+
+    def test_reset_drops_the_theme_font(self):
+        (self.device / "font.ttf").write_bytes(b"old font")
+        result = self.run_theme("--reset")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((self.device / "font.ttf").exists(), "--reset is back to the bundled font")
+
+    def test_the_windows_script_puts_and_drops_the_font_as_theme_sh_does(self):
+        script = (TOOLS / "theme.ps1").read_text(encoding="utf-8")
+        reset = next(line for line in script.splitlines() if line.strip().startswith("Invoke-Tv tv.py \"mkdir -p $dir"))
+        self.assertIn("$(Drop 'font.ttf')", reset)
+        font = next(line for line in script.splitlines() if line.startswith("if (Test-Path $font)"))
+        self.assertIn("(Put 'font.ttf')", font)
+        self.assertIn("(Drop 'font.ttf')", font)
+
 
 if __name__ == "__main__":
     unittest.main()

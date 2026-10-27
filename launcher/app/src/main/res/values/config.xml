@@ -340,6 +340,10 @@
          whose state the TV cannot be trusted with stays. Off by default: every input is listed. Can also be set
          with "inputs_connected_only" in a theme. -->
     <bool name="inputs_connected_only">false</bool>
+    <!-- OpenType feature tags for a theme's own font (font.ttf next to config.json; themes/README.md), comma
+         separated: "ss08" picks a font's stylistic set 8, "ss01, cv05" two at once. Empty, the default, draws the
+         font as it comes, and the bundled Outfit never takes them. Can also be set with "font_features" in a theme. -->
+    <string name="font_features" translatable="false"></string>
     <!-- Names under every tile, not only the focused one: unfocused names stay dimmed, the focused one is full white.
          With dock_row the band grows down to hold the dock's names too. -->
     <bool name="always_show_names">false</bool>

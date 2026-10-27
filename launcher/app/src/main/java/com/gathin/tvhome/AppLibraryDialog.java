@@ -600,6 +600,7 @@ final class AppLibraryDialog {
         view.setTextSize(size);
         view.setTextColor(color);
         view.setTypeface(UiFont.get(activity, R.string.font_medium));
+        ThemeFont.style(view);
         view.setLetterSpacing(0.01f);
         view.setIncludeFontPadding(false);
         return view;

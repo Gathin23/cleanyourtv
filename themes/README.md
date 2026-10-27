@@ -133,6 +133,7 @@ A new key needs one there in the same pull request.
 | `home_long_press_home` | bool | Every Home press opens Home, a held one too. Android turns a Home press held past 400 ms into ALL_APPS for the system-image launcher, which nothing answers once the stock launcher is disabled, so a firm press on a slow remote did nothing (Philips TPM191E, Android 12, where `long_press_timeout` does not move that limit). Needs `key_filter` (`HOME_KEY_SERVICE=1`), so held keys such as Volume Up/Down stop repeating, confirmed on that Philips; single presses still step. Off by default |
 | `power_on_home_always` | bool | Home at every power-on, whatever the TV put in front: the last HDMI input, Live TV or an app, for TVs that come back to the last source (Philips). Unlike `power_on_home`, it does not wait for a window to show: the Home screen comes up about a second after the screen turns on (`HOME_KEY_SERVICE=1`). A key pressed before that wins. Ignored with `boot_to_live_tv`, or with an Open on start app. Off by default |
 | `inputs_connected_only` | bool | The Inputs list shows only HDMI ports and CEC devices that report connected; empty ports, the AV jacks and devices asleep in standby fold behind a "More inputs" row that expands them. Some TVs (TCL) report an empty HDMI port as connected-standby, the same state a sleeping device has, so a device in standby is folded too. An HDMI row whose state the TV cannot be trusted with stays (`false` by default) |
+| `font_features` | string | OpenType features for the theme's own font, as comma-separated 4-character tags (`"ss08"` turns on the font's stylistic set 8). The font itself is a `font.ttf` in the theme folder (see [Font](#font)); the bundled Outfit never takes these. Empty by default |
 | `race_calendar` | list of races | F1 race-weekend mode: from 12 hours before a weekend's first session until 4 hours after the race starts, a panel under the clock shows the next session with a countdown (or the live one) and the weekend's session times in the TV's time zone. Write it with `tools/venv/bin/python -I tools/race_calendar.py <theme folder>`, which fetches the season from the free Jolpica API; the launcher itself never goes online |
 | `home_idle_clock_minutes` | 0 to 1440 | Minutes Home may sit untouched before it shows the clock screensaver (a thin clock and date drifting over a slow glow, as the system "Clock" screensaver does). Any key returns to Home. It starts only from Home, never over Live TV or an app; 0 is off (default) |
 | `clock_wallpaper` | bool | The clock screensaver over Home's wallpaper instead of black with a coloured glow; the clock still moves every minute (`false` by default) |
@@ -192,6 +193,15 @@ On the TV, Launcher settings has a Wallpaper row: pick one picture from the coll
 `wallpaper.jpg`), or None. A pick shows that one picture and stops the rotation until you choose Theme
 default, press Follow theme, or push a theme again.
 
+## Font
+
+A `font.ttf` beside `config.json` replaces the launcher's bundled Outfit in every text it draws, each at the
+weight the layout asks for (a variable font is drawn at that weight; a static one at its own). `tools/theme.sh`
+pushes it, and removes the last theme's font when a theme has none or on `--reset`. Without it, or with a file
+Android cannot read or over 8 MB, Outfit stays. Only a font whose licence lets you share it, such as the
+[SIL Open Font License](https://openfontlicense.org): put its licence file (`OFL.txt`) in the theme folder too,
+so it travels with the font. Letters the font lacks come from the TV's own fonts.
+
 ## Reduced motion
 
 `"reduced_motion": true` keeps the look but calms the movement and draws far fewer frames: the
@@ -236,6 +246,7 @@ Open a PR with a new folder here containing:
   for example `sips -z 720 1280 -s format jpeg s.png --out screenshot.jpg` on macOS. Leave the focus on
   the dock so the glow and the hero name show. A PR without it fails CI (`tests/test_themes.py`).
 - `wallpaper.jpg` or `wallpapers/` if the theme uses them.
+- `font.ttf` and its licence file if the theme brings its own font ([Font](#font)).
 
 Then add a row to the table above with the screenshot, the same way as the others. Keep the dock list
 generic (the big streaming apps) unless the theme is for a specific TV, and say which TV you tried it on
