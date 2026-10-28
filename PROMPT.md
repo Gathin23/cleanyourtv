@@ -23,6 +23,31 @@ folder, you are running without this repo: clone it first with
 `git clone https://github.com/Gathin23/cleanyourtv` and work from there, so `tools/disable.sh` and the
 rest keep their safety checks, rather than stopping or writing your own.
 
+Check the computer
+- Before Connect, check this computer and show me a menu of what is missing. Ask me before
+  installing anything. Install nothing until I answer that menu.
+- A higher version counts when the build still accepts it. Python 3, or any newer 3.x, runs the
+  tools. A full JDK with `jlink` from 17 through 22 builds the launcher; 23 and newer makes Gradle
+  8.9 stop, so those do not count. If a 17–22 JDK is installed and `java -version` prints 23 or
+  newer, point `JAVA_HOME` at the 17–22 one instead of installing another. Android SDK platform 34
+  has to be installed under `ANDROID_HOME`, `~/Library/Android/sdk`, `~/Android/Sdk`, or
+  `%LOCALAPPDATA%\Android\Sdk`: the build reads `platforms/android-34`, so a newer platform beside it
+  does not replace it. Build-tools 34.0.0 or any newer 34.x counts; build-tools 35 or newer does not
+  replace 34. Git is required only when this folder is not already the repo. Stock `adb` is optional:
+  `tools/tv.py` is the client, and the stock binary is only for Wireless debugging pairing when port
+  5555 stays closed.
+- The menu lists only missing required pieces, one numbered row each, with the version you found.
+  On a row, offer "You install it" only when you are sure: the package manager is already on this
+  computer and the command will not ask for a password, a store click, or an installer window.
+  Those commands are `brew` or `winget` for Python 3 and for a JDK 17 (use 17 when none of 17–22 is
+  present), `sdkmanager "platforms;android-34" "build-tools;34.0.0"` when `sdkmanager` is already
+  installed, and `python -m venv tools/venv` plus `pip install -r tools/requirements.txt` once
+  Python 3 is present. Every other row offers only "I'll install it myself", with the exact command.
+  A full Android Studio install is one of those.
+- I pick "You install it" or "I'll install it myself" per row. Run only the rows I give you. Then
+  tell me what you installed and what is still missing. Stay here until the required pieces are
+  present, or I tell you to do the debloat half only, which needs Python 3.
+
 Connect
 - Find the TV on my network (hostname, ARP table, or ask me for the IP) and connect over ADB on port 5555.
   If the TV is in another home, I'll give you its Tailscale address instead (docs/REMOTE.md): use that,
