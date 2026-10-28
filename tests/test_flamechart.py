@@ -8,7 +8,9 @@ neither Perfetto's query engine nor a TV. Drawing needs Pillow, so that test ski
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import contextlib
 import importlib.util
+import io
 import os
 from pathlib import Path
 import re
@@ -128,6 +130,80 @@ class ArgumentTest(unittest.TestCase):
                 with open(os.devnull, "w") as null, mock.patch("sys.stderr", null):
                     flamechart.parse(argv)
 
+    def parse_error(self, argv):
+        with contextlib.redirect_stderr(io.StringIO()) as err, self.assertRaises(SystemExit) as caught:
+            flamechart.parse(argv)
+        self.assertEqual(caught.exception.code, 2)
+        return err.getvalue()
+
+    def test_an_out_that_cannot_be_written_is_refused_before_the_traces_are_opened(self):
+        # im.save() threw from draw(), after Perfetto's query engine had started and every trace had been
+        # read, so a typo in --out read as a chart that failed.
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "charts"
+            folder.mkdir()
+            for out, expected in ((str(folder), "is a folder"),
+                                  (str(folder / "chart"), "has no extension"),
+                                  (str(Path(tmp) / "nothere" / "chart.png"), "there is no folder")):
+                with self.subTest(out=out):
+                    self.assertIn(expected, self.parse_error(["a", "--out", out]))
+            through = Path(tmp) / "file.png"
+            through.write_text("not a folder")
+            self.assertIn("is a file, not a folder", self.parse_error(["a", "--out", str(through / "chart.png")]))
+            self.assertIn("--out is empty", self.parse_error(["a", "--out", ""]))
+
+    def test_a_png_in_a_folder_that_is_there_is_still_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, "chart.png")
+            self.assertEqual(flamechart.parse(["a", "b", "--out", out]).out, out)
+            self.assertEqual(flamechart.parse(["a", "--out", "chart.png"]).out, "chart.png")   # the checkout
+
+
+class OutputArgumentTest(unittest.TestCase):
+    def assert_rejected_before_trace_work(self, argv, out, flag):
+        with (mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
+              mock.patch.object(flamechart.trace_report, "opener") as opener,
+              mock.patch.object(flamechart.trace_report, "expand") as expand,
+              mock.patch("builtins.__import__", wraps=__import__) as imports,
+              contextlib.redirect_stderr(io.StringIO()) as err,
+              self.assertRaises(SystemExit) as caught):
+            flamechart.main(argv)
+        self.assertEqual(caught.exception.code, 2)
+        self.assertIn(flag, err.getvalue().splitlines()[-1])
+        self.assertFalse(out.exists())
+        opener.assert_not_called()
+        expand.assert_not_called()
+        self.assertFalse(any(call.args[0].split(".")[0] in ("PIL", "perfetto")
+                             for call in imports.call_args_list))
+
+    def test_non_png_output_is_rejected_before_trace_work(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for suffix in (".txt", ".svg", ".jpg"):
+                with self.subTest(suffix=suffix):
+                    out = Path(tmp, "chart" + suffix)
+                    self.assert_rejected_before_trace_work(["nav-1.pftrace", "--out", str(out)], out, "--out")
+
+    def test_unusable_width_is_rejected_before_trace_work(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp, "chart.png")
+            for width in (-1, 0, 1, 244, 245):
+                with self.subTest(width=width):
+                    self.assert_rejected_before_trace_work(
+                        ["nav-1.pftrace", "--out", str(out), "--width", str(width)], out, "--width")
+
+    def test_png_paths_and_usable_widths_are_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for suffix in (".png", ".PNG"):
+                for width in (None, 246):
+                    with self.subTest(suffix=suffix, width=width):
+                        out = str(Path(tmp, "chart" + suffix))
+                        argv = ["nav-1.pftrace", "--out", out]
+                        if width is not None:
+                            argv += ["--width", str(width)]
+                        args = flamechart.parse(argv)
+                        self.assertEqual(args.out, out)
+                        self.assertEqual(args.width, 1600 if width is None else width)
+
 
 @unittest.skipUnless(importlib.util.find_spec("PIL"), "drawing needs Pillow (tools/requirements-perf.txt)")
 class DrawTest(unittest.TestCase):
@@ -143,6 +219,26 @@ class DrawTest(unittest.TestCase):
             im = Image.open(out).convert("RGB")
             self.assertEqual(im.size, size)
             self.assertIn(flamechart.MAGENTA, set(im.getdata()))
+
+    def test_main_writes_png_at_default_and_minimum_width(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            for width in (None, 246):
+                with self.subTest(width=width):
+                    out = Path(tmp, "chart.PNG" if width is not None else "chart.png")
+                    argv = [str(trace), "--out", str(out)]
+                    if width is not None:
+                        argv += ["--width", str(width)]
+                    open_trace = lambda path: (fake_trace(), lambda: None)
+                    with mock.patch.object(flamechart.trace_report, "opener", return_value=open_trace), \
+                            contextlib.redirect_stdout(io.StringIO()):
+                        flamechart.main(argv)
+                    with Image.open(out) as im:
+                        self.assertEqual(im.format, "PNG")
+                        self.assertEqual(im.width, 1600 if width is None else width)
+                        im.verify()
 
 
 if __name__ == "__main__":

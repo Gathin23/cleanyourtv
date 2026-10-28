@@ -1,0 +1,6 @@
+{
+  "tv": "Nokia Streaming Box 8000 (Sagemcom/NES, SEI600NK4, HND, Amlogic)",
+  "os": "Android TV 14",
+  "brand": "Nokia",
+  "notes": "Firmware refuses every `pm disable*`, `pm hide` and `pm uninstall --user 0` (\"This command is illegal!\"), so the list is suspended and background-restricted instead (commands in its README): Google/Privacy Sandbox ad services, recommendation rows, Nokia row config and auto-installs, factory tests; voice and YouTube Music off by choice; the stock launcher (HOME priority 2, \"core application\") cannot be replaced yet; port 5555 opens without pairing"
+}

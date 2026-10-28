@@ -21,6 +21,40 @@
 # Memory, PSS: stock tvlauncher 64 MB + 15 MB swapped vs 41 to 46 MB for my build of launcher/
 # (a few local changes); tvrecommendations about 20 MB, katniss about 52 MB (two processes).
 #
+# Second unit: Asia-Pacific (persist.tcl.client_type TCL-AP-MT9221-01), same product C06_2K_GB and
+# build AR2101, security patch 2024-02-05. The firmware update check reports "up to date" on this
+# region's server, so AP units may stay behind the EU unit above. Remote: BT_RC833_M4 (Bluetooth LE,
+# with mic). Applied on 2026-10-23 with the list below, except where noted; lived with until 2026-10-26.
+# - Voice from the Bluetooth remote needs com.google.android.tv.remote.service as well as katniss.
+#   With remote.service disabled the mic button does nothing and logs nothing. Both re-enabled here.
+# - After katniss is re-enabled, the mic first opens the Assistant setup screen once; "Use
+#   Assistant without signing in" is enough for voice search in YouTube.
+# - Here the saved Wi-Fi network belonged to setupwraith (dumpsys wifi | grep cname=), so it was
+#   left enabled; disabling it would have dropped Wi-Fi and ADB.
+#
+# Vietnam unit, 2026-10-27 (@d0nj): same model "Smart TV", product C06_2K_GB and build
+# AR2101 / AR14, Android TV 11 (SDK 30), security patch 2022-01-05, mt5867, about 918 MB RAM.
+# One session, not a several-day test. Kept setupwraith: dumpsys wifi showed four saved-network
+# entries with cname=com.google.android.tungsten.setupwraith; disabling it would delete those
+# networks and disconnect Wi-Fi and ADB. Chromecast (mediashell), ttvs firmware updates, YouTube,
+# TV360 and VTVgo were kept. Google TTS was left enabled. Stan, Rakuten TV and TCL Alexa were
+# already disabled. The photo screensaver was switched to AOSP Colors before disabling backdrop
+# (command and undo below).
+# - Off by owner choice: voice (katniss), the remote-mic bridge (tv.remote.service), TalkBack and
+#   all four TCL USB media apps, as in the labelled block below. The mic button is unused.
+# - Additional packages disabled on this unit are listed as commented choices at the end; they
+#   do not change the EU/AP list's defaults. Remote buttons were not physically tested afterwards.
+# - After sync, a wait and one reboot, usercenter alone returned among the disabled packages.
+#   Left enabled after that, rather than disabling it again at every boot.
+# - YouTube, Live TV and SmartTube opened; the TV input framework created an HDMI 1 session
+#   (HW1413744128). HDMI screenshots were empty. Hardware inventory reported more HDMI IDs than
+#   the registered input map, so those IDs are not evidence of extra physical ports.
+# - launcher/ became Home with stock tvlauncher disabled (mFocusedApp confirmed). The final
+#   launcher configuration was not reboot-tested, and physical remote buttons remain unverified.
+# - Dock note: four columns, YouTube (com.google.android.youtube.tv), TV360 (com.viettel.tv360.tv),
+#   VTVgo (vn.vtv.vtvgotv), SmartTube (org.smarttube.stable), left to right; live_tv_package=com.tcl.tv.
+#   These are per-unit config.json/theme values, not shared launcher defaults.
+#
 # Known quirks on this firmware:
 # - The stock launcher declares HOME priority 2, so `cmd package set-home-activity` alone does not
 #   take Home while it is enabled (Home still opens it). Disabling it, as build-and-install.sh
@@ -66,7 +100,7 @@ com.google.android.play.games
 com.google.android.videos              # Play Movies
 com.google.android.youtube.tvmusic
 com.google.android.syncadapters.calendar
-com.google.android.tungsten.setupwraith # first-run wizard, setup already done
+com.google.android.tungsten.setupwraith # first-run wizard, setup already done; check it does not own the Wi-Fi first (header)
 
 # Stock home and its recommendation rows, replaced by launcher/
 # com.google.android.tvlauncher   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved
@@ -74,7 +108,7 @@ com.google.android.tvrecommendations
 
 # Off by choice on this unit: comment out what you use
 com.google.android.katniss             # Google search/voice, keep for the mic button
-com.google.android.tv.remote.service   # phone-app remote (casting does not need it)
+com.google.android.tv.remote.service   # phone-app remote AND the BT remote's mic bridge: re-enable with katniss for voice (tested, AP unit)
 com.google.android.tts                 # Google text-to-speech, keep for TalkBack
 com.google.android.marvin.talkback     # TalkBack
 com.google.android.backdrop            # photo screensaver, switch the screensaver first (quirks)
@@ -89,3 +123,10 @@ com.tcl.imageplayer
 # com.amazon.amazonvideo.livingroom    # Prime Video
 # tv.wuaki.apptv                       # Rakuten TV
 # com.tcl.smartalexa                   # TCL Alexa bridge
+
+# Additional choices on the Vietnam unit only; uncomment only if wanted on your TV.
+# com.tcl.copydatatotv                 # phone data-migration helper
+# com.tcl.t_solo                       # Bluetooth "listen alone" helper
+# com.tcl.dashboard                    # TCL HOME; kept on the EU/AP units above
+# com.tcl.suspension                   # Quick Panel; kept on the EU/AP units above
+# com.google.android.partnersetup      # includes an RLZ ping receiver

@@ -1,0 +1,94 @@
+# HOTACK SMART2KPJT projector, shown on the box and in Settings as "Whale TV (95C8)"
+# (Amlogic am30b8, WhaleOS, Zeasn firmware; Settings > About: model SMART2KPJT, customer model S36)
+# Android 13 (API 33), 1 GB RAM, 8 GB flash, ro.adb.secure=1 (the projector asks
+# once to trust the computer).
+# Build:    TQ1A.230205.002.20260427104413 release-keys
+# Firmware: WHALEOS-S8E-S2C.A1444.2KPJ.00000103 (kernel 5.4.210)
+# Firmware-Version starting WHALEOS-S8E and package names com.zeasn.whaleos.* are the quickest way to tell
+# whether this list fits.
+#
+# Apply:  TV_HOST=<ip> tools/disable.sh examples/hotack-smart2kpjt/debloat.txt
+# Undo:   TV_HOST=<ip> tools/restore.sh examples/hotack-smart2kpjt/debloat.txt com.zeasn.whaleos.launcher3
+# Everything is disabled with `pm disable-user`, never uninstalled.
+# Status: applied 2026-10-20 and used daily for three days. Nothing broke. Used and working: Home, the Inputs
+#         list, YouTube, MagentaTV, Jellyfin, Prime Video, Bluetooth, HDMI playback (picture and sound),
+#         every remote button listed below, USB storage (a stick mounts, shows in Files and ES File Explorer
+#         and the remote's USB button opens the Whale file browser; a 1080p H.264 MP4 plays with picture and
+#         sound; one MKV of unknown codec played sound only, so not every codec is decoded).
+#         NOT exercised: Live TV playback (no cable/sat on this unit; the tuner app opens to "Kein Signal"),
+#         keystone settings.
+#
+# See also examples/sankey-smart2ktvse (another WhaleOS set: stock launcher com.whaletv.launcher, different
+# package set); both agree that com.zeasn.livetv must stay.
+#
+# Live TV: com.zeasn.livetv is the stock Android TV app. With no tuner source it opens to "Kein Signal", but it
+# also hosts HDMI playback, so keep it (and live_tv_package pointing at it).
+#
+# HDMI: with a source plugged in, the Inputs menu shows it as one row ("Playback_1 . HDMI3", the CEC device name
+# plus the port) and switching works. Two things must be right for that: the TV app has to be named in config.xml
+# (live_tv_package = com.zeasn.livetv), and the launcher has to send the input intent to it (#1297). Without that,
+# Android shows its chooser (com.zeasn.livetv, MagentaTV and ES File Explorer all claim the channel URI) instead
+# of switching. Older launcher builds also listed the port and the CEC device as two rows.
+#
+# Connecting: Settings > Developer options > USB debugging; ADB answers on 5555 (Wireless debugging also
+# works, port shown in its screen). Turn both off afterwards; port 5555 is plaintext.
+#
+# Launcher half works: sideloaded APKs install and a launcher with the HOME category is accepted.
+#   Stock launcher: com.zeasn.whaleos.launcher3
+#   Build: STOCK_LAUNCHER=com.zeasn.whaleos.launcher3 INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
+#   Live TV app: com.zeasn.livetv   Settings: com.zeasn.whaleos.settings (also com.android.tv.settings)
+#   YouTube: com.WhaleTV.whaleos.youtube.tv (Cobalt build, system app, updates with the firmware)
+#   No Google Play Store and no Google setup wizard: nothing else claims Home (only Android's FallbackHome).
+#
+# APP STORE: com.zeasn.whaleos.appgallery ("Apps" tile) is the ONLY store, and the installer of record for
+# apps added through it (Downloader, Jellyfin, ZDF, ...). It is left ENABLED below. Disabling it leaves no
+# way to install or update apps except sideloading (Downloader, or `pm install -r` over ADB).
+#
+# Remote (IR remote "ir_keypad", layout /vendor/usr/keylayout/RS1U-GL-RY.kl). With the stock launcher gone:
+#   Input    scancode 79  = TV_INPUT. Nothing on this firmware answers com.android.tv.action.VIEW_INPUTS, so the
+#            button needs INPUT_KEY_SERVICE=1 and handle_view_inputs = true in config.xml (the launcher then
+#            answers the request with its Inputs menu, also from inside an app).
+#   Gear     scancode 141 = SETTINGS, handled by the firmware (opens Whale settings).
+#   Netflix  scancode 60  = KEYCODE_F2   -> app_keys "KEYCODE_F2:<package>" (useless once Netflix is off).
+#   Disney+  scancode 897 = keycode 312  -> app_keys "312:<package>"; stock behaviour is a "please try again" toast.
+#   YouTube and Prime Video buttons keep working through the firmware.
+#   Find other codes: `getevent -lt` while pressing, then grep the scancode in the .kl file above.
+#
+# Device-specific names / KEPT on purpose (disabling these breaks things or removes a feature):
+#   com.droidlogic.keystone     keystone/geometry correction (projected image)
+#   com.hysd.hyscreen           focus/voice helper, role unclear, left on
+#   com.droidlogic.updater      firmware OTA (ABUpdater)
+#   com.stellamore              factory menu and USB upgrade
+#   com.droidlogic.tvinput, com.zeasn.livetv, com.zeasn.whaleos.settings, com.iqqi.imeservice (keyboard),
+#   com.android.bluetooth, com.stellamore.bluetoothspeaker (projector as Bluetooth speaker; not judged)
+# Private DNS (optional, see the README's ad-blocking DNS note) works on this set; YouTube still plays.
+# Screenshots: `screencap` works on Home and in apps; HDMI input returns empty.
+
+# --- Zeasn / Whale vendor services and store ---
+com.whaletv.logger                               # WhaleLogger
+com.zeasn.tokenapp                               # Zeasn token / tracker (BOOT_COMPLETED, key tracker)
+com.zeasn.deviceportal.asdprovider.certified     # device portal client
+# com.zeasn.whaleos.appgallery                  # Whale app gallery: the ONLY app store here (no Play Store), KEEP it
+
+# --- Factory test apps ---
+com.stm
+com.stm.factorytest
+
+# --- Phone-style Android bloat ---
+com.android.printspooler
+com.android.musicfx
+com.android.music
+com.android.providers.calendar
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.wallpaperbackup
+com.android.dreams.phototable
+org.chromium.webview_shell
+
+# --- Chosen by the owner: Netflix, casting and mirroring not used ---
+com.netflix.ninja
+com.netflix.dial
+com.netflix.tokenmanager
+com.zeasn.tv.cast                                # WhaleCast
+com.droidlogic.miracast
+com.aml.dial                                     # YouTube DIAL (cast) server

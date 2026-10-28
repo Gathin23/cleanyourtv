@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Options, set before building. -->
+<resources>
+    <!-- true: opening the add-on (its Home tile or the app list) switches Bluetooth at once and shows the result.
+         false: it opens on the current state, and Turn on / Turn off switches it. -->
+    <bool name="switch_on_open">true</bool>
+    <!-- Seconds without a key press before the panel closes itself; 0 keeps it open until Back. -->
+    <integer name="close_after_seconds">5</integer>
+</resources>

@@ -1,0 +1,71 @@
+# TCL 32ES570F (32" HD, Italy), device C06, product C06_2K_GB, model "Smart TV".
+# Android TV 11 (SDK 30), build AR2101, TCL software V8-T221T01-LF1V121, security patch 2022-01-05.
+# MStar board (ro.board.platform mt5867), 939 MB RAM (low_ram=true), ro.adb.secure=1.
+#
+# Same C06 platform as examples/tcl-32s5k, but an older firmware (that unit: T221T05-LF1V361).
+# This list is the 32S5K list with the differences below, in daily use on this unit.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-32es570f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-32es570f/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (disabled by launcher/build-and-install.sh).
+# Live TV app: com.tcl.tv (also plays HDMI). Inputs come from com.tcl.tvinput.
+#
+# Unit-specific notes:
+# - Does not stay disabled: the firmware re-enables tv.wuaki.apptv (Rakuten), com.tcl.smartalexa and
+#   com.tcl.usercenter at every boot (the ttvs "OverSeasAppShow" service). They are left out of the
+#   list on purpose; hide them in the launcher's hidden_apps instead.
+# - com.tcl.guard disables, but its process keeps running (persistent, system uid, about 80 MB).
+# - Disabling com.tcl.dashboard (TCL Home), com.tcl.suspension (Quick Panel) and com.tcl.t_solo left
+#   the remote, source picker and settings working; the 32S5K list keeps the first two. Comment them
+#   out if a key stops working on your firmware.
+# - This model has no standby-LED setting, and standby is a full power-down.
+# - Wi-Fi is 2.4 GHz only, which is the usual cause of slow or failing streaming apps here.
+# - The saved Wi-Fi was not touched: com.google.android.tungsten.setupwraith is left enabled.
+# - The photo screensaver is swapped before it is disabled:
+#   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+#   (stock: com.google.android.backdrop/com.google.android.backdrop.Backdrop)
+#
+# DO NOT DISABLE on this TV: com.tcl.tv, com.tcl.tvinput, com.tcl.ttvs (firmware updater),
+# com.tcl.system.server, com.tcl.tcl_bt_rcu_service, com.tcl.autopair, com.tcl.settings,
+# com.tcl.providers.config, com.tcl.keyhelp, com.tcl.messagebox.
+#
+# Used since 2026-10-20 (five days), with one reboot: Netflix, Plex and Prime Video open, HDMI switching works.
+
+# TCL account, promos and content
+com.tcl.guard                          # TGuard; the process keeps running
+com.tcl.partnercustomizer              # promo rows on the stock home
+com.tcl.waterfall.overseas             # TCL web-video portal
+com.tcl.esticker                       # store-demo sticker
+android.autoinstalls.config.tcl.device # partner-app auto installer config
+com.tcl.dashboard                      # TCL Home tile
+com.tcl.suspension                     # Quick Panel
+com.tcl.t_solo
+
+# Google extras
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.videos              # Play Movies
+com.google.android.youtube.tvmusic
+com.google.android.syncadapters.calendar
+com.google.android.partnersetup
+com.google.android.tvrecommendations
+
+# Off by choice: comment out what you use
+com.google.android.katniss             # Google search/voice
+# com.google.android.tv.remote.service # phone-app remote; disabled on the tested set (uncomment to do the same). Shared lists keep it on: it also carries the remote mic on some sets
+com.google.android.tts
+com.google.android.marvin.talkback
+com.google.android.backdrop            # photo screensaver, swap it first (see notes)
+# com.google.android.inputmethod.latin # Gboard: disabled on this unit (the TV keeps its own
+#                                      # com.tcl.inputmethod.international keyboard), but left out as the
+#                                      # on-screen keyboard; comment it back in only if you know yours has another
+com.google.android.apps.mediashell     # Cast receiver: casting from a phone stops working
+com.tcl.ui_mediaCenter                 # USB media player, together with the next three
+com.tcl.audioplayer
+com.tcl.videoplayer
+com.tcl.imageplayer
+
+# Already disabled when the unit arrived; left as-is.
+# au.com.stan.and

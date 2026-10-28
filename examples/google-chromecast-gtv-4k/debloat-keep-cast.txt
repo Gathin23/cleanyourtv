@@ -5,10 +5,13 @@
 #
 # Apply:   TV_HOST=<ip> tools/disable.sh examples/google-chromecast-gtv-4k/debloat-keep-cast.txt
 # Undo:    TV_HOST=<ip> tools/restore.sh examples/google-chromecast-gtv-4k/debloat-keep-cast.txt com.google.android.apps.tv.launcherx
+# Check:   TV_HOST=<ip> tools/venv/bin/python -I tools/check.py examples/google-chromecast-gtv-4k/debloat-keep-cast.txt com.google.android.apps.tv.launcherx
+#          launcherx stays Home with this list, also with the launcher added by redirect (debloat.txt, "Home by redirect").
 # Everything is DISABLED, not uninstalled.
 #
 # Kept on purpose, unlike debloat.txt:
-# - com.google.android.tungsten.setupwraith: it holds the Cast receiver's device credentials (debloat.txt, quirks).
+# - com.google.android.tungsten.setupwraith: it holds the Cast receiver's device credentials, and it can own a
+#   saved Wi-Fi network, which disabling it deletes (both in debloat.txt, quirks).
 # - com.google.android.apps.tv.dreamx and com.google.android.backdrop: without the new launcher's Clock
 #   screensaver, disabling them leaves the screensaver pointing at nothing.
 # Move on to debloat.txt when you install the launcher and accept losing phone casting after a reboot.

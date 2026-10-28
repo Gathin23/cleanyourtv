@@ -1,7 +1,7 @@
 # Xiaomi MiTV-ASTP1 (codename maverick; China-market firmware), Android 9 (SDK 28),
 # firmware 2.40.641.0514.cn (HyperOS-era CN build), Amlogic/droidlogic, 1 GB RAM, 720p panel.
-# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). It is not in
-# KNOWN_STOCK_LAUNCHERS, so install with: STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh
+# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). Install with:
+# STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-astp1/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-astp1/debloat.txt com.mitv.tvhome
@@ -14,7 +14,10 @@
 #   com.xiaodianshi.tv.yst (bilibili). The list below keeps them all except NewTV.
 # - Network ADB (port 5555) closes on every reboot; re-enable it in
 #   Settings -> Account & Security -> ADB debugging after each power cycle.
-# - mitv.service is the core MiTV service: do not touch it.
+# - mitv.service is the core MiTV service: do not touch it. It registers TvService, which Xiaomi's own
+#   Settings reads the hardware configuration through; with it disabled, Settings freezes for 20-30 s and
+#   then crashes the Sound page (#1310). Why:
+#   docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
 # - com.xiaomi.mitv.settings is the ONLY settings UI: nothing on this firmware answers
 #   android.settings.SETTINGS or WIFI_SETTINGS (the launcher's pills need a fallback for that).
 # - Casting (com.xiaomi.mitv.smartshare / com.xiaomi.miplay / com.xiaomi.wfdsinkhelperservice /

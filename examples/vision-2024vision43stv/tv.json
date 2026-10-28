@@ -1,0 +1,6 @@
+{
+  "tv": "Vision 2024VISION43STV (CVTE TP.T950D4T.PB751, Amlogic T950D4, 1 GB), Europe",
+  "os": "Android 13",
+  "brand": "Vision",
+  "notes": "Not Google TV (CVTE launcher and settings); CVTE ad/telemetry services, Zeasn content service, ad screensaver, weather and cleaner off; ADB from the factory menu (MENU 1147 on a source), no authorisation; no FallbackHome, so the new Home must be `directBootAware` before the stock launcher goes (black screen at boot otherwise, LAN-cable recovery in the header); Home key sends `COMMON_HOME`; inputs and channels go through CVTE's TIF player with `toActivity` TvSettingActivity; Input key needs an accessibility key filter; launcher works"
+}

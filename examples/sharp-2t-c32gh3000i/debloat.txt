@@ -1,0 +1,73 @@
+# SHARP 2T-C32GH3000I (reported as SHARP 2K Smart TV-A; Skyworth-built, device beomil, product SW11_SHARP_APEU, MediaTek mt5867), Indonesia
+# Google TV 14 (API 34), build UKN6.260116.061, ~1 GB RAM. Same platform as motorola-swtv-24ae-fhd.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
+# Setup wizard: com.google.android.tungsten.setupwraith (claims HOME).
+# Live TV app: com.cltv.hybrid; HDMI and tuner inputs: com.mediatek.tvinput.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-2t-c32gh3000i/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-2t-c32gh3000i/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Port 5555 was closed out of the box; only Wireless debugging was offered, so the first connection
+# was `adb pair` + `adb connect` + `adb tcpip 5555`.
+#
+# WARNING: on this set the Wi-Fi network joined during first setup belonged to setupwraith
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`). Forget it and re-join it in Settings before disabling
+# setupwraith, or Android deletes the network and the TV drops off Wi-Fi.
+#
+# Applied and verified on 2026-10-21: screenshots after each batch, a reboot (nothing came back),
+# Live TV, HDMI and YouTube/Netflix playback; the real remote's Home, Input, Settings and app buttons
+# all worked with INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1 and settings_key_keycodes 83.
+# Launcher config: live_tv_package com.cltv.hybrid (also hidden from the grid).
+# Private DNS works on this set (streams buffered with AdGuard on this ISP, not with Cloudflare).
+# Voice search for content ("open YouTube to search ...") fails with `provider.OPEN ... UNKNOWN_ERROR`
+# once launcherx is off (docs/TROUBLESHOOTING.md); app commands ("open YouTube") still work. Kept off.
+#
+# Kept on purpose: com.smartdevice.global.service (global keys, BLE remote, find-my-remote),
+# com.smartdevice.dailyshortcut (GLOBAL_BUTTON receiver), com.tianci.localmedia (USB media player),
+# com.google.android.tv.googletvremotepairer (remote pairing), com.smartdevice.factory (never launched),
+# com.cltv.hybrid, com.mediatek.*, Play Store, Play Services, Gboard, Google TTS, Dolby audio,
+# com.google.android.katniss (voice, by choice), com.google.android.tv.remote.service (phone remote, by choice),
+# com.tcl.browser (this is BrowseHere, by choice).
+
+# --- Skyworth telemetry and activation ---
+com.smartdevice.recordactivation             # records first activation
+com.smartdevice.aftersale                    # "after-sale" service: boot + network receivers, can install APKs
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# --- Android ad and personalisation services ---
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# --- Skyworth content and recommendations ---
+com.smartdevice.recommendation               # Coocaa recommendation rows and analytics
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects rows into the home screen
+
+# --- Bloatware / cleaners / manuals / unused ---
+com.Smartdevice.emanual                      # on-screen manual
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.smartdevice.dailymanage                  # TV Guard / cleaner
+com.smartdevice.myapp                        # Daily Key / app manager
+com.google.android.play.games                # Google Play Games, off by choice
+com.amazon.amazonvideo.livingroom            # Prime Video, off by choice
+com.google.android.apps.mediashell           # Chromecast, off by choice
+com.smartdevice.dtv.icast                    # Coocaa iCast (AirPlay mirror / DLNA), off by choice
+
+# --- Stock Google TV home and setup wizard ---
+# Disable only after installing and verifying the new launcher!
+com.google.android.tungsten.setupwraith      # setup wizard recovery activity claiming HOME
+com.google.android.apps.tv.launcherx         # stock Google TV launcher
+
+# --- Memory pass: the set has ~1 GB RAM and was swapping ---
+# dreamx: set the screensaver to the launcher's Clock first:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+# Back to Google's: settings put secure screensaver_components com.google.android.apps.tv.dreamx/.service.Backdrop
+com.google.android.apps.tv.dreamx            # ambient-mode screensaver, ~70 MB resident
+com.android.settings.intelligence            # suggestions in Settings
+com.google.android.partnersetup              # Play partner customizations
+com.google.android.youtube.tvmusic           # YouTube Music, off by choice
+com.tencent.qqlivei18n                       # WeTV (user-installed), off by choice
+com.apple.atve.androidtv.appletv             # Apple TV (user-installed), off by choice

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 50DP660 / L49C2US (\"Percee TV\", tcl_eu, MediaTek MT5658 / board mt5891, V8-T658T01-LF1V602 / V570)",
+  "os": "Android TV 8.0",
+  "brand": "TCL",
+  "notes": "TCL content tiles (T-Channel), MagiConnect, Alexa bridge, OTA updater, USB players, Rakuten preload and ODM test apps; Assistant and speech recognition off (no microphone), Cast kept; stock launcher has HOME priority 2 and must be disabled; three PERSISTENT `android.uid.system` packages survive `disable-user`; factory menu from the remote via Picture > Advanced Settings > Brightness > Contrast > `1950` with network ADB on 5555; an NVM reset needs a factory reset and a USB reflash afterwards or the Wi-Fi MAC, Widevine keybox and Netflix ESN stay wiped; [compatibility notes](../docs/devices/tcl-50dp660.txt)"
+}

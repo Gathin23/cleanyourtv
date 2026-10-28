@@ -1,0 +1,6 @@
+{
+  "tv": "Tuvio TD43UFBCV5 (Changhong AI PONT, DVB96, MediaTek m7632), Russia",
+  "os": "Google TV 14",
+  "brand": "Tuvio",
+  "notes": "Same platform and firmware as the BenQ E55-735: Anoki ACR, adservices/federated compute, Google feedback, Homwee store/help, Google TV recommendations and dreamx; Netflix, Prime Video, YouTube Music off by choice; voice, Chromecast, AirPlay, Miracast (`com.mediatek.androidbox` is the receiver here) and USB media kept; setupwraith owned the saved Wi-Fi; Home moves only once launcherx is disabled; MediaTek partnercustomizer re-enabled by the firmware at every boot; IR remote Settings key is scancode 498 but any key helper kills volume repeat, so it is left off; AdGuard DNS works; 1.9 GB; reboot-checked"
+}

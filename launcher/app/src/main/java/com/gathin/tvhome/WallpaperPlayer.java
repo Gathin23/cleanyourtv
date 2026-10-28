@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 final class WallpaperPlayer {
     private final FrameLayout root;
     private final ImageView image;
+    private final int backgroundColor;
     private final List<File> files;
     private final long interval;
     private final String order;
@@ -63,6 +64,7 @@ final class WallpaperPlayer {
 
     WallpaperPlayer(Context context, FrameLayout root, Config config) {
         this.root = root;
+        backgroundColor = config.backgroundColor;
         files = new ArrayList<>(config.wallpapers);
         interval = config.wallpaperRotationMinutes * 60_000L;
         bitmapConfig = config.wallpaperTrueColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
@@ -133,6 +135,17 @@ final class WallpaperPlayer {
 
     void stop() {
         active = false;
+    }
+
+    /** Drops the wallpaper texture when Home is hidden and Android asks the process to free memory. */
+    void releaseForMemoryPressure() {
+        if (current == null) return;
+        image.setImageDrawable(null);
+        // The renderer may still have a queued frame that references this hardware bitmap. Drop our references and
+        // let Android reclaim its native buffer after rendering releases it instead of recycling it mid-frame.
+        current = null;
+        displayed = "";
+        root.setBackgroundColor(backgroundColor);
     }
 
     /** The pictures the rotation picks from now: wallpaper_moods' group for the time of day, or the whole collection. */
@@ -250,6 +263,8 @@ final class WallpaperPlayer {
     private void show(Bitmap bitmap) {
         Bitmap old = current;
         current = bitmap;
+        // The wallpaper covers the whole root; avoid drawing the fallback colour under it.
+        root.setBackground(null);
         image.setImageBitmap(bitmap);
         if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
     }

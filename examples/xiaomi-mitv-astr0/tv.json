@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi Redmi Smart TV A Pro 55\" 2025 Energy-saving (MiTV-ASTR0, blueplanet, Amlogic), China firmware OS3.0.106.0.USTAATV, 3 GB RAM",
+  "os": "Android 14 (HyperOS 3, CN build)",
+  "brand": "Xiaomi",
+  "notes": "Second HyperOS 3 Xiaomi: standby ads are the Hyper screensaver Activity itself (`com.xiaomi.mitv.hyper.screensaver`, own downloaded carousel, verified live) — disabling the usual content sources does not stop it; classic `com.mitv.screensaver`/`advertise` don't exist; PatchWall **disabled and replaced via the `com.ts.launcher` allowlist trampoline** (works on this OS3.0.106 build, as on MFFU0's OS3.0.115); keep `com.xiaomi.mitv.smartpanel` (it is the Menu-button panel); no idle clock screensaver possible (idle timeout is a hard panel-off); ADB closes on every reboot; [device notes](../docs/devices/xiaomi-mitv-astr0-blueplanet.md)"
+}

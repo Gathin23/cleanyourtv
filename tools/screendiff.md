@@ -13,7 +13,7 @@ tools/venv/bin/python tools/screendiff.py shots/before.png shots/after.png \
 |---|---|---|
 | 0 | `identical (1 region masked): ...` | No pixel outside the masks differs by more than 8 |
 | 1 | `different: N pixels differ ..., inside x0,y0,x1,y1` | Find out why before posting |
-| 2 | an error | Different sizes, a box outside the picture, an unreadable file |
+| 2 | an error | Different sizes, a box outside the picture, an unreadable screenshot (the `before` or the `after` one is named, and a picture that was cut short counts), an `--out` or `--diff` it cannot write |
 
 | Option | Notes |
 |---|---|
@@ -21,6 +21,7 @@ tools/venv/bin/python tools/screendiff.py shots/before.png shots/after.png \
 | `--blur x0,y0,x1,y1` | Pixelated in both screenshots of the pair. Repeatable. For the Wi-Fi name, account pictures. It doesn't affect the comparison. |
 | `--out PNG` | The labelled pair, at `--scale` (default 0.5). |
 | `--diff PNG` | The differing pixels, white on black. |
+| `--labels` | The two labels over the pair, comma-separated (`Before,After` by default); anything but two is refused. |
 | `--threshold N` | Channel difference to ignore (default 8, compression noise). |
 
 ## Boxes

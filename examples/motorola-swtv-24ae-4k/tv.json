@@ -1,0 +1,6 @@
+{
+  "tv": "Motorola SWTV-24AE-4K (Skyworth OEM, eleonas, MediaTek), India",
+  "os": "Google TV 14",
+  "brand": "Motorola",
+  "notes": "Same eleonas board as [Skyworth SWTV-24AE-4K NF](skyworth-swtv-24ae-4k-nf/), Motorola product SW10_TG on build UKN7; Skyworth telemetry (recordactivation, aftersale), ad services, recommendation rows and partner customizer, Ginga/MHEG, Health Connect, e-manual, TV Guard off; streaming apps, Assistant and karaoke left as owner's choice; firmware re-enables Netflix at every boot (appops background block instead); Wi-Fi setupwraith gotcha; Settings button is keycode 83; Live TV is `com.cltv.hybrid`; reboot-checked"
+}

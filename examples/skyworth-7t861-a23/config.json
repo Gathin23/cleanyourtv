@@ -1,0 +1,12 @@
+{
+  "dock_apps": [
+    "com.amazon.firetv.youtube",
+    "org.videolan.vlc",
+    "com.github.mytv.android",
+    "com.tcl.browser"
+  ],
+  "hidden_apps": [
+    "com.skyworth.tv"
+  ],
+  "live_tv_package": "com.skyworth.tv"
+}

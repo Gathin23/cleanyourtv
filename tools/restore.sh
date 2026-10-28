@@ -16,6 +16,9 @@ STOCK="${2:-com.google.android.tvlauncher}"
 PY=tools/venv/bin/python
 [ -x "$PY" ] || PY=tools/venv/Scripts/python.exe
 export MSYS_NO_PATHCONV=1
+# The same hint as disable.sh. Without it, a missing venv fell through to the Windows path above, and
+# bash only said tools/venv/Scripts/python.exe was not there, once for each side of the pipe below.
+[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt" >&2; exit 1; }
 # recovery.py reads and validates the list itself, prints the batch for tv.py and says on stderr what
 # it will leave alone. Without a record it warns and falls back to enabling the whole list. A refused
 # plan never reaches the TV because recovery.py prints nothing until the whole plan is built, so

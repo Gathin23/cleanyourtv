@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Quiet Hours</string>
+    <string name="channel_name">Volume cap</string>
+    <string name="notification_text">Keeping the volume under the cap. Open Quiet Hours to change it.</string>
+</resources>

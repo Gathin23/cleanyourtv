@@ -1,0 +1,26 @@
+# BGH Smart TV (Android-reported model), Android TV 14 / SDK 34, firmware UKNV.260821.001
+# Retail model number not recorded: match this firmware, not the brand alone.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/bgh-smart-tv-android14/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/bgh-smart-tv-android14/debloat.txt com.google.android.tvlauncher
+# Reversible disables applied on 2026-10-20 and still disabled on 2026-10-25.
+# Stock Home: com.google.android.tvlauncher/.MainActivity; disable only after a working replacement owns HOME.
+# Live TV: com.mediatek.wwtv.tvcenter; keep it for tuner and input handling.
+# Keep Play Store, Play Services, keyboard, casting, input/remote services and firmware updater.
+# The replacement used for this observation is a separate customized launcher, not validation of upstream v3.0.0.
+# See README.md for boot behavior and validation limits. No root or firmware flashing.
+
+# Retail demonstration applications
+fusion.android.tv.demo
+com.coocaa.demonow.lightining
+
+# Feedback and recommendation/customization applications
+com.google.android.feedback
+com.google.android.tvrecommendations
+com.smartdevice.leanbacklauncher.customizer
+
+# Owner preference: disables Assistant / voice search; remove this line if voice control is needed
+com.google.android.katniss
+
+# Stock Home, only after the replacement is installed, selected and verified
+com.google.android.tvlauncher

@@ -11,7 +11,8 @@
 # - ADB on port 5555 is closed (connection refused) until you pair once through Wireless debugging with
 #   the stock adb: Developer options > Wireless debugging > Pair device with pairing code, `adb pair
 #   <ip:pairport> <code>`, `adb connect <ip:connectport>` (`adb mdns services` lists both ports), then
-#   `adb tcpip 5555`. After that tools/tv.py works on 5555 (README, Troubleshooting).
+#   `adb tcpip 5555`. After that tools/tv.py works on 5555
+#   (docs/TROUBLESHOOTING.md, "USB debugging never opens port 5555").
 # - The Cast receiver (com.google.android.apps.mediashell) reads its factory device credentials from a
 #   provider hosted INSIDE the setup wizard package:
 #     Provider{com.google.android.tungsten.setupwraith/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider}

@@ -17,6 +17,7 @@ Run from the repository root:
     python -m unittest tests.test_bench_accessibility -v
 """
 import unittest
+from unittest import mock
 
 from tools import bench
 
@@ -84,7 +85,7 @@ class ColdStartOrderTest(unittest.TestCase):
         def spy(command, read_timeout_s=None):
             if command.startswith("settings put secure enabled_accessibility_services"):
                 order.append("restore")
-            elif command.startswith("am start -W -n com.gathin.tvhome"):
+            elif command.startswith("am start -W ") and command.endswith("-n com.gathin.tvhome/.MainActivity"):
                 order.append("measure")
             return original_shell(command, read_timeout_s)
         tv.shell = spy
@@ -97,11 +98,8 @@ class ColdStartOrderTest(unittest.TestCase):
             return out
         tv.shell = shell_with_start
 
-        bench.other_app = lambda _tv: "com.android.tv.settings/.MainSettings"
-        try:
+        with mock.patch.object(bench, "other_app", lambda _tv: "com.android.tv.settings/.MainSettings"):
             bench.cold_start(tv, "com.gathin.tvhome/.MainActivity", 1)
-        finally:
-            pass
 
         self.assertIn("measure", order, order)
         self.assertIn("restore", order, order)

@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 55QD6QF Fire TV (AFTOLCBC82, ginza), Canada",
+  "os": "Fire OS 8.1.8.0 / Android 11",
+  "brand": "Hisense",
+  "notes": "Fire OS 8.1 TV: Amazon telemetry, ACR, ad/recommendation feeders, advertising ID, Shopping, Channels, tutorials; Amazon preloads, Miracast and Alexa off by choice (vizzini returns at every boot); retailer apps re-enable at boot (remove them in Settings > Applications); Wi-Fi owned by oobe; input switching, the Home key and the homekey broadcast reserved to Amazon; AirPlay, Live TV, Silk, OTA kept; debloat only"
+}

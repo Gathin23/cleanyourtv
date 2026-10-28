@@ -1,0 +1,6 @@
+{
+  "tv": "BenQ GV32 portable projector (SDMC, BenQ_GV01, himalaya, MediaTek m7332)",
+  "os": "Google TV 14",
+  "brand": "BenQ",
+  "notes": "First BenQ projector list: Android ad services, Google feedback, partner setup, disclaimer screen, Play Games, Instagram; setupwraith owned the setup Wi-Fi (forget and re-join first); `com.sdmc.kt` (focus/keystone), remote pairing and `fusion.android.tv.demo` (Input key) kept; USB media player skipped by the TV-input guard; Settings and profile buttons mapped by scancode, which costs held-key repeat; Wireless debugging only; config.json dock; reboot-checked"
+}

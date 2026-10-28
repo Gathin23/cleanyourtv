@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV Pro (G08, G08_4K_GB, MediaTek), Europe/UK firmware",
+  "os": "Android TV 12",
+  "brand": "TCL",
+  "notes": "Older EU G08 build (STT2.221228.001 AS34): the US list applies only partially — no Samba-ACR ttvs payload, no AirplayAPK, no hotelmenu/TV+/e-sticker preloads, no Android 14 ad services. TCL pushes/demo/help, duplicate webviews, Mediatek casting leftovers, Play Movies, TTS, dreamx, printspooler; suspension/interactive/ttvs listed as DO-NOT-DISABLE (they host the Source-key QuickPanel and the TIAS source overlay — disabling kills the remote Source key, verified fix on a live set); stock launcher kept; debloat only. A second unit, a 75Q7C on AS36 with five more TCL preloads, runs the launcher as Home: remote keycodes and the volume-repeat trade in the README. A third unit, a 50C805X1 on AS34 (France), has those preloads too: four of them and four Google extras are now in the list, com.tcl.guard stays enabled (disabled, the system retries it every 5 s); casting still works there with setupwraith disabled; a fourth unit, a 55C7K on the same STT2.221228.001 build on Wi-Fi, runs the launcher as Home with YouTube (scan 245)→SmartTube and Disney+ (scan 762)→JioHotstar via HomeKeyService, volume repeat traded for the buttons"
+}

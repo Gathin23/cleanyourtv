@@ -32,4 +32,29 @@ public class HomeKeyServiceTest {
     @Test public void noBootCountMeansNoProbe() {
         assertFalse(HomeKeyService.firstBindAfterBoot(-1, -1, SOON));
     }
+
+    private static final String TV = "com.mediatek.wwtv.tvcenter";
+
+    @Test public void liveTvBeforeAnyKeyGoesHome() {
+        assertTrue(HomeKeyService.powerOnRedirect(TV, TV, SOON, HomeKeyService.BOOT_WINDOW_MS));
+    }
+
+    @Test public void otherAppsAndInputsAreLeftAlone() {
+        assertFalse(HomeKeyService.powerOnRedirect(TV, "com.netflix.ninja", SOON, HomeKeyService.BOOT_WINDOW_MS));
+        assertFalse(HomeKeyService.powerOnRedirect(TV, null, SOON, HomeKeyService.BOOT_WINDOW_MS));
+    }
+
+    @Test public void afterAKeyOrTheWindowLiveTvStays() {
+        assertFalse(HomeKeyService.powerOnRedirect(TV, TV, SOON, 0));
+        assertFalse(HomeKeyService.powerOnRedirect(TV, TV, HomeKeyService.BOOT_WINDOW_MS, HomeKeyService.BOOT_WINDOW_MS));
+    }
+
+    @Test public void offMeansNothing() {
+        assertFalse(HomeKeyService.powerOnRedirect("", TV, SOON, HomeKeyService.BOOT_WINDOW_MS));
+    }
+
+    @Test public void alwaysGoesHomeAfterScreenOnUntilAKey() {
+        assertTrue(HomeKeyService.stillArmed(SOON, SOON + HomeKeyService.SCREEN_ON_WINDOW_MS));
+        assertFalse(HomeKeyService.stillArmed(SOON, 0));
+    }
 }

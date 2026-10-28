@@ -1,0 +1,6 @@
+{
+  "tv": "Skyworth 7S60_A5 (sky8S34, 1.9 GB), China market",
+  "os": "Coocaa OS / Android 8",
+  "brand": "Skyworth",
+  "notes": "Coocaa boot-ad and push services, usage reporting, silent auto-installer, Baidu SDK, shop demo, ad-SDK screensaver, app store, voice, OTA, account and payment apps; launcher works through a homepage shim (Home is a system property on Coocaa OS) and must be built as `com.coocaa.tvhome`; Inputs menu lists Coocaa's own sources; config.json"
+}

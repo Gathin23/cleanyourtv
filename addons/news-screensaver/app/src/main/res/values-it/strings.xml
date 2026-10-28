@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Salvaschermo notizie</string>
+    <string name="dream_name">Notizie</string>
+    <string name="loading_title">Recupero le notizie…</string>
+    <string name="offline_title">Nessuna notizia al momento</string>
+    <string name="offline_body">Impossibile raggiungere i feed. Controlla la connessione di rete della TV e gli indirizzi dei feed; il salvaschermo riprova tra un paio di minuti.</string>
+    <string name="no_feeds_title">Nessun feed</string>
+    <string name="no_feeds_body">Aggiungi un feed RSS o Atom nelle impostazioni del salvaschermo, oppure con setup.sh.</string>
+    <string name="settings_title">Salvaschermo notizie</string>
+    <string name="seconds_per_headline">Secondi per titolo: %1$d</string>
+    <string name="feeds_heading">Feed (OK su uno lo rimuove)</string>
+    <string name="feed_hint">Nome | https://example.com/rss.xml (il nome è facoltativo)</string>
+    <string name="feed_add">Aggiungi feed</string>
+    <string name="feed_invalid">Usa un indirizzo https://, se vuoi preceduto da un nome e una barra: Nome | https://…</string>
+    <string name="feed_too_many">L’elenco dei feed è pieno (%1$d).</string>
+    <string name="feed_remove">Rimuovere questo feed?</string>
+    <string name="feed_remove_yes">Rimuovi</string>
+    <string name="settings_info">Quando parte il salvaschermo si imposta nelle impostazioni della TV (Salvaschermo o Risparmio energetico), oppure con setup.sh. Le notizie si aggiornano ogni 15 minuti mentre sono visibili.</string>
+    <string name="preview">Anteprima</string>
+</resources>

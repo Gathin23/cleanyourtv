@@ -4,7 +4,6 @@ import json
 import os
 from pathlib import Path
 import shutil
-import stat
 import subprocess
 import sys
 import tempfile
@@ -32,6 +31,16 @@ class Device:
             raise OSError("simulated transport failure")
         if os.environ.get("FAKE_CORRUPT") and command.startswith("echo '"):
             command = "echo 'QUJD' >>" + command.split(">>", 1)[1]
+        # SELinux refusing rename(2) in /data/local/tmp while cp works, in toybox's words (#1588).
+        if os.environ.get("FAKE_NO_RENAME") and command.startswith("mv "):
+            return "mv: bad '%s': Permission denied\n" % command.split("'")[1]
+        if os.environ.get("FAKE_NO_COPY") and command.startswith("cp "):
+            return "cp: %s: Permission denied\n" % command.split("'")[3]
+        # A connection that drops while cp is writing: the target is cut short, then the transport raises.
+        if os.environ.get("FAKE_PARTIAL_COPY") and command.startswith("cp "):
+            with open(command.split("'")[1], "rb") as src, open(command.split("'")[3], "wb") as dst:
+                dst.write(src.read(int(os.environ["FAKE_PARTIAL_COPY"])))
+            raise OSError("simulated connection drop mid-copy")
         return subprocess.run(["/bin/sh", "-c", command], capture_output=True, text=True).stdout
 
     def close(self):
@@ -51,7 +60,8 @@ class TempDirTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.base, ignore_errors=True)
 
 
-@unittest.skipUnless(shutil.which("md5sum") and shutil.which("base64"), "needs md5sum and base64")
+@unittest.skipUnless(os.name == "posix" and shutil.which("md5sum") and shutil.which("base64"),
+                     "the fake TV's shell is /bin/sh, and md5sum and base64 are needed")
 class B64PushTest(TempDirTest):
     """M4 (safe replace of the remote file) and L3 (usage) in tools/b64push.py."""
 
@@ -116,7 +126,7 @@ class B64PushTest(TempDirTest):
         target.write_bytes(b"old contents")
         result = self.push(str(self.local(os.urandom(5000))), str(target), FAKE_CORRUPT="1")
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
-        self.assertIn("MISMATCH", result.stdout)
+        self.assertIn("MISMATCH", result.stderr)
         self.assertEqual(target.read_bytes(), b"old contents")
         self.assertEqual(sorted(p.name for p in self.remote_dir.iterdir()), ["file.apk"])
 
@@ -144,3 +154,57 @@ class B64PushTest(TempDirTest):
         self.assertIn(hashlib.md5(b"").hexdigest(), result.stdout)
         self.assertEqual(sorted(p.name for p in self.remote_dir.iterdir()), ["empty.txt"])
 
+    def test_a_refused_move_copies_the_verified_file_and_checks_it_again(self):
+        # TCL ak30a5 on 20250610 refuses mv in /data/local/tmp, while cp works there (#1588).
+        data = os.urandom(10000)
+        target = self.remote_dir / "file.apk"
+        for before in (b"old contents", None):
+            with self.subTest(target_existed=before is not None):
+                if before is None:
+                    target.unlink()
+                else:
+                    target.write_bytes(before)
+                self.log.unlink(missing_ok=True)
+                result = self.push(str(self.local(data)), str(target), FAKE_NO_RENAME="1")
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(target.read_bytes(), data)
+                self.assertEqual(sorted(p.name for p in self.remote_dir.iterdir()), ["file.apk"],
+                                 "temporary files are cleaned up")
+                copies = [c for c in self.commands() if c.startswith("cp ")]
+                self.assertEqual(len(copies), 1, self.commands())
+                self.assertIn(f"md5sum '{target}'", copies[0], "the copy on the target is checked again")
+                self.assertIn("Permission denied", result.stdout, "the output says why it copied")
+
+    def test_a_move_that_works_is_not_followed_by_a_copy(self):
+        target = self.remote_dir / "file.apk"
+        result = self.push(str(self.local(b"new contents")), str(target))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual([c for c in self.commands() if c.startswith("cp ")], [])
+
+    def test_a_refused_move_and_a_failed_copy_exit_1_and_clear_staging(self):
+        for env in ({"FAKE_NO_COPY": "1"}, {"FAKE_RAISE": "cp -f"}):
+            with self.subTest(env=env):
+                target = self.remote_dir / "file.apk"
+                target.write_bytes(b"old contents")
+                result = self.push(str(self.local(b"new contents")), str(target),
+                                   FAKE_NO_RENAME="1", **env)
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertEqual(target.read_bytes(), b"old contents", "the fake refused before writing")
+                self.assertEqual(sorted(p.name for p in self.remote_dir.iterdir()), ["file.apk"])
+                self.assertIn(f"bad '{target}.part': Permission denied", result.stderr)
+                self.assertIn(f"{target} may be incomplete", result.stderr)
+                if "FAKE_NO_COPY" in env:
+                    self.assertIn(f"cp: {target}: Permission denied", result.stderr)
+
+    def test_a_copy_interrupted_part_way_says_the_target_may_be_incomplete(self):
+        # The connection drops after cp has written half the file: the target is cut short.
+        data = os.urandom(10000)
+        target = self.remote_dir / "file.apk"
+        target.write_bytes(b"old contents")
+        result = self.push(str(self.local(data)), str(target), FAKE_NO_RENAME="1", FAKE_PARTIAL_COPY="5000")
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertEqual(target.read_bytes(), data[:5000], "the fake cut the copy short")
+        self.assertEqual(sorted(p.name for p in self.remote_dir.iterdir()), ["file.apk"])
+        self.assertIn(f"bad '{target}.part': Permission denied", result.stderr)
+        self.assertIn(f"{target} may be incomplete", result.stderr)
+        self.assertIn("simulated connection drop mid-copy", result.stderr, "the transport error still shows")

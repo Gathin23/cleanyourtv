@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV Pro (G03, G03_4K_GB / G03_4K_US, BeyondTV4, Realtek R51MT05, V8-R51MT05-LF1V620 / LF1V813), Middle East and US firmware",
+  "os": "Google TV 11",
+  "brand": "TCL",
+  "notes": "Same platform as tcl-43c645: TCL BI analytics and logkit, promo rows (TCL Channel, BrowseHere), dashboard, messages, partner auto-installs; streaming apps, voice, Chromecast, Miracast/T-Cast, USB player, game bar, TCL Live off by choice, firmware updates kept; launcherx, setupwraith and dreamx off (setupwraith owned the Wi-Fi: forget and re-join first), reboot-checked; Input key works without InputKeyService, gear is keycode 4077 (`settings_key_keycodes`), config.json sets Live TV to com.tcl.tv; a second unit on the same build ships a Bluetooth TCL_RC902V_M1 remote whose Netflix/YouTube/Prime buttons die with launcherx and come back from `app_keys` (in config.json, verified with the real remote); a US unit (GTV93) shows dreamx also hosts the Google Home panel and TCL's updater needs StartandroidService for its device number, so it stays on"
+}

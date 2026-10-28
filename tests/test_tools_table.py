@@ -6,12 +6,14 @@ that AGENTS.md and tools/trace.md already send contributors to for key latency, 
 numbers, and tools/adb-closed.py, which the closing step in the README quoted inline and nowhere
 else. Nobody notices a missing row, so this test reads the table the way a reader does.
 
-Two kinds of file are not expected in the table, and neither is a judgement call about the tool:
+Three kinds of file are not expected in the table, and none is a judgement call about the tool:
 
   * README_STATS, README_FEATURED and README_CARD draw the README's card image in CI, not something
     a reader runs; the card's alt text is what points at them.
   * SCENES_WALLPAPERS draws the wallpaper of themes/scenes and is linked from themes/README.md,
     which is the only place a theme author needs it.
+  * GEN_TABLES writes the README's TV tables and brand line after a merge, a maintainer's step; the
+    markers around those tables name it, and so do CONTRIBUTING.md and MAINTAINER.md.
 
 A PowerShell twin (.ps1) is listed by the row of its .sh script, as the table's theme.sh row already
 serves theme.ps1. Its suffix is trimmed before the lookup, so a twin without its script is reported.
@@ -33,7 +35,8 @@ README_STATS = "readme_stats.py"        # the three that draw docs/card.jpg
 README_FEATURED = "readme_featured.py"
 README_CARD = "readme_card.py"
 SCENES_WALLPAPERS = "scenes_wallpapers.py"   # themes/scenes/wallpapers, linked from themes/README.md
-NOT_IN_TABLE = {README_STATS, README_FEATURED, README_CARD, SCENES_WALLPAPERS}
+GEN_TABLES = "gen_tables.py"            # the TV tables, from examples/*/tv.json
+NOT_IN_TABLE = {README_STATS, README_FEATURED, README_CARD, SCENES_WALLPAPERS, GEN_TABLES}
 
 
 def table_rows(text):

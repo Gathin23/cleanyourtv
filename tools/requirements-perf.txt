@@ -1,4 +1,6 @@
-# Optional: only for the performance tools (tools/trace_report.py, tools/flamechart.py, tools/screendiff.py). Not needed to clean a TV.
+# Optional: the performance tools (tools/trace_report.py, tools/flamechart.py, tools/screendiff.py) and
+# Pillow for the three scripts that draw the README card (tools/readme_stats.py, readme_featured.py,
+# readme_card.py; see docs/workflows/press.md). Not needed to clean a TV.
 # tools/venv/bin/pip install -r tools/requirements-perf.txt   See tools/trace.md.
 perfetto==0.58.2
 pillow==11.3.0

@@ -1,0 +1,6 @@
+{
+  "tv": "Hitachi CDH-LE32SMART21 (TCL-built C06, C06_2K_GB, MediaTek MT9221, 1 GB), Argentina",
+  "os": "Android TV 11",
+  "brand": "Hitachi",
+  "notes": "TCL promo/portal/popups, TGuard (memory manager keeps running), Google feedback and recommendation rows; same platform as the TCL 40S5400A; ttvs is the firmware updater, keep it; /data nearly full blocks installs, low RAM makes TGuard kill Play mid-install; Prime Video, Chromecast, USB players off by choice"
+}

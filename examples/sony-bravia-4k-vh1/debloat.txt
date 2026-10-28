@@ -1,6 +1,15 @@
 # Sony BRAVIA 4K VH1 (device BRAVIA_VH1, KD-55XH9096, MediaTek MT5895 / MT5835), EU firmware
 # Google TV 12 (API 31), build BRAVIA_VH1_EU-user 12 STT2.230505.001.S137 626241
 # Product codename Valhalla_EU; ro.boot.product.hardware.sku = KD-55XH9096
+# Also Sony XBR-55X900H (2020, BRAVIA_VH1, MediaTek MT5835), US/Canada, Android TV 12 with the same stock
+# tvlauncher, build BRAVIA_VH1_UC-user 12 STT2.230505.001.S67 625001: every package below exists on it except
+# com.spocky.projengmenu, com.youview.poa and tv.samba.ssm.ui (com.sony.dtv.b2b.softap was disabled from the
+# factory). Applied there on 2026-10-26 in two batches, then tvlauncher by launcher/build-and-install.sh, all
+# except Assistant (katniss), Netflix and com.sony.dtv.homekit, kept by choice. With Backdrop disabled the
+# screensaver was set to com.android.dreams.basic/.Colors. setupwraith did not claim HOME there either and stayed
+# enabled; the Wi-Fi in use belonged to android.uid.system. No key helper was needed: Home, gear, Netflix,
+# YouTube, Input, the mic button, held volume and a power cycle all checked on the real remote. Reboot-checked:
+# everything stayed disabled and Home stayed on the launcher. One day of use so far.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh1/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh1/debloat.txt com.google.android.tvlauncher

@@ -1,7 +1,9 @@
 # Xiaomi MiTV-ASTP0 (codename mulan; China-market firmware, sold as L55M7-EA), Android 9 (SDK 28),
 # firmware 22.12.2.1630, Amlogic/droidlogic, 1.5 GB RAM, 1080p panel. Used in Vietnam.
-# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). It is not in
-# KNOWN_STOCK_LAUNCHERS, so install with: STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh
+# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). Keep it enabled (see "Home"
+# below): install with STOCK_LAUNCHER=none launcher/build-and-install.sh. Home stays com.mitv.tvhome,
+# so the script stops at its Home check after installing the launcher; then turn HomeKeyService on
+# with the settings command build-and-install.sh runs for HOME_KEY_SERVICE=1.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-astp0/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-astp0/debloat.txt com.mitv.tvhome
@@ -16,7 +18,10 @@
 #   standby, so the TV drops off the network until it is woken.
 # - mitv.service is the core MiTV service: do not touch it. The owner chose to drop payment, Mi Home,
 #   Mi Video, the voice assistant and every casting receiver but AirPlay (in com.xiaomi.mitv.smartshare).
-#   The app store and com.mitv.videoplayer (USB files) stay.
+#   The app store and com.mitv.videoplayer (USB files) stay. It registers TvService, which Xiaomi's own
+#   Settings reads the hardware configuration through; with it disabled, Settings freezes for 20-30 s and
+#   then crashes the Sound page (#1310). Why:
+#   docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
 # - com.xiaomi.mitv.remotecontroller.service looped at 100-190% CPU and flooded logd (~490 MB in
 #   30 min): its relay host is gone, so it is disabled below. ES File Explorer ran DLNA and a WebView
 #   in the background; it is replaced by Material Files (F-Droid, me.zhanghai.android.files).

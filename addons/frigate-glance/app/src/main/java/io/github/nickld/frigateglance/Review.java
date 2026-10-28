@@ -9,9 +9,12 @@ import org.json.JSONObject;
 /** One message from frigate/reviews: a review item starting (new), changing (update) or ending (end). */
 public final class Review {
     private static final Set<String> TYPES = Set.of("new", "update", "end");
+    private static final String VERIFIED = "-verified";
 
     public final String type, id, camera, severity;
     public final List<String> objects, zones, detectionIds;
+    /** Names Frigate gave objects (a face, a known plate), from data.sub_labels. */
+    public final List<String> subLabels;
 
     private Review(String type, JSONObject after) {
         this.type = type;
@@ -19,7 +22,8 @@ public final class Review {
         camera = after.optString("camera", "");
         severity = after.optString("severity", "");
         JSONObject data = after.optJSONObject("data");
-        objects = Json.strings(data == null ? null : data.optJSONArray("objects"));
+        objects = labels(Json.strings(data == null ? null : data.optJSONArray("objects")));
+        subLabels = Json.strings(data == null ? null : data.optJSONArray("sub_labels"));
         zones = Json.strings(data == null ? null : data.optJSONArray("zones"));
         detectionIds = Json.strings(data == null ? null : data.optJSONArray("detections"));
     }
@@ -32,6 +36,16 @@ public final class Review {
         this.objects = objects;
         this.zones = zones;
         this.detectionIds = List.of(eventId);
+        this.subLabels = List.of();
+    }
+
+    /**
+     * An object Frigate named (sub_labels) is listed as "<label>-verified": it counts, and reads, as its label.
+     */
+    private static List<String> labels(List<String> objects) {
+        java.util.LinkedHashSet<String> out = new java.util.LinkedHashSet<>();
+        for (String o : objects) out.add(o.endsWith(VERIFIED) ? o.substring(0, o.length() - VERIFIED.length()) : o);
+        return List.copyOf(out);
     }
 
     /**

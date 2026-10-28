@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bluetooth Toggle</string>
+
+    <string name="state_on">Bluetooth attivo</string>
+    <string name="state_off">Bluetooth disattivato</string>
+    <string name="state_turning_on">Attivazione del Bluetooth</string>
+    <string name="state_turning_off">Disattivazione del Bluetooth</string>
+    <string name="state_none">Questa TV non ha il Bluetooth</string>
+
+    <string name="turn_on">Attiva</string>
+    <string name="turn_off">Disattiva</string>
+    <string name="pair">Associa un accessorio</string>
+    <string name="settings">Impostazioni Bluetooth</string>
+
+    <string name="need_permission">Consenti l’accesso al Bluetooth per attivarlo da qui.</string>
+    <string name="settings_only">Questa versione di Android permette di disattivare il Bluetooth solo dalle Impostazioni.</string>
+    <string name="not_switched">Non è stato possibile cambiare lo stato del Bluetooth.</string>
+</resources>

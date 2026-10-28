@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Flock</string>
+    <string name="paused">Paused</string>
+    <string name="running">Flocking</string>
+    <string name="controls">OK  Pause  ·  ↑ More birds  ·  ↓ Fewer birds  ·  Back  Exit</string>
+    <plurals name="birds">
+        <item quantity="one">%1$d bird</item>
+        <item quantity="other">%1$d birds</item>
+    </plurals>
+</resources>

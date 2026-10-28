@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 TOOLS="$(cd ../tools && pwd)"   # absolute, so the venv's Python doesn't warn about "../" in its prefix
 PY=$TOOLS/venv/bin/python
 [ -x "$PY" ] || PY=$TOOLS/venv/Scripts/python.exe
+# No venv yet: say how to make one (as tools/disable.sh does) instead of failing on the Windows path (#1142).
+[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt" >&2; exit 1; }
 export MSYS_NO_PATHCONV=1
 # Below minSdk, `pm install` refuses the APK with INSTALL_FAILED_OLDER_SDK - and only after gradle has
 # spent a minute building and b64push has pushed the APK to the TV (#576). Ask the TV first. The
@@ -26,11 +28,14 @@ fi
 # Homebrew's openjdk@17 is keg-only and is never registered where java_home would find it, so check
 # the version it answers with and fall through when it is not a 17. `java -version` goes to a
 # variable rather than through `grep -q`, whose early exit can SIGPIPE the JVM under `set -o pipefail`.
+# A JRE (Temurin ships one) answers as a 17 but has no jlink, which the Android Gradle plugin needs,
+# so skip it too and fall through to Homebrew (#1255).
 if [ -z "${JAVA_HOME:-}" ]; then
   JH="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
   if [ -n "$JH" ]; then
     case "$("$JH/bin/java" -version 2>&1 || true)" in *'version "17.'*) ;; *) JH="" ;; esac
   fi
+  if [ -n "$JH" ] && [ ! -x "$JH/bin/jlink" ]; then JH=""; fi
   if [ -z "$JH" ] && [ -d /opt/homebrew/opt/openjdk@17 ]; then JH=/opt/homebrew/opt/openjdk@17; fi
   if [ -z "$JH" ]; then JH="$(java -XshowSettings:properties -version 2>&1 | awk '/java.home/ {print $3}')"; fi
   JAVA_HOME="$JH"
@@ -40,7 +45,11 @@ export JAVA_HOME
 export ANDROID_HOME="${ANDROID_HOME:-$(for d in ~/Library/Android/sdk ~/Android/Sdk; do [ -d "$d" ] && echo "$d" && break; done)}"
 export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}"
 export PATH="$JAVA_HOME/bin:$PATH"
-[ -f local.properties ] || echo "sdk.dir=$ANDROID_HOME" > local.properties
+# local.properties is a Java properties file, where a backslash is an escape. Git Bash on Windows hands us
+# C:\Users\...\Sdk, which Gradle then reads as a broken path ("The filename, directory name, or volume label
+# syntax is incorrect"), and since the file is only written when missing, build-and-install.ps1 kept failing
+# on it too. Forward slashes work everywhere.
+[ -f local.properties ] || echo "sdk.dir=$(printf '%s' "$ANDROID_HOME" | tr '\\' '/')" > local.properties
 ./gradlew assembleRelease -q --console=plain
 # Which app owns Home differs by build (com.google.android.tvlauncher on Android TV,
 # com.google.android.apps.tv.launcherx on newer Google TV), so ask the TV instead of guessing.
@@ -103,11 +112,25 @@ case "$OUT" in
     exit 1 ;;
   *) echo "ERROR: pm install failed; the stock launcher was left untouched." >&2; exit 1 ;;
 esac
+# Replacing the launcher while it is Home lets Android restart it mid-update, and on a TCL G03
+# (Android 11) that instance came up with mOccludesParent=false: Home then left the previous app or
+# HDMI picture on screen (#1101). `am start` below would only reuse it, so stop it first; the start
+# then creates a fresh one. A force stop also takes the key helpers off the enabled list, so a helper
+# that was on is written back (cleared first: Android binds again only when the list changes).
+"$PY" -I ../tools/tv.py 's=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop com.gathin.tvhome; case "$s" in *com.gathin.tvhome*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac' >/dev/null
 # Start the launcher on its own, before the stock Home is touched. In the batch below a start that
 # fails only prints an "Error:" line, and the stock launcher would be disabled anyway, leaving the TV
 # with no usable Home (#239). "Status: ok" from `am start -W` means the activity really came up;
 # the HOME resolution further down only names a component, it does not prove the activity starts.
-START_OUT=$("$PY" -I ../tools/tv.py 'am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity')
+# With STOCK_LAUNCHER=none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would
+# make this launcher the home process until a restart, and Android then blocks the stock launcher's
+# remote-button launches (BAL_BLOCK, #1274). The component alone still proves the activity comes up.
+if [ "$STOCK_LAUNCHER" = none ]; then
+  START_CMD='am start -W -n com.gathin.tvhome/.MainActivity'
+else
+  START_CMD='am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity'
+fi
+START_OUT=$("$PY" -I ../tools/tv.py "$START_CMD")
 echo "$START_OUT"
 # Both halves matter: some builds answer "Status: ok" for a task that was merely brought to the
 # front, and an activity that cannot start still prints "Error: Activity not started".

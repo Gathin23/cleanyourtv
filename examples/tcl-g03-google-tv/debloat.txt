@@ -51,6 +51,23 @@
 # screensaver, then disable dreamx. Home landed on the new launcher straight away (mFocusedApp checked), with
 # no RecoveryActivity in between.
 #
+# US firmware unit, 2026-10-25: TCL Smart TV Pro G03_4K_US (BeyondTV4, Realtek rtd288o / R51MT05,
+# software V8-R51MT05-LF1V813), Google TV 11, build RP1A.200622.001 GTV93, security patch 2023-10-05, client
+# TCL-NA-RTD51M-S1. The packages of groups 1-3 still enabled on this unit were disabled one per shell call, then
+# rebooted: Wi-Fi and internet stayed up, Settings opened and every package stayed disabled. Lived with for a few
+# days. This unit kept launcherx and setupwraith (setupwraith owned the Wi-Fi here too), so group 6 and the
+# launcherx line were not applied. Found on this unit:
+# - com.tcl.xian.StartandroidService is also how TCL's updater gets the device number (dnum). With it disabled,
+#   Settings > About > Software Update > Network Update fails with "Local network or server abnormal, please check
+#   the network and try again" while the network is fine (logcat: "dnum is null!"). If you turned it off, to check for an update enable it,
+#   reboot once, run the check, then disable it again (docs/TROUBLESHOOTING.md).
+# - com.google.android.apps.tv.dreamx is more than the promo screensaver: it also hosts Google TV's Google Home panel
+#   (SmartHomeMainActivity: lights and other devices in the quick settings). Disabling it removes that panel. It also
+#   loads the panel's account through com.google.android.apps.tv.launcherx, so with launcherx off the panel opens and
+#   closes at once: if the household uses Google Home lights, keep launcherx enabled as well and hand Home to the new
+#   launcher with stock_home_redirect (docs/TROUBLESHOOTING.md, #1653).
+# - Apps only mode (Settings > Accounts & Sign In > account) also hides the Google Home panel on this firmware.
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
@@ -61,7 +78,7 @@
 # ---- 1. TCL and Google telemetry ----
 com.tcl.bi                                  # TCL BI analytics
 com.tcl.logkit                              # log capture and upload
-com.tcl.xian.StartandroidService            # background reporting service
+# com.tcl.xian.StartandroidService          # background reporting service; off on the tested units, but TCL's updater needs it (see header), so it stays on
 com.google.android.feedback                 # crash / feedback reporting
 
 # ---- 2. TCL and Google content, ads and recommendation rows ----
@@ -111,7 +128,7 @@ com.tcl.MultiScreenInteraction_TV           # T-Cast / MagiConnect phone link
 # Re-enable it (tools/restore.sh does) before a factory reset.
 com.google.android.tungsten.setupwraith
 
-# ---- 7. Google ambient screensaver (promos) ----
+# ---- 7. Google ambient screensaver (promos); also hosts the Google Home panel (see header) ----
 # Switch the screensaver first, e.g. to the launcher's clock:
 #   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
 # Back to Google's: settings put secure screensaver_components com.google.android.apps.tv.dreamx/.service.Backdrop

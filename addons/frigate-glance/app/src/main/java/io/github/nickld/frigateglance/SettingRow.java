@@ -43,9 +43,9 @@ final class SettingRow extends LinearLayout {
 
         this.value = new TextView(context);
         this.value.setTextSize(17);
-        this.value.setTextColor(0xFFC9D1D9);
         this.value.setText(value);
         addView(this.value, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        setValue(value);
     }
 
     void setDetail(String d) {
@@ -55,6 +55,8 @@ final class SettingRow extends LinearLayout {
 
     void setValue(String v) {
         value.setText(v);
+        value.setTextColor(0xFFC9D1D9);
+        value.setTypeface(android.graphics.Typeface.DEFAULT);
     }
 
     /** A value that needs to stand out, such as the snooze state: coloured and bold. */

@@ -1,0 +1,15 @@
+{
+  "dock_apps": [
+    "com.amazon.amazonvideo.livingroom",
+    "in.startv.hotstar",
+    "com.amazon.music.tv",
+    "com.netflix.ninja"
+  ],
+  "hidden_apps": ["com.apps.livetv"],
+  "live_tv_package": "com.apps.livetv",
+  "columns": 6,
+  "stock_home_redirect": "com.google.android.tvlauncher",
+  "icon_only_buttons": true,
+  "wifi_label_width": 300,
+  "tile_menu": true
+}

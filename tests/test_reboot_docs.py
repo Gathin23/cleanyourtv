@@ -8,6 +8,11 @@ own service and returns once the request is accepted - and four pages still hand
 shell form. These tests keep every page on the mode that returns, and check the promise the pages
 make ("returns once ADB accepts it") against tools/tv.py instead of trusting the prose.
 
+A list's header is a page too: its `# Reboot:` line is what an owner pastes between batches, so the
+comments in every `examples/<tv>/*.txt` are read as well. The quoted form counts:
+`tools/tv.py 'reboot'` is the same shell command, written the way the repo writes every other one
+(`tools/tv.py 'pm list packages -d'`).
+
 What counts as a command: a line with no backticks on it. A page that explains the symptom has to
 name the broken form, and it writes it in backticks (`tools/tv.py reboot`); a line a reader is meant
 to paste does not.
@@ -28,8 +33,8 @@ TV = ROOT / "tools" / "tv.py"
 TROUBLE = ROOT / "docs" / "TROUBLESHOOTING.md"
 README = ROOT / "README.md"
 
-# `tv.py reboot`, not `tv.py --reboot`: the dashes sit between the path and the word.
-SHELL_REBOOT = re.compile(r"tv\.py\s+reboot\b")
+# `tv.py reboot` or `tv.py 'reboot'`, not `tv.py --reboot`: the dashes sit between the path and the word.
+SHELL_REBOOT = re.compile(r"tv\.py\s+['\"]?reboot\b")
 
 # Pages that reboot and then keep using the TV, so the next command needs it back.
 CHAINS = ("docs/TROUBLESHOOTING.md", "docs/devices/durabrand-durat32isdb.md",
@@ -52,11 +57,25 @@ def page(path):
     return path.read_text(encoding="utf-8")
 
 
+def list_comments(text):
+    """A list with each line cut to its comment, so the header is read and the line numbers stay."""
+    return "\n".join(line[line.index("#"):] if "#" in line else "" for line in text.split("\n"))
+
+
+def pages(root):
+    """(path, text) for every page a reader runs commands from: each .md, and each list's comments."""
+    root = Path(root)
+    for path in markdown_files(root):
+        yield path, page(path)
+    for path in sorted((root / "examples").glob("*/*.txt")):
+        yield path, list_comments(page(path))
+
+
 class EveryPageUsesTheModeTest(unittest.TestCase):
     def test_no_page_runs_the_shell_form(self):
         found = []
-        for path in markdown_files(ROOT):
-            for number, line in shell_reboots(page(path)):
+        for path, text in pages(ROOT):
+            for number, line in shell_reboots(text):
                 found.append(f"{path.relative_to(ROOT).as_posix()}:{number}: {line}")
         self.assertEqual([], found, "use `tools/tv.py --reboot`; the shell form hangs (#995):\n"
                          + "\n".join(found))
@@ -122,16 +141,41 @@ class TheCheckerItselfTest(unittest.TestCase):
 
     def test_a_path_written_in_prose_is_not_a_command(self):
         self.assertEqual([], shell_reboots("`tools/tv.py reboot` never comes back.\n"))
+        self.assertEqual([], shell_reboots("# - `tools/tv.py 'reboot'` never returns on this set (#995).\n"))
         self.assertEqual(1, len(shell_reboots("python -I tools/tv.py reboot\n")))
+
+    def test_a_quoted_command_is_reported(self):
+        for line in ("TV_HOST=<tv ip> tools/tv.py 'reboot'", 'tools/tv.py "reboot"',
+                     r"# Reboot:  & tools\venv\Scripts\python.exe -I tools\tv.py 'reboot'"):
+            with self.subTest(line=line):
+                self.assertEqual([(1, line)], shell_reboots(line + "\n"))
+        self.assertEqual([], shell_reboots("tools/tv.py 'pm list packages -d'\n"))
+
+    def test_a_list_is_read_for_its_comments_with_its_line_numbers(self):
+        text = ("# Apply:   tools/disable.sh <list>\n"
+                "com.acme.ads   # ad SDK\n"
+                "# Reboot:  tools/tv.py 'reboot'\n")
+        comments = list_comments(text)
+        self.assertEqual([(3, "# Reboot:  tools/tv.py 'reboot'")], shell_reboots(comments))
+        self.assertNotIn("com.acme.ads", comments, "a package line is not a command")
+        self.assertIn("# ad SDK", comments)
 
     def test_a_walk_finds_the_pages_it_is_given(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "docs").mkdir()
             (root / "docs" / "note.md").write_text("tools/tv.py reboot\n", encoding="utf-8")
+            # A .txt that is not a TV list is not read; every list in an examples/ folder is.
             (root / "README.txt").write_text("tools/tv.py reboot\n", encoding="utf-8")
-            found = [path.name for path in markdown_files(root) if shell_reboots(page(path))]
-            self.assertEqual(["note.md"], found)
+            tv = root / "examples" / "acme-tv"
+            tv.mkdir(parents=True)
+            (tv / "debloat.txt").write_text("# Reboot:  tools/tv.py 'reboot'\ncom.acme.ads\n", encoding="utf-8")
+            (tv / "debloat-keep-cast.txt").write_text(
+                "# - `tools/tv.py 'reboot'` never returns here: use --reboot\n"
+                "# Reboot:  tools/tv.py --reboot\n", encoding="utf-8")
+            found = [path.relative_to(root).as_posix()
+                     for path, text in pages(root) if shell_reboots(text)]
+            self.assertEqual(["docs/note.md", "examples/acme-tv/debloat.txt"], found)
 
 
 if __name__ == "__main__":

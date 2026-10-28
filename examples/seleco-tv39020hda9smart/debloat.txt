@@ -1,0 +1,41 @@
+# Seleco TV39020HDA9SMART 39" (AT_SmartScreen, panel 13AT204V10_PAS; Toptech + Zeasn, Realtek RTK2842P, rtd285o), Italy
+# Android TV 9 (API 28), build AT_SmartScreen-userdebug 9 RTK2842P eng.arge.20220324.112716
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/seleco-tv39020hda9smart/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/seleco-tv39020hda9smart/debloat.txt cn.zeasn.launcher.vstoresubclient.toptech
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: cn.zeasn.launcher.vstoresubclient.toptech (Zeasn). Disabled last, only after com.gathin.tvhome
+# was confirmed as Home. Live TV and inputs: com.toptech.tvmenu (kept); its source picker is
+# com.toptech.tvmenu/.input.InputActivity, which config.json uses for the Inputs pill.
+# Kept: com.toptech.tv.service, com.toptech.tvmenu, com.realtek.dtv, com.realtek.tv.atv, com.realtek.tv.passthrough,
+#       com.toptech.keyboard_seven (on-screen keyboard), com.atmaca.atmpas (loads picture/sound settings at boot),
+#       Play Store, Play Services, YouTube.
+# Never launched: com.toptech.factorytools, com.toptech.tvfactory (factory menus).
+# Prime Video: the set came with the phone build (com.amazon.avod.thirdpartyclient, in /data/app) instead of the TV
+# app; it was replaced by the TV build, com.amazon.amazonvideo.livingroom (see README.md).
+# Nothing came back enabled after a reboot. Same Toptech/Zeasn platform as caxium-58-realtek-rtk2851p.
+
+# Telemetry and auto-installs
+com.zeasn.deviceportal.asdprovider.toptech      # Zeasn device portal service, starts at boot
+android.autoinstalls.config.realtek.device      # Play auto-installs of partner apps
+
+# Content and ads
+com.zeasn.services.general                      # Zeasn weather, search and "weekly" feed
+cn.zeasn.toptech.rtk2851.vstoresubclient        # Zeasn app store
+
+# Background services and preloaded apps
+com.atmaca.atmretailmode                        # shop demo mode
+com.android.printspooler
+com.android.camera2
+com.android.wallpaper.livepicker
+com.android.chrome
+com.rtk.mediabrowser                            # USB media player
+
+# Not used by the owner
+com.netflix.mediaclient                         # the phone build
+com.google.android.katniss                      # Google voice search; the remote's mic button stops working
+com.rtk.android.miracast                        # screen mirroring
+
+# Stock launcher (only after the new launcher is Home)
+cn.zeasn.launcher.vstoresubclient.toptech

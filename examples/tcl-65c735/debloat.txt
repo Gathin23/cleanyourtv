@@ -41,9 +41,37 @@
 #   com.gathin.tvhome AUTO_START allow; appops write-settings` first, and restore_key_services in the theme.
 # - `tools/tv.py 'reboot'` never returns on this set (#995): run it with a timeout.
 #
+# Also used on a TCL 65C745 QLED, France (2023; same product G05_4K_GB, build AR2101, incremental AR25, software
+# V8-T615T03-LF1V614, security patch 2024-03-05, wired Ethernet, 32-bit armeabi-v7a), with these notes:
+# - Applied in seven batches with a screenshot between each. One day of use; several reboots, two of them checked
+#   with tools/check.py (no drift). The 65C745 also comes as a G08 set on Google TV 14 (examples/tcl-55c745): read
+#   ro.product.name before picking a list.
+# - Also disabled on this unit: the lines marked "65C745" below (commented out, so this list is unchanged), plus
+#   Netflix, Prime Video, the stock YouTube app, Chromecast (com.google.android.apps.mediashell), T-Cast
+#   (com.tcl.MultiScreenInteraction_TV) and the game bar, by choice. AirPlay kept by choice.
+# - com.tcl.ttvs disabled: TCL offers nothing past LF1V614 on this set. With it off, com.tcl.usercenter and T-Cast
+#   stayed disabled across both reboots, where the 55C728 and 65C935 saw them come back.
+# - There is no separate Network/ADB debugging toggle: USB debugging alone opens port 5555.
+# - Two setup-time SSIDs were saved; with both forgotten and the set on Ethernet, disable.sh could read no network
+#   owner and skipped setupwraith, so it went with FORCE_SETUPWRAITH=1. Before that, build-and-install.sh rolled
+#   Home back because setupwraith's RecoveryActivity claimed HOME, as described above.
+# - Remote (IR, "MStar Smart TV IR Receiver"): no Input 178 button. The source button, marked CH, sends KEY_EPG
+#   (scancode 365), which Android does not map: "scan:365:inputs" in app_keys opens the Inputs menu once #1167 is in the launcher.
+#   Gear 4077, Netflix 4062 and YouTube 4065 as on the 55C728.
+# - Volume: with a key-filtering helper bound (HomeKeyService or InputKeyService), each press of the remote's
+#   volume key steps the volume twice; an injected KEYCODE_VOLUME_UP steps it once, and consuming the key in the
+#   helper does not stop the double step. key_filter: false brings back one step per press, at the price of every
+#   remote button mapped above.
+# - The auto-start op is named APP_AUTO_START here (`appops get <package>`): `appops set com.gathin.tvhome AUTO_START
+#   allow` fails (Unknown operation string), APP_AUTO_START is accepted. Allowed and saved with `appops write-settings`,
+#   it let a third-party screensaver (Aerial Views) bind, and it still did after a reboot (docs/TROUBLESHOOTING.md,
+#   "A third-party screensaver never shows"). After a theme push only one of the two helpers was bound at a time; a
+#   reboot binds the enabled ones again.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65c735/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c735/debloat.txt com.google.android.apps.tv.launcherx
-# Windows: tools\disable.ps1 / tools\restore.ps1 -TvHost <tv ip> <list> -Stock com.google.android.apps.tv.launcherx
+# Windows: $env:TV_HOST="<tv ip>"; tools\disable.ps1 examples\tcl-65c735\debloat.txt
+#          $env:TV_HOST="<tv ip>"; tools\restore.ps1 examples\tcl-65c735\debloat.txt -Stock com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI: com.tcl.tv + com.tcl.tvinput.
@@ -74,7 +102,7 @@ com.tcl.ttvs                           # TCL BI/awareness/identifier services; o
 com.tcl.guard                          # TGuard: device-use tracking, "health info", memory cleaner
 com.google.android.feedback            # "send feedback"
 com.google.android.partnersetup        # partner-app attribution
-# com.tcl.logkit                       # 55C728, 65C935: TCL diagnostics/log collector
+# com.tcl.logkit                       # 55C728, 65C935, 65C745: TCL diagnostics/log collector
 
 # Batch 2 - TCL content, ads and promos
 com.tcl.waterfall.overseas             # TCL content recommendations
@@ -84,9 +112,9 @@ com.tcl.usercenter                     # TCL account
 com.tcl.dashboard                      # "TCL Home" panel, gift box and promos
 com.tcl.tv.tclhome_passive             # pushes TCL content at boot
 com.tcl.esticker                       # retail demo stickers
-# com.tcl.channelplus                  # 55C728, 65C935: TCL's free ad-supported channels
-# com.tcl.useragreement                # 55C728, 65C935: agreement screen shown once during setup
-# android.autoinstalls.config.google.gtvpai # 55C728, 65C935: partner app auto-installer
+# com.tcl.channelplus                  # 55C728, 65C935, 65C745: TCL's free ad-supported channels
+# com.tcl.useragreement                # 55C728, 65C935, 65C745: agreement screen shown once during setup
+# android.autoinstalls.config.google.gtvpai # 55C728, 65C935, 65C745: partner app auto-installer
 
 # Batch 3 - preloaded apps and services not used
 # au.com.stan.and                      # Stan (AU): disabled by the firmware on arrival, shell may not touch it
@@ -101,10 +129,10 @@ com.tcl.hearaid                        # hearing test / volume adaptation
 com.google.android.marvin.talkback     # screen reader
 com.google.android.syncadapters.calendar
 com.google.android.onetimeinitializer
-# com.tcl.ocean.instructions           # 55C728, 65C935: e-manual
-# com.tcl.browser                      # 55C728, 65C935: TCL browser
-# com.tcl.android.webview              # 55C728: TCL's WebView (the active one is com.google.android.webview)
-# com.tcl.t_solo                       # 55C728: Bluetooth "listen alone"
+# com.tcl.ocean.instructions           # 55C728, 65C935, 65C745: e-manual
+# com.tcl.browser                      # 55C728, 65C935, 65C745: TCL browser
+# com.tcl.android.webview              # 55C728, 65C745: TCL's WebView (the active one is com.google.android.webview)
+# com.tcl.t_solo                       # 55C728, 65C745: Bluetooth "listen alone"
 
 # Batch 4 - voice and casting (owner keeps Chromecast and Miracast)
 com.google.android.katniss             # Google Assistant / voice search (mic button)
@@ -113,7 +141,7 @@ com.tcl.assistant                      # TCL voice service
 com.tcl.smartalexa                     # Alexa
 com.tcl.airplay2                       # AirPlay
 com.mediatek.AirplayAPK                # AirPlay
-# com.tcl.miracast                     # 55C728, 65C935: Miracast mirroring, off by choice
+# com.tcl.miracast                     # 55C728, 65C935, 65C745: Miracast mirroring, off by choice
 
 # Batch 5 - with the launcher in this repo installed (launcher/build-and-install.sh disables launcherx)
 com.google.android.tungsten.setupwraith # first-run wizard; its RecoveryActivity claims HOME. Re-enable
@@ -121,4 +149,4 @@ com.google.android.tungsten.setupwraith # first-run wizard; its RecoveryActivity
 
 # Batch 6 (55C728) - once the launcher's clock is the screensaver:
 #   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
-# com.google.android.apps.tv.dreamx     # 55C728: Google TV ambient mode screensaver and smart-home panel
+# com.google.android.apps.tv.dreamx     # 55C728, 65C745: Google TV ambient mode screensaver and smart-home panel

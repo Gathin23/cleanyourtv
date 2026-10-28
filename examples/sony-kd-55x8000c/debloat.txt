@@ -1,0 +1,102 @@
+# Sony BRAVIA KD-55X8000C (2015, "BRAVIA 4K 2015", device SVP-DTV15, MediaTek), China firmware
+# Android TV 7.0 (API 24), build SVP4KDTV15_CN-user 7.0 NRD91N.S35 5.435, 1.5 GB RAM, Ethernet
+#
+# Apply:   $env:TV_HOST="<tv ip>"; tools\disable.ps1  examples\sony-kd-55x8000c\debloat.txt   (Windows)
+#          TV_HOST=<tv ip> tools/disable.sh  examples/sony-kd-55x8000c/debloat.txt            (macOS/Linux)
+# Undo:    $env:TV_HOST="<tv ip>"; tools\restore.ps1 examples\sony-kd-55x8000c\debloat.txt   (Windows)
+#          TV_HOST=<tv ip> tools/restore.sh  examples/sony-kd-55x8000c/debloat.txt            (macOS/Linux)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.leanbacklauncher (the 2015 Sony launcher, NOT tvlauncher).
+# It is NOT in this list: the launcher half needs Android 8 (minSdk 26), this set is API 24, so the
+# stock home stays. Home also answers fallback com.android.tv.settings/.system.FallbackHome.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it also plays every HDMI input.
+# Keep: com.sony.dtv.tvinput.*, braviasync* (HDMI-CEC), remotepairing, uinputservice, imeproxy,
+# leanback.ime, softwarekeyboard (ime.chww), settingsprovider, mtktvapi.agent, com.mediatek.*,
+# chinaapkenabler (China setup/app plumbing), partnerkeycn + systemapp + scrums.action (remote keys),
+# servicemode, webapi, dialservice, hddmgr, timers, usbmsgservice, audiooutput, configsettings,
+# interactivetv* (screens on/off, time, discovery plugins), irbservice, rcplayer*.
+# 屏幕镜像: the Inputs menu's fixed entry opens com.sony.dtv.networkapp.wifidirect
+# (.ui.screens.ScreenMirroringHomeActivity); screnmirroring.com + com.mediatek.wfd are the WFD stack
+# behind it, so with those two disabled the entry stays and does nothing.
+# com.sony.dtv.b2b.hotelmode is kept too: Settings reads its hotelsettings provider (see the b2b group).
+#
+# This firmware has no Google Play Services: there is no Play Store, no katniss/pumpkin voice, no
+# YouView, no Play Movies/Music. The Google packages in the EU 2015 Sony lists do not exist here.
+#
+# Only packages that ship with this firmware are listed; apps installed after purchase are not.
+# Also kept: com.sony.dtv.appassistant (应用助手, preloaded).
+#
+# Reported on one China-market KD-55X8000C, one evening of use. If something breaks, re-enable it with
+# `pm enable <package>` and please report it.
+
+# Video/content apps the owner does not use (they start at boot and held ~250 MB of the 1.5 GB)
+com.wasu.wasutvcs                                # 华数TV, preloaded
+com.tencent.qqmusictv                            # QQ音乐, preloaded and updated
+com.sony.dtv.qq                                  # QQ音乐 preload, with Tencent remote-device service
+com.sony.dtv.mysony                              # My Sony 会员尊享 (membership/promo app)
+
+# Sony's preloaded 应用中心 (a partner build of 当贝市场): it is what fills the home's 推荐 row with
+# paid-app cards.
+com.sony.dangbeimarket
+
+# Sony Discovery / recommendation rows and promo feeds
+com.sony.dtv.discovery                           # Discover bar, ~28 MB resident
+com.sony.dtv.discovery.plugin.wasuplugin         # 华数 plugin feeding Discover
+com.sony.dtv.discovery.plugin.wasusearch         # 华数 search provider
+com.sony.dtv.bivlinfo                            # BIVL service behind Discover
+com.sony.dtv.recommendationservice
+com.sony.dtv.watchtvrecommendation
+com.sony.dtv.irbrecommendation
+com.sony.dtv.networkrecommendation
+
+# Help, tutorials, manual
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                             # i-Manual
+com.sony.dtv.touchpad.tutorial
+
+# Retail demo / shop mode
+com.sony.dtv.demomode
+com.sony.dtv.shopsettings
+
+# Telemetry, remote support, device-ID and push
+com.qterics.da.product                           # Qterics device agent
+com.sony.dtv.da.service                          # Sony device agent
+com.sony.dtv.remoteaccess                        # Sony remote support
+com.sony.dtv.duid.generator                      # tracking ID generator
+com.sony.dtv.servermgr                           # Sony push (C2DM receiver)
+
+# Hotel / commercial / pro mode
+# com.sony.dtv.b2b.hotelmode is NOT here: it provides the com.sony.dtv.b2b.hotelsettings provider that
+# com.android.tv.settings' MainFragment reads while it builds the menu. Disabled, Settings opens to a
+# blank screen (the fragment dies on the missing provider) and HomeKeyService-style Settings buttons look
+# broken. One evening of use found this; keep it enabled.
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.vendorprotocol                  # Control4-style automation; also keeps node alive
+com.sony.dtv.b2b.noderuntime
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+
+# Firmware update, left enabled: the other SVP-DTV15 lists keep it too, and an updater is the one service
+# worth leaving on. The owner turns it off on this set by choice; uncomment the line to disable OTA.
+# com.sony.dtv.systemupdate
+
+# USB media players, casting and camera
+com.sony.dtv.osat.album
+com.sony.dtv.osat.music
+com.sony.dtv.osat.video
+com.sony.dtv.tvcamera                            # 电视摄像机 (no camera on this set)
+com.sony.huey.dlna.module
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna
+com.sonyericsson.dlna.dtcpplayer
+
+# Screensaver and leftover launcher entry
+com.sony.dtv.braviashow                          # BRAVIA Show DreamService
+com.sony.dtv.moreapps                            # 更多应用 partner row
+
+# IR blaster settings (the daemon com.sony.dtv.irbservice is kept: it also listens to audio output)
+com.sony.dtv.irblaster

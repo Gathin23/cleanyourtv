@@ -2,7 +2,7 @@
 # Android 12 (Google TV), firmware STT2.230203.001, incremental AS50 -- same build as tcl-g10-google-tv
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55s470g/debloat.txt
-# Undo:    TV_HOST=<tv ip> examples/tcl-55s470g/restore.sh   (or tools/restore.sh <this file> com.google.android.apps.tv.launcherx)
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55s470g/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
@@ -57,7 +57,8 @@ com.google.android.apps.mediashell     # Chromecast built-in
 com.google.android.youtube.tvmusic
 com.google.android.videos              # Google TV app (purchases/rentals)
 com.tcl.smartalexa                     # Alexa
-com.google.android.tv.remote.service   # Google TV phone-app remote (the physical remote is unaffected)
+com.google.android.tv.remote.service   # Google TV phone-app remote, and the remote mic's bridge on this build (#1441): comment out with katniss to keep voice
 
-# Needed for the custom launcher. Disable only AFTER launcher/ is installed (see README Troubleshooting).
+# Needed for the custom launcher. Disable only AFTER launcher/ is installed
+# (see docs/TROUBLESHOOTING.md, "The new launcher still doesn't own Home").
 com.google.android.tungsten.setupwraith

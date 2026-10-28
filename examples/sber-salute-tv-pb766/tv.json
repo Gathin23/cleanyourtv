@@ -1,0 +1,6 @@
+{
+  "tv": "Sber Salute TV 32\" (CVTE TPD.MT9216.PB766, MediaTek MT9256, 1 GB), Russia",
+  "os": "StarOS 1.103 / Android 11",
+  "brand": "Sber",
+  "notes": "Second StarOS list, MediaTek board: Sber content apps, SberPrime, kids room, parental control, smart home, browser, screensaver, surveys, beta, bug reporter, cleaner, Miracast; Developer options open normally; stock launcher kept enabled (CVTE); five apps re-enabled by Sber's platform service at boot are hidden in `config.json`; no Google services, so no official YouTube; reboot-checked"
+}

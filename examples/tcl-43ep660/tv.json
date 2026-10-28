@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 43EP660 (Europe, BeyondTV, Realtek rtd285o, V8-R851T02-LF1V378)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "TCL BI analytics, user center, TCL Channel, message box, stickers, TV Guard, T-Cast, app store, USB players; voice and Miracast off by choice, Chromecast and updaters kept; stock launcher has HOME priority 2, so it must be disabled; setupwraith owns the setup Wi-Fi and does not claim HOME, so it stays; `StartandroidService` kept (device authentication)"
+}

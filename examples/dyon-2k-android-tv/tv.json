@@ -1,0 +1,6 @@
+{
+  "tv": "DYON 2K Android TV (MTC, komagome, MediaTek m5621), Germany",
+  "os": "Android TV 11",
+  "brand": "DYON",
+  "notes": "First DYON list, same MTC/JVC firmware family as [mtc-uk-2k-android-tv](mtc-uk-2k-android-tv/): Anoki ACR, partner auto-installs, recommendation rows and partner customizer, Google feedback; StreamTV FAST channels, ZDF Mediathek, RTL+, YouTube Music, Play Movies/Games, Assistant, phone remote and Backdrop off by choice; Chromecast kept; setupwraith owns the first-setup Wi-Fi, leave it; every remote button works with no key service; time zone ships as a fixed `Etc/GMT-2`"
+}

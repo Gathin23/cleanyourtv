@@ -1,0 +1,116 @@
+# Philips 65OLED706/12 (65" 4K OLED, 3-sided Ambilight), France
+# Android TV 11 (SDK 30), firmware RTT2.211108.001 build 21029, security patch 2025-10-01, board PH1M_EA_9970A
+# ro.product.model=2021/22 Philips UHD Android TV  ro.product.device=PH1M_EA_9970A
+# Fingerprint: Philips/PH1M_EA_9970A/PH1M_EA_9970A:11/RTT2.211108.001/21029:user/release-keys
+# MediaTek MT5895, 2.7 GB RAM, 1920x1080 UI. Connected over Ethernet.
+#
+# Same board AND same firmware build as examples/philips-50pus8517 and examples/philips-55oled707. Read the
+# 50PUS8517 quirks and its DO NOT DISABLE block first: they apply here as written, and nothing in that block is
+# disabled below (xtv, eum, aurora, playtv, nettvbrowser, browser engine, Ambilight, remote, firmware update...).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-65oled706/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-65oled706/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher
+# Live TV app:    org.droidtv.playtv (set live_tv_package to it; the Inputs menu then lists HDMI 1-4, the analog
+#                 inputs and Live TV, and switching to an HDMI input opens it in playtv)
+#
+# What this unit adds to the 50PUS8517 / 55OLED707 notes:
+#
+# 1. Already disabled at the factory on this French unit: the UK Freeview apps (uk.co.freeview.*,
+#    org.droidtv.freeviewplayers), Apple TV, YouTube Music AND org.droidtv.aurora. The 50PUS8517 notes say a
+#    disabled aurora leaves xtv retrying every 201 ms; on this unit an idle 30 s log shows 0 handleConnectAurora
+#    and 0 connectCotextService lines, so aurora was left as the factory set it.
+# 2. Packages the earlier lists do not have, checked with `dumpsys package` (none launched):
+#    org.droidtv.astrahdplus (HD+ German satellite info pages), io.mimi.tvapp + io.mimi.sdk.service (Mimi
+#    hearing-personalised sound), org.droidtv.dropboxprovider (Dropbox in Media). All three disabled cleanly;
+#    sound, Media and live TV unaffected. Not touched: org.droidtv.fastip (IP channel installer; the 75PUS8505
+#    notes say SOURCES dies without it), org.droidtv.sam / csm (service menus), dukservice, usbbreakin, factory.
+# 3. tools/tv.py (adb_shell) gets no answer until it is accepted at the TV's own "Allow USB debugging?" prompt,
+#    even with the same key the stock adb already uses; tools/theme.sh hangs on it until then. The stock adb works.
+# 4. OLED screensaver: tvsystemui draws a moving Philips logo over everything after about 5 minutes of a still
+#    picture, and once it is up it stays on top of the launcher's own idle clock. home_idle_clock_minutes must
+#    therefore be 4 or less here; with the clock already up (it moves every minute) the logo did not come back
+#    in more than 7 minutes. Injected keys over adb do not dismiss the logo, and the shell cannot write to the
+#    remote's input device on this firmware (sendevent: Permission denied), so test it with the real remote.
+# 5. The TV powers on to the last source in use: switched off from Home it comes back on Home, switched off on
+#    an HDMI input it comes back on that input. It only resumes the PlayTvActivity it left, which sends its
+#    window event once the input has a picture (about 5 s), if at all, so power_on_home alone is late or
+#    misses it. power_on_home_always (with HOME_KEY_SERVICE=1) brings Home up about 1 s after wake, from an
+#    HDMI input or an app. After installing the launcher and after a theme push (which force-stops it),
+#    switch enabled_accessibility_services off and on again, or the helper stays in "Crashed services".
+# 6. Chromecast (mediashell) re-enables itself, as on the 50PUS8517: left out.
+# 7. show_stats and the CPU figure: apps cannot read the CPU load here. /proc/stat and /proc/loadavg are
+#    denied to apps on this Android 11 build, and the kernel has no cpuidle (no
+#    /sys/devices/system/cpu/cpu0/cpuidle). The load average read over adb sits around 36 on 4 cores at
+#    idle, so it would not be a usable stand-in anyway. Memory and storage read fine; the CPU part is left out.
+#
+# Verified with the real remote after the list and the launcher: channel change, TV guide, SOURCES drawer and
+# HDMI switching, sound and Ambilight all work; Home opens the replacement launcher. After a reboot, waiting
+# 15 s first (quirk 1), all 26 packages were still disabled and nothing came back. Free memory at idle on Home:
+# about 780 MB stock, about 1.1 GB with this list and the launcher.
+#
+# Kept on purpose (owner's choice): Google Assistant (katniss), Play-Fi, IP control, DLNA, YouTube, Prime Video.
+#
+# Second unit: Philips 55OLED706/12 (55"), Poland, on Wi-Fi. Same board, same build 21029, security patch
+# 2025-10-01. Applied with tools/disable.ps1 in small batches on 2026-10-24, a screenshot and a 30 s idle-log check
+# after each, and checked with the real remote the same day; not yet lived with for days. No replacement launcher.
+# - Already disabled at the factory, as on the French unit: the UK Freeview apps and org.droidtv.aurora (left as
+#   the factory set it). YouTube Music and Apple TV were enabled here. The saved Wi-Fi network belonged to
+#   android.uid.system, not to setupwraith (kept anyway).
+# - The disable scripts skip two entries of this list on this firmware: org.droidtv.usagelogger and
+#   org.droidtv.demome both ask for TV_INPUT_HARDWARE (#321). demome was kept. usagelogger holds INTERNET of its
+#   own, and with the rest of this list applied its ErrEvLogSvc process logged "bindToNetvLoggerService: null
+#   ResolveInfo" about every 10 s (not seen before the list), so it was disabled afterwards with TVINPUT_ALLOW=1:
+#   the retry stopped, and Live TV, channel changes, the SOURCES drawer and the HDMI picture still worked.
+# - Not disabled from this list: com.netflix.ninja (owner's choice) and com.google.android.tvrecommendations (the
+#   stock launcher stays Home).
+# - Disabled on top of this list, none of them used by the owner (labels from the 50PUS8517 list where it has
+#   them): org.droidtv.tv.frameworklogger (as in philips-65pml9506), the gallery apps nettvapp1814 (ARTE),
+#   nettvapp5326 (Toon Goggles), nettvapp5512 (Fishing TV) and nettvapp20004410 (Couchplay Games),
+#   org.droidtv.android.fitness (Fitness Buddy, starts at boot), two Polish VOD apps pl.canalplus.tvod.atv and
+#   com.tvp.vodtv.tv (never launched; the second was installed by the Philips gallery), com.mgmedia.androidApp
+#   (CHILI), com.ted.android.tv, tv.wuaki.apptv (Rakuten TV), com.dsi.ant.service.socket and
+#   com.dsi.ant.plugins.antplus (ANT+ fitness sensors, never launched), com.google.android.youtube.tvmusic,
+#   com.google.android.apps.tachyon (Google Meet) and com.phorus.playfi.softap (Play-Fi itself was not touched).
+# - After a reboot all 38 were still disabled and nothing came back. No retry loop in a 30 s idle log.
+# - The stock launcher keeps a "Google Play Movies & TV" tile in Favourite apps after com.google.android.videos is
+#   disabled, also after a reboot; hold OK on it to remove it.
+# - Free memory at idle (dumpsys meminfo, the two readings straddle a reboot): 674 MB before, 867 MB after.
+
+# TP Vision + Google telemetry. Disable candeebug and gel together (gel runs in candeebug's process).
+org.droidtv.candeebug                     # "DAC" analytics uploader
+org.droidtv.gel                           # metrics collector
+org.droidtv.usagelogger                   # usage and panel telemetry
+com.google.android.feedback
+com.google.android.partnersetup           # partner attribution
+
+# Philips promos, gallery and auto-installs. Disable the row first, then its backend.
+org.droidtv.nettvrecommender              # "Top Picks" row
+org.droidtv.recommendation
+org.droidtv.nettv.market                  # "Collection Smart TV" app store
+org.droidtv.nettvapps                     # app gallery preload installer
+android.autoinstalls.config.tpv.device    # Play auto-install of partner apps
+org.droidtv.astrahdplus                   # HD+ (German satellite operator) info pages
+org.droidtv.m7opapp                       # M7 satellite operator promo; keep if you use one of those operators
+org.droidtv.demome                        # retail demo mode
+
+# Features this owner does not use. Check each against your own setup.
+org.droidtv.amazonalexa                   # Alexa bridge; channel zapping and the guide still work without it
+io.mimi.tvapp                             # Mimi hearing-personalised sound
+io.mimi.sdk.service                       # its audio service; sound unaffected when both are off
+org.droidtv.dropboxprovider               # Dropbox source in Media
+com.google.android.marvin.talkback        # keep if anyone needs the screen reader
+
+# Google setup leftovers and unused apps
+com.google.android.onetimeinitializer
+com.google.android.sss.authbridge         # set-up-from-phone helper
+com.google.android.syncadapters.calendar  # no calendar app on the TV
+com.google.android.play.games
+com.google.android.videos                 # Google TV / Play Movies
+com.netflix.ninja                         # owner's choice (no subscription)
+
+# Stock launcher and its content engine, replaced by launcher/. ORDER MATTERS (50PUS8517): the launcher first.
+# com.google.android.tvlauncher   # launcher/build-and-install.sh disables it after Home has moved
+com.google.android.tvrecommendations      # recommendation rows and the system notification panel

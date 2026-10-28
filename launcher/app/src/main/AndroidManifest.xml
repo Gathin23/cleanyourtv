@@ -38,6 +38,11 @@
         <intent>
             <action android:name="android.settings.MANAGE_APPLICATIONS_SETTINGS" />
         </intent>
+        <!-- The tile menu and the app library offer App info only where this resolves (SystemSettings.appInfo). -->
+        <intent>
+            <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+            <data android:scheme="package" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -149,6 +154,22 @@
                 android:resource="@xml/home_key_service" />
         </service>
 
+        <!-- market://launch?id=<package>: package-name app launches from the Android TV Remote service
+             (Home Assistant android_tv_remote), normally served by the stock launcher. -->
+        <activity
+            android:name=".AppLaunchActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="market" android:host="launch" />
+            </intent-filter>
+        </activity>
+
         <!-- The same clock, started by Home itself after home_idle_clock_minutes without input. -->
         <activity
             android:name=".ClockActivity"
@@ -190,6 +211,28 @@
 
         <!-- The remote's Input button (KEYCODE_TV or KEYCODE_TV_INPUT) opens the input switcher, and input_key_keycodes and
          app_keys (config.xml or a theme) bring back other remote buttons; see InputKeyService. -->
+        <!-- Bound again by the system after a force stop, which restarts Home on firmware that kills
+             third-party apps (TCL tc8000_ay30a2). It reads no notification.
+             cmd notification allow_listener com.gathin.tvhome/.GuardRevival -->
+        <service
+            android:name=".GuardRevival"
+            android:directBootAware="true"
+            android:exported="true"
+            android:label="@string/home_key_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name=".GuardConfig"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS">
+            <intent-filter>
+                <action android:name="com.gathin.tvhome.GUARD" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".InputKeyService"
             android:exported="false"

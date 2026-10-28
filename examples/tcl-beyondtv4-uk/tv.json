@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV Pro, UK Freeview Play (BeyondTV4 / BeyondTV6, Realtek rtd288o, 2 GB, AR05)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL telemetry, promos, content feed, TGuard, Google attribution and the stock Home recommendation row; voice, casting, updates and every streaming app kept; AR05 differs from `tcl-50c725k`: the TCL media apps hold TV_INPUT_HARDWARE, `com.tcl.system.server` re-enables seven preloads at every boot (background-restricted instead), and the Assistant hotword was revoked; [notes](../docs/devices/tcl-beyondtv4-uk-ar05.md)"
+}

@@ -37,8 +37,8 @@ public class ReviewFilterTest {
 
     @Test
     public void cameraNotListedIsHidden() {
-        assertFalse(filter("{\"cameras\":{\"frontdoooor\":\"Front door\"}}").shows(review("alert", "shop", "person"), NOW, 0));
-        assertTrue(filter("{\"cameras\":{\"frontdoooor\":\"Front door\"}}").shows(review("alert", "frontdoooor", "person"), NOW, 0));
+        assertFalse(filter("{\"cameras\":{\"porch\":\"Front door\"}}").shows(review("alert", "shop", "person"), NOW, 0));
+        assertTrue(filter("{\"cameras\":{\"porch\":\"Front door\"}}").shows(review("alert", "porch", "person"), NOW, 0));
     }
 
     @Test

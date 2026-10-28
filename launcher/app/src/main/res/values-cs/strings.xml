@@ -10,6 +10,7 @@
     <string name="not_connected">Žádné zařízení</string>
     <string name="live_tv">Televize</string>
     <string name="no_inputs">Nenašly se žádné vstupy</string>
+    <string name="more_inputs">Další vstupy</string>
     <string name="good_morning">Dobré ráno</string>
     <string name="good_afternoon">Dobré odpoledne</string>
     <string name="good_evening">Dobrý večer</string>
@@ -25,11 +26,20 @@
     <string name="home_settings">Výchozí domovská obrazovka</string>
     <string name="home_settings_help">Vyberte původní domovskou obrazovku, pokud už nechcete CleanYourTV používat jako domovskou, nebo CleanYourTV, pokud se k ní chcete vrátit. Původní launcher musí být zapnutý a televize musí nabízet výběr domovské obrazovky. Pokud byl vypnutý, spusťte nejdřív skript pro obnovení.</string>
     <string name="launcher_settings">Nastavení domovské obrazovky</string>
+    <string name="native_settings">Nastavení výrobce</string>
     <string name="columns_label">Aplikací v řádku</string>
+    <string name="rows_below_dock_label">Řádků pod dokem</string>
     <string name="dock_opacity_label">Krytí pruhu docku</string>
+    <string name="wallpaper_label">Tapeta</string>
+    <string name="wallpaper_state">Tapeta: %1$s</string>
+    <string name="wallpaper_none">Žádná</string>
+    <string name="wallpaper_applied">Tapeta změněna</string>
+    <string name="wallpaper_theme_default">Podle motivu</string>
     <string name="animations_state">Animace: %1$s</string>
     <string name="advanced_effects">Pokročilé efekty</string>
     <string name="advanced_effects_state">Pokročilé efekty: %1$s</string>
+    <string name="open_on_start_label">Otevřít po spuštění</string>
+    <string name="open_on_start_state">Otevřít po spuštění: %1$s</string>
     <string name="advanced_effects_warning">Přidá zvednutou dlaždici, zvětšení ikon a plynulé přechody barev. Může zvýšit spotřebu paměti, skutečný rozdíl záleží na televizi.</string>
     <string name="follow_theme">Podle motivu (zrušit volby na TV)</string>
     <string name="follow_theme_hint">Použije aktuální motiv nebo vestavěné nastavení rozložení a animací. Nahrání nového motivu nebo jeho resetování také zruší volby provedené na televizi.</string>
@@ -62,11 +72,14 @@
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Paměť %1$d / %2$d MB</string>
     <string name="stats_storage">Volné místo %1$s</string>
+    <string name="storage_gb_whole">%1$.0f GB</string>
+    <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="quick_picture">Obraz</string>
     <string name="quick_network">Síť</string>
     <string name="quick_apps">Aplikace</string>
     <string name="quick_apps_hint">Znovu zapnout</string>
     <string name="dock_edit">Upravit dok</string>
+    <string name="power_menu">Restartovat…</string>
     <string name="dock_edit_hint">Vyberte místo v doku, které chcete změnit, a stiskněte OK. Tlačítkem Zpět skončíte.</string>
     <string name="dock_edit_pick_app">Nyní vyberte aplikaci pro toto místo a stiskněte OK. Tlačítkem Zpět vyberete jiné místo.</string>
     <string name="tile_add_to_dock">Přidat do doku</string>
@@ -94,4 +107,6 @@
         <item quantity="other">%1$d aplikací</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="last_opened">Naposledy otevřeno: %1$s</string>
+    <string name="game_live">Právě živě</string>
 </resources>

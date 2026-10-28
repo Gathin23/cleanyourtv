@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 58S571F (TCL Fire TV, AFTDEC012E, ginza, MediaTek mt5896), US",
+  "os": "Fire OS 8 / Android 11",
+  "brand": "TCL",
+  "notes": "The S5 sibling of `tcl-43s450f-ca/` (same AFTDEC012E platform as `amazon-fire-tv-aftdec012e/`): Amazon ACR, ad/recommendation feeders, advertising ID, Shopping, demo, tutorials, telemetry, KSO service; Alexa extras, preloads and TCL apps (OpApp, Luna, Kids, News, Gallery, System Status, Prime Video) off by choice; Alexa voice returns at every boot as on the Hisense; the stock launcher also owns Settings; Appstore kept for the remote's branded buttons; AirPlay, Miracast, Live TV, Silk kept; debloat only"
+}

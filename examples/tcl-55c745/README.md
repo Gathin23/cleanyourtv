@@ -6,6 +6,9 @@ examples/tcl-85rm7l-google-tv, and the same G08 board as the C755, QM6K and 75T7
 Ethernet; a France/UK household (French and UK catch-up apps alongside Stremio and a third-party YouTube
 client). Both halves work on this set: the debloat list and the Clean Your TV launcher as Home.
 
+Not every 65C745 is a G08: a 65C745 from France reports `G05_4K_GB` (Google TV 11, build `AR2101`). Check
+`ro.product.name` first; a G05 set belongs with examples/tcl-65c735.
+
 | File | What it is |
 |---|---|
 | `debloat.txt` | The 48 app packages disabled, grouped and commented (plus the stock launcher and setup wizard) |

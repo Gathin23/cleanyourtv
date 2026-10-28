@@ -1,0 +1,64 @@
+# Sony BRAVIA VU1 (KD-43X7500H, product BRAVIA_VU1_UC, Realtek SoC), 2 GB RAM, armeabi-v7a
+# Android TV 11 (API 30, classic Android TV, not Google TV), build RTT7.210105.001/366.60436
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-vu1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-vu1/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# History: the same set was first removed with `pm uninstall --user 0` on 2026-10-18 and lived with for seven
+# days (several reboots; Home, Inputs, Settings, Netflix and YouTube fine; no crashes seen apart from the one below).
+# On 2026-10-25 the packages were re-enabled and this file was applied with tools/disable.sh:
+# all 19 stayed disabled after a reboot, `tools/check.py` reported "nothing drifted", Home, Settings and the
+# 21 HDMI/AV input entries were fine. One boot earlier in the run logged a crash in two Realtek vendor
+# services (exTv HAL, com.realtek.tv.atv); both respawned and nothing was visibly wrong.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV; recommendations rows with sponsored
+# tiles). cmd package set-home-activity printed Success and changed nothing: the stock launcher outranks any
+# other HOME app, so it has to be disabled for a new launcher to get Home (FLauncher, me.efesser.flauncher, was
+# used). It is the last line below, commented out, because the run above removed it with uninstall rather than
+# disable-user: disable it last, after the new launcher answers HOME.
+# Tuner / inputs on this Realtek set are com.realtek.dtv, com.realtek.tv.atv and com.android.tv (Live
+# Channels): keep them, plus the com.sony.dtv.* services (sonysystemservice, smartui = Input menu, ipcontrol,
+# remotecontrolsettings, timers) and all com.realtek.* overlays.
+#
+# Kept on purpose: Chromecast built-in (com.google.android.apps.mediashell). Measured on this set after a fresh
+# boot and 2 minutes idle: about 31 MB PSS (109 MB RSS, mostly shared pages), +16 MB used RAM, and
+# `am force-stop` leaves it stopped (no respawn after 65 s) until the next boot.
+#
+# Gotchas from the run:
+# - Wait at least 15 s after the last `pm` command, and run `adb shell sync`, before rebooting. Eight changes
+#   made right before a reboot were lost (package state is written lazily).
+# - Before disabling setupwraith check `dumpsys wifi | grep -o 'cname=[^ ]*'`. Here the saved networks belong
+#   to android.uid.system and com.google.uid.shared, so Wi-Fi and ADB stayed up.
+# - While setupwraith is enabled its .MainActivity answers HOME; it takes Home from a third-party launcher
+#   until it is disabled.
+# - Not tested: the remote's mic button after katniss goes (it also needs com.google.android.tv.remote.service,
+#   kept), and Google Home Mini voice control of the TV.
+
+# Sony demo and help
+com.sony.dtv.demo                        # retail demo mode
+com.sony.dtv.smarthelp                   # Sony help tile
+com.sony.dtv.helpguidecontents           # on-screen manual (IManual)
+
+# Google leftovers a TV never needs
+com.google.android.feedback              # Google feedback reporter
+com.google.android.partnersetup          # RLZ install-attribution provider
+com.google.android.onetimeinitializer    # runs once after first setup
+com.google.android.syncadapters.calendar # calendar sync
+com.android.providers.calendar           # calendar storage (calendar is one of the allowed providers)
+com.android.printspooler                 # printing
+com.android.camera2                      # the set has no camera
+com.android.gallery3d                    # legacy photo viewer
+com.android.htmlviewer                   # local HTML viewer
+com.android.wallpaper.livepicker         # live wallpaper picker
+
+# Off by choice (owner does not use them)
+com.google.android.videos                # Play Movies & TV
+com.google.android.tts                   # Google text-to-speech; ~227 MB RSS at baseline; the TalkBack screen reader has no voice without it
+com.google.android.backdrop              # Ambient screensaver, ~108 MB RSS at baseline
+com.google.android.katniss               # Assistant / voice search, ~110-125 MB RSS at baseline; the remote's mic stops
+
+# Launcher handover: install the replacement launcher first and confirm Home, then disable these
+com.google.android.tvrecommendations     # launcher recommendations rows; the SHIELD phone remote also stops without it
+com.google.android.tungsten.setupwraith  # setup wizard; its .MainActivity answers HOME (see the Wi-Fi owner check above); also costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+# com.google.android.tvlauncher          # stock launcher: untested as a disable here (removed with uninstall); do it last

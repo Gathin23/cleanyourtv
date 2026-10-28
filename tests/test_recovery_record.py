@@ -128,6 +128,8 @@ class RecoveryRecordTest(unittest.TestCase):
         self.state_path.write_text(json.dumps(state))
 
     def run_script(self, script, *args):
+        if os.name != "posix" or not shutil.which("bash"):
+            raise unittest.SkipTest(f"{script} is a POSIX script; it needs bash")
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
         return subprocess.run(
@@ -394,6 +396,90 @@ class RecoveryRecordTest(unittest.TestCase):
                     self.assertIn("not a usable recovery record", result.stderr)
                     self.assertEqual(self.sent(), [], "nothing reached the TV")
                     self.assertEqual(path.read_bytes(), before, "the file is left for inspection")
+
+    # ---- a list that cannot be read at all, rather than one with a bad line in it
+    #
+    # Every refusal read_list already made (a name that is not a package, a list with no names) is one
+    # line naming the list. A path that cannot be opened was not one of them: Path.read_text raised
+    # straight out of read_list, so the undo printed a 17-line traceback through pathlib instead of
+    # saying what was wrong - while tools/disable.sh, which checks the list itself before calling
+    # recovery.py, already answered the same typo with "cannot read the list: <path>".
+
+    def run_recovery(self, *args):
+        env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
+                   FAKE_TV_STATE=str(self.state_path))
+        return subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "recovery.py"), *args],
+            cwd=self.repo, env=env, capture_output=True, text=True, timeout=120,
+        )
+
+    def test_a_list_that_is_not_there_is_named_not_a_traceback(self):
+        self.tv()
+        missing = self.base / "no-such-list.txt"
+        result = self.run_script("restore.sh", str(missing))
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn(f"could not read {missing}", result.stderr)
+        self.assertIn("No such file or directory", result.stderr)
+        self.assertIn("examples/<your tv>/debloat.txt", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual(self.sent(), [], "a refused list sends nothing")
+
+    def test_a_list_that_is_a_folder_is_named_too(self):
+        self.tv()
+        folder = self.base / "debloat.txt.d"
+        folder.mkdir()
+        result = self.run_script("restore.sh", str(folder))
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn(f"could not read {folder}", result.stderr)
+        self.assertIn("Is a directory", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(self.sent(), [])
+        # A path that runs through a file is caught one step earlier by restore.sh's own cd, so the
+        # recovery.py message is what the other entry points have to answer; this pins it.
+        through_a_file = self.base / "debloat.txt" / "list.txt"
+        result = self.run_recovery("--commands", str(through_a_file))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn(f"could not read {through_a_file}", result.stderr)
+        self.assertIn("Not a directory", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_recovery_py_says_it_too_without_the_shell(self):
+        # restore.sh is the way in, but the guard belongs where the read is: both of recovery.py's
+        # entry points read a list, and neither may answer a typo with a traceback.
+        self.tv()
+        missing = self.base / "no-such-list.txt"
+        for args in (("--commands", str(missing)), ("--save", str(missing))):
+            with self.subTest(args=args[0]):
+                result = self.run_recovery(*args)
+                self.assertEqual(result.returncode, 1)
+                self.assertIn(f"could not read {missing}", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertEqual(result.stdout, "", "no part of a plan is printed")
+        self.assertIsNone(self.record(), "a list that could not be read records nothing")
+
+    def test_the_read_is_guarded_in_the_source(self):
+        # A refactor that drops the try/except leaves the shell path above green only by luck, so pin
+        # where the read happens: read_list is the one place a list is read.
+        source = (ROOT / "tools" / "recovery.py").read_text(encoding="utf-8")
+        self.assertIn("def read_list(", source)
+        body = source.split("def read_list(", 1)[1].split("\ndef ", 1)[0]
+        self.assertRegex(body, r"try:\s*\n\s*text = Path\(path\)\.read_text\([^)]*\)\s*\n\s*except OSError")
+
+    def test_a_list_with_bad_names_is_still_refused_by_read_list(self):
+        # The new except OSError must not be the answer to these two: they were one-liners already.
+        self.tv()
+        self.list_path.write_text("com.example.good\ncom.example.evil;pm uninstall com.example.good\n")
+        result = self.run_script("restore.sh", str(self.list_path))
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("not a package name", result.stderr)
+        self.assertNotIn("could not read", result.stderr)
+        empty = self.base / "empty.txt"
+        empty.write_text("# nothing here\n")
+        result = self.run_script("restore.sh", str(empty))
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("no package names in this list", result.stderr)
+        self.assertNotIn("could not read", result.stderr)
 
 
 if __name__ == "__main__":

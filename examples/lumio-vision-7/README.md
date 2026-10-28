@@ -23,9 +23,20 @@ whole package goes.
 
 setupwraith owned one saved Wi-Fi network here, but the **active** network was system-owned
 (`OwnerUid 1000`), so disabling setupwraith did **not** drop Wi-Fi or ADB. `tools/disable.sh`'s guard is
-deliberately conservative, so it needs `FORCE_SETUPWRAITH=1` (already in the Apply line). If your unit's
-active Wi-Fi is owned by setupwraith instead, forget and re-join the network in Settings first so it
-becomes system-owned.
+deliberately conservative: it skips setupwraith whenever setupwraith owns a saved network, used or not,
+so this unit needed `FORCE_SETUPWRAITH=1`. The Apply line leaves it out, so first check which network
+your unit is on and who owns it:
+
+```sh
+tools/tv.py "dumpsys wifi | grep -oE 'Currently Connected: [a-z]*|cname=[^ ]*'"
+```
+
+Each saved network prints its `Currently Connected:` flag and then its owner, and `dumpsys` lists them
+more than once. A plain `grep -o 'cname=[^ ]*'` prints only the owners, so it looks the same whichever
+network is in use. If the `cname=` after `Currently Connected: true` is
+`com.google.android.tungsten.setupwraith`, forget and re-join that network in Settings first so it
+becomes system-owned, then check again. Add `FORCE_SETUPWRAITH=1` only on Ethernet, or once the entry you
+are connected to is `android.uid.system`, as it was here.
 
 **Trade-off:** disabling setupwraith can break Chromecast (the Cast receiver `mediashell` reads device
 info from it). Re-enable setupwraith (`pm enable com.google.android.tungsten.setupwraith`) to get casting

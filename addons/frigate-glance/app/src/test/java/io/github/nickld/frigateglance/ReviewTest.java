@@ -16,10 +16,10 @@ public class ReviewTest {
         Review r = Review.parse(fixture("review_new.json"));
         assertEquals("new", r.type);
         assertEquals("1761100000.1-abc", r.id);
-        assertEquals("frontdoooor", r.camera);
+        assertEquals("porch", r.camera);
         assertEquals("alert", r.severity);
         assertEquals(List.of("person"), r.objects);
-        assertEquals(List.of("entire_front_yard"), r.zones);
+        assertEquals(List.of("front_yard"), r.zones);
         assertEquals(List.of("1761100000.0-ev1"), r.detectionIds);
     }
 
@@ -29,6 +29,14 @@ public class ReviewTest {
         assertEquals("update", r.type);
         assertEquals(List.of("person", "car"), r.objects);
         assertEquals(2, r.detectionIds.size());
+    }
+
+    @Test
+    public void verifiedObjectReadsAsItsLabelAndCarriesItsName() {
+        Review r = Review.parse("{\"type\":\"update\",\"after\":{\"id\":\"r1\",\"camera\":\"porch\",\"severity\":\"alert\","
+                + "\"data\":{\"objects\":[\"person-verified\",\"person\",\"car\"],\"sub_labels\":[\"Alex\"]}}}");
+        assertEquals(List.of("person", "car"), r.objects);
+        assertEquals(List.of("Alex"), r.subLabels);
     }
 
     @Test
@@ -62,7 +70,7 @@ public class ReviewTest {
 
     @Test
     public void subLabelArrayTakesFirstElement() {
-        assertEquals("Nick", Detection.parse(fixture("event_sublabel_array.json"), Map.of()).subLabel);
+        assertEquals("Alex", Detection.parse(fixture("event_sublabel_array.json"), Map.of()).subLabel);
     }
 
     @Test

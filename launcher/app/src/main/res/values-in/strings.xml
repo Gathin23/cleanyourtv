@@ -10,6 +10,7 @@
     <string name="not_connected">Tidak ada perangkat</string>
     <string name="live_tv">TV Langsung</string>
     <string name="no_inputs">Tidak ada input ditemukan</string>
+    <string name="more_inputs">Input lainnya</string>
     <string name="good_morning">Selamat Pagi</string>
     <string name="good_afternoon">Selamat Siang</string>
     <string name="good_evening">Selamat Sore</string>
@@ -27,6 +28,7 @@
     <string name="home_settings">Pilih Beranda utama</string>
     <string name="home_settings_help">Pilih beranda asli untuk berhenti menggunakan CleanYourTV sebagai Beranda, atau CleanYourTV untuk kembali. Antarmuka asli harus aktif dan TV Anda harus menyediakan pemilih beranda; gunakan skrip pemulihan terlebih dahulu jika sebelumnya dinonaktifkan.</string>
     <string name="launcher_settings">Setelan antarmuka</string>
+    <string name="native_settings">Setelan pabrikan</string>
     <string name="columns_label">App per baris</string>
     <string name="dock_opacity_label">Opasitas pita dock</string>
     <string name="rows_below_dock_label">Baris di bawah dock</string>
@@ -38,6 +40,8 @@
     <string name="animations_state">Animasi: %1$s</string>
     <string name="advanced_effects">Efek Lanjut</string>
     <string name="advanced_effects_state">Efek lanjut: %1$s</string>
+    <string name="open_on_start_label">Buka saat mulai</string>
+    <string name="open_on_start_state">Buka saat mulai: %1$s</string>
     <string name="advanced_effects_warning">Menambah tile terangkat, zoom ikon, dan transisi warna yang halus. Dapat menambah penggunaan memori; perbedaan aktual tergantung TV Anda.</string>
     <string name="follow_theme">Ikuti tema (atur ulang pilihan di TV)</string>
     <string name="follow_theme_hint">Menggunakan tema saat ini atau pengaturan tata letak dan gerakan bawaan. Memasang atau mengatur ulang tema juga menghapus pilihan di TV Anda.</string>
@@ -72,6 +76,7 @@
     <string name="card_state_new_key">Kunci baru</string>
     <string name="card_state_new_label">Nama baru</string>
     <string name="dock_edit">Setel Dock</string>
+    <string name="power_menu">Mulai ulang…</string>
     <string name="dock_edit_hint">Pilih posisi dock yang ingin diubah lalu tekan OK. Kembali untuk selesai.</string>
     <string name="dock_edit_pick_app">Sekarang pilih aplikasi untuk ditempatkan di sana lalu tekan OK. Kembali untuk memilih posisi lain.</string>
     <string name="tile_add_to_dock">Tambah ke dock</string>
@@ -104,4 +109,5 @@
     <string name="race_live">%1$s · langsung</string>
     <string name="race_finished">Bendera finis</string>
     <string name="last_opened">Terakhir dibuka %1$s</string>
+    <string name="game_live">Langsung sekarang</string>
 </resources>

@@ -1,0 +1,64 @@
+# Master-G MGA3200 (manufacturer SCBC, device R1, Realtek platform), Android TV 9 (API 28), 1.5 GB
+# RAM, 1280x720 output. Firmware PTT1.201001.001 build 259 (2020-12-23), security patch 2020-11-05.
+# The OS itself reports model/device strings "ATV R1"/"R1" on this TV — same hardware:
+# fingerprint MASTER-G/MASTER-G/R1:9/PTT1.201001.001/259:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/master-g-mga3200/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/master-g-mga3200/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same SCBC platform and Realtek board family as examples/thomson-t32rtl6000/ and examples/sanyo-atv-r2/
+# (SCBC, PTT1.x firmware branch).
+#
+# Stock launcher: com.google.android.tvlauncher (restore.sh / build-and-install.sh defaults work).
+# Live TV app: com.android.tv with the Realtek ISDB-T tuner stack (com.realtek.dtv, com.realtek.tv.isdb) —
+#   the tuner must stay enabled or digital broadcast channels disappear.
+# Kept on purpose: GMS / Play / WebView / keyboard, remote/Bluetooth (com.apps.smartkey,
+#   bluetoothremote, fivekey, virtualkey, autopair, com.realtek.keyinterceptserver),
+#   com.creative.fastscreen.tv (FastCast Miracast receiver — NOT ad bloat), and streaming apps left to taste.
+
+# --- Telemetry, analytics, recommendation rows ---
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.google.android.apps.nbu.smartconnect.tv
+# SCBC consent agent for data collection (confirmed on SANYO and Thomson ATV R1/R2)
+com.apps.function.gdpr
+com.realtek.leanbacklauncher.partnercustomizer
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# --- Content/promo rows and partner auto-installs ---
+com.apps.channels                          # the SCBC "S-Channels" content app
+android.autoinstalls.config.scbc.device    # partner auto-install config for SCBC devices
+com.android.printspooler
+
+# --- Google Assistant (the mic button on the remote goes dead, saves ~80 MB RAM) ---
+# com.google.android.katniss
+
+# --- Preinstalled service and stores ---
+com.vewd.core.service
+
+# --- Streaming apps off by choice (adjust to taste) ---
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom
+com.google.android.videos
+
+# --- Google add-ons ---
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+
+# --- OEM leftovers (factory/demo/test utilities, com.apps.*) ---
+com.apps.eshow                             # retail store demo mode
+com.apps.esticker                          # store promotional sticker overlay
+# Factory menus: leave alone, never open (as on sanyo-atv-r2)
+# com.apps.factory.ui
+# com.rtk.engmenu
+# com.realtek.factorytools
+com.apps.clear                             # background task killer
+com.apps.networkspeed
+com.apps.usbmediaplayer
+com.apps.wifihotspot
+
+# --- Firmware updates: kept (uncomment both to stop updates; they can reinstall disabled junk) ---
+# com.apps.ota
+# com.apps.authota

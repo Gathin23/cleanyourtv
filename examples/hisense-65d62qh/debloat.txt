@@ -44,7 +44,7 @@
 #
 # Apply:   tools\disable.ps1 -TvHost <tv ip> examples\hisense-65d62qh\debloat.txt
 # Undo:    tools\restore.ps1 -TvHost <tv ip> examples\hisense-65d62qh\debloat.txt
-# Reboot:  & tools\venv\Scripts\python.exe -I tools\tv.py 'reboot'
+# Reboot:  & tools\venv\Scripts\python.exe -I tools\tv.py --reboot   # returns once ADB accepts it; wait for the TV to come back
 # Compare: & tools\venv\Scripts\python.exe -I tools\tv.py 'pm list packages -d'
 # Comment out any line you want to keep.
 

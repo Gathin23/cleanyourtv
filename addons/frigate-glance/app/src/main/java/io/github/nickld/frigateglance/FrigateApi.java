@@ -30,7 +30,8 @@ import org.json.JSONObject;
 /**
  * Frigate's HTTP API, as Peek uses it: log in on the authenticated port (8971) for a frigate_token cookie,
  * read /api/config, fetch a camera's latest frame. Frigate's certificate is usually self-signed, so it is
- * trusted on first contact and pinned (SHA-256 of the leaf certificate) from then on.
+ * trusted on first contact and pinned (SHA-256 of the leaf certificate) from then on. Frigate makes itself a new
+ * one when its container is recreated; that one is refused until it is trusted from the settings screen.
  */
 public final class FrigateApi {
     public interface PinListener {
@@ -42,6 +43,8 @@ public final class FrigateApi {
     private final String baseUrl, user, password;
     private final PinListener pinListener;
     private volatile String pin;
+    /** A certificate seen in place of the pinned one, or "": what trustOffered() would pin. */
+    private volatile String offered = "";
     private volatile String token;
 
     public FrigateApi(String baseUrl, String user, String password, String pinnedSha256, PinListener onFirstPin) {
@@ -189,13 +192,7 @@ public final class FrigateApi {
             @Override
             public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                 if (chain == null || chain.length == 0) throw new CertificateException("no certificate");
-                String seen = sha256(chain[0].getEncoded());
-                if (pin.isEmpty()) {
-                    pin = seen;
-                    pinListener.onFirstPin(seen);
-                } else if (!pin.equals(seen)) {
-                    throw new CertificateException("Frigate's certificate changed (pinned " + pin.substring(0, 12) + ")");
-                }
+                checkLeaf(sha256(chain[0].getEncoded()));
             }
 
             @Override
@@ -210,6 +207,39 @@ public final class FrigateApi {
         } catch (java.security.GeneralSecurityException e) {
             throw new IOException(e);
         }
+    }
+
+    /** Trusts on first contact, then only the pinned certificate; a different one is kept as the offer. */
+    void checkLeaf(String seen) throws CertificateException {
+        if (pin.isEmpty()) {
+            pin = seen;
+            pinListener.onFirstPin(seen);
+        } else if (!pin.equals(seen)) {
+            offered = seen;
+            throw new CertificateException("New certificate");
+        } else {
+            offered = "";
+        }
+    }
+
+    /** The pinned certificate's SHA-256, or "" before first contact. */
+    public String pin() {
+        return pin;
+    }
+
+    /** The certificate Frigate presented in place of the pinned one, or "" when there is none. */
+    public String offeredPin() {
+        return offered;
+    }
+
+    /** Pins the certificate Frigate now presents; false when none was offered. */
+    public boolean trustOffered() {
+        String o = offered;
+        if (o.isEmpty()) return false;
+        pin = o;
+        offered = "";
+        pinListener.onFirstPin(o);
+        return true;
     }
 
     static String sha256(byte[] der) {

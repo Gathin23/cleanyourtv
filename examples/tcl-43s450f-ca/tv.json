@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 43S450F-CA (S4 Fire TV Edition, AFTDEC012E, ginza, MediaTek), Canada",
+  "os": "Fire OS 8.1.8.5 / Android 11",
+  "brand": "TCL",
+  "notes": "First TCL Fire TV Edition list, from the Stick 4K 2023 and Hisense Fire OS 8 lists: Amazon telemetry, ACR, ad bidding and sponsored rows, Fire TV Channels, Shopping, demo content, popups, Photos/Kids/miniTV/Silk, tutorials, other-device setup, Matter controller, screensaver; Crave, Paramount+, Max and Apple TV off by choice; seven protected packages noted; Alexa, Prime Video, Music, Luna, casting, OTA, Live TV and tuner kept; AdGuard Private DNS works; debloat only, stock launcher protected; reboot-checked; notes in README.md"
+}

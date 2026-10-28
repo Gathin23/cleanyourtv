@@ -1,12 +1,14 @@
 # Xiaomi Mi TV 4A (MiTV-MOOQ1, codename tarzan), Android TV 10, firmware QTG3.200305.006.2591
 # Also a good starting point for other Xiaomi/Redmi Android TVs with PatchWall.
+# Android TV 11 (firmware RTM4.220307.164.9021): not this whole list, see README.md in this folder.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Known quirk on this firmware: default_input_method points at com.baidu.input, which is not
-# installed, so no keyboard appears in search fields. Set Gboard as the IME (see README gotchas).
+# installed, so no keyboard appears in search fields. Set Gboard as the IME
+# (docs/TROUBLESHOOTING.md, "No on-screen keyboard").
 
 # Xiaomi telemetry
 com.miui.tv.analytics

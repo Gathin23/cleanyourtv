@@ -1,0 +1,37 @@
+# RCA Android TV, RC50A21S-4KSM (Toptech/Zeasn firmware, Realtek RTD2851P)
+# Android TV 9 (API 28), firmware RTK2851P eng.tianju.20210703.181325 (userdebug, release-keys)
+# ro.product.model=SmartTV  ro.product.device=SmartTV  ro.product.manufacturer=Q010
+# ro.board.platform=rtd285o  ro.product.board=mac6p  ~1.5 GB RAM, armeabi-v7a userspace
+# Fingerprint: Realtek/RealtekATV/RealtekATV:9/RTK2851P/tianjunyong07031813:userdebug/release-keys
+# The model properties are generic (SmartTV / SMARTPHONE): match on the build id and board, not the name.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/rca-rc50a21s-4ksm/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/rca-rc50a21s-4ksm/debloat.txt com.zeasn.rca.toptech
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.zeasn.rca.toptech (Zeasn). Android's FallbackHome is the only other HOME.
+# No Live TV app with a leanback entry point: tuner and inputs live in com.toptech.tvmenu (keep it).
+# The saved Wi-Fi network belongs to android.uid.system; no setupwraith on this build.
+#
+# Leave alone: com.toptech.* (tvmenu = input panel and TV player, tv.service, keyboard_seven,
+# setupwizard, systemupdate, tvfactory, factorytools), com.realtek.* (dtv, tv.atv, tv.passthrough = HDMI/AV/
+# VGA/YPbPr inputs, providers.tv), com.hikeen.actiontest. Do not launch the factory packages.
+# Kept by choice on the test set: Google Assistant (katniss), firmware updates (com.toptech.systemupdate),
+# AirPlay/EShare/DLNA (com.ecloud.*), Miracast (com.rtk.android.miracast), USB media player, photo screensaver.
+#
+# Applied 2026-10-21 on one set and used for two days, through several reboots and power off/on: nothing came
+# back enabled, Home stayed on the reference launcher, Wi-Fi and Ethernet reconnect. Not a longer soak yet.
+# See README.md in this folder for the Inputs panel, the Input key and the ADB notes.
+
+# Zeasn ad portal, store and background services
+com.zeasn.deviceportal.asdprovider.toptech   # ad/portal service; starts at boot, can install packages (~69 MB)
+com.zeasn.services.general                   # Zeasn "weather" service; starts at boot, reads logs (~69 MB)
+cn.zeasn.toptech2851.rca.vstoresubclient     # Zeasn app store; Google Play stays
+
+# Partner auto-installs and unused services
+android.autoinstalls.config.realtek.device   # Play auto-installs of partner apps
+com.android.printspooler                     # printing
+
+# Stock launcher: disable only once the reference launcher owns Home (build-and-install.sh with
+# STOCK_LAUNCHER=com.zeasn.rca.toptech does it in the right order)
+com.zeasn.rca.toptech                        # Zeasn launcher with promo rows

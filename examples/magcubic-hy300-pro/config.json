@@ -1,0 +1,11 @@
+{
+  "dock_apps": [
+    "org.smarttube.beta",
+    "com.google.android.youtube.tv",
+    "com.nuvio.app",
+    "org.videolan.vlc"
+  ],
+  "hidden_apps": [],
+  "columns": 4,
+  "wallpaper": false
+}

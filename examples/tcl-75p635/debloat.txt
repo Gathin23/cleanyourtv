@@ -1,0 +1,72 @@
+# TCL 75P635 (reports "Smart TV", device G07, product G07_4K_GB_NF, client TCL-EU-RTD51A-S1), BeyondTV4 firmware.
+# Android TV 11 (SDK 30), build RP1A.200622.001, incremental AR07 (software V8-R51AT01-LF1V138,
+# built 2026-03-12, security patch 2025-12-05). The fingerprint still says
+# TCL/G07_4K_GB_NF/G07:11/RP1A.200622.001/AR20:user/release-keys; ro.build.version.incremental says AR07.
+# Tested on 2026-10-25. Launcher replacement (CleanYourTV Home) and package
+# persistence verified after reboot.
+#
+# Note: com.tcl.notereminder resets to enabled after reboot on this firmware
+# (com.tcl.usercenter stays disabled). Re-disable it after each reboot:
+#   TV_HOST=<tv ip> tools/tv.py "pm disable-user --user 0 com.tcl.notereminder"
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-75p635/debloat.txt
+# Restore: TV_HOST=<tv ip> tools/restore.sh examples/tcl-75p635/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+# Disable setupwraith before launcherx (order matters on this TV). Disabling setupwraith gives Home
+# back but can break casting (Chromecast built-in) after a reboot; comment out its line if you cast.
+# Run set-home-activity while the new launcher is in the foreground, then
+# immediately disable setupwraith; the system /product version respawns
+# on HOME keyevents if set-home-activity is not set first.
+#
+# Live TV: com.tcl.tv — set via config.json in this folder.
+# com.tcl.overseasappshow was not installed on this unit (skipped).
+# Packages already disabled before our changes: au.com.stan.and, tv.wuaki.apptv,
+# com.tcl.micmanager, com.google.android.apps.tv.dreamx, com.tcl.smartalexa.
+
+# Google TV home and setup
+com.google.android.tungsten.setupwraith
+# com.google.android.apps.tv.launcherx  # launcher/build-and-install.sh disables it after the new launcher starts
+
+# TCL telemetry and crash reporting
+com.tcl.guard
+
+# TCL ads, content feeds and promos
+com.tcl.waterfall.overseas
+com.tcl.partnercustomizer
+com.tcl.esticker
+com.tcl.channelplus
+com.tcl.messagebox
+com.tcl.notereminder                 # resets after reboot on this firmware; re-disable manually
+com.tcl.dashboard
+com.tcl.usercenter
+com.tcl.tv.tclhome_passive
+com.tcl.gallery
+
+# TCL background services
+com.tcl.suspension                   # private-listening feature; not used
+com.tcl.t_solo                       # private-listening companion
+com.tcl.keyhelp
+com.tcl.ui_mediaCenter
+com.tcl.android.webview              # TCL WebView wrapper; not the system WebView provider
+com.tcl.useragreement
+com.tcl.MultiScreenInteraction_TV    # screen mirroring via TCL app (phone casting via Miracast kept)
+
+# Voice assistant — off by choice
+com.tcl.assistant
+
+# Google extras / preload configuration
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.videos
+com.google.android.syncadapters.calendar
+com.google.android.marvin.talkback   # screen reader; no accessibility service was active
+
+# Unused streaming apps — off by choice
+de.sky.online
+com.google.android.play.games
+
+# Kept: Chromecast, Miracast (phone screen sharing), USB MediaPlayer, ambient
+# screensaver, firmware updater, Google Play Services and the Play Store.
+# Keep com.tcl.tv, com.tcl.tvinput, com.tcl.settings, com.tcl.system.server,
+# com.tcl.providers.config, com.tcl.initsetup, com.tcl.autopair,
+# com.tcl.tcl_bt_rcu_service, com.tvos and all Android/Google system components.

@@ -1,5 +1,18 @@
 # Sony BRAVIA 4K GB (EU: device BRAVIA_ATV2_EU, product BRAVIA_ATV2). Android TV 9 (API 28).
+# Retail model reported on the same platform and firmware: KD-75XE8596.
 # Firmware BRAVIA_ATV2_EU-user 9 PTT1.190515.001.S54 672201 release-keys
+#
+# Also confirmed 2026-10-27 on a Sony XBR-49X705D, Latin America variant (product BRAVIA_ATV2_BR, model
+# BRAVIA 4K GB), same build: BRAVIA_ATV2_BR-user 9 PTT1.190515.001.S54 672201 release-keys. Wi-Fi.
+# Applied in four batches with screenshots between them; com.sony.dtv.promos is not installed there.
+# tools/disable.sh's TVINPUT_ALLOW check skipped android.autoinstalls.config.sony.bravia and
+# com.qterics.da.product (dumpsys shows no permission block for either), so both stayed enabled (#321).
+# All other entries stayed disabled across a reboot. launcher/ installed (live_tv_package
+# com.sony.dtv.tvx), Home confirmed with mResumedActivity; Home, Input, Settings and the remote's app
+# buttons work. power_on_home with HOME_KEY_SERVICE=1 brought Home up at power-on, but with
+# HomeKeyService bound holding Volume Up moved one step per press instead of ramping (the key-repeat
+# loss in docs/devices/tcl-55p71b-g09-key-repeat.md, seen on this Sony too), so the helper was
+# removed again. Tested one day.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-gb/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-gb/debloat.txt

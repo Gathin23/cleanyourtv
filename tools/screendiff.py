@@ -13,6 +13,7 @@ Boxes are x0,y0,x1,y1 in the screenshots' pixels. Exit status: 0 identical, 1 di
 Needs Pillow (tools/requirements-perf.txt). Read tools/screendiff.md first.
 """
 import argparse
+from pathlib import Path
 import re
 import sys
 
@@ -27,6 +28,64 @@ def box(text):
     if x0 >= x1 or y0 >= y1:
         raise argparse.ArgumentTypeError(f"a box needs x0 < x1 and y0 < y1: {text!r}")
     return x0, y0, x1, y1
+
+
+def output_path(option, path):
+    """The file a picture will be written to, checked before the screenshots are read.
+
+    Exit status 1 is 'the two screenshots differ', a finding the reader acts on, so a folder typed wrong
+    must not come back as one: --out and --diff are judged here, before the images are opened and before
+    Pillow is imported, and a path that cannot be written is named rather than attempted.
+    """
+    if not path:
+        return None
+    target = Path(path)
+    if target.is_dir():
+        raise ValueError(f"{option} {path} is a folder, so nothing could be written there: "
+                         f"name the file, e.g. --out shots/before-after.png")
+    if not target.parent.is_dir():
+        if target.parent.is_file():
+            raise ValueError(f"{option} {path}: {target.parent} is a file, not a folder")
+        raise ValueError(f"{option} {path}: there is no folder {target.parent} - create it first")
+    if not target.suffix:
+        raise ValueError(f"{option} {path} has no extension, so its format is unknown: name it {path}.png")
+    return target
+
+
+def write(image, path):
+    """Save one picture, naming the path and the reason if it cannot be written.
+
+    Pillow answers an unwritable destination with OSError and an extension it does not know with
+    ValueError; either left alone ends the run in a traceback with exit 1, the status the page reads as
+    'the screenshots differ'.
+    """
+    try:
+        image.save(path)
+    except (OSError, ValueError) as e:
+        raise ValueError(f"cannot write {path}: {getattr(e, 'strerror', None) or e}") from e
+
+
+def screenshot(which, path):
+    """The picture at `path`, decoded now, named as the argument it was given as.
+
+    Image.open() reads only the header, so a screenshot whose copy was cut short - an interrupted
+    `tools/tv.py --screenshot`, a file pulled off the TV before the write finished, a download that
+    stopped early - opens here without complaint and fails on the first pixel read, inside the
+    comparison. Left alone that is an OSError traceback with exit 1, the status the page reads as
+    "different: N pixels differ ... find out why before posting": a finding about the launcher from a
+    file nothing could be read out of. Decoding it here answers it as the unreadable file it is, with
+    the before or after argument named.
+    """
+    from PIL import Image
+    image = None
+    try:
+        image = Image.open(path)
+        image.load()
+    except OSError as e:
+        if image is not None:
+            image.close()   # the file is open; a refusal should not leave the handle for the GC
+        raise ValueError(f"cannot read the {which} screenshot {path}: {e}. Nothing was compared.")
+    return image
 
 
 def compare(a, b, masks, threshold):
@@ -106,15 +165,21 @@ def parse(argv):
 
 def main(argv=None):
     args = parse(sys.argv[1:] if argv is None else argv)
+    for option, path in (("--out", args.out), ("--diff", args.diff)):
+        try:
+            output_path(option, path)
+        except ValueError as e:
+            print(f"{e}. Nothing was read or written.", file=sys.stderr)
+            return 2
     try:
-        from PIL import Image
+        import PIL  # noqa: F401 - the check; screenshot() reads Image when it is about to decode
     except ImportError:
         print("screendiff.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt", file=sys.stderr)
         return 2
     try:
-        a, b = Image.open(args.before), Image.open(args.after)
-    except OSError as e:
-        print(f"cannot read a screenshot: {e}", file=sys.stderr)
+        a, b = screenshot("before", args.before), screenshot("after", args.after)
+    except ValueError as e:
+        print(e, file=sys.stderr)
         return 2
     if a.size != b.size:
         print(f"the screenshots differ in size: {a.size[0]}x{a.size[1]} and {b.size[0]}x{b.size[1]}", file=sys.stderr)
@@ -125,10 +190,18 @@ def main(argv=None):
         return 2
     count, bbox, worst, diff = _compare(a, b, args.mask, args.threshold)
     if args.out:
-        pair(a, b, args.blur, args.label_pair, args.scale).save(args.out)
+        try:
+            write(pair(a, b, args.blur, args.label_pair, args.scale), args.out)
+        except ValueError as e:
+            print(f"{e}. The comparison was not reported.", file=sys.stderr)
+            return 2
         print(f"{args.out}: written")
     if args.diff:
-        diff.save(args.diff)
+        try:
+            write(diff, args.diff)
+        except ValueError as e:
+            print(f"{e}. The comparison was not reported.", file=sys.stderr)
+            return 2
     masked = f" ({len(args.mask)} region{'s' if len(args.mask) != 1 else ''} masked)" if args.mask else ""
     if count == 0:
         print(f"identical{masked}: no pixel differs by more than {args.threshold}")

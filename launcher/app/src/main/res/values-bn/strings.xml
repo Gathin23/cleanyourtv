@@ -10,6 +10,7 @@
     <string name="not_connected">কোনো ডিভাইস নেই</string>
     <string name="live_tv">লাইভ টিভি</string>
     <string name="no_inputs">কোনো ইনপুট পাওয়া যায়নি</string>
+    <string name="more_inputs">আরও ইনপুট</string>
     <string name="good_morning">সুপ্রভাত</string>
     <string name="good_afternoon">শুভ অপরাহ্ন</string>
     <string name="good_evening">শুভ সন্ধ্যা</string>
@@ -29,11 +30,14 @@
     <string name="home_settings">ডিফল্ট হোম বেছে নিন</string>
     <string name="home_settings_help">CleanYourTV-কে আর হোম হিসেবে ব্যবহার না করতে আপনার আগের হোম বেছে নিন, আবার ফিরতে CleanYourTV বেছে নিন। আগের লঞ্চারটি চালু থাকতে হবে এবং আপনার টিভিতে হোম বেছে নেওয়ার ব্যবস্থা থাকতে হবে; সেটি বন্ধ করা থাকলে আগে রিস্টোর স্ক্রিপ্ট চালান।</string>
     <string name="launcher_settings">লঞ্চার সেটিংস</string>
+    <string name="native_settings">নেটিভ সেটিংস</string>
     <string name="columns_label">প্রতি সারিতে অ্যাপ</string>
     <string name="dock_opacity_label">ডক বারের অস্বচ্ছতা</string>
     <string name="animations_state">অ্যানিমেশন: %1$s</string>
     <string name="advanced_effects">এডভান্স ইফেক্টস</string>
     <string name="advanced_effects_state">এডভান্স ইফেক্টস: %1$s</string>
+    <string name="open_on_start_label">চালু হলে খুলুন</string>
+    <string name="open_on_start_state">চালু হলে খুলুন: %1$s</string>
     <string name="advanced_effects_warning">এতে টাইল একটু উপরে উঠে আসে, আইকন জুম হয় এবং কালার স্মুথভাবে বদলায়। মেমরি বেশি লাগতে পারে; কতটা পার্থক্য হবে তা আপনার টিভির উপর নির্ভর করে।</string>
     <string name="follow_theme">থিম অনুসরণ করুন (টিভিতে করা পছন্দ মুছে দিন)</string>
     <string name="follow_theme_hint">বর্তমান থিম বা বিল্ট-ইন লেআউট ও মোশন সেটিংস ব্যবহার করে। থিম পাঠালে বা রিসেট করলেও টিভিতে করা আপনার পছন্দ মুছে যায়।</string>
@@ -70,6 +74,7 @@
     <string name="reorder">অ্যাপ সাজান</string>
     <string name="tile_move">সরান</string>
     <string name="dock_edit">এডিট ডক</string>
+    <string name="power_menu">রিস্টার্ট করুন…</string>
     <string name="dock_edit_hint">ডকের যে জায়গাটি বদলাতে চান সেটি বেছে OK চাপুন। শেষ হলে Back চাপুন।</string>
     <string name="dock_edit_pick_app">ওই জায়গায় যে অ্যাপ রাখতে চান সেটি বেছে OK চাপুন। অন্য জায়গা বাছতে Back চাপুন।</string>
     <string name="tile_add_to_dock">ডকে যোগ করুন</string>
@@ -93,4 +98,5 @@
         <item quantity="other">%1$dটি অ্যাপ</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="game_live">এখন সরাসরি</string>
 </resources>

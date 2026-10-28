@@ -73,6 +73,12 @@ and the new launcher cannot take over the Home button on this box yet. `theme/co
 box's dock, hidden apps and the hidden Wi-Fi pill for when it can (push it with
 `tools/theme.sh examples/nokia-streaming-box-8000/theme`).
 
+Not yet tested on this box: on the TiVo Stream 4K, which runs the same NES middleware,
+`com.nes.coreservice` (kept on in this list) uninstalls at every boot every non-system app that declares HOME,
+and suspending or force-stopping it does not stop that (#1062). Expect the same here, so before installing
+the launcher read [the TiVo notes](../tivo-stream-4k/README.md#the-launcher) for what worked there: a
+launcher without the HOME category, opened from the Home key by an accessibility service.
+
 ## Before you start again
 
 ADB over the network was switched off at the end of the first run. To work on the box again: TV

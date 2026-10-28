@@ -44,7 +44,7 @@ class LogTV:
                 raise AssertionError(f"unexpected grep arguments: {grep}")
             return "\n".join(line for line in next(self.logs)
                              if any(re.search(pattern, line) for pattern in args[1::2]))
-        if command in (f"am start -W -n {OTHER}", "logcat -c -b main", "input keyevent 3"):
+        if command in (f"am start -W --activity-reorder-to-front -n {OTHER}", "logcat -c -b main", "input keyevent 3"):
             return ""
         raise AssertionError(f"unexpected shell command: {command}")
 
@@ -68,7 +68,7 @@ class ReturnToHomeTest(unittest.TestCase):
                     values, commands = self.measure([home(), resume(tag=tag, extra=extra)],
                                                     component=component)
                     self.assertEqual(values, [125])
-                    self.assertEqual(commands[:3], [f"am start -W -n {OTHER}",
+                    self.assertEqual(commands[:3], [f"am start -W --activity-reorder-to-front -n {OTHER}",
                                                    "logcat -c -b main", "input keyevent 3"])
 
     def test_an_old_resume_without_a_current_resume_is_not_a_sample(self):
@@ -123,6 +123,30 @@ class ReturnToHomeTest(unittest.TestCase):
     def test_a_resume_at_the_key_timestamp_is_valid(self):
         values, _ = self.measure([home(), resume("1000.000")])
         self.assertEqual(values, [0])
+
+
+class ColdStartHomeTest(unittest.TestCase):
+    def test_each_cold_start_targets_the_home_task_and_keeps_wait_time(self):
+        for component in (COMPONENT, "com.example.home/.Launcher"):
+            with self.subTest(component=component):
+                tv = mock.Mock()
+                tv.package_of.return_value = component.split("/")[0]
+                launch = ("am start -W -a android.intent.action.MAIN "
+                          f"-c android.intent.category.HOME -n {component}")
+                waits = iter(("WaitTime: 410", "WaitTime: 430"))
+                tv.shell.side_effect = lambda command: next(waits) if command == launch else ""
+                with mock.patch.object(bench, "other_app", return_value=OTHER), \
+                        mock.patch.object(bench, "accessibility_services", return_value=[]), \
+                        mock.patch.object(bench, "restore_accessibility") as restore, \
+                        mock.patch.object(bench.time, "sleep"):
+                    values = bench.cold_start(tv, component, 2)
+                self.assertEqual(values, [410, 430])
+                self.assertEqual(tv.shell.call_args_list, [
+                    mock.call(f"am start -W --activity-reorder-to-front -n {OTHER}"),
+                    mock.call(f"am force-stop {component.split('/')[0]}"),
+                    mock.call(launch),
+                ] * 2)
+                restore.assert_called_once_with(tv, component.split("/")[0], [])
 
 
 if __name__ == "__main__":

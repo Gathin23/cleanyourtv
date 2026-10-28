@@ -20,6 +20,15 @@ final class Dimming {
 
     enum Night { OFF, ON, SCHEDULED }
 
+    /**
+     * Night mode after the one-press toggle (NightToggleActivity): On when it turns night on; when it turns night
+     * off, the mode that toggle replaced if it was the schedule, so a scheduled night is not lost, otherwise Off.
+     */
+    static Night nightAfterToggle(boolean turnOn, Night replaced) {
+        if (turnOn) return Night.ON;
+        return replaced == Night.SCHEDULED ? Night.SCHEDULED : Night.OFF;
+    }
+
     static final class Settings {
         /** The master switch. Off draws nothing, whatever the rest says. */
         boolean on;
@@ -174,6 +183,14 @@ final class Dimming {
         int b = (int) Math.round((WARM_RGB & 0xFF) * k);
         int a = (int) Math.round(alpha * 255);
         return a << 24 | r << 16 | g << 8 | b;
+    }
+
+    /** Android draws a window that lets touches through at most this opaque (InputManager's default). */
+    static final int MAX_PASS_THROUGH_ALPHA = Math.round(0.8f * 255);
+
+    /** True when the layer must keep touches to be drawn as dark as its colour says. */
+    static boolean keepsTouches(int color) {
+        return (color >>> 24) > MAX_PASS_THROUGH_ALPHA;
     }
 
     /**

@@ -1,6 +1,8 @@
 # Amazon Fire TV 50" 4K smart TV (AFTTIFF43, codename brandenburg; panel AMZ_K24NE5_4K50M600A),
 # Fire OS 7.7.1.7 / Android 9 (SDK 28), build PS7717.5741N, MediaTek, armeabi-v7a. US.
 # Done remotely over Tailscale through a Synology NAS as subnet router (docs/REMOTE.md, option B).
+# Second unit: 75" Fire TV Omni Series (same AFTTIFF43 / brandenburg, panel AMZ_K24NE5_4K75M600A,
+# board m7632), Fire OS 7.7.1.4, build PS7714.5507N, US, on Wi-Fi. AFTTIFF43 covers several panel sizes.
 #
 # FIRE OS: DEBLOAT ONLY. Home stays com.amazon.tv.launcher/.ui.HomeActivity_vNext (priority 950);
 # the shared launcher does not apply. Same build line as toshiba-fire-tv-aftha004, and the list
@@ -28,6 +30,20 @@
 #
 # adb exec-out screencap -p prints "Init wrapper sys mutex successful" before the PNG data on this
 # set (docs/TROUBLESHOOTING.md).
+#
+# 75" Omni unit, 2026-10-24: the whole list plus the "Added from the 75\" Omni" group below, in four
+# batches with a Home screenshot after each, then rebooted: Home, Settings, HDMI input switching and
+# Netflix work, and every entry stayed disabled except com.amazon.vizzini. Notes from that unit:
+# - com.amazon.neo.minerva and com.amazon.neo.minerva.logcat are not installed on PS7714 ("Unknown
+#   package"); the rest of the list applies as is.
+# - The Omni has far-field mics for hands-free Alexa, so "only listens while the mic button is held"
+#   does not hold there. com.amazon.vizzini comes back enabled on its own within minutes, even without a
+#   reboot, so it cannot be kept off; the TV's physical mic switch is the way to silence the mics.
+# - Tubi (com.tubitv.ott), Fire TV Channels (com.amazon.hedwig) and the sponsored rows are preinstalled.
+# - Private DNS (dns.adguard-dns.com) confirmed again: ad domains resolve to 127.0.0.1, the network stays
+#   VALIDATED. The Pluto TV hero slides and the "Stream Free" row stay: they come from the launcher feed.
+# - The first tools/tv.py --reboot ended in a TimeoutError and the set did not restart (uptime unchanged);
+#   the second was accepted. Read /proc/uptime after a reboot before trusting a check.
 
 # Content recognition, telemetry and metrics
 com.amazon.tv.acr
@@ -65,3 +81,28 @@ com.amazon.audiohome                      # Alexa Home Theater
 # Screensaver (screensaver_enabled was already 0; idle screen comes from these)
 com.amazon.tv.ftvambient                  # Ambient Experience
 com.amazon.ftv.screensaver
+
+# Added from the 75" Omni unit (ads, telemetry, notices; tested there, see the header)
+com.amazon.kso.blackbird                  # launcher ad sync / bidding (sponsored banner and rows)
+com.amazon.media.recommendations          # sponsored and recommendation rows
+com.amazon.tv.easyupgrade                 # "upgrade your Fire TV" promos
+com.amazon.hedwig                         # Fire TV Channels (free ad-supported channels row)
+com.amazon.client.metrics.api             # metrics client API
+com.amazon.ceviche                        # data collection pipelines
+com.amazon.tv.developer.dataservice       # personalization data for third-party apps
+com.amazon.wifilocker                     # syncs saved Wi-Fi passwords to Amazon
+com.amazon.systemnotices
+com.amazon.tv.releasenotes                # "what's new" notes
+com.amazon.uxnotification                 # UX notification popups
+com.android.printspooler                  # printing: nothing to print from on a TV
+com.android.bips
+
+# Disabled on the 75" Omni unit by that owner's choice, kept by the first owner. Uncomment to disable.
+# com.tubitv.ott                          # Tubi
+# com.amazon.vizzini                      # Alexa voice: re-enables itself, see the header
+# com.amazon.alexamediaplayer.runtime.ftv
+# com.amazon.alexa.externalmediaplayer.fireos
+# com.apple.airplay.amazon.airplay        # AirPlay receiver
+# com.amazon.cast.sink                    # Miracast receiver
+# com.amazon.cloud9                       # Silk
+# com.amazon.tv.website_launcher

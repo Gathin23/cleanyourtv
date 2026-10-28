@@ -3,6 +3,11 @@
 # Same G08 board as examples/tcl-c755-google-tv, tcl-qm6k-google-tv and tcl-85rm7l-google-tv, on the US
 # firmware build. Those lists were the starting point; this one adds what the US set ships on top (streaming
 # preloads and a few TCL extras) and the Android 14 ad and privacy services.
+# Second unit: TCL 55Q77K (55", model "Smart TV Pro", G08_4K_US, client type TCL-NA-MT9653-S1, MediaTek MT9653),
+# same firmware UTT2.250416.001 AU16, on Ethernet. That owner applied this list on 23 October 2026 except AirPlay,
+# the TCL browser and the streaming apps, kept by choice, and the set came through a reboot the same day.
+# README.md has that unit's remote button codes and notes. No package changes from it: a few more it disabled
+# have one day of use, not a few.
 #
 # Tested 20-21 October 2026 on one set, 37 packages in all. The first 35 were disabled, the TV was rebooted and
 # all 35 were still disabled afterwards. The last two (launcherx and setupwraith) were added later for a custom

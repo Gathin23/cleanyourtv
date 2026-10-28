@@ -22,6 +22,16 @@
 # (Home, Input, Settings, app buttons, Back) worked. The set powers on to the last source, so after a
 # reboot from Live TV it shows Live TV, not Home. Not yet lived with for days.
 #
+# Second unit, Türkiye (model code F8), same AR05 fingerprint, tested 2026-10-24: this list (minus the group 4
+# apps it did not have) plus the stock launcher, rebooted twice, and nothing came back at boot. But the kept
+# com.tcl.versionUpdateApp is also TCL's silent app store: 15 s after the launcher's `pm install` it installed
+# an update of com.tcl.waterfall.overseas, and the update left that package enabled again (`dumpsys package`
+# shows enabled=0 with lastDisabledCaller: com.tcl.versionUpdateApp). Check `pm list packages -d` after any
+# install, or hide the TCL Channel tile with the launcher's hidden_apps, or disable the updater as well, as
+# that owner chose to, which also stops firmware updates.
+# com.tcl.guard is a PERSISTENT system-uid app: after `pm disable-user` its tile goes, but its process still
+# starts at every boot, as does the factory-disabled com.tcl.smartalexa.
+#
 # AirPlay from an iPhone: Android TV has no built-in receiver; AirScreen (com.ionitech.airscreen) does it
 # with nothing installed on the phone. Kept.
 #
@@ -36,7 +46,8 @@
 # com.tvos                                            # tvos framework resources
 # com.google.android.apps.mediashell                  # Chromecast (kept by choice)
 # com.tcl.miracast com.tcl.MultiScreenInteraction_TV  # Miracast / MagiConnect (kept by choice)
-# com.tcl.versionUpdateApp                            # TCL OTA updater (kept by choice)
+# com.tcl.versionUpdateApp                            # TCL OTA updater (kept by choice; can re-enable
+#                                                     # TCL Channel by updating it, see above)
 # com.google.android.tv.remote.service                # Google TV phone-app remote (kept by choice;
 #                                                     # disabled at first, re-enabled later)
 

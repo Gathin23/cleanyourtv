@@ -26,6 +26,9 @@ public class GlassView extends View {
     private int glowRgb = 0xFFFFFF;
     /** Glow strength: the white glow stays faint, a coloured one needs more alpha to read as warm light. */
     private int glowAlpha = 0x30;
+    /** glass_style rim or halo: no sheen and no fill, only the crisp rim (and, for halo, a lighter outer glow). */
+    private boolean flat;
+    private boolean halo;
 
     public GlassView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -58,6 +61,14 @@ public class GlassView extends View {
         invalidate();
     }
 
+    /** One of Config's GLASS_* styles. */
+    void setStyle(String style) {
+        flat = Config.GLASS_RIM.equals(style) || Config.GLASS_HALO.equals(style);
+        halo = Config.GLASS_HALO.equals(style);
+        rim.setStrokeWidth((flat ? 2f : 1.5f) * density);
+        invalidate();
+    }
+
     void setRadius(float px) {
         radius = px;
         invalidate();
@@ -78,14 +89,21 @@ public class GlassView extends View {
         // Outer glow: thin rings across the inset, each a little fainter, so it fades out smoothly. Three wide
         // strokes left visible bands once the glow took an app's colour at a stronger alpha. The hardware layer
         // caches the result, so the rings cost one draw, not one per frame of the spring.
-        int rings = 12;
-        float step = inset / rings;
-        glow.setStrokeWidth(step + 0.5f);
-        for (int i = 0; i < rings; i++) {
-            float o = step * (i + 0.5f);
-            float t = 1f - (float) i / rings;
-            glow.setColor(Math.round(glowAlpha * t) << 24 | glowRgb);
-            canvas.drawRoundRect(rect.left - o, rect.top - o, rect.right + o, rect.bottom + o, radius + o, radius + o, glow);
+        if (!flat || halo) {
+            int rings = 12;
+            float step = inset / rings;
+            int alpha = flat ? glowAlpha / 2 : glowAlpha;
+            glow.setStrokeWidth(step + 0.5f);
+            for (int i = 0; i < rings; i++) {
+                float o = step * (i + 0.5f);
+                float t = 1f - (float) i / rings;
+                glow.setColor(Math.round(alpha * t) << 24 | glowRgb);
+                canvas.drawRoundRect(rect.left - o, rect.top - o, rect.right + o, rect.bottom + o, radius + o, radius + o, glow);
+            }
+        }
+        if (flat) {
+            canvas.drawRoundRect(rect, radius, radius, rim);
+            return;
         }
 
         canvas.drawRoundRect(rect, radius, radius, fill);

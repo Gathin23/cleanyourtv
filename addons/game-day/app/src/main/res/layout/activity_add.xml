@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adding a calendar with the remote, in four steps; also opened at one step to change a calendar. -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingStart="48dp" android:paddingEnd="48dp" android:paddingTop="28dp" android:paddingBottom="20dp">
+
+    <TextView android:id="@+id/title" style="@style/Title" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="@string/add" />
+
+    <LinearLayout android:id="@+id/steps" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_below="@id/title" android:layout_marginTop="6dp" android:orientation="horizontal">
+        <TextView android:id="@+id/step1" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginEnd="18dp" android:textSize="13sp" android:text="@string/step_link" />
+        <TextView android:id="@+id/step2" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginEnd="18dp" android:textSize="13sp" android:text="@string/step_name" />
+        <TextView android:id="@+id/step3" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginEnd="18dp" android:textSize="13sp" android:text="@string/step_sport" />
+        <TextView android:id="@+id/step4" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="13sp" android:text="@string/step_colour" />
+    </LinearLayout>
+
+    <!-- How the turn will look on Home: shown for the sport and colour steps. -->
+    <LinearLayout android:id="@+id/preview" android:layout_width="300dp" android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true" android:layout_below="@id/steps" android:layout_marginTop="28dp"
+        android:background="@drawable/panel" android:orientation="vertical" android:padding="18dp" android:visibility="gone">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/on_home"
+            android:textSize="11sp" android:letterSpacing="0.2" android:textAllCaps="true" android:textColor="#73FFFFFF" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp"
+            android:orientation="horizontal" android:gravity="center_vertical">
+            <View android:id="@+id/previewBar" android:layout_width="4dp" android:layout_height="14dp" android:layout_marginEnd="9dp" />
+            <TextView android:id="@+id/previewTop" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="11sp" android:letterSpacing="0.18" android:textAllCaps="true" android:textColor="#B3FFFFFF"
+                android:singleLine="true" android:ellipsize="end" />
+        </LinearLayout>
+        <TextView android:id="@+id/previewWord" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" android:textSize="22sp" android:fontFamily="sans-serif-light" android:textColor="#FFFFFFFF"
+            android:singleLine="true" android:ellipsize="end" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/body" android:layout_width="match_parent" android:layout_height="match_parent"
+        android:layout_below="@id/steps" android:layout_toStartOf="@id/preview" android:layout_marginTop="24dp"
+        android:layout_marginEnd="28dp" android:orientation="vertical">
+
+        <TextView android:id="@+id/note" style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <EditText android:id="@+id/field" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@drawable/field" android:padding="12dp" android:textSize="16sp" android:textColor="#FFFFFFFF"
+            android:textColorHint="#59FFFFFF" android:singleLine="true" android:importantForAutofill="no"
+            android:inputType="textUri" android:imeOptions="actionNext|flagNoExtractUi" android:hint="@string/link_hint" />
+
+        <TextView android:id="@+id/next" style="@style/Button" android:layout_width="160dp" android:layout_height="wrap_content"
+            android:layout_marginTop="14dp" android:gravity="center" android:text="@string/next" />
+
+        <ScrollView android:id="@+id/sportScroll" android:layout_width="match_parent" android:layout_height="match_parent"
+            android:padding="4dp" android:clipToPadding="false" android:scrollbars="none" android:visibility="gone">
+            <LinearLayout android:id="@+id/sports" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <io.github.justinnewman.gameday.ColourGrid android:id="@+id/grid" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="8dp" android:visibility="gone" />
+        <TextView android:id="@+id/colourName" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" android:textSize="18sp" android:textColor="#FFFFFFFF" android:visibility="gone" />
+    </LinearLayout>
+</RelativeLayout>

@@ -11,8 +11,11 @@ import java.util.function.LongSupplier;
 
 /**
  * When a card shows, changes and leaves. One card at a time: a new matching review replaces it. It leaves
- * dismissSeconds after its review ends, and at the latest 120 s after its last news, so a lost "end"
- * message can never leave a card on screen. Not thread-safe: the service calls it from one thread.
+ * dismissSeconds after its objects have all gone (ended, or parked when dismissOnStationary), as Peek does:
+ * Frigate ends the review itself only after its cutoff, some 30 to 40 s later. An object that comes back
+ * while the card counts down stops the countdown. The review's "end" starts it too, for lost event
+ * messages, and the card leaves at the latest 120 s after its last news, so a lost "end" can never leave it
+ * on screen. Not thread-safe: the service calls it from one thread.
  */
 public final class CardController {
     static final long HARD_LIMIT_MS = 120_000;
@@ -25,13 +28,18 @@ public final class CardController {
     private final ReviewFilter filter;
     private final Map<String, String> displayNames;
     private final int dismissSeconds;
+    private final boolean dismissOnStationary;
     private final LongSupplier clock;
 
     private Review shown;
     private final Map<String, Detection> detections = new LinkedHashMap<>();
     private long deadline;
-    /** True once the shown card is counting down to leaving (its review ended, or a test card). */
+    /** True once the shown card is counting down to leaving (its objects left, its review ended, or a test card). */
     private boolean ending;
+    /** Frigate ended the shown review (or it is a test card): no object can stop the countdown any more. */
+    private boolean reviewEnded;
+    /** The shown review's objects Frigate stopped tracking. */
+    private final Set<String> endedIds = new java.util.HashSet<>();
     private long snoozedUntil;
     /** Reviews that had a card which then left (dismissed, ended, replaced): their updates never reopen one. */
     private final java.util.Set<String> closed = java.util.Collections.newSetFromMap(
@@ -43,11 +51,12 @@ public final class CardController {
             });
 
     public CardController(CardView view, ReviewFilter filter, Map<String, String> displayNames, int dismissSeconds,
-            LongSupplier clock) {
+            boolean dismissOnStationary, LongSupplier clock) {
         this.view = view;
         this.filter = filter;
         this.displayNames = displayNames;
         this.dismissSeconds = dismissSeconds;
+        this.dismissOnStationary = dismissOnStationary;
         this.clock = clock;
     }
 
@@ -62,20 +71,51 @@ public final class CardController {
             if (shown != null) closed.add(shown.id);
             shown = r;
             detections.clear();
+            endedIds.clear();
             deadline = now + quietLimit(r);
             ending = false;
+            reviewEnded = false;
+            settle(now);
             view.show(model());
         } else if (isShown && "update".equals(r.type)) {
             shown = r;
-            deadline = now + quietLimit(r);
-            ending = false;
+            if (!ending) deadline = now + quietLimit(r);
+            settle(now);
             view.update(model());
         } else if (isShown && "end".equals(r.type)) {
             shown = r;
-            deadline = now + dismissSeconds * 1000L;
+            if (!ending) deadline = now + dismissSeconds * 1000L;
             ending = true;
+            reviewEnded = true;
             view.update(model());
         }
+    }
+
+    /** Starts the countdown when the review's objects have all gone, and stops it when one is back. */
+    private void settle(long now) {
+        if (reviewEnded) return;
+        boolean gone = objectsGone();
+        if (gone && !ending) {
+            ending = true;
+            deadline = now + dismissSeconds * 1000L;
+        } else if (!gone && ending) {
+            ending = false;
+            deadline = now + quietLimit(shown);
+        }
+    }
+
+    /**
+     * Every object the review lists has ended or parked, and at least one was seen. One listed but not yet
+     * heard of counts as present: its event may come after the review update that names it.
+     */
+    private boolean objectsGone() {
+        if (shown.detectionIds.isEmpty()) return false;
+        for (String id : shown.detectionIds) {
+            if (endedIds.contains(id)) continue;
+            Detection d = detections.get(id);
+            if (d == null || !(dismissOnStationary && d.stationary)) return false;
+        }
+        return true;
     }
 
     private static long quietLimit(Review r) {
@@ -84,8 +124,13 @@ public final class CardController {
 
     public void onDetection(Detection d) {
         if (shown == null || !shown.detectionIds.contains(d.id)) return;
-        if (d.ended) detections.remove(d.id);
-        else detections.put(d.id, d);
+        if (d.ended) {
+            detections.remove(d.id);
+            endedIds.add(d.id);
+        } else {
+            detections.put(d.id, d);
+        }
+        settle(clock.getAsLong());
         view.update(model());
     }
 
@@ -98,8 +143,10 @@ public final class CardController {
         String after = "{\"id\":\"" + TEST_ID + "\",\"camera\":\"" + camera + "\",\"severity\":\"alert\",\"data\":{}}";
         shown = Review.parse("{\"type\":\"new\",\"after\":" + after + "}");
         detections.clear();
+        endedIds.clear();
         deadline = clock.getAsLong() + dismissSeconds * 1000L + TEST_EXTRA_MS;
         ending = true;
+        reviewEnded = true;
         view.show(model());
     }
 
@@ -153,6 +200,7 @@ public final class CardController {
         if (TEST_ID.equals(shown.id)) return "Test card";
         Set<String> parts = new LinkedHashSet<>();
         for (String o : shown.objects) parts.add(pretty(o));
+        parts.addAll(shown.subLabels);
         for (Detection d : detections.values()) {
             if (d.subLabel != null) parts.add(d.subLabel);
             if (d.plate != null) parts.add(d.plate);

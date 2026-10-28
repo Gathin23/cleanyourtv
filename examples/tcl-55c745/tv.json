@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55C745, 2023 (G08, G08_4K_GB, MediaTek tcl9618)",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Same firmware build (AU02) as tcl-q7c-google-tv and tcl-85rm7l-google-tv, different household: TCL promo/push/demo, account, cleaner, log capture, Android 14 ad/privacy services, duplicate webviews/browser, USB media player, Android peripheral updater; stock YouTube, Netflix, Prime Video, Twitch and UK catch-up apps (ITVX, My5, Wuaki) off by choice, French catch-up apps kept; voice search, Miracast and MagicConnect kept by choice (opposite of the Q7C list); com.tcl.eva disabled here (left untouched on the Q7C set over its camera permissions); launcherx and setupwraith off for the Clean Your TV launcher (dock: Stremio + a third-party YouTube client only); reboot-checked twice"
+}

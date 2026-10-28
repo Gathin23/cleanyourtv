@@ -41,7 +41,7 @@ com.google.android.backdrop             # ambient screensaver, replaced by the l
 
 # Assistant, accessibility and preloads the owner does not use
 com.homwee.alexacontrol                 # Alexa integration; Google Assistant stays (katniss kept)
-com.google.android.marvin.talkback      # accessibility
+# com.google.android.marvin.talkback    # accessibility: refused by the firmware (SecurityException), left enabled
 com.google.android.tv.remote.service    # Android phone-as-remote app; Chromecast is mediashell
 com.google.android.play.games
 com.google.android.videos               # Play Movies & TV

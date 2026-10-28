@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Orologio mondiale</string>
+    <string name="add_city">Aggiungi città</string>
+    <string name="clock_format">Formato orologio</string>
+    <string name="local">Locale</string>
+    <string name="search_city">Città o fuso orario</string>
+    <string name="search_hint">Premi OK per scrivere; Giù per scegliere una città</string>
+    <string name="no_cities">Nessuna città trovata</string>
+    <string name="change_city">Cambia città</string>
+    <string name="move_earlier">Sposta prima</string>
+    <string name="move_later">Sposta dopo</string>
+    <string name="remove_city">Rimuovi città</string>
+    <string name="city_limit">Scegli fino a sei orologi</string>
+    <string name="already_shown">Questo orologio è già mostrato</string>
+    <string name="same_day">Stesso giorno dell’ora locale</string>
+    <string name="tomorrow">Domani in questa città</string>
+    <string name="yesterday">Ieri in questa città</string>
+    <plurals name="day_difference">
+        <item quantity="one">%1$+d giorno rispetto all’ora locale</item>
+        <item quantity="many">%1$+d giorni rispetto all’ora locale</item>
+        <item quantity="other">%1$+d giorni rispetto all’ora locale</item>
+    </plurals>
+    <string name="local_reference">Date confrontate con %1$s</string>
+    <string name="controls">Frecce per spostarti · OK per le opzioni della città · Indietro per tornare</string>
+    <string name="format_system">Usa l’impostazione della TV</string>
+    <string name="format_12">Ora a 12 ore</string>
+    <string name="format_24">Ora a 24 ore</string>
+    <string name="close">Chiudi</string>
+    <string name="screensaver">Salvaschermo</string>
+    <string name="preview">Anteprima · qualsiasi tasto per tornare</string>
+    <string name="background_option">Sfondo: %1$s</string>
+    <string name="motion_option">Movimento: %1$s</string>
+    <string name="brightness_option">Luminosità orologi: %1$s</string>
+    <string name="gradient">Sfumatura del cielo</string>
+    <string name="plain">Nero</string>
+    <string name="motion_on">Attivo</string>
+    <string name="motion_reduced">Ridotto (immobile)</string>
+    <string name="clock_brightness">Luminosità orologi</string>
+    <string name="dim">Bassa</string>
+    <string name="medium">Media</string>
+    <string name="bright">Alta</string>
+    <string name="tv_screensaver_settings">Impostazioni salvaschermo della TV</string>
+    <string name="screensaver_unavailable">Questa TV non offre impostazioni per il salvaschermo. Puoi comunque usare Anteprima.</string>
+    <string name="background">Sfondo</string>
+    <string name="starfield">Cielo stellato</string>
+    <string name="world_map">Mappa del mondo</string>
+    <string name="zone_detail">%1$s · %2$s</string>
+</resources>

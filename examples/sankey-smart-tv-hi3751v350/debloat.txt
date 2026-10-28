@@ -1,0 +1,39 @@
+# Sankey SMART_TV (CVTE firmware, HiSilicon Hi3751V350 "bigfish"), Android 12, build Hi3751V352E_DMO, firmware 20231115_180213_01
+# 1 GB RAM (low_ram), 1280x720 panel. Not the SMART2KTVSE (Whale OS, Amlogic) in sankey-smart2ktvse/: different board.
+# Tested on one set for one day, with the launcher; notes in README.md in this folder.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sankey-smart-tv-hi3751v350/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sankey-smart-tv-hi3751v350/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.cvte.tv.launcher.space (+ .skin). Keep it ENABLED: it is the only HOME, there is no FallbackHome.
+# Live TV: com.cvte.tv.setting/.TvSettingActivity. Source picker: com.cvte.tv.globalui/.InputSourceActivity.
+# Kept on purpose: com.cvte.tvservice, com.cvte.tv.api.impl, com.cvte.tv.setting and com.cvte.tv.globalui (inputs,
+# channels, remote keys), com.cvte.settings, com.hisilicon.rmservice (the remote's accessibility service),
+# com.vendor.vnaudiomanager, com.cvte.tv.media and com.hisilicon.higallery (the file browser that opens when a USB
+# drive is plugged in), com.cvte.tv.systemupgrade (firmware updates), com.maxhub.screenshare.server.tv,
+# com.screenshare.platform and com.cvte.dssshare.dlna (MHshare phone casting, the "ShareServer" tile),
+# com.cvte.tv.ucservice (unknown, runs from boot), and the factory packages com.cvte.fac.menu, com.cvte.factory.*,
+# com.cvte.license.at and com.cvte.tv.tools (never launched).
+
+# CVTE ads and telemetry
+com.cvte.gaia.ad.service          # ad service, the largest app process after Play services (~27 MB)
+com.cvte.wonder.cloud.service     # "UniAdService"
+com.cvte.industries               # push messenger and ad receiver
+
+# Manufacturer content
+com.cvte.tv.pictorial             # screensaver with ads
+com.cvte.tv.steward               # "cleaner" with scheduled optimisation
+com.cvte.tv.weather               # the stock launcher's weather; keep it if you keep the stock launcher
+
+# CVTE app store. The stock launcher's Apps grid is its AppSelectActivity: with the store disabled that grid does
+# nothing, and the firmware has no other app list or uninstall screen, so keep it if you keep the stock launcher.
+# It also kept offering "WebTube" (1.9 MB, signed CN=cvte, package name com.google.android.youtube.tv) as an update
+# for Google's YouTube; the install fails on the signature and the prompt comes back.
+# com.stark.store                  # kept by default (it hosts the stock Apps grid); the tested set turned it off
+
+# Google extras
+com.google.android.feedback
+
+# Off by choice on the tested set
+com.hisilicon.miracast            # Miracast receiver

@@ -25,8 +25,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Holds the dimming layer: one full-screen window over every app that never takes focus, keys or touches, so the
- * remote keeps controlling what is on screen. Runs only while there is a layer to hold or a schedule to follow,
+ * Holds the dimming layer: one full-screen window over every app that never takes focus or keys, so the remote
+ * keeps controlling what is on screen. Runs only while there is a layer to hold or a schedule to follow,
  * and stops itself otherwise. It redraws whenever the settings change and at each start and end of the night.
  * With the TV picture option on, it also sets the TV's own picture for the night and puts the day's back after.
  */
@@ -44,6 +44,8 @@ public class DimService extends Service {
     private Dimming.Picture tvSent;
     private WindowManager wm;
     private View layer;
+    /** Whether the layer window keeps touches, which lets Android draw it darker than 80 %. */
+    private boolean layerKeepsTouches;
     /** Kept in a field: SharedPreferences holds its listeners weakly. */
     private final SharedPreferences.OnSharedPreferenceChangeListener prefsListener = (p, key) -> apply();
     private final Runnable tick = this::apply;
@@ -172,15 +174,21 @@ public class DimService extends Service {
     }
 
     private void showLayer(int color) {
+        boolean opaque = Dimming.keepsTouches(color);
         if (layer != null) {
             layer.setBackgroundColor(color);
+            if (opaque != layerKeepsTouches) {
+                wm.updateViewLayout(layer, params(opaque));
+                layerKeepsTouches = opaque;
+            }
             return;
         }
         View v = new View(this);
         v.setBackgroundColor(color);
         try {
-            wm.addView(v, params());
+            wm.addView(v, params(opaque));
             layer = v;
+            layerKeepsTouches = opaque;
         } catch (RuntimeException e) {
             Log.w(Prefs.TAG, "layer not shown (display over other apps not allowed?): " + e.getMessage());
         }
@@ -196,13 +204,19 @@ public class DimService extends Service {
         layer = null;
     }
 
-    private static WindowManager.LayoutParams params() {
+    /**
+     * Since Android 12 a window that lets touches through is drawn at most 80 % opaque, whatever its colour says.
+     * Darker than that, the layer keeps touches instead: TVs have no touchscreen, and the remote's keys never come
+     * here (not focusable); only an air-mouse pointer can't click through then.
+     */
+    private static WindowManager.LayoutParams params(boolean keepTouches) {
+        int touch = keepTouches ? WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL : WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
         WindowManager.LayoutParams p = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        | touch
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                         | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);

@@ -10,10 +10,11 @@ whose check fails, then follows the full method
 1. **Before you change anything,** install the base build with `launcher/build-and-install.sh` and run:
 
    ```bash
-   TV_HOST=<tv ip> tools/venv/bin/python tools/bench.py --out-dir work/bench-before
+   TV_HOST=<tv ip> tools/venv/bin/python -I tools/bench.py --out-dir work/bench-before
    ```
 
-2. Make the change, install your build the same way, and run `tools/bench.py --out-dir work/bench-after`.
+2. Make the change, install your build the same way, and run
+   `tools/venv/bin/python -I tools/bench.py --out-dir work/bench-after`.
 3. Compare the two `result.json` files. Leave out any field that is `null` in both:
 
    | Field | Fails when the after value is |
@@ -25,14 +26,21 @@ whose check fails, then follows the full method
    | `pss_mb` | more than 2 MB above before |
    | `idle_launcher_cpu_pct` | more than 0.5 points above before |
 
+   Two more numbers sit in the same file without a limit here. `movement_ms` is the end of the frames
+   a key set off, so a change that makes the focus settle later - a longer highlight slide, an added
+   bounce, a slower scroll - moves it while `response_ms` stays where it was: compare it the same way
+   as `response_ms` when your change touches motion. `idle_cpu_pct` is the whole TV's idle CPU, not
+   the launcher's (that is `idle_launcher_cpu_pct` above), so other apps move it; read it as context.
+
 4. **If a field fails,** follow the method below with that scenario (`home`, `cold` or `nav`) to find
    the cost. Fix it and go back to step 2. Fixes that usually work:
    - doing the work after the first frame;
    - skipping work when nothing changed;
    - decoding images at their display size;
    - keeping results instead of recomputing them.
-5. Put the six fields, before and after, in the PR. If a feature has to cost something, give the number
-   and the reason. Once it works, spend one more pass on its cost.
+5. Put the six fields, before and after, in the PR, plus `movement_ms` when your change touches
+   motion. If a feature has to cost something, give the number and the reason. Once it works, spend
+   one more pass on its cost.
 
 Some notes on the numbers:
 - **Noise:** two runs of the same build on a TCL C755 differed by 0 ms in key response, up to 45 ms in

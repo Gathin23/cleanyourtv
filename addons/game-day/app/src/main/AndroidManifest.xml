@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- Only to fetch the calendar links the person adds; nothing else goes online. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:supportsRtl="false"
+        android:theme="@style/Screen">
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <!-- Clean Your TV module card (docs/specs/card.md): the tile reads "Game Day" once the owner says Show. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+        <activity android:name=".CalendarActivity" android:exported="false" android:screenOrientation="landscape" />
+        <activity android:name=".AddCalendarActivity" android:exported="false" android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity android:name=".SecondsActivity" android:exported="false" android:screenOrientation="landscape" />
+
+        <!-- Clean Your TV launcher, game_day (docs/modules.md): where Home reads each team's next game. -->
+        <meta-data android:name="com.gathin.tvhome.games" android:value="io.github.justinnewman.gameday.games" />
+
+        <!-- Read-only and holding no links: what Home shows anyway. -->
+        <provider
+            android:name=".GamesProvider"
+            android:authorities="io.github.justinnewman.gameday.games"
+            android:exported="true" />
+
+        <!-- The setup script's door. WRITE_SECURE_SETTINGS is held by the ADB shell only, so no app can use it. -->
+        <provider
+            android:name=".FilesProvider"
+            android:authorities="io.github.justinnewman.gameday.files"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+    </application>
+</manifest>

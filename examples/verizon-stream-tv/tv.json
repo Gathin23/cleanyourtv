@@ -1,0 +1,6 @@
+{
+  "tv": "Verizon Stream TV, 1st gen (WNC JS8V, Amlogic), US",
+  "os": "Android 12",
+  "brand": "Verizon",
+  "notes": "Verizon AMS event recorder (app, screen, power + Crashlytics), Assistant, Chromecast, screensaver, TalkBack/TTS, unused streaming apps and the stock Verizon launcher; streaming box, no HDMI inputs, Live TV only works with Pluto TV kept; BT remote pairs with OK + Apps held 6 s, its Apps button needs the launcher's key service; firmware updates, setupwraith (owns the saved Wi-Fi) and `com.wnc.*` kept; AdGuard DNS works; sideloading and HOME launchers accepted"
+}

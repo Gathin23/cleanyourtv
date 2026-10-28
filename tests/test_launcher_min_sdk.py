@@ -133,6 +133,8 @@ class MinSdkGuardTest(unittest.TestCase):
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))
+        if os.name != "posix" or not shutil.which("bash"):
+            raise unittest.SkipTest("build-and-install.sh is a POSIX script; it needs bash")
         result = subprocess.run(
             ["bash", str(self.launcher / "build-and-install.sh")],
             cwd=self.launcher, env=env, capture_output=True, text=True, timeout=180,

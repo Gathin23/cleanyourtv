@@ -1,0 +1,6 @@
+{
+  "tv": "XGIMI MoGo 4 projector (WK08K, altai, MediaTek)",
+  "os": "Google TV 14",
+  "brand": "XGIMI",
+  "notes": "Same altai board as the MoGo 3 Pro, one build older: factory and burn-in tools, bug-report uploader, Google feedback and ad services, setupwraith, Google preloads, Assistant and phone remote; keystone/autofocus/HDMI and StarMirror mirroring kept. setupwraith owned a saved hotspot but not the network in use, so check which entry is connected before `FORCE_SETUPWRAITH`. launcherx re-enables itself across a reboot and during use, so `stock_home_redirect` is what holds Home; `HOME_KEY_SERVICE` is therefore not optional, and it costs volume-key auto-repeat (a held D-pad still repeats). Wireless debugging only, and the port closes at every reboot. config.json has the dock; one session of a few hours, reboot-checked"
+}

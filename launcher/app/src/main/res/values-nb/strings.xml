@@ -10,6 +10,7 @@
     <string name="not_connected">Ingen enhet</string>
     <string name="live_tv">Direkte-TV</string>
     <string name="no_inputs">Fant ingen innganger</string>
+    <string name="more_inputs">Flere innganger</string>
     <string name="good_morning">God morgen</string>
     <string name="good_afternoon">God ettermiddag</string>
     <string name="good_evening">God kveld</string>
@@ -28,6 +29,7 @@
     <string name="home_settings">Velg standard startskjerm</string>
     <string name="home_settings_help">Velg den opprinnelige startskjermen for å slutte å bruke CleanYourTV, eller velg CleanYourTV for å bytte tilbake. Den opprinnelige startskjermen må være aktivert, og TV-en må støtte valg av startskjerm. Kjør tilbakeføringsskriptet først hvis den ble deaktivert.</string>
     <string name="launcher_settings">Innstillinger for startskjermen</string>
+    <string name="native_settings">Produsentinnstillinger</string>
     <string name="columns_label">Apper per rad</string>
     <string name="dock_opacity_label">Dekkevne for dock-feltet</string>
     <string name="rows_below_dock_label">Rader under favorittraden</string>
@@ -39,6 +41,8 @@
     <string name="animations_state">Animasjoner: %1$s</string>
     <string name="advanced_effects">Avanserte effekter</string>
     <string name="advanced_effects_state">Avanserte effekter: %1$s</string>
+    <string name="open_on_start_label">Åpne ved oppstart</string>
+    <string name="open_on_start_state">Åpne ved oppstart: %1$s</string>
     <string name="advanced_effects_warning">Legger til løftede appfliser, ikonzoom og myke fargeoverganger. Kan øke minnebruken. Forskjellen avhenger av TV-en.</string>
     <string name="follow_theme">Følg temaet (tilbakestill lokale valg)</string>
     <string name="follow_theme_hint">Bruker temaets eller de innebygde innstillingene for oppsett og bevegelse. Hvis du overfører eller tilbakestiller et tema, nullstilles også valgene du har gjort på TV-en.</string>
@@ -73,6 +77,7 @@
     <string name="card_state_new_key">Ny nøkkel</string>
     <string name="card_state_new_label">Nytt navn</string>
     <string name="dock_edit">Rediger favorittraden</string>
+    <string name="power_menu">Start på nytt…</string>
     <string name="dock_edit_hint">Velg plassen du vil endre i favorittraden, og trykk OK. Trykk Tilbake for å avslutte.</string>
     <string name="dock_edit_pick_app">Velg appen du vil plassere der, og trykk OK. Trykk Tilbake for å velge en annen plass.</string>
     <string name="tile_add_to_dock">Legg til i favorittraden</string>
@@ -105,4 +110,5 @@
     <string name="race_live">%1$s · direkte</string>
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
+    <string name="game_live">Direkte nå</string>
 </resources>

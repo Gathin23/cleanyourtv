@@ -1,4 +1,5 @@
-# Sony BRAVIA 4K AE1 (device BRAVIA_AE_M6L, MediaTek MT5897), EU firmware
+# Sony BRAVIA XR-55A95L (A95L, 2023 QD-OLED, MediaTek MT5838), EU firmware
+# Android reports it as model "BRAVIA 4K AE1", device BRAVIA_AE_M6L; the retail model is in ro.boot.product.hardware.sku.
 # Android 12 (Google TV, API 31), build BRAVIA_AE1_EU-user 12 STT2.231117.001 634040
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-ae1/debloat.txt

@@ -1,0 +1,6 @@
+{
+  "tv": "CHiQ AI PONT (Changhong GTVU65, dangni, MediaTek mt5867)",
+  "os": "Google TV 14",
+  "brand": "CHiQ",
+  "notes": "Google ad services and auto-installs, Homwee store/help; 1 GB; setupwraith must go (RecoveryActivity component cannot be disabled alone); MediaTek partnercustomizer safe to disable (reboot-checked)"
+}

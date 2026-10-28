@@ -1,0 +1,48 @@
+# Philips 65PML9506/12 (TP Vision, board PH1M_EA_9970A, MediaTek), Spain
+# Android TV 11 (API 30), build RTT2.211108.001, 2.8 GB RAM, UI 1920x1080 at 320 dpi, Wi-Fi.
+# Fingerprint: Philips/PH1M_EA_9970A/PH1M_EA_9970A:11/RTT2.211108.001/21029:user/release-keys
+#
+# Same board and firmware as examples/philips-50pus8517: its quirks apply (read them there), notably
+# do NOT disable org.droidtv.eum or org.droidtv.aurora (org.droidtv.xtv retries forever without them).
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-65pml9506/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-65pml9506/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Kept on purpose (owner's choice): Netflix, Prime Video, Disney+, Apple TV, Spotify, Stremio,
+# Moonlight, YouTube, voice assistant (katniss), Chromecast (mediashell), Alexa, ipcontrol and DLNA.
+# Left alone because their function could not be confirmed: com.phorus.playfi.*, dropboxprovider,
+# fastip, csm, sam, icp, cdasettings, org.droidtv.m7opapp.
+# Live TV app: org.droidtv.playtv
+
+# Batch 1: TP Vision telemetry
+org.droidtv.candeebug                     # "DAC" analytics uploader
+org.droidtv.gel                           # metrics collector inside the candeebug process
+org.droidtv.usagelogger                   # boot stats, keypress counts, panel telemetry
+org.droidtv.tv.frameworklogger            # reboot reasons handed to the Philips logger
+com.google.android.feedback               # Market Feedback Agent
+com.google.android.partnersetup           # partner referrer / attribution
+com.google.android.onetimeinitializer     # first-setup leftover
+
+# Batch 2: Philips promotion, NetTV store and preloaded web apps
+org.droidtv.nettvrecommender              # "Top Picks" promotion row
+org.droidtv.recommendation                # its backend
+org.droidtv.nettv.market                  # app storefront
+org.droidtv.nettvapp1814                  # ARTE
+org.droidtv.nettvapp4546                  # MEGOGO
+org.droidtv.nettvapp4655                  # Deezer
+org.droidtv.nettvapp4932                  # Free Games by PlayWorks
+org.droidtv.nettvapp20004410              # Couchplay Games
+org.droidtv.demome                        # retail demo mode
+
+# Batch 3: Google leftovers and preloaded apps not used
+com.google.android.sss.authbridge         # set-up-from-phone helper
+com.google.android.syncadapters.calendar  # Calendar sync, no calendar app
+com.google.android.play.games
+com.google.android.videos                 # Google TV / Play Movies
+com.zeasn.whalelive                       # WhaleLive ad-supported FAST channels
+com.boosteroidtv.streaming                # Boosteroid cloud gaming
+tv.wuaki.apptv                            # Rakuten TV
+
+# Batch 4: silent installer. On every screen-on it re-installed the ~26 "NetTV" apps
+# (Toon Goggles and others) and Play Protect popped up for each one it blocked.
+org.droidtv.nettvapps

@@ -1,0 +1,57 @@
+# Kogan G7 Google TV (model "Kogan G7", manufacturer Expressluck, device cottongreen, Realtek), Australia
+# Google TV (Android 11, SDK 30), firmware RTK5.250429.042, 1.7 GB RAM
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/kogan-g7/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/kogan-g7/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.realtek.tv (HDMI inputs are
+# com.realtek.tv.passthrough). Lived with for six days with the launcher installed, on Wi-Fi.
+# This firmware is lean: no ACR or analytics package was found.
+#
+# Keep: com.realtek.tv*, com.realtek.dtv, com.realtek.menu, com.realtek.slices (settings slices, restarts the
+# TV input service), com.realtek.keyintercept* (remote keys), com.realtek.statusbar, com.realtek.secservice,
+# com.realtek.display.monitor, com.seraphic.hbbtv.app (HbbTV / Freeview Plus), com.realsil.ota (firmware
+# updates), com.rtk.mediabrowser (USB media player), com.realtek.kara (karaoke mic).
+#
+# Known quirks on this firmware:
+# - With launcherx disabled, setupwraith's RecoveryActivity claims HOME at priority 1, so it goes too.
+#   Disabling it did not drop the TV off Wi-Fi here.
+# - The remote's app buttons die with launcherx. Netflix (IR keycode 3001), YouTube (IR 3003) and Prime Video
+#   (Bluetooth usage 0x0c0076) are consumed by Realtek's key service (com.realtek.keyintercept) before Android
+#   sees them. Because the TV has the com.google.android.feature.AMATI_EXPERIENCE feature, it only hands them
+#   to launcherx/.globalbutton.GlobalButtonLaunch_Receiver as an explicit broadcast, so they cannot be
+#   remapped (same as the IR keys on inclo-google-tv-4k). Disney+ arrives as KEYCODE_BUTTON_6 (193) through
+#   Google's GlobalKeyReceiver, and app_keys "193:com.disney.disneyplus" with InputKeyService brings it back
+#   (checked with the real remote). Shell cannot disable launcherx's HomeActivity on its own
+#   (SecurityException), and with launcherx enabled it takes HOME back, so the other three stay dead.
+# - Disabling dreamx leaves screensaver_components pointing at it. Point it at the launcher's clock:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+
+# Retail demo / store mode
+com.realtek.storemode
+com.realtek.retailmode
+
+# Content, ads and promos
+com.realtek.leanbacklauncher.partnercustomizer   # partner tweaks to the Google TV home rows
+android.autoinstalls.config.google.gtvpai        # silently installs partner apps
+com.google.android.apps.tv.dreamx                # ambient mode screensaver (shows promos)
+
+# Preloaded apps
+com.realtek.karaoke.userguide                    # karaoke how-to screen
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.youtube.tvmusic               # off by choice
+
+# Needed for the custom launcher: with launcherx disabled, setupwraith's RecoveryActivity claims HOME.
+# Disable only AFTER the launcher is installed. launcher/build-and-install.sh disables launcherx itself.
+com.google.android.tungsten.setupwraith   # costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+
+# Optional: uncomment what you don't use
+# com.amazon.amazonvideo.livingroom              # Prime Video
+# com.netflix.ninja                              # Netflix
+# com.google.android.videos                      # Google TV movie store
+# com.google.android.katniss                     # Google Assistant voice
+# com.google.android.apps.mediashell             # Chromecast
+# com.rtk.mediabrowser                           # USB media player
+# com.realtek.kara                               # karaoke mic support

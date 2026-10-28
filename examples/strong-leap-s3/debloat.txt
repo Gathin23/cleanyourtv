@@ -1,0 +1,47 @@
+# Strong LEAP-S3 box ("STRONG LEAP S3" on the label), ro.product.model="4K Google TV Box",
+# manufacturer SkyworthDigital, device YDA, board HP46AY4 (Amlogic S905Y4), about 1.9 GB RAM, 32-bit userspace.
+# Google TV 14 (API 34), build UKG3.260128.001.C3.0.12_20260904. Tested in Italy.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/strong-leap-s3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/strong-leap-s3/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Lived with for over a week, with several reboots and the same firmware. The reference launcher is Home and its
+# remote buttons were checked on the real remote and survived reboots. This box has NO reset button: a first attempt
+# that disabled setupwraith and launcherx together and then rebooted ended in a black screen and needed a hardware
+# reset from a pad on the board. Follow the order in docs/devices/strong-leap-s3.md ("HOME and Wi-Fi") and pair
+# Wireless debugging first.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (HOME, priority 2). setupwraith .RecoveryActivity also claims
+# HOME (priority 1), so both are in this list. The Wi-Fi network saved during first setup belonged to setupwraith:
+# disabling it dropped the box off the network and ADB with it. Forget and re-join the network first, and disable
+# setupwraith while launcherx is still enabled: `dumpsys wifi | grep -o 'cname=[^ ]*'` shows the owner.
+# A box with no HDMI inputs and no Live TV app, so no live_tv_package; the launcher hides its Inputs pill.
+#
+# Kept on purpose: com.sdt.globalkey and com.sdt.vendor (remote app-button receivers), com.droidlogic.* (Amlogic
+# remote pairing, HDMI-CEC, picture), com.mft.rcupair, com.mft.frontpanelledsservice, com.sdt.ota, com.sdt.upgrade and
+# com.google.android.tv.dfuservice (firmware and remote updates), com.google.android.tv.remote.service (phone remote),
+# com.google.android.apps.tv.dreamx (screensaver), com.sdt.deviceinfo, com.sdt.customization, Play Store and Play Services.
+# com.oemservice (the Wanbo and Byintek lists disable it) was looked at and left enabled: a boot receiver only.
+#
+# Off by the owner's choice, not part of the list: com.google.android.katniss (Assistant),
+# com.google.android.apps.mediashell (Cast receiver) and com.google.android.youtube.tv (official YouTube, replaced
+# by a sideloaded one).
+
+# Privacy Sandbox / ads framework
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Vendor test, QA and feedback
+com.oem.qa
+com.sdt.producttest
+com.amlogic.voicesubtitle                   # no visible effect when disabled
+com.android.tv.feedbackconsent
+
+# Google extras
+com.google.android.play.games
+
+# Only to let a replacement launcher take Home: disable launcherx only after the replacement survived a reboot
+com.google.android.tungsten.setupwraith     # owns the Wi-Fi saved at setup, see above
+com.google.android.apps.tv.launcherx

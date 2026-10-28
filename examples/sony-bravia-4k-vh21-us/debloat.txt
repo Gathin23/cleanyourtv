@@ -1,0 +1,59 @@
+# Sony BRAVIA 4K VH21 (XR-65A95K, 2022 QD-OLED, device BRAVIA_VH21, product BRAVIA_VH21_M_UC, MediaTek), US firmware
+# Android 12 (Google TV, API 31), build BRAVIA_VH21_M_UC-user 12 STT2.230505.001.S136 682241, security patch 2026-05-01
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh21-us/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh21-us/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Third VH21 unit, same firmware build as sony-bravia-4k-vh21 (Australia) and sony-bravia-4k-vh21-eu (EU),
+# 250 packages. The US set ships Sony promos and Sony Select enabled (the EU set has them off at the
+# factory). This list is the privacy and ads core only: no preloads, no always-running services off, so
+# it is the smallest of the three and the one to start from if you want to keep everything that works.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV). Pass it to restore.sh as above;
+# build-and-install disables it, so it is not in this list.
+# Live TV / HDMI: com.sony.dtv.tvx (set it as live_tv_package in the launcher's config.xml and hide it).
+# Keep the com.sony.dtv.tvinput.* services, com.sony.dtv.braviasync*, tvapi, sonysystemservice, imeproxy,
+# settingsprovider, systemupdate/update, the Sony settings apps and all com.mediatek.*: they drive HDMI,
+# the tuner, Bravia Sync, updates and the remote.
+# Kept by owner's choice: the streaming and media apps, Google Assistant (katniss, voicesearch,
+# assistantadapter), Chromecast built-in (mediashell), AirPlay and HomeKit (airplayapp, homekit), firmware
+# updates, and the BRAVIA CAM packages (sensingcamera.*, gestureapp), which this model supports.
+# Already disabled at the factory: com.sony.dtv.b2b.softap, com.sony.dtv.b2b.vendorprotocol. Not in this
+# list, so restore.sh leaves them as they are.
+#
+# Applied 19 Oct 2026 in two batches with a screenshot between; launcher 2.3 installed with the
+# Input-button service (INPUT_KEY_SERVICE=1). Reboot-checked twice:
+# Home came back on the new launcher both times. Lived with for a week; nothing re-enabled.
+# One incident, not the debloat: on 20 Oct the Widevine L1 HAL died mid-stream and would not re-initialize
+# (GetProvisioningMethod failed, usage table status 340), so DRM-protected apps crashed on launch or would
+# not play. Network, packages and Home were fine. A reboot (`tools/tv.py --reboot`) cleared it. If DRM apps
+# stop at once on this firmware, reboot before you suspect the list.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+tv.samba.ssm.ui
+
+# telemetry and remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # remote-support session service
+com.sonyericsson.idd.agent                     # Sony IDD usage-data agent
+com.sony.dtv.sonybugreportsys
+com.google.android.feedback
+
+# demo / shop mode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# Sony promotions (enabled at the factory on the US set)
+com.sony.dtv.promos
+com.sony.dtv.sonyselect                        # Sony Select app recommendations
+
+# Help tiles
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+
+# Google TV setup wizard: with launcherx disabled its RecoveryActivity (HOME priority 1) outranks
+# set-home-activity. Disable it only after Home resolves to the new launcher, and re-enable it before a
+# factory reset.
+com.google.android.tungsten.setupwraith

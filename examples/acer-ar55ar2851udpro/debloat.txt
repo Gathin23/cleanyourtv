@@ -1,0 +1,80 @@
+# Acer AR55AR2851UDPRO 55" (SCBC device R4, Realtek rtd2851m), India, Android TV 14, firmware UKR1.260308
+# Build UKR1.260308, incremental 3272 (the R4G 50" note's set is 5597)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/acer-ar55ar2851udpro/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/acer-ar55ar2851udpro/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (Android TV, not Google TV: launcherx is not installed).
+# HDMI and AV inputs: com.apps.passthrough. Live TV: com.apps.livetv with com.apps.atv / com.apps.dtv.
+#
+# Not the same as the Acer R4G 50" in docs/devices/acer-r4g.md (MOKA R4_GTV, Google TV 14), although the
+# build is the same. Boot runs Acer's own com.apps.tvsettings/.ui.FallbackHome, and nothing came back:
+# after three cold boots (power cable out for 30 s) all 28 packages below stayed disabled, including ten that
+# the R4G firmware re-enables at every boot (play.games, feedback, gdpr, esticker, tvmanager, meeting.service,
+# timeclock, audiolink, scast, fastscreen). No RecoveryActivity in logcat.
+#
+# setupwraith owns the saved Wi-Fi network on this set (dumpsys wifi | grep -o 'cname=[^ ]*'): leave it enabled.
+# Port 5555 opened with `adb tcpip 5555` after Wireless debugging pairing stayed open across all three cold boots.
+#
+# The remote's YouTube button never reaches Android: com.realtek.keyinterceptserver takes it (keycode 2030) and
+# starts com.google.android.youtube.tv by package, so app_keys cannot remap it. With YouTube disabled, every press
+# crashes that persistent service (ActivityNotFoundException); Android restarts it at once and nothing else
+# breaks. Comment out the YouTube line below if you want the button to work.
+#
+# New launcher: see README.md and config.json here. Home stays on tvlauncher with set-home-activity, so the
+# launcher takes the Home button through HOME_KEY_SERVICE with stock_home_redirect (tvlauncher stays enabled).
+#
+# Kept on purpose: com.realtek.leanbacklauncher.partnercustomizer (supplies the Inputs button on tvlauncher,
+#   as on the Compac ATV R2), com.apps.passthrough, com.apps.smartmenu (picture menu), the key handlers
+#   (com.apps.smartkey, com.apps.virtualkey, com.mk.tv.fivekey, com.realtek.keyinterceptserver,
+#   com.realtek.android.globalkeyhandler, com.apps.bluetoothremote), com.apps.sys, com.mk.service.tvmidware,
+#   firmware updates (com.apps.ota, com.apps.authota), Assistant, Chromecast, Netflix, Prime Video, Backdrop.
+# Not touched: com.apps.factory.ui and com.realtek.factorytools (never started), com.apps.biz.ds and
+#   com.apps.biz.mt (unclear), com.seraphic.hbbtv.app, com.apps.usbmediaplayer.
+#
+# Tested on one set on 2026-10-24, in three batches with a Home screenshot after each, then a cold boot:
+# Home, HDMI input, Prime Video, Assistant mic, casting, Home/Back/volume/Settings keys work. Then five more
+# packages (Play Movies, speed test, partner setup, basic screensaver, TalkBack) and two more
+# cold boots, with the new launcher on Home. AdGuard Private DNS validates and Prime Video plays with it.
+# Fresh, not yet lived with for days; update it if something breaks.
+
+# SCBC / Google telemetry and feedback
+com.apps.function.gdpr                       # SCBC data-consent agent
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Android ad and personalisation services
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Ads, content rows and auto-installs
+com.apps.mk.wd                               # boot receiver with ClickAd/ClickApp/ClickChannel activities
+android.autoinstalls.config.scbc.device      # Play auto-installs of partner apps
+com.google.android.tvrecommendations         # sponsored and recommendation rows on the stock Home
+
+# OEM demo and background apps
+com.apps.eshow                               # in-store demo / promo
+com.apps.esticker                            # ShowService overlay, demo stickers
+com.mk.tv.meeting.service                    # digital-signage service with an accessibility service
+com.apps.tvmanager                           # TV manager / cleaner
+
+# Not needed on a TV
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.apps.wifihotspot                         # TV as a Wi-Fi hotspot
+com.mk.tv.timeclock                          # WorldClock
+com.apps.function.audiolink                  # Audio Link
+com.google.android.play.games
+com.google.android.partnersetup              # Google partner setup / RLZ pings
+com.android.dreams.basic                     # basic "Colors" screensaver (Ambient/Backdrop kept)
+com.google.android.marvin.talkback           # TalkBack screen reader: keep it if anyone uses it
+
+# Preloaded apps and casting (personal choice: comment out any you use)
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
+com.creative.fastscreen.tv                   # FastCast Miracast receiver (screen mirroring)
+com.apps.scast                               # SCast casting receiver
+com.google.android.videos                    # Google Play Movies
+com.mk.tv.networkspeed                       # network speed test (Firebase)
