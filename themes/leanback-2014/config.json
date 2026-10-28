@@ -4,7 +4,8 @@
   "sky_intensity": 0,
   "show_greeting": false,
   "clock_right": true,
-  "search_orb": "#86C739",
+  "search_orb": "#4285F4",
+  "buttons_at_end": true,
   "dock_row": true,
   "dock_band": false,
   "dock_title": false,
@@ -14,7 +15,11 @@
   "cinematic_white_focus": true,
   "columns": 5,
   "rows_below_dock": 2,
-  "row_titles": ["Featured", "Apps", "More apps"],
+  "row_titles": [
+    "Featured",
+    "Apps",
+    "More apps"
+  ],
   "tile_corner_radius": 2,
   "always_show_names": false,
   "glass_style": "rim",
