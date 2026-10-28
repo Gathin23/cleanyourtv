@@ -1299,17 +1299,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             public void run() {
                 if (isFinishing() || isDestroyed()) return;
-                File dir = Config.dir(MainActivity.this);
-                File file = dir == null ? null : new File(dir, Config.FILE_NAME);
-                boolean readable = false;
-                if (file != null && file.isFile()) {
-                    try (java.io.FileInputStream in = new java.io.FileInputStream(file)) {
-                        readable = in.read() >= 0;
-                    } catch (IOException notYet) {
-                        // still not readable
-                    }
-                }
-                if (readable) {
+                // Recreate only when the next load will take config.json: a partly written or invalid file would
+                // send it back to the copy and start another watcher, every five seconds.
+                if (Config.overlayReadable(MainActivity.this)) {
                     recreate();
                 } else if (SystemClock.elapsedRealtime() < until) {
                     configWatch.postDelayed(this, 5000);

@@ -807,6 +807,13 @@ final class Config {
         return json;
     }
 
+    /** Whether the next load would take config.json itself: storage mounted and the file parses. No side effects. */
+    static boolean overlayReadable(Context ctx) {
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) return false;
+        File dir = dir(ctx);
+        return dir != null && read(new File(dir, FILE_NAME)) != null;
+    }
+
     private static JSONObject read(File file) {
         if (file == null || !file.isFile()) return null;
         if (file.length() > 64 * 1024) {
