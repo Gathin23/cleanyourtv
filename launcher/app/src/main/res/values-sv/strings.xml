@@ -120,4 +120,5 @@
     <string name="race_qualifying">Kval</string>
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
+    <string name="game_live">Direkt nu</string>
 </resources>

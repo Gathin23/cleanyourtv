@@ -110,6 +110,32 @@
 #    below apart from sonytab. Left alone because it was not clear what they do: ondservice,
 #    ecodashboard, frame, smartmediaapp, preinappfiltering, eulaviewer.
 
+# Sixth unit, North American firmware again: product BRAVIA 4K VH2, build BRAVIA_VH2_UC-user 12
+# STT2.230505.001.S136 682241 (the fifth unit's build), ro.adb.secure=1, on Wi-Fi only. Applied on
+# 28 October 2026 in small batches, then the launcher; one reboot and a day so far. Applied from the list
+# below: the tracker, telemetry, demo, preloaded and promo groups, sonytab, lastaccess, usercontext, vewd,
+# helpguidecontents, livingfit, the Asia-Pacific preloads present here (osat.music, sonypicturescore,
+# videos) and setupwraith; build-and-install.sh disabled launcherx. Assistant, Chromecast built-in, AirPlay
+# (com.sony.dtv.airplayapp), DLNA, Sony's Media Player (com.sony.dtv.smartmediaapp) and firmware updates kept.
+# What this unit adds:
+#
+#  - Factory-disabled here: homekit, b2b.rs232csupport and b2b.softap. Enabled: livingfit (factory-disabled
+#    on the fifth unit), promos, sonyselect, sonytab, seeds.iot, seeds.iot.remotestart, b2b.vendorprotocol,
+#    sonypicturescore and the Apple TV app.
+#  - Kept enabled by disable.sh, not by choice: com.qterics.da.product, android.autoinstalls.config.sony.bravia
+#    and com.sony.dtv.launcherxcustomizer. Their dumpsys has no permission block at all, so the input-driver
+#    check cannot read them and skips them (TVINPUT_ALLOW=1 overrides it). None of them serves
+#    android.media.tv.TvInputService here. They were left enabled, not forced.
+#  - Wi-Fi: the home network was forgotten and joined again in Settings, after which setupwraith still owned
+#    a phone hotspot saved during first setup. disable.sh skips setupwraith while it owns any saved network,
+#    so the hotspot entry was removed as well (`cmd wifi forget-network <id>`; `dumpsys wifi` names the owner
+#    of each network in its "Configured networks" section). setupwraith then disabled without an override,
+#    and the TV stayed on Wi-Fi with ADB answering.
+#  - Input-button service NOT enabled: with launcherx and setupwraith disabled, the real remote's Home, Input,
+#    gear and app buttons and the mic button all worked, and the TV booted to the new launcher. This
+#    confirms the second unit's finding that Sony's firmware answers the buttons alone, on a BRAVIA_VH2_UC build.
+#  - The Play Store has a LEANBACK_LAUNCHER entry here, so it shows as a tile in the replacement launcher.
+
 # ACR viewing tracker
 tv.samba.ssm                                   # Samba TV fingerprints what's on screen
 tv.samba.ssm.ui

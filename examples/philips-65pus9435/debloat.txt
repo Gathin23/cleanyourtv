@@ -39,6 +39,22 @@
 # 5. Checked with the real remote after the launcher took over: Home, SOURCES drawer, the launcher's
 #    Inputs menu, Ambilight, and casting YouTube from a phone.
 #
+# Second unit: Philips 55PUS9435/12, Germany, on Wi-Fi. Same firmware and fingerprint as above
+# (STT2.230526.001/4215). Cleaned on 27 Oct 2026 and used for one day with one reboot, not a
+# several-day test.
+# - Every entry of batches 1-3 that is installed on this unit was disabled; Fitness Buddy, YouTube
+#   Music and Play Games were not installed or already off from the factory. Batches 4 and 5 were not
+#   installed at all. usagelogger and demome left alone, as note 1 says.
+# - build-and-install.sh with HOME_KEY_SERVICE=1 ran through, Home resolved to com.gathin.tvhome, and it
+#   still did after the reboot, without a key press. Same live_tv_package and hidden_apps as note 3.
+# - The firmware opens org.droidtv.playtv at power-on; power_on_home sent it back to Home.
+# - The remote's TV button sends scancode 170 (KEY_ISO). app_keys scan:170:<package> made it open a
+#   streaming app instead of Live TV; with the key filter that needs, a held Volume Up/Down steps
+#   once per press, as on the tpm191e units.
+# - The first SOURCES press opened org.droidtv.fastip's FAST channels promo page
+#   (fastIPPromoActivity); its "don't ask again" option brings the input bar back. fastip stays
+#   enabled, as in the 8505 list's DO NOT DISABLE block.
+#
 # Kept on purpose: Ambilight (org.droidtv.ambihuecommon, org.droidtv.ambiair, org.droidtv.alhuewizard),
 # Chromecast (com.google.android.apps.mediashell), firmware updates (org.droidtv.oad, com.easy.oad),
 # the HbbTV browser engine (com.vewd.core.browserui), ARTE and ARD Mediathek web apps

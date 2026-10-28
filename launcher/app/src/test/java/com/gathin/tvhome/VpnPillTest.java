@@ -21,4 +21,16 @@ public class VpnPillTest {
     public void hiddenWithNoVpnAndNoInstalledVpnApp() {
         assertEquals(VpnBadge.PILL_HIDDEN, VpnBadge.pillState(false, false));
     }
+
+    /**
+     * At rest the pill is an outline, so its ink is the state colour; on the solid focused fill it is the
+     * contrasting ink. A solid pill at rest read as selected, which is the bug this pins.
+     */
+    @Test
+    public void inkContrastsTheSolidFillOnlyWhenFocused() {
+        assertEquals(VpnBadge.INK, VpnBadge.pillInkColor(true, true));
+        assertEquals(VpnBadge.GREEN, VpnBadge.pillInkColor(true, false));
+        assertEquals(VpnBadge.INK_OFF, VpnBadge.pillInkColor(false, true));
+        assertEquals(VpnBadge.RED, VpnBadge.pillInkColor(false, false));
+    }
 }

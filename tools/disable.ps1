@@ -57,12 +57,13 @@ if (-not $pkgs -or $pkgs.Count -eq 0) {
 # Core Android packages, the same block as disable.sh: with one of these disabled Android itself can stop
 # booting (#884, an original Mi TV Stick). No switch overrides it. Ext services and ext shared also
 # ship under AOSP's bare names, android.ext.services and android.ext.shared (#1711). Keep both
-# patterns in step with disable.sh and recovery.py (tests/test_core_packages.py).
-$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$'
+# patterns in step with disable.sh and recovery.py (tests/test_core_packages.py). The TV middleware
+# (com.cltv.mal, com.mediatek.tis / tv.service / tv.agent) is guarded too (#1578, a Haier boot loop).
+$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 $coreOk = '^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 $core = @($pkgs | Where-Object { $_ -cmatch $coreRe -and $_ -cnotmatch $coreOk })
 if ($core.Count -gt 0) {
-    throw "refusing ${List}: it disables core Android packages, and without them the TV may not boot again (#884): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
+    throw "refusing ${List}: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
 }
 # A Wi-Fi network saved during the first-run wizard belongs to setupwraith, and Android deletes it when
 # setupwraith is disabled. Skip it while it owns the saved network; `$env:FORCE_SETUPWRAITH=1` overrides.

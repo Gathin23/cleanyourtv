@@ -7,8 +7,9 @@ import android.os.Bundle;
 /**
  * Switches night mode in one press, for a remote button ("hold:190:io.github.maxhayim.brightness/.NightToggleActivity"
  * in the launcher's app_keys) or another app. Without extras it toggles: on (dimming with it) when night mode was off
- * or on a schedule, off when it was on; the schedule can be set again in the settings. An extra "night" of "on" or
- * "off" sets it instead, and "bar" false skips the quick bar that shows the result. No window of its own.
+ * or on a schedule, and on the next press back to what it replaced, the schedule or off. An extra "night" of "on" or
+ * "off" sets it instead (off also puts a replaced schedule back), and "bar" false skips the quick bar that shows the
+ * result. No window of its own.
  */
 public class NightToggleActivity extends Activity {
     static final String EXTRA_NIGHT = "night";
@@ -21,7 +22,10 @@ public class NightToggleActivity extends Activity {
             Dimming.Settings s = Prefs.load(this);
             String wanted = getIntent().getStringExtra(EXTRA_NIGHT);
             boolean turnOn = wanted == null ? s.night != Dimming.Night.ON : "on".equals(wanted);
-            s.night = turnOn ? Dimming.Night.ON : Dimming.Night.OFF;
+            Dimming.Night replaced = Prefs.nightBeforeToggle(this);
+            if (!turnOn) Prefs.setNightBeforeToggle(this, null);
+            else if (s.night != Dimming.Night.ON) Prefs.setNightBeforeToggle(this, s.night);
+            s.night = Dimming.nightAfterToggle(turnOn, replaced);
             if (turnOn) s.on = true;
             Prefs.save(this, s);
             DimService.start(this);

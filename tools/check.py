@@ -370,7 +370,7 @@ def main():
     core = recovery.core_packages(listed)
     if core:
         # The same refusal as disable.sh: --fix would disable these again (#884).
-        sys.stderr.write(f"refusing {list_path}: it disables core Android packages, and without them "
+        sys.stderr.write(f"refusing {list_path}: it disables core Android or TV middleware packages, and without them "
                          f"the TV may not boot again (#884): {', '.join(core)}. Take these lines out "
                          f"of the list and run it again. Nothing was checked or changed.\n")
         return 2

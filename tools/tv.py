@@ -318,6 +318,10 @@ PNG = b"\x89PNG\r\n\x1a\n"
 # Key names go into a shell command on the TV, so only plain key names and numeric keycodes get through.
 KEY_NAME = re.compile(r"^[A-Z0-9_]+$")
 KEY_GAP_S = 0.6   # between two keys, so the UI has finished reacting to the first
+# The pause after the last key is there for a screen to settle. The capture's read timeout is 120 s and
+# the pull's 300 s, so a pause longer than that is a unit typo rather than a settle: "seconds" typed as
+# milliseconds or nanoseconds ("--wait 1000000000") used to hang the run for years instead of returning.
+WAIT_MAX_S = 300.0
 
 
 def check_arity(args):
@@ -429,7 +433,8 @@ def screenshot_args(rest):
     KEY is an Android key name without the KEYCODE_ prefix (HOME, DPAD_RIGHT), a full name (KEYCODE_BACK)
     or a numeric keycode (83). The screenshot is taken --wait seconds after the last key (default 1). With no
     keys, --wait still pauses before the capture, so a screen that is still loading can settle; without it,
-    no keys means no pause."""
+    no keys means no pause. The pause is 0 to 300 seconds: a value time.sleep() cannot take, or one that is
+    a unit typo, is a usage error here rather than a traceback after the keys have been pressed."""
     local, keys, wait = None, [], None
     i = 0
     while i < len(rest):
@@ -441,8 +446,15 @@ def screenshot_args(rest):
                 wait = float(rest[i + 1])
             except ValueError:
                 wait = -1
-            if wait < 0:
-                usage_error(f"--wait needs a number of seconds, not {rest[i + 1]!r}")
+            # Judged here, with the destination and before connect(), because time.sleep() cannot take
+            # every float: NaN is a ValueError and an infinity (or 1e18) an OverflowError, both raised in
+            # screenshot() *after* the keys have been pressed on the TV - exit 1, the code this client
+            # keeps for a capture that came back empty, so a typo in the pause read as a TV with nothing
+            # on screen, with no PNG and the capture never taken. A NaN fails both comparisons, so this
+            # one test covers it too.
+            if not 0 <= wait <= WAIT_MAX_S:
+                usage_error(f"--wait needs a number of seconds between 0 and {WAIT_MAX_S:g}, "
+                            f"not {rest[i + 1]!r}")
             i += 2
             continue
         if local is None and not arg.startswith("--"):

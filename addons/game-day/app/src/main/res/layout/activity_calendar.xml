@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One calendar: change its sport, colour, name or link, fetch it, move it up, remove it. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:paddingStart="48dp" android:paddingEnd="48dp" android:paddingTop="28dp">
+
+    <TextView android:id="@+id/title" style="@style/Title" android:layout_width="match_parent" android:layout_height="wrap_content" />
+    <TextView android:id="@+id/sub" style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="2dp" android:singleLine="true" android:ellipsize="end" />
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="24dp" android:orientation="horizontal">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginEnd="24dp" android:orientation="vertical">
+            <TextView android:id="@+id/sport" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <TextView android:id="@+id/colour" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <TextView android:id="@+id/name" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content" />
+            <TextView android:id="@+id/link" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/fetch" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/fetch_one" />
+            <TextView android:id="@+id/up" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/move_up" />
+            <TextView android:id="@+id/remove" style="@style/Button" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/remove" android:textColor="#FFFF8A80" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

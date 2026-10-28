@@ -75,4 +75,5 @@
         <item quantity="other">%1$d aplikacija</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="game_live">Uživo sada</string>
 </resources>

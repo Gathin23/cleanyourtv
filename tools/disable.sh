@@ -59,12 +59,15 @@ fi
 # below CORE_OK are the exception: tested lists turn them off and no TV feature uses them.
 # Some TVs ship ext services and ext shared under AOSP's bare names, android.ext.services and
 # android.ext.shared, with no com.android. or com.google.android. in front (#1711).
+# The TV middleware is guarded the same way: MediaTek's MAL (com.cltv.mal), TV service, agent and input
+# service (com.mediatek.tis). A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off
+# (#1578), and the Haier-built AQUA MatrixTV list keeps all four.
 # Keep CORE_RE and CORE_OK the same in disable.ps1 and recovery.py (tests/test_core_packages.py).
-CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$'
+CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 CORE_OK='^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 CORE=$(printf '%s\n' "$PKGS" | grep -E "$CORE_RE" | grep -vE "$CORE_OK" || true)
 if [ -n "$CORE" ]; then
-  { echo "refusing $LIST: it disables core Android packages, and without them the TV may not boot again (#884):"
+  { echo "refusing $LIST: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578):"
     printf '%s\n' "$CORE" | sed 's/^/  /'
     echo "Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."; } >&2
   exit 1

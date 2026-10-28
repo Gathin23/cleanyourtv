@@ -92,8 +92,10 @@ Debloat
   `com.google.android.*`, and ext services and ext shared also as the bare `android.ext.services` and
   `android.ext.shared`), `com.google.android.overlay.modules*`, `com.android.providers.*` (calendar,
   contacts, user dictionary and blocked numbers aside), `com.android.systemui`, `com.android.shell`,
-  `com.android.phone`, `com.android.settings`, `com.android.tv.settings` and `android`. An original Mi TV
-  Stick never booted again after a list took the first six
+  `com.android.phone`, `com.android.settings`, `com.android.tv.settings` and `android`, nor the TV
+  middleware (`com.cltv.mal`, `com.mediatek.tis`, `com.mediatek.tv.service`, `com.mediatek.tv.agent`:
+  a Haier set restarted in a loop with `com.cltv.mal` off,
+  [#1578](https://github.com/Gathin23/cleanyourtv/issues/1578)). An original Mi TV Stick never booted again after a list took the first six
   ([#884](https://github.com/Gathin23/cleanyourtv/issues/884)); `tools/disable.sh` refuses such a list.
 - Before touching streaming apps, voice assistant, Chromecast, Miracast or the update service, ask me
   which ones I use with a checklist question and disable only what I don't tick.

@@ -108,4 +108,5 @@
     <string name="race_live">%1$s · en directe</string>
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
+    <string name="game_live">En directe</string>
 </resources>

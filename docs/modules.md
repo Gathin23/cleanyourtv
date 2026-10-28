@@ -111,3 +111,36 @@ Retro, an NES library for the TV, declares a card exactly as above:
 
 A launcher that wants other apps' Continue watching rows can read them, see
 [`docs/watch-next.md`](watch-next.md).
+
+## Each team's next game on Home (game_day)
+
+An app can hand Home a short list of upcoming events, which the launcher shows in the F1 panel's place under the
+clock and rotates through, with the theme's F1 weekend as one more turn. The launcher only reads; it never writes
+to the app and never goes online, so the app does the fetching. The owner opts in by naming the app's package in
+the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
+
+1. Name a read-only content provider in a `meta-data` on your `<application>`:
+
+   ```xml
+   <meta-data android:name="com.gathin.tvhome.games" android:value="com.example.games" />
+   <provider android:name=".GamesProvider" android:authorities="com.example.games" android:exported="true" />
+   ```
+
+   The provider must belong to the package the owner named; the launcher ignores an authority another app holds.
+2. Answer a query on `content://<authority>/turns` with these columns, one row per turn, sorted by start:
+
+   | Column | Type | What |
+   |---|---|---|
+   | `top_line` | text | The small top line, for example "Minnesota Wild at Dallas Stars". Rows without it are skipped. |
+   | `word` | text | The word before the countdown: "Puck drop" shows "Puck drop in 2h 18m". Empty shows the countdown alone. |
+   | `start_ms`, `end_ms` | integer | Epoch milliseconds. Between them the panel says "Live now"; after `end_ms` the row is dropped. |
+   | `colour` | integer | ARGB of the short bar. |
+   | `calendar` | text | Where the row came from; not shown. |
+   | `turn_seconds` | integer | Seconds per turn, 10 to 120; anything else means 30. Read from the first row. |
+
+   An empty cursor hides the panel. Keep it to what Home shows anyway: the provider is exported without a
+   permission, so it must hold no links, accounts or other private data.
+3. Call `notifyChange` on that URI when the rows change. The launcher queries when Home comes back, when Home is
+   pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
+
+The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.

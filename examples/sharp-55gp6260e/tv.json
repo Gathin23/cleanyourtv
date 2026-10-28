@@ -1,0 +1,6 @@
+{
+  "tv": "SHARP 55GP6260E (Sharp Google TV, kaitak, MediaTek MTK9612), EU",
+  "os": "Google TV 11",
+  "brand": "SHARP",
+  "notes": "Partner rows, retail demo, e-manual; Netflix, Disney+, Prime Video, YouTube, YouTube Music, Play Games, Twitch and NordVPN off by choice; setupwraith owned the Wi-Fi saved at setup and claims Home; remote gear is KEYCODE_FOCUS (80), YouTube is KEYCODE_TV_INPUT_COMPOSITE_1, Prime Video is KEYCODE_TV_INPUT_COMPONENT_2, FAV APP is KEYCODE_BUTTON_11 (opens the e-manual), Netflix is KEYCODE_STEM_1 (a held volume key steps once with HOME_KEY_SERVICE=1); ro.adb.secure unset; one session, not days"
+}

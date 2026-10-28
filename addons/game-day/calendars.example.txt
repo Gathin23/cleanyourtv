@@ -1,0 +1,14 @@
+# Copy this file to calendars.txt (it stays on your computer: calendars.txt is git-ignored, because calendar links
+# are often secrets) and run setup.sh or setup.ps1.
+#
+# sport | name | link | colour (optional)
+#
+# sport:  one of the sports in README.md (Hockey, Basketball, Baseball, Soccer, American football, Motor racing,
+#         light start, ...); it sets the word in front of the countdown ("Puck drop in 2h 18m").
+# name:   only for Game Day's list, up to 40 characters.
+# link:   the calendar's subscription link: https://, http:// or webcal://.
+# colour: one of the 36, such as "Green, dark" or "Amber, light"; left out, Game Day picks an unused one.
+
+Hockey     | Minnesota Wild | https://example.com/…/minnesota-wild.ics
+Soccer     | Utah Royals    | webcal://example.com/…/utah-royals.ics      | Amber, medium
+Basketball | Utah Jazz      | https://example.com/…/utah-jazz.ics

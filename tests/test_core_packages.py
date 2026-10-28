@@ -10,6 +10,9 @@ Ext services and ext shared also ship under AOSP's bare names, android.ext.servi
 android.ext.shared, with no com.android. or com.google.android. in front: the package dumps from an OBE
 R3 Ultra (Android 11), a CVTE SMART_TV (Android 12) and a MIBOX4 list both, installed and enabled (#1711).
 
+The TV middleware is guarded the same way: com.cltv.mal (MediaTek's MAL), com.mediatek.tis, tv.service and
+tv.agent. A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off (#1578).
+
 The PowerShell case needs `pwsh` on PATH and skips without it; CI's Ubuntu runner has it.
 """
 import os
@@ -39,6 +42,8 @@ CORE = [
     "com.android.providers.downloads",
     # AOSP's bare names for the same two modules (#1711).
     "android.ext.services", "android.ext.shared",
+    # TV middleware: a Haier H50H5F restarted in a loop with com.cltv.mal off (#1578).
+    "com.cltv.mal", "com.mediatek.tis", "com.mediatek.tv.service", "com.mediatek.tv.agent",
 ]
 # Look alike but are fine: what tested lists disable, and names that only share a prefix.
 NOT_CORE = [
@@ -48,6 +53,8 @@ NOT_CORE = [
     "com.google.android.tungsten.setupwraith", "com.google.android.apps.tv.launcherx",
     "com.android.shell2", "com.example.android.ext.services",
     "android.ext.services.overlay", "android.ext.sharedlib", "android.extservices",
+    # Tested lists turn these off: FAST channels, and the Live TV app the factory disables on some sets.
+    "com.cltv.fast", "com.cltv.hybrid", "com.mediatek.tv.settings", "com.mediatek.tis.overlay",
 ]
 
 

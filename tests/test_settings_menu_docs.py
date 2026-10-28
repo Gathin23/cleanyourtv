@@ -4,8 +4,8 @@ Clicking Settings opens the TV's own settings app. Holding OK opens a menu inste
 China-market set the row an owner needs is the one Xiaomi's own settings app carries: the ADB switch
 under Account & Security, which Android's settings app has no page for. MainActivity.showSettingsMenu()
 offers that app as "Native settings" whenever one of the packages in `settings_fallback_components` is
-installed (Xiaomi China, TCL/FFALCON, Fire OS), yet the README block a reader is sent to - "Launcher
-settings and the default home" - described the launcher's own settings page and not this menu at all.
+installed (Xiaomi China, TCL/FFALCON, Fire OS), yet the block a reader is sent to - "Launcher
+settings and the default home", in the README then and in docs/launcher.md now - described the launcher's own settings page and not this menu at all.
 The row was written down in one device note only, and that note sent the reader to "the pull request
 that added it": merged, so there is nothing there to read, while the notes for other China sets answer
 a closed ADB port with "re-enable it in Account & Security" without saying which app that is.
@@ -23,11 +23,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MAIN_ACTIVITY = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "MainActivity.java"
 STRINGS = ROOT / "launcher" / "app" / "src" / "main" / "res" / "values" / "strings.xml"
-README = ROOT / "README.md"
+GUIDE = ROOT / "docs" / "launcher.md"
 VENDOR_NOTE = ROOT / "docs" / "devices" / "xiaomi-mitv-mteq0" / "xiaomi-mitv-mteq0.md"
 
 METHOD = "private void showSettingsMenu()"
-BLOCK = "<summary><b>Launcher settings and the default home</b></summary>"
+BLOCK = "## Launcher settings and the default home"
 # addSettingsMenuRow(rows, popup, R.string.<name>, ...), however the call is wrapped.
 ROW = re.compile(r"addSettingsMenuRow\(\s*rows,\s*popup,\s*R\.string\.([a-z_]+)")
 
@@ -67,19 +67,19 @@ def string_text(name, xml):
 
 
 def settings_block(text):
-    """The README block that answers how to reach the launcher's and the TV's settings."""
-    start = text.find(BLOCK)
+    """The docs/launcher.md section that answers how to reach the launcher's and the TV's settings."""
+    start = text.find(BLOCK + "\n")
     if start < 0:
         return ""
-    end = text.find("</details>", start)
-    return text[start:end]
+    end = text.find("\n## ", start + len(BLOCK))
+    return text[start:end if end > 0 else len(text)]
 
 
 class SettingsMenuDocumentedTest(unittest.TestCase):
     def setUp(self):
         self.body = method_body(MAIN_ACTIVITY.read_text(encoding="utf-8"))
         self.xml = STRINGS.read_text(encoding="utf-8")
-        self.block = settings_block(README.read_text(encoding="utf-8"))
+        self.block = settings_block(GUIDE.read_text(encoding="utf-8"))
 
     def test_the_menu_still_offers_the_vendor_settings_app(self):
         # The subject of this file: without this row there is no route to Account & Security on a set
@@ -90,12 +90,12 @@ class SettingsMenuDocumentedTest(unittest.TestCase):
     def test_every_menu_row_is_named_in_the_readme_block(self):
         rows = menu_rows(self.body)
         self.assertGreaterEqual(len(rows), 4, "read no rows out of showSettingsMenu(): the reader is broken")
-        self.assertTrue(self.block, f"README.md has no {BLOCK} block")
+        self.assertTrue(self.block, f"docs/launcher.md has no {BLOCK} section")
         for name in rows:
             with self.subTest(row=name):
                 text = string_text(name, self.xml)
                 self.assertIn(text, self.block,
-                              f"the Settings menu's {text!r} row (R.string.{name}) is not in the README block")
+                              f"the Settings menu's {text!r} row (R.string.{name}) is not in docs/launcher.md")
 
     def test_the_vendor_note_names_the_row_and_reads_on_its_own(self):
         note = VENDOR_NOTE.read_text(encoding="utf-8")
