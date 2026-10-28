@@ -1,0 +1,8 @@
+# Local build output stays out of git, and so do the starter paintings: fetch-starter.sh downloads them
+# (public domain, from the museums' own servers) into the assets folder before a build.
+.gradle/
+build/
+local.properties
+/app/src/main/assets/starter/*.jpg
+/.screensaver-before
+/secrets.properties

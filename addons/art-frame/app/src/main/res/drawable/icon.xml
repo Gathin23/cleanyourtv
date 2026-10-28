@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A gold frame with a cream matte around a small landscape: dusk sky, sun and hills. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#FF111214" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#FFE0B354" android:pathData="M6,9h36v30h-36z" />
+    <path android:fillColor="#FFEFE8D8" android:pathData="M9,12h30v24h-30z" />
+    <path android:fillColor="#FF3D5A80" android:pathData="M14,16h20v16h-20z" />
+    <path android:fillColor="#FFF2C57C" android:pathData="M28,21m-2.5,0a2.5,2.5 0,1 1,5 0a2.5,2.5 0,1 1,-5 0" />
+    <path android:fillColor="#FF2E4A3A" android:pathData="M14,32l6,-7l5,5l3,-3l6,5z" />
+</vector>

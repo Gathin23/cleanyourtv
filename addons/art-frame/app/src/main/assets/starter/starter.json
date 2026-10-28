@@ -1,0 +1,95 @@
+{
+  "note": "Public-domain paintings bundled with Art Frame, chosen wide enough to fill a 16:9 or 16:10 screen with little cropping. fetch-starter.sh downloads each 'download' into this folder as 'file'; the app imports the ones that are present on its first start, set to fill the screen.",
+  "artworks": [
+    {
+      "file": "seurat-grande-jatte.jpg",
+      "title": "A Sunday on La Grande Jatte",
+      "artist": "Georges Seurat",
+      "date": "1884-86",
+      "source": "aic",
+      "url": "https://www.artic.edu/artworks/27992",
+      "credit": "Art Institute of Chicago, public domain (CC0)",
+      "download": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/full/!3840,2160/0/default.jpg"
+    },
+    {
+      "file": "hokusai-great-wave.jpg",
+      "title": "Under the Wave off Kanagawa",
+      "artist": "Katsushika Hokusai",
+      "date": "1830/33",
+      "source": "aic",
+      "url": "https://www.artic.edu/artworks/24645",
+      "credit": "Art Institute of Chicago, public domain (CC0)",
+      "download": "https://www.artic.edu/iiif/2/b3974542-b9b4-7568-fc4b-966738f61d78/full/!3840,2160/0/default.jpg"
+    },
+    {
+      "file": "caillebotte-paris-street.jpg",
+      "title": "Paris Street; Rainy Day",
+      "artist": "Gustave Caillebotte",
+      "date": "1877",
+      "source": "aic",
+      "url": "https://www.artic.edu/artworks/20684",
+      "credit": "Art Institute of Chicago, public domain (CC0)",
+      "download": "https://www.artic.edu/iiif/2/f8fd76e9-c396-5678-36ed-6a348c904d27/full/!3840,2160/0/default.jpg"
+    },
+    {
+      "file": "monet-stacks-of-wheat.jpg",
+      "title": "Stacks of Wheat (End of Summer)",
+      "artist": "Claude Monet",
+      "date": "1890-91",
+      "source": "aic",
+      "url": "https://www.artic.edu/artworks/64818",
+      "credit": "Art Institute of Chicago, public domain (CC0)",
+      "download": "https://www.artic.edu/iiif/2/a38e2828-ec6f-ece1-a30f-70243449197b/full/!3840,2160/0/default.jpg"
+    },
+    {
+      "file": "hitchcock-flower-girl.jpg",
+      "title": "Flower Girl in Holland",
+      "artist": "George Hitchcock",
+      "date": "1887",
+      "source": "aic",
+      "url": "https://www.artic.edu/artworks/138",
+      "credit": "Art Institute of Chicago, public domain (CC0)",
+      "download": "https://www.artic.edu/iiif/2/e72305c9-1a1c-8a36-7450-582619366338/full/!3840,2160/0/default.jpg"
+    },
+    {
+      "file": "whistler-nocturne.jpg",
+      "title": "Nocturne: Blue and Gold - Southampton Water",
+      "artist": "James McNeill Whistler",
+      "date": "1872",
+      "source": "aic",
+      "url": "https://www.artic.edu/artworks/56905",
+      "credit": "Art Institute of Chicago, public domain (CC0)",
+      "download": "https://www.artic.edu/iiif/2/50034c7f-ce51-00f1-430e-a6f7efc233fc/full/!3840,2160/0/default.jpg"
+    },
+    {
+      "file": "turner-burning-parliament.jpg",
+      "title": "The Burning of the Houses of Lords and Commons, 16 October 1834",
+      "artist": "Joseph Mallord William Turner",
+      "date": "1835",
+      "source": "cma",
+      "url": "https://clevelandart.org/art/1942.647",
+      "credit": "Cleveland Museum of Art, CC0",
+      "download": "https://openaccess-cdn.clevelandart.org/1942.647/1942.647_print.jpg"
+    },
+    {
+      "file": "church-twilight-wilderness.jpg",
+      "title": "Twilight in the Wilderness",
+      "artist": "Frederic Edwin Church",
+      "date": "1860",
+      "source": "cma",
+      "url": "https://clevelandart.org/art/1965.233",
+      "credit": "Cleveland Museum of Art, CC0",
+      "download": "https://openaccess-cdn.clevelandart.org/1965.233/1965.233_print.jpg"
+    },
+    {
+      "file": "van-gogh-plane-trees.jpg",
+      "title": "The Large Plane Trees (Road Menders at Saint-Remy)",
+      "artist": "Vincent van Gogh",
+      "date": "1889",
+      "source": "cma",
+      "url": "https://clevelandart.org/art/1947.209",
+      "credit": "Cleveland Museum of Art, CC0",
+      "download": "https://openaccess-cdn.clevelandart.org/1947.209/1947.209_print.jpg"
+    }
+  ]
+}

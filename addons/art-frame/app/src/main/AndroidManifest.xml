@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- Museum search and downloads (api.artic.edu, clevelandart.org, metmuseum.org), and the upload page phones
+         on the home network open while the Send from phone screen is showing. Nothing else goes out. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Only with "Home background matches the art" on: the default picture becomes the TV's system wallpaper. -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <!-- Only with "Wake into art" on: a foreground service keeps a screen-on receiver registered (started again
+         after a boot), and "display over other apps", granted by build-and-install.sh, lets it open art mode. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:icon="@drawable/icon"
+        android:banner="@drawable/banner"
+        android:largeHeap="true"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+
+        <!-- Art mode: the tile, the card and the remote's art button (app_keys "4181:com.gathin.artframe"). -->
+        <activity
+            android:name=".FrameActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+
+        <activity android:name=".LibraryActivity" android:exported="false" />
+        <activity android:name=".ArtworkActivity" android:exported="false" />
+        <activity android:name=".SearchActivity" android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity android:name=".PreviewActivity" android:exported="false" />
+        <activity android:name=".UploadActivity" android:exported="false" />
+        <!-- Opened by the TV's screensaver settings (xml/dream.xml), which needs it exported. -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:label="@string/settings" />
+
+        <!-- `settings put secure screensaver_components com.gathin.artframe/.ArtDream` (build-and-install.sh). -->
+        <service
+            android:name=".ArtDream"
+            android:label="@string/dream_name"
+            android:exported="true"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.service.dream" android:resource="@xml/dream" />
+        </service>
+
+        <service
+            android:name=".WakeService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Opens art mode when the TV wakes from standby" />
+        </service>
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
