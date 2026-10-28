@@ -90,14 +90,10 @@ final class ThemeFont {
     private static boolean load(Context ctx, Config cfg) {
         File dir = Config.dir(ctx);
         File file = dir == null ? null : new File(dir, FILE_NAME);
-        if (file == null || !file.isFile()) {
-            loaded = null;
-            return false;
-        }
+        if (file == null || !file.isFile()) return drop();
         if (file.length() > MAX_BYTES) {
             Log.w(TAG, FILE_NAME + " is over " + (MAX_BYTES >> 20) + " MB; keeping the bundled font");
-            loaded = null;
-            return false;
+            return drop();
         }
         long stamp = file.length() ^ file.lastModified();
         if (!file.equals(loaded) || stamp != loadedStamp) {
@@ -114,7 +110,14 @@ final class ThemeFont {
         }
         features = features(cfg.fontFeatures);
         if (typeface(400) != null) return true;
+        return drop();
+    }
+
+    /** Back to the bundled font, letting go of a font that was loaded before. */
+    private static boolean drop() {
         loaded = null;
+        byWeight.clear();
+        features = "";
         return false;
     }
 
