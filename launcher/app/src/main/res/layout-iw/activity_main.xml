@@ -279,6 +279,31 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:baselineAligned="true">
+                        <!-- search_orb and home_title, as in layout/activity_main.xml. Gone unless a theme sets them. -->
+                        <ImageView
+                            android:id="@+id/searchOrb"
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="24dp"
+                            android:padding="13dp"
+                            android:src="@drawable/ic_search"
+                            android:contentDescription="@android:string/search_go"
+                            android:focusable="true"
+                            android:clickable="true"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/homeTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+                            android:textColor="#FFFFFFFF"
+                            android:textSize="52sp"
+                            android:fontFamily="@string/font_light"
+                            android:includeFontPadding="false"
+                            android:visibility="gone" />
+
                         <TextClock
                             android:id="@+id/ampm"
                             android:layout_width="wrap_content"

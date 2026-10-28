@@ -61,3 +61,11 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
+| `tile_corner_radius` | <img src="switches/home_title.jpg" width="320" alt="tile_corner_radius 0 on a TV"> |
+| `tile_shape` | <img src="switches/home_title.jpg" width="320" alt="tile_shape square on a TV"> |
+| `flat_tiles` | <img src="switches/home_title.jpg" width="320" alt="flat_tiles on a TV"> |
+| `tile_label_inside` | <img src="switches/home_title.jpg" width="320" alt="tile_label_inside on a TV"> |
+| `row_titles` | <img src="switches/search_orb.jpg" width="320" alt="row_titles on a TV"> |
+| `home_title` | <img src="switches/home_title.jpg" width="320" alt="home_title Start on a TV"> |
+| `clock_right` | <img src="switches/search_orb.jpg" width="320" alt="clock_right on a TV"> |
+| `search_orb` | <img src="switches/search_orb.jpg" width="320" alt="search_orb focused on a TV"> |

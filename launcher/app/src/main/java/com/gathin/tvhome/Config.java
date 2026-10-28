@@ -266,6 +266,22 @@ final class Config {
     final boolean singleRow;
     /** With single_row, the band runs behind every app in the row, not only the dock apps (config.xml, dock_band_all). */
     final boolean dockBandAll;
+    /** The tiles' corner radius in dp at the design size, 0 to 24 (config.xml, tile_corner_radius). */
+    final int tileCornerRadius;
+    /** Square tiles instead of 16:9 banners (config.xml, tile_shape square). */
+    final boolean squareTiles;
+    /** uniform_tiles cards in one bright flat colour of the icon (config.xml, flat_tiles). */
+    final boolean flatTiles;
+    /** uniform_tiles: the name inside the card, always shown, none under it (config.xml, tile_label_inside). */
+    final boolean tileLabelInside;
+    /** A heading above each row, in order (config.xml, row_titles); empty for none. */
+    final List<String> rowTitles;
+    /** A large title in the clock's place, the clock moved right (config.xml, home_title); empty for none. */
+    final String homeTitle;
+    /** The time at the top right without the date (config.xml, clock_right; home_title implies it). */
+    final boolean clockRight;
+    /** The search button's colour (config.xml, search_orb); 0 hides it. */
+    final int searchOrb;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -281,7 +297,8 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait, boolean iconOnlyVpn) {
+                   int openOnStartNetworkWait, boolean iconOnlyVpn, int tileCornerRadius, boolean squareTiles, boolean flatTiles,
+                   boolean tileLabelInside, List<String> rowTitles, String homeTitle, boolean clockRight, int searchOrb) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -331,6 +348,14 @@ final class Config {
         this.iconOnlyButtons = iconOnlyButtons;
         this.iconOnlyInputs = iconOnlyInputs;
         this.iconOnlyVpn = iconOnlyVpn;
+        this.tileCornerRadius = tileCornerRadius;
+        this.squareTiles = squareTiles;
+        this.flatTiles = flatTiles;
+        this.tileLabelInside = tileLabelInside;
+        this.rowTitles = Collections.unmodifiableList(rowTitles);
+        this.homeTitle = homeTitle;
+        this.clockRight = clockRight || !homeTitle.isEmpty();
+        this.searchOrb = searchOrb;
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -393,6 +418,16 @@ final class Config {
         this.glowStyle = glowStyle(glowStyle);
         this.wallpaperCaptions = wallpaperCaptions;
         this.glassStyle = glassStyle(glassStyle);
+    }
+
+    /** search_orb's #RRGGBB as an opaque colour; 0 (no button) when empty or not a colour. */
+    static int searchOrbColor(String value) {
+        if (value == null || value.trim().isEmpty()) return 0;
+        try {
+            return Color.parseColor(value.trim()) | 0xFF000000;
+        } catch (IllegalArgumentException e) {
+            return 0;
+        }
     }
 
     /** A known glow_style, or radial (the default) for anything else. */
@@ -516,6 +551,14 @@ final class Config {
         String glassStyle = res.getString(R.string.glass_style);
         boolean singleRow = res.getBoolean(R.bool.single_row);
         boolean dockBandAll = res.getBoolean(R.bool.dock_band_all);
+        int tileCornerRadius = res.getInteger(R.integer.tile_corner_radius);
+        String tileShape = res.getString(R.string.tile_shape);
+        boolean flatTiles = res.getBoolean(R.bool.flat_tiles);
+        boolean tileLabelInside = res.getBoolean(R.bool.tile_label_inside);
+        List<String> rowTitles = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.row_titles)));
+        String homeTitle = res.getString(R.string.home_title).trim();
+        boolean clockRight = res.getBoolean(R.bool.clock_right);
+        String searchOrb = res.getString(R.string.search_orb).trim();
         boolean applied = false;
 
         File dir = dir(ctx);
@@ -626,6 +669,14 @@ final class Config {
             dockBandAll = bool(json, "dock_band_all", dockBandAll);
             glowStyle = string(json, "glow_style", glowStyle);
             glassStyle = string(json, "glass_style", glassStyle);
+            tileCornerRadius = integer(json, "tile_corner_radius", tileCornerRadius, 0, 24);
+            tileShape = string(json, "tile_shape", tileShape);
+            flatTiles = bool(json, "flat_tiles", flatTiles);
+            tileLabelInside = bool(json, "tile_label_inside", tileLabelInside);
+            rowTitles = stringList(json, "row_titles", rowTitles);
+            homeTitle = string(json, "home_title", homeTitle);
+            clockRight = bool(json, "clock_right", clockRight);
+            searchOrb = string(json, "search_orb", searchOrb);
         }
         // A top-bar app is moved there, not copied: it leaves the grid.
         for (String pkg : topBarApps) if (!hidden.contains(pkg)) hidden.add(pkg);
@@ -688,7 +739,9 @@ final class Config {
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn);
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn, Math.max(0, Math.min(24, tileCornerRadius)),
+                "square".equalsIgnoreCase(tileShape.trim()), flatTiles, tileLabelInside, singleRow ? Collections.emptyList() : rowTitles,
+                homeTitle, clockRight, searchOrbColor(searchOrb));
     }
 
     /**
