@@ -116,6 +116,11 @@
     <string name="library_app_info">App info</string>
     <string name="library_save_failed">Could not save the shortcut</string>
     <string name="library_recent">New · Add to Home</string>
+    <string name="library_pinned">Pinned</string>
+    <string name="library_pin">Pin to top</string>
+    <string name="library_unpin">Unpin</string>
+    <string name="library_move_earlier">Move earlier</string>
+    <string name="library_move_later">Move later</string>
     <string name="library_hint_add">Press to add to Home · Hold for options</string>
     <string name="library_hint_open">Press to open · Hold for options</string>
     <plurals name="library_app_count">

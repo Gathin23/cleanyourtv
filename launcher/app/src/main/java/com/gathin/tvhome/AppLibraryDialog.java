@@ -94,6 +94,7 @@ final class AppLibraryDialog {
     private int selectedOffset;
     private final Map<String, Long> installTimes = new HashMap<>();
     private final Map<String, String> labels = new HashMap<>();
+    private LibraryOrder libraryOrder;
     private long catalogTime;
     private PopupWindow actionPopup;
     private RecyclerView catalog;
@@ -158,6 +159,7 @@ final class AppLibraryDialog {
         this.changed = changed;
         this.dismissed = dismissed;
         this.excludedApps = excludedApps;
+        this.libraryOrder = LibraryOrder.load(activity);
         density = activity.getResources().getDisplayMetrics().density;
         panel = new LinearLayout(activity);
         panel.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
@@ -273,15 +275,14 @@ final class AppLibraryDialog {
 
     private void fill(List<ResolveInfo> catalogue) {
         totalApps = catalogue.size();
-        apps = catalogue;
         Map<String, Boolean> home = new HashMap<>();
-        for (ResolveInfo app : apps) {
+        for (ResolveInfo app : catalogue) {
             String pkg = app.activityInfo.packageName;
             home.put(pkg, onHome.test(pkg));
         }
         catalogTime = System.currentTimeMillis();
         Collator collator = Collator.getInstance();
-        apps.sort((a, b) -> {
+        catalogue.sort((a, b) -> {
             String pa = a.activityInfo.packageName, pb = b.activityInfo.packageName;
             if (selectionMode) return LibraryApps.compareCatalog(home.get(pa), label(a), pa,
                     home.get(pb), label(b), pb, collator);
@@ -291,6 +292,18 @@ final class AppLibraryDialog {
             int byLabel = collator.compare(label(a), label(b));
             return byLabel != 0 ? byLabel : pa.compareTo(pb);
         });
+        Map<String, ResolveInfo> byPackage = new HashMap<>();
+        List<String> catalogKeys = new ArrayList<>();
+        for (ResolveInfo app : catalogue) {
+            String pkg = app.activityInfo.packageName;
+            byPackage.put(pkg, app);
+            catalogKeys.add(pkg);
+        }
+        apps = new ArrayList<>();
+        for (String pkg : libraryOrder.sort(catalogKeys)) {
+            ResolveInfo app = byPackage.get(pkg);
+            if (app != null) apps.add(app);
+        }
         showCatalog();
     }
 
@@ -505,6 +518,38 @@ final class AppLibraryDialog {
         selectedPackage = next >= 0 ? apps.get(next).activityInfo.packageName : app.activityInfo.packageName;
     }
 
+    private List<String> packageKeys() {
+        List<String> keys = new ArrayList<>();
+        for (ResolveInfo app : apps) keys.add(app.activityInfo.packageName);
+        return keys;
+    }
+
+    private void changePin(ResolveInfo app, boolean pin) {
+        LibraryOrder next = pin
+                ? libraryOrder.pin(app.activityInfo.packageName, packageKeys())
+                : libraryOrder.unpin(app.activityInfo.packageName);
+        if (!LibraryOrder.save(activity, next)) {
+            Toast.makeText(activity, R.string.library_save_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        libraryOrder = next;
+        selectedOffset = 0;
+        dismissActions();
+        refresh();
+    }
+
+    private void moveOrder(ResolveInfo app, int delta) {
+        LibraryOrder next = libraryOrder.move(app.activityInfo.packageName, delta, packageKeys());
+        if (!LibraryOrder.save(activity, next)) {
+            Toast.makeText(activity, R.string.library_save_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        libraryOrder = next;
+        selectedOffset = 0;
+        dismissActions();
+        refresh();
+    }
+
     private void open(ResolveInfo app) {
         close();
         Intent intent = new Intent(Intent.ACTION_MAIN).setComponent(
@@ -539,6 +584,11 @@ final class AppLibraryDialog {
         boolean home = onHome.test(pkg);
         addAction(rows, home ? R.string.library_remove_shortcut : R.string.library_add_home,
                 () -> changeHome(app, !home));
+        boolean pinned = libraryOrder.isPinned(pkg);
+        addAction(rows, pinned ? R.string.library_unpin : R.string.library_pin,
+                () -> changePin(app, !pinned));
+        addAction(rows, R.string.library_move_earlier, () -> moveOrder(app, -1));
+        addAction(rows, R.string.library_move_later, () -> moveOrder(app, 1));
         Intent info = SystemSettings.appInfo(activity, pkg);
         if (info != null) addAction(rows, R.string.library_app_info, () -> {
             close();
@@ -652,16 +702,18 @@ final class AppLibraryDialog {
             name.setEllipsize(TextUtils.TruncateAt.END);
             TextView status = holder.itemView.findViewById(R.id.status);
             boolean home = onHome.test(pkg);
+            boolean pinned = libraryOrder.isPinned(pkg);
             boolean recent = !selectionMode && LibraryApps.recent(installTimes.getOrDefault(pkg, 0L), catalogTime);
-            status.setText(home ? R.string.library_on_home : recent ? R.string.library_recent : R.string.library_add_home);
-            status.setVisibility(home || !okOpens ? View.VISIBLE : View.INVISIBLE);
+            status.setText(home ? R.string.library_on_home : pinned ? R.string.library_pinned
+                    : recent ? R.string.library_recent : R.string.library_add_home);
+            status.setVisibility(home || pinned || !okOpens ? View.VISIBLE : View.INVISIBLE);
             holder.itemView.setBackground(surface(home ? 0x1475BBA4 : 0x0CFFFFFF, 18));
             View check = holder.itemView.findViewById(R.id.dot);
             check.getLayoutParams().width = dp(home ? 18 : 8);
             check.getLayoutParams().height = dp(home ? 18 : 8);
             if (home) check.setBackgroundResource(R.drawable.library_check);
             else check.setBackground(surface(0xFF70D9A0, 8));
-            check.setVisibility(home || recent ? View.VISIBLE : View.GONE);
+            check.setVisibility(home || pinned || recent ? View.VISIBLE : View.GONE);
             holder.itemView.setOnClickListener(v -> {
                 boolean onHomeNow = onHome.test(pkg);
                 if (LibraryApps.okOpens(selectionMode, okOpens, onHomeNow)) open(app);

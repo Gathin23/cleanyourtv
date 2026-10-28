@@ -32,6 +32,16 @@ and `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. On Linux the insta
 
 Themes set the same keys plus a background colour and a wallpaper.
 
+## App library
+
+With the App library enabled, hold **OK** on an app card to open its options:
+
+- **Pin to top** or **Unpin** keeps the app in the pinned group at the front of the list.
+- **Move earlier** and **Move later** change the manual order of the catalogue.
+- The order and pinned choices are stored on the TV and survive launcher restarts; new apps are appended after the saved entries.
+
+A normal OK press keeps its existing behaviour: it opens the app when configured, or adds/removes its Home shortcut.
+
 ## Launcher settings and the default home
 
 Click **Settings** for the TV's own settings. Hold OK on it for its menu:
