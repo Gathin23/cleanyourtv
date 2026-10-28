@@ -428,6 +428,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
+        // Home started before config.json could be read (right after a power cut): read again until it can, then
+        // rebuild, so the wallpaper and the weather come back by themselves.
+        if (Config.overlayFromCopy) watchConfigReadable();
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         appLibrarySelection = cfg.appLibrarySelection;
         libraryOkOpens = cfg.libraryOkOpens;
@@ -1286,10 +1289,40 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** How long Home keeps checking for config.json after starting on the kept copy. */
+    private static final long CONFIG_WATCH_MS = 3 * 60 * 1000L;
+    private final Handler configWatch = new Handler(Looper.getMainLooper());
+
+    private void watchConfigReadable() {
+        final long until = SystemClock.elapsedRealtime() + CONFIG_WATCH_MS;
+        configWatch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isFinishing() || isDestroyed()) return;
+                File dir = Config.dir(MainActivity.this);
+                File file = dir == null ? null : new File(dir, Config.FILE_NAME);
+                boolean readable = false;
+                if (file != null && file.isFile()) {
+                    try (java.io.FileInputStream in = new java.io.FileInputStream(file)) {
+                        readable = in.read() >= 0;
+                    } catch (IOException notYet) {
+                        // still not readable
+                    }
+                }
+                if (readable) {
+                    recreate();
+                } else if (SystemClock.elapsedRealtime() < until) {
+                    configWatch.postDelayed(this, 5000);
+                }
+            }
+        }, 5000);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
+        configWatch.removeCallbacksAndMessages(null);
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
