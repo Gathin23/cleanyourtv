@@ -1,5 +1,5 @@
 # Google TV Streamer (device kirkwood), Google TV 14 (SDK 34), build UTTK.260317.003, 4 GB RAM
-# Second unit: tested 20-28 October 2026. Five-package subset with stock Home and Cast kept enabled.
+# Tested on my unit 20-28 October 2026. Five-package subset with stock Home and Cast kept enabled.
 # Apply: TV_HOST=<ip> tools/disable.sh examples/google-tv-streamer-4k-kirkwood/debloat-keep-cast.txt
 # Undo:  TV_HOST=<ip> tools/restore.sh examples/google-tv-streamer-4k-kirkwood/debloat-keep-cast.txt com.google.android.apps.tv.launcherx
 # Disable only. Back up first; comment out packages you want to keep.
@@ -15,6 +15,6 @@ com.google.android.feedback
 com.android.tv.feedbackconsent
 com.google.android.tv.remotecontrol.logging      # remote usage logging, not the phone remote service
 
-# Privacy Sandbox advertising services; activities and services inspected before disabling
+# Privacy Sandbox advertising services; I inspected activities and services before disabling
 com.google.android.adservices.api
 com.google.android.ext.adservices.api
