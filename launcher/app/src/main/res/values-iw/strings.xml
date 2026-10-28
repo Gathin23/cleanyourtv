@@ -100,6 +100,11 @@
     <string name="reorder_not_saved">לא ניתן לשמור את הסדר החדש</string>
     <string name="app_library">ספריית אפליקציות</string>
     <string name="library_empty">לא נמצאו אפליקציות שניתן לפתוח</string>
+    <string name="library_pinned">מוצמדת</string>
+    <string name="library_pin">הצמדה לראש</string>
+    <string name="library_unpin">ביטול הצמדה</string>
+    <string name="library_move_earlier">העברה למעלה</string>
+    <string name="library_move_later">העברה למטה</string>
     <string name="library_on_home">במסך הבית</string>
     <string name="library_add_home">הוספה למסך הבית</string>
     <string name="library_remove_shortcut">הסרה ממסך הבית</string>

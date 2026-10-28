@@ -13,7 +13,7 @@ class TopBarLaunchActionsTest(unittest.TestCase):
             '@Override public void onLibraryUp()', 1)[0]
 
     def test_top_bar_passes_configured_actions_to_tested_selection_policy(self):
-        self.assertIn('addTopBarApps(cfg.topBarApps, cfg.launchActions)', self.source)
+        self.assertIn('addTopBarApps(LibraryOrder.load(this).topBarApps(configuredTopBarApps), topBarLaunchActions)', self.source)
         self.assertIn('LaunchActions.select(pkg, launchActions, launch,', self.method)
         self.assertIn('button.setOnClickListener(v -> open(new Intent(target)))', self.method)
 
