@@ -1265,7 +1265,8 @@ first two writes are what make the opt-in survive, so read why:
 - `WRITE_SECURE_SETTINGS` is what lets the launcher write the helper back onto the list at screen-on.
   Without it `GuardKeep` gives up silently and the helper stays off after the first standby, which looks
   like the helper having died. `RESTORE_KEY_SERVICES=1` at install already grants it
-  ([the force-stop section](#accessibility-helper-enabled-but-the-remote-button-does-nothing)).
+  ([the force-stop section](#accessibility-helper-enabled-but-the-remote-button-does-nothing)), and an install
+  without it takes the grant back, so once the opt-in is on, pass it on every reinstall.
 - `GuardRevival` is the listener the system re-binds once the process is gone, and firmware that kills
   third-party apps in standby takes the screen-on watch with it. The rebind is what re-arms it.
 
