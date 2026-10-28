@@ -525,6 +525,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
+    java.util.List<Entry> quietEntries() { return new ArrayList<>(items); }
+
+    void quietLaunch(Entry entry) { launch(entry); }
+
     private void launch(Entry e) {
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
