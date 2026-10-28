@@ -9,10 +9,18 @@ import org.junit.Test;
 public class AccessTest {
     @Test
     public void adbStates() {
-        assertEquals(Access.Adb.OFF, Access.adb(false, true, 5555));
+        assertEquals(Access.Adb.OFF, Access.adb(false, false, -1));
+        assertEquals(Access.Adb.OFF, Access.adb(false, false, 5555));
         assertEquals(Access.Adb.USB_ONLY, Access.adb(true, false, -1));
         assertEquals(Access.Adb.NETWORK, Access.adb(true, false, 5555));
         assertEquals(Access.Adb.NETWORK, Access.adb(true, true, -1));
+    }
+
+    @Test
+    public void wirelessDebuggingWithUsbDebuggingOff() {
+        // Xiaomi TV Box S 3rd gen (MiTV-AFMU0), Google TV 14: adb_enabled 0, adb_wifi_enabled 1, and port 5555 answers.
+        assertEquals(Access.Adb.NETWORK, Access.adb(false, true, 5555));
+        assertEquals(Access.Adb.NETWORK, Access.adb(false, true, -1));
     }
 
     @Test
