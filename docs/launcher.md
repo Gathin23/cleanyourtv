@@ -36,9 +36,10 @@ Themes set the same keys plus a background colour and a wallpaper.
 
 With the App library enabled, hold **OK** on an app card to open its options:
 
-- **Pin to top** or **Unpin** keeps the app in the pinned group at the front of the list.
-- **Move earlier** and **Move later** change the manual order of the catalogue.
-- The order and pinned choices are stored on the TV and survive launcher restarts; new apps are appended after the saved entries.
+- **Pin to top** or **Unpin** keeps the app in the pinned group at the front of the list. Pinned apps also get fixed launch buttons in Home's top bar and are omitted from the Home grid.
+- **Move earlier** and **Move later** change the manual order of the catalogue and the pinned top-bar buttons.
+- The configured `top_bar_apps` buttons keep their existing order and launch actions; pinned buttons are appended after them without duplicates.
+- Pinning, unpinning, and reordering refresh the Home grid and top bar immediately. The order and pinned choices are stored on the TV and survive launcher restarts; new apps are appended after the saved entries.
 
 A normal OK press keeps its existing behaviour: it opens the app when configured, or adds/removes its Home shortcut.
 

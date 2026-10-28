@@ -535,6 +535,7 @@ final class AppLibraryDialog {
         libraryOrder = next;
         selectedOffset = 0;
         dismissActions();
+        changed.run();
         refresh();
     }
 
@@ -547,6 +548,7 @@ final class AppLibraryDialog {
         libraryOrder = next;
         selectedOffset = 0;
         dismissActions();
+        changed.run();
         refresh();
     }
 

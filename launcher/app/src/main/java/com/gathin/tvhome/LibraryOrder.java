@@ -74,6 +74,14 @@ final class LibraryOrder {
         return new LibraryOrder(next, pinned);
     }
 
+    List<String> topBarApps(List<String> configured) {
+        List<String> result = new ArrayList<>(configured);
+        for (String key : sort(keys)) {
+            if (pinned.contains(key) && !result.contains(key)) result.add(key);
+        }
+        return result;
+    }
+
     List<String> sort(List<String> catalog) {
         Set<String> available = new HashSet<>(catalog);
         Set<String> added = new HashSet<>();

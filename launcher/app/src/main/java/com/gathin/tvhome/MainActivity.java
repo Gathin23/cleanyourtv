@@ -282,6 +282,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     };
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
     private Set<String> hiddenApps = Collections.emptySet();
+    private List<String> configuredTopBarApps = Collections.emptyList();
+    private Map<String, String> topBarLaunchActions = Collections.emptyMap();
+    private View.OnKeyListener pillKeys;
     /** library_excluded_apps: packages the App library catalogue never offers. */
     private Set<String> libraryExcludedApps = Collections.emptySet();
     private List<Cards.Card> cards = Collections.emptyList();
@@ -428,6 +431,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
+        configuredTopBarApps = cfg.topBarApps;
+        topBarLaunchActions = cfg.launchActions;
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         appLibrarySelection = cfg.appLibrarySelection;
         libraryOkOpens = cfg.libraryOkOpens;
@@ -796,7 +801,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             libraryFromTopBar = true;   // closing it goes back to this button, not to the pill after the last row
         });
         btnLibraryTop.setVisibility(cfg.libraryButton && cfg.appLibrary ? View.VISIBLE : View.GONE);
-        addTopBarApps(cfg.topBarApps, cfg.launchActions);
+        refreshTopBarApps();
         iconOnlyButtons = cfg.iconOnlyButtons;
         topMenu = cfg.topMenu;
         wifiIconOnly = iconOnlyButtons && cfg.wifiLabelWidth <= 0;
@@ -846,7 +851,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
-        View.OnKeyListener pillKeys = (v, keyCode, event) -> {
+        pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
@@ -1111,6 +1116,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      *                 on a return to the same tiles it would only mark a change that didn't happen.
      */
     private void reloadApps(boolean animate, boolean rebuild, boolean entrance) {
+        refreshTopBarApps();
         cancelPendingFocusScroll();
         RecyclerView.ViewHolder footer = grid.findViewHolderForAdapterPosition(adapter.appCount());
         final boolean restoreLibrary = adapter.isLibraryAt(adapter.appCount()) && footer != null
@@ -1181,7 +1187,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // One LEANBACK query for both the tiles and the card checks.
         final List<ResolveInfo> leanback = getPackageManager().queryIntentActivities(
                 new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER), 0);
-        cards = moduleCards ? CardFeature.run(() -> Cards.discover(this, hiddenApps,
+        Set<String> effectiveHidden = new HashSet<>(hiddenApps);
+        effectiveHidden.addAll(LibraryOrder.load(this).pinned);
+        cards = moduleCards ? CardFeature.run(() -> Cards.discover(this, effectiveHidden,
                 () -> Cards.load(Cards.storeFile(this)), leanback), none) : none;
         adapter.reload(cards.isEmpty() ? none : CardFeature.run(() -> Cards.shown(cards), none), leanback);
         lastFocusedKey = returnKey;
@@ -2418,6 +2426,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** top_bar_apps buttons, in bar order. */
     private final List<View> topAppButtons = new ArrayList<>();
 
+    private void refreshTopBarApps() {
+        ViewGroup bar = findViewById(R.id.topButtons);
+        for (View button : topAppButtons) bar.removeView(button);
+        topAppButtons.clear();
+        addTopBarApps(LibraryOrder.load(this).topBarApps(configuredTopBarApps), topBarLaunchActions);
+    }
+
+    private void bindTopBarApp(View button) {
+        if (pillKeys != null) button.setOnKeyListener(pillKeys);
+        if (advancedEffects) {
+            button.setOnFocusChangeListener((view, focused) -> view.animate()
+                    .scaleX(focused ? 1.04f : 1f).scaleY(focused ? 1.04f : 1f)
+                    .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start());
+        }
+    }
+
     /**
      * Puts each top_bar_apps app in the top bar as a round pill with the app's own logo, left of the network pill.
      * The logo keeps its colours: the pill style's tint, which turns the other icons white, is cleared.
@@ -2453,6 +2477,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             button.setContentDescription(label);
             Intent target = launch;
             button.setOnClickListener(v -> open(new Intent(target)));
+            bindTopBarApp(button);
             // After the network pill and the VPN pill; the Hebrew bar runs the other way, so before both there.
             bar.addView(button, bar.indexOfChild(getResources().getBoolean(R.bool.rtl_menu_bar) ? btnVpn : btnWifi));
             topAppButtons.add(button);
