@@ -212,6 +212,8 @@ def output_path(value):
         raise argparse.ArgumentTypeError(f"{value}: {folder} is a file, not a folder")
     if not os.path.isdir(folder):
         raise argparse.ArgumentTypeError(f"{value}: there is no folder {folder} - create it first")
+    if os.path.splitext(value)[1].lower() != ".png":
+        raise argparse.ArgumentTypeError(f"{value}: name the PNG with a .png extension")
     return value
 
 
@@ -231,6 +233,8 @@ def parse(argv):
     p.add_argument("--engine", metavar="PATH", help="a trace_processor_shell to use instead of downloading one")
     p.add_argument("--width", type=int, default=1600)
     args = p.parse_args(argv)
+    if args.width <= LEFT + 95:
+        p.error(f"--width must be greater than {LEFT + 95} pixels to leave room for the plot")
     if len(args.traces) > 4:
         p.error("at most four traces (panels)")
     if not re.fullmatch(r"first-frame|all|start:\d+(\.\d+)?", args.window):

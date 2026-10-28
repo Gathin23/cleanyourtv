@@ -214,9 +214,11 @@ class DisableVerifyTest(unittest.TestCase):
         # What each script runs: the read, the line that fails the run, and the ADB warning before it.
         lines = {
             "disable.sh": ("\"$PY\" -I tools/tv.py 'pm list packages -e --user 0' 2>/dev/null",
-                           '\n[ -z "$STILL_ON" ] || exit 1\n', '\nif [ "$ADB_SECURE" = "0" ]; then\n'),
+                           '\n[ -z "$STILL_ON" ] || exit 1\n',
+                           '\nif [ "$ADB_SECURE" = "0" ] || [ -z "$ADB_SECURE" ]; then\n'),
             "disable.ps1": ("& $py -I $tvPy 'pm list packages -e --user 0' 2>$null",
-                            "\nif ($stillOn.Count -gt 0) { exit 1 }\n", "\nif ($adbSecure -eq '0') {\n"),
+                            "\nif ($stillOn.Count -gt 0) { exit 1 }\n",
+                            "\nif ($null -ne $adbSecure -and ($adbSecure -eq '0' -or $adbSecure -eq '')) {\n"),
         }
         for name, text in (("disable.sh", sh), ("disable.ps1", ps1)):
             read, fail, adb = lines[name]

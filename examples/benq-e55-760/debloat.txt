@@ -1,0 +1,112 @@
+# BenQ E55-760 (55" 4K, Taiwan), Google TV on Android 14 (SDK 34), firmware UKN5.251016.080
+# Built by Changhong (ro.product.manufacturer=Changhong, ro.product.model="AI PONT"), but product
+# GTVU64BQ on board "alimos", MediaTek, about 2 GB RAM. Note the product differs from the E55-735 and
+# E55-750 examples (both DVB96BQ): this is a newer variant, and it carries Changhong's com.gdch.*
+# packages alongside the com.homwee.* ones the older two have.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-e55-760/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-e55-760/debloat.txt com.google.android.apps.tv.launcherx
+#
+# Install (launcherx kept, as examples/sony-bravia-vu3 does):
+#   config.xml: stock_home_redirect=com.google.android.apps.tv.launcherx, key_filter=false,
+#               restore_key_services=true
+#   TV_HOST=<tv ip> STOCK_LAUNCHER=none RESTORE_KEY_SERVICES=1 launcher/build-and-install.sh
+#   (its Home check reports launcherx and exits 1, which is expected), then bind the helper:
+#   settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService
+#   settings put secure accessibility_enabled 1
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER).
+# Already disabled from the factory: com.cltv.hybrid, com.mediatek.dtv.tvinput.{atsc,dvb,isdb}tuner,
+# com.mediatek.opapp, com.mediatek.tv.oneworld.tvcenter.
+#
+# Quirks on this firmware, all checked on the TV:
+# - There is NO Wireless debugging toggle while the set is on Ethernet, and USB debugging alone never
+#   opens port 5555 (it answers "Connection refused" even after a reboot). The TV's only open ports are
+#   6465-6467, 8008-8010, 8443 and 9000. Move the TV to Wi-Fi: Wireless debugging then becomes tappable
+#   and pairing works. Its connect port is random and changes on every reconnect, so resolve it with
+#   `adb mdns services` instead of hard-coding one. A reboot switches Wireless debugging off again.
+# - The TV's USB ports are host-only. "Select USB configuration" offers MTP/PTP/RNDIS in developer
+#   options, but a cable to a computer enumerates nothing, so there is no ADB over USB.
+# - The saved Wi-Fi network is owned by setupwraith (`dumpsys wifi | grep cname=`). Forget the network
+#   and re-join it from Settings before disabling setupwraith, or the TV drops off Wi-Fi and ADB with it.
+# - Home keeps going to com.google.android.tungsten.setupwraith/.RecoveryActivity after the stock
+#   launcher is disabled: setupwraith must be disabled too (listed below). build-and-install.sh stops
+#   with that exact message and re-enables the stock launcher, so run the list first, then the script.
+# - com.gdch.wwtv.mediaplayer asks for TV_INPUT_HARDWARE and HDMI_CEC, so tools/disable.sh skips it, but
+#   it is a false positive: `pm query-services -a android.media.tv.TvInputService` answers only
+#   com.mediatek.tis (HDMI/Composite/Component), com.mediatek.tv.agent and com.mediatek.autopair. HDMI
+#   was checked on the set after a reboot with it disabled. It needs TVINPUT_ALLOW=1.
+# - The remote's gear button sends HID consumer usage 0x000c009f, which evdev reports as KEY_UNKNOWN,
+#   so the stock launcher was the only thing answering it and it does nothing once launcherx is
+#   disabled. settings_key_scancodes 786591 (the MSC_SCAN value) did NOT catch it; what the framework
+#   reports is keyCode 83 / scanCode 240, as on the PEAQ AI PONT unit in #853. Its Netflix and YouTube
+#   buttons emit no input event at all, with or without a helper. The Input button is 0x000c0097 /
+#   KEY_TV2 and keeps working.
+# - HOME_KEY_SERVICE with key_filter TRUE costs key repeats here, as on the TCL G09 build: holding
+#   volume up steps once per press instead of ramping. The final setup below keeps the helper bound
+#   with key_filter FALSE, which is what gets the ramp back; see the two bullets after this one.
+# - power_on_home is not needed on this set: the firmware already resumes com.gathin.tvhome at
+#   power-on by itself (wm_set_resumed_activity in `logcat -b events`).
+# - The gear button is a global key: `dumpsys window policy` routes KEYCODE_NOTIFICATION to
+#   com.google.android.apps.tv.launcherx/.remotecontrol.GlobalKeyListener_Receiver (NOT to
+#   com.homwee.factory, which takes SOFT_LEFT/CALL/CAMERA/AT/PLUS here, so #853's factory-menu
+#   caveat does not apply to this unit). A temporary Log.w at the top of MainActivity's
+#   dispatchKeyEvent showed the gear never reaches the focused window at all, while DPAD_DOWN does
+#   (keyCode=20 scanCode=108) - so an Activity-level route is impossible and only a bound helper,
+#   or launcherx itself, can answer it.
+# - Held volume with HomeKeyService bound and key_filter true: the same Log.w in the helper's
+#   onKeyEvent logged the gear (keyCode=83 scanCode=240) twice and **no volume event of any kind**,
+#   down or repeat. That is the onKeyEvent evidence docs/devices/tcl-55p71b-g09-key-repeat.md asks
+#   for ("a future report that logs the repeat event arriving at a helper"): on this set the helper
+#   never receives the volume key, so the launcher cannot be the one dropping the repeats, which
+#   matches the AOSP reading in that note. Android 14 / SDK 34, a sixth vendor.
+# - key_filter false then gives the ramp back while the helper stays bound for the home redirect,
+#   and the gear keeps working because launcherx answers it, not the helper (the Sony BRAVIA VU3
+#   arrangement). Measured working on this set.
+# - Assistant content search ("大谷翔平") is drawn inside launcherx's own home screen: katniss sends
+#   VIEW https://tv.google.com/... to .gateway.LauncherDeepLink, launcherx then starts
+#   .home.HomeActivity with the results. With stock_home_redirect set, HomeKeyService bounces that
+#   screen to this launcher about 240 ms later and the results are gone - no error, just nothing.
+#   So stock_home_redirect and Assistant content search cannot both work here; voice app commands
+#   ("open Netflix") are unaffected. With launcherx disabled entirely the same search fails with an
+#   on-screen error, as docs/TROUBLESHOOTING.md describes for the onn 4K box.
+# - Re-enabling launcherx takes Home back immediately: `cmd package set-home-activity` prints
+#   Success and changes nothing (priority=2 outranks this launcher), as on the Hisense set.
+# - This firmware does not re-enable anything at boot: the disabled list was identical after a reboot.
+# - There is a second, dormant user (10, "new_user"). `pm disable-user --user 0` does not touch it.
+
+# Changhong / Homwee store and help
+com.homwee.store
+com.homwee.help
+
+# Automatic content recognition (reports what is on screen)
+tv.anoki.acr.anokiacroptin
+
+# Broadcast middleware for markets this set is not sold in
+tv.mopa.ginga                          # Ginga, Brazilian DTV
+org.obs.mhegservice                    # MHEG-5, UK/Irish DTV
+
+# Google TV recommendations and screensaver (set another screensaver first)
+com.google.android.videos              # Google TV app, the home screen's recommendation source
+com.google.android.apps.tv.dreamx      # ambient mode; mixes recommendations into the screensaver
+com.google.android.play.games
+
+# Apps this home does not use (by choice; keep the ones you use)
+com.google.android.youtube.tvmusic
+com.gdch.wwtv.mediaplayer              # USB media player; needs TVINPUT_ALLOW=1, see header
+
+# Stock home. Disable only after the new launcher is installed and set as home.
+com.google.android.tungsten.setupwraith  # its RecoveryActivity otherwise takes over Home
+# com.google.android.apps.tv.launcherx   # LEFT ENABLED on this set, on purpose - see the header:
+#   it is the only thing that answers the gear button, and disabling it also breaks Assistant
+#   content search. Home is handed over with stock_home_redirect + key_filter false instead.
+
+# Kept on purpose: com.homwee.upgrade and com.homwee.dmt.upgrade (firmware updates),
+# com.homwee.dynamicbacklight (dynamic backlight, drives the MediaTek PQ service),
+# com.homwee.factory (factory menu - never start it, and it is left enabled),
+# com.google.android.katniss (voice), com.google.android.apps.mediashell (Chromecast),
+# com.homwee.mmp.screenshare / com.homwee.multiscreenshare (Miracast), com.mediatek.autopair
+# (pairs and wakes the BenQ remote), com.mediatek.tis (HDMI/AV inputs),
+# com.gdch.android.tv.inputplayer and com.google.android.tv.inputplayer (input playback),
+# com.gdch.gameoptimiser (game mode), and every streaming app the household uses.

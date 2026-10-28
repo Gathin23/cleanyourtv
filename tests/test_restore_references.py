@@ -202,15 +202,15 @@ class RestoreReferencesTest(unittest.TestCase):
                          "than the list shows")
 
     def test_a_folder_script_a_page_names_is_there(self):
-        # examples/epson-ls800, anker-nebula-d2426 and tcl-43c645 ship the install and restore scripts
-        # they came with, and their pages name them; the TCL 55S470G header named one its folder does
-        # not have, so an owner's first undo command was "No such file".
+        # examples/epson-ls800 ships the restore script it came with, and its page names it (tcl-43c645
+        # dropped its own scripts for the shared tools, #1717); the TCL 55S470G header named one its
+        # folder does not have, so an owner's first undo command was "No such file".
         missing = [(str(path), name) for path, name in read_script_references(ROOT)
                    if not (ROOT / name).is_file()]
         self.assertEqual([], missing,
                          "these lines hand the owner a script inside a list folder that is not in the "
                          "repo, so the command fails before anything reaches the TV")
-        self.assertGreaterEqual(len(read_script_references(ROOT)), 4,
+        self.assertGreaterEqual(len(read_script_references(ROOT)), 2,
                                 "the folders that do ship such a script should be read; the scanner "
                                 "found fewer")
 

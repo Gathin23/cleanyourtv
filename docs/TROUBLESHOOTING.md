@@ -84,9 +84,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `TVOS-04.16.031.01.12`): the firmware starts `adbd` on its own port, 5877 there (`service.adb.tcp.port`),
   and the TV never shows it. Scan the TV's TCP ports (`nmap -p- <tv ip>`, or a short Python loop over
   `socket.connect_ex`; skip `nc` on macOS) and try each open port with `TV_HOST=<tv ip> TV_PORT=<port>
-  tools/tv.py --probe`: the ADB one answers, the others time out. Every script here honours `TV_PORT`, and
+  tools/tv.py --probe`: the ADB one answers, the others time out. A sandboxed shell can make `nmap`'s own
+  ping-discovery probe fail outright ("Network is down", SO_ERROR 50) before it scans anything;
+  `nmap -sT -Pn` (a plain TCP connect scan, no ping, no raw sockets) or the Python loop above still
+  works there. Every script here honours `TV_PORT`, and
   the closing check is `tools/adb-closed.py <tv ip> <port>`.
-- **Close port 5555 when you're done**: plaintext, and a shell for anyone on the LAN when `ro.adb.secure=0`. Steps in the README FAQ.
+- **Close port 5555 when you're done**: plaintext, and a shell for anyone on the LAN when `ro.adb.secure=0`, or when it is unset on a debug build or Android 4.4 (`tools/disable.sh` warns about both). Steps in the README FAQ.
 - **The TV sits on a separate VLAN or IoT network** and `tools/tv.py` times out although debugging
   is on: the router keeps the computer from reaching it. Add a temporary firewall rule from your
   computer to the TV on tcp/5555 only, and remove it again when you close ADB. Opening the whole
@@ -310,7 +313,8 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `Remove-Item Env:HANDLERS_ALLOW` after those two, or a later `check.py --fix` on your main list
   skips the guard too. To turn the app back on, use
   `tools/tv.py 'pm enable --user 0 <package>'`. `tools/restore.sh` with that list turns it back on
-  as well, but it also turns the stock launcher back on and makes it Home, as it does for any list.
+  as well, and leaves Home on this project's launcher: it turns the stock launcher back on and makes
+  it Home only if the stock launcher was on when the list was applied (#1714).
   Report another one rather than reading it as a firmware quirk: the wrong-handler case needs
   a source change, not a setting.
 - **`adb exec-out screencap -p` gives a broken PNG** on some MediaTek sets (Xiaomi, and Amazon's
@@ -486,7 +490,9 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   Confirmed on this set: with `HomeKeyService` bound, Volume Down held for 3 s gave one step in
   `dumpsys audio`; unbound, a 1.07 s hold gave 14 repeats 50 ms apart. Single presses step once either
   way, also through HDMI ARC to a home cinema system. Choose between a firm Home press and a held volume
-  ramp; this set cannot have both.
+  ramp; this set cannot have both. A 50PUS7354 on the same board and firmware does the same with its original
+  Philips remote, so a slow remote is not needed: firm presses sent `ALL_APPS` to FallbackHome there
+  too, and `home_long_press_home` fixed it.
 - **The TV drops off Wi-Fi for good the moment setupwraith is disabled**, seen on Google TV 14 (Sony
   BRAVIA 9 II, Philips R8G, Skyworth SWTV-24NA-4K NF, Xiaomi TV Box S 3rd gen MiTV-AFMU0) and on a TCL
   G07 on Google TV 11 (build AR17; on AR20 the network belonged to `android.uid.system`). A Wi-Fi
@@ -734,6 +740,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   package that also claims HOME (PatchWall on Xiaomi) makes Android drop the default. The install
   script now picks the known stock launcher among the candidates by itself; otherwise choose one on
   the TV or pass `STOCK_LAUNCHER=<package>`.
+- **`tools/restore.sh` leaves the packages an earlier batch disabled off, after the TV changed its
+  address mid-cleanup.** The recovery record is one file per list and address
+  (`~/.cleanyourtv/recovery-<address>-<list hash>.json`), so a new DHCP lease - a router restart, or
+  the Wi-Fi forget and re-join the setupwraith step asks for itself - makes the next
+  `tools/disable.sh` run find no record and write a fresh one from a TV that is already partly
+  cleaned: every package the earlier batches disabled is in it as "already disabled, left alone by
+  undo", and undo at the new address leaves them off. `tools/disable.sh` now says so on stderr, names
+  the record under the old address and the packages the two disagree about. Run `tools/restore.sh` at
+  the old address first, or move that record to the new address's name once you are sure it is this
+  set and not a second one cleaned with the same list ([#2139](https://github.com/Gathin23/cleanyourtv/issues/2139)).
 - **Stremio fails every stream with `ConnectException: Failed to connect to /127.0.0.1:11470`**,
   and only Force stop brings it back until the next reboot. This is not the debloat. It is a Stremio
   regression in 1.11 ([stremio-bugs#2866](https://github.com/Stremio/stremio-bugs/issues/2866)):

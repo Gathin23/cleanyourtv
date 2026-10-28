@@ -152,7 +152,9 @@ def scenario_of(path):
     if sidecar and os.path.exists(sidecar):
         try:
             with open(sidecar) as f:
-                return json.load(f).get("scenario", "")
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data.get("scenario", "")
         except (OSError, ValueError):
             pass
     return os.path.basename(path).split("-")[0]

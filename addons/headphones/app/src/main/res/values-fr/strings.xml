@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Casques</string>
+    <string name="plays_through">Le son sort actuellement par : %1$s</string>
+    <string name="output_speakers">les haut-parleurs de la TV</string>
+    <string name="output_fixed">la sortie audio de la TV (HDMI ARC ou optique)</string>
+    <string name="allow_title">Autoriser l\'accès Bluetooth</string>
+    <string name="allow_detail">Pour lister vos casques et savoir quand ils se déconnectent. OK pour autoriser.</string>
+    <string name="not_allowed">Non autorisé</string>
+    <string name="pair_title">Appairer ou connecter un casque</string>
+    <string name="pair_detail">Ouvre les réglages Bluetooth de la TV. Mettez d\'abord le casque en mode appairage.</string>
+    <string name="guard_title">Silence quand il se déconnecte</string>
+    <string name="guard_detail">Met en pause et coupe les haut-parleurs de la TV quand le casque se déconnecte, pour que le son ne parte pas dans la pièce. Rétablit le son à son retour.</string>
+    <string name="guard_detail_fixed">Met en pause quand le casque se déconnecte. Le volume de cette TV est fixe (ARC ou amplificateur), elle ne peut donc pas aussi couper les haut-parleurs.</string>
+    <string name="on">Activé</string>
+    <string name="off">Désactivé</string>
+    <string name="unmute_title">Rétablir le son des haut-parleurs</string>
+    <string name="unmute_detail">Coupé quand le casque s\'est déconnecté.</string>
+    <string name="muted">Coupé</string>
+    <string name="heading_paired">Casques et enceintes appairés</string>
+    <string name="no_bluetooth">Pas de Bluetooth sur cette TV</string>
+    <string name="bluetooth_off">Le Bluetooth est désactivé</string>
+    <string name="bluetooth_off_detail">Activez-le dans les réglages de la TV.</string>
+    <string name="none_yet">Aucun pour l\'instant</string>
+    <string name="none_yet_detail">Utilisez la ligne du dessus pour en appairer un.</string>
+    <string name="connected">Connecté</string>
+    <string name="connected_battery">Connecté, batterie %1$s</string>
+    <string name="not_connected_detail">Non connecté. OK ouvre les réglages Bluetooth pour le connecter.</string>
+    <string name="unnamed">Appareil sans nom</string>
+    <string name="heading_several">Plusieurs casques à la fois</string>
+    <string name="sharing_one_pair">Cette TV envoie le son vers un seul casque Bluetooth à la fois. Pour deux casques, utilisez un émetteur Bluetooth double liaison sur la sortie casque ou optique de la TV.</string>
+    <string name="sharing_auracast">Cette TV peut diffuser vers plusieurs casques LE Audio (Auracast) à la fois : lancez le partage depuis les réglages Bluetooth de la TV.</string>
+    <string name="sharing_no_broadcast">Cette TV envoie le son vers un seul casque Bluetooth à la fois ; elle ne gère pas la diffusion LE Audio. Pour deux casques, utilisez un émetteur Bluetooth double liaison sur la sortie casque ou optique de la TV.</string>
+</resources>

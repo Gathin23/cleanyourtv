@@ -81,7 +81,10 @@ def apply(command):
         if name not in state["disabled"] and name not in state.get("pinned", []):
             state["disabled"].append(name)
     elif command.startswith("cmd package set-home-activity --user 0 "):
-        state["home"] = command.split()[-1]
+        # Some firmware answers the switch and keeps Home where it was (the Chromecast with Google TV
+        # 4K list records it); home_locked plays that firmware.
+        if not state.get("home_locked"):
+            state["home"] = command.split()[-1]
     save()
 
 

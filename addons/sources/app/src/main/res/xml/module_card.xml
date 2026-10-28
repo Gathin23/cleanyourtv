@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<card spec="1" label="Sources" caption="Devices by name" accent="#3DDC84" />
+<!-- Not "Sources": on a TV in French that is what the launcher's own Inputs pill says, so the
+     launcher reserves it and drops the card. A card label is not localisable in spec 1. -->
+<card spec="1" label="Devices" caption="Sources by name" accent="#3DDC84" />

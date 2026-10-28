@@ -129,6 +129,25 @@
 #   launcher's home_long_press_home switch, installed with -HomeKeyService, fixed it; as on the fourth
 #   unit, the key filter ends Volume Up/Down repeat on hold, which this household preferred anyway.
 # - An injected KEYCODE_TV is ignored here too; test Live TV and SOURCES with the real remote.
+#
+# Sixth unit: Philips 50PUS7354 (LED, 2019 model), France, on Wi-Fi. Same firmware as the lead unit:
+# STT2.230526.001, fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys.
+# One session on 27 Oct 2026 with two restarts, not a several-day test. Launcher notes are in README.md.
+# - From the list below: all of batches 1 and 2; from batch 3 Prime Video, videos, youtube.tvmusic, play.games,
+#   talkback and playfi.softap, with katniss (Assistant) and dlna kept by choice; com.google.android.music is not
+#   installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome were skipped by the TV_INPUT_HARDWARE guard, as on the fifth unit. `pm query-services
+#   --components -a android.media.tv.TvInputService` lists only com.mediatek.tvinput, com.mediatek.tv.agent,
+#   org.droidtv.fastip and com.google.android.videos, so both were disabled with TVINPUT_ALLOW=1 set for those two
+#   alone. `dumpsys tv_input` still listed HDMI 1-4 after each batch.
+# - Also disabled, none used here: org.droidtv.tv.frameworklogger, org.droidtv.nettvapps,
+#   org.droidtv.nettv_launcherapp and org.droidtv.sticker (as on the fourth unit), com.netflix.ninja,
+#   com.apple.atve.androidtv.appletv and org.droidtv.dropboxprovider. Kept by choice: the official YouTube app
+#   (casting from a phone needs it), Alexa, Chromecast and both firmware updaters.
+# - The same 15 Freeview packages and org.droidtv.freeviewplayers were disabled from the factory.
+# - Every entry, tvrecommendations included, stayed disabled through both restarts (`pm list packages -d`
+#   compared before and after). com.phorus.playfi.tv was left enabled, per the note in batch 3.
+# - Private DNS in hostname mode validated on this firmware (`dumpsys connectivity` lists validated addresses).
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader

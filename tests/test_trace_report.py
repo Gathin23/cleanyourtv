@@ -298,6 +298,41 @@ class FilesTest(unittest.TestCase):
             self.assertEqual(report.scenario_of(str(path)), "nav")
             self.assertEqual(report.scenario_of(str(Path(tmp, "cold-3.pftrace"))), "cold")
 
+    def test_non_object_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            for text in ("[]", "null", '"nav"', "42"):
+                with self.subTest(sidecar=text):
+                    path.with_suffix(".json").write_text(text, encoding="utf-8")
+                    self.assertEqual(report.scenario_of(str(path)), "nav")
+
+    def test_object_sidecars_preserve_the_scenario_value(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            for data, expected in (({"scenario": "cold"}, "cold"), ({}, ""),
+                                   ({"scenario": ""}, ""), ({"scenario": None}, None)):
+                with self.subTest(sidecar=data):
+                    path.with_suffix(".json").write_text(json.dumps(data), encoding="utf-8")
+                    self.assertEqual(report.scenario_of(str(path)), expected)
+
+    def test_missing_and_malformed_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            self.assertEqual(report.scenario_of(str(path)), "nav")
+            path.with_suffix(".json").write_text("{", encoding="utf-8")
+            self.assertEqual(report.scenario_of(str(path)), "nav")
+
+    def test_unreadable_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            path.with_suffix(".json").write_text('{"scenario": "cold"}', encoding="utf-8")
+            with mock.patch("builtins.open", side_effect=PermissionError("unreadable sidecar")):
+                self.assertEqual(report.scenario_of(str(path)), "nav")
+
     def test_missing_perfetto_says_what_to_install(self):
         with mock.patch.dict(sys.modules, {"perfetto": None, "perfetto.trace_processor": None}), \
                 contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as caught:

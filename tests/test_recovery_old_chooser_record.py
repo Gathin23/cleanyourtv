@@ -99,12 +99,14 @@ class OldChooserRecordTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         record = self.record()
         self.assertIsNone(record["home"])
-        # The entries from before cleanup are kept as they were, not the TV as it is now.
+        # The entries from before cleanup are kept as they were, not the TV as it is now, including
+        # the stock launcher save() recorded alongside the list (#1714).
         self.assertEqual(record["packages"], {
             "com.example.enabled": "enabled",
             "com.example.already_off": "disabled",
             "com.example.absent": "absent",
             "com.example.added_later": "enabled",
+            STOCK: "enabled",
         })
         self.assertEqual(record["created"], first["created"])
         self.assertEqual(record["settings"], first["settings"])

@@ -11,7 +11,9 @@ before. Both scripts now go through this record: `disable.sh` writes it before t
 reaches the TV, and `restore.sh` replays it.
 
 Records live in ~/.cleanyourtv/, one per TV and list. The first one wins: a retry after a
-half-applied list must not record the broken state as the original. A later run, and check.py --fix,
+half-applied list must not record the broken state as the original. The TV is the address it was
+reached at, so a set that takes a new address gets a new record: save() warns when a record under
+another address still holds, as enabled, a package it just found disabled (#2139). A later run, and check.py --fix,
 only add the names the list gained since then, with their state before this list disabled them, and
 record a package that was absent then and is installed and enabled now as enabled.
 """
@@ -30,9 +32,15 @@ PACKAGE_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")
 HOME_RE = re.compile(r"[A-Za-z_][\w.]*/[\w.$]+")
 SCALE_RE = re.compile(r"-?\d+(\.\d+)?")
 SETTINGS = ("window_animation_scale", "transition_animation_scale", "animator_duration_scale")
-# This project's own launcher. When it already owned Home before debloating, restoring Home to it
-# would leave the stock launcher off, so restore goes back to the stock one instead.
+# This project's own launcher. When it already owned Home before debloating while the stock launcher
+# was on, restoring Home to it would leave the stock launcher's Home unused, so restore goes back to the
+# stock one instead. When the stock launcher was already off then, this launcher keeps Home (#1714).
 CUSTOM_LAUNCHER = "com.gathin.tvhome"
+# The stock launchers launcher/build-and-install.sh knows (its KNOWN_STOCK_LAUNCHERS). save() records
+# the state of each one installed, listed or not, so restore turns one back on only when it was on
+# before cleanup (#1714). tests/test_restore_stock_launcher.py keeps the two lists in step.
+STOCK_LAUNCHERS = ("com.google.android.tvlauncher", "com.google.android.apps.tv.launcherx",
+                   "com.google.android.leanbacklauncher", "com.mitv.tvhome")
 # What answers HOME without being a launcher, the cases disable.sh, disable.ps1 and check.py skip too:
 # the setup wizards and the settings apps (on Google TV, setupwraith's .RecoveryActivity takes Home and
 # system_server crash-loops on it), a vendor's FallbackHome, the placeholder a TCL or a Xiaomi shows
@@ -46,9 +54,12 @@ VERSION = 1
 # Core Android packages no list may disable: with one of these off, Android itself can stop booting
 # (#884: an original Mi TV Stick that lost its permission controller, package installer, ext services,
 # module metadata and mainline overlays never came back). The content providers in CORE_OK are the
-# exception, since tested lists turn them off and no TV feature uses them. disable.sh and disable.ps1
+# exception, since tested lists turn them off and no TV feature uses them. Ext services and ext shared
+# also ship under AOSP's bare names, android.ext.services and android.ext.shared (#1711: an OBE R3
+# Ultra, a CVTE SMART_TV and a MIBOX4 list them that way). disable.sh and disable.ps1
 # carry the same two patterns (tests/test_core_packages.py keeps the three in step).
-CORE_RE = re.compile(r"^(android|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$")
+# The TV middleware too: com.cltv.mal (a Haier H50H5F looped with it off, #1578), com.mediatek.tis, tv.service, tv.agent.
+CORE_RE = re.compile(r"^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$")
 CORE_OK = re.compile(r"^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$")
 
 
@@ -114,10 +125,61 @@ def lan_address(host):
         return None
 
 
+def list_digest(list_path):
+    """The eight hex characters in a record's name that identify the list it was taken for."""
+    return hashlib.sha1(str(Path(list_path).resolve()).encode()).hexdigest()[:8]
+
+
 def record_name(list_path, tag):
-    digest = hashlib.sha1(str(Path(list_path).resolve()).encode()).hexdigest()[:8]
+    digest = list_digest(list_path)
     tag = re.sub(r"[^A-Za-z0-9.-]", "_", tag or "no-host")
     return Path.home() / ".cleanyourtv" / f"recovery-{tag}-{digest}.json"
+
+
+def records_under_other_addresses(list_path, path):
+    """The other records taken for this same list, as (tag, path), the file this run writes left out.
+
+    A record is one file per TV and list, and on the network the TV is the address it was reached at,
+    so a set that takes a new DHCP lease leaves its record behind under the old address: the next run
+    finds no record for the new one and writes a fresh one out of a TV that is already cleaned (#2139).
+    """
+    folder = path.parent
+    if not folder.is_dir():
+        return []
+    digest = list_digest(list_path)
+    suffix = f"-{digest}.json"
+    found = []
+    for other in sorted(folder.glob(f"recovery-*{suffix}")):
+        if other.name == path.name:
+            continue
+        found.append((other.name[len("recovery-"):-len(suffix)], other))
+    return found
+
+
+def cleaned_by_another_record(list_path, path, disabled):
+    """The record for this list, under another address, that reads like this TV before an earlier run.
+
+    A package this run finds disabled, which that record holds as enabled before its own cleanup, is
+    the shape of the same TV at a new address: the earlier run disabled it, and the record it left is
+    the only place that still says it was on. A second TV cleaned with the same list is the other
+    reading, and the warning says so rather than being sure here. A record that cannot be read is left
+    to the run that owns it: this is one more line of output, not a reason to stop.
+    """
+    found = []
+    for tag, other in records_under_other_addresses(list_path, path):
+        try:
+            with open(other) as handle:
+                record = json.load(handle)
+        except (OSError, ValueError):
+            continue
+        recorded = record.get("packages") if isinstance(record, dict) else None
+        if not isinstance(recorded, dict):
+            continue
+        names = sorted(name for name, state in recorded.items()
+                       if state == "enabled" and name in disabled)
+        if names:
+            found.append((tag, other, names))
+    return found
 
 
 def record_path(list_path, host):
@@ -386,6 +448,11 @@ def save(list_path, host):
     # The launcher that owns Home may not be in the list, but it is what undo has to put back.
     home_package = home.split("/", 1)[0] if home else None
     targets = packages + ([home_package] if home_package and home_package not in packages else [])
+    # So may an installed stock launcher: undo needs its state from before, so that it turns it back
+    # on only when it was on (#1714). One the factory had disabled (examples/verizon-stream-tv), or
+    # that launcher/build-and-install.sh had disabled before this list, is recorded as disabled and
+    # stays off.
+    targets += [name for name in STOCK_LAUNCHERS if name in installed and name not in targets]
     # A Home that is no launcher (setupwraith's recovery screen, a FallbackHome, a factory test) is not
     # recorded as Home either: restore would pin Home to it with the stock launcher enabled again, so
     # it resolves the stock launcher instead. Its package keeps the entry above: that state is real.
@@ -415,6 +482,23 @@ def save(list_path, host):
     else:
         print(f"HOME before: {home or 'no component answered'}")
     print("undo with tools/restore.sh <same list>; keep this file, it is the only copy.")
+    # A fresh record is written whenever this address has none, which is also what a TV that took a
+    # new DHCP lease looks like: the record from before its cleanup is still under the old address,
+    # and nothing in it reaches undo from here (#2139). Say so while the owner is still at the TV.
+    for tag, other, names in cleaned_by_another_record(list_path, path, disabled):
+        shown = ", ".join(names[:5]) + (", ..." if len(names) > 5 else "")
+        sys.stderr.write(
+            f"warning: a new record was written for this list, and one for the same list is under "
+            f"{tag}:\n"
+            f"  {other}\n"
+            f"{len(names)} of the packages disabled now are recorded there as enabled before an "
+            f"earlier cleanup ({shown}).\n"
+            "If this is that TV on a new address (a new DHCP lease, or the Wi-Fi forget and re-join "
+            "the setupwraith step asks for), undo run from here leaves those off. Run tools/restore.sh "
+            "at the old address first, or move that record to "
+            f"~/.cleanyourtv/{path.name} once you are sure it is this TV.\n"
+            "If this is a second set cleaned with the same list, nothing is wrong: both records "
+            "stay.\n")
     return 0
 
 
@@ -452,19 +536,34 @@ def restore_commands(list_path, stock, host):
     for name, state in untouched:
         sys.stderr.write(f"  leaving {name} alone ({state} when the record was taken)\n")
 
-    # The stock launcher comes back unless the owner had disabled it before cleanup: the list may
-    # have disabled it even when it was not the recorded Home (e.g. the custom launcher owned Home).
+    # The stock launcher comes back only when the record holds it as enabled, which re_enable above
+    # already covers (#1714): restore enables what was on before cleanup and nothing else. One the
+    # record holds as disabled was off before this list (the factory, or launcher/build-and-install.sh
+    # before the list), and one it does not hold at all (a record taken before save() noted the stock
+    # launchers) cannot be said to have been on, so neither is turned on here.
     fallback = stock or "com.google.android.tvlauncher"
-    if states.get(fallback) != "disabled" and fallback not in re_enable:
-        commands.append(f"pm enable {fallback}")
+    fallback_state = states.get(fallback)
 
     home = record.get("home")
     if home and home.split("/", 1)[0] != CUSTOM_LAUNCHER:
         commands.append(f"cmd package set-home-activity --user 0 {home}")
+    elif home and fallback_state != "enabled":
+        # This project's launcher owned Home and the stock launcher was not on: Home stays where it
+        # was. Its package is in the record as enabled, so it was enabled above.
+        commands.append(f"cmd package set-home-activity --user 0 {home}")
+        sys.stderr.write(f"  Home goes back to {home}, which owned it when the record was taken: "
+                         f"{fallback} was {fallback_state or 'not in the record'} then, so it stays as "
+                         f"it is. To have it back: tools/tv.py 'pm enable {fallback}', then make it "
+                         f"Home.\n")
+    elif not home and fallback_state in ("disabled", "absent"):
+        # No Home was recorded and the stock launcher was off or missing: there is nothing to resolve.
+        sys.stderr.write(f"  leaving Home alone: none was recorded, and {fallback} was {fallback_state} "
+                         f"when the record was taken\n")
     else:
         # Nothing handled HOME before cleanup (fresh TV, chooser only), only something that is no
-        # launcher did, or this project's launcher did, so there is no stock component to replay; ask
-        # the TV to resolve the stock launcher the way restore.sh always did.
+        # launcher did, or this project's launcher did while the stock launcher was on, so there is no
+        # stock component to replay; ask the TV to resolve the stock launcher the way restore.sh
+        # always did.
         commands.append(f"cmd package set-home-activity --user 0 $(cmd package resolve-activity "
                         f"--brief -a android.intent.action.MAIN -c android.intent.category.HOME "
                         f"{fallback} | tail -n 1)")
