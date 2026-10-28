@@ -18,7 +18,7 @@ All work remains local until explicitly delivered.
 - T5 — S2 — Surface pinned App Library apps in the Home top bar while preserving configured top_bar_apps — commit: a7fdb3f
 - T6 — S2 — Add regression tests, documentation, build, and Chromecast verification for pinned top-bar apps — commit: a7fdb3f
 - T7 — S2 — Create and push the user's remote fork — commit: a2bca54; PR #2466
-- T8 — S3 — Evaluate a safe installation path for Shizuku Next and its store for future ADB-wireless utility apps — commit: pending
+- T8 — S3 — Evaluate a safe installation path for Shizuku Next and its store for future ADB-wireless utility apps — commit: dcdce12c on fork branch research/shizuku-next
 
 ## Log
 
@@ -34,3 +34,4 @@ All work remains local until explicitly delivered.
 - L10: The requested owner was darkei08, but the authenticated GitHub account is darkrei08; the remote fork exists under darkrei08/cleanyourtv.
 - L11: Si confermo darkrei08 poi prosegui coi task eseguendo sempre pi herder orchestration e po extensible workflow
 - L12: Fork darkrei08/cleanyourtv was cloned at /root/git/fork/cleanyourtv, feature/app-library-ordering was pushed, issue #2465 and PR #2466 were opened; target CI is pending and GitHub refused the feature-idea label update because the fork account cannot update the official repository PR.
+- L13: Research-only Shizuku findings were recorded in fork branch research/shizuku-next as dcdce12c; installation remains a separate decision because official Shizuku and the third-party Shizuku-Next fork share a package identity but differ in trust, signing, and TV setup behavior.
