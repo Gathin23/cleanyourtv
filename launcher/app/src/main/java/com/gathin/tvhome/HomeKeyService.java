@@ -148,7 +148,7 @@ public class HomeKeyService extends AccessibilityService {
         if (running == this) running = null;
         stopWaitingForUnlock();
         if (screenOnReceiver != null) unregisterReceiver(screenOnReceiver);
-        if (profileStopped != null) unregisterReceiver(profileStopped);
+        releaseProfileHold();
         if (standbyExit != null) {
             try {
                 unregisterReceiver(standbyExit);
@@ -304,6 +304,7 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public boolean onUnbind(Intent intent) {
         if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
+        releaseProfileHold();
         return super.onUnbind(intent);
     }
 
@@ -381,6 +382,21 @@ public class HomeKeyService extends AccessibilityService {
         } else {
             heldForProfile = false;
             openHome();
+        }
+    }
+
+    /** The profile hold, its timer and its receiver go with this binding: GuardKeep.stepOut keeps the process, so
+     *  a check left queued or a receiver left registered could still open Home after the service has left. */
+    private void releaseProfileHold() {
+        heldForProfile = false;
+        afterProfileScreen = false;
+        handler.removeCallbacks(profilePickCheck);
+        if (profileStopped != null) {
+            try {
+                unregisterReceiver(profileStopped);
+            } catch (RuntimeException ignored) {
+            }
+            profileStopped = null;
         }
     }
 
