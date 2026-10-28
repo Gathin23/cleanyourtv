@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cuffie</string>
+    <string name="plays_through">Ora l’audio esce da: %1$s</string>
+    <string name="output_speakers">gli altoparlanti della TV</string>
+    <string name="output_fixed">l’uscita audio della TV (HDMI ARC o ottica)</string>
+    <string name="allow_title">Consenti l’accesso al Bluetooth</string>
+    <string name="allow_detail">Per elencare le tue cuffie e accorgersi quando si scollegano. OK per chiedere.</string>
+    <string name="not_allowed">Non consentito</string>
+    <string name="pair_title">Associa o collega le cuffie</string>
+    <string name="pair_detail">Apre le impostazioni Bluetooth della TV. Metti prima le cuffie in modalità di associazione.</string>
+    <string name="guard_title">Silenzio quando si scollegano</string>
+    <string name="guard_detail">Mette in pausa ciò che è in riproduzione e silenzia gli altoparlanti della TV quando le cuffie si scollegano, così l’audio non si sposta nella stanza. Riattiva l’audio quando tornano.</string>
+    <string name="guard_detail_fixed">Mette in pausa ciò che è in riproduzione quando le cuffie si scollegano. Il volume di questa TV è fisso (ARC o un amplificatore), quindi non può silenziare anche gli altoparlanti.</string>
+    <string name="on">Sì</string>
+    <string name="off">No</string>
+    <string name="unmute_title">Riattiva gli altoparlanti</string>
+    <string name="unmute_detail">Silenziati quando le cuffie si sono scollegate.</string>
+    <string name="muted">Silenziato</string>
+    <string name="heading_paired">Cuffie e altoparlanti associati</string>
+    <string name="no_bluetooth">Questa TV non ha il Bluetooth</string>
+    <string name="bluetooth_off">Il Bluetooth è disattivato</string>
+    <string name="bluetooth_off_detail">Attivalo nelle impostazioni della TV.</string>
+    <string name="none_yet">Ancora nessuno</string>
+    <string name="none_yet_detail">Usa la riga qui sopra per associarne qualcuno.</string>
+    <string name="connected">Connesso</string>
+    <string name="connected_battery">Connesso, batteria %1$s</string>
+    <string name="not_connected_detail">Non connesso. OK apre le impostazioni Bluetooth per collegarlo.</string>
+    <string name="unnamed">Dispositivo senza nome</string>
+    <string name="heading_several">Più cuffie contemporaneamente</string>
+    <string name="sharing_one_pair">Questa TV invia l’audio a un solo paio di cuffie Bluetooth alla volta. Per due paia, usa un trasmettitore Bluetooth dual-link sull’uscita cuffie o ottica della TV.</string>
+    <string name="sharing_auracast">Questa TV può trasmettere a molte cuffie LE Audio (Auracast) contemporaneamente: avvia la condivisione dalle impostazioni Bluetooth della TV.</string>
+    <string name="sharing_no_broadcast">Questa TV invia l’audio a un solo paio di cuffie Bluetooth alla volta e non ha la trasmissione LE Audio. Per due paia, usa un trasmettitore Bluetooth dual-link sull’uscita cuffie o ottica della TV.</string>
+</resources>

@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.nl.md">Nederlands</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a>
 </p>
 
 <p align="center">
@@ -30,6 +30,18 @@ tracciamento, passo per passo con il telecomando: [cleanyour.tv/not-android](htt
 
 ![La schermata Google TV originale a confronto con il launcher CleanYourTV](docs/stock-vs-new-side.jpg)
 
+## Da dove iniziare
+
+| Hai | Vai a |
+|---|---|
+| **Una Android TV o una Google TV** | [Avvio rapido](#avvio-rapido): un assistente di programmazione fa il lavoro in una quindicina di minuti. |
+| **Una TV Samsung, LG, Roku, Vizio o Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV lì non funziona, ma puoi disattivare il tracciamento con il telecomando. |
+| **Solo un telefono Android** | L'[app Clean Your TV](https://cleanyour.tv/app) creata dalla community: niente portatile, niente assistente di programmazione. |
+| **Vuoi prima vedere com'è** | [Cosa offre il launcher](#cosa-offre-il-launcher): schermate della nuova Home. |
+
+**Link ufficiali:** [cleanyour.tv](https://cleanyour.tv) e questo repository. Altri domini che usano il nome, come
+cleanyourtv.com, non sono gestiti da questo progetto ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)).
+
 ## Come funziona
 
 Attiva il debug USB nelle opzioni sviluppatore della TV, consenti una volta al computer di collegarsi in ADB via rete,
@@ -47,7 +59,11 @@ di programmazione a controllare prima la TV reale, poi a chiederti quali app e f
 
 ## Avvio rapido
 
-Ti servono un computer sulla stessa rete della TV e un assistente di programmazione che sappia eseguire comandi da
+Senza computer c'è l'[app Clean Your TV](https://cleanyour.tv/app) per Android, creata dalla community: collega la
+TV, mostra prima un piano, salva un punto di ripristino e si limita a disattivare le app. Senza assistente di
+programmazione, ma con un computer, puoi fare gli stessi passi a mano: vedi [Fai da te](#fai-da-te).
+
+Con l'assistente ti servono un computer sulla stessa rete della TV e un assistente di programmazione che sappia eseguire comandi da
 terminale, per esempio [Claude Code](https://claude.com/product/claude-code), [Codex](https://github.com/openai/codex)
 o [Gemini CLI](https://github.com/google-gemini/gemini-cli).
 
@@ -113,7 +129,9 @@ possono richiedere comunque un mouse o uno schermo touch.
 - Toglierla dalla Home non disinstalla l'app. La scelta resta dopo il riavvio, dopo gli aggiornamenti delle app e
   quando applichi o reimposti un tema.
 
-Vedi anche la [guida alla libreria app](docs/app-library.md).
+Vedi anche la [guida alla libreria app](docs/app-library.md). La pagina delle impostazioni del launcher, riga per riga,
+la home predefinita, le lingue, i tasti del telecomando, il salvaschermo e la compilazione da soli sono in
+[docs/launcher.md](docs/launcher.md) (in inglese).
 
 ## Quali TV sono supportate
 
@@ -231,7 +249,12 @@ per il ripristino prima di lanciarlo. Per pulizia e ripristino usa [`tools/disab
 | [`tools/b64push.py`](tools/b64push.py) | Invia file grandi, come gli APK, a blocchi e li ricontrolla. |
 | [`tools/disable.sh`](tools/disable.sh) / [`tools/restore.sh`](tools/restore.sh) | Applica l'elenco delle app da disattivare, o ripristina dal record fatto prima. |
 | [`tools/recovery.py`](tools/recovery.py) | Salva il record di ripristino e genera i comandi per ripristinare. |
+| [`tools/check.py`](tools/check.py) | Confronta la TV con l'elenco applicato, per vedere cosa ha annullato un aggiornamento del firmware; con `--fix` rimette a posto. |
+| [`tools/adb-closed.py`](tools/adb-closed.py) | Verifica che la porta ADB di rete della TV sia chiusa dopo aver spento il debug. |
+| [`tools/privacy.py`](tools/privacy.py) | Controlla la TV alla ricerca di voce, ACR e telemetria e mostra le prove; con `--write` ne ricava un elenco. |
+| [`tools/relay.py`](tools/relay.py) | Inoltra una porta locale alla porta ADB della TV, per gli assistenti il cui ambiente isolato non raggiunge la rete. |
 | [`tools/theme.sh`](tools/theme.sh) | Invia o reimposta un tema e riavvia la Home. |
+| [`tools/manage.py`](tools/manage.py) | Elenca add-on, temi e opzioni con la schermata, mostra cosa c'è sulla TV e permette di installare, aggiornare o rimuovere. |
 | [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Compila e installa il launcher e cambia la Home. |
 
 ## Configurazione aggiuntiva
@@ -288,6 +311,15 @@ OK sul pulsante Impostazioni e scegli il menu delle schede modulo per gestirle.
 Per gli sviluppatori vedi [`docs/modules.md`](docs/modules.md); per il contratto di comunicazione vedi
 [`docs/specs/card.md`](docs/specs/card.md).
 
+## Il microfono, e cosa si può dire
+
+"Quale di questi pacchetti ascolta?" non ha una risposta onesta in una riga: una scansione dei permessi trova decine di
+pacchetti di sistema con `RECORD_AUDIO` che non registrano nulla, e i client ACR vedono lo schermo senza alcun
+permesso audio. [`tools/privacy.py`](tools/privacy.py) riporta ciò che la TV dichiara davvero, con le prove per ogni
+candidato di voce, ACR e telemetria: `TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py`; con `--write`
+li trasforma in un normale elenco di app da disattivare. Non può però provare le intenzioni:
+[docs/privacy.md](docs/privacy.md) (in inglese) spiega perché.
+
 ## Ripristinare il launcher e le app originali
 
 Prima di disattivare, `tools/disable.sh` registra lo stato di ogni app dell'elenco (attiva, disattivata o non
@@ -320,6 +352,22 @@ TV_HOST=192.168.1.50 tools/restore.sh "examples/il-tuo-modello/debloat.txt" com.
   rimuovere il launcher vai in **Impostazioni → App** sulla TV.
 - Se l'ADB non si collega, puoi comunque riattivare le app dalle impostazioni della TV.
 
+Per i dettagli (cosa contiene il record, quando conta l'argomento del launcher originale, cosa succede senza record)
+vedi [docs/restore.md](docs/restore.md), in inglese.
+
+## Dopo un aggiornamento del firmware
+
+Un aggiornamento si installa sopra il sistema ripulito: le app dell'elenco tornano, la Home passa al launcher originale
+e compaiono nuove app preinstallate che nessun elenco cita. Riapri l'ADB come al passo 1 dell'[Avvio rapido](#avvio-rapido),
+poi confronta la TV con l'elenco applicato; con `--fix` rimette tutto a posto:
+
+```bash
+TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/il-tuo-modello/debloat.txt
+```
+
+I codici di uscita, un controllo settimanale e i casi particolari sono in
+[docs/firmware-updates.md](docs/firmware-updates.md) (in inglese).
+
 ## Risoluzione dei problemi
 
 La guida completa (in inglese) è in [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
@@ -336,6 +384,12 @@ La guida completa (in inglese) è in [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHO
   `tools/venv/bin/python -I tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'`.
 
 ## Domande frequenti
+
+**Non programmo e non ho un portatile: posso farlo lo stesso?**
+
+Sì. L'[app per telefono Android](https://cleanyour.tv/app), gratuita, open source e creata dalla community, fa la stessa
+pulizia via Wi-Fi: si collega alla TV, mostra prima un piano, salva un punto di ripristino e si limita a disattivare
+le app, quindi tutto si può rimettere a posto.
 
 **Reinstalla il firmware o rimuove le app di sistema?**
 
@@ -355,9 +409,10 @@ ADB a Internet dal router.
 **Dopo bisogna spegnere il debug?**
 
 Sì. La connessione ADB via TCP (di serie porta 5555) usata dagli strumenti non è cifrata, e alcuni firmware non
-chiedono nemmeno l'autorizzazione. Finito il lavoro, spegni il debug USB e il debug di rete / ADB, revoca le
-autorizzazioni date e verifica che la porta sia chiusa seguendo i
-[passaggi del README in inglese](README.md#questions-people-ask).
+chiedono nemmeno l'autorizzazione. Finito il lavoro, spegni il debug USB, il debug di rete / ADB e il debug wireless
+(quelli che ha la tua TV), revoca le autorizzazioni date, riavvia la TV e verifica dal computer che la porta sia
+chiusa: `python3 tools/adb-closed.py <ip della TV>` deve dire che la porta è chiusa. Il launcher funziona anche senza
+debug. Altri dettagli nelle [domande frequenti in inglese](docs/faq.md#isnt-adb-access-a-security-hole).
 
 **Supporta DNS privato o AirPlay?**
 

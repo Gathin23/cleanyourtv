@@ -22,13 +22,13 @@
      "notes": "PatchWall, Mi analytics, SmartShare, MiLink"
    }
    ```
-   `tv` and `os` fill the folder's row in both TV tables, `brand` the brand line (spelled as it is there),
+   `tv` and `os` fill the folder's row in the TV tables, `brand` the README's brand grid (spelled as it is there),
    `notes` the Notes cell in `examples/README.md`: one line of Markdown, links relative to `examples/`, `\|`
-   for a pipe. `readme_os` is the one optional key: it is the OS cell of the front page's two-column table,
+   for a pipe. `readme_os` is the one optional key: it is the OS cell of the two-column table in `README.nl.md`,
    for a set whose row there should read shorter than the same set's row in `examples/README.md` - that table
-   has room for `Google TV launcher on Android TV 11`, the front page for `Google TV 11`.
+   has room for `Google TV launcher on Android TV 11`, the short one for `Google TV 11`.
    `tests/test_examples.py` checks the file.
-5. Change nothing outside the folder. The tables in `README.md` and `examples/README.md`, the brand line and the
+5. Change nothing outside the folder. The tables in `examples/README.md` and `README.nl.md`, the brand grid and the
    counts (the `TV models` number in the card's alt text) are generated from every `tv.json` by
    `tools/gen_tables.py`, which a maintainer runs after merging; CI compares them only on `main`.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Do not add

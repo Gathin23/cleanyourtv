@@ -1,0 +1,76 @@
+# Xiaomi F2 Fire TV (AFTMA2857F, codename shine), Fire OS 7.7.1.7 / Android 9 (SDK 28), build
+# PS7717.5741N.0036408028416 (incremental 0036408028548), UK set with a DVB tuner. The same platform and
+# build as examples/tcl-32sf560-fire-tv and examples/toshiba-fire-tv-aftha004; this list is what this set
+# ships, plus Xiaomi's own analytics.
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher keeps HOME (protected; set-home-activity changes nothing).
+# A separate home screen can be brought up over it with an accessibility watcher - see SHOWCASE.md, Amazon
+# Fire TV ("Fire TV → Apple TV front end"). Live TV app: com.amazon.tv.livetv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-f2-fire-tv-aftma2857f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-f2-fire-tv-aftma2857f/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Applied on 2026-10-20 in batches with a screenshot after each, then rebooted: the home screen, the Inputs
+# page (HDMI1, HDMI2, Cable/Antenna, Satellite, Freely, Composite, Media Player), HDMI1 passthrough, Live TV
+# with its 182 channels and YouTube were checked after every batch and after the reboot. Lived with for eight
+# days; on 2026-10-28 every listed package was still disabled.
+#
+# Refused by Fire OS ("Cannot disable a protected package"), not listed: com.amazon.device.metrics,
+# com.amazon.device.logmanager, com.amazon.device.crashmanager, com.amazon.diode, com.fireos.usagestats.proxy,
+# com.amazon.ftvads.deeplinking.
+#
+# Kept on purpose: the stock launcher, Live TV and the whole tuner and input stack (com.droidlogic.tvinput,
+# inputpreference.service, the Vewd HbbTV engine), Settings and Quick Settings, the keyboard, remote and
+# Bluetooth pairing, account, sync and security services, the Appstore, Prime Video, Alexa voice, DIAL,
+# Miracast and AirPlay, firmware updates, Xiaomi TV+ and every sideloaded app.
+
+# Telemetry and analytics
+com.amazon.tv.acr                        # Automatic Content Recognition; also reads HDMI input
+com.miui.tv.analytics                    # Xiaomi analytics (Firebase), shipped on this Xiaomi-built set
+com.amazon.client.metrics.api
+com.amazon.tv.fw.metrics
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.perfc
+com.amazon.dp.logger
+com.amazon.ceviche
+com.amazon.tv.developer.dataservice
+com.amazon.wifilocker
+com.amazon.neo.minerva.logcat
+
+# Ads, promotions and content rows
+com.amazon.kso.blackbird                 # sponsored banner and row sync
+com.amazon.sneakpeek
+com.amazon.hybridadidservice             # advertising ID
+com.amazon.hedwig                        # Fire TV Channels
+com.amazon.franktvinput                  # Fire TV Channels' input; the HDMI and tuner inputs are com.droidlogic.tvinput
+com.amazon.tv.easyupgrade                # upgrade promotions
+com.amazon.shoptv.client                 # Shop on Fire TV
+com.amazon.livedeviceservice
+com.amazon.gamehub
+com.amazon.minitv.android.app
+com.amazon.privacypassservice
+com.amazon.providers.contentsupport
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.democontent.provider       # retail demo content
+
+# Preloaded extras
+com.amazon.tmm.tutorial
+com.amazon.storm.lightning.tutorial
+com.amazon.tahoe                         # Amazon Kids
+com.amazon.cloud9                        # Silk browser
+com.amazon.tv.website_launcher           # Silk shortcuts on the home screen
+com.amazon.ods.kindleconnect
+com.amazon.whisperjoin.middleware.np     # Wi-Fi provisioning for Amazon devices
+com.amazon.tv.ffsprovisioneeclient       # frustration-free setup
+com.amazon.wha.mediabrowserservice       # multi-room music group
+
+# Preloaded streaming apps: the owner's choice, not bloat. Uncomment the ones you don't watch.
+# uk.co.bbc.iplayer                      # BBC iPlayer (disabled here)
+# com.bskyb.nowtv.beta                   # NOW (disabled here)
+# com.onemainstream.skynews.android      # Sky News (disabled here)
+# com.redbull.rbtv                       # Red Bull TV (disabled here)
+# com.disney.disneyplus                  # Disney+ (disabled, later re-enabled to watch)
+# tv.pluto.android                       # Pluto TV (disabled, later re-enabled)

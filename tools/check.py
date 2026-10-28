@@ -22,12 +22,13 @@ moment those come back into play: the update can turn setupwraith back on for a 
 owns, and a fix that skipped the checks would take that TV off Wi-Fi with no way back in.
 
 Exit codes: 0 in sync (or fixed), 1 drift, an incomplete fix, or packages a safety check left on,
-2 the TV or the list could not be read, which includes ADB timing out or failing partway (after which a
---fix may be partial, and the next check says what is left), or the command line asked for something this
-script does not do, which includes naming a launcher the TV does not have. That last one matters:
-README.md tells an owner to run this from a weekly job and hear about it on exit 1, so a mistyped flag
-must not come back as drift, nor a mistyped launcher as "nothing drifted". A recovery record --fix
-cannot read or update is 2 as well, with nothing changed on the TV.
+2 the TV or the list could not be read, which includes ADB timing out or failing partway (after which
+a --fix may be partial, and the next check says what is left), a run with no TV_HOST set or no ADB
+client to read the TV with, or the command line asked for something this script does not do, which
+includes naming a launcher the TV does not have. That last one matters: README.md tells an owner to
+run this from a weekly job and hear about it on exit 1, so a mistyped flag must not come back as
+drift, nor a mistyped launcher as "nothing drifted". A recovery record --fix cannot read or update is
+2 as well, with nothing changed on the TV.
 """
 import os
 import re
@@ -380,12 +381,20 @@ def main():
     # authorisations were revoked, or for a key the TV has not seen) or when the TV goes to standby
     # partway, and AdbTimeoutError and DeviceAuthError. Left alone they end the run with a traceback
     # and exit 1, which a cron job reads as drift, so every Exception here is exit 2, the TV could
-    # not be read. SystemExit and KeyboardInterrupt are not Exceptions: tv.py's own exits (TV_HOST
-    # unset), the refusals in recovery.py and in this file once --fix has started, and Ctrl-C still
-    # stop the run as before.
+    # not be read. The two shapes that stop the run before any connection are SystemExit rather than
+    # Exception, so they need the clause below: tv.py stops with its own message when TV_HOST is
+    # unset, and recovery.connect() stops with one when adb_shell is not installed. Both mean the TV
+    # was never asked, and both used to answer 1 - "the TV drifted" for a job that never ran.
     probe = "tools/venv/bin/python -I tools/tv.py --probe"
     try:
         dev = recovery.connect()
+    except SystemExit as e:
+        # A string code is one of those two messages: print it and answer 2. Nothing else in tv.py
+        # or recovery.py exits with a string, so a numeric one (or none) keeps its own meaning.
+        if not isinstance(e.code, str):
+            raise
+        sys.stderr.write(f"{e.code}\nNothing was checked or changed.\n")
+        return 2
     except (OSError, ConnectionError) as e:
         sys.stderr.write(f"could not reach the TV ({e}). Check it is on and TV_HOST is right "
                          f"({probe}).\n")

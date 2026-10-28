@@ -169,6 +169,20 @@ class StartMetricsTest(unittest.TestCase):
 
 
 class NavMetricsTest(unittest.TestCase):
+    def test_frame_p90_uses_nearest_rank_for_unsorted_samples(self):
+        for n, expected in ((1, 1), (5, 5), (9, 9), (10, 9), (11, 10), (20, 18), (100, 90)):
+            with self.subTest(n=n):
+                q = fake_trace(frames=list(range(n, 0, -1)))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], expected)
+
+    def test_frame_p90_excludes_the_slowest_tenth_at_the_boundary(self):
+        for n in (10, 20, 100):
+            with self.subTest(n=n):
+                q = fake_trace(frames=[16] * (9 * n // 10) + [1000] * (n // 10))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], 16)
+
     def test_frame_times_draws_gpu_and_missed_deadlines(self):
         q = fake_trace(frames=[10, 12, 14, 16, 40], missed=2, draws=[(1100, 6), (1120, 8)], gpu=[(1101, 2), (1121, 4)])
         m = report.nav_metrics(q, PKG)

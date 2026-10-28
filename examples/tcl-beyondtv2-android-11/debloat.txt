@@ -33,6 +33,12 @@
 # on the replacement launcher, Inputs menu with HDMI 1-3 + AV + Live TV, HDMI 1 switching into
 # com.tcl.tv/.TVActivity, Netflix / YouTube / Play Store / Settings / Live TV all launching and
 # returning Home, no crash and no ANR. One session only, NOT days of use; see README.md.
+#
+# Third unit (TCL 65P615, ro.product.model BeyondTV, client type TCL-ME-RT2851-S1, software
+# V8-R851T02-LF1V715), 2026-10-28: fingerprint TCL/BeyondTV/BeyondTV:11/PPR1.180610.011/AR05 - product
+# BeyondTV instead of BeyondTV2, same AR05 build and the same preloaded set. Same four batches, then the
+# launcher, then one full reboot: every package still disabled, Home on the replacement launcher, Inputs
+# menu with HDMI 1-3 + AV + Live TV, YouTube and Chromecast (mediashell) running. One session only.
 
 # --- The one non-obvious entry: TCL re-enables promo packages on every boot.
 # Without this line, com.tcl.MultiScreenInteraction_TV, com.tcl.notereminder and

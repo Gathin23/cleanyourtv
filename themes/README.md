@@ -99,6 +99,7 @@ A new key needs one there in the same pull request.
 | `focus_overshoot` | bool | The highlight and the focused tile swing past their target before settling (`true` by default); `false` glides straight there with smooth scrolling |
 | `vpn_app` | string | App the network pill opens when a VPN is configured; also shows a red "VPN off" badge while no VPN is up |
 | `vpn_pill` | bool | The VPN as its own pill after the network pill instead of a badge inside it: solid green while a VPN is up, solid red "VPN off" while none is and `vpn_app` is installed, hidden otherwise. Pressing it opens `vpn_app` (without it, the App library, or VPN settings with `app_library` off); it keeps its label with `icon_only_buttons`; the network pill then opens Wi-Fi settings. Ignored with `top_menu`. A VPN app's kill switch holds a VPN up while the app says disconnected, so the pill stays green then (`false` by default) |
+| `icon_only_vpn` | bool | With `vpn_pill`, the VPN pill as a round icon button too, matching `icon_only_buttons`: an open lock on the plain glass button while no VPN is up, the closed lock in a green outline while one is, solid green only while focused, like the pill; "VPN" / "VPN off" become its TalkBack description (`false` by default) |
 | `animations` | bool | Basic focus, glass, title and tile entrance motion; true by default |
 | `advanced_effects` | bool | Optional lifted tile, icon zoom, smooth ambient colour and app opening effects; false by default |
 | `show_home_settings_shortcut` | bool | Keep the optional Default-home tile visible when the TV has a home picker; false by default |
@@ -238,6 +239,8 @@ Open a PR with a new folder here containing:
   the dock so the glow and the hero name show. A PR without it fails CI (`tests/test_themes.py`).
 - `wallpaper.jpg` or `wallpapers/` if the theme uses them.
 
-Then add a row to the table above with the screenshot, the same way as the others. Keep the dock list
-generic (the big streaming apps) unless the theme is for a specific TV, and say which TV you tried it on
-in the PR description.
+Then add a row to the table above with the screenshot, the same way as the others, and bump the count in
+the repository's `README.md`, in its Themes feature row (the `N ship in themes/` sentence):
+`tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails until the
+two agree. Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
+and say which TV you tried it on in the PR description.

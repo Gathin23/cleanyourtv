@@ -17,6 +17,7 @@ frame times and missed deadlines over the whole recording.
 import argparse
 import glob
 import json
+import math
 import os
 import re
 import statistics
@@ -128,7 +129,7 @@ def nav_metrics(q, package):
     if frames:
         out["frames"] = len(frames)
         out["frame median"] = statistics.median(frames)
-        out["frame p90"] = frames[min(len(frames) - 1, int(0.9 * len(frames)))]
+        out["frame p90"] = frames[math.ceil(0.9 * len(frames)) - 1]
     if render is not None:
         draws = [r["dur"] / MS for r in q(slices(render, "s.name like 'DrawFrame%' and s.dur >= 0", "s.dur"))]
         if not frames:

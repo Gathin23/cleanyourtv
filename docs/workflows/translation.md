@@ -20,7 +20,11 @@
      the launcher on a TV running that language and nothing anywhere else.
 3. Add the locale to `launcher/app/src/main/res/xml/locales_config.xml`, in the tag form: a language
    folder that is not registered there cannot be chosen for the launcher alone on Android 13+.
-4. Add the language to the Languages list in `README.md`.
+4. Add the language to the Languages list in `docs/launcher.md`, in the name that list uses, and the same
+   name to the `NAMES` table in `tests/test_locales_registered.py`. That table is the only map from the
+   qualifier Android reads (`sr-Latn`) to the English name the page uses ("Serbian (Latin)"), so
+   `test_the_name_table_covers_every_folder` stays red until both are there: "a language has no English name
+   in this test's table". Step 3's `locales_config.xml` entry does not satisfy it.
 5. To fix a missing string in existing locales, add it to every `values-*` folder you can, in the same order as
    the default `strings.xml`. A missing string falls back to English (`launcher/app/lint.xml`), but a new switch
    needs its strings in every locale.

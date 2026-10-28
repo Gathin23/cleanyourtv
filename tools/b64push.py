@@ -10,7 +10,8 @@ verified file is copied over the target and checked again. That copy is not atom
 
 Exit status: 0 the copy is on the TV, 1 a transfer failed (the target is as it was, unless that
 copy failed or was interrupted, which the message says), 2 nothing was sent: the arguments were
-refused, or the connection failed in one of the ways tv.py explains (a refused port, a Wireless
+refused, the local file could not be read, the packages in tools/requirements.txt are not installed,
+or the connection failed in one of the ways tv.py explains (a refused port, a Wireless
 debugging port, a handshake that timed out, a TV that cannot be reached). Why it stopped goes to
 stderr, which the scripts that throw the progress on stdout away still show.
 """
@@ -63,7 +64,22 @@ def main():
     # Imported only now: tv.py exits at import time when TV_HOST is unset, which would hide the
     # usage message above.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    import tv  # noqa: E402
+    # The client needs adb_shell, which the README installs into tools/venv only. This is the fourth
+    # place that client is imported and the only one that answered a plain `python3 tools/b64push.py`
+    # with a ModuleNotFoundError traceback and exit 1 - the code this file keeps for a transfer that
+    # failed - for a run that never reached the TV. privacy.py's and recovery.py's connect() stop with
+    # the line that builds the venv, and bench.py and trace.py start again under it, so a reader who
+    # has just cloned the repository gets the same answer here. The handler is entered only when the
+    # import fails, so a working client - the real one, or the stand-in the tests put beside a copy of
+    # this file - is used as before.
+    try:
+        import tv  # noqa: E402
+    except ImportError as error:
+        sys.stderr.write(f"cannot load tools/tv.py ({error}).\n"
+                         "run: python3 -m venv tools/venv && "
+                         "tools/venv/bin/pip install -r tools/requirements.txt\n"
+                         "Nothing was sent to the TV.\n")
+        return 2
 
     # A refused port or a TV that cannot be reached gets tv.py's own explanation, not a traceback, and
     # exits 2 as tv.py does: nothing was sent. An error tv.py has nothing to add to keeps its traceback.

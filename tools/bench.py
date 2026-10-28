@@ -18,6 +18,10 @@ platform tools are not installed by default.
 Usage:
     TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3
     TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3 --out-dir my-results
+    TV_HOST=192.168.1.50 python tools/bench.py --app org.videolan.vlc/.StartActivity
+
+--app names the app the cold start and the return to Home leave Home for. Without it, the TV's
+Settings, else the first leanback app that is not the launcher.
 
 The output is a summary plus the raw per-key numbers, so a run can be compared with another one or
 re-analysed later.
@@ -49,6 +53,9 @@ DEFAULT_SEQUENCE = (22, 22, 22, 21, 21, 21, 20, 22, 22, 21, 21, 19)
 KEYCODE_NAMES = {19: "KEYCODE_DPAD_UP", 20: "KEYCODE_DPAD_DOWN", 21: "KEYCODE_DPAD_LEFT",
                  22: "KEYCODE_DPAD_RIGHT", 66: "KEYCODE_ENTER", 3: "KEYCODE_HOME",
                  4: "KEYCODE_BACK"}
+
+# An activity as package/activity, e.g. org.videolan.vlc/.StartActivity (the same pattern as tools/trace.py).
+COMPONENT = re.compile(r"^[A-Za-z][A-Za-z0-9_.]*/[A-Za-z0-9_.$]+$")
 
 
 class TV:
@@ -300,20 +307,27 @@ def frame_rows(framestats):
 
 
 def other_app(tv):
-    """An app to send the TV to, so the launcher really starts cold.
+    """An app to send the TV to, so the launcher really starts cold: --app when given, else the TV's
+    Settings, else the first leanback app that isn't the launcher. tools/trace.py picks its own the same way.
 
-    The Settings app is found by the category it answers, not by a hardcoded activity: the
-    activity name differs between manufacturers (com.android.tv.settings/.MainSettings on
-    Google TV, others elsewhere), and a fixed name simply does not exist on some sets.
+    Settings is found by the action it answers, not by a hardcoded activity: the activity name differs
+    between manufacturers (com.android.tv.settings/.MainSettings on Google TV, others elsewhere).
+    Never the chooser: a plain LAUNCHER lookup resolves to android's ResolverActivity, a dialog, on a
+    TCL C755 and a HOTACK L018 projector, and the run then measured against that dialog.
     """
     if tv._other_app:
         return tv._other_app
-    out = tv.shell(
-        "cmd package resolve-activity --brief -a android.intent.action.MAIN "
-        "-c android.intent.category.LAUNCHER")
-    lines = [line.strip() for line in out.splitlines() if "/" in line]
-    tv._other_app = lines[-1] if lines else None
-    return tv._other_app
+    launcher = tv.package_of(tv.home_component() or "")
+    candidates = tv.shell("cmd package resolve-activity --brief -a android.settings.SETTINGS").splitlines()
+    candidates += tv.shell("cmd package query-activities --brief -a android.intent.action.MAIN "
+                           "-c android.intent.category.LEANBACK_LAUNCHER").splitlines()
+    for line in candidates:
+        line = line.strip()
+        if COMPONENT.match(line) and not line.startswith(("android/", launcher + "/")) \
+                and "Resolver" not in line:
+            tv._other_app = line
+            return line
+    return None
 
 
 def accessibility_services(tv, package):
@@ -553,7 +567,11 @@ def main():
     parser.add_argument("--idle", type=int, default=60, help="idle seconds")
     parser.add_argument("--out-dir", type=out_dir, default="bench-results",
                         metavar="DIR", help="where to write the results (default bench-results)")
+    parser.add_argument("--app", metavar="COMPONENT",
+                        help="the app to leave Home for, as package/activity (default: found on the TV)")
     args = parser.parse_args()
+    if args.app and not COMPONENT.match(args.app):
+        parser.error(f"--app needs package/activity, not {args.app!r}")
     # Each of these five is a count of what the run measures, and zero of one measures nothing there
     # while the run still exits 0: --series 0 and --keys 0 wrote a result.json whose key numbers are
     # all null, and --cold 0 / --returns 0 the same for their fields, which in that file cannot be
@@ -579,6 +597,7 @@ def main():
 
     tv = TV(args.host, args.port)
     atexit.register(tv.close)
+    tv._other_app = args.app
     component = tv.home_component()
     if not component:
         raise SystemExit("no component answers HOME on this TV")

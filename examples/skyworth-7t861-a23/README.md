@@ -25,7 +25,7 @@ All 16 packages in `debloat.txt` have been verified across a cold reboot. Specif
 
 ## Replacing the Home Launcher
 
-On Coocaa OS, the stock launcher cannot be replaced via standard Android Home chooser without bootlooping. Replacing the launcher safely requires building under the Coocaa package ID, using `coocaa-home-shim`, and pointing the `persist.service.homepage` properties.
+On Coocaa OS, the stock launcher cannot be replaced via standard Android Home chooser without bootlooping. Replacing the launcher safely requires building under the Coocaa package ID, using `coocaa-home-shim`, and pointing both the `persist.service.homepage` and `persist.service.model` properties (dual-track dispatch for standard/video modes and Home Office mode).
 
 Detailed instructions, boot observations, and property undo commands are documented in:
 👉 [`docs/devices/skyworth-7t861-a23.md`](../../docs/devices/skyworth-7t861-a23.md)

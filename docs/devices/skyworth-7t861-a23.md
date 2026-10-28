@@ -91,7 +91,12 @@ TV_HOST=<tv ip> tools/tv.py 'pm install -r /data/local/tmp/shim.apk; rm -f /data
 
 ### Step 3: Redirect Coocaa Home properties
 
-Point the system homepage properties to the shim using `tools/tv.py`:
+Point both pairs of system homepage properties to the shim using `tools/tv.py`. Coocaa OS uses a dual-track
+dispatch mechanism for physical remote Home button presses:
+- `persist.service.homepage.*` controls dispatch in standard video, elder, and children's modes.
+- `persist.service.model.*` controls dispatch when the TV is set to or was previously in "Home Office" mode (`com.skyworth.officehomepage`).
+
+Both pairs must point to the shim. If `persist.service.model.*` is omitted or left on its default, pressing the remote's Home button while the TV is in Home Office mode bypasses Android's default home and bounces back to `com.skyworth.officehomepage`.
 
 ```bash
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.pkg com.ccos.tv.homepage'

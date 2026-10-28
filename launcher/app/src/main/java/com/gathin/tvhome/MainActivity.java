@@ -215,6 +215,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView btnVpn;
     /** The VpnBadge pill state btnVpn shows, so a refresh that changes nothing does not restyle it. */
     private int vpnPillState = VpnBadge.PILL_HIDDEN;
+    /** icon_only_vpn: the VPN pill is a round lock button; off, it keeps the plain glass look saved here. */
+    private boolean iconOnlyVpn;
+    private Drawable.ConstantState vpnPlainBackground;
+    private ColorStateList vpnPlainInk;
     private SpringAnimation springX, springY;
     private float glassTargetX, glassTargetY;
     // How far the grid has scrolled the glass. springY works without it, in grid content space, so a
@@ -834,6 +838,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             makeIconOnly((TextView) btnSettings);
         }
         if (cfg.iconOnlyInputs) makeIconOnly((TextView) btnInputs);
+        iconOnlyVpn = vpnPill && cfg.iconOnlyVpn;
+        if (iconOnlyVpn) {
+            vpnPlainBackground = btnVpn.getBackground().getConstantState();
+            vpnPlainInk = btnVpn.getCompoundDrawableTintList();
+            makeIconOnly(btnVpn);
+        }
         btnSettings.setOnLongClickListener(v -> {
             showSettingsMenu();
             return true;
@@ -2995,6 +3005,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ColorStateList ink = new ColorStateList(
                     new int[][]{new int[]{android.R.attr.state_focused}, new int[0]},
                     new int[]{VpnBadge.pillInkColor(up, true), VpnBadge.pillInkColor(up, false)});
+            if (iconOnlyVpn) {
+                // An open lock on the plain glass button, or the closed lock outlined in green like the pill (solid
+                // while focused); the words go to talkback.
+                btnVpn.setContentDescription(getString(up ? R.string.vpn : R.string.vpn_off));
+                btnVpn.setBackground(up ? VpnBadge.pillBackground(true, density) : vpnPlainBackground.newDrawable());
+                btnVpn.setCompoundDrawablesRelativeWithIntrinsicBounds(VpnBadge.iconOnlyLock(up), 0, 0, 0);
+                btnVpn.setCompoundDrawableTintList(up ? ink : vpnPlainInk);
+                btnVpn.setVisibility(View.VISIBLE);
+                return;
+            }
             btnVpn.setText(up ? R.string.vpn : R.string.vpn_off);
             btnVpn.setTextColor(ink);
             btnVpn.setBackground(VpnBadge.pillBackground(up, density));

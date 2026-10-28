@@ -168,6 +168,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   something stalls there. Use `tools/tv.py --reboot`: it sends the reboot through ADB's own service
   and returns once the request is accepted. The TV is still restarting at that point, so let it
   answer again (`tools/tv.py --probe`) before the next command.
+- **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
+  skips every package in the list with "the TV's dumpsys shows neither a requested nor a granted permission
+  block". That message names Android 5.x, but the cause here is another one: Android's watchdog turns service
+  dumps off once it has seen `system_server` hang, and they stay off until `system_server` restarts.
+  `dumpsys activity` and `dumpsys connectivity` print nothing useful either, so the Home check cannot read the
+  focused app. On a Xiaomi Mi TV 4A (MiTV-MOOQ1, Android TV 11, `RTM4.220307.164.8277`) that had been up for
+  almost eight days, the load average was around 62 and `logcat` held repeated watchdog lines from
+  `system_server`. Reboot before changing anything (`tools/tv.py --reboot`); `dumpsys` worked again straight
+  after. Do not get past the skips with `TVINPUT_ALLOW=1`: the check could not run, which is not the same as
+  passing.
 - **A `logcat` without the line you expected is not proof that nothing happened.** On a TCL 55C728
   (`G05_4K_GB`, Google TV 11) the main buffer is 1 MiB (`persist.logd.size.main`), and the TV's own
   HDMI, ARC and media logging fills it in well under a minute; around power-on it held about 30
@@ -382,6 +392,14 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   launcher that cannot be installed, not the lists. If the `Failure [...]` line names
   `INSTALL_FAILED_VERIFICATION_FAILURE` instead, that is the bullet above - the firmware's installer
   verifier, not the API level.
+- **App info opens half-width with a dark rectangle** from a tile's long-press menu on a TCL G07
+  (`55P61B`, Android 11, [#1696](https://github.com/Gathin23/cleanyourtv/issues/1696)). The TV's
+  `AppManagementActivity` renders the same way when opened by the standard
+  `android.settings.APPLICATION_DETAILS_SETTINGS` intent from `adb`, with the launcher out of the
+  path. To view an app's details on this firmware, open TV Settings > Apps and select the app there:
+  Settings uses its `AppsActivity` with an embedded detail pane, which the owner checked renders at
+  full width. Changing the launcher's intent flags would not address this firmware's standalone
+  App info screen.
 - **Screenshots come out empty** while Live TV, an HDMI input or Netflix is on screen, seen on TCL
   and a [Sony KDL-49W800G](https://github.com/Gathin23/cleanyourtv/issues/92). Press Home before
   `screencap`. An empty capture means nothing about the ADB connection or playback; check those
@@ -486,6 +504,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `FallbackHome`. An opt-in application-ID build worked with the stock launcher still enabled;
   see the [device notes and rollback steps](devices/xiaomi-mitv-aetp0-dofus.md). This is different
   from a missing default-home picker or a remote that emits ALL_APPS.
+- **China-market Xiaomi refuses the new launcher as Home outright**, seen on a Laser Cinema 2 4K
+  (`nemo`, Android 9, firmware `2.1.3.4134`): `cmd package set-home-activity` answers `cannot be
+  home on user 0`, while the APK does declare `MAIN`/`HOME`/`DEFAULT` and is installed and enabled.
+  This firmware's `PackageManagerService.applyPostResolutionFilter` removes every HOME candidate that
+  is not `FLAG_SYSTEM` when `ro.formovie.launcher_type` is not `AndroidTV` (it reads `Patchwall`
+  here, and a shell `setprop` is refused), so this is a flag test rather than the package-name
+  allowlist above and the alternate application ID it accepted does not help. `query-activities -c
+  android.intent.category.HOME` lists only PatchWall and `FallbackHome`. Keep the stock launcher
+  enabled - disabling it leaves only `FallbackHome` - and see the
+  [device notes](devices/xiaomi-nemo-laser-cinema2.md) for the queries and the firmware code.
 - **The new launcher still doesn't own Home** after the stock one is disabled, seen on Google TV
   (Xiaomi MiTV-MOOR2). Another system app answers HOME: `com.google.android.tungsten.setupwraith`,
   with `.MainActivity` at intent-filter priority 4 and `.RecoveryActivity` at priority 1. You

@@ -19,7 +19,13 @@ table says so, the text itself for a string - and refuses one the launcher would
 range the table states. A theme's config.json is hand-edited, so one that cannot be read, is not JSON, or is not a
 JSON object is named before the key is written, and a write it cannot make says so instead of ending in a traceback.
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
-left over are answered with the usage line and exit 2 before a theme folder is read or written.
+left over are answered with the usage line and exit 2 before a theme folder is read or written. list, status,
+show, install and remove read their own words the same way, before anything is read from this checkout or asked
+of the TV.
+
+Exit status: 0 the command ran, 1 a command on the TV or a script this checkout runs failed, 2 the command line
+asked for something this script does not do - a command it does not have, or a word the command would drop - which
+is answered before the READMEs are read or the TV is asked anything.
 """
 import json
 import math
@@ -345,9 +351,10 @@ def show_line(item, installed=None):
 
 def cmd_list(what):
     groups = {"addons": addons, "themes": themes, "switches": switches}
-    for g in ([what] if what else ["addons", "themes", "switches"]):
+    for g in ([what] if what else list(LIST_GROUPS)):
         if g not in groups:
-            sys.exit("list addons, themes or switches")
+            sys.stderr.write(f"list takes addons, themes or switches, not {g!r}: {USAGE_LINES['list']}\n")
+            return 2
         items = groups[g]()
         print(f"{g} ({len(items)})")
         for item in items:
@@ -445,6 +452,51 @@ class Usage(Exception):
     """A command line that cannot run: the message goes to stderr and the status is 2."""
 
 
+# What each command's own line may carry, and the usage line it answers with. `list` prints one of the three
+# groups: its usage line has one word because `list addons themes` printed the add-ons and exited 0, which reads as
+# "both are listed". `show` and `install` take any number of words on purpose - an add-on's name in
+# addons/README.md can be several ("Frigate Glance"), and install passes what is left to the creator's script.
+# `remove` is the reason this is worth judging: `remove weather --dry-run` ran pm uninstall on the TV with a word
+# the command never read, so the set was changed by a command line that asked for something else.
+WORDS = {
+    "list": (0, 1, "addons, themes or switches"),
+    "show": (1, None, "an add-on, theme or switch"),
+    "status": (0, 0, "no words"),
+    "install": (1, None, "an add-on or a theme"),
+    "remove": (1, 1, "one add-on"),
+}
+
+USAGE_LINES = {
+    "list": "list [addons|themes|switches]",
+    "show": "show <add-on, theme or switch>",
+    "status": "status",
+    "install": "install <add-on or theme> [script arguments]",
+    "remove": "remove <add-on>",
+}
+
+LIST_GROUPS = ("addons", "themes", "switches")
+
+
+def own_words(command, args):
+    """The words `command` reads, or Usage naming what is missing or what it would drop there.
+
+    Every command here used to read the first word or two of its own line and ignore the rest, while set has
+    answered a leftover word with the usage line and exit 2 since it was given one: `list addons themes` listed
+    the add-ons and exited 0, `status --json` printed the status it prints without the flag, and `remove
+    weather --dry-run` uninstalled the add-on. A word the command does not read is a command line that asked for
+    something this script does not do, so it is answered before a README is read or the TV is asked anything.
+    """
+    least, most, what = WORDS[command]
+    if len(args) < least:
+        raise Usage(f"{command} needs {what}: {USAGE_LINES[command]}")
+    if most is not None and len(args) > most:
+        dropped = " ".join(args[most:])
+        raise Usage(f"{command} takes {what}, and would drop {dropped!r}: {USAGE_LINES[command]}")
+    if command == "list" and args and args[0] not in LIST_GROUPS:
+        raise Usage(f"list takes addons, themes or switches, not {args[0]!r}: {USAGE_LINES[command]}")
+    return args
+
+
 def set_args(args):
     """(key, value, theme) from set's own arguments, or Usage naming what is missing.
 
@@ -486,16 +538,6 @@ def main(argv):
         print(__doc__)
         return 0
     c, args = argv[0], argv[1:]
-    if c == "list":
-        return cmd_list(args[0] if args else None)
-    if c == "show" and args:
-        return cmd_show(" ".join(args))
-    if c == "status":
-        return cmd_status()
-    if c == "install" and args:
-        return cmd_install(args[0], args[1:])
-    if c == "remove" and args:
-        return cmd_remove(args[0])
     if c == "set":
         try:
             key, value, theme = set_args(args)
@@ -503,8 +545,23 @@ def main(argv):
             sys.stderr.write(f"{usage}\n")
             return 2
         return cmd_set(key, value, theme)
-    print(__doc__)
-    return 2
+    if c not in WORDS:
+        print(__doc__)
+        return 2
+    try:
+        args = own_words(c, args)
+    except Usage as usage:
+        sys.stderr.write(f"{usage}\n")
+        return 2
+    if c == "list":
+        return cmd_list(args[0] if args else None)
+    if c == "show":
+        return cmd_show(" ".join(args))   # a name can be several words: "Frigate Glance"
+    if c == "status":
+        return cmd_status()
+    if c == "install":
+        return cmd_install(args[0], args[1:])
+    return cmd_remove(args[0])
 
 
 if __name__ == "__main__":

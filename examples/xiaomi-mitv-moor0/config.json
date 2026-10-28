@@ -1,0 +1,17 @@
+{
+  "columns": 5,
+  "dock_apps": [
+    "ar.tvplayer.tv",
+    "org.smarttube.beta",
+    "de.rtli.tvnow",
+    "org.jellyfin.androidtv",
+    "de.swr.avp.ard.tv"
+  ],
+  "hidden_apps": [
+    "com.mitv.livetv"
+  ],
+  "live_tv_package": "com.mitv.livetv",
+  "app_keys": [
+    "190:org.smarttube.beta"
+  ]
+}

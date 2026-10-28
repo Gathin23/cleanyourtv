@@ -37,10 +37,10 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
    broke and what you re-enabled.
 4. Add `examples/<brand>-<model>/tv.json`, the row the TV tables show for your list. Copy
    `examples/xiaomi-mi-tv-4a/tv.json`: `tv` (the model as the tables name it), `os`, `brand` (spelled as
-   on the README's brand line; a new brand is fine) and `notes` (one line: what the list disables and
-   keeps). One optional key, `readme_os`, is the OS cell of the `README.md` table when it should read
-   shorter than `os` does in `examples/README.md`. Change nothing outside your folder: the TV tables in
-   `README.md` and `examples/README.md`, the brand line and the counts are generated from every folder's
+   in the README's brand grid; a new brand is fine) and `notes` (one line: what the list disables and
+   keeps). One optional key, `readme_os`, is the OS cell of the short table in `README.nl.md` when it should
+   read shorter than `os` does in `examples/README.md`. Change nothing outside your folder: the TV table in
+   `examples/README.md`, the brand grid in the READMEs and the counts are generated from every folder's
    `tv.json` after merging, so a PR that edits them only collides with the other open lists.
 5. If your TV's Live TV app or stock launcher has a different package name, say so in the header. Where
    a script needs the stock launcher, `tools/restore.sh` takes it as its second argument

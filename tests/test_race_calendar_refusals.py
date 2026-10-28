@@ -19,6 +19,7 @@ import contextlib
 import datetime
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -132,6 +133,24 @@ class RefusalTest(unittest.TestCase):
         status, stderr = self.run_main(str(picture), "--season", "2026")
         self.assert_refused(status, stderr, "there is no theme folder at", str(picture))
         self.urlopen.assert_not_called()
+
+    def test_an_empty_theme_name_is_not_the_directory_it_is_run_from(self):
+        # `race_calendar.py "$THEME"` with THEME unset passes the empty word, and Path("") is Path("."):
+        # a folder that is always there, so the folder check let it through, the run wrote a config.json
+        # into the directory it stood in and exited 0 as if the calendar were in the theme.
+        self.stub()
+        started = os.getcwd()
+        self.addCleanup(os.chdir, started)
+        os.chdir(self.theme)
+        for word in ("", "   "):
+            with self.subTest(word=word):
+                status, stderr = self.run_main(word, "--season", "2026")
+                self.assert_refused(status, stderr, "there is no theme folder in", repr(word),
+                                    "an empty or blank name")
+                self.assertEqual(self.out.getvalue(), "", "the run reported a calendar it did not write")
+                self.assertFalse((self.theme / "config.json").exists(),
+                                 "the run wrote a config.json in the directory it was started from")
+                self.urlopen.assert_not_called()
 
     def test_a_config_json_that_is_not_json_is_named_and_never_fetches(self):
         # The theme's own config.json is hand-written, and a typo in it was a JSONDecodeError traceback

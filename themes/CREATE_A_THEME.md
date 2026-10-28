@@ -108,6 +108,10 @@ Add one row to the table in [`themes/README.md`](README.md):
 | [`retro/`](retro/) | What it looks like in one line | <img src="retro/screenshot.jpg" width="320" alt="retro theme"> |
 ```
 
+Then bump the count in the repository's `README.md`, in its Themes feature row (the `N ship in themes/`
+sentence): `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and
+fails until the front page says the same number.
+
 ## 7. Open the pull request
 
 - One topic per PR.

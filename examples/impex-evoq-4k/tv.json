@@ -1,0 +1,6 @@
+{
+  "tv": "Impex evoQ 4K (Changhong, GTVU64IP, board alimos, MediaTek mt5896), India",
+  "os": "Google TV 14",
+  "brand": "Impex",
+  "notes": "Same board as benq-e55-760 on UKN3 firmware; Anoki ACR, Google ad services and auto-installs, feedback, Homwee store/help, Ginga; setupwraith owns the Wi-Fi; Wireless debugging only; IR gear button is evdev 498, and a key helper costs the volume ramp; AdGuard DNS validates; reboot-checked"
+}

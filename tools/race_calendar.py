@@ -9,12 +9,13 @@ Then push the theme as usual: tools/theme.sh <theme folder>. The launcher never 
 the only thing that does, once, on your computer. The data comes from Jolpica (https://jolpi.ca), the free
 community successor to the Ergast API: no key, no account. Run it again when F1 moves a session or a new
 season starts. Races that are already over are left out. The theme folder has to exist (config.json in it is
-created if it is not there yet).
+created if it is not there yet), and its name cannot be empty: `race_calendar.py "$THEME"` with the variable
+unset would otherwise write the calendar into the directory you ran it from.
 
 Exit status: 0 the calendar is in the theme, 1 the season has no race left to show, 2 this run could not do
-its job - the folder is not there, its config.json is not the JSON object a theme has (or cannot be read or
-written), --season is not a year, or the fetch failed - and says why on stderr. Nothing is written on 1 or
-2: the theme stays as it was.
+its job - the folder is not there (or was left empty), its config.json is not the JSON object a theme has (or
+cannot be read or written), --season is not a year, or the fetch failed - and says why on stderr. Nothing is
+written on 1 or 2: the theme stays as it was.
 """
 import argparse
 import datetime
@@ -96,6 +97,16 @@ def main():
                         help="season year, default the current one")
     args = parser.parse_args()
 
+    # `race_calendar.py "$THEME"` with THEME unset passes the empty word, and Path("") is Path(".") - the
+    # directory this run was started in, which is always there - so the check below let it through and
+    # the run wrote a config.json where the reader stood, printed its usual line and exited 0, as if the
+    # calendar were in their theme. An empty name is not a theme's name (#2100 judged the empty
+    # --screenshot value the same way), so it is refused before the folder is looked at.
+    if not args.theme.strip():
+        return refuse(f"there is no theme folder in {args.theme!r}: an empty or blank name means this "
+                      f"directory, not a theme, so the calendar would be written where you stand. "
+                      f"Nothing was written: name the theme's folder - themes/aurora - and if the name "
+                      f"came from a shell variable, that variable was empty.")
     # A folder that is not there is nearly always a typo in the theme's name, and the run used to make
     # that folder and put a calendar in it: the author then pushed, or debugged, a theme that is not the
     # one they meant. The config.json inside is still created for a folder that does exist.

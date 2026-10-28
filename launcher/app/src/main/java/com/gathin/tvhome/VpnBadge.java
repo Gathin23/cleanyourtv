@@ -47,6 +47,11 @@ final class VpnBadge extends ReplacementSpan {
         return vpnUp ? PILL_UP : vpnAppInstalled ? PILL_OFF : PILL_HIDDEN;
     }
 
+    /** icon_only_vpn: the closed lock while a VPN is up, the open lock while none is. */
+    static int iconOnlyLock(boolean up) {
+        return up ? R.drawable.ic_lock : R.drawable.ic_lock_open;
+    }
+
     /**
      * vpn_pill: the pill's background. At rest it is an outline in the state colour and only the focused state is
      * filled solid with a white ring — a solid pill at rest read as already selected, so OK pressed on a tile was

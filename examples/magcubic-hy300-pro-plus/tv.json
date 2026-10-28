@@ -1,0 +1,6 @@
+{
+  "tv": "Magcubic HY300 Pro+ projector (rk3566_rgo)",
+  "os": "Android 14",
+  "brand": "Magcubic",
+  "notes": "Music and printing off; stock launcher com.htc.magcubicos disabled by the install script so it boots into this launcher (no keystone screen then); Inputs pill opens Allwinner's com.softwinner.awsource picker; Settings pill opens com.android.tv.settings"
+}

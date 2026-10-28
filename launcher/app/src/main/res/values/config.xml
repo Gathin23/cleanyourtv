@@ -306,6 +306,10 @@
     <bool name="icon_only_buttons">false</bool>
     <!-- The Inputs pill as a round icon button too (the label moves to the talkback description). -->
     <bool name="icon_only_inputs">false</bool>
+    <!-- With vpn_pill, the VPN pill as a round icon button too: an open lock on the plain glass button while no VPN is
+         up, the closed lock in a green outline while one is (solid green only while focused, like the pill). "VPN" /
+         "VPN off" become its talkback description. A theme can set "icon_only_vpn": true. -->
+    <bool name="icon_only_vpn">false</bool>
     <!-- true colours the Wi-Fi pill's icon green while the TV is online and leaves it white while it is not (dark on
          the focused pill either way), so the connection shows at a glance, also as an icon-only button. Can also be
          set with "wifi_status_color": true in a theme's config.json. -->

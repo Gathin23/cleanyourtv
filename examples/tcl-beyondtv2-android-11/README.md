@@ -93,3 +93,25 @@ has to be ruled out, not that the drift is solved. Worth repeating on a unit tha
   "the TV's dumpsys shows neither a requested nor a granted permission block". The package is a
   partner auto-install config with no code path left after first boot, so it was left enabled. It is
   not in this list, and this is a note for anyone who adds it and wonders why the script skips it.
+
+## A third unit: the TCL 65P615 (product `BeyondTV`, ME firmware)
+
+A 65" **TCL 65P615** reports `ro.product.model BeyondTV` - not `BeyondTV2` - but the same build,
+`TCL/BeyondTV/BeyondTV:11/PPR1.180610.011/AR05:user/release-keys`, client type `TCL-ME-RT2851-S1`,
+software `V8-R851T02-LF1V715`. Its preloaded package set matches this folder, so the list applies
+unchanged. This firmware is also not `examples/tcl-beyondtv-rt2851`: that unit has the same product
+name but runs Android 9 (`AP06`). Recorded 2026-10-28, in one session with one full reboot - not days
+of use.
+
+- **Applied in four batches** (overseasappshow and the TCL analytics/promo group first, then
+  tclhome_master/notereminder and the Google attribution pair, then voice, then mirroring, phone remote
+  and backdrop), a screenshot after each. Wi-Fi and the stock Home stayed up throughout.
+- **Factory state differs again:** `com.tcl.smartalexa`, `smartconnect.tv` and Netflix
+  (`com.netflix.ninja`) came disabled from the factory on this unit, as did Stan, Rakuten, `com.tcl.gallery`
+  and 15 `uk.co.freeview.*` apps. `pm list packages -d` held 41 packages in all after the list.
+- **Launcher:** installed with `launcher/build-and-install.sh`; `com.google.android.tvlauncher` was the only
+  stock Home, and Home resolved to the new launcher on the first try. The Inputs menu listed HDMI 1-3, AV
+  and Live TV with no `source_panel_service`.
+- **After one reboot** (with `sync` and the 15 s wait first): all 41 still disabled, nothing re-enabled,
+  Home on the replacement launcher, Chromecast's `mediashell` running, Wi-Fi up. A longer run would
+  still be worth having for the analytics-pair drift noted above.
