@@ -79,6 +79,19 @@ Disabled, exhibit leaves the key to the launcher, so:
 No background service runs unless Wake into art is on. Pictures, settings and the library stay in the app's own
 storage on the TV.
 
+### Network use
+
+- **Picture sources**, only when you search or save: `api.artic.edu` and `www.artic.edu` (Art Institute of Chicago),
+  `openaccess-api.clevelandart.org` and `openaccess-cdn.clevelandart.org`, `collectionapi.metmuseum.org` and
+  `images.metmuseum.org`, `commons.wikimedia.org` and `upload.wikimedia.org`, `images-api.nasa.gov` and
+  `images-assets.nasa.gov`, and with your key `api.unsplash.com` and `images.unsplash.com`. HTTPS only, no cookies,
+  no login; Unsplash gets your access key and a download report for each saved photo.
+- **Local upload server**, only while the Send from phone screen is open: a small HTTP server on the first free port
+  from 8790 to 8799, answering only addresses on the local network (site-local, link-local or loopback) and only
+  requests carrying the random one-time code from the QR on the TV. It accepts pictures up to 60 MB each and stops
+  when the screen closes.
+- Nothing is sent anywhere else: no analytics, no crash reports, no account.
+
 ## Licences of the pictures
 
 Searches offer only pictures free to show at home: public domain, CC0, CC BY / BY-SA (credited with author and
