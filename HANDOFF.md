@@ -51,11 +51,15 @@ The user requested a pause and a committed handoff to continue locally with TV a
 
 Completed before pause:
 
+- Final repository-wide Python suite: **2,132 tests, 36 skipped, OK**.
+- Final offline Java test/lint/release build: **BUILD SUCCESSFUL** (47 seconds).
+- Final lint: **0 errors, 100 warnings**; final APK: **557,893 bytes**.
+
 - JDK 17 + platform 34 + build-tools 34.0.0 configured in the cloud workspace.
 - `testReleaseUnitTest lintRelease assembleRelease` passed during implementation.
 - 297 JVM tests, zero failures. Lint completed with zero errors (warnings remain,
   including English text formatting and the programmatically constructed custom view).
-- Release APK measured 557,893 bytes on the penultimate successful build, below
+- Release APK measured 557,893 bytes on the final successful build, below
   589,824-byte / 576-KiB gate. Check the final size again after further edits.
 - No manifest, permission, dependency, minSdk, package identity, Home guard,
   install/restore script, system package or physical TV changes.
@@ -67,8 +71,6 @@ Completed before pause:
   classic recovery, screen sizing or screensaver on a TV or working emulator.
 - Software Android TV API 30 emulator was started without KVM; it remained offline
   during checks. Do not describe it as a successful emulator test.
-- Repository-wide Python tests were started; consult the final handoff validation
-  note below for their eventual result. JVM test success does not imply Python success.
 - Photos are committed as a separate pack, not installed on a TV. Without the pack or
   an existing wallpaper, the panorama is blank. Improve that empty state before delivery.
 
