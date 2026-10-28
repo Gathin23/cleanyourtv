@@ -9,10 +9,10 @@ All work remains local until explicitly delivered.
 
 ## Tasks
 
-- T1 — S1 — Define the smallest interaction and persistence model for pinning and manual App Library order — commit: a194bb2
-- T2 — S1 — Add bounded persistence and deterministic ordering helpers with unit tests — commit: a194bb2
-- T3 — S1 — Add App Library controls for pin, unpin, and moving entries — commit: a194bb2
-- T4 — S1 — Update user-facing launcher documentation and run local verification — commit: a194bb2
+- T1 — S1 — Define the smallest interaction and persistence model for pinning and manual App Library order — commit: 0bd1454
+- T2 — S1 — Add bounded persistence and deterministic ordering helpers with unit tests — commit: 0bd1454
+- T3 — S1 — Add App Library controls for pin, unpin, and moving entries — commit: 0bd1454
+- T4 — S1 — Update user-facing launcher documentation and run local verification — commit: 0bd1454
 
 ## Log
 
