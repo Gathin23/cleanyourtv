@@ -83,7 +83,7 @@ storage on the TV.
 
 - **Picture sources**, only when you search or save: `api.artic.edu` and `www.artic.edu` (Art Institute of Chicago),
   `openaccess-api.clevelandart.org` and `openaccess-cdn.clevelandart.org`, `collectionapi.metmuseum.org` and
-  `images.metmuseum.org`, `commons.wikimedia.org` and `upload.wikimedia.org`, `images-api.nasa.gov` and
+  `images.metmuseum.org`, `commons.wikimedia.org`, `thumb.wikimedia.org` and `upload.wikimedia.org`, `images-api.nasa.gov` and
   `images-assets.nasa.gov`, and with your key `api.unsplash.com` and `images.unsplash.com`. HTTPS only, no cookies,
   no login; Unsplash gets your access key and a download report for each saved photo.
 - **Local upload server**, only while the Send from phone screen is open: a small HTTP server on the first free port
