@@ -202,7 +202,9 @@
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
          com.xgimi.xrmservice does, on every one of its remote keys, power included (docs/TROUBLESHOOTING.md).
          Whenever that launcher's home screen comes up anyway, HomeKeyService (HOME_KEY_SERVICE=1) sends the TV
-         straight back here. A theme's config.json can set it too. Leave empty to omit. -->
+         straight back here. A theme's config.json can set it too. Leave empty to omit. While a profile of the
+         owner runs (Google TV's kids profile, picked in its profile chooser) that home stays, locked to the kids'
+         apps, and the redirect resumes once the profile stops. -->
     <string name="stock_home_redirect" translatable="false"></string>
 
     <!-- For TVs whose firmware opens the Live TV app (live_tv_package) by itself at every power-on, with no setting
