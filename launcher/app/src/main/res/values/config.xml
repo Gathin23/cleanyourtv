@@ -412,6 +412,12 @@
          "show_stats": true. Nothing is read, and the clock does not move, while this is false. -->
     <bool name="show_stats">false</bool>
 
+    <!-- Home shows the TV's own system wallpaper behind its tiles, instead of its background colour: the picture
+         any app sets with Android's wallpaper API, such as a picture-frame app following its art. Off by default;
+         a theme can set "system_wallpaper": true, and darken it with "wallpaper_dim". Leave the theme's wallpaper
+         out when this is on. Nothing changes while this is false. -->
+    <bool name="system_wallpaper">false</bool>
+
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
          sets its opacity. Around 60 reads clearly without hiding a wallpaper. Can also be set with

@@ -434,6 +434,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // the theme's background, so launch looks the same.
         getWindow().setBackgroundDrawable(null);
         wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
+        if (cfg.systemWallpaper) {
+            // system_wallpaper: the TV's own wallpaper shows through behind Home instead of the background colour.
+            root.setBackgroundColor(WallpaperPlayer.systemWallpaperScrim(cfg));
+            getWindow().setFormat(android.graphics.PixelFormat.TRANSLUCENT);
+            getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
+        }
         sky = findViewById(R.id.sky);
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);

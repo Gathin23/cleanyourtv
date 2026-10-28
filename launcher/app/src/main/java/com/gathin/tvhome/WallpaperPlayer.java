@@ -62,9 +62,16 @@ final class WallpaperPlayer {
     private LocalDate sunDay;
     private int[] sun;
 
+    /** The root's colour over the system wallpaper: clear, or black at wallpaper_dim per cent. */
+    static int systemWallpaperScrim(Config config) {
+        return config.wallpaperDim > 0 ? (config.wallpaperDim * 255 / 100) << 24 : 0;
+    }
+
     WallpaperPlayer(Context context, FrameLayout root, Config config) {
         this.root = root;
-        backgroundColor = config.backgroundColor;
+        // system_wallpaper: the TV's wallpaper shows through, so the root stays clear (darkened by wallpaper_dim)
+        // instead of taking the colour.
+        backgroundColor = config.systemWallpaper ? systemWallpaperScrim(config) : config.backgroundColor;
         files = new ArrayList<>(config.wallpapers);
         interval = config.wallpaperRotationMinutes * 60_000L;
         bitmapConfig = config.wallpaperTrueColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
