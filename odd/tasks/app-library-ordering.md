@@ -31,3 +31,5 @@ All work remains local until explicitly delivered.
 - L7: Remote fork creation and push are tracked separately and remain blocked until the user authorizes the exact remote destination and write operation.
 - L8: T5/T6 implementation and verification were committed locally as a7fdb3f; unrelated themes/salotto/, probe-artifacts/, and the tracking document remain outside that work-unit commit.
 - L9: Aggiunginal task anche la possibilita di isntallre shizuku next ed il suo store per poter in fururo installre app utili legte ad asb wireless
+- L10: The requested owner was darkei08, but the authenticated GitHub account is darkrei08; the remote fork exists under darkrei08/cleanyourtv.
+- L11: Si confermo darkrei08 poi prosegui coi task eseguendo sempre pi herder orchestration e po extensible workflow
