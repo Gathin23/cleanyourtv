@@ -1,0 +1,63 @@
+# ZTE ZXV10 B866F V1.1 (codename oppen, Amlogic armeabi-v7a), Android TV 14 (SDK 34), firmware EBS.UKG3.250115.001
+# Status: tested across multiple cold reboots with CleanYourTV as default Home (2026-10-28).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/zte-b866f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/zte-b866f/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (and secondary CFW drawer com.ebsproject.drawer)
+#
+# IMPORTANT — ZTE Anti-Tamper Watchdog & PMSImpl Home Interception:
+#   1. /system_ext/app/ControlDevice/ControlDevice.apk (com.control.device, android.uid.system)
+#      registers com.control.device.receiver.ZteKeyInterceptorReceiver on BOOT_COMPLETED.
+#      Its TimerTask (com.control.device.receiver.A.run -> ZteKeyInterceptorReceiver.Q) checks
+#      PackageManager.queryIntentActivities(MAIN + HOME, 0) for any enabled FLAG_SYSTEM launcher
+#      other than com.google.android.tungsten.setupwraith and com.android.tv.settings.
+#      If both com.google.android.tvlauncher and com.ebsproject.drawer are disabled and no
+#      FLAG_SYSTEM launcher is present, Q(Context) returns null and A.run() broadcasts
+#      Intent("android.intent.action.FACTORY_RESET") with EXTRA_REASON="ResetButon", wiping /data!
+#   2. /system/framework/FrameworkCustomization.jar (com.zte.framework.services.pm.PMSImpl)
+#      intercepts HOME resolution via PMSImpl.getBestActivity() when tv_user_setup_complete=1,
+#      requiring a FLAG_SYSTEM Home activity.
+#   3. Run `TV_HOST=<tv ip> examples/zte-b866f/setup-zte-mitigation.sh` BEFORE disabling the stock
+#      launchers (see examples/zte-b866f/README.md for full details).
+#
+# Kept on purpose:
+#   - com.google.android.tungsten.setupwraith: owns the saved Wi-Fi profile (cname=com.google.android.tungsten.setupwraith)
+#   - com.android.tv.settings: required for TV Settings and Direct Boot FallbackHome
+#   - com.topjohnwu.magisk, org.liskovsoft.androidtv.rukeyboard, ru.littlevictor.powermenu,
+#     com.mixplorer, com.alphainventor.filemanager
+#   - ZTE FLAG_PERSISTENT packages (PackageManager refuses disabling persistent packages):
+#     com.zte.factorytesttool, com.zstbproc.priorityinc, com.zte.ztepersistentservice
+#   - ZTE PMSImpl package-level protected middleware (pm disable-user returns `default`;
+#     ZteKeyInterceptorReceiver is disabled at the component level instead):
+#     com.control.device, com.ztestb.basecomp, tv.upgrade.service
+#   - android.autoinstalls.config.zte.device (no permissions block in dumpsys; harmless stub)
+
+# --- Stock Launcher & Recommendations (disable after setup-zte-mitigation.sh & CleanYourTV install) ---
+com.google.android.tvlauncher
+com.google.android.tvrecommendations
+com.ebsproject.drawer                  # EBS CFW secondary app drawer / Home activity
+
+# --- ZTE Telemetry & Middleware Services ---
+com.zte.helper                         # ZTE background helper & telemetry
+com.netgem.zte.secureservices          # Netgem/ZTE operator service
+
+# --- CFW Cleaners & Junk Utilities ---
+com.yxt.memoryclean                    # MemoryClean RAM killer utility
+com.rocketfly                          # RocketFly booster utility
+
+# --- Google Assistant & Telemetry ---
+com.google.android.katniss             # Google Assistant (comment out to keep voice search)
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# --- Unused Preloaded Streaming Apps ---
+com.google.android.youtube.tvmusic
+com.netflix.ninja
+com.netflix.tokenmanager

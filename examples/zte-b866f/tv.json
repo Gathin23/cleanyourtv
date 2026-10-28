@@ -1,0 +1,7 @@
+{
+  "tv": "ZTE ZXV10 B866F V1.1 (Amlogic oppen)",
+  "os": "Android TV 14 (EBS CFW)",
+  "readme_os": "Android TV 14",
+  "brand": "ZTE",
+  "notes": "Requires disabling com.control.device watchdog or running launcher with FLAG_SYSTEM to prevent factory reset on reboot; EBS drawer, ZTE telemetry, MemoryClean, RocketFly, Assistant, Play Next disabled; `com.google.android.tungsten.setupwraith` kept for Wi-Fi: [notes](zte-b866f/README.md)"
+}

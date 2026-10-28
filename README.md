@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="341 TV models · 93 brands · 29 languages · 532 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 297 more: 313 articles from 44 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="342 TV models · 94 brands · 29 languages · 532 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 297 more: 313 articles from 44 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher." width="800"></a>
 </p>
 
 **Samsung, LG, Roku or another non-Android TV?** CleanYourTV can't run there, but you can still turn off
@@ -137,7 +137,7 @@ Tested lists from contributors, one folder per model in [`examples/`](examples/)
 Acer · AiPro2K · AIWA · AQUA · Artel · ASUS · Beko · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor · Dialog ·
 DYON · Freebox · Home+ · INCLO · Karbonn · KTC · Liberton · Lumio · Master-G · MTC · Next · Noblex · OK. · OPPO ·
 Panavox · PEAQ · Polytron · PPTV · PRISM+ · SANYO · Seleco · Super General · Síragon · Tele System · TiVo · Tornado ·
-Turkcell · Tuvio · Verizon · Vision ·
+Turkcell · Tuvio · Verizon · Vision · ZTE ·
 Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 <!-- tv-brands:end -->
@@ -490,6 +490,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Xiaomi TV S Pro 100 Mini LED 2025 (小米电视 S Pro 100, L100MB-SP, MiTV-MFFU0, finch, MediaTek), China firmware OS3.0.115.0.UFFMATV, 4 GB RAM | Android 14 (HyperOS 3, CN build) |
 | Xiaomi TV Stick 4K (MiTV-AYFR0, soul, Amlogic), streaming stick | Android TV 14 |
 | Xiaomi TV Stick 4K 2nd gen (MiTV-AFMU1, twilight, adastra, Amlogic), streaming stick | Google TV 14 |
+| ZTE ZXV10 B866F V1.1 (Amlogic oppen) | Android TV 14 |
 
 <!-- tv-table:end -->
 

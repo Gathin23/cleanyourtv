@@ -1,0 +1,6 @@
+id=cleanyourtv
+name=CleanYourTV System Launcher (ZTE B866F Mitigation)
+version=1.0
+versionCode=1
+author=CleanYourTV
+description=Mounts CleanYourTV as /system/app/CleanYourTV with FLAG_SYSTEM and disables ZTE ControlDevice factory-reset watchdog on ZTE ZXV10 B866F.
