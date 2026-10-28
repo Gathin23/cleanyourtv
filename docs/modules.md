@@ -144,3 +144,33 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
 
 The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.
+
+## Weather and fuel prices under the clock (home_glance)
+
+An app can hand Home one short line for the free space under the clock (temperature, fuel prices, and the like),
+with an optional weather icon. The launcher only reads; it never writes to the app and never goes online. The owner
+opts in by naming the app's package in the `home_glance` key (`config.xml` or a theme). The line is shown only while
+the race weekend / Game Day panel is hidden (#2381); when that panel is on, the glance stays away.
+
+1. Name a read-only content provider in a `meta-data` on your `<application>`:
+
+   ```xml
+   <meta-data android:name="com.gathin.tvhome.glance" android:value="com.example.glance" />
+   <provider android:name=".GlanceProvider" android:authorities="com.example.glance" android:exported="true" />
+   ```
+
+   The provider must belong to the package the owner named; the launcher ignores an authority another app holds.
+2. Answer a query on `content://<authority>/line` with these columns, one row (or none):
+
+   | Column | Type | What |
+   |---|---|---|
+   | `text` | text | The line under the clock, for example "21° · E10 1.69 €/L · Diesel 1.55 €/L". An empty cursor or empty text hides the line. At most 64 characters. |
+   | `icon` | text | Closed vocabulary: `clear`, `cloudy`, `rain`, `snow`, `storm`, `fog`, `night`. Anything else is drawn as cloudy. The launcher draws the icon itself. |
+
+   The provider is exported without a permission, so it must hold no token, address, entity id, link or other private
+   data: only what Home shows.
+3. Call `notifyChange` on that URI when the line changes. The launcher queries when Home comes back and on each
+   change, and watches only while Home is on screen. Fetching is the app's job; refreshing about every 15 minutes
+   while something asks is enough.
+
+The [Smart Home](../addons/README.md) add-on implements this from Home Assistant.

@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,8 +17,10 @@ import java.util.Locale;
 final class Ha {
     /** At most this many rows, so a large installation can't make the screen slow. */
     static final int MAX_ENTITIES = 80;
+    /** At most this many fuel-price sensors in the glance header. */
+    static final int MAX_PRICES = 6;
 
-    enum Kind { SCENE, TOGGLE, CLIMATE, SENSOR, OPENING, LOCK }
+    enum Kind { WEATHER, PRICE, SCENE, TOGGLE, CLIMATE, SENSOR, OPENING, LOCK }
 
     static final class Entity {
         final String id;
@@ -54,6 +57,14 @@ final class Ha {
         String value() {
             if (!available()) return "Unavailable";
             switch (kind) {
+                case WEATHER:
+                    return Double.isNaN(current) ? capital(state) : number(current) + "°";
+                case PRICE:
+                    try {
+                        return number(Double.parseDouble(state)) + (unit.isEmpty() ? "" : " " + unit);
+                    } catch (NumberFormatException e) {
+                        return state;
+                    }
                 case SCENE:
                     return "Run";
                 case TOGGLE:
@@ -76,6 +87,57 @@ final class Ha {
                 default:
                     return state;
             }
+        }
+    }
+
+    /**
+     * What the glance header (and the optional Home line) shows: one weather entity and up to
+     * {@link #MAX_PRICES} fuel prices. {@link #icon} is the closed vocabulary the launcher draws.
+     */
+    static final class Glance {
+        final Entity weather;
+        final List<Entity> prices;
+        /** One line for Home, for example "21° · E10 1.69 €/L · Diesel 1.55 €/L". Empty when nothing to show. */
+        final String text;
+        /** clear, cloudy, rain, snow, storm, fog, night, or empty. */
+        final String icon;
+
+        Glance(Entity weather, List<Entity> prices) {
+            this.weather = weather;
+            this.prices = Collections.unmodifiableList(prices);
+            this.icon = weather == null || !weather.available() ? "" : weatherIcon(weather.state);
+            this.text = line(weather, prices);
+        }
+
+        boolean empty() {
+            return text.isEmpty();
+        }
+
+        private static String line(Entity weather, List<Entity> prices) {
+            StringBuilder b = new StringBuilder();
+            if (weather != null && weather.available() && !Double.isNaN(weather.current)) {
+                b.append(number(weather.current)).append('°');
+            }
+            for (Entity p : prices) {
+                if (!p.available()) continue;
+                if (b.length() > 0) b.append(" · ");
+                b.append(shortName(p.name));
+                try {
+                    b.append(' ').append(number(Double.parseDouble(p.state)));
+                } catch (NumberFormatException e) {
+                    b.append(' ').append(p.state);
+                }
+                if (p.unit != null && !p.unit.isEmpty()) b.append(' ').append(p.unit);
+            }
+            return b.toString();
+        }
+
+        /** First word of the friendly name, capped so the Home line stays short. */
+        private static String shortName(String name) {
+            String n = name == null ? "" : name.trim();
+            int space = n.indexOf(' ');
+            if (space > 0) n = n.substring(0, space);
+            return n.length() > 12 ? n.substring(0, 12) : n;
         }
     }
 
@@ -107,6 +169,85 @@ final class Ha {
         return out.size() > MAX_ENTITIES ? new ArrayList<>(out.subList(0, MAX_ENTITIES)) : out;
     }
 
+    /**
+     * Weather and fuel prices for the glance header. With {@code ids} empty: the first available weather
+     * entity and up to {@link #MAX_PRICES} price sensors. With ids set: those entities, in that order.
+     */
+    static Glance glance(List<Entity> all, List<String> ids) {
+        if (ids != null && !ids.isEmpty()) {
+            Entity weather = null;
+            List<Entity> prices = new ArrayList<>();
+            for (String id : ids) {
+                Entity e = find(all, id);
+                if (e == null) continue;
+                if (e.kind == Kind.WEATHER && weather == null) weather = e;
+                else if (e.kind == Kind.PRICE && prices.size() < MAX_PRICES) prices.add(e);
+            }
+            return new Glance(weather, prices);
+        }
+        Entity weather = null;
+        List<Entity> prices = new ArrayList<>();
+        for (Entity e : all) {
+            if (e.kind == Kind.WEATHER && weather == null && e.available()) weather = e;
+            else if (e.kind == Kind.PRICE && prices.size() < MAX_PRICES) prices.add(e);
+        }
+        if (weather == null) {
+            for (Entity e : all) {
+                if (e.kind == Kind.WEATHER) {
+                    weather = e;
+                    break;
+                }
+            }
+        }
+        return new Glance(weather, prices);
+    }
+
+    /** Rows for the remote list: weather and prices live in the glance header only. */
+    static boolean inList(Entity e) {
+        return e.kind != Kind.WEATHER && e.kind != Kind.PRICE;
+    }
+
+    /**
+     * Closed vocabulary for the Home line and the in-app icon: clear, cloudy, rain, snow, storm, fog, night.
+     * Unknown Home Assistant states map to cloudy.
+     */
+    static String weatherIcon(String state) {
+        if (state == null) return "cloudy";
+        switch (state) {
+            case "sunny":
+            case "clear":
+                return "clear";
+            case "clear-night":
+                return "night";
+            case "cloudy":
+            case "partlycloudy":
+            case "windy":
+            case "windy-variant":
+                return "cloudy";
+            case "fog":
+                return "fog";
+            case "rainy":
+            case "pouring":
+            case "hail":
+                return "rain";
+            case "snowy":
+            case "snowy-rainy":
+                return "snow";
+            case "lightning":
+            case "lightning-rainy":
+                return "storm";
+            default:
+                return "cloudy";
+        }
+    }
+
+    static boolean priceUnit(String unit) {
+        if (unit == null) return false;
+        String u = unit.trim().toUpperCase(Locale.ROOT).replace(" ", "");
+        return u.equals("€") || u.equals("EUR") || u.equals("€/L") || u.equals("EUR/L")
+                || u.equals("€/LITRE") || u.equals("EUR/LITRE");
+    }
+
     static Entity entity(JSONObject o) {
         String id = o.optString("entity_id", "");
         String state = o.optString("state", "");
@@ -119,6 +260,9 @@ final class Ha {
         String deviceClass = a.optString("device_class", "");
         String unit = a.optString("unit_of_measurement", "");
         switch (domain) {
+            case "weather":
+                return new Entity(id, Kind.WEATHER, name, state, -1, a.optDouble("temperature", Double.NaN),
+                        Double.NaN, "°");
             case "scene":
                 return new Entity(id, Kind.SCENE, name, state, -1, Double.NaN, Double.NaN, "");
             case "light":
@@ -132,6 +276,9 @@ final class Ha {
                 return new Entity(id, Kind.CLIMATE, name, state, -1, a.optDouble("current_temperature", Double.NaN),
                         a.optDouble("temperature", Double.NaN), "°");
             case "sensor":
+                if (priceUnit(unit)) {
+                    return new Entity(id, Kind.PRICE, name, state, -1, Double.NaN, Double.NaN, unit);
+                }
                 if (!deviceClass.equals("temperature") && !deviceClass.equals("humidity")) return null;
                 return new Entity(id, Kind.SENSOR, name, state, -1, Double.NaN, Double.NaN, unit);
             case "binary_sensor":
@@ -214,5 +361,10 @@ final class Ha {
 
     private static String capital(String s) {
         return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
+    private static Entity find(List<Entity> all, String id) {
+        for (Entity e : all) if (e.id.equals(id)) return e;
+        return null;
     }
 }

@@ -439,6 +439,12 @@
          online. A theme can set "game_day". -->
     <string name="game_day" translatable="false"></string>
 
+    <!-- One short line under the clock (temperature and fuel prices from Home Assistant, and the like): the package of
+         an add-on that publishes them (the Smart Home add-on: io.github.maxhayim.smarthome; contract in docs/modules.md).
+         Empty = off: nothing is read or watched. Shown only while the race / Game Day panel is hidden. The launcher
+         only reads what the add-on publishes and never goes online. A theme can set "home_glance". -->
+    <string name="home_glance" translatable="false"></string>
+
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
          sets its opacity. Around 60 reads clearly without hiding a wallpaper. Can also be set with

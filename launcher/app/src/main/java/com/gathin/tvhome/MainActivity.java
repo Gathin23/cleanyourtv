@@ -195,6 +195,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView raceKicker, raceHeadline, raceSessions;
     /** game_day: each team's next game from an add-on, rotating in the race panel; null when the key is off. */
     private GameDay gameDay;
+    /** home_glance: one short line under the clock from an add-on; null when the key is off. */
+    private HomeGlance homeGlance;
+    private View homeGlancePanel;
+    private ImageView homeGlanceIcon;
+    private TextView homeGlanceText;
     private View raceBar;
     private LinearLayout racePager;
     private long rotationStart;
@@ -532,6 +537,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         raceBar = findViewById(R.id.raceBar);
         racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
+        homeGlancePanel = findViewById(R.id.homeGlance);
+        homeGlanceIcon = findViewById(R.id.homeGlanceIcon);
+        homeGlanceText = findViewById(R.id.homeGlanceText);
+        homeGlance = HomeGlance.create(this, cfg.homeGlance, handler, this::updateHomeGlance);
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
@@ -710,18 +719,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
 
-        // game_day: the panel above the dock rides up with the cards instead of being covered by them, and fades
-        // out by the time it reaches the clock. The grid's own offset is read, so a jump (Home, a restored focus)
-        // lands right too.
-        if (gameDay != null) {
+        // game_day / home_glance: the panel above the dock rides up with the cards instead of being covered by
+        // them, and fades out by the time it reaches the clock. The grid's own offset is read, so a jump (Home,
+        // a restored focus) lands right too.
+        if (gameDay != null || homeGlance != null) {
             View clockBlock = findViewById(R.id.leftBlock);
             grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                     int shift = rv.canScrollVertically(-1) ? rv.computeVerticalScrollOffset() : 0;
+                    View panel = racePanel.getVisibility() == View.VISIBLE ? racePanel
+                            : homeGlancePanel != null ? homeGlancePanel : racePanel;
                     racePanel.setTranslationY(-shift);
-                    int room = Math.max(1, racePanel.getTop() - clockBlock.getBottom());
-                    racePanel.setAlpha(Math.max(0f, 1f - shift / (float) room));
+                    int room = Math.max(1, panel.getTop() - clockBlock.getBottom());
+                    float alpha = Math.max(0f, 1f - shift / (float) room);
+                    racePanel.setAlpha(alpha);
+                    if (homeGlancePanel != null) {
+                        homeGlancePanel.setTranslationY(-shift);
+                        homeGlancePanel.setAlpha(alpha);
+                    }
                 }
             });
         }
@@ -970,6 +986,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openInputsIfAsked(intent)) return;
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
         if (gameDay != null && !stopped) gameDay.read();
+        if (homeGlance != null && !stopped) homeGlance.read();
         grid.scrollToPosition(0);
         lastFocused = 0;
         lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
@@ -1044,6 +1061,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        if (homeGlance != null) homeGlance.start();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1225,6 +1243,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
         if (gameDay != null) gameDay.stop();
+        if (homeGlance != null) homeGlance.stop();
         handler.removeCallbacks(turnTick);
         if (diya != null) diya.stop();
         cancelPendingFocusScroll();
@@ -1280,6 +1299,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onDestroy() {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
+        if (homeGlance != null) homeGlance.shutdown();
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -2640,6 +2660,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         List<GameDay.Turn> turns = GameDay.merge(games, f1, now);
         if (turns.isEmpty()) {
             racePanel.setVisibility(View.GONE);
+            updateHomeGlance();
             return;
         }
         int seconds = gameDay.turnSeconds();
@@ -2667,6 +2688,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // No session times for a game: the line takes no room, so the dots sit under the countdown.
             raceSessions.setVisibility(View.GONE);
             racePanel.setVisibility(View.VISIBLE);
+            updateHomeGlance();
         }
         showPager(turns.size(), on);
         if (turns.size() > 1 && !stopped) handler.postDelayed(turnTick, GameDay.delayToNextTurn(since, seconds));
@@ -2700,6 +2722,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RaceWeekend.State s = raceCalendar.isEmpty() ? null : RaceWeekend.at(raceCalendar, java.time.Instant.now());
         if (s == null) {
             racePanel.setVisibility(View.GONE);
+            updateHomeGlance();
             return;
         }
         RaceWeekend.Race race = s.race;
@@ -2740,6 +2763,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         raceSessions.setText(row);
         racePanel.setVisibility(View.VISIBLE);
+        updateHomeGlance();
+    }
+
+    /**
+     * home_glance: one short line under the clock when the race / Game Day panel is not using that space.
+     * Empty key or empty text hides it; racePanel visible hides it too (#2381).
+     */
+    private void updateHomeGlance() {
+        if (homeGlancePanel == null) return;
+        if (homeGlance == null || racePanel.getVisibility() == View.VISIBLE) {
+            homeGlancePanel.setVisibility(View.GONE);
+            return;
+        }
+        HomeGlance.Line line = homeGlance.line();
+        if (line.empty()) {
+            homeGlancePanel.setVisibility(View.GONE);
+            return;
+        }
+        homeGlanceText.setText(line.text);
+        if (line.icon.isEmpty()) {
+            homeGlanceIcon.setVisibility(View.GONE);
+        } else {
+            homeGlanceIcon.setVisibility(View.VISIBLE);
+            homeGlanceIcon.setImageResource(homeGlanceDrawable(line.icon));
+        }
+        homeGlancePanel.setVisibility(View.VISIBLE);
+    }
+
+    private static int homeGlanceDrawable(String icon) {
+        switch (icon) {
+            case "clear": return R.drawable.ic_weather_clear;
+            case "rain": return R.drawable.ic_weather_rain;
+            case "snow": return R.drawable.ic_weather_snow;
+            case "storm": return R.drawable.ic_weather_storm;
+            case "fog": return R.drawable.ic_weather_fog;
+            case "night": return R.drawable.ic_weather_night;
+            default: return R.drawable.ic_weather_cloudy;
+        }
     }
 
     private void refreshPillsAfterNextDraw() {

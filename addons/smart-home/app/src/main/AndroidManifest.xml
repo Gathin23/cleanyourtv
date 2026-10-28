@@ -15,6 +15,9 @@
         android:networkSecurityConfig="@xml/network"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
 
+        <!-- home_glance: the launcher reads one short line and an icon name from GlanceProvider. -->
+        <meta-data android:name="com.gathin.tvhome.glance" android:value="io.github.maxhayim.smarthome.glance" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -38,5 +41,11 @@
             android:authorities="${applicationId}.config"
             android:exported="true"
             android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+
+        <!-- Temperature and fuel prices for the launcher's home_glance line: text and icon name only. -->
+        <provider
+            android:name=".GlanceProvider"
+            android:authorities="io.github.maxhayim.smarthome.glance"
+            android:exported="true" />
     </application>
 </manifest>

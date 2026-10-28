@@ -1,16 +1,20 @@
 # Smart Home
 
-Your [Home Assistant](https://www.home-assistant.io) on the TV: scenes, lights and switches, climate, temperature
-and humidity sensors, doors and windows, and locks, in sections you work with the remote. OK runs a scene or
-switches a light; ◀ ▶ dims a light by 10 % or moves a thermostat by half a degree. A community add-on, not made by
-or affiliated with the Home Assistant project. For the [Clean Your TV](../../README.md) launcher it declares a
-[module card](../../docs/modules.md): once you answer **Show card** its tile reads "Smart Home" with a blue glow.
-On any other Android TV home it is an ordinary app.
+Your [Home Assistant](https://www.home-assistant.io) on the TV: a glance of weather and fuel prices at the top,
+then scenes, lights and switches, climate, temperature and humidity sensors, doors and windows, and locks, in
+sections you work with the remote. OK runs a scene or switches a light; ◀ ▶ dims a light by 10 % or moves a
+thermostat by half a degree. A community add-on, not made by or affiliated with the Home Assistant project. For
+the [Clean Your TV](../../README.md) launcher it declares a [module card](../../docs/modules.md): once you answer
+**Show card** its tile reads "Smart Home" with a blue glow. On any other Android TV home it is an ordinary app.
+With the launcher's `home_glance` key set to this package, Home also shows one short line under the clock (temperature
+and fuel prices with their unit, for example `21° · E10 1.69 €/L`) while the race / Game Day panel is not using that
+space.
 
 ![Smart Home on a TV, with demo data](screenshot.jpg)
 
 | Section | Shows | With the remote |
 |---|---|---|
+| Glance | `weather.*` temperature and condition icon; sensors whose unit is `€`, `EUR`, `€/L` or `EUR/L` (Tankerkönig and the like) | Shown only |
 | Scenes | `scene.*` | OK runs it |
 | Lights and switches | `light.*`, `switch.*`, `fan.*`, `input_boolean.*`, on or off with brightness | OK toggles, ◀ ▶ dims a light |
 | Climate | `climate.*`: room temperature → set temperature | ◀ ▶ moves the set temperature |
@@ -18,8 +22,10 @@ On any other Android TV home it is an ordinary app.
 | Doors and windows | `binary_sensor.*` with device class door, window, garage door or opening | Shown only |
 | Locks | `lock.*`, locked or unlocked | **Shown only: a TV remote never unlocks a door** |
 
-At most 80 entities, sorted by name within each section; unavailable ones are dimmed. It reads `GET /api/states`
-every 10 seconds while the screen is open, and nothing when it is closed.
+At most 80 entities, sorted by name within each section; unavailable ones are dimmed. The glance header takes the
+first available weather entity and up to six fuel-price sensors unless you name the entities in the config (below).
+It reads `GET /api/states` every 10 seconds while the screen is open, and nothing when it is closed. The Home line
+reuses the last glance and refreshes Home Assistant only when that copy is older than about 15 minutes.
 
 ## Setup
 
@@ -31,12 +37,16 @@ Assistant, open your profile, then Security, then Long-lived access tokens, Crea
 - put both in a file and push it from a computer, so the token is never typed on the TV or put on a command line:
 
   ```bash
-  echo '{"url": "http://192.168.1.10:8123", "token": "eyJ..."}' > backup/smart-home.json
+  echo '{"url": "http://192.168.1.10:8123", "token": "eyJ...", "glance": ["weather.home", "sensor.station_e10", "sensor.station_diesel"]}' > backup/smart-home.json
   TV_HOST=<tv ip> addons/smart-home/install.sh backup/smart-home.json
   ```
 
+  `glance` is optional: without it the app picks the first weather entity and up to six euro fuel-price sensors.
   The app takes the file into its own storage and deletes it. Keep the file outside the repo (`backup/` is
   git-ignored).
+
+For the line under the clock, set `"home_glance": "io.github.maxhayim.smarthome"` in a theme's `config.json` (or
+the same key in `launcher/app/src/main/res/values/config.xml`). Empty keeps the line off.
 
 ## Permissions
 
@@ -47,8 +57,8 @@ Assistant, open your profile, then Security, then Long-lived access tokens, Crea
 Plain `http://` is allowed for the home network (`res/xml/network.xml`); use `https://` with a certificate from a
 public authority (Nabu Casa, Let's Encrypt). The token stays in the app's own storage (backups are off) and is
 sent only to the address you entered, as `Authorization: Bearer`. `ConfigProvider` takes a pushed file and only
-the ADB shell can use it (it requires `WRITE_SECURE_SETTINGS`, as Frigate Glance's does). No background service,
-accounts or libraries.
+the ADB shell can use it (it requires `WRITE_SECURE_SETTINGS`, as Frigate Glance's does). `GlanceProvider` answers
+the launcher with one text line and an icon name only. No foreground service, accounts or libraries.
 
 ## Build and install
 
@@ -61,16 +71,20 @@ TV_HOST=<tv ip> addons/smart-home/install.sh [config.json]
 To build only: `cd addons/smart-home && ./gradlew assembleRelease`; the JVM tests run with
 `./gradlew testReleaseUnitTest`.
 
+A new `screenshot.jpg` from a real TV (16:9, under 300 KB, address and token blurred) belongs with any visual
+change to the glance header.
+
 ## Limits
 
 - **Self-signed HTTPS** certificates are refused. Use `http://` on the home network or a public certificate.
 - **`homeassistant.local`** names only resolve where the TV's network does mDNS name lookups; use the IP address
   if it doesn't.
-- **Which entities** is fixed by domain and device class; there is no picker yet.
+- **Which entities** for the remote list is fixed by domain and device class; the glance list can be named in
+  `config.json`. There is no on-TV picker yet.
 
 ## Tested on
 
-MOKA R8G (Android 14), on a home app that implements the module-card spec, against a stand-in server on the home network answering with Home Assistant's documented response shapes: the config pushed through `ConfigProvider`, reading the states, running a scene and dimming a light (the requests arrived as the REST API documents them). **Not yet tried against a real Home Assistant:** the author's server was down; a report from someone with one is welcome. The screenshot shows that demo data, with the address blurred. The JVM tests cover parsing, the service calls, the request headers against a local stand-in, and errors.
+MOKA R8G (Android 14), on a home app that implements the module-card spec, against a stand-in server on the home network answering with Home Assistant's documented response shapes: the config pushed through `ConfigProvider`, reading the states, running a scene and dimming a light (the requests arrived as the REST API documents them). The screenshot shows that demo data, with the address blurred. Also tried on a Sony BRAVIA (Android 9) against a real Home Assistant: weather and a euro fuel-price sensor on the glance header and on the launcher's `home_glance` line (with unit). The JVM tests cover parsing, the service calls, the request headers against a local stand-in, and errors.
 
 ## Maintainer
 

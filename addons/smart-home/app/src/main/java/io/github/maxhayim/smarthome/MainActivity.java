@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -21,9 +23,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The tile and module card open this: your Home Assistant's scenes, lights and switches, climate, sensors, doors
- * and windows, and locks, in sections. OK runs a scene or switches a light; Left and Right dim a light or move a
- * thermostat. Locks are shown, never opened. It reads Home Assistant only while this screen is open.
+ * The tile and module card open this: a glance of weather and fuel prices at the top, then your Home
+ * Assistant's scenes, lights and switches, climate, sensors, doors and windows, and locks. OK runs a
+ * scene or switches a light; Left and Right dim a light or move a thermostat. Locks are shown, never
+ * opened. It reads Home Assistant only while this screen is open.
  */
 public class MainActivity extends Activity {
     private static final long REFRESH_MS = 10_000;
@@ -98,6 +101,7 @@ public class MainActivity extends Activity {
             if (r.ok()) {
                 try {
                     found = Ha.parse(r.body);
+                    GlanceCache.fromStates(this, r.body, c.glance);
                 } catch (JSONException e) {
                     why = "Home Assistant's answer couldn't be read.";
                 }
@@ -139,8 +143,10 @@ public class MainActivity extends Activity {
         } else {
             status.setText(entities.isEmpty() ? "Reading Home Assistant…" : "Connected to " + config.url + ".");
         }
+        addGlance(Ha.glance(entities, config.glance));
         Ha.Kind section = null;
         for (Ha.Entity e : entities) {
+            if (!Ha.inList(e)) continue;
             if (e.kind != section) {
                 section = e.kind;
                 heading(Ha.section(section));
@@ -170,6 +176,58 @@ public class MainActivity extends Activity {
                 rows.getChildAt(i).requestFocus();
                 break;
             }
+        }
+    }
+
+    private void addGlance(Ha.Glance g) {
+        if (g.empty()) return;
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.HORIZONTAL);
+        box.setGravity(Gravity.CENTER_VERTICAL);
+        box.setPadding(px(16), px(8), px(16), px(20));
+        if (!g.icon.isEmpty()) {
+            ImageView icon = new ImageView(this);
+            icon.setImageResource(weatherDrawable(g.icon));
+            LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(px(56), px(56));
+            ip.setMarginEnd(px(20));
+            box.addView(icon, ip);
+        }
+        LinearLayout text = new LinearLayout(this);
+        text.setOrientation(LinearLayout.VERTICAL);
+        if (g.weather != null && g.weather.available() && !Double.isNaN(g.weather.current)) {
+            TextView temp = new TextView(this);
+            temp.setText(Ha.number(g.weather.current) + "°");
+            temp.setTextSize(42);
+            temp.setTextColor(0xFFFFFFFF);
+            temp.setIncludeFontPadding(false);
+            text.addView(temp);
+        }
+        if (!g.prices.isEmpty()) {
+            TextView prices = new TextView(this);
+            StringBuilder line = new StringBuilder();
+            for (Ha.Entity p : g.prices) {
+                if (line.length() > 0) line.append("   ");
+                line.append(p.name).append(' ').append(p.value());
+            }
+            prices.setText(line.toString());
+            prices.setTextSize(16);
+            prices.setTextColor(0xFF8B949E);
+            prices.setPadding(0, px(4), 0, 0);
+            text.addView(prices);
+        }
+        box.addView(text);
+        rows.addView(box);
+    }
+
+    private static int weatherDrawable(String icon) {
+        switch (icon) {
+            case "clear": return R.drawable.ic_weather_clear;
+            case "rain": return R.drawable.ic_weather_rain;
+            case "snow": return R.drawable.ic_weather_snow;
+            case "storm": return R.drawable.ic_weather_storm;
+            case "fog": return R.drawable.ic_weather_fog;
+            case "night": return R.drawable.ic_weather_night;
+            default: return R.drawable.ic_weather_cloudy;
         }
     }
 

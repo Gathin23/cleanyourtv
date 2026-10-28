@@ -104,6 +104,38 @@
             android:visibility="gone" />
     </LinearLayout>
 
+    <!-- home_glance: one short line under the clock from an add-on. Mirrored with the race panel. -->
+    <LinearLayout
+        android:id="@+id/homeGlance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_marginEnd="60dp"
+        android:layout_marginTop="158dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/homeGlanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="#FFFFFFFF"
+            android:textSize="22sp"
+            android:fontFamily="@string/font_light"
+            android:includeFontPadding="false" />
+
+        <ImageView
+            android:id="@+id/homeGlanceIcon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="12dp"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+
     <!-- Cinematic top shelf: darkens the edge behind the shelf and the lower half, so the text and the
          dock stay readable over the artwork. -->
     <View
