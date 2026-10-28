@@ -66,6 +66,9 @@ def answer(command):
         return (state["home"] or "") + "\n"
     if command.startswith("dumpsys activity"):
         return state.get("home_process", "")
+    # The Wi-Fi guard asks which app owns the saved networks (tests/test_setupwraith_home_guard.py).
+    if command.startswith("dumpsys wifi"):
+        return state.get("wifi", "")
     if command.startswith("settings get global "):
         return "null\n"
     return ""

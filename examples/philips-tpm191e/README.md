@@ -79,3 +79,32 @@ unit" note; this section covers the launcher side.
 On 25 October 2026, a separate Philips TV reported `65OLED804/12` as its Android device name. Its system properties identify the platform as TPM191E / `PH9M_EA_5599`, MediaTek MT5887, Android TV 12 / API 31, fingerprint `Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys`, matching the firmware above.
 
 At observation, Home still resolved to the stock `com.google.android.tvlauncher/.MainActivity`. The Freeview/TP Vision packages noted above were disabled. `com.google.android.youtube.tvmusic` was also disabled, but its disable history was not established. No additional package had been disabled for cleanup, and the shared debloat list was not applied to this unit. This is a starting-state observation, not a debloat or launcher test.
+
+## Philips 50PUS7354: single-session notes
+
+Checked on a Philips 50PUS7354 (LED, 2019, France, on Wi-Fi), same TP Vision TPM191E board and firmware as the
+lead unit (`STT2.230526.001`), with its original Philips remote. Package details are in `debloat.txt`'s "Sixth
+unit" note; this section covers the launcher side. One session with two restarts, not a several-day test.
+
+- `launcher/build-and-install.sh` ran through on its own: cold start in 1.7 s, and Home moved to
+  `com.gathin.tvhome/.MainActivity` once the stock launcher was disabled (`mFocusedApp`).
+- The Inputs menu listed HDMI 1 / MHL, HDMI 2 to 4 (a computer on HDMI 3 by its HDMI-CEC name, marked connected),
+  YPbPr and Live TV, with `live_tv_package` `org.droidtv.playtv`. Live TV opened from it, and Home came back
+  opaque over the picture.
+- The remote's SOURCES and Settings buttons kept working with the stock launcher disabled: SOURCES opens
+  `org.droidtv.channels`' sources drawer, the Settings button `org.droidtv.philipstvdrawer`. So this remote did not
+  need the fourth unit's `settings_key_scancodes` 357.
+- The remote's Netflix and Rakuten TV buttons did nothing once Netflix was disabled (Rakuten TV is not installed
+  on this unit). Netflix is Linux key 632 (`KEY_ONSCREEN_KEYBOARD` in `getevent -lt`); `KeyInputMgrSvc` logs
+  `Netflix key=632` and hands it to `NetflixLaunchService`. Rakuten TV is 779 (`GlobalKeyRcv`:
+  `key=779,scan=779`). `app_keys` `scan:632:<package>` and `scan:779:<package>`, installed with
+  `HOME_KEY_SERVICE=1`, opened the chosen apps instead (checked on the real remote).
+- With `HomeKeyService` bound, a held Volume Up moved one step per press, as on the fourth and fifth units.
+  `consume_volume_keys` true did not bring the ramp back here; single presses still stepped once. The owner kept
+  the key helper.
+- A held Home press did nothing with the original Philips remote too, not only with the fifth unit's slow
+  third-party remote: two holds logged `START u0 {act=android.intent.action.ALL_APPS pkg=com.android.tv.settings}`
+  and stayed in the app. `home_long_press_home` fixed it; Home opens on release.
+- The firmware opens `org.droidtv.playtv` at every boot (`wm_set_resumed_activity`: FallbackHome, then
+  PlayTvActivity). `power_on_home_always` with `HOME_KEY_SERVICE=1` brought Home up about 9 s later, and the owner
+  confirmed a standby and power-on from the remote lands on Home as well.

@@ -55,13 +55,15 @@ if (-not $pkgs -or $pkgs.Count -eq 0) {
     throw "refusing ${List}: no package names in it (every line is a comment or blank), so nothing was sent to the TV and no recovery record was written."
 }
 # Core Android packages, the same block as disable.sh: with one of these disabled Android itself can stop
-# booting (#884, an original Mi TV Stick). No switch overrides it. Keep both patterns in step with
-# disable.sh and recovery.py (tests/test_core_packages.py).
-$coreRe = '^(android|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$'
+# booting (#884, an original Mi TV Stick). No switch overrides it. Ext services and ext shared also
+# ship under AOSP's bare names, android.ext.services and android.ext.shared (#1711). Keep both
+# patterns in step with disable.sh and recovery.py (tests/test_core_packages.py). The TV middleware
+# (com.cltv.mal, com.mediatek.tis / tv.service / tv.agent) is guarded too (#1578, a Haier boot loop).
+$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 $coreOk = '^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 $core = @($pkgs | Where-Object { $_ -cmatch $coreRe -and $_ -cnotmatch $coreOk })
 if ($core.Count -gt 0) {
-    throw "refusing ${List}: it disables core Android packages, and without them the TV may not boot again (#884): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
+    throw "refusing ${List}: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
 }
 # A Wi-Fi network saved during the first-run wizard belongs to setupwraith, and Android deletes it when
 # setupwraith is disabled. Skip it while it owns the saved network; `$env:FORCE_SETUPWRAITH=1` overrides.
@@ -79,11 +81,13 @@ if ($pkgs -contains $setup -and -not $forceSetupwraith) {
     }
 }
 # Same as disable.sh: on firmware with ro.adb.secure=0, port 5555 gives a shell to any device on the
-# network without the "Allow" prompt. Read it now and say so once the list is done; a failed read only
-# skips the note. Windows PowerShell turns redirected stderr into an error that 'Stop' would throw.
+# network without the "Allow" prompt, and an empty value counts too (a debug build or Android 4.4 reads
+# a missing ro.adb.secure as 0, #1720). Read it now and say so once the list is done; a failed read
+# only skips the note, so it is $null, apart from an empty answer. Windows PowerShell turns redirected
+# stderr into an error that 'Stop' would throw.
 $ErrorActionPreference = 'Continue'
 $adbSecure = ((& $py -I (Join-Path $repo 'tools\tv.py') 'getprop ro.adb.secure' 2>$null) -join '').Trim()
-if ($LASTEXITCODE -ne 0) { $adbSecure = '' }
+if ($LASTEXITCODE -ne 0) { $adbSecure = $null }
 $ErrorActionPreference = 'Stop'
 
 # Home guard (#239), the same check as disable.sh: a list that disables the app owning Home leaves the
@@ -110,7 +114,9 @@ function Read-HomeLaunchers {
     # Nor is a factory-test app (com.duokan.factorytest/.FactoryLauncher answers HOME on a Mi TV 4A).
     $usable = @($parsed | Where-Object { $_.Cls -notmatch 'FallbackHome$' -and $notLaunchers -notcontains $_.Pkg -and $_.Pkg -notmatch 'factorytest|factory_test|factorymode' } |
         ForEach-Object { $_.Pkg } | Sort-Object -Unique)
-    [pscustomobject]@{ Ok = ($answered -and $parsed.Count -gt 0); Launchers = $usable }
+    # Whether setupwraith answers HOME, for the check below (#1573).
+    $setupAnswers = @($parsed | Where-Object { $_.Pkg -eq $setup }).Count -gt 0
+    [pscustomobject]@{ Ok = ($answered -and $parsed.Count -gt 0); Launchers = $usable; SetupAnswers = $setupAnswers }
 }
 if (-not $forceHome -and $pkgs.Count -gt 0) {
     $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
@@ -141,6 +147,12 @@ if (-not $forceHome -and $pkgs.Count -gt 0) {
             $others = @(@($found.Launchers) | Where-Object { $_ -ne $homePkg -and $pkgs -notcontains $_ })
             if (-not $found.Ok -or $others.Count -eq 0) {
                 Write-Warning "Skipping ${homePkg}: it owns Home, and no other app that can answer Home is installed and staying enabled. Make the new launcher Home first (launcher\build-and-install.ps1), then run this list again to disable the old one; or set `$env:FORCE_HOME=1 if you can still reach the TV."
+                $pkgs = @($pkgs | Where-Object { $_ -ne $homePkg })
+            } elseif ($found.SetupAnswers -and $pkgs -notcontains $setup) {
+                # Same as disable.sh (#1573): setupwraith answers HOME ahead of an installed launcher and
+                # stays enabled (not listed, or skipped above for the Wi-Fi network), so with the owner
+                # disabled Home goes to its RecoveryActivity, not to the other launcher.
+                Write-Warning "Skipping ${homePkg}: it owns Home, and $setup stays enabled and answers Home ahead of the other launchers here, so with $homePkg disabled Home would go to its RecoveryActivity, the black screen system_server can crash-loop on (docs\TROUBLESHOOTING.md). Make the new launcher Home first (launcher\build-and-install.ps1), or disable setupwraith in the same run (if it was skipped for the Wi-Fi network, forget the network and join it again in Settings > Network & Internet), then run this list again; or set `$env:FORCE_HOME=1 if you can still reach the TV."
                 $pkgs = @($pkgs | Where-Object { $_ -ne $homePkg })
             }
         }
@@ -283,8 +295,9 @@ if ($pkgs.Count -gt 0) {
     }
 }
 
-if ($adbSecure -eq '0') {
-    Write-Warning "This TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on your network without the `"Allow`" prompt. When you are done, turn USB debugging and Network/ADB debugging off on the TV and reboot it (README: `"Isn't ADB access a security hole?`")."
+if ($null -ne $adbSecure -and ($adbSecure -eq '0' -or $adbSecure -eq '')) {
+    $why = if ($adbSecure -eq '') { 'This TV does not set ro.adb.secure. On a debug (userdebug) build or Android 4.4 that is the same as ro.adb.secure=0: network ADB on port 5555 accepts any device on your network without the "Allow" prompt.' } else { 'This TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on your network without the "Allow" prompt.' }
+    Write-Warning "$why When you are done, turn USB debugging, Network/ADB debugging and Wireless debugging off on the TV and reboot it (README: `"Isn't ADB access a security hole?`")."
 }
 if ($batchExit -ne 0) { throw "tv.py --batch failed (exit code $batchExit): the list may be only partly applied; run it again once the TV answers" }
 # Last, so the warnings above are printed either way: a listed package the TV left enabled fails the

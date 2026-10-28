@@ -26,8 +26,9 @@ The tables live between <!-- tv-table:start ... --> and <!-- tv-table:end --> li
 between <!-- tv-brands:start ... --> and <!-- tv-brands:end -->; everything outside them is hand-written.
 The counts are the card's alt text ("N TV models · B brands · L languages · "), the "| **L languages** |"
 feature row and STATS in tools/readme_stats.py. Exit codes: 0 up to date (or written), 1 out of date
-(--check), 2 what it was given cannot be read: a tv.json, a marker, or the path in --root or --adopt
-(nothing is written then).
+(--check), or a count moved and --font could not draw one of the pictures (the tables are written; the
+picture is not - redraw it before committing), 2 what it was given cannot be read: a tv.json, a marker, or
+the path in --root or --adopt (nothing is written then).
 """
 import argparse
 import json
@@ -320,6 +321,26 @@ def read_inputs(root, patch):
         return None, f"--adopt: cannot read '{patch}': {e.strerror}. Nothing was written."
 
 
+def redraw(root, font):
+    """Draw docs/stats.png then docs/card.jpg through the two card scripts; a line saying what stopped, or None.
+
+    This is the one place the script starts two other programs, and each of them answers a font that is not
+    Fredoka's variable TTF - the Google Fonts zip renamed, a static single-weight file beside it - or a venv
+    without Pillow (requirements.txt has none; docs/workflows/press.md installs requirements-perf.txt) with
+    its own line and exit 1. With check=True that line was then followed by a CalledProcessError traceback
+    that named the font path as a command, after the tables had already been rewritten: a run that read like
+    "nothing was drawn" had changed two files, and the pictures it promised were not there.
+    """
+    for script, out in (("tools/readme_stats.py", "docs/stats.png"),
+                        ("tools/readme_card.py", "docs/card.jpg")):
+        done = subprocess.run([sys.executable, script, font, out], cwd=root)
+        if done.returncode:
+            return (f"{out} was not redrawn: {script} exited {done.returncode} and its line above says why. "
+                    f"The tables are written; redraw the picture once that is fixed, with "
+                    f"python3 {script} <Fredoka.ttf> {out}, and commit it with the tables.")
+    return None
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--root", default=str(Path(__file__).resolve().parents[1]))
@@ -362,8 +383,10 @@ def main(argv=None):
         if a.font:
             # The font was checked from where this runs; the scripts run in the checkout, so hand them the full path.
             font = str(Path(a.font).resolve())
-            for script, out in (("tools/readme_stats.py", "docs/stats.png"), ("tools/readme_card.py", "docs/card.jpg")):
-                subprocess.run([sys.executable, script, font, out], cwd=root, check=True)
+            stopped = redraw(root, font)
+            if stopped:
+                print(stopped, file=sys.stderr)
+                return 1
             changed += ["docs/stats.png", "docs/card.jpg"]
         else:
             print("A count changed: redraw docs/stats.png and docs/card.jpg (--font Fredoka.ttf, or "

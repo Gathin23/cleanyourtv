@@ -5,9 +5,6 @@
     "com.github.mytv.android",
     "com.tcl.browser"
   ],
-  "settings_fallback_components": [
-    "com.skyworth.setting/com.skyworth.setting.module.main.MainProxyActivity"
-  ],
   "hidden_apps": [
     "com.skyworth.tv"
   ],

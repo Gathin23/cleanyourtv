@@ -57,12 +57,17 @@ fi
 # Stick never came back after a list took the permission controller, package installer, ext services,
 # module metadata and the mainline overlays (#884). No switch overrides this. The content providers
 # below CORE_OK are the exception: tested lists turn them off and no TV feature uses them.
+# Some TVs ship ext services and ext shared under AOSP's bare names, android.ext.services and
+# android.ext.shared, with no com.android. or com.google.android. in front (#1711).
+# The TV middleware is guarded the same way: MediaTek's MAL (com.cltv.mal), TV service, agent and input
+# service (com.mediatek.tis). A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off
+# (#1578), and the Haier-built AQUA MatrixTV list keeps all four.
 # Keep CORE_RE and CORE_OK the same in disable.ps1 and recovery.py (tests/test_core_packages.py).
-CORE_RE='^(android|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$'
+CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 CORE_OK='^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 CORE=$(printf '%s\n' "$PKGS" | grep -E "$CORE_RE" | grep -vE "$CORE_OK" || true)
 if [ -n "$CORE" ]; then
-  { echo "refusing $LIST: it disables core Android packages, and without them the TV may not boot again (#884):"
+  { echo "refusing $LIST: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578):"
     printf '%s\n' "$CORE" | sed 's/^/  /'
     echo "Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."; } >&2
   exit 1
@@ -91,8 +96,11 @@ if printf '%s\n' "$PKGS" | grep -x "$SETUP" >/dev/null && [ -z "${FORCE_SETUPWRA
 fi
 
 # On firmware with ro.adb.secure=0, port 5555 gives a shell to any device on the network without the
-# "Allow" prompt. Read it now and say so once the list is done; a failed read only skips the note.
-ADB_SECURE="$("$PY" -I tools/tv.py "getprop ro.adb.secure" 2>/dev/null | tr -d '[:space:]')" || ADB_SECURE=""
+# "Allow" prompt. An empty value counts too: on a debug (userdebug or eng) build, and on Android 4.4,
+# adbd reads a missing ro.adb.secure as 0, and sets in examples/ give a shell that way (#1720). Read it
+# now and say so once the list is done; a failed read only skips the note, so it is kept apart from an
+# empty answer.
+ADB_SECURE="$("$PY" -I tools/tv.py "getprop ro.adb.secure" 2>/dev/null | tr -d '[:space:]')" || ADB_SECURE="unread"
 
 # Home guard (#239): a list that disables the app owning Home leaves the TV with nothing to start the
 # next time Home is pressed, and on Google TV the setup wizard can take the category instead and
@@ -113,14 +121,23 @@ drop_pkg() { PKGS="$(printf '%s\n' "$PKGS" | grep -vxF "$1" || true)"; }
 # a placeholder the firmware shows when no launcher is enabled, not a home the viewer can use.
 # Nor does a factory-test app: on a Xiaomi Mi TV 4A com.duokan.factorytest/.FactoryLauncher answers
 # HOME, and handing Home to it leaves the viewer on the factory test screen.
-home_launchers() {
+# home_claims prints every HOME component as package/activity; home_launchers keeps the launchers.
+home_claims() {
   local raw claims
   raw=$("$PY" -I tools/tv.py "$CLAIM_QUERY" 2>/dev/null) || return 1
   claims=$(printf '%s\n' "$raw" | tr -d '\r' | grep -oE '^ *[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+' | sed -E 's/^ +//' | sort -u || true)
   [ -n "$claims" ] || return 1
-  printf '%s\n' "$claims" | grep -vE '/[^ ]*FallbackHome$' | cut -d/ -f1 | sort -u \
+  printf '%s\n' "$claims"
+}
+launchers_in() {
+  printf '%s\n' "$1" | grep -vE '/[^ ]*FallbackHome$' | cut -d/ -f1 | sort -u \
     | grep -viE 'factorytest|factory_test|factorymode' \
     | grep -vxF -e com.google.android.tungsten.setupwraith -e com.android.tv.settings -e com.android.settings -e com.android.provision || true
+}
+home_launchers() {
+  local claims
+  claims=$(home_claims) || return 1
+  launchers_in "$claims"
 }
 HOME_PKG=""
 HOME_CHOOSER=""
@@ -151,12 +168,33 @@ if [ -z "${FORCE_HOME:-}" ] && [ -n "$PKGS" ]; then
     if printf '%s\n' "$PKGS" | grep -xF "$HOME_PKG" >/dev/null; then
       # Nothing left to answer Home once the list is applied, or the TV could not say who does: either
       # way the owner is the only Home this run knows about, so it stays enabled.
-      LAUNCHERS=$(home_launchers || true)
+      CLAIMS=$(home_claims || true)
+      LAUNCHERS=$(launchers_in "$CLAIMS")
       OTHERS=$(printf '%s\n' "$LAUNCHERS" | sed '/^$/d' | grep -vxF "$HOME_PKG" | grep -vxF "$PKGS" || true)
+      # Another launcher is not enough while setupwraith answers HOME and stays enabled (not listed, or
+      # skipped above for the Wi-Fi network): on Google TV its .RecoveryActivity answers ahead of an
+      # installed launcher (priority 1 against 0 on a Chromecast with Google TV 4K), so with the owner
+      # disabled Home goes to it, not to the launcher that is merely installed (#1573). A launcher that
+      # already owns Home is a different case: the owner is then not the stock launcher this guards.
+      # grep without -q: an early exit could SIGPIPE printf and fail open under pipefail (see above).
+      SETUP_HOME=""
+      if printf '%s\n' "$CLAIMS" | grep -F "$SETUP/" >/dev/null \
+          && ! printf '%s\n' "$PKGS" | grep -xF "$SETUP" >/dev/null; then
+        SETUP_HOME=1
+      fi
       if [ -z "$OTHERS" ]; then
         echo "Skipping $HOME_PKG: it owns Home, and no other app that can answer Home is installed and" >&2
         echo "staying enabled. Make the new launcher Home first (launcher/build-and-install.sh), then run" >&2
         echo "this list again to disable the old one; or set FORCE_HOME=1 if you can still reach the TV." >&2
+        drop_pkg "$HOME_PKG"
+      elif [ -n "$SETUP_HOME" ]; then
+        echo "Skipping $HOME_PKG: it owns Home, and $SETUP stays enabled and answers Home" >&2
+        echo "ahead of the other launchers here, so with $HOME_PKG disabled Home would go to its" >&2
+        echo "RecoveryActivity, the black screen system_server can crash-loop on (docs/TROUBLESHOOTING.md)." >&2
+        echo "Make the new launcher Home first (launcher/build-and-install.sh), or disable setupwraith in" >&2
+        echo "the same run (if it was skipped for the Wi-Fi network, forget the network and join it again" >&2
+        echo "in Settings > Network & Internet), then run this list again; or set FORCE_HOME=1 if you can" >&2
+        echo "still reach the TV." >&2
         drop_pkg "$HOME_PKG"
       fi
     fi
@@ -354,10 +392,17 @@ if [ -n "$PKGS" ]; then
   fi
 fi
 
-if [ "$ADB_SECURE" = "0" ]; then
-  echo "Warning: this TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on" >&2
-  echo "your network without the \"Allow\" prompt. When you are done, turn USB debugging and" >&2
-  echo "Network/ADB debugging off on the TV and reboot it (README: \"Isn't ADB access a security hole?\")." >&2
+if [ "$ADB_SECURE" = "0" ] || [ -z "$ADB_SECURE" ]; then
+  if [ -z "$ADB_SECURE" ]; then
+    echo "Warning: this TV does not set ro.adb.secure. On a debug (userdebug) build or Android 4.4 that" >&2
+    echo "is the same as ro.adb.secure=0: network ADB on port 5555 accepts any device on your network" >&2
+    echo "without the \"Allow\" prompt." >&2
+  else
+    echo "Warning: this TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on" >&2
+    echo "your network without the \"Allow\" prompt." >&2
+  fi
+  echo "When you are done, turn USB debugging, Network/ADB debugging and Wireless debugging off on the" >&2
+  echo "TV and reboot it (README: \"Isn't ADB access a security hole?\")." >&2
 fi
 
 # Last, so the warning above is printed either way: a listed package the TV left enabled fails the

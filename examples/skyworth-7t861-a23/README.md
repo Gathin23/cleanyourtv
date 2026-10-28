@@ -29,3 +29,12 @@ On Coocaa OS, the stock launcher cannot be replaced via standard Android Home ch
 
 Detailed instructions, boot observations, and property undo commands are documented in:
 👉 [`docs/devices/skyworth-7t861-a23.md`](../../docs/devices/skyworth-7t861-a23.md)
+
+## The launcher's Settings pill
+
+The Settings pill sends the standard `android.settings.SETTINGS` intent. This firmware's own settings app can be
+offered beside it as **Native settings** in the launcher's menu: add
+`com.skyworth.setting/com.skyworth.setting.module.main.MainProxyActivity` to `settings_fallback_components` in
+`launcher/app/src/main/res/values/config.xml` and build. That list is read from `config.xml` only, never from a
+theme's `config.json` ([`themes/README.md`](../../themes/README.md), Keys table); on API 30 and later the package
+also has to be in the launcher's `<queries>`, and this set is Android 10, where package visibility does not apply.

@@ -23,7 +23,8 @@ this file repeats their rules in the form an agent needs, and links to them for 
   the input/source menu, remote and Bluetooth pairing, the on-screen keyboard, Play Store and Play
   Services. When a package name says nothing, read `dumpsys package <name>`, then ask.
 - **Never disable Android's core packages:** the permission controller, package installer, ext
-  services/shared and module metadata (`com.android.*` and `com.google.android.*`),
+  services/shared and module metadata (`com.android.*` and `com.google.android.*`; ext services/shared
+  also as the bare `android.ext.services` and `android.ext.shared`),
   `com.google.android.overlay.modules*`, `com.android.providers.*` (calendar, contacts, user dictionary
   and blocked numbers aside), `com.android.systemui`, `com.android.shell`, `com.android.phone`,
   `com.android.settings`, `com.android.tv.settings`, `android`. Without them Android may not boot (#884);
@@ -47,8 +48,13 @@ this file repeats their rules in the form an agent needs, and links to them for 
   Live TV, HDMI and some streaming apps give empty screenshots; that is the TV, not damage.
 - **An injected key is not proof** for a remote button that goes through an accessibility helper: ask the
   person to press the real button. `am force-stop com.gathin.tvhome` switches those helpers off.
-- **Close ADB afterwards.** USB debugging and Network/ADB debugging off, authorisations revoked, reboot,
-  then `tools/adb-closed.py <tv ip>` must report the port closed. Port 5555 is plaintext.
+- **Close ADB afterwards.** Wireless debugging and Network/ADB debugging off, and USB debugging unless
+  the person asks to keep it; authorisations revoked. Wireless debugging has its own port
+  (`adb mdns services` lists it as `_adb-tls-connect._tcp`): check it with
+  `tools/adb-closed.py <tv ip> <port>` straight after switching it off, before the reboot, as it takes
+  a new port each start. Then reboot: `tools/adb-closed.py <tv ip>` must report 5555 closed, with
+  Wireless debugging still off. If 5555 still answers with USB debugging kept on, switch that off too.
+  Only the tool's "closed" counts. Port 5555 is plaintext.
 - **Stop and say so** when the TV refuses: `pm disable-user` refused for every package, a sideload that
   fails verification, or an SDK below the launcher's `minSdk` 26. Do not retry in a loop, and do not lower
   `minSdk` or hand over an APK built elsewhere.

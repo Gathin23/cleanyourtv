@@ -122,7 +122,15 @@ esac
 # fails only prints an "Error:" line, and the stock launcher would be disabled anyway, leaving the TV
 # with no usable Home (#239). "Status: ok" from `am start -W` means the activity really came up;
 # the HOME resolution further down only names a component, it does not prove the activity starts.
-START_OUT=$("$PY" -I ../tools/tv.py 'am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity')
+# With STOCK_LAUNCHER=none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would
+# make this launcher the home process until a restart, and Android then blocks the stock launcher's
+# remote-button launches (BAL_BLOCK, #1274). The component alone still proves the activity comes up.
+if [ "$STOCK_LAUNCHER" = none ]; then
+  START_CMD='am start -W -n com.gathin.tvhome/.MainActivity'
+else
+  START_CMD='am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity'
+fi
+START_OUT=$("$PY" -I ../tools/tv.py "$START_CMD")
 echo "$START_OUT"
 # Both halves matter: some builds answer "Status: ok" for a task that was merely brought to the
 # front, and an activity that cannot start still prints "Error: Activity not started".

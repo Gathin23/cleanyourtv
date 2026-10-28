@@ -79,6 +79,21 @@
 # (295 MB before the list). `input keyevent 83` did nothing once launcherx was off (simulated, not a press
 # on the remote).
 #
+# Indonesian unit: TCL 32V51C, 32" (G13, G13_2K_GB, MediaTek mt5867, 954 MB, build UKN2.241110.001 AU13,
+# security patch 2026-06-01, bought in Indonesia). Applied in five batches on 2026-10-27 with a screenshot after
+# each, and checked after two reboots. Home came back on launcher/ both times, Wi-Fi reconnected, and YouTube
+# and Netflix played. Three findings on this unit:
+# - tools/disable.sh skips two active entries of this list here, so the Apply line alone leaves them enabled.
+#   com.mediatek.MtkDemo requests TV_INPUT_HARDWARE, which the input-driver check (#321) refuses, although
+#   `pm query-services --components -a android.media.tv.TvInputService` does not list it. It was kept enabled
+#   here because no HDMI device was at hand to check the inputs afterwards. And
+#   android.autoinstalls.config.google.gtvpai shows no permission block in dumpsys (it is a stub with one
+#   DummyReceiver), so the same check cannot read it; it went with TVINPUT_ALLOW=1 on a one-line list.
+# - The network in use belonged to android.uid.system, and an unused network saved during setup belonged to
+#   setupwraith, as on the Brazilian unit: FORCE_SETUPWRAITH=1 deleted only the unused one.
+# - TGuard (com.tcl.guard) and a store demo (fusion.android.tv.demo) ship enabled here and were disabled;
+#   they are listed, commented, at the end.
+#
 # Known quirks on this firmware:
 # - The remote's gear button sends keycode 83 (KEYCODE_NOTIFICATION, scancode 561), which only launcherx
 #   handled: set settings_key_keycodes to [83] (config.xml or a theme) so it opens Settings again.
@@ -90,6 +105,14 @@
 #   docs/TROUBLESHOOTING.md.
 # - With katniss off the mic button does nothing; leave it enabled if you use voice.
 # - Usage statistics restart empty after a power cut (they are written to disk only now and then).
+# - Without HomeKeyService the gear does nothing, so Settings is reached through Home, and on this 1 GB set
+#   that costs the app: on the 32V51C, YouTube was killed in the background (am_proc_died at oom_adj 900)
+#   between Home and Settings and started cold afterwards. Opened over the app (the gear with
+#   settings_key_keycodes [83]), Settings left YouTube's process alive, and Back returned to it. One test each.
+#   The 32V51C took the gear and lost the volume ramp, as the AU13 unit above did.
+# - With setupwraith disabled, Settings > Privacy > Usage & diagnostics spins for ever: setupwraith serves
+#   that page (com.google.android.settings.USAGE_AND_DIAGNOSTICS_SETTING). On the 32V51C it was enabled for
+#   a minute to switch the toggle off, then disabled again with tools/disable.sh; Home stayed on launcher/.
 
 # Batch 1: TCL tracking, ads and auto-installs
 # com.tcl.ttvs                         # TCL analytics AND the firmware updater: kept on so updates arrive (#322)
@@ -124,3 +147,12 @@ com.google.android.apps.tv.dreamx      # Google TV Ambient mode screensaver (pro
 # units do not ship them, so they stay commented; uncomment them on a Brazilian unit if nobody uses them.
 # br.com.claro.now.smarttvclient       # Claro TV+
 # com.mercadolibre.android.mplay_tv    # Mercado Play
+
+# Indonesian 32V51C only: present on that unit and disabled there; check they exist on yours first.
+# com.tcl.guard                        # TGuard: TCL cleaner and app manager, starts at boot (BootStartReceiver)
+# fusion.android.tv.demo               # store demo player
+# Android 14's Privacy Sandbox (ad topics worked out on the TV), disabled on the 32V51C on 2026-10-27 after
+# the two reboot checks above, so not yet reboot-checked there; SmartTube, Netflix and YouTube opened after.
+# com.android.adservices.api
+# com.android.ondevicepersonalization.services
+# com.android.federatedcompute.services

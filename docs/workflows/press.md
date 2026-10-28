@@ -5,9 +5,10 @@
 1. Add a row `| Outlet | [Headline](<url>) | Date |` to the right country section of `docs/PRESS.md`, in the
    headline's own language. The link must open and show the article: no syndicated copies, no auto-generated
    listings, nothing that cannot be checked.
-2. Update the counts in all four places `tests/test_press_counts.py` checks: the `docs/PRESS.md` intro line,
-   its index line, the README card's alt text ("and N more: N articles from N countries") and `MORE` in
-   `tools/readme_featured.py`. Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the
+2. Update the counts in all five places `tests/test_press_counts.py` checks: the `docs/PRESS.md` intro line,
+   its index line, the card's alt text in `README.md` ("and N more: N articles from N countries"), the same
+   numbers in the Dutch alt text of that card in `README.nl.md` ("nog N media: N artikelen uit N landen"), and
+   `MORE` in `tools/readme_featured.py`. Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the
    performance requirements install:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
    `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and

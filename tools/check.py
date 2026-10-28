@@ -98,7 +98,9 @@ def launcher_to_use(dev, listed, preferred=None):
     if preferred:
         if not recovery.PACKAGE_RE.fullmatch(preferred):
             raise SystemExit(f"not a package name: {preferred!r}")
-        match = [c for c in home_activities(dev) if home_of(c) == preferred]
+        # A package can register a FallbackHome next to its real Home; only the real one will do.
+        match = [c for c in home_activities(dev)
+                 if home_of(c) == preferred and not FALLBACK_HOME_RE.search(c)]
         if not match:
             raise SystemExit(f"{preferred} has no HOME activity on this TV: is the launcher "
                              f"installed? (launcher/build-and-install.sh)")
@@ -272,11 +274,13 @@ def fix(dev, listed, back_on, home_drifted, preferred):
         recovery.shell(dev, f"cmd package set-home-activity --user 0 {target}")
         home = recovery.query_home(dev)
         if home != target:
+            # Stop here, as the comment above says: Home is still on what it was, which may be a
+            # package this list disables, and disabling it now leaves the TV with setupwraith's
+            # RecoveryActivity or a placeholder for Home (#1573).
             print(f"Home: asked for {target} but the TV still resolves {home or 'nothing'}; "
-                  f"reboot it and check again")
-            failed = True
-        else:
-            print(f"Home: set to {target}")
+                  f"nothing was disabled. Reboot it and check again")
+            return 1
+        print(f"Home: set to {target}")
     left_on = []
     if back_on:
         left_on = safety_checks(dev, back_on)
@@ -350,10 +354,23 @@ def main():
         # out: read_list stops with a message, which Python turns into exit 1.
         sys.stderr.write(f"{e}. Nothing was checked or changed.\n")
         return 2
+    # The launcher argument has to be a Home the TV can stay on: not one this list disables (--fix would
+    # set Home to it and then disable it), and none of what answers HOME without being a launcher. With
+    # `check.py --fix <list> com.google.android.tungsten.setupwraith`, --fix set Home to setupwraith's
+    # RecoveryActivity and called it fixed (#1573).
+    if preferred and (preferred in listed or preferred in NOT_LAUNCHERS
+                      or FACTORY_HOME_RE.search(preferred)):
+        why = ("this list disables it" if preferred in listed else
+               "it answers Home without being a launcher (a setup wizard, a settings app or a "
+               "factory test)")
+        sys.stderr.write(f"check.py: {preferred} cannot be the launcher Home is on: {why}. Pass the "
+                         f"launcher Home should stay on, or no launcher at all. Nothing was checked "
+                         f"or changed.\n")
+        return 2
     core = recovery.core_packages(listed)
     if core:
         # The same refusal as disable.sh: --fix would disable these again (#884).
-        sys.stderr.write(f"refusing {list_path}: it disables core Android packages, and without them "
+        sys.stderr.write(f"refusing {list_path}: it disables core Android or TV middleware packages, and without them "
                          f"the TV may not boot again (#884): {', '.join(core)}. Take these lines out "
                          f"of the list and run it again. Nothing was checked or changed.\n")
         return 2

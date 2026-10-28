@@ -12,6 +12,12 @@ folder given in place of a file name, a file in the middle of the path and a nam
 all exit 2 with the path named. A write that fails once it has started - Pillow answers that with OSError,
 and an extension it does not know with ValueError - is also named, not left as a traceback with exit 1.
 
+The same rule covers the screenshots themselves: `Image.open()` reads the header only, so a picture cut
+short - a `tv.py --screenshot` interrupted, a file pulled before the write finished - opened fine and
+failed at the first pixel, inside the comparison: an OSError traceback with exit 1, the status the page
+reads as "N pixels differ, find out why". Both files are decoded in full before anything is compared now,
+and one that cannot be read is named as the before or the after screenshot, exit 2, nothing compared.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import argparse
@@ -180,6 +186,43 @@ class CompareTest(unittest.TestCase):
         self.assertNotIn("Traceback", text)
         self.assertFalse(os.path.exists(out))
 
+    def cut_short(self, name, part=3):
+        """A real screenshot with its bytes cut off: the header opens, the pixels cannot be read."""
+        full = self.shot(name)
+        return self.cut_short_bytes(full, "cut-" + name, part)
+
+    def cut_short_bytes(self, full, name, part=3):
+        data = Path(full).read_bytes()
+        short = os.path.join(self.tmp.name, name)
+        Path(short).write_bytes(data[:max(32, len(data) // part)])
+        return short
+
+    def test_a_cut_short_screenshot_is_unreadable_not_a_difference(self):
+        """A --screenshot interrupted, or a file pulled before the write finished, is not a finding."""
+        good = self.shot("good.png")
+        jpeg = os.path.join(self.tmp.name, "sound.jpg")
+        self.Image.new("RGB", (200, 100), (10, 10, 10)).save(jpeg, quality=80)
+        pairs = ((self.cut_short("cut.png"), good, "before"),
+                 (self.cut_short("cut2.png"), good, "after"),
+                 (self.cut_short_bytes(jpeg, "cut-sound.jpg", 2), good, "after"))
+        for bad, other, which in pairs:
+            with self.subTest(file=bad, which=which):
+                before, after = (bad, other) if which == "before" else (other, bad)
+                with contextlib.redirect_stdout(io.StringIO()) as out, \
+                        contextlib.redirect_stderr(io.StringIO()) as err:
+                    code = screendiff.main([before, after])
+                self.assertEqual(code, 2, f"exit 1 reads as 'the screenshots differ': {err.getvalue()}")
+                self.assertIn(f"cannot read the {which} screenshot {bad}", err.getvalue())
+                self.assertIn("Nothing was compared", err.getvalue())
+                self.assertNotIn("Traceback", err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+
+    def test_a_pair_that_reads_is_still_compared(self):
+        """The decode is not allowed to swallow the comparison it guards."""
+        a, b = self.shot("a.png", "12:00"), self.shot("b.png", "12:01")
+        self.assertEqual(self.run_tool([a, b])[0], 1)
+        self.assertEqual(self.run_tool([a, b, "--mask", "0,0,60,20"])[0], 0)
+
 
 class OutputPathTest(unittest.TestCase):
     """A --out or --diff that cannot be written is exit 2, not the 1 the page reads as 'they differ'."""
@@ -256,6 +299,36 @@ class OutputPathTest(unittest.TestCase):
         self.assertNotIn("requirements-perf.txt", run.stderr, "Pillow was reported first")
         self.assertNotIn("Traceback", run.stderr)
         self.assertEqual(run.stdout, "")
+
+
+class DecodeBeforeCompareTest(unittest.TestCase):
+    """The pixels are read before the comparison, so an unreadable screenshot is exit 2, not 'different'.
+
+    Pillow is optional (`tools/requirements-perf.txt`) and CI does not install it, so the run that needs a
+    cut-short picture is above; this reads the same ordering out of the source.
+    """
+
+    SOURCE = (ROOT / "tools" / "screendiff.py").read_text(encoding="utf-8")
+
+    def test_both_screenshots_are_read_before_the_comparison(self):
+        read = self.SOURCE.split("count, bbox, worst, diff = _compare(", 1)[0]
+        self.assertIn('screenshot("before", args.before), screenshot("after", args.after)', read,
+                      "the two screenshots are no longer read before the comparison")
+
+    def test_the_read_is_a_full_decode_inside_the_guard(self):
+        body = self.SOURCE.split("def screenshot(", 1)[1].split("\ndef ", 1)[0]
+        self.assertIn("image = Image.open(path)", body)
+        self.assertIn("image.load()", body,
+                      "Image.open() reads the header only; a cut-short file fails at the first pixel")
+        self.assertIn("except OSError as e:", body)
+        self.assertIn("Nothing was compared", body)
+
+    def test_a_file_it_cannot_read_stops_before_the_comparison(self):
+        after_read = self.SOURCE.split("        a, b = screenshot(", 1)[1]
+        refusal = after_read.split("\n    if a.size", 1)[0]
+        self.assertIn("return 2", refusal,
+                      "an unreadable screenshot falls through to the comparison, whose exit 1 reads as "
+                      "'the screenshots differ'")
 
 
 if __name__ == "__main__":

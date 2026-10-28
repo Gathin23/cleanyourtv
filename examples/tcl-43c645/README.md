@@ -24,17 +24,19 @@ If you try them, say how it went in an issue.
 |---|---|
 | `debloat.txt` | Groups 1-3 (both TVs' telemetry, promos and extras, setupwraith), 4 (more TCL telemetry, content and unused preloads) and 5 (voice assistant, by choice) |
 | `config.json` | Launcher overlay for these TVs: dock, Live TV app, remote buttons |
-| `build-and-install.sh` | Builds `launcher/`, installs it, pushes `config.json`, makes it Home, disables launcherx and setupwraith, switches the key services on |
-| `restore.sh` | Re-enables everything in `debloat.txt`, gives Home back to launcherx, switches the key services off (`--uninstall` also removes the launcher) |
+
+This folder used to ship its own `build-and-install.sh` and `restore.sh`. They skipped the shared tools' Wi-Fi
+guard and the record that undo works from (#1717), so use the shared ones:
 
 ```sh
-TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt   # or one group at a time
-TV_HOST=<tv ip> examples/tcl-43c645/build-and-install.sh
-TV_HOST=<tv ip> examples/tcl-43c645/restore.sh                     # undo
+TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt          # or one group at a time
+TV_HOST=<tv ip> HOME_KEY_SERVICE=1 INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
+TV_HOST=<tv ip> tools/theme.sh examples/tcl-43c645                        # dock, Live TV app, remote buttons
+TV_HOST=<tv ip> tools/restore.sh examples/tcl-43c645/debloat.txt com.google.android.apps.tv.launcherx   # undo
 ```
 
-The scripts use the stock `adb` from platform-tools (`$ANDROID_HOME/platform-tools/adb`). On WSL2 the adb
-daemon hung while forking; `adb -P 15037 nodaemon server` in another terminal plus `ADB_PORT=15037` worked.
+On WSL2 the adb daemon hung while forking; `adb -P 15037 nodaemon server` in another terminal plus
+`ADB_PORT=15037` worked.
 
 ## Re-enable one app
 
@@ -46,7 +48,7 @@ adb shell pm enable <package>          # e.g. com.tcl.ui_mediaCenter for USB dri
 
 ## Change the dock order or the wallpaper
 
-Edit `dock_apps` in `config.json` (four package names, left to right) and run `build-and-install.sh` again.
+Edit `dock_apps` in `config.json` (four package names, left to right) and run `tools/theme.sh examples/tcl-43c645` again.
 Package names: `adb shell pm list packages -3`.
 
 For a wallpaper, copy this folder's `config.json` into a theme folder, add `"wallpaper": true` and a dark
@@ -79,7 +81,7 @@ remote. Injected keys never reach the accessibility services, so `input keyevent
 
 - **Accessibility services after a reinstall**: Android unbinds them on reinstall and binds them again only
   when `enabled_accessibility_services` changes. Writing the same value back leaves them enabled but unbound
-  and the remote buttons dead, so `build-and-install.sh` clears the list first. Do not `am force-stop` the
+  and the remote buttons dead, so the old per-folder script cleared the list first (the shared tools check the helpers are bound, #1237). Do not `am force-stop` the
   launcher: the services land in "Crashed services" until the next reinstall.
 - `TclAppBoot` refuses to bind services of packages without TCL's `OP_AUTO_START` while their process is not
   running (`callee_does't_have_OP_AUTO_START_permission` in logcat). After a cold reboot the launcher's

@@ -36,12 +36,14 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
+    # Only here: forks have no OG_PC_API_KEY, so the job would fail on every pull request in them (#2032).
     if: >-
+      github.repository == 'Gathin23/cleanyourtv' && (
       (github.event_name == 'pull_request_target' && !github.event.pull_request.draft) ||
       github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' ||
       (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
        startsWith(github.event.comment.body, '/bot review') &&
-       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)))
     runs-on: ubuntu-latest
     # A single PR review gets 30 minutes; the backfill (workflow_dispatch) and the 6-hourly sweep keep 5 hours.
     timeout-minutes: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && 300 || 30 }}

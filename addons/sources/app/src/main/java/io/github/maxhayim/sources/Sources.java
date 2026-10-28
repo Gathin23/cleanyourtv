@@ -61,7 +61,15 @@ final class Sources {
     private Sources() {
     }
 
+    /** The connection states in English: nothing connected, connected in standby, connected. */
+    static final String[] STATES = {"nothing connected", "connected, in standby", "connected"};
+
     static List<Row> rows(Collection<Input> inputs) {
+        return rows(inputs, STATES);
+    }
+
+    /** As above, with the three connection states in the TV's language, in the order of {@link #STATES}. */
+    static List<Row> rows(Collection<Input> inputs, String[] states) {
         List<Input> ports = new ArrayList<>();
         for (Input i : inputs) if (i.parentId == null) ports.add(i);
         // HDMI first, by port number, then the rest by name
@@ -76,20 +84,20 @@ final class Sources {
             List<Input> devices = new ArrayList<>();
             for (Input i : inputs) if (port.id.equals(i.parentId)) devices.add(i);
             if (devices.isEmpty()) {
-                out.add(new Row(port.id, port.name(), detail(port.label, port.name(), port.connected, port.standby),
+                out.add(new Row(port.id, port.name(), detail(port.label, port.name(), port.connected, port.standby, states),
                         port.connected));
                 continue;
             }
             for (Input d : devices) {
-                out.add(new Row(d.id, d.name(), detail(port.label, d.name(), true, d.standby), true));
+                out.add(new Row(d.id, d.name(), detail(port.label, d.name(), true, d.standby, states), true));
             }
         }
         return out;
     }
 
     /** "HDMI 2" under a device's own name; the connection state where the port is the name. */
-    static String detail(String portLabel, String name, boolean connected, boolean standby) {
-        String state = !connected ? "nothing connected" : standby ? "connected, in standby" : "connected";
+    static String detail(String portLabel, String name, boolean connected, boolean standby, String[] states) {
+        String state = !connected ? states[0] : standby ? states[1] : states[2];
         if (portLabel.isEmpty() || portLabel.equalsIgnoreCase(name)) return state;
         return portLabel + " · " + state;
     }

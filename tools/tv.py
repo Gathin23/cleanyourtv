@@ -14,7 +14,7 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
 
 Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
 empty or failed, 2 it was refused before anything ran on the TV - a flag it does not have, a local
-path that is not there, a port it could not open.
+path that cannot be used, a port it could not open.
 
 Set TV_ADB_BINARY to the Google adb executable to use an already connected, paired transport
 (including encrypted Wireless debugging). See tools/native-adb.md.
@@ -387,6 +387,42 @@ def transfer_args(args):
         path_error(f"cannot write {local}: permission denied. Nothing was pulled.")
 
 
+def screenshot_target(local):
+    """Judge the file --screenshot saves to, and make the folder it needs, before the TV is opened.
+
+    Every page here hands out `--screenshot shots/01.png` - PROMPT.md, AGENTS.md, CONTRIBUTING.md - and
+    the folder that does not exist yet was fixed for them in #364. Two other shapes a destination takes
+    were judged nowhere: a folder of that name (`mkdir shots` and then `--screenshot shots`, or a name
+    typed with its trailing separator) reached adb_shell's pull, which writes to the name it is given,
+    as an IsADirectoryError *after* the TV had run `screencap` - exit 1, the code this client keeps for a
+    capture that came back empty, so the run read as a TV with nothing on screen; no PNG; and the
+    capture left on the TV, because the cleanup after the pull never ran. A path through a file was the
+    same shape one step earlier, out of os.makedirs, and `--screenshot ""` - what
+    `--screenshot "$SHOT"` sends when SHOT was never set - was FileNotFoundError: ''. --push and --pull
+    have been judged this way since #2039; this is the flag the pages hand out most.
+
+    A folder that is not there is still made rather than refused: that is the one shape the command is
+    expected to fix for itself.
+    """
+    if not local:
+        usage_error("--screenshot needs the file to save to")
+    if os.path.isdir(local):
+        path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
+                   f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
+    folder = os.path.dirname(os.path.abspath(local))
+    if os.path.exists(folder) and not os.path.isdir(folder):
+        path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
+                   f"Nothing was captured.")
+    try:
+        os.makedirs(folder, exist_ok=True)
+    except OSError as e:
+        path_error(f"cannot create the folder {folder} for {local}: {e.strerror or e}. Nothing was captured.")
+    if not os.access(folder, os.W_OK):
+        path_error(f"cannot write {local}: {folder} is not writable. Nothing was captured.")
+    if os.path.exists(local) and not os.access(local, os.W_OK):
+        path_error(f"cannot write {local}: permission denied. Nothing was captured.")
+
+
 def screenshot_args(rest):
     """`<local.png> [KEY ...] [--wait SECONDS]` into (local, keys, wait), or a usage error before connecting.
 
@@ -419,6 +455,7 @@ def screenshot_args(rest):
         i += 1
     if local is None:
         usage_error("--screenshot needs the file to save to")
+    screenshot_target(local)
     if wait is None:
         wait = 1.0 if keys else 0.0
     return local, keys, wait
@@ -445,10 +482,11 @@ def keyevent(name):
 
 def screenshot(dev, local, keys=(), wait=0.0):
     """Press `keys`, then capture the TV screen into `local`. Returns 0, or 1 when the capture failed or
-    came back empty."""
-    # Agents pass paths like shots/01-home.png before that folder exists, and the pull then fails
-    # after the capture has already run on the TV (#364). Create it first.
-    os.makedirs(os.path.dirname(os.path.abspath(local)), exist_ok=True)
+    came back empty.
+
+    `local` and the folder it needs are judged - and the folder made - by screenshot_target() before the
+    TV is opened: agents pass shots/01-home.png before that folder exists (#364), and a destination that
+    cannot be written has to be answered before a capture is run for it."""
     for i, key in enumerate(keys):
         if i:
             time.sleep(KEY_GAP_S)

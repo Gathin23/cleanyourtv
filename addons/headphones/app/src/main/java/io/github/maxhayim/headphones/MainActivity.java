@@ -133,60 +133,61 @@ public class MainActivity extends Activity {
     private void build() {
         int focused = rows.indexOfChild(rows.getFocusedChild());
         rows.removeAllViews();
-        status.setText("Sound now plays through: " + output());
+        status.setText(getString(R.string.plays_through, output()));
         Row first;
 
         if (!allowed()) {
-            first = add(new Row(this, "Allow Bluetooth access",
-                    "To list your headphones and to notice when they drop. OK asks.", this::askBluetooth));
-            first.setValue("Not allowed");
+            first = add(new Row(this, getString(R.string.allow_title),
+                    getString(R.string.allow_detail), this::askBluetooth));
+            first.setValue(getString(R.string.not_allowed));
         } else {
             first = null;
         }
 
-        Row pair = add(new Row(this, "Pair or connect headphones",
-                "Opens the TV's Bluetooth settings. Put the headphones in pairing mode first.", this::openBluetooth));
+        Row pair = add(new Row(this, getString(R.string.pair_title),
+                getString(R.string.pair_detail), this::openBluetooth));
         if (first == null) first = pair;
 
         boolean fixed = audio.isVolumeFixed();
-        Row guard = add(new Row(this, "Quiet when they drop", fixed
-                ? "Pauses what plays when headphones disconnect. This TV's volume is fixed (ARC or an amplifier), so it can't also mute the speakers."
-                : "Pauses what plays and mutes the TV speakers when headphones disconnect, so the sound doesn't jump to the room. Unmutes when they're back.",
+        Row guard = add(new Row(this, getString(R.string.guard_title),
+                getString(fixed ? R.string.guard_detail_fixed : R.string.guard_detail),
                 () -> {
                     prefs.edit().putBoolean(QuietReceiver.GUARD, !prefs.getBoolean(QuietReceiver.GUARD, true)).apply();
                     build();
                 }));
-        guard.setValue(prefs.getBoolean(QuietReceiver.GUARD, true) ? "On" : "Off");
+        guard.setValue(getString(prefs.getBoolean(QuietReceiver.GUARD, true) ? R.string.on : R.string.off));
         if (prefs.getBoolean(QuietReceiver.MUTED_BY_US, false)) {
-            Row unmute = add(new Row(this, "Unmute the speakers", "Muted when headphones dropped.", () -> {
+            Row unmute = add(new Row(this, getString(R.string.unmute_title), getString(R.string.unmute_detail), () -> {
                 audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_SHOW_UI);
                 prefs.edit().putBoolean(QuietReceiver.MUTED_BY_US, false).apply();
                 build();
             }));
-            unmute.setValue("Muted");
+            unmute.setValue(getString(R.string.muted));
         }
 
-        heading("Paired headphones and speakers");
+        heading(getString(R.string.heading_paired));
         if (adapter == null) {
-            add(new Row(this, "No Bluetooth on this TV", null, null));
+            add(new Row(this, getString(R.string.no_bluetooth), null, null));
         } else if (!adapter.isEnabled()) {
-            add(new Row(this, "Bluetooth is off", "Switch it on in the TV's settings.", this::openBluetooth));
+            add(new Row(this, getString(R.string.bluetooth_off), getString(R.string.bluetooth_off_detail), this::openBluetooth));
         } else if (allowed()) {
             List<BluetoothDevice> paired = pairedAudio();
-            if (paired.isEmpty()) add(new Row(this, "None yet", "Use the row above to pair some.", null));
+            if (paired.isEmpty()) add(new Row(this, getString(R.string.none_yet), getString(R.string.none_yet_detail), null));
             Set<String> connected = connected();
             for (BluetoothDevice d : paired) {
                 boolean on = connected.contains(d.getAddress());
                 String battery = on ? Quiet.battery(batteryLevel(d)) : "";
                 Row r = add(new Row(this, name(d),
-                        on ? (battery.isEmpty() ? "Connected" : "Connected, battery " + battery) : "Not connected. OK opens Bluetooth settings to connect.",
+                        on ? (battery.isEmpty() ? getString(R.string.connected) : getString(R.string.connected_battery, battery))
+                                : getString(R.string.not_connected_detail),
                         this::openBluetooth));
-                r.setValue(on ? "Connected" : "");
+                r.setValue(on ? getString(R.string.connected) : "");
             }
         }
 
-        heading("Several headphones at once");
-        add(new Row(this, Quiet.sharing(Build.VERSION.SDK_INT, broadcastSupport()), null, null));
+        heading(getString(R.string.heading_several));
+        int[] sharing = {R.string.sharing_one_pair, R.string.sharing_auracast, R.string.sharing_no_broadcast};
+        add(new Row(this, getString(sharing[Quiet.sharingCase(Build.VERSION.SDK_INT, broadcastSupport())]), null, null));
 
         View keep = focused >= 0 && focused < rows.getChildCount() ? rows.getChildAt(focused) : null;
         (keep != null && keep.isFocusable() ? keep : first).requestFocus();
@@ -232,9 +233,9 @@ public class MainActivity extends Activity {
             int t = d.getType();
             boolean bt = t == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
                     || (Build.VERSION.SDK_INT >= 31 && (t == AudioDeviceInfo.TYPE_BLE_HEADSET || t == AudioDeviceInfo.TYPE_BLE_SPEAKER));
-            if (bt) return Quiet.clean(String.valueOf(d.getProductName()));
+            if (bt) return Quiet.clean(String.valueOf(d.getProductName()), getString(R.string.unnamed));
         }
-        return audio.isVolumeFixed() ? "the TV's audio output (HDMI ARC or optical)" : "the TV speakers";
+        return getString(audio.isVolumeFixed() ? R.string.output_fixed : R.string.output_speakers);
     }
 
     private List<BluetoothDevice> pairedAudio() {
@@ -262,11 +263,11 @@ public class MainActivity extends Activity {
         return out;
     }
 
-    private static String name(BluetoothDevice d) {
+    private String name(BluetoothDevice d) {
         try {
-            return Quiet.clean(d.getName());
+            return Quiet.clean(d.getName(), getString(R.string.unnamed));
         } catch (SecurityException e) {
-            return Quiet.clean(null);
+            return getString(R.string.unnamed);
         }
     }
 

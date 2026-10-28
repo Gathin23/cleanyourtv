@@ -20,7 +20,6 @@
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43c645/debloat.txt com.google.android.apps.tv.launcherx
-#          (or examples/tcl-43c645/restore.sh, which also gives Home back to launcherx)
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. HOME fallback com.google.android.tungsten.setupwraith
