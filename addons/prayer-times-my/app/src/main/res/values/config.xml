@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default JAKIM zone. Change on the TV with Left/Right; the choice is remembered. -->
+    <string name="zone" translatable="false">WLY01</string>
+    <color name="accent">#2BB673</color>
+</resources>
