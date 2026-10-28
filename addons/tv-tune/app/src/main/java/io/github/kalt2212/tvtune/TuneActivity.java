@@ -3,6 +3,7 @@ package io.github.kalt2212.tvtune;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -134,6 +136,7 @@ public final class TuneActivity extends Activity {
         Button primary = button(copy, session.started() ? R.string.resume : R.string.start,
             () -> { if (session.started()) { if (session.complete()) showSummary(); else showCheck(); } else showPreparation(); });
         button(copy, R.string.fields, this::showFieldIntroduction);
+        button(copy, R.string.correction_lab, () -> startActivity(new Intent(this, CorrectionPreviewActivity.class)));
         if (session.started() || saved.contains("original") || saved.contains("revised")) button(copy, R.string.delete_session, this::deleteDialog);
         text(copy, getText(R.string.welcome_note), 13, MUTED);
         TunePatternView art = new TunePatternView(this, -2, fields, false);
@@ -153,6 +156,7 @@ public final class TuneActivity extends Activity {
         LinearLayout root = screen(2);
         text(root, getString(R.string.step, session.step() + 1, TuneSession.COUNT), 13, ACCENT).setLetterSpacing(0.1f);
         title(root, TITLES[session.step()]); text(root, getText(BODIES[session.step()]), 21, MUTED);
+        text(root, getText(R.string.next_check_hint), 16, ACCENT);
         button(root, R.string.show_pattern, () -> beginPattern(false)).requestFocus();
         LinearLayout outcomes = new LinearLayout(this); root.addView(outcomes);
         int[] titles = {R.string.seen, R.string.adjusted, R.string.skip};
@@ -184,7 +188,16 @@ public final class TuneActivity extends Activity {
     }
     private void showFieldIntroduction() {
         LinearLayout root = screen(4); title(root, R.string.fields_title);
-        text(root, getText(R.string.fields_body), 22, MUTED);
+        LinearLayout row = new LinearLayout(this); row.setGravity(Gravity.CENTER_VERTICAL);
+        root.addView(row, new LinearLayout.LayoutParams(-1, -2));
+        LinearLayout copy = column(); row.addView(copy, new LinearLayout.LayoutParams(0, -2, 1));
+        text(copy, getText(R.string.fields_body), 18, MUTED);
+        text(copy, getText(R.string.companion_url), 15, ACCENT);
+        ImageView qr = new ImageView(this); qr.setImageResource(R.drawable.companion_qr);
+        qr.setContentDescription(getString(R.string.companion_qr_description)); qr.setFocusable(false);
+        LinearLayout.LayoutParams qrParams = new LinearLayout.LayoutParams(dp(180), dp(180));
+        qrParams.setMarginStart(dp(24)); row.addView(qr, qrParams);
+        text(root, getText(R.string.fields_limit), 16, 0xffffca9e);
         button(root, R.string.open_fields, () -> beginPattern(true)).requestFocus();
         button(root, R.string.back, this::showWelcome);
     }

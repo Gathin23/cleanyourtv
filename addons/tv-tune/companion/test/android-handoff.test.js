@@ -7,8 +7,11 @@ import { PATCHES } from '../src/patterns.js';
 for (const locale of ['values', 'values-es']) {
   test(`Android ${locale} gives the public companion and honest manual handoff`, () => {
     const strings = readFileSync(new URL(`../../app/src/main/res/${locale}/strings.xml`, import.meta.url), 'utf8');
-    const body = strings.match(/<string name="fields_body">([^<]+)<\/string>/)?.[1];
-    assert.ok(body);
+    const body = ['fields_body', 'companion_url', 'fields_limit'].map(name => {
+      const value = strings.match(new RegExp(`<string name="${name}">([^<]+)</string>`))?.[1];
+      assert.ok(value, `Visible handoff text missing: ${name}`);
+      return value;
+    }).join(' ');
     assert.ok(body.includes('https://tv-tune-kalt2212.vercel.app/'));
     assert.ok(body.includes('ID') && body.includes('RGB'));
     assert.match(body, locale === 'values' ? /no automatic pairing/i : /no hay emparejamiento automático/i);

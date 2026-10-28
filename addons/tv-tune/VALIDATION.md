@@ -39,15 +39,17 @@ universal-compatibility or automatic-correction claim is made.
   emulator image is not modified. This is not a real TV, panel-light validation or
   a substitute for the required real-TV screenshot.
 
-- **Physical Xiaomi:** previously identified as MiTV_MOOQ0 / croods. The current
-  ADB connection did not respond. The owner cannot run the physical test now.
-  No package was installed or picture setting changed on that TV in this run.
+- **Physical Xiaomi:** MiTV-MOOQ0 / croods, Android TV 10 (API 29), firmware
+  `QTG3.200305.006.5135`. A locally built APK was installed and tested using ADB
+  input on 2026-10-28; see the dated results below. Physical-remote and
+  instrumented emitted-light checks remain separate. Picture settings were not changed.
 - **Physical iPhone:** exact model/browser and real capture are unverified.
 - **Mac camera:** not used. Browser frames were simulated, not a physical sensor.
 - **Reference instrument:** availability is unknown; no meter measurements, camera
   characterisation, held-out accuracy study or emitted-light validation exists.
-- **Real-TV screenshot:** missing. This blocks the repository's new-add-on screenshot
-  test and a merge-ready submission. No mockup is substituted for it.
+- **Real-TV screenshot:** supplied from this physical TV as `screenshot.jpg`,
+  1280×720 JPEG, 77,475 bytes, updated for native 0.1.1. The native ADB source capture is 1920×1080.
+  The screenshot and tested-on repository checks now pass in the local test copy.
 
 ## Review and build notes
 
@@ -94,16 +96,16 @@ evidence requirement, not a reason to weaken the check.
 Record only model, Android version and firmware; do not publish network addresses,
 serials, account information or private device names.
 
-- [ ] Build locally, install on the explicitly connected owned TV and confirm launch.
+- [x] Build locally, install on the explicitly connected owned TV and confirm launch.
 - [ ] Test hidden/shown module-card behaviour and return to Home.
 - [ ] Walk every screen with the real D-pad, including all edges, notes and deletion.
 - [ ] Check Back, Home, ordinary picture-menu interruption and resume.
-- [ ] Check the five patterns, field IDs, OK label toggle and two-minute pause/resume.
+- [x] Check the five patterns, field IDs, OK label toggle and two-minute pause/resume (ADB input on the physical TV).
 - [ ] Confirm screen-on flags and timers stop after leaving the app.
 - [ ] Confirm SDR output path; inspect actual light with a reference before colour claims.
-- [ ] Capture a sanitised real-TV image as `screenshot.jpg`, 16:9 and at most 300 KB.
-- [ ] Replace the draft tested-on/index entry with the measured model/OS/firmware scope.
-- [ ] Run the complete repository suite and add-on checks again.
+- [x] Capture a sanitised real-TV image as `screenshot.jpg`, 16:9 and at most 300 KB.
+- [x] Replace the draft tested-on/index entry with the measured model/OS/firmware scope.
+- [x] Run the complete repository suite and add-on checks again.
 
 ## Physical phone acceptance checklist
 
@@ -432,3 +434,122 @@ was not relaxed. Emulator captures stay outside the repository; none is supplied
 as `screenshot.jpg`. No new SDK agreement beyond the previously approved
 `android-sdk-license`, physical-device access, upstream PR, APK publication,
 launcher change or web redeployment was involved.
+
+
+### Physical Xiaomi TV through ADB, 2026-10-28 (initial native 0.1.0 pass)
+
+Source: fork `kalt2212/cleanyourtv`, branch `feat/tv-tune`, commit
+`2ed9dc26f660b79f5367a45e02540d0c4949f7a2`. The old local checkout was
+at `37aea7e`; it was left untouched. Tests used a separate checkout of the current
+fork. Native application code was unchanged; only validation documentation, the
+catalogue row and the real-TV screenshot were prepared locally.
+
+- Device: Xiaomi MiTV-MOOQ0 (`croods`), Android TV 10 / API 29, firmware
+  `QTG3.200305.006.5135`. Android reported 1920×1080 and density 320;
+  native captures and the app's render-size label agreed on 1920×1080.
+- A fresh JDK 17 / SDK 34 build completed `testReleaseUnitTest lintRelease assembleRelease`
+  with eleven JVM tests passing, zero lint errors and six documented warnings.
+  Test APK SHA-256: `2fa3ec503f673c76442a39f5b63692783462a9b33da5f7b579b12f0129b8b9f7`.
+  Its manifest requested no permissions. TV Tune was absent before installation;
+  the source-built app installed successfully and launched in 971 ms according
+  to `am start -W`. This single cold launch is not a performance benchmark.
+- Spanish welcome, preparation, all five guide/pattern screens, Back, summary,
+  experiment instructions and fields were exercised on the physical TV through
+  injected D-pad events. All five checklist results were deliberately Skipped;
+  no picture adjustment or visual colour-accuracy judgement was recorded.
+- Original/revised synthetic notes were entered and saved. Force-stopping only
+  TV Tune and launching it again preserved both notes and the completed checklist.
+  Android TV's keyboard consumed arrows while open; Back closed it before normal
+  D-pad navigation resumed. This is not a physical-remote or microphone test.
+  The delete dialog was cancelled once, preserving Resume, then confirmed to
+  remove only this new installation's synthetic checklist/notes. The app returned
+  to a fresh welcome. TV Tune was absent from the retained crash log buffer.
+- Native screenshots were inspected. Framebuffer samples matched every shadow
+  code (0, 2, 4, 8, 12, 16, 24, 32), highlight code (223, 231, 239, 247, 251,
+  253, 255) and sixteen-step grayscale code. These are rendered app-code checks,
+  not measurements of panel light or confirmation of the OEM SDR processing path.
+- All eleven experiment fields matched their expected central RGB values. Blue
+  remained unchanged after Right at the upper bound and an Up/Down sequence.
+  OK hid labels and restored the exact original RGB image. The unlabelled blue
+  patch occupied (732, 312)–(1188, 768), 456×456 pixels, 10.028% of the framebuffer.
+- After 137.51 seconds of observed device uptime without injected input, the
+  inactivity screen was present and `KEEP_SCREEN_ON` was cleared. OK restored
+  the same blue field. The active field held `KEEP_SCREEN_ON` before the pause.
+  This proves eventual pause/resume, not an exact timer-latency bound.
+- Home moved focus to `com.gathin.tvhome`; the TV Tune window cleared
+  `KEEP_SCREEN_ON`. Reordering TV Tune to the front preserved the activity,
+  showed the pause screen and restored blue on OK. Back to instructions also
+  cleared the screen-on flag. This does not test the physical Home button or
+  hidden/shown launcher module-card preferences.
+- The physical-TV welcome was captured directly with ADB. Xiaomi's screencap
+  prepended a non-image diagnostic line; the PNG signature was used to separate
+  those transport bytes without changing image pixels. The verified PNG was
+  converted to the required 1280×720 JPEG with macOS sips. No mockup, emulator,
+  generated image, account details or private device identifiers were included.
+- Full repository suite: 747 tests, 736 passed, eleven skipped. Skips cover main-only
+  counts and optional Pillow/perfetto checks. The sandbox initially blocked twelve
+  loopback socket tests; the permitted run outside the sandbox passed. No test or
+  screenshot requirement was relaxed. JavaScript tests: 76/76; syntax checks passed.
+- The public companion's nine static assets and MIT licence matched the current
+  source hashes over normal unauthenticated HTTPS. No web redeployment was needed.
+
+Remaining scope: a physical remote, hidden/shown launcher module-card preferences,
+ordinary picture-menu interruption, physical-phone camera capture and independent
+reference-instrument validation. No launcher settings, system/picture settings,
+security/debugging configuration or pre-existing user data were changed. No commit,
+push, upstream PR, public evidence upload or release was performed in this test run.
+
+Owner-assisted follow-up: the owner confirmed opening the experiment with the
+physical remote and later confirmed that Right changed the field. A read-only
+ADB capture showed the native grey-128 experiment screen during this exchange.
+The complete physical-remote traversal, physical OK label toggle and phone-camera
+capture are still unverified; this follow-up does not close those broader gates.
+
+### Native 0.1.1 QR and app-only correction prototype, 2026-10-28
+
+Following the owner's request to create a correction prototype, the native app now
+adds a separate paired-chart activity and an explicit ADB report-import helper.
+This is a processed-RGB-code experiment confined to app-owned patches. It does not
+change panel settings, other apps, inputs, video players or Android security.
+
+- Fresh JDK 17 / SDK 34 build: 17 JVM tests passed; lint zero errors and nine
+  warnings (the six previously documented warnings, the new landscape activity
+  and two generated QR path-length warnings). No lint rule was disabled.
+  Final locally built APK SHA-256:
+  `2e7db752fda3feeee535fad94b47a1d332ab8533fc20e9157980225ca2952108`.
+- Four host-importer tests passed, including unconfirmed/non-neutral input,
+  low-quality captures, huge/non-finite/boolean values, warnings and file bounds.
+  Decimal string intent extras preserve double precision at the gain limit;
+  imported sample provenance is explicitly unverified in the native UI.
+- Companion regressions: 76/76. Full repository suite: 747 tests, 736 passed,
+  eleven skipped. The required real-TV screenshot test passes without exceptions.
+- The old TV instructions contained no QR; an independent decoder failed to find
+  one before implementation. Both generated localized vectors independently
+  decoded to their expected public URLs. The actual 1920×1080 Spanish Xiaomi
+  screenshot then decoded to `https://tv-tune-kalt2212.vercel.app/`. All instructions,
+  QR, fallback URL and buttons were visible. This is native rendering/decoding
+  evidence, not an optical phone-scanning or camera-permission test.
+- The synthetic neutral reference 144/128/112 produced gains 0.889/1/1.143. On the
+  real TV framebuffer, all twelve corrected chart cells matched independent
+  expected codes; grey 128 became 114/128/146. The original chart was unchanged.
+  Toggling off restored the complete original RGB screenshot byte-for-byte.
+  This is a deterministic synthetic-reference check, not a measured optical gain.
+- The ADB host demo command opened/updated the preview and produced the same
+  expected codes. A zero channel was refused by the native input guard, showing
+  the rejection screen; Back returned to the main app. No checklist was cleared.
+- A native 0.1.1 inactivity observation found the lab paused after 183.85 seconds
+  without injected input, with `KEEP_SCREEN_ON` cleared. OK retained the enabled
+  transform. A bare reorder-to-front intent initially reset the view; this was
+  reproduced on the TV and corrected so only explicit sample extras replace the
+  preview. The final APK passed Home → paused return → OK with the same enabled
+  transform. The decimal-boundary sample 16.3/24.45/24.45 was accepted and rendered
+  the expected corrected codes; invalid string input was refused.
+- Independent review found an instruction-order defect (QR hidden after opening
+  fields); it was fixed by opening the phone page first. A second review found no
+  Important/Critical issues; its integer-overflow, float-precision and sample-
+  provenance observations were corrected before the final build.
+
+Physical-phone capture, the final emitted-light before/after comparison and a
+reference-instrument study remain pending. The input-quality heuristics do not
+prove camera accuracy, a stable camera lock or correct display calibration. The
+lab does not linearise light or solve gamma/D65; highlight clipping is disclosed.

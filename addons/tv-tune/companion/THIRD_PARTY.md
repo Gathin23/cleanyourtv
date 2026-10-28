@@ -24,3 +24,9 @@ Unusually long URLs fall back to the visible link instead of displaying a stale 
 The handoff panel hides and pauses the patch before showing the QR, so the QR is
 never part of an active measurement patch. Independent decoder checks use synthetic
 images; they are not evidence of physical-phone scanning or display calibration.
+
+The native Android experiment screen uses pre-generated QR vector resources from
+this same encoder. `test/generate-native-qr.mjs` reproduces both localized assets
+from the Android `companion_url` strings, with the same four-module quiet zone.
+The encoder runs only during asset generation; no encoder library, QR web service
+or additional Android runtime dependency is shipped for this feature.
