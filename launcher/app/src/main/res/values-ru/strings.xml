@@ -101,6 +101,7 @@
     <string name="tile_replace_in_dock">Заменить другим приложением</string>
     <string name="dock_edit_pick_place">Выберите место в доке для этого приложения и нажмите ОК. Назад — отмена.</string>
     <string name="reorder">Изменить порядок приложений</string>
+    <string name="switch_profile">Сменить профиль</string>
     <string name="tile_move">Переместить</string>
     <string name="reorder_hint">ОК — взять приложение, стрелки — переместить, Назад — поставить. Ещё раз Назад — готово.</string>
     <string name="reorder_not_saved">Не удалось сохранить новый порядок</string>

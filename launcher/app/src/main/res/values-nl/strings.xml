@@ -84,6 +84,7 @@
     <string name="tile_replace_in_dock">Vervangen door andere app</string>
     <string name="dock_edit_pick_place">Kies de plek in het dock voor deze app en druk op OK. Terug om te annuleren.</string>
     <string name="reorder">Apps ordenen</string>
+    <string name="switch_profile">Profiel wisselen</string>
     <string name="tile_move">Verplaatsen</string>
     <string name="reorder_hint">OK pakt een app op, de pijlen verplaatsen hem, Terug zet hem neer. Nog eens Terug om te stoppen.</string>
     <string name="reorder_not_saved">Kon de nieuwe volgorde niet opslaan</string>

@@ -47,6 +47,7 @@
     <string name="tile_replace_in_dock">Substitueix per una altra aplicació</string>
     <string name="dock_edit_pick_place">Tria la posició del dock per a aquesta aplicació i prem D\'acord. Enrere per cancel·lar.</string>
     <string name="reorder">Reordena les aplicacions</string>
+    <string name="switch_profile">Canvia de perfil</string>
     <string name="tile_move">Mou</string>
     <string name="reorder_hint">D\'acord agafa una aplicació, les fletxes la mouen, Enrere la deixa. Torna a prémer Enrere per acabar.</string>
     <string name="reorder_not_saved">No s\'ha pogut desar el nou ordre</string>

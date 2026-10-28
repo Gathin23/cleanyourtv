@@ -49,6 +49,7 @@
     <string name="tile_replace_in_dock">แทนที่ด้วยแอปอื่น</string>
     <string name="dock_edit_pick_place">เลือกตำแหน่งในแถบแอปสำหรับแอปนี้ แล้วกด OK กดย้อนกลับเพื่อยกเลิก</string>
     <string name="reorder">จัดเรียงแอป</string>
+    <string name="switch_profile">สลับโปรไฟล์</string>
     <string name="tile_move">ย้าย</string>
     <string name="reorder_hint">กด OK เพื่อเลือกแอป ใช้ลูกศรเพื่อย้าย กดย้อนกลับเพื่อวาง กดย้อนกลับอีกครั้งเพื่อเสร็จสิ้น</string>
     <string name="reorder_not_saved">บันทึกลำดับใหม่ไม่ได้</string>

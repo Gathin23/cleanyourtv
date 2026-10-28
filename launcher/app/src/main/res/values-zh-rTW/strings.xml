@@ -74,6 +74,7 @@
     <string name="tile_replace_in_dock">以其他應用程式取代</string>
     <string name="dock_edit_pick_place">為此應用程式選擇 Dock 位置，然後按確定。按返回取消。</string>
     <string name="reorder">調整應用程式順序</string>
+    <string name="switch_profile">切換設定檔</string>
     <string name="tile_move">移動</string>
     <string name="reorder_hint">按確定選取應用程式，方向鍵移動，按返回放下。再按一次返回完成。</string>
     <string name="reorder_not_saved">無法儲存新順序</string>

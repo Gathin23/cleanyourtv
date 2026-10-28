@@ -87,6 +87,7 @@
     <string name="tile_replace_in_dock">Ersätt med en annan app</string>
     <string name="dock_edit_pick_place">Välj en plats i favoritraden för appen och tryck OK. Tillbaka för att avbryta.</string>
     <string name="reorder">Ändra ordning på appar</string>
+    <string name="switch_profile">Byt profil</string>
     <string name="tile_move">Flytta</string>
     <string name="reorder_hint">OK plockar upp en app, pilarna flyttar den, Tillbaka placerar den. Tillbaka igen för att avsluta.</string>
     <string name="reorder_not_saved">Kunde inte spara den nya ordningen</string>

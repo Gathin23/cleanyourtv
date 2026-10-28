@@ -88,6 +88,7 @@
     <string name="wallpaper_applied">Đã đổi hình nền</string>
     <string name="wallpaper_theme_default">Theo theme</string>
     <string name="reorder">Sắp xếp ứng dụng</string>
+    <string name="switch_profile">Chuyển hồ sơ</string>
     <string name="reorder_hint">Bấm OK để nhấc ứng dụng, phím mũi tên để di chuyển, Back để đặt xuống. Bấm Back lần nữa để xong.</string>
     <string name="reorder_not_saved">Không lưu được thứ tự mới</string>
     <string name="app_library">Thư viện ứng dụng</string>

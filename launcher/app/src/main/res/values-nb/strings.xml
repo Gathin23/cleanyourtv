@@ -84,6 +84,7 @@
     <string name="tile_replace_in_dock">Erstatt med en annen app</string>
     <string name="dock_edit_pick_place">Velg en plass i favorittraden for denne appen, og trykk OK. Trykk Tilbake for å avbryte.</string>
     <string name="reorder">Endre apprekkefølge</string>
+    <string name="switch_profile">Bytt profil</string>
     <string name="tile_move">Flytt</string>
     <string name="reorder_hint">Trykk OK for å velge en app, bruk pilene for å flytte den, og trykk Tilbake for å plassere den. Trykk Tilbake igjen for å avslutte.</string>
     <string name="reorder_not_saved">Kunne ikke lagre den nye rekkefølgen</string>

@@ -86,6 +86,7 @@
     <string name="tile_replace_in_dock">Nahradit jinou aplikací</string>
     <string name="dock_edit_pick_place">Vyberte místo v doku pro tuto aplikaci a stiskněte OK. Tlačítkem Zpět zrušíte.</string>
     <string name="reorder">Seřadit aplikace</string>
+    <string name="switch_profile">Přepnout profil</string>
     <string name="tile_move">Přesunout</string>
     <string name="reorder_hint">OK zvedne aplikaci, šipky ji posunou, Zpět ji položí. Dalším Zpět skončíte.</string>
     <string name="reorder_not_saved">Nové pořadí se nepodařilo uložit</string>

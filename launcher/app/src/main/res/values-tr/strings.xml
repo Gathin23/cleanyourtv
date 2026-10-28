@@ -74,6 +74,7 @@
     <string name="tile_replace_in_dock">Başka bir uygulamayla değiştir</string>
     <string name="dock_edit_pick_place">Bu uygulama için bir dock yeri seçip Tamam\'a basın. İptal için Geri.</string>
     <string name="reorder">Uygulamaları sırala</string>
+    <string name="switch_profile">Profil değiştir</string>
     <string name="tile_move">Taşı</string>
     <string name="reorder_hint">Tamam bir uygulamayı alır, oklar taşır, Geri bırakır. Bitirmek için tekrar Geri.</string>
     <string name="reorder_not_saved">Yeni sıra kaydedilemedi</string>

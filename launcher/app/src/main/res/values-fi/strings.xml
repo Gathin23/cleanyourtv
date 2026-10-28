@@ -73,6 +73,7 @@
     <string name="stats_memory">Muisti %1$d / %2$d Mt</string>
     <string name="stats_storage">Tallennustilaa vapaana %1$s</string>
     <string name="reorder">Järjestä sovellukset</string>
+    <string name="switch_profile">Vaihda profiilia</string>
     <string name="tile_move">Siirrä</string>
     <string name="reorder_hint">OK nostaa sovelluksen, nuolet siirtävät sitä ja Takaisin laskee sen paikalleen. Lopeta painamalla Takaisin uudelleen.</string>
     <string name="reorder_not_saved">Uutta järjestystä ei voitu tallentaa</string>

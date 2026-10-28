@@ -83,6 +83,7 @@
     <string name="tile_replace_in_dock">Ganti dengan aplikasi lain</string>
     <string name="dock_edit_pick_place">Pilih posisi dock untuk aplikasi ini lalu tekan OK. Kembali untuk membatalkan.</string>
     <string name="reorder">Tata Ulang App</string>
+    <string name="switch_profile">Ganti profil</string>
     <string name="tile_move">Pindahkan</string>
     <string name="reorder_hint">OK mengambil aplikasi, panah memindahkannya, Kembali menempatkannya. Kembali lagi untuk selesai.</string>
     <string name="reorder_not_saved">Tidak dapat menyimpan urutan baru</string>

@@ -84,6 +84,7 @@
     <string name="tile_replace_in_dock">Boshqa ilova bilan almashtirish</string>
     <string name="dock_edit_pick_place">Bu ilova uchun dockdagi joyni tanlab, OK ni bosing. Bekor qilish uchun Back.</string>
     <string name="reorder">Ilovalar tartibini oʻzgartirish</string>
+    <string name="switch_profile">Profilni almashtirish</string>
     <string name="tile_move">Koʻchirish</string>
     <string name="reorder_hint">OK ilovani ushlaydi, strelkalar suradi, Back joyiga qoʻyadi. Tugatish uchun yana Back.</string>
     <string name="reorder_not_saved">Yangi tartib saqlanmadi</string>

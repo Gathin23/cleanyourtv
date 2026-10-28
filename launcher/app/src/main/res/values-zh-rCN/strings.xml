@@ -85,6 +85,7 @@
     <string name="dock_edit_hint">选择要更改的程序坞位置，然后按确定。按返回完成。</string>
     <string name="dock_edit_pick_app">现在选择要放在那里的应用，然后按确定。按返回重新选择位置。</string>
     <string name="reorder">调整应用顺序</string>
+    <string name="switch_profile">切换个人资料</string>
     <string name="reorder_hint">按确定选中应用，方向键移动，按返回放下。再按一次返回完成。</string>
     <string name="reorder_not_saved">无法保存新顺序</string>
     <string name="app_library">应用库</string>

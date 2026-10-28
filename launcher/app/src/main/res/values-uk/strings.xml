@@ -100,6 +100,7 @@
     <string name="tile_replace_in_dock">Замінити іншим застосунком</string>
     <string name="dock_edit_pick_place">Виберіть місце в доку для цього застосунку та натисніть OK. «Назад» — скасувати.</string>
     <string name="reorder">Упорядкувати застосунки</string>
+    <string name="switch_profile">Змінити профіль</string>
     <string name="tile_move">Перемістити</string>
     <string name="reorder_hint">OK бере застосунок, стрілки переміщують, «Назад» ставить на місце. Ще раз «Назад» — завершити.</string>
     <string name="reorder_not_saved">Не вдалося зберегти новий порядок</string>

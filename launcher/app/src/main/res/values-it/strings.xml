@@ -101,6 +101,7 @@
     <string name="tile_replace_in_dock">Sostituisci con un\'altra app</string>
     <string name="dock_edit_pick_place">Scegli il posto del dock per questa app e premi OK. Indietro per annullare.</string>
     <string name="reorder">Riordina le app</string>
+    <string name="switch_profile">Cambia profilo</string>
     <string name="tile_move">Sposta</string>
     <string name="reorder_hint">OK prende un\'app, le frecce la spostano, Indietro la posiziona. Ancora Indietro per finire.</string>
     <string name="reorder_not_saved">Impossibile salvare il nuovo ordine</string>

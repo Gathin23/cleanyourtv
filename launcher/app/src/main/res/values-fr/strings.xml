@@ -74,6 +74,7 @@
     <string name="tile_replace_in_dock">Remplacer par une autre appli</string>
     <string name="dock_edit_pick_place">Choisissez l\'emplacement du dock pour cette appli et appuyez sur OK. Retour pour annuler.</string>
     <string name="reorder">Réorganiser les applis</string>
+    <string name="switch_profile">Changer de profil</string>
     <string name="tile_move">Déplacer</string>
     <string name="reorder_hint">OK prend une appli, les flèches la déplacent, Retour la pose. Retour à nouveau pour terminer.</string>
     <string name="reorder_not_saved">Impossible d\'enregistrer le nouvel ordre</string>

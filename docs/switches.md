@@ -55,4 +55,5 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `vpn_pill` | <img src="switches/vpn_pill.jpg" width="320" alt="vpn_pill on a TV"> |
 | `power_on_home_always` | <img src="switches/power_on_home_always.jpg" width="320" alt="power_on_home_always on a TV"> |
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
+| `profiles_button` | <img src="switches/profiles_button.jpg" width="320" alt="profiles_button: the person button focused in the top bar on a Chromecast with Google TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |

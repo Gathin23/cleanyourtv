@@ -100,6 +100,7 @@
     <string name="tile_replace_in_dock">다른 앱으로 바꾸기</string>
     <string name="dock_edit_pick_place">이 앱을 넣을 독 위치를 고르고 OK를 누르세요. 뒤로 가기(←) 버튼을 누르면 취소됩니다.</string>
     <string name="reorder">앱 순서 바꾸기</string>
+    <string name="switch_profile">프로필 전환</string>
     <string name="tile_move">이동</string>
     <string name="reorder_hint">OK로 앱을 선택 후 방향키로 옮기고, 뒤로 가기(←) 버튼으로 내려놓습니다. 뒤로 가기(←) 버튼을 한 번 더 누르면 종료됩니다.</string>
     <string name="reorder_not_saved">새 순서를 저장할 수 없음</string>

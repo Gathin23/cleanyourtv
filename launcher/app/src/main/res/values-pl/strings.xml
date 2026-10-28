@@ -74,6 +74,7 @@
     <string name="tile_replace_in_dock">Zamień na inną aplikację</string>
     <string name="dock_edit_pick_place">Wybierz miejsce w docku dla tej aplikacji i naciśnij OK. Wstecz, aby anulować.</string>
     <string name="reorder">Zmień kolejność aplikacji</string>
+    <string name="switch_profile">Przełącz profil</string>
     <string name="tile_move">Przenieś</string>
     <string name="reorder_hint">OK podnosi aplikację, strzałki ją przesuwają, Wstecz ją upuszcza. Ponownie Wstecz, aby zakończyć.</string>
     <string name="reorder_not_saved">Nie udało się zapisać nowej kolejności</string>

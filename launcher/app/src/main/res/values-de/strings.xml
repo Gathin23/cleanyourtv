@@ -51,6 +51,7 @@
     <string name="tile_replace_in_dock">Durch andere App ersetzen</string>
     <string name="dock_edit_pick_place">Wähle den Dock-Platz für diese App und drücke OK. Zurück zum Abbrechen.</string>
     <string name="reorder">Apps anordnen</string>
+    <string name="switch_profile">Profil wechseln</string>
     <string name="tile_move">Verschieben</string>
     <string name="reorder_hint">OK hebt eine App an, Pfeiltasten verschieben sie, Zurück legt sie ab. Nochmals Zurück zum Beenden.</string>
     <string name="reorder_not_saved">Neue Reihenfolge konnte nicht gespeichert werden</string>

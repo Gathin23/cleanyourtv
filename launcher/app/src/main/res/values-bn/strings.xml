@@ -72,6 +72,7 @@
     <string name="card_state_new_key">নতুন কি</string>
     <string name="card_state_new_label">নতুন নাম</string>
     <string name="reorder">অ্যাপ সাজান</string>
+    <string name="switch_profile">প্রোফাইল পরিবর্তন করুন</string>
     <string name="tile_move">সরান</string>
     <string name="dock_edit">এডিট ডক</string>
     <string name="power_menu">রিস্টার্ট করুন…</string>

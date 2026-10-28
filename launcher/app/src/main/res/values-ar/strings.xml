@@ -74,6 +74,7 @@
     <string name="tile_replace_in_dock">استبدال بتطبيق آخر</string>
     <string name="dock_edit_pick_place">اختر موضعًا في الشريط لهذا التطبيق واضغط موافق. اضغط رجوع للإلغاء.</string>
     <string name="reorder">إعادة ترتيب التطبيقات</string>
+    <string name="switch_profile">تبديل الملف الشخصي</string>
     <string name="tile_move">نقل</string>
     <string name="reorder_hint">اضغط موافق لالتقاط تطبيق، والأسهم لتحريكه، ورجوع لتثبيته. اضغط رجوع مرة أخرى للإنهاء.</string>
     <string name="reorder_not_saved">تعذّر حفظ الترتيب الجديد</string>

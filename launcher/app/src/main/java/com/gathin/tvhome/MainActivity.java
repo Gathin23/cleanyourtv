@@ -737,6 +737,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             libraryFromTopBar = true;   // closing it goes back to this button, not to the pill after the last row
         });
         btnLibraryTop.setVisibility(cfg.libraryButton && cfg.appLibrary ? View.VISIBLE : View.GONE);
+        btnProfiles = findViewById(R.id.btnProfiles);
+        if (cfg.profilesButton) {
+            btnProfiles.setOnClickListener(v -> open(new Intent(PROFILE_PICKER).setComponent(PROFILE_CHOOSER)));
+            btnProfiles.setVisibility(View.VISIBLE);
+        }
         addTopBarApps(cfg.topBarApps, cfg.launchActions);
         iconOnlyButtons = cfg.iconOnlyButtons;
         topMenu = cfg.topMenu;
@@ -801,9 +806,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
+        btnProfiles.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnProfiles, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -2720,6 +2726,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ColorStateList wifiNoInternetTint, wifiOfflineTint;
     /** The app library button in the top bar (library_button). */
     private View btnLibraryTop;
+    /** profiles_button: opens Google TV's profile chooser, which lives in its stock launcher. */
+    private View btnProfiles;
+    private static final String PROFILE_PICKER = "com.google.android.gms.account.ProfilePickerDelegation";
+    private static final ComponentName PROFILE_CHOOSER = new ComponentName("com.google.android.apps.tv.launcherx",
+            "com.google.android.apps.tv.launcherx.profile.chooser.ProfileChooserActivity");
     /** The open library came from that button: closing it returns there instead of scrolling to the grid's end. */
     private boolean libraryFromTopBar;
     /** The open library came from the VPN pill (vpn_pill, no VPN app): closing it returns there while the pill still shows. */
