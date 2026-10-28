@@ -130,7 +130,7 @@ TV_HOST=<tv ip> LITELLM_URL=https://litellm.example.com LITELLM_KEY=sk-... \
 | `NTFY_URL`, `NTFY_TOKEN` | "Send it to my phone". |
 | `SPEECH_LANGUAGE` | `de-DE`, `en-GB` … for the recognizer and the voice. Empty: the TV's language. |
 | `HOOKS` | `[{"name":"movie night","description":"Dim the lights for a film","url":"https://n8n…/webhook/…"}]` |
-| `VOICE_KEY` | `1` makes the mic button open Ask; `0` gives it back to the TV's search. See [The mic button](#the-mic-button). |
+| `VOICE_KEY` | `1` makes the mic button open Ask and switches on its accessibility service; `0` gives the button back to the TV's search and switches the service off. See [The mic button](#the-mic-button). |
 
 Without the build tools, build in Docker the way the launcher is built, then run with `SKIP_BUILD=1`.
 
@@ -214,11 +214,13 @@ With OpenRouter your questions go to OpenRouter and the model's provider, not to
 | What | How |
 |---|---|
 | Your voice | Speech-to-text is the TV's own recognizer (Google on most Android TVs), so the audio goes to it. Only the text goes to your server. The mic is open only while the orb is red. |
-| The conversation | Sent to your server only, kept in memory while Ask is open. "Remember" facts stay on the TV; "forget …" removes them, `content call … --method forget` clears all. |
+| The conversation | Sent to the server you set, kept in memory while Ask is open. With OpenRouter that is OpenRouter and the model's provider. "Remember" facts stay on the TV; "forget …" removes them, `content call … --method forget` clears all. |
+| Where else words go | Only when a request needs it, straight from the TV: a heard film or series title (and its IMDb id) to Cinemeta (`v3-cinemeta.strem.io`); a place name, then its coordinates, to Open-Meteo for the weather; search words to your SearXNG, and through it to the search engines it uses; a page's address to that page's site when Ask reads it; the text you send to your phone to your ntfy; your webhooks' calls to their URLs. Nothing else is sent anywhere. |
 | Keys | Stored in the app's private storage. The setup page never shows a saved key back; the ADB `get` call only says whether one is set. |
+| The setup page | Plain HTTP on your home network, so the key you paste goes from the phone to the TV unencrypted across your Wi-Fi. Use it on a network you trust, or set the key from a computer with `install.sh` (over ADB). |
 | Web pages | Marked as untrusted data, so instructions inside a page are not followed. Pages on your LAN, the tailnet or the TV itself are refused, on every redirect. |
 | The screen | Read only when you ask what's on it, and only the app behind the panel. |
-| The mic button | Ask holds the Assistant role; nothing filters your keys. `VOICE_KEY=0` gives the button back. |
+| The mic button | Ask holds the Assistant role; nothing filters your keys. `VOICE_KEY=1` also switches on Ask's accessibility service (Back, sleep, reading and pressing on screen, only when you ask). `VOICE_KEY=0` gives the button back and switches the service off. |
 | Background | Nothing runs while Ask is closed except a timer's alarm. No polling, no analytics. |
 
 ## Permissions
