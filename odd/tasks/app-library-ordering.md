@@ -17,7 +17,7 @@ All work remains local until explicitly delivered.
 - T4 — S1 — Update user-facing launcher documentation and run local verification — commit: 0bd1454
 - T5 — S2 — Surface pinned App Library apps in the Home top bar while preserving configured top_bar_apps — commit: a7fdb3f
 - T6 — S2 — Add regression tests, documentation, build, and Chromecast verification for pinned top-bar apps — commit: a7fdb3f
-- T7 — S2 — Create and push the user's remote fork — commit: blocked on explicit remote destination and push authorization
+- T7 — S2 — Create and push the user's remote fork — commit: a2bca54; PR #2466
 - T8 — S3 — Evaluate a safe installation path for Shizuku Next and its store for future ADB-wireless utility apps — commit: pending
 
 ## Log
@@ -33,3 +33,4 @@ All work remains local until explicitly delivered.
 - L9: Aggiunginal task anche la possibilita di isntallre shizuku next ed il suo store per poter in fururo installre app utili legte ad asb wireless
 - L10: The requested owner was darkei08, but the authenticated GitHub account is darkrei08; the remote fork exists under darkrei08/cleanyourtv.
 - L11: Si confermo darkrei08 poi prosegui coi task eseguendo sempre pi herder orchestration e po extensible workflow
+- L12: Fork darkrei08/cleanyourtv was cloned at /root/git/fork/cleanyourtv, feature/app-library-ordering was pushed, issue #2465 and PR #2466 were opened; target CI is pending and GitHub refused the feature-idea label update because the fork account cannot update the official repository PR.
