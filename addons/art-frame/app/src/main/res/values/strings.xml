@@ -92,7 +92,8 @@
     <string name="search_intro">Free-to-use pictures only: public domain, CC0, CC BY or the Unsplash License.</string>
     <string name="searching">Searching %1$s…</string>
     <string name="search_failed">Search failed: %1$s</string>
-    <string name="no_results">Nothing found. Try other words or another museum.</string>
+    <string name="no_results">Nothing found. Try other words or another source.</string>
+    <string name="none_fit">%1$d found, none shaped like the TV. Choose “Shape: any” to see them.</string>
     <string name="results">%1$d works from %2$s</string>
 
     <string name="save">Save to library</string>

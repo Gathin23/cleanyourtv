@@ -93,15 +93,20 @@ public class SearchActivity extends Activity {
             }
             return false;
         });
-        bar.addView(query, new LinearLayout.LayoutParams(Ui.dp(this, 620), LinearLayout.LayoutParams.WRAP_CONTENT));
+        bar.addView(query, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         TextView go = Ui.button(this, getString(R.string.search), v -> search(query.getText().toString()));
         LinearLayout.LayoutParams gp = Ui.gap(this, 20, 0);
         gp.leftMargin = Ui.dp(this, 14);
         bar.addView(go, gp);
-        bar.addView(shape, Ui.gap(this, 20, 0));
+        bar.addView(shape);
+        root.addView(bar, Ui.gap(this, 0, 10));
+        // The search's outcome (how many, nothing found, or why it failed) on its own line under the box.
         status = Ui.text(this, getString(R.string.search_intro), 16, Ui.MUTED);
-        bar.addView(status);
-        root.addView(bar, Ui.gap(this, 0, 16));
+        status.setSingleLine(true);
+        status.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        status.setPadding(Ui.dp(this, 22), 0, 0, Ui.dp(this, 12));
+        root.addView(status, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
 
         grid = new GridView(this);
         grid.setNumColumns(5);
@@ -171,6 +176,7 @@ public class SearchActivity extends Activity {
             List<Sources.Result> found = null;
             String error = null;
             int pagesUsed = 0;
+            int[] seen = new int[1];
             try {
                 // With the shape filter, keep reading pages until a screenful suits the TV (at most four pages).
                 found = new java.util.ArrayList<>();
@@ -178,6 +184,7 @@ public class SearchActivity extends Activity {
                 while (pagesUsed < 4) {
                     List<Sources.Result> pageHits = s.search(words, p + pagesUsed);
                     pagesUsed++;
+                    seen[0] += pageHits.size();
                     for (Sources.Result r : pageHits) {
                         if (!filter || Sources.suits(r.width, r.height, screenRatio)) found.add(r);
                     }
@@ -204,8 +211,13 @@ public class SearchActivity extends Activity {
                 more = used > 0;
                 results.addAll(got);
                 adapter.notifyDataSetChanged();
-                status.setText(results.isEmpty() ? getString(R.string.no_results)
-                        : getString(R.string.results, results.size(), getString(s.name())));
+                if (results.isEmpty()) {
+                    // Hits that the shape filter hid are not "nothing found": say so, and how to see them.
+                    status.setText(seen[0] > 0 && prefs.shapeFilter() ? getString(R.string.none_fit, seen[0])
+                            : getString(R.string.no_results));
+                } else {
+                    status.setText(getString(R.string.results, results.size(), getString(s.name())));
+                }
                 if (p == 0 && !results.isEmpty()) grid.requestFocus();
             });
         }, "search").start();

@@ -155,13 +155,14 @@ final class Sources {
         public int name() { return R.string.source_cma; }
 
         public List<Result> search(String query, int page) throws IOException {
-            String url = Uri.parse("https://openaccess-api.clevelandart.org/api/artworks/").buildUpon()
+            Uri.Builder b = Uri.parse("https://openaccess-api.clevelandart.org/api/artworks/").buildUpon()
                     .appendQueryParameter("q", query)
                     .appendQueryParameter("cc0", "1")
                     .appendQueryParameter("has_image", "1")
-                    .appendQueryParameter("limit", String.valueOf(PAGE))
-                    .appendQueryParameter("skip", String.valueOf(page * PAGE))
-                    .build().toString();
+                    .appendQueryParameter("limit", String.valueOf(PAGE));
+            // "skip=0" is left out: Cleveland's cache answered some first pages asked for with it with no results.
+            if (page > 0) b.appendQueryParameter("skip", String.valueOf(page * PAGE));
+            String url = b.build().toString();
             JSONObject o = Http.json(url);
             List<Result> out = new ArrayList<>();
             JSONArray data = o.optJSONArray("data");
