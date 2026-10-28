@@ -225,9 +225,18 @@ if [ "${INPUT_KEY_SERVICE:-0}" = 1 ]; then enable_service InputKeyService; fi
 if [ "${HOME_KEY_SERVICE:-0}" = 1 ]; then enable_service HomeKeyService; fi
 # The grant follows the switch on every install: pm install -r keeps a grant, so a run without the switch takes it
 # back. WRITE_SECURE_SETTINGS opens every secure and global setting, not only the accessibility list.
+# tv.py does not hand back the TV shell's exit status, so each side prints its marker only once the TV shows the
+# state it wants, and the install stops when the marker is missing. The revoke is judged by the package's
+# permission state rather than pm's exit status, so a permission that was never granted counts as revoked, and a
+# dumpsys that does not list the permission at all prints nothing.
+SECURE=android.permission.WRITE_SECURE_SETTINGS
 if [ "${RESTORE_KEY_SERVICES:-0}" = 1 ]; then
-  "$PY" -I ../tools/tv.py "pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS && echo restore-granted"
+  STEP="pm grant com.gathin.tvhome $SECURE && echo restore-granted"; MARK=restore-granted
 else
-  "$PY" -I ../tools/tv.py "pm revoke com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS 2>/dev/null; echo secure-settings-revoked"
+  STEP="pm revoke com.gathin.tvhome $SECURE; s=\$(dumpsys package com.gathin.tvhome); case \"\$s\" in *\"$SECURE: granted=true\"*) ;; *\"$SECURE\"*) echo secure-settings-revoked ;; esac"
+  MARK=secure-settings-revoked
 fi
+OUT=$("$PY" -I ../tools/tv.py "$STEP")
+echo "$OUT"
+case "$OUT" in *"$MARK"*) ;; *) echo "ERROR: WRITE_SECURE_SETTINGS is not in the state this install asked for ($MARK missing)" >&2; exit 1 ;; esac
 echo "Installed. Press Home on the remote to see it."

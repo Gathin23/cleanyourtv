@@ -157,9 +157,16 @@ if ($InputKeyService) { Enable-Service 'InputKeyService' }
 if ($HomeKeyService) { Enable-Service 'HomeKeyService' }
 # The grant follows the switch on every install: pm install -r keeps a grant, so a run without the switch takes it
 # back. WRITE_SECURE_SETTINGS opens every secure and global setting, not only the accessibility list.
+# tv.py does not hand back the TV shell's exit status, so each side prints its marker only once the TV shows the
+# state it wants, and the install stops when the marker is missing (see build-and-install.sh).
+$secure = 'android.permission.WRITE_SECURE_SETTINGS'
 if ($RestoreKeyServices) {
-    'pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS && echo restore-granted' | & $py -I ..\tools\tv.py --batch
+    $step = "pm grant com.gathin.tvhome $secure && echo restore-granted"; $mark = 'restore-granted'
 } else {
-    'pm revoke com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS 2>/dev/null; echo secure-settings-revoked' | & $py -I ..\tools\tv.py --batch
+    $step = "pm revoke com.gathin.tvhome $secure; s=`$(dumpsys package com.gathin.tvhome); case `"`$s`" in *`"${secure}: granted=true`"*) ;; *`"$secure`"*) echo secure-settings-revoked ;; esac"
+    $mark = 'secure-settings-revoked'
 }
+$out = ($step | & $py -I ..\tools\tv.py --batch) -join "`n"
+Write-Host $out
+if ($out -notmatch [regex]::Escape($mark)) { throw "WRITE_SECURE_SETTINGS is not in the state this install asked for ($mark missing)" }
 Write-Host 'Installed. Press Home on the remote to see it.'
