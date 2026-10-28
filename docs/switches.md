@@ -68,4 +68,5 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `row_titles` | <img src="switches/search_orb.jpg" width="320" alt="row_titles on a TV"> |
 | `home_title` | <img src="switches/home_title.jpg" width="320" alt="home_title Start on a TV"> |
 | `clock_right` | <img src="switches/search_orb.jpg" width="320" alt="clock_right on a TV"> |
-| `search_orb` | <img src="switches/search_orb.jpg" width="320" alt="search_orb focused on a TV"> |
+| `search_orb` | <img src="switches/search_orb.jpg" width="320" alt="search_orb on a TV"> |
+| `buttons_at_end` | <img src="switches/buttons_at_end.jpg" width="320" alt="buttons_at_end on a TV"> |

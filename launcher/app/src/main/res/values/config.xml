@@ -267,6 +267,10 @@
     <!-- A round search button of this colour (#RRGGBB) at the top left that opens the TV's search. Empty is off;
          a theme can set "search_orb". -->
     <string name="search_orb" translatable="false"></string>
+    <!-- Inputs, Wi-Fi and Settings (and the library button) leave the header for a row of round buttons after the last
+         row of tiles, as on Leanback; with search_orb they take its colour. Off by default; a theme can set
+         "buttons_at_end": true. Not with single_row or top_menu. -->
+    <bool name="buttons_at_end">false</bool>
     <!-- The date and the line between the clock and the date in the clock's full white instead of dimmed. Can also be
          set with "header_white" in a theme. -->
     <bool name="header_white">false</bool>

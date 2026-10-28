@@ -282,6 +282,8 @@ final class Config {
     final boolean clockRight;
     /** The search button's colour (config.xml, search_orb); 0 hides it. */
     final int searchOrb;
+    /** The header's buttons in a row after the last tiles (config.xml, buttons_at_end); never with single_row or top_menu. */
+    final boolean buttonsAtEnd;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -298,7 +300,8 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
                    int openOnStartNetworkWait, boolean iconOnlyVpn, int tileCornerRadius, boolean squareTiles, boolean flatTiles,
-                   boolean tileLabelInside, List<String> rowTitles, String homeTitle, boolean clockRight, int searchOrb) {
+                   boolean tileLabelInside, List<String> rowTitles, String homeTitle, boolean clockRight, int searchOrb,
+                   boolean buttonsAtEnd) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -356,6 +359,7 @@ final class Config {
         this.homeTitle = homeTitle;
         this.clockRight = clockRight || !homeTitle.isEmpty();
         this.searchOrb = searchOrb;
+        this.buttonsAtEnd = buttonsAtEnd && !singleRow && !topMenu;
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -559,6 +563,7 @@ final class Config {
         String homeTitle = res.getString(R.string.home_title).trim();
         boolean clockRight = res.getBoolean(R.bool.clock_right);
         String searchOrb = res.getString(R.string.search_orb).trim();
+        boolean buttonsAtEnd = res.getBoolean(R.bool.buttons_at_end);
         boolean applied = false;
 
         File dir = dir(ctx);
@@ -677,6 +682,7 @@ final class Config {
             homeTitle = string(json, "home_title", homeTitle);
             clockRight = bool(json, "clock_right", clockRight);
             searchOrb = string(json, "search_orb", searchOrb);
+            buttonsAtEnd = bool(json, "buttons_at_end", buttonsAtEnd);
         }
         // A top-bar app is moved there, not copied: it leaves the grid.
         for (String pkg : topBarApps) if (!hidden.contains(pkg)) hidden.add(pkg);
@@ -741,7 +747,7 @@ final class Config {
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn, Math.max(0, Math.min(24, tileCornerRadius)),
                 "square".equalsIgnoreCase(tileShape.trim()), flatTiles, tileLabelInside, singleRow ? Collections.emptyList() : rowTitles,
-                homeTitle, clockRight, searchOrbColor(searchOrb));
+                homeTitle, clockRight, searchOrbColor(searchOrb), buttonsAtEnd);
     }
 
     /**

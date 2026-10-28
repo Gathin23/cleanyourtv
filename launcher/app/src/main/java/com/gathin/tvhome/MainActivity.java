@@ -551,6 +551,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
+        buttonsAtEnd = cfg.buttonsAtEnd;
+        searchOrbColor = cfg.searchOrb;
         if (cfg.clockRight) moveClockRight();
         if (!cfg.homeTitle.isEmpty()) {
             TextView homeTitle = findViewById(R.id.homeTitle);
@@ -899,6 +901,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (festive) applyFestiveSkin((TextView) btnInputs, (TextView) btnSettings);
 
+        if (buttonsAtEnd) {
+            // The buttons stay in the header, unseen and out of focus, so every menu still hangs from them; the
+            // footer after the last row shows round copies that press them (footerButtons).
+            ViewGroup bar = findViewById(R.id.topButtons);
+            bar.setAlpha(0f);
+            for (int i = 0; i < bar.getChildCount(); i++) bar.getChildAt(i).setFocusable(false);
+        }
+
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
@@ -1135,8 +1145,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         cancelPendingFocusScroll();
         RecyclerView.ViewHolder footer = grid.findViewHolderForAdapterPosition(adapter.appCount());
         final boolean restoreLibrary = adapter.isLibraryAt(adapter.appCount()) && footer != null
-                && footer.itemView.findViewById(R.id.btnLibrary) != null
-                && footer.itemView.findViewById(R.id.btnLibrary).hasFocus();
+                && footer.itemView.hasFocus();
         // Capture the app before rebinding can move focus and overwrite its key.
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
@@ -2406,8 +2415,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         clockRow.removeView(ampm);
         findViewById(R.id.clockDivider).setVisibility(View.GONE);
         ((View) findViewById(R.id.date).getParent()).setVisibility(View.GONE);
-        clock.setTextSize(30f);
+        clock.setTextSize(buttonsAtEnd ? 40f : 30f);
         LinearLayout topButtons = findViewById(R.id.topButtons);
+        if (buttonsAtEnd) {
+            // buttons_at_end hides the buttons, so the time gets a box of its own at the header's right end.
+            LinearLayout box = new LinearLayout(this);
+            box.setGravity(Gravity.CENTER_VERTICAL);
+            RelativeLayout.LayoutParams boxLp = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            boxLp.addRule(RelativeLayout.ALIGN_PARENT_END);
+            boxLp.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.leftBlock);
+            boxLp.bottomMargin = Math.round(6 * density);
+            ((ViewGroup) topButtons.getParent()).addView(box, boxLp);
+            topButtons = box;
+        }
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.CENTER_VERTICAL;
@@ -2452,7 +2473,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         searchOrb.setOnKeyListener((v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
-            else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+            else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && !buttonsAtEnd)
                 (btnInputs.getVisibility() == View.VISIBLE ? btnInputs : firstTopButton()).requestFocus();
             return keyCode == KeyEvent.KEYCODE_DPAD_DOWN || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
                     || keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_LEFT;
@@ -2547,6 +2568,86 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** The footer's first button: the library pill, or with buttons_at_end the first round copy. */
+    private View footerFocus(View row) {
+        View pill = row.findViewById(R.id.btnLibrary);
+        return pill.getVisibility() == View.VISIBLE || footerCopies.isEmpty() ? pill : footerCopies.get(0);
+    }
+
+    /**
+     * buttons_at_end: a row of round copies of the header's shown buttons, in order, for the footer after the last
+     * row, as Leanback kept its settings at the bottom. Each presses (or holds) its button, so the menus still hang
+     * from the header; with search_orb they take its colour and focus look. Up goes back to the last row.
+     */
+    @Override public View footerButtons() {
+        LinearLayout row = new LinearLayout(this);
+        row.setClipChildren(false);
+        row.setClipToPadding(false);
+        footerCopies.clear();
+        ViewGroup bar = findViewById(R.id.topButtons);
+        List<TextView> originals = new ArrayList<>();
+        for (int i = 0; i < bar.getChildCount(); i++) {
+            View child = bar.getChildAt(i);
+            if (child instanceof TextView && child.isClickable() && child.getVisibility() == View.VISIBLE) originals.add((TextView) child);
+        }
+        int size = Math.round((searchOrbColor != 0 ? 52 : 42) * density), pad = (size - Math.round(22 * density)) / 2;
+        for (int i = 0; i < originals.size(); i++) {
+            TextView original = originals.get(i);
+            boolean first = i == 0, last = i == originals.size() - 1;
+            ImageView copy = new ImageView(this);
+            copy.setTag(original);
+            copy.setFocusable(true);
+            copy.setClickable(true);
+            copy.setPadding(pad, pad, pad, pad);
+            CharSequence name = original.getContentDescription() != null ? original.getContentDescription() : original.getText();
+            copy.setContentDescription(name);
+            GradientDrawable orb = null;
+            if (searchOrbColor != 0) {
+                orb = new GradientDrawable();
+                orb.setShape(GradientDrawable.OVAL);
+                orb.setColor(searchOrbColor);
+                copy.setBackground(orb);
+            } else {
+                copy.setBackgroundResource(R.drawable.pill_bg);
+            }
+            GradientDrawable ring = orb;
+            copy.setOnFocusChangeListener((v, focused) -> {
+                if (ring != null) ring.setStroke(focused ? Math.round(2 * density) : 0, Color.WHITE);
+                v.animate().scaleX(focused ? 1.15f : 1f).scaleY(focused ? 1.15f : 1f)
+                        .setDuration(reducedMotion ? Motion.REDUCED_MS : 160).start();
+                if (focused) onLibraryFocused();
+            });
+            copy.setOnClickListener(v -> original.performClick());
+            copy.setOnLongClickListener(v -> original.performLongClick());
+            copy.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) onLibraryUp();
+                return keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                        || (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && first) || (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && last);
+            });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+            lp.setMarginEnd(Math.round(20 * density));
+            row.addView(copy, lp);
+            footerCopies.add(copy);
+        }
+        refreshFooterButtons();
+        return row;
+    }
+
+    /** buttons_at_end: each round copy takes its button's current icon and tint (the Wi-Fi state, a VPN lock). */
+    private void refreshFooterButtons() {
+        for (ImageView copy : footerCopies) {
+            TextView original = (TextView) copy.getTag();
+            Drawable icon = original.getCompoundDrawablesRelative()[0];
+            if (icon != null && icon.getConstantState() != null) icon = icon.getConstantState().newDrawable().mutate();
+            copy.setImageDrawable(icon);
+            // The icon's resting colour (white, or the Wi-Fi state's), not the pill's dark focused one: the copy's
+            // background stays the same colour when focused.
+            ColorStateList tint = original.getCompoundDrawableTintList();
+            copy.setImageTintList(tint == null ? null : ColorStateList.valueOf(tint.getDefaultColor()));
+        }
+    }
+
     @Override public void onLibraryUp() {
         if (adapter.appCount() == 0) { firstTopButton().requestFocus(); return; }
         int lastRow = ((adapter.appCount() - 1) / COLUMNS) * COLUMNS;
@@ -2559,7 +2660,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!adapter.isLibraryAt(position)) return;
         RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(position);
         if (holder != null) {
-            View button = holder.itemView.findViewById(R.id.btnLibrary);
+            View button = footerFocus(holder.itemView);
             Rect visible = new Rect();
             if (button.getGlobalVisibleRect(visible) && visible.height() >= button.getHeight()) {
                 if (button.requestFocus()) libraryFocusPending = false;
@@ -2572,7 +2673,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (appLibrary != null || !hasWindowFocus()) return;
                 RecyclerView.ViewHolder footer = grid.findViewHolderForAdapterPosition(adapter.appCount());
                 if (footer != null && adapter.isLibraryAt(adapter.appCount())
-                        && footer.itemView.findViewById(R.id.btnLibrary).requestFocus()) libraryFocusPending = false;
+                        && footerFocus(footer.itemView).requestFocus()) libraryFocusPending = false;
             });
             return;
         }
@@ -2583,7 +2684,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (pendingFocusScroll != this) return;
                 pendingFocusScroll = null;
                 RecyclerView.ViewHolder footer = rv.findViewHolderForAdapterPosition(position);
-                if (footer != null && footer.itemView.findViewById(R.id.btnLibrary).requestFocus())
+                if (footer != null && footerFocus(footer.itemView).requestFocus())
                     libraryFocusPending = false;
             }
         };
@@ -2956,10 +3057,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 btnWifi.setCompoundDrawableTintList(tint);
             }
         }
+        refreshFooterButtons();
     }
 
     /** config.xml icon_only_buttons. */
     private boolean iconOnlyButtons;
+    /** buttons_at_end, and the round copies of the header's buttons its footer shows. */
+    private boolean buttonsAtEnd;
+    private final List<ImageView> footerCopies = new ArrayList<>();
+    /** search_orb's colour, 0 without one; buttons_at_end's copies take it too. */
+    private int searchOrbColor;
     /** search_orb's button; null without one. */
     private ImageView searchOrb;
     /** tile_corner_radius, for the glass highlight's corners. */
