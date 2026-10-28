@@ -148,6 +148,28 @@
 # - Every entry, tvrecommendations included, stayed disabled through both restarts (`pm list packages -d`
 #   compared before and after). com.phorus.playfi.tv was left enabled, per the note in batch 3.
 # - Private DNS in hostname mode validated on this firmware (`dumpsys connectivity` lists validated addresses).
+#
+# Seventh unit: Philips 43PUS7304/12 (LED, 2019 model), Germany, on Wi-Fi. Same firmware as the lead unit:
+# STT2.230526.001, security patch 2025-11-01, fingerprint
+# Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. One session on 27 Oct 2026 with two
+# restarts, not a several-day test. Launcher notes are in README.md.
+# - Developer options showed USB debugging only, no Network debugging or Wireless debugging entry; with USB
+#   debugging on, port 5555 answered on the LAN and tools/tv.py connected with no cable.
+# - From the list below: all of batches 1 and 2, batch 3 except Prime Video (kept by choice); videos and music are
+#   not installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome: TV_INPUT_HARDWARE false positives again (`pm query-services` lists only
+#   com.mediatek.tvinput, com.mediatek.tv.agent and org.droidtv.fastip), disabled with TVINPUT_ALLOW=1 for those two
+#   alone; `dumpsys tv_input` still listed HDMI 1-4 after each batch.
+# - Also disabled, as on the sixth unit: org.droidtv.tv.frameworklogger, org.droidtv.nettvapps,
+#   org.droidtv.nettv_launcherapp, org.droidtv.sticker, org.droidtv.dropboxprovider, com.netflix.ninja,
+#   com.apple.atve.androidtv.appletv; plus de.telekom.magentatv.tv (a Play Store install, unused).
+#   Kept: YouTube, Chromecast, both firmware updaters, com.phorus.playfi.tv.
+# - All 44 disabled packages (the 16 factory ones included) stayed disabled through both restarts, tvrecommendations too.
+# - Ambilight (follow video) checked working on screen after the whole list and the launcher.
+# - Android's "storage full" warnings: /data is 4.8 GB, 81% used before cleanup. org.droidtv.channels held about
+#   2 GB of app data (`dumpsys diskstats`), the largest by far; it was not cleared, as that holds the channel list
+#   and favourites. `pm clear` on the disabled streaming apps and com.google.android.tts, plus `pm trim-caches`,
+#   freed about 450 MB.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader

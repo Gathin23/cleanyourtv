@@ -30,11 +30,17 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.mediatek.wwtv.tvcenter.
-# Keep: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, com.tcl.suspension
+# Keep: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, com.tcl.partnercustomizer, com.tcl.suspension
 # (source panel / Input button), com.tcl.keyhelp (virtual keys), com.tcl.useragreement, com.tcl.factory.view,
 # mediatek.factorymenu.ui, com.mediatek.wwtv.setupwizard, com.google.android.tv.remote.service.
 # Live TV/HDMI safety (both models): keep com.mediatek.wwtv.tvcenter; it also plays HDMI, so disabling it
 # breaks both. Keep com.mediatek.tvinput, com.mediatek.tv.service and com.tcl.suspension as well.
+# On G13/AU10, com.tcl.partnercustomizer owns the tvlauncher.widget provider used by the persistent
+# com.mediatek.tv.service. Keep it enabled: a related MediaTek build repeatedly crashed the service after
+# that provider was removed (#2138). The G13 provider owner was verified, but the crash was not reproduced
+# on this TV; the rest of the list was applied and reboot-checked with partnercustomizer still enabled.
+# Earlier 43S5K, AU07 and AU13 reports disabled it without a reported crash; those historical runs do not
+# establish that removing this provider is safe on every G13 build after a reboot.
 #
 # com.tcl.ttvs on this firmware is BOTH TCL's analytics (bi.core.BIService, identifier, trackdata) AND
 # TCL's firmware/app updater (versionUpdateApp.core.SystemUpdateService). Disabling it stops TCL
@@ -118,7 +124,7 @@
 # com.tcl.ttvs                         # TCL analytics AND the firmware updater: kept on so updates arrive (#322)
 com.tcl.messagebox                     # TCL push messages and promos; carries an org.tcl.ttvs receiver
 com.tcl.logkit                         # log capture and upload
-com.tcl.partnercustomizer              # TCL promo rows on the Google TV home; [43S5K ONLY]
+# com.tcl.partnercustomizer            # keep: tvlauncher.widget provider for com.mediatek.tv.service (#2138)
 android.autoinstalls.config.google.gtvpai   # silently installs partner apps
 com.google.android.partnersetup        # partner attribution (RLZ pings)
 

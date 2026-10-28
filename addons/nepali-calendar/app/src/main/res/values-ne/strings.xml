@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">नेपाली पात्रो</string>
+    <string name="previous">अघिल्लो</string>
+    <string name="today">आज</string>
+    <string name="next">अर्को</string>
+    <string name="screensaver">स्क्रिनसेभर</string>
+    <string name="screensaver_missing">यो टिभीमा स्क्रिनसेभर सेटिङ उपलब्ध छैन।</string>
+    <string name="out_of_range">विक्रम संवत् %1$d देखि %2$d सम्मका मिति मात्र उपलब्ध छन्। टिभीको मिति जाँच गर्नुहोस्।</string>
+    <string-array name="national_days">
+        <item>नयाँ वर्षको शुभकामना</item>
+        <item>लोकतन्त्र दिवस</item>
+        <item>गणतन्त्र दिवस</item>
+        <item>संविधान दिवस</item>
+        <item>पृथ्वी जयन्ती</item>
+        <item>माघे संक्रान्ति</item>
+        <item>शहीद दिवस</item>
+        <item>प्रजातन्त्र दिवस</item>
+    </string-array>
+</resources>

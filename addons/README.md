@@ -10,7 +10,8 @@ the core bigger or change how it behaves. You install an add-on only if you want
 | Add-on | What it does | Author | Tested on | Permissions | Screenshot |
 |---|---|---|---|---|---|
 | [Jewish Calendar](jewish-calendar/) | Offline Hebrew and Gregorian dates, holiday/Shabbat greetings, and an optional clock screensaver | [lionlev21](https://github.com/lionlev21) | Android TV 12 (model private) | None | <img src="jewish-calendar/screenshot.jpg" width="240" alt="Jewish Calendar on a TV"> |
-| [Frigate Glance](frigate-glance/) | Frigate camera pop-ups over whatever is playing | [NickLD](https://github.com/NickLD) | TCL 65Q650G | overlay, accessibility (card keys), network, foreground service | <img src="frigate-glance/screenshot.jpg" width="240" alt="Frigate Glance on a TV"> |
+| [Nepali Calendar](nepali-calendar/) | Offline Bikram Sambat and Gregorian dates in Devanagari and Latin, a BS month grid with weekends and fixed-date national days in red, and an optional clock screensaver | [@1yuv](https://github.com/1yuv) | Hisense 50A6H4 (SmartTV 4K, songshan), Android TV 11 | None | <img src="nepali-calendar/screenshot.jpg" width="240" alt="Nepali Calendar on a TV"> |
+| [Frigate Glance](frigate-glance/) | Frigate camera pop-ups over whatever is playing | [NickLD](https://github.com/NickLD) | TCL 65Q650G | overlay, accessibility (card keys), network, foreground service, start at boot | <img src="frigate-glance/screenshot.jpg" width="240" alt="Frigate Glance on a TV"> |
 | [Capacity Stats](capacity-stats/) | Available/total and used/total RAM; available/total storage | [lionlev21](https://github.com/lionlev21) | Android TV 12 (model private) | None | <img src="capacity-stats/screenshot.jpg" width="240" alt="Capacity Stats on a TV"> |
 | [Weather](weather/) | The weather for one city: now, US air quality and the next three days, from Open-Meteo (no key) | [@Sumyabazar1](https://github.com/Sumyabazar1) | Hisense SmartTV 4K FFM (lushan), Google TV 12 | `INTERNET` | <img src="weather/screenshot.jpg" width="240" alt="Weather on a TV"> |
 | [Photo Prints](photo-prints/) | Your own photos as a screensaver: dated prints dealt in on a time-of-day sky, and a card that starts the slideshow | [@shivamsingh262](https://github.com/shivamsingh262) | Sony BRAVIA KD-65X82L (Google TV 12) | None | <img src="photo-prints/screenshot.jpg" width="240" alt="Photo Prints on a TV"> |
@@ -35,6 +36,7 @@ the core bigger or change how it behaves. You install an add-on only if you want
 | [Digital Rain](digital-rain/) | A Matrix-style screensaver: mirrored katakana and digits falling in green trails with bright heads, drawn on the TV with no network; the card starts it at once | [@dennis-oleary](https://github.com/dennis-oleary) | NVIDIA SHIELD Android TV Pro 2019 (Android TV 11) | None | <img src="digital-rain/screenshot.jpg" width="240" alt="Digital Rain on a TV"> |
 | [Bluetooth Toggle](bluetooth-toggle/) | For Android 12 and older (13 and newer do not let apps switch Bluetooth). A one-press Bluetooth switch: the tile turns Bluetooth off or on, a small panel says which, and Pair accessory is one press away | [@justin-newman](https://github.com/justin-newman) | Hisense 75U75N (hengshan), Google TV 12 | Bluetooth (`BLUETOOTH_CONNECT`) | <img src="bluetooth-toggle/screenshot.jpg" width="240" alt="Bluetooth Toggle on a TV"> |
 | [TV Inspector](tv-inspector/) | What the remote sends (key name, key code, scan code, device) and what the TV can play: display modes, HDR, video decoders, audio outputs and formats, input devices; every line also in logcat for a `tv.json` or a bug report | [@shaharukhs](https://github.com/shaharukhs) | Sansui TV (Skyworth eleonas, MediaTek MT9676), Android TV 14 | None | <img src="tv-inspector/screenshot.jpg" width="240" alt="TV Inspector on a TV"> |
+| [Game Day](game-day/) | Each team's next game on Home, counted down ("Puck drop in 2h 18m", then "Live now"), from calendar links you add: any team, any sport, no scores; one turn per team, rotating, with the theme's F1 weekend | [@justin-newman](https://github.com/justin-newman) | Hisense 75U75N (hengshan), Google TV 12 | `INTERNET` (your calendar links only) | <img src="game-day/screenshot.jpg" width="240" alt="Game Day on a TV"> |
 
 A widget, an info tile, a storage or smart-home card: if it can live as its own small app, it can live
 here. See the rules below.
@@ -109,7 +111,10 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install weather
   an add-on. Open an issue first instead.
 - **No prebuilt APKs** in the repo. People build from source, as with the launcher.
 - **Permissions up front.** The add-on's README lists every permission it asks for and why, plus
-  any network access or background service. The rules in [`docs/modules.md`](../docs/modules.md)
+  any network access or background service, and the Permissions column of the table above carries the
+  same list in one line: a reader scanning it sees what each add-on can do without opening its README,
+  so an add-on whose manifest asks for something the column leaves out is a bug in this page.
+  The rules in [`docs/modules.md`](../docs/modules.md)
   apply: no telemetry without an opt-in, no ads, your own art.
 - **Tested on a real TV.** Say which one in the README and in the table above.
 - **A screenshot.** `addons/<name>/screenshot.jpg`: the add-on on a real TV, its card in the grid or
@@ -129,3 +134,6 @@ Open a pull request that adds `addons/<name>/` and one row to the table above. T
 blocked by add-ons: a separate workflow builds whatever changed under `addons/`, and
 `tests/test_addons.py` checks the folder rules (own Gradle project, a README with a Permissions
 section, a screenshot, no APKs, a row in this table showing the screenshot) and that the launcher never includes or references this folder.
+`tests/test_addon_permissions_index.py` holds each row's Permissions column and the add-on's own
+Permissions section to the `uses-permission` lines in its `AndroidManifest.xml`, so a new permission
+cannot reach a TV without the two pages saying so.

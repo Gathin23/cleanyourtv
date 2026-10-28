@@ -136,7 +136,7 @@ public class RemoteKeysTest {
         assertEquals("mute", keys.get(190));
         assertEquals("screensaver", keys.get(195));
         assertEquals("sleep", parseHold("hold:190:sleep").get(190));
-        for (String word : new String[] {"back", "home", "recents", "mute", "sleep", "screensaver", "settings", "wifi"}) {
+        for (String word : new String[] {"back", "home", "recents", "mute", "sleep", "screensaver", "settings", "wifi", "ignore"}) {
             assertTrue(word, RemoteKeys.isAction(word));
         }
         assertFalse(RemoteKeys.isAction("com.netflix.ninja"));
