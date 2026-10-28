@@ -3625,7 +3625,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             try {
                 startActivity(voice);
                 return;
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored ) {
             }
         }
         // Fallback: generic voice search (works on AOSP Android TV builds)
@@ -3635,7 +3635,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             try {
                 startActivity(search);
                 return;
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored) {
             }
         }
         // 3. Danh sách các package trợ lý phổ biến trên Android TV / Google TV (bao gồm Sony, Google TV gốc, v.v.)
@@ -3663,7 +3663,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
                 startActivity(targetIntent);
-            } catch (ActivityNotFoundException ignored) {
+            } catch (ActivityNotFoundException | SecurityException ignored) {
                 Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
             }
         }
