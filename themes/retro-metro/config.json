@@ -1,0 +1,27 @@
+{
+  "background_color": "#1F2223",
+  "wallpaper": false,
+  "sky_intensity": 0,
+  "show_greeting": false,
+  "home_title": "Start",
+  "uniform_tiles": true,
+  "flat_tiles": true,
+  "tile_label_inside": true,
+  "tile_shape": "square",
+  "tile_corner_radius": 0,
+  "dock_row": false,
+  "columns": 8,
+  "rows_below_dock": 2,
+  "row_titles": [
+    "essential",
+    "internet",
+    "entertainment"
+  ],
+  "always_show_names": false,
+  "glass_style": "rim",
+  "focus_overshoot": false,
+  "ambient_glow": false,
+  "app_glow": false,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true
+}
