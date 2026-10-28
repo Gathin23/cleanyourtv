@@ -17,9 +17,9 @@ import androidx.annotation.NonNull;
  */
 final class VpnBadge extends ReplacementSpan {
 
-    private static final int GREEN = 0xFF30D158;
+    static final int GREEN = 0xFF30D158;
     static final int INK = 0xFF06290F;
-    private static final int RED = 0xFFFF453A;
+    static final int RED = 0xFFFF453A;
     static final int INK_OFF = 0xFFFFFFFF;
 
     private final Drawable lock;
@@ -47,14 +47,31 @@ final class VpnBadge extends ReplacementSpan {
         return vpnUp ? PILL_UP : vpnAppInstalled ? PILL_OFF : PILL_HIDDEN;
     }
 
-    /** vpn_pill: the pill's background, solid green or red; focused it keeps its colour and gets a white ring. */
+    /**
+     * vpn_pill: the pill's background. At rest it is an outline in the state colour and only the focused state is
+     * filled solid with a white ring — a solid pill at rest read as already selected, so OK pressed on a tile was
+     * taken for a press on the pill.
+     */
     static StateListDrawable pillBackground(boolean up, float density) {
         StateListDrawable bg = new StateListDrawable();
         GradientDrawable focused = pillShape(up, density);
         focused.setStroke(Math.round(3 * density), 0xFFFFFFFF);
         bg.addState(new int[]{android.R.attr.state_focused}, focused);
-        bg.addState(new int[0], pillShape(up, density));
+        GradientDrawable rest = new GradientDrawable();
+        rest.setColor(0x00000000);
+        rest.setCornerRadius(21 * density);
+        rest.setStroke(Math.round(2 * density), up ? GREEN : RED);
+        bg.addState(new int[0], rest);
         return bg;
+    }
+
+    /**
+     * vpn_pill: the pill's text and icon colour. At rest the pill is an outline, so the ink is the state colour;
+     * on the solid focused fill it is the contrasting ink.
+     */
+    static int pillInkColor(boolean up, boolean focused) {
+        if (up) return focused ? INK : GREEN;
+        return focused ? INK_OFF : RED;
     }
 
     private static GradientDrawable pillShape(boolean up, float density) {

@@ -108,4 +108,6 @@ Not tested: casting, Miracast, firmware update, several-day stability.
 ## When you are done
 
 Network ADB on port 5555 is plaintext. On the TV: Developer options → USB debugging off, and
-"Revoke USB debugging authorisations"; reboot, then check `nc -vz <tv ip> 5555` fails.
+"Revoke USB debugging authorisations"; reboot, then check that
+`tools/venv/bin/python -I tools/adb-closed.py <tv ip>` says the port is closed. Only a refusal counts: a
+timeout or "No route to host" proves nothing.

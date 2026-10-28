@@ -96,4 +96,5 @@
     <string name="race_countdown_hours">%1$dt %2$dm</string>
     <string name="race_countdown_days">%1$dd %2$dt</string>
     <string name="last_opened">Sidst åbnet %1$s</string>
+    <string name="game_live">Live nu</string>
 </resources>

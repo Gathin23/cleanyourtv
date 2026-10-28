@@ -121,4 +121,5 @@
     <string name="race_countdown_days">%1$d ngày %2$d giờ</string>
     <string name="last_opened">Mở lần cuối %1$s</string>
     <string name="tile_move">Di chuyển</string>
+    <string name="game_live">Đang diễn ra</string>
 </resources>

@@ -21,6 +21,10 @@ So step 1 checks the port straight after switching Wireless debugging off, and s
 reboot, checks 5555 and that Wireless debugging has not come back. `tools/adb-closed.py` gives the same
 order when it finds a port still open, and names Wireless debugging with the other two toggles.
 
+The README keeps the question with a short answer, the two steps without the Wireless debugging port
+details, and a link; the full steps moved to docs/faq.md under the same heading, and that is what the step
+checks below read.
+
 The FAQ heading itself must not move: tools/disable.sh and tools/disable.ps1 send a reader to it by name
 when the TV reports `ro.adb.secure=0`, and tests/test_adb_exposure.py pins that warning. The checks below
 read the scripts for the quoted heading instead of copying it, so a rename on either side fails here.
@@ -40,6 +44,7 @@ from test_sabrina_cast_restart_note import bullets  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 README = (ROOT / "README.md").read_text(encoding="utf-8")
+FAQ = (ROOT / "docs" / "faq.md").read_text(encoding="utf-8")
 TROUBLE = (ROOT / "docs" / "TROUBLESHOOTING.md").read_text(encoding="utf-8")
 SCRIPTS = (ROOT / "tools" / "disable.sh", ROOT / "tools" / "disable.ps1")
 HEADING = "Isn't ADB access a security hole?"
@@ -99,10 +104,30 @@ class DoingItByHandTest(unittest.TestCase):
         self.assertIn("adb tcpip 5555", pairing[0])
 
 
-class CloseUpStepsTest(unittest.TestCase):
-    def setUp(self):
+def long_answer(text, heading=HEADING):
+    """The docs/faq.md section under `## heading`, or None when the heading is gone."""
+    start = text.find(f"## {heading}\n")
+    if start == -1:
+        return None
+    end = text.find("\n## ", start + 3)
+    return text[start:] if end == -1 else text[start:end]
+
+
+class ReadmeShortAnswerTest(unittest.TestCase):
+    def test_the_readme_keeps_two_steps_and_links_the_full_ones(self):
         answer = faq_answer(README, SUMMARY)
         self.assertIsNotNone(answer, f"README.md has no {SUMMARY!r}")
+        short = steps(answer)
+        self.assertEqual(sorted(short), [1, 2])
+        self.assertIn("**Wireless debugging**", short[1])
+        self.assertIn("`python3 tools/adb-closed.py <tv ip>` must say the port is closed", short[2])
+        self.assertIn("(docs/faq.md#isnt-adb-access-a-security-hole)", answer)
+
+
+class CloseUpStepsTest(unittest.TestCase):
+    def setUp(self):
+        answer = long_answer(FAQ)
+        self.assertIsNotNone(answer, f"docs/faq.md has no '## {HEADING}'")
         self.steps = steps(answer)
         self.assertEqual(sorted(self.steps), [1, 2], "the FAQ answer no longer reads as two steps")
 

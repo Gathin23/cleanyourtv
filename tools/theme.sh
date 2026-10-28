@@ -5,6 +5,10 @@
 #
 # Usage: TV_HOST=192.168.1.50 tools/theme.sh themes/aurora
 #        TV_HOST=192.168.1.50 tools/theme.sh --reset        # remove the overlay, back to config.xml
+#
+# One argument, and --reset takes none: a second word is refused rather than dropped (see below). Exit status:
+# 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed; 2 the command line is not one
+# theme folder or --reset, so nothing was sent.
 set -euo pipefail
 # Resolve the theme folder against the caller's directory before moving into tools/.
 # Git Bash's pwd says /c/Users/..., which the Windows Python cannot open; pwd -W gives C:/Users/... (as in disable.sh).
@@ -17,6 +21,24 @@ case "$THEME_ARG" in
   /*|[A-Za-z]:[\\/]*) THEME_ARG="$(cd "$THEME_ARG" 2>/dev/null && { pwd -W 2>/dev/null || pwd; } || printf '%s' "$THEME_ARG")" ;;
   *) THEME_ARG="$(pwd -W 2>/dev/null || pwd)/$THEME_ARG" ;;
 esac
+# A theme folder or --reset, and nothing else. The first word alone decided everything the script did, so
+# `theme.sh --reset themes/aurora` matched the reset branch on that word and threw the folder away: the theme
+# the reader named was removed from the TV instead of pushed, and the run answered "reset" with exit 0 (the
+# undo hint this script prints is what people copy, so appending the folder to it is an easy line to type).
+# The same line the other way round, `theme.sh themes/aurora --reset`, pushed the theme and ignored the
+# --reset the reader asked for. Both are answered here, before TV_HOST is required and before anything is
+# sent: a command line this script cannot read should not reach a TV.
+if [ -z "$THEME_ARG" ]; then
+  echo "usage: theme.sh <theme folder> | --reset" >&2
+  exit 2
+fi
+if [ "$#" -gt 1 ]; then
+  shift
+  echo "theme.sh takes one argument, a theme folder or --reset: $* would not have been used, and --reset" \
+    "removes the theme from the TV while a folder pushes it, so the two cannot share a command line." \
+    "Nothing was sent to the TV." >&2
+  exit 2
+fi
 cd "$(dirname "$0")"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0 themes/aurora}"
 PY=venv/bin/python

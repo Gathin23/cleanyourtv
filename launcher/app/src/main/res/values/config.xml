@@ -47,6 +47,13 @@
          Off by default; a theme can set "open_on_start_choice": true. -->
     <bool name="open_on_start_choice">false</bool>
 
+    <!-- Seconds the first Home after the TV starts waits for a working internet connection before it opens the
+         boot_to_live_tv or Open on start app. A streaming app opened before the network is back shows an error,
+         and after a power cut Wi-Fi can take minutes, as the router starts again too. Home stays on screen
+         meanwhile, and leaving Home cancels the opening. 0, the default: open at once. Up to 600; a theme can
+         set "open_on_start_network_wait": 180. -->
+    <integer name="open_on_start_network_wait">0</integer>
+
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
          to that package instead, and the app starts normally. Leave empty to omit. -->
@@ -63,7 +70,11 @@
 
     <!-- Tiles that open a screen of the app instead of its start screen: "package=action", sent to that package.
          A tile whose action no longer resolves opens the app normally. MagentaTV's program guide:
-         com.telekom.onetv.tv.pl=com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE. -->
+         com.telekom.onetv.tv.pl=com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE. "package=input:<input id>" makes
+         the tile switch to that TV input instead (ids from dumpsys tv_input), e.g. a Live TV tile straight to
+         HDMI 1: com.mediatek.wwtv.tvcenter=input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW5. "package=view:uri"
+         opens that URI in the package instead (ACTION_VIEW): Bbox TV's live channels are
+         fr.bouyguestelecom.tv.bbui=view:bbox://live. -->
     <string-array name="launch_actions">
     </string-array>
 
@@ -184,8 +195,9 @@
          for HDMI 3 on a TCL Smart TV Pro; the ids are in `tools/tv.py 'dumpsys tv_input'` (hdmi_port=N under
          TvInputHardwareInfo). An action word in place of a package runs that action instead: back, home, recents,
          mute (toggles the sound, with the TV's volume bar), sleep (standby, Android 9 and later), screensaver (the
-         one chosen in the TV's settings, or the launcher's clock), settings or wifi; e.g. KEYCODE_PROG_YELLOW:mute
-         and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
+         one chosen in the TV's settings, or the launcher's clock), settings, wifi or ignore (swallows the button: it
+         does nothing, for a shortcut pressed by accident; find its scancode with `tools/tv.py 'getevent -t'`);
+         e.g. KEYCODE_PROG_YELLOW:mute, scan:586:ignore and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
          entry, e.g. hold:191:io.github.maxhayim.brightness/.QuickActivity for an add-on's quick bar. Prefix an
          entry with "hold:" for the same button's long press:
          "hold:KEYCODE_BUTTON_8:org.xbmc.kodi" opens Kodi when held for half a second, while the unprefixed entry
@@ -391,6 +403,15 @@
     <string-array name="library_apps" translatable="false">
     </string-array>
 
+    <!-- Packages the App library catalogue never offers, even with app_library on (config.xml
+         library_excluded_apps, or a theme's config.json). Different from hidden_apps, which only keeps a
+         package off Home while still listing it here: some boards hide a package because opening it is
+         unsafe (a factory-test menu that can misconfigure the TV), and the catalogue otherwise ignores
+         hidden_apps and offers it as "Add to Home" anyway. Empty (off) by default, so existing setups
+         change nothing. -->
+    <string-array name="library_excluded_apps" translatable="false">
+    </string-array>
+
     <!-- Module cards: an app that declares a card (docs/specs/card.md) can stand in for its tile with its own
          label, caption and glow colour, once you answer Show on the prompt. false: never look for cards or ask. -->
     <bool name="module_cards">true</bool>
@@ -411,6 +432,12 @@
     <!-- One line under the clock: CPU, free memory and free storage. Off by default; a theme can set
          "show_stats": true. Nothing is read, and the clock does not move, while this is false. -->
     <bool name="show_stats">false</bool>
+
+    <!-- Each team's next game in the F1 panel's place under the clock, rotating with the theme's F1 weekend: the package
+         of an add-on that publishes them (the Game Day add-on: io.github.justinnewman.gameday; contract in docs/modules.md).
+         Empty = off: nothing is read or watched. The launcher only reads what the add-on publishes and never goes
+         online. A theme can set "game_day". -->
+    <string name="game_day" translatable="false"></string>
 
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100

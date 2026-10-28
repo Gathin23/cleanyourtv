@@ -147,4 +147,5 @@
     <string name="race_countdown_hours">%1$dh %2$dmin</string>
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
+    <string name="game_live">Ao vivo agora</string>
 </resources>

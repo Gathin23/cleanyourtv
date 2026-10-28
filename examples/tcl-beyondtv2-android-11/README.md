@@ -58,3 +58,38 @@ on this unit.
 - Assistant TTS plays on `STREAM_ASSISTANT` (stream 20), shipped at **4/15** on this unit with no
   user-facing control, and the remote's volume keys only move `STREAM_MUSIC`. Raising stream 20
   once at startup (`setStreamVolume(20, 10, 0)`, idempotent) is the cheap fix.
+
+## A second unit: the Hitachi CDH-LE554KSMART22 re-badge
+
+A 55" **Hitachi CDH-LE554KSMART22** sold in Argentina reports the same fingerprint as the unit
+above, `TCL/BeyondTV2/BeyondTV:11/PPR1.180610.011/AR05:user/release-keys`, the same board
+(`ro.board.platform rtd285o`) and the same preloaded package set. The list in this folder applies to
+it unchanged. Recorded 2026-10-27, in one session with two full reboots - not days of use.
+
+Hardware worth knowing, since the badge suggests otherwise: 2 GB RAM with
+`ro.config.low_ram=false`, and a 10 GB `/data` that was 1% full. None of the install pressure the
+1 GB Hitachi MT9221 set hits (`examples/hitachi-cdh-le32smart21`) applies here - the launcher APK
+installed first try, with no `pm trim-caches` and no TGuard interference.
+
+### Disabling overseasappshow first: no drift in one session
+
+The note above leaves open "whether disabling `overseasappshow` stops the drift for the analytics
+pair is not yet verified on this unit". On this one it did. `com.tcl.overseasappshow` went in the
+**first** batch, before anything else; `com.tcl.bi` and `com.tcl.tv.tclhome_passive` followed in
+batches one and two. After two full reboots, `pm list packages -d` still held all 13 disabled
+packages, with nothing re-enabled.
+
+That is weaker evidence than the drift it answers: the pair above came back **the day after** a
+reboot, and this check spans one session. It shows the boot-time enabler is not the only thing that
+has to be ruled out, not that the drift is solved. Worth repeating on a unit that has run for a week.
+
+### Two small differences from the first unit
+
+- **The saved Wi-Fi network belongs to `com.android.tv.settings`** here, not to `android.uid.system`
+  / `com.google.uid.shared`. Either way it is not setupwraith's, so the header's "setupwraith safe"
+  holds - but it is a third owner string, so read `dumpsys wifi | grep -o 'cname=[^ ]*'` on your own
+  set rather than matching one of the two already written down.
+- **`tools/disable.sh` refuses `android.autoinstalls.config.tcl.device`** on this firmware, with
+  "the TV's dumpsys shows neither a requested nor a granted permission block". The package is a
+  partner auto-install config with no code path left after first boot, so it was left enabled. It is
+  not in this list, and this is a note for anyone who adds it and wonders why the script skips it.

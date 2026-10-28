@@ -9,7 +9,9 @@ some MediaTek sets), leave nothing behind on the TV, and name the 0-byte case fo
 TV and HDMI inputs capture empty.
 
 It can also press remote keys first (#560), so one command shows what a key did: key names are checked
-before anything reaches the TV, since they end up in a shell command there.
+before anything reaches the TV, since they end up in a shell command there. The same goes for --wait: a
+value float() takes but time.sleep() cannot ("nan", "inf", 1e18) was a traceback out of the capture with
+the keys already pressed, and the run answered 1, the code kept for a capture that came back empty.
 
 The TV itself is faked, so these run anywhere adb_shell is installed or not.
 
@@ -219,6 +221,36 @@ class ScreenshotTest(unittest.TestCase):
                 self.assertEqual(code, 2)
                 self.assertIn("usage:", err)
                 self.assertEqual(device.calls, [], "nothing may reach the TV")
+
+    def test_a_wait_that_time_sleep_cannot_take_is_refused_before_the_keys(self):
+        # float() takes these, so they went straight to time.sleep() in screenshot(), after the keys had
+        # been pressed on the TV: NaN is a ValueError there and an infinity (or 1e18) an OverflowError, as
+        # a traceback with exit 1 - the code this client keeps for a capture that came back empty. The last
+        # two are the unit typo instead: seconds typed as nanoseconds sleeps for years rather than failing.
+        for value in ("nan", "NaN", "inf", "1e18", "1000000001"):
+            with self.subTest(wait=value):
+                code, out, err, device = self.run_tv(["--screenshot", "a.png", "HOME", "--wait", value])
+                self.assertEqual(code, 2, err)
+                self.assertIn(f"--wait needs a number of seconds between 0 and {TV.WAIT_MAX_S:g}, "
+                              f"not {value!r}", err)
+                self.assertIn("usage:", err)
+                self.assertEqual("", out)
+                self.assertNotIn("Traceback", err)
+                self.assertEqual(device.calls, [], "the pause is judged before the TV is opened")
+                self.assertEqual([], self.sleeps, "no key press is started for a pause that cannot be kept")
+
+    def test_the_ends_of_the_pause_still_capture(self):
+        # 0 is the shape a script writes for "no pause", and the ceiling is a real pause: neither may be
+        # refused by the check the values above meet.
+        for value, sleeps in (("0", []), ("300", [300.0])):
+            with self.subTest(wait=value):
+                with tempfile.TemporaryDirectory() as tmp:
+                    local = Path(tmp) / "home.png"
+                    code, out, err, _ = self.run_tv(["--screenshot", str(local), "HOME", "--wait", value])
+                    self.assertEqual(code, 0, err)
+                    self.assertEqual(local.read_bytes(), PNG)
+                    self.assertEqual(self.sleeps, sleeps)
+                    self.assertIn(f"screenshot {local}", out)
 
     def test_a_flag_without_its_argument_is_a_usage_error_not_a_tv_command(self):
         for args in (["--screenshot"], ["--push", "only-one"], ["--pull"]):

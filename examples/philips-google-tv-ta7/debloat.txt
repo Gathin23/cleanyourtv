@@ -1,6 +1,9 @@
 # Philips Google TV TA7 (TPV, PH3M_LT_T32 / device PH3M_AL_T32, MediaTek), Brazil
 # Google TV 14 (API 34), build UTT1.250308.001. About 1.9 GB RAM, armeabi-v7a, UI 1920x1080 on a 4K panel.
 # Fingerprint: Philips/PH3M_LT_T32/PH3M_AL_T32:14/UTT1.250308.001/101000072000:user/release-keys
+# Third unit: 50PUD7408/77, Argentina, same device and build UTT1.250308.001. Applied in batches on 2026-10-25
+# with a screenshot after each, launcher installed, rebooted once (nothing re-enabled itself, boots to the new Home);
+# Live TV, HDMI input list and YouTube playback checked, Input and app buttons pressed on the real remote.
 # Vendor packages: TP Vision org.droidtv.* on a MediaTek base (com.mediatek.*, mediatek.factorymenu.ui).
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-google-tv-ta7/debloat.txt
@@ -28,6 +31,13 @@
 #   (HOME_KEY_SERVICE=1, no config needed for KEYCODE_SETTINGS). Input and app buttons keep working.
 # - KEYCODE_GUIDE and KEYCODE_NOTIFICATION are global keys of launcherx; this remote does not send them.
 # - setupwraith owned one old saved network (not the one in use), and only that entry was deleted.
+#   Third unit: the same. Forgetting that network first (`cmd wifi list-networks`, then
+#   `cmd wifi forget-network <id>`) lets tools/disable.sh's Wi-Fi check pass without FORCE_SETUPWRAITH.
+# - Third unit: with HomeKeyService bound, holding volume up moves one step; with the accessibility list
+#   empty it ramps again (tested both ways on the real remote). Same trade as
+#   docs/devices/tcl-55p71b-g09-key-repeat.md: the gear button or the volume ramp, not both. That owner
+#   kept the ramp and installed without HOME_KEY_SERVICE=1; the gear button then does nothing, and
+#   Settings stays on the launcher's Settings pill.
 #
 # Second set: Philips 55PUD7908/77, Latin America, same device and build (software
 # TPM237L_R.101.000.072.000, security patch 2026-03-05). Debloated on 2026-10-20 with the core of this
@@ -54,34 +64,45 @@
 # and mediatek.factorymenu.ui (factory menus), com.mediatek.android.leanbacklauncher.partnercustomizer
 # (crash-loops tv.service on another MediaTek set), com.android.tv.ota and com.easy.oad (firmware
 # updates), com.google.android.katniss (Assistant), Play Store, Play Services, both keyboards.
-# Disabled by the owner before this list and therefore not in it: cm.aptoide.pt, com.vscine.tv,
-# com.viki.android, fusion.android.tv.demo, com.google.android.apps.tv.dreamx (ambient mode),
-# com.android.adservices.api, com.android.ondevicepersonalization.services,
-# com.android.federatedcompute.services, com.android.tv.feedbackconsent, com.google.android.feedback
-# and the two Health Connect packages.
+# Disabled by the first owner before this list: cm.aptoide.pt, com.vscine.tv, com.viki.android and
+# com.google.android.apps.tv.dreamx (ambient mode). The demo, ad-services, feedback and Health Connect
+# packages they had also disabled are now list entries, applied on the third unit.
 
 # Batch 1: telemetry and attribution
 org.droidtv.candeebug                        # TP Vision "DAC" analytics: CollectionService, boot receiver, ~55 MB resident
 org.droidtv.gel                              # TP Vision metrics GatheringService, shares candeebug's cache provider
 com.google.android.partnersetup              # partner referrer / RLZ ping
 android.autoinstalls.config.tpv.device       # Play auto-install of TPV partner apps
+com.android.adservices.api                   # Privacy Sandbox ad services (third unit)
+com.android.ondevicepersonalization.services # (third unit)
+com.android.federatedcompute.services        # (third unit)
+com.android.tv.feedbackconsent               # (third unit)
+com.google.android.feedback                  # (third unit)
 
 # Batch 2: manufacturer content and popups
 com.mediatek.opapp                           # European satellite operator apps (Canal Digitaal, HD+, Skylink...), unused in Brazil
 org.droidtv.consentcmpapp                    # TP Vision ad-consent (CMP) screen
 com.mstar.android.tv.disclaimercustomization # disclaimer popup
+fusion.android.tv.demo                       # retail store demo, RetailDialogReceiver (third unit)
 
 # Batch 3: background extras
 com.google.android.play.games
 com.google.android.onetimeinitializer        # runs once at first setup
 com.google.android.syncadapters.calendar     # no calendar app on a TV
 com.android.printspooler
+com.android.healthconnect.controller         # Health Connect, nothing on a TV uses it (third unit)
+com.android.health.connect.backuprestore     # (third unit)
 
 # Batch 4: by owner's choice (not used)
 com.netflix.ninja
 com.amazon.amazonvideo.livingroom            # Prime Video
 com.google.android.videos                    # Google TV films/shop app
 com.google.android.apps.mediashell           # Chromecast built-in, ~75 MB resident
+# The third unit kept Netflix, Prime Video and Chromecast (comment those lines out if you use them) and
+# disabled these instead. com.google.android.videos was not installed on it.
+# com.spotify.tv.android
+# com.google.android.youtube.tvmusic
+# com.nero.swiftlink.mirror.tv               # "1001 TVs" phone-mirroring receiver, preinstalled
 
 # Batch 5: stock home. Disable only after the new launcher is installed (build-and-install.sh with STOCK_LAUNCHER does this).
 # setupwraith goes first: its RecoveryActivity (HOME priority 1) otherwise takes Home. Check

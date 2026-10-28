@@ -10,6 +10,9 @@ drift". A job built from the page alone could therefore not tell "the TV drifted
 never ran", and one more case ends at 1 as well: with `TV_HOST` unset the run stops in tools/tv.py
 before any of the above, with tv.py's own message and its own exit code, which is 1.
 
+The section has since moved out of the README into docs/firmware-updates.md ("Exit codes, and a weekly
+job"), which the README's "After a firmware update" links; the checks below read it there.
+
 So: the codes are read out of tools/check.py and out of real runs, and the README section that gives
 the job has to name each of them. Nothing here reads the page's wording: a number on a line that
 talks about the exit the run makes is what counts, so the sentences can be rewritten freely.
@@ -31,6 +34,8 @@ from test_drift_check import FAKE_TV  # noqa: E402  (the simulated TV check.py a
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
+GUIDE = ROOT / "docs" / "firmware-updates.md"
+JOB = "## Exit codes, and a weekly job"
 CHECK = ROOT / "tools" / "check.py"
 STOCK = "com.google.android.tvlauncher"
 CUSTOM = "com.gathin.tvhome"
@@ -181,8 +186,9 @@ class CheckExitCodeTest(unittest.TestCase):
         self.assertNotIn("could not read the TV", result.stderr)
 
     def test_the_readme_names_every_code_the_checker_can_return(self):
-        section = readme_section(README.read_text(encoding="utf-8"))
-        self.assertIsNotNone(section, "%s is gone from README.md: the weekly job has no page" % HEADING)
+        self.assertIn("(docs/firmware-updates.md)", "\n".join(readme_section(README.read_text(encoding="utf-8"))))
+        section = readme_section(GUIDE.read_text(encoding="utf-8"), JOB)
+        self.assertIsNotNone(section, "%s is gone from docs/firmware-updates.md: the weekly job has no page" % JOB)
         self.assertGreaterEqual(len(paragraphs(section)), 4, "the section reads as nearly empty")
         named = codes_named(section)
         codes = literal_returns(CHECK.read_text(encoding="utf-8"))
@@ -192,7 +198,7 @@ class CheckExitCodeTest(unittest.TestCase):
                          % (sorted(codes), sorted(named)))
 
     def test_the_readme_still_carries_the_weekly_job(self):
-        section = readme_section(README.read_text(encoding="utf-8"))
+        section = readme_section(GUIDE.read_text(encoding="utf-8"), JOB)
         self.assertIsNotNone(section)
         self.assertTrue(any(re.match(r"^\s*\d+\s+\d+\s+\*", line) for line in section),
                         "the cron line a home server runs is gone from the section")

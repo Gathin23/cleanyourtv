@@ -110,4 +110,5 @@
     <string name="race_live">%1$s · direkte</string>
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
+    <string name="game_live">Direkte nå</string>
 </resources>

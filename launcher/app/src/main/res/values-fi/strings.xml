@@ -111,4 +111,5 @@
     <string name="race_live">%1$s · käynnissä</string>
     <string name="race_finished">Ruutulippu</string>
     <string name="last_opened">Viimeksi avattu %1$s</string>
+    <string name="game_live">Käynnissä nyt</string>
 </resources>

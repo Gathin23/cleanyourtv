@@ -15,6 +15,9 @@ day it lands, and the folder-to-locale rule is Android's own: `de`, `zh-rCN` for
 region, and `b+sr+Latn` for one with a script, which `locales_config.xml` registers as `sr-Latn`.
 English needs no folder: `values/` is the default.
 
+The Languages list moved from the README into docs/launcher.md (its "Languages" section); the README
+keeps the count in its launcher table and links that page.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 from pathlib import Path
@@ -27,10 +30,10 @@ ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / "launcher/app/src/main/res"
 CONFIG = RES / "xml/locales_config.xml"
 MANIFEST = ROOT / "launcher/app/src/main/AndroidManifest.xml"
-FRONT = ROOT / "README.md"
+FRONT = ROOT / "docs" / "launcher.md"  # the Languages list, linked from the README
 DEFAULT = "en"
 
-# The name each language goes by in README.md's Languages block, keyed by the locale it registers as.
+# The name each language goes by in docs/launcher.md's Languages section, keyed by the locale it registers as.
 # A new translation has to be named here as well as in that page: this is the only map from the
 # qualifier Android reads (`sr-Latn`) to the English name the page uses ("Serbian (Latin)").
 NAMES = {
@@ -107,8 +110,8 @@ def without_a_folder(locales, folders):
 
 
 def languages_block(text):
-    """The body of README.md's Languages block, or '' when the page has no such block."""
-    found = re.search(r"<summary><b>Languages</b></summary>(.*?)</details>", text, re.S)
+    """The body of docs/launcher.md's Languages section, or '' when the page has no such section."""
+    found = re.search(r"^## Languages\n(.*?)(?=^## |\Z)", text, re.S | re.M)
     return found.group(1) if found else ""
 
 
@@ -145,9 +148,9 @@ class LocaleConfigTest(unittest.TestCase):
 
     def test_the_readme_names_every_language(self):
         block = languages_block(FRONT.read_text(encoding="utf-8"))
-        self.assertTrue(block, "README.md has no Languages block")
+        self.assertTrue(block, "docs/launcher.md has no Languages section")
         self.assertEqual([], unnamed(block),
-                         "README.md's Languages list leaves these out, though the count above it "
+                         "docs/launcher.md's Languages list leaves these out, though the count above it "
                          "includes them")
 
     def test_the_name_table_covers_every_folder(self):
@@ -156,7 +159,7 @@ class LocaleConfigTest(unittest.TestCase):
         self.assertGreaterEqual(len(NAMES), 20, "the name table is too small to be checked")
         self.assertEqual([], sorted(set(translated()) - set(NAMES)),
                          "a language has no English name in this test's table: add it here and to "
-                         "README.md's Languages list")
+                         "docs/launcher.md's Languages list")
 
 
 class ReaderTest(unittest.TestCase):
@@ -187,9 +190,9 @@ class ReaderTest(unittest.TestCase):
         self.assertEqual(["da"], without_a_folder({"en", "da"}, {"de": "values-de"}))
         self.assertEqual([], without_a_folder({"en", "de"}, {"de": "values-de"}))
 
-    def test_the_languages_block_is_read_and_stops_at_its_details(self):
-        page = ("<summary><b>Languages</b></summary>\n\nGerman and Danish.\n\n</details>\n"
-                "<summary><b>Remote keys</b></summary>\n\nKorean.\n\n</details>\n")
+    def test_the_languages_block_is_read_and_stops_at_the_next_section(self):
+        page = ("## Languages\n\nGerman and Danish.\n\n"
+                "## Remote keys\n\nKorean.\n")
         self.assertEqual("German and Danish.", languages_block(page).strip())
         self.assertEqual(["Korean"], unnamed(languages_block(page), {"ko": "Korean"}))
         self.assertEqual("", languages_block("no block here"))

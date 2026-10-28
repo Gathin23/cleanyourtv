@@ -15,6 +15,18 @@
 # second pass below, survived it); launcher/ installed, Home confirmed with mFocusedApp/mResumedActivity,
 # Inputs menu, D-pad from all four edges and YouTube launch checked. Not yet lived with for days either.
 #
+# Also confirmed 2026-10-27 on a TCL L40S6500 (40"), same fingerprint and
+# persist.tcl.client_type TCL-LA-RT41KB-S1 as the 32S6500S, Wi-Fi only. Applied in four batches with
+# screenshots between them, keeping katniss and speech.pumpkin (Assistant wanted) and the streaming apps;
+# com.tcl.waterfall.overseas, Red Bull TV and Twitch were not installed. After a reboot everything stayed
+# disabled except com.tcl.usercenter, which the system re-enables at every boot (as on the TCL Android 9
+# sets in the PROMPT); left in the list, it stays idle. launcher/ installed, Home confirmed with
+# mResumedActivity, Inputs menu (HDMI 1/2, Live TV) and the remote's app buttons checked. Tested one day.
+# Power-on: this unit opens com.tcl.tv at every boot, so Home at power-on needs power_on_home with
+# HOME_KEY_SERVICE=1 - which worked, but with HomeKeyService bound, holding Volume Up moved the volume
+# one step per press instead of ramping (the key-repeat loss in docs/devices/tcl-55p71b-g09-key-repeat.md,
+# seen here too). The owner chose the volume ramp and pressing Home once after power-on, so the helper is off.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

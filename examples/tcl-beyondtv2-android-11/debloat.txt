@@ -2,6 +2,10 @@
 # Android TV 11 (API 30), build PPR1.180610.011, fingerprint
 # TCL/BeyondTV2/BeyondTV:11/PPR1.180610.011/AR05:user/release-keys.
 #
+# Also sold re-badged: a Hitachi CDH-LE554KSMART22 (55", Argentina) reports this same fingerprint,
+# board and preloaded set, so this list applies to it unchanged. See README.md for what that second
+# unit confirmed and where its factory state differs.
+#
 # Not the same set as examples/tcl-beyondtv2-latin-america: same product name and build number, but
 # that unit runs Android 9 (API 28, `AP08`) and ships a different preloaded package set (no
 # com.tcl.overseasappshow, no com.tcl.usercenter, no MagiConnect, no com.tcl.notereminder).
@@ -23,6 +27,12 @@
 # replacement launcher, Inputs menu, Live TV (com.tcl.tv/.TVActivity), Netflix and Prime Video launch,
 # Home returns from every app, no crash and no ANR in logcat. NOT yet lived with for weeks; this
 # list is deliberately conservative (telemetry, ads, promos, and the voice/mirroring choices).
+#
+# Second unit (Hitachi CDH-LE554KSMART22, Argentina), 2026-10-27: same four-batch run, a screenshot
+# after each batch and two full reboots. Same result - every package stayed disabled, Wi-Fi up, Home
+# on the replacement launcher, Inputs menu with HDMI 1-3 + AV + Live TV, HDMI 1 switching into
+# com.tcl.tv/.TVActivity, Netflix / YouTube / Play Store / Settings / Live TV all launching and
+# returning Home, no crash and no ANR. One session only, NOT days of use; see README.md.
 
 # --- The one non-obvious entry: TCL re-enables promo packages on every boot.
 # Without this line, com.tcl.MultiScreenInteraction_TV, com.tcl.notereminder and
@@ -50,11 +60,14 @@ com.google.android.feedback             # "send feedback"
 com.google.android.partnersetup         # partner-app attribution / installs
 
 # --- Voice: off by choice, the remote's mic button goes dead. Comment out to keep the assistant.
-# com.tcl.smartalexa (Alexa) was already disabled at the factory on this unit.
 com.google.android.katniss              # Google Assistant / voice search
 com.google.android.tv.assistant         # Assistant LED service
 com.tcl.assistant                       # TCL voice service
 com.tcl.micmanager                      # TCL microphone manager for voice
+com.tcl.smartalexa                      # TCL's Alexa bridge: already off at the factory on the first
+# unit, but ENABLED and running as a PERSISTENT process on the Hitachi one, so it needs the line.
+# It is the one voice package worth disabling even if you keep the assistant: the four above are the
+# Google/TCL assistant path, this one is a separate always-resident bridge.
 
 # --- Casting, remote, updates, screensaver: off by choice. Chromecast itself is kept
 # (com.google.android.apps.mediashell stays), only Miracast screen mirroring goes.
@@ -63,10 +76,15 @@ com.tcl.MultiScreenInteraction_TV       # MagiConnect mirroring/casting companio
 com.google.android.tv.remote.service    # phone-app remote (the physical remote is unaffected)
 # com.tcl.versionUpdateApp              # TCL OTA firmware updater: kept on, so security fixes still arrive
 com.google.android.backdrop             # stock ambient photo screensaver
+com.google.android.apps.nbu.smartconnect.tv # Smart Connect "data saver" VPN: off at the factory on
+# the first unit, enabled on the Hitachi one. Disabled there with no effect on Wi-Fi or any app.
 
-# --- Already disabled at the factory on this unit (left alone): au.com.stan.and,
-# com.google.android.apps.nbu.smartconnect.tv, com.tcl.gallery, com.tcl.smartalexa, tv.wuaki.apptv
-# and the 15 uk.co.freeview.* catch-up apps.
+# --- Already disabled at the factory (left alone): au.com.stan.and, com.tcl.gallery, tv.wuaki.apptv
+# and the 15 uk.co.freeview.* catch-up apps. Which packages ship disabled varies by unit, so check
+# `pm list packages -d` before you start rather than trusting this line: the Hitachi re-badge also
+# had com.tcl.MultiScreenInteraction_TV, com.tcl.notereminder, com.tcl.tv.tclhome_master and
+# com.tcl.usercenter already off, while com.tcl.smartalexa and smartconnect.tv (both entries above)
+# came enabled there. A line for a package that is already disabled is a no-op either way.
 
 # --- Not needed on this firmware, safe either way: com.google.android.tungsten.setupwraith (it does
 # not own the Wi-Fi network here, see the header; disable it only if you want the first-run wizard gone).
@@ -84,7 +102,9 @@ com.google.android.backdrop             # stock ambient photo screensaver
 
 # --- Deliberately NOT in this list
 # com.google.android.tvrecommendations - the stock launcher was replaced, so there is no
-#   recommendation row left to remove; not tested here.
+#   recommendation row left to remove. Disabled on the Hitachi re-badge for one session and two
+#   reboots with nothing broken (the replacement launcher does not read it), but one session is not
+#   enough to put it in the list: it stays out until someone has run without it for days.
 # com.tcl.ui_mediaCenter com.tcl.gallery - USB media players, kept for USB drives.
 # All streaming apps (Netflix, YouTube, YouTube Music, Disney+, Prime Video, Spotify, HBO Max,
 #   Flow, DirecTV Go) are kept; comment out the irrelevant ones if you want them gone.

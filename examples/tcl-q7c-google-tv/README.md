@@ -540,3 +540,46 @@ this firmware's own volume handling, not the helper trade described in the G09 n
   header line naming this unit.
 - Nothing was connected to the HDMI inputs; the tuner, channel scanning and Live TV playback were not tested.
 - Casting and mirroring were turned off by choice, so they were not tested after the list.
+
+## Seventh unit: 65Q7C (Wi-Fi)
+
+Applied on 2026-10-24. Same build as the Q7C above: `ro.product.model` `Smart TV Pro`, Android 14 (SDK 34), `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`. 21 packages were disabled by hand with `adb shell pm disable-user --user 0`
+
+The Clean Your TV launcher was not installed, so launcherx & setupwraith are untouched
+
+### Notes for this unit
+
+- **`com.tpa.kb` is not a keyboard**. It is a preinstalled system app (`/product/app/Tpakb`) & is absent from `ime list -a`. Its exact purpose is unconfirmed - do not confuse it with the actual input methods listed below
+
+```sh
+λ adb -s $S shell ime list -a -s
+com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+com.google.android.tts/com.google.android.apps.speech.tts.googletts.settings.asr.voiceime.VoiceInputMethodService
+com.google.android.tv.remote.service/.ImeBridgeService
+com.tcl.inputmethod.international/.T_IME
+com.tcl.ttvs/.tcast.core.stringinput.SoftKeyboard
+```
+
+> The primary, default input method is `T-IME`; Gboard was unselectable/grayed out in the keyboard settings
+
+- **ZDF**: the ZDF Mediathek app is disabled & ZDF HD live still works after a reboot
+- **ARTE:** the app opens but needs an account to play - it is disabled
+- **Chromecast**: `com.google.android.apps.mediashell` is disabled & casting from an android phone using the default youtube still works
+- **Connecting**: Wireless debugging with `adb pair` & `adb connect`. `tools/tv.py` failed with an `STLS` error from `adb_shell`. `adb tcpip 5555` was not tried; instead, the `adb` cli was used directly
+
+### Test limits
+
+- applied on 2026-10-24, multiple reboots & subsequent use
+- hdmi inputs, airplay & the tuner were not tested
+- following preinstalled apps & buttons on the remote continued to work seamlessly after applying the list:
+  - voice recognition
+  - quick panel
+  - t-solo
+  - netflix
+  - prime video (only opened, no account)
+  - youtube
+  - local media integration (gallery, videos)
+  - tcl channel
+  - disney plus (only opened, no account)
+
+> prime video & disney plus apps opened fine, i do not claim that playback works

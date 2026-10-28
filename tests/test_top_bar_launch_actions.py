@@ -18,7 +18,9 @@ class TopBarLaunchActionsTest(unittest.TestCase):
         self.assertIn('button.setOnClickListener(v -> open(new Intent(target)))', self.method)
 
     def test_action_is_package_scoped_resolved_and_does_not_replace_missing_apps(self):
-        self.assertIn('new Intent(action).setPackage(targetPackage)', self.method)
+        self.assertIn('LaunchActions.intent(targetPackage, action)', self.method)
+        helper = (JAVA / 'LaunchActions.java').read_text()
+        self.assertIn('return i.setPackage(pkg);', helper)
         self.assertIn('pm.resolveActivity(custom, 0) != null ? custom : null', self.method)
         self.assertLess(self.method.index('if (launch == null) continue'),
                         self.method.index('LaunchActions.select'))

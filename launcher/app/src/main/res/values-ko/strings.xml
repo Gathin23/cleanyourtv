@@ -146,4 +146,5 @@
     <string name="race_countdown_days">%1$d일 %2$d시간</string>
     <!-- Cinematic top shelf (cinematic_home): %1$s is when it was last opened, e.g. "5분 전". -->
     <string name="last_opened">마지막 실행 %1$s</string>
+    <string name="game_live">지금 생중계</string>
 </resources>

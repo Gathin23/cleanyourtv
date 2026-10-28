@@ -108,3 +108,24 @@ unit" note; this section covers the launcher side. One session with two restarts
 - The firmware opens `org.droidtv.playtv` at every boot (`wm_set_resumed_activity`: FallbackHome, then
   PlayTvActivity). `power_on_home_always` with `HOME_KEY_SERVICE=1` brought Home up about 9 s later, and the owner
   confirmed a standby and power-on from the remote lands on Home as well.
+
+## Philips 43PUS7304/12: single-session notes
+
+Checked on a Philips 43PUS7304/12 (LED, 2019, Germany, on Wi-Fi), same TP Vision TPM191E board and firmware as the
+lead unit (`STT2.230526.001`), with its original Philips remote. Package details are in `debloat.txt`'s "Seventh
+unit" note; this section covers the launcher side. One session with two restarts, not a several-day test.
+
+- `launcher/build-and-install.sh` with `HOME_KEY_SERVICE=1` ran through on its own: cold start in 1.8 s, Home moved
+  to `com.gathin.tvhome/.MainActivity` once the stock launcher was disabled (`mFocusedApp`), and it stayed there
+  after a restart.
+- config.xml as on the 50PUS7354: `live_tv_package` `org.droidtv.playtv`, `hidden_apps` `org.droidtv.playtv`,
+  `org.droidtv.demome`, `org.droidtv.eum`; `home_long_press_home` and `power_on_home_always` true. A held Home and
+  a power-on from the remote both land on Home; held Volume Up/Down step once per press, as on the other units.
+- SOURCES and the Settings button kept working on the real remote with the stock launcher disabled.
+- A tile for the Philips channel list: leaving `org.droidtv.channels` out of `hidden_apps` and setting
+  `launch_actions` `org.droidtv.channels=org.droidtv.intent.action.CHANLIST`, `app_labels`
+  `org.droidtv.channels=Favoriten` and `app_banners` `org.droidtv.channels=banner_tv` gives a tile that opens the
+  channel list over Live TV, where the favourite lists are picked. Checked on the real remote.
+- The remote's Rakuten TV and Netflix buttons, read with `getevent -lt`: 779 (`030b`) and 632
+  (`KEY_ONSCREEN_KEYBOARD`), the same scancodes as the 50PUS7354. `app_keys` `scan:779:<package>` and
+  `scan:632:com.google.android.youtube.tv` opened the chosen apps from the real remote.

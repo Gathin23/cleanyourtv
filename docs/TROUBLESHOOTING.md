@@ -19,6 +19,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   shows the TV's MAC and `dns-sd -B _androidtvremote2._tcp` still finds it by name while no port on
   it can be opened. Seen on macOS 26 (Darwin 25.6) against a Hisense `hengshan` set, Google TV 12,
   where the stock `adb` and `tools/tv.py` failed identically.
+  The closing check is denied the same way, and it is the one the procedure accepts: `tools/adb-closed.py
+  <tv ip>` answers `could not check <ip>:5555 ([Errno 65] No route to host). Is the TV on and on this
+  network?` followed by the Local Network note, exit 2, so a machine without the permission can neither
+  confirm nor deny that the port is closed. Grant it to the terminal, reopen it, and check again: only a
+  "closed" from a granted terminal counts.
 - **No "wireless debugging" toggle** on some TVs, Xiaomi among them. USB debugging alone opens
   network ADB on port 5555.
 - **USB debugging is greyed out and there is no Wireless debugging entry either**, seen on a carrier
@@ -250,6 +255,26 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   device-owner app that hid it, or leave it, as the
   [Chromecast with Google TV 4K list](../examples/google-chromecast-gtv-4k/debloat.txt) does with
   `cast2class` (`hidden=true` and `enabled=2` there).
+- **A second Google TV profile keeps the listed packages enabled for itself.** The lists,
+  `tools/disable.sh`, `tools/restore.sh` and `tools/check.py` act on user 0, the TV's main profile. A
+  profile added on Google TV is a user of its own (type `com.android.tv.profile` in `dumpsys user`), with
+  its own enabled state for every package, so the list never reaches it. On a Chromecast with Google TV
+  4K (`sabrina`, Google TV 14, `UTTC.250917.004`) with one such profile, six packages the list had
+  disabled for user 0 were still enabled for that profile, user 10: `com.google.android.videos`,
+  `com.android.tv.feedbackconsent`, `com.google.android.adservices.api`,
+  `com.google.android.ext.adservices.api`, `com.google.android.federatedcompute` and
+  `com.google.android.ondevicepersonalization.services`. They run only while that profile is in use; it
+  had not been since setup. See which profiles there are, and what each still has on:
+  ```sh
+  tools/tv.py 'pm list users'                    # UserInfo{10:...} after user 0 is a second profile
+  tools/tv.py 'pm list packages -e --user 10'    # what that profile has enabled
+  ```
+  To clean that profile as well, run the list's names for its user by hand (both lines below were run on
+  that Chromecast). The recovery record, `restore.sh` and `check.py` do not see it, so undo it the same way:
+  ```sh
+  tools/tv.py 'pm disable-user --user 10 com.google.android.videos'
+  tools/tv.py 'pm enable --user 10 com.google.android.videos'          # undo
+  ```
 - **The Input key and CEC die after the hidden factory menu is opened**, seen on a Haier/CVTE set
   (Durabrand `DURAT32ISDB`, `dupont`, Android TV 11 build `RTM6.230109.232`,
   [#470](https://github.com/Gathin23/cleanyourtv/issues/470)). `com.cvte.tv.hkcfac` is the
@@ -409,7 +434,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   itself, not bloat. `tools/disable.sh`, `disable.ps1` and `check.py --fix` now refuse any list that
   names them (or `com.android.providers.*` other than calendar, contacts, user dictionary and
   blocked numbers, `com.android.systemui`, `com.android.shell`, `com.android.phone`,
-  `com.android.settings`, `com.android.tv.settings` or `android`), with no switch to override it.
+  `com.android.settings`, `com.android.tv.settings` or `android`), with no switch to override it, and
+  since [#1578](https://github.com/Gathin23/cleanyourtv/issues/1578) the same refusal covers the TV
+  middleware: `com.cltv.mal`, `com.mediatek.tis`, `com.mediatek.tv.service` and
+  `com.mediatek.tv.agent` (the bullet below). The three tools say "core Android or TV middleware
+  packages" in that message, so a run that refuses one of the four reads the same way as this one.
   If a set is already stuck and still answers ADB, `pm enable` each of those packages and reboot;
   if ADB is gone too, a factory reset from the recovery menu is usually the only way back.
 - **The TV restarts in a loop after a debloat**, seen once, on a Haier H50H5F (Google TV 14,
@@ -426,7 +455,9 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   Wireless debugging usually goes off at every restart and gets a new port each time it is switched
   on, so read the port from its screen or `adb mdns services`. This set never stayed up long enough
   to switch it back on, and then restarted into the recovery menu, where a factory reset turns every
-  disabled package back on (nothing was uninstalled).
+  disabled package back on (nothing was uninstalled). One of those eight, `com.cltv.mal`, is on the
+  list `tools/disable.sh`, `disable.ps1` and `check.py --fix` refuse (the bullet above), so a debloat
+  cannot take it out again; the other seven are not guarded.
 - **The TV stays on the boot logo after a list, and disabling the only Home app is enough to do
   it**, seen on a KitKat-era set ([COOP COTV-0001](https://github.com/Gathin23/cleanyourtv/issues/795):
   Realtek `rtd298x`, Android 4.4.2, SDK 19). 17 packages were disabled over Ethernet ADB, each
@@ -936,6 +967,23 @@ running back on the list the next time it starts; a helper turned off in Setting
   like `KEYCODE_BUTTON_4` (191) may be shared with other buttons on some remotes/key layouts, so mapping by keycode
   can unintentionally hijack other buttons.
   `scan:` checks match first and target only that specific physical button. See [the Mi Box S note](devices/xiaomi-mi-box-s.md).
+- **The Settings button opens Android TV Settings, not the TV's own menu** (Sony BRAVIA VU3, Google TV 14,
+  `BRAVIA_VU3`; the report records no build, [#2131](https://github.com/Gathin23/cleanyourtv/issues/2131)):
+  the Quick Settings ribbon that button used to open (Picture mode, Picture settings, Brightness) is Sony's
+  own app, and the helper takes `KEYCODE_SETTINGS` before any app is asked, so the press opens the standard
+  settings action - on this set `com.android.tv.settings/.MainSettings`, or the launcher's own panel with
+  `settings_key_panel`. With the helper off the press arrives and nothing opens: `WindowManager` logs
+  `mShortPressOnSettingsBehavior=SHORT_PRESS_SETTINGS_NOTHING`. The ribbon is still installed and opens when
+  it is asked directly: `tools/tv.py 'am start -n com.sony.dtv.smartui/.settings.SmartSettingsActivity'`.
+  `settings_key_keycodes` and `settings_key_scancodes` do not bring the ribbon back on their own: both end in
+  `Settings.ACTION_SETTINGS`, and `settings_fallback_components` is read only when that action resolves to
+  nothing, which it does not on this set. If the remote reports a scancode for that button, an `app_keys`
+  entry should put it back (read from the launcher's code, not yet tried on a set), because a `scan:` entry is
+  answered before the settings branch in
+  `HomeKeyService.onKeyEvent`: `"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"` in
+  `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -lt` while pressing the button,
+  as the `scan:` bullet above does for a Sony remote). A keycode entry cannot: `"176:..."` is
+  `KEYCODE_SETTINGS`, which the helper takes itself before it looks at any app key.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
@@ -1407,3 +1455,36 @@ tools/tv.py 'settings put global private_dns_mode opportunistic'
 
 or keep Private DNS and accept that the router's domain rules no longer cover the TV. Write down which one
 you chose, so the next "this one service is slow on the TV" does not start from scratch.
+
+## An app that runs a local VPN is on until the next boot, then gone
+
+A DNS filter, an ad blocker or a VPN client you keep, set to start with the TV, works once switched on, and
+after every reboot the TV comes up without it: no `tun0`, no process. Seen with the AdGuard app (4.6.207,
+local VPN mode) on an Anker Nebula D2426 projector (Android TV 14, `UKNV.260603.001`, 1.7 GB), and the
+mechanism is Android's, not the app's. Its boot receiver did run: the TV's log shows
+`ActivityManager: Start proc <pid>:<package> ... for broadcast {.../BootUpReceiver}`, then 12 s later
+`Process <package> (pid <pid>) has died: cch+95 CEM`, while the app's own lines still say it is loading. The
+receiver had returned and handed the loading to a thread, no foreground service was up yet, so to Android
+the process was an empty cached one, and this firmware keeps very few of those:
+`tools/tv.py 'dumpsys activity settings' | grep CUR_MAX` prints `CUR_MAX_CACHED_PROCESSES=8` and
+`CUR_MAX_EMPTY_PROCESSES=4`. The first boot services push it out before it reaches the VPN. Any such app that
+loads slowly on a small TV can hit this; Private DNS (the README's option) is not affected, since the system
+resolver does the work.
+
+What does not help: the background exemptions (`cmd appops set <package> RUN_ANY_IN_BACKGROUND allow`,
+`dumpsys deviceidle whitelist +<package>`, `am set-standby-bucket <package> active`), because the app
+was never restricted, only evicted; and `device_config put activity_manager max_cached_processes 32`,
+which leaves `CUR_MAX_CACHED_PROCESSES` at the maker's 8. What does: make the system itself bring the VPN
+up at boot, by declaring the app as the always-on VPN. The app must have had its VPN consent dialog
+accepted once before (it has, if its protection was ever switched on by hand):
+
+```sh
+tools/tv.py 'settings put secure always_on_vpn_app <package>; settings put secure always_on_vpn_lockdown 0'
+```
+
+At the next boot the log shows `Background started FGS: Allowed [callingPackage: <package>` about 25 s
+after the process start, and `tools/tv.py 'ip addr show tun0'` has an address, before the firmware's own
+boot-time calls go out (about two minutes in, here). Keep `always_on_vpn_lockdown` at 0: with 1 Android
+drops every packet until the VPN is up, and a TV whose app fails to start stays offline, with no screen
+that says why. Undo:
+`tools/tv.py 'settings delete secure always_on_vpn_app; settings delete secure always_on_vpn_lockdown'`.

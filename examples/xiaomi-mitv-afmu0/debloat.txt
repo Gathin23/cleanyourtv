@@ -23,6 +23,11 @@
 #   launcherx and dreamx. Check before disabling: tools/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*'
 # - Leave alone: com.xiaomi.android.tvsetup.partnercustomizer, mitv.service, com.droidlogic*.
 # - With the stock launcher gone, apps without a dock slot just appear in the grid.
+# - Remote shortcut keys (Vendor_2717_Product_32b9.kl): YouTube sends BUTTON_3 (scancode 425), Prime Video sends
+#   BUTTON_7 (scancode 207), and Apps button sends ALL_APPS (scancode 216). Enable HomeKeyService
+#   (settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService) and push
+#   examples/xiaomi-mitv-afmu0/theme/config.json with tools/theme.sh to restore YouTube, map Prime Video, and make
+#   the Apps button open Home. See README.md.
 
 # Telemetry and feedback
 com.miui.tv.analytics
