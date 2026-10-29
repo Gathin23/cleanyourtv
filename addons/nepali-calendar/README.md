@@ -2,8 +2,9 @@
 
 An optional, standalone module card with today's Bikram Sambat (BS) date in Devanagari and in Latin
 letters, the Gregorian date, a clock, and the BS month as a grid. It also offers an optional system
-clock screensaver. Installing it never changes the launcher's header, date line, settings or theme; it
-uses only the existing module-card contract.
+clock screensaver. When a theme opts in with `nepali_calendar`, the add-on publishes today's BS date
+and its calendar tithi to the launcher's Home panel. The launcher only reads the add-on's cache; only
+this add-on connects to the API.
 
 ## Setup
 
@@ -15,7 +16,8 @@ Build from this folder with JDK 17 and Android SDK 34:
 
 Sideload the APK with the repository's normal ADB tools. On Home, approve **Nepali Calendar** when the
 launcher asks about its card, or enable it later under Settings → Module cards. The card opens the
-calendar's own screen; it cannot put a live date into the launcher header or tile caption.
+calendar's own screen. The optional Home integration is a separate theme panel; it does not change
+the launcher's clock/date header or the calendar tile caption.
 
 The screen shows the clock, the date as "मंगलबार, कार्तिक १०, २०८३" and "Kartik 10, 2083 BS", and the
 Gregorian date in the TV's language. The grid shows the BS month, Sunday first, each day with its
@@ -27,10 +29,28 @@ The national days are the ones kept on a fixed BS date: New Year (Baishakh 1), L
 (Baishakh 11), Republic Day (Jestha 15), Constitution Day (Asoj 3), Prithvi Jayanti (Poush 27), Maghe
 Sankranti (Magh 1), Martyrs' Day (Magh 16) and Democracy Day (Falgun 7). On those days the screen shows
 the day's name. Dashain, Tihar, Holi, Teej and the other lunar festivals move every year and are not
-shown; neither are tithis or government-announced holidays. This is a date calendar, not a patro for
-rituals.
+shown, nor are government-announced holidays. The calendar screen's month grid does not show tithis.
+The optional Home line shows the API's daily tithi label; it is not an astronomical calculation for
+the current hour or city. This is not a patro for rituals.
 
 English and Nepali UI strings are included; the BS date is always shown in both scripts.
+
+## Home date and tithi
+
+Install this add-on, then set `"nepali_calendar": "com.oneyuv.tv.nepalicalendar"` in the theme's
+`config.json`. Home shows the Nepali date and the API's `t` value for that BS day in the open space
+between the clock and the app shelf. The date comes from the TV's local calendar; the tithi comes
+from the monthly endpoint
+[`/calendar/{year}/{month}`](https://api-nepalicalendar.leapcell.app/docs), using the API's
+published dataset for the matching BS year and month. The value is the calendar's daily tithi, not
+an astronomical tithi recalculated for a city or exact time. It does not need location permission.
+
+The add-on requests `INTERNET` to fetch the current month's public data. It refreshes when Home opens
+and retries every 30 minutes while Home is visible if data is unavailable; a successful value is cached
+for the current day. The date remains visible with a tithi-unavailable message if the network or API is
+unavailable. The request contains only the BS year and month; the API host receives ordinary connection
+metadata such as the TV's public IP address. No location, account, or device identifier is sent. The API is by
+[S4NKALP/nepali-calendar-api](https://github.com/S4NKALP/nepali-calendar-api) and its code is MIT-licensed.
 
 ## Optional screensaver
 
@@ -42,11 +62,15 @@ It does not replace the launcher's own idle-clock activity.
 
 ## Permissions
 
-None requested. The exported dream requires Android's `BIND_DREAM_SERVICE` permission from its caller;
-this is a binding restriction, not a permission granted to the app. No Internet, location, overlays,
-accessibility, boot receiver, alarms, foreground service, analytics or ads. Nothing is stored. The only
-service is the optional system-managed `DreamService`; updates stop when the activity/dream is not
-visible.
+| Permission | Why |
+|---|---|
+| `INTERNET` | Fetches the public current-month tithi data from the configured calendar API when the Home theme opts in. |
+
+No location, overlays, accessibility, boot receiver, alarms, analytics or ads. The app stores only
+the current date's tithi cache. The exported dream requires Android's `BIND_DREAM_SERVICE` permission
+from its caller; this is a binding restriction, not a permission granted to the app. The only service
+is the optional system-managed `DreamService`; calendar API updates are short-lived worker threads
+started by an on-screen Home/provider request, not a background service.
 
 ## Data and validation
 

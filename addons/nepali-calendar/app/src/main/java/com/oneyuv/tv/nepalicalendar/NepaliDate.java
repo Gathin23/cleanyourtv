@@ -56,6 +56,11 @@ final class NepaliDate {
         return WEEKDAYS[weekday(date)] + ", " + MONTHS[bs.month - 1] + " " + digits(bs.day) + ", " + digits(bs.year);
     }
 
+    /** Compact date for the launcher's Home panel. */
+    static String homeText(BikramSambat bs) {
+        return MONTHS[bs.month - 1] + " " + digits(bs.day) + ", " + digits(bs.year);
+    }
+
     /** "Kartik 10, 2083 BS" */
     static String latin(BikramSambat bs) { return MONTHS_LATIN[bs.month - 1] + " " + bs.day + ", " + bs.year + " BS"; }
 

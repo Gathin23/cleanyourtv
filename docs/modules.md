@@ -144,3 +144,14 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
 
 The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.
+
+## Nepali date and tithi (`nepali_calendar`)
+
+A theme may name an installed app package in `nepali_calendar`. That app declares a string application
+meta-data value `com.gathin.tvhome.nepali_calendar` containing the authority of its own exported,
+read-only provider. Home queries `content://<authority>/today`, whose single row has the text columns
+`bs_date` and `tithi`. The launcher only reads the provider; the add-on is responsible for retrieving
+and caching any data. An empty `tithi` means the current day's tithi is unavailable. The Nepal theme
+uses the Nepali Calendar add-on, which reads its monthly date/tithi data from
+[S4NKALP/nepali-calendar-api](https://github.com/S4NKALP/nepali-calendar-api). This is the API's
+daily calendar tithi, not a city- or time-specific astronomical calculation.

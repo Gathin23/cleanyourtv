@@ -195,6 +195,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView raceKicker, raceHeadline, raceSessions;
     /** game_day: each team's next game from an add-on, rotating in the race panel; null when the key is off. */
     private GameDay gameDay;
+    /** Today's Nepali date and tithi from an opted-in add-on. */
+    private NepaliCalendarHome nepaliCalendar;
     private View raceBar;
     private LinearLayout racePager;
     private long rotationStart;
@@ -537,6 +539,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         raceBar = findViewById(R.id.raceBar);
         racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
+        nepaliCalendar = NepaliCalendarHome.create(this, cfg.nepaliCalendar, handler, this::updatePanel);
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
@@ -715,10 +718,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
 
-        // game_day: the panel above the dock rides up with the cards instead of being covered by them, and fades
-        // out by the time it reaches the clock. The grid's own offset is read, so a jump (Home, a restored focus)
-        // lands right too.
-        if (gameDay != null) {
+        // The game/calendar panel rides up with the cards instead of being covered by them, and fades out by the
+        // time it reaches the clock. The grid's own offset is read, so a jump (Home, a restored focus) lands right too.
+        if (gameDay != null || nepaliCalendar != null) {
             View clockBlock = findViewById(R.id.leftBlock);
             grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -1054,7 +1056,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pillsShown = true;
         }
         if (showStats) startStats();
-        if (gameDay != null) gameDay.start();
+        if (nepaliCalendar != null) nepaliCalendar.start();
+        else if (gameDay != null) gameDay.start();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1235,6 +1238,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(openWhenOnline);
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
+        if (nepaliCalendar != null) nepaliCalendar.stop();
         if (gameDay != null) gameDay.stop();
         handler.removeCallbacks(turnTick);
         if (diya != null) diya.stop();
@@ -1291,6 +1295,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onDestroy() {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
+        if (nepaliCalendar != null) nepaliCalendar.shutdown();
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -2632,6 +2637,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * each team's next game takes a turn there, and the theme's F1 weekend is one more turn drawn as today.
      */
     private void updatePanel() {
+        if (nepaliCalendar != null) {
+            handler.removeCallbacks(turnTick);
+            String date = nepaliCalendar.date();
+            if (date.isEmpty()) {
+                racePanel.setVisibility(View.GONE);
+                return;
+            }
+            raceBar.setBackgroundColor(0xFFE7A857);
+            raceKicker.setText("नेपाली पात्रो");
+            raceHeadline.setText(date);
+            String tithi = nepaliCalendar.tithi();
+            raceSessions.setText(tithi.isEmpty() ? "तिथि उपलब्ध छैन" : "आजको तिथि · " + tithi);
+            raceSessions.setVisibility(View.VISIBLE);
+            racePager.setVisibility(View.GONE);
+            racePanel.setVisibility(View.VISIBLE);
+            return;
+        }
         if (gameDay == null) {
             updateRace();
             return;

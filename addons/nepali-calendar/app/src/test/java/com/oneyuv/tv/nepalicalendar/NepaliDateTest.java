@@ -15,6 +15,7 @@ public class NepaliDateTest {
         LocalDate date = LocalDate.of(2026, 10, 27);
         BikramSambat bs = BikramSambat.of(date);
         assertEquals("मंगलबार, कार्तिक १०, २०८३", NepaliDate.text(bs, date));
+        assertEquals("कार्तिक १०, २०८३", NepaliDate.homeText(bs));
         assertEquals("Kartik 10, 2083 BS", NepaliDate.latin(bs));
         assertEquals("कार्तिक २०८३ · Kartik 2083", NepaliDate.monthTitle(bs));
     }
