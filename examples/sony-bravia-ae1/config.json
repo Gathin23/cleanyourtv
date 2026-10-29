@@ -1,0 +1,16 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.android.vending"
+  ],
+  "hidden_apps": ["com.sony.dtv.tvlin"],
+  "live_tv_package": "com.sony.dtv.tvlin",
+  "columns": 4,
+  "app_keys": [
+    "scan:583:com.netflix.ninja",
+    "scan:485:com.google.android.youtube.tv",
+    "scan:490:com.amazon.amazonvideo.livingroom"
+  ]
+}

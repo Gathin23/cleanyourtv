@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A half white, half amber sun inside the adaptive icon's safe zone. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FFFFFF" android:pathData="M54,36a18,18 0 0 0 0,36z" />
+    <path android:fillColor="#F5A524" android:pathData="M54,36a18,18 0 0 1 0,36z" />
+</vector>

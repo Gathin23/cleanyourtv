@@ -95,7 +95,7 @@ class SonyDensityNoteTest(unittest.TestCase):
         block = self.text.split("```sh", 1)[1].split("```", 1)[0]
         steps = ["wm density 320",
                  "settings --user 0 put secure display_density_forced 320",
-                 "tv.py reboot"]
+                 "tv.py --reboot"]
         positions = [block.find(step) for step in steps]
         self.assertNotIn(-1, positions, f"missing step in {steps}")
         self.assertEqual(positions, sorted(positions), "the saved density must come after wm density")

@@ -1,0 +1,49 @@
+# DYON 2K Android TV (MTC-built, codename komagome, MediaTek m5621, 0.9 GB RAM), Germany
+# Android TV 11 (API 30), build RTO8.250915.001. ro.product.manufacturer = MTC, ro.adb.secure = 1.
+# Same MTC/JVC firmware family as examples/mtc-uk-2k-android-tv (android.autoinstalls.config.JVC is present).
+# USB debugging alone opens port 5555, no pairing.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/dyon-2k-android-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/dyon-2k-android-tv/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home). It is not in this list:
+# launcher/build-and-install.sh disables it once the new launcher is Home. setupwraith does not claim HOME
+# on this set, but it owns a Wi-Fi network saved during first setup, so leave it enabled.
+# Live TV, HDMI and the source menu: com.mediatek.wwtv.tvcenter (the launcher's default live_tv_package).
+# Every remote button (app buttons, Input, Settings) works with the new launcher and no key service.
+#
+# Leave alone: com.mediatek.* (tuner, inputs, TV service, autopair), fusion.android.tv.demo (the Bluetooth
+# accessory pairing screen; it handles the Input key on examples/beko-b43b880b), com.airoha.btd and
+# com.airoha.android.bluetoothlegatt (the remote's Bluetooth data and firmware tools; hide the tiles with
+# hidden_apps instead), and never start com.mediatek.mtc.factory, mediatek.factorymenu.ui or com.mediatek.testpq.
+# Kept on the tested TV: Chromecast (com.google.android.apps.mediashell), Play Store, Netflix, Prime Video,
+# Disney+, YouTube, Spotify, the USB media player (MMP) and the firmware updater.
+# Notes from this TV:
+# - The time zone came set to the fixed Etc/GMT-2 with automatic time zone on, so the clock does not follow
+#   winter time; the shell may not change it (SUGGEST_MANUAL_TIME_AND_ZONE), only Settings > Date & time.
+# - Disney+ asked for a new login after the first reboot; the other apps kept theirs.
+
+# Viewing data, ads and auto-installs
+tv.anoki.acr.controller                      # Anoki ACR: recognises what is on screen, persistent, boot receiver
+android.autoinstalls.config.JVC              # Play auto-installs of partner apps
+com.google.android.leanbacklauncher.partnercustomizer  # partner rows and channels in the stock launcher
+com.google.android.tvrecommendations         # recommendation rows
+
+# Telemetry and services not needed on a TV
+com.google.android.feedback
+com.android.printspooler
+
+# Preloaded apps, off by choice
+com.cltv.fast                                # StreamTV, iWedia free streaming channels (FAST), not the tuner
+com.google.android.youtube.tvmusic           # YouTube Music
+com.google.android.videos                    # Google TV / Play Filme
+com.google.android.play.games                # Play Games
+com.mobisystems.fileman                      # File Commander
+com.zdf.android.mediathek                    # ZDF Mediathek (preinstalled for Germany)
+de.rtli.tvnow                                # RTL+ (preinstalled for Germany)
+
+# Google extras, off by choice
+com.google.android.katniss                   # Assistant and voice search: the remote's mic button stops working
+com.google.android.tv.remote.service         # phone-as-remote (Google TV app)
+com.google.android.backdrop                  # Ambient Mode screensaver

@@ -1,0 +1,84 @@
+# Hisense 65U7ESG (65", Colombia; device hengshan, board his9618, platform merak, MediaTek MT9689), Google TV /
+# Android 12, build STT2.230310.002 (incremental 00.00.00.135), security patch 2025-05-01. 2.4 GB RAM.
+# Fourth unit of this folder: the same device and build as the U75 in debloat.txt. This is the list as applied on
+# the 65U7ESG on 2026-10-25, in eight batches with a reboot and a screenshot after each: every boot was normal, and
+# Home, Ethernet, an antenna channel, HDMI 1 and the remote's buttons kept working.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan/debloat-65u7esg.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan/debloat-65u7esg.txt com.google.android.apps.tv.launcherx
+# Check:   TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/hisense-u75-hengshan/debloat-65u7esg.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. On this unit it stays ENABLED on purpose, so it keeps
+# answering the remote's app buttons, while HomeKeyService sends its home screen on to the launcher
+# ("key_filter": false and "stock_home_redirect"): README.md, "65U7ESG", has the setup and why. With the usual
+# setup instead (launcherx disabled by launcher/build-and-install.sh), leave the launcherx argument off check.py.
+# Live TV and HDMI: com.vt.tv.tvcenter (live_tv_package).
+#
+# Differences from debloat.txt: VIDAA Channels Plus (net.vidaatv.hisense.android.tv) and the VIDAA content tab
+# (com.vidaa.oemtabcontentprovider) are not installed here; HiAlexa (com.vt.alexa), Google Assistant and the OTA
+# updater are kept by choice; casting, Google TV's ambient mode and the partner apps PAI installed are off by choice.
+#
+# WARNING: do not add com.vt.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.ai_sense, com.vt.tv.aiot,
+# com.vt.tv.aiotprotocolapp or com.vt.tv.aiotsystemservice: debloat.txt has why (Android Recovery on a related board).
+#
+# Kept as in debloat.txt (tvcenter, input, source.*, mediatek.*, the remote and its pairing, the keyboard, Play
+# Store and Play Services), plus: com.mstar.netflixobserver and com.netflix.tokenmanager (the Netflix button,
+# keycode 265), com.vt.remoteupgrade (the remote's firmware), com.vt.tv.customerlauncher and com.vt.udpserver
+# (other Hisense apps may rely on them), com.vt.tv.mediacenter (USB player) and com.vt.tv.singlelisten (music from
+# a phone over Bluetooth).
+# Already disabled at the factory: com.mediatek.tis, com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.dtv.tvinput.dvbtuner
+
+# Google TV's setup wizard: its RecoveryActivity takes Home once launcherx is disabled. Here it owned the Wi-Fi
+# network saved during setup; the set is on its built-in Ethernet, so this went on with FORCE_SETUPWRAITH=1 and the
+# saved network was dropped. It also holds a CastInfoProvider; casting is not used on this unit, so what disabling
+# it does to casting here was not tested.
+com.google.android.tungsten.setupwraith
+
+# Telemetry and tracking
+com.vt.tv.evservice                          # Hisense ACR (codePath Vtp_ACR), asks PACKAGE_USAGE_STATS
+com.google.android.partnersetup              # Google partner referral pings
+com.google.android.feedback                  # crash/feedback uploader, asks READ_LOGS
+android.autoinstalls.config.google.gtvpai    # PAI: installed DIRECTV GO, Mercado Play and iQIYI on this unit
+
+# Retail demo, hotel/commercial mode, factory tools, first-run walkthrough (never opened, only disabled).
+# Store mode was already off on this ex-display unit (persist.sys.vt.storemode=false).
+com.vt.storemode
+com.vt.tv.b2b
+com.vt.factory
+com.vt.fte
+
+# Hisense preloads and background helpers
+com.vt.hishow                                # Vtp_FamilyMoment, photo app + its screensaver; asks RECORD_AUDIO
+com.vt.tv.protector                          # "Device Assistant" cleaner with a boot receiver
+com.vt.tv.calmanconnector                    # Calman calibration connector
+com.hisense.odinbrowser                      # Odin browser; asks CAMERA, RECORD_AUDIO, INSTALL_PACKAGES
+
+# Partner apps and Google preloads, off by choice (comment out any you use)
+com.directv.dtvlatam                         # DIRECTV GO
+com.iqiyi.i18n.tv                            # iQIYI (archived by the Play Store)
+com.mercadolibre.android.mplay_tv            # Mercado Play (archived by the Play Store)
+tv.twitch.android.app                        # Twitch
+com.google.android.play.games                # Google Play Games
+
+# Casting, off by choice. AirPlay lives in com.mediatek.* packages and was switched off in Settings > System >
+# AirPlay and HomeKit instead (README.md).
+com.google.android.apps.mediashell           # Chromecast built-in
+com.vt.tv.dlna                               # DLNA renderer
+com.vt.tv.mobiledeviceconnectiontips         # Miracast ("Screen Casting")
+com.vt.tv.airplaykeycheck                    # AirPlay key check
+
+# Google TV's ambient mode (the Backdrop screensaver with suggestions; two processes). Pick another screensaver
+# afterwards, for instance the launcher's clock:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+com.google.android.apps.tv.dreamx
+
+# Broadcast interactivity for standards Colombia does not use (its DTT is DVB-T2); antenna TV kept working.
+tv.mopa.ginga                                # Ginga, ISDB-Tb (Brazil)
+com.vt.tv.interactive                        # .atsc.InteractMainService, ATSC (US)
+
+# Unused on a television
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.android.providers.calendar
+com.android.providers.contacts

@@ -1,0 +1,6 @@
+{
+  "tv": "Sony XR-65X90J (2021, BRAVIA_VH2, MediaTek MT5895), China",
+  "os": "Android TV 10",
+  "brand": "Sony",
+  "notes": "China firmware with no Samba TV, no Google feedback and no Sony promos/Select/tab, so there is no Sony ACR to remove; first VH2 list on Android 10; demo/help, BRAVIA CAM leftovers (no camera), IDD/bug-report/usercontext/seeds, JD SmartService, QuickSet, 12 b2b hotel-mode packages and DLNA off; Dangbei home and store kept (the Dangbei home as HOME fallback behind an owner-supplied third-party launcher); HappyCast kept; all 47 disables survived a reboot and persist and hotelmode did not come back"
+}

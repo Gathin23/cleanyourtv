@@ -10,6 +10,7 @@
     <string name="not_connected">Cap dispositiu</string>
     <string name="live_tv">TV en directe</string>
     <string name="no_inputs">No s\'ha trobat cap entrada</string>
+    <string name="more_inputs">Més entrades</string>
     <string name="good_morning">Bon dia</string>
     <string name="good_afternoon">Bona tarda</string>
     <string name="good_evening">Bon vespre</string>
@@ -23,11 +24,14 @@
     <string name="stats_storage">Emmagatzematge %1$s lliure</string>
     <string name="dream_name">Rellotge</string>
     <string name="launcher_settings">Configuració del llançador</string>
+    <string name="native_settings">Configuració del fabricant</string>
     <string name="columns_label">Aplicacions per fila</string>
     <string name="dock_opacity_label">Opacitat de la barra del dock</string>
     <string name="animations_state">Animacions: %1$s</string>
     <string name="advanced_effects">Efectes avançats</string>
     <string name="advanced_effects_state">Efectes avançats: %1$s</string>
+    <string name="open_on_start_label">Obre en iniciar</string>
+    <string name="open_on_start_state">Obre en iniciar: %1$s</string>
     <string name="advanced_effects_warning">Eleva les targetes, amplia les icones i suavitza els canvis de color. Pot augmentar l’ús de memòria; depèn del televisor.</string>
     <string name="follow_theme">Segueix el tema (restableix els ajustos)</string>
     <string name="follow_theme_hint">Utilitza la disposició i els efectes del tema actual o els valors integrats. Aplicar o restablir un tema també esborra aquests ajustos.</string>
@@ -36,6 +40,7 @@
     <string name="off">Desactivat</string>
     <string name="enable">Activa</string>
     <string name="dock_edit">Edita el dock</string>
+    <string name="power_menu">Reinicia…</string>
     <string name="dock_edit_hint">Tria la posició del dock que vols canviar i prem D\'acord. Enrere per acabar.</string>
     <string name="dock_edit_pick_app">Ara tria l\'aplicació que hi vols posar i prem D\'acord. Enrere per triar una altra posició.</string>
     <string name="tile_add_to_dock">Afegeix al dock</string>
@@ -103,4 +108,5 @@
     <string name="race_live">%1$s · en directe</string>
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
+    <string name="game_live">En directe</string>
 </resources>

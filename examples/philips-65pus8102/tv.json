@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 65PUS8102/12 (TP Vision TPM171E, PH7M_EU_5596, MediaTek MT5891), Europe",
+  "os": "Android TV 8.0",
+  "brand": "Philips",
+  "notes": "Extends the 55PUS7503 list on the same firmware: DAC/GEL analytics, Inscape ACR client (its `inscape_fp` daemon needs root), NetTV store and 13 web apps, Assistant and Alexa off by choice; keep `nettvbrowser`, it is the HbbTV handler; RSA prompt needed revoke + mains power cycle"
+}

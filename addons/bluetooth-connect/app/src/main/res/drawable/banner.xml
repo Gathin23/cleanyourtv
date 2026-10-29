@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a speaker with a link that is cut. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#39C5CF" android:pathData="M200,50h60v80h-60z" />
+    <path android:fillColor="#101418" android:pathData="M230,72m-10,0a10,10 0 1 1 20,0a10,10 0 1 1 -20,0" />
+    <path android:fillColor="#101418" android:pathData="M230,106m-16,0a16,16 0 1 1 32,0a16,16 0 1 1 -32,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M60,60h60v14h-60z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M60,106h24v14h-24z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M96,106h24v14h-24z" />
+</vector>

@@ -1,0 +1,6 @@
+{
+  "dock_apps": ["com.plexapp.android", "com.netflix.ninja", "com.google.android.youtube.tv", "com.amazon.amazonvideo.livingroom"],
+  "columns": 4,
+  "live_tv_package": "com.tcl.tv",
+  "hidden_apps": []
+}

@@ -16,12 +16,20 @@
 #   pairing code, `adb pair`, then `adb tcpip 5555` on the device `adb devices` lists). Port 5555 closes
 #   again on every reboot and Wireless debugging switches itself off; turn it back on (no new pairing
 #   code needed, stock adb reconnects by mDNS) and run `adb tcpip 5555` again.
+#   `adb mdns services` lists the stick's current address on the _adb._tcp port; the unit takes a new
+#   DHCP address after a re-join or reboot (this one alternated between two), so read the address there
+#   before reconnecting.
 # - WARNING: Wi-Fi joined during the first-run setup belongs to setupwraith (`dumpsys wifi | grep -o
 #   'cname=[^ ]*'` printed com.google.android.tungsten.setupwraith), and Android deletes such a network
 #   when setupwraith is disabled (see examples/sony-bravia-9-ii). The HD has no Ethernet, so that drops
 #   ADB too. Before disabling setupwraith: Settings > Network & Internet > your network > Forget, then
 #   join it again. The owner then reads android.uid.system:1000, and disabling setupwraith kept Wi-Fi.
 #   tools/disable.sh skips setupwraith while it still owns the network.
+#   Google TV 14 also shows the wizard's saved network under Settings > Network & Internet > Wi-Fi >
+#   App preferences; removing it there, then joining the network in Settings, leaves every owner
+#   android.uid.system. Joining the router's other band's SSID (the 2.4 name of the same router) creates
+#   the system-owned entry, so FORCE_SETUPWRAITH=1 then deletes only the wizard's unused copy. Verified
+#   on a second boreal unit, 2026-10-23.
 # - setupwraith has to go before the launcher can own Home, as on the 4K: launcherx is HOME priority 2,
 #   setupwraith/.RecoveryActivity priority 1. launcher/build-and-install.ps1 then switched Home on the
 #   first try.
@@ -35,12 +43,18 @@
 #   reboot and whenever the receiver restarts (crash, force-stop, update). Cast Fix (SHOWCASE.md) does it
 #   at boot; it ran on every reboot during the trial and phone casting worked each time. Details in
 #   docs/TROUBLESHOOTING.md ("Casting from a phone fails with Untrusted device", issue #361).
+#   Cast Fix 1.0 (thayford/castfix) was verified on a second boreal unit, 2026-10-23: paired with the
+#   PairReceiver broadcast, `adb_allowed_connection_time` set to 0, and the boot run logged
+#   "Cast credentials loaded" -> "Casting ready."; the cast log showed
+#   "Created singleton instance of ClientAuthSigner", and phone casting, HOME and the mic button
+#   worked after the reboot.
 # - With launcherx disabled the remote's YouTube button does nothing (the Netflix button still works).
 #   Same fix as the 4K: Key Mapper's -foss APK from GitHub (4.6.1 here), `pm install` from
 #   /data/local/tmp, then the `pm grant` / `settings put secure enabled_accessibility_services` lines
 #   from the 4K list, and `dumpsys deviceidle whitelist +io.github.sds100.keymapper` to clear its
 #   battery warning. Don't `am force-stop` Key Mapper over ADB: that unbinds its accessibility service
 #   until the setting is cleared and set again. Record the "Button 3" trigger with the physical remote.
+#   The -foss APK from its GitHub releases, version 4.6.2, is what the second unit (2026-10-23) runs.
 # - The "type on your phone" prompt that never works: default_input_method was
 #   com.google.android.tv.remote.service/.ImeBridgeService before anything here was changed. Gboard is
 #   installed and enabled, so the on-screen keyboard comes back with

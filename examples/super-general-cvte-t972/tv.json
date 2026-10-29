@@ -1,0 +1,6 @@
+{
+  "tv": "Super General 55\" 4K (CVTE TP.SK708D.PC821, Amlogic T972, x30a4, 1 GB), Saudi Arabia",
+  "os": "Android 9",
+  "brand": "Super General",
+  "notes": "Not Google TV; `com.sdk.hades` adware in two silently installed packages, CVTE ad services and ad screensaver, Stark store, cleaner, weather, firmware updater; Play Services ships disabled (`pm enable` it); ADB from the factory menu (MENU 1147 on a source); app buttons come from CVTE's hotkey service, Source is left to the app in front (open `com.cvte.tv.globalui/.InputSourceActivity`), a key-filtering accessibility service breaks Volume hold; NFX repointed with a same-package stand-in; third-party launcher; reboot-checked; [notes](super-general-cvte-t972/README.md)"
+}

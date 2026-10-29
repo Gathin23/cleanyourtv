@@ -5,7 +5,7 @@
 # Usage: TV_HOST=192.168.1.50 addons/photo-screensaver/build-and-install.sh
 #        TV_HOST=192.168.1.50 addons/photo-screensaver/build-and-install.sh --uninstall
 set -euo pipefail
-HERE="$(cd "$(dirname "$0")" && pwd)"
+HERE="$(cd "$(dirname "$0")" && (pwd -W 2>/dev/null || pwd))"
 TOOLS="$HERE/../../tools"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0}"
 PY="$TOOLS/venv/bin/python"
@@ -26,5 +26,5 @@ fi
 "$PY" -I "$TOOLS/b64push.py" "$HERE/app/build/outputs/apk/release/app-release.apk" /data/local/tmp/photodream.apk >/dev/null
 tv "pm install -r /data/local/tmp/photodream.apk; rm -f /data/local/tmp/photodream.apk"
 # TCL's TclAppBoot blocks the app's provider until it may auto-start; elsewhere the op doesn't exist.
-tv "appops set $PKG APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" >/dev/null
+tv "appops set $PKG AUTO_START allow 2>/dev/null; appops set $PKG APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" >/dev/null
 echo "Installed. Now: TV_HOST=$TV_HOST addons/photo-screensaver/sync.sh"

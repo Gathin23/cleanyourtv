@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55C845X2 / 75C845X2, UK/Europe (G08_4K_GB, MediaTek tcl9618)",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Same set as the C755 list; YouTube and Play Movies & TV off (SmartTube used); Chromecast, AirPlay and game bar kept; disabling the stock launcher empties Accounts & profiles (see its README); remote keycodes and the key-repeat cost of the button helper in its README"
+}

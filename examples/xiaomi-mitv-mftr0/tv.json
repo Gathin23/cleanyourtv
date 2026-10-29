@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MFTR0 (freeguy, MediaTek mt9653), China firmware OS2.0.23.0.RFTMATV (HyperOS TV 2)",
+  "os": "Android 11 (HyperOS TV 2, CN build)",
+  "brand": "Xiaomi",
+  "notes": "Second CN set from the ASTR0 sessions, one HyperOS generation earlier (Android 11): same ad screensaver carrier (`com.xiaomi.mitv.hyper.screensaver`) and the same `com.ts.launcher` allowlist trampoline for third-party Home with PatchWall disabled, both carried over and verified; no WPS/overseaservice/adservices here; keep `com.xiaomi.mitv.smartpanel` (Menu-button panel); ADB needs the on-TV RSA confirmation once and closes on every reboot; [debloat and Home notes](../docs/devices/xiaomi-mitv-mftr0-debloat-home.md), [inputs/settings notes](../docs/devices/xiaomi-mitv-mftr0-freeguy.txt)"
+}

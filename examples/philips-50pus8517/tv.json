@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 50PUS8517/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), Europe",
+  "os": "Android TV 11",
+  "brand": "Philips",
+  "notes": "First `org.droidtv` TP Vision list: DAC analytics uploader (AWS Firehose), Top Picks, app gallery; Assistant, DLNA, IP control off by choice; disabling `eum` or `aurora` leaves persistent `xtv` retrying forever, and `eum` also kills the sources drawer -- see quirk 5; the same list was also run on a 70PUS8505 and a 65PUS9206 (same board and firmware)"
+}

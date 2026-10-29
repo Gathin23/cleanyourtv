@@ -1,0 +1,78 @@
+# TCL 65P615, Europe (ro.product.model BeyondTV, board RTD2851, client type TCL-EU-RT2851-S1,
+# model code F8, software V8-R851T02-LF1V637.018714), Android TV 9 (API 28), build
+# PPR1.180610.011 AP06, fingerprint TCL/BeyondTV/BeyondTV:9/PPR1.180610.011/AP06, armv7l.
+# Same AP06 / TCL-EU-RT2851-S1 family as examples/tcl-beyondtv-rt2851 (software LF1V606 on that list).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65p615/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65p615/debloat.txt
+# Stock launcher: com.google.android.tvlauncher (restore.sh default). Other HOME claimants are only
+# fallbacks: com.tcl.keycustomfunctionservice/.FallbackHome and com.android.tv.settings FallbackHome.
+# Live TV app: com.tcl.tv. HDMI inputs: com.tcl.tvpassthrough. Tuner: com.tcl.tvinput.
+#
+# Install the launcher BEFORE group 5: com.tcl.tvweishi and com.tcl.appmarket2 both carry a
+# PackageInstallerService, and persist.tcl.whitelistpath points into appmarket2's data.
+#
+# Source quirks from the AP06 sibling list: KEYCODE_TV_INPUT is unhandled; Source goes through TCL;
+# screencap blank over HDMI/Netflix; voice_ap native daemon may keep running without root.
+#
+# Skipped by tools/disable.sh on this unit (TVINPUT_ALLOW / no permission block readable): left enabled
+# and not listed below — android.autoinstalls.config.tcl.device,
+# com.google.android.leanbacklauncher.recommendations.
+# com.tcl.cyberui is absent on this unit (Unknown package); not listed.
+#
+# Tested 2026-10-27 on a real unit: launcher installed first, then this list, reboot once: Home stayed
+# on com.gathin.tvhome, voice/Miracast/OTA stayed off, Chromecast (mediashell) kept. Not yet lived
+# with for days; treat as reboot-checked rather than long-term.
+#
+# DO NOT DISABLE (load-bearing on this firmware):
+# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough  # Live TV, tuner, HDMI
+# com.tcl.sourcemananger                            # source/input menu (TIF_SourceMenu)
+# com.tcl.keycustomfunctionservice                  # remote key handling, fallback home
+# com.tcl.framework.custom                          # TCL key receiver
+# com.tcl.tcl_bt_rcu_service com.tcl.autopair       # Bluetooth remote
+# com.google.android.tv.remote.service              # remote control service
+# com.tcl.inputmethod.international                 # default keyboard (T_IME)
+# com.tcl.settings com.tcl.initsetup com.tcl.factory.view
+# com.tcl.showmode                                  # sound modes (Dolby/DTS/night), not just demo
+# com.tcl.xian.StartandroidService                  # device authentication
+# com.tcl.appstatecontroller                        # boot/network/package receivers, purpose unclear
+# com.realtek.netflix.setting com.android.WifiCountryService
+# com.google.android.apps.mediashell                # Chromecast, kept by choice
+
+# 1. Telemetry and analytics
+com.tcl.bi                                  # TCL BI analytics (Firebase, Crashlytics, net monitor)
+com.google.android.feedback                 # "send feedback"
+com.google.android.tv.bugreportsender       # bug report uploader
+com.google.android.partnersetup             # partner-app attribution
+com.google.android.onetimeinitializer       # one-time setup leftovers
+
+# 2. Content, recommendation rows and promos
+com.google.android.tvrecommendations        # home-screen recommendation rows
+com.tcl.partnercustomizer                   # TCL promo rows, T-key page
+com.tcl.messagebox                          # TCL message/promo box (ttvs)
+com.tcl.esticker                            # retail demo stickers
+
+# 3. Preloads and background extras
+com.google.android.videos                   # Play Movies & TV
+com.tcl.ui_mediaCenter                      # USB media centre; nothing on USB here (players kept)
+com.tcl.useragreement                       # end-user agreement screens
+com.tcl.android.webview                     # unused, Google WebView is the active provider
+com.tcl.keyhelp                             # remote-key help overlays
+
+# 4. Off by choice on this unit
+com.tcl.miracast                            # Miracast screen mirroring
+# com.tcl.MultiScreenInteraction_TV  # T-Cast phone remote, kept on for shared lists (off on the tested set)
+# com.tcl.versionUpdateApp  # TCL firmware updater, kept on for shared lists (off on the tested set)
+# com.tcl.rc.ota                            # remote-control firmware OTA, kept
+# com.google.android.apps.mediashell        # Chromecast, kept
+
+# 5. After the launcher is installed
+com.tcl.tvweishi                            # TCL "TV Guard" cleaner
+com.tcl.appmarket2                          # TCL app store (Play Store stays)
+
+# 6. Voice, off by choice
+com.google.android.katniss                  # Google voice search and the mic button
+com.google.android.speech.pumpkin           # offline speech recognition
+com.tcl.assistant                           # TCL's Google Assistant bridge
+com.tcl.micmanager                          # remote microphone manager
+com.google.android.tv.assistant             # Assistant LED service

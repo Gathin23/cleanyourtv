@@ -1,0 +1,11 @@
+{
+  "dock_apps": [
+    "com.wbd.stream",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tv"
+  ],
+  "hidden_apps": [],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "columns": 4
+}

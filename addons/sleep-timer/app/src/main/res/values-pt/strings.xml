@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Desligar</string>
+    <string name="hint">Escolha em quanto tempo a TV entra em espera. Um minuto antes aparece um aviso.</string>
+    <string name="in_minutes">%1$d min</string>
+    <string name="cancel">Cancelar o timer</string>
+    <string name="state_off">Nenhum timer ligado.</string>
+    <string name="state_on">Desliga às %1$s.</string>
+    <string name="no_service">O serviço de acessibilidade do Desligar está desligado (rode o script de instalação).</string>
+    <string name="warning_title">A TV vai desligar</string>
+    <string name="warning_seconds">em %1$d segundos</string>
+    <string name="more">Mais 15 minutos</string>
+    <string name="now">Desligar agora</string>
+    <string name="service_label">Desligar</string>
+    <string name="service_description">Só põe a TV em espera quando o timer do Desligar acaba. Não lê a tela.</string>
+    <string name="quick_hint">◀ ▶ escolher o tempo · OK fechar</string>
+</resources>

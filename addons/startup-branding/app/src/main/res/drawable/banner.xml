@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: the rising sun on a screen, beside a title bar. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#000000" android:pathData="M0,0h320v180h-320z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:fillColor="#00000000"
+        android:pathData="M48,54h76a6,6 0,0 1,6 6v60a6,6 0,0 1,-6 6h-76a6,6 0,0 1,-6 -6v-60a6,6 0,0 1,6 -6z" />
+    <path android:fillColor="#F2B84B" android:pathData="M66,108a20,20 0,0 1,40 0z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M52,108h68v3h-68z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M156,80h120v9h-120zM156,98h84v7h-84z" />
+</vector>

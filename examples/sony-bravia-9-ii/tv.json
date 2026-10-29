@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 9 II (K-65XR90M2, BRAVIA_AE3, MediaTek MT5838)",
+  "os": "Google TV 14",
+  "brand": "Sony",
+  "notes": "Samba TV ACR, Sony/Qterics device agents, IDD, My BRAVIA promos, Sony Select and Sony tab, demo mode; setupwraith off for the launcher, but it owns Wi-Fi saved during setup and disabling it deletes that network; Chromecast off by choice"
+}

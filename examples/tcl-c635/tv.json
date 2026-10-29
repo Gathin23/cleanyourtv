@@ -1,0 +1,6 @@
+{
+  "tv": "TCL C635 (Smart TV Pro, BeyondTV4, Realtek rtd288o, Android 11/SDK 30), Brazil",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL BI analytics (com.tcl.bi), logkit, promo waterfall feed, channelplus FAST, partner customizer/attribution, browser, gallery, retail demo (esticker, ocean.instructions, useragreement, factory.view); `com.tcl.overseasappshow` disabled first so promo packages do not re-enable on boot (au.com.stan.and and tv.wuaki.apptv arrive pre-disabled at factory); gamebar kept by choice; Live TV (com.tcl.tv + com.tcl.tvinput), hardware HDMI inputs, voice, OTA and BT remote kept; Google TV launcher stays as fallback; this repo's launcher (com.gathin.tvhome) verified; animation scales set to 0.5 and heavy apps AOT-compiled for faster launch"
+}

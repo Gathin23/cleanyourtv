@@ -17,7 +17,159 @@
 #
 # Kept on purpose: org.droidtv.amazonalexa (Alexa power on/off), com.google.android.apps.mediashell
 # (Chromecast), org.droidtv.oad and com.easy.oad (firmware updates), org.droidtv.eum (see the
-# philips-50pus8517 list: xtv retries forever without it and the sources drawer dies).
+# philips-50pus8517 list: xtv retries forever without it and the sources drawer dies). The fourth
+# unit below disabled org.droidtv.nettvbrowser, org.droidtv.menudataapp and
+# org.droidtv.nettvregistration too, then re-enabled all three without confirming a failure first:
+# they are in the philips-50pus8517 DO-NOT-DISABLE block (written for board PH1M_EA_9970A, a
+# different board), and re-enabling cost nothing, so the same caution was applied here on
+# PH9M_EA_5599 rather than testing whether it actually needed it.
+#
+# Second unit (same model, firmware STT2.230526.001, Norway, on Ethernet): the whole list applied, with
+# Prime Video, Assistant and Alexa off by choice. After one reboot every entry stayed disabled except
+# com.google.android.tvrecommendations, which came back enabled (batch 4). Left as is rather than disabled
+# again after each boot.
+#
+# Third unit: Philips 75PUH8265/96, Taiwan, on Ethernet, still on the ANDROID 9 firmware the 2020 sets
+# shipped with: PTT1.181130.001 build 200260, security patch 2021-11-05. Same device PH9M_EA_5599,
+# model TPM191E, MediaTek mt5887, about 2 GB RAM.
+# Fingerprint: Philips/PH9M_EA_5599/PH9M_EA_5599:9/PTT1.181130.001/200260:user/release-keys
+# - The same 15 Freeview packages were disabled from the factory, on a Taiwanese set too.
+# - Not installed on this firmware: com.google.android.music, com.phorus.playfi.softap,
+#   org.droidtv.fastip and org.droidtv.aurora (so the 8505 note on fastip does not apply here).
+# - Disabled from this list: batch 1, batch 2, and batch 3 except dlna. org.droidtv.dlna was KEPT,
+#   following examples/philips-75pus8505 (contentexplorer, "Media", binds it on this board).
+#   tvrecommendations (batch 4) was kept, so the notification panel stays.
+# - Also disabled on this unit: org.droidtv.amazonalexa (kept above, unused here),
+#   com.google.android.sss.authbridge, org.droidtv.nettvapps, org.droidtv.sticker, and the preloaded
+#   web-app tiles nettvapp1814 (ARTE), 4655 (Deezer), 4771 (Divan.TV), 5326 (Toon Goggles),
+#   5512 (Fishing TV) and 20004410 (Couchplay Games). Labels read with `aapt2 dump badging`.
+# - launcher/build-and-install.sh ran through on its own on Android 9: the first cold start answered
+#   `am start -W` with Status ok in 2.6 s, unlike the Android 12 timeout in the 8505 notes.
+# - Idle-loop check after the debloat (philips-50pus8517 quirk 5 method, 30 s): 306 lines, nothing tied
+#   to a disabled package. Most of it was org.droidtv.ambihue driving paired Hue lights, plus
+#   tptvservice's ApplicationSwitchService about once a second.
+# - Checked the same day; the set has not been restarted since, so persistence across a reboot is
+#   not confirmed for this unit.
+#
+# Fourth unit: Philips 55OLED854/12 (OLED, not LED like the other three units here), Poland, on
+# Ethernet. Same firmware as the lead unit above: STT2.230526.001, security patch 2025-11-01,
+# fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. A
+# single session, not a several-day test. Like the lead unit, only an owner-selected subset of the
+# list below was applied, not all of it: from batch 1, usagelogger, candeebug, demome, feedback
+# and syncadapters.calendar, but not gel, partnersetup or onetimeinitializer (not tested, not
+# chosen either way); all of batch 2; from batch 3, only katniss and playfi.softap, since the
+# owner's own choice of apps meant amazonvideo.livingroom, videos, music, youtube.tvmusic,
+# play.games, marvin.talkback and dlna were left enabled (Prime Video is this owner's own dock
+# pick; the rest were simply not chosen, not confirmed safe or unsafe here); batch 4 after the
+# launcher took Home, as written. Checked after one reboot and a 30 s idle-log check (the
+# philips-50pus8517 quirk 5 method), both run before the launcher install and its batch-4 disables:
+# no line tied to a disabled package repeated, the Sources drawer and every HDMI input listed
+# correctly, and `pm list packages -d` still showed every one of the 25 disables below (10 from
+# the list below plus the 15 new ones noted next) after the reboot. com.google.android.tvrecommendations
+# and the stock launcher (batch 4) were disabled afterward, once the launcher install had Home;
+# neither has been through a reboot yet on this unit.
+# - The same 15 Freeview packages (plus org.droidtv.freeviewplayers) were disabled from the
+#   factory here too, on a Polish unit.
+# - com.phorus.playfi.tv matched the lead unit's note: re-enabled itself after the reboot
+#   (AudioOutService, "PlayFi Enabled"). softap stayed off.
+# - tvrecommendations (batch 4) was disabled only after the launcher took Home, so after this
+#   unit's one reboot, not before it; whether it stays disabled through a reboot on this unit, as
+#   it did not on the second unit, is not yet confirmed.
+# - Disabled on top of the list below, none of them used by the owner, all confirmed through the
+#   reboot and idle-log check: org.droidtv.tv.frameworklogger, com.mediatek.backgrounddetection
+#   (MediaTek's own background-app heuristic, not an org.droidtv package), org.droidtv.dukservice,
+#   org.droidtv.usbbreakin, org.droidtv.nettv_launcherapp, org.droidtv.nettvapps, and the preloaded
+#   web-app tiles nettvapp1814 (ARTE), 4508, 4609, 4655 (Deezer), 5225, 5326 (Toon Goggles),
+#   5512 (Fishing TV) and 20004410 (Couchplay Games) -- the same numbered-tile pattern as the
+#   third unit's list, on this unit's own `pm list packages`. Also dk.logisoft.snipergame, a
+#   preloaded demo game present on this unit but not mentioned on the other three.
+# - org.droidtv.philipstvdrawer was disabled by mistake, then re-enabled: it is the Philips side
+#   menu (TV guide, channel list, sources, Media, quick settings), not a content tile, matching the
+#   philips-50pus8517 list's own note on it.
+# - Settings button, launcher/build-and-install.ps1 -HomeKeyService: this remote's Settings button
+#   sends Linux scancode 357 (KEY_OPTION, no MSC_SCAN), read with `tools/tv.py 'getevent -lt'`, so
+#   config.xml settings_key_scancodes = 357 fixes it. Costs the same trade-off as the TCL G09 in
+#   docs/TROUBLESHOOTING.md: HomeKeyService's key filtering also stopped Volume Up/Down from
+#   repeating on hold. The owner chose to keep volume repeat, so key_filter is false on this unit
+#   and the remote's Settings button does nothing (Settings stays reachable from the launcher's own
+#   on-screen button).
+# - OLED screensaver: org.droidtv.tvsystemui's GFXCaptureService (bound from com.android.systemui)
+#   draws a moving Philips logo over everything after a few minutes of a still picture, as on the
+#   65OLED706 (a different board, PH1M_EA_9970A) -- so this is not board-specific, likely whichever
+#   OLED panel is fitted. Confirmed here too: injected keys over ADB do not dismiss it; a real
+#   remote key does.
+#
+# Fifth unit: Philips 65OLED804/12 (OLED, 2019 model), Germany, on Ethernet. It shipped with Android
+# TV 9 and now runs the same Android 12 firmware as the lead unit: STT2.230526.001, security patch
+# 2025-11-01, fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys.
+# Applied in five batches on 22 Oct 2026, each followed by a check of `dumpsys tv_input`, the TV
+# processes and a 30 s idle log (the philips-50pus8517 quirk 5 method), and lived with until 25 Oct
+# through three restarts, one of them a cold start. The only repeating idle lines before and after
+# were xtv's JointSpace REST server (org.restlet ... InboundWay) answering a client on the LAN.
+# - From the list below: all of batch 1 except usagelogger and demome, which tools/disable.ps1 skips
+#   because both ask for TV_INPUT_HARDWARE (the 65PUS9435 list explains why that is a false positive
+#   here); all of batch 2; from batch 3 katniss, videos and playfi.softap, with Prime Video, TalkBack
+#   and DLNA kept by choice; batch 4 after the launcher took Home. youtube.tvmusic and play.games were
+#   disabled from the factory, with the same 15 Freeview packages and org.droidtv.freeviewplayers.
+#   com.google.android.music and org.droidtv.android.fitness are not installed on this unit.
+# - Also disabled, none used here: org.droidtv.sticker, org.droidtv.amazonalexa (no other process
+#   held a connection to it in `dumpsys activity services`; channel changes and the TV guide work
+#   without it), and the preloaded Apple TV, MUBI, Twitch, Paramount+ (com.cbs.ca) and WWE apps.
+# - Every entry stayed disabled through all three restarts, com.google.android.tvrecommendations
+#   included, unlike the second unit. `tools/check.py` reported nothing drifted after the last one.
+# - Checked with the remote afterwards: Live TV and channel changes, the TV guide, the SOURCES drawer
+#   with HDMI 1-4, Ambilight, picture settings, and casting from a phone. The third-party remote in use
+#   has no Settings button; its gear-like button opens the Philips options menu, before and after the
+#   debloat, so the fourth unit's Settings-button finding was not testable here.
+# - The household uses a slow third-party remote whose presses last 430-550 ms. With the stock
+#   launcher disabled, a Home press held past 400 ms did nothing: Android sends its long-press action,
+#   ALL_APPS, to the system-image Home, which is com.android.tv.settings' FallbackHome and answers
+#   nothing (docs/TROUBLESHOOTING.md, "Home works when tapped but does nothing when pressed firmly").
+#   `settings put secure long_press_timeout 800` did not change that, not even after a reboot. The
+#   launcher's home_long_press_home switch, installed with -HomeKeyService, fixed it; as on the fourth
+#   unit, the key filter ends Volume Up/Down repeat on hold, which this household preferred anyway.
+# - An injected KEYCODE_TV is ignored here too; test Live TV and SOURCES with the real remote.
+#
+# Sixth unit: Philips 50PUS7354 (LED, 2019 model), France, on Wi-Fi. Same firmware as the lead unit:
+# STT2.230526.001, fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys.
+# One session on 27 Oct 2026 with two restarts, not a several-day test. Launcher notes are in README.md.
+# - From the list below: all of batches 1 and 2; from batch 3 Prime Video, videos, youtube.tvmusic, play.games,
+#   talkback and playfi.softap, with katniss (Assistant) and dlna kept by choice; com.google.android.music is not
+#   installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome were skipped by the TV_INPUT_HARDWARE guard, as on the fifth unit. `pm query-services
+#   --components -a android.media.tv.TvInputService` lists only com.mediatek.tvinput, com.mediatek.tv.agent,
+#   org.droidtv.fastip and com.google.android.videos, so both were disabled with TVINPUT_ALLOW=1 set for those two
+#   alone. `dumpsys tv_input` still listed HDMI 1-4 after each batch.
+# - Also disabled, none used here: org.droidtv.tv.frameworklogger, org.droidtv.nettvapps,
+#   org.droidtv.nettv_launcherapp and org.droidtv.sticker (as on the fourth unit), com.netflix.ninja,
+#   com.apple.atve.androidtv.appletv and org.droidtv.dropboxprovider. Kept by choice: the official YouTube app
+#   (casting from a phone needs it), Alexa, Chromecast and both firmware updaters.
+# - The same 15 Freeview packages and org.droidtv.freeviewplayers were disabled from the factory.
+# - Every entry, tvrecommendations included, stayed disabled through both restarts (`pm list packages -d`
+#   compared before and after). com.phorus.playfi.tv was left enabled, per the note in batch 3.
+# - Private DNS in hostname mode validated on this firmware (`dumpsys connectivity` lists validated addresses).
+#
+# Seventh unit: Philips 43PUS7304/12 (LED, 2019 model), Germany, on Wi-Fi. Same firmware as the lead unit:
+# STT2.230526.001, security patch 2025-11-01, fingerprint
+# Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. One session on 27 Oct 2026 with two
+# restarts, not a several-day test. Launcher notes are in README.md.
+# - Developer options showed USB debugging only, no Network debugging or Wireless debugging entry; with USB
+#   debugging on, port 5555 answered on the LAN and tools/tv.py connected with no cable.
+# - From the list below: all of batches 1 and 2, batch 3 except Prime Video (kept by choice); videos and music are
+#   not installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome: TV_INPUT_HARDWARE false positives again (`pm query-services` lists only
+#   com.mediatek.tvinput, com.mediatek.tv.agent and org.droidtv.fastip), disabled with TVINPUT_ALLOW=1 for those two
+#   alone; `dumpsys tv_input` still listed HDMI 1-4 after each batch.
+# - Also disabled, as on the sixth unit: org.droidtv.tv.frameworklogger, org.droidtv.nettvapps,
+#   org.droidtv.nettv_launcherapp, org.droidtv.sticker, org.droidtv.dropboxprovider, com.netflix.ninja,
+#   com.apple.atve.androidtv.appletv; plus de.telekom.magentatv.tv (a Play Store install, unused).
+#   Kept: YouTube, Chromecast, both firmware updaters, com.phorus.playfi.tv.
+# - All 44 disabled packages (the 16 factory ones included) stayed disabled through both restarts, tvrecommendations too.
+# - Ambilight (follow video) checked working on screen after the whole list and the launcher.
+# - Android's "storage full" warnings: /data is 4.8 GB, 81% used before cleanup. org.droidtv.channels held about
+#   2 GB of app data (`dumpsys diskstats`), the largest by far; it was not cleared, as that holds the channel list
+#   and favourites. `pm clear` on the disabled streaming apps and com.google.android.tts, plus `pm trim-caches`,
+#   freed about 450 MB.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader
@@ -52,3 +204,4 @@ com.phorus.playfi.softap                  # DTS Play-Fi soft access point
 # kill the live launcher. It is also the only handler for the notification side panel
 # (OPEN_NOTIFICATIONS_PANEL, TOGGLE_NOTIFICATION_HANDLER_PANEL) on this firmware: that panel goes too.
 com.google.android.tvrecommendations      # "Android TV Core Services": recommendation rows, notification panel
+#                                         # second unit: re-enabled by the firmware at the next boot

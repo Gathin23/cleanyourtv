@@ -10,6 +10,7 @@
     <string name="not_connected">Nema uređaja</string>
     <string name="live_tv">TV programi</string>
     <string name="no_inputs">Nema pronađenih ulaza</string>
+    <string name="more_inputs">Još ulaza</string>
     <string name="good_morning">Dobro jutro</string>
     <string name="good_afternoon">Dobar dan</string>
     <string name="good_evening">Dobro veče</string>
@@ -31,11 +32,14 @@
     <string name="home_key_name">Dugme Home</string>
     <string name="home_key_description">Dugme Home na daljinskom otvara ovaj početni ekran.</string>
     <string name="launcher_settings">Podešavanja početnog ekrana</string>
+    <string name="native_settings">Podešavanja proizvođača</string>
     <string name="columns_label">Aplikacija po redu</string>
     <string name="dock_opacity_label">Prozirnost trake doka</string>
     <string name="animations_state">Animacije: %1$s</string>
     <string name="advanced_effects">Napredni efekti</string>
     <string name="advanced_effects_state">Napredni efekti: %1$s</string>
+    <string name="open_on_start_label">Otvori pri pokretanju</string>
+    <string name="open_on_start_state">Otvori pri pokretanju: %1$s</string>
     <string name="advanced_effects_warning">Podiže pločice, uvećava ikone i ublažava prelaze boja. Može povećati potrošnju memorije, zavisno od TV-a.</string>
     <string name="follow_theme">Prati temu (resetuj izbore)</string>
     <string name="follow_theme_hint">Koristi raspored i animacije tekuće teme ili ugrađene vrednosti. Primena ili resetovanje teme briše i izbore na TV-u.</string>
@@ -44,6 +48,7 @@
     <string name="off">Isklj.</string>
     <string name="enable">Uključi</string>
     <string name="dock_edit">Uredi dok</string>
+    <string name="power_menu">Ponovo pokreni…</string>
     <string name="dock_edit_hint">Izaberite mesto u doku i pritisnite OK. Nazad za kraj.</string>
     <string name="dock_edit_pick_app">Sada izaberite aplikaciju za to mesto i pritisnite OK. Nazad da izaberete drugo mesto.</string>
     <string name="tile_add_to_dock">Dodaj u dok</string>
@@ -70,4 +75,5 @@
         <item quantity="other">%1$d aplikacija</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="game_live">Uživo sada</string>
 </resources>

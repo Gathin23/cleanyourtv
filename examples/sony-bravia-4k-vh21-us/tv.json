@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH21 (XR-65A95K, 2022, BRAVIA_VH21, MediaTek), US",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Privacy and ads core only, the smallest of the three VH21 lists: Samba TV ACR, Sony/Qterics agents, IDD, bug report, Sony promos/Select (on at the factory in the US), demo mode, help tiles; setupwraith off for the launcher; streaming apps, Assistant, Chromecast, AirPlay/HomeKit, BRAVIA CAM packages and firmware updates kept; reboot-checked twice, lived with a week; a Widevine L1 wedge on this firmware is cleared by a reboot, not the list"
+}

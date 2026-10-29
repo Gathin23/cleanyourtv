@@ -1,0 +1,6 @@
+{
+  "tv": "BenQ E55-760 (Changhong AI PONT, GTVU64BQ, board alimos)",
+  "os": "Google TV 14",
+  "brand": "BenQ",
+  "notes": "Homwee store/help, Anoki ACR, Ginga/MHEG, Google TV recommendations; launcherx kept with stock_home_redirect and key_filter false (gear button and the volume ramp together); Assistant content search needs launcherx's home screen, so it and the redirect cannot both work; no Wireless debugging on Ethernet and port 5555 never opens; USB host-only; setupwraith owns the Wi-Fi; gdch mediaplayer is a TV_INPUT false positive; gear is keycode 83 scancode 240, not its MSC_SCAN"
+}

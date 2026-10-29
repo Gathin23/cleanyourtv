@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH21 (KD-65X85K, 2022, BRAVIA_VH21, MediaTek MT5895), Australia & India",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Samba TV ACR, Sony/Qterics agents, IDD, Sony promos/Select/tab, demo mode; QuickSet, TTS, Sony IoT and BRAVIA CAM suite off to free memory; Assistant and unused preloads off by choice; Chromecast, AirPlay, HbbTV, firmware updates kept; a second unit (India, PA build) uses the redirect route (launcherx + setupwraith kept on) with stock_home_redirect in config.json, Settings scancode 646, YouTube (485) and Prime Video (490) app keys; reboot-checked"
+}

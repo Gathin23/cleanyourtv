@@ -1,0 +1,74 @@
+# AQUA MatrixTV EE 50" 4K (Haier, ro.product.model "AQUA MatrixTV EE", product AQ9676EU, device omonia),
+# Google TV 14 (API 34), firmware UKN7.260716.049, MediaTek (CVTE-family board: com.cvte.tv.at,
+# com.cvte.autobacklight present), Indonesia. 3840x2160 panel, UI at 1920x1080 (wm size override, factory), 320 dpi.
+# Close sibling of examples/haier-hr9216eu (MatrixTV GE).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/aqua-matrixtv-ee-50/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/aqua-matrixtv-ee-50/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (.home.HomeActivity); the install script disables it.
+# Live TV: com.cltv.hybrid (Anoki "LiveTV", AnokiTvInputService). HDMI 1-4 = com.mediatek.tis/.HdmiInputService/HW2-HW5,
+# AV = com.mediatek.tis/.CompositeInputService/HW6, DVB tuner = com.mediatek.dtv.tvinput.dvbtuner/.DvbTvInputService/HW0.
+# Already disabled from the factory: com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.dtv.tvinput.atsctuner,
+# ru.haier.evo, com.haier.apps.evoSmart, com.mediatek.tv.oneworld.tvcenter, it.hon.onboarding.
+#
+# setupwraith owned one saved Wi-Fi network that was not the one in use; it was forgotten
+# (cmd wifi forget-network) before setupwraith was disabled. The network in use belonged to android.uid.system.
+#
+# Tested on 24 October 2026 on one set, including two reboots, with the real remote. Same-day test, not a
+# multi-day soak. Order used: this whole list (setupwraith included) while launcherx still owned Home, then
+# launcher/build-and-install.sh, which disables launcherx once the new launcher is running.
+# The home screen was launcher/ from this repo; config.json beside this list has its dock and the gear key.
+# Network ADB on 5555 survived a reboot on this set (service.adb.tcp.port=5555), Wireless debugging was on too.
+# com.haier.gamingbar comes back enabled at every boot (seen on the first reboot), so it is commented out below.
+#
+# Remote ("SmartTV-RC Consumer Control", BLE HID): Netflix, YouTube, Input and Mic keep working with no helper
+# (com.mediatek.tv.agent and Haier global-key receivers). The YouTube Music button opens YouTube Music, which
+# forwards into YouTube on this build. The Prime Video button goes to Prime Video (disabled here, so nothing).
+# The gear button is KEY_UNKNOWN (scancode 240, HID usage 0x0c009f) as KEYCODE_NOTIFICATION (83), a global key
+# for launcherx's GlobalKeyListener: settings_key_keycodes 83 + settings_key_panel true + HOME_KEY_SERVICE=1.
+# Do not use scancode 240: the YouTube Music (0x0c00cb) and Prime Video (0x0c00a6) buttons share it.
+# HomeKeyService costs the volume ramp (one step per press while held), the trade in
+# docs/devices/tcl-55p71b-g09-key-repeat.md; the owner of the test set kept the gear.
+#
+# KEEP, even though the names look like bloat (components checked with dumpsys package):
+# - com.haier.appmanager.dispatcher, com.haier.hkcfac, com.haier.tv.hmagicboard: global key receivers.
+# - com.mediatek.autopair, com.haier.bt_pair_tips, com.google.android.tv.googletvremotepairer: remote pairing.
+# - com.telink.lt: remote (Telink BLE) firmware, also claims HOME at priority 0.
+# - com.cvte.tv.at, com.cvte.autobacklight, com.at.factory.androidtvaidlservice, mediatek.factorymenu.ui: factory - never open.
+# - com.mediatek.tis, com.mediatek.dtv.tvinput.dvbtuner, com.cltv.hybrid, com.cltv.mal, com.mediatek.tv.agent,
+#   com.mediatek.extservice (CEC), com.mediatek.tv.settings, com.google.android.tv.inputplayer, com.mediatek.wwtv.mediaplayer,
+#   com.mediatek.tv.oneworld.wizardkt (channel scan), tv.mopa.ginga.
+# - By owner choice on the test set: Assistant (katniss), Chromecast (mediashell), Miracast, system updater, Ambient (dreamx),
+#   Netflix, YouTube, YouTube Music, YouTube Kids, Vidio, iQIYI, Bstation.
+
+# Haier content, IoT, cleaner, e-manual
+com.haierubic.usmartdevice                       # Haier smart-device / IoT service
+it.hon.service                                   # Haier hOn IoT service
+com.haier.apps                                   # Haier promo content app (Kinopoisk)
+com.haier.tvhousekeeper                          # "TV housekeeper" cleaner
+com.haier.emanual9603                            # e-manual
+com.haier.oemtabprovider                         # the "Haier" tab on the Google TV home
+com.haier.launcher.haiermatrix                   # Zeasn content launcher, not the system Home
+
+# Telemetry, partner rows, retail demo, preloads
+com.google.android.feedback                      # Google usage feedback
+tv.anoki.acr.anokiacroptin                       # Anoki ACR opt-in (content recognition)
+com.mediatek.tv.launcher.partner                 # partner rows on the stock home
+com.mediatek.tv.retaildemo                       # retail demo mode
+com.google.android.play.games                    # preloaded
+
+# By owner choice: apps the test household did not use
+com.amazon.amazonvideo.livingroom                # Prime Video, not used
+in.startv.hotstar.dplus.tv                       # Disney+ Hotstar, not used
+id.visionplus.android.atv                        # Vision+, not used
+com.tencent.qqlivei18n                           # WeTV, not used
+com.apple.atve.androidtv.appletv                 # Apple TV, not used
+# com.haier.gamingbar                            # Haier game-mode overlay, not wanted; firmware re-enables it at boot
+com.haier.overseastv.bluetoothspeaker            # TV as Bluetooth speaker, not wanted
+com.google.android.marvin.talkback               # TalkBack, not used
+
+# Google TV home handover. setupwraith's RecoveryActivity claims HOME at priority 1 and takes over once launcherx
+# is disabled, so it goes first, while launcherx still owns Home. Check the Wi-Fi note above before disabling it.
+com.google.android.tungsten.setupwraith

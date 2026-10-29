@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH1 (KD-55XH9096 / KD-65XH9296 / XBR-55X900H, BRAVIA_VH1, MediaTek MT5895), EU, UK and US",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Samba TV ACR, Sony/Qterics/IDD agents, demo/hotel mode, Select/promos/help; stock tvlauncher off for CleanYourTV; Assistant and Netflix off by choice; Chromecast and firmware updates kept; setupwraith left enabled (Home already on the custom launcher); same platform as [docs/devices/sony-kd-55x9000h.md](../docs/devices/sony-kd-55x9000h.md) (PA firmware notes); on UK units keep com.youview.poa, the Freeview Play app that hosts BBC iPlayer, ITVX, Channel 4 and 5 ([docs/devices/sony-youview-uk-catchup.md](../docs/devices/sony-youview-uk-catchup.md))"
+}

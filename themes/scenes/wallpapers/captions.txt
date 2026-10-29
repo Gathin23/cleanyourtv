@@ -1,0 +1,16 @@
+# wallpaper_captions: the name shown under the top-right pills, as "<file><TAB><name>", one per line
+# (themes/README.md); a picture without a line shows no name.
+01-dusk-peaks.jpg	Dusk peaks
+02-golden-coast.jpg	Golden coast
+03-moon-lake.jpg	Moon lake
+04-aurora.jpg	Aurora
+05-dunes.jpg	Dunes
+06-above-the-clouds.jpg	Above the clouds
+07-mirror-lake.jpg	Mirror lake
+08-tea-hills.jpg	Tea hills
+09-alpenglow.jpg	Alpenglow
+10-city-lights.jpg	City lights
+11-balloon-sunrise.jpg	Balloon sunrise
+12-monsoon.jpg	Monsoon
+13-lighthouse-coast.jpg	Lighthouse coast
+14-autumn-valley.jpg	Autumn valley

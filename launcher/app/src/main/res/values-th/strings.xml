@@ -10,6 +10,7 @@
     <string name="not_connected">ไม่มีอุปกรณ์</string>
     <string name="live_tv">ทีวีสด</string>
     <string name="no_inputs">ไม่พบแหล่งสัญญาณ</string>
+    <string name="more_inputs">แหล่งสัญญาณเพิ่มเติม</string>
     <string name="good_morning">สวัสดีตอนเช้า</string>
     <string name="good_afternoon">สวัสดีตอนบ่าย</string>
     <string name="good_evening">สวัสดีตอนเย็น</string>
@@ -25,11 +26,14 @@
     <string name="dream_name">นาฬิกา</string>
 
     <string name="launcher_settings">การตั้งค่าหน้าหลัก</string>
+    <string name="native_settings">การตั้งค่าของผู้ผลิต</string>
     <string name="columns_label">แอปต่อแถว</string>
     <string name="dock_opacity_label">ความทึบของแถบด็อก</string>
     <string name="animations_state">ภาพเคลื่อนไหว: %1$s</string>
     <string name="advanced_effects">เอฟเฟกต์ขั้นสูง</string>
     <string name="advanced_effects_state">เอฟเฟกต์ขั้นสูง: %1$s</string>
+    <string name="open_on_start_label">เปิดเมื่อเริ่มเครื่อง</string>
+    <string name="open_on_start_state">เปิดเมื่อเริ่มเครื่อง: %1$s</string>
     <string name="advanced_effects_warning">ยกไทล์ ขยายไอคอน และเปลี่ยนสีพื้นหลังอย่างนุ่มนวล อาจใช้หน่วยความจำเพิ่มขึ้น ขึ้นอยู่กับทีวี</string>
     <string name="follow_theme">ใช้ตามธีม (รีเซ็ตการตั้งค่า)</string>
     <string name="follow_theme_hint">ใช้รูปแบบและภาพเคลื่อนไหวจากธีมปัจจุบันหรือค่าในแอป การใช้หรือรีเซ็ตธีมจะล้างตัวเลือกบนทีวีด้วย</string>
@@ -38,6 +42,7 @@
     <string name="off">ปิด</string>
     <string name="enable">เปิดใช้งาน</string>
     <string name="dock_edit">แก้ไขแถบแอป</string>
+    <string name="power_menu">รีสตาร์ท…</string>
     <string name="dock_edit_hint">เลือกตำแหน่งในแถบแอปที่ต้องการเปลี่ยน แล้วกด OK กดย้อนกลับเพื่อเสร็จสิ้น</string>
     <string name="dock_edit_pick_app">จากนั้นเลือกแอปที่จะวางตรงนั้น แล้วกด OK กดย้อนกลับเพื่อเลือกตำแหน่งอื่น</string>
     <string name="tile_add_to_dock">เพิ่มในแถบแอป</string>
@@ -62,4 +67,5 @@
         <item quantity="other">%1$d แอป</item>
     </plurals>
     <string name="greeting_with_name">%1$s %2$s</string>
+    <string name="game_live">กำลังถ่ายทอดสด</string>
 </resources>

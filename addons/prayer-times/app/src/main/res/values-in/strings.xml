@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jadwal Sholat</string>
+    <string name="prayer_fajr">Subuh</string>
+    <string name="prayer_sunrise">Syuruq</string>
+    <string name="prayer_dhuhr">Dzuhur</string>
+    <string name="prayer_asr">Ashar</string>
+    <string name="prayer_maghrib">Maghrib</string>
+    <string name="prayer_isha">Isya</string>
+    <string name="prayer_in">%1$s dalam %2$s</string>
+    <string name="prayer_tomorrow">%1$s besok</string>
+    <string name="prayer_alert_badge">WAKTU SHOLAT</string>
+    <string name="prayer_alert_title">Waktu %1$s</string>
+    <string name="prayer_alert_dismiss">%1$ds</string>
+    <string name="notification_title">Waktu Sholat %1$s Telah Tiba</string>
+    <string name="notification_body">Saatnya menunaikan ibadah sholat %1$s (%2$s) untuk wilayah %3$s</string>
+    <string name="reminders_active">Pengingat aktif</string>
+    <string name="updated_at">diperbarui %1$s</string>
+    <string name="loading">Memuat…</string>
+    <string name="offline">Tidak dapat terhubung ke Aladhan. Menampilkan jadwal terakhir.</string>
+    <string name="unexpected_error">Jawaban tidak terduga dari Aladhan.</string>
+</resources>

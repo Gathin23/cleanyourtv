@@ -1,6 +1,6 @@
 """The Keys table in themes/README.md defines each key once.
 
-The recipe in AGENTS.md says to add a key's row to this table, and four contributors each did exactly
+The switch recipe (docs/workflows/launcher-switch.md) says to add a key's row to this table, and four contributors each did exactly
 that when they taught `app_keys` a new form (a scancode on 20 Oct, `input:` on 21 Oct, `hold:` on 22
 Oct), so the table ended up with four `app_keys` rows: the third one lost the scancode form that the
 first two document, and a reader who finds it first concludes scancodes are not supported.

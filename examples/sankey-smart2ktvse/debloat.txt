@@ -22,7 +22,7 @@ com.zeasn.tokenapp             # Token management
 com.zeasn.hotelmodelservice    # Hotel mode (not needed for home use)
 com.zeasn.deviceportal.asdprovider.certified  # Device portal
 com.zeasn.tv.cast              # Casting bloat (not the system cast)
-com.zeasn.livetv               # Live TV service - SKIPPED during disable (needed for HDMI inputs)
+# com.zeasn.livetv             # Live TV service: keep it. Disabling it gives "No Signal" on every input (HDMI included)
 com.zeasn.whaleos.settings     # Whale OS settings overlay
 
 # Factory/test apps
@@ -37,8 +37,12 @@ com.whaletv.web.app_runtime    # Web app runtime
 # Android ad services
 com.android.adservices.api     # Android ad services
 
+# Camera app: this set has none. Disabled by hand on that unit, not by this list;
+# uncomment the line to have the list do it.
+# com.android.camera2          # Camera (a system app: pm disable-user works, pm uninstall fails with DELETE_FAILED_INTERNAL_ERROR)
+
 # Unknown services
-com.mirakulo.astrotv.service   # Unknown service (safe to disable)
+com.mirakulo.astrotv.service   # Ginga interactive TV for ISDB-Tb broadcasts; disabling only turns broadcast interactivity off
 
 # System updaters (disable to prevent bloat from returning)
 com.droidlogic.updater         # OTA updater
@@ -50,11 +54,13 @@ com.whaletv.launcher           # Original Whale TV launcher
 # Notes:
 # - com.zeasn.livetv was NOT disabled because it provides the software layer
 #   for HDMI/AV/tuner inputs. Disabling it causes "No Signal" on all inputs.
-# - com.android.camera2 was disabled but is a system app (pm disable-user works,
-#   pm uninstall fails with DELETE_FAILED_INTERNAL_ERROR)
+# - com.android.camera2 is not part of the set this list applies: it was disabled
+#   by hand on that unit. It is a system app, so pm disable-user works while
+#   pm uninstall fails with DELETE_FAILED_INTERNAL_ERROR; the commented-out line
+#   above lets the list do it.
 # - MENU+1147 does NOT work on SMART2KTVSE model (tested, nothing appears)
 # - To enable ADB: Install Activity Launcher app from USB, use it to access
 #   hidden Android Settings -> Developer options -> enable USB debugging
-# - To restore everything: tools/restore.sh sankey-debloat.txt
+# - To restore everything: tools/restore.sh examples/sankey-smart2ktvse/debloat.txt com.whaletv.launcher
 # - Stock launcher package: com.whaletv.launcher
 # - Live TV package: com.zeasn.livetv

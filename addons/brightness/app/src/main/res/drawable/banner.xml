@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a screen bright on the left, dim and warm on the right, under a half sun. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#3A4654" android:pathData="M24,24h136v132h-136z" />
+    <path android:fillColor="#2A1D10" android:pathData="M160,24h136v132h-136z" />
+    <path android:fillColor="#F5A524" android:pathData="M160,62a28,28 0 0 1 0,56z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M160,62a28,28 0 0 0 0,56z" />
+    <path android:fillColor="#F5A524" android:pathData="M24,146h272v10h-272z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M24,146h180v10h-180z" />
+</vector>

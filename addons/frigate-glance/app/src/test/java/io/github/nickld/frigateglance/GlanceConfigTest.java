@@ -12,7 +12,7 @@ public class GlanceConfigTest {
             "\"mqtt\":\"mqtt://u:p@192.168.1.10:1883\",\"frigateUrl\":\"https://192.168.1.11:8971\"";
     private static final String FULL = "{" + REQUIRED
             + ",\"frigateUser\":\"viewer\",\"frigatePassword\":\"pw\",\"topicPrefix\":\"frigate\""
-            + ",\"rtspUser\":\"r\",\"rtspPassword\":\"rp\",\"cameras\":{\"frontdoooor\":\"Front door\"}"
+            + ",\"rtspUser\":\"r\",\"rtspPassword\":\"rp\",\"cameras\":{\"porch\":\"Front door\"}"
             + ",\"labels\":[\"person\"],\"severity\":\"alerts_and_detections\",\"corner\":\"top-left\""
             + ",\"dismissSeconds\":15,\"snoozeMinutes\":30,\"liveVideo\":false,\"boxes\":false"
             + ",\"dismissKey\":\"KEYCODE_MENU\",\"snoozeKey\":\"KEYCODE_INFO\"}";
@@ -93,7 +93,7 @@ public class GlanceConfigTest {
     public void readsEveryKey() {
         GlanceConfig c = GlanceConfig.parse(FULL);
         assertEquals("viewer", c.frigateUser);
-        assertEquals("Front door", c.cameras.get("frontdoooor"));
+        assertEquals("Front door", c.cameras.get("porch"));
         assertTrue(c.labels.contains("person"));
         assertEquals("alerts_and_detections", c.severity);
         assertEquals("top-left", c.corner);
@@ -127,8 +127,8 @@ public class GlanceConfigTest {
 
     @Test
     public void streamsMapCamerasToGo2rtcStreams() {
-        GlanceConfig c = GlanceConfig.parse(requiredPlus("\"streams\":{\"frontdoooor\":\"frontdoooor_sub\"}"));
-        assertEquals("frontdoooor_sub", c.streams.get("frontdoooor"));
+        GlanceConfig c = GlanceConfig.parse(requiredPlus("\"streams\":{\"porch\":\"porch_sub\"}"));
+        assertEquals("porch_sub", c.streams.get("porch"));
         assertTrue(GlanceConfig.parse("{" + REQUIRED + "}").streams.isEmpty());
     }
 

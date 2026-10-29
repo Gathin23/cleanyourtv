@@ -1,0 +1,13 @@
+{
+  "dock_apps": [
+    "com.plexapp.android",
+    "com.oumi.utility.media.hub",
+    "hami.androidtv",
+    "com.google.android.youtube.tv"
+  ],
+  "hidden_apps": [
+    "com.android.tv.settings"
+  ],
+  "live_tv_package": "com.google.android.tv",
+  "columns": 4
+}

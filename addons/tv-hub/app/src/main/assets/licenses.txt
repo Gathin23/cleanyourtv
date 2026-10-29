@@ -1,0 +1,11 @@
+TV Hub is free software under the MIT licence. It has no ads, no accounts, no tracking and no telemetry, and it brings no channels of its own: it plays the sources you add. Only use playlists and services you are allowed to watch.
+
+Third-party software in this app, all under the Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0):
+
+- AndroidX Media3 (ExoPlayer, HLS, UI), Copyright The Android Open Source Project
+- AndroidX RecyclerView, Annotation and Core, Copyright The Android Open Source Project
+- Kotlin standard library and kotlinx.coroutines, Copyright JetBrains s.r.o. and Kotlin contributors
+
+Not included: no code from OpenTV (GPL-3.0), Dispatcharr (AGPL-3.0) or Kodi (GPL-2.0). TV Hub only reads Dispatcharr's documented playlist and guide addresses and the HDHomeRun tuners' local HTTP interface.
+
+Names such as Pluto TV, Tubi, Plex, Kodi, HDHomeRun and Dispatcharr belong to their owners and are used only to name the apps and devices TV Hub can open or read. TV Hub is not affiliated with them or with CleanYourTV.

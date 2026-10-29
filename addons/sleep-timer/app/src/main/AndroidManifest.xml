@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Android 12+: the timer fires on the minute; without it the alarm may come a few minutes late. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Android 10 and later only let an app open the warning from the background when it may draw over other
+         apps. the install script grants it; on Android 9 it is not needed. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/banner"
+        android:label="@string/app_name">
+
+        <!-- The quick bar, for a remote button: map it in the launcher's app_keys as
+             hold:<keycode>:io.github.luyzfernando08.sleeptimer/.QuickActivity. The tile and the card open the picker. -->
+        <activity
+            android:name=".QuickActivity"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- Bedtime in one press: a 30-minute timer plus Brightness's night mode, off again on the next press. -->
+        <activity
+            android:name=".BedtimeActivity"
+            android:taskAffinity=""
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- The timer picker: the app's own tile and, on the cleanyourtv launcher, its module card. -->
+        <activity
+            android:name=".TimerActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+
+        <!-- The last minute: a countdown over whatever is playing, with "15 more minutes" and "Now". -->
+        <activity
+            android:name=".WarningActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/Warning" />
+
+        <!-- Exported only to callers holding WRITE_SECURE_SETTINGS (the adb shell), for the TEST action. -->
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+
+        <!-- Its only job is the "lock screen" global action, which on Android 9 and later puts the TV to sleep: an
+             ordinary app has no other way to. It asks for no events and cannot read the screen. -->
+        <service
+            android:name=".SleepService"
+            android:exported="true"
+            android:label="@string/service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/sleep_service" />
+        </service>
+    </application>
+</manifest>

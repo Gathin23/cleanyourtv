@@ -1,0 +1,6 @@
+{
+  "tv": "Kalley R10G (device R10G, product ACER_FFM, MOKA, Realtek RTD2875P), Latin America",
+  "os": "Google TV 14",
+  "brand": "Kalley",
+  "notes": "Same hardware family as `prismplus-q65-ultra-r10g/` with different preloads: Claro, Kick, JioTV, CBS, Apple TV, Prime Video, karaoke, Play Movies; launcherx and setupwraith stay on: disabling both boot-looped a second set (#1807), so Home goes to the new launcher through `stock_home_redirect` and the key helpers; the firmware re-enables most preloads at boot (as on the Acer R4G); Input key is KEYCODE_TV_INPUT (RC860G) and needs InputKeyService; keep Realtek dtv/atv for inputs and OTA"
+}

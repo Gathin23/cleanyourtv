@@ -1,0 +1,15 @@
+{
+  "dock_apps": ["com.netflix.ninja", "com.hulu.livingroomplus", "com.wbd.stream", "com.apple.atve.androidtv.appletv"],
+  "columns": 4,
+  "live_tv_package": "com.tcl.tv",
+  "hidden_apps": [],
+  "power_on_home": true,
+  "restore_key_services": true,
+  "app_keys": [
+    "83:com.android.tv.settings",
+    "4001:com.tcl.tv",
+    "4062:com.netflix.ninja",
+    "4099:com.amazon.amazonvideo.livingroom",
+    "190:com.google.android.youtube.tv"
+  ]
+}

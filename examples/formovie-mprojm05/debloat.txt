@@ -12,10 +12,24 @@
 # Kept: com.fengmi.projector.imaging (focus, keystone, auto keystone; auto keystone still works with Camera2 off),
 # com.fengmi.fmsettings, com.fengmi.platform, com.formovie.fmutils, com.formovie.gsettings (projector settings,
 # voice key, USB), com.formovie.launchboard (Formovie app drawer), droidlogic services, Live Channels, Play Store and Services.
-# Remote ("Xiaomi RC", Vendor_2717_Product_32b9.kl): the gear button sends KEY_APPSELECT (580), mapped to
-# KEYCODE_ALL_APPS (284), not KEY_TAPE (384). With tvlauncher disabled it does nothing; settings_key_keycodes 284 with
-# HOME_KEY_SERVICE=1 makes it open Settings, but that helper stops a held Volume Up from ramping (one step per press).
+# Remote ("Xiaomi RC", Vendor_2717_Product_32b9.kl): the apps button (a grid of squares; the remote has no gear
+# button) sends KEY_APPSELECT (580), mapped to KEYCODE_ALL_APPS (284), not KEY_TAPE (384). With tvlauncher disabled
+# it does nothing; settings_key_keycodes 284 with HOME_KEY_SERVICE=1 makes it open Settings, but that helper stops a
+# held Volume Up from ramping (one step per press). It can run autofocus instead: README.md in this folder.
 # Firmware updates come through TvSettings; no separate updater package.
+#
+# Second unit: Xiaomi Mi Smart Projector 2 (same MiProjM05 / eva), build PQ3B.190705.003.1912 (older than the first
+# unit's), fingerprint MI/eva/eva:9/PQ3B.190705.003/1912:user/release-keys, security patch 2021-09-05, 2 GB RAM,
+# from 2026-10-25.
+#   - This list applied cleanly on 2026-10-25, and nothing came back after a reboot. The owner kept Prime Video and
+#     Ambient (backdrop) enabled. This build also has com.fengmi.autofocustest, disabled the same day: it is
+#     commented out below until it has been lived with.
+#   - Autofocus and keystone still work with Camera2 disabled.
+#   - One older saved Wi-Fi network belonged to setupwraith; the network in use belonged to android.uid.system.
+#     setupwraith claims no HOME here and was left enabled.
+#   - Also on this build, kept: cn.formovie.fengos.iot (Xiaomi MIoT host service, lets the Mi Home app control the
+#     projector; starts at boot) and com.fengos.fmexplorer (Formovie file manager and USB media player).
+#   - The owner put autofocus on the Home button and Home on the apps button (README.md in this folder).
 
 # Telemetry and partner auto-installs
 com.google.android.feedback
@@ -43,6 +57,8 @@ com.google.android.videos
 com.android.camera2                          # the webcam is driven by Formovie's own cameraservice_fm, not this app
 com.android.printspooler
 com.fengmi.testsuite                         # factory test suite: disabled, never launched
+# com.fengmi.autofocustest                   # untested: factory autofocus test (second unit's build), one activity, no
+                                             # services; never launched. Autofocus itself is com.fengmi.projector.imaging
 
 # Stock launcher (only after the new launcher is Home)
 com.google.android.tvlauncher

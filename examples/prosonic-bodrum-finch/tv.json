@@ -1,0 +1,6 @@
+{
+  "tv": "Prosonic Android TV (Vestel-built, BODRUM, finch, MediaTek m7332), Denmark",
+  "os": "Android TV 14",
+  "brand": "Prosonic",
+  "notes": "Same Vestel platform as Cecotec shandao and JVC menlo: Vestel reporter/logger/speedup/smartcenter and auto-installs, Google ad services, feedback and partner setup, ANT+, Health Connect, CTS shims; Netflix, Prime Video, Disney+, HBO Max, Viaplay, DR TV, YouSee (also claims HOME) and Assistant off on this set by choice, left commented in the list; fusion.android.tv.demo and partnercustomizer kept; the hotkey service starts Netflix and Prime itself, so app_keys never see those buttons; key_filter stops held volume ramping; 1.4 GB"
+}

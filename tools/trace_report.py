@@ -17,6 +17,7 @@ frame times and missed deadlines over the whole recording.
 import argparse
 import glob
 import json
+import math
 import os
 import re
 import statistics
@@ -81,34 +82,38 @@ def _start(q, package):
     end = None
     resume = q(slices(main, f"s.name = 'activityResume' and s.ts >= {anchor}"))
     out = {}
-    if bind:
+    if bind and bind[0]["dur"] >= 0:
         out["bindApplication"] = bind[0]["dur"] / MS
     created = q(slices(main, f"s.name = 'activityStart' and s.ts >= {anchor}"))
-    if created:
+    if created and created[0]["dur"] >= 0:
         out["activityStart"] = created[0]["dur"] / MS
     if start:
         first_start = [s for s in start if s["ts"] >= anchor] or start
-        out["onStart"] = first_start[0]["dur"] / MS
-    if resume:
+        if first_start[0]["dur"] >= 0:
+            out["onStart"] = first_start[0]["dur"] / MS
+    if resume and resume[0]["dur"] >= 0:
         out["onResume"] = resume[0]["dur"] / MS
         resumed = resume[0]["ts"] + resume[0]["dur"]
         traversal = q(slices(main, f"s.name = 'traversal' and s.ts >= {resumed}"))
-        if traversal:
+        if traversal and traversal[0]["dur"] >= 0:
             t = traversal[0]
             out["first traversal"] = t["dur"] / MS
             end = t["ts"] + t["dur"]
             if render is not None:
                 drawn = q(slices(render, f"s.name like 'DrawFrame%' and s.ts >= {t['ts']}"))
                 if drawn:
-                    end = max(end, drawn[0]["ts"] + drawn[0]["dur"])
-            out["first frame"] = (end - anchor) / MS
+                    # Perfetto uses -1 when a slice has no end; it is not a completion time.
+                    end = max(end, drawn[0]["ts"] + drawn[0]["dur"]) if drawn[0]["dur"] >= 0 else None
+            if end is not None:
+                out["first frame"] = (end - anchor) / MS
     if render is not None:
         out["frames"] = one(q, f"select count(*) from slice s join thread_track tt on s.track_id = tt.id "
-                               f"where tt.utid = {render} and s.name like 'DrawFrame%' "
+                               f"where tt.utid = {render} and s.name like 'DrawFrame%' and s.dur >= 0 "
                                f"and s.ts >= {anchor} and s.ts < {anchor + WINDOW_NS}", 0)
-    if one(q, f"select 1 from actual_frame_timeline_slice where upid = {upid} limit 1"):
+    if one(q, f"select 1 from actual_frame_timeline_slice where upid = {upid} and dur >= 0 "
+              f"and ts >= {anchor} and ts < {anchor + WINDOW_NS} limit 1"):
         out["missed"] = one(q, f"select count(*) from actual_frame_timeline_slice where upid = {upid} "
-                               f"and jank_type like '%App Deadline Missed%' "
+                               f"and dur >= 0 and jank_type like '%App Deadline Missed%' "
                                f"and ts >= {anchor} and ts < {anchor + WINDOW_NS}", 0)
     return out, anchor, end
 
@@ -118,26 +123,27 @@ def nav_metrics(q, package):
     upid, main, render = threads(q, package)
     if upid is None:
         return {}
-    frames = sorted(r["dur"] / MS for r in q(f"select dur from actual_frame_timeline_slice where upid = {upid}"))
+    frames = sorted(r["dur"] / MS for r in q(f"select dur from actual_frame_timeline_slice "
+                                            f"where upid = {upid} and dur >= 0"))
     out = {}
     if frames:
         out["frames"] = len(frames)
         out["frame median"] = statistics.median(frames)
-        out["frame p90"] = frames[min(len(frames) - 1, int(0.9 * len(frames)))]
+        out["frame p90"] = frames[math.ceil(0.9 * len(frames)) - 1]
     if render is not None:
-        draws = [r["dur"] / MS for r in q(slices(render, "s.name like 'DrawFrame%'", "s.dur"))]
+        draws = [r["dur"] / MS for r in q(slices(render, "s.name like 'DrawFrame%' and s.dur >= 0", "s.dur"))]
         if not frames:
             out["frames"] = len(draws)
         if draws:
             out["draw median"] = statistics.median(draws)
         waits = [r["dur"] / MS for r in q(f"select s.dur from slice s join thread_track tt on s.track_id = tt.id "
                                            f"join thread t using(utid) where t.upid = {upid} "
-                                           f"and s.name like 'waiting for GPU completion%'")]
+                                           f"and s.name like 'waiting for GPU completion%' and s.dur >= 0")]
         if waits:
             out["gpu median"] = statistics.median(waits)
     if frames:
         out["missed"] = one(q, f"select count(*) from actual_frame_timeline_slice where upid = {upid} "
-                               f"and jank_type like '%App Deadline Missed%'", 0)
+                               f"and dur >= 0 and jank_type like '%App Deadline Missed%'", 0)
     return out
 
 
@@ -147,7 +153,9 @@ def scenario_of(path):
     if sidecar and os.path.exists(sidecar):
         try:
             with open(sidecar) as f:
-                return json.load(f).get("scenario", "")
+                data = json.load(f)
+                if isinstance(data, dict):
+                    return data.get("scenario", "")
         except (OSError, ValueError):
             pass
     return os.path.basename(path).split("-")[0]

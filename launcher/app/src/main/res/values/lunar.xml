@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- lunar_date (config.json, off by default): the lunisolar date under the date. Translated where the
+     calendar is used (ko, vi, zh-rCN, zh-rTW); other locales show the English names on purpose. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="lunar_date_format">Lunar %1$d/%2$s · %3$s</string>
+    <string name="lunar_month_leap">%1$d (leap)</string>
+    <string name="lunar_year">Year of the %2$s</string>
+    <string-array name="lunar_stems">
+        <item>Jia</item><item>Yi</item><item>Bing</item><item>Ding</item><item>Wu</item>
+        <item>Ji</item><item>Geng</item><item>Xin</item><item>Ren</item><item>Gui</item>
+    </string-array>
+    <string-array name="lunar_branches">
+        <item>Rat</item><item>Ox</item><item>Tiger</item><item>Rabbit</item><item>Dragon</item><item>Snake</item>
+        <item>Horse</item><item>Goat</item><item>Monkey</item><item>Rooster</item><item>Dog</item><item>Pig</item>
+    </string-array>
+</resources>

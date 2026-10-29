@@ -1,0 +1,32 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.disney.disneyplus",
+    "com.wbd.stream",
+    "com.apple.atve.androidtv.appletv"
+  ],
+  "columns": 6,
+  "fill_dock": false,
+  "app_library": false,
+  "tile_menu": true,
+  "background_color": "#090C14",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 1,
+  "wallpaper_order": "sequential",
+  "wallpaper_dim": 0,
+  "wallpaper_captions": false,
+  "wallpaper_true_color": true,
+  "home_idle_clock_minutes": 2,
+  "cinematic_home": false,
+  "dock_title": false,
+  "dock_glass": true,
+  "dock_opacity": 65,
+  "icon_only_buttons": true,
+  "ambient_glow": false,
+  "app_glow": false,
+  "glow_style": "off",
+  "focus_overshoot": false,
+  "advanced_effects": true
+}

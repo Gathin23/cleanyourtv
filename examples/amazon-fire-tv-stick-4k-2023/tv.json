@@ -1,0 +1,6 @@
+{
+  "tv": "Amazon Fire TV Stick 4K, 2nd gen 2023 (AFTKM, karat), Brazil",
+  "os": "Fire OS 8.1.8.5 / Android 11",
+  "brand": "Amazon Fire TV",
+  "notes": "First Fire OS 8 list, every new package checked with `dumpsys package`: Amazon telemetry, ACR, presence sensing (`ftvspatial`), ad/recommendation feeders, Live tab and Fire TV Channels, Shopping, Music/Photos/Silk/Luna/Kids, Ambient, Alexa extras incl. smart home, calling and Alexa+ skill connections; seven protected packages noted; voice search, Prime Video, casting and mirroring, Matter casting, OTA kept; leave animation scales at 1.0 (at 0.5 the ☰ side menu opens nothing); Pi-hole via static DNS; debloat only"
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Luminosità</string>
+    <string name="channel_name">Attenuazione dello schermo</string>
+    <string name="notification_text">Schermo attenuato. Apri Luminosità per cambiare o disattivare.</string>
+    <string name="quick_brightness">Luminosità %1$d%%</string>
+    <string name="quick_night_brightness">Luminosità notturna %1$d%%</string>
+    <string name="quick_hint">◀ ▶ regola · OK chiudi</string>
+</resources>

@@ -10,6 +10,7 @@
     <string name="not_connected">Нет устройства</string>
     <string name="live_tv">Телеканалы</string>
     <string name="no_inputs">Источники не найдены</string>
+    <string name="more_inputs">Другие источники</string>
     <string name="good_morning">Доброе утро</string>
     <string name="good_afternoon">Добрый день</string>
     <string name="good_evening">Добрый вечер</string>
@@ -67,6 +68,7 @@
     <string name="card_state_new_key">Новый ключ</string>
     <string name="card_state_new_label">Новое название</string>
     <string name="launcher_settings">Настройки главного экрана</string>
+    <string name="native_settings">Настройки производителя</string>
     <string name="columns_label">Приложений в ряду</string>
     <string name="dock_opacity_label">Непрозрачность панели дока</string>
     <string name="rows_below_dock_label">Рядов под доком</string>
@@ -78,6 +80,8 @@
     <string name="animations_state">Анимация: %1$s</string>
     <string name="advanced_effects">Расширенные эффекты</string>
     <string name="advanced_effects_state">Расширенные эффекты: %1$s</string>
+    <string name="open_on_start_label">Открывать при запуске</string>
+    <string name="open_on_start_state">Открывать при запуске: %1$s</string>
     <string name="advanced_effects_warning">Приподнимает плитки, увеличивает значки и сглаживает переходы цвета. Может увеличить расход памяти; результат зависит от телевизора.</string>
     <string name="follow_theme">Следовать теме (сбросить выбор)</string>
     <string name="follow_theme_hint">Использовать параметры расположения и анимации текущей темы или встроенные. Установка или сброс темы также удаляет выбор на телевизоре.</string>
@@ -90,6 +94,7 @@
     <string name="off">Выкл.</string>
     <string name="enable">Включить</string>
     <string name="dock_edit">Изменить док</string>
+    <string name="power_menu">Перезагрузить…</string>
     <string name="dock_edit_hint">Выберите место в доке и нажмите ОК. Назад — готово.</string>
     <string name="dock_edit_pick_app">Теперь выберите приложение для этого места и нажмите ОК. Назад — выбрать другое место.</string>
     <string name="tile_add_to_dock">Добавить в док</string>
@@ -145,4 +150,5 @@
     <!-- Cinematic top shelf (cinematic_home): the line under the focused dock app's name; %1$s is when it was
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Последний запуск: %1$s</string>
+    <string name="game_live">Сейчас в эфире</string>
 </resources>

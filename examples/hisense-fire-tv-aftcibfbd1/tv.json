@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense Fire TV (AFTCIBFBD1, coyote, MediaTek), US",
+  "os": "Fire OS 8.0 / Android 11",
+  "brand": "Hisense",
+  "notes": "First Fire OS 8 TV: Amazon ACR, ad/recommendation feeders, advertising ID, Shopping, demo, tutorials, telemetry; Alexa, AirPlay, Miracast and preloads (Tubi, Music/Photos, miniTV, Naatyam, games, Ambient) off by choice; Alexa voice (vizzini) is re-enabled at every boot and nothing adb can do sticks; two protected packages noted; HDMI input switching is Amazon-only (TUNE_INPUT is signature-level); AdGuard Private DNS works; Kids, OTA, Live TV, Silk kept; second unit 65U65SFC (U65 Pro, US) adds more telemetry, popups and promos, Alexa extras, Gallery and Luna; debloat only, see the 2023 stick list for more packages"
+}

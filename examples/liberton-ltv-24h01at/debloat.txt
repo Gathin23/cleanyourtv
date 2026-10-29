@@ -1,0 +1,58 @@
+# Liberton LTV 24H01AT (Liberton, built by Changhong, device redwood, Android 11 API 30,
+# firmware RTM6.230109.263, security patch 2023-01). Stock launcher: com.google.android.tvlauncher.
+# The vendor layer is Homwee (com.homwee.*). Adapted from examples/rca-ai-pont (same redwood board)
+# and examples/chiq-ai-pont (same Android 11 Homwee family). Verified against this TV's 122 packages.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/liberton-ltv-24h01at/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/liberton-ltv-24h01at/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# KEEP, even though the names look like bloat (from the redwood-family notes):
+# - com.google.android.leanbacklauncher.partnercustomizer: provides the tvlauncher.widget content
+#   provider. Without it com.mediatek.tv.service crash-loops after the next reboot and the Input
+#   key and other remote hotkeys stop working.
+# - com.homwee.factory, com.homwee.synckey (remote key service), com.mediatek.wwtv.setupwizard
+#   (Live TV channel scan), all com.mediatek.* (Live TV, inputs, remote pairing).
+#
+# Owner's choices (2026-10-23): keep the voice assistant, keep Chromecast casting, disable the
+# vendor updaters (commented out below, since shared lists keep updates), apps suggested by probe (Kyivstar TV, Netflix, YouTube, Prime Video, Spotify).
+# No Anoki/FAST-channel packages on this firmware; no com.android.tv.feedbackconsent.
+
+# Homwee store, ads, silent installers and media extras
+com.homwee.aipont                       # brand portal
+com.homwee.store
+com.homwee.help                         # e-manual
+com.homwee.chinstallapk                 # silent installer
+com.homwee.chtvmanager                  # "TV Manager" cleaner / memory optimizer
+# com.homwee.upgrade                    # vendor updater: kept in the shared list; the owner disabled it, uncomment to do the same
+# com.homwee.dmt.upgrade                # second factory updater: kept, as above
+android.autoinstalls.config.homwee      # partner-app auto-installs
+com.homwee.mmp.fileexplorer             # re-enable in Settings to browse USB storage
+com.homwee.mmp.imageplayer              # re-enable in Settings to view photos from USB
+com.homwee.mmp.screenshare              # brand screen mirroring; Google Cast (mediashell) stays
+com.homwee.multiscreenshare
+
+# Telemetry, ads and sponsored content rows
+com.google.android.tvrecommendations    # sponsored poster rows in the stock launcher
+com.google.android.feedback             # feedback reports to Google (found by tools/privacy.py)
+com.google.android.partnersetup
+com.google.android.syncadapters.calendar
+com.google.android.backdrop             # ambient screensaver, replaced by the launcher's Clock
+
+# Assistant, accessibility and preloads the owner does not use
+com.homwee.alexacontrol                 # Alexa integration; Google Assistant stays (katniss kept)
+# com.google.android.marvin.talkback    # accessibility: refused by the firmware (SecurityException), left enabled
+com.google.android.tv.remote.service    # Android phone-as-remote app; Chromecast is mediashell
+com.google.android.play.games
+com.google.android.videos               # Play Movies & TV
+com.google.android.youtube.tvmusic
+
+# Kept per owner's choice:
+# com.google.android.katniss           # Google Assistant; the remote's mic button needs it
+# com.google.android.tts               # voice answers
+# com.google.android.apps.mediashell   # Chromecast casting from the phone
+# com.google.android.tungsten.setupwraith  # Home works untouched on this tvlauncher firmware;
+#                                           # and disabling it can delete the saved Wi-Fi network
+# com.google.android.tvlauncher        # disabled by launcher/build-and-install.sh only after
+#                                       # the new home is installed and set as default
+# com.changhong.inface.net.wfd         # Miracast source, not in the tested lists, left as is

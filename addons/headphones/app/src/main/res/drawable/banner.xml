@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a pair of headphones over a dark screen. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#1E2630" android:pathData="M24,24h272v132h-272z" />
+    <path android:strokeColor="#7C9CFF" android:strokeWidth="10" android:fillColor="#00000000"
+        android:pathData="M122,112v-22a38,38 0 0 1 76,0v22" />
+    <path android:fillColor="#7C9CFF" android:pathData="M110,100h22v40h-22z" />
+    <path android:fillColor="#7C9CFF" android:pathData="M188,100h22v40h-22z" />
+</vector>

@@ -1,0 +1,65 @@
+# TCL 55A300W picture-frame QLED Google TV, 2023, US (device G08, model "Smart TV", product G08_4K_US_NF,
+# client type TCL-NA-MT9653-S1-A300, MediaTek MT9653), Android 12 (Google TV, SDK 31),
+# firmware STT2.230203.001 AS15, software V8-T653T02-LF1V179.
+# Same G08 board as examples/tcl-g08-us-google-tv, one Android version older (that list is AU16, Android 14);
+# it was the starting point, and every entry below is one of its lines. Its Android 14 ad and privacy
+# services, com.tcl.browser and com.tcl.repairguide are not on this firmware.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55a300w/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55a300w/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv. Nothing was disabled
+# from the factory.
+# Left enabled on purpose: com.tcl.tv, com.tcl.tvinput, com.tcl.suspension (the input menu), com.tcl.initsetup,
+# com.tcl.useragreement, com.tcl.factory.view, com.tcl.gamebar, com.tcl.tcl_bt_rcu_service (the remote),
+# com.tcl.UpdatePeripheral, com.google.android.katniss (voice), Chromecast, AirPlay (com.tcl.airplay2), Play
+# Store and Play Services, all com.mediatek.*, and the owner's streaming apps (Prime Video kept by choice).
+#
+# Wi-Fi: the network the TV was using had been saved by setupwraith during first setup. It was forgotten and
+# joined again in Settings > Network & Internet before batch 3; `dumpsys wifi | grep -o 'cname=[^ ]*'` then
+# named only com.android.tv.settings, and tools/disable.sh disabled setupwraith without FORCE_SETUPWRAITH.
+#
+# Launcher: launcher/build-and-install.sh with INPUT_KEY_SERVICE=1 and the app_keys in config.json. The remote
+# here is the white TCL one with Netflix and YouTube buttons. Netflix and Settings send the same codes as the
+# 55Q77K's in examples/tcl-g08-us-google-tv/README.md (4062, 83), but YouTube sends 4065 (scancode 245, taken by
+# TCL's TclShortCutKeyManager), not 190, so it needs "4065:com.google.android.youtube.tv". Its TV button (the screen icon right of
+# Home) sends keycode 4001, scancode 365: com.tcl.tv's GlobalKeyService turns it into KEYCODE_GUIDE for launcherx
+# while the TV app is not running, so with launcherx off it did nothing. "4001:guide:com.tcl.tv" opens the
+# program guide again (com.tcl.tv/.epg.EpgProActivity), as before; "4001:input:com.tcl.tvinput/.TunerInputService/HW2"
+# switches to the antenna without the guide. All checked on the real remote. A held volume button now steps once
+# per press (the key-helper trade in that README); the owner accepted it.
+#
+# Applied 26 October 2026 in three batches with a screenshot and crash-log check after each, then launcherx by
+# build-and-install.sh, then reboot-checked: all 22 stayed disabled and Home stayed on the launcher. Home, Input,
+# the mic button and a power cycle checked on the real remote. One day of use so far.
+
+# Batch 1: TCL promo, push messages, retail / hotel demo, telemetry
+com.tcl.tv.plus                        # TCL TV+ free channels
+com.tcl.messagebox                     # TCL pushed messages and promos
+com.tcl.esticker                       # retail-demo sticker
+com.tcl.hotelmenu                      # hotel-mode portal
+com.tcl.exhibit                        # store demo
+com.tcl.tv.tclhome_passive             # TCL content pushed to the home screen at boot
+com.tcl.dashboard                      # TCL Home panel and its promos
+com.tcl.logkit                         # log capture
+com.google.android.feedback
+com.tcl.ocean.instructions             # on-TV manual
+com.android.printspooler
+com.google.android.syncadapters.calendar
+com.google.android.onetimeinitializer
+com.tcl.usercenter                     # TCL account
+
+# Batch 2: off by choice
+com.tcl.smartalexa                     # Alexa
+com.tcl.channelplus                    # TCL Live FAST channels (a Live TV input)
+com.tcl.hearaid                        # hearing test / accessibility helper
+com.tcl.t_solo                         # Bluetooth "listen alone"
+com.google.android.videos              # Google TV / Play Movies storefront
+com.google.android.play.games
+
+# Batch 3: setup wizard; its RecoveryActivity takes Home when launcherx is off. Re-join Wi-Fi first (header).
+com.google.android.tungsten.setupwraith
+
+# Stock launcher, off once the new launcher is Home (build-and-install.sh does this)
+com.google.android.apps.tv.launcherx

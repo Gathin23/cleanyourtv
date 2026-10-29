@@ -3,6 +3,8 @@
 # Same software family as examples/tcl-43c645 (LF1V652) and the BeyondTV4 of examples/tcl-65c725, which shipped
 # the older com.google.android.tvlauncher; this unit runs launcherx.
 # Applied and verified on a real unit on 2026-10-20/21 (Ethernet, Wi-Fi off), with launcher/ as Home and a reboot.
+# Also: TCL 65C655 Pro, same build (TCL/G03_4K_GB/BeyondTV4:11/RP1A.200622.001/AR09, LF1V620), on Wi-Fi, 2026-10-23:
+# the list in five batches with launcher/ as Home and three reboots; the remote-mic note below and README.md.
 # Notes, remote keycodes and quirks: README.md in this folder.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55c725/debloat.txt
@@ -57,6 +59,7 @@ com.google.android.tungsten.setupwraith
 # com.tcl.versionUpdateApp             # TCL firmware updater
 # com.tcl.miracast                     # screen mirroring
 # com.google.android.apps.mediashell   # Chromecast
-# com.google.android.tv.remote.service # Google TV phone remote; also carries the remote's mic on other TCL sets
+# com.google.android.tv.remote.service # Google TV phone remote; also carries the remote's mic on other TCL sets,
+#                                      # and on the 65C655 Pro (AtvSearchAssistantService): disabled, voice stopped
 # com.tcl.gamebar                      # console game-mode overlay
 # com.tcl.t_solo                       # "Listen alone": TV audio to Bluetooth headphones

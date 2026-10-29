@@ -1,0 +1,6 @@
+{
+  "tv": "NVIDIA SHIELD TV 2017 (darcy)",
+  "os": "Android TV 11",
+  "brand": "NVIDIA Shield",
+  "notes": "NVIDIA and Google telemetry, promos and partner auto-installs, GameStream and NVIDIA Games, factory test tools, idle CTS/MIDI/GSI stubs; Assistant, Chromecast, firmware updates and the NAS/SMB packages kept (NVIDIA's Plex Media Server build uses them)"
+}

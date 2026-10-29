@@ -79,6 +79,49 @@ class StartMetricsTest(unittest.TestCase):
         self.assertEqual(m["first frame"], 165)
         self.assertEqual((m["bindApplication"], m["activityStart"]), (40, 50))
 
+    def test_unfinished_first_draw_does_not_establish_a_completed_first_frame(self):
+        for drawn_at in (1055, 1100):
+            with self.subTest(drawn_at=drawn_at):
+                q = fake_trace(cold=True)
+                self.addCleanup(q.close)
+                q(f"update slice set ts = {drawn_at * MS}, dur = -1 where name like 'DrawFrame%'")
+                m = report.start_metrics(q, PKG)
+                self.assertEqual((m["onResume"], m["first traversal"]), (30, 20))
+                self.assertNotIn("first frame", m)
+                self.assertEqual(m["frames"], 0)
+                self.assertEqual(report.start_window(q, PKG), (900 * MS, None))
+
+    def test_unfinished_lifecycle_durations_are_unavailable(self):
+        for name, metric in (("bindApplication", "bindApplication"), ("activityStart", "activityStart"),
+                             ("performStart%", "onStart"), ("activityResume", "onResume"),
+                             ("traversal", "first traversal")):
+            with self.subTest(name=name):
+                q = fake_trace(cold=True)
+                self.addCleanup(q.close)
+                q(f"update slice set dur = -1 where name like '{name}'")
+                m = report.start_metrics(q, PKG)
+                self.assertNotIn(metric, m)
+                self.assertTrue(all(value >= 0 for value in m.values()))
+                self.assertEqual(report.start_window(q, PKG)[0], 900 * MS)
+                if name in ("activityResume", "traversal"):
+                    self.assertNotIn("first frame", m)
+                    self.assertIsNone(report.start_window(q, PKG)[1])
+                else:
+                    self.assertEqual(m["first frame"], 165)
+
+    def test_missing_render_thread_or_draw_keeps_the_traversal_fallback(self):
+        for missing in ("thread", "draw"):
+            with self.subTest(missing=missing):
+                q = fake_trace(cold=True)
+                self.addCleanup(q.close)
+                if missing == "thread":
+                    q("delete from thread where name = 'RenderThread'")
+                else:
+                    q("delete from slice where name like 'DrawFrame%'")
+                m = report.start_metrics(q, PKG)
+                self.assertEqual(m["first frame"], 160)
+                self.assertEqual(report.start_window(q, PKG), (900 * MS, 1060 * MS))
+
     def test_frames_outside_the_window_are_not_counted(self):
         m = report.start_metrics(fake_trace(draws=[(1500, 8), (2600, 8)]), PKG)
         self.assertEqual(m["frames"], 2)
@@ -98,6 +141,26 @@ class StartMetricsTest(unittest.TestCase):
         m = report.start_metrics(fake_trace(frames=[16, 16], missed=0), PKG)
         self.assertEqual(m["missed"], 0)
 
+    def test_unfinished_frame_timeline_does_not_count_as_a_missed_completed_frame(self):
+        q = fake_trace(frames=[16, 16], missed=0)
+        self.addCleanup(q.close)
+        q("update actual_frame_timeline_slice set dur = -1, jank_type = 'App Deadline Missed' "
+          "where ts = 1080000000")
+        self.assertEqual(report.start_metrics(q, PKG)["missed"], 0)
+        q("update actual_frame_timeline_slice set dur = -1")
+        self.assertNotIn("missed", report.start_metrics(q, PKG))
+
+    def test_completed_timeline_outside_the_start_window_does_not_make_its_deadlines_available(self):
+        for completed_at in (800, 2400, 3000):
+            with self.subTest(completed_at=completed_at):
+                q = fake_trace(cold=True, frames=[16])
+                self.addCleanup(q.close)
+                q("update actual_frame_timeline_slice set dur = -1")
+                q(f"insert into actual_frame_timeline_slice values ({completed_at * MS}, {16 * MS}, 2, 'None')")
+                m = report.start_metrics(q, PKG)
+                self.assertNotIn("missed", m)
+                self.assertEqual(m["first frame"], 165)
+
     def test_newest_launcher_process_is_used(self):
         self.assertEqual(report.threads(fake_trace(), PKG), (2, 1, 2))
 
@@ -106,6 +169,20 @@ class StartMetricsTest(unittest.TestCase):
 
 
 class NavMetricsTest(unittest.TestCase):
+    def test_frame_p90_uses_nearest_rank_for_unsorted_samples(self):
+        for n, expected in ((1, 1), (5, 5), (9, 9), (10, 9), (11, 10), (20, 18), (100, 90)):
+            with self.subTest(n=n):
+                q = fake_trace(frames=list(range(n, 0, -1)))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], expected)
+
+    def test_frame_p90_excludes_the_slowest_tenth_at_the_boundary(self):
+        for n in (10, 20, 100):
+            with self.subTest(n=n):
+                q = fake_trace(frames=[16] * (9 * n // 10) + [1000] * (n // 10))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], 16)
+
     def test_frame_times_draws_gpu_and_missed_deadlines(self):
         q = fake_trace(frames=[10, 12, 14, 16, 40], missed=2, draws=[(1100, 6), (1120, 8)], gpu=[(1101, 2), (1121, 4)])
         m = report.nav_metrics(q, PKG)
@@ -135,6 +212,56 @@ class NavMetricsTest(unittest.TestCase):
         self.assertEqual(m["frames"], 2)
         self.assertEqual(m["frame median"], 16)
         self.assertEqual(m["missed"], 0)
+
+    def test_unfinished_draw_and_gpu_wait_do_not_improve_medians(self):
+        q = fake_trace(draws=[(1100, 6)], gpu=[(1060, 4), (1100, 2)])
+        self.addCleanup(q.close)
+        q("update slice set dur = -1 where ts = 1100000000")
+        m = report.nav_metrics(q, PKG)
+        self.assertEqual(m["frames"], 1)
+        self.assertEqual(m["draw median"], 10)
+        self.assertEqual(m["gpu median"], 4)
+
+    def test_only_unfinished_draws_and_waits_have_no_measured_durations(self):
+        q = fake_trace(gpu=[(1060, 4)])
+        self.addCleanup(q.close)
+        q("update slice set dur = -1 where track_id = 20")
+        m = report.nav_metrics(q, PKG)
+        self.assertEqual(m["frames"], 0)
+        self.assertNotIn("draw median", m)
+        self.assertNotIn("gpu median", m)
+
+    def test_completed_zero_duration_slices_are_kept(self):
+        q = fake_trace(frames=[0], missed=0, gpu=[(1060, 4)])
+        self.addCleanup(q.close)
+        q("update slice set dur = 0 where track_id = 20")
+        m = report.nav_metrics(q, PKG)
+        self.assertEqual(m["frames"], 1)
+        self.assertEqual(m["frame median"], 0)
+        self.assertEqual(m["frame p90"], 0)
+        self.assertEqual(m["draw median"], 0)
+        self.assertEqual(m["gpu median"], 0)
+
+    def test_unfinished_frame_timeline_does_not_improve_frame_times_or_counts(self):
+        q = fake_trace(frames=[16, 40], missed=0)
+        self.addCleanup(q.close)
+        q("update actual_frame_timeline_slice set dur = -1, jank_type = 'App Deadline Missed' "
+          "where ts = 1080000000")
+        m = report.nav_metrics(q, PKG)
+        self.assertEqual(m["frames"], 1)
+        self.assertEqual(m["frame median"], 16)
+        self.assertEqual(m["frame p90"], 16)
+        self.assertEqual(m["missed"], 0)
+
+    def test_only_unfinished_frame_timeline_keeps_the_draw_fallback(self):
+        q = fake_trace(frames=[16])
+        self.addCleanup(q.close)
+        q("update actual_frame_timeline_slice set dur = -1")
+        m = report.nav_metrics(q, PKG)
+        self.assertEqual(m["frames"], 1)
+        self.assertEqual(m["draw median"], 10)
+        for metric in ("frame median", "frame p90", "missed"):
+            self.assertNotIn(metric, m)
 
 
 class ReportTest(unittest.TestCase):
@@ -184,6 +311,41 @@ class FilesTest(unittest.TestCase):
             path.with_suffix(".json").write_text('{"scenario": "nav"}')
             self.assertEqual(report.scenario_of(str(path)), "nav")
             self.assertEqual(report.scenario_of(str(Path(tmp, "cold-3.pftrace"))), "cold")
+
+    def test_non_object_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            for text in ("[]", "null", '"nav"', "42"):
+                with self.subTest(sidecar=text):
+                    path.with_suffix(".json").write_text(text, encoding="utf-8")
+                    self.assertEqual(report.scenario_of(str(path)), "nav")
+
+    def test_object_sidecars_preserve_the_scenario_value(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            for data, expected in (({"scenario": "cold"}, "cold"), ({}, ""),
+                                   ({"scenario": ""}, ""), ({"scenario": None}, None)):
+                with self.subTest(sidecar=data):
+                    path.with_suffix(".json").write_text(json.dumps(data), encoding="utf-8")
+                    self.assertEqual(report.scenario_of(str(path)), expected)
+
+    def test_missing_and_malformed_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            self.assertEqual(report.scenario_of(str(path)), "nav")
+            path.with_suffix(".json").write_text("{", encoding="utf-8")
+            self.assertEqual(report.scenario_of(str(path)), "nav")
+
+    def test_unreadable_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            path.with_suffix(".json").write_text('{"scenario": "cold"}', encoding="utf-8")
+            with mock.patch("builtins.open", side_effect=PermissionError("unreadable sidecar")):
+                self.assertEqual(report.scenario_of(str(path)), "nav")
 
     def test_missing_perfetto_says_what_to_install(self):
         with mock.patch.dict(sys.modules, {"perfetto": None, "perfetto.trace_processor": None}), \

@@ -1,0 +1,6 @@
+{
+  "tv": "Beko B43B880B (Arçelik, sinchon, MediaTek), Turkey",
+  "os": "Android TV 11",
+  "brand": "Beko",
+  "notes": "First Beko list, same Arçelik/MediaTek family as [grundig-kunyang](grundig-kunyang/): Anoki ACR, FAST channels, Beko Channel, partner auto-installs, Google feedback; Assistant, Play Movies/Games, TalkBack off by choice, Chromecast and AirScreen kept; `fusion.android.tv.demo` handles the Input key, keep it; the Digiturk app also claims HOME; launcher works over `build-and-install.ps1`, every remote button works with no key service"
+}

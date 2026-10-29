@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Options, set before building. With the defaults the page is as it always was. -->
+<resources>
+    <!-- Days in the forecast row after today, 3 to 7. Above 3 the day cards share the row and get more compact. -->
+    <integer name="forecast_days">3</integer>
+    <!-- The relative humidity now, after "Feels like". -->
+    <bool name="show_humidity">false</bool>
+    <!-- The wind speed now, after "Feels like": km/h, or mph with temperature_unit f. -->
+    <bool name="show_wind">false</bool>
+    <!-- c: degrees Celsius. f: degrees Fahrenheit, for the temperature now, feels-like, the days' highs and lows
+         and the wind (mph). -->
+    <string name="temperature_unit" translatable="false">c</string>
+    <!-- The temperature now in the other unit too, at the start of the "Feels like" line ("22°C · Feels like 70°"). -->
+    <bool name="show_both_units">false</bool>
+</resources>

@@ -1,0 +1,83 @@
+# Dcolor GD2 (SDMC, device YHT, Amlogic), Google TV 14 (SDK 34)
+# Build: Dcolor/GD2/YHT:14/URO4.260304.027/15200246:user/release-keys
+# Home it shipped with: Google TV (com.google.android.apps.tv.launcherx). 128 system apps, 39 disabled here.
+#
+# Apply:    tools/disable.sh examples/dcolor-gd2/debloat.txt
+# Restore:  tools/restore.sh examples/dcolor-gd2/debloat.txt com.google.android.apps.tv.launcherx
+# Launcher: INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Disable it only after the new launcher is Home;
+# disable.sh skips it until another app answers HOME, so run this list again once the launcher is installed.
+# setupwraith: the first-run wizard also claims HOME on Google TV. disable.sh skips it while it owns the
+# saved Wi-Fi network (`dumpsys wifi | grep -o 'cname=[^ ]*'`): forget the network the box is on and join it
+# again in Settings, then run this list again. FORCE_SETUPWRAITH=1 only on Ethernet, or if disable.sh still
+# skips it after that re-join. Re-enable it before a factory reset; restore.sh does.
+# Disabling setupwraith gives Home back but costs casting (Chromecast built-in); re-enable it to cast.
+#
+# Left on on purpose: com.android.vending (Play Store), com.google.android.gms, com.google.android.youtube.tv,
+# com.netflix.ninja, com.google.android.tv.dfuservice (system updates), com.google.android.tv.remote.service
+# (phone remote), com.android.tv.settings and the com.droidlogic.* / com.onn.* vendor packages.
+#
+# Remote: the YouTube button sends HID usage 0x0c0077, which Vendor_0957_Product_0005.kl maps to BUTTON_3
+# (keycode 190). It does nothing once launcherx is off. Bring it back with app_keys
+# "190:com.google.android.youtube.tv" (config.xml or a theme) and INPUT_KEY_SERVICE=1.
+# Screensaver: Google TV's ambient mode (dreamx) is disabled below, so settings still points at it until
+# you select the launcher's Clock:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#   settings put secure screensaver_enabled 1
+# Sleep: the TV's own idle timers are system screen_off_timeout (screensaver start) and secure sleep_timeout.
+
+# --- Ads, telemetry, on-device personalization, feedback
+com.android.adservices.api                       # Android Privacy Sandbox ad services
+com.android.federatedcompute.services            # federated learning client
+com.android.ondevicepersonalization.services     # on-device personalization for ads
+com.google.android.feedback                      # sends feedback and bug reports to Google
+com.android.tv.feedbackconsent                   # consent prompt for the feedback reporter
+com.google.android.partnersetup                  # partner (OEM) setup and attribution hooks
+
+# --- Assistant, speech, accessibility
+com.google.android.katniss                       # Google Assistant and voice search (the remote's mic button)
+com.google.android.tts                           # Google text-to-speech
+com.google.android.marvin.talkback               # TalkBack screen reader
+
+# --- Google TV extras
+com.google.android.apps.mediashell               # Chromecast built-in receiver (casting to the TV)
+com.google.android.play.games                    # Play Games
+com.google.android.youtube.tvmusic               # YouTube Music
+com.google.android.syncadapters.calendar         # Google Calendar sync
+
+# --- Screensavers
+com.google.android.apps.tv.dreamx                # Google TV ambient mode and its screensaver (Backdrop)
+com.android.dreams.basic                         # AOSP basic dreams (Colors)
+
+# --- Health Connect and backup
+com.android.health.connect.backuprestore
+com.android.healthconnect.controller
+com.android.backupconfirm
+com.android.localtransport                       # local backup transport
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+
+# --- Providers and services a TV does not use
+com.android.providers.calendar
+com.android.providers.contacts
+com.android.providers.userdictionary
+com.android.cameraextensions
+com.android.dynsystem                            # dynamic system updates (GSI)
+com.android.htmlviewer
+com.android.managedprovisioning                  # work profile and device owner setup
+com.android.pacprocessor
+com.android.printspooler
+com.android.proxyhandler
+com.android.se                                   # secure element service
+com.android.settings.intelligence                # settings search suggestions
+com.android.soundpicker
+
+# --- Test shims and vendor first-boot config
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+android.autoinstalls.config.soc.amlogic          # Amlogic first-boot app auto-install config
+
+# --- Stock home and setup wizard: last, after the new launcher is Home
+com.google.android.apps.tv.launcherx             # Google TV home (stock launcher)
+com.google.android.tungsten.setupwraith          # first-run wizard; it also claims HOME and can take Home over

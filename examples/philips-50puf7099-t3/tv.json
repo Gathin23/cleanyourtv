@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 50PUF7099/T3 (TPV EBONY_V560, Hisilicon), China",
+  "os": "Android TV 9",
+  "brand": "Philips",
+  "notes": "China-market set, not the org.droidtv platform the other Philips lists cover: BestV/百视通 stock home (`com.bestv.ott`, not in `KNOWN_STOCK_LAUNCHERS`, so pass `STOCK_LAUNCHER=com.bestv.ott`), three package families side by side (`tv.fun.*`, `com.newtv.*`, `com.tpv.*`), no GMS; the casting, camera, video-call and smart-home apps off with the TPV telemetry and ad services and the BestV/NewTV background services, plus the store; the two firmware upgraders are commented out (the tested set had them off, which gives up system OTA, and `tv.fun.tvupgrade` can re-install the BestV home); the preinstalled content apps and the voice assistant kept by choice; the screensaver shipped pointing at a package that is not installed, so there was no DreamService at all; reboot-checked, but one session only and the physical remote untested ([device note](../docs/devices/philips-50puf7099-t3.md))"
+}

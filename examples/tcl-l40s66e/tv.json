@@ -1,0 +1,6 @@
+{
+  "tv": "TCL L40S66E (C06, C06_2K_GB, MediaTek MT9221, 1 GB), Argentina",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "Same firmware as `hitachi-cdh-le32smart21/`: Google telemetry and recommendation rows, TCL account/promos/popups, TGuard (disable does stop it here, and free RAM is higher without it), data-saver VPN, setupwraith; all streaming apps, voice, Chromecast, screensaver and USB players kept by choice; ttvs and rc.ota kept for updates; launcher/ needs reduced_motion on this GPU"
+}

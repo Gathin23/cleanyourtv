@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH21 (XR-55A80K, 2022, BRAVIA_VH21, MediaTek mt5895), EU",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Samba TV ACR, Sony/Qterics agents, IDD, Sony Select, demo mode; Assistant, HbbTV, DLNA, QuickSet, TTS, gestures, Prime Video and Google TV Movies off by choice; setupwraith off for the launcher (Wi-Fi re-joined first); app buttons keep working via sonyvendorservice, YouTube/Prime/Disney+ share keycode 196 (scancodes 485/490/491); Chromecast, AirPlay, firmware updates and Sony IP control (Home Assistant) kept; reboot-checked"
+}

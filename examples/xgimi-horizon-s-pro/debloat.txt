@@ -1,5 +1,14 @@
 # XGIMI Horizon S Pro projector (model XK03H, device xgimigalileo, MediaTek), Android TV 11 (SDK 30),
 # build RT.3.24.329 release-keys.
+# Also XGIMI Halo+ (same model XK03H and device xgimigalileo), build RT.3.24.327 release-keys, Android TV 11,
+# after XGIMI's update from Android TV 10 (QX.2.6.139). Every package below exists on it. Applied there on
+# 2026-10-26 before the update and checked after it: the store demo, factory, telemetry and Google preload
+# groups, plus com.google.android.tv.remote.service, com.xgimi.filemanager, com.xgimi.gimiplayer and
+# com.xgimi.doubanfm (the rest of the off-by-choice groups were kept), and Smart Connect
+# (com.google.android.apps.nbu.smartconnect.tv, not on the Horizon S Pro). All stayed disabled through the
+# update; com.xgimi.upgrade, the firmware updater the update added, is kept. After the update, also
+# disabled and reboot-checked: com.google.android.partnersetup, com.android.printspooler,
+# com.google.android.syncadapters.calendar and com.google.android.onetimeinitializer (not in this list).
 #
 # Apply:   TV_HOST=<projector ip> tools/disable.sh examples/xgimi-horizon-s-pro/debloat.txt
 # Undo:    TV_HOST=<projector ip> tools/restore.sh examples/xgimi-horizon-s-pro/debloat.txt

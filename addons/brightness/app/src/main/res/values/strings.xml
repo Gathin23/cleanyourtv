@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Brightness</string>
+    <string name="quick_brightness">Brightness %1$d%%</string>
+    <string name="quick_night_brightness">Night brightness %1$d%%</string>
+    <string name="quick_hint">◀ ▶ adjust · OK close</string>
+    <string name="channel_name">Screen dimming</string>
+    <string name="notification_text">Dimming the screen. Open Brightness to change or switch off.</string>
+</resources>

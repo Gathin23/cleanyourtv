@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home Assistant often runs at http://<ip>:8123 on the home network, so plain HTTP is allowed. Use https:// when
+     the server has a certificate (Nabu Casa, Let's Encrypt). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

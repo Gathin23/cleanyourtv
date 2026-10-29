@@ -33,6 +33,21 @@
 # - Leave alone: com.xiaomi.android.tvsetup.partnercustomizer, mitv.service, com.droidlogic*, and the YouTube
 #   app (com.google.android.youtube.tv stays enabled on both units).
 #
+# A third unit, same firmware, applied this list with Chromecast kept and then the launcher installed:
+# - Netflix (com.netflix.ninja), YouTube Music and partner setup were enabled at the start, not off at the
+#   firmware level as above; Netflix ran in the background at about 89 MB PSS.
+# - setupwraith owned one saved network, an old one; the network in use belonged to android.uid.system.
+#   `tools/tv.py "cmd wifi list-networks"` lists the saved networks in the same order as the cname= lines
+#   above, so the two together show which network goes. Only that old network was lost.
+# - The remote's YouTube, Netflix and Prime Video buttons do nothing once launcherx is off. They send
+#   KEYCODE_BUTTON_3, BUTTON_6 and BUTTON_7 (Vendor_2717_Product_32b9.kl); config.json in this folder maps
+#   them back with app_keys, which needs INPUT_KEY_SERVICE=1 when running build-and-install.sh.
+# - The real Home button returned to the new launcher without HOME_KEY_SERVICE.
+# - com.google.android.youtube.tv.recommendations shows up in dumpsys meminfo, but it is a process of the
+#   YouTube app, not a package: pm disable-user answers "Unknown package".
+# - partnercustomizer and partnersetup were disabled here for a day and one reboot with nothing missing
+#   (Home, Wi-Fi, the remote and the key helper all came back); the lines are commented out below.
+#
 # Kept by choice - the two units disagreed here. One kept all of these, the other disabled them and saw no
 # problem; uncomment the ones you are happy to lose. The Assistant line costs voice search, and the four after
 # it cost casting (Chromecast, Miracast and Mi Connect; phone casting was not tested on the second unit).
@@ -80,6 +95,8 @@ com.netflix.tokenmanager               # Netflix sign-in token, Netflix itself i
 com.android.providers.contacts         # contacts, nothing on a TV uses it
 com.android.health.connect.backuprestore
 # com.xiaomi.mitv.updateservice        # kept: firmware updates. One owner disabled it (no updates were offered); uncomment to do the same
+# com.xiaomi.android.tvsetup.partnercustomizer # third unit only, one day: Xiaomi first-run wizard and region pages (see "Leave alone" above)
+# com.google.android.partnersetup      # third unit only, one day: Google partner setup, RLZ install ping
 
 # Stock launcher and setup wizard, replaced by launcher/ (see notes above)
 com.google.android.apps.tv.launcherx    # build-and-install.sh also disables it, after Home has moved

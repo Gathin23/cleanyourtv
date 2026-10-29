@@ -1,0 +1,23 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tv",
+    "in.startv.hotstar"
+  ],
+  "hidden_apps": [
+    "com.android.tv",
+    "com.sony.dtv.ecodashboard",
+    "com.sony.dtv.m2.seeds.iot",
+    "com.sony.dtv.timers",
+    "com.google.android.videos"
+  ],
+  "live_tv_package": "com.android.tv",
+  "columns": 4,
+  "app_keys": [
+    "scan:758:com.netflix.ninja",
+    "scan:569:com.google.android.youtube.tv",
+    "scan:653:com.google.android.youtube.tvmusic",
+    "scan:652:com.amazon.amazonvideo.livingroom"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KD-55X82L / KD-65X82L / XR-65X90L (2023, BRAVIA_VH22, MediaTek), India and US",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Same firmware build as the VH21 list: Samba TV ACR, Sony/Qterics agents, IDD, Sony promos/Select/tab, demo mode; YouTube Music, Play Games, Sony IoT/phone link, help, Living Decor, eco dashboard and BRAVIA CAM extras off by choice; setupwraith off for the launcher (it owned only an unused 2.4 GHz network); gear button is scancode 646; Assistant, Chromecast, AirPlay, Apple TV, firmware updates kept; reboot-checked"
+}

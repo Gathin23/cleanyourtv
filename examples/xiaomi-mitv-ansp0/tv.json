@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-ANSP0 (小米电视5 Pro 65\", jobs, Amlogic), China firmware 23.6.5.3226, 4 GB RAM",
+  "os": "Android TV 9 (CN build)",
+  "brand": "Xiaomi",
+  "notes": "Second CN-firmware Xiaomi, no Google apps: Mi analytics/push/cloud control, ad web container, shop plugin, promo reels, TV Manager, game SDK, preloaded apps, office-mode second home and voice off; updater kept; **keep PatchWall enabled** (disabling it leaves FallbackHome's black screen), set the new launcher as preferred home instead; inputs switch only with the vendor's `EXTSRC_PLAY` extra; ADB closes on every reboot; [more notes](../docs/devices/xiaomi-mitv-ansp0-jobs.txt)"
+}

@@ -10,6 +10,7 @@
     <string name="not_connected">未連接裝置</string>
     <string name="live_tv">電視直播</string>
     <string name="no_inputs">找不到輸入來源</string>
+    <string name="more_inputs">更多輸入來源</string>
     <string name="good_morning">早安</string>
     <string name="good_afternoon">午安</string>
     <string name="good_evening">晚安</string>
@@ -28,11 +29,14 @@
     <string name="home_settings">選擇預設主畫面</string>
     <string name="home_settings_help">選擇原本的主畫面即可停止使用 CleanYourTV 當主畫面，要切回來時選 CleanYourTV。原本的桌面必須仍是啟用狀態，如果被安裝腳本停用了，請先用還原腳本啟用；電視也必須有系統的主畫面選擇頁。</string>
     <string name="launcher_settings">桌面設定</string>
+    <string name="native_settings">原生設定</string>
     <string name="columns_label">每列 app 數量</string>
     <string name="dock_opacity_label">Dock 列不透明度</string>
     <string name="animations_state">動畫效果：%1$s</string>
     <string name="advanced_effects">進階效果</string>
     <string name="advanced_effects_state">進階效果：%1$s</string>
+    <string name="open_on_start_label">開機時開啟</string>
+    <string name="open_on_start_state">開機時開啟：%1$s</string>
     <string name="advanced_effects_warning">加上圖塊浮起、圖示放大與背景顏色漸變。可能會多用一些記憶體，實際差異視電視而定。</string>
     <string name="follow_theme">跟隨主題（重設電視上的選擇）</string>
     <string name="follow_theme_hint">改用目前主題或內建的版面與動畫設定。推送或重設主題時，也會清除你在電視上做的這些選擇。</string>
@@ -63,6 +67,7 @@
     <string name="card_state_new_key">新金鑰</string>
     <string name="card_state_new_label">新名稱</string>
     <string name="dock_edit">編輯 Dock</string>
+    <string name="power_menu">重新啟動…</string>
     <string name="dock_edit_hint">選擇要變更的 Dock 位置，然後按確定。按返回完成。</string>
     <string name="dock_edit_pick_app">現在選擇要放在那裡的應用程式，然後按確定。按返回重新選擇位置。</string>
     <string name="tile_add_to_dock">新增至 Dock</string>
@@ -73,6 +78,7 @@
     <string name="reorder_hint">按確定選取應用程式，方向鍵移動，按返回放下。再按一次返回完成。</string>
     <string name="reorder_not_saved">無法儲存新順序</string>
     <string name="app_library">應用程式庫</string>
+    <string name="last_opened">上次開啟：%1$s</string>
     <string name="library_empty">找不到可啟動的應用程式</string>
     <string name="library_on_home">已在主畫面</string>
     <string name="library_add_home">新增至主畫面</string>
@@ -87,4 +93,5 @@
         <item quantity="other">%1$d 個應用程式</item>
     </plurals>
     <string name="greeting_with_name">%1$s，%2$s</string>
+    <string name="game_live">直播中</string>
 </resources>

@@ -1,0 +1,63 @@
+# Sber Salute TV 43" (CVTE board TP.T962D4.PC756, Amlogic T962D4 "t5w", codename at30a6, panel LE43VA, 2 GB RAM, 8 GB eMMC), Russia
+# StarOS (Salute TV) 1.101.84-B28350 on Android 13, build TP1A.220905.004.A2 (2026-02-15), user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sber-salute-tv-at30a6/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sber-salute-tv-at30a6/debloat.txt ru.sberdevices.starlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: ru.sberdevices.starlauncher (pass STOCK_LAUNCHER=ru.sberdevices.starlauncher to the install
+# script). Developer options are locked on this firmware; how ADB was turned on is in README.md.
+#
+# Sber's platform service (ru.sberdevices.services, system uid) reinstalls its "mandatory" apps after every
+# uninstall, usually at the next boot: parental control, SberPrime, beta, SberPlay, surveys, kids room, its
+# YouTube and smart home all came back. Disabled, they stay put. Do not uninstall anything here.
+# The platform service itself cannot be disabled (ru.sberdevices.services.core re-enables it within a
+# second) and it hosts the Salute voice assistant. Leave it and ru.sberdevices.assistant alone.
+#
+# Keep: ru.sberdevices.tvinputs (HDMI/AV playback, it also answers the launcher's Inputs menu),
+# ru.sberdevices.app.starkeyboard (the only IME), ru.sberdevices.webview (WebView provider),
+# ru.sberdevices.systemui, com.android.systemui (Sber build), ru.sberdevices.SberDevicesServiceSystem,
+# ru.sberdevices.location.provider, ru.sberdevices.app.setup, ru.sberdevices.settings, com.sberbank.settings,
+# the ru.sberdevices.* overlays and resources, every com.droidlogic.* package and every com.cvte.* package
+# (factory and TV API apps: do not open them, see README).
+
+# Sber content apps and preloads
+ru.sberdevices.music                         # Zvuk music; its ~100 MB update stays in /data while disabled
+ru.sberdevices.starlivetv                    # StarLiveTv, Sber's online channels
+ru.sberdevices.startube                      # Sber's own "YouTube" wrapper; installed itself after a reboot
+ru.sberdevices.videos                        # "Видео" catalogue
+ru.sberdevices.sberplay                      # SberPlay games
+ru.sberdevices.subscriptions                 # SberPrime subscriptions
+ru.sberdevices.starkidsroom.prod             # "Детская комната" (kids room); installed itself after a reboot
+ru.sberdevices.parentcontrol                 # parental control
+ru.sberdevices.starprofile                   # user profiles; the voice assistant still worked without it
+ru.sberdevices.smarthome.promo               # smart home promo
+com.salute.star                              # "Умный дом" smart home app, ~45 MB resident; installed itself after a reboot
+ru.sberdevices.starbrowser                   # Salute browser
+ru.sberdevices.starmarket                    # Sber app catalogue; re-enable to install apps or apps.sber.ru/my APKs from it
+ru.sberdevices.tv                            # "Настройка провайдеров", TV provider setup for Sber's channel guide; HDMI unaffected
+
+# Sber screensaver: point screensaver_components at another dream first (README), or it comes back enabled
+ru.sberdevices.starscreensaver               # ~220 MB of cached artwork
+
+# Sber background services
+ru.sberdevices.survey                        # surveys
+ru.sberdevices.openbeta                      # beta programme
+ru.sberdevices.bugreporter                   # StarBugReporter
+ru.sberdevices.starcleaner                   # StarCleaner, the "Очистка памяти" screen
+ru.sberdevices.rcfupdater                    # remote control firmware updater; the paired remote keeps working
+ru.sberdevices.gamepad.service               # gamepad service stub
+
+# Screen sharing receivers (Chromecast is not part of this firmware)
+ru.sberdevices.huaweicast                    # Huawei Cast Plus
+com.maxhub.screenshare.server.tv             # MHshare
+com.screenshare.platform                     # ScreenShare platform for MHshare
+com.cvte.dssshare.dlna                       # DLNA renderer (Jetty on a random port); a normal app, gone for good once removed
+
+# Firmware updates stay on by default. The tested unit disabled both at its owner's request since 21 October,
+# with no side effects seen; StarServicesCore is still started at boot by the system even when disabled.
+# ru.sberdevices.updater                     # OTA updater
+# ru.sberdevices.services.core               # StarServicesCore, the updater core
+
+# Stock launcher, replaced by launcher/ (disable.sh skips it while it still owns Home)
+ru.sberdevices.starlauncher

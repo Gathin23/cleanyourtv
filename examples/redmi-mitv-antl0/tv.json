@@ -1,0 +1,6 @@
+{
+  "tv": "Redmi TV (MiTV-ANTL0, starwars)",
+  "os": "Android 5.1.1 (not Android TV)",
+  "brand": "Redmi",
+  "notes": "Mi push/web-content/cloud-control ads, TV Taobao, stock screensaver, OTA; needs `pm hide` instead of `pm disable-user`; startup-ad method depends on firmware and stock-launcher version, see the [L43M7-EA settings-only case](../docs/devices/xiaomi-l43m7-ea-antl0.md)"
+}

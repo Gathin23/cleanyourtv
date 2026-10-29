@@ -1,0 +1,9 @@
+{
+  "dock_apps": [
+    "org.smarttube.stable",
+    "jp.co.tver.tvapp",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "live_tv_package": "jp.co.sharp.av.android.aquostvapp"
+}

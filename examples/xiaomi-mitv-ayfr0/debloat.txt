@@ -20,9 +20,11 @@
 # - HDMI-CEC One Touch Play works with the custom launcher: system_server (HdmiControlService) sends
 #   <Text View On> and <Active Source> before starting the HOME activity.
 # - Kept on purpose: Google Assistant (katniss), Chromecast (mediashell), phone remote (tv.remote.service),
-#   Miracast (smartshare, wfdsinkhelperservice), screensavers (com.mitv.dream, com.google.android.backdrop),
+#   Miracast (smartshare, wfdsinkhelperservice), the Mi screensaver (com.mitv.dream),
 #   com.xiaomi.tvqs.overseas (quick settings panel), com.xiaomi.android.tvsetup.partnercustomizer,
 #   com.google.android.tungsten.setupwraith.
+# - com.google.android.tvrecommendations does not stay disabled: com.droidlogic re-enables it on every boot
+#   (lastDisabledCaller: com.droidlogic), so it is commented out below. The custom launcher never asks it for rows.
 
 # Xiaomi + Google telemetry and attribution
 com.miui.tv.analytics
@@ -31,12 +33,25 @@ com.google.android.feedback
 com.android.tv.feedbackconsent
 com.google.android.partnersetup
 
+# Privacy Sandbox ad APIs, on-device personalisation and federated learning
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Health Connect, which nothing on a stick uses
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+
+# Contacts and calendar sync, unused on a stick
+com.android.providers.contacts
+com.google.android.syncadapters.calendar
+
 # PatchWall, content rows, promos, auto-installs
 com.mitv.tvhome.atv
 com.mitv.tvhome.michannel
 com.mitv.tvhome.mitvplus
 com.xm.webcontent
-com.google.android.tvrecommendations
+# com.google.android.tvrecommendations     # re-enabled by com.droidlogic on every boot, see the header
 android.autoinstalls.config.soc.amlogic
 android.autoinstalls.config.xiaomi.mibox3
 android.autoinstalls.config.xioami.mibox3   # misspelled duplicate present on firmware (sic, "xioami")
@@ -46,6 +61,7 @@ com.xiaomi.mitv.updateservice
 
 # Preloaded apps
 com.netflix.ninja
+com.netflix.tokenmanager                   # Netflix's sign-in helper, unused with Netflix disabled
 com.amazon.amazonvideo.livingroom
 com.google.android.youtube.tvmusic
 com.google.android.play.games
@@ -53,6 +69,7 @@ com.google.android.marvin.talkback
 com.mitv.videoplayer
 com.xiaomi.mimusic2
 com.android.printspooler
+com.google.android.backdrop                # Ambient Mode screensaver; the Mi screensaver (com.mitv.dream) stays
 
 # Stock Android TV launcher, replaced by launcher/ (build-and-install.sh disables it after Home moves)
 # com.google.android.tvlauncher

@@ -1,0 +1,20 @@
+{
+  "hidden_apps": [
+    "com.cvte.fac.menu",
+    "com.stb.factorymenu",
+    "ru.sberdevices.webview",
+    "ru.sberdevices.starcleaner",
+    "ru.sberdevices.starprofile",
+    "ru.sberdevices.parentcontrol",
+    "ru.sberdevices.starkidsroom.prod",
+    "com.sberbank.settings",
+    "com.android.tv.settings"
+  ],
+  "live_tv_package": "",
+  "app_library": true,
+  "app_labels": [
+    "ru.sberdevices.starlauncher=Салют ТВ",
+    "ru.sberdevices.starmarket=Каталог Сбера",
+    "ru.sberdevices.settings=Центр управления"
+  ]
+}

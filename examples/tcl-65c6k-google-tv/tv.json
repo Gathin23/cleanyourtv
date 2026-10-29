@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65C6K (Smart TV Pro, G08, G08_4K_GB, MediaTek tcl9618 / mt5896, SoC MT9689), Latin America",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Same firmware build as the C755 and 85RM7L lists (UTT2.250416.001 AU02); TCL promos, TCL Live, store/hotel demo, Alexa, soundbar updater and the Android 14 ad services; TCL Home (com.tcl.dashboard) off too, unlike the C755, with every remote button still working; Assistant, Play Games and YouTube Music off by choice; Chromecast, AirPlay, Miracast, T-Cast (so ttvs stays), game bar and USB media kept; debloat only, stock launcher and setupwraith kept; the TCL tab on Home comes from Google TV itself and stays; reboot-checked twice, three days of use"
+}

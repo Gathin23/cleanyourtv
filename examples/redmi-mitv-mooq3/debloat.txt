@@ -1,0 +1,77 @@
+# Redmi TV 43" (MiTV-MOOQ3, codename tarzan, MediaTek m7632), Android TV 11, firmware RTM4.220307.164.8237
+# India retail unit, 1.7 GB RAM, Android low-RAM mode on. Same tarzan board as the MOOQ1 (../xiaomi-mi-tv-4a):
+# the odm/vendor/system partitions report MiTV-MOOQ1, only ro.product.model says MOOQ3.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/redmi-mitv-mooq3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/redmi-mitv-mooq3/debloat.txt
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+# Provisional: applied in one session in five batches, with a screenshot and a check of Home after each, and
+# reboot-checked: `pm list packages -d` was identical before and after the reboot.
+#
+# disable.sh skips two entries here on this firmware: android.autoinstalls.config.xiaomi.amelie and
+# com.mstar.android.tv.disclaimercustomization print no permission block in `dumpsys package`, so the
+# HDMI-input check cannot read them. Neither is in `pm query-services --components -a
+# android.media.tv.TvInputService` (only com.mediatek.tvinput, com.mediatek.tv.service and Play Movies are),
+# so both were disabled with TVINPUT_ALLOW=1 in a run of their own; HDMI 1-3 and AV still list and switch.
+#
+# Stock launcher: com.google.android.tvlauncher. It is NOT in this list: launcher/build-and-install.sh
+# disables it after com.gathin.tvhome is installed and verified as Home. Only the stock launcher and
+# com.android.tv.settings/.system.FallbackHome claim HOME; setupwraith does not, and the saved Wi-Fi network
+# belongs to android.uid.system, so setupwraith stays enabled.
+#
+# Kept deliberately, checked with `dumpsys package`:
+#   com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter, mitv.service   HDMI 1-3, AV, tuner
+#   com.xiaomi.android.tvsetup.partnercustomizer   BleRcActivity (remote pairing) and the global-key receiver
+#   com.mitv.overseaservice                        hosts netflixService (the Netflix key)
+#   com.xiaomi.tvqs.overseas                       TV quick-settings receivers
+#   com.google.android.backdrop, com.mitv.dream    screensavers; Backdrop (Ambient mode with Google Photos) in use
+#   com.google.android.apps.mediashell, com.mitv.milinkservice, com.xiaomi.mitv.smartshare,
+#   com.xiaomi.wfdsinkhelperservice                Chromecast, Mi Cast and Miracast, kept by owner's choice
+#   com.google.android.katniss                     voice assistant, kept by owner's choice
+#   com.xiaomi.mitv.updateservice                  firmware updates
+#   com.xiaomi.mitv.mediaexplorer, com.mitv.videoplayer   the USB media player
+#
+# The remote's PatchWall button arrives from "Xiaomi RC Consumer Control" as KEY_WWW (scancode 150, HID usage
+# 0x0c0196, read with `getevent -lt`) and does nothing once PatchWall is disabled. No remap is included:
+# an app_keys entry for it ("scan:150:<target>") has not been tried on the real remote yet.
+# com.mitv.dream's launcher entry shows up as "Mi Wallpaper" in the grid; config.json hides the tile without
+# disabling the screensaver.
+
+# ---- Xiaomi and Google telemetry ----
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback                     # crash / feedback reporting
+
+# ---- Xiaomi content, ads and recommendation rows ----
+com.mitv.tvhome.atv                             # PatchWall
+com.mitv.tvhome.michannel                       # Mi recommendation channels
+com.mitv.tvhome.mitvplus                        # Xiaomi TV+ FAST channels
+com.xm.webcontent                               # Xiaomi promo web content
+android.autoinstalls.config.xiaomi.amelie       # partner app auto-install config (TVINPUT_ALLOW=1, see header)
+com.google.android.tvrecommendations            # stock launcher recommendation rows
+
+# ---- Background services not needed ----
+com.xiaomi.mitv.tvmanager                       # "TV Manager" cleaner
+com.xiaomi.amazon.alexa                         # Alexa bridge
+com.mitv.gallery                                # Mi Gallery
+
+# ---- Preloaded apps ----
+com.mitv.tvlock                                 # Xiaomi TV lock / parental password
+com.xiaomo.tv.milegal                           # Xiaomi legal / privacy screens
+com.mstar.android.tv.disclaimercustomization    # vendor disclaimer screen (TVINPUT_ALLOW=1, see header)
+com.mediatek.wwtv.webview                       # vendor web view shell
+fusion.android.tv.demo                          # retail store demo loop
+com.xiaomi.mimusic2                             # Mi Music
+com.google.android.play.games                   # Play Games
+com.xiaomi.mitv.handbook                        # on-screen user manual
+mediatek.factorymenu.ui                         # factory menu: disabled, never launched
+
+# ---- Optional, by owner's choice ----
+com.xiaomitv.sonyliv                            # old SonyLIV 3.6 build; the Play Store com.sonyliv is kept
+tv.airtel.xstream.tvapp                         # Airtel Xstream
+com.discoveryplus.mitv                          # discovery+
+com.firestick.shemaroome                        # ShemarooMe
+com.crunchyroll.crunchyroid                     # Crunchyroll
+com.google.android.youtube.tvmusic              # YouTube Music
+com.google.android.videos                       # Play Movies & TV
+com.mxtech.videoplayer.television               # MX Player

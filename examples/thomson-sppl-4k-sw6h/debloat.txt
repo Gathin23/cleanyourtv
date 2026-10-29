@@ -3,7 +3,7 @@
 # Same board and build as skyworth-sw-22sa. 4K panel drawn at 1920x1080 (wm size override from the factory).
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/thomson-sppl-4k-sw6h/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/thomson-sppl-4k-sw6h/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/thomson-sppl-4k-sw6h/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock Home: com.google.android.apps.tv.launcherx; setupwraith's RecoveryActivity also claims HOME, and the

@@ -1,0 +1,27 @@
+# KTC 4K Smart TV (device hongkong, MediaTek), Taiwan, Google TV 14, build UKNV.260626.001.
+# Sold white-label with Taiwan telecom VOD apps preinstalled (friDay/ChocoTV/LiTV/myVideo/
+# Hami/iQIYI) — those are kept here on the owner's request. This list only removes ACR
+# tracking, Google feedback telemetry, and OEM factory/demo tools.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/ktc-4k-smart-tv-hongkong/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/ktc-4k-smart-tv-hongkong/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Do NOT disable com.google.android.katniss — it's Google Assistant/voice search; the
+# remote's mic button and in-app voice search stop working without it.
+
+# ACR (automatic content recognition) tracking
+tv.anoki.acr.anokiacroptin
+
+# Google feedback/crash telemetry
+com.google.android.feedback
+
+# OEM factory/production-line test tools
+com.ktc.serialport
+com.ktc.tv.factory
+ktc.factorymenu.ui
+mediatek.factorymenu.ui
+
+# Misc unused preinstalled apps
+com.electronic.manual
+fusion.android.tv.demo

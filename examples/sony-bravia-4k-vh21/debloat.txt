@@ -1,12 +1,11 @@
-# Sony BRAVIA 4K VH21 (KD-65X85K, 2022, device BRAVIA_VH21, MediaTek MT5895), Australia
+# Sony BRAVIA 4K VH21 (KD-65X85K, 2022, device BRAVIA_VH21, MediaTek MT5895), Australia & India
 # Android 12 (Google TV, API 31), build BRAVIA_VH21_M_PA-user 12 STT2.230505.001.S136 682241, 3 GB RAM
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh21/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh21/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Stock launcher: com.google.android.apps.tv.launcherx (Google TV). Pass it to restore.sh as above;
-# build-and-install disables it, so it is not in this list.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV). Pass it to restore.sh as above.
 # Live TV / tuner app: com.sony.dtv.tvx (set it as live_tv_package in the launcher's config.xml and hide it).
 # Keep the com.sony.dtv.tvinput.* services, com.sony.dtv.braviasync*, tvapi, sonysystemservice, imeproxy,
 # settingsprovider, systemupdate/update, the Sony settings apps and all com.mediatek.*: they drive HDMI,
@@ -16,15 +15,31 @@
 # Already disabled at the factory: com.sonypicturescore, com.sony.dtv.b2b.vendorprotocol,
 # com.sony.dtv.b2b.softap, com.sony.dtv.kenhchonloc. Not in this list, so restore.sh leaves them alone.
 #
-# Launcher: the launcher must target SDK 30+ (it does now) or Play Protect blocks the install on this
-# firmware as "built for an older version of Android". Inputs lists the PS5 on HDMI 1 twice (the port and
-# its CEC device input) on this firmware.
-# Speed: memory was the bottleneck (swap full, ~480 MB available with the streaming apps open). The last
-# group below frees ~120 MB of always-running services; window/transition/animator scales set to 0.5 and
-# `pm trim-caches` (/data went from 81% to 65% full) helped too. Reboot-checked; Ethernet, so setupwraith
-# owned no saved Wi-Fi network here (check with `dumpsys wifi` before disabling it on Wi-Fi).
-# Applied 19-20 Oct 2026; not yet lived with for weeks. If something breaks, `pm enable <package>`
-# and please report it.
+# First unit (Australia, Ethernet, disabled-launcher route):
+# The launcher must target SDK 30+ or Play Protect blocks the install on this firmware as "built for an older
+# version of Android". Inputs lists the PS5 on HDMI 1 twice (the port and its CEC device input). Memory was
+# the bottleneck (~480 MB available); window/transition/animator scales at 0.5 and pm trim-caches helped.
+# On Ethernet, setupwraith owned no saved Wi-Fi network and was disabled along with launcherx.
+# Unit 1 route: uncomment com.google.android.tungsten.setupwraith at the end (Ethernet only, costs casting).
+#
+# Second unit (India, Wi-Fi & Ethernet, redirect route):
+# Same model KD-65X85K and MediaTek MT5895 board, Asia-Pacific build
+# BRAVIA_VH21_M_PA-user 12 STT2.230505.001.S136 682241 release-keys.
+# Tested with the reference launcher via the REDIRECT route (see config.json):
+#  - launcherx and setupwraith stay ENABLED: on Wi-Fi, dumpsys wifi confirms setupwraith owns the saved Wi-Fi
+#    credentials (cname=com.google.android.tungsten.setupwraith). Disabling it disconnects Wi-Fi and ADB.
+#    Keeping launcherx on prevents setupwraith's RecoveryActivity (HOME priority 1) from taking Home and
+#    preserves remote app hotkeys.
+#  - Home redirection: config.json sets stock_home_redirect to com.google.android.apps.tv.launcherx, handled
+#    by HomeKeyService (Settings > Accessibility). Home pressed anywhere bounces straight back to CleanYourTV.
+#  - Remote keys: Settings button sends scancode 646 ("scan:646:settings" in app_keys). Remote app keys:
+#    scan:485 (YouTube) and scan:490 (Prime Video) in app_keys.
+#  - Additional bloat discovered and disabled: BRAVIA CAM services (camerafwupdate, settings, distancealert,
+#    livingfit), Sony seeds IoT auth and remotestart, Sony help and eco dashboard.
+#  - screensaver: dreamx is commented out below because disabling it requires setting screensaver_components
+#    first (e.g. com.gathin.tvhome/.ClockDream or com.android.dreams.basic/.Colors).
+#
+# Applied 19-20 Oct 2026 (Unit 1) and 26 Oct 2026 (Unit 2); reboot-checked.
 
 # ACR viewing tracker
 tv.samba.ssm                      # Samba TV fingerprints what's on screen
@@ -37,10 +52,13 @@ com.qterics.da.product            # Qterics device agent
 com.sony.dtv.da.service           # remote-support session service
 com.google.android.feedback
 
-# Sony ads, promos and recommendation rows
+# Sony ads, promos, help and recommendation rows
 com.sony.dtv.promos
 com.sony.dtv.sonyselect           # Sony Select app recommendations
 com.sony.dtv.sonytab              # Sony content tab / partner rows
+com.sony.dtv.smarthelp            # Sony help tile (second unit)
+com.sony.dtv.helpguidecontents    # help guide contents (second unit)
+com.sony.dtv.ecodashboard         # Eco dashboard tile (second unit)
 
 # demo / shop mode
 com.sony.dtv.demosupport
@@ -51,6 +69,9 @@ com.sony.dtv.multiscreendemo
 com.google.android.katniss
 com.sony.dtv.voicesearch
 com.sony.dtv.assistantadapter
+
+# screensaver: set basic screensaver first, or the launcher's clock (com.gathin.tvhome/.ClockDream)
+# com.google.android.apps.tv.dreamx # Ambient screensaver and background sync jobs
 
 # preloaded apps (off by choice)
 au.com.ninenow.ctv                # 9Now
@@ -66,8 +87,16 @@ com.vewd.core.service
 com.uei.quicksetsdk.sony          # UEI QuickSet: IR control of cable boxes/soundbars; HDMI-CEC unaffected
 com.google.android.tts            # Google text-to-speech: TalkBack and read-aloud stop working
 com.sony.dtv.seeds.iot            # Sony smart-home / phone-app link (BRAVIA Connect, remote start)
+com.sony.dtv.seeds.auth           # Sony seeds authentication service (second unit)
+com.sony.dtv.seeds.iot.remotestart # remote start receiver for seeds IoT (second unit)
 com.sony.dtv.gestureapp           # BRAVIA CAM gestures (no camera on this set)
+com.sony.dtv.sensingcamera.fwupdate # BRAVIA CAM firmware update checker; no camera on this set, the TV's own updater (systemupdate) stays on (second unit)
+com.sony.dtv.sensingcamera.settings # BRAVIA CAM settings provider (second unit)
+com.sony.dtv.distancealert        # BRAVIA CAM proximity/distance alert (second unit)
+com.sony.dtv.livingfit            # BRAVIA CAM Living Fit feature (second unit)
 
-# Google TV setup wizard: with launcherx disabled its RecoveryActivity (HOME priority 1) outranks
-# set-home-activity, and shell can't disable just that component. Re-enable before a factory reset.
-com.google.android.tungsten.setupwraith
+# Google TV setup wizard: with launcherx disabled (Unit 1, Ethernet), RecoveryActivity claims Home
+# so setupwraith had to go. For the redirect route (Unit 2, config.json) and on Wi-Fi, KEEP IT ENABLED:
+# setupwraith owns the saved Wi-Fi network (dumpsys wifi), so disabling it breaks Wi-Fi and ADB.
+# With launcherx kept enabled, RecoveryActivity never triggers.
+# com.google.android.tungsten.setupwraith

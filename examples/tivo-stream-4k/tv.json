@@ -1,0 +1,6 @@
+{
+  "tv": "TiVo Stream 4K (SEI Robotics IPA1104HDW, SEI400TV, Amlogic S905Y2, NES)",
+  "os": "Android TV 12",
+  "brand": "TiVo",
+  "notes": "Firmware refuses every `pm disable*` and `pm hide`, so the list is suspended (README.md here); `com.nes.coreservice` uninstalls non-system apps that declare HOME and 53 listed packages at every boot, so the launcher must not declare HOME"
+}

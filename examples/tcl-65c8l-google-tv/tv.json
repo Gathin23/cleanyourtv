@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65C8L (Smart TV Pro, G17, G17_4K_GB, MediaTek tcl9655), 2025, Australia",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "First G17 board (firmware UTT2.250416.001 AU08), checked against the C7L list package by package; Samba TV ACR, TCL promos/FAST channels and the message hub, store/hotel demo, partner auto-installs, soundbar updater, a preloaded AstroTV service; Assistant, Chromecast, AirPlay, Miracast, game bar, USB media and Play Games kept; Wireless debugging only (pair, then `adb tcpip 5555`); setupwraith owned the Wi-Fi network, re-join before disabling it; Settings/TV-guide/Netflix/Prime/YouTube buttons remapped by keycode in config.json (all share scancode 240), and the key helper costs continuous volume-repeat on this board; AdGuard Private DNS works; 27 packages survived a reboot; single-session test"
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL UnionTV, Latin America (TCL-built like Thomson 32HE5800, Realtek RT2841); also confirmed on a TCL 32S6500S and L40S6500 (persist.tcl.client_type TCL-LA-RT41KB-S1)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "TCL BI analytics, promo rows/partner customizer, app store, cleaner, user center; Ambient Mode, TTS, TalkBack and voice off; Chromecast and firmware updater kept; standby (STR) takes Ethernet down, no network wake"
+}

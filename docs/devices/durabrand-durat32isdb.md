@@ -88,7 +88,7 @@ is in front**, reboot, then turn CEC back on:
 ```sh
 tools/tv.py 'am start -n com.cvte.tv.hkcfac/.MainActivity'
 tools/tv.py 'input keyevent 218; input keyevent 218'
-tools/tv.py reboot
+tools/tv.py --reboot               # returns once ADB accepts it; wait for the TV to come back
 tools/tv.py 'settings put global hdmi_control_enabled 1'
 ```
 

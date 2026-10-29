@@ -10,6 +10,7 @@
     <string name="not_connected">Немає пристрою</string>
     <string name="live_tv">Телеканали</string>
     <string name="no_inputs">Джерел не знайдено</string>
+    <string name="more_inputs">Інші джерела</string>
     <string name="good_morning">Доброго ранку</string>
     <string name="good_afternoon">Добрий день</string>
     <string name="good_evening">Добрий вечір</string>
@@ -45,6 +46,7 @@
     <string name="home_settings">Головний екран за замовчуванням</string>
     <string name="home_settings_help">Виберіть оригінальний головний екран, щоб більше не використовувати CleanYourTV як головний екран, або CleanYourTV, щоб повернутися. Оригінальний головний екран має бути увімкнений, а телевізор має показувати вибір головного екрана; якщо його було вимкнено, спершу скористайтеся скриптом відновлення.</string>
     <string name="launcher_settings">Налаштування лаунчера</string>
+    <string name="native_settings">Налаштування виробника</string>
     <string name="columns_label">Застосунків у рядку</string>
     <string name="rows_below_dock_label">Рядків під доком</string>
     <string name="wallpaper_label">Шпалери</string>
@@ -55,6 +57,8 @@
     <string name="animations_state">Анімації: %1$s</string>
     <string name="advanced_effects">Розширені ефекти</string>
     <string name="advanced_effects_state">Розширені ефекти: %1$s</string>
+    <string name="open_on_start_label">Відкривати під час запуску</string>
+    <string name="open_on_start_state">Відкривати під час запуску: %1$s</string>
     <string name="advanced_effects_warning">Додає ефект піднятої плитки, наближення значків і плавні переходи кольору. Може збільшити використання пам’яті; фактична різниця залежить від вашого телевізора.</string>
     <string name="follow_theme">Скинути мої зміни (повернути налаштування теми)</string>
     <string name="follow_theme_hint">Повертає кількість застосунків у рядку, рядки під доком, анімації, розширені ефекти та шпалери до значень із поточної теми. Установка нової теми також скидає ці налаштування.</string>
@@ -89,6 +93,7 @@
     <string name="card_state_new_key">Новий ключ</string>
     <string name="card_state_new_label">Нова назва</string>
     <string name="dock_edit">Редагувати док</string>
+    <string name="power_menu">Перезапустити…</string>
     <string name="dock_edit_hint">Виберіть місце в доку, яке треба змінити, і натисніть OK. «Назад» — завершити.</string>
     <string name="dock_edit_pick_app">Тепер виберіть застосунок для цього місця та натисніть OK. «Назад» — вибрати інше місце.</string>
     <string name="tile_add_to_dock">Додати в док</string>
@@ -144,4 +149,5 @@
     <!-- Cinematic top shelf (cinematic_home): the line under the focused dock app's name; %1$s is when it was
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Востаннє відкрито %1$s</string>
+    <string name="game_live">Наживо зараз</string>
 </resources>

@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-ASTP0 (mulan, sold as L55M7-EA), China firmware 22.12.2.1630, 1.5 GB RAM",
+  "os": "Android TV 9 (CN build)",
+  "brand": "Xiaomi",
+  "notes": "Sibling of ASTP1: Mi analytics/push/cloud control, shop plugin, TV Manager, the Chinese wake word (~30% CPU) and the phone-remote relay that loops at 100-190% CPU off; casting except AirPlay, payment, voice and Mi Video off by choice; keep `com.mitv.tvhome` (Home falls to FallbackHome without it); inputs switch only with Xiaomi's `EXTSRC_PLAY`; time zone ships as Asia/Shanghai"
+}

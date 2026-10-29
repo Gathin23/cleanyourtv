@@ -1,0 +1,6 @@
+{
+  "tv": "JVC LT-58CA810 (UK 4K Android TV, MTC, MTCMSD6886UK, sadang, MediaTek m7322), UK",
+  "os": "Android TV 11",
+  "brand": "JVC",
+  "notes": "Same MTC board and firmware build as Hitachi 65QLEDSM20, with the UK Freeview Play layer: Google feedback, data meter, calendar sync, printing, Play Games, YouTube Music, Google TV, Chromecast (by choice), the Freeview Play broadband guide, stock home and rows; fusion.android.tv.demo KEPT (Input key) and partnercustomizer left enabled pending a logcat check; uk.co.freeview.* come back at every boot, so hide them; Live TV opens itself at every power-on (Freeview Play), no setting turns it off"
+}

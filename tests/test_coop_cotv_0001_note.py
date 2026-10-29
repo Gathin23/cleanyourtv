@@ -101,7 +101,7 @@ class CoopNoteTest(unittest.TestCase):
         self.assertIn("INICIALIZANDO", body)
         self.assertIn("pm list packages -d", self.text)
         self.assertIn("pm enable", self.text)
-        self.assertIn("tools/tv.py reboot", self.text)
+        self.assertIn("tools/tv.py --reboot", self.text)
         self.assertIn("33–73 s", self.text)
 
     def test_every_disabled_package_is_recorded(self):

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55C715 QLED (Europe, BeyondTV2, Realtek RTD2851, V8-R851T02-LF1V606); also TCL 55C718 (Finland, same build)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "Same firmware as the EU RT2851 BeyondTV list: TCL BI analytics, promo rows/partner customizer, cyberui, TV Guard and store, user center (re-enabled at every boot, so is Rakuten), TalkBack, Ambient Mode; USB media, mirroring, voice and firmware updater off by choice, Chromecast kept; partnercustomizer also holds the stock home's Inputs icon; launcher works (Live TV `com.tcl.tv`), reboot-checked"
+}

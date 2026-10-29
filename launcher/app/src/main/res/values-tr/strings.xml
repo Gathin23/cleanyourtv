@@ -10,6 +10,7 @@
     <string name="not_connected">Cihaz Yok</string>
     <string name="live_tv">Canlı TV</string>
     <string name="no_inputs">Giriş Bulunamadı</string>
+    <string name="more_inputs">Diğer girişler</string>
     <string name="good_morning">Günaydın</string>
     <string name="good_afternoon">İyi Günler</string>
     <string name="good_evening">İyi Akşamlar</string>
@@ -50,11 +51,14 @@
     <string name="card_state_new_key">Yeni anahtar</string>
     <string name="card_state_new_label">Yeni ad</string>
     <string name="launcher_settings">Başlatıcı ayarları</string>
+    <string name="native_settings">Üretici ayarları</string>
     <string name="columns_label">Satır başına uygulama</string>
     <string name="dock_opacity_label">Dock bandı opaklığı</string>
     <string name="animations_state">Animasyonlar: %1$s</string>
     <string name="advanced_effects">Gelişmiş efektler</string>
     <string name="advanced_effects_state">Gelişmiş efektler: %1$s</string>
+    <string name="open_on_start_label">Açılışta aç</string>
+    <string name="open_on_start_state">Açılışta aç: %1$s</string>
     <string name="advanced_effects_warning">Kutucukları yükseltir, simgeleri büyütür ve renk geçişlerini yumuşatır. Bellek kullanımını artırabilir; etki TV’ye bağlıdır.</string>
     <string name="follow_theme">Temayı izle (TV seçimlerini sıfırla)</string>
     <string name="follow_theme_hint">Geçerli temanın veya yerleşik ayarların düzenini ve hareketini kullanır. Tema uygulamak ya da sıfırlamak TV seçimlerini de temizler.</string>
@@ -63,6 +67,7 @@
     <string name="off">Kapalı</string>
     <string name="enable">Etkinleştir</string>
     <string name="dock_edit">Dock\'u düzenle</string>
+    <string name="power_menu">Yeniden başlat…</string>
     <string name="dock_edit_hint">Değiştirilecek dock yerini seçip Tamam\'a basın. Bitirmek için Geri.</string>
     <string name="dock_edit_pick_app">Şimdi oraya konacak uygulamayı seçip Tamam\'a basın. Başka bir yer seçmek için Geri.</string>
     <string name="tile_add_to_dock">Dock\'a ekle</string>
@@ -88,4 +93,5 @@
         <item quantity="other">%1$d uygulama</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
+    <string name="game_live">Şimdi canlı</string>
 </resources>

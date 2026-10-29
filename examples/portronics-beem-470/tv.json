@@ -1,0 +1,6 @@
+{
+  "tv": "Portronics Beem 470 Smart LED Projector (Allwinner H713, 1 GB), India",
+  "os": "Android 11",
+  "brand": "Portronics",
+  "notes": "First Portronics list: HTC stock launcher/OTA/telemetry and app store, Allwinner Live TV/media/theme apps, stock YouTube replaced by SmartTube, AOSP phone/print/cell leftovers; casting/EShare kept; HOME key needs both setup flags, and Settings needs an explicit component because the firmware answers no ACTION_SETTINGS"
+}

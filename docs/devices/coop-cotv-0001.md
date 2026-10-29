@@ -29,8 +29,8 @@ re-applied the list in batches. That second half is why this note exists — the
 
 ## How the set was reached
 
-- Wi-Fi (192.168.18.3): port 5555 closed, `nmap -Pn -p 1-65535` found no open TCP port at all.
-- Ethernet (192.168.18.32): 5555 open, and that is the only way in. `tools/tv.py` was used because no
+- Wi-Fi: port 5555 closed, `nmap -Pn -p 1-65535` found no open TCP port at all.
+- Ethernet: 5555 open, and that is the only way in. `tools/tv.py` was used because no
   `adb` binary was installed on the reporter's machine.
 - The first connection raised `ConnectionResetError`; a retry a few seconds later worked. The set
   seems to accept one ADB session at a time, so a failed connect is not the end of it.
@@ -71,7 +71,7 @@ package name.
   tools/tv.py 'pm enable com.haiersoft.launcherproject2995hk'
   # ...once per package that was disabled, or once per package in the backup
   tools/tv.py 'pm list packages -d'      # must print nothing
-  tools/tv.py reboot
+  tools/tv.py --reboot                   # returns once ADB accepts it; wait for the TV to come back
   ```
 
   This set showed `INICIALIZANDO` once more on the reboot and then booted normally. Boots take 33–73 s.

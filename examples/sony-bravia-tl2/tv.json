@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA TL2 (OD0M_EA_T32, TPV-built, MediaTek), Europe",
+  "os": "Android TV 11",
+  "brand": "Sony",
+  "notes": "TPV org.droidtv platform like the Philips 50PUS8517, not the usual Sony one: no Samba TV or Sony agents; retail demo, TPV partner auto-installs, Google feedback/Play Games; Prime Video, Disney+, Red Bull TV and preloaded games off by choice; stock tvlauncher off for the launcher; org.droidtv untouched, e-manual only hidden; Assistant, Chromecast, phone remote, updates kept; USB debugging alone opens 5555; ~1.7 GB; reboot-checked"
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">亮度</string>
+    <string name="quick_brightness">亮度　%1$d%%</string>
+    <string name="quick_night_brightness">夜間亮度　%1$d%%</string>
+    <string name="quick_hint">◀ ▶ 調整亮度　OK 關閉</string>
+    <string name="channel_name">螢幕調光</string>
+    <string name="notification_text">正在調暗螢幕。開啟「亮度」可調整或關閉。</string>
+</resources>

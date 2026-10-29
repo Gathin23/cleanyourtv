@@ -1,5 +1,5 @@
 # Sony BRAVIA 4K UR2 (device BRAVIA_UR2_4K, MediaTek)
-# Android 10 (Android TV, API 29), firmware BRAVIA_UR2_4K_UC-user 10 QTG3.200305.006.S97 662301
+# Android 10 (Android TV, API 29), build QTG3.200305.006.S97 662301 (US UC firmware and EU retail KD-55XG9505)
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur2/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur2/debloat.txt
@@ -13,8 +13,9 @@
 # Already disabled at the factory: com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap,
 # screnmirroring.com.
 #
-# Applied one afternoon with the dock set to Netflix, YouTube, Disney+, ZEE5. Not yet lived with
-# for weeks; if something breaks, re-enable it with `pm enable <package>` and please report it.
+# Applied on US firmware (dock: Netflix, YouTube, Disney+, ZEE5) and re-confirmed on an EU retail
+# KD-55XG9505 (BRAVIA_UR2_4K_EU) with the Apple TV style launcher (dock: Netflix, Prime Video,
+# YouTube, Spotify). HDMI 1-4/eARC, TVX tuner, Bravia Sync, and remote control verified across reboots.
 
 # tracking / ads / recommendations
 tv.samba.ssm                                   # Samba TV (ACR viewing data)
@@ -25,11 +26,28 @@ com.sony.dtv.promos
 com.sony.dtv.sonyselect
 com.google.android.tvrecommendations           # only the stock launcher uses it
 com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.sony.dtv.sonybugreportsys
+com.sony.dtv.sonyloglevelsettingsys
 
 # demo / shop mode
 com.sony.dtv.demosupport
 com.sony.dtv.demosystemsupport
 com.sony.dtv.multiscreendemo
+
+# Sony IoT and ambient services
+com.sony.dtv.seeds.iot
+com.sony.dtv.seeds.iot.remotestart
+com.sony.dtv.seeds.auth
+com.sony.dtv.livingfit                         # Living Decor / ambient service
+
+# hotel / professional mode (unused in a home)
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.adminpassword
+com.sony.dtv.deviceadminsettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.rs232csupport
 
 # voice assistant (removes the remote's mic search; skip these three to keep it)
 com.google.android.katniss
@@ -39,6 +57,10 @@ com.sony.dtv.assistantadapter
 # Chromecast built-in (skip to keep casting)
 com.google.android.apps.mediashell
 
+# screen mirroring / Wi-Fi Direct (skip to keep Miracast)
+com.mediatek.wfd
+com.sony.dtv.networkapp.wifidirect
+
 # preloaded apps, disabled by choice
 com.onehundredpics.onehundredpicsquiz
 air.com.vudu.air.DownloaderTablet
@@ -46,6 +68,7 @@ com.sling
 com.fox.foxone
 com.cbs.ott
 com.google.android.youtube.tvunplugged
+com.google.android.music
 com.google.android.youtube.tvmusic
 com.google.android.play.games
 com.google.android.videos

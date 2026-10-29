@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stormo</string>
+    <string name="paused">In pausa</string>
+    <string name="running">In volo</string>
+    <string name="controls">OK  Pausa  ·  ↑ Più uccelli  ·  ↓ Meno uccelli  ·  Indietro  Esci</string>
+    <plurals name="birds">
+        <item quantity="one">%1$d uccello</item>
+        <item quantity="other">%1$d uccelli</item>
+    </plurals>
+</resources>

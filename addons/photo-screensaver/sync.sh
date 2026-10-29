@@ -74,7 +74,7 @@ done <<< "$ON_TV"
 SENT=0
 for F in ${FILES[@]+"${FILES[@]}"}; do
   NAME=$(basename "$F")
-  printf '%s\n' "$ON_TV" | grep -qx "$(md5 "$F")  $NAME" && continue
+  printf '%s\n' "$ON_TV" | grep -Fqx "$(md5 "$F")  $NAME" && continue
   echo "sending $NAME"
   "$PY" -I b64push.py "$F" "$TMP-$NAME" | grep md5 || { echo "sending $NAME failed; run the script again to resume" >&2; exit 1; }
   # Written through the app's FilesProvider so the app owns the file (on TCL G10 a copied one gives EACCES).

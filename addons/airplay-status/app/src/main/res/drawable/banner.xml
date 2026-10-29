@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a screen with a triangle under it and radio waves. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:strokeColor="#5AC8FA" android:strokeWidth="8" android:fillColor="#00000000" android:pathData="M104,40h112v74h-112z" />
+    <path android:fillColor="#5AC8FA" android:pathData="M160,104l26,36h-52z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="5" android:fillColor="#00000000" android:pathData="M236,60a40,40 0 0 1 0,40M250,48a58,58 0 0 1 0,64" />
+</vector>

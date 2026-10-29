@@ -1,0 +1,59 @@
+# Sony BRAVIA KDL-55W800C (2015, "BRAVIA 2015", device SVP-DTV15, MediaTek), Taiwan firmware
+# Android TV 7.0 (API 24), build SVPDTV15_TW 7.0 NRD91N.S43 5.455, 1.6 GB RAM, Wi-Fi
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kdl-55w800c/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kdl-55w800c/debloat.txt com.google.android.leanbacklauncher
+# Everything is DISABLED (pm disable-user --user 0), never uninstalled. Comment out a line to keep it.
+#
+# Stock launcher: com.google.android.leanbacklauncher. It is NOT in this list: the launcher half needs
+# Android 8 (minSdk 26) and this set is API 24, so the stock home stays.
+# Live TV / input app: com.sony.dtv.tvx, which also plays every HDMI input. Kept.
+# Keep: com.sony.dtv.tvinput.*, tvplayer*, braviasync* (HDMI-CEC), remotepairing, remotecontrolsettings,
+# google.android.tv.remote.service, uinputservice, imeproxy, ime.chww (the active keyboard),
+# leanback.ime, settingsprovider, netflixmanager (Netflix button), mtktvapi.agent, com.mediatek.*,
+# systemupdate, Play Store/Services, the b2b hotel/pro plumbing, DLNA and USB media players.
+# Kept by the owner's choice: Netflix, YouTube, Play Movies, voice search (katniss + pumpkin),
+# Chromecast (mediashell), screen mirroring (wifidirect, screnmirroring.com, mediatek.wfd).
+# Already disabled at the factory: b2b.hotellanguage, b2b.hotelmenu, google.android.music,
+# google.android.play.games. Not in this list, so restore.sh leaves them off.
+# Reboot-checked: nothing came back by itself after a reboot (pm list packages -d unchanged).
+# Screenshots: screencap returns 0 bytes while Live TV keeps playing under the translucent stock
+# home, even with Home in front: am force-stop com.sony.dtv.tvx, press Home, then capture.
+#
+# Applied 2026-10-26; one session of use so far. If something breaks, re-enable it with
+# `pm enable <package>` and please report it.
+
+# Telemetry, remote support, bug reports
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.google.android.feedback                    # Feedback / crash reporter
+com.google.android.tv.bugreportsender          # Bug report sender
+com.sony.dtv.b2b.vendorprotocol                # SDDP model/MAC/IP broadcast for Control4-style home
+                                               # automation; re-enable if you use one
+
+# Sony content, ads and recommendation rows
+com.sony.dtv.discovery                         # Discover bar
+com.sony.dtv.bivlinfo                          # feeds Discover
+com.sony.dtv.sonyselect                        # Sony Select promo tile/app store
+com.sony.dtv.sonyshelf                         # leanbacklauncher's PARTNER_CUSTOMIZATION: fills the
+                                               # 精選應用程式 "Featured apps" row, and also adds the
+                                               # Home inputs row. Off: both rows go after the next
+                                               # boot; HDMI stays reachable with the remote's Input
+                                               # button (tvx input menu), tested HDMI 2.
+com.sony.dtv.recommendationservice
+com.sony.dtv.woprecommendation                 # What's on Play recommendations
+com.sony.dtv.networkrecommendation
+com.sony.dtv.watchtvrecommendation
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Retail demo and preloaded help apps
+com.sony.dtv.demomode                          # Shop demo mode
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual electronic guide
+com.sony.dtv.bravialifehack
+com.sony.dtv.touchpad.tutorial                 # touchpad remote tutorial, posts a recommendation card
+
+# Streaming apps the owner does not use
+com.amazon.amazonvideo.livingroom              # Prime Video
+com.amazon.aiv.us                              # Prime Video companion

@@ -1,0 +1,60 @@
+# SHARP AQUOS 4T-C43DL1 (AQUOS-TVJ21-2, tcve2uj), Japan, Android TV 11 (SDK 30), firmware RTT2.220104.001 (78000_20241212)
+# Sharp's own Japan-market MediaTek platform (jp.co.sharp.av.*), not the CVTE boards of the UK/EU AQUOS lists.
+# 3 GB RAM; 32-bit only (ro.product.cpu.abilist = armeabi-v7a,armeabi), so sideloads need armeabi-v7a or universal APKs.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-4t-c43dl1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-4t-c43dl1/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (disabled by launcher/build-and-install.sh once com.gathin.tvhome
+#   owned Home). Sharp's own jp.co.sharp.av.android.tvlauncher and monitormaintainer ship already disabled;
+#   jp.co.sharp.av.android.shlauncher stays as a HOME candidate and was left alone.
+# Live TV app: jp.co.sharp.av.android.aquostvapp (set as live_tv_package, see config.json); the Inputs menu
+#   lists HDMI 1-4 and 入力5 through the TV input framework and switches without extra config.
+# Network ADB opens on port 5555 with USB debugging on; ro.adb.secure=1.
+#
+# Applied and verified on 2026-10-24: screenshot after each batch, Live TV, HDMI, Home, 入力切換, 番組表,
+# the remote's app buttons and ネット動画 checked on the real remote. Every jp.co.sharp.* entry was checked
+# with `dumpsys package` first.
+#
+# Kept on purpose (TV, inputs, remote, power): jp.co.sharp.av.android.tvcore, aquostvapp, dtvinputtif,
+# uhdtvinputtif, dtvbgservice, rsvcore (recording reservations), epglinker, reclistlinker, mmp (media player),
+# aquosuiservice (picture/input/tool menus), provider.*, bmode, neuf, pouf, powermanagerwrapper,
+# ffmpowercontrol, suspendhelper, rcservice, settingssub, setupwizard, sharpresourcemanager, systemupdate,
+# hybridcastcpdm, ipcontrolservice, rs232cservice, lighticonservice, launchercustom, voiceguide, emanual,
+# aquossupportapp and aquosfiledownloader (key receivers), soundpartner; all com.mediatek.* (tvinput,
+# hotkey.dispatcher, autopair, tv.agent); Play Store, Play Services, Gboard, TalkBack, Dolby audio.
+# Kept by choice: jp.co.sharp.android.tvnetapp / netdottv (the remote's ネット動画 button; no background
+# service), all streaming apps the owner uses. Test/factory packages (tvtest, shmictest, hotelbrowser) were
+# neither disabled nor opened.
+
+# --- Telemetry, retail demo, partner auto-install ---
+jp.co.sharp.av.android.analyticsservice        # Sharp usage analytics
+jp.co.sharp.av.android.storedemoapplication    # retail store demo
+android.autoinstalls.config.sharp.av           # PAI partner auto-install stub
+com.google.android.feedback
+com.google.android.partnersetup
+
+# --- Sharp content and recommendation services ---
+jp.co.sharp.av.android.cocorovision            # COCORO VISION AI recommendations (Firebase, screen/key event reports)
+jp.co.sharp.av.android.chranking               # AQUOS 番組ランキング content service
+jp.co.sharp.av.android.aquoscity               # AQUOS City content portal
+jp.co.sharp.av.android.living_camera_app       # living-room camera app
+com.google.android.play.games
+com.google.android.backdrop                    # Ambient Mode screensaver; falls back to the basic dream
+
+# --- Off by owner's choice ---
+com.google.android.katniss                     # Google Assistant / voice search (mic button stops working)
+com.google.android.apps.mediashell             # Chromecast built-in
+jp.co.sharp.av.android.tvremote                # AQUOS phone-remote companion (Firebase messaging)
+com.google.android.tv.remote.service           # Android TV phone remote
+jp.co.sharp.av.android.cocoroguide             # COCORO ID account / guide
+jp.co.sharp.av.android.dlna.homenetwork        # DLNA home-network browser (recorder/NAS playback)
+
+# --- After the new launcher owned Home ---
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+
+# --- Preloaded streaming apps, off by owner's choice ---
+jp.paravi.androidtv                            # Paravi
+jp.unext.cocorovideo                           # U-NEXT for COCORO VIDEO (the regular U-NEXT app stays)
+com.google.android.videos                      # Google Play Movies & TV

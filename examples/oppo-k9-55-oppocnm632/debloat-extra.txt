@@ -1,0 +1,50 @@
+# OPPO K9 55 (OPPOCNM632), Android 9 / ColorOS TV — optional slimmer set
+# Apply on top of examples/oppo-k9-55-oppocnm632/debloat.txt, only for what you do not use.
+# Kept out of both lists: stock home (com.heytap.tv.launcher), Settings, the market, Live TV,
+# the file browser, Jellyfin and Miracast.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/oppo-k9-55-oppocnm632/debloat-extra.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oppo-k9-55-oppocnm632/debloat-extra.txt com.heytap.tv.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Voice is off by choice. A name-only privacy audit matched com.heytap.speechassist.tv
+# (it declares RECORD_AUDIO) and com.heytap.tv.assistant.oppo (system uid; the returned
+# appops history had touched RECORD_AUDIO). That shows the op was used, not that audio left
+# the TV. Karaoke, the live-streaming app and the watch bridge are off by choice too.
+
+# Gallery, weather, camera and calendar
+com.heytap.tv.calendar
+com.heytap.tv.camera
+com.heytap.tv.cloudgallery
+com.heytap.tv.gallery3d
+com.heytap.tv.weather
+
+# Calls, speakers, device inspect and the HeyTap things shelf
+com.heytap.tv.videocall
+com.heytap.tv.btspeaker
+com.heytap.tv.heythings
+com.heytap.tv.deviceinspect
+
+# Smart home, voice and the OPPO assistant (off by choice)
+com.heytap.smarthome.tv
+com.heytap.speechassist.tv                    # declares RECORD_AUDIO
+com.heytap.tv.assistant.oppo                  # system uid; appops history touched RECORD_AUDIO
+
+# Cross-device links and accessories
+com.heytap.iot.synergy
+com.heytap.iot.relayplayer
+com.heytap.ars.sink
+com.heytap.optvbtlink
+com.heytap.accessory
+
+# Relax, fitness, karaoke, watch and account leftovers (off by choice)
+com.coloros.relax.tv
+com.health.aisportcoach
+com.loostone.tuning
+com.okii.watch.tv
+com.tencent.karaoketv
+com.changba.sd
+com.huya.nftv
+com.oneplus.tv.android.account
+com.oplus.onet
+tv.newtv.loginservice

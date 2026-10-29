@@ -1,0 +1,6 @@
+{
+  "tv": "Strong LEAP-S3 box (SkyworthDigital YDA, Amlogic S905Y4), Italy",
+  "os": "Google TV 14",
+  "brand": "Skyworth",
+  "notes": "Privacy Sandbox ad services, Skyworth factory test apps, feedback consent, Play Games; launcherx + setupwraith (setupwraith owned the Wi-Fi saved at setup, no reset button on the box); remote buttons, updaters and Amlogic services kept; see the [device note](../docs/devices/strong-leap-s3.md)"
+}

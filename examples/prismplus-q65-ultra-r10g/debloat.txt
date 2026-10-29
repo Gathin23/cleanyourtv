@@ -24,6 +24,12 @@ com.apps.wifihotspot
 com.mk.tv.meeting.service
 com.apps.esticker3
 com.android.printspooler
+com.android.tv.feedbackconsent
+
+# Privacy Sandbox and on-device personalization
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
 
 # Broadcast tuner apps not used here (DTMB, ISDB, ATSC)
 com.realtek.dtmb
@@ -42,9 +48,8 @@ com.wbd.stream                              # Max, off by choice
 
 # Stock home. Disable only after the new launcher is installed and running, or Home lands on a factory test app.
 com.google.android.apps.tv.launcherx
-# Left enabled: com.google.android.tungsten.setupwraith (disabling it also disables Google Assistant "Hey Google").
+com.google.android.tungsten.setupwraith     # setup wizard; on this set YouTube casting from a phone still works after a reboot (tested 2026-10-25)
 #   Careful: on most Google TV sets setupwraith's RecoveryActivity takes Home once launcherx is off and
-#   crash-loops system_server (docs/TROUBLESHOOTING.md). The install script checks where Home lands and rolls
-#   back; if it does on yours, disable setupwraith too (forget and re-join Wi-Fi first, it owns the network).
+#   crash-loops system_server (docs/TROUBLESHOOTING.md). Forget and re-join Wi-Fi first, it owns the network.
 
 # KEEP: com.realtek.dtv, com.realtek.tv.atv (HDMI and other inputs). Left enabled: com.realtek.airplay2.

@@ -1,0 +1,51 @@
+# Lumio Vision 7, 55" / 139 cm (KTC ODM, Realtek chipset, device khardi, product KTC_LUMIO_4K_EU_23GV1), India
+# Google TV 14 (Android 14, SDK 34), build UKRA.251202.032
+# First Lumio list. Contributed by Subramanya GB.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/lumio-vision-7/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/lumio-vision-7/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (disabled by launcher/build-and-install.sh after the
+#   new launcher is confirmed Home). On this build setupwraith re-claims Home (.RecoveryActivity/.MainActivity)
+#   the moment launcherx is off, and the shell cannot disable that component alone (SecurityException), so
+#   setupwraith has to be disabled too (listed below). The active Wi-Fi here was system-owned (OwnerUid 1000),
+#   so disabling setupwraith did NOT drop Wi-Fi - but setupwraith owned another saved network, so disable.sh's
+#   guard skipped it and this unit needed FORCE_SETUPWRAITH=1. Check yours first with the README's
+#   "Currently Connected" check (the cname list alone does not say which network is in use): if setupwraith
+#   owns the network in use, forget and re-join it in Settings. Disabling setupwraith may break Chromecast
+#   (mediashell reads device info from it); re-enable setupwraith to get casting back.
+# Live TV / tuner app: com.realtek.tv (set as live_tv_package in config.xml, and hidden from the grid).
+# Netflix (com.netflix.ninja) shipped already disabled on this unit.
+# Remote app buttons (for config.xml app_keys): YouTube 190, Netflix 191, Prime Video 195, TL;DR 200.
+# Tested same day over Wireless debugging (classic port 5555 was already open): every HDMI/tuner input and
+# installed app verified by screenshot; rebooted and the fork launcher came back as Home.
+
+# Ad tracking / Privacy Sandbox
+tv.anoki.acr.anokiacroptin                  # Anoki ACR: on-screen content recognition for ad targeting
+com.android.adservices.api                  # Privacy Sandbox ad APIs (Topics, attribution)
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Retail demo + regional / unused preloads
+com.realtek.storemode                       # KtcStoreMode: in-store demo mode
+com.realtek.kara                            # Karaoke
+com.realtek.karaoke.userguide
+com.hk.gingaplayer.huangs                   # Ginga (Latin-America ISDB-T middleware), inert on an EU DVB set
+
+# Google telemetry / bloat
+com.google.android.feedback                 # crash / usage reporting
+com.google.android.partnersetup             # partner / referrer telemetry
+com.google.android.syncadapters.calendar    # background calendar sync, unused on a TV
+com.google.android.apps.tv.dreamx           # Google ambient screensaver (the fork launcher has its own clock)
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+
+# Voice assistant (optional): ~100 MB RAM in the background. Comment out to keep voice search / the mic button.
+com.google.android.katniss
+
+# Required for a third-party launcher to hold Home on this build (see header: check the Wi-Fi owner first)
+com.google.android.tungsten.setupwraith
+
+# Owner's personal swap, NOT bloat - left commented so the list keeps YouTube by default:
+# com.google.android.youtube.tv             # removed in favour of SmartTube

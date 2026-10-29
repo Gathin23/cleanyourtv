@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 50PUD7406/43 (TPV, PH0M_EA_T32, MStar/MediaTek), Chile; 55PUS7906/12, Lithuania; 50PUS7906/12, Germany",
+  "os": "Android TV 11",
+  "brand": "Philips",
+  "notes": "First list for PH0M_EA_T32 (same board as the 65PUG7406/78 notes), not the org.droidtv xtv platform: DAC/GEL analytics, TPV framework logger and CMS client, app gallery, retail demo, partner customizer, recommendations, ambient mode; Chromecast off because a shared network of ~150 hosts kept pausing and closing YouTube (HOME sent by mediashell); point the screensaver away from the disabled backdrop; Assistant and updates kept; a second unit (EU) adds a boot-to-Live-TV quirk and the MMP player as a TV_INPUT_HARDWARE false positive; a third unit (55PUS7906/12, EU, TPM215E) shows HDMI (PS4) and DVB-T work with the list applied and MMP, eum and nettvregistration kept, and adds six candidate lines; a fourth unit (50PUS7906/12, EU) maps the remote's Rakuten key (keycode 249, caught by TPVTvService) to another app with app_keys"
+}

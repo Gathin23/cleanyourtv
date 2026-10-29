@@ -1,0 +1,6 @@
+{
+  "tv": "Panasonic 4KTV-3MUP (MOKA R4_GTV, Realtek rtd2851m), Taiwan",
+  "os": "Google TV 14",
+  "brand": "Panasonic",
+  "notes": "Google TV variant of the [Acer R4G](../docs/devices/acer-r4g.md) platform on build UKR1.260308: FallbackHome re-enables a fixed list at every boot, so only packages that stay disabled are listed (Prime Video, YouTube Music, partnersetup and calendar sync come back and are left out, the two apps hidden with hidden_apps); feedback consent, Android ad services, SCBC ad-click and auto-install services, Health Connect, hotspot, backup leftovers; Disney+, CHOCO TV, Twitch, NHK World, USB media player off by choice; launcherx and setupwraith stay enabled (setupwraith owns the saved Wi-Fi); the launcher takes Home via HomeKeyService + stock_home_redirect, holding volume steps once; config.json has the dock; reboot-checked"
+}

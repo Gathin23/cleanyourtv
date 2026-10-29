@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The weather for one place, full screen: now, the air quality and the next three days. It reads Open-Meteo only
+ * The weather for one place, full screen: now, the air quality and the next days (options.xml). It reads Open-Meteo only
  * while it is on screen (every {@link Forecast#REFRESH_MS}, or {@link Forecast#RETRY_MS} after a failure) and
  * does nothing in the background. The place is chosen once with a search and kept in the app's preferences.
  */
@@ -40,12 +40,24 @@ public final class WeatherActivity extends Activity {
     private View content;
     private TextView message;
     private boolean shown;
+    /** options.xml: days after today, and the extras on the "Feels like" line. */
+    private int forecastDays;
+    private boolean showHumidity;
+    private boolean showWind;
+    /** options.xml: degrees Fahrenheit (and mph) instead of Celsius, and the other unit on the "Feels like" line. */
+    private boolean fahrenheit;
+    private boolean bothUnits;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_weather);
         place = getSharedPreferences(PREFS, MODE_PRIVATE);
+        forecastDays = Forecast.forecastDays(getResources().getInteger(R.integer.forecast_days));
+        showHumidity = getResources().getBoolean(R.bool.show_humidity);
+        showWind = getResources().getBoolean(R.bool.show_wind);
+        fahrenheit = "f".equalsIgnoreCase(getString(R.string.temperature_unit).trim());
+        bothUnits = getResources().getBoolean(R.bool.show_both_units);
         root = findViewById(R.id.root);
         content = findViewById(R.id.content);
         message = findViewById(R.id.message);
@@ -83,7 +95,7 @@ public final class WeatherActivity extends Activity {
         io.execute(() -> {
             Forecast.Report report;
             try {
-                report = Forecast.fetch(lat, lon);
+                report = Forecast.fetch(lat, lon, forecastDays);
             } catch (Exception e) {
                 report = null;
             }
@@ -101,9 +113,20 @@ public final class WeatherActivity extends Activity {
         shown = true;
         root.setBackground(Forecast.backdrop(r.code, r.day));
         ((TextView) findViewById(R.id.place)).setText(place.getString("name", ""));
-        ((TextView) findViewById(R.id.temp)).setText(r.tempC + "°");
+        ((TextView) findViewById(R.id.temp)).setText(Forecast.degrees(r.tempC, fahrenheit) + "°");
         ((TextView) findViewById(R.id.sky)).setText(Forecast.sky(r.code, r.day));
-        ((TextView) findViewById(R.id.feels)).setText(getString(R.string.feels_like, r.feelsC));
+        StringBuilder feels = new StringBuilder();
+        if (bothUnits) {
+            feels.append(getString(fahrenheit ? R.string.other_unit_c : R.string.other_unit_f,
+                    Forecast.degrees(r.tempC, !fahrenheit))).append(" · ");
+        }
+        feels.append(getString(R.string.feels_like, Forecast.degrees(r.feelsC, fahrenheit)));
+        if (showHumidity) feels.append(" · ").append(getString(R.string.humidity, r.humidity));
+        if (showWind) {
+            feels.append(" · ").append(fahrenheit ? getString(R.string.wind_mph, Forecast.mph(r.windKmh))
+                    : getString(R.string.wind, r.windKmh));
+        }
+        ((TextView) findViewById(R.id.feels)).setText(feels);
 
         TextView air = findViewById(R.id.airQuality);
         if (r.aqi >= 0) {
@@ -121,12 +144,30 @@ public final class WeatherActivity extends Activity {
         LinearLayout days = findViewById(R.id.days);
         days.removeAllViews();
         LayoutInflater inflater = getLayoutInflater();
-        for (Forecast.Day d : r.days) {
+        // More than three days: the cards share the row, with short day names, so a week fits on screen.
+        boolean compact = r.days.size() > Forecast.MIN_DAYS;
+        if (compact) days.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+        for (int i = 0; i < r.days.size(); i++) {
+            Forecast.Day d = r.days.get(i);
             View card = inflater.inflate(R.layout.item_day, days, false);
-            ((TextView) card.findViewById(R.id.dayName))
-                    .setText(d.date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()));
+            ((TextView) card.findViewById(R.id.dayName)).setText(d.date.getDayOfWeek()
+                    .getDisplayName(compact ? TextStyle.SHORT : TextStyle.FULL, Locale.getDefault()));
             ((TextView) card.findViewById(R.id.daySky)).setText(Forecast.sky(d.code, true));
-            ((TextView) card.findViewById(R.id.dayTemps)).setText(getString(R.string.high_low, d.maxC, d.minC));
+            TextView temps = card.findViewById(R.id.dayTemps);
+            temps.setText(getString(R.string.high_low, Forecast.degrees(d.maxC, fahrenheit),
+                    Forecast.degrees(d.minC, fahrenheit)));
+            if (compact) {
+                int pad = Math.round(14 * getResources().getDisplayMetrics().density);
+                card.setPadding(pad, pad, pad, pad);
+                TextView sky = card.findViewById(R.id.daySky);
+                sky.setTextSize(15);
+                sky.setSingleLine(false);   // "Partly cloudy" on two lines rather than cut; every card two lines tall
+                sky.setLines(2);
+                temps.setTextSize(21);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                lp.setMarginEnd(i < r.days.size() - 1 ? Math.round(12 * getResources().getDisplayMetrics().density) : 0);
+                card.setLayoutParams(lp);
+            }
             days.addView(card);
         }
 

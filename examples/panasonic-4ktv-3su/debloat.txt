@@ -1,0 +1,65 @@
+# Panasonic 4KTV-3SU (Skyworth-built, device SW6H, product SW6H_PANATV_NF, MediaTek, armeabi-v7a), Android TV 14
+# (API 34), build UTT1.250517.001, ~1.9 GB RAM. Same board and build as thomson-sppl-4k-sw6h and skyworth-sw-22sa.
+# 4K panel drawn at 1920x1080 (wm size override from the factory, density 320; leave it).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-4ktv-3su/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-4ktv-3su/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock Home: com.google.android.apps.tv.launcherx; setupwraith's RecoveryActivity also claims HOME.
+# Live TV app: com.smartdevice.livetv; the launcher's Inputs menu lists HDMI 1-3, AV and Live TV and switches through it.
+#
+# Home without disabling launcherx or setupwraith: the saved Wi-Fi network belonged to setupwraith
+# (dumpsys wifi: cname=com.google.android.tungsten.setupwraith), and the owner kept it rather than forget and
+# re-join the network; Chromecast is in use too, and on Google TV the Cast receiver can read its credentials from
+# setupwraith. So neither is in this list. `cmd package set-home-activity` prints Success and changes nothing here,
+# so launcher/build-and-install.sh reports Home is still launcherx and stops before its helpers. What works:
+# config.json here (stock_home_redirect launcherx), then
+#   TV_HOST=<tv ip> STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 launcher/build-and-install.sh
+# and, since that run stops early, switch on HomeKeyService as the script's enable_service does. Checked with
+# dumpsys activity activities | grep mFocusedApp: Home from YouTube, an explicit start of launcherx, and power-on
+# after a reboot (launcherx resumes for ~1 s, then com.gathin.tvhome/.MainActivity) all end on the new launcher.
+# Driven from the Google TV phone app's remote (no physical remote at hand), which still works with launcherx kept.
+#
+# Applied on 2026-10-26 in three batches with a screenshot after each; Home, D-pad, the Inputs menu and Live TV
+# checked. After a reboot `pm list packages -d` matched exactly: this firmware re-enables nothing at boot.
+#
+# Disabled from the factory, so not listed (restore.sh would turn it ON): com.google.android.feedback.
+#
+# Kept on purpose: launcherx + setupwraith (above), com.smartdevice.livetv + overlay_SANLUX, com.mediatek.tvinput,
+# com.mediatek.tv.service, com.mediatek.android.tv.globalkeyoverlay (Live TV, HDMI, hot keys),
+# com.smartdevice.dailyshortcut (quick menu), com.smartdevice.duplebluetooth + bleconnectservice (BLE remote
+# pairing), com.smartdevice.factory and mediatek.factorymenu.ui (never launched), com.tianci.localmedia, Play Store +
+# Play Services, keyboards, katniss + tv.assistant + tv.remote.service (voice and the phone remote, by choice),
+# mediashell (Chromecast, by choice), com.smartdevice.dtv.icast + com.mediatek.androidbox (Miracast/DLNA, by choice),
+# Netflix, Prime Video, YouTube Music and Google TV (Play Movies) (by choice).
+
+# Telemetry and after-sale push
+com.android.tv.feedbackconsent
+com.smartdevice.aftersale                    # boot + network receivers, can install APKs
+com.smartdevice.dailymanage                  # "Daily Manage" boot service, no documented purpose
+
+# Android ad and personalisation services
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Skyworth content, ads, demos and preloads
+com.smartdevice.recommendation               # Coocaa recommendation rows; bundles Sensors Data analytics
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects rows into the home screen
+android.autoinstalls.config.google.gtvpai    # Play auto-installs of partner apps
+com.smartdevice.epopplayer                   # ePop shop demo player
+fusion.android.tv.demo                       # shop demo player
+com.coocaa.demonow.lightining                # "Demo Now" retail mode
+com.Smartdevice.emanual                      # on-screen manual
+com.mstar.android.tv.disclaimercustomization # retail legal-disclaimer dialogs
+com.smartdevice.myapp                        # Skyworth "My App" shortcut page
+com.smartdevice.setupwraith                  # Skyworth first-run/privacy wizard (not Google's setupwraith)
+
+# Not needed on a TV
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.google.android.syncadapters.calendar
+
+# Off by owner's choice
+com.google.android.play.games

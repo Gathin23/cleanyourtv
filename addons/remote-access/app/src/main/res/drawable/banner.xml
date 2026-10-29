@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a screen with a terminal prompt and a padlock. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#1E2630" android:pathData="M24,24h272v132h-272z" />
+    <path android:strokeColor="#E5534B" android:strokeWidth="8" android:fillColor="#00000000" android:pathData="M70,70l26,20l-26,20" />
+    <path android:fillColor="#E5534B" android:pathData="M108,106h44v8h-44z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M206,88h52v40h-52z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="6" android:fillColor="#00000000" android:pathData="M216,88v-10a16,16 0 0 1 32,0v10" />
+</vector>

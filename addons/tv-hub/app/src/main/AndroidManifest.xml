@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Playlists, guides, logos and streams. The only permission TV Hub asks for. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Runs on TVs only, but does not demand TV hardware so Fire TV and boxes without a tuner install it. -->
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!--
+      Package visibility without QUERY_ALL_PACKAGES: the live-TV apps TV Hub knows by name
+      (keep in sync with Apps.KNOWN), and any app with a TV launcher entry for "Show every TV app".
+    -->
+    <queries>
+        <package android:name="tv.pluto.android" />
+        <package android:name="com.tubitv" />
+        <package android:name="com.plexapp.android" />
+        <package android:name="org.xbmc.kodi" />
+        <package android:name="com.getchannels.dvr.app" />
+        <package android:name="com.silicondust.view" />
+        <package android:name="com.google.android.youtube.tvunplugged" />
+        <package android:name="com.sling" />
+        <package android:name="com.philo.philo.google" />
+        <package android:name="com.haystack.android" />
+        <package android:name="com.google.android.tv" />
+        <package android:name="ar.tvplayer.tv" />
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+    </queries>
+
+    <!--
+      usesCleartextTraffic: home servers (Dispatcharr, HDHomeRun, a NAS) serve plain http on the
+      local network, and many IPTV playlists are http. allowBackup off: source settings and
+      stream addresses never leave the TV in a backup.
+    -->
+    <application
+        android:name=".TvHubApp"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:banner="@drawable/banner"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TvHub"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|orientation">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <!-- CleanYourTV module card, spec 1 (docs/specs/card.md): same activity as LEANBACK_LAUNCHER. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+
+        <activity android:name=".ui.OnboardingActivity" android:exported="false" />
+        <activity android:name=".ui.SourceEditorActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".player.PlayerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TvHub.Player"
+            android:configChanges="keyboard|keyboardHidden|navigation|screenSize|smallestScreenSize|screenLayout|orientation" />
+    </application>
+</manifest>

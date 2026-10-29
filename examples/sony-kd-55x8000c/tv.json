@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KD-55X8000C (2015, \"BRAVIA 4K 2015\", SVP-DTV15, MediaTek), China firmware",
+  "os": "Android TV 7.0",
+  "brand": "Sony",
+  "notes": "China firmware without Google services (no Play Store, katniss, YouView): Sony's preloaded 应用中心 (`com.sony.dangbeimarket`) is what fills the home's paid-app 推荐 row, disabled here; 华数TV and QQ音乐 off; 屏幕镜像 kept because the Inputs menu carries a fixed entry for it (a dead source otherwise); debloat only out of the box, the launcher needs Android 8 (minSdk 26), but the minSdk 24 build from #608 installs, runs and takes Home here"
+}

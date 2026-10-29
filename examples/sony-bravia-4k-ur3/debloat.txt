@@ -1,0 +1,56 @@
+# Sony BRAVIA 4K UR3 / KD-55X8000H (device BRAVIA_UR3, MediaTek mt5893)
+# Android 10 (Android TV, API 29), firmware BRAVIA_UR3_EU-user 10 QTG3.200305.006.S97 662301
+# and Taiwan retail KD-55X8000H, firmware BRAVIA_UR3_TW-user 10 QTG3.200305.006.S97 662301
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur3/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (the restore.sh default is correct).
+# The only other HOME claimant is com.android.tv.settings/.system.FallbackHome, so even a
+# failed launcher takeover still lands on a settings home rather than a black screen.
+# Live TV / tuner app: com.sony.dtv.tvx (set it as live_tv_package in the launcher's config).
+# Keep the com.sony.dtv.tvinput.* services, com.sony.dtv.braviasync*, com.sony.dtv.tvapi,
+# com.sony.dtv.sonysystemservice and the Sony settings apps: they drive HDMI, the tuner,
+# Bravia Sync and the remote. Also keep com.sony.dtv.airplayapp and com.sony.dtv.homekit
+# (AirPlay and HomeKit), and the update services (com.sony.dtv.update, .systemupdate,
+# .oadservice) if you want OTA firmware updates. Left enabled by choice here:
+# com.sony.dtv.seeds.iot* , the Vewd core and com.youview.poa / com.sony.dtv.youview.
+# Already disabled at the factory: com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap,
+# screnmirroring.com (that typo'd name is exactly what Sony ships — do not "fix" it).
+# On the Taiwan build (BRAVIA_UR3_TW, KD-55X8000H), com.sony.dtv.promos is not installed, and
+# com.sony.dtv.seeds.iot, com.vewd.core.integration.dia, com.google.android.videos and
+# com.google.android.play.games ship disabled at the factory.
+#
+# Applied in one session and reboot-checked: all 16 below stayed disabled after a reboot on EU,
+# and the tracking/ad/demo subset plus com.google.android.tv.bugreportsender and the reference
+# launcher (com.gathin.tvhome) stayed disabled/default across a reboot on the Taiwan KD-55X8000H
+# (with voice assistant, Chromecast, AirPlay/HomeKit, Miracast and streaming apps kept by choice).
+# Not yet lived with for weeks; if something breaks, re-enable with `pm enable <package>`
+# and please report it.
+
+# tracking / ads / recommendations
+tv.samba.ssm                                   # Samba TV (ACR viewing data)
+com.qterics.da.product
+com.sony.dtv.da.service
+com.sonyericsson.idd.agent
+com.sony.dtv.promos                            # EU build; absent on TW (KD-55X8000H)
+com.sony.dtv.sonyselect
+com.google.android.tvrecommendations           # only the stock launcher uses it
+com.google.android.feedback
+com.google.android.tv.bugreportsender          # confirmed on TW (KD-55X8000H)
+
+# demo / shop mode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# voice assistant (removes the remote's mic search; skip these three to keep it)
+com.google.android.katniss
+com.google.android.tv.assistant
+com.sony.dtv.assistantadapter
+
+# preloaded apps, disabled by choice (com.apple.atve.sony.appletv kept here — used as a dock app)
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.videos

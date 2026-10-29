@@ -50,9 +50,33 @@ public class ForecastTest {
     }
 
     @Test
+    public void forecastDaysStayBetweenThreeAndSeven() {
+        assertEquals(3, Forecast.forecastDays(3));
+        assertEquals(7, Forecast.forecastDays(7));
+        assertEquals(3, Forecast.forecastDays(0));
+        assertEquals(7, Forecast.forecastDays(16));
+    }
+
+    @Test
     public void wetBulbMatchesStull() {
         // Stull (2011): 20 °C and 50 % give a wet-bulb of about 13.7 °C.
         assertEquals(13.7, Forecast.wetBulb(20, 50), 0.1);
         assertEquals(true, Forecast.wetBulb(1.1, 86) < 1.0);
+    }
+
+    @Test
+    public void degreesRoundOnlyOnceInEitherUnit() {
+        assertEquals(22, Forecast.degrees(21.6, false));
+        assertEquals(71, Forecast.degrees(21.6, true));   // 70.88, not 22 °C rounded first (71.6 -> 72)
+        assertEquals(32, Forecast.degrees(0, true));
+        assertEquals(-40, Forecast.degrees(-40, true));
+        assertEquals(212, Forecast.degrees(100, true));
+    }
+
+    @Test
+    public void windInMilesPerHour() {
+        assertEquals(0, Forecast.mph(0));
+        assertEquals(10, Forecast.mph(16));
+        assertEquals(62, Forecast.mph(100));
     }
 }

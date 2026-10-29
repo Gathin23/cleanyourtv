@@ -17,6 +17,18 @@
 # Applied and verified on a real unit on 2026-10-19: Wi-Fi stayed up, launcher/ installed with the
 # default build-and-install.sh, Home and the Inputs menu worked after the full list.
 #
+# Second unit, France (OQEE by Free preloaded), applied 2026-10-23: same client_type and build
+# PPR2.180905.006.A1 (builder date 2021-01-25), TCL software V8-R41KT01-LF1V374.009210, 32" (soc_32).
+# Retail label not read (covered by a wall mount). Disabled in batches with a screenshot after each,
+# launcher/ installed with the default build-and-install.ps1, rebooted, then checked with the real IR
+# remote: Home, Source, Netflix, Prime Video and Settings buttons all work, as do HDMI 1/2, AV, Live TV.
+# - com.tcl.waterfall.overseas (below) is installed on this unit: a TCL content app bundling Google
+#   Mobile Ads and Firebase. Disabled without side effects.
+# - The "GalaView" tile is not its own app but com.tcl.partnercustomizer/.tkey.TKeyGalaActivity, so it
+#   stays enabled (key handling); hide it from the launcher with hidden_apps com.tcl.partnercustomizer.
+# - com.google.android.katniss is re-enabled by the firmware at every boot here; pumpkin stays off.
+# - com.google.android.music is not installed on this unit.
+#
 # DO NOT DISABLE here (load-bearing or unclear, run as android.uid.system):
 # com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough com.tcl.sourcemananger   # Live TV, HDMI, tuner, Source menu
 # com.tcl.autopair com.tcl.tcl_bt_rcu_service com.tcl.keycustomfunctionservice  # remote, BT pairing
@@ -40,6 +52,7 @@ com.tcl.appmarket2                      # TCL app store (Play Store stays)
 com.tcl.usercenter                      # TCL account / phone binding web pages
 com.tcl.esticker                        # retail energy-label sticker
 com.tcl.useragreement                   # TCL agreement screen, done after setup
+com.tcl.waterfall.overseas              # TCL content app, Mobile Ads + Firebase (second unit)
 
 # Background services
 com.tcl.tvweishi                        # "TV Guard" cleaner with its own installer

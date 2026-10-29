@@ -1,0 +1,35 @@
+# Chromecast with Google TV 4K (2020, device sabrina), Google TV 14 (SDK 34), build UTTC.250917.004 (14193937)
+#
+# Debloat only: the same cleanup as debloat.txt, minus the three packages that cost something on this device.
+# Phone casting keeps working, the stock Google TV home stays, and so does the ambient screensaver.
+#
+# Apply:   TV_HOST=<ip> tools/disable.sh examples/google-chromecast-gtv-4k/debloat-keep-cast.txt
+# Undo:    TV_HOST=<ip> tools/restore.sh examples/google-chromecast-gtv-4k/debloat-keep-cast.txt com.google.android.apps.tv.launcherx
+# Check:   TV_HOST=<ip> tools/venv/bin/python -I tools/check.py examples/google-chromecast-gtv-4k/debloat-keep-cast.txt com.google.android.apps.tv.launcherx
+#          launcherx stays Home with this list, also with the launcher added by redirect (debloat.txt, "Home by redirect").
+# Everything is DISABLED, not uninstalled.
+#
+# Kept on purpose, unlike debloat.txt:
+# - com.google.android.tungsten.setupwraith: it holds the Cast receiver's device credentials, and it can own a
+#   saved Wi-Fi network, which disabling it deletes (both in debloat.txt, quirks).
+# - com.google.android.apps.tv.dreamx and com.google.android.backdrop: without the new launcher's Clock
+#   screensaver, disabling them leaves the screensaver pointing at nothing.
+# Move on to debloat.txt when you install the launcher and accept losing phone casting after a reboot.
+#
+# Lived with on 2026-10-22: stock home, phone casting (YouTube), Play Store and Assistant all worked.
+
+# Telemetry, feedback and ads
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.tv.remotecontrol.logging     # remote usage logging
+com.google.android.apps.tv.netoscope            # network diagnostics reporting
+com.google.android.federatedcompute
+com.google.android.ondevicepersonalization.services
+com.google.android.adservices.api               # Privacy Sandbox ad services
+com.google.android.ext.adservices.api
+
+# Preloaded apps
+com.google.android.play.games
+com.google.android.videos                       # Google TV / Play Movies; re-enable for purchased titles
+com.android.printspooler
+com.google.android.marvin.talkback              # re-enable if you need the screen reader

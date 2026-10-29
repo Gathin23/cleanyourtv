@@ -1,12 +1,56 @@
 package com.gathin.tvhome;
 
 import org.junit.Test;
+import java.text.Collator;
+import java.util.Locale;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.*;
 
 public class LibraryAppsTest {
+    @Test public void thePillHidesOnlyWhileTheTopBarButtonIsAWayIn() {
+        assertTrue(LibraryApps.showPill(true, false, true));
+        assertTrue(LibraryApps.showPill(true, true, true));
+        assertTrue(LibraryApps.showPill(true, false, false));
+        assertFalse(LibraryApps.showPill(true, true, false));
+        assertFalse(LibraryApps.showPill(false, true, true));
+        assertFalse(LibraryApps.showPill(false, false, true));
+    }
+
+    @Test public void okOpensHomeAppsAndEveryAppWithTheSwitchButNeverInSelectionMode() {
+        assertTrue(LibraryApps.okOpens(false, false, true));
+        assertFalse(LibraryApps.okOpens(false, false, false));
+        assertTrue(LibraryApps.okOpens(false, true, false));
+        assertTrue(LibraryApps.okOpens(false, true, true));
+        assertFalse(LibraryApps.okOpens(true, true, false));
+        assertFalse(LibraryApps.okOpens(true, false, true));
+    }
+
+    @Test public void hidingKeepsTheNextAppOrThePreviousAppAtTheEnd() {
+        assertEquals(1, LibraryApps.nextAfterRemoval(0, 5));
+        assertEquals(3, LibraryApps.nextAfterRemoval(2, 5));
+        assertEquals(3, LibraryApps.nextAfterRemoval(4, 5));
+        assertEquals(-1, LibraryApps.nextAfterRemoval(0, 1));
+        assertEquals(-1, LibraryApps.nextAfterRemoval(0, 0));
+        assertEquals(1, LibraryApps.nextAfterRemoval(-1, 3));
+        assertEquals(1, LibraryApps.nextAfterRemoval(9, 3));
+    }
+
+    @Test public void checkedAppsComeFirstAndEachGroupCanUseLabelOrder() {
+        assertTrue(LibraryApps.compareHomeGroup(true, false) < 0);
+        assertTrue(LibraryApps.compareHomeGroup(false, true) > 0);
+        assertEquals(0, LibraryApps.compareHomeGroup(true, true));
+        assertEquals(0, LibraryApps.compareHomeGroup(false, false));
+        Collator alphabet = Collator.getInstance(Locale.ENGLISH);
+        assertTrue(LibraryApps.compareCatalog(true, "Zeta", "pkg.zeta",
+                false, "Alpha", "pkg.alpha", alphabet) < 0);
+        assertTrue(LibraryApps.compareCatalog(true, "Alpha", "pkg.alpha",
+                true, "Zeta", "pkg.zeta", alphabet) < 0);
+        assertTrue(LibraryApps.compareCatalog(false, "Alpha", "pkg.alpha",
+                false, "Zeta", "pkg.zeta", alphabet) < 0);
+    }
+
     private static final long DAY = 24L * 60 * 60 * 1000;
 
     @Test public void missingShortcutsComeBeforeHomeAppsEvenWhenTheHomeAppIsNewer() {
@@ -88,6 +132,14 @@ public class LibraryAppsTest {
             try { LibraryApps.decode(raw); fail(raw); }
             catch (IllegalArgumentException expected) { }
         }
+    }
+
+    @Test public void excludedFromCatalogIsExactSetMembershipAndEmptyByDefault() {
+        Set<String> excluded = new HashSet<>();
+        excluded.add("com.example.factory");
+        assertTrue(LibraryApps.excludedFromCatalog(excluded, "com.example.factory"));
+        assertFalse(LibraryApps.excludedFromCatalog(excluded, "com.example.other"));
+        assertFalse(LibraryApps.excludedFromCatalog(Collections.emptySet(), "com.example.factory"));
     }
 
     @Test public void aFullListAllowsRemovalAndAnExistingChoiceButNotAnotherApp() {

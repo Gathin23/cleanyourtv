@@ -55,4 +55,13 @@ public class CardTextTest {
         assertEquals("▶ Snooze 1h", p.get(KeyRules.SNOOZE));
         assertEquals(2, CardText.parts("KEYCODE_DPAD_LEFT", "KEYCODE_DPAD_RIGHT", 60, null).size());
     }
+
+    @Test
+    public void noPictureSaysWhy() {
+        assertEquals("No picture: Frigate has a new certificate.\nTrust it in Frigate Glance › Overview › Frigate.",
+                CardText.noPicture(true, "javax.net.ssl.SSLHandshakeException: whatever"));
+        assertEquals("No picture: Frigate not reached.\nfailed to connect to /192.168.1.11 (port 8971)",
+                CardText.noPicture(false, "java.net.ConnectException: failed to connect to /192.168.1.11 (port 8971)"));
+        assertEquals("No picture: Frigate not reached.", CardText.noPicture(false, null));
+    }
 }
