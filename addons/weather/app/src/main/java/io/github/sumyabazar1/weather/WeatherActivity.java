@@ -111,6 +111,12 @@ public final class WeatherActivity extends Activity {
 
     private void show(Forecast.Report r) {
         shown = true;
+        place.edit()
+                .putInt("weather_temp", Forecast.degrees(r.tempC, fahrenheit))
+                .putString("weather_sky", getString(Forecast.sky(r.code, r.day)))
+                .putString("weather_unit", fahrenheit ? "f" : "c")
+                .apply();
+        getContentResolver().notifyChange(WeatherProvider.URI, null);
         root.setBackground(Forecast.backdrop(r.code, r.day));
         ((TextView) findViewById(R.id.place)).setText(place.getString("name", ""));
         ((TextView) findViewById(R.id.temp)).setText(Forecast.degrees(r.tempC, fahrenheit) + "°");

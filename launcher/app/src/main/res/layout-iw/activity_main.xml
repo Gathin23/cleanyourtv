@@ -311,6 +311,22 @@
                             android:includeFontPadding="false" />
                     </LinearLayout>
 
+                    <!-- weather_package: temperature and sky from the Weather add-on, hidden until data arrives. -->
+                    <TextView
+                        android:id="@+id/weatherLine"
+                        android:gravity="right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginTop="6dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textColor="#A6FFFFFF"
+                        android:textSize="14sp"
+                        android:fontFamily="@string/font_regular"
+                        android:letterSpacing="0.04"
+                        android:visibility="gone" />
+
                 </LinearLayout>
             </LinearLayout>
 

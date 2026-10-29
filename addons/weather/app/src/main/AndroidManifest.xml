@@ -30,5 +30,13 @@
             </intent-filter>
             <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
         </activity>
+
+        <!-- The authority the launcher reads via ApplicationInfo meta-data "com.gathin.tvhome.weather". -->
+        <meta-data android:name="com.gathin.tvhome.weather" android:value="io.github.sumyabazar1.weather.now" />
+
+        <provider
+            android:name=".WeatherProvider"
+            android:authorities="io.github.sumyabazar1.weather.now"
+            android:exported="true" />
     </application>
 </manifest>

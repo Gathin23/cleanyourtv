@@ -195,6 +195,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView raceKicker, raceHeadline, raceSessions;
     /** game_day: each team's next game from an add-on, rotating in the race panel; null when the key is off. */
     private GameDay gameDay;
+    /** weather_package: temperature and sky from the Weather add-on; null when the key is off. */
+    private WeatherLine weatherLine;
+    private TextView weatherLineView;
     private View raceBar;
     private LinearLayout racePager;
     private long rotationStart;
@@ -538,6 +541,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         raceBar = findViewById(R.id.raceBar);
         racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
+        weatherLine = WeatherLine.create(this, cfg.weatherPackage, handler, this::updateWeatherLine);
+        weatherLineView = findViewById(R.id.weatherLine);
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
@@ -1056,6 +1061,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        if (weatherLine != null) weatherLine.start();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1237,6 +1243,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
         if (gameDay != null) gameDay.stop();
+        if (weatherLine != null) weatherLine.stop();
         handler.removeCallbacks(turnTick);
         if (lamp != null) lamp.stop();
         cancelPendingFocusScroll();
@@ -1292,6 +1299,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onDestroy() {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
+        if (weatherLine != null) weatherLine.shutdown();
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -2127,6 +2135,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glass.animate().cancel();
         if (animations && !reducedMotion) glass.animate().alpha(0f).setDuration(160).start();
         else glass.setAlpha(0f);
+    }
+
+    // ---- weather line (config.xml weather_package) ------------------------------------------------
+
+    private void updateWeatherLine() {
+        if (weatherLineView == null) return;
+        String text = weatherLine != null ? weatherLine.text() : null;
+        if (text != null && !text.isEmpty()) {
+            weatherLineView.setText(text);
+            weatherLineView.setVisibility(View.VISIBLE);
+        } else {
+            weatherLineView.setVisibility(View.GONE);
+        }
     }
 
     // ---- optional system stats (config.xml show_stats) --------------------------------------------
