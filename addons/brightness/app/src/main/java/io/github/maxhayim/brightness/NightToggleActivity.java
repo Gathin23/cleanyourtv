@@ -9,7 +9,8 @@ import android.os.Bundle;
  * in the launcher's app_keys) or another app. Without extras it toggles: on (dimming with it) when night mode was off
  * or on a schedule, and on the next press back to what it replaced, the schedule or off. An extra "night" of "on" or
  * "off" sets it instead (off also puts a replaced schedule back), and "bar" false skips the quick bar that shows the
- * result. No window of its own.
+ * result. "flip" (Home's sun and moon button, the launcher's night_mode) keeps a schedule: day now at a scheduled night,
+ * or night by day, until the schedule's next start or end; off or on it is the plain toggle. No window of its own.
  */
 public class NightToggleActivity extends Activity {
     static final String EXTRA_NIGHT = "night";
@@ -21,6 +22,16 @@ public class NightToggleActivity extends Activity {
         if (DimService.canDraw(this)) {
             Dimming.Settings s = Prefs.load(this);
             String wanted = getIntent().getStringExtra(EXTRA_NIGHT);
+            if ("flip".equals(wanted) && s.night == Dimming.Night.SCHEDULED) {
+                Dimming.flip(s, DimService.minuteNow(), System.currentTimeMillis());
+                s.on = true;
+                Prefs.save(this, s);
+                DimService.start(this);
+                if (getIntent().getBooleanExtra(EXTRA_BAR, true)) startActivity(new Intent(this, QuickActivity.class));
+                finish();
+                return;
+            }
+            if ("flip".equals(wanted)) wanted = null;
             boolean turnOn = wanted == null ? s.night != Dimming.Night.ON : "on".equals(wanted);
             Dimming.Night replaced = Prefs.nightBeforeToggle(this);
             if (!turnOn) Prefs.setNightBeforeToggle(this, null);

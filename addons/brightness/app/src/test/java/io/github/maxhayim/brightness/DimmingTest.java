@@ -246,4 +246,40 @@ public class DimmingTest {
         assertEquals(Dimming.Night.OFF, Dimming.nightAfterToggle(false, Dimming.Night.OFF));
         assertEquals(Dimming.Night.OFF, Dimming.nightAfterToggle(false, Dimming.Night.ON));
     }
+
+    private static final long HOUR = 3_600_000L;
+    /** 22:00 on some day, as epoch ms (the arithmetic only needs whole minutes). */
+    private static final long TEN_PM = 1_000L * 24 * HOUR + 22 * HOUR;
+
+    @Test
+    public void flipAtAScheduledNightIsDayUntilTheMorning() {
+        Dimming.Settings s = on();   // 21:00 to 07:00
+        Dimming.flip(s, 22 * 60, TEN_PM);
+        assertFalse(Dimming.nightNow(s, 22 * 60));
+        assertEquals(TEN_PM + 9 * HOUR, s.overrideUntil);   // 07:00
+        Dimming.expire(s, TEN_PM + 5 * HOUR);
+        assertFalse(Dimming.nightNow(s, 3 * 60));
+        Dimming.expire(s, TEN_PM + 9 * HOUR);
+        assertEquals(-1, s.override);
+        assertTrue(Dimming.nightNow(s, 21 * 60 + 30));   // the next night is night again
+        assertEquals(Dimming.Night.SCHEDULED, s.night);
+    }
+
+    @Test
+    public void flipByDayIsNightUntilTheScheduleStarts() {
+        Dimming.Settings s = on();
+        long threePm = TEN_PM - 7 * HOUR;
+        Dimming.flip(s, 15 * 60, threePm);
+        assertTrue(Dimming.nightNow(s, 15 * 60));
+        assertEquals(threePm + 6 * HOUR, s.overrideUntil);   // 21:00, when the schedule takes over
+    }
+
+    @Test
+    public void aSecondFlipGoesBackToTheSchedule() {
+        Dimming.Settings s = on();
+        Dimming.flip(s, 22 * 60, TEN_PM);
+        Dimming.flip(s, 23 * 60, TEN_PM + HOUR);
+        assertEquals(-1, s.override);
+        assertTrue(Dimming.nightNow(s, 23 * 60));
+    }
 }

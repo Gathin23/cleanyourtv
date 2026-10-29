@@ -18,6 +18,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+        <!-- Clean Your TV's night_mode key (docs/modules.md): whether it is night now, one row, read-only. -->
+        <meta-data android:name="com.gathin.tvhome.night" android:value="io.github.maxhayim.brightness.night" />
+        <provider
+            android:name=".NightStateProvider"
+            android:authorities="io.github.maxhayim.brightness.night"
+            android:exported="true" />
 
         <!-- The quick bar, for a remote button: map it in the launcher's app_keys as
              hold:<keycode>:io.github.maxhayim.brightness/.QuickActivity. The tile and the card open the settings. -->
@@ -36,7 +42,13 @@
             android:exported="true"
             android:excludeFromRecents="true"
             android:noHistory="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <!-- Clean Your TV's night_mode key (docs/modules.md): its sun and moon button switches night mode here. -->
+            <intent-filter>
+                <action android:name="com.gathin.tvhome.action.TOGGLE_NIGHT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

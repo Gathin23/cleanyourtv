@@ -25,6 +25,9 @@ final class Prefs {
         s.nightStart = p.getInt("night_start", s.nightStart);
         s.nightEnd = p.getInt("night_end", s.nightEnd);
         s.tvPicture = p.getBoolean("tv_picture", s.tvPicture);
+        s.override = p.getInt("override", s.override);
+        s.overrideUntil = p.getLong("override_until", s.overrideUntil);
+        Dimming.expire(s, System.currentTimeMillis());
         s.tvNight = picture(p, "tv_night_", Dimming.Picture.NIGHT);
         try {
             s.night = Dimming.Night.valueOf(p.getString("night", s.night.name()));
@@ -45,6 +48,8 @@ final class Prefs {
                 .putInt("night_end", s.nightEnd)
                 .putString("night", s.night.name())
                 .putBoolean("tv_picture", s.tvPicture)
+                .putInt("override", s.override)
+                .putLong("override_until", s.overrideUntil)
                 .apply();
         savePicture(c, "tv_night_", s.tvNight);
     }

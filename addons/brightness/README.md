@@ -56,6 +56,17 @@ black at the missing brightness with the amber folded in for warmth. It never ta
 keeps controlling whatever is on screen. A foreground service holds the window and switches night
 mode at the scheduled times, and it stops itself when there is nothing to draw and no schedule to follow.
 
+## Night on Home
+
+With the launcher's `night_mode` key set to `io.github.maxhayim.brightness` (`config.xml` or a theme, see
+[`docs/switches.md`](../../docs/switches.md)), Home follows this app's night: a moon button in the top bar by day
+and a sun at night. It switches to the other side for now (`.NightToggleActivity` with `night` "flip"): on a schedule,
+day at a scheduled night or night by day until the schedule's next start or end, which then takes over again;
+with night mode off or on, the plain toggle. Holding OK opens these settings. And
+with `wallpaper_moods`, Home shows the night wallpapers while it is night here rather than by the clock. The launcher only
+reads a one-row provider (`content://io.github.maxhayim.brightness.night/night`, a `night` column of 1 or 0) and
+starts the toggle; the contract is in [`docs/modules.md`](../../docs/modules.md).
+
 ## Permissions
 
 | Permission | Why |
@@ -69,7 +80,8 @@ own picture"). It lets the app read and change the picture menu's settings and n
 
 No internet permission: nothing leaves the TV. No accounts, telemetry, ads or libraries. Settings stay in the
 app's own storage (backups are off). The `OffReceiver` is open to any sender on purpose: it can only switch
-dimming off.
+dimming off. The night provider is exported without a permission on purpose too: it says only whether it is
+night, and changes nothing.
 
 ## Build and install
 
@@ -125,6 +137,11 @@ spec; not yet on this repo's launcher), and the layer back by itself after the a
 
 The JVM tests cover the levels, the colour arithmetic, the schedule (past midnight, edges, empty windows), the
 1 % floor, the fine steps and the clamping of stored values.
+
+Panasonic Google TV LCD (kowloon, Vestel, MediaTek), Android 14, 26 to 29 Oct 2026, on this repo's launcher
+with `night_mode`: the card in the grid, the scheduled night (21:00 to 08:00) starting without opening the app,
+Home's sun and moon and its night wallpapers following it, the button switching day and night, and the layer
+and schedule back by themselves after a reboot.
 
 Still to check on a TV running this repo's launcher (the test TV's home app has no module cards):
 

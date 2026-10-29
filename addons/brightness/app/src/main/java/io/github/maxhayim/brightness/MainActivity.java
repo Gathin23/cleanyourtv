@@ -202,6 +202,7 @@ public class MainActivity extends Activity {
     private void stepNight(int d) {
         s.night = Dimming.Night.values()[(s.night.ordinal() + d + 3) % 3];
         Prefs.setNightBeforeToggle(this, null);
+        s.override = -1;   // and a flip from Home's button
         changed();
     }
 

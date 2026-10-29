@@ -24,6 +24,28 @@ final class Dimming {
      * Night mode after the one-press toggle (NightToggleActivity): On when it turns night on; when it turns night
      * off, the mode that toggle replaced if it was the schedule, so a scheduled night is not lost, otherwise Off.
      */
+    /**
+     * "flip" on a schedule, at this minute of the day and epoch time: the other side until the schedule's next start
+     * or end, or back to the schedule when a flip already holds. Only for a schedule; off or on take the plain toggle.
+     */
+    static void flip(Settings s, int minute, long nowMs) {
+        if (s.override >= 0 && nowMs < s.overrideUntil) {
+            s.override = -1;
+            return;
+        }
+        boolean scheduled = inWindow(s.nightStart, s.nightEnd, minute);
+        int next = scheduled ? s.nightEnd : s.nightStart;
+        int minutes = ((next - minute) % (24 * 60) + 24 * 60) % (24 * 60);
+        if (minutes == 0) minutes = 24 * 60;
+        s.override = scheduled ? 0 : 1;
+        s.overrideUntil = nowMs - (nowMs % 60_000L) + minutes * 60_000L;
+    }
+
+    /** A flip that has run out (Prefs.load): the schedule decides again. */
+    static void expire(Settings s, long nowMs) {
+        if (s.override >= 0 && nowMs >= s.overrideUntil) s.override = -1;
+    }
+
     static Night nightAfterToggle(boolean turnOn, Night replaced) {
         if (turnOn) return Night.ON;
         return replaced == Night.SCHEDULED ? Night.SCHEDULED : Night.OFF;
@@ -39,6 +61,12 @@ final class Dimming {
         /** Minutes after midnight, local time. */
         int nightStart = 21 * 60;
         int nightEnd = 7 * 60;
+        /**
+         * The other side of the schedule for now (NightToggleActivity's "flip", Home's sun and moon button): -1 none,
+         * 0 day, 1 night, until overrideUntil (epoch ms): the schedule's next start or end after it was set.
+         */
+        int override = -1;
+        long overrideUntil;
         /** The TV's own picture at night too (Realtek TVs): the values below, and the day's back in the morning. */
         boolean tvPicture;
         Picture tvNight = Picture.NIGHT;
@@ -156,6 +184,7 @@ final class Dimming {
             case ON:
                 return true;
             case SCHEDULED:
+                if (s.override >= 0) return s.override == 1;
                 return inWindow(s.nightStart, s.nightEnd, minute);
             default:
                 return false;
