@@ -350,9 +350,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         /** wifi_status_warnings follows validation; signal-strength updates also land here, so skip those. */
         private boolean lastValidated;
+        /** wifi_signal_bars: the bar count last drawn from a signal-strength update; 0 before the first. */
+        private int lastBars;
 
         @Override
         public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities caps) {
+            if (wifiSignalBars && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                    && caps.getSignalStrength() != NetworkCapabilities.SIGNAL_STRENGTH_UNSPECIFIED) {
+                int bars = WifiBars.count(caps.getSignalStrength());
+                if (bars != lastBars) {
+                    lastBars = bars;
+                    handler.post(MainActivity.this::updateWifiLabel);
+                }
+            }
             boolean validated = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
             // open_on_start_network_wait: the boot's app opens on the first validated network.
             if (validated && startPending != null) handler.post(openWhenOnline);
@@ -801,6 +812,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         iconOnlyButtons = cfg.iconOnlyButtons;
         topMenu = cfg.topMenu;
         wifiIconOnly = iconOnlyButtons && cfg.wifiLabelWidth <= 0;
+        wifiSignalBars = cfg.wifiSignalBars;
         if (cfg.wifiStatusColor) {
             wifiPlainTint = btnWifi.getCompoundDrawableTintList();
             wifiOnlineTint = getColorStateList(R.color.pill_icon_online);
@@ -2810,6 +2822,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 WifiInfo info = wm != null ? wm.getConnectionInfo() : null;
                 String ssid = info != null ? info.getSSID() : null;
                 flame = info != null ? Math.max(1, Math.min(4, WifiManager.calculateSignalLevel(info.getRssi(), 5))) : 3;
+                if (wifiSignalBars && info != null) icon = WifiBars.icon(info.getRssi());
                 if (ssid != null) {
                     ssid = ssid.replace("\"", "").trim();
                     if (!ssid.isEmpty() && !ssid.contains("unknown") && !ssid.equals("0x")) text = ssid;
@@ -2883,6 +2896,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ColorStateList wifiOnlineTint, wifiPlainTint;
     /** wifi_status_warnings (with wifi_status_color): orange without internet, red offline; null while off. */
     private ColorStateList wifiNoInternetTint, wifiOfflineTint;
+    /** config.xml wifi_signal_bars. */
+    private boolean wifiSignalBars;
     /** The app library button in the top bar (library_button). */
     private View btnLibraryTop;
     /** The open library came from that button: closing it returns there instead of scrolling to the grid's end. */

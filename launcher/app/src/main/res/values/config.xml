@@ -316,6 +316,11 @@
          the focused pill either way), so the connection shows at a glance, also as an icon-only button. Can also be
          set with "wifi_status_color": true in a theme's config.json. -->
     <bool name="wifi_status_color">false</bool>
+    <!-- true lights 1, 2 or 3 of the Wi-Fi icon's bars for a weak, moderate or strong signal (-70 and -60 dBm),
+         redrawn when Android reports a signal change that moves the count (Android 10 and later; earlier, on each
+         return to Home). The festive skin's diya takes the icon's place while it is lit. Can also be set with
+         "wifi_signal_bars": true in a theme's config.json. -->
+    <bool name="wifi_signal_bars">false</bool>
     <!-- With wifi_status_color: the icon orange while the TV is connected but Android has not reached the internet
          through it (a hotel or holiday-park Wi-Fi waiting for its login page) and red while it is offline, instead
          of white for both. Can also be set with "wifi_status_warnings": true in a theme's config.json. -->
