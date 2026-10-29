@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cuaca di samping jam layar Home (WeatherApp.java). Ubah ke false untuk mematikannya. -->
+    <bool name="cw_enabled">true</bool>
+    <!-- Kapsul hitam di belakang tombol atas, ala Dynamic Island. Ubah ke false untuk mematikannya. -->
+    <bool name="cw_island">true</bool>
+    <!-- Satuan suhu: false = Celsius, true = Fahrenheit. -->
+    <bool name="cw_fahrenheit">false</bool>
+    <!-- Koordinat lokasi (derajat desimal). Isi sekarang: pusat Kota Gorontalo.
+         Untuk titik rumah Anda: Google Maps, tekan lama di lokasi, salin dua angka koordinatnya. -->
+    <string name="cw_lat" translatable="false">0.5375</string>
+    <string name="cw_lon" translatable="false">123.0625</string>
+</resources>
