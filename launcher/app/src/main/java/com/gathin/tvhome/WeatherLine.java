@@ -29,6 +29,8 @@ final class WeatherLine {
     private final Runnable onChange;
     private final ExecutorService io = Executors.newSingleThreadExecutor();
     private final ContentObserver observer;
+    private boolean active;    // true between start() and stop()
+    private int generation;    // incremented each start(); guards late deliveries after stop→start
     private boolean watching;
     private String text;
 
@@ -67,18 +69,23 @@ final class WeatherLine {
     }
 
     void start() {
+        active = true;
+        generation++;
         if (!watching) {
             try {
                 ctx.getContentResolver().registerContentObserver(uri, false, observer);
                 watching = true;
             } catch (SecurityException e) {
-                // The add-on's provider went away; keep what is on screen.
+                // The add-on's provider went away; active stays true so the initial read proceeds.
             }
         }
         read();
     }
 
     void stop() {
+        // Set inactive first so any observer onChange() queued on the main handler calls read()
+        // but read() returns immediately, and any in-flight lambda is discarded on delivery.
+        active = false;
         if (watching) ctx.getContentResolver().unregisterContentObserver(observer);
         watching = false;
     }
@@ -89,6 +96,8 @@ final class WeatherLine {
     }
 
     void read() {
+        if (!active) return;
+        final int gen = generation;
         try {
             io.execute(() -> {
                 String result = null;
@@ -105,6 +114,7 @@ final class WeatherLine {
                 }
                 String finalResult = result;
                 main.post(() -> {
+                    if (!active || generation != gen) return;
                     text = finalResult;
                     onChange.run();
                 });
