@@ -114,7 +114,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static int tileHeightPx(int tileWidthPx) {
-        return Math.round(tileWidthPx * DESIGN_H_DP / DESIGN_W_DP);
+        return tileHeightPx(tileWidthPx, false);
+    }
+
+    /** tile_shape square: as tall as wide. */
+    static int tileHeightPx(int tileWidthPx, boolean square) {
+        return square ? tileWidthPx : Math.round(tileWidthPx * DESIGN_H_DP / DESIGN_W_DP);
+    }
+
+    /** Room a row's item gains (dp): less the name tile_label_inside removes under it. */
+    static float rowExtraDp(boolean labelInside, boolean dockRow) {
+        return labelInside ? (dockRow ? -29f : -24f) : 0f;
     }
 
     /** Height of one grid item: the tile, the name label under it and the item's own padding. */
@@ -155,13 +165,19 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     static int tileWidthPx(int innerWidthPx, int gridHeightPx, int columns, int rowsBelowDock, boolean dockTitle,
                            boolean dockRow, float density) {
+        return tileWidthPx(innerWidthPx, gridHeightPx, columns, rowsBelowDock, dockTitle, dockRow, false, 0f, density);
+    }
+
+    /** The same for square tiles and for rows with rowExtraDp more (or less) room each. */
+    static int tileWidthPx(int innerWidthPx, int gridHeightPx, int columns, int rowsBelowDock, boolean dockTitle,
+                           boolean dockRow, boolean square, float rowExtraDp, float density) {
         int w = tileWidthPx(innerWidthPx, columns, density);
         if (gridHeightPx <= 0 || rowsBelowDock <= 0) return w;
         float reserved = (dockRow ? DOCK_EXTRA_DP + BOTTOM_ROOM_DP + (dockTitle ? TITLE_ROOM_DP : 0)
                 : TOP_ROOM_DP + COMPACT_BOTTOM_ROOM_DP) * density;
         float perItem = (gridHeightPx - reserved) / (rowsBelowDock + 1);
-        float tileH = perItem - (dockRow ? ITEM_EXTRA_DP : COMPACT_ITEM_EXTRA_DP) * density;
-        int byHeight = Math.round(tileH * DESIGN_W_DP / DESIGN_H_DP);
+        float tileH = perItem - ((dockRow ? ITEM_EXTRA_DP : COMPACT_ITEM_EXTRA_DP) + rowExtraDp) * density;
+        int byHeight = square ? Math.round(tileH) : Math.round(tileH * DESIGN_W_DP / DESIGN_H_DP);
         // Shrink at most to MIN_HEIGHT_FIT of the width-only size. Below that the tiles look lost in their wide
         // columns (2 rows under a titled dock came out at 80dp); the rows that still don't fit run off the bottom
         // and scroll, and MainActivity keeps the title's room above the dock.
@@ -218,6 +234,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Map<String, String> appLabels, appBanners;
     /** Every app tile is its icon on a card tinted from that icon, never its banner (config.xml, uniform_tiles). */
     private final boolean uniformTiles;
+    /** tile_corner_radius, tile_shape square, flat_tiles and tile_label_inside (Config). */
+    private final int cornerDp;
+    private final boolean squareTiles, flatTiles, labelInside;
+    /** rowExtraDp for tile_label_inside. */
+    private final float rowExtraDp;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     private final List<Entry> items = new ArrayList<>();
@@ -248,6 +269,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         this.uniformTiles = cfg.uniformTiles;
+        this.cornerDp = cfg.tileCornerRadius;
+        this.squareTiles = cfg.squareTiles;
+        this.flatTiles = cfg.uniformTiles && cfg.flatTiles;
+        this.labelInside = cfg.uniformTiles && cfg.tileLabelInside;
+        this.rowExtraDp = rowExtraDp(labelInside, cfg.dockRow);
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -415,7 +441,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, squareTiles, rowExtraDp, density);
+        int h = tileHeightPx(w, squareTiles);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -432,15 +459,24 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             v.setPadding(v.getPaddingLeft(), pad, v.getPaddingRight(), pad);
         }
         name.setLayoutParams(nameLp);
+        if (labelInside) name.setVisibility(View.GONE);
         // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
         if (singleRow) v.getLayoutParams().width = inner / dockSize;
         if (uniformTiles) {
             // tvOS-style tile: a large centred mark, no caption inside the card.
             View icon = v.findViewById(R.id.icon);
             FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
-            iconLp.width = iconLp.height = Math.round(h * ICON_SHARE);
-            iconLp.bottomMargin = 0;
+            iconLp.width = iconLp.height = Math.round(h * (labelInside ? 0.42f : ICON_SHARE));
+            // tile_label_inside: the mark a little above the middle, clear of the name in the bottom corner.
+            iconLp.bottomMargin = labelInside ? Math.round(h * 0.12f) : 0;
             icon.setLayoutParams(iconLp);
+            if (labelInside) {
+                TextView label = v.findViewById(R.id.label);
+                label.setGravity(android.view.Gravity.START | android.view.Gravity.BOTTOM);
+                int pad = Math.round(8 * density);
+                label.setPadding(pad, 0, pad, Math.round(6 * density));
+                label.setTextSize(12f);
+            }
         } else if (h < Math.round(DESIGN_H_DP * density)) {
             // Shrunk tiles (e.g. 5 or 6 columns): scale icon and bottom margin proportionally with tile height so the label does not overlap the icon.
             View icon = v.findViewById(R.id.icon);
@@ -452,7 +488,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot, cornerDp);
     }
 
     @Override
@@ -477,7 +513,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
         // In a single row every tile is the dock's kind: the big title above names it.
         boolean dockKind = dockRow && (singleRow || position < dockSize);
-        h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
+        h.name.setVisibility(labelInside ? View.GONE : dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
         h.inDock = dockKind;
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
         h.name.setAlpha(focused ? 1f : restNameAlpha);
@@ -491,7 +527,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
         if (uniformTiles && e.banner == null) {
-            if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
+            if (e.backdrop == null) e.backdrop = flatTiles ? flat(ambientColorAt(position)) : backdrop(e.icon, ambientColorAt(position));
             h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
         }
         if (e.banner != null) {
@@ -505,7 +541,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.icon.setImageDrawable(e.icon);
             h.icon.setVisibility(View.VISIBLE);
             h.label.setText(e.label);
-            h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
+            h.label.setVisibility(uniformTiles && !labelInside ? View.GONE : View.VISIBLE);
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
@@ -728,6 +764,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return Color.rgb((int) (sum[best][0] / w), (int) (sum[best][1] / w), (int) (sum[best][2] / w));
     }
 
+    /** flat_tiles: one bright colour of the icon's, top and bottom alike; a grey icon keeps a mid grey. */
+    static int[] flat(int color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        if (hsv[1] > 0.15f) hsv[1] = Math.max(hsv[1], 0.7f);
+        hsv[2] = Math.max(0.5f, Math.min(hsv[2], 0.8f));
+        int c = Color.HSVToColor(hsv);
+        return new int[]{c, c};
+    }
+
     /**
      * The uniform tile's fill. Where the icon sits on a flat colour of its own (a white or coloured rounded
      * square), the card takes that colour, so the mark reads as filling the tile as on tvOS. Otherwise a
@@ -878,7 +924,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /** Corner radius for a tile of this width: 16dp at the design width, proportionally less when smaller. */
     static float cornerRadius(int tileWidthPx, float density) {
-        return 16f * density * Math.min(1f, tileWidthPx / (DESIGN_W_DP * density));
+        return cornerRadius(tileWidthPx, density, 16);
+    }
+
+    /** The same from tile_corner_radius' radius at the design width instead of 16dp. */
+    static float cornerRadius(int tileWidthPx, float density, int radiusDp) {
+        return radiusDp * density * Math.min(1f, tileWidthPx / (DESIGN_W_DP * density));
     }
 
     static final class Holder extends RecyclerView.ViewHolder {
@@ -899,7 +950,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         boolean inDock;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
-               boolean reducedMotion, float restNameAlpha, boolean overshoot) {
+               boolean reducedMotion, float restNameAlpha, boolean overshoot, int cornerDp) {
             super(v);
             card = v.findViewById(R.id.card);
             cardBackground = card.getBackground();
@@ -917,8 +968,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             card.setOutlineProvider(new ViewOutlineProvider() {
                 @Override
                 public void getOutline(View view, Outline outline) {
-                    // 16dp at the design width, scaled down with the tile so small tiles keep the same shape.
-                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
+                    // tile_corner_radius (16dp) at the design width, scaled down with the tile so small tiles keep the same shape.
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density, cornerDp));
                 }
             });
             card.setClipToOutline(true);

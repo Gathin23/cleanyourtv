@@ -266,6 +266,14 @@ final class Config {
     final boolean singleRow;
     /** With single_row, the band runs behind every app in the row, not only the dock apps (config.xml, dock_band_all). */
     final boolean dockBandAll;
+    /** The tiles' corner radius in dp at the design size, 0 to 24 (config.xml, tile_corner_radius). */
+    final int tileCornerRadius;
+    /** Square tiles instead of 16:9 banners (config.xml, tile_shape square). */
+    final boolean squareTiles;
+    /** uniform_tiles cards in one bright flat colour of the icon (config.xml, flat_tiles). */
+    final boolean flatTiles;
+    /** uniform_tiles: the name inside the card, always shown, none under it (config.xml, tile_label_inside). */
+    final boolean tileLabelInside;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -281,7 +289,8 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait, boolean iconOnlyVpn) {
+                   int openOnStartNetworkWait, boolean iconOnlyVpn, int tileCornerRadius, boolean squareTiles, boolean flatTiles,
+                   boolean tileLabelInside) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -331,6 +340,10 @@ final class Config {
         this.iconOnlyButtons = iconOnlyButtons;
         this.iconOnlyInputs = iconOnlyInputs;
         this.iconOnlyVpn = iconOnlyVpn;
+        this.tileCornerRadius = tileCornerRadius;
+        this.squareTiles = squareTiles;
+        this.flatTiles = flatTiles;
+        this.tileLabelInside = tileLabelInside;
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -516,6 +529,10 @@ final class Config {
         String glassStyle = res.getString(R.string.glass_style);
         boolean singleRow = res.getBoolean(R.bool.single_row);
         boolean dockBandAll = res.getBoolean(R.bool.dock_band_all);
+        int tileCornerRadius = res.getInteger(R.integer.tile_corner_radius);
+        String tileShape = res.getString(R.string.tile_shape);
+        boolean flatTiles = res.getBoolean(R.bool.flat_tiles);
+        boolean tileLabelInside = res.getBoolean(R.bool.tile_label_inside);
         boolean applied = false;
 
         File dir = dir(ctx);
@@ -626,6 +643,10 @@ final class Config {
             dockBandAll = bool(json, "dock_band_all", dockBandAll);
             glowStyle = string(json, "glow_style", glowStyle);
             glassStyle = string(json, "glass_style", glassStyle);
+            tileCornerRadius = integer(json, "tile_corner_radius", tileCornerRadius, 0, 24);
+            tileShape = string(json, "tile_shape", tileShape);
+            flatTiles = bool(json, "flat_tiles", flatTiles);
+            tileLabelInside = bool(json, "tile_label_inside", tileLabelInside);
         }
         // A top-bar app is moved there, not copied: it leaves the grid.
         for (String pkg : topBarApps) if (!hidden.contains(pkg)) hidden.add(pkg);
@@ -688,7 +709,8 @@ final class Config {
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn);
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn, Math.max(0, Math.min(24, tileCornerRadius)),
+                "square".equalsIgnoreCase(tileShape.trim()), flatTiles, tileLabelInside);
     }
 
     /**

@@ -61,3 +61,7 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
+| `tile_corner_radius` | <img src="switches/tile_shape.jpg" width="320" alt="tile_corner_radius 0 on a TV"> |
+| `tile_shape` | <img src="switches/tile_shape.jpg" width="320" alt="tile_shape square on a TV"> |
+| `flat_tiles` | <img src="switches/tile_shape.jpg" width="320" alt="flat_tiles on a TV"> |
+| `tile_label_inside` | <img src="switches/tile_shape.jpg" width="320" alt="tile_label_inside on a TV"> |

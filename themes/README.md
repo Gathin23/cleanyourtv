@@ -80,6 +80,10 @@ A new key needs one there in the same pull request.
 | `wallpaper_true_color` | bool | Decode wallpapers in 32-bit colour (8 MB at 1080p) instead of RGB_565 (4 MB), which bands dark gradients such as a night sky; for TVs with 2 GB or more (`false` by default) |
 | `app_library` | bool | An App library pill after the last Home row: every installed app, add one to Home or take it off (`false` by default). The choices stay on the TV when a theme is pushed or reset; see [docs/app-library.md](../docs/app-library.md) |
 | `uniform_tiles` | bool | Each app tile is its icon on a card tinted from that icon, with the name only under the focused tile, instead of the app's own banner (`false` by default) |
+| `tile_corner_radius` | int, 0 to 24 | The tiles' corner radius in dp at the design tile size (16 by default); 0 gives square corners. The focus highlight and the dock band follow it |
+| `tile_shape` | `banner` or `square` | `square` makes every tile as tall as it is wide instead of a 16:9 banner (`banner` by default); best with `uniform_tiles` |
+| `flat_tiles` | bool | With `uniform_tiles`, each card is one bright, flat colour taken from its icon instead of a deep gradient (`false` by default) |
+| `tile_label_inside` | bool | With `uniform_tiles`, the app's name sits inside the card at its bottom left and always shows; no name under the tile (`false` by default) |
 | `icon_tiles` | list of package names, `config.xml` only | Apps drawn from their icon and name instead of their banner, for banners that crop badly; empty by default. Not read from a theme |
 | `app_library_selection` | bool | OK toggles Home checkmarks in the library; checked apps first, both groups alphabetized. Hiding keeps focus on the adjacent next app (previous at the end). Requires `app_library`; `false` preserves the standard open/long-press behavior |
 | `library_ok_opens` | bool | OK opens every app in the library, not only the ones on Home, for a library that holds the apps `hidden_apps` keeps off Home; holding OK still offers Add to Home, and cards drop their "Add to Home" line. Requires `app_library`; `app_library_selection` wins when both are on; `false` by default |

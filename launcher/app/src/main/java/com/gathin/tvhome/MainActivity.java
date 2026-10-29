@@ -430,6 +430,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
+        tileCornerDp = cfg.tileCornerRadius;
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         appLibrarySelection = cfg.appLibrarySelection;
         libraryOkOpens = cfg.libraryOkOpens;
@@ -637,7 +638,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
         if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
-                singleRow, cfg.dockBandAll));
+                singleRow, cfg.dockBandAll, cfg.tileCornerRadius));
         if (cfg.fadeRows) TopFade.attach(grid, 48 * density);
         // Reduced motion: the tiles are simply there, with no entrance (reloadApps skips it there too).
         if (animations && !reducedMotion) {
@@ -658,8 +659,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int h = b - t;
             // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
             int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
-            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow, density);
-            int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
+            float rowExtraDp = AppAdapter.rowExtraDp(cfg.uniformTiles && cfg.tileLabelInside, cfg.dockRow);
+            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow,
+                    cfg.squareTiles, rowExtraDp, density);
+            int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW, cfg.squareTiles), density)
+                    + Math.round(rowExtraDp * density);
             int dockRow = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);   // item height plus DockDecoration offsets
             int gridRows = itemH * rowsBelowDock;
             // Keep the hero below the header when the library is enabled on a short screen,
@@ -1729,7 +1733,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lp.height = (int) h;
             glass.setLayoutParams(lp);
             // GlassView draws its slab inset by pad, i.e. exactly over the zoomed tile: same corners as the tile.
-            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density) * scale);
+            glass.setRadius(AppAdapter.cornerRadius(card.getWidth(), density, tileCornerDp) * scale);
         }
         glassCardW = card.getWidth();
         glassTargetX = x;
@@ -2874,6 +2878,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** config.xml icon_only_buttons. */
     private boolean iconOnlyButtons;
+    /** tile_corner_radius, for the glass highlight's corners. */
+    private int tileCornerDp = 16;
     /** config.xml top_menu: Inputs, Wi-Fi and Settings folded into one gear. */
     private boolean topMenu;
     /** show_inputs_pill as configured: top_menu clears showInputsPill, so its Inputs row reads this. */

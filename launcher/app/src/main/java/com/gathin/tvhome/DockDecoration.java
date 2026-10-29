@@ -34,6 +34,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final boolean singleRow;
     /** dock_band_all: in a single row, the band runs behind every app instead of the dock apps only. */
     private final boolean bandAll;
+    /** tile_corner_radius: the tiles' radius at the design size, which the even band's corners follow. */
+    private final int cornerDp;
 
     /**
      * @param translucent the cinematic shelf's band: the artwork and the glow show through it.
@@ -44,10 +46,12 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
      * @param bandVisible false skips the band and its edge, so the tiles float on the wallpaper (dock_band).
      * @param singleRow   every app sits in the dock's row (single_row); the band covers the dock apps only, unless bandAll.
      * @param bandAll     with singleRow, the band runs behind every app in the row (dock_band_all).
+     * @param cornerDp    the tiles' corner radius at the design size (tile_corner_radius).
      */
     DockDecoration(int dockSize, float density, boolean translucent, boolean names, int opacity, boolean lightGlass,
-                   boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll) {
+                   boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll, int cornerDp) {
         this.dockSize = dockSize;
+        this.cornerDp = cornerDp;
         this.singleRow = singleRow;
         this.bandAll = singleRow && bandAll;
         this.density = density;
@@ -118,7 +122,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         // outwards and still keeps about the band's top margin from its rounded end.
         float sidePad = 22 * density;
         float side = Math.max(0f, Math.min(sidePad, Math.min(rect.left, parent.getWidth() - rect.right) - density));
-        float radius = AppAdapter.cornerRadius(cardWidth, density);
+        float radius = AppAdapter.cornerRadius(cardWidth, density, cornerDp);
         if (evenPadding) {
             // The same padding on all four sides, so the band's corners are concentric with the tiles' everywhere.
             int inner = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();

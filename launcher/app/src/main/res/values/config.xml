@@ -393,6 +393,17 @@
     <!-- Every app tile is its icon on a card tinted from that icon, name only under the focused tile,
          instead of each app's own banner. Off by default; a theme can set "uniform_tiles": true. -->
     <bool name="uniform_tiles">false</bool>
+    <!-- The tiles' corner radius in dp at the design tile size, 16 by default; 0 gives square corners. The focus
+         highlight and the dock band follow it. A theme can set "tile_corner_radius" (0 to 24). -->
+    <integer name="tile_corner_radius">16</integer>
+    <!-- The tiles' shape: banner (16:9, the default) or square. A theme can set "tile_shape". -->
+    <string name="tile_shape" translatable="false">banner</string>
+    <!-- With uniform_tiles, each card one bright, flat colour taken from its icon instead of a deep gradient.
+         Off by default; a theme can set "flat_tiles": true. -->
+    <bool name="flat_tiles">false</bool>
+    <!-- With uniform_tiles, the app's name inside the card at its bottom left, always shown, and no name under the
+         tile. Off by default; a theme can set "tile_label_inside": true. -->
+    <bool name="tile_label_inside">false</bool>
     <!-- Optional direct Home picker in the app library: OK toggles the checkmark, checked apps first.
          Off by default; a theme can set "app_library_selection": true (also needs app_library). -->
     <bool name="app_library_selection">false</bool>
