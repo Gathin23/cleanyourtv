@@ -26,7 +26,7 @@ window.onFetch = function(id, ok, text){
   var cb = pending[id]; if (!cb) return;
   delete pending[id];
   if (!ok) return cb(null);
-  try { cb(JSON.parse(text)); } catch (e) { cb(null); }
+  try { cb(JSON.parse(text)); } catch (e) { cb(/^\s*</.test(text || '') ? {html: text} : null); }   // páginas HTML (lista de fillers)
 };
 /* Na memória ficam só as 200 respostas usadas por último; as outras voltam do cache em disco do Android. */
 var CACHE_MAX = 200, cacheN = 0;
@@ -476,7 +476,7 @@ function pickSeason(n, first){
   var box = document.getElementById('dEps'); box.innerHTML = ''; box.style.transform = '';
   eps.forEach(function(v){
     var e = el('div', 'f tile ep');
-    e.dataset.mact = 'episode'; e.dataset.vid = v.id;
+    e.dataset.mact = 'episode'; e.dataset.vid = v.id; e.dataset.sk = v.season + ':' + (v.episode || v.number);
     var th = el('span', 'th');
     th.appendChild(epImg(v));
     th.appendChild(el('span', 'code', 'E' + (v.episode || v.number)));
@@ -487,6 +487,37 @@ function pickSeason(n, first){
     box.appendChild(e);
   });
   if (first && eps[0]) { M.video = eps[0]; document.getElementById('dPlayLabel').textContent = 'Assistir T' + n + ':E' + (eps[0].episode || eps[0].number); }
+  markFillers(M.detail);
+}
+// Selo de filler nos episódios de anime, com dados do animefillerlist.com.
+function markFillers(d){
+  fillers(d).then(function(map){
+    if (M.detail !== d) return;
+    Array.prototype.forEach.call(document.querySelectorAll('#dEps .ep'), function(e){
+      var k = map[e.dataset.sk], th = e.querySelector('.th');
+      if (!k || !th || th.querySelector('.filler')) return;
+      th.appendChild(el('span', 'filler ' + k, k === 'recap' ? 'RECAP' : 'FILLER'));
+    });
+  });
+}
+function fillers(d){
+  if (d._fillers) return d._fillers;
+  var map = {}, genres = d.meta.genres || d.meta.genre || [];
+  if (genres.indexOf('Animation') < 0 && genres.indexOf('Anime') < 0) return (d._fillers = Promise.resolve(map));
+  // A página do animefillerlist.com numera os episódios em sequência e marca cada linha
+  // com a classe "filler"; casa pela posição absoluta do episódio no Cinemeta.
+  var slug = (d.meta.name || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  if (!slug) return (d._fillers = Promise.resolve(map));
+  d._fillers = cached('https://www.animefillerlist.com/shows/' + slug).then(function(p){
+    var html = (p && p.html) || '', byNum = {}, re = /<tr class="(\w+)[^"]*" id="eps-(\d+)"/g, r;
+    while ((r = re.exec(html))) if (r[1] === 'filler') byNum[r[2]] = 'filler';
+    var vids = (d.meta.videos || []).filter(function(v){ return v.season > 0; }).sort(function(a, b){
+      return a.season - b.season || (a.episode || a.number) - (b.episode || b.number);
+    });
+    vids.forEach(function(v, i){ if (byNum[i + 1]) map[v.season + ':' + (v.episode || v.number)] = byNum[i + 1]; });
+  }).catch(function(){}).then(function(){ return map; });
+  return d._fillers;
 }
 // Miniatura do episódio: se a do Cinemeta falhar (404 em muitas temporadas novas),
 // tenta TVmaze e, para anime, Kitsu; por último usa o fundo do título.
