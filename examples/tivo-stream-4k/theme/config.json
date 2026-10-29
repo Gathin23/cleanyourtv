@@ -1,4 +1,25 @@
 {
-  "dock_apps": ["com.netflix.ninja", "com.amazon.amazonvideo.livingroom", "com.google.android.youtube.tv"],
+  "dock_apps": [
+    "com.plexapp.android",
+    "com.netflix.ninja",
+    "com.disney.disneyplus",
+    "com.amazon.amazonvideo.livingroom",
+    "com.wbd.stream",
+    "com.peacocktv.peacockandroid",
+    "com.cbs.ott"
+  ],
+  "sky_intensity": 70,
+  "dock_glass": true,
+  "advanced_effects": true,
+  "cinematic_home": true,
+  "wallpaper": true,
+  "app_glow": true,
+  "glow_style": "horizon",
+  "app_keys": [
+    "173:com.gathin.tvhome",
+    "hold:173:com.poppy.scoreboard",
+    "172:com.poppy.scoreboard"
+  ],
+  "module_cards": true,
   "tile_menu": true
 }
