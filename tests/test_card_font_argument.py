@@ -278,7 +278,14 @@ COMMAND = re.compile(r"`([^`]*" + SCRIPT.pattern + r" [^`]*)`")
 
 
 class PressRecipeShapeTest(unittest.TestCase):
-    """The commands the page prints have to be the two-argument shape the scripts now insist on."""
+    """The commands the page prints have to be the two-argument shape the scripts now insist on.
+
+    Both card scripts take a font and the picture to write, and docs/workflows/press.md step 2 is where a
+    press PR reads them: a run printed with an argument missing stops on the usage line, so the picture a
+    reader sees keeps the count it had. The October variant is the same two arguments behind a flag the
+    script names (`readme_card.py --halloween ...`), so a word starting with `--` is read as an option
+    rather than an argument - after it is held to being one the script knows.
+    """
 
     def commands(self):
         return COMMAND.findall(PRESS.read_text(encoding="utf-8"))
@@ -293,7 +300,13 @@ class PressRecipeShapeTest(unittest.TestCase):
             with self.subTest(command=cmd):
                 parts = cmd.split()
                 at = parts.index(SCRIPT.findall(cmd)[0])
-                arguments = parts[at + 1:]
+                # `readme_card.py --halloween <font> <picture>` draws the October variant, so an option the
+                # script names may come before the two arguments; the arguments are still the font and the
+                # picture, and the flag has to be one that script knows.
+                for flag in (word for word in parts[at + 1:] if word.startswith("--")):
+                    self.assertIn(flag, (ROOT / parts[at]).read_text(encoding="utf-8"),
+                                  f"press.md passes {flag} to {parts[at]}, which does not name it")
+                arguments = [word for word in parts[at + 1:] if not word.startswith("--")]
                 self.assertEqual(2, len(arguments),
                                  f"press.md prints '{cmd}', which is not <script> <font> <picture>")
                 self.assertTrue((ROOT / parts[at]).is_file(),

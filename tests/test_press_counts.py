@@ -7,6 +7,12 @@ docs/featured.png). Adding one article by hand means editing all of them; this c
 PR that adds a row and forgets the counts fails here instead of shipping a card that says 73 over a
 list of 74.
 
+The picture those alt texts belong to is a file of its own, and which one the pages show changes: today
+docs/card-halloween.jpg, the October variant, drawn by tools/readme_card.py --halloween from the same
+docs/featured.png, and docs/card.jpg the rest of the year. The recipe a press PR follows (step 2 of
+docs/workflows/press.md) named docs/card.jpg by hand, so the run it gave redrew a picture no page showed
+and left the one the reader sees at the count it had; the picture names here come from the pages.
+
 The Videos section at the end of the same page is read the same way, and had nothing reading it: the
 intro ends "[147 videos](#videos) follow the articles", the section's own line says when the view
 counts were read ("views as of 27 Oct"), and both numbers are derived from the rows underneath - a
@@ -45,6 +51,10 @@ YOUTUBE_LINK = re.compile(r"\((https?://[^)\s]*youtube\.com/[^)\s]+)\)")
 # in Dutch and README.de.md in German, and any translation that copies the picture later. The words
 # around the numbers are translated; the numbers are not.
 CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
+# The picture itself: the alt text is translated and the numbers move with the rows, while the file the
+# numbers are drawn into is one of two - docs/card.jpg, and docs/card-halloween.jpg, the October variant
+# the front pages show during the Halloween window.
+CARD_SRC = re.compile(r'src="(docs/card[^"]*\.jpg)"')
 
 
 def card_alt_texts():
@@ -55,6 +65,31 @@ def card_alt_texts():
         if match:
             out[path.name] = match.group(1)
     return out
+
+
+def pictures_in(text):
+    """The card picture files a page shows, by path: docs/card.jpg or docs/card-halloween.jpg."""
+    return set(CARD_SRC.findall(text))
+
+
+def card_pictures(pages=None):
+    """{picture: [pages showing it]} for every README*.md that shows the card.
+
+    `pages` is {file name: text} to read instead of the checkout, which is how the reader is held to the
+    shapes a page uses without a second copy of the walk.
+    """
+    if pages is None:
+        pages = {path.name: path.read_text(encoding="utf-8") for path in sorted(ROOT.glob("README*.md"))}
+    out = {}
+    for name in sorted(pages):
+        for picture in pictures_in(pages[name]):
+            out.setdefault(picture, []).append(name)
+    return out
+
+
+def step_two():
+    """docs/workflows/press.md step 2, the one that moves the counts and redraws the card."""
+    return PRESS_RECIPE.read_text(encoding="utf-8").split("\n2. ")[1].split("\n3. ")[0]
 
 
 def sections():
@@ -261,10 +296,34 @@ class PressCountsTest(unittest.TestCase):
         # file then failed on with nothing in the recipe to point at - the same gap #2132 closed for the
         # Dutch page. The list comes from the pages, so a translation that copies the card is covered
         # without this test being edited first.
-        step = PRESS_RECIPE.read_text(encoding="utf-8").split("\n2. ")[1].split("\n3. ")[0]
+        step = step_two()
         for name in sorted(card_alt_texts()):
             with self.subTest(readme=name):
                 self.assertIn(name, step, f"docs/workflows/press.md step 2 does not name {name}")
+
+    def test_the_press_recipe_draws_the_card_the_pages_show(self):
+        # Step 2 is the run a press PR makes once the numbers have moved, and it named the pictures by
+        # hand - docs/featured.png and docs/card.jpg. The front pages show docs/card-halloween.jpg during
+        # the Halloween window, drawn by tools/readme_card.py from the same docs/featured.png into a
+        # second file: the recipe's run then draws a picture no page shows and leaves the one a reader
+        # sees stating the count it had, which is the gap #2132 and #2461 closed for the pages' alt
+        # texts. The picture names come from the pages, so the season going back to docs/card.jpg, or a
+        # fourth variant, is covered without this test being edited first.
+        pictures = card_pictures()
+        self.assertTrue(pictures, "no README*.md shows the card picture")
+        self.assertLessEqual({"README.md", "README.nl.md", "README.de.md"},
+                             set().union(*(set(pages) for pages in pictures.values())),
+                             "the walk no longer finds the card on the three front pages")
+        step = step_two()
+        for picture in sorted(pictures):
+            with self.subTest(picture=picture):
+                self.assertIn(picture, step,
+                              f"docs/workflows/press.md step 2 does not name {picture}, which "
+                              f"{', '.join(pictures[picture])} show(s): the run it gives redraws another file")
+                if "-halloween" in picture:
+                    self.assertIn("--halloween", step,
+                                  f"docs/workflows/press.md step 2 names {picture} without the --halloween "
+                                  f"run tools/readme_card.py needs to draw the October variant")
 
     def test_the_card_source_draws_the_same_numbers(self):
         more = re.search(r'^MORE = "(.*)"$', FEATURED.read_text(encoding="utf-8"), re.M)
@@ -290,6 +349,32 @@ class PressCountsTest(unittest.TestCase):
             for url in LINK.findall("\n".join(rows)):
                 self.assertNotIn(url, seen, f"{url} is in both {seen.get(url)} and {name}")
                 seen[url] = name
+
+
+class CardPictureReaderTest(unittest.TestCase):
+    """The picture reader over pages written here: both card files, a page with none, and the banner."""
+
+    def page(self, src):
+        return (f'<a href="docs/PRESS.md"><img src="{src}" alt="360 TV models · 97 brands · 30 languages · '
+                f'561 KB launcher." width="800"></a>')
+
+    def test_the_october_variant_is_a_card(self):
+        self.assertEqual({"docs/card-halloween.jpg"}, pictures_in(self.page("docs/card-halloween.jpg")))
+
+    def test_the_plain_card_is_a_card(self):
+        self.assertEqual({"docs/card.jpg"}, pictures_in(self.page("docs/card.jpg")))
+
+    def test_a_page_without_a_card_shows_none(self):
+        self.assertEqual(set(), pictures_in("<h1>CleanYourTV</h1>\n\nNo picture here."))
+
+    def test_the_banner_is_not_a_card(self):
+        self.assertEqual(set(), pictures_in(self.page("docs/banner-halloween.png")))
+
+    def test_the_cards_are_counted_by_file(self):
+        pages = {"README.md": self.page("docs/card.jpg"), "README.nl.md": self.page("docs/card.jpg"),
+                 "README.de.md": self.page("docs/card-halloween.jpg")}
+        self.assertEqual({"docs/card.jpg": ["README.md", "README.nl.md"],
+                          "docs/card-halloween.jpg": ["README.de.md"]}, card_pictures(pages))
 
 
 class PressVideosTest(unittest.TestCase):

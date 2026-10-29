@@ -6,17 +6,23 @@
    headline's own language. The link must open and show the article: no syndicated copies, no auto-generated
    listings, nothing that cannot be checked.
 2. Update the counts in every place `tests/test_press_counts.py` checks: the `docs/PRESS.md` intro line, its
-   index line, the card's alt text in every `README*.md` that shows `docs/card.jpg` - today `README.md` ("and N
+   index line, the card's alt text in every `README*.md` that shows the card - today `README.md` ("and N
    more: N articles from N countries"), the Dutch `README.nl.md` ("nog N media: N artikelen uit N landen") and
    the German `README.de.md` ("und N weitere: N Artikel aus N Ländern") - and `MORE` in
    `tools/readme_featured.py`. Every page shows the same picture, so a translation that copies it states the
    same numbers in its own words: the three named here are the pages that carry it today, not the rule.
-   Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the performance requirements install:
+   The picture is a file of its own, and which one the pages link changes: `docs/card-halloween.jpg` during
+   the Halloween window (the October variant, drawn with `--halloween` from `docs/stats-halloween.png`) and
+   `docs/card.jpg` the rest of the year. Redraw the one they link: drawing the other leaves the count a
+   reader sees as it was, in a file no page shows. Pillow is what draws them, and the performance
+   requirements install it:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
-   `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and
-   `tools/venv/bin/python -I tools/readme_card.py Fredoka.ttf docs/card.jpg`. Fredoka is the variable TTF from Google Fonts and its
-   file is not in the repo, so that first argument is the path of the copy you downloaded; each script says
-   so when the path is wrong. If you cannot redraw them, say so in the PR.
+   `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and, in the October
+   window, `tools/venv/bin/python -I tools/readme_card.py --halloween Fredoka.ttf docs/card-halloween.jpg`
+   (`docs/card.jpg` otherwise: `tools/venv/bin/python -I tools/readme_card.py Fredoka.ttf docs/card.jpg`).
+   Fredoka is the variable TTF from Google Fonts and its file is not in the repo, so that first argument is
+   the path of the copy you downloaded; each script says so when the path is wrong. If you cannot redraw it,
+   say so in the PR.
 3. A video goes in the `## Videos` section at the end of the same page, not in a country section:
    `| Channel | [Title](<url>) | Date | Views |`, in the table's date form (`27&nbsp;Oct`), newest first.
    Two numbers above that table are read from the rows by `tests/test_press_counts.py` and move with it:
