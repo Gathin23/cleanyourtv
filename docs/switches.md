@@ -30,6 +30,8 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `wallpaper_rotation_minutes` | <img src="../themes/scenes/screenshot.jpg" width="320" alt="wallpaper_rotation_minutes on a TV"> |
 | `festival` | <img src="../themes/dussehra/screenshot.jpg" width="320" alt="festival on a TV"> |
 | `settings_key_panel` | <img src="quick-settings-panel.jpg" width="320" alt="settings_key_panel on a TV"> |
+| `settings_key_service` | <img src="switches/settings_key_service.png" width="320" alt="Native settings panel on MiTV-ASTP0, captured with the compatibility fork on 2026-10-21"> |
+| `settings_key_action` | <img src="switches/settings_key_service.png" width="320" alt="Native settings panel opened by the configured service and action on MiTV-ASTP0"> |
 | `home_idle_clock_minutes` | <img src="clock-screensaver.png" width="320" alt="home_idle_clock_minutes on a TV"> |
 | `gamepad_passthrough` | <img src="switches/gamepad_passthrough.jpg" width="320" alt="gamepad_passthrough on a TV"> |
 | `consume_volume_keys` | <img src="switches/consume_volume_keys.jpg" width="320" alt="consume_volume_keys on a TV"> |

@@ -123,6 +123,7 @@ A new key needs one there in the same pull request.
 | `accent_color` | `#RRGGBB` | Colour of the focus glow while the festive skin is on; diya gold if not set |
 | `settings_key_keycodes` | list of keycodes | Remote buttons that open Settings, for `HomeKeyService` (TCL Google TV gear: `[83]`) |
 | `settings_key_panel` | bool | Those buttons open a small quick settings panel (TV settings, Display, Network, Apps, Launcher settings) instead of the TV's Settings |
+| `settings_key_service`, `settings_key_action` | string | Optional native panel for a Settings key: an explicit service (`package/.Service`) with an optional action, or an activity action when the service is empty. Both default to empty. Tried before `settings_key_panel`; an unavailable or refused target falls back to that panel or the usual TV settings. Works on Home and through the existing `HomeKeyService`; see [native Settings keys](#native-settings-keys) |
 | `settings_fallback_components` | list, `config.xml` only | Vendor screens tried in order when nothing usable answers the standard Settings action (Xiaomi China, TCL/FFALCON, and Fire OS, where the real menu lives in its launcher), each as `package/activity`; the first one whose package is installed wins, and when none is, the standard intent is sent anyway and may open nothing. Fire OS answers that intent with a `CTSDummy` stub, which counts as missing so the fallback runs. A package named here also has to be listed in the launcher's `<queries>` (Android 11 package visibility), so a set whose settings app is neither of these needs a build, not a theme push. Not read from a theme |
 | `restore_key_services` | bool | After a force stop of the launcher, Home puts the remote's accessibility helpers (`HomeKeyService`, `InputKeyService`) back on the enabled list; needs `RESTORE_KEY_SERVICES=1` at install. Off by default |
 | `input_key_keycodes` | list of keycodes | More remote buttons that open the input switcher, for `InputKeyService` (`KEYCODE_TV` and `KEYCODE_TV_INPUT` always do) |
@@ -155,6 +156,34 @@ A new key needs one there in the same pull request.
 | `ambient_glow` | bool | The glow behind the dock in the focused app's colour (`true` by default); `false` keeps only `background_color` or the wallpaper, e.g. for a calm photo background |
 | `app_glow` | bool | The focus highlight glows in the focused app's colour on every tile, as `cinematic_home` does for the dock (`false` by default) |
 | `fade_rows` | bool | The rows fade out as they scroll up under the clock instead of being cut off at a hard line; the wallpaper or sky shows through. The grid then draws into a hardware layer (about 6 MB of graphics memory at 1080p) (`false` by default) |
+
+## Native Settings keys
+
+Some TVs put picture, sound and input settings in a service rather than an activity. To use that
+panel for a configured remote key, merge these keys into the existing theme. For example, the
+MiTV-ASTP0 (`mulan`, Android 9, firmware `24.7.4.3982`) exposes:
+
+```json
+{
+  "settings_key_keycodes": [82],
+  "settings_key_service": "com.xiaomi.mitv.settings/.TvSettingService",
+  "settings_key_action": "com.xiaomi.intent.action.show.globalsetting"
+}
+```
+
+The component and action are firmware-specific; use only a known settings entry. The configured
+service takes precedence, so its action is not also tried as an activity. With only an action,
+Home opens the activity that handles it. A missing, malformed or refused target returns to the
+existing `settings_key_panel` choice, including the normal system-settings fallback.
+
+Home handles these keycodes while it is focused. The existing `HomeKeyService`, if enabled, also
+handles its Settings key and configured scancodes/keycodes. These keys do not enable that helper.
+With a native target configured, a MENU release carrying the exact firmware flags `30001` is
+accepted; other canceled releases are ignored. The tile menu is unchanged.
+
+Remove `settings_key_service` and `settings_key_action` to restore the prior Settings-key behavior.
+The [panel screenshot](../docs/switches.md) was captured on this MiTV-ASTP0 on 2026-10-21 with these
+two keys in the compatibility fork; it illustrates the native panel opened by this configuration.
 
 ## Wallpapers
 
