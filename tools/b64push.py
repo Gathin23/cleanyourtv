@@ -10,7 +10,8 @@ verified file is copied over the target and checked again. That copy is not atom
 
 Exit status: 0 the copy is on the TV, 1 a transfer failed (the target is as it was, unless that
 copy failed or was interrupted, which the message says), 2 nothing was sent: the arguments were
-refused, the local file could not be read, the packages in tools/requirements.txt are not installed,
+refused (a remote path so long that no chunk fits one shell command is one of them), the local file
+could not be read, the packages in tools/requirements.txt are not installed,
 or the connection failed in one of the ways tv.py explains (a refused port, a Wireless
 debugging port, a handshake that timed out, a TV that cannot be reached). Why it stopped goes to
 stderr, which the scripts that throw the progress on stdout away still show.
@@ -93,9 +94,28 @@ def main():
         return 2
     b64 = remote + ".b64.part"
     part = remote + ".part"
+    # Each chunk is one shell command - echo '<base64>' >> '<remote>.b64.part' && echo okN - and the
+    # wrapper around the base64 (the echo, the redirect, the staging path, the marker) travels in the
+    # same command, so the room left for the base64 depends on how long the remote path is. A flat
+    # 64-byte allowance for all of it fitted an APK staged as /data/local/tmp/tvhome.apk and came 25
+    # bytes short of a theme wallpaper staged as /data/local/tmp/cyt-theme-wallpapers-01-dusk-peaks.jpg:
+    # Google ADB answered "shell command too long" (its service string is capped at MAX_PAYLOAD_V1)
+    # after theme.sh had already written the new config.json and cleared the old collection (#2614).
+    chunk = CHUNK
+    command_limit = getattr(dev, "max_shell_command_size", None)
+    if command_limit is not None:
+        head, tail = "echo '", f"' >> {q(b64)} && echo ok"
+        # The marker is ok<N>, widest at the last chunk, and N cannot exceed the file's byte count.
+        room = command_limit - len(head) - len(tail) - len(str(len(data)))
+        chunk = min(chunk, room // 4 * 3)   # 4 base64 characters per 3 raw bytes
+        if chunk < 3:
+            dev.close()
+            print(f"refusing {remote!r}: staged as {b64!r} it leaves no room for a chunk in the "
+                  f"{command_limit} bytes this TV takes per shell command. "
+                  f"Nothing was sent to the TV.", file=sys.stderr)
+            return 2
+    chunk -= chunk % 3   # a multiple of 3, or each chunk ends in '=' padding mid-stream and base64 -d corrupts it
     try:
-        chunk = min(CHUNK, dev.max_chunk_size * 3 // 4 - 64)   # base64 of the chunk plus the echo must fit one payload
-        chunk -= chunk % 3   # a multiple of 3, or each chunk ends in '=' padding mid-stream and base64 -d corrupts it
         # Only our own temporary names are cleared; the target stays until the copy is verified.
         # `: >` creates the base64 file even for an empty upload, so `base64 -d` has an input.
         dev.shell(f"rm -f {q(b64)} {q(part)} && : > {q(b64)}")

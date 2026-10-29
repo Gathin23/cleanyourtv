@@ -182,6 +182,12 @@ class NativeAdbDevice:
     # keeps adb's command-line arguments below Windows' process argument limit.
     max_chunk_size = 4096
 
+    # b64push's chunks are shell commands, and those have a bound of their own: adb's RemoteShell()
+    # refuses a service string over MAX_PAYLOAD_V1 (4 KB) unless the shell protocol is in use, and
+    # shell() below passes -x, which turns the protocol off. The service string is "shell:" plus the
+    # command, so the command has the other 4089 bytes - and the remote path rides in it (#2614).
+    max_shell_command_size = 4096 - len("shell:")
+
     def __init__(self, binary, host, port, timeout):
         self.binary = binary
         self.serial = f"[{host}]:{port}" if ":" in host else f"{host}:{port}"
