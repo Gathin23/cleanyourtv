@@ -20,6 +20,15 @@ final class Dimming {
 
     enum Night { OFF, ON, SCHEDULED }
 
+    /**
+     * Night mode after the one-press toggle (NightToggleActivity): On when it turns night on; when it turns night
+     * off, the mode that toggle replaced if it was the schedule, so a scheduled night is not lost, otherwise Off.
+     */
+    static Night nightAfterToggle(boolean turnOn, Night replaced) {
+        if (turnOn) return Night.ON;
+        return replaced == Night.SCHEDULED ? Night.SCHEDULED : Night.OFF;
+    }
+
     static final class Settings {
         /** The master switch. Off draws nothing, whatever the rest says. */
         boolean on;

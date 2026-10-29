@@ -1,6 +1,6 @@
 {
-  "tv": "Formovie Laser 4K projector (hanlla, MediaTek T31 / m7632, 1.8 GB)",
+  "tv": "Formovie Laser 4K projector / Formovie Theater (hanlla, MediaTek T31 / m7632, 1.8 GB)",
   "os": "Android TV 14",
   "brand": "Formovie",
-  "notes": "First Formovie list, kept light at the owner's request: Google feedback and consent, partnersetup RLZ pings, Formovie's Play auto-installer, tvrecommendations and Ambient Mode; no Formovie ad or content service on this build; projector manager (focus, keystone, BLE remote), Dolby audio, input/source app, BT remote pairing, Launch Board and User Manual kept; YouTube, Prime Video, Chromecast, Assistant and OTA kept by choice; classic tvlauncher, built-in Ethernet"
+  "notes": "First Formovie list, kept light at the owner's request: Google feedback and consent, partnersetup RLZ pings, Formovie's Play auto-installer, tvrecommendations and Ambient Mode; no Formovie ad or content service on this build; projector manager (focus, keystone, BLE remote), Dolby audio, input/source app, BT remote pairing, Launch Board and User Manual kept; YouTube, Prime Video, Chromecast, Assistant and OTA kept by choice; classic tvlauncher, built-in Ethernet; second unit sold as Formovie Theater (tested on Wi-Fi; its Ethernet port untested): a second auto-installer (`android.autoinstalls.config.formovie`), no tuner, Google Live Channels takes HDMI from tvcenter (commented-out fix), every remote button works without a key helper"
 }

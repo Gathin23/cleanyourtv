@@ -17,8 +17,9 @@
 #   reporting "user setup is in progress":
 #       settings put secure user_setup_complete 1
 #       settings put global device_provisioned 1
-# - This firmware answers no ACTION_SETTINGS intent. With launcher/, set
-#   settings_component=com.htc.htcsettings/com.htc.activity.HomeActivity in config.xml.
+# - This firmware answers no ACTION_SETTINGS intent. With launcher/, add
+#   com.htc.htcsettings/com.htc.activity.HomeActivity to settings_fallback_components in config.xml,
+#   and com.htc.htcsettings to the <queries> in AndroidManifest.xml (a <package> line).
 # - The stock launcher is com.htc.htclauncherhighenglishd08; re-enable it if you remove launcher/.
 
 # Stock HTC launcher and its infrastructure, replaced by launcher/

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a scoreboard with a countdown's colon on a deep green field. Drawn for this add-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF0B2A1E" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FF134A33" android:pathData="M70,50h180a14,14 0,0 1,14 14v52a14,14 0,0 1,-14 14h-180a14,14 0,0 1,-14 -14v-52a14,14 0,0 1,14 -14z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M88,70h52v40h-52z M180,70h52v40h-52z" android:fillAlpha="0.9" />
+    <path android:fillColor="#FF3CBE78" android:pathData="M160,80m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0 M160,100m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0" />
+</vector>

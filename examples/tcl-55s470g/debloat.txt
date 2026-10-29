@@ -57,7 +57,8 @@ com.google.android.apps.mediashell     # Chromecast built-in
 com.google.android.youtube.tvmusic
 com.google.android.videos              # Google TV app (purchases/rentals)
 com.tcl.smartalexa                     # Alexa
-com.google.android.tv.remote.service   # Google TV phone-app remote (the physical remote is unaffected)
+com.google.android.tv.remote.service   # Google TV phone-app remote, and the remote mic's bridge on this build (#1441): comment out with katniss to keep voice
 
-# Needed for the custom launcher. Disable only AFTER launcher/ is installed (see README Troubleshooting).
+# Needed for the custom launcher. Disable only AFTER launcher/ is installed
+# (see docs/TROUBLESHOOTING.md, "The new launcher still doesn't own Home").
 com.google.android.tungsten.setupwraith

@@ -1,0 +1,20 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "hami.androidtv",
+    "tw.com.gamer.android.animad"
+  ],
+  "hidden_apps": [
+    "com.realtek.tv",
+    "com.apps.function.audiolink",
+    "com.apps.ota",
+    "com.google.android.play.games",
+    "com.google.android.videos",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tvmusic"
+  ],
+  "live_tv_package": "com.realtek.tv",
+  "columns": 4,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+}

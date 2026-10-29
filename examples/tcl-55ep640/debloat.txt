@@ -1,7 +1,11 @@
 # TCL 55EP640, Greece (ro.product.model BeyondTV, board RTD2851 / platform rtd285o), Android TV 11 (API 30),
 # build PPR1.180610.011 AR04, fingerprint TCL/BeyondTV/BeyondTV:11/PPR1.180610.011/AR04, 32-bit (armeabi-v7a).
+# Also verified on TCL 65EP640 (Android 11, AR05 build) by @Vinceblah.
 # Same hardware as examples/tcl-50p615 (AR05) and the same package set, plus com.tcl.dashboard (TCL IoT
 # dashboard / giftbox promos, disabled as on examples/tcl-43p615).
+#
+# Note for 65EP640: The disabled subset used was exactly as below, EXCEPT com.android.dreams.basic, 
+# com.hitv.explore, com.spotify.tv.android, and tunein.player were kept enabled.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55ep640/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55ep640/debloat.txt

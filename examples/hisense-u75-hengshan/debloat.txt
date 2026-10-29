@@ -3,11 +3,14 @@
 # different device and a mostly different package namespace: com.vt.* here, com.hisense.* there).
 # 2.4 GB RAM. Latin America / Brazil market (Ginga broadcast middleware preloaded).
 # Second unit: Hisense 75U75N, US market, same device and build (STT2.230310.002). This list applied
-# there except com.hisense.odinbrowser (kept by that owner); README.md has its remote's button codes
-# and notes, config.json its dock.
+# there except com.hisense.odinbrowser (kept by that owner), plus that owner's choices near the end;
+# README.md has its remote's button codes and notes, config.json its dock.
 # Third unit: Hisense 55U7N, same device and build, reported 2026-10-24 (#1326): the volume ramp goes the
 # same way with HomeKeyService alone and no CEC soundbar, so that trade is the board's, not the soundbar's.
 # README.md carries it.
+# Fourth unit: Hisense 65U7ESG, Colombia, same device and build (00.00.00.135), applied 2026-10-25. Its own
+# list is debloat-65u7esg.txt (no VIDAA packages there; casting and ambient mode off, HiAlexa kept), and
+# README.md has how it keeps both the remote's app buttons and the volume ramp.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan/debloat.txt com.google.android.apps.tv.launcherx
@@ -73,9 +76,19 @@ com.google.android.syncadapters.calendar
 com.android.providers.calendar
 com.android.providers.contacts
 
+# 75U75N owner's choices, all reversible: apps that unit's owner does not use
+com.vt.tv.mobiledeviceconnectiontips       # Miracast screen mirroring (codePath Miracast); Chromecast and AirPlay kept
+com.vt.tv.mediacenter                      # Media Center: USB and DLNA file player
+com.vt.tv.dlna                             # DLNA renderer
+com.vt.tv.singlelisten                     # MyMusic
+com.vt.roomcalibration                     # room audio calibration prompt (RoomCalibration)
+com.google.android.youtube.tvmusic         # YouTube Music
+com.google.android.play.games              # Google Play Games
+
 # Launcher phase only. Google TV's setup wizard also claims android.intent.category.HOME (priority 1,
 # RecoveryActivity), so it takes Home the moment the stock launcher is disabled and a third-party
 # launcher can never own the Home button. Leave this line out if you are only debloating.
 # On some sets the wizard holds the Wi-Fi credentials saved during setup; if the TV forgets its
-# network, re-enter it with the remote. restore.sh re-enables it.
+# network, re-enter it with the remote. restore.sh re-enables it. On the 75U75N the saved network
+# belonged to android.uid.system (dumpsys wifi cname), and Wi-Fi stayed up.
 com.google.android.tungsten.setupwraith

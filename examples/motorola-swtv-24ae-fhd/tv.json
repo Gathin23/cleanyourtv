@@ -1,6 +1,6 @@
 {
-  "tv": "Motorola SWTV-24AE-FHD (Skyworth OEM, beomil, MediaTek), India/Global",
+  "tv": "Motorola / Coocaa SWTV-24AE-FHD (24LP6000G, Skyworth OEM, beomil), India/SEA",
   "os": "Google TV 14",
   "brand": "Motorola",
-  "notes": "Skyworth after-sale/activation trackers, recommendation rows and partner customizer, TV Guard (dailymanage), Daily Key (myapp), e-manual; Google Play Games and feedback; launcherx + setupwraith off; setupwraith owned Wi-Fi saved at setup; remote Settings button emits keycode 83 (KEYCODE_NOTIFICATION) on scancode 240, needs HomeKeyService; Live TV is `com.cltv.hybrid`"
+  "notes": "Skyworth OEM board sold as Motorola in India (build UKN4) and Coocaa 24LP6000G in Vietnam/SEA (build UKN6); after-sale/activation trackers, ad services, recommendation rows, demos; Wi-Fi ownership setupwraith gotcha documented; remote Settings button emits keycode 83 (KEYCODE_NOTIFICATION) on scancode 240, needs HomeKeyService; Live TV is `com.cltv.hybrid` (Motorola) or `com.mediatek.wwtv.tvcenter` (Coocaa); reboot-checked"
 }

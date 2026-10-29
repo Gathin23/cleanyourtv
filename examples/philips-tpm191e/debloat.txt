@@ -98,6 +98,78 @@
 #   65OLED706 (a different board, PH1M_EA_9970A) -- so this is not board-specific, likely whichever
 #   OLED panel is fitted. Confirmed here too: injected keys over ADB do not dismiss it; a real
 #   remote key does.
+#
+# Fifth unit: Philips 65OLED804/12 (OLED, 2019 model), Germany, on Ethernet. It shipped with Android
+# TV 9 and now runs the same Android 12 firmware as the lead unit: STT2.230526.001, security patch
+# 2025-11-01, fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys.
+# Applied in five batches on 22 Oct 2026, each followed by a check of `dumpsys tv_input`, the TV
+# processes and a 30 s idle log (the philips-50pus8517 quirk 5 method), and lived with until 25 Oct
+# through three restarts, one of them a cold start. The only repeating idle lines before and after
+# were xtv's JointSpace REST server (org.restlet ... InboundWay) answering a client on the LAN.
+# - From the list below: all of batch 1 except usagelogger and demome, which tools/disable.ps1 skips
+#   because both ask for TV_INPUT_HARDWARE (the 65PUS9435 list explains why that is a false positive
+#   here); all of batch 2; from batch 3 katniss, videos and playfi.softap, with Prime Video, TalkBack
+#   and DLNA kept by choice; batch 4 after the launcher took Home. youtube.tvmusic and play.games were
+#   disabled from the factory, with the same 15 Freeview packages and org.droidtv.freeviewplayers.
+#   com.google.android.music and org.droidtv.android.fitness are not installed on this unit.
+# - Also disabled, none used here: org.droidtv.sticker, org.droidtv.amazonalexa (no other process
+#   held a connection to it in `dumpsys activity services`; channel changes and the TV guide work
+#   without it), and the preloaded Apple TV, MUBI, Twitch, Paramount+ (com.cbs.ca) and WWE apps.
+# - Every entry stayed disabled through all three restarts, com.google.android.tvrecommendations
+#   included, unlike the second unit. `tools/check.py` reported nothing drifted after the last one.
+# - Checked with the remote afterwards: Live TV and channel changes, the TV guide, the SOURCES drawer
+#   with HDMI 1-4, Ambilight, picture settings, and casting from a phone. The third-party remote in use
+#   has no Settings button; its gear-like button opens the Philips options menu, before and after the
+#   debloat, so the fourth unit's Settings-button finding was not testable here.
+# - The household uses a slow third-party remote whose presses last 430-550 ms. With the stock
+#   launcher disabled, a Home press held past 400 ms did nothing: Android sends its long-press action,
+#   ALL_APPS, to the system-image Home, which is com.android.tv.settings' FallbackHome and answers
+#   nothing (docs/TROUBLESHOOTING.md, "Home works when tapped but does nothing when pressed firmly").
+#   `settings put secure long_press_timeout 800` did not change that, not even after a reboot. The
+#   launcher's home_long_press_home switch, installed with -HomeKeyService, fixed it; as on the fourth
+#   unit, the key filter ends Volume Up/Down repeat on hold, which this household preferred anyway.
+# - An injected KEYCODE_TV is ignored here too; test Live TV and SOURCES with the real remote.
+#
+# Sixth unit: Philips 50PUS7354 (LED, 2019 model), France, on Wi-Fi. Same firmware as the lead unit:
+# STT2.230526.001, fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys.
+# One session on 27 Oct 2026 with two restarts, not a several-day test. Launcher notes are in README.md.
+# - From the list below: all of batches 1 and 2; from batch 3 Prime Video, videos, youtube.tvmusic, play.games,
+#   talkback and playfi.softap, with katniss (Assistant) and dlna kept by choice; com.google.android.music is not
+#   installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome were skipped by the TV_INPUT_HARDWARE guard, as on the fifth unit. `pm query-services
+#   --components -a android.media.tv.TvInputService` lists only com.mediatek.tvinput, com.mediatek.tv.agent,
+#   org.droidtv.fastip and com.google.android.videos, so both were disabled with TVINPUT_ALLOW=1 set for those two
+#   alone. `dumpsys tv_input` still listed HDMI 1-4 after each batch.
+# - Also disabled, none used here: org.droidtv.tv.frameworklogger, org.droidtv.nettvapps,
+#   org.droidtv.nettv_launcherapp and org.droidtv.sticker (as on the fourth unit), com.netflix.ninja,
+#   com.apple.atve.androidtv.appletv and org.droidtv.dropboxprovider. Kept by choice: the official YouTube app
+#   (casting from a phone needs it), Alexa, Chromecast and both firmware updaters.
+# - The same 15 Freeview packages and org.droidtv.freeviewplayers were disabled from the factory.
+# - Every entry, tvrecommendations included, stayed disabled through both restarts (`pm list packages -d`
+#   compared before and after). com.phorus.playfi.tv was left enabled, per the note in batch 3.
+# - Private DNS in hostname mode validated on this firmware (`dumpsys connectivity` lists validated addresses).
+#
+# Seventh unit: Philips 43PUS7304/12 (LED, 2019 model), Germany, on Wi-Fi. Same firmware as the lead unit:
+# STT2.230526.001, security patch 2025-11-01, fingerprint
+# Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. One session on 27 Oct 2026 with two
+# restarts, not a several-day test. Launcher notes are in README.md.
+# - Developer options showed USB debugging only, no Network debugging or Wireless debugging entry; with USB
+#   debugging on, port 5555 answered on the LAN and tools/tv.py connected with no cable.
+# - From the list below: all of batches 1 and 2, batch 3 except Prime Video (kept by choice); videos and music are
+#   not installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome: TV_INPUT_HARDWARE false positives again (`pm query-services` lists only
+#   com.mediatek.tvinput, com.mediatek.tv.agent and org.droidtv.fastip), disabled with TVINPUT_ALLOW=1 for those two
+#   alone; `dumpsys tv_input` still listed HDMI 1-4 after each batch.
+# - Also disabled, as on the sixth unit: org.droidtv.tv.frameworklogger, org.droidtv.nettvapps,
+#   org.droidtv.nettv_launcherapp, org.droidtv.sticker, org.droidtv.dropboxprovider, com.netflix.ninja,
+#   com.apple.atve.androidtv.appletv; plus de.telekom.magentatv.tv (a Play Store install, unused).
+#   Kept: YouTube, Chromecast, both firmware updaters, com.phorus.playfi.tv.
+# - All 44 disabled packages (the 16 factory ones included) stayed disabled through both restarts, tvrecommendations too.
+# - Ambilight (follow video) checked working on screen after the whole list and the launcher.
+# - Android's "storage full" warnings: /data is 4.8 GB, 81% used before cleanup. org.droidtv.channels held about
+#   2 GB of app data (`dumpsys diskstats`), the largest by far; it was not cleared, as that holds the channel list
+#   and favourites. `pm clear` on the disabled streaming apps and com.google.android.tts, plus `pm trim-caches`,
+#   freed about 450 MB.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader

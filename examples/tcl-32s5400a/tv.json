@@ -2,5 +2,5 @@
   "tv": "TCL 32S5400A (C06, C06_2K_GB, MediaTek MT9221, 1 GB), 2023",
   "os": "Android TV 11",
   "brand": "TCL",
-  "notes": "Same C06 platform as `tcl-40s5400a/`, but older AR2101 / V8-T221T05-LF1V005 firmware and SonyLIV/YuppTV preloads; TCL account/TGuard/promos, Google extras, regional preloads; firmware updater kept (ttvs is the updater); stock launcher priority 2, keep the remote/BT/TCL settings packages"
+  "notes": "Same C06 platform as `tcl-40s5400a/`, but older AR2101 / V8-T221T05-LF1V005 firmware and SonyLIV/YuppTV preloads; TCL account/TGuard/promos, Google extras, regional preloads; firmware updater kept (ttvs is the updater); stock launcher priority 2, keep the remote/BT/TCL settings packages; a second unit on V8-T221T01-LF1V121 needs 500 MB free before any install (`pm trim-caches`)"
 }

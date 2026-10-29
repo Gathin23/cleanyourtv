@@ -1,0 +1,6 @@
+{
+  "tv": "Seleco TV39020HDA9SMART 39\" (AT_SmartScreen, Toptech + Zeasn, Realtek RTK2842P), Italy",
+  "os": "Android TV 9",
+  "brand": "Seleco",
+  "notes": "Same Toptech/Zeasn platform as [caxium-58-realtek-rtk2851p](caxium-58-realtek-rtk2851p/): Zeasn device portal, services feed and store, partner auto-installs, retail demo, print spooler, camera, live wallpapers, Chrome, USB media player; phone Netflix, voice search and Miracast off by choice; shipped with the phone build of Prime Video instead of the TV app, replaced by hand; stock Zeasn Home disabled last; Live TV and inputs stay with `com.toptech.tvmenu`, whose `.input.InputActivity` the Inputs pill opens; the remote's Input key still goes to the Zeasn Home; config.json has the dock; reboot-checked"
+}

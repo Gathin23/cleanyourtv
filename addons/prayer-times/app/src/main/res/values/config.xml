@@ -5,7 +5,9 @@
     <string name="longitude" translatable="false">-7.5898</string>
     <string name="place" translatable="false">Casablanca</string>
     <!-- Aladhan's calculation method (https://aladhan.com/calculation-methods), e.g. 2 ISNA, 3 Muslim World
-         League, 4 Umm al-Qura, 5 Egyptian, 13 Turkey, 21 Morocco. -->
+         League, 4 Umm al-Qura, 5 Egyptian, 13 Turkey, 20 Indonesia (Kemenag), 21 Morocco. -->
     <string name="method" translatable="false">21</string>
     <color name="accent">#2BB673</color>
+    <!-- Show an on-screen alert card when a prayer time arrives. Off by default. -->
+    <bool name="reminders">false</bool>
 </resources>

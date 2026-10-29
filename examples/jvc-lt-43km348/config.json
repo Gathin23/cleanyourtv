@@ -1,0 +1,18 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.spotify.tv.android",
+    "tv.pluto.android"
+  ],
+  "hidden_apps": [
+    "com.mediatek.wwtv.tvcenter"
+  ],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "live_tv_action": "android.mtk.intent.action.ACTION_REQUEST_TOP_RESUME",
+  "app_keys": [
+    "190:com.google.android.youtube.tv",
+    "191:com.netflix.ninja"
+  ],
+  "columns": 4
+}

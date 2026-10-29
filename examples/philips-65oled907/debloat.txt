@@ -3,6 +3,22 @@
 # ro.product.model=2021/22 Philips UHD Android TV   ro.product.device=PH1M_EA_9970A
 # 197 packages installed; connected over Wi-Fi (wlan0)
 #
+# Second unit: Philips 55OLED907/12 (55" OLED+, 2022, Ambilight), French retail unit on Wi-Fi. Same board, same
+# firmware RTT2.211108.001 (build 21029), security patch 2025-10-01.
+# Status (55OLED907): applied 2026-10-19, applied again after a factory reset, in daily use since; re-checked
+# 2026-10-26 with `pm list packages -d`. On that unit katniss (Google Assistant) and ipcontrol were kept, and the
+# optional section at the end of this file was disabled as well.
+# Philips quirks seen on the 55OLED907:
+#   * The screensaver ships off and the firmware puts its delay back to "never" at every boot: on an OLED, set it
+#     again after each boot.
+#   * With "Ambilight+hue" enabled in the TV's Ambilight settings, the TV turns the Hue lamps back on at every
+#     power-on, whatever was chosen before standby.
+#   * The JointSPACE API (port 1926) works from another computer, but called from an app on the TV itself it drives
+#     org.droidtv.xtv to 100 % CPU with connections that never close, until the TV is restarted.
+#   * Also keep there: org.droidtv.philipstvdrawer (the OPTIONS key), org.droidtv.xtvsystem,
+#     org.droidtv.homeintentresolver, org.droidtv.channels, org.droidtv.alhuewizard and org.droidtv.sunrise
+#     (Ambilight + Hue) and com.easy.oad (USB firmware updates).
+#
 # A TAILORED list, not a copy of another owner's. The board and firmware match
 # examples/philips-50pus8517, examples/philips-55oled707 and examples/philips-65oled706 exactly, so their
 # DO NOT DISABLE block and firmware quirks apply here as written. Read the 50PUS8517 file first.
@@ -62,3 +78,31 @@ com.google.android.play.games             # Play Games; not used on a TV
 # --- owner's explicit choices on this unit -----------------------------------
 com.google.android.katniss                # Assistant and voice search, ~101 MB across two processes. Kills the remote's mic button, "Hey Google", on-screen voice search and the mic icon inside YouTube/Play Store search. Settings and tvsystemui guard their calls into it, so nothing crashes
 org.droidtv.ipcontrol                     # LAN control of volume, audio output, Ambilight on/off and ShopMode. NOT the JointSpace API on 1925/1926 -- that is served by org.droidtv.xtv, which stays. Owner does not drive the TV from Home Assistant
+
+# --- optional: also disabled on the 55OLED907 (second unit) -----------------
+# Commented out so that this list does not change for anyone; remove the "# " in front of the ones you want.
+# org.droidtv.tv.frameworklogger         # framework event logger
+# org.droidtv.fastip                     # free ad-supported channels, has an advertising-ID activity
+# com.zeasn.whalelive                    # Whale TV (free ad-supported channels)
+# org.droidtv.dropboxprovider            # Dropbox provider
+# org.droidtv.nettv_launcherapp          # Philips Smart TV app launcher
+# org.droidtv.nettvapp1815               # Zeasn web app
+# org.droidtv.nettvapp20004410           # Zeasn web app
+# org.droidtv.nettvapp4546               # Zeasn web app
+# org.droidtv.nettvapp4655               # Zeasn web app (Deezer)
+# org.droidtv.nettvapp5326               # Zeasn web app
+# org.droidtv.nettvapp5512               # Zeasn web app
+# org.droidtv.amazonalexa                # Alexa only; Google Assistant (katniss) is separate
+# org.droidtv.leanbackcustomizer         # partner customisation of the stock launcher; the OPTIONS key keeps working
+# io.mimi.sdk.service                    # Mimi sound personalisation service
+# com.google.android.marvin.talkback     # TalkBack screen reader; keep it if anyone in the home needs it
+# org.droidtv.m7opapp                    # M7 satellite operators (Canal Digitaal, TV Vlaanderen, Skylink, HD Austria)
+# Streaming apps, disabled on the 55OLED907 by its owner's choice (taste, not bloat):
+# com.netflix.ninja                      # Netflix
+# com.amazon.amazonvideo.livingroom      # Prime Video
+# com.apple.atve.androidtv.appletv       # Apple TV
+# com.google.android.youtube.tvmusic     # YouTube Music
+# tv.wuaki.apptv                         # Rakuten TV
+# fr.filmotv.philips.android.tv          # FilmoTV
+# com.google.android.videos              # Google Play Movies
+# com.boosteroidtv.streaming             # Boosteroid (cloud gaming)

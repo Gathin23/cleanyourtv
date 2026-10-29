@@ -2,5 +2,5 @@
   "tv": "TCL Smart TV (G07, G07_4K_GB_NF, Realtek RTD2851A, 2 GB)",
   "os": "Google TV 11",
   "brand": "TCL",
-  "notes": "TCL BI analytics (ttvs, also the firmware updater), TGuard, waterfall, TCL Live, TCL Home dashboard, messages, hotel/demo, partner auto-installs; voice, Miracast, MagiConnect, T-Solo, firmware updates and unused preloads off by choice, Chromecast kept; launcherx, setupwraith and dreamx off (Wi-Fi belonged to android.uid.system), reboot-checked; Input key works without InputKeyService, gear is scancode 561 (`settings_key_scancodes`), Netflix and YouTube buttons need an accessibility helper"
+  "notes": "TCL BI analytics (ttvs, also the firmware updater), TGuard, waterfall, TCL Live, TCL Home dashboard, messages, hotel/demo, partner auto-installs; voice, Miracast, MagiConnect, T-Solo, firmware updates and unused preloads off by choice, Chromecast kept; launcherx, setupwraith and dreamx off (Wi-Fi belonged to android.uid.system), reboot-checked; Input key works without InputKeyService, gear is scancode 561 (`settings_key_scancodes`), Netflix and YouTube buttons need an accessibility helper; also sold as Hitachi CDH-LE554KSMART26 (same AR07 firmware, Latin America)"
 }

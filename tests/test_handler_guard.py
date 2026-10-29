@@ -43,6 +43,8 @@ class HandlerGuardTest(unittest.TestCase):
             (repo / "debloat.txt").write_text(LIST)
             capture = Path(tmp) / "commands.txt"
             env = dict(os.environ, CAPTURE=str(capture), **(extra_env or {}))
+            if os.name != "posix" or not shutil.which("bash"):
+                raise unittest.SkipTest("disable.sh is a POSIX script; it needs bash")
             result = subprocess.run(["bash", str(tools / "disable.sh"), "debloat.txt"], cwd=repo,
                                     env=env, capture_output=True, text=True, stdin=subprocess.DEVNULL)
             self.assertEqual(result.returncode, 0, result.stderr)

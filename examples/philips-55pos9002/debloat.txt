@@ -1,0 +1,71 @@
+# Philips 55POS9002/12 (55" OLED, TP Vision TPM171E, device PH7M_EU_5596), Europe, 2017 model
+# Android TV 8.0.0 (API 26), firmware TPM171E_R.107.001.143.000, security patch 2021-01-05.
+# MediaTek MT5891, armeabi-v7a, 1.9 GB RAM, 1080p UI.
+# Fingerprint: Philips/PH7M_EU_5596/PH7M_EU_5596:8.0.0/OC/4718:user/release-keys
+#
+# Same platform, device and firmware build as examples/philips-65pus8102 and examples/philips-55pus7503;
+# this is the OLED sales model. Packages that are not installed on this set were left out of the list
+# (no nettvapp* web apps, no Gameloft or TED preloads).
+#
+# Apply:   TV_HOST=<tv ip> TVINPUT_ALLOW=1 tools/disable.sh examples/philips-55pos9002/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55pos9002/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# TVINPUT_ALLOW=1: without it disable.sh skips org.droidtv.demome and org.droidtv.usagelogger (both ask for
+# TV_INPUT_HARDWARE) and com.google.android.leanbacklauncher.recommendations (its dumpsys has no permission
+# block). None of the three serves an input: `cmd package query-services -a android.media.tv.TvInputService`
+# lists only com.mediatek.tvinput (HDMI, component, tuner, S-video, DVI), com.mediatek.agent and app preview
+# inputs. They were disabled last, after a reboot and a Live TV + HDMI ARC check, and Live TV was checked again.
+# To be careful, apply the list without TVINPUT_ALLOW=1 first, reboot, check your inputs, then run it again
+# with it.
+#
+# Stock launcher: com.google.android.tvlauncher (not in this list; build-and-install.sh disables it
+#                 after the new Home is running)
+# Live TV app:    org.droidtv.playtv
+# Launcher config: config.json in this folder (live_tv_package, hidden_apps).
+#
+# Kept on purpose, do NOT disable: org.droidtv.nettvbrowser (HbbTV red button), org.droidtv.eum (user
+# manual, hidden instead), org.droidtv.playtv, org.droidtv.xtv, org.droidtv.GlobalKey (remote buttons and
+# remote pairing), org.droidtv.settings, org.droidtv.tvsystemui, com.mediatek.tvinput,
+# com.mediatek.tunerservice, com.google.android.katniss (Google Assistant; YouTube's voice search uses it),
+# Chromecast (com.google.android.apps.mediashell), firmware updates (org.droidtv.oad), Ambilight/Hue,
+# Play Store and Play Services, com.google.android.tv.remote.service (phone remote).
+#
+# Verified on the real TV: replacement Home, Live TV from the Inputs menu and back to Home, HDMI ARC sound to a
+# soundbar, the Source, Home, mic and Guide buttons on the real remote. Every package below (and the four
+# commented out at the end) stayed disabled across at least two reboots; none came back by itself.
+# Not checked: HDMI inputs with a source attached, YPbPr.
+
+# Google feedback, tutorials and recommendation rows (same as philips-55pus7503)
+com.google.android.feedback                       # Market Feedback Agent
+com.google.android.tvtutorials                    # Android TV first-run tutorials
+com.google.android.tvrecommendations              # Android TV recommendations/content rows
+com.google.android.leanbacklauncher.recommendations  # needs TVINPUT_ALLOW=1, see header
+
+# Philips promotion and telemetry
+org.droidtv.demome                                # Retail/store demonstration app; needs TVINPUT_ALLOW=1
+org.droidtv.nettvrecommender                      # Philips NetTV / Top Picks recommendation row
+org.droidtv.usagelogger                           # Boot stats, remote keypress counts, panel telemetry; needs TVINPUT_ALLOW=1
+org.droidtv.candeebug                             # "DAC" analytics uploader
+org.droidtv.gel                                   # "GEL" metrics collector, runs inside the candeebug process
+org.droidtv.tv.frameworklogger                    # Reboot reasons and firmware-install records to the Philips logger
+tv.inscape.tvclient.inscapeacr                    # "Inscape" ACR client: identifies what is on screen, HDMI included
+org.droidtv.sticker                               # Feature promo stickers and banners (StickerActivity, BannerActivity)
+org.droidtv.twittershare                          # Twitter share sheet (SocialResolverActivity)
+
+# Philips NetTV app store (pre-Android web app platform; Play Store replaces it)
+org.droidtv.nettv.market                          # NetTV app gallery
+org.droidtv.nettvapps                             # "NetTvApps" manager
+org.droidtv.nettv_launcherapp                     # NetTV app launcher entry
+org.droidtv.nettvregistration                     # Philips account registration for NetTV
+com.opera.sdk.example                             # Opera TV SDK sample app (leanback entry, no use)
+
+# Preinstalled Google apps whose service is gone or that nobody needs on a TV
+com.google.android.music                          # Google Play Music (service discontinued)
+com.google.android.play.games                     # Google Play Games
+
+# Off by choice on this set; uncomment the ones you don't use
+# com.netflix.ninja                               # Netflix (its remote button can open another app: README.md)
+# com.amazon.amazonvideo.livingroom               # Prime Video
+# com.google.android.videos                       # Google Play Movies & TV
+# org.droidtv.amazonalexa                         # Alexa

@@ -1,6 +1,6 @@
 {
-  "tv": "TCL BeyondTV2 (Latin America / Brazil, Realtek RTD2851)",
+  "tv": "TCL BeyondTV2 (Latin America / Brazil, Realtek RTD2851); also confirmed on a 55\" unit",
   "os": "Android TV 9",
   "brand": "TCL",
-  "notes": "TCL analytics and boot content feed; `com.tcl.esticker` does not stay disabled on this firmware; UK Freeview apps already off at the factory; [draw-cost notes](../docs/devices/tcl-beyondtv2-v660.md)"
+  "notes": "TCL analytics, boot content feed, account/setup screens, Samba, extra content rows; voice (Google Assistant, TCL's Alexa) and Chromecast off by choice; `com.tcl.notereminder`, `smartalexa`, `tclhome_master` and `usercenter` get restored by the firmware on their own; `com.tcl.esticker` sticks disabled on the second unit but not the first; UK Freeview apps already off at the factory; [draw-cost notes](../docs/devices/tcl-beyondtv2-v660.md)"
 }

@@ -1,7 +1,7 @@
 # Xiaomi MiTV-ASTP1 (codename maverick; China-market firmware), Android 9 (SDK 28),
 # firmware 2.40.641.0514.cn (HyperOS-era CN build), Amlogic/droidlogic, 1 GB RAM, 720p panel.
-# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). It is not in
-# KNOWN_STOCK_LAUNCHERS, so install with: STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh
+# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). Install with:
+# STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-astp1/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-astp1/debloat.txt com.mitv.tvhome

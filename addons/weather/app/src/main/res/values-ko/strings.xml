@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">날씨</string>
+
+    <string name="feels_like">체감 %1$d°</string>
+    <string name="humidity">습도 %1$d%%</string>
+    <string name="wind">바람 %1$d km/h</string>
+    <string name="wind_mph">바람 %1$d mph</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">대기질 %1$d · %2$s</string>
+    <string name="updated">%1$s 업데이트 · Open-Meteo</string>
+    <string name="change_city">도시 바꾸기</string>
+    <string name="loading">날씨를 불러오는 중…</string>
+    <string name="offline">Open-Meteo에 연결할 수 없습니다. TV의 인터넷 연결을 확인하세요. 5분 뒤에 다시 시도합니다.</string>
+
+    <string name="pick_title">어느 도시인가요?</string>
+    <string name="pick_hint">도시 이름. 예: 서울</string>
+    <string name="pick_search">검색</string>
+    <string name="pick_none">\"%1$s\"에 해당하는 곳이 없습니다</string>
+    <string name="pick_first">날씨를 볼 도시를 고르세요.</string>
+
+    <string name="aqi_good">좋음</string>
+    <string name="aqi_moderate">보통</string>
+    <string name="aqi_sensitive">민감군 주의</string>
+    <string name="aqi_unhealthy">나쁨</string>
+    <string name="aqi_very_unhealthy">매우 나쁨</string>
+    <string name="aqi_hazardous">위험</string>
+
+    <string name="sky_clear">맑음</string>
+    <string name="sky_sunny">맑음</string>
+    <string name="sky_mostly_clear">대체로 맑음</string>
+    <string name="sky_mostly_sunny">대체로 맑음</string>
+    <string name="sky_partly_cloudy">구름 조금</string>
+    <string name="sky_cloudy">흐림</string>
+    <string name="sky_fog">안개</string>
+    <string name="sky_drizzle">이슬비</string>
+    <string name="sky_freezing_drizzle">어는 이슬비</string>
+    <string name="sky_light_rain">약한 비</string>
+    <string name="sky_rain">비</string>
+    <string name="sky_heavy_rain">강한 비</string>
+    <string name="sky_freezing_rain">어는 비</string>
+    <string name="sky_light_snow">약한 눈</string>
+    <string name="sky_snow">눈</string>
+    <string name="sky_heavy_snow">강한 눈</string>
+    <string name="sky_snow_grains">쌀알눈</string>
+    <string name="sky_showers">소나기</string>
+    <string name="sky_snow_showers">소낙눈</string>
+    <string name="sky_thunderstorm">뇌우</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55Q6CX1 (Smart TV Pro, G08, G08_4K_GB, MediaTek)",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "European G08 build (STT2.221228.001 AS35): TCL promos, push messages, onboarding overlays, telemetry/logkit, Google Play Movies, TTS, dreamx screensaver; launcherx and setupwraith safely disabled (Wi-Fi owned by system, not setupwraith) and replaced with CleanYourTV; Game Bar, T-Exhibit, AirPlay, Chromecast, Miracast and DVB tuner kept; suspension/interactive/ttvs kept (they host the Source QuickPanel and live TV overlays); key helpers left unbound to preserve volume ramp; duplicate WebViews commented (check the active provider first); reboot-checked"
+}

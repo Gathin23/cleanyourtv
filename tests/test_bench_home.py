@@ -44,7 +44,7 @@ class LogTV:
                 raise AssertionError(f"unexpected grep arguments: {grep}")
             return "\n".join(line for line in next(self.logs)
                              if any(re.search(pattern, line) for pattern in args[1::2]))
-        if command in (f"am start -W -n {OTHER}", "logcat -c -b main", "input keyevent 3"):
+        if command in (f"am start -W --activity-reorder-to-front -n {OTHER}", "logcat -c -b main", "input keyevent 3"):
             return ""
         raise AssertionError(f"unexpected shell command: {command}")
 
@@ -68,7 +68,7 @@ class ReturnToHomeTest(unittest.TestCase):
                     values, commands = self.measure([home(), resume(tag=tag, extra=extra)],
                                                     component=component)
                     self.assertEqual(values, [125])
-                    self.assertEqual(commands[:3], [f"am start -W -n {OTHER}",
+                    self.assertEqual(commands[:3], [f"am start -W --activity-reorder-to-front -n {OTHER}",
                                                    "logcat -c -b main", "input keyevent 3"])
 
     def test_an_old_resume_without_a_current_resume_is_not_a_sample(self):
@@ -142,7 +142,7 @@ class ColdStartHomeTest(unittest.TestCase):
                     values = bench.cold_start(tv, component, 2)
                 self.assertEqual(values, [410, 430])
                 self.assertEqual(tv.shell.call_args_list, [
-                    mock.call(f"am start -W -n {OTHER}"),
+                    mock.call(f"am start -W --activity-reorder-to-front -n {OTHER}"),
                     mock.call(f"am force-stop {component.split('/')[0]}"),
                     mock.call(launch),
                 ] * 2)

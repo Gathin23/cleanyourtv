@@ -5,12 +5,13 @@ ADB handshake, several times per key, plus the whole main log pulled back for ev
 100 MB on a TCL C755, 41 s a read). Through a
 relay one full run took over 45 minutes. Now the TV class connects once with tools/tv.py's client
 and reuses it, reopening it once if it drops; only the log's newest lines are read, filtered on the
-TV, and not at all once the first keys show the TV doesn't log them; and the key loop looks up Home once. --host also has to reach the client: the old subprocesses only read TV_HOST.
+TV, and not at all once the first keys show the TV doesn't log them; and the key loop looks up Home once. --host also has to reach the client: the old subprocesses only read TV_HOST. It reaches it as TV_HOST/TV_PORT, and the target the run keeps is the one tools/tv.py made of those two (it splits `host:port` and checks the range), not the arguments again.
 
 The TV and tools/tv.py are faked, so these run without either.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import os
 import sys
 import types
 import unittest
@@ -38,7 +39,11 @@ class FakeDevice:
 
 
 def fake_client(devices):
-    """A stand-in for tools/tv.py: connect() hands out the given devices in turn."""
+    """A stand-in for tools/tv.py: connect() hands out the given devices in turn.
+
+    HOST and PORT stand for the target the real client resolves from TV_HOST/TV_PORT when bench.py
+    imports it; this one has no parser, so the environment bench.py sets for it is what a test reads.
+    """
     module = types.ModuleType("tv")
     module.HOST, module.PORT = None, None
     module.connects = 0
@@ -67,7 +72,19 @@ class OneConnectionTest(unittest.TestCase):
     def test_host_and_port_from_the_command_line_reach_the_client(self):
         tv, client = self.tv_with(FakeDevice())
         tv.shell("true")
-        self.assertEqual((client.HOST, client.PORT), ("192.0.2.7", 15555))
+        # bench.py hands the command line to the client through TV_HOST/TV_PORT, the two the real
+        # tools/tv.py reads when it is imported. The fake client resolves neither, so the pair is
+        # what this can check; the read-back is the test below.
+        self.assertEqual((os.environ["TV_HOST"], os.environ["TV_PORT"]), ("192.0.2.7", "15555"))
+
+    def test_the_target_the_client_resolved_is_the_one_the_run_keeps(self):
+        # tools/tv.py splits `host:port` out of the address and refuses a port outside 1..65535.
+        # bench.py used to put the arguments back over that (tv_client.HOST, PORT = self.host,
+        # int(self.port)), so `--host <ip>:<port>` reached the client as a machine of that name.
+        tv, client = self.tv_with(FakeDevice())
+        client.HOST, client.PORT = "192.0.2.20", 5877
+        tv.shell("true")
+        self.assertEqual((tv.host, tv.port, tv.serial), ("192.0.2.20", 5877, "192.0.2.20:5877"))
 
     def test_a_dropped_connection_is_reopened_once(self):
         first, second = FakeDevice(fail_first=True), FakeDevice({"echo": b"ok"})

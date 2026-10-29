@@ -6,7 +6,10 @@ other tools in tools/ take, would have made a folder called `--out`. And a path 
 os.makedirs' `FileExistsError: [Errno 17] File exists: .../README.md` traceback instead of naming it.
 
 The script now answers -h/--help with its own note and writes nothing, refuses any other leading dash and
-any run that is not exactly one argument, and names a path that is a file. So a test here has to be run,
+any run that is not exactly one argument, and names a path that is a file. Three more of the same:
+an empty word (a variable that came out empty), a folder it cannot create (a path through a file) and a
+folder sitting where one scene's file goes each ended in a traceback with exit 1, the code a run that
+wrote nothing returns; they now name the path and say what did land. So a test here has to be run,
 not read: every check below executes the script in a folder of its own and looks at what it left there.
 
 The 14 names are not copied in: the scenes' own record is themes/scenes/wallpapers/captions.txt, one
@@ -115,6 +118,45 @@ class ScenesWallpapersArgumentsTest(unittest.TestCase):
         self.assertIn(str(picture), err, "the refusal does not name the path")
         self.assertNotIn("Traceback", err, "a file as the folder still ends in a traceback")
         self.assertEqual(picture.read_text(encoding="utf-8"), "not a folder\n", "the file was changed")
+
+    def test_an_empty_argument_is_refused(self):
+        # `scenes_wallpapers.py ""` is what a variable that came out empty looks like: os.makedirs('')
+        # is a FileNotFoundError whose line names no path, so nothing in it says what to fix.
+        code, out, err = run("", cwd=self.cwd)
+        self.assertEqual(code, 2, f"an empty folder exited {code} (stdout {out!r})")
+        self.assertIn("empty", err, "the refusal does not say the argument was empty")
+        self.assertIn("<folder>", err, "the refusal does not print the usage line")
+        self.assertNotIn("Traceback", err, "an empty folder still ends in a traceback")
+        self.assertNotIn("scenes written", out)
+        self.assertNothingWritten()
+
+    def test_a_folder_it_cannot_create_is_named(self):
+        # A path through a file: makedirs answered NotADirectoryError, a traceback with exit 1.
+        picture = self.cwd / "README.md"
+        picture.write_text("not a folder\n", encoding="utf-8")
+        target = picture / "scenes"
+        code, out, err = run(str(target), cwd=self.cwd)
+        self.assertEqual(code, 2, f"a folder under a file exited {code} (stdout {out!r})")
+        self.assertIn(str(target), err, "the refusal does not name the path it could not create")
+        self.assertIn("Nothing was written", err, "the refusal does not say nothing was written")
+        self.assertNotIn("Traceback", err, "a folder it cannot create still ends in a traceback")
+        self.assertEqual(picture.read_text(encoding="utf-8"), "not a folder\n", "the file was changed")
+
+    def test_a_folder_where_a_scene_goes_is_named_with_what_was_written(self):
+        # A stale directory called after one scene's file: open(..., 'w') answered IsADirectoryError,
+        # a traceback that also looked like a run that wrote nothing.
+        names = caption_names()
+        self.assertGreaterEqual(len(names), 3, "read no picture names out of captions.txt")
+        out_dir = self.cwd / "scenes"
+        (out_dir / f"{names[1]}.svg").mkdir(parents=True)
+        code, out, err = run(str(out_dir), cwd=self.cwd)
+        self.assertEqual(code, 2, f"a folder in the way exited {code} (stdout {out!r})")
+        self.assertIn(str(out_dir / f"{names[1]}.svg"), err, "the refusal does not name the file")
+        self.assertIn(f"1 of {len(names)}", err, "the refusal does not say how much was written")
+        self.assertNotIn("Traceback", err, "a folder in the way still ends in a traceback")
+        self.assertNotIn("scenes written", out)
+        self.assertTrue((out_dir / f"{names[0]}.svg").is_file(),
+                        "the scene written before the failure is not on disk")
 
     def test_the_scenes_land_in_the_folder_as_promised(self):
         out_dir = self.cwd / "scenes"

@@ -83,6 +83,25 @@
 # about what disabling those three would break. The owner also disabled com.google.android.katniss
 # (Assistant). The commented lines at the end of the list were disabled here as well; they are a
 # same-evening test only, so they stay commented until someone has lived with them.
+#
+# FOURTH UNIT (EU, Germany, German UI): Philips 50PUS7906/12, wired Ethernet, nothing in the USB ports. The build of
+# the third unit: persist.odm.tpv.fw.revision=TPM215E_R.101.000.198.158, persist.odm.tpv.region=eu,
+# ro.product.name=PH0M_EA_T32, Android 11. Tested the same evening only, with two reboots.
+# Applied: the four telemetry lines, nettv.market, fusion.android.tv.demo, partnercustomizer, tvrecommendations,
+# backdrop (screensaver moved to com.gathin.tvhome/.ClockDream, quirk 1), videos, youtube.tvmusic, play.games and
+# Spotify, plus com.google.android.katniss (Assistant) by the owner's choice. Kept by choice: mediashell
+# (Chromecast, on a home network; casting from a phone works), Netflix and Prime Video. Fitness is not installed.
+# tools/disable.sh skipped com.mstar.android.tv.disclaimercustomization (dumpsys shows no permission block for it on
+# this unit), so it stayed enabled. Home handed over to launcher/ on the first try.
+# katniss came back after the first reboot: it had been disabled a few seconds before, and a `sync` in between did
+# not keep it. Disabled again and left well over 15 s before the second reboot, it stayed off, and the disabled list
+# matched what was applied. Quirk 5 (boot to Live TV) shows here too; power_on_home_always with HOME_KEY_SERVICE=1
+# brings Home back about 3 s after the firmware opens com.mediatek.wwtv.tvcenter.
+# Real remote with the launcher as Home: Home, Source/Input, Settings and the Netflix key work. The Rakuten key sends
+# keycode 249 (KEYCODE_TV_INPUT_COMPONENT_1, scancode 472, KEY_FN_F7); TPVTvService catches it ("launchRakutenApp")
+# and starts tv.wuaki.apptv, which this unit ships disabled, so the key does nothing. app_keys "249:<package>"
+# (HOME_KEY_SERVICE=1) gets the key first and opens that app instead (checked on the real remote).
+# Not checked here: HDMI picture and DVB-T (IPTV only), held volume (external audio).
 
 # TPV / Philips telemetry
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517

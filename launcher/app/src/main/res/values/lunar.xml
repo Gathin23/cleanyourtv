@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- lunar_date (config.json, off by default): the lunisolar date under the date. Translated where the
-     calendar is used (vi, zh-rCN, zh-rTW); other locales show the English names on purpose. -->
+     calendar is used (ko, vi, zh-rCN, zh-rTW); other locales show the English names on purpose. -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="lunar_date_format">Lunar %1$d/%2$s · %3$s</string>
     <string name="lunar_month_leap">%1$d (leap)</string>

@@ -26,9 +26,8 @@ ambient colour gradient, and a wallpaper that follows the time of day.
 | `wallpaper_dim` | `10` | A light shade so the picture keeps its colour |
 | `reduced_motion` | `true` | Calmer motion, fewer frames |
 
-`glass_style` works on the main launcher (since glass_style landed upstream). `dock_band` is a
-launcher switch from the companion switches change; on a launcher build without it the theme
-still applies the rest and the key is simply ignored.
+`glass_style` and `dock_band` both work on the main launcher. A build older than either still applies
+the rest of the theme and ignores that key.
 
 ## Apps: you choose
 

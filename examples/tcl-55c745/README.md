@@ -71,3 +71,9 @@ TV_HOST=<tv-ip> tools/theme.sh --reset
 - French catch-up apps (France.tv, 6play, TF1+, Arte) were kept by choice and not exercised beyond appearing
   on the home screen; UK catch-up apps (ITVX, My5) and Rakuten TV/Wuaki were disabled by choice, also
   untested beyond being hidden.
+
+## Second unit: 65Q6C, Ethernet
+
+TCL 65Q6C, model "Smart TV Pro", device `G08`, product `G08_4K_GB`, the same `UTT2.250416.001 AU02`, on
+Ethernet. Owner report from 28 October 2026: the debloat and the Clean Your TV launcher worked, Home stayed on
+`com.gathin.tvhome` after a reboot, and the Home and Settings keys worked.

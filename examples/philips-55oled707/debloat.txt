@@ -36,6 +36,43 @@
 #   starts only on Home, never over an app or Live TV. Checked here: the clock came up after 3 minutes
 #   on Home.
 #
+# Third unit: Philips 55OLED887/12 (55" OLED with Ambilight), Poland, on Wi-Fi. Same board and the same
+# RTT2.211108.001 build 21029 as the first unit (fingerprint above), security patch 2025-10-01, 2.7 GB RAM.
+# Applied in six batches with tools/disable.sh on one day with two reboots; not yet lived with for days,
+# so nothing below changes the list.
+# - Disabled there from this file: candeebug, gel, usagelogger, nettvrecommender, recommendation,
+#   nettv.market, demome, amazonalexa, feedback, setupwraith, katniss, play.games, videos,
+#   youtube.tvmusic, Rakuten TV, and tvrecommendations after the replacement launcher was Home. On top of
+#   it (owner's choice): org.droidtv.tv.frameworklogger, nettv_launcherapp, leanbackcustomizer (Philips
+#   partner rows for the stock launcher), m7opapp, astrahdplus, dropboxprovider, partnersetup,
+#   onetimeinitializer, sss.authbridge, syncadapters.calendar, marvin.talkback and
+#   com.google.android.backdrop. Not installed on that unit: nettvapps and the nettvapp* web apps, Fitness
+#   Buddy, CHILI, Singa, TED, WhaleLive, Pluto TV and Boosteroid.
+# - Kept there (owner's choice): everything Ambilight and Hue, the picture and sound settings and the audio
+#   path, Play-Fi soft AP included, Chromecast, DLNA, IP control, the Philips side menu, the firmware
+#   updaters, and Netflix, Prime Video, Apple TV, YouTube, MEGOGO and Sweet TV. The owner syncs Ambilight
+#   with Hue bulbs: AmbilightService, HueService, AmbiAirControllerService and the ambihue LinkService stayed
+#   bound after every batch, and Ambilight + Hue sync worked on screen after the list.
+# - Wi-Fi: the saved network belongs to android.uid.system (`dumpsys wifi | grep -o 'cname=[^ ]*'`), not to
+#   setupwraith, so disabling setupwraith kept the TV on Wi-Fi. This answers the Wi-Fi question above for
+#   this firmware, on one unit.
+# - disable.sh's TV-input guard held back usagelogger and demome. Neither serves a TvInputService
+#   (`pm query-services --components -a android.media.tv.TvInputService`), so both were disabled with
+#   TVINPUT_ALLOW=1, as on the 65PUS9206 in examples/philips-50pus8517. HDMI 2 still had a picture after
+#   a reboot, and the SOURCES drawer listed HDMI 1-4.
+# - After both reboots `pm list packages -d` was identical: nothing re-enabled itself. Idle log after the
+#   last batch (50PUS8517 quirk 5 method, 30 s): about 400 lines, almost all of them adbd's USB retry; no
+#   handleConnectAurora or connectCotextService loop.
+# - Launcher: build-and-install.sh ran through. The firmware opens org.droidtv.playtv at every power-on.
+#   power_on_home with HOME_KEY_SERVICE=1 did NOT send it to Home on this unit: Live TV came back after the
+#   boot probe and stayed. power_on_home_always did, after a reboot and after waking from standby with the
+#   real remote. With HomeKeyService bound, a held Volume + steps once per press, as measured on the
+#   65OLED804 in docs/devices/tcl-55p71b-g09-key-repeat.md; the owner kept the helper for Home at power-on.
+# - The board reports Composite (HW1), Component (HW2), SCART (HW3) and VGA (HW4) inputs that this model
+#   does not have; `input_sources` HW1=- to HW4=- leaves them out of the Inputs menu.
+# - Home, SOURCES, Netflix, Ambilight and Quick menu worked on the real remote afterwards; this remote has
+#   no Settings or YouTube button. Private DNS (AdGuard) works.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-55oled707/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55oled707/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

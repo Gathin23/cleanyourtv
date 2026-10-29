@@ -5,6 +5,8 @@
 > the Home button still opened Samsung Home and a long-press restart returned to HDMI.
 > Standby resume worked in one sequence; it is not a system launcher replacement.
 > No safe system-app removal or full restorable backup was established.
+> To turn off the tracking on a Samsung (or LG, Roku) TV with the remote instead, see
+> [cleanyour.tv/not-android](https://cleanyour.tv/not-android).
 
 One owner's reconnaissance from a Mac on the same network, not a port and not a tested list. It was
 reported in [#441](https://github.com/Gathin23/cleanyourtv/issues/441) on 2026-10-20 by

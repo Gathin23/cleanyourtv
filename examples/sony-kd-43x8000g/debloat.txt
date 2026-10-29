@@ -36,7 +36,6 @@ com.qterics.da.product                         # Qterics device agent
 com.sony.dtv.sonybugreportsys
 com.google.android.tv.bugreportsender
 com.google.android.feedback
-com.sony.dtv.scrums.action                     # Sony SCRUMS usage metrics
 com.mediatek.agent                             # MediaTek diagnostics agent
 com.mediatek.dmagent                           # MediaTek device management agent
 com.sony.dtv.sonyloglevelsettingsys            # system log level daemon
@@ -70,6 +69,7 @@ com.google.android.play.games
 com.google.android.backdrop                    # ambient screensaver
 
 # Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
+# com.sony.dtv.scrums.action                   # Action Menu overlay & remote button (TvDotAction.apk)
 # com.google.android.apps.mediashell           # Chromecast built-in
 # com.sony.dtv.smartmediaapp                   # Media Player, plays files from USB
 # com.sony.dtv.osat.music                      # plays music from USB

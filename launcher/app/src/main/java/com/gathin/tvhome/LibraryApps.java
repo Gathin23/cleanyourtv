@@ -107,6 +107,12 @@ final class LibraryApps {
         return library && (pill || !button);
     }
 
+    /** A package on library_excluded_apps (config.xml): never offered in the catalogue, unlike hidden_apps,
+     *  which only keeps a package off Home while the catalogue still lists it. */
+    static boolean excludedFromCatalog(Set<String> excludedApps, String pkg) {
+        return excludedApps.contains(pkg);
+    }
+
     /** OK on a library card opens the app (true) or changes its Home shortcut. app_library_selection's OK always
      *  changes it; otherwise an app on Home opens, and with library_ok_opens every app does. */
     static boolean okOpens(boolean selection, boolean openAll, boolean onHome) {

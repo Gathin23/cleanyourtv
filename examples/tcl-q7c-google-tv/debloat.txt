@@ -20,6 +20,10 @@
 # marked "fifth unit" below were verified disabled there. OTA-survival audit: the update re-enabled none of this list
 # and newly installed com.tcl.channelplus (in the list); com.iplayer.android.webview from the Android 12 days is gone
 # from this firmware. See README.
+# Sixth unit: TCL 55C69K (G08_4K_GB, client type TCL-EU-MT9653-S1), Europe, same build (AU02), on Wi-Fi, one day from
+# 26 October 2026: 43 disabled and checked after three reboots; katniss, tclhome_passive, onetimeinitializer and
+# UpdatePeripheral kept; dashboard, eva, gallery, mediashell, gamebar, youtube.tvmusic and the fifth-unit webview and
+# MediaTek groups off too. Port 5555 opened with USB + Network debugging. See README.
 #
 # Apply:   FORCE_SETUPWRAITH=1 TV_HOST=<tv ip> tools/disable.sh examples/tcl-q7c-google-tv/debloat.txt
 #          FORCE_SETUPWRAITH=1 only on Ethernet with no saved Wi-Fi: disable.sh otherwise skips setupwraith because
@@ -138,3 +142,20 @@ com.google.android.apps.tv.launcherx
 
 # Second Home claimant: off once the new launcher is Home (this set is on Ethernet, so no saved Wi-Fi to lose)
 com.google.android.tungsten.setupwraith
+
+# Seventh unit: TCL 65Q7C (Smart TV Pro), Android 14 (SDK 34), tcl9618-user 14 UTT2.250416.001 AU02: reboot, home, casting checked; hdmi input & airplay not tested; its other nine are already active above
+# streaming
+# com.crunchyroll.crunchyroid
+# com.zattoo.player
+# tv.arte.plus7
+# de.prosiebensat1digital.seventv
+# tv.mopa.ginga
+# de.exaring.waipu
+# de.swr.avp.ard.tv
+# com.zdf.android.mediathek
+# google
+# com.google.android.youtube.tvmusic
+# com.google.android.apps.mediashell
+# tcl extras
+# com.tcl.factory.view
+# com.tpa.kb

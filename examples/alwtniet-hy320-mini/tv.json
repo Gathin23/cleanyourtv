@@ -1,0 +1,6 @@
+{
+  "tv": "Alwtniet HY320 Mini projector (device adt3, Askey; Allwinner/HTC firmware), 1 GB, 720p",
+  "os": "Android 11",
+  "brand": "Alwtniet",
+  "notes": "Older build of the Portronics Beem 470 / Magcubic HY300 Pro firmware family: HTC ad overlay (`com.htc.expandsdk`), telemetry and store, factory/burn-in test apps and a preloaded Huawei AppGallery off; firmware updaters off on purpose (reason in the header); `com.htc.htcsettings`, the power menu (`com.htc.closedialog`) and the SN/MAC writer kept; ships at density 240, `wm density 213` gives the 960x540dp TV layout; stock HTC launcher left enabled, `STOCK_LAUNCHER=none`; arrived with unofficial streaming apps in the user partition"
+}

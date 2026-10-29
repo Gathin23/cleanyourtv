@@ -32,7 +32,17 @@ case "$OUT" in *Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; e
 if [ -n "$CONFIG" ]; then
   STAGE=/data/local/tmp/smart-home-config.json
   tv --push "$CONFIG" "$STAGE" >/dev/null
-  tv "content write --uri content://$PKG.config/config.json < $STAGE; rm -f $STAGE; echo config pushed"
+  # On some TVs the shell cannot start this provider until the app is running.
+  # Start it before writing, then allow its process to come up.
+  tv "am start -n $PKG/.MainActivity >/dev/null; sleep 2; echo opened"
+  # The provider can take a moment to appear after the app starts. tv.py does not pass the remote
+  # shell's exit status through, so require a success marker from content write itself. Android's
+  # content command can print a provider error and still exit 0, so success must also be silent.
+  OUT=$(tv "ok=0; for attempt in 1 2 3; do if write_out=\$(content write --user 0 --uri content://$PKG.config/config.json < $STAGE 2>&1) && [ -z \"\$write_out\" ]; then ok=1; break; fi; [ -z \"\$write_out\" ] || printf '%s\n' \"\$write_out\"; [ \"\$attempt\" -eq 3 ] || sleep 1; done; if rm -f $STAGE && [ \"\$ok\" -eq 1 ]; then echo __SMART_HOME_CONFIG_OK__; fi")
+  case "$OUT" in
+    *__SMART_HOME_CONFIG_OK__*) echo "config pushed" ;;
+    *) echo "$OUT" >&2; echo "ERROR: config write failed (or staged config could not be removed)" >&2; exit 1 ;;
+  esac
 fi
 tv "am start -n $PKG/.MainActivity >/dev/null; echo opened"
 echo "Installed. Smart Home is open on the TV; press Home and answer Show card for the card."

@@ -1,6 +1,6 @@
 {
-  "tv": "Haier Android TV DVB2K (broadway, HaierATVT56DVB)",
+  "tv": "Haier Android TV DVB2K (broadway, HaierATVT56DVB; also sold as the CANDY Android TV DVB2K, CANDYATVT56)",
   "os": "Android TV 11",
   "brand": "Haier",
-  "notes": "Anoki ACR, retail demo, Haier content apps and auto-install; 1 GB, 720p; setupwraith left enabled"
+  "notes": "Anoki ACR, retail demo, Haier content apps and auto-install; 1 GB, 720p; setupwraith left enabled; CANDY variant: identical firmware, same risks and quirks, see debloat.txt"
 }

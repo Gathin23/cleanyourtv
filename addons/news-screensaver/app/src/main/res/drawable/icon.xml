@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A newspaper page with a headline bar. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#FF14203A" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#FFF2F2F2" android:pathData="M9,10h30v28h-30z" />
+    <path android:fillColor="#FFFF8A5B" android:pathData="M12,13h24v4h-24z" />
+    <path android:fillColor="#FF14203A" android:pathData="M12,20h10v9h-10z" />
+    <path android:fillColor="#FF8A93A6" android:pathData="M25,20h11v2h-11zM25,24h11v2h-11zM25,28h11v2h-11zM12,32h24v2h-24z" />
+</vector>

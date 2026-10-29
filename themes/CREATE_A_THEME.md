@@ -11,8 +11,8 @@ complete example.
 
 - The Clean Your TV launcher is installed and is Home on the TV.
 - `TV_HOST` points at the TV, and `tools/theme.sh` (or `tools/theme.ps1`) works.
-- Read [`themes/README.md`](README.md). Every key is optional; an unknown key is ignored, so a
-  broken `config.json` never breaks Home.
+- Read [`themes/README.md`](README.md). Every key is optional, and every key in the examples below is one
+  the Keys table there lists; a key it does not list is ignored, so a broken `config.json` never breaks Home.
 
 ## 1. Ask the user (do not guess)
 
@@ -107,6 +107,10 @@ Add one row to the table in [`themes/README.md`](README.md):
 ```markdown
 | [`retro/`](retro/) | What it looks like in one line | <img src="retro/screenshot.jpg" width="320" alt="retro theme"> |
 ```
+
+Then bump the count in the repository's `README.md`, in its Themes feature row (the `N ship in themes/`
+sentence): `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and
+fails until the front page says the same number.
 
 ## 7. Open the pull request
 

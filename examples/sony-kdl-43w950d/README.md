@@ -9,7 +9,7 @@ Same build number (`6.827`) as [`examples/sony-xbr-55x850d`](../sony-xbr-55x850d
 and the same SVP-DTV15/MediaTek platform as the other Sony 2015/2016 `SVP-DTV15`
 lists in this repo, just a different retail model and market (India).
 
-The [debloat list](debloat.txt) disables 75 packages: everything the owner does
+The [debloat list](debloat.txt) disables 71 packages: everything the owner does
 not use, since they install their own apps from Play Store afterwards, plus the
 stock-launcher chain (deferred until the replacement Home was confirmed, per the
 list's own last section).

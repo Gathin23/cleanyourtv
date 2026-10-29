@@ -169,6 +169,20 @@ class StartMetricsTest(unittest.TestCase):
 
 
 class NavMetricsTest(unittest.TestCase):
+    def test_frame_p90_uses_nearest_rank_for_unsorted_samples(self):
+        for n, expected in ((1, 1), (5, 5), (9, 9), (10, 9), (11, 10), (20, 18), (100, 90)):
+            with self.subTest(n=n):
+                q = fake_trace(frames=list(range(n, 0, -1)))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], expected)
+
+    def test_frame_p90_excludes_the_slowest_tenth_at_the_boundary(self):
+        for n in (10, 20, 100):
+            with self.subTest(n=n):
+                q = fake_trace(frames=[16] * (9 * n // 10) + [1000] * (n // 10))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], 16)
+
     def test_frame_times_draws_gpu_and_missed_deadlines(self):
         q = fake_trace(frames=[10, 12, 14, 16, 40], missed=2, draws=[(1100, 6), (1120, 8)], gpu=[(1101, 2), (1121, 4)])
         m = report.nav_metrics(q, PKG)
@@ -297,6 +311,41 @@ class FilesTest(unittest.TestCase):
             path.with_suffix(".json").write_text('{"scenario": "nav"}')
             self.assertEqual(report.scenario_of(str(path)), "nav")
             self.assertEqual(report.scenario_of(str(Path(tmp, "cold-3.pftrace"))), "cold")
+
+    def test_non_object_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            for text in ("[]", "null", '"nav"', "42"):
+                with self.subTest(sidecar=text):
+                    path.with_suffix(".json").write_text(text, encoding="utf-8")
+                    self.assertEqual(report.scenario_of(str(path)), "nav")
+
+    def test_object_sidecars_preserve_the_scenario_value(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            for data, expected in (({"scenario": "cold"}, "cold"), ({}, ""),
+                                   ({"scenario": ""}, ""), ({"scenario": None}, None)):
+                with self.subTest(sidecar=data):
+                    path.with_suffix(".json").write_text(json.dumps(data), encoding="utf-8")
+                    self.assertEqual(report.scenario_of(str(path)), expected)
+
+    def test_missing_and_malformed_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            self.assertEqual(report.scenario_of(str(path)), "nav")
+            path.with_suffix(".json").write_text("{", encoding="utf-8")
+            self.assertEqual(report.scenario_of(str(path)), "nav")
+
+    def test_unreadable_sidecars_fall_back_to_the_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp, "nav-1.pftrace")
+            path.write_bytes(b"")
+            path.with_suffix(".json").write_text('{"scenario": "cold"}', encoding="utf-8")
+            with mock.patch("builtins.open", side_effect=PermissionError("unreadable sidecar")):
+                self.assertEqual(report.scenario_of(str(path)), "nav")
 
     def test_missing_perfetto_says_what_to_install(self):
         with mock.patch.dict(sys.modules, {"perfetto": None, "perfetto.trace_processor": None}), \

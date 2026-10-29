@@ -1,7 +1,8 @@
 # Hisense SmartTV 4K FFM (device songshan, product songshan_emH_FFM, board m7632, MediaTek),
 # Android 11 / SDK 30, firmware RTT2.220118.001 / 01.00.05.04. The Android model string is
 # "SmartTV 4K FFM".
-# Also sold as the Hisense 50A6H4 (US), Android model string "SmartTV 4K": the third unit below.
+# Also sold as the Hisense 50A6H4 (US), Hisense 65U6G and Hisense 65A6H: the third, fourth and fifth units
+# below.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-smarttv-4k-ffm-android11/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-smarttv-4k-ffm-android11/debloat.txt com.google.android.apps.tv.launcherx
@@ -60,10 +61,38 @@
 # - com.hisense.tv.dlna, Hisense's DLNA renderer, listens on ports 38400 and 39500. Disabled, it closed
 #   them only after a reboot; until then the port stayed open, even after am force-stop. AirPlay (7000)
 #   and the Google TV remote service (6466/6467) are separate and kept working.
-# - With launcherx disabled, Settings > Privacy > Usage & diagnostics opens nothing (focus goes to
-#   frameworkpackagestubs' SettingsPrivacyStub), probably because the page lived in the Google TV home;
-#   not checked with launcherx re-enabled. Set it before the launcher swap.
+# - With setupwraith and launcherx disabled, Settings > Privacy > Usage & diagnostics opens nothing (focus
+#   goes to frameworkpackagestubs' SettingsPrivacyStub). The page is setupwraith's, not the Google TV
+#   home's: on a Chromecast with Google TV 4K (Google TV 14) only setupwraith answers it
+#   (README, "Are there switches in the TV's own Settings worth flipping too?"); not checked on this set. Set it before
+#   this list disables setupwraith.
 # - Private DNS (dns.adguard-dns.com) works; YouTube and the streaming apps still play.
+#
+# Fourth unit: the Hisense 65U6G (retail model; same device songshan and build RTT2.220118.001,
+# Android model string "SmartTV 4K FFM", Android 11 / SDK 30). One session on 2026-10-27 with reboots:
+# - setupwraith passed the Wi-Fi guard without FORCE_SETUPWRAITH (active network owned by com.android.tv.settings).
+# - Applied debloat (setupwraith, mediashell, YouTube Music, Google TV Movies) and clean launcher swap.
+# - Remote keycodes match the SmartRC layout: YouTube 293, Prime Video 295, Disney+ 607 (scancode 484),
+#   Tubi 606, and gear 83.
+# - Private DNS (dns.adguard-dns.com) verified persistent across reboots; streaming apps play normally.
+#
+# Fifth unit: the Hisense 65A6H (same device songshan, build RTT2.220118.001, incremental 00.00.00.53,
+# security patch 2025-06-01, Android model string "SmartTV 4K"). One session on 2026-10-28 with two reboots:
+# this list plus the three commented entries marked "third unit" at the end, applied in batches, then the
+# launcher. Nothing came disabled from the factory; storemode is not installed, evservice is. Notes from it:
+# - tools/disable.sh held back gtvpai and disclaimercustomization at first: this firmware's dumpsys prints no
+#   permission block for either, so the input-driver check cannot read them. With HDMI confirmed working
+#   after a reboot, TVINPUT_ALLOW=1 disabled them, as the script's message says.
+# - setupwraith passed the Wi-Fi guard without FORCE_SETUPWRAITH: every saved network belonged to
+#   android.uid.system. Usage & diagnostics was switched off in Settings before it was disabled.
+# - Unlike the third unit, with launcherx disabled and no key helper enabled only Netflix, Input and Home
+#   worked when pressed for real; the gear, YouTube, Prime Video and Disney+ buttons did nothing. The owner
+#   kept them unmapped rather than enable InputKeyService and lose the volume ramp (held Volume Up repeats
+#   about every 115 ms with no helper bound). Their codes were not captured on this unit.
+# - The owner also disabled katniss, hisense.alexa, dreamx, AirPlay (com.mediatek.AirplayAPK and
+#   com.mediatek.partner.airplay; AirplayAPK serves a TvInputService, so it too needs TVINPUT_ALLOW=1),
+#   com.vt.miracast and com.hisense.tv.dlna, plus unused streaming apps and preloads; mediashell (Chromecast)
+#   and the firmware updaters stayed on. Nothing broke, and every package stayed disabled across both reboots.
 
 # Retail / store demo
 com.hisense.storemode

@@ -10,12 +10,14 @@
     <string name="not_connected">Sem dispositivo</string>
     <string name="live_tv">TV ao vivo</string>
     <string name="no_inputs">Nenhuma entrada encontrada</string>
+    <string name="more_inputs">Mais entradas</string>
     <string name="good_morning">Bom dia</string>
     <string name="good_afternoon">Boa tarde</string>
     <string name="good_evening">Boa noite</string>
     <string name="good_night">Boa noite</string>
     <string name="festival_dussehra_greeting">Feliz Dussehra</string>
     <string name="festival_diwali_greeting">Feliz Diwali</string>
+    <string name="festival_halloween_greeting">Feliz Halloween</string>
     <string name="shamsi_month_farvardin">Farvardin</string>
     <string name="shamsi_month_ordibehesht">Ordibehesht</string>
     <string name="shamsi_month_khordad">Khordad</string>
@@ -67,6 +69,7 @@
     <string name="card_state_new_key">Nova chave</string>
     <string name="card_state_new_label">Novo nome</string>
     <string name="dock_edit">Editar o dock</string>
+    <string name="power_menu">Reiniciar…</string>
     <string name="dock_edit_hint">Escolha o lugar do dock que quer mudar e pressione OK. Voltar para terminar.</string>
     <string name="dock_edit_pick_app">Agora escolha o app para colocar lá e pressione OK. Voltar para escolher outro lugar.</string>
     <string name="tile_add_to_dock">Adicionar ao dock</string>
@@ -145,4 +148,5 @@
     <string name="race_countdown_hours">%1$dh %2$dmin</string>
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
+    <string name="game_live">Ao vivo agora</string>
 </resources>

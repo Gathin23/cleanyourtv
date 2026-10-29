@@ -10,11 +10,26 @@
 # HDMI/AV inputs continued to work. This list is for the recorded product/build; verify your own TV.
 # Stock launcher: com.google.android.apps.tv.launcherx. The custom launcher was installed and confirmed
 # as Home before this package was disabled; restore.sh takes the stock launcher package above.
+# Second unit (same product and build, India, 25 October 2026): with launcherx disabled the remote's Netflix,
+# YouTube, Prime Video and YouTube Music buttons do nothing, because Realtek's GlobalKeyReceiver hands them to
+# launcherx. Keeping launcherx with stock_home_redirect and key_filter false kept both the buttons and the
+# volume ramp; see README.md in this folder.
 # Live TV: com.android.tv. Keep the Realtek input/tuner packages com.realtek.dtv, com.realtek.tv.atv,
 # com.realtek.tv.passthrough and Sony's com.sony.dtv.smartui (the input menu).
 # Kept during the session: streaming apps, Assistant, Chromecast, AirPlay, Play Store/Services, and
 # the TV's core, remote, Wi-Fi and Bluetooth services. Two packages were already disabled in the initial
 # backup and are not part of this list: com.sony.dtv.b2b.vendorprotocol and com.android.camera2.
+#
+# Second unit: KD-55X75K, India, same build (UKR1.240726.001). Every line applied unchanged, in three
+# batches (setupwraith before launcherx); the same packages were still disabled after a reboot, and power-on
+# goes through com.realtek.advancesetting/.FallbackHome to the new launcher, not to Live TV. Only
+# com.sony.dtv.b2b.vendorprotocol was disabled at the factory here. Port 5555 was closed: Wireless debugging
+# pairing, then `adb tcpip 5555`. The saved Wi-Fi belonged to android.uid.system, so setupwraith was safe to
+# disable. Once launcherx is off, the remote's Netflix, YouTube, YouTube Music and Prime Video buttons do
+# nothing; Input, the settings button, the mic and Home keep working without a helper. Those four buttons are
+# vendor keys told apart by scancode (getevent EV_KEY 0x2f6, 0x239, 0x28d, 0x28c), so config.json maps them as
+# scan:758, scan:569, scan:653 and scan:652 (INPUT_KEY_SERVICE=1). With that helper bound, holding volume
+# moves one step per press (docs/devices/tcl-55p71b-g09-key-repeat.md); leave the helper off to keep the ramp.
 #
 # Sony promos, demo content and help
 com.sony.dtv.promos                       # My BRAVIA promos

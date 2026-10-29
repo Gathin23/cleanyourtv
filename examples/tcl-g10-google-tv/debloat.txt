@@ -22,6 +22,33 @@
 # YouTube 4065, Netflix 4062, Prime Video 4099 and Web 4159, which only app_keys brings back once
 # launcherx is off, and the gear as keycode 83 on scancode 233 (settings_key_keycodes).
 #
+# Also used on a TCL 55Q651G (US Q6, 2024; product G10_4K_US_NF, software V8-R75PT01-LF1V534, same
+# build STT2.230203.001). As on the 43P69K, Samba TV ACR and logkit shipped enabled; both were
+# disabled, along with the optional 55Q651G lines below. Kept by choice: ttvs (firmware updates),
+# partnercustomizer (the remote's YouTube button goes through it, as
+# googletvcustomer://com.tcl.partnercustomizer/startapp?packagename=com.google.android.youtube.tv),
+# dreamx, AirPlay and ui_mediaCenter (USB media). Re-enabled: com.tcl.channelplus and
+# com.google.android.tv.remote.service (see quirks). With launcherx kept for the remote's app and gear
+# buttons, key_filter false and stock_home_redirect set to launcherx, a held volume key over an HDMI
+# eARC soundbar (CEC) still ramps: 34 steps in about 6 s, as before any change. A cold boot stayed on
+# Google TV's home until the boot probe change in #1546.
+#
+# Also used on a TCL 55Q6CS, India (product G10_4K_GB, software V8-R75PT01-LF1V534, same build
+# STT2.230203.001, Realtek rtd6748). Tested on 2026-10-28 for one day with one reboot check, not yet lived with
+# for several days. As on the 43P69K, Samba TV ACR, logkit and ttvs shipped enabled; they were disabled and stayed
+# off after the reboot, as did everything else applied. tv.plus and smartlink.core are not installed. That unit
+# kept tv.remote.service (the mic works), dreamx (screensaver switched to the launcher's ClockDream), AirPlay,
+# Miracast and MagiConnect, and also disabled the India-firmware extras in the optional section below.
+# The saved setup Wi-Fi belonged to setupwraith there too: forgotten and re-joined in Settings first.
+# Its remote sends the same app keycodes as the C69B (Netflix 4062, YouTube 4065, Prime Video 4099, Web 4159,
+# gear 83 on scancode 233), plus Input as 4514 (scancode 139; input_key_keycodes) and Dashboard as 4001
+# (scancode 365; app_keys "4001:settings"), all dead once launcherx is off. With INPUT_KEY_SERVICE=1 and
+# HOME_KEY_SERVICE=1 all of them worked from the real remote, but held volume then stepped once per press, as in
+# docs/devices/tcl-55p71b-g09-key-repeat.md; the owner kept the buttons. APP_AUTO_START (below) held across the
+# reboot. disable.sh skips android.autoinstalls.config.google.gtvpai there (no permission block to read for its
+# input check); it was disabled by hand there, but HDMI playback was not checked afterwards, so leave it enabled
+# unless you test your inputs.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g10-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g10-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -30,7 +57,8 @@
 # Live TV app: com.tcl.tv (keep it, it also owns HDMI/antenna playback). Keep com.tcl.tvinput,
 # com.tcl.dashboard, com.tcl.suspension, com.tcl.autopair and com.tcl.systemserver too.
 # Already disabled at the factory on the original US unit: com.tcl.logkit, tv.samba.ssm.ui
-# (Samba TV ACR), com.tcl.ttvs. These shipped enabled on the Netherlands 43P69K (see optional lines).
+# (Samba TV ACR), com.tcl.ttvs. These shipped enabled on the Netherlands 43P69K and the US 55Q651G
+# (see optional lines).
 #
 # Known quirks on this firmware:
 # - The red "TV" tile disappears from the Google TV Home row after this list (probably
@@ -58,11 +86,16 @@
 #   press starts AtvSearchAssistantService inside that package, so with the package disabled the button
 #   does nothing (no key on any /dev/input/event*) and logcat says the service is "not found".
 #   `pm enable com.google.android.tv.remote.service` brings voice back without a reboot. Confirmed on a
-#   43T6C (G10, Realtek, build STT2.230203.001); the phone-remote app pairing needs it too. (#1441)
+#   43T6C (G10, Realtek, build STT2.230203.001) and on the 55Q651G; the phone-remote app pairing needs
+#   it too. (#1441)
+# - With no antenna channels scanned, TCL Live (com.tcl.channelplus) is Live TV's only source: with it
+#   disabled, Live TV opens the channel scan (com.tcl.tv/.scan.launch.ScanMainActivity). After
+#   `pm enable com.tcl.channelplus` the channels come back only after a reboot, because com.tcl.tv
+#   starts its BootService at boot. Comment its line out if you watch TCL Live. Confirmed on the 55Q651G.
 
 # TCL content, ads and promos
 com.tcl.tv.plus                        # TCL TV+ content app
-com.tcl.channelplus                    # TCL Live FAST channels, also removes them from Live TV
+com.tcl.channelplus                    # TCL Live FAST channels, also removes them from Live TV; see quirks
 com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
 com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
 com.tcl.interactive                    # TCL TIAS background service
@@ -86,15 +119,32 @@ com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks ab
 
 # Optional: uncomment what you don't use
 # Tested on the Netherlands 43P69K; telemetry shipped enabled there, unlike the original US unit.
+# Samba TV ACR, logkit and guard were disabled on the US 55Q651G too; ttvs was kept there.
 # tv.samba.ssm.ui                      # Samba TV ACR viewing tracking
 # com.tcl.ttvs                        # TCL analytics; re-enable if firmware updates stop arriving
 # com.tcl.logkit                      # log capture and upload
 # com.tcl.waterfall.overseas           # TCL Channel / content feed on the 43P69K
 # com.tcl.guard                       # TGuard memory cleaner
 # com.tcl.magiconnectfree              # MagiConnect phone-to-TV app
+# Tested on the US 55Q651G:
+# com.tcl.messagebox
+# com.tcl.usercenter                   # TCL account prompts
+# com.tcl.useragreement                # TCL EULA screen, only needed during setup
+# com.tcl.smartalexa                   # Works with Alexa
+# com.google.android.play.games
+# com.google.android.videos            # Google TV movies and shows
 # com.tcl.airplay2                     # AirPlay, together with the next line
 # com.realtek.airplay2
 # com.netflix.ninja                    # Netflix, together with the next line
 # com.netflix.tokenmanager
 # com.amazon.amazonvideo.livingroom    # Prime Video
 # com.google.android.youtube.tv
+# Disabled on the India 55Q6CS (by the owner's choice for the apps):
+# com.tcl.messagebox                   # TCL push messages
+# com.tcl.t_solo                       # TCL promo app
+# com.tcl.smartalexa                   # Alexa integration
+# com.tcl.hearaid                      # hearing-aid audio app
+# com.tcl.browser                      # TCL web browser
+# com.google.android.youtube.tvmusic   # YouTube Music
+# com.google.android.videos            # Google TV / Play Movies storefront
+# com.google.android.play.games        # Play Games

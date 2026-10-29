@@ -1,0 +1,110 @@
+# Hisense 55QD6QF Fire TV (Fire TV Edition, AFTOLCBC82, codename ginza, MediaTek), Fire OS 8.1.8.0 (RS8180.3746N),
+# Android 11 (SDK 30), 1.8 GB of RAM, Canada. Starts from hisense-fire-tv-aftcibfbd1/ and amazon-fire-tv-stick-4k-2023/;
+# each package was checked on this set before listing.
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher (Home: .ui.HomeActivity_vNext, priority 950) and
+# com.amazon.firehomestarter are protected (pm disable-user and am force-stop are refused); launcher/ does not apply.
+# Live TV app: com.amazon.tv.livetv.
+#
+# Apply:  TV_HOST=<tv ip> tools/disable.sh examples/hisense-fire-tv-55qd6qf/debloat.txt
+# Undo:   TV_HOST=<tv ip> tools/restore.sh examples/hisense-fire-tv-55qd6qf/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Applied 2026-10-24 in four batches with a screenshot of Home after each (the Alexa group on 2026-10-25), then
+# rebooted three times: Home, Netflix, YouTube, Prime Video, Apple TV, Spotify, Settings, the Appstore, AirPlay
+# mirroring from an iPhone and HDMI-CEC (a PS5 switching the TV to its input when it wakes) all work. Lived with for
+# about a day so far. Free memory after a reboot (MemAvailable): 463 MB before, about 740 MB after.
+#
+# Fire OS 8 notes on this set:
+# - com.amazon.vizzini (Alexa voice) comes back ENABLED AT EVERY BOOT, as on hisense-fire-tv-aftcibfbd1/; the rest of
+#   the Alexa group stays off. Re-run the list after a reboot if you don't use Alexa.
+# - Third-party apps preinstalled by the retailer or Hisense (Bell Fibe TV / Crave, VIDAA, a YouTube player, Twitch)
+#   came back ENABLED after a reboot when disabled. They are ordinary user apps, so they are not in this list;
+#   remove them in Settings > Applications if you don't want them.
+# - The saved Wi-Fi network belongs to com.amazon.tv.oobe (`dumpsys wifi | grep -o 'cname=[^ ]*'`): never disable it.
+# - No package in this list was refused; the protected ones are the same as on hisense-fire-tv-aftcibfbd1/.
+# - AdGuard Private DNS works (mads.amazon-adsystem.com resolves to 127.0.0.1) and removes the third-party ads from the
+#   hero banner; Amazon's own promotions stay (they come from the protected launcher's feed).
+# - Animation scales at 0.5 make the ☰ side menu open nothing, as on amazon-fire-tv-stick-4k-2023/.
+# - ADB Debugging switched itself off after one of the three reboots: check Developer Options before running a script.
+#
+# For launcher authors (what Fire OS 8 reserves to Amazon here, read from the APKs' manifests):
+# - Switching to an HDMI input: com.amazon.tv.inputpreference.service's PassthroughPlayerActivity needs
+#   com.amazon.tv.permission.TUNE_INPUT, InputTabActivity and StartAmazonInputActivity LAUNCH_INPUTS,
+#   GameBoardInputSwitchActivity SET_UPDATE_INPUT_STATE; the standard passthrough request opens Live TV. The remote's
+#   Input button and HDMI-CEC still work.
+# - The Home key never reaches an accessibility service's key filter, and the CLOSE_SYSTEM_DIALOGS "homekey" broadcast
+#   requires com.amazon.permission.ENABLE_KEYGUARD_FLAGS (signature|privileged|amazon).
+# - ACTION_SETTINGS goes through Amazon's Home; the settings grid itself, com.amazon.tv.launcher/.ui.MainSettingsActivity
+#   (action amazon.intent.action.MAINSETTINGS), is exported without a permission.
+# - The Appstore (com.amazon.venezia/.grid.AppsGridLauncherActivity) has no screen of its own: it opens Amazon's Home on
+#   its Apps page.
+# - An accessibility service that opens another home screen over HomeActivity_vNext works as a replacement Home.
+#
+# Kept on purpose: Live TV and the TV inputs, settings, the Appstore, Silk, OTA updates, the keyboard, remote and
+# Bluetooth services, casting (DIAL, Matter casting), AirPlay (personal choice: mirroring from an iPhone or a Mac),
+# com.amazon.tv.oobe, com.amazon.imp, the screensaver.
+
+# Telemetry and metrics
+com.amazon.ceviche                     # data collection pipelines
+com.amazon.client.metrics.api          # metrics client API
+com.amazon.device.telemetry.emitter    # telemetry emitter
+com.amazon.dp.logger                   # device log upload
+com.amazon.perfc                       # performance telemetry
+com.amazon.perfcollection              # performance telemetry
+com.amazon.wirelessmetrics.service     # Wi-Fi metrics upload
+com.amazon.livedeviceservice           # live device reporting
+com.amazon.privacypassservice          # privacy pass token service
+com.amazon.tv.developer.dataservice    # personalization data for third-party apps
+com.amazon.wifilocker                  # uploads Wi-Fi passwords to Amazon
+com.amazon.tv.acr                      # Automatic Content Recognition (what's on screen, HDMI included)
+com.amazon.hybridadidservice           # advertising ID
+
+# Ads, sponsored rows, promos, shopping
+com.amazon.kso.blackbird               # launcher ad sync / bidding
+com.amazon.media.recommendations       # sponsored and recommendation rows
+com.amazon.sneakpeek                   # autoplaying previews on Home
+com.amazon.providers.contentsupport    # content support provider
+com.amazon.shoptv.client               # Shop on Fire TV
+com.amazon.tv.democontent.provider     # retail demo content
+com.amazon.tv.easyupgrade              # "upgrade your Fire TV" promos
+com.amazon.systemnotices               # system notices popups
+com.amazon.uxnotification              # UX notification popups
+com.amazon.tv.releasenotes             # "what's new"
+com.amazon.hedwig                      # Fire TV Channels (free channels with ads)
+
+# Tutorials
+com.amazon.storm.lightning.tutorial    # remote app tutorial
+com.amazon.tmm.tutorial                # remote tutorial
+
+# Preloaded apps (personal choice)
+com.amazon.bueller.music               # Amazon Music
+com.amazon.bueller.photos              # Amazon Photos
+com.amazon.tahoe                       # Amazon Kids
+com.amazon.gamehub                     # games hub
+com.amazon.spiderpork                  # Amazon Luna
+com.amazon.minitv.android.app          # miniTV
+com.amazon.naatyam                     # Naatyam
+com.tubitv.ott                         # Tubi
+com.amazon.tv.localgallery             # Gallery
+com.amazon.smarthomemapviewapp         # smart home dashboard (cameras, lights)
+com.amazon.ods.kindleconnect           # "show on Fire TV" from Echo / Fire tablet
+
+# Casting (personal choice; AirPlay is kept)
+com.amazon.cast.sink                   # Miracast screen mirroring
+
+# Alexa (personal choice, about 115 MB of RAM; vizzini comes back at every boot, see the header)
+com.amazon.vizzini                     # Alexa voice on Fire TV
+com.amazon.alexamediaplayer.runtime.ftv # Alexa media player
+com.amazon.alexa.externalmediaplayer.fireos # Alexa music playback
+com.amazon.aca                         # Alexa hints/cues providers (AlexaCentralForApps)
+com.amazon.aiondec                     # Alexa skill connections
+com.amazon.audiohome                   # Alexa Home Theater
+com.amazon.tv.alexaalerts              # alarms, timers, reminders
+com.amazon.tv.alexanotifications       # Alexa notifications
+com.amazon.rtcsessioncontroller        # Alexa calling / Drop In
+com.amazon.spotify.mediabrowserservice # Spotify for Alexa (the Spotify app is separate)
+com.amazon.tv.mattercohost             # Matter smart-home controller (com.amazon.tv.matter, Matter casting, stays)
+com.amazon.tv.ffsprovisioneeclient     # frustration-free setup client
+com.amazon.whisperjoin.middleware.np   # frustration-free setup of other Amazon devices
+com.amazon.whisperjoin.middleware.v2.np # frustration-free setup of other Amazon devices

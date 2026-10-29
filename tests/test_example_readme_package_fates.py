@@ -12,6 +12,10 @@ examples/sankey-smart2ktvse did with com.zeasn.livetv, the software layer under 
 HDMI inputs (#1203). This test reads the claim where a reader reads it and compares it
 with the set the script would actually send.
 
+A third word, `refused`, says the firmware would not let the package be disabled.
+A list names only what was actually disabled (CONTRIBUTING step 3), so a refused
+package must not be on an active line either.
+
 Two packages are exempt from the "disabled" side because they are not disabled by the
 list: the stock launchers launcher/build-and-install.sh takes Home from (the list only
 names them in a header comment). The exempt set is read out of that script rather than
@@ -32,11 +36,11 @@ EXAMPLES = ROOT / "examples"
 # compared rather than skipped; test_list_format is what refuses a bad name in a list.
 BACKTICKED = re.compile(r"`([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+)`")
 # What a row says about that package, right after the closing backtick.
-FATE = re.compile(r"^\s*(?:is\s+)?(kept|disabled)\b", re.IGNORECASE)
+FATE = re.compile(r"^\s*(?:is\s+)?(kept|disabled|refused)\b", re.IGNORECASE)
 
 
 def claims(text):
-    """(package, "kept"|"disabled") for every backticked package a row gives a fate to.
+    """(package, "kept"|"disabled"|"refused") for every backticked package a row gives a fate to.
 
     Only the words straight after the name count, so "`pkg` (Chromecast kept)" talks
     about Chromecast, not about pkg, and "`pkg` deliberately left out" claims nothing.
@@ -87,6 +91,10 @@ def disagreements(folder, notes, active, exempt):
             problems.append(
                 f"{folder}: says {package} is kept, but its debloat.txt disables it "
                 f"(a trailing comment does not keep a package off the TV)")
+        if fate == "refused" and package in active:
+            problems.append(
+                f"{folder}: says the firmware refuses {package}, but its debloat.txt "
+                f"still lists it (comment the line out, with the reason)")
         if fate == "disabled" and package not in active and package not in exempt:
             problems.append(
                 f"{folder}: says {package} is disabled, but its debloat.txt does not list it")
@@ -116,6 +124,10 @@ class ReaderTest(unittest.TestCase):
         text = ("kept `com.a.b` kept, `com.c.d` disabled, `com.e.f` is kept")
         self.assertEqual(claims(text),
                          [("com.a.b", "kept"), ("com.c.d", "disabled"), ("com.e.f", "kept")])
+
+    def test_claims_reads_a_package_the_firmware_refused(self):
+        text = "`com.a.b` is refused by the firmware (SecurityException, left enabled)"
+        self.assertEqual(claims(text), [("com.a.b", "refused")])
 
     def test_claims_ignores_a_package_a_row_says_nothing_about(self):
         text = ("`com.a.b` deliberately left out because it is a system app; "
@@ -155,6 +167,18 @@ class ReaderTest(unittest.TestCase):
         self.assertEqual(len(problems), 1)
         self.assertIn("com.zeasn.livetv", problems[0])
         self.assertIn("disables it", problems[0])
+
+    def test_a_refused_claim_on_an_active_line_is_reported(self):
+        problems = disagreements("liberton", "`com.google.android.marvin.talkback` is refused",
+                                 active={"com.google.android.marvin.talkback"}, exempt=set())
+        self.assertEqual(len(problems), 1)
+        self.assertIn("com.google.android.marvin.talkback", problems[0])
+        self.assertIn("still lists it", problems[0])
+
+    def test_a_refused_claim_without_a_line_is_fine(self):
+        problems = disagreements("liberton", "`com.google.android.marvin.talkback` is refused",
+                                 active={"com.a.b"}, exempt=set())
+        self.assertEqual(problems, [])
 
     def test_a_disabled_claim_without_a_line_is_reported(self):
         problems = disagreements("sankey", "camera `com.android.camera2` disabled",

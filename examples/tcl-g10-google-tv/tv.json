@@ -1,6 +1,6 @@
 {
-  "tv": "TCL 55\" 4K Google TV, 2023 (G10, G10_4K_US_NF); also TCL 55P6K, Spain and TCL 43P69K, Netherlands (G10_4K_GB_NF_32BIT)",
+  "tv": "TCL 55\" 4K Google TV, 2023 (G10, G10_4K_US_NF); also TCL 55P6K, Spain and TCL 43P69K, Netherlands (G10_4K_GB_NF_32BIT); and TCL 55Q651G, US (G10_4K_US_NF); and TCL 55Q6CS, India (G10_4K_GB)",
   "os": "Google TV 12",
   "brand": "TCL",
-  "notes": "TCL TV+, TCL Live, store demo, smartlink installer; setupwraith also claims Home once the stock launcher is disabled; on the Netherlands 43P69K, Samba TV ACR, logkit and ttvs shipped enabled (disabled and reboot-checked), setupwraith owned the setup Wi-Fi (re-join first), and dreamx was re-enabled to keep the screensaver menu; unit-specific packages are optional"
+  "notes": "TCL TV+, TCL Live, store demo, smartlink installer; setupwraith also claims Home once the stock launcher is disabled; on the Netherlands 43P69K, Samba TV ACR, logkit and ttvs shipped enabled (disabled and reboot-checked), setupwraith owned the setup Wi-Fi (re-join first), and dreamx was re-enabled to keep the screensaver menu; on the US 55Q651G, Samba TV ACR and logkit shipped enabled too, and with no antenna channels TCL Live is Live TV's only source; unit-specific packages are optional; on the India 55Q6CS the same telemetry shipped enabled, setupwraith owned the Wi-Fi, and the remote's Input (4514) and Dashboard (4001) need the key helpers, which cost the held-volume ramp"
 }

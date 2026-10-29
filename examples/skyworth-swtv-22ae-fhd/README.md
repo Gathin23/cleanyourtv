@@ -18,7 +18,7 @@ comment out what your set does not have before applying it.
 
 ## Stock launcher
 - **Launcher:** `com.google.android.apps.tv.launcherx` (`.home.HomeActivity`)
-- When restoring or building/installing, pass `STOCK_LAUNCHER=com.google.android.apps.tv.launcherx`.
+- When restoring, pass it to `tools/restore.sh` as the second argument; when building/installing, pass `STOCK_LAUNCHER=com.google.android.apps.tv.launcherx` to `launcher/build-and-install.sh`.
 
 ## Live TV
 - **Live TV app/package:** `com.mediatek.wwtv.tvcenter`  

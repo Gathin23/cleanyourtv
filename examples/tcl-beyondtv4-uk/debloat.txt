@@ -1,0 +1,72 @@
+# TCL "Smart TV Pro", UK Freeview Play build (device BeyondTV4, product BeyondTV6, board Realtek rtd288o), 2 GB RAM
+# Android TV 11 (SDK 30), 32-bit userspace, build RP1A.200622.001 / incremental AR05, security patch 2022-04-05.
+# Fingerprint TCL/BeyondTV6/BeyondTV4:11/RP1A.200622.001/AR05:user/release-keys.
+#
+# Same platform as examples/tcl-50c725k (BeyondTV4 / BeyondTV6 / rtd288o, 2 GB, RP1A.200622.001) but a different
+# firmware and preload set: that unit runs AR10, this one AR05 with the UK Freeview Play apps (all 16
+# uk.co.freeview.* packages and tv.wuaki.apptv already disabled at the factory). Do not apply one list to the
+# other. In particular this build's com.tcl.gallery, com.tcl.imageplayer, com.tcl.audioplayer,
+# com.tcl.videoplayer, com.tcl.ui_mediaCenter and com.tcl.t_solo all request
+# android.permission.TV_INPUT_HARDWARE - they are the software layer under HDMI/AV - so disabling one can leave
+# that port showing "No Signal" until a full restore and a cold boot (#321). tcl-50c725k disables
+# com.tcl.gallery; on this firmware that is not safe by the permission scan, and it was left alone.
+#
+# Notes on this firmware (the TV_INPUT_HARDWARE set, the boot re-enable, the katniss revoke):
+#   docs/devices/tcl-beyondtv4-uk-ar05.md
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-beyondtv4-uk/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-beyondtv4-uk/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (HOME priority 2). Not listed here:
+#   launcher/build-and-install.sh installs com.gathin.tvhome and disables it afterwards. The only other HOME
+#   claimant on this build is com.android.tv.settings/.system.FallbackHome.
+# Live TV app: com.tcl.tv, inputs: com.tcl.tvinput (both kept; set live_tv_package to com.tcl.tv).
+#   TvInputManager exposes 4 hardware ports; the launcher's Inputs menu lists HDMI 1-3, AV and Live TV.
+#
+# Kept by the owner's choice: Google Assistant (com.google.android.katniss, com.google.android.tv.assistant,
+#   com.tcl.assistant, com.tcl.micmanager), casting (com.tcl.miracast, com.tcl.MultiScreenInteraction_TV,
+#   com.google.android.tv.remote.service, com.google.android.apps.mediashell), firmware updates
+#   (com.tcl.versionUpdateApp), TCL account and setup (com.tcl.usercenter, com.tcl.useragreement,
+#   com.tcl.initsetup), remote and Bluetooth pairing (com.tcl.partnercustomizer, com.tcl.tcl_bt_rcu_service,
+#   com.tcl.autopair, com.tcl.keyhelp), Settings (com.tcl.settings, com.android.tv.settings), the keyboard
+#   (com.tcl.inputmethod.international), Live TV and inputs (com.tcl.tv, com.tcl.tvinput), every streaming app,
+#   and the 20 sideloaded apps on the unit.
+#
+# Tested: applied on 2026-10-23 over network ADB in four batches with a screenshot after each and a full reboot
+# at the end, then re-checked on 2026-10-26 after a cold start. On both checks all of these were still disabled,
+# Home was the replacement launcher, Wi-Fi stayed up, the crash buffer was empty, the HDMI/AV inputs still
+# enumerated and Live TV opened from the launcher's Inputs menu. That is three days and one power cycle, not
+# weeks: treat the list as a starting point rather than a long-lived one.
+
+# --- TCL telemetry, promos and content feeds
+com.tcl.overseasappshow                 # system-uid promo/app-show service; note the boot re-enabler on this
+                                        # firmware is com.tcl.system.server, not this package (see the end)
+com.tcl.bi                              # TCL BI analytics / telemetry
+com.tcl.waterfall.overseas              # TCL content feed / recommendation waterfall
+com.tcl.messagebox                      # pushed TCL messages and promos
+com.tcl.esticker                        # retail demo energy-label sticker
+com.tcl.dashboard                       # TCL dashboard / giftbox promo surface
+com.tcl.notereminder                    # notes & reminder widget
+com.tcl.guard                           # TGuard: device-use tracking, "health info", memory cleaner
+
+# --- Google attribution and the stock Home recommendation row
+com.google.android.feedback             # "send feedback" reporting
+com.google.android.partnersetup         # partner-app attribution / silent installs
+com.google.android.tvrecommendations    # recommendation row; harmless once the stock launcher is gone
+
+# --- Tried and reverted: this firmware puts these back at every boot.
+# com.google.android.videos com.google.android.youtube.tvmusic com.google.android.play.games
+# com.google.android.backdrop com.android.messaging com.android.camera2 com.android.printspooler
+# com.tcl.system.server (running as tcl_system_server) holds android.permission.CHANGE_COMPONENT_ENABLED_STATE
+# and a BootReceiver, and re-enables exactly that set after every reboot, so they stay at their factory state.
+# To quieten them without fighting it, restrict instead of disabling:
+#   cmd appops set <pkg> RUN_ANY_IN_BACKGROUND ignore
+# (that was applied on the test unit for those seven; it survives reboots).
+
+# --- Not a package, so not in the list, but worth knowing on this build:
+# com.google.android.katniss held RECORD_AUDIO open for hotword detection permanently (src:HOTWORD plus
+# ECHO_REFERENCE in dumpsys audio, ~28% of one core) although the set reports no android.hardware.microphone,
+# so hotword can never fire. The HOTWORD_DISABLE broadcast and HotwordSilentToggleActivity did not stop it.
+# The owner revoked the permission: pm revoke com.google.android.katniss android.permission.RECORD_AUDIO
+# (the remote's mic button stops working; undo with pm grant). 28% -> 0.4% of one core.

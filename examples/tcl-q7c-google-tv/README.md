@@ -24,7 +24,10 @@ and it is not needed.
 
 The order matters: setupwraith goes while Google TV's home still owns Home, then `build-and-install.sh` starts the
 new launcher and only then disables launcherx. `disable.sh` skips launcherx on the first run (its Home guard), which
-is what you want here.
+is what you want here, as long as no other launcher is installed: the guard holds launcherx back only when nothing
+else could answer Home, so with Projectivy or another launcher on the TV it disables launcherx in the same run, and
+that launcher takes Home until `build-and-install.sh` (with `STOCK_LAUNCHER=none`, since it does not know that
+launcher) makes the new one Home. Seen on a G08 EU unit, [tcl-g08-eu-android12](../tcl-g08-eu-android12/).
 
 ```bash
 FORCE_SETUPWRAITH=1 TV_HOST=<tv-ip> tools/disable.sh examples/tcl-q7c-google-tv/debloat.txt
@@ -454,3 +457,146 @@ launcher (launcherx and setupwraith off). This set is the source of the groups m
 - **Never list** `com.google.android.modulemetadata` and the `com.google.android.overlay.modules.*` overlays
   (permissioncontroller, modulemetadata-forframework): `tools/disable.sh` refuses a list that names them
   (brick class, #884). The Android 12 EU list named them before the tool gate existed; they are excluded here.
+
+## Sixth unit: 55C69K (Europe, Wi-Fi)
+
+One owner's session on 2026-10-26, following [`PROMPT.md`](../../PROMPT.md) on Windows 11 with Claude Code and the
+repo's PowerShell tools (`tools/disable.ps1`, `launcher/build-and-install.ps1`; no platform-tools `adb`). Same pair as
+this folder, so `debloat.txt` here is the list to run; this section records the deltas.
+
+| Field | Observed value |
+|---|---|
+| Retail model | `55C69K`, supplied by the owner; not exposed by `ro.product.model` (`Smart TV Pro`) |
+| `ro.product.name` / `ro.product.device` | `G08_4K_GB` / `G08` |
+| Android / SDK | `14` / `34`, Google TV |
+| `ro.build.fingerprint` | `TCL/G08_4K_GB/G08:14/UTT2.250416.001/AU02:user/release-keys` |
+| `ro.software.version_id` | `V8-T653T01-LF1V643` |
+| Security patch | `2025-12-05` |
+| `ro.hardware` / `ro.board.platform` | `mt5896` / `merak` |
+| `ro.boot.client_type` | `TCL-EU-MT9653-S1` |
+| `ro.adb.secure` | `1` |
+
+### Connecting and closing
+
+- **Port 5555 opened directly** with USB debugging and Network debugging on, unlike the Wireless-debugging-only
+  65Q7D Pro and 65T8C. It came back by itself after both reboots done with debugging on.
+- **Closing worked from the switches:** Network debugging and USB debugging off, authorisations revoked, reboot;
+  `tools/adb-closed.py` then answered `Connection refused`. The `adb_enabled` problem in the Q7C notes did not show.
+- **Windows, antivirus with HTTPS scanning (Avast):** `sdkmanager` and Gradle failed with `PKIX path building
+  failed`, because the scanner re-signs TLS with a root that Windows trusts and Java does not. Passing
+  `-Djavax.net.ssl.trustStoreType=Windows-ROOT` in `SDKMANAGER_OPTS` and `GRADLE_OPTS` fixed both. The same option
+  in `JAVA_TOOL_OPTIONS` stops `launcher/build-and-install.ps1`: Java prints a notice on stderr, which the script's
+  `$ErrorActionPreference = 'Stop'` treats as a failure.
+- **Windows PowerShell 5.1** drops the inner double quotes of a `tools/tv.py "... grep -E '...'"` argument; piping
+  the commands into `tools/tv.py --batch` keeps them intact.
+
+### setupwraith and the saved Wi-Fi
+
+The network in use belonged to `android.uid.system`. One older saved network, not in range and not in use, belonged
+to `com.google.android.tungsten.setupwraith`. With the owner's agreement it was removed with
+`tools/tv.py 'cmd wifi forget-network <id>'` (ids from `cmd wifi list-networks`), as the US G08 third unit did;
+`tools/disable.ps1` then disabled the wizard without `FORCE_SETUPWRAITH`, and Wi-Fi and ADB stayed up.
+
+### The list as applied
+
+41 packages in five batches with `tools/disable.ps1` and a screenshot after each, then setupwraith, then launcherx
+through `launcher/build-and-install.ps1`: 43 in all.
+After three reboots `pm list packages -d` still listed all 43; the firmware re-enabled nothing. Compared with this folder's list:
+
+| Q7C entry or group | Here |
+|---|---|
+| `com.tcl.tv.tclhome_passive`, `com.google.android.onetimeinitializer`, `com.tcl.UpdatePeripheral` | Kept (not tried) |
+| `com.google.android.katniss` | Kept: the owner uses Google Assistant |
+| (kept on the Q7C) `com.tcl.dashboard` | Disabled; no problem noticed in one day with the new launcher as Home |
+| (kept on the Q7C) `com.google.android.apps.mediashell`, `com.tcl.gamebar` | Disabled by choice |
+| ("not touched" on the Q7C) `com.tcl.eva`, `com.tcl.gallery` | Disabled; `eva` as TCL's voice layer (the EU and AU G08 lists disable it too; voice search was not tested afterwards), `gallery` by choice (nothing on USB) |
+| (fifth-unit groups) `com.tcl.android.webview`, `com.mediatek.support.webview`, `com.mediatek.network`, `com.mediatek.backgrounddetection` | Disabled here too; `dumpsys webviewupdate` named `com.google.android.webview` as the active provider first |
+| (not in the list) `com.google.android.youtube.tvmusic` | Disabled by choice |
+
+Left alone, as on the Q7C: `com.tcl.tv`, `com.tcl.tvinput`, `com.tcl.suspension`, `com.tcl.interactive`,
+`com.tcl.ttvs`, `com.tcl.autopair`, the TCL keyboard, `com.tvos`, `com.tpa.kb` and the firmware updater.
+`com.tcl.factory.view` was not opened.
+
+### Remote buttons without a key helper
+
+No key helper was installed. On the real remote, Home, Input (TCL's source panel) and YouTube worked with launcherx
+off; the gear did nothing. The gear's keycode 83 reaches the focused window here (`logcat`:
+`InputDispatcher: TIDD: publishKeyEvent(... com.gathin.tvhome/...MainActivity ..., keyCode=83)`), so
+`settings_key_keycodes` `[83]` in `config.xml` answers it while Home is in front **without `HomeKeyService`**,
+and the owner confirmed it opens Settings. Inside an app the button still goes to that app. With no helper bound,
+a held Volume + moves one step and then repeats slowly (`repeatCount=1` after about 400 ms in `logcat`): that is
+this firmware's own volume handling, not the helper trade described in the G09 note.
+
+### Other checks
+
+- Power-on lands on the new launcher (`wm_set_resumed_activity`: `FallbackHome`, then `com.gathin.tvhome`); the
+  firmware does not open Live TV by itself, so neither `power_on_home` nor `boot_to_live_tv` is needed.
+- The Inputs menu listed HDMI 1 to 4 and Live TV; HDMI 1 opened `com.tcl.tv/com.tcl.player.TVActivity`.
+- Private DNS (`dns.adguard-dns.com`) validated, and YouTube loaded its feed through it.
+
+### Test limits
+
+- One set, one day, three reboots. Nothing here has been lived with for several days, so `debloat.txt` only gains a
+  header line naming this unit.
+- Nothing was connected to the HDMI inputs; the tuner, channel scanning and Live TV playback were not tested.
+- Casting and mirroring were turned off by choice, so they were not tested after the list.
+
+## Seventh unit: 65Q7C (Wi-Fi)
+
+Applied on 2026-10-24. Same build as the Q7C above: `ro.product.model` `Smart TV Pro`, Android 14 (SDK 34), `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`. 21 packages were disabled by hand with `adb shell pm disable-user --user 0`
+
+The Clean Your TV launcher was not installed, so launcherx & setupwraith are untouched
+
+### Notes for this unit
+
+- **`com.tpa.kb` is not a keyboard**. It is a preinstalled system app (`/product/app/Tpakb`) & is absent from `ime list -a`. Its exact purpose is unconfirmed - do not confuse it with the actual input methods listed below
+
+```sh
+λ adb -s $S shell ime list -a -s
+com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+com.google.android.tts/com.google.android.apps.speech.tts.googletts.settings.asr.voiceime.VoiceInputMethodService
+com.google.android.tv.remote.service/.ImeBridgeService
+com.tcl.inputmethod.international/.T_IME
+com.tcl.ttvs/.tcast.core.stringinput.SoftKeyboard
+```
+
+> The primary, default input method is `T-IME`; Gboard was unselectable/grayed out in the keyboard settings
+
+- **ZDF**: the ZDF Mediathek app is disabled & ZDF HD live still works after a reboot
+- **ARTE:** the app opens but needs an account to play - it is disabled
+- **Chromecast**: `com.google.android.apps.mediashell` is disabled & casting from an android phone using the default youtube still works
+- **Connecting**: Wireless debugging with `adb pair` & `adb connect`. `tools/tv.py` failed with an `STLS` error from `adb_shell`. `adb tcpip 5555` was not tried; instead, the `adb` cli was used directly
+
+### Test limits
+
+- applied on 2026-10-24, multiple reboots & subsequent use
+- hdmi inputs, airplay & the tuner were not tested
+- following preinstalled apps & buttons on the remote continued to work seamlessly after applying the list:
+  - voice recognition
+  - quick panel
+  - t-solo
+  - netflix
+  - prime video (only opened, no account)
+  - youtube
+  - local media integration (gallery, videos)
+  - tcl channel
+  - disney plus (only opened, no account)
+
+> prime video & disney plus apps opened fine, i do not claim that playback works
+
+## Eighth unit: 65Q7CX1 (Italy, Wi-Fi)
+
+Same build: `G08_4K_GB`, Android 14, `UTT2.250416.001 AU02`. Set up on 28-29 October 2026. The launcher first ran
+with `stock_home_redirect`, then launcherx and setupwraith were disabled so Google TV no longer flashes at power-on.
+
+- **Chromecast works with setupwraith and launcherx disabled**, after a reboot too: logcat has `Cast.Auth.OK=1` and
+  6/6 `CastV2.Authenticate.Challenge.In`/`Response.Out`, no `No private key`. The Cast receiver signs with
+  `jni_client_auth_creds_mediadrm`, so on this build its key does not come from setupwraith (unlike Google's own
+  Chromecast hardware). The Wi-Fi network belonged to setupwraith: it was forgotten and rejoined first.
+- **Home held** opened Google TV's notification panel, which is launcherx's
+  (`.dashboard.DashboardHandler` answers `TOGGLE_NOTIFICATION_HANDLER_PANEL`). With launcherx disabled nothing opens it,
+  and Settings has no notification screen. `app_keys` `3:home` and `hold:3:com.gathin.tvhome/.QuickSettingsActivity`
+  put the launcher's quick panel there instead.
+- **TCL Channel** (4020) → `4020:com.tcl.tv` opens Live TV. Settings (gear) needs `settings_key_keycodes` `[83]`.
+- **Not looked into:** there is no recents screen (`KEYCODE_APP_SWITCH` does nothing), and the mic answers "Google
+  Assistant is having trouble processing your request", already with launcherx enabled.

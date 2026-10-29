@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * The pictures: PNG, JPEG or WebP files in the app's own folder on the TV, put there from a computer
@@ -114,24 +115,35 @@ final class Images {
             // A provider without names: the made-up one will do.
         }
         if (Look.fileName(name).isEmpty()) name = "picked-" + System.currentTimeMillis();
-        File out = new File(dir(c), name);
-        long total = 0;
-        try (InputStream in = c.getContentResolver().openInputStream(uri); OutputStream o = new FileOutputStream(out)) {
-            if (in == null) return null;
-            byte[] buf = new byte[64 * 1024];
-            for (int n; (n = in.read(buf)) > 0; ) {
-                total += n;
-                if (total > MAX_BYTES) throw new IOException("too big");
-                o.write(buf, 0, n);
-            }
+        try (InputStream in = c.getContentResolver().openInputStream(uri)) {
+            return in != null && replace(in, dir(c), name, Images::usable) ? name : null;
         } catch (IOException | SecurityException e) {
-            out.delete();
             return null;
         }
-        if (!usable(out)) {
-            out.delete();
-            return null;
+    }
+
+    /**
+     * Copies into a hidden file next to the picture and renames it over the picture only once it's whole and
+     * usable, so a failed import never touches a picture of the same name. The hidden file never shows in
+     * {@link #list} ({@link Look#fileName} refuses names starting with a dot).
+     */
+    static boolean replace(InputStream in, File dir, String name, Predicate<File> usable) throws IOException {
+        File part = File.createTempFile(".import-", ".part", dir);
+        boolean done = false;
+        try {
+            long total = 0;
+            try (OutputStream o = new FileOutputStream(part)) {
+                byte[] buf = new byte[64 * 1024];
+                for (int n; (n = in.read(buf)) > 0; ) {
+                    total += n;
+                    if (total > MAX_BYTES) return false;
+                    o.write(buf, 0, n);
+                }
+            }
+            done = usable.test(part) && part.renameTo(new File(dir, name));
+            return done;
+        } finally {
+            if (!done) part.delete();
         }
-        return name;
     }
 }

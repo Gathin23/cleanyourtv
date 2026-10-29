@@ -41,11 +41,12 @@ final class Quiet {
 
     /** What the TV can do for several listeners, from its LE Audio broadcast check (Android 13+). */
     static String sharing(int sdk, int broadcastSource) {
-        if (sdk < 33) {
+        int which = sharingCase(sdk, broadcastSource);
+        if (which == SHARING_ONE_PAIR) {
             return "This TV sends sound to one pair of Bluetooth headphones at a time. For two pairs, use a"
                     + " dual-link Bluetooth transmitter on the TV's headphone or optical output.";
         }
-        if (broadcastSource == FEATURE_SUPPORTED) {
+        if (which == SHARING_AURACAST) {
             return "This TV can broadcast to many LE Audio (Auracast) headphones at once: start sharing from the"
                     + " TV's Bluetooth settings.";
         }
@@ -53,10 +54,23 @@ final class Quiet {
                 + " For two pairs, use a dual-link Bluetooth transmitter on the TV's headphone or optical output.";
     }
 
+    static final int SHARING_ONE_PAIR = 0, SHARING_AURACAST = 1, SHARING_NO_BROADCAST = 2;
+
+    /** Which of the three sharing texts applies, so the screen can say it in the TV's language. */
+    static int sharingCase(int sdk, int broadcastSource) {
+        if (sdk < 33) return SHARING_ONE_PAIR;
+        return broadcastSource == FEATURE_SUPPORTED ? SHARING_AURACAST : SHARING_NO_BROADCAST;
+    }
+
     static String clean(String name) {
-        if (name == null) return "Unnamed device";
+        return clean(name, "Unnamed device");
+    }
+
+    /** As above, with the words for a device without a name in the TV's language. */
+    static String clean(String name, String unnamed) {
+        if (name == null) return unnamed;
         String n = name.replaceAll("\\p{C}", "").trim();
-        if (n.isEmpty()) return "Unnamed device";
+        if (n.isEmpty()) return unnamed;
         return n.length() > 40 ? n.substring(0, 40).trim() + "…" : n;
     }
 }

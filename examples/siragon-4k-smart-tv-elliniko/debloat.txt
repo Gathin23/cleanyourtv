@@ -1,0 +1,27 @@
+# Síragon 4K Smart TV (KTC ODM, MediaTek MT9676 merak, device elliniko, product KTC_SIRAGON_4K_24GV1), Venezuela
+# Google TV on Android 14 (API 34), build UKN6.260116.117
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/siragon-4k-smart-tv-elliniko/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/siragon-4k-smart-tv-elliniko/debloat.txt com.google.android.apps.tv.launcherx
+# Stock launcher: com.google.android.apps.tv.launcherx
+# Live TV: com.mediatek.tv.oneworld.tvcenter
+
+# Telemetry, tracking and ad services
+tv.anoki.acr.anokiacroptin                     # Anoki ACR automatic content recognition
+com.android.adservices.api                      # Android 14 Privacy Sandbox ad-targeting API
+com.android.ondevicepersonalization.services    # On-Device Personalization ML ad service
+com.android.federatedcompute.services           # Federated Compute background processor
+com.google.android.feedback                     # Google TV crash and feedback telemetry
+com.android.tv.feedbackconsent                  # Feedback consent dialog
+com.mediatek.tv.launcher.partner               # MediaTek leanback launcher partner sponsored rows injector
+
+# Commercial preloads, demos, and unused middlewares
+com.mediatek.tv.retaildemo                      # Retail store demo loop
+com.electronic.manual                           # On-screen user manual
+# tv.mopa.ginga                                 # Ginga, the interactive layer of ISDB-Tb broadcasts; disabled on the tested set (uncomment to do the same)
+com.google.android.play.games                   # Google Play Games TV service
+com.google.android.videos                       # Google TV movies & shows store
+com.google.android.apps.tv.dreamx               # Ambient recommendation screensaver
+
+# Home handover: setupwraith Wi-Fi owned by android.uid.system:1000
+com.google.android.tungsten.setupwraith        # Setup wizard / RecoveryActivity
+com.google.android.apps.tv.launcherx           # Stock Google TV launcher

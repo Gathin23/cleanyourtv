@@ -1,23 +1,28 @@
-"""The Connecting page says which ADB key `tools/tv.py` uses, and what to delete when the TV refuses it.
+"""The Connecting page says which ADB keys `tools/tv.py` offers, and which one the prompt asks for.
 
-`tools/tv.py` keeps a key of its own in `tools/adbkey/` and falls back to the stock `~/.android/adbkey`
-only while it has not made one (`if not os.path.exists(KEY) and os.path.exists(ADB_KEY)`). So a set that
-was first reached with this client is asked again for a key the stock `adb` never registered: #1526 is a
-TCL 55C61B whose `tv.py` had made its own key in `tools/adbkey` before the TV approved the stock adb key,
-and the set stayed `unauthorized` until that folder was deleted and the next run reused
-`~/.android/adbkey`.
+`tools/tv.py` keeps a key of its own in `tools/adbkey/`. While it has not made one it uses the stock
+`~/.android/adbkey` alone (`if not os.path.exists(KEY) and os.path.exists(ADB_KEY)`); once it has, it
+offers its own key first and the stock one after it. It used to offer only its own, so a set that already
+trusted the stock key was asked for one the stock `adb` never registered: #1526 is a TCL 55C61B whose
+`tv.py` had made its own key in `tools/adbkey` before the TV approved the stock adb key, and the set stayed
+`unauthorized` until that folder was deleted. adb_shell signs the TV's token with each key in turn and
+sends the first key's public half (the "Allow USB debugging?" prompt) only when none is accepted, so the
+second key adds no prompt and the prompt still asks for tv.py's own key.
 
-The page described the fallback as if it always applied, which is exactly the case it does not cover, and
-it gave no way out. Both halves are pinned here: what the code does (a throwaway tree with a stub
-adb_shell that records the key handed to the TV, so no adb_shell and no TV are needed) and what the page
-says. If the fallback ever becomes unconditional, the source test fails and the bullet has to be rewritten
-rather than left describing the old rule.
+Both halves are pinned here: what the code offers (a throwaway tree with a stub adb_shell that records
+every key handed to the TV, in order, so no adb_shell and no TV are needed) and what the page says. If the
+order or the fallback changes, these tests fail and the bullet has to be rewritten rather than left
+describing the old rule. The page's PowerShell command is pinned too: `rmdir /s /q` is Command Prompt
+syntax, and in PowerShell `rmdir` is an alias of Remove-Item, which takes `/s` as the path and stops at
+`/q`, leaving the folder in place.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
 from pathlib import Path
+import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -32,8 +37,10 @@ SECTION = "## Connecting"
 STOCK_PUB = "stock-adb-key"
 OWN_PUB = "made-by-tv-py"
 GENERATED_PUB = "generated-by-tv.py"
+NOT_A_KEY = "not a key"
 
-# Enough of adb_shell for tv.py to import; connect() records the key it was handed instead of dialling.
+# Enough of adb_shell for tv.py to import; connect() records the keys it was handed, one public half per
+# line in the order adb_shell would try them, instead of dialling.
 STUB_DEVICE = (
     "import os\n"
     "class AdbDeviceTcp:\n"
@@ -41,15 +48,18 @@ STUB_DEVICE = (
     "        self.host, self.port = host, port\n"
     "    def connect(self, rsa_keys=None, **kwargs):\n"
     "        with open(os.environ['KEY_OUT'], 'w') as f:\n"
-    "            f.write(rsa_keys[0].pub)\n"
+    "            f.write('\\n'.join(key.pub for key in rsa_keys))\n"
     "    def shell(self, cmd, **kwargs):\n"
     "        return 'x'\n"
     "    def close(self):\n"
     "        pass\n"
 )
+# The real signer parses the private key when it is made, and raises ValueError for one it cannot read.
 STUB_SIGNER = (
     "class PythonRSASigner:\n"
     "    def __init__(self, pub, priv):\n"
+    "        if priv == '" + NOT_A_KEY + "':\n"
+    "            raise ValueError('Not a DER-encoded OpenSSL private RSA key')\n"
     "        self.pub, self.priv = pub, priv\n"
 )
 STUB_KEYGEN = (
@@ -119,35 +129,49 @@ class PageTest(unittest.TestCase):
                                 "the Connecting section read fewer than 10 bullets, so the checks below "
                                 "could pass by reading nothing")
 
-    def test_one_bullet_names_the_key_this_client_keeps(self):
+    def key_bullet(self):
         said = [b for b in bullets(connecting()) if "tools/adbkey" in b]
         self.assertEqual(len(said), 1, f"{len(said)} bullets name tools/adbkey: {said}")
-        bullet = said[0]
+        return said[0]
+
+    def test_one_bullet_names_the_key_this_client_keeps(self):
+        bullet = self.key_bullet()
         for needle, why in (
-            ("~/.android/adbkey", "the stock key the next run falls back to"),
+            ("offers the stock `~/.android/adbkey`", "that tv.py offers the stock key as well as its own"),
             ("unauthorized", "what the TV answers while it is not trusted"),
-            ("rm -rf tools/adbkey", "the way out"),
-            ("rmdir /s /q", "the same on Windows"),
-            ("--probe", "the run that picks the stock key up"),
+            ("rm -rf tools/adbkey", "the way to have the prompt register the stock key"),
+            ("Remove-Item -Recurse -Force tools\\adbkey", "the same in PowerShell"),
+            ("rmdir /s /q tools\\adbkey", "the same in Command Prompt"),
+            ("--probe", "the run that registers the stock key"),
+            ("tools\\venv\\Scripts\\python.exe -I tools\\tv.py --probe", "that run as Windows starts it"),
             ("#1526", "the report"),
         ):
             self.assertIn(needle, bullet, f"the tools/adbkey bullet does not name {why} ({needle!r})")
 
+    def test_each_windows_command_is_given_for_the_shell_that_runs_it(self):
+        # `rmdir /s /q` is Command Prompt syntax. In PowerShell rmdir is an alias of Remove-Item, whose
+        # only positional parameter is the path: it takes `/s` as the path and stops at `/q`.
+        said = {shell: command for command, shell in
+                re.findall(r"`([^`]+)` in (PowerShell|Command Prompt)", self.key_bullet())}
+        self.assertEqual(said.get("PowerShell"), "Remove-Item -Recurse -Force tools\\adbkey",
+                         "the tools/adbkey bullet gives PowerShell a command it refuses, or none")
+        self.assertEqual(said.get("Command Prompt"), "rmdir /s /q tools\\adbkey")
 
     def test_the_fallback_is_not_described_without_its_condition(self):
         said = [b for b in bullets(connecting()) if "~/.android/adbkey" in b]
         self.assertTrue(said, "nothing in the Connecting section names the stock ~/.android/adbkey")
         for bullet in said:
             self.assertIn("tools/adbkey", bullet,
-                          "a bullet promises the stock key without saying that a key of tv.py's own in "
-                          "tools/adbkey wins while that folder exists - the case #1526 was stuck in")
+                          "a bullet names the stock key without tools/adbkey, whose key tv.py offers first "
+                          "and the prompt asks for while that folder holds one")
 
 
 class FallbackTest(unittest.TestCase):
     """What tv.py actually hands the TV, run against a copy of the script in a throwaway tree."""
 
-    def probe(self, own_key=False, stock_key=False, stock_pub=True):
-        """Run `tv.py --probe` in a tree of its own; return (result, the public key sent to the TV)."""
+    def probe(self, own_key=False, stock_key=False, stock_pub=True, stock_priv="private", stock_mode=None):
+        """Run `tv.py --probe` in a tree of its own; return (result, the public keys offered to the TV, in
+        order). The stock key is left at self.stock_key."""
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp, ignore_errors=True)
 
@@ -165,8 +189,11 @@ class FallbackTest(unittest.TestCase):
 
         home = tmp / "home"
         (home / ".android").mkdir(parents=True)
+        self.stock_key = home / ".android" / "adbkey"
         if stock_key:
-            (home / ".android" / "adbkey").write_text("private")
+            self.stock_key.write_text(stock_priv)
+            if stock_mode is not None:
+                os.chmod(self.stock_key, stock_mode)
             if stock_pub:
                 (home / ".android" / "adbkey.pub").write_text(STOCK_PUB)
         if own_key:
@@ -175,39 +202,71 @@ class FallbackTest(unittest.TestCase):
             (tools / "adbkey" / "adbkey.pub").write_text(OWN_PUB)
 
         out = tmp / "key-out.txt"
-        env = dict(os.environ, TV_HOST="127.0.0.1", HOME=str(home), KEY_OUT=str(out),
+        # Windows expands `~` from USERPROFILE, not HOME: without it tv.py reads the real
+        # ~/.android and generates its own key, so "the stock key wins" is never observed there.
+        home_var = {"USERPROFILE": str(home)} if os.name == "nt" else {}
+        env = dict(os.environ, TV_HOST="127.0.0.1", HOME=str(home), **home_var,
+                   KEY_OUT=str(out),
                    PYTHONPATH=os.pathsep.join([str(tmp / "stub"), str(tools)]))
         result = subprocess.run([sys.executable, str(tools / "tv.py"), "--probe"],
                                 cwd=str(tmp), env=env, capture_output=True, text=True, timeout=120)
-        sent = out.read_text().strip() if out.exists() else ""
-        return result, sent
+        offered = out.read_text().splitlines() if out.exists() else []
+        return result, offered
 
     def test_the_stock_key_is_used_while_the_client_has_none(self):
-        result, sent = self.probe(stock_key=True)
+        result, offered = self.probe(stock_key=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(sent, STOCK_PUB,
-                         "tv.py did not reuse ~/.android/adbkey, so a set that trusts platform-tools' "
-                         "key is asked again for this client's")
+        self.assertEqual(offered, [STOCK_PUB],
+                         "tv.py did not reuse ~/.android/adbkey alone, so the prompt would not register the "
+                         "key platform-tools uses")
 
-    def test_a_key_of_its_own_wins_over_the_stock_one(self):
-        # The state #1526 was stuck in: the folder already exists, so the stock key is never looked at.
-        result, sent = self.probe(own_key=True, stock_key=True)
+    def test_the_stock_key_is_offered_after_a_key_of_its_own(self):
+        # The state #1526 was stuck in: tools/adbkey held a key, and the TV trusted only the stock one.
+        result, offered = self.probe(own_key=True, stock_key=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(sent, OWN_PUB,
-                         "tv.py now prefers ~/.android/adbkey over a key of its own: check that the "
-                         "Connecting bullet still describes what it does, then rewrite both")
+        self.assertIn(STOCK_PUB, offered,
+                      "tv.py does not offer ~/.android/adbkey once tools/adbkey holds a key, so a set that "
+                      "trusts only the stock key stays unauthorized (#1526)")
+        self.assertEqual(offered, [OWN_PUB, STOCK_PUB],
+                         "tv.py's own key is not offered first, so the prompt asks for another key than the "
+                         "Connecting bullet says")
+
+    def test_its_own_key_alone_without_a_whole_stock_key(self):
+        for case in ({}, {"stock_key": True, "stock_pub": False}):
+            with self.subTest(**case):
+                result, offered = self.probe(own_key=True, **case)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(offered, [OWN_PUB])
+
+    def test_a_stock_key_it_cannot_read_does_not_stop_the_connection(self):
+        result, offered = self.probe(own_key=True, stock_key=True, stock_priv=NOT_A_KEY)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(offered, [OWN_PUB],
+                         "a ~/.android/adbkey adb_shell cannot parse stopped a connection tv.py's own key "
+                         "could make")
+
+    @unittest.skipIf(os.name == "nt", "POSIX permission bits; the chmod is a no-op on Windows")
+    def test_the_stock_key_keeps_its_permissions(self):
+        # It belongs to the user's own adb: tv.py reads it and restricts only the key in tools/adbkey.
+        for case in ({"own_key": True}, {}):
+            with self.subTest(**case):
+                result, offered = self.probe(stock_key=True, stock_mode=0o644, **case)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(STOCK_PUB, offered)
+                self.assertEqual(stat.S_IMODE(self.stock_key.stat().st_mode), 0o644,
+                                 "tv.py changed the permissions of ~/.android/adbkey")
 
     def test_its_own_key_is_made_beside_the_script(self):
-        result, sent = self.probe()
+        result, offered = self.probe()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(sent, GENERATED_PUB,
+        self.assertEqual(offered, [GENERATED_PUB],
                          "tv.py made no key of its own, so the folder the page tells a reader to delete "
                          "would never exist")
 
     def test_the_fallback_needs_the_public_half_too(self):
-        result, sent = self.probe(stock_key=True, stock_pub=False)
+        result, offered = self.probe(stock_key=True, stock_pub=False)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(sent, GENERATED_PUB,
+        self.assertEqual(offered, [GENERATED_PUB],
                          "tv.py reused a ~/.android/adbkey that has no .pub beside it")
 
 

@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KDL-55W800C (2015, \"BRAVIA 2015\", SVP-DTV15, MediaTek), Taiwan firmware",
+  "os": "Android TV 7.0",
+  "brand": "Sony",
+  "notes": "Qterics/Sony device agents, Discover/BIVL and the recommendation services, Sony Select, retail demo, help apps, Prime Video by choice; `com.sony.dtv.sonyshelf` is leanbacklauncher's partner customization and feeds both the Featured apps row and the Home inputs row, so with it off HDMI is reached with the Input button; voice, Chromecast, mirroring and updates kept; reboot-checked; list only, the launcher needs Android 8 (minSdk 26)"
+}

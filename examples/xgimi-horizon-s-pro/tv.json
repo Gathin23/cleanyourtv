@@ -1,5 +1,5 @@
 {
-  "tv": "XGIMI Horizon S Pro projector (XK03H, xgimigalileo, MediaTek)",
+  "tv": "XGIMI Horizon S Pro / Halo+ projector (XK03H, xgimigalileo, MediaTek)",
   "os": "Android TV 11",
   "brand": "XGIMI",
   "notes": "First projector: keystone/autofocus/HDMI player kept, factory and burn-in tools, bug-report uploader, Google preloads; HDMI needs `input_action`; voice, Chromecast off by choice"

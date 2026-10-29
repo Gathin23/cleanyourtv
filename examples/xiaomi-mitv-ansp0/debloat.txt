@@ -1,8 +1,9 @@
 # Xiaomi MiTV-ANSP0 (codename jobs; 小米电视5 Pro 65", China-market firmware), Android 9 (SDK 28),
 # firmware 23.6.5.3226, Amlogic, 4 GB RAM, 1080p UI (320 dpi), 54 GB /data.
 # Stock launcher: com.mitv.tvhome (PatchWall, HOME activity .MainActivityUserMode) - KEEP IT ENABLED,
-# see "Home" below. Install with: STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh
-# (build-and-install.sh already knows com.mitv.tvhome, so the argument is optional).
+# see "Home" below. Install with: STOCK_LAUNCHER=none launcher/build-and-install.sh
+# (build-and-install.sh knows com.mitv.tvhome and disables it otherwise; Home then falls to
+# FallbackHome and the script rolls back).
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-ansp0/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-ansp0/debloat.txt com.mitv.tvhome

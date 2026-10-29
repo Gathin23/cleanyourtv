@@ -12,6 +12,11 @@ import android.view.View;
  * this one only ever starts from Home. Any key returns to Home.
  */
 public class ClockActivity extends Activity {
+    @Override
+    protected void attachBaseContext(android.content.Context base) {
+        super.attachBaseContext(LauncherLocale.wrap(base));   // locale
+    }
+
 
     private ClockScene scene;
 

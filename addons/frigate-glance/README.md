@@ -73,7 +73,8 @@ and `TestCardReceiver` shows a test card over whatever is playing.
 | `severity` | `alerts` | `alerts`, or `alerts_and_detections` |
 | `corner` | `top-right` | `top-left`, `bottom-left`, `bottom-right` |
 | `cardScale` | `100` | card size in percent (50 to 200), picture and text together |
-| `dismissSeconds` | `8` | seconds the card stays after the event ends (1 to 120) |
+| `dismissSeconds` | `8` | seconds the card stays once the alert's objects have left (1 to 120); an object coming back stops the countdown |
+| `dismissOnStationary` | `true` | a parked object counts as left, as in Peek |
 | `snoozeMinutes` | `60` | length of a snooze (5 to 720) |
 | `liveVideo` | `true` | live picture from go2rtc's RTSP port 8554; `false` refreshes a snapshot every second |
 | `streams` | `{}` | camera to the go2rtc stream for live video, when Frigate's own live stream is too big |

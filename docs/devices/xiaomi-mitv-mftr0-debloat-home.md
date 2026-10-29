@@ -144,9 +144,81 @@ accessibility helper surviving one.
 
 ### What this note leaves open
 
-- The allowlist route was not tried on this build. It works on OS3.0.106 (ASTR0) and
-  OS3.0.115 (MFFU0), and nothing here says it fails on OS3.0.28.
+- The allowlist route was not tried on this 3.0.28 build. It works on OS3.0.106
+  (ASTR0), OS3.0.115 (MFFU0), OS3.0.103 (a third unit, below) and OS3.0.106 on this
+  model (a DSU image, below), and nothing here says it fails on OS3.0.28.
 - Where the record came from is not established and that OTA is silent; a factory
   reset was not tried.
 - Nothing here was measured with this repo's launcher: the unit ran a third-party home
   app.
+
+## A third unit on OS3.0.103: the allowlist route works
+
+The route the 3.0.28 unit left open was run on a third MiTV-MFTR0 (`freeguy`, 4 GB) on
+China firmware `OS3.0.103.0.UFTMATV` (Android 14, security patch 2025-07-05). No root was
+used and no file of the firmware was edited. It is a different unit from the OTA set
+above, not a re-run on it.
+
+The 3.0.28 behaviour reproduced first:
+
+- `cmd package set-home-activity --user 0 <a third-party HOME app>` printed `Success` and
+  Home still went to PatchWall. Logcat carried
+  `W/PackageManager: addPreferredActivity: Don't set 3-app default home`.
+- A `cmd role add-role-holder --user 0 android.app.role.HOME` holder made no difference.
+- With an ordinary third-party launcher and `pm disable-user --user 0 com.mitv.tvhome`,
+  HOME resolved to `com.xiaomi.mitv.settings/.entry.FallbackHome` and the picture stayed
+  black.
+- `am start -a android.intent.action.MAIN -c android.intent.category.HOME` from the shell
+  was refused: `requires com.mitv.tvhome.permission.HOME_STATE`.
+
+This unit had no preferred-activity record naming `com.mitv.tvhome` when it was first read.
+Its only record named `com.xiaomi.setupwizard/.guide.PqGuideActivity`, a setup-guide
+activity that is disabled and cannot match. The commands failed the same way without it, so
+the `mAlways` record explains the 3.0.28 unit but is not required for the refusal; the
+`addPreferredActivity` guard above is the one seen here.
+
+What worked, in this order:
+
+1. Build the reference launcher with `-PlauncherApplicationId=com.ts.launcher`
+   (`./gradlew assembleRelease`; the APK was 535,569 B) and install it. Its HOME component
+   is `com.ts.launcher/com.gathin.tvhome.MainActivity`, and
+   `cmd package query-activities --brief -a android.intent.action.MAIN -c
+   android.intent.category.HOME` lists it next to PatchWall.
+2. `pm disable-user --user 0 com.mitv.tvhome`.
+3. HOME resolved to `com.ts.launcher/com.gathin.tvhome.MainActivity`, and it was still
+   Home after a reboot. The undo is `pm enable --user 0 com.mitv.tvhome` and a reboot.
+
+The HOME choice follows the package name: the same APK is accepted under `com.ts.launcher`
+and not under its default `com.gathin.tvhome`, which is why the identity is rebuilt with the
+Gradle property rather than renamed after the fact.
+
+### What the behaviour does and does not establish
+
+The underlying firmware mechanism has not been fully established by the supported, non-root
+procedure documented here. The results show the package-name-dependent behaviour and the
+builds it was seen on; they are not a root-free inspection of the firmware's internal
+allowlist, and this note does not claim one.
+
+Treat the rule as observed behaviour on the builds named above, not as a documented
+interface: another build, region or channel can differ.
+
+One timing detail cost a wrong conclusion here: after `pm disable-user` the shell returns
+before PackageManager has written the new state down. A reboot inside that window brings
+PatchWall back, which reads like the firmware re-enabling it. Let the write land (a `sync`,
+or 15-30 s) before rebooting.
+
+## The same answer on OS3.0.106, from a DSU image
+
+An `OS3.0.106.0.UFTMATV` image of the same model was booted as a Dynamic System Update,
+with a fresh system partition and fresh user data (109 packages, no third-party apps).
+
+The two checks that decide it gave the same answers as 3.0.103:
+
+- `cmd package set-home-activity` printed `Success` and logcat carried the same
+  `W/PackageManager: addPreferredActivity: Don't set 3-app default home`.
+- With `com.mitv.tvhome` disabled, the build under the default `com.gathin.tvhome` fell to
+  `com.xiaomi.mitv.settings/.entry.FallbackHome` and the picture stayed black, while the
+  `com.ts.launcher` build was Home and was still Home after a reboot.
+
+This was a DSU install, not a flashed update, and it started from fresh user data: the
+result describes that state.

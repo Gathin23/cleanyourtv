@@ -6,6 +6,11 @@
 #
 # Apply:   TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-4k-2023/debloat.txt
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/amazon-fire-tv-stick-4k-2023/debloat.txt com.amazon.tv.launcher
+# For the whole list, put HANDLERS_ALLOW=1 in front of the Apply line ($env:HANDLERS_ALLOW=1 for disable.ps1). Since
+# 2026-10-23 disable.sh keeps the app that answers VIEW vnd.android.cursor.item/channel, read as the HDMI input
+# handler, and here that is com.amazon.tv.livetv/.TvChannelsPlayerActivityAlias: a stick has no tuner or HDMI input.
+# Seen 2026-10-25 on a Fire TV Stick 4K Plus (AFTMA08C15, karat, RS8185.3891N): livetv was the only listed package
+# the check held back; the Settings handlers (com.amazon.tv.launcher, com.amazon.tv.settings.v2) are not listed.
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 # ADB on Fire OS 8: Settings > My Fire TV > About > press select 7 times on the device name, back > Developer Options >
 # ADB Debugging. Port 5555, accept the prompt on the TV (ro.adb.secure=1).

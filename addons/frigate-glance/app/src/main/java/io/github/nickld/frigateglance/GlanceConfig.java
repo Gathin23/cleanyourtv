@@ -37,6 +37,8 @@ public final class GlanceConfig {
     /** Card size in percent of the standard card (picture, text and bar together). */
     public final int cardScale;
     public final boolean liveVideo, boxes;
+    /** A parked object counts as gone, as in Peek: a car that stops does not keep the card up. */
+    public final boolean dismissOnStationary;
     /** A third card key opens the camera full screen; off by default. */
     public final boolean fullscreen;
     public final String fullscreenKey;
@@ -61,6 +63,7 @@ public final class GlanceConfig {
         cardScale = clamp(o.optInt("cardScale", 100), 50, 200);
         liveVideo = o.optBoolean("liveVideo", true);
         boxes = o.optBoolean("boxes", true);
+        dismissOnStationary = o.optBoolean("dismissOnStationary", true);
         dismissKey = key(o, "dismissKey", "KEYCODE_DPAD_LEFT");
         snoozeKey = key(o, "snoozeKey", "KEYCODE_DPAD_RIGHT");
         if (dismissKey.equals(snoozeKey)) throw new IllegalArgumentException("dismissKey and snoozeKey are the same key");
@@ -126,6 +129,7 @@ public final class GlanceConfig {
             o.put("cardScale", cardScale);
             o.put("liveVideo", liveVideo);
             o.put("boxes", boxes);
+            o.put("dismissOnStationary", dismissOnStationary);
             o.put("dismissKey", dismissKey);
             o.put("snoozeKey", snoozeKey);
             o.put("fullscreen", fullscreen);

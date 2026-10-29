@@ -1,0 +1,49 @@
+# Koryo 55" 4K Smart TV (CVTE TP.HV553.PC821B, HiSilicon Hi3751V553 "bigfish"), Android 7.0, build NRD90M release-keys, firmware 20180808_165024
+# 1 GB RAM (850 MB usable), 3840x2160 panel (BOE HV550QUB_N5A).
+# Tested on one set, with stock launcher kept; notes in README.md in this folder.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/koryo-smart-tv-hi3751v553/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/koryo-smart-tv-hi3751v553/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.cvte.tv.launcher.fall (+ .skin). Keep it ENABLED: the remote's physical
+# Home key and on-screen input source switcher route to it, and disabling it breaks remote navigation.
+# Live TV / Inputs: com.cvte.tv.setting/.TvSettingActivity.
+# Kept on purpose: com.cvte.tvservice, com.cvte.tv.setting (inputs and hardware tuning),
+# com.cvte.settings, com.cvte.tv.ucservice and com.cvte.tv.appstore (without these, clicking any app
+# tile in the stock launcher crashes with an unhandled exception), com.cvte.tv.media (USB file manager),
+# com.cvte.directboot.application (FallbackHome), com.android.vending (official Google Play Store),
+# com.google.android.gms, and factory packages com.cvte.fac.menu, com.cvte.gaochuang.factory.at (never launched).
+
+# CVTE background services and ad telemetry
+com.cvte.tv.steward               # "cleaner" daemon with scheduled background tasks
+com.cvte.tv.pictorial             # screensaver with ad recommendation push
+com.cvte.ui.help.unit2k17         # user guide / help manual app
+# Firmware updater: off on the tested set (the firmware is end-of-life), kept on in this list so
+# updates still arrive for everyone else. Uncomment to do the same.
+# com.cvte.tv.systemupgrade       # OTA updater
+
+# Zeasn ad service and recommendations
+cn.zeasn.cvte.HV553.vstoresubclient # Zeasn store and recommendation client
+com.zeasn.services.general        # Zeasn background ad service
+
+# Casting and screen mirroring daemons (run continuously in background)
+com.ecloud.eshare.server          # EShare server
+com.ecloud.eairplay               # AirPlay receiver
+com.ecloud.emedia                 # EShare media receiver
+com.hisilicon.miracast            # Miracast screen mirroring receiver
+com.hisilicon.dlna.dmp            # DLNA media player
+com.hisilicon.dlna.dmr            # DLNA media renderer
+com.hisilicon.dlna.dms            # DLNA media server
+
+# Google extras and telemetry
+com.google.android.feedback       # Crash and feedback uploader
+com.google.android.marvin.talkback # TalkBack accessibility screen reader
+com.google.android.voicesearch    # Legacy voice search (not functional on this remote)
+
+# Outdated stock apps
+com.google.android.youtube.tv     # Outdated stock YouTube with unskippable ads
+com.netflix.mediaclient           # Incompatible legacy Netflix
+com.android.browser               # Stock AOSP browser
+com.android.egg                   # Easter egg
+com.svox.pico                     # Pico TTS engine

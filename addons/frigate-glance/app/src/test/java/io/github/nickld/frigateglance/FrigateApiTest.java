@@ -107,10 +107,10 @@ public class FrigateApiTest {
         String[] query = new String[1];
         server = new TinyHttp()
                 .on("/api/login", r -> { logins.incrementAndGet(); return new TinyHttp.Response(200, "{}"); })
-                .on("/api/frontdoooor/latest.jpg", r -> { query[0] = r.query; return new TinyHttp.Response(200, "JPEG"); })
+                .on("/api/porch/latest.jpg", r -> { query[0] = r.query; return new TinyHttp.Response(200, "JPEG"); })
                 .start();
         FrigateApi api = new FrigateApi(server.url(), "", "", "", pin -> {});
-        assertEquals("JPEG", new String(api.latestJpeg("frontdoooor", 360), StandardCharsets.UTF_8));
+        assertEquals("JPEG", new String(api.latestJpeg("porch", 360), StandardCharsets.UTF_8));
         assertEquals("h=360", query[0]);
         assertEquals(0, logins.get());
     }

@@ -1,0 +1,6 @@
+{
+  "tv": "JVC LT-43KM348 (KTC-built, KTC_JVC_2K_25GV1, jagalchi, MediaTek mt5867 / T56)",
+  "os": "Google TV 14",
+  "brand": "JVC",
+  "notes": "First KTC list: Anoki ACR (its CLTV free-channels app `com.cltv.hybrid` stays on in the shared list) (both talk to `*.aistrm.net`, which AdGuard Private DNS does not block; the vendor ACR HAL stays, without network), Android ad/federated services, feedback, partner setup, Health Connect and backup leftovers; Prime Video, Play Movies, Play Games, TCL Browser, e-manual off by choice; setupwraith owned the setup Wi-Fi and the Cast credentials, Chromecast off by choice; the remote's Settings button panel lives in launcherx and goes with it, colour keys and the TV key reach `InputKeyService`; `DISPLAY_SETTINGS` opens the picture/backlight panel over HDMI; Live TV needs `live_tv_action`; same board as the [Master-G 2K note](../docs/devices/master-g-2k-smart-tv.md); 0.96 GB"
+}

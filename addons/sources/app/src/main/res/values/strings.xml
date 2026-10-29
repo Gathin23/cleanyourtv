@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sources</string>
+    <string name="state_nothing">nothing connected</string>
+    <string name="state_standby">connected, in standby</string>
+    <string name="state_connected">connected</string>
+    <string name="live_tv">Live TV</string>
+    <string name="live_tv_detail">The TV\'s antenna or cable tuner.</string>
+    <string name="no_sources">No sources</string>
+    <string name="no_sources_detail">This TV reports no HDMI or tuner inputs.</string>
+    <string name="cant_open">This TV has no app that opens that source.</string>
+    <plurals name="devices_connected">
+        <item quantity="one">%1$d device connected.</item>
+        <item quantity="other">%1$d devices connected.</item>
+    </plurals>
 </resources>

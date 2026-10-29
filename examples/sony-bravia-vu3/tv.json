@@ -2,5 +2,5 @@
   "tv": "Sony BRAVIA KD-55X75K (BRAVIA_VU3_4K, Realtek rtd2885m)",
   "os": "Google TV 14",
   "brand": "Sony",
-  "notes": "Disables Google setup, feedback, games, calendar sync, print, personalization and Sony demo/help/promotions apps; keeps Live TV, core Google services, streaming apps and inputs."
+  "notes": "Disables Google setup, feedback, games, calendar sync, print, personalization and Sony demo/help/promotions apps; keeps Live TV, core Google services, streaming apps and inputs. A second unit on the same build keeps the stock launcher for the remote's app buttons, with the new launcher's Home redirect (see [its README](sony-bravia-vu3/README.md))."
 }

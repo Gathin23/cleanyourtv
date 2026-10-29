@@ -9,6 +9,12 @@
 # Ordinary comments get their own concurrency group, so a "done, pushed" comment can't cancel the review of the
 # push it talks about (that is what left #670 and #730 stale). Every 6 hours a sweep re-reviews any open PR whose
 # review is older than its head commit; the first sweep also redoes the v1 reviews once (about $2.50).
+#
+# 0GM rollout: after the review, a duplicate and collision pass on 0GM (information only: a "Possibly collides with
+# #N" line in the Checks of both PRs, never a verdict or a label). When a PR opens: only its own pairs. On the
+# 6-hourly sweep and a manual backfill: every open PR (about $0.03 and 1-2 minutes). Shadow, for 2 days: the same
+# review again with context-blocks DPX as a dry run (nothing written; its verdict goes to the log as MB-SHADOW
+# lines, on its own ledger so it never uses the live cap). Remove the two shadow steps after the comparison.
 name: maintainer-bot
 on:
   pull_request_target:
@@ -36,27 +42,62 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
+    # Only here: forks have no OG_PC_API_KEY, so the job would fail on every pull request in them (#2032).
     if: >-
+      github.repository == 'Gathin23/cleanyourtv' && (
       (github.event_name == 'pull_request_target' && !github.event.pull_request.draft) ||
       github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' ||
       (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
        startsWith(github.event.comment.body, '/bot review') &&
-       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)))
     runs-on: ubuntu-latest
     # A single PR review gets 30 minutes; the backfill (workflow_dispatch) and the 6-hourly sweep keep 5 hours.
     timeout-minutes: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && 300 || 30 }}
     steps:
       - id: day
         run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: .maintainer-bot
           key: maintainer-bot-ledger-${{ steps.day.outputs.day }}-${{ github.run_id }}
           restore-keys: maintainer-bot-ledger-${{ steps.day.outputs.day }}-
-      - uses: Gathin23/maintainer-bot@794dd7e86815c63b04e82be2c4fb8494b2af25c8 # maintainer-bot: tv.json lists, pinned
+      - uses: Gathin23/maintainer-bot@dc295e24beb36f09ead3884eba65007a64912cfb # maintainer-bot 0gm-rollout: cache-aware ledger, 0GM duplicate pass, pinned
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           og-pc-api-key: ${{ secrets.OG_PC_API_KEY }}
           pr: ${{ github.event.pull_request.number || github.event.issue.number || inputs.pr }}
           force: ${{ github.event_name == 'issue_comment' }}
           daily-cap-usd: "100"
+      - name: Duplicate and collision pass (0GM)
+        if: >-
+          (github.event_name == 'pull_request_target' &&
+           contains(fromJSON('["opened","reopened","ready_for_review"]'), github.event.action)) ||
+          github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.pr == '')
+        continue-on-error: true
+        uses: Gathin23/maintainer-bot@dc295e24beb36f09ead3884eba65007a64912cfb # same pin as above
+        with:
+          mode: dedupe
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          og-pc-api-key: ${{ secrets.OG_PC_API_KEY }}
+          pr: ${{ github.event.pull_request.number }}
+          daily-cap-usd: "100"
+          dedupe-cap-usd: "1"
+      - name: Shadow review with DPX context (dry run, 2 days)
+        if: github.event_name == 'pull_request_target'
+        continue-on-error: true
+        uses: Gathin23/maintainer-bot@dc295e24beb36f09ead3884eba65007a64912cfb # same pin as above
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          og-pc-api-key: ${{ secrets.OG_PC_API_KEY }}
+          pr: ${{ github.event.pull_request.number }}
+          dry-run: "true"
+          force: "true"
+          context-blocks: DPX
+          per-pr-cap-usd: "1.5"
+          daily-cap-usd: "5"
+          ledger-dir: .maintainer-bot/shadow
+          results-file: .maintainer-bot/shadow/${{ github.run_id }}.jsonl
+      - name: Shadow verdict to the log
+        if: github.event_name == 'pull_request_target'
+        continue-on-error: true
+        run: sed 's/^/MB-SHADOW /' ".maintainer-bot/shadow/${{ github.run_id }}.jsonl" 2>/dev/null || true

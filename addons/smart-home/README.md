@@ -70,7 +70,7 @@ To build only: `cd addons/smart-home && ./gradlew assembleRelease`; the JVM test
 
 ## Tested on
 
-MOKA R8G (Android 14), on a home app that implements the module-card spec, against a stand-in server on the home network answering with Home Assistant's documented response shapes: the config pushed through `ConfigProvider`, reading the states, running a scene and dimming a light (the requests arrived as the REST API documents them). **Not yet tried against a real Home Assistant:** the author's server was down; a report from someone with one is welcome. The screenshot shows that demo data, with the address blurred. The JVM tests cover parsing, the service calls, the request headers against a local stand-in, and errors.
+MOKA R8G (Android 14), on a home app that implements the module-card spec, against a stand-in server on the home network answering with Home Assistant's documented response shapes: the config pushed through `ConfigProvider`, reading the states, running a scene and dimming a light (the requests arrived as the REST API documents them). On a TCL Smart TV Pro (G08, Android 14), [#1752](https://github.com/Gathin23/cleanyourtv/issues/1752) reports a connection to a real Home Assistant server and lists entities with their current states; running a scene and toggling a light were not tested there. The screenshot shows the stand-in data, with the address blurred. The JVM tests cover parsing, the service calls, the request headers against a local stand-in, and errors.
 
 ## Maintainer
 

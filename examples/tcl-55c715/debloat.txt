@@ -1,6 +1,8 @@
 # TCL 55C715 QLED (2020, Belgium), reports ro.product.model BeyondTV2 / device BeyondTV, board rtd285o (Realtek RT2851),
 # client type TCL-EU-RT2851-S1, software V8-R851T02-LF1V606 (AP06), Android TV 9 (API 28), build PPR1.180610.011,
 # security patch 2020-09-05, 2 GB RAM. Same firmware as examples/tcl-beyondtv-rt2851/, which was the starting point.
+# Second unit: TCL 55C718 (Finland), same build: ro.product.model BeyondTV2, fingerprint TCL/BeyondTV2/BeyondTV:9/PPR1.180610.011/AP06,
+# software V8-R851T02-LF1V606, client type TCL-EU-RT2851-S1, 2 GB RAM, armeabi-v7a, stock Home com.google.android.tvlauncher 7.7.15.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55c715/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55c715/debloat.txt
@@ -25,6 +27,14 @@
 # - Disabling com.google.android.katniss (group 6) also disables search on the stock home screen, typed search too.
 # - Settings > Applications opens TCL "TV Guard" (com.tcl.tvweishi), and still does while it is disabled.
 # - Re-enable com.tcl.tvweishi and com.tcl.appmarket2 (group 7) while installing the launcher, as on the RT2851 list.
+# - 55C718: disable.sh skipped android.autoinstalls.config.tcl.device and com.google.android.leanbacklauncher.recommendations
+#   (the input-driver check found no permission block in dumpsys for them), so they stayed enabled; nothing else on the list
+#   needed an override. pm disable-user on com.tcl.usercenter is refused for the shell (SecurityException), as noted above.
+#
+# Status: 2026-10-27, 55C718 (Finland): groups 1 to 6 and 8 applied (com.tcl.versionUpdateApp and Chromecast left on), launcher
+# installed, then group 7 and com.google.android.backdrop disabled. Netflix, YouTube, Yle Areena, Live TV, HDMI through the
+# Inputs menu and the source key, and the remote worked after each step and after restarts; in daily use for 4 days since.
+# Re-enabled afterwards: none.
 #
 # Already disabled at the factory, left alone: the 14 uk.co.freeview.* apps, com.tcl.bootadservice,
 # com.tcl.common.terminalmanagerplus, com.tcl.smartalexa, com.tcl.notereminder, com.tcl.gallery, Stan, ZEE5, Eros Now,

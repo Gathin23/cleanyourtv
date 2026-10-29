@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Game Day</string>
+    <string name="subtitle">Your teams\' next games on Home, from your own calendars</string>
+
+    <string name="add">Add a calendar</string>
+    <string name="seconds">Seconds per turn</string>
+    <string name="fetch_now">Fetch now</string>
+    <string name="fetching">Fetching</string>
+    <string name="help">How to add calendars from a computer</string>
+    <string name="none_yet">No calendars yet.</string>
+    <string name="none_yet_more">Add a team\'s calendar link (from Stanza, a team\'s website, or Google Calendar\'s \"Secret address in iCal format\"), or set them all at once from a computer with setup.sh.</string>
+    <string name="footer">Updated %1$s · %2$s · links are never shown in full</string>
+    <plurals name="calendars">
+        <item quantity="one">%d calendar</item>
+        <item quantity="other">%d calendars</item>
+    </plurals>
+    <plurals name="entries">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
+    <string name="full">At most 20 calendars</string>
+    <string name="failed">Last loaded %1$s. %2$s. Showing that copy.</string>
+    <string name="failed_never">Could not load: %1$s.</string>
+    <string name="help_title">From a computer</string>
+    <string name="help_text">Long links are easier to paste than to type with the remote. On a computer with this repository and ADB access to the TV, put one calendar per line in addons/game-day/calendars.txt as\n\nsport | name | link\n\nthen run\n\nTV_HOST=&lt;tv ip&gt; addons/game-day/setup.sh\n\n(setup.ps1 on Windows). It replaces this list and prints how each calendar loaded. Links are never printed.</string>
+    <string name="ok">OK</string>
+
+    <string name="sport">Sport</string>
+    <string name="colour">Colour</string>
+    <string name="name">Name</string>
+    <string name="link">Link</string>
+    <string name="fetch_one">Fetch this calendar now</string>
+    <string name="move_up">Move up in the list</string>
+    <string name="remove">Remove calendar</string>
+    <string name="loaded">Loaded %1$s · next: %2$s</string>
+    <string name="remove_title">Remove %1$s?</string>
+    <string name="remove_text">Its games leave Home. The link is deleted from the TV; your calendar itself is not touched.</string>
+    <string name="keep">Keep it</string>
+    <string name="remove_short">Remove</string>
+
+    <string name="step_link">1 Link</string>
+    <string name="step_name">2 Name</string>
+    <string name="step_sport">3 Sport</string>
+    <string name="step_colour">4 Colour</string>
+    <string name="next">Next</string>
+    <string name="link_hint">Links starting with webcal:// work too</string>
+    <string name="link_bad">That is not a calendar link. It starts with https://, http:// or webcal://.</string>
+    <string name="link_twice">That calendar is already on the list.</string>
+    <string name="checking">Checking the link</string>
+    <string name="checked">Checked: %1$s found. The name is only for this list.</string>
+    <string name="name_bad">The name is empty or over 40 characters.</string>
+    <string name="colour_hint">Left and Right to choose, Up and Down for the shade, OK to save · a dot marks a colour another calendar uses</string>
+    <string name="on_home">On Home</string>
+    <string name="no_entry">Nothing in the next 7 days</string>
+    <string name="live_now">Live now</string>
+    <string name="seconds_text">How long each team stays on Home before the next one</string>
+    <string name="seconds_hint">10 to 120 seconds, in steps of 5 · OK to save</string>
+</resources>

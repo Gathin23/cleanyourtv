@@ -22,7 +22,7 @@
 #   black, looping recovery screen. Shell cannot disable that component. Disabling the whole setupwraith
 #   package worked until a reboot, after which this TV had it back in charge, unlike the MOOR2, QM6K and
 #   Chromecast reports where the disable survives. launcher/build-and-install.sh refuses and rolls back
-#   while Home resolves to setupwraith (README, Troubleshooting).
+#   while Home resolves to setupwraith (docs/TROUBLESHOOTING.md, "The new launcher still doesn't own Home").
 #   Recover with: pm enable com.google.android.apps.tv.launcherx; pm enable com.google.android.tungsten.setupwraith
 # - AR71 (US, a TCL 55Q750G, 21 October 2026): the first run of build-and-install.sh on G05 firmware.
 #   setupwraith stayed disabled across a reboot and Home stayed with the new launcher (mFocusedApp =

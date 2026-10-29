@@ -1,0 +1,55 @@
+# HY320 projector (t950s_be311, Google-certified Android TV), Android 13 (SDK 33)
+# Firmware be311-13 TQ2A.20250729 06:21:20.E1, 1280x720 panel, 213dpi.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hy320/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hy320/debloat.txt com.htc.htclauncherhighenglishd08
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Kept on purpose:
+# - com.htc.htcsettings: projector's own settings (Wi-Fi, picture, keystone)
+# - com.htc.htclauncherhighenglishd08: stock launcher, disabled during setup. build-and-install.sh does
+#   not know it (it is not one of the stock launchers that script recognises), so run it with
+#   STOCK_LAUNCHER=none and set Home with cmd package set-home-activity. This firmware's Home key also
+#   carries a custom HOME.JM category, which the launcher in this repository does not declare: see the
+#   folder README and #1799.
+# - com.softwinner.tcorrection: projection/keystone settings
+# - com.droidlogic.updater: firmware updater (kept enabled; firmware updaters are better left on)
+# - com.droidlogic.tvinput: HDMI/input hardware layer (TV_INPUT_HARDWARE permission)
+# - Factory/test packages (com.fb): not started, disabled only
+# - com.google.android.katniss (Google Assistant), com.google.android.tvrecommendations,
+#   com.google.android.landscape (screensaver), com.droidlogic.miracast, com.waxrain.airplayer2:
+#   kept enabled per user preference
+#
+# User keeps: Netflix, YouTube, MX Player, Wave IPTV, Google Assistant, content recommendations,
+# screensaver, Miracast, AirPlay/DLNA, Clock, Music Player, File Browser, Media Center, Gallery
+
+# Manufacturer ad/telemetry services
+com.jiumao.screen.systemadplayer
+com.smart.tv.launcher
+com.ht1.launcher
+
+# Manufacturer app stores
+com.master.apps
+com.master.tv.market
+com.overseas.store.appstore
+com.android.mgstv
+
+# Background services not needed
+com.fb
+com.define.shellservice
+com.jm.jmlauncher
+com.android.printspooler
+com.android.wallpaperbackup
+com.android.camera2
+com.android.hotspot2.osulogin
+com.android.soundpicker
+com.android.htmlviewer
+com.spocky.projengmenu
+
+# Preloaded apps not used
+com.droidlogic.videoplayer
+com.droidlogic.imageplayer
+com.android.chrome
+com.google.android.youtube.tvmusic
+com.amazon.avod.thirdpartyclient
+org.videolan.vlc

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Météo</string>
+
+    <string name="feels_like">Ressenti %1$d°</string>
+    <string name="humidity">Humidité %1$d %%</string>
+    <string name="wind">Vent %1$d km/h</string>
+    <string name="wind_mph">Vent %1$d mph</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Qualité de l\'air %1$d · %2$s</string>
+    <string name="updated">Mis à jour à %1$s · Open-Meteo</string>
+    <string name="change_city">Changer de ville</string>
+    <string name="loading">Chargement de la météo…</string>
+    <string name="offline">Open-Meteo est injoignable. Vérifiez la connexion Internet de la TV ; nouvel essai dans 5 minutes.</string>
+
+    <string name="pick_title">Quelle ville ?</string>
+    <string name="pick_hint">Nom de la ville, par ex. Lyon</string>
+    <string name="pick_search">Rechercher</string>
+    <string name="pick_none">Aucun lieu nommé « %1$s »</string>
+    <string name="pick_first">Choisissez une ville pour voir sa météo.</string>
+
+    <string name="aqi_good">Bonne</string>
+    <string name="aqi_moderate">Moyenne</string>
+    <string name="aqi_sensitive">Mauvaise pour les personnes sensibles</string>
+    <string name="aqi_unhealthy">Mauvaise</string>
+    <string name="aqi_very_unhealthy">Très mauvaise</string>
+    <string name="aqi_hazardous">Dangereuse</string>
+
+    <string name="sky_clear">Dégagé</string>
+    <string name="sky_sunny">Ensoleillé</string>
+    <string name="sky_mostly_clear">Plutôt dégagé</string>
+    <string name="sky_mostly_sunny">Plutôt ensoleillé</string>
+    <string name="sky_partly_cloudy">Partiellement nuageux</string>
+    <string name="sky_cloudy">Nuageux</string>
+    <string name="sky_fog">Brouillard</string>
+    <string name="sky_drizzle">Bruine</string>
+    <string name="sky_freezing_drizzle">Bruine verglaçante</string>
+    <string name="sky_light_rain">Pluie faible</string>
+    <string name="sky_rain">Pluie</string>
+    <string name="sky_heavy_rain">Forte pluie</string>
+    <string name="sky_freezing_rain">Pluie verglaçante</string>
+    <string name="sky_light_snow">Neige faible</string>
+    <string name="sky_snow">Neige</string>
+    <string name="sky_heavy_snow">Forte neige</string>
+    <string name="sky_snow_grains">Neige en grains</string>
+    <string name="sky_showers">Averses</string>
+    <string name="sky_snow_showers">Averses de neige</string>
+    <string name="sky_thunderstorm">Orage</string>
+</resources>

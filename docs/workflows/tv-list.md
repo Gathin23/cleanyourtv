@@ -22,18 +22,26 @@
      "notes": "PatchWall, Mi analytics, SmartShare, MiLink"
    }
    ```
-   `tv` and `os` fill the folder's row in both TV tables, `brand` the brand line (spelled as it is there),
+   `tv` and `os` fill the folder's row in the TV tables, `brand` the README's brand grid (spelled as it is there),
    `notes` the Notes cell in `examples/README.md`: one line of Markdown, links relative to `examples/`, `\|`
-   for a pipe. `readme_os` is the one optional key: it is the OS cell of the front page's two-column table,
+   for a pipe. `readme_os` is the one optional key: it is the OS cell of the two-column table in `README.nl.md`,
    for a set whose row there should read shorter than the same set's row in `examples/README.md` - that table
-   has room for `Google TV launcher on Android TV 11`, the front page for `Google TV 11`.
+   has room for `Google TV launcher on Android TV 11`, the short one for `Google TV 11`.
    `tests/test_examples.py` checks the file.
-5. Change nothing outside the folder. The tables in `README.md` and `examples/README.md`, the brand line and the
-   counts (the `TV models` number in the card's alt text) are generated from every `tv.json` by
-   `tools/gen_tables.py`, which a maintainer runs after merging; CI compares them only on `main`.
-6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Do not add
-   install or restore scripts, Private DNS or AdGuard setup, or `pm uninstall` steps: the folder only
-   disables, and `tools/disable.sh` and `tools/restore.sh` do the rest.
+5. Change nothing outside the folder. The tables in `examples/README.md` and `README.nl.md`, the brand grid in
+   `README.md`, `README.nl.md` and `README.de.md`, and the counts (the `TV models` number in the card's alt text)
+   are generated from every `tv.json` by `tools/gen_tables.py`, which a maintainer runs after merging; CI compares
+   them only on `main`.
+6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. That
+   `config.json` takes only the keys `themes/README.md`'s Keys table says a theme can set: the rows it marks
+   `config.xml` only - the vendor settings screens, the icon tiles - are never read out of a pushed file, so
+   `theme.sh` drops them without a word and the launcher keeps its own value. A set that needs one wants that
+   line in the folder's `README.md`, for the owner to set in `launcher/app/src/main/res/values/config.xml`
+   before building. `tests/test_shipped_config_keys_are_read.py` holds every shipped `config.json` to the
+   table. Do not add install or restore scripts, Private DNS or AdGuard setup, or `pm uninstall` steps: the
+   folder only disables, and `tools/disable.sh` and `tools/restore.sh` do the rest.
+   `tests/test_list_folders_ship_lists_only.py` holds every folder under `examples/` to that, so a script
+   in the folder is a red suite rather than a second answer to the undo every list already has.
 
 A model with notes but no several-day list goes in `docs/devices/<brand-model>.md`, with one line under the notes
 list at the end of `examples/README.md`. A folder in `examples/` must have packages in it.

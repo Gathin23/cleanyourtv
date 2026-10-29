@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Timer di spegnimento</string>
+    <string name="hint">Scegli quando la TV va in standby. Un avviso compare un minuto prima.</string>
+    <string name="in_minutes">%1$d min</string>
+    <string name="cancel">Annulla il timer</string>
+    <string name="state_off">Nessun timer impostato.</string>
+    <string name="state_on">Standby alle %1$s.</string>
+    <string name="no_service">Il servizio di accessibilità del timer di spegnimento è spento (lancia lo script di installazione).</string>
+    <string name="warning_title">La TV si sta spegnendo</string>
+    <string name="warning_seconds">tra %1$d secondi</string>
+    <string name="more">Altri 15 minuti</string>
+    <string name="now">Spegni ora</string>
+    <string name="service_label">Timer di spegnimento</string>
+    <string name="service_description">Mette la TV in standby solo alla fine del timer di spegnimento. Non legge lo schermo.</string>
+</resources>

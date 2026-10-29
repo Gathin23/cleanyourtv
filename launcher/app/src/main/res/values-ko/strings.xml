@@ -10,12 +10,14 @@
     <string name="not_connected">기기 없음</string>
     <string name="live_tv">실시간 TV</string>
     <string name="no_inputs">입력 없음</string>
+    <string name="more_inputs">입력 더보기</string>
     <string name="good_morning">좋은 아침이에요</string>
     <string name="good_afternoon">좋은 오후예요</string>
     <string name="good_evening">좋은 저녁이에요</string>
     <string name="good_night">편안한 밤 되세요</string>
     <string name="festival_dussehra_greeting">행복한 두세라 되세요</string>
     <string name="festival_diwali_greeting">행복한 디왈리 되세요</string>
+    <string name="festival_halloween_greeting">해피 할로윈</string>
     <string name="ethernet">이더넷</string>
     <string name="offline">오프라인</string>
     <string name="not_available">이 TV에서 사용할 수 없음</string>
@@ -92,6 +94,7 @@
     <string name="card_state_new_key">새 키</string>
     <string name="card_state_new_label">새 이름</string>
     <string name="dock_edit">독 편집</string>
+    <string name="power_menu">다시 시작…</string>
     <string name="dock_edit_hint">바꿀 독 위치를 고르고 OK를 누르세요. 뒤로 가기(←) 버튼을 누르면 종료됩니다.</string>
     <string name="dock_edit_pick_app">이제 그 자리에 넣을 앱을 고르고 OK를 누르세요. 뒤로 가기(←) 버튼을 누르면 다른 위치를 고릅니다.</string>
     <string name="tile_add_to_dock">독에 추가</string>
@@ -144,4 +147,5 @@
     <string name="race_countdown_days">%1$d일 %2$d시간</string>
     <!-- Cinematic top shelf (cinematic_home): %1$s is when it was last opened, e.g. "5분 전". -->
     <string name="last_opened">마지막 실행 %1$s</string>
+    <string name="game_live">지금 생중계</string>
 </resources>

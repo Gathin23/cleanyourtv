@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: three green rain streaks with bright heads on black. Drawn for this add-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF000000" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#5500FF41" android:pathData="M100,20h12v100h-12z" />
+    <path android:fillColor="#FFD8FFD8" android:pathData="M100,120h12v12h-12z" />
+    <path android:fillColor="#8800FF41" android:pathData="M154,0h12v140h-12z" />
+    <path android:fillColor="#FFD8FFD8" android:pathData="M154,140h12v12h-12z" />
+    <path android:fillColor="#4400FF41" android:pathData="M208,40h12v60h-12z" />
+    <path android:fillColor="#FFD8FFD8" android:pathData="M208,100h12v12h-12z" />
+</vector>

@@ -10,8 +10,8 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -21,6 +21,11 @@ import java.util.List;
 
 /** Remote-friendly settings owned by the launcher; system settings stay one row away. */
 public final class LauncherSettingsActivity extends Activity {
+    @Override
+    protected void attachBaseContext(android.content.Context base) {
+        super.attachBaseContext(LauncherLocale.wrap(base));   // locale
+    }
+
     static final String EXTRA_REORDER = "com.gathin.tvhome.extra.REORDER_FROM_SETTINGS";
     private SharedPreferences choices;
     private final TextView[] columnChoices = new TextView[4];
@@ -92,8 +97,10 @@ public final class LauncherSettingsActivity extends Activity {
                 refresh();
             });
         }
-        // Keep the numeric choices increasing in the Hebrew reading direction. Reorder the
-        // actual views so D-pad focus follows their positions without changing the saved values.
+        // Mirror text alignment without globally opting the launcher into RTL. Numeric rows
+        // still need explicit ordering in Android's no-supportsRtl compatibility mode.
+        if (getResources().getBoolean(R.bool.rtl_menu_bar))
+            findViewById(android.R.id.content).setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         if (getResources().getBoolean(R.bool.rtl_app_grid)) {
             reverseRow(columnChoices);
             reverseRow(rowChoices);

@@ -1,0 +1,52 @@
+# PPTV p34a4p (Suning PPTV, Amlogic board), Android 5.1.1, build LMY47V.20251117, 1 GB RAM.
+# Tested 2026-10-24. First PPTV list.
+# ADB: 5555, no auth (ro.adb.secure=0); the owner re-opens network debugging after a power cycle.
+# Stock launcher: com.pptv.launcher (locked in, see below). Live TV: com.pptv.tv.
+#
+# Apply:   NOT tools/disable.sh — it uses pm disable-user, which this firmware DENIES (see
+#          the blocker below). Hide each package instead, one pm command per shell call:
+#   grep -vE '^\s*(#|$)' examples/pptv-p34a4p/debloat.txt | sed -E 's/\s+#.*$//' \
+#     | awk '{print "pm hide " $1}' | TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py --batch
+# Undo:    NOT tools/restore.sh — its pm enable cannot undo a hide on this firmware.
+#          Same as Apply, but `pm unhide`.
+#
+# The blocker: pm disable-user is denied for every package with a SecurityException
+# (attempt to change component state — the same wall the FFalcon r34a0 and Whaley WTV55K1
+# sets hit on Android 5.x). pm hide instead: the hidden state persists across reboots on 5.1
+# and pm unhide restores. Check: dumpsys package <pkg> | grep "User 0"  (hidden=true).
+#
+# SDK 22, below the bundled launcher's minSdk 26: debloat only, the stock launcher stays —
+# and it cannot be replaced either (its HOME intent filter carries a custom
+# android.intent.category.HOME.pptv, no chooser ever appears, and hiding it kills the HOME
+# key after the next reboot). The full story is in docs/devices/pptv-p34a4p.md.
+#
+# Ads on this set come in three layers; the list below is layer 1. Layer 2 is the Amlogic
+# bootanimation video ad, killed with properties (these survive reboots; persist.sys.advert
+# gets flipped back to 1 by an app after boot, the ad stays gone with videoadvert=0):
+#   setprop persist.sys.videoadvert 0; setprop persist.sys.picadvert 0
+#   setprop persist.sys.advert 0; setprop persist.sys.advert_enable 0
+#   setprop persist.sys.advert_status 0
+# Layer 3 is network-layer ads — the launcher's hifuntv.com/huan.tv feed and the hpplay cast
+# promos — which no package list can reach. The device note names the domains that must stay
+# reachable if you block them elsewhere.
+#
+# Watchdog: com.pptv.search, com.pptv.usercenter and the launcher embed a MyInstallReceiver
+# (PACKAGE_REMOVED, then download + reinstall of the package). It needs INSTALL_PACKAGES,
+# so once snisupdate / push.service / newtvad are hidden the chain is dead — nothing came
+# back across a day of reboots.
+#
+# Kept on purpose: com.pptv.launcher (the only HOME handler), com.pptv.snisservice (SNIS
+# service bus, the framework's core), com.pptv.tv (live TV), com.pplive.tvplayer (local
+# player, DLNA/AirPlay receiver), com.pptv.lisenceauth (CIBN licence check), and — after a
+# failed experiment — com.pptv.search, com.pptv.usercenter, com.pptv.tvhousekeeper,
+# com.pptv.terminalmanager, com.pptv.microhelper, com.nanosic.www.remoteota,
+# com.example.upgrad, com.bajintech.karaok: hiding those eight crashed the launcher in a
+# boot loop until all were unhidden, and the culprit was never isolated. If you experiment,
+# hide one at a time with a reboot in between.
+
+# PPTV ad and push services
+com.pptv.newtvad                       # TvAdService, banner ads
+com.pptv.push.service                  # push channel
+com.pptv.snisupdate                    # silent installer (PushAppInstallActivity)
+com.pptv.screenprotect                 # screensaver ads
+com.pptv.tvbuy                         # shopping app

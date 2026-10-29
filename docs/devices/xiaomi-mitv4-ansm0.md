@@ -104,7 +104,7 @@ production builds`. So the refusal belongs to the generation, not one build.
   (and its installer allowlist) stays enabled:
 
   ```bash
-  "$PY" -I tools/tv.py 'appops set com.xiaomi.mitv.tvpush.tvpushservice POST_NOTIFICATION deny'
+  tools/venv/bin/python -I tools/tv.py 'appops set com.xiaomi.mitv.tvpush.tvpushservice POST_NOTIFICATION deny'
   # check: appops get com.xiaomi.mitv.tvpush.tvpushservice    undo: ... POST_NOTIFICATION allow
   ```
 

@@ -8,6 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,5 +185,73 @@ public class StartupBrandingTest {
         }
         assertEquals("12L", Compat.release(32));
         assertEquals("API 40", Compat.release(40));
+    }
+
+    // A failed import must leave a picture of the same name alone (picked files keep their provider's name).
+    private static File folderWithLogo() throws IOException {
+        File dir = Files.createTempDirectory("pictures").toFile();
+        Files.write(new File(dir, "logo.png").toPath(), "old".getBytes());
+        return dir;
+    }
+
+    private static String logo(File dir) throws IOException {
+        return new String(Files.readAllBytes(new File(dir, "logo.png").toPath()));
+    }
+
+    private static void onlyLogo(File dir) {
+        assertArrayEquals(new String[]{"logo.png"}, dir.list());
+    }
+
+    @Test
+    public void unusableImportKeepsThePicture() throws IOException {
+        File dir = folderWithLogo();
+        assertFalse(Images.replace(new ByteArrayInputStream("new".getBytes()), dir, "logo.png", f -> false));
+        assertEquals("old", logo(dir));
+        onlyLogo(dir);
+    }
+
+    @Test
+    public void oversizedImportKeepsThePicture() throws IOException {
+        File dir = folderWithLogo();
+        InputStream endless = new InputStream() {
+            @Override
+            public int read() {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) {
+                return len;
+            }
+        };
+        assertFalse(Images.replace(endless, dir, "logo.png", f -> true));
+        assertEquals("old", logo(dir));
+        onlyLogo(dir);
+    }
+
+    @Test
+    public void failedReadKeepsThePicture() throws IOException {
+        File dir = folderWithLogo();
+        InputStream broken = new InputStream() {
+            @Override
+            public int read() throws IOException {
+                throw new IOException("provider went away");
+            }
+        };
+        try {
+            Images.replace(broken, dir, "logo.png", f -> true);
+        } catch (IOException expected) {
+            // what copyIn turns into null
+        }
+        assertEquals("old", logo(dir));
+        onlyLogo(dir);
+    }
+
+    @Test
+    public void usableImportReplacesThePicture() throws IOException {
+        File dir = folderWithLogo();
+        assertTrue(Images.replace(new ByteArrayInputStream("new".getBytes()), dir, "logo.png", f -> f.length() == 3));
+        assertEquals("new", logo(dir));
+        onlyLogo(dir);
     }
 }

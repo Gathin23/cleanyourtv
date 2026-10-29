@@ -11,7 +11,7 @@
 #                  com.google.android.tungsten.setupwraith to your copy.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-kowloon/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-kowloon/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-kowloon/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Only the streaming and music apps below are tested on this TV. Telemetry, partner and background packages

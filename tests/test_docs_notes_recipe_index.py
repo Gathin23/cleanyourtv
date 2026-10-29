@@ -1,4 +1,4 @@
-"""The docs recipe asks for the link that keeps a new docs/devices/ note findable.
+"""The docs recipe asks for the links that keep a new docs page findable.
 
 `docs/workflows/docs-notes.md` is the page AGENTS.md's workflow list and CONTRIBUTING's routing table
 send a contributor to for "a troubleshooting entry, a fix to PROMPT.md, or any other docs change", and
@@ -10,11 +10,16 @@ the row of its folder in `examples/README.md` when the model has a list of its o
 as it read left the suite red: `docs/devices/<name>.md : notes nothing links to (add them to
 examples/README.md, either to the row of their list or to the notes index)`.
 
-Nothing here copies the rule: the section heading the index is read by, the row rule and the
-repo-wide sweep all come from `tests/test_device_notes_index.py`, and two tests below run that
-checker over a tree written here - a note nothing links has to be reported, and the same note linked
-from `examples/README.md` has to be quiet - so a checker that stops enforcing fails this pair instead
-of letting the page pass silently.
+It said nothing either about the page a docs change is when it is not a device note: a page added
+below `docs/` is held to `tests/test_docs_pages_reachable.py`, which reported
+`pages under docs/ that nothing links to: docs/hdmi-cec-notes.md` for a page written beside them, and
+the recipe is where a contributor is told what a docs change needs.
+
+Nothing here copies either rule: the section heading the index is read by, the row rule and the
+repo-wide sweeps all come from `tests/test_device_notes_index.py` and `tests/test_docs_pages_reachable.py`,
+and four tests below run those checkers over trees written here - a page nothing links has to be
+reported, and the same page linked from a page a reader comes through has to be quiet - so a checker
+that stops enforcing fails these pairs instead of letting the page pass silently.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -31,6 +36,7 @@ from test_device_notes_index import (  # noqa: E402
     index_notes_with_their_own_list,
     unlinked_notes,
 )
+from test_docs_pages_reachable import unlinked_docs  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "docs" / "workflows" / "docs-notes.md"
@@ -164,6 +170,26 @@ class TheBulletReaderTest(unittest.TestCase):
         self.assertEqual([b for b in bullets(text) if "docs/devices" in b],
                          ["Brand-specific knowledge goes in `examples/` or `docs/devices/`."])
         self.assertEqual(index_bullets(text), [])
+
+
+class ThePageCheckerStillBitesTest(unittest.TestCase):
+    def tree(self, files):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        for name, text in files.items():
+            (root / name).parent.mkdir(parents=True, exist_ok=True)
+            (root / name).write_text(text, encoding="utf-8")
+        return root
+
+    def test_a_page_nothing_links_is_reported(self):
+        root = self.tree({"README.md": "# readme\n", "docs/hdmi-cec.md": "# notes\n"})
+        self.assertEqual(["docs/hdmi-cec.md"], unlinked_docs(root))
+
+    def test_the_same_page_linked_from_a_page_is_quiet(self):
+        root = self.tree({"CONTRIBUTING.md": "Read [the HDMI notes](docs/hdmi-cec.md).\n",
+                          "docs/hdmi-cec.md": "# notes\n"})
+        self.assertEqual([], unlinked_docs(root))
 
 
 if __name__ == "__main__":

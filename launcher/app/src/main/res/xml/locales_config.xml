@@ -8,6 +8,8 @@
     <locale android:name="de" />
     <locale android:name="ca" />
     <locale android:name="es" />
+    <!-- Latin American Spanish (values-b+es+419). -->
+    <locale android:name="es-419" />
     <locale android:name="fr" />
     <locale android:name="ru" />
     <locale android:name="zh-CN" />
@@ -32,4 +34,6 @@
     <locale android:name="uz" />
     <locale android:name="uk" />
     <locale android:name="ko" />
+    <locale android:name="da" />
+    <locale android:name="sv" />
 </locale-config>

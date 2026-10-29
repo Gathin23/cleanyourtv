@@ -150,6 +150,8 @@ class EmptyListTest(unittest.TestCase):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
         if entry == "sh":
+            if os.name != "posix" or not shutil.which("bash"):
+                raise unittest.SkipTest("disable.sh is a POSIX script; it needs bash")
             argv = ["bash", str(self.tools / "disable.sh"), str(self.list_path)]
         else:
             argv = [PWSH, "-NoProfile", "-File", str(self.tools / "disable.ps1"),

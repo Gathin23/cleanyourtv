@@ -14,6 +14,12 @@
   which is how three of them were found sitting unread. That section is a claim as well: an entry filed there
   says its model has no list, so once the list lands the link moves into the row, where
   `index_notes_with_their_own_list` wants it.
+- A new page under `docs/`, in a folder of its own too, is linked from a page a reader comes through:
+  `CONTRIBUTING.md`, `README.md`, `AGENTS.md`, or a page in `docs/` that is already linked.
+  `tests/test_docs_pages_reachable.py` walks every page below `docs/` and fails on one nothing links to
+  (`pages under docs/ that nothing links to: docs/<the new page>.md`); a path inside a code block is an
+  example, not a link. That is how `docs/DOS-AND-DONTS.md` was found, a page whose own rule is "no
+  screenshots or reports in `docs/` that nothing links to" and which nothing in the repository named.
 - Several tests pin facts in `docs/devices/` notes, `PROMPT.md` and `docs/TROUBLESHOOTING.md` (the
   `tests/test_*_note.py` files). If you reword one of those passages, run the suite and keep the fact.
 - Docs and the README stay in step: a new list gets its `tv.json` (the TV tables are generated from it), and a

@@ -2,5 +2,5 @@
   "tv": "Sankey SMART_TV (CVTE, HiSilicon Hi3751V350, 1 GB)",
   "os": "Android 12",
   "brand": "Sankey",
-  "notes": "CVTE ad and push services (`gaia.ad`, `wonder.cloud`, `industries`), the ad screensaver, the \"cleaner\", the stock weather and Google feedback; Miracast off by choice; the CVTE store kept by default (it hosts the stock launcher's Apps grid; the tested set turned it off because it kept pushing a CVTE-signed \"WebTube\" as a YouTube update); no Developer options and no App info page, ADB from the CVTE factory menu (MENU 1147); stock launcher kept (no FallbackHome, `COMMON_HOME`, #1201); Inputs pill opens `com.cvte.tv.globalui/.InputSourceActivity`"
+  "notes": "CVTE ad and push services (`gaia.ad`, `wonder.cloud`, `industries`), the ad screensaver, the \"cleaner\", the stock weather and Google feedback; Miracast off by choice; the CVTE store kept by default (it hosts the stock launcher's Apps grid; the tested set turned it off because it kept pushing a CVTE-signed \"WebTube\" as a YouTube update); no Developer options and no App info page, ADB from the CVTE factory menu (MENU 1147); stock launcher kept (no FallbackHome, and power-on needs a direct-boot-aware Home; #1201, #1448); Inputs pill opens `com.cvte.tv.globalui/.InputSourceActivity`"
 }

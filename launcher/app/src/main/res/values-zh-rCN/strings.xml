@@ -37,12 +37,14 @@
     <string name="not_connected">未连接</string>
     <string name="live_tv">电视直播</string>
     <string name="no_inputs">未找到输入源</string>
+    <string name="more_inputs">更多输入源</string>
     <string name="good_morning">早上好</string>
     <string name="good_afternoon">下午好</string>
     <string name="good_evening">晚上好</string>
     <string name="good_night">晚安</string>
     <string name="festival_dussehra_greeting">十胜节快乐</string>
     <string name="festival_diwali_greeting">排灯节快乐</string>
+    <string name="festival_halloween_greeting">万圣节快乐</string>
     <string name="ethernet">有线网络</string>
     <string name="offline">未连接网络</string>
     <string name="not_available">此电视不支持该功能</string>
@@ -80,6 +82,7 @@
     <string name="card_state_new_key">新密钥</string>
     <string name="card_state_new_label">新名称</string>
     <string name="dock_edit">编辑程序坞</string>
+    <string name="power_menu">重新启动…</string>
     <string name="dock_edit_hint">选择要更改的程序坞位置，然后按确定。按返回完成。</string>
     <string name="dock_edit_pick_app">现在选择要放在那里的应用，然后按确定。按返回重新选择位置。</string>
     <string name="reorder">调整应用顺序</string>
@@ -144,4 +147,5 @@
     <string name="tile_add_to_dock">添加到程序坞</string>
     <string name="tile_move">移动</string>
     <string name="tile_replace_in_dock">替换为其他应用</string>
+    <string name="game_live">直播中</string>
 </resources>

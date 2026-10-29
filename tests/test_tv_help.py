@@ -100,6 +100,10 @@ class TvHelpTest(unittest.TestCase):
         mark, cmds = work / "mark", work / "cmds"
         env = {k: v for k, v in os.environ.items() if k not in ("TV_HOST", "TV_PORT", "PYTHONPATH")}
         env["HOME"] = str(self.home)
+        # Windows expands `~` from USERPROFILE, not HOME, so tv.py would read the real ~/.android
+        # and make a key of its own instead of the stock one this run put in the temporary home.
+        if os.name == "nt":
+            env["USERPROFILE"] = str(self.home)
         env["STUB_MARK"], env["STUB_CMDS"] = str(mark), str(cmds)
         if stub:
             env["PYTHONPATH"] = str(self.base)
@@ -213,7 +217,7 @@ class TvHelpTest(unittest.TestCase):
         # above the adb_shell imports (and above the TV_HOST check, which exits at import time).
         lines = SCRIPT.read_text(encoding="utf-8").splitlines()
         guard = next(n for n, l in enumerate(lines) if 'sys.argv[1] in ("-h", "--help")' in l)
-        client = next(n for n, l in enumerate(lines) if l.startswith("from adb_shell"))
+        client = next(n for n, l in enumerate(lines) if l.lstrip().startswith("from adb_shell"))
         host = next(n for n, l in enumerate(lines) if 'os.environ.get("TV_HOST")' in l)
         self.assertLess(guard, client, "the help branch must run before adb_shell is imported")
         self.assertLess(guard, host, "the help branch must run before TV_HOST is required")

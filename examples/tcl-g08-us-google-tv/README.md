@@ -78,3 +78,51 @@ any accessibility helper; inside another app they go to that app. YouTube needs 
 volume button stepped once per press here too, with TV speakers and no soundbar
 ([TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating)).
 That owner kept the volume ramp and went without the YouTube button.
+## Third unit: TCL 55Q77K on Wi-Fi
+
+TCL 55Q77K, model "Smart TV Pro", the same firmware `UTT2.250416.001 AU16`, on Wi-Fi. Set up on 25 October 2026
+with this list less the streaming apps, AirPlay and Alexa (kept by that owner), then the setup wizard and
+launcherx for the reference launcher. All of it came through a reboot the same day.
+
+- **A wizard-owned network that Settings does not list.** After forgetting and joining the current network again
+  in Settings, `tools/disable.sh` still skipped the wizard: an older network saved during first setup also
+  belonged to it, and Settings > Network & Internet lists only networks in range, so it could not be forgotten
+  there. `tools/tv.py 'cmd wifi list-networks'` shows every saved network with its id;
+  `tools/tv.py 'cmd wifi forget-network <id>'` removed the stale one, the current network stayed connected, and
+  `tools/disable.sh` then disabled the wizard without `FORCE_SETUPWRAITH`.
+- **Power-on** lands on the new Home (`logcat -b events -d | grep wm_set_resumed_activity`); the firmware does
+  not open Live TV by itself, so neither `power_on_home` nor `boot_to_live_tv` is needed.
+- **Every app button back with one helper.** With `INPUT_KEY_SERVICE=1` and these `app_keys`, Netflix, YouTube,
+  Prime Video, Apple TV and the Settings button opened their targets again, pressed on the real remote. TCL TV+ is disabled by this list, so its button (4184) can open any other app;
+  `83:settings` answers the Settings button through the same helper, without `HOME_KEY_SERVICE`. Disney+ needs
+  no entry: TCL still opens it itself.
+
+  ```xml
+  <string-array name="app_keys" translatable="false">
+      <item>4062:com.netflix.ninja</item>
+      <item>190:com.google.android.youtube.tv</item>
+      <item>4099:com.amazon.amazonvideo.livingroom</item>
+      <item>4160:com.apple.atve.androidtv.appletv</item>
+      <!-- the TCL TV+ button, free once TCL TV+ is disabled: 4184:<package of your choice> -->
+      <item>83:settings</item>
+  </string-array>
+  ```
+
+  The held-volume trade described above applies to this helper; it was not measured on this unit.
+
+## Fourth unit: Cast and the freezer
+
+Another `G08_4K_US` set on `UTT2.250416.001 AU16`, in Google TV basic mode with no account, launcherx and the setup
+wizard disabled for a custom Home app. Seen 22 and 23 October 2026.
+
+- **Cast froze.** With launcherx off, `com.google.android.apps.mediashell` sat in the cached state and Android 14's
+  freezer stopped it every few minutes (`isFrozen=true`, `curProcState=19`, and `ActivityManager: freezing <pid>
+  com.google.android.apps.mediashell` in `logcat`). Phones found the TV slowly or not at all, and once its 8009
+  connections sat in `CLOSE_WAIT`. Having the Home app bind `.CastReceiverService` (action
+  `com.google.cast.action.BIND`) kept it at `vis (service)` in `dumpsys activity oom`, and it has not frozen since.
+  Details and the caveat in
+  [TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#working-on-the-tv), under "Casting disappears although the Cast
+  receiver is still running".
+- **Reinstalling the Home app can switch the TV to an input.** While Home restarts, TCL's player `com.tcl.tv` is next
+  in the back stack: it resumes, re-tunes its last input (here the AirPlay input) and stays in front.
+  `am force-stop com.tcl.tv` before `pm install -r` avoids it.

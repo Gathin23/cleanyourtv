@@ -2,7 +2,7 @@
 # build RTK2851P (Realtek/RealtekATV/RealtekATV:9/RTK2851P, userdebug), 1.5 GB RAM.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/caxium-58-realtek-rtk2851p/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/caxium-58-realtek-rtk2851p/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/caxium-58-realtek-rtk2851p/debloat.txt cn.zeasn.launcher.vstoresubclient.toptech
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher is cn.zeasn.launcher.vstoresubclient.toptech (Zeasn). It is not in this list: disable it only

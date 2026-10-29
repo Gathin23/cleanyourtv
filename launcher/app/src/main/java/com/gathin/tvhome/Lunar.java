@@ -16,10 +16,14 @@ final class Lunar {
     private Lunar() {
     }
 
-    /** Hours east of UTC used for the calendar: lunar_utc_offset, or 7 for Vietnamese and 8 otherwise. */
+    /** Hours east of UTC used for the calendar: lunar_utc_offset, or 7 for Vietnamese, 9 for Korean and 8 otherwise. */
     static int offsetFor(int configured, Locale locale) {
         if (configured >= 0) return configured;
-        return "vi".equals(locale.getLanguage()) ? 7 : 8;
+        switch (locale.getLanguage()) {
+            case "vi": return 7;
+            case "ko": return 9;
+            default: return 8;
+        }
     }
 
     /** Today's lunar date, formatted with the locale's strings. */
@@ -36,9 +40,11 @@ final class Lunar {
     /** Gregorian date to {day, month, year, leap (1 = leap month)} of the lunar calendar at UTC+tz. */
     static int[] fromSolar(int dd, int mm, int yy, double tz) {
         long dayNumber = jdFromDate(dd, mm, yy);
-        int k = (int) Math.floor((dayNumber - 2415021.076998695) / 29.530588853);
-        long monthStart = newMoonDay(k + 1, tz);
-        if (monthStart > dayNumber) monthStart = newMoonDay(k, tz);
+        int k = (int) Math.floor((dayNumber - 2415021.076998695) / 29.530588853) + 1;
+        long monthStart = newMoonDay(k, tz);
+        // The mean-month estimate can still be a new moon ahead when the real one falls just after local midnight;
+        // one step back was not always enough, and the day before that new moon came out as day 0.
+        while (monthStart > dayNumber) monthStart = newMoonDay(--k, tz);
         long a11 = lunarMonth11(yy, tz);
         long b11 = a11;
         int lunarYear;

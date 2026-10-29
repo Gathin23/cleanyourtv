@@ -2,5 +2,5 @@
   "tv": "Wanbo X5 Pro projector (built-in Google TV stick: SkyworthDigital YYT, Amlogic), Australia",
   "os": "Google TV 14",
   "brand": "Wanbo",
-  "notes": "Google feedback, Privacy Sandbox ad services, xCPE remote-management agent, Skyworth device-info and factory test apps; projector observer, remote pairing and hot keys kept; Assistant, YouTube Music, TalkBack off by choice; launcherx + setupwraith (setupwraith owned the Wi-Fi saved at setup); port 5555 opens without pairing"
+  "notes": "Google feedback, Privacy Sandbox ad services, xCPE remote-management agent, Skyworth device-info, partner customization and factory test apps; projector observer, remote pairing and hot keys kept; Assistant, YouTube Music, TalkBack off by choice; launcherx + setupwraith (setupwraith owned the Wi-Fi saved at setup); port 5555 opens without pairing; second unit (Mexico, 5 days across reboots): remote app keycodes 265/266/138/136 and Settings keycode 83 mapped via key services"
 }

@@ -9,6 +9,24 @@
 # build-and-install script, Home, Inputs menu (HDMI 1/2, AV, Live TV), HDMI switching, Settings,
 # Netflix/Prime/YouTube launch and the Clock screensaver checked on the device. Not yet lived with for days.
 #
+# Also confirmed 2026-10-26 on a TCL 32S6500S, identical fingerprint but persist.tcl.client_type
+# TCL-LA-RT41KB-S1 (not SEM-LA-RT41KB-S1 above) and Wi-Fi only, no Ethernet. Applied in six batches with
+# screenshots between them and a reboot check (all 34 disabled packages, including the launcher's own
+# second pass below, survived it); launcher/ installed, Home confirmed with mFocusedApp/mResumedActivity,
+# Inputs menu, D-pad from all four edges and YouTube launch checked. Not yet lived with for days either.
+#
+# Also confirmed 2026-10-27 on a TCL L40S6500 (40"), same fingerprint and
+# persist.tcl.client_type TCL-LA-RT41KB-S1 as the 32S6500S, Wi-Fi only. Applied in four batches with
+# screenshots between them, keeping katniss and speech.pumpkin (Assistant wanted) and the streaming apps;
+# com.tcl.waterfall.overseas, Red Bull TV and Twitch were not installed. After a reboot everything stayed
+# disabled except com.tcl.usercenter, which the system re-enables at every boot (as on the TCL Android 9
+# sets in the PROMPT); left in the list, it stays idle. launcher/ installed, Home confirmed with
+# mResumedActivity, Inputs menu (HDMI 1/2, Live TV) and the remote's app buttons checked. Tested one day.
+# Power-on: this unit opens com.tcl.tv at every boot, so Home at power-on needs power_on_home with
+# HOME_KEY_SERVICE=1 - which worked, but with HomeKeyService bound, holding Volume Up moved the volume
+# one step per press instead of ramping (the key-repeat loss in docs/devices/tcl-55p71b-g09-key-repeat.md,
+# seen here too). The owner chose the volume ramp and pressing Home once after power-on, so the helper is off.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -18,12 +36,21 @@
 # com.android.tv.settings); setupwraith does not claim HOME here. com.google.android.leanbacklauncher is
 # also installed and stays enabled as a fallback.
 # Live TV app: com.tcl.tv (keep it, it owns tuner/HDMI playback; its TVActivity has a leanback entry, so
-# launcher/ needs only live_tv_package com.tcl.tv). Keep com.tcl.tvinput, com.tcl.tvpassthrough (the HDMI
-# TvInputServices) and com.tcl.sourcemananger (source key / input panel). Inputs come from the standard
-# TvInputManager, so the launcher's Inputs menu works with the default config.
+# launcher/ needs live_tv_package com.tcl.tv - and hidden_apps needs com.tcl.tv added too, or it still
+# shows as a duplicate grid tile alongside the Inputs menu's "Live TV" row; the default hidden_apps only
+# excludes the placeholder com.mediatek.wwtv.tvcenter). Keep com.tcl.tvinput, com.tcl.tvpassthrough (the
+# HDMI TvInputServices) and com.tcl.sourcemananger (source key / input panel). Inputs come from the
+# standard TvInputManager, so the launcher's Inputs menu itself works with the default config.
 # Standby: Quick start ("Iniciar rapido", STR, sys.tcl.str.switch) suspends to RAM and takes Ethernet down
 # with it, so ADB, Cast and Wake-on-LAN cannot wake the TV; there is no network-standby option on this
 # firmware. TCL's picture/system panel opens with `am start -a com.tcl.settings.action.NETWORKSETTINGS`.
+# Not tested on the Wi-Fi-only 32S6500S unit above.
+# Wi-Fi pill name on Android 9: showing the connected network's name (not just "Wi-Fi") needs both the
+# launcher's own ACCESS_FINE_LOCATION grant (build-and-install.sh does this) and the TV's system Location
+# turned on (`settings put secure location_mode 3` and `settings put secure location_providers_allowed
+# +network`, then restart the launcher) - unlike config.xml's show_network_pill comment, which only
+# mentions this gate on Android 14. Ask before turning system Location on; it is a privacy-relevant change
+# beyond the app's own permission grant.
 #
 # Differences from the Thomson list, which keeps these three: com.tcl.partnercustomizer,
 # com.tcl.copydatatotv and com.tcl.common.terminalmanagerplus were disabled here with the remote, HDMI
@@ -32,11 +59,33 @@
 # Kept here but disabled in the Thomson list: the TCL media players (com.tcl.ui_mediaCenter,
 # audioplayer, imageplayer, videoplayer) for USB playback, and com.google.android.partnersetup.
 #
+# The 32S6500S unit shipped with a few packages this list's first unit did not have:
+# com.tcl.waterfall.overseas, com.tcl.useragreement, com.google.android.leanbacklauncher.partnerwidget,
+# com.google.android.leanbacklauncher.partnercustomizer and com.tcl.partnercustomizer.resource - all
+# disabled below with the remote, HDMI, Settings and the launcher still working.
+# com.android.vending, com.tcl.browser and com.globo.globotv (Globoplay) were the apps still enabled and
+# on the leanback home screen afterward on that unit, besides the ones kept below by choice; which survive
+# depends on what the retailer and the owner's own account preloaded, so check `pm list packages` on yours.
+#
+# Two lines below (com.google.android.leanbacklauncher.recommendations and
+# android.autoinstalls.config.tcl.device) disabled cleanly on the first unit, but on the 32S6500S unit
+# tools/disable.sh's own TVINPUT_ALLOW safety check skipped both: dumpsys showed neither package's
+# permission block, so the input-driver check could not clear them and left them enabled. Harmless either
+# way (both are content/auto-install helpers, not input drivers) - set TVINPUT_ALLOW=1 once every other
+# input still works after a reboot if you want them off too (#321).
+#
 # Deliberately NOT disabled (system-relevant or unclear): com.tcl.framework.custom, com.tcl.keyhelp,
 # com.tcl.keycustomfunctionservice (remote keys), com.tcl.autopair, com.tcl.tcl_bt_rcu_service (remote
 # pairing), com.tcl.settings, com.tcl.initsetup, com.tcl.appstatecontroller,
 # com.tcl.xian.StartandroidService, com.tcl.ui_mediaCenter (USB playback), com.realtek.netflix.setting
-# (Netflix ESN/config), Chromecast (mediashell), firmware updates (versionUpdateApp, rc.ota).
+# (Netflix ESN/config), Chromecast (mediashell), firmware updates
+# (versionUpdateApp, rc.ota).
+# Also left alone on the 32S6500S unit, none of them tested further: com.tcl.factory.view (a BootUpReceive
+# receiver and a .MainMenu activity; the name alone puts it in PROMPT.md's "never even open a factory
+# package" category, so it was left exactly as found, neither disabled nor started - treat it the same way
+# on any TCL set until someone reports what it actually does), com.google.android.sss.authbridge and
+# com.tcl.systemuioverlay (both gave dumpsys almost nothing to go on), and com.android.ListenNetStateService
+# (one BootBroadcastReceiver, unclear what it feeds; low risk but untested, so left enabled out of caution).
 
 # Telemetry and feedback
 com.tcl.bi                              # TCL analytics / telemetry service
@@ -45,25 +94,39 @@ com.google.android.tv.bugreportsender
 
 # Content rows, promos and auto-installs
 com.google.android.tvrecommendations
-com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher.recommendations   # TVINPUT_ALLOW=1 may be needed, see header
 com.tcl.partnercustomizer               # TCL promo rows / T-key content
-android.autoinstalls.config.tcl.device  # Play auto-installs of partner apps
+com.tcl.partnercustomizer.resource      # 32S6500S unit only
+com.google.android.leanbacklauncher.partnerwidget      # 32S6500S unit only
+com.google.android.leanbacklauncher.partnercustomizer  # 32S6500S unit only
+android.autoinstalls.config.tcl.device  # Play auto-installs of partner apps; TVINPUT_ALLOW=1 may be needed
 com.tcl.esticker                        # retail demo stickers
 com.tcl.appmarket2                      # TCL app store (Google Play Store stays)
 com.tcl.tvweishi                        # "cleaner" widget service
 com.tcl.usercenter                      # TCL account sign-in nags
 com.tcl.copydatatotv                    # phone-to-TV copy helper, starts at boot
+com.tcl.waterfall.overseas              # TCL content/ad app (WebActivity, VideoPlayActivity, Firebase);
+                                        # com.tcl.cyberui, same family, came pre-disabled by TCL on this unit
 
 # Preloaded apps
 com.google.android.videos               # Play Movies & TV
 com.google.android.play.games
 com.google.android.music
 com.android.printspooler
+com.tcl.useragreement                   # one-time ToS screen, 32S6500S unit only
 
 # Off by choice on this unit (voice, and two third-party apps installed on this unit); re-enable if wanted
 com.google.android.katniss              # Google Assistant / voice search
 com.nousguide.android.rbtv              # Red Bull TV
 tv.twitch.android.app
+
+# The 32S6500S owner also switched off their own streaming apps and Miracast. Left commented out here,
+# since most owners use them; uncomment any you don't:
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom       # Prime Video
+# com.spotify.tv.android
+# com.google.android.apps.mediashell      # Chromecast receiver
+# com.tcl.MultiScreenInteraction_TV       # TCL's Miracast-like screen mirroring/DLNA app
 
 # Second pass, applied the same day. The launcher's Clock screensaver replaces Ambient Mode:
 #   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'

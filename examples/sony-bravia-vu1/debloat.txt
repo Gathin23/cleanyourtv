@@ -15,8 +15,8 @@
 # Stock launcher: com.google.android.tvlauncher (classic Android TV; recommendations rows with sponsored
 # tiles). cmd package set-home-activity printed Success and changed nothing: the stock launcher outranks any
 # other HOME app, so it has to be disabled for a new launcher to get Home (FLauncher, me.efesser.flauncher, was
-# used). It is the last line below, commented out, because the run above removed it with uninstall rather than
-# disable-user: disable it last, after the new launcher answers HOME.
+# used). The run above removed it with uninstall rather than disable-user; the second unit below disabled it with
+# disable-user. It is the last line: disable it last, after the new launcher answers HOME.
 # Tuner / inputs on this Realtek set are com.realtek.dtv, com.realtek.tv.atv and com.android.tv (Live
 # Channels): keep them, plus the com.sony.dtv.* services (sonysystemservice, smartui = Input menu, ipcontrol,
 # remotecontrolsettings, timers) and all com.realtek.* overlays.
@@ -34,6 +34,19 @@
 #   until it is disabled.
 # - Not tested: the remote's mic button after katniss goes (it also needs com.google.android.tv.remote.service,
 #   kept), and Google Home Mini voice control of the TV.
+#
+# Second unit (same product BRAVIA_VU1_UC and build 366.60436, 2026-10-26): every line applied unchanged with
+# tools/disable.sh in three batches, tvrecommendations before the launcher. Then launcher/build-and-install.sh
+# installed com.gathin.tvhome and disabled the stock launcher with `pm disable-user` (not uninstall):
+# Home resolved to the new launcher, and after a reboot all packages were still disabled and the TV started
+# straight into it (not Live TV). So the last line is now active.
+# - setupwraith was left ENABLED on this unit, and it did not claim HOME once tvlauncher was disabled
+#   (query-activities listed only com.gathin.tvhome and the two FallbackHome activities), and phone casting still
+#   worked after two days. Owners who cast from a phone can comment its line out; see README.md in this folder.
+# - Live TV: com.android.tv has no leanback launch entry here, so the launcher's Inputs menu needs
+#   live_tv_package com.realtek.tv.atv (the stock "TV" tile); config.json in this folder sets it.
+# - Remote: Input and the settings button are vendor keys (EV_KEY 0x225, 0x254) handled by the firmware. They
+#   kept working with the stock launcher disabled and no key helper enabled, and holding Volume still ramps.
 
 # Sony demo and help
 com.sony.dtv.demo                        # retail demo mode
@@ -60,5 +73,5 @@ com.google.android.katniss               # Assistant / voice search, ~110-125 MB
 
 # Launcher handover: install the replacement launcher first and confirm Home, then disable these
 com.google.android.tvrecommendations     # launcher recommendations rows; the SHIELD phone remote also stops without it
-com.google.android.tungsten.setupwraith  # setup wizard; its .MainActivity answers HOME (see the Wi-Fi owner check above); also costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
-# com.google.android.tvlauncher          # stock launcher: untested as a disable here (removed with uninstall); do it last
+com.google.android.tungsten.setupwraith  # setup wizard; its .MainActivity answers HOME on the first unit (see the Wi-Fi owner check above); also costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith); the second unit kept it
+# com.google.android.tvlauncher          # stock launcher: launcher/build-and-install.sh disables it with disable-user after the new launcher owns Home (second unit, reboot-checked); do not disable it by hand first

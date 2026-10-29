@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark and opaque, no blur (the launcher targets TVs with 1 GB of RAM): a see-through panel let the home
+     screen's top bar, network name included, show through its text. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FF1B1C20" />
+    <stroke android:width="1dp" android:color="#26FFFFFF" />
+    <corners android:radius="22dp" />
+</shape>

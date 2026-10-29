@@ -7,7 +7,7 @@
 # Try it without waiting (adb only): a 70 s timer, the warning after 10 s:
 #        TV_HOST=192.168.1.50 tools/tv.py 'am broadcast -n io.github.luyzfernando08.sleeptimer/.AlarmReceiver -a io.github.luyzfernando08.sleeptimer.TEST --ei seconds 70'
 set -euo pipefail
-HERE="$(cd "$(dirname "$0")" && pwd)"
+HERE="$(cd "$(dirname "$0")" && (pwd -W 2>/dev/null || pwd))"
 TOOLS="$HERE/../../tools"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0}"
 PY="$TOOLS/venv/bin/python"

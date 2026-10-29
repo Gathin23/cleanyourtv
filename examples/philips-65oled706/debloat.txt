@@ -35,8 +35,16 @@
 #    in more than 7 minutes. Injected keys over adb do not dismiss the logo, and the shell cannot write to the
 #    remote's input device on this firmware (sendevent: Permission denied), so test it with the real remote.
 # 5. The TV powers on to the last source in use: switched off from Home it comes back on Home, switched off on
-#    an HDMI input it comes back on that input. Nothing to fix.
+#    an HDMI input it comes back on that input. It only resumes the PlayTvActivity it left, which sends its
+#    window event once the input has a picture (about 5 s), if at all, so power_on_home alone is late or
+#    misses it. power_on_home_always (with HOME_KEY_SERVICE=1) brings Home up about 1 s after wake, from an
+#    HDMI input or an app. After installing the launcher and after a theme push (which force-stops it),
+#    switch enabled_accessibility_services off and on again, or the helper stays in "Crashed services".
 # 6. Chromecast (mediashell) re-enables itself, as on the 50PUS8517: left out.
+# 7. show_stats and the CPU figure: apps cannot read the CPU load here. /proc/stat and /proc/loadavg are
+#    denied to apps on this Android 11 build, and the kernel has no cpuidle (no
+#    /sys/devices/system/cpu/cpu0/cpuidle). The load average read over adb sits around 36 on 4 cores at
+#    idle, so it would not be a usable stand-in anyway. Memory and storage read fine; the CPU part is left out.
 #
 # Verified with the real remote after the list and the launcher: channel change, TV guide, SOURCES drawer and
 # HDMI switching, sound and Ambilight all work; Home opens the replacement launcher. After a reboot, waiting

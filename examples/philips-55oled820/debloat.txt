@@ -1,0 +1,70 @@
+# Philips 55OLED820/12 (55" 4K OLED with Ambilight, 2023 model), Czech Republic
+# Google TV 14 (API 34), firmware UKN2.241117.001 build 3000518, security patch 2026-01-05, board PH1M_WW_9972
+# ro.product.model=Philips_Google_TV_TA5  ro.product.device=PH1M_WW_9972  ro.product.manufacturer=TPV
+# Fingerprint: Philips/PH1M_WW_9972/PH1M_WW_9972:14/UKN2.241117.001/3000518:user/release-keys
+# Philips SW TPM231WW_R.201.100.228.212. MediaTek MT5896, 4x Cortex-A73 at 2.0 GHz, 2.8 GB RAM, zram swap
+# 600 MB. Wired Ethernet.
+#
+# Same board as examples/philips-55oled708 (PH1M_WW_9972), one Android release newer (14 instead of 12).
+# The org.droidtv layer and its DO NOT DISABLE rules in examples/philips-50pus8517 apply here as well;
+# nothing from that block is disabled below.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-55oled820/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55oled820/debloat.txt com.google.android.apps.tv.launcherx
+# Everything below is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# STATUS: applied 2026-10-24 12:30 to 12:41 in one session, TV on a third-party launcher (Projectivy).
+# Checked the same day: every package stayed disabled across a reboot (the TV's own scheduled standby
+# reboot at 12:33), `pm list packages -d` went from 25 to 40, and a 30 s idle log after the last change
+# had about 1 100 lines (1 759 before the first batch) with no line repeating about the disabled
+# packages. While ADB stayed connected the TV also kept cycling between standby and semi-standby
+# (wake reason WIFI/cast), which made some samples much longer; that was already there before any change.
+# The Home Assistant Android TV Remote integration and the launcher worked after the reboot.
+# In daily use since then.
+#
+# Memory: MemAvailable 755 MB before, 916 MB right after the first batch (TV in standby, same uptime).
+# The six user apps below (not listed, see the end) were uninstalled in the same session.
+#
+# Launcher and Cast: launcherx and setupwraith are KEPT on purpose. The Cast receiver reads its device
+# credentials from setupwraith's CastInfoProvider (confirmed with `dumpsys package providers` on this
+# unit), and setupwraith's RecoveryActivity claims Home at priority 1, above the usual third-party launcher.
+# The third-party launcher takes Home through an accessibility service, so nothing about Home changed.
+
+# TP Vision and Philips telemetry
+tv.samba.ssm                              # Samba TV ACR (what is on screen, for ad targeting); sent only about 33 kB in 44 h on this unit, but it has no use here
+org.droidtv.amazonalexa                   # Alexa bridge
+
+# Google telemetry, feedback and ad APIs
+com.android.adservices.api                # Privacy Sandbox ad APIs
+com.android.ondevicepersonalization.services  # on-device ad personalisation
+com.android.federatedcompute.services     # federated learning for personalisation
+com.google.android.feedback               # Market Feedback Agent
+com.android.tv.feedbackconsent            # feedback consent collector
+
+# Promos and sync nobody uses
+com.google.android.apps.tv.dreamx         # Google ambient screensaver and Google Home panel
+com.google.android.syncadapters.calendar  # synced a Google calendar to the TV every day; no calendar app is installed
+com.tpv.nftgallery                        # "NFT Collection" art gallery app
+
+# Preinstalled apps that were never used on this unit. All sit in /data/app.
+com.amazon.amazonvideo.livingroom         # Prime Video
+com.google.android.youtube.tvmusic        # YouTube Music
+com.google.android.play.games             # Play Games
+com.netflix.ninja                         # Netflix; the Netflix key on the remote now does nothing
+com.netflix.tokenmanager                  # Netflix token manager, goes with the app
+
+# Level not applied yet on this unit, listed as comments so the next person knows what was found.
+# Measured at idle, PSS in MB. The same packages ran without a retry loop on examples/philips-55oled708.
+# org.droidtv.candeebug                   # 16: "DAC" analytics uploader, 22 TV processes bind it
+# org.droidtv.gel                         # metrics collector in candeebug's process, 464 alarms in 44 h; disable both
+# org.droidtv.control4app                 # 4 Control4 packages, about 16 MB together
+# com.phorus.playfi.tv                    # 18 (+3 for .softap): Play-Fi; keep org.droidtv.tv.playFiAudioService
+# com.google.android.katniss              # 74 across two processes: kills the remote's mic key and voice search
+
+# User apps uninstalled on this unit with `pm uninstall` (this repo only disables, so they are not listed):
+# Disney+, iQIYI, HBO Max, Kinomap, Aerial Views, Spotify.
+# In /data/app on the stock image, so an equivalent here would be `pm disable-user --user 0`:
+# com.disney.disneyplus
+# com.iqiyi.i18n.tv
+# com.wbd.stream
+# com.spotify.tv.android

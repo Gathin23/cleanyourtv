@@ -35,6 +35,14 @@ import java.util.Locale;
 public class MainActivity extends Activity {
     private static final String TAG = "PrayerTimes";
     private static final String[] NAMES = {"Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"};
+    private static final int[] NAME_RES = {
+            R.string.prayer_fajr,
+            R.string.prayer_sunrise,
+            R.string.prayer_dhuhr,
+            R.string.prayer_asr,
+            R.string.prayer_maghrib,
+            R.string.prayer_isha
+    };
     private static final String[] ARABIC = {"الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"};
     private static final int[] ICONS = {R.drawable.ic_fajr, R.drawable.ic_sunrise, R.drawable.ic_dhuhr,
             R.drawable.ic_asr, R.drawable.ic_maghrib, R.drawable.ic_isha};
@@ -97,7 +105,7 @@ public class MainActivity extends Activity {
 
         status = text(16, 400, 0x80FFFFFF);
         status.setPadding(0, dp(18), 0, 0);
-        status.setText("Loading…");
+        status.setText(getString(R.string.loading));
         col.addView(status);
 
         setContentView(root);
@@ -139,16 +147,21 @@ public class MainActivity extends Activity {
             main.post(() -> {
                 loading = false;
                 if (result == null) {
-                    status.setText("Can't reach Aladhan. Showing the last times, if any.");
+                    status.setText(getString(R.string.offline));
                     return;
                 }
                 try {
                     parse(result.getJSONObject("data"));
                     loadedFor = day;
+                    if (getResources().getBoolean(R.bool.reminders)) {
+                        PrayerScheduler.saveTimingsAndSchedule(MainActivity.this, day, NAMES, times, minutes, getString(R.string.place));
+                    } else {
+                        PrayerScheduler.cancel(MainActivity.this);
+                    }
                     render();
                 } catch (Exception e) {
                     Log.w(TAG, "parse: " + e);
-                    status.setText("Unexpected answer from Aladhan.");
+                    status.setText(getString(R.string.unexpected_error));
                 }
             });
         }).start();
@@ -188,9 +201,10 @@ public class MainActivity extends Activity {
         }
         if (nextIdx >= 0) {
             int left = minutes[nextIdx] - now;
-            next.setText(NAMES[nextIdx] + " in " + (left >= 60 ? left / 60 + " h " : "") + left % 60 + " min");
+            String timeStr = (left >= 60 ? left / 60 + " h " : "") + left % 60 + " min";
+            next.setText(getString(R.string.prayer_in, getString(NAME_RES[nextIdx]), timeStr));
         } else {
-            next.setText("Fajr tomorrow");
+            next.setText(getString(R.string.prayer_tomorrow, getString(NAME_RES[0])));
         }
 
         rows.removeAllViews();
@@ -216,7 +230,7 @@ public class MainActivity extends Activity {
             ar.setText(ARABIC[i]);
             card.addView(ar);
             TextView name = centered(text(20, 500, hl ? 0xE6FFFFFF : (i == 1 ? 0x80FFFFFF : 0xB3FFFFFF)));
-            name.setText(NAMES[i]);
+            name.setText(getString(NAME_RES[i]));
             name.setPadding(0, dp(8), 0, dp(20));
             card.addView(name);
             TextView time = centered(text(42, hl ? 500 : 300, fg));
@@ -229,8 +243,13 @@ public class MainActivity extends Activity {
             lp.setMargins(i == 0 ? 0 : dp(8), 0, i == NAMES.length - 1 ? 0 : dp(8), 0);
             rows.addView(card, lp);
         }
-        status.setText("Aladhan" + (methodName.isEmpty() ? "" : " · " + methodName) + " · updated "
-                + new SimpleDateFormat("HH:mm", Locale.ROOT).format(new Date()));
+        boolean reminders = getResources().getBoolean(R.bool.reminders);
+        String updated = getString(R.string.updated_at, new SimpleDateFormat("HH:mm", Locale.ROOT).format(new Date()));
+        String statusStr = "Aladhan" + (methodName.isEmpty() ? "" : " · " + methodName) + " · " + updated;
+        if (reminders) {
+            statusStr += " · " + getString(R.string.reminders_active);
+        }
+        status.setText(statusStr);
     }
 
     private static String fetch(String url) throws Exception {

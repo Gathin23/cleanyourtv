@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MOOR0 (venom, MediaTek)",
+  "os": "Google TV 11",
+  "brand": "Xiaomi",
+  "notes": "Mi ad row and PatchWall, Mi analytics, store demo, factory test HOME claimant (`com.duokan.factorytest`); voice, Miracast, Xiaomi media apps and stock YouTube off by choice, Chromecast and firmware updaters kept; setup wizard off (saved Wi-Fi belonged to `android.uid.system`) and `launcherx` replaced by CleanYourTV"
+}

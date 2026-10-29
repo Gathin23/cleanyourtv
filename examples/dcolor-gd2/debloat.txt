@@ -2,14 +2,16 @@
 # Build: Dcolor/GD2/YHT:14/URO4.260304.027/15200246:user/release-keys
 # Home it shipped with: Google TV (com.google.android.apps.tv.launcherx). 128 system apps, 39 disabled here.
 #
-# Apply:    FORCE_SETUPWRAITH=1 tools/disable.sh examples/dcolor-gd2/debloat.txt
+# Apply:    tools/disable.sh examples/dcolor-gd2/debloat.txt
 # Restore:  tools/restore.sh examples/dcolor-gd2/debloat.txt com.google.android.apps.tv.launcherx
 # Launcher: INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. Disable it only after the new launcher is Home;
 # disable.sh skips it until another app answers HOME, so run this list again once the launcher is installed.
 # setupwraith: the first-run wizard also claims HOME on Google TV. disable.sh skips it while it owns the
-# saved Wi-Fi network (FORCE_SETUPWRAITH=1 overrides). Re-enable it before a factory reset; restore.sh does.
+# saved Wi-Fi network (`dumpsys wifi | grep -o 'cname=[^ ]*'`): forget the network the box is on and join it
+# again in Settings, then run this list again. FORCE_SETUPWRAITH=1 only on Ethernet, or if disable.sh still
+# skips it after that re-join. Re-enable it before a factory reset; restore.sh does.
 # Disabling setupwraith gives Home back but costs casting (Chromecast built-in); re-enable it to cast.
 #
 # Left on on purpose: com.android.vending (Play Store), com.google.android.gms, com.google.android.youtube.tv,

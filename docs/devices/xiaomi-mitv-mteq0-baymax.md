@@ -17,12 +17,12 @@ The same package-name HOME allowlist as the MiTV-AETP0
 The opt-in identity worked here as documented for the AETP0:
 
 ```bash
-"$PY" -I tools/tv.py 'pm path com.ts.launcher'        # must print nothing
+tools/venv/bin/python -I tools/tv.py 'pm path com.ts.launcher'        # must print nothing
 (cd launcher && ./gradlew assembleRelease -PlauncherApplicationId=com.ts.launcher)
-"$PY" -I tools/b64push.py launcher/app/build/outputs/apk/release/app-release.apk /data/local/tmp/ts.apk
-"$PY" -I tools/tv.py 'pm install -r /data/local/tmp/ts.apk'
-"$PY" -I tools/tv.py 'cmd package set-home-activity --user 0 com.ts.launcher/com.gathin.tvhome.MainActivity'
-"$PY" -I tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
+tools/venv/bin/python -I tools/b64push.py launcher/app/build/outputs/apk/release/app-release.apk /data/local/tmp/ts.apk
+tools/venv/bin/python -I tools/tv.py 'pm install -r /data/local/tmp/ts.apk'
+tools/venv/bin/python -I tools/tv.py 'cmd package set-home-activity --user 0 com.ts.launcher/com.gathin.tvhome.MainActivity'
+tools/venv/bin/python -I tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 ```
 
 `resolve-activity` answered `com.ts.launcher/com.gathin.tvhome.MainActivity`, also with
@@ -63,10 +63,15 @@ The passthrough channel URI the launcher sends is accepted but does not switch t
 and an integer extra `input` does, with the same numbering as the MiTV-MFTR0
 ([`xiaomi-mitv-mftr0-freeguy.txt`](xiaomi-mitv-mftr0-freeguy.txt)):
 
+The ready-to-push overlay is [`examples/xiaomi-mitv-mteq0/config.json`](../../examples/xiaomi-mitv-mteq0/config.json):
+push it with `TV_HOST=<tv ip> tools/theme.sh examples/xiaomi-mitv-mteq0` after installing the launcher.
+It keeps the shared launcher defaults unchanged and applies this route only when this device profile is pushed.
+
 | Input | TvInputInfo ID | `input` |
 |---|---|---|
 | HDMI 1 | `com.mediatek.tvinput/.hdmi.HDMIInputService/HW5` | 23 |
 | HDMI 2 | `com.mediatek.tvinput/.hdmi.HDMIInputService/HW6` | 24 |
+| HDMI 3 | `com.mediatek.tvinput/.hdmi.HDMIInputService/HW7` | 25 |
 | AV | `com.mediatek.tvinput/.composite.CompositeInputService/HW2` | 2 |
 
 An HDMI-CEC device appears as an extra input (`.../HDMI200008`) whose parent is the port it is on.
@@ -80,7 +85,7 @@ this set, so the driver runs with `CN` and never sees 5 GHz networks on channels
 on channel 104 was invisible; Xiaomi routers pick CN-legal channels, so they work). Fix:
 
 ```bash
-"$PY" -I tools/tv.py 'settings put global service_region VN'   # your country code
+tools/venv/bin/python -I tools/tv.py 'settings put global service_region VN'   # your country code
 # then Wi-Fi off and on (or reboot); dumpsys wifi shows mDriverCountryCode
 ```
 

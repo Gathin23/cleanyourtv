@@ -1,6 +1,6 @@
 {
   "tv": "OnePlus TV (C00, Cebu, MediaTek m7632), India",
-  "os": "Android TV 10",
+  "os": "Android TV 10 and 11",
   "brand": "OnePlus",
-  "notes": "HeyTap push and OnePlus ODM telemetry, OxygenPlay page, recommendation rows, Relax, image wall, user guide, TV Manager; Chromecast, Miracast, TV Mirror, OnePlus Connect, USB media apps and unused streaming preloads off by choice; keep the partner customizer while the stock home is in use (its Inputs and Wi-Fi icons); remote buttons work with launcher/ without key services; 1.8 GB; reboot-checked"
+  "notes": "HeyTap push and OnePlus ODM telemetry, OxygenPlay page, recommendation rows, Relax, image wall, user guide, TV Manager; Chromecast, Miracast, TV Mirror, OnePlus Connect, USB media apps and unused streaming preloads off by choice; keep the partner customizer while the stock home is in use (its Inputs and Wi-Fi icons); remote buttons work with launcher/ without key services; Settings button is keycode 82; 1.8 GB; reboot-checked on both"
 }

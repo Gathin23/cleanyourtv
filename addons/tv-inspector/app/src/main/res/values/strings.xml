@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">TV Inspector</string>
+    <string name="intro">What this TV\'s remote sends, and what the TV can play. Handy when you write a tv.json, map a button or file a bug.</string>
+    <string name="keys">Remote keys</string>
+    <string name="info">TV info</string>
+    <string name="back">Back</string>
+    <string name="keys_hint">Press any button on the remote. Press Back twice to leave.</string>
+    <string name="keys_waiting">Waiting for a key…</string>
+    <string name="keys_held">held, repeat %1$d</string>
+    <string name="keys_back_again">Press Back again to leave.</string>
+    <string name="keys_missing">Home and Power never reach apps. A button that shows nothing here is taken by the system or by an accessibility helper first. Volume keys still change the volume.</string>
+    <string name="keys_recent">Recent keys</string>
+    <string name="loading">Reading the TV…</string>
+    <string name="section_tv">This TV</string>
+    <string name="section_screen">Screen</string>
+    <string name="section_video">Video decoders</string>
+    <string name="section_audio">Audio</string>
+    <string name="section_inputs">Remotes and input devices</string>
+    <string name="logcat">The same lines are in logcat: tools/tv.py \'logcat -d -s TvInspector\'</string>
+</resources>

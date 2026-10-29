@@ -1,0 +1,4 @@
+{
+  "live_tv_package": "org.droidtv.playtv",
+  "hidden_apps": ["org.droidtv.playtv", "org.droidtv.eum"]
+}

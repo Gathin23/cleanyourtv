@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Salvaschermo con foto</string>
+    <string name="dream_name">Foto</string>
+    <string name="date_format">EEEE  d MMMM</string>
+    <string name="empty_title">Ancora nessuna foto</string>
+    <string name="empty_body">Metti le foto in questa cartella sulla TV con sync.sh o sync.ps1:</string>
+    <string name="settings_title">Salvaschermo con foto</string>
+    <string name="option_clock">Mostra ora e data</string>
+    <string name="option_dates">Mostra quando è stata scattata una foto (mese e anno)</string>
+    <string name="option_prints">Tre stampe invece dello schermo intero (senza mollette)</string>
+    <string name="option_sky">Cielo che segue l’ora del giorno dietro le stampe</string>
+    <string name="option_weather">Mostra il meteo (serve la posizione della TV)</string>
+    <string name="weather_info">Usa la posizione approssimativa della TV e Open-Meteo. Se è spento, nulla passa dalla rete.</string>
+    <string name="weather_no_permission">Consenti l’accesso alla posizione per il meteo.</string>
+    <string name="weather_location_off">I servizi di localizzazione sono spenti su questa TV: accendili per il meteo.</string>
+    <string name="weather_ok">La posizione è attiva. Il meteo si aggiorna ogni 30 minuti.</string>
+    <string name="open_location_settings">Apri le impostazioni della posizione</string>
+    <string name="preview">Anteprima</string>
+</resources>

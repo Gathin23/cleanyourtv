@@ -20,8 +20,10 @@
 #
 # Re-enabled by the firmware at every boot (checked with one reboot on 2026-10-22):
 # com.google.android.katniss (Assistant) comes back enabled, the same behaviour as anker-nebula-d2426.
-# This owner keeps it on, so the mic button works and nobody re-disables it after each boot;
-# tools/check.py --fix <this file> re-disables what came back if you prefer.
+# This owner keeps it on, so the mic button works and nobody re-disables it after each boot.
+# To keep it off instead, uncomment com.google.android.katniss and com.google.android.tv.assistant
+# below and run Apply again (disable.sh records them first, so Undo brings them back); after each
+# boot, tools/check.py --fix <this file> re-disables what came back.
 #
 # Already disabled at the factory: com.mediatek.wwtv.tvcenter, com.google.android.marvin.talkback.
 #

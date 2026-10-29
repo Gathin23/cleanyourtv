@@ -40,8 +40,9 @@ class CalendarConfigTest(unittest.TestCase):
                                 timezone=datetime.timezone)
         with mock.patch.object(sys, "argv", ["race_calendar.py", str(self.theme), "--season", "2026"]), \
                 mock.patch.object(race_calendar, "datetime", clock), \
-                contextlib.redirect_stdout(io.StringIO()):
-            race_calendar.main()
+                contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()):
+            return race_calendar.main()
 
     def test_utf8_theme_keeps_other_keys_when_calendar_is_updated(self):
         original = {
@@ -68,13 +69,15 @@ class CalendarConfigTest(unittest.TestCase):
                     self.assertEqual(updated["race_calendar"][0]["name"], "Example Grand Prix")
 
     def test_malformed_theme_is_unchanged_and_never_fetches(self):
+        # It used to be a traceback: a trailing comma in the theme's own config.json ended the run in
+        # JSONDecodeError, and Python's exit code for that is 1 - the code this script keeps for "this
+        # season has no race left to show". It is now the refusal every other bad input gets.
         for encoding in ("utf-8", "utf-8-sig"):
             with self.subTest(encoding=encoding):
                 data = '{"greeting_name":"客廳 Trịnh",'.encode(encoding)
                 self.config.write_bytes(data)
                 self.urlopen.reset_mock()
-                with self.assertRaises(json.JSONDecodeError):
-                    self.run_main()
+                self.assertEqual(self.run_main(), 2)
                 self.urlopen.assert_not_called()
                 self.assertEqual(self.config.read_bytes(), data)
 

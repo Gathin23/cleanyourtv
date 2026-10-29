@@ -36,15 +36,14 @@ anyway; it shows in `dumpsys meminfo` whether or not the menu was opened. Never 
 
 Install it with the stock launcher left alone:
 `launcher\build-and-install.ps1 -TvHost <tv ip> -StockLauncher none` (or `STOCK_LAUNCHER=none`). It installs,
-starts and becomes the default for plain `HOME`, but as built today:
+starts and becomes the default for plain `HOME`, and since #2219 its HOME filter lists `COMMON_HOME` beside `HOME`,
+so the Home key reaches it on a set with `ro.CVT_EN_COMMON_HOME_INTENT=1` too. Power-on still opens the stock
+launcher, because the launcher's Home activity is not direct-boot-aware.
 
-- the Home key still opens the stock launcher, because the launcher has no `COMMON_HOME` filter;
-- power-on still opens the stock launcher, because the launcher's Home activity is not direct-boot-aware.
-
-On the tested set both were fixed by a local build (a second intent filter with `COMMON_HOME`, and a direct-boot-aware
+On the tested set the power-on half was fixed by a local build (a direct-boot-aware
 Home activity that waits on a black screen for `ACTION_USER_UNLOCKED` before reading its settings), then choosing
-the launcher with **Always** in Android's home picker once. That is a change to the Home path, proposed to the
-maintainer in #1201 rather than carried here. The firmware's missing App info page is #1202.
+the launcher with **Always** in Android's home picker once. That is a change to the Home path, tracked in #1448
+and #1201 rather than carried here. The firmware's missing App info page is #1202.
 
 `config.json` in this folder makes the **Inputs** pill open the TV's own source picker (DTV, ATV, AV, HDMI 1-3):
 the HDMI ports are not registered with TvInputManager, only an IPTV app's input is. It also hides System Tracing

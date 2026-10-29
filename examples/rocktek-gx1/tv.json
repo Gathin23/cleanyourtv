@@ -1,0 +1,6 @@
+{
+  "tv": "RockTek GX1 (HPR3A1325_4K)",
+  "os": "Google TV 14",
+  "brand": "RockTek",
+  "notes": "Skyworth Realtek RTD1325 platform; Google TV 14 with 5-slot glass dock; stock launcherx and setupwraith safely disabled after Home handover; Google TV mobile remote and RockTek front panel LED control preserved; [gear button mapped to keycode 83](rocktek-gx1/README.md)"
+}

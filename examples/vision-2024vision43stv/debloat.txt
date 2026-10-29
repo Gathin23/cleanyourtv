@@ -4,9 +4,10 @@
 # Android settings, so Developer options are unreachable. Build fingerprint is spoofed
 # (google/shamu/...), so don't use it to match your set; match the board name instead.
 # Tested on one set for a day, not yet a few days; launcher half done too.
+# Stock launcher: com.cvte.tv.launcher.space (pass it to restore.sh, as the Undo line below does).
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/vision-2024vision43stv/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vision-2024vision43stv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vision-2024vision43stv/debloat.txt com.cvte.tv.launcher.space
 # Everything is DISABLED, not uninstalled. Kept on purpose: com.cvte.tv.api.impl (TIF player, hotkeys),
 # com.cvte.tv.setting (the live-TV UI: CH+/-, number keys, info banner), com.cvte.tv.globalui (source
 # menu), com.cvte.tvservice, com.droidlogic.* (tvinput, dtvkit), com.cvte.fac.menu, com.cvte.factory.*.

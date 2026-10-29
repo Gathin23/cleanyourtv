@@ -2,5 +2,5 @@
   "tv": "BYINTEK T5 Max projector (built-in Google TV stick: SkyworthDigital YYT, Amlogic), Brazil",
   "os": "Google TV 14",
   "brand": "BYINTEK",
-  "notes": "Same stick/firmware as Wanbo X5 Pro; telemetry, Privacy Sandbox, xCPE, Skyworth device-info and factory test apps off; setupwraith kept (it owns the saved Wi-Fi here) and launcherx kept enabled as recovery while the fork is HOME; voice, Chromecast, OTA kept; autofocus/keystone/HDMI run by the projector mainboard, not Android"
+  "notes": "Same stick/firmware as Wanbo X5 Pro; telemetry, Privacy Sandbox, xCPE, Skyworth device-info and factory test apps off; setupwraith and launcherx left out of the list, then disabled by hand after a Wi-Fi forget/rejoin (undo in the header); voice, Chromecast receiver, OTA kept (casting not checked with setupwraith off; the Gadnic PROJ100W list, same stick, says it breaks); autofocus/keystone/HDMI run by the projector mainboard, not Android"
 }

@@ -49,8 +49,9 @@ cover from #1121 ran.
 2. Push the settings: `tools/theme.sh examples/acer-ar55ar2851udpro`.
 
 [`config.json`](config.json): dock Prime Video, JioHotstar, Amazon Music, Netflix, 6 columns, the Live TV app
-`com.apps.livetv` for the Inputs menu, the full network name on the Wi-Fi pill (`icon_only_buttons` with
-`wifi_label_width` 320), and hold OK on a tile for Move and App info (`tile_menu`).
+`com.apps.livetv` for the Inputs menu, the network name on the Wi-Fi pill (`icon_only_buttons` with
+`wifi_label_width` 300, the widest the launcher keeps: it cuts a longer name with an ellipsis, and 0 is
+icon only), and hold OK on a tile for Move and App info (`tile_menu`).
 
 ## Remote (RC710)
 

@@ -1,14 +1,16 @@
 # Wanbo X5 Pro projector, built-in Google TV stick: ro.product.model="4K Google TV Stick",
-# manufacturer SkyworthDigital, device YYT, Amlogic (ro.board.platform HP46B), about 1.9 GB RAM.
-# Google TV 14 (API 34), build UKG3.260128.001.C3.3.5_20260723. Tested in Australia.
+# manufacturer SkyworthDigital, device YYT, product HP4609-Skyworth, Amlogic (ro.board.platform HP46B),
+# about 1.9 GB RAM. Google TV 14 (API 34), build UKG3.260128.001.C3.3.5_20260723.
+# Tested in Australia; second unit on the same firmware build and 32-bit userspace (armeabi-v7a)
+# tested in Mexico and lived with for five days across multiple reboots.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/wanbo-x5-pro/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/wanbo-x5-pro/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Applied on 2026-10-19, then the reference launcher (v2.3) installed and Home, D-pad navigation and
-# launching Netflix and YouTube from the dock checked with screenshots. Not yet lived with for days;
-# if something breaks, re-enable it with `pm enable <package>` and please report it.
+# Applied on 2026-10-19 (first unit, v2.3 launcher) and 2026-10-21..2026-10-26 (second unit, five days
+# of daily use across cold reboots): Home, D-pad navigation, launching apps from the dock, Bluetooth
+# audio, projector autofocus/keystone and casting all verified. Nothing re-enabled itself after reboot.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. setupwraith .RecoveryActivity also claims HOME
 # (priority 1): with only launcherx disabled, Home went to it and it restarted itself every ~60 ms.
@@ -26,18 +28,28 @@
 # - `adb install` over Wi-Fi hung; most likely Play Protect's prompt was waiting behind the screensaver.
 #   Pushing the APK as base64 chunks and running `pm install` worked. Wake the screen before installing.
 # - com.android.devicelockcontroller is protected: `pm disable-user` is refused.
+# - Second unit (remote buttons): `com.sdt.globalkey` routes the remote's four app buttons and Settings
+#   gear to launcherx. Once launcherx is disabled, the Settings gear emits KEYCODE_NOTIFICATION (83) and
+#   the four app buttons emit KEYCODE_STEM_1 (265, Netflix), KEYCODE_STEM_2 (266, YouTube),
+#   KEYCODE_F8 (138, Prime Video) and KEYCODE_F6 (136, Disney+). Enabling HOME_KEY_SERVICE=1 and
+#   INPUT_KEY_SERVICE=1 with `settings_key_keycodes` `[83]` and `app_keys` for `265`, `266`, `138` and
+#   `136` restores all five buttons. The projector's physical autofocus and keystone buttons are handled
+#   by `com.sdt.projector.observer` and keep working without launcherx.
 #
-# Kept on purpose: com.sdt.projector.observer (projector accessibility service), com.mft.rcupair
-# (remote pairing), com.sdt.globalkey (remote hot keys), com.mft.frontpanelledsservice,
+# Kept on purpose: com.sdt.projector.observer (projector accessibility service, autofocus and keystone),
+# com.mft.rcupair (remote pairing), com.sdt.globalkey (remote hot keys), com.mft.frontpanelledsservice,
 # com.google.android.tv.dfuservice (remote firmware and backlight), com.droidlogic.* (Amlogic settings
-# and connected devices), com.dolby.android.audio.service, com.sdt.customization, the keyboard,
-# Play Store, Play Services. Kept by choice here (safe to add if you don't use them):
+# and connected devices), com.dolby.android.audio.service, the keyboard, Play Store, Play Services.
+# Kept by choice here (safe to add if you don't use them; all tested for five days on the second unit):
 # com.google.android.apps.mediashell (Chromecast), com.sdt.ota and com.sdt.upgrade (firmware updates),
-# com.google.android.apps.tv.dreamx (Ambient screensaver).
+# com.google.android.apps.tv.dreamx (Ambient screensaver, can be replaced with ClockDream).
 
-# Telemetry and remote management
+# Telemetry, partner setup and remote management
 com.google.android.feedback                 # Google feedback reporter
 com.android.tv.feedbackconsent              # feedback consent screen
+com.google.android.partnersetup             # Google partner setup hook (second unit)
+com.sdt.customization                       # Skyworth partner customization & home channels (second unit)
+android.autoinstalls.config.AMLSTBAndroid.device  # partner auto-install config (second unit)
 com.oemservice                              # xCPE remote-management agent (boot receiver only)
 com.sdt.deviceinfo                          # Skyworth device-info reporter (boot receiver only)
 
@@ -59,7 +71,10 @@ com.android.cameraextensions
 com.android.dynsystem
 com.android.hotspot2.osulogin
 com.google.android.syncadapters.calendar
+com.android.providers.calendar              # calendar storage provider (second unit)
+com.android.providers.contacts              # contacts storage provider (second unit)
 com.google.android.play.games
+com.google.android.videos                   # Google TV Movies & TV storefront (second unit)
 
 # Off by choice (comment out if you use them)
 com.google.android.katniss                  # Google Assistant / voice search

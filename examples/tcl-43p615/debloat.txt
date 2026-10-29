@@ -83,7 +83,6 @@ com.google.android.backdrop                 # stock ambient photo screensaver
 # boot-re-enable rule. com.tcl.usercenter stays off here, unlike on the Android 9 RTD2851 sets
 # (see examples/tcl-beyondtv-rt2851).
 com.netflix.ninja                           # Netflix
-com.google.android.youtube.tv               # YouTube
 com.google.android.youtube.tvmusic          # YouTube Music
 com.amazon.amazonvideo.livingroom           # Prime Video
 com.disney.disneyplus                       # Disney+

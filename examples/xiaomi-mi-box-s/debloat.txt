@@ -33,6 +33,9 @@
 #   - The saved Wi-Fi belonged to android.uid.system, not setupwraith; setupwraith was not needed.
 #   - The Apps button (scancode 580, ALL_APPS) opens Home with the launcher's HomeKeyService
 #     (build-and-install -HomeKeyService). Home, Back, voice and Netflix work without it.
+#   - On remotes with a Live button (scancode 399), disabling com.google.android.tv triggers
+#     partnercustomizer to open Google Play unless remapped via app_keys ("scan:399:<package>",
+#     build-and-install -InputKeyService).
 #
 # Third unit (same PI.3933 build), Turkey, 2026-09-17 to 2026-10-24 (37 days):
 #   - Xiaomi's update service enables PatchWall again. Its component applife.LifeKeeper installs
@@ -42,6 +45,11 @@
 #   - For this reason, this list disables the update service before PatchWall. After the updater was disabled,
 #     PatchWall stayed disabled for 37 days and after each reboot.
 #   - Five minutes after you apply the list, do a check: compare `pm list packages -d` with this file.
+#
+# Fifth unit (same PI.3933 build), 2026-10-25. Details: docs/devices/xiaomi-mi-box-s.md
+#   - The Apps button as Home costs the volume ramp: with HomeKeyService bound, a held Volume key moves one
+#     step instead of ramping, the same trade as docs/devices/tcl-55p71b-g09-key-repeat.md. Checked on the
+#     real remote, with the helper bound and with the list empty. The owner kept the ramp.
 
 # Xiaomi + Google telemetry and ad tracking
 com.miui.tv.analytics                  # Mi analytics: reads logs and app usage

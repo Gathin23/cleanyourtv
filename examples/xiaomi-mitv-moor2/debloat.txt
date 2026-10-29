@@ -58,6 +58,17 @@
 #   - Private DNS dns.adguard-dns.com works; the streaming apps above still play.
 #   First-day report, like the one above.
 #
+# Fourth TV, MiTV-MOOR2 on an OLDER firmware, RTM5.220609.003.1917 (Google TV 11, 1.8 GB RAM; 20-24 Oct 2026,
+# four days so far): the list went on unchanged except that com.xiaomi.mitv.manualhelp, com.mitv.milinkservice
+# and com.graymatrix.did are not installed on this build either. Nothing came back after several reboots.
+#   - setupwraith: the main Wi-Fi belonged to android.uid.system, only an old guest network to setupwraith, so it
+#     went off with FORCE_SETUPWRAITH=1 after forgetting that network was accepted.
+#   - The Settings button died once launcherx was off, as described below; enabling HomeKeyService alone
+#     (`settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService`) fixed it,
+#     checked with the real remote.
+#   - The optional "second round" at the end of this list was also disabled and lived with on this TV.
+#
+
 # Remote buttons once launcherx is disabled (that second TV; `dumpsys window policy` lists who gets
 # each global key, logcat shows what happens):
 #   Settings   KEYCODE_SETTINGS (176) goes to com.xiaomi.android.tvsetup.partnercustomizer, whose
@@ -118,7 +129,8 @@ com.google.android.play.games          # Play Games
 # Android ignores android:priority on HOME filters for non-system apps and `cmd package
 # set-home-activity` reports Success without taking effect (not even across a reboot). Disabling
 # the setupwraith PACKAGE is what frees the slot; `pm disable-user` on its individual components is
-# refused with a SecurityException. See the README troubleshooting section.
+# refused with a SecurityException. See docs/TROUBLESHOOTING.md,
+# "The new launcher still doesn't own Home".
 #
 # Trade-off: setupwraith is the first-run setup wizard. Everyday use is unaffected, but re-enable it
 # before a factory reset - tools/restore.sh does that for you while this line is in the list.
@@ -138,3 +150,23 @@ com.google.android.tungsten.setupwraith   # setup wizard; blocks a third-party l
 # com.android.wallpaperbackup            # wallpaper backup agent
 # com.google.android.onetimeinitializer  # one-off task after first setup, runs at boot
 # com.mstar.android.tv.disclaimercustomization   # legal screen of the first-run setup wizard only
+
+# ---------------------------------------------------------------------------------------------
+# Optional second round (firmware RTM5.220609.003.1917, 20-24 Oct 2026): disabled on the fourth TV above with
+# the launcher owning Home, by the owner's choice; four days, several reboots, nothing re-enabled, Netflix,
+# YouTube, Inputs and the remote still fine. Uncomment what you don't use.
+# com.amazon.amazonvideo.livingroom      # Prime Video
+# com.google.android.videos              # Google TV / Play Movies
+# com.google.android.youtube.tvmusic     # YouTube Music
+# com.google.android.marvin.talkback     # screen reader
+# com.android.printspooler               # printing
+# com.google.android.feedback            # Google feedback reporter
+# com.google.android.syncadapters.calendar
+# com.mitv.videoplayer                   # Xiaomi USB media player
+# com.mitv.gallery                       # Xiaomi gallery
+# com.xiaomi.mitv.mediaexplorer          # Xiaomi media explorer; a third-party file manager opens USB media instead
+# com.mitv.livetv.ci_mediatek            # CI+ card module for broadcast TV; only without a CI card
+# Firmware updaters, better left enabled; the owner turned them off, which also stops OTA updates:
+# com.xiaomi.mitv.updateservice
+# com.mitv.upgrader
+# com.mitv.ABUpdateStatus
