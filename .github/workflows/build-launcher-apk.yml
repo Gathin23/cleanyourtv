@@ -1,3 +1,4 @@
+---
 name: Build CleanYourTV launcher APK
 
 on:
@@ -24,13 +25,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install SDK packages
+      - name: Install Android SDK packages
         run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          [ -x "$SDKMGR" ] || SDKMGR="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"
+          yes | "$SDKMGR" --licenses > /dev/null || true
+          "$SDKMGR" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build release APK
         working-directory: launcher
@@ -53,3 +53,4 @@ jobs:
           gh release create "$TAG" CleanYourTV-Launcher-v3.1.apk --title "CleanYourTV launcher v3.1 (build ${{ github.run_number }})" --notes "Clean Your TV launcher APK built from Gathin23/cleanyourtv (MIT License). Debug-signed release build."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+---
