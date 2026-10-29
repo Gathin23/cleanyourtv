@@ -357,8 +357,13 @@ class MainActivity : Activity() {
 
                 var assetStream: InputStream? = null
                 try {
-                    assetStream = resources.openRawResource(R.raw.clean_launcher)
-                } catch (_: Exception) {
+                    val rawId = resources.getIdentifier("clean_launcher", "raw", packageName)
+                    if (rawId != 0) {
+                        assetStream = resources.openRawResource(rawId)
+                    }
+                } catch (_: Exception) {}
+
+                if (assetStream == null) {
                     try {
                         assetStream = assets.open("clean_launcher.apk")
                     } catch (_: Exception) {
@@ -394,11 +399,21 @@ class MainActivity : Activity() {
                         }
                         log.append(" • Streaming APK Install: $streamRes\n")
 
-                        val setDefaultRes = adbConn.executeShellCommand("cmd package set-home-activity com.gathin.tvhome/.MainActivity")
-                        log.append(" • Set Default Launcher: $setDefaultRes\n")
+                        adbConn.executeShellCommand("pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS")
+                        adbConn.executeShellCommand("pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION")
+                        adbConn.executeShellCommand("pm grant com.gathin.tvhome android.permission.ACCESS_COARSE_LOCATION")
 
-                        val disableOldRes = adbConn.executeShellCommand("pm disable-user --user 0 com.google.android.apps.tv.launcherx")
-                        log.append(" • Disable Stock LauncherX: $disableOldRes\n")
+                        val setDefaultRes = adbConn.executeShellCommand("cmd package set-home-activity com.gathin.tvhome/.MainActivity")
+                        log.append(" • Set Default Home Activity: $setDefaultRes\n")
+
+                        val disable1 = adbConn.executeShellCommand("pm disable-user --user 0 com.google.android.apps.tv.launcherx")
+                        val disable2 = adbConn.executeShellCommand("pm disable-user --user 0 com.google.android.tvlauncher")
+                        val disable3 = adbConn.executeShellCommand("pm disable-user --user 0 com.tcl.tvhome")
+
+                        log.append(" • Stock Launcher Disabling Results:\n")
+                        log.append("   - LauncherX: $disable1\n")
+                        log.append("   - Android TV Launcher: $disable2\n")
+                        log.append("   - TCL Home: $disable3\n")
 
                         adbConn.disconnect()
                     } else {
