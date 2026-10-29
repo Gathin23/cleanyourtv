@@ -44,12 +44,6 @@ public final class MainActivity extends Activity {
         FrameLayout.LayoutParams place = new FrameLayout.LayoutParams(
                 Math.min(dp(660), getResources().getDisplayMetrics().widthPixels - dp(64)), -2, Gravity.CENTER);
         root.addView(panel, place);
-        TextView title = text(R.string.app_name, 30, 0xfff2f8ff);
-        title.setTextDirection(View.TEXT_DIRECTION_LTR);
-        title.setGravity(android.text.TextUtils.getLayoutDirectionFromLocale(
-                getResources().getConfiguration().getLocales().get(0)) == View.LAYOUT_DIRECTION_RTL
-                ? Gravity.RIGHT : Gravity.LEFT);
-        panel.addView(title);
         status = text(R.string.state_off, 14, 0xffa3b4c5);
         LinearLayout.LayoutParams statusSize = new LinearLayout.LayoutParams(-1, -2);
         statusSize.setMargins(0, dp(6), 0, dp(24));
