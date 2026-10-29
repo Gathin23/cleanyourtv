@@ -57,6 +57,8 @@ final class WallpaperPlayer {
     private final Map<String, String> names;
     /** wallpaper_moods: the collection's groups by time of day; empty rotates through all of it. */
     private final Map<String, Set<String>> moods;
+    /** wallpaper_events: pictures that replace the rotation between two dates; empty is the usual rotation all year. */
+    private final List<WallpaperEvent> events;
     /** config.xml latitude and longitude for the sun's times, and today's {sunrise, sunset} once worked out. */
     private final String latitude, longitude;
     private LocalDate sunDay;
@@ -73,6 +75,7 @@ final class WallpaperPlayer {
         order = config.wallpaperOrder;
         preferences = context.getSharedPreferences("wallpaper_rotation", Context.MODE_PRIVATE);
         moods = config.wallpaperMoods;
+        events = config.wallpaperEvents;
         latitude = moods.isEmpty() ? "" : context.getString(R.string.latitude);
         longitude = moods.isEmpty() ? "" : context.getString(R.string.longitude);
         // Playback state belongs to one collection. Changing the collection starts from its first
@@ -148,15 +151,22 @@ final class WallpaperPlayer {
         root.setBackgroundColor(backgroundColor);
     }
 
-    /** The pictures the rotation picks from now: wallpaper_moods' group for the time of day, or the whole collection. */
+    /**
+     * The pictures the rotation picks from now: the event's pictures while a wallpaper_events date is on, else
+     * wallpaper_moods' group for the time of day, or the whole collection.
+     */
     private List<File> playable() {
-        if (moods.isEmpty()) return files;
+        if (moods.isEmpty() && events.isEmpty()) return files;
         LocalDateTime now = LocalDateTime.now();
+        List<File> event = WallpaperEvent.today(files, events, now.toLocalDate());
+        if (event != null) return event;
+        List<File> usual = WallpaperEvent.without(files, events);
+        if (moods.isEmpty()) return usual;
         if (!now.toLocalDate().equals(sunDay)) {
             sunDay = now.toLocalDate();
             sun = WallpaperMood.sun(sunDay, latitude, longitude, ZoneId.systemDefault());
         }
-        return WallpaperMood.select(files, moods, WallpaperMood.timeOfDay(now.getHour() * 60 + now.getMinute(), sun[0], sun[1]));
+        return WallpaperMood.select(usual, moods, WallpaperMood.timeOfDay(now.getHour() * 60 + now.getMinute(), sun[0], sun[1]));
     }
 
     void close() {

@@ -361,6 +361,15 @@
          group falls back to the whole collection; empty rotates through every picture. A theme can set
          "wallpaper_moods" as an object. -->
     <string name="wallpaper_moods" translatable="false"></string>
+    <!-- Pictures for a span of dates, as JSON written like wallpaper_moods: {"12-20 to 12-26": [file names],
+         "12-31 to 01-01": [...]}. Between the two dates the rotation picks only from that event's pictures, ahead of
+         wallpaper_moods; outside them they stay out of the rotation. A date is "MM-DD" (every year) or "YYYY-MM-DD"
+         (that year only, for a day that moves); a key with one date is that day. The end date is included: "12-20 to
+         12-26" shows them all through the 26th. A yearly event whose start is after its end runs over New Year
+         ("12-31 to 01-01"). The first event listed wins when two overlap. Empty is no events. A theme can set
+         "wallpaper_events" as an object; like wallpaper_moods it needs a rotating collection
+         (wallpaper_rotation_minutes above 0). -->
+    <string name="wallpaper_events" translatable="false"></string>
     <!-- Hold OK on a tile opens a small menu: Move (picks the tile up for reordering), Remove from Home (only with
          app_library) and App info. false keeps the old behaviour: holding OK opens the app's App info page.
          Can also be set with "tile_menu": true in a theme's config.json. -->

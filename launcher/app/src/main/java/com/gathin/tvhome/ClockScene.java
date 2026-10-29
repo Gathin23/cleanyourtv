@@ -20,6 +20,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -60,6 +61,7 @@ final class ClockScene {
     private long shownMs;
     private String order;
     private Map<String, Set<String>> moods;
+    private List<WallpaperEvent> events = Collections.emptyList();
     private String latitude, longitude;
 
     private final Runnable tick = new Runnable() {
@@ -141,6 +143,7 @@ final class ClockScene {
             rotationMs = cfg.wallpaperRotationMinutes * 60_000L;
             order = cfg.wallpaperOrder;
             moods = cfg.wallpaperMoods;
+            events = cfg.wallpaperEvents;
             latitude = moods.isEmpty() ? "" : ctx.getString(R.string.latitude);
             longitude = moods.isEmpty() ? "" : ctx.getString(R.string.longitude);
         }
@@ -213,12 +216,16 @@ final class ClockScene {
         loadWallpaper();
     }
 
-    /** WallpaperPlayer's filter: the pictures wallpaper_moods allows at this hour, or all of them. */
+    /** WallpaperPlayer's filter: the event's pictures on its dates, else those wallpaper_moods allows at this hour, or all. */
     private List<File> playable() {
-        if (moods.isEmpty()) return rotation;
+        if (moods.isEmpty() && events.isEmpty()) return rotation;
         LocalDateTime now = LocalDateTime.now();
+        List<File> event = WallpaperEvent.today(rotation, events, now.toLocalDate());
+        if (event != null) return event;
+        List<File> usual = WallpaperEvent.without(rotation, events);
+        if (moods.isEmpty()) return usual;
         int[] sun = WallpaperMood.sun(now.toLocalDate(), latitude, longitude, ZoneId.systemDefault());
-        return WallpaperMood.select(rotation, moods,
+        return WallpaperMood.select(usual, moods,
                 WallpaperMood.timeOfDay(now.getHour() * 60 + now.getMinute(), sun[0], sun[1]));
     }
 

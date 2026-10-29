@@ -80,6 +80,19 @@ Static example:
 `wallpaper_moods` needs `wallpaper_rotation_minutes` greater than 0 to load the collection; for a
 single picture, set it to 0 and use `wallpaper.jpg`.
 
+To swap in a different set of pictures for a span of dates, add `wallpaper_events`, written like
+`wallpaper_moods` with the dates as the key. The end date is included, and a span whose start is after
+its end runs over New Year:
+
+```json
+{
+  "wallpaper_events": {
+    "12-20 to 12-26": ["xmas-001.jpg", "xmas-002.jpg"],
+    "12-31 to 01-01": ["nye-001.jpg"]
+  }
+}
+```
+
 ## 4. Push and check on the real TV
 
 ```bash
