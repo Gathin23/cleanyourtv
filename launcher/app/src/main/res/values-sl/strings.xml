@@ -24,6 +24,7 @@
     <string name="not_available">Ni na voljo na tem televizorju</string>
     <string name="cant_open">Aplikacije %1$s ni mogoče odpreti</string>
     <string name="date_format">EEEE, d. MMMM</string>
+    <string name="date_format_home">EEEE\nd. MMMM</string>
     <string name="shamsi_month_farvardin">Farvardin</string>
     <string name="shamsi_month_ordibehesht">Ordibehesht</string>
     <string name="shamsi_month_khordad">Khordad</string>

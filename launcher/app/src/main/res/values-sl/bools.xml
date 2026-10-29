@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Long Slovenian dates need room to wrap beside the clock. -->
+    <!-- Slovenian Home dates put the weekday above the day and month. -->
     <bool name="date_single_line">false</bool>
 </resources>
