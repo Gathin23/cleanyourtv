@@ -36,6 +36,7 @@ class MainActivity : Activity() {
     private lateinit var btnInstallLauncher: Button
     private lateinit var btnFastBoot: Button
     private lateinit var btnRestore: Button
+    private lateinit var btnManualGuide: Button
 
     private lateinit var safetyRulesEngine: SafetyRulesEngine
     private lateinit var backupRestoreEngine: BackupRestoreEngine
@@ -57,6 +58,7 @@ class MainActivity : Activity() {
         btnInstallLauncher = findViewById(R.id.btnInstallLauncher)
         btnFastBoot = findViewById(R.id.btnFastBoot)
         btnRestore = findViewById(R.id.btnRestore)
+        btnManualGuide = findViewById(R.id.btnManualGuide)
 
         safetyRulesEngine = SafetyRulesEngine()
         backupRestoreEngine = BackupRestoreEngine(this)
@@ -69,6 +71,7 @@ class MainActivity : Activity() {
         btnInstallLauncher.setOnClickListener { runInstallCleanLauncher() }
         btnFastBoot.setOnClickListener { runFastBootOptimization() }
         btnRestore.setOnClickListener { runRestore() }
+        btnManualGuide.setOnClickListener { showManualLauncherGuide() }
     }
 
     private fun getTargetHost(): String = etTvIp.text.toString().trim().ifBlank { "127.0.0.1" }
@@ -251,18 +254,14 @@ class MainActivity : Activity() {
             for (app in targets) {
                 val pkgName = app.packageName.replace("\r", "").trim()
                 if (safetyRulesEngine.isProtected(pkgName)) {
-                    resultLog.append(" • SKIPPED (Protected): $pkgName\n")
+                    resultLog.append(" • SKIPPED (Protected Hardware/System): $pkgName\n")
                     continue
                 }
 
                 if (isAdbAvailable) {
-                    // 1. Revoke background execution
                     val denyBg1 = adbConn.executeShellCommand("cmd appops set $pkgName RUN_IN_BACKGROUND deny").replace("\r", "").trim()
-
-                    // 2. Wipe app cache & data
                     val clearData = adbConn.executeShellCommand("pm clear $pkgName").replace("\r", "").trim()
 
-                    // 3. Disable package
                     val cmd = "pm disable-user --user 0 $pkgName"
                     val disableRes = adbConn.executeShellCommand(cmd).replace("\r", "").trim()
 
@@ -403,7 +402,9 @@ class MainActivity : Activity() {
             val accelCommands = listOf(
                 "settings put global window_animation_scale 0.5",
                 "settings put global transition_animation_scale 0.5",
-                "settings put global animator_duration_scale 0.5"
+                "settings put global animator_duration_scale 0.5",
+                "settings put global boot_fast 1",
+                "setprop persist.sys.fastboot 1"
             )
 
             for (cmd in accelCommands) {
@@ -421,13 +422,30 @@ class MainActivity : Activity() {
             }
 
             log.append("Boot Acceleration Applied:\n")
-            log.append("✓ Reduced animation delays for 2x faster boot UI transition.\n")
-            log.append("✓ Disabled background telemetry boot listeners.\n")
+            log.append("✓ Enabled TCL persistent Fastboot mode.\n")
+            log.append("✓ Cut animation transition delay by 50%.\n")
 
             runOnUiThread {
                 tvStatus.text = log.toString()
             }
         }
+    }
+
+    private fun showManualLauncherGuide() {
+        AlertDialog.Builder(this)
+            .setTitle("Manual TV Settings Guide")
+            .setMessage(
+                "To set CleanYourTV as default Home Launcher on your TV manually:\n\n" +
+                        "1. Open TV Settings on your Smart TV.\n" +
+                        "2. Navigate to 'Apps' -> 'Default apps'.\n" +
+                        "3. Select 'Home app'.\n" +
+                        "4. Choose 'CleanYourTV' (com.gathin.tvhome).\n\n" +
+                        "If 'Default apps' menu is hidden on TCL Google TV:\n" +
+                        "• Go to Settings -> Apps -> See all apps -> CleanYourTV -> Open.\n" +
+                        "• Press the Home button on your TV remote and select 'Always' for CleanYourTV."
+            )
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     private fun runRestore() {
