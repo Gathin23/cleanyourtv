@@ -32,6 +32,7 @@ PROMPT = ROOT / "PROMPT.md"
 FAKE_TV = r'''
 import json
 import os
+import subprocess
 import sys
 
 
@@ -63,7 +64,44 @@ def run(command):
         return ""
     if "resolve-activity" in command:
         return state["home"] + "\n"
+    if "WRITE_SECURE_SETTINGS" in command:
+        return secure_step(command)
     return ""
+
+
+# The WRITE_SECURE_SETTINGS step decides its own marker on the TV, so it runs here as written,
+# in sh, against a pm and a dumpsys that keep the grant in the state file.
+PM = """#!/bin/sh
+case "$1" in
+  grant) echo granted > "$FAKE_SECURE" ;;
+  revoke) [ "$(cat "$FAKE_SECURE.works")" = 1 ] && echo denied > "$FAKE_SECURE" ;;
+esac
+exit 0
+"""
+DUMPSYS = """#!/bin/sh
+g=false; [ "$(cat "$FAKE_SECURE")" = granted ] && g=true
+echo "      android.permission.WRITE_SECURE_SETTINGS: granted=$g"
+"""
+
+
+def secure_step(command):
+    shims = os.path.join(os.path.dirname(STATE_PATH), "tv-bin")
+    os.makedirs(shims, exist_ok=True)
+    for name, body in (("pm", PM), ("dumpsys", DUMPSYS)):
+        path = os.path.join(shims, name)
+        with open(path, "w") as f:
+            f.write(body)
+        os.chmod(path, 0o755)
+    secure = shims + "/secure"
+    with open(secure, "w") as f:
+        f.write(state["secure"] + "\n")
+    with open(secure + ".works", "w") as f:
+        f.write("1\n" if state["revoke_works"] else "0\n")
+    env = dict(os.environ, PATH=shims + ":" + os.environ["PATH"], FAKE_SECURE=secure)
+    out = subprocess.run(["sh", "-c", command], env=env, capture_output=True, text=True).stdout
+    with open(secure) as f:
+        state["secure"] = f.read().strip()
+    return out
 
 
 def main():
@@ -119,11 +157,13 @@ class MinSdkGuardTest(unittest.TestCase):
         self.home = self.base / "home"
         self.home.mkdir()
 
-    def install(self, **overrides):
+    def install(self, restore=False, **overrides):
         state = {
             "sdk": "34",
             "home": STOCK_HOME,
             "install_output": "Success\n",
+            "secure": "denied",
+            "revoke_works": True,
             "commands": [],
         }
         state.update(overrides)
@@ -133,6 +173,9 @@ class MinSdkGuardTest(unittest.TestCase):
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))
+        env.pop("RESTORE_KEY_SERVICES", None)
+        if restore:
+            env["RESTORE_KEY_SERVICES"] = "1"
         if os.name != "posix" or not shutil.which("bash"):
             raise unittest.SkipTest("build-and-install.sh is a POSIX script; it needs bash")
         result = subprocess.run(
@@ -160,6 +203,23 @@ class MinSdkGuardTest(unittest.TestCase):
         self.assertIn("Installed.", result.stdout)
         self.assertTrue(self.marker.exists())
         self.assertTrue(any("pm install" in c for c in state["commands"]))
+
+    def test_a_grant_the_tv_keeps_stops_the_install(self):
+        result, state = self.install(secure="granted", revoke_works=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("secure-settings-revoked missing", result.stderr)
+        self.assertEqual(state["secure"], "granted")
+
+    def test_a_granted_tv_is_revoked(self):
+        result, state = self.install(secure="granted")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(state["secure"], "denied")
+
+    def test_restore_key_services_grants(self):
+        result, state = self.install(restore=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("restore-granted", result.stdout)
+        self.assertEqual(state["secure"], "granted")
 
     def test_the_number_comes_from_the_build_file(self):
         # What #608 (minSdk 24) changes: the guard has to follow the build file, not a copy of it.

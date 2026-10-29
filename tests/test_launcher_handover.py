@@ -50,6 +50,9 @@ state = load()
 def run(command):
     if "pm install" in command:
         return "Success\n"
+    # A TV that never held WRITE_SECURE_SETTINGS: the revoke step finds it denied.
+    if "pm revoke" in command and "WRITE_SECURE_SETTINGS" in command:
+        return "secure-settings-revoked\n"
     if "am start" in command:
         if state["start_fails"]:
             return ("Starting: Intent { cmp=com.gathin.tvhome/.MainActivity }\n"
