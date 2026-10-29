@@ -84,7 +84,8 @@
     <string-array name="app_labels">
     </string-array>
     <!-- A tile's artwork instead of the app's banner: "package=drawable", a banner_* drawable bundled with the
-         launcher (res/drawable). banner_tv is a magenta field with the Live TV glyph. -->
+         launcher (res/drawable). banner_tv is a magenta field with the Live TV glyph; banner_appstore is an
+         orange "appstore" field for Fire TV's Appstore (com.amazon.venezia), which ships only a small icon. -->
     <string-array name="app_banners">
     </string-array>
 
