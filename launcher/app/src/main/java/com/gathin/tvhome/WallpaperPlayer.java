@@ -90,7 +90,7 @@ final class WallpaperPlayer {
         image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         names = config.wallpaperCaptions && config.wallpaperEnabled && !files.isEmpty()
                 ? WallpaperCaptions.read(files.get(0).getParentFile()) : Collections.emptyMap();
-        caption = names.isEmpty() ? null : makeCaption(context, root);
+        caption = names.isEmpty() ? null : makeCaption(context, root, config.textShadow);
         if (config.wallpaperEnabled && !files.isEmpty()) {
             root.addView(image, 0, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -207,12 +207,20 @@ final class WallpaperPlayer {
      * Small light text under the top-right buttons, above everything else and never focusable. It sits where the
      * top bar ends in every layout, so it does not cover the clock, the stats line or the tiles.
      */
-    private static TextView makeCaption(Context context, FrameLayout root) {
+    private static TextView makeCaption(Context context, FrameLayout root, boolean tightShadow) {
         float dp = context.getResources().getDisplayMetrics().density;
         TextView text = new TextView(context);
         text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         text.setTextColor(0xD9FFFFFF);
-        text.setShadowLayer(6 * dp, 0, dp, 0xCC000000);
+        // text_shadow: a tight shadow inside padding that the margins give back. A wide one is cut off at the view's
+        // edges while the caption fades (the fade draws into a layer the size of the view), which can show as a box.
+        int pad = tightShadow ? Math.round(8 * dp) : 0;
+        if (tightShadow) {
+            text.setShadowLayer(2 * dp, 0, dp, 0xE6000000);
+            text.setPadding(pad, pad, pad, pad);
+        } else {
+            text.setShadowLayer(6 * dp, 0, dp, 0xCC000000);
+        }
         text.setSingleLine(true);
         text.setEllipsize(TextUtils.TruncateAt.END);
         text.setMaxWidth(Math.round(520 * dp));
@@ -225,8 +233,8 @@ final class WallpaperPlayer {
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.END);
-        params.topMargin = Math.round(110 * dp);
-        params.setMarginEnd(Math.round(62 * dp));
+        params.topMargin = Math.round(110 * dp) - pad;
+        params.setMarginEnd(Math.round(62 * dp) - pad);
         root.addView(text, params);
         return text;
     }

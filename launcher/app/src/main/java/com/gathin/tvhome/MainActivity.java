@@ -601,6 +601,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             lunarDate.setTextSize(11f);
             date.setPadding(0, (int) (4 * density), 0, 0);
         }
+        if (cfg.textShadow) addTextShadows();
         vpnApp = cfg.vpnApp;
         vpnPill = cfg.vpnPill && !cfg.topMenu;
         btnVpn = findViewById(R.id.btnVpn);
@@ -2236,6 +2237,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glass.animate().cancel();
         if (animations && !reducedMotion) glass.animate().alpha(0f).setDuration(160).start();
         else glass.setAlpha(0f);
+    }
+
+    /**
+     * text_shadow: a tight dark shadow under the white text over the wallpaper. The app name gets padding for it
+     * (its start margin gives it back) because the shelf fades, and a fade cuts a shadow off at the view's edges.
+     */
+    private void addTextShadows() {
+        int[] ids = {R.id.greeting, R.id.clock, R.id.ampm, R.id.date, R.id.shamsiDate, R.id.lunarDate, R.id.stats};
+        for (int id : ids) {
+            ((TextView) findViewById(id)).setShadowLayer(2 * density, 0, density, 0xE6000000);
+        }
+        int pad = Math.round(6 * density);
+        heroName.setShadowLayer(2 * density, 0, 0.75f * density, 0xE6000000);
+        heroName.setPadding(pad, pad, pad, pad);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) hero.getLayoutParams();
+        params.setMarginStart(params.getMarginStart() - pad);
+        hero.setLayoutParams(params);
     }
 
     // ---- optional system stats (config.xml show_stats) --------------------------------------------

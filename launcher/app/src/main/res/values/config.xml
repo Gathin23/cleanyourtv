@@ -505,6 +505,10 @@
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
     <bool name="app_glow">false</bool>
+    <!-- A tight dark shadow under the white clock, date, greeting, stats line, focused app's name and wallpaper caption,
+         so they stay readable over a bright wallpaper. false (the default) leaves the text as it is. Can also be set
+         with "text_shadow": true in a theme's config.json. -->
+    <bool name="text_shadow">false</bool>
     <!-- The rows fade out as they scroll up under the clock, instead of being cut off at a hard line (TopFade).
          The grid then draws into a hardware layer, about 6 MB of graphics memory at 1080p, so it is off by default.
          Can also be set with "fade_rows": true in a theme's config.json. -->
