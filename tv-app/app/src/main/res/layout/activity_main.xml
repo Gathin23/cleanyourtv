@@ -15,7 +15,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CleanYourTV — Mobile &amp; TV Control Center"
+            android:text="CleanYourTV — Control Center"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold"
@@ -167,11 +167,21 @@
                 android:textSize="11sp" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnManualGuide"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:text="Manual TV Settings Guide (Set Home Launcher)"
+            android:backgroundTint="#475569"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:layout_marginBottom="10dp" />
+
         <TextView
             android:id="@+id/tvAdbHelp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mobile Remote Mode: Enter target TV IP address above and tap 'Connect TV'. Once connected, TV details will display in the card above and all 5 remote actions can be executed wirelessly."
+            android:text="Manual Setup: To select Clean Launcher as default Home app on TV without ADB, go to TV Settings -> Apps -> Default apps -> Home app -> CleanYourTV."
             android:textColor="#FDE047"
             android:textSize="12sp"
             android:padding="8dp"
@@ -181,7 +191,7 @@
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="200dp"
             android:text="Console Log:\nSelect an action above to begin."
             android:textColor="#CBD5E1"
             android:textSize="12sp"

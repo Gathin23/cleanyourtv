@@ -8,6 +8,7 @@ class SafetyRulesEngine {
 
     companion object {
         val HARD_PROTECTED_PACKAGES = setOf(
+            // Core System UI & Settings
             "com.google.android.katniss",
             "com.google.android.googlequicksearchbox",
             "com.google.android.youtube.tv",
@@ -27,7 +28,25 @@ class SafetyRulesEngine {
             "com.google.android.tungsten.setupwrangler",
             "com.google.android.tvlauncher",
             "com.google.android.apps.tv.launcherx",
-            "com.gathin.tvhome"
+            "com.gathin.tvhome",
+
+            // Remote Control, Bluetooth, Power & Standby Hardware Services (LOCKED)
+            "com.android.bluetooth",
+            "com.tcl.bluetooth",
+            "com.tcl.tv.bluetooth",
+            "com.tcl.remote",
+            "com.tcl.tv.remote",
+            "com.tcl.power",
+            "com.tcl.tv.power",
+            "com.tcl.standby",
+            "com.tcl.tv.standby",
+            "com.tcl.system",
+            "com.tcl.tv.system",
+            "com.tcl.cec",
+            "com.tcl.tv.cec",
+            "com.android.hardware.input",
+            "com.mediatek.tv.bluetooth",
+            "com.mediatek.tv.power"
         )
 
         val KNOWN_DEBLOAT_PATTERNS = mapOf(
@@ -62,6 +81,10 @@ class SafetyRulesEngine {
             "partner", "customizer", "recommendation", "telemetry", "shop", "promo",
             "advert", "analytics", "banner", "metrics", "tracker", "overlay"
         )
+
+        val CRITICAL_HARDWARE_KEYWORDS = listOf(
+            "bluetooth", "power", "standby", "cec", "input", "remote", "key", "telephony", "wifi"
+        )
     }
 
     private val userProtectedPackages = mutableSetOf<String>()
@@ -72,7 +95,12 @@ class SafetyRulesEngine {
     }
 
     fun isProtected(packageName: String): Boolean {
-        return HARD_PROTECTED_PACKAGES.contains(packageName) || userProtectedPackages.contains(packageName)
+        val lowerPkg = packageName.lowercase()
+        if (HARD_PROTECTED_PACKAGES.contains(packageName) || userProtectedPackages.contains(packageName)) {
+            return true
+        }
+        // Protect critical remote, bluetooth, standby & power drivers
+        return CRITICAL_HARDWARE_KEYWORDS.any { lowerPkg.contains(it) }
     }
 
     fun classifyApp(packageName: String, appLabel: String, isSystem: Boolean, isEnabled: Boolean): AppInfo {
@@ -83,7 +111,7 @@ class SafetyRulesEngine {
                 isSystem = isSystem,
                 isEnabled = isEnabled,
                 category = AppCategory.PROTECTED,
-                recommendationReason = "Essential core system component (locked against accidental modification)",
+                recommendationReason = "Essential TV hardware / remote / power component (locked)",
                 confidenceLevel = ConfidenceLevel.HIGH,
                 safetyCategory = "Protected"
             )

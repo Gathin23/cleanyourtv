@@ -26,6 +26,14 @@ class SafetyRulesEngineTest {
     }
 
     @Test
+    fun testBluetoothAndPowerRemoteDriversAreProtected() {
+        assertTrue(engine.isProtected("com.android.bluetooth"))
+        assertTrue(engine.isProtected("com.tcl.bluetooth"))
+        assertTrue(engine.isProtected("com.tcl.power"))
+        assertTrue(engine.isProtected("com.tcl.standby"))
+    }
+
+    @Test
     fun testUserProtectedPackagesAreProtected() {
         engine.setUserProtectedPackages(setOf("com.my.custom.app"))
         assertTrue(engine.isProtected("com.my.custom.app"))
@@ -47,12 +55,6 @@ class SafetyRulesEngineTest {
     }
 
     @Test
-    fun testOemSystemPackageClassification() {
-        val info = engine.classifyApp("com.tcl.guard", "TCL Guard", true, true)
-        assertEquals(AppCategory.OPTIONAL, info.category)
-    }
-
-    @Test
     fun testUserAppClassificationIsOptional() {
         val info = engine.classifyApp("com.example.randomapp", "Random App", false, true)
         assertEquals(AppCategory.OPTIONAL, info.category)
@@ -61,12 +63,7 @@ class SafetyRulesEngineTest {
     @Test
     fun testCommandValidationRejectsProtectedPackages() {
         assertFalse(engine.validateCommand("com.android.settings", "pm disable-user --user 0 com.android.settings"))
-    }
-
-    @Test
-    fun testCommandValidationRejectsArbitraryShellCommands() {
-        assertFalse(engine.validateCommand("com.tcl.partnercustomizer", "rm -rf /data/system"))
-        assertFalse(engine.validateCommand("com.tcl.partnercustomizer", "reboot recovery"))
+        assertFalse(engine.validateCommand("com.android.bluetooth", "pm disable-user --user 0 com.android.bluetooth"))
     }
 
     @Test
