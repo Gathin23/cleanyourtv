@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, user-scalable=no">
+<title>BadarasOS · Prévia estilo Netflix</title>
+<style>
+/* Prévia de design: não é usada pela TV. Tela de 1920x1080, escalada para caber na janela. */
+@font-face{font-family:'Hanken Grotesk';src:url('hanken.ttf');font-weight:100 900}
+
+/* ===== Tokens =====
+   Grid de 8 pontos: todo espaço, tamanho e raio é múltiplo de 8 (4 só para ajustes finos).
+   Fontes em múltiplos de 4. */
+:root{
+  --accent:#e50914;           /* destaque (C troca na prévia) */
+  --accent-ink:#fff;
+  --bg:#0b0b0f;
+  --surface:#18181f;
+  --surface-2:#24242d;
+  --text:#fff;
+  --text-2:rgba(255,255,255,0.72);
+  --text-3:rgba(255,255,255,0.5);
+  --focus:#fff;
+  --match:#46d369;
+  /* espaço */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:40px; --s8:48px; --s10:64px; --s12:96px;
+  /* tipo */
+  --t-xs:12px; --t-s:16px; --t-m:20px; --t-l:24px; --t-xl:32px; --t-2xl:40px; --t-3xl:48px; --t-hero:80px;
+  /* raio */
+  --r-s:4px; --r-m:8px; --r-l:16px; --r-pill:999px;
+  /* layout */
+  --rail:104px;               /* menu fechado */
+  --x:168px;                  /* coluna de conteúdo: menu + 64 */
+  --safe-x:120px;             /* margem segura nas telas sem menu */
+  --top:48px;                 /* margem do topo */
+  --ring:0 0 0 4px var(--focus);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+*{box-sizing:border-box}
+#stage{width:1920px;height:1080px;position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;
+  font-family:'Hanken Grotesk',system-ui,sans-serif;color:var(--text);background:var(--bg)}
+.f{outline:none}
+
+/* ===== Destaque (billboard) ===== */
+#bb{position:absolute;right:0;top:0;width:1504px;height:848px;transition:background .45s}
+#bb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+#bb img.show{opacity:1}
+/* Arte clara (colagem com fundo branco): mostra o pôster emoldurado no lugar. */
+#bb img.framed,.ov .art.framed{inset:auto;right:var(--safe-x);top:136px;width:320px;height:480px;border-radius:var(--r-m);box-shadow:0 32px 64px rgba(0,0,0,0.6)}
+#bbShade,.ov .shade{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,var(--bg) 0%,rgba(11,11,15,0.92) 24%,rgba(11,11,15,0.55) 48%,rgba(11,11,15,0) 72%),
+             linear-gradient(0deg,var(--bg) 0%,rgba(11,11,15,0.6) 32%,rgba(11,11,15,0) 64%),
+             linear-gradient(180deg,rgba(11,11,15,0.72) 0%,rgba(11,11,15,0) 24%)}
+#bb.framed #bbShade{background:linear-gradient(0deg,var(--bg) 0%,rgba(11,11,15,0) 40%)}
+
+#info{position:absolute;left:var(--x);top:120px;width:832px;display:flex;flex-direction:column;gap:var(--s4)}
+body.hasTop #info{top:144px}
+.kick{display:flex;align-items:center;gap:var(--s2);height:32px;font-size:var(--t-s);font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text-2)}
+.kick b{display:inline-flex;width:32px;height:32px;border-radius:var(--r-m);background:var(--accent);color:var(--accent-ink);align-items:center;justify-content:center;font-size:var(--t-m);letter-spacing:0}
+#logoBox{height:192px;display:flex;align-items:flex-end}
+body.hasTop #logoBox{height:160px}
+#logo{max-width:600px;max-height:100%;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.6))}
+.htitle,#title{margin:0;font-size:var(--t-hero);line-height:1;font-weight:800;letter-spacing:-2px;display:none}
+/* Título longo (vídeo do YouTube): menor e em até 2 linhas */
+#title.long{font-size:var(--t-3xl);line-height:56px;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;letter-spacing:-1px;max-width:832px}
+.meta{display:flex;align-items:center;gap:var(--s3);height:32px;font-size:var(--t-m);font-weight:600;color:var(--text-2);white-space:nowrap}
+.meta .m{color:var(--match);font-weight:800}
+.meta .tag{height:24px;padding:0 var(--s2);border:2px solid rgba(255,255,255,0.5);border-radius:var(--r-s);display:inline-flex;align-items:center;font-size:var(--t-xs);font-weight:800;color:var(--text)}
+.desc{margin:0;font-size:var(--t-m);line-height:32px;color:var(--text);opacity:.92;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:760px;text-shadow:0 2px 16px rgba(0,0,0,0.6)}
+#prog{display:none;align-items:center;gap:var(--s4);height:24px;font-size:var(--t-s);color:var(--text-2)}
+#prog .bar{width:304px;height:4px;background:rgba(255,255,255,0.25);border-radius:2px;overflow:hidden}
+#prog .bar i{display:block;height:100%;background:var(--accent)}
+#btns,.brow{display:flex;gap:var(--s4);margin-top:var(--s2)}
+.btn{height:64px;padding:0 var(--s6);border-radius:var(--r-m);display:flex;align-items:center;gap:var(--s3);font-size:var(--t-l);font-weight:700;white-space:nowrap;
+  background:rgba(109,109,110,0.55);color:#fff;transition:transform .15s var(--ease),background .15s,color .15s}
+.btn svg{width:32px;height:32px}
+.btn.icon{width:64px;padding:0;justify-content:center;border-radius:50%}
+.btn.icon svg{width:24px;height:24px}
+.btn.primary{background:#fff;color:#000}
+.btn.on{background:var(--focus);color:#000;transform:scale(1.06);box-shadow:0 0 0 4px rgba(255,255,255,0.24)}
+.btn.primary.on{background:var(--accent);color:var(--accent-ink);box-shadow:var(--ring)}
+#btns.solo .btn:not(.primary){display:none}
+
+/* ===== Fileiras =====
+   Coluna dos cartões alinhada com o texto do destaque (x = 168). As fileiras têm altura do conteúdo,
+   então o título de uma nunca encosta nos cartões da outra. */
+#rowsVp{position:absolute;left:calc(var(--x) - var(--s2));right:0;top:648px;bottom:0;overflow:hidden}
+#rows{transition:transform .35s var(--ease)}
+.lane{padding:0 0 var(--s4) var(--s2);transition:opacity .3s}
+.lane.past,.lane.below{opacity:0}
+.lane.peek .track{opacity:0} /* fileira que não cabe inteira: só o título aparece, como aviso de que tem mais */
+.lane h2,.sec h2,.ov h2{margin:0;height:32px;font-size:var(--t-l);font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:var(--s3)}
+.lane h2 small,.sec h2 small{font-size:var(--t-s);font-weight:600;color:var(--text-3)}
+.lane.t-top .track{gap:var(--s5)}
+.track{display:flex;gap:var(--s4);transition:transform .3s var(--ease);padding:var(--s5) 0 var(--s4)}
+.loading{font-size:var(--t-m);color:var(--text-3);padding:var(--s6) var(--s6)}
+
+/* Cartões */
+.c{flex:0 0 auto;position:relative;border-radius:var(--r-m);overflow:hidden;background:var(--surface);
+  transition:transform .2s var(--ease),box-shadow .2s}
+.c img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.c img.bg.pos{object-position:center 20%}
+.c.on{transform:scale(1.08);z-index:2;box-shadow:var(--ring),0 16px 40px rgba(0,0,0,0.7)}
+.track>.c,.track>.top{transform-origin:left top}
+.top.ten .n{letter-spacing:-8px}
+.c.land{width:352px;height:200px}
+.c.cap{width:352px;height:168px}
+.c.port{width:176px;height:264px}
+.c.game img.bg{height:104%}
+.shade2{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0) 56%)}
+.c.land img.lg{position:absolute;left:var(--s4);bottom:var(--s4);max-width:64%;max-height:56px;object-fit:contain;object-position:left bottom}
+.c.cont img.lg,.c.cont .nm{bottom:var(--s5)}
+.c .nm{position:absolute;left:var(--s4);right:var(--s4);bottom:var(--s4);font-size:var(--t-m);font-weight:800;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c .pb{position:absolute;left:var(--s4);right:var(--s4);bottom:var(--s2);height:4px;border-radius:2px;background:rgba(255,255,255,0.3)}
+.c .pb i{display:block;height:100%;border-radius:2px;background:var(--accent)}
+.c .sub{position:absolute;left:var(--s4);bottom:var(--s3);font-size:var(--t-s);line-height:16px;font-weight:600;color:var(--text-2)}
+.c .cap2{position:absolute;left:var(--s4);right:var(--s4);bottom:var(--s4);font-size:var(--t-s);font-weight:700;line-height:24px}
+.badge{position:absolute;left:var(--s2);top:var(--s2);height:24px;padding:0 var(--s2);border-radius:var(--r-s);font-size:var(--t-xs);font-weight:800;letter-spacing:.5px;display:flex;align-items:center;background:rgba(0,0,0,0.72)}
+.badge.new{background:var(--accent);color:var(--accent-ink)}
+.badge.hydra{background:#7c6cf0}
+.badge.yt{background:#ff0033}
+.c.app{width:272px;height:152px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s3);font-size:var(--t-m);font-weight:700;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--b) 40%,var(--surface)) 0%,var(--surface) 80%)}
+.c.app img.ai{width:64px;height:64px;border-radius:var(--r-l);object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.4))}
+.c.app.dock{width:auto;height:200px;gap:var(--s4);font-size:var(--t-l)}
+.c.app.dock img.ai{width:96px;height:96px}
+.c.app.g{width:auto}
+.c.act{width:272px;height:152px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s3);font-size:var(--t-m);font-weight:700}
+.c.act svg{width:48px;height:48px;color:var(--accent)}
+.c.port.g{width:auto;height:auto;aspect-ratio:2/3}
+.c.app.on,.c.port.g.on{transform:scale(1.05)}
+
+/* Top 10: número grande vazado à esquerda do pôster.
+   A Hanken é variável e os traços de cada algarismo se sobrepõem; com contorno, as sobreposições
+   viram riscos dentro do número. Por isso o contorno fica numa camada de trás (8 px, metade aparece)
+   e uma cópia só com preenchimento vai por cima e cobre os riscos internos. */
+.top{flex:0 0 auto;height:312px;gap:var(--s2);display:flex;align-items:flex-end;transition:transform .2s var(--ease)}
+.top .n{flex:0 0 auto;font-size:224px;line-height:168px;font-weight:900;letter-spacing:0;
+  color:var(--bg);-webkit-text-stroke:8px #6e6e7a;position:relative;z-index:0}
+.top .n::after{content:attr(data-n);position:absolute;inset:0;color:var(--bg);-webkit-text-stroke:0}
+.top .c{position:relative;z-index:1}
+.top .c.port{width:208px;height:312px} /* Top 10 tem pôster maior que as outras fileiras, como no Netflix */
+.top.on{transform:scale(1.05);z-index:2}
+.top.on .c{box-shadow:var(--ring),0 16px 40px rgba(0,0,0,0.7)}
+.top.on .n{-webkit-text-stroke-color:#fff}
+.top.ten .n::after{letter-spacing:-8px}
+
+/* ===== Menu lateral (abre ao receber foco) ===== */
+#railShade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.96) 0%,rgba(0,0,0,0.86) 24%,rgba(0,0,0,0) 48%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+#rail{position:absolute;left:0;top:0;bottom:0;width:var(--rail);z-index:10;display:flex;flex-direction:column;justify-content:center;gap:var(--s2);padding:0 0 0 var(--s6);
+  background:linear-gradient(90deg,rgba(0,0,0,0.72),rgba(0,0,0,0));transition:width .3s var(--ease)}
+#rail .who{position:absolute;top:var(--top);left:var(--s5);display:flex;align-items:center;gap:var(--s4)}
+.avatar{width:56px;height:56px;border-radius:var(--r-m);background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:var(--t-l);color:var(--accent-ink)}
+.ni{height:56px;display:flex;align-items:center;gap:var(--s5);color:var(--text-3);font-size:var(--t-l);font-weight:700;white-space:nowrap;position:relative}
+.ni svg{flex:0 0 32px;width:32px;height:32px}
+.ni span,.who span{opacity:0;transform:translateX(-8px);transition:opacity .2s,transform .2s}
+.ni.sel{color:var(--text)}
+.ni.sel::before{content:"";position:absolute;left:calc(-1 * var(--s6));top:var(--s4);bottom:var(--s4);width:4px;border-radius:0 4px 4px 0;background:var(--accent)}
+body.railOpen #rail{width:424px}
+body.railOpen #railShade{opacity:1}
+body.railOpen .ni span,body.railOpen .who span{opacity:1;transform:none}
+.ni.on{color:#fff;transform:scale(1.04);transform-origin:left center}
+.ni.on span{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:4px;text-underline-offset:8px}
+.who span{font-size:var(--t-m);font-weight:700}
+
+/* ===== Relógio, legenda e avisos ===== */
+#clock{position:absolute;right:var(--s8);top:var(--top);text-align:right;z-index:5;text-shadow:0 2px 16px rgba(0,0,0,0.7)}
+#clock b{display:block;font-size:var(--t-xl);line-height:40px;font-weight:700}
+#clock span{display:block;font-size:var(--t-s);line-height:24px;color:var(--text-2)}
+#hint{position:absolute;left:var(--s6);bottom:var(--s6);font-size:var(--t-xs);line-height:24px;color:var(--text-3);z-index:11;opacity:0;transition:opacity .3s}
+body.railOpen #hint{opacity:1}
+#hint kbd{font-family:inherit;border:1px solid rgba(255,255,255,0.3);border-radius:var(--r-s);padding:0 var(--s1);margin:0 2px}
+#toast{position:absolute;left:50%;bottom:var(--s8);transform:translate(-50%,16px);height:56px;padding:0 var(--s6);border-radius:var(--r-m);background:#fff;color:#000;font-size:var(--t-m);font-weight:700;display:flex;align-items:center;opacity:0;transition:.25s;z-index:60;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ===== Barra do topo (abas, filtros, status) ===== */
+#topbar{position:absolute;left:var(--x);top:var(--top);height:48px;display:flex;align-items:center;gap:var(--s2);z-index:6}
+.tb{height:48px;padding:0 var(--s5);border-radius:var(--r-pill);display:flex;align-items:center;gap:var(--s2);font-size:var(--t-m);font-weight:700;color:var(--text-2);white-space:nowrap;flex:0 0 auto;
+  transition:transform .15s var(--ease),background .15s,color .15s}
+.tb svg{width:24px;height:24px}
+.tb b{color:#fff;font-weight:800}
+.tb.title{font-size:var(--t-xl);font-weight:800;color:#fff;padding:0 var(--s4) 0 0;letter-spacing:-.5px}
+.tb.sel{color:#fff;background:rgba(255,255,255,0.16)}
+.tb.outline{box-shadow:inset 0 0 0 2px rgba(255,255,255,0.32);color:#fff}
+.tb.chip{font-size:var(--t-s);background:rgba(255,255,255,0.08);color:var(--text);height:40px;padding:0 var(--s4)}
+.tb.chip .dot{width:8px;height:8px;border-radius:50%;background:var(--match);box-shadow:0 0 0 4px rgba(70,211,105,0.2)}
+.tb.on{background:#fff;color:#000;box-shadow:none;transform:scale(1.06)}
+.tb.on b{color:#000}
+.tb.sm{height:40px;padding:0 var(--s4);font-size:var(--t-s)}
+#menu{position:absolute;z-index:20;top:112px;width:384px;padding:var(--s2);border-radius:var(--r-l);background:#1c1c24;box-shadow:0 32px 80px rgba(0,0,0,0.75);display:none}
+.mi{height:48px;padding:0 var(--s4);border-radius:var(--r-m);display:flex;align-items:center;justify-content:space-between;font-size:var(--t-m);font-weight:600;color:var(--text-2)}
+.mi.sel{color:#fff;font-weight:800}
+.mi.sel::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.mi.on{background:#fff;color:#000}
+
+/* ===== Telas com layout próprio =====
+   O conteúdo começa 16 px antes da coluna (x = 152) e cada bloco tem 16 px de respiro,
+   para o anel de foco não ser cortado e tudo alinhar em x = 168. */
+#view{position:absolute;left:calc(var(--x) - var(--s4));right:var(--s6);top:var(--top);bottom:0;display:none}
+body.isView #browse{display:none}
+body.isView #view{display:block}
+.vhead{display:flex;align-items:center;gap:var(--s2);height:48px;margin:0 var(--s4) var(--s5)}
+.vs,.hs{overflow:hidden;scroll-behavior:smooth}
+.hrow{display:flex;gap:var(--s4);padding:var(--s4)}
+.grid{display:grid;gap:var(--s4);padding:var(--s4)}
+.sec{margin-bottom:var(--s4)}
+.sec h2{margin:0 var(--s4)}
+.empty{font-size:var(--t-m);line-height:32px;color:var(--text-3);padding:var(--s5) 0}
+
+/* Buscar */
+.search{display:flex;gap:var(--s8);height:100%}
+.kb{flex:0 0 576px}
+.query{height:72px;margin:0 var(--s4) var(--s5);border-bottom:4px solid rgba(255,255,255,0.3);display:flex;align-items:center;gap:var(--s3);font-size:var(--t-xl);font-weight:700}
+.query svg{width:32px;height:32px;color:var(--text-3)}
+.query .ph{color:var(--text-3);font-weight:600}
+.query i{width:4px;height:40px;background:var(--accent);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.keys{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--s2);padding:0 var(--s4)}
+.key{height:64px;border-radius:var(--r-m);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:var(--t-l);font-weight:700;text-transform:uppercase;transition:transform .12s}
+.key.wide{grid-column:span 2;font-size:var(--t-m);text-transform:none;gap:var(--s2)}
+.key svg{width:24px;height:24px}
+.key.on{background:#fff;color:#000;transform:scale(1.06)}
+.results{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.results .grid{grid-template-columns:repeat(5,1fr)}
+
+/* TV e Entradas */
+.feat{width:640px;height:296px;border-radius:var(--r-l);position:relative;overflow:hidden;padding:var(--s6);display:flex;flex-direction:column;justify-content:flex-end;gap:var(--s2);
+  background:var(--surface);transition:transform .2s var(--ease),box-shadow .2s}
+.feat b{font-size:var(--t-xl);line-height:40px;font-weight:800;letter-spacing:-.5px}
+.feat span{font-size:var(--t-m);color:var(--text-2)}
+.feat .live{position:absolute;left:var(--s6);top:var(--s6);height:32px;padding:0 var(--s3);border-radius:var(--r-s);background:var(--accent);font-size:var(--t-xs);font-weight:800;letter-spacing:1px;display:flex;align-items:center;gap:var(--s2);color:#fff}
+.feat .live i{width:8px;height:8px;border-radius:50%;background:#fff;animation:blink 1.4s infinite}
+.feat svg.big{position:absolute;right:var(--s6);top:var(--s6);width:120px;height:120px;opacity:.18}
+.feat.on,.inp.on{transform:scale(1.04);box-shadow:var(--ring),0 16px 40px rgba(0,0,0,0.7);z-index:2}
+.inp{width:360px;height:248px;border-radius:var(--r-l);background:var(--surface);padding:var(--s5);display:flex;flex-direction:column;justify-content:space-between;position:relative;
+  transition:transform .2s var(--ease),box-shadow .2s;box-shadow:inset 0 0 0 2px transparent}
+.inp.sm{width:296px;height:200px}
+.inp.cur{box-shadow:inset 0 0 0 2px var(--accent)}
+.inp.cur.on{box-shadow:var(--ring),0 16px 40px rgba(0,0,0,0.7)}
+.inp svg{width:48px;height:48px;color:var(--text-2)}
+.inp b{font-size:var(--t-xl);line-height:40px;font-weight:800;display:block}
+.inp span{font-size:var(--t-s);line-height:24px;color:var(--text-2)}
+.inp .st{position:absolute;right:var(--s5);top:var(--s5);height:24px;display:flex;align-items:center;font-size:var(--t-xs);font-weight:800;letter-spacing:.8px;padding:0 var(--s2);border-radius:var(--r-s);background:rgba(255,255,255,0.1)}
+.inp.cur .st{background:var(--accent)}
+.pcbox{margin:var(--s4);max-width:1104px;padding:var(--s6);border-radius:var(--r-l);background:var(--surface);display:flex;align-items:center;gap:var(--s5)}
+.pcbox .txt{flex:1 1 auto}
+.pcbox .txt b{font-size:var(--t-l);line-height:32px;display:block;margin-bottom:var(--s1)}
+.pcbox .txt span{font-size:var(--t-s);line-height:24px;color:var(--text-2)}
+
+/* Configurações */
+.cfg{display:flex;gap:var(--s6);height:calc(100% - 96px)}
+.slist{flex:0 0 384px;display:flex;flex-direction:column;gap:var(--s1);padding:var(--s4)}
+.si{height:64px;padding:0 var(--s5);border-radius:var(--r-m);font-size:var(--t-m);font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:var(--s4);transition:transform .12s}
+.si svg{width:24px;height:24px}
+.si.sel{color:#fff;background:var(--surface)}
+.si.on{background:#fff;color:#000;transform:scale(1.03)}
+.spanel{flex:1 1 auto;min-width:0;max-width:1040px;padding:var(--s4)}
+.spanel h3{margin:0 0 var(--s4);height:40px;display:flex;align-items:center;font-size:var(--t-xl);font-weight:800}
+.srows{display:flex;flex-direction:column;gap:var(--s2)}
+.srow{min-height:88px;padding:var(--s4) var(--s5);border-radius:var(--r-m);background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:var(--s5);transition:transform .12s,box-shadow .12s}
+.srow b{font-size:var(--t-m);line-height:24px;display:block}
+.srow small{font-size:var(--t-s);line-height:24px;color:var(--text-2);display:block}
+.srow .val{font-size:var(--t-m);font-weight:700;color:var(--text-2);white-space:nowrap}
+.srow.on{box-shadow:var(--ring);transform:scale(1.015)}
+.srow.ro{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,0.1)}
+.tg{flex:0 0 64px;height:40px;border-radius:var(--r-pill);background:rgba(255,255,255,0.2);position:relative;transition:background .2s}
+.tg::after{content:"";position:absolute;left:4px;top:4px;width:32px;height:32px;border-radius:50%;background:#fff;transition:left .2s}
+.tg.y{background:var(--accent)}
+.tg.y::after{left:28px}
+.sws{display:flex;gap:var(--s4);padding:var(--s2) 0 var(--s5)}
+.sw{width:72px;height:72px;border-radius:50%;transition:transform .12s;position:relative}
+.sw.sel::after{content:"";position:absolute;inset:-8px;border-radius:50%;box-shadow:inset 0 0 0 4px rgba(255,255,255,0.56)}
+.sw.on{transform:scale(1.12);box-shadow:var(--ring)}
+
+/* ===== Telas por cima (detalhes, fonte, player, Jogar na TV) ===== */
+.ov{position:absolute;inset:0;z-index:40;background:var(--bg);overflow:hidden}
+.ov .art{position:absolute;right:0;top:0;width:1504px;height:848px;object-fit:cover;transition:opacity .3s}
+.ov.dimart .art{opacity:.24}
+.ov>.vs{position:absolute;inset:0;padding:0 0 var(--s10) calc(var(--safe-x) - var(--s4))}
+.dhead{padding:var(--s12) 0 0 var(--s4);width:912px;display:flex;flex-direction:column;gap:var(--s4);min-height:648px}
+.dlogo{max-width:600px;max-height:176px;object-fit:contain;object-position:left bottom;align-self:flex-start;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.6))}
+.dtitle{margin:0;font-size:var(--t-hero);line-height:1;font-weight:800;letter-spacing:-2px}
+.dhead .desc{-webkit-line-clamp:3}
+.dcast{font-size:var(--t-s);line-height:24px;color:var(--text-3)}
+.dcast b{color:var(--text-2);font-weight:600}
+.ep{flex:0 0 400px;transition:transform .2s var(--ease)}
+.ep .th{height:224px;border-radius:var(--r-m);position:relative;overflow:hidden;background:var(--surface)}
+.ep .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ep .th .num{position:absolute;left:var(--s2);top:var(--s2);height:24px;display:flex;align-items:center;font-size:var(--t-xs);font-weight:800;background:rgba(0,0,0,0.72);border-radius:var(--r-s);padding:0 var(--s2)}
+.ep .th .ok{position:absolute;right:var(--s2);top:var(--s2);width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.ep .th .ok svg{width:16px;height:16px}
+.ep .pb{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,0.3)}
+.ep .pb i{display:block;height:100%;background:var(--accent)}
+.ep b{display:block;font-size:var(--t-m);line-height:24px;margin:var(--s4) 0 var(--s1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:var(--t-s);line-height:24px;color:var(--text-2)}
+.ep.on{transform:scale(1.04);z-index:2}
+.ep.on .th{box-shadow:var(--ring),0 16px 40px rgba(0,0,0,0.7)}
+.ep.watched .th img{opacity:.6}
+
+/* Escolha a fonte */
+.srcw{position:absolute;inset:0;display:flex;gap:var(--s8);padding:var(--s10) var(--s8) var(--s8) var(--safe-x)}
+.srcw aside{flex:0 0 336px;display:flex;flex-direction:column;gap:var(--s4);position:relative}
+.srcw aside img{width:336px;height:504px;border-radius:var(--r-m);object-fit:cover;background:var(--surface);box-shadow:0 32px 64px rgba(0,0,0,0.6)}
+.srcw aside b{font-size:var(--t-xl);line-height:40px}
+.srcw aside span{font-size:var(--t-m);line-height:24px;color:var(--text-2)}
+.srcw main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:var(--s2);position:relative}
+.srcw h1{margin:0;height:64px;font-size:var(--t-2xl);font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:var(--s4)}
+.srcw h1 small{font-size:var(--t-s);font-weight:600;color:var(--text-3)}
+.recs{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin:0 calc(-1 * var(--s4));padding:var(--s4)}
+.rec{height:152px;border-radius:var(--r-m);background:var(--surface-2);padding:var(--s4) var(--s5);display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.rec .k{font-size:var(--t-xs);line-height:16px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--accent)}
+.rec b{font-size:var(--t-l);line-height:32px}
+.rec span{font-size:var(--t-s);line-height:24px;color:var(--text-2)}
+.rec.on,.srow2.on{transform:scale(1.03);box-shadow:var(--ring);z-index:2}
+.filters{display:flex;gap:var(--s2);align-items:center;height:64px}
+.filters .note{margin-left:auto;font-size:var(--t-s);color:var(--text-3)}
+.slist2{flex:1 1 auto;min-height:0;margin:0 calc(-1 * var(--s4))}
+.slist2 .in{display:flex;flex-direction:column;gap:var(--s2);padding:var(--s4)}
+.srow2{height:88px;border-radius:var(--r-m);background:var(--surface);display:flex;align-items:center;gap:var(--s5);padding:0 var(--s5);flex:0 0 auto;transition:transform .15s,box-shadow .15s}
+.srow2 .ad{flex:0 0 192px;font-size:var(--t-s);font-weight:800;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow2 .nm{flex:1 1 auto;min-width:0;font-size:var(--t-m);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow2 .tags{display:flex;gap:var(--s2);flex:0 0 auto}
+.t{height:32px;padding:0 var(--s3);border-radius:var(--r-s);font-size:var(--t-xs);font-weight:800;display:inline-flex;align-items:center;background:rgba(255,255,255,0.1);white-space:nowrap}
+.t.q4k{background:#f5c518;color:#1a1400}
+.t.dub{background:rgba(70,211,105,0.2);color:#7ef0a0}
+.t.dir{background:rgba(255,255,255,0.9);color:#000}
+
+/* Player */
+.pl img.vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pl .tshade{position:absolute;left:0;right:0;top:0;height:264px;background:linear-gradient(180deg,rgba(0,0,0,0.8),rgba(0,0,0,0))}
+.pl .bshade{position:absolute;left:0;right:0;bottom:0;height:424px;background:linear-gradient(0deg,rgba(0,0,0,0.92),rgba(0,0,0,0))}
+.pl .ttl{position:absolute;left:var(--safe-x);top:var(--s10);height:32px;display:flex;align-items:center;gap:var(--s4);font-size:var(--t-m);color:var(--text-2)}
+.pl .ttl svg{width:32px;height:32px}
+.pl .info{position:absolute;left:var(--safe-x);bottom:200px}
+.pl .info b{font-size:var(--t-3xl);line-height:56px;font-weight:800;display:block;letter-spacing:-.5px}
+.pl .info span{font-size:var(--t-m);line-height:32px;color:var(--text-2)}
+.pl .seek{position:absolute;left:var(--safe-x);right:var(--safe-x);bottom:152px;height:24px;display:flex;align-items:center;gap:var(--s5);font-size:var(--t-m);font-weight:600}
+.pl .track2{flex:1 1 auto;height:8px;border-radius:4px;background:rgba(255,255,255,0.3);position:relative}
+.pl .track2 .buf{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,0.45);border-radius:4px}
+.pl .track2 .pos{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
+.pl .track2 .knob{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:var(--accent)}
+.pl .ctr{position:absolute;left:calc(var(--safe-x) - var(--s4));right:calc(var(--safe-x) - var(--s4));bottom:var(--s7);display:flex;align-items:center;gap:var(--s4)}
+.pb2{height:64px;min-width:64px;padding:0 var(--s4);border-radius:var(--r-pill);display:flex;align-items:center;justify-content:center;gap:var(--s2);font-size:var(--t-m);font-weight:700;color:#fff;transition:transform .12s,background .12s}
+.pb2 svg{width:32px;height:32px}
+.pb2.on{background:#fff;color:#000;transform:scale(1.08)}
+.pl .sp{flex:1 1 auto}
+.skip{position:absolute;right:var(--safe-x);bottom:216px;height:64px;padding:0 var(--s6);border-radius:var(--r-m);box-shadow:inset 0 0 0 2px rgba(255,255,255,0.8);background:rgba(0,0,0,0.5);display:flex;align-items:center;gap:var(--s3);font-size:var(--t-m);font-weight:700;white-space:nowrap;transition:transform .12s}
+.skip svg{width:24px;height:24px}
+.skip.on{background:#fff;color:#000;box-shadow:none;transform:scale(1.06)}
+.nextc{position:absolute;right:var(--safe-x);bottom:216px;width:560px;border-radius:var(--r-m);background:rgba(20,20,26,0.96);overflow:hidden;display:flex;box-shadow:0 32px 64px rgba(0,0,0,0.7)}
+.nextc img{width:224px;height:128px;object-fit:cover;flex:0 0 224px}
+.nextc .tx{padding:var(--s3) var(--s4);display:flex;flex-direction:column;justify-content:center;gap:var(--s1);min-width:0}
+.nextc .tx small{font-size:var(--t-s);color:var(--text-2)}
+.nextc .tx b{font-size:var(--t-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nextc .row{display:flex;gap:var(--s2);margin-top:var(--s2)}
+.nextc .cd{position:absolute;left:0;bottom:0;height:4px;background:var(--accent);transition:width 1s linear}
+
+/* Jogar na TV */
+.gl .art{width:100%;height:100%}
+.gl .shade{background:linear-gradient(90deg,rgba(11,11,15,0.96) 0%,rgba(11,11,15,0.82) 36%,rgba(11,11,15,0.2) 72%),linear-gradient(0deg,rgba(11,11,15,0.8) 0%,rgba(11,11,15,0) 40%)}
+.gl .box{position:absolute;left:var(--safe-x);top:152px;width:768px;display:flex;flex-direction:column;gap:var(--s6)}
+.gl .box img{max-width:560px;max-height:200px;object-fit:contain;object-position:left bottom;align-self:flex-start}
+.steps{display:flex;flex-direction:column;gap:var(--s4)}
+.stp{display:flex;align-items:center;gap:var(--s4);height:40px;font-size:var(--t-l);font-weight:600;color:var(--text-3)}
+.stp i{flex:0 0 40px;height:40px;border-radius:50%;box-shadow:inset 0 0 0 4px rgba(255,255,255,0.24);display:flex;align-items:center;justify-content:center}
+.stp.run{color:#fff}
+.stp.run i{box-shadow:none;border:4px solid rgba(255,255,255,0.24);border-top-color:var(--accent);animation:spin .8s linear infinite}
+.stp.done{color:var(--text-2)}
+.stp.done i{background:var(--accent);box-shadow:none}
+.stp.done i svg{width:24px;height:24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="browse">
+  <div id="bb"><img id="bbA" alt=""><img id="bbB" alt=""><div id="bbShade"></div></div>
+
+  <section id="info">
+    <div id="kicker" class="kick"><b>B</b><span id="kick">Série</span></div>
+    <div id="logoBox"><img id="logo" alt=""><h1 id="title" class="htitle"></h1></div>
+    <div id="meta" class="meta"></div>
+    <div id="prog"><div class="bar"><i id="progFill"></i></div><span id="progTxt"></span></div>
+    <p id="desc" class="desc"></p>
+    <div id="btns">
+      <div class="btn primary" data-b="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span id="playTxt">Assistir</span></div>
+      <div class="btn" data-b="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Mais informações</div>
+      <div class="btn icon" data-b="list"><span id="listIco" style="display:flex"></span></div>
+    </div>
+  </section>
+
+  <div id="topbar"></div>
+  <div id="menu"></div>
+
+  <div id="rowsVp"><div id="rows"></div></div>
+  </div>
+  <div id="view"></div>
+  <div id="toast"></div>
+
+  <div id="railShade"></div>
+  <nav id="rail">
+    <div class="who"><div class="avatar">F</div><span>Fred</span></div>
+  </nav>
+
+  <div id="clock"><b id="clk">--:--</b><span id="dt"></span></div>
+  <div id="hint"><kbd>←↑→↓</kbd> navegar · <kbd>Enter</kbd> OK · <kbd>Esc</kbd> voltar · <kbd>C</kbd> cor de destaque</div>
+</div>
+
+<script>
+// ---------- Ajuste de escala (prévia no PC) ----------
+var SCALE=1;
+function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080),st=document.getElementById('stage');SCALE=s;
+  st.style.transform='scale('+s+')';st.style.left=(innerWidth-1920*s)/2+'px';st.style.top=(innerHeight-1080*s)/2+'px';}
+addEventListener('resize',fit);fit();
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n){return (n<10?'0':'')+n;}
+
+// ---------- Ícones ----------
+var ICON={
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  home:'<path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/>',
+  tv:'<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  movies:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>',
+  list:'<path d="M12 5v14M5 12h14"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  games:'<path d="M6 9h12a3 3 0 013 3v2a3 3 0 01-5.2 2L14 14h-4l-1.8 2A3 3 0 013 14v-2a3 3 0 013-3z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="16" cy="12" r=".6"/><circle cx="17.5" cy="13.6" r=".6"/>',
+  apps:'<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>',
+  inputs:'<path d="M7 7h10v5l-2 3H9l-2-3z"/><path d="M9.5 7V3.5M14.5 7V3.5M12 15v6"/>',
+  cfg:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+  refresh:'<path d="M20 11a8 8 0 10-2.3 5.7"/><path d="M20 4v7h-7"/>',
+  hdmi:'<path d="M3 8h18v5l-3 3H6l-3-3z"/><path d="M7 11h10"/>',
+  power:'<path d="M12 3v8"/><path d="M6.3 6.3a8 8 0 1011.4 0"/>',
+  screen:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M9 10l3-3 3 3M12 7v6"/>',
+  chev:'<path d="M6 9l6 6 6-6"/>',
+  back:'<path d="M15 6l-6 6 6 6"/>',
+  play:'<path d="M7 4.5v15l13-7.5z" fill="currentColor" stroke="none"/>',
+  pause:'<path d="M8 5v14M16 5v14" stroke-width="3"/>',
+  rew:'<path d="M4 12a8 8 0 108-8H8"/><path d="M10 1L7 4l3 3"/><text x="12" y="15.5" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-weight="700">10</text>',
+  fwd:'<path d="M20 12a8 8 0 11-8-8h4"/><path d="M14 1l3 3-3 3"/><text x="12" y="15.5" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-weight="700">10</text>',
+  sub:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 13h4M13 13h4M7 16h7"/>',
+  eps:'<rect x="3" y="4" width="13" height="10" rx="1.5"/><path d="M7 18h13V8"/>',
+  next:'<path d="M5 5l10 7-10 7z" fill="currentColor" stroke="none"/><path d="M19 5v14" stroke-width="2.6"/>',
+  wifi:'<path d="M2 9a15 15 0 0120 0"/><path d="M5 12.5a10 10 0 0114 0"/><path d="M8.5 16a5 5 0 017 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/>',
+  paint:'<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3" fill="currentColor"/><circle cx="12" cy="7.5" r="1.3" fill="currentColor"/><circle cx="16" cy="10" r="1.3" fill="currentColor"/><path d="M12 21a2.5 2.5 0 010-5h2a3 3 0 003-3"/>',
+  ccbox:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 10.5a2 2 0 100 3M16 10.5a2 2 0 100 3"/>',
+  pc:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+  android:'<path d="M5 10h14v7a2 2 0 01-2 2H7a2 2 0 01-2-2z"/><path d="M7 10a5 5 0 0110 0"/><path d="M8 4l1.5 2.5M16 4l-1.5 2.5"/>',
+  del:'<path d="M9 5h11v14H9l-6-7z"/><path d="M12 9l5 6M17 9l-5 6"/>',
+  space:'<path d="M4 10v4h16v-4"/>',
+  antenna:'<path d="M12 12v9M8 21h8"/><path d="M12 12L6 3M12 12l6-9"/><circle cx="12" cy="12" r="1.5"/>',
+  live:'<circle cx="12" cy="12" r="2.5"/><path d="M7.5 7.5a6.4 6.4 0 000 9M16.5 7.5a6.4 6.4 0 010 9M4.6 4.6a10.5 10.5 0 000 14.8M19.4 4.6a10.5 10.5 0 010 14.8"/>',
+  ball:'<circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/><path d="M12 3v4M21 10.5l-5-.5M18 19l-3.5-4.5M6 19l3.5-4.5M3 10.5l5-.5"/>'
+};
+function svg(k,w){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||2)+'" stroke-linecap="round" stroke-linejoin="round">'+ICON[k]+'</svg>';}
+
+// ---------- Menu lateral ----------
+var NAV=[['search','Buscar'],['home','Início'],['tv','TV'],['movies','Filmes e Séries'],['list','Minha lista'],['games','Jogos'],['apps','Apps'],['inputs','Entradas'],['cfg','Configurações']];
+var rail=$('rail');
+NAV.forEach(function(n){rail.insertAdjacentHTML('beforeend','<div class="ni" data-k="'+n[0]+'">'+svg(n[0])+'<span>'+n[1]+'</span></div>');});
+var navEls=[].slice.call(rail.querySelectorAll('.ni'));
+
+// ---------- Dados ----------
+var MH='https://images.metahub.space/';
+function art(kind,id,size){return MH+kind+'/'+(size||'medium')+'/'+id+'/img';}
+// Lê a imagem em 32x18 e devolve brilho médio, brilho da borda e cor média (sem os brancos).
+// As imagens passam por /img (serve.py) porque os servidores de arte não mandam CORS.
+var TONES={};
+function sample(url){
+  if(TONES[url])return TONES[url];
+  return TONES[url]=new Promise(function(res){
+    var im=new Image();im.crossOrigin='anonymous';
+    im.onload=function(){
+      try{
+        var c=document.createElement('canvas');c.width=32;c.height=18;var g=c.getContext('2d');g.drawImage(im,0,0,32,18);
+        var d=g.getImageData(0,0,32,18).data,sum=0,edge=0,ne=0,rgb=[0,0,0],nc=0;
+        for(var y=0;y<18;y++)for(var x=0;x<32;x++){
+          var i=(y*32+x)*4,l=.299*d[i]+.587*d[i+1]+.114*d[i+2];sum+=l;
+          if(y===0||y===17||x===0||x===31){edge+=l;ne++;}
+          if(l<200){rgb[0]+=d[i];rgb[1]+=d[i+1];rgb[2]+=d[i+2];nc++;}
+        }
+        res({mean:sum/576,edge:edge/ne,rgb:nc?rgb.map(function(v){return Math.round(v/nc);}):[40,40,48]});
+      }catch(e){res({mean:0,edge:0,rgb:[40,40,48]});}
+    };
+    im.onerror=function(){res({mean:0,edge:0,rgb:[40,40,48]});};
+    im.src='/img?u='+encodeURIComponent(url);
+  });
+}
+// Arte clara: colagem com fundo branco ou imagem quase toda clara. Nesses casos usamos o pôster.
+function isLight(id){return sample(art('background',id,'small')).then(function(t){return t.edge>185||t.mean>170;});}
+function tint(id){
+  return sample(art('poster',id,'small')).then(function(t){
+    var c=t.rgb.map(function(v){return Math.round(v*0.55);}).join(',');
+    return 'radial-gradient(ellipse at 78% 40%,rgba('+c+',0.9) 0%,rgba('+c+',0.35) 45%,rgba(11,11,15,0) 75%)';
+  });
+}
+var STEAM='https://cdn.cloudflare.steamstatic.com/steam/apps/';
+var GEN={'Action':'Ação','Adventure':'Aventura','Animation':'Animação','Comedy':'Comédia','Crime':'Crime','Documentary':'Documentário','Drama':'Drama','Family':'Família','Fantasy':'Fantasia','History':'História','Horror':'Terror','Mystery':'Mistério','Romance':'Romance','Sci-Fi':'Ficção científica','Thriller':'Suspense','War':'Guerra','Western':'Faroeste','Biography':'Biografia','Sport':'Esporte'};
+var GENRES=['','Action','Adventure','Comedy','Crime','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Thriller','Documentary','Family'];
+
+// Jogos de exemplo (na TV vêm do pcagent).
+function G(id,name,src,last,hours,desc){return {id:id,name:name,src:src,last:last,hours:hours,desc:desc};}
+var GAMES=[
+  G(1091500,'Cyberpunk 2077','Steam','Jogado ontem','62 h jogadas','Uma história de ação e aventura em mundo aberto em Night City, uma megalópole obcecada por poder, glamour e modificações corporais.'),
+  G(1244090,'Sea of Stars','Steam','Jogado há 3 dias','18 h jogadas','Um RPG por turnos inspirado nos clássicos, com dois Filhos do Solstício unindo os poderes do sol e da lua.'),
+  G(271590,'Grand Theft Auto V','Steam','Jogado há 1 semana','140 h jogadas','Três criminosos muito diferentes arriscam tudo numa série de golpes ousados em Los Santos.'),
+  G(1808500,'ARC Raiders','Steam','Jogado há 14 dias','9 h jogadas','Sobreviva a máquinas mortais num mundo pós-apocalíptico e volte para casa com o saque.'),
+  G(292030,'The Witcher 3','Hydra','Jogado há 3 semanas','47 h jogadas','Como Geralt de Rívia, cace monstros e procure a criança da profecia num vasto mundo aberto.'),
+  G(730,'Counter-Strike 2','Steam','Jogado há 1 mês','310 h jogadas','O próximo capítulo do jogo de tiro tático competitivo mais jogado do mundo.'),
+  G(289650,"Assassin's Creed Unity",'Steam','Jogado há 8 meses','21 h jogadas','Paris, 1789. A Revolução Francesa transforma a cidade num lugar de terror e caos.')
+];
+var LIBRARY=GAMES.concat([
+  G(1174180,'Red Dead Redemption 2','Steam','Jogado há 1 ano','88 h jogadas','Arthur Morgan e a gangue Van der Linde fogem pelo coração dos Estados Unidos no fim da era dos foras da lei.'),
+  G(1245620,'Elden Ring','Steam','Ainda não jogado','','Levante-se, Maculado, e seja guiado pela graça para portar o poder do Anel Prístino nas Terras Intermédias.'),
+  G(1593500,'God of War','Steam','Jogado há 5 meses','30 h jogadas','Kratos, agora pai, protege o filho Atreus numa jornada pelo violento mundo da mitologia nórdica.'),
+  G(2050650,'Resident Evil 4','Steam','Ainda não jogado','','Leon S. Kennedy vai a um vilarejo europeu isolado para resgatar a filha do presidente.'),
+  G(553850,'Helldivers 2','Steam','Jogado há 2 meses','12 h jogadas','Junte-se aos Helldivers e espalhe a democracia gerenciada pela galáxia, em cooperação com até 4 amigos.'),
+  G(1086940,"Baldur's Gate 3",'Steam','Jogado há 6 meses','54 h jogadas','Reúna seu grupo e volte aos Reinos Esquecidos numa história de amizade, traição e sobrevivência.'),
+  G(990080,'Hogwarts Legacy','Hydra','Ainda não jogado','','Viva a vida de um estudante de Hogwarts no século XIX e descubra um segredo antigo do mundo bruxo.'),
+  G(2358720,'Black Myth: Wukong','Hydra','Jogado há 2 meses','15 h jogadas','Um RPG de ação inspirado em Jornada ao Oeste, como o Predestinado em busca da verdade por trás de uma lenda.')
+]);
+var ACTIONS=[
+  {name:'Fechar jogo',icon:'power',desc:'Fecha o jogo aberto no PC e volta a TV para o BadarasOS.',done:'Jogo fechado no PC'},
+  {name:'Devolver tela ao PC',icon:'screen',desc:'Liga o monitor do PC de novo e desliga a imagem na TV.',done:'Imagem devolvida ao monitor'},
+  {name:'Ir para o HDMI 1',icon:'hdmi',desc:'Troca a entrada da TV para o PC, sem abrir jogo.',done:'Trocando para o HDMI 1…'},
+  {name:'Atualizar biblioteca',icon:'refresh',desc:'Pede ao PC a lista mais nova da Steam e da Hydra.',done:'Biblioteca atualizada'}
+];
+// Apps: os quatro primeiros são a barra de apps da Início.
+// [nome, cor da marca, pacote]. Só os apps instalados na TV; o ícone vem de icons/<pacote>.png.
+var APPS=[['YouTube','#ff0033','com.google.android.youtube.tv'],['SportzX','#7b3fe4','com.sportzx.live'],['Stremio','#5b3fc4','com.stremio.one'],['Nuvio','#1e66f5','com.nuvio.tv'],
+  ['Netflix','#e50914','com.netflix.ninja'],['Crunchyroll','#f47521','com.crunchyroll.crunchyroid'],['Spotify','#1db954','com.spotify.tv.android'],['Twitch','#9146ff','tv.twitch.android.app'],
+  ['Kick','#53fc18','com.kick.mobile'],['Steam Link','#1b6fa8','com.valvesoftware.steamlink']];
+function appTile(a,cls,attrs){return '<div class="c app'+(cls?' '+cls:'')+'" style="--b:'+a[1]+'"'+(attrs||'')+'><img class="ai" src="icons/'+a[2]+'.png" alt=""><span>'+a[0]+'</span></div>';}
+var ADDONS=['Meu PC','WatchHub','Torrentio','Torrentio Brazuca','TorrentsDB','NoTorrent','FrostStream','HdHub','BestCine'];
+
+function item(m,type){
+  return {kind:type,id:m.id,name:m.name,desc:m.description||'',year:m.releaseInfo||m.year||'',rating:m.imdbRating||'',
+    genres:(m.genres||m.genre||[]).slice(0,2).map(function(g){return GEN[g]||g;}),runtime:m.runtime||'',
+    yt:((m.trailerStreams||[])[0]||{}).ytId||''};
+}
+// Catálogos do Cinemeta (top, imdbRating e year), com cache por endereço.
+var cache={};
+function getJ(u){if(!cache[u])cache[u]=fetch(u).then(function(r){return r.json();}).catch(function(){return {};});return cache[u];}
+function cat(type,catalog,genre){
+  return getJ('https://cinemeta-catalogs.strem.io/'+catalog+'/catalog/'+type+'/'+catalog+(genre?'/genre='+encodeURIComponent(genre):'')+'.json')
+    .then(function(d){return (d.metas||[]).map(function(m){return item(m,type);});});
+}
+function search(q){
+  function one(t){return getJ('https://v3-cinemeta.strem.io/catalog/'+t+'/top/search='+encodeURIComponent(q)+'.json').then(function(d){return (d.metas||[]).map(function(m){return item(m,t);});});}
+  return Promise.all([one('movie'),one('series')]).then(function(r){var o=[],i=0;while(o.length<30&&(r[0][i]||r[1][i])){if(r[1][i])o.push(r[1][i]);if(r[0][i])o.push(r[0][i]);i++;}return o;});
+}
+function meta(x){return getJ('https://v3-cinemeta.strem.io/meta/'+x.kind+'/'+x.id+'.json').then(function(d){return d.meta||null;});}
+function lane(title,type,p,from,to){
+  return p.then(function(items){return {title:title,type:type,items:items.slice(from||0,to||20)};});
+}
+
+// Minha lista de exemplo: começa com alguns títulos em alta.
+var MYLIST=null;
+function myList(){
+  if(MYLIST)return Promise.resolve(MYLIST);
+  return Promise.all([cat('series','top'),cat('movie','top'),cat('series','top','Animation')]).then(function(r){
+    if(!MYLIST)MYLIST=[r[0][2],r[1][0],r[2][1],r[0][5],r[1][3],r[0][12],r[1][7],r[2][4],r[0][8],r[1][11]].filter(Boolean);
+    return MYLIST;
+  });
+}
+function inList(x){return (MYLIST||[]).some(function(y){return y.id===x.id;});}
+function toggleList(x){
+  return myList().then(function(L){
+    var i=L.findIndex(function(y){return y.id===x.id;});
+    if(i>=0){L.splice(i,1);toast('Removido da Minha lista');return false;}
+    L.unshift(x);toast('Adicionado à Minha lista');return true;
+  });
+}
+
+// Registro dos itens mostrados nas telas (os cartões guardam só o índice).
+var REG=[];
+function reg(x){REG.push(x);return REG.length-1;}
+function X(el){return REG[+el.dataset.x];}
+function poster(x,cls){return '<div class="c port f'+(cls?' '+cls:'')+'" data-ok="detail" data-x="'+reg(x)+'"><div class="cap2">'+esc(x.name)+'</div><img class="bg" src="'+art('poster',x.id,'small')+'" onerror="this.remove()"></div>';}
+
+// ---------- Páginas ----------
+var mv={tab:'all',genre:''};
+var PAGES={
+  home:{
+    lanes:function(){
+      return Promise.all([cat('series','top'),cat('movie','top')]).then(function(res){
+        var S=res[0],M=res[1];
+        // Progresso inventado, só para mostrar o "Continuar".
+        // Continuar: tudo o que foi visto na TV, de qualquer app (como os "Assistidos" da Início de hoje).
+        // Progresso e apps de exemplo; os vídeos do YouTube são trailers reais dos títulos do catálogo.
+        function yt(x){return x&&x.yt?{kind:'yt',id:x.yt,name:x.name+' · Trailer oficial',src:'YouTube',desc:'Você parou no meio do vídeo. Abre direto no app do YouTube, no mesmo ponto.'}:null;}
+        var plan=[[S[3],'Stremio'],[yt(M[0]),''],[M[1],'Nuvio'],[S[6],'Meu PC'],[yt(S[2]),''],[S[1],'Stremio'],[M[4],'Nuvio'],[yt(M[5]),'']];
+        var cont=plan.filter(function(p){return p[0];}).map(function(p,i){
+          var o=Object.assign({},p[0]);o.p=[0.62,0.4,0.35,0.8,0.55,0.18,0.5,0.7][i];
+          if(o.kind!=='yt'){o.src=p[1];o.s=1+i%2;o.e=3+i;o.ep=o.kind==='series'?('T'+o.s+':E'+o.e):'';o.left=[24,0,71,9,0,40,52,0][i]+' min restantes';}
+          else o.left=['1:12 de 2:31','0:48 de 2:05','1:40 de 2:22'][i%3];
+          return o;});
+        return [
+          {title:'Continuar assistindo para Fred',type:'cont',items:cont},
+          {title:'Top 10 séries hoje',type:'top',items:S.slice(0,10)},
+          {title:'Top 10 filmes hoje',type:'top',items:M.slice(0,10)},
+          {title:'Jogos no PC',sub:'FRED · conectado',type:'game',items:GAMES},
+          {title:'Filmes em alta',type:'land',items:M.slice(0,16)},
+          {title:'Séries para maratonar',type:'port',items:S.slice(10,26)},
+          {title:'Seus apps',type:'app',items:APPS}
+        ];
+      });
+    }
+  },
+  movies:{
+    top:function(){
+      return [{t:'title',label:'Filmes e Séries'},
+        {t:'tab',k:'all',label:'Tudo'},{t:'tab',k:'movie',label:'Filmes'},{t:'tab',k:'series',label:'Séries'},{t:'tab',k:'anime',label:'Animes'},
+        {t:'menu',label:'Gêneros',val:mv.genre?GEN[mv.genre]:''},
+        {t:'act',k:'search',label:'Buscar',icon:'search'}];
+    },
+    lanes:function(){
+      var t=mv.tab,g=mv.genre,list;
+      if(t==='anime'){
+        list=[lane('Top 10 animes hoje','top',cat('series','top','Animation'),0,10),
+          lane('Animes mais bem avaliados','land',cat('series','imdbRating','Animation')),
+          lane('Filmes de animação em alta','port',cat('movie','top','Animation')),
+          lane('Clássicos da animação','land',cat('movie','imdbRating','Animation'))];
+      } else if(g){
+        var gn=GEN[g].toLowerCase();list=[];
+        (t==='all'?['movie','series']:[t]).forEach(function(ty){
+          var w=ty==='movie'?'Filmes':'Séries';
+          list.push(lane(w+' de '+gn+' em alta','land',cat(ty,'top',g)),lane(w+' de '+gn+' mais bem avaliados','port',cat(ty,'imdbRating',g)));
+        });
+      } else if(t==='all'){
+        list=[lane('Top 10 filmes hoje','top',cat('movie','top'),0,10),
+          lane('Séries em alta','land',cat('series','top')),
+          lane('Lançamentos de 2026','port',cat('movie','year','2026')),
+          lane('Ação e aventura','land',cat('movie','top','Action')),
+          lane('Comédias','port',cat('movie','top','Comedy')),
+          lane('Terror','land',cat('movie','top','Horror')),
+          lane('Séries aclamadas pela crítica','port',cat('series','imdbRating'))];
+      } else {
+        var w=t==='movie'?'filmes':'séries',W=t==='movie'?'Filmes':'Séries';
+        list=[lane('Top 10 '+w+' hoje','top',cat(t,'top'),0,10),
+          lane('Lançamentos de 2026','land',cat(t,'year','2026')),
+          lane(W+' mais bem avaliados','port',cat(t,'imdbRating')),
+          lane('Ação','land',cat(t,'top','Action')),
+          lane('Comédia','port',cat(t,'top','Comedy')),
+          lane('Drama','land',cat(t,'top','Drama')),
+          lane('Ficção científica','port',cat(t,'top','Sci-Fi'))];
+      }
+      return Promise.all(list).then(function(ls){return ls.filter(function(l){return l.items.length;});});
+    }
+  },
+  games:{
+    top:function(){
+      return [{t:'title',label:'Jogos'},{t:'chip',label:'FRED · conectado'},
+        {t:'act',k:'hdmi',label:'PC na entrada <b>HDMI 1</b>',icon:'hdmi'},
+        {t:'act',k:'refresh',label:'Atualizar',icon:'refresh'}];
+    },
+    lanes:function(){
+      var steam=LIBRARY.filter(function(g){return g.src==='Steam';}),hydra=LIBRARY.filter(function(g){return g.src==='Hydra';});
+      return Promise.resolve([
+        {title:'Jogados recentemente',type:'game',items:GAMES},
+        {title:'Biblioteca Steam',sub:steam.length+' jogos',type:'cap',items:steam},
+        {title:'Da Hydra',sub:hydra.length+' jogos',type:'game',items:hydra},
+        {title:'Controle do PC',type:'act',items:ACTIONS}
+      ]);
+    }
+  },
+  search:{view:viewSearch},
+  list:{view:viewList},
+  tv:{view:viewTv},
+  apps:{view:viewApps},
+  inputs:{view:viewInputs},
+  cfg:{view:viewCfg}
+};
+
+// ---------- Estado ----------
+var page='home',lanes=[],topItems=[],menuItems=[],loadId=0,vf=null,OVS=[];
+var focus={zone:'rows',r:0,c:0,b:0,n:1,t:0,m:0};
+var rowsEl=$('rows'),topEl=$('topbar'),menuEl=$('menu'),viewEl=$('view');
+
+function go(k){
+  page=k;var my=++loadId,P=PAGES[k];
+  navEls.forEach(function(n){n.classList.toggle('sel',n.dataset.k===k);});
+  document.body.classList.toggle('isView',!!P.view);
+  if(P.view){
+    REG=[];viewEl.innerHTML='';vf=null;focus.zone='view';
+    P.view(viewEl);
+    vf=viewEl.querySelector('.f.first')||viewEl.querySelector('.f');
+    return render();
+  }
+  renderTop();
+  rowsEl.innerHTML='<div class="loading">Carregando…</div>';
+  P.lanes().then(function(ls){
+    if(my!==loadId)return;
+    lanes=ls;focus.r=0;focus.c=0;build();render();setHero(cur(),true);
+  });
+}
+
+// ---------- Barra do topo ----------
+function renderTop(){
+  var P=PAGES[page];topItems=P.top?P.top():[];
+  document.body.classList.toggle('hasTop',topItems.length>0);
+  topEl.innerHTML=topItems.map(function(it){
+    if(it.t==='title')return '<div class="tb title">'+it.label+'</div>';
+    if(it.t==='chip')return '<div class="tb chip"><i class="dot"></i>'+it.label+'</div>';
+    if(it.t==='tab')return '<div class="tb f'+(mv.tab===it.k?' sel':'')+'">'+it.label+'</div>';
+    if(it.t==='menu')return '<div class="tb f outline">'+it.label+(it.val?' <b>'+it.val+'</b>':'')+svg('chev',2.4)+'</div>';
+    return '<div class="tb f outline">'+(it.icon?svg(it.icon):'')+'<span>'+it.label+'</span></div>';
+  }).join('');
+}
+function topFocusables(){return [].slice.call(topEl.querySelectorAll('.f'));}
+function topItem(i){var f=0;for(var j=0;j<topItems.length;j++){if(/tab|menu|act/.test(topItems[j].t)){if(f===i)return topItems[j];f++;}}}
+
+// ---------- Fileiras ----------
+function cardHTML(L,x,i){
+  if(L.type==='app')return appTile(x);
+  if(L.type==='act')return '<div class="c act">'+svg(x.icon,1.8)+'<span>'+x.name+'</span></div>';
+  if(L.type==='game')return '<div class="c port game"><img class="bg" src="'+STEAM+x.id+'/library_600x900_2x.jpg"><span class="badge'+(x.src==='Hydra'?' hydra':'')+'">'+x.src.toUpperCase()+'</span></div>';
+  if(L.type==='cap')return '<div class="c cap"><img class="bg" src="'+STEAM+x.id+'/header.jpg"><div class="shade2"></div><div class="sub">'+x.last+'</div></div>';
+  if(L.type==='top')return '<div class="top'+(i===9?' ten':'')+'"><div class="n" data-n="'+(i+1)+'">'+(i+1)+'</div><div class="c port"><img class="bg" src="'+art('poster',x.id,'small')+'">'+(i<3&&x.kind==='series'?'<span class="badge new">NOVOS EPISÓDIOS</span>':'')+'</div></div>';
+  if(L.type==='port')return '<div class="c port"><img class="bg" src="'+art('poster',x.id,'small')+'"></div>';
+  if(x.kind==='yt')return '<div class="c land cont"><img class="bg" src="https://i.ytimg.com/vi/'+x.id+'/mqdefault.jpg"><div class="shade2"></div><span class="badge yt">YOUTUBE</span>'+
+    '<div class="nm">'+esc(x.name)+'</div><div class="pb"><i style="width:'+(x.p*100)+'%"></i></div></div>';
+  var h='<div class="c land'+(L.type==='cont'?' cont':'')+'"><img class="bg" data-id="'+x.id+'" src="'+art('background',x.id,'small')+'"><div class="shade2"></div>'+(x.src?'<span class="badge">'+x.src.toUpperCase()+'</span>':'')+
+    '<img class="lg" src="'+art('logo',x.id)+'" data-name="'+esc(x.name)+'" onerror="logoFail(this)">';
+  if(L.type==='cont')h+='<div class="pb"><i style="width:'+(x.p*100)+'%"></i></div>';
+  return h+'</div>';
+}
+// Recorta a sobra transparente do logo (muitos PNGs vêm centralizados numa caixa larga),
+// para ele começar na mesma linha do texto. Usa object-view-box, então o layout segue o recorte.
+var TRIM={};
+function trim(img){
+  var u=img.currentSrc||img.src;if(!u||img.dataset.trim===u)return;img.dataset.trim=u;
+  (TRIM[u]=TRIM[u]||new Promise(function(res){
+    var im=new Image();im.crossOrigin='anonymous';
+    im.onload=function(){
+      try{
+        var w=Math.min(im.naturalWidth,480),h=Math.round(im.naturalHeight*w/im.naturalWidth),k=im.naturalWidth/w;
+        var c=document.createElement('canvas');c.width=w;c.height=h;var g=c.getContext('2d');g.drawImage(im,0,0,w,h);
+        var d=g.getImageData(0,0,w,h).data,x0=w,y0=h,x1=-1,y1=-1;
+        for(var y=0;y<h;y++)for(var x=0;x<w;x++)if(d[(y*w+x)*4+3]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+        if(x1<0)return res('');
+        res('inset('+Math.floor(y0*k)+'px '+Math.floor((w-1-x1)*k)+'px '+Math.floor((h-1-y1)*k)+'px '+Math.floor(x0*k)+'px)');
+      }catch(e){res('');}
+    };
+    im.onerror=function(){res('');};
+    im.src='/img?u='+encodeURIComponent(u);
+  })).then(function(box){if((img.currentSrc||img.src)===u)img.style.objectViewBox=box;});
+}
+function logoFail(el){var d=document.createElement('div');d.className=el.dataset.fb||'nm';d.textContent=el.dataset.name;el.replaceWith(d);}
+function build(){
+  rowsEl.innerHTML=lanes.map(function(L,r){
+    return '<div class="lane t-'+L.type+'" data-r="'+r+'"><h2>'+L.title+(L.sub?' <small>'+L.sub+'</small>':'')+'</h2><div class="track">'+
+      L.items.map(function(x,i){return cardHTML(L,x,i);}).join('')+'</div></div>';
+  }).join('');
+  fixLightCards(rowsEl);
+}
+// Cartões deitados com arte clara passam a mostrar o pôster, com o rosto/título no quadro.
+function fixLightCards(root){
+  [].forEach.call(root.querySelectorAll('img.bg[data-id]'),function(im){
+    isLight(im.dataset.id).then(function(l){if(l){im.src=art('poster',im.dataset.id,'medium');im.classList.add('pos');}});
+  });
+}
+
+// ---------- Destaque ----------
+var heroT=0,front='bbA';
+function cur(){var L=lanes[focus.r];return L&&L.items[focus.c];}
+function curType(){return lanes[focus.r]&&lanes[focus.r].type;}
+function setHero(x,now){
+  clearTimeout(heroT);
+  heroT=setTimeout(function(){fillHero(x);},now?0:260); // espera o controle parar antes de trocar a arte
+}
+function fillHero(x){
+  if(!x)return;
+  var T=curType(),g=T==='game'||T==='cap',a=T==='app',act=T==='act',y=x.kind==='yt';
+  var bg=a||act?'':g?STEAM+x.id+'/library_hero.jpg':y?'https://i.ytimg.com/vi/'+x.id+'/maxresdefault.jpg':art('background',x.id,'large');
+  var back=front==='bbA'?'bbB':'bbA',bi=$(back),fi=$(front),bb=$('bb');
+  function swap(src,framed,bgc){
+    bi.onload=function(){bi.classList.toggle('framed',framed);bi.classList.add('show');fi.classList.remove('show');front=back;
+      bb.classList.toggle('framed',framed);bb.style.background=bgc||'';};
+    bi.src=src;
+  }
+  if(!bg){bi.onload=fi.onload=null;bi.classList.remove('show');fi.classList.remove('show');bb.classList.remove('framed');bb.style.background='';}
+  else if(g||y)swap(bg,false);
+  else isLight(x.id).then(function(light){
+    if(cur()!==x)return;
+    if(!light)return swap(bg,false);
+    tint(x.id).then(function(t){if(cur()===x)swap(art('poster',x.id,'large'),true,t);});
+  });
+  var logo=$('logo'),title=$('title'),name=a?x[0]:x.name;
+  title.textContent=name;title.style.display='none';logo.style.display='';
+  logo.onerror=function(){logo.style.display='none';title.style.display='block';};
+  title.classList.toggle('long',y);
+  if(a||act||y){logo.removeAttribute('src');logo.onerror();if(y)title.style.display='-webkit-box';}
+  else{logo.style.objectViewBox='';logo.onload=function(){trim(logo);};logo.src=g?STEAM+x.id+'/logo.png':art('logo',x.id);}
+  $('kick').textContent=a?'App':act?'Controle do PC':g?'Jogo · '+x.src:y?'Vídeo · YouTube':(x.kind==='series'?'Série':'Filme')+(T==='cont'&&x.src?' · '+x.src:'');
+  var meta=[];
+  if(g){meta.push('<span>'+x.last+'</span>');if(x.hours)meta.push('<span>'+x.hours+'</span>');meta.push('<span class="tag">PC · HDMI 1</span>');}
+  else if(y)meta=['<span>Trailer</span>','<span class="tag">YouTube</span>'];
+  else if(!a&&!act)meta=metaTags(x);
+  $('meta').innerHTML=meta.join('');
+  $('desc').textContent=a?'Aperte OK para abrir.':x.desc;
+  var pr=$('prog');
+  if(T==='cont'){pr.style.display='flex';$('progFill').style.width=(x.p*100)+'%';$('progTxt').textContent=(x.ep?x.ep+' · ':'')+x.left;}
+  else pr.style.display='none';
+  $('playTxt').textContent=g?'Jogar na TV':a?'Abrir':act?x.name:y?'Continuar no YouTube':T==='cont'?'Continuar':'Assistir';
+  $('btns').classList.toggle('solo',a||act||y);
+  $('listIco').innerHTML=svg(inList(x)?'check':'list',2.4);
+}
+function metaTags(x,seasons){
+  var m=[];
+  if(x.rating)m.push('<span class="m">'+Math.round(x.rating*10)+'% relevante</span>');
+  if(x.year)m.push('<span>'+x.year+'</span>');
+  m.push('<span class="tag">16</span>');
+  if(seasons)m.push('<span>'+seasons+(seasons>1?' temporadas':' temporada')+'</span>');
+  else if(x.runtime)m.push('<span>'+x.runtime+'</span>');
+  m.push('<span class="tag">4K</span>');
+  if(x.genres&&x.genres.length)m.push('<span>'+x.genres.join(' · ')+'</span>');
+  return m;
+}
+
+// ---------- Foco ----------
+function render(){
+  document.querySelectorAll('.on').forEach(function(e){e.classList.remove('on');});
+  var ov=OVS[OVS.length-1];
+  document.body.classList.toggle('railOpen',!ov&&focus.zone==='rail');
+  if(ov){if(ov.f){ov.f.classList.add('on');show(ov.f);}return;}
+  menuEl.style.display=focus.zone==='menu'?'block':'none';
+  if(focus.zone==='rail')navEls[focus.n].classList.add('on');
+  if(PAGES[page].view){if(focus.zone==='view'&&vf){vf.classList.add('on');show(vf);}return;}
+  if(focus.zone==='top')topFocusables()[focus.t].classList.add('on');
+  if(focus.zone==='menu')menuEl.children[focus.m].classList.add('on');
+  if(focus.zone==='btns')document.querySelectorAll('#btns .btn')[focus.b].classList.add('on');
+  var laneEls=rowsEl.querySelectorAll('.lane');
+  if(laneEls[focus.r])rowsEl.style.transform='translateY('+(-laneEls[focus.r].offsetTop)+'px)';
+  for(var r=0;r<laneEls.length;r++){
+    laneEls[r].classList.toggle('past',r<focus.r);
+    // Abaixo da fileira com foco, só aparece fileira que cabe inteira; da seguinte, só o título.
+    var top=laneEls[r].offsetTop-(laneEls[focus.r]?laneEls[focus.r].offsetTop:0),vh=$('rowsVp').clientHeight;
+    var fits=top+laneEls[r].offsetHeight-16<=vh,peek=!fits&&top+48<=vh;
+    laneEls[r].classList.toggle('peek',r>focus.r&&peek);
+    laneEls[r].classList.toggle('below',r>focus.r&&!fits&&!peek);
+    var tr=laneEls[r].querySelector('.track'),c=r===focus.r?focus.c:(+tr.dataset.c||0);
+    tr.dataset.c=c;
+    var kids=tr.children;
+    tr.style.transform='translateX('+(-(kids[c]?kids[c].offsetLeft-kids[0].offsetLeft:0))+'px)'; // offsetLeft já inclui a margem da fileira
+    if(r===focus.r&&focus.zone==='rows'&&kids[c])kids[c].classList.add('on');
+  }
+}
+// Rola as áreas .vs (vertical) e .hs (horizontal) até o item com foco aparecer.
+function show(el){
+  var p=el.parentElement;
+  while(p&&p!==document.body){
+    if(p.classList.contains('vs')||p.classList.contains('hs')){
+      var pr=p.getBoundingClientRect(),er=el.getBoundingClientRect(),m=40*SCALE;
+      if(p.classList.contains('vs')){
+        if(er.top<pr.top+m)p.scrollTop-=(pr.top+m-er.top)/SCALE;
+        else if(er.bottom>pr.bottom-m)p.scrollTop+=(er.bottom-pr.bottom+m)/SCALE;
+      } else {
+        if(er.left<pr.left+m)p.scrollLeft-=(pr.left+m-er.left)/SCALE;
+        else if(er.right>pr.right-m)p.scrollLeft+=(er.right-pr.right+m)/SCALE;
+      }
+    }
+    p=p.parentElement;
+  }
+}
+// Navegação espacial nas telas com layout próprio: vai para o item mais perto na direção da seta.
+function spatial(root,from,dx,dy){
+  var els=[].slice.call(root.querySelectorAll('.f')),fr=from.getBoundingClientRect();
+  var fx=fr.left+fr.width/2,fy=fr.top+fr.height/2,cands=[];
+  els.forEach(function(e){
+    if(e===from||e.offsetParent===null)return;
+    var r=e.getBoundingClientRect(),ex=r.left+r.width/2,ey=r.top+r.height/2;
+    var main=dx?(ex-fx)*dx:(ey-fy)*dy,cross=dx?Math.abs(ey-fy):Math.abs(ex-fx);
+    if(main<=8)return;
+    var band=dx?cross<(fr.height+r.height)/2:true;
+    cands.push({e:e,main:main,cross:cross,band:band});
+  });
+  if(!cands.length)return null;
+  if(dx){
+    var inBand=cands.filter(function(c){return c.band;});
+    var pool=inBand.length?inBand:cands;
+    pool.sort(function(a,b){return (a.main+a.cross*2)-(b.main+b.cross*2);});
+    return pool[0].e;
+  }
+  var min=Math.min.apply(null,cands.map(function(c){return c.main;}));
+  return cands.filter(function(c){return c.main<=min+60;}).sort(function(a,b){return a.cross-b.cross;})[0].e;
+}
+function nBtns(){return $('btns').classList.contains('solo')?1:3;}
+function move(dx,dy){
+  var ov=OVS[OVS.length-1],z=focus.zone;
+  // O item com foco pode ter sido trocado (resultado de busca, filtro): volta para o primeiro.
+  if(ov&&ov.f&&!ov.f.isConnected){ov.f=ov.el.querySelector('.f');return render();}
+  if(!ov&&z==='view'&&vf&&!vf.isConnected){vf=viewEl.querySelector('.f');return render();}
+  if(ov){var n=spatial(ov.el,ov.f,dx,dy);if(n){ov.f=n;if(ov.onFocus)ov.onFocus(n);render();}return;}
+  if(z==='menu'){if(dy)focus.m=Math.max(0,Math.min(menuItems.length-1,focus.m+dy));return render();}
+  if(z==='rail'){
+    if(dy)focus.n=Math.max(0,Math.min(navEls.length-1,focus.n+dy));
+    else if(dx>0)focus.zone=PAGES[page].view?'view':lanes.length?'rows':'top';
+    return render();
+  }
+  if(z==='view'){
+    var nx=vf&&spatial(viewEl,vf,dx,dy);
+    if(nx){vf=nx;if(viewEl.onFocus)viewEl.onFocus(nx);}
+    else if(dx<0)focus.zone='rail';
+    return render();
+  }
+  if(z==='top'){
+    var nt=topFocusables().length;
+    if(dx){var t2=focus.t+dx;if(t2<0)focus.zone='rail';else focus.t=Math.min(nt-1,t2);}
+    else if(dy>0){focus.zone='btns';focus.b=0;}
+    return render();
+  }
+  if(z==='btns'){
+    if(dx){var nb=focus.b+dx;if(nb<0)focus.zone='rail';else focus.b=Math.min(nBtns()-1,nb);}
+    else if(dy>0)focus.zone='rows';
+    else if(dy<0&&topItems.length){focus.zone='top';}
+    return render();
+  }
+  if(!lanes.length)return;
+  if(dy){
+    var nr=focus.r+dy;
+    if(nr<0){focus.zone='btns';focus.b=0;return render();}
+    if(nr>=lanes.length)return;
+    focus.r=nr;var tr=rowsEl.querySelectorAll('.lane')[nr].querySelector('.track');
+    focus.c=Math.min(+tr.dataset.c||0,lanes[nr].items.length-1);
+  } else {
+    var nc=focus.c+dx;
+    if(nc<0){focus.zone='rail';return render();}
+    if(nc>=lanes[focus.r].items.length)return;
+    focus.c=nc;
+  }
+  render();setHero(cur());
+}
+
+// ---------- Avisos ----------
+var toastT=0;
+function toast(t){var el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove('show');},2200);}
+
+// ---------- Telas por cima ----------
+function pushOv(html,opts){
+  var wrap=document.createElement('div');wrap.innerHTML=html;var el=wrap.firstChild;
+  $('stage').appendChild(el);
+  var o=Object.assign({el:el,f:null},opts||{});OVS.push(o);
+  o.f=el.querySelector('.f.first')||el.querySelector('.f');render();return o;
+}
+function popOv(){
+  var o=OVS.pop();if(!o)return;
+  if(o.onClose)o.onClose();o.el.remove();
+  if(!OVS.length&&!PAGES[page].view)fillHero(cur()); // atualiza o "Minha lista" do destaque
+  render();
+}
+function topOv(){return OVS[OVS.length-1];}
+function refocus(o,sel){o.f=o.el.querySelector(sel)||o.el.querySelector('.f');render();}
+
+// Detalhes de filme ou série
+function openDetail(x){
+  var o=pushOv('<div class="ov det"><img class="art" src="'+art('background',x.id,'large')+'"><div class="shade"></div><div class="vs"><div class="dhead"><div class="kick"><b>B</b>Carregando…</div></div></div></div>');
+  isLight(x.id).then(function(l){
+    if(!l)return;var a=o.el.querySelector('.art');a.src=art('poster',x.id,'large');a.classList.add('framed');
+    tint(x.id).then(function(t){o.el.style.background=t+',var(--bg)';});
+  });
+  meta(x).then(function(m){
+    if(topOv()!==o)return;
+    m=m||{};
+    var full=Object.assign({},x,item(Object.assign({id:x.id,name:x.name},m),x.kind));
+    full.genres=(m.genres||[]).slice(0,3).map(function(g){return GEN[g]||g;});
+    var vids=(m.videos||[]).filter(function(v){return v.season>0;});
+    var seasons=[];vids.forEach(function(v){if(seasons.indexOf(v.season)<0)seasons.push(v.season);});seasons.sort(function(a,b){return a-b;});
+    var cast=(m.cast||[]).slice(0,4).join(', '),dir=(m.director||[]).slice(0,2).join(', ');
+    var playLbl=x.kind==='series'?(x.s?'Continuar T'+x.s+':E'+x.e:seasons.length?'Assistir T'+seasons[0]+':E1':'Assistir'):(x.p?'Continuar':'Assistir');
+    var h='<div class="dhead">'+
+      '<div class="kick"><b>B</b>'+(x.kind==='series'?'Série':'Filme')+'</div>'+
+      '<img class="dlogo" src="'+(m.logo||art('logo',x.id))+'" data-name="'+esc(x.name)+'" data-fb="dtitle" onload="trim(this)" onerror="logoFail(this)">'+
+      '<div class="meta">'+metaTags(full,seasons.length).join('')+'</div>'+
+      '<p class="desc">'+esc(full.desc)+'</p>'+
+      (cast?'<div class="dcast"><b>Elenco:</b> '+esc(cast)+(dir?' · <b>Direção:</b> '+esc(dir):'')+'</div>':'')+
+      '<div class="brow"><div class="btn primary f first" data-ok="dplay">'+svg('play')+'<span>'+playLbl+'</span></div>'+
+      '<div class="btn f" data-ok="dlist"><span class="li">'+svg(inList(x)?'check':'list',2.4)+'</span>Minha lista</div>'+
+      '<div class="btn f" data-ok="trailer">'+svg('screen')+'Trailer</div></div></div>';
+    if(seasons.length){
+      h+='<section class="sec"><h2>Episódios</h2><div class="hs"><div class="hrow" id="dSeasons">'+
+        seasons.map(function(s){return '<div class="tb f'+(s===seasons[0]?' sel':'')+'" data-ok="season" data-s="'+s+'">Temporada '+s+'</div>';}).join('')+
+        '</div></div><div class="hs"><div class="hrow" id="dEps"></div></div></section>';
+    }
+    h+='<section class="sec"><h2>Recomendados</h2><div class="hs"><div class="hrow" id="dRecs"></div></div></section>';
+    o.el.querySelector('.vs').innerHTML=h;
+    o.x=x;o.vids=vids;
+    if(seasons.length)fillEps(o,x.s||seasons[0]);
+    cat(x.kind,'top',(m.genres||[])[0]).then(function(r){
+      var box=o.el.querySelector('#dRecs');if(!box)return;
+      box.innerHTML=r.filter(function(y){return y.id!==x.id;}).slice(0,14).map(function(y){return poster(y);}).join('');
+    });
+    refocus(o,'.f.first');
+  });
+}
+// Episódios de exemplo: os dois primeiros da temporada 1 assistidos, o terceiro pela metade.
+function fillEps(o,s){
+  var box=o.el.querySelector('#dEps');
+  [].forEach.call(o.el.querySelectorAll('#dSeasons .tb'),function(t){t.classList.toggle('sel',+t.dataset.s===s);});
+  box.parentElement.scrollLeft=0;
+  box.innerHTML=o.vids.filter(function(v){return v.season===s;}).map(function(v){
+    var w=s===1&&v.episode<3,p=s===1&&v.episode===3?0.42:w?1:0;
+    var when=v.firstAired?new Date(v.firstAired).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'}):'';
+    return '<div class="ep f'+(w?' watched':'')+'" data-ok="ep" data-s="'+s+'" data-e="'+v.episode+'" data-name="'+esc(v.name||v.title||'')+'" data-th="'+esc(v.thumbnail||'')+'">'+
+      '<div class="th">'+(v.thumbnail?'<img src="'+v.thumbnail+'">':'')+'<span class="num">E'+v.episode+'</span>'+(w?'<span class="ok">'+svg('check',3)+'</span>':'')+
+      (p?'<div class="pb"><i style="width:'+p*100+'%"></i></div>':'')+'</div>'+
+      '<b>'+v.episode+'. '+esc(v.name||v.title||'Episódio '+v.episode)+'</b><span>'+esc(v.overview||v.description||(when?'Lançado em '+when:''))+'</span></div>';
+  }).join('');
+}
+
+// Escolha a fonte (fontes de exemplo, com os nomes dos add-ons de verdade)
+var SQ=['Todas','4K','1080p','720p'],SL=['Todos','Dublado','Legendado'];
+function sources(x,ep){
+  var tag=ep?'S'+pad(ep.s)+'E'+pad(ep.e):String(x.year||'').slice(0,4);
+  var base=x.name.replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'.')+'.'+tag;
+  function S(addon,q,lang,size,direct,extra,rec,why){return {addon:addon,q:q,lang:lang,size:size,direct:direct,title:base+'.'+q+'.'+extra+(lang==='Dublado'?'.DUAL':''),rec:rec,why:why};}
+  return [
+    S('Meu PC','1080p','Legendado','2,1 GB',true,'WEB-DL','No seu PC','Já está no seu PC, abre na hora'),
+    S('FrostStream','4K','Legendado','6,4 GB',true,'WEB-DL.HDR','Assistir agora','Link direto testado agora'),
+    S('BestCine','1080p','Dublado','1,8 GB',true,'WEB-DL','Melhor dublada','Áudio em português'),
+    S('HdHub','1080p','Legendado','2,6 GB',true,'BluRay','Legenda sincronizada','Legenda em português no tempo certo'),
+    S('Torrentio Brazuca','1080p','Dublado','2,4 GB',false,'WEB-DL'),
+    S('Torrentio','4K','Legendado','12,3 GB',false,'WEB-DL.DV'),
+    S('Torrentio','1080p','Legendado','3,1 GB',false,'BluRay.x265'),
+    S('NoTorrent','720p','Legendado','980 MB',true,'WEB-DL'),
+    S('TorrentsDB','1080p','Dublado','2,2 GB',false,'WEB-DL'),
+    S('WatchHub','720p','Legendado','—',true,'Stream'),
+    S('Torrentio','720p','Dublado','1,1 GB',false,'WEB-DL')
+  ];
+}
+function srcTags(s){
+  return '<span class="t'+(s.q==='4K'?' q4k':'')+'">'+s.q+'</span><span class="t'+(s.lang==='Dublado'?' dub':'')+'">'+s.lang+'</span>'+
+    (s.size!=='—'?'<span class="t">'+s.size+'</span>':'')+'<span class="t'+(s.direct?' dir':'')+'">'+(s.direct?'Link direto':'Torrent · Stremio')+'</span>';
+}
+function openSources(x,ep){
+  var all=sources(x,ep),sub=ep?'T'+ep.s+':E'+ep.e+(ep.name?' · '+ep.name:''):[x.year,x.runtime].filter(Boolean).join(' · ');
+  var recs=all.filter(function(s){return s.rec;});
+  var o=pushOv('<div class="ov dimart"><img class="art" src="'+art('background',x.id,'large')+'"><div class="shade"></div><div class="srcw">'+
+    '<aside><div class="btn f" data-ok="close" style="align-self:flex-start">'+svg('back',2.4)+'Voltar</div><img src="'+art('poster',x.id)+'"><b>'+esc(x.name)+'</b><span>'+esc(sub)+'</span></aside>'+
+    '<main><h1>Escolha a fonte <small>'+all.length+' fontes · '+ADDONS.length+' add-ons</small></h1>'+
+    '<div class="recs">'+recs.map(function(s,i){return '<div class="rec f'+(i===0?' first':'')+'" data-ok="src" data-i="'+all.indexOf(s)+'"><span class="k">'+s.rec+'</span><b>'+s.addon+' · '+s.q+'</b><span>'+s.why+'</span></div>';}).join('')+'</div>'+
+    '<div class="filters"><div class="tb f outline" data-ok="fq">Qualidade <b>Todas</b>'+svg('chev',2.4)+'</div><div class="tb f outline" data-ok="fl">Idioma <b>Todos</b>'+svg('chev',2.4)+'</div>'+
+    '<div class="tb f outline" data-ok="nuvio">Escolher no Nuvio</div><span class="note">Link direto toca na TV · Torrent abre no Stremio</span></div>'+
+    '<div class="vs slist2"><div class="in"></div></div></main></div></div>',{x:x,ep:ep,all:all,q:0,l:0});
+  isLight(x.id).then(function(l){if(l)o.el.querySelector('.art').style.display='none';});
+  fillSources(o);render();
+}
+function fillSources(o){
+  var q=SQ[o.q],l=SL[o.l];
+  o.el.querySelector('[data-ok=fq] b').textContent=q;o.el.querySelector('[data-ok=fl] b').textContent=l;
+  var list=o.all.map(function(s,i){return [s,i];}).filter(function(p){return (q==='Todas'||p[0].q===q)&&(l==='Todos'||p[0].lang===l);});
+  o.el.querySelector('.slist2 .in').innerHTML=list.length?list.map(function(p){var s=p[0];
+    return '<div class="srow2 f" data-ok="src" data-i="'+p[1]+'"><span class="ad">'+s.addon+'</span><span class="nm">'+esc(s.title)+'</span><span class="tags">'+srcTags(s)+'</span></div>';}).join('')
+    :'<div class="empty">Nenhuma fonte com esse filtro.</div>';
+}
+
+// Player (imagem parada no lugar do vídeo)
+function fmt(s){var h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=Math.floor(s%60);return (h?h+':'+pad(m):m)+':'+pad(ss);}
+function openPlayer(x,ep,src){
+  var dur=x.kind==='series'?2830:7420,pos=x.p?x.p*dur:95;
+  var line=ep?'T'+ep.s+':E'+ep.e+(ep.name?' · '+ep.name:''):[x.year,src?src.addon+' · '+src.q:''].filter(Boolean).join(' · ');
+  var o=pushOv('<div class="ov pl"><img class="vid" src="'+(ep&&ep.th?ep.th:art('background',x.id,'large'))+'"><div class="tshade"></div><div class="bshade"></div>'+
+    '<div class="ttl">'+svg('back',2.4)+'<span>Voltar com o botão Voltar do controle</span></div>'+
+    '<div class="info"><b>'+esc(x.name)+'</b><span>'+esc(line)+'</span></div>'+
+    '<div class="skip f first" data-ok="skip">'+svg('next',2)+'Pular abertura</div>'+
+    '<div class="seek"><span class="tc">'+fmt(pos)+'</span><div class="track2"><div class="buf" style="width:'+Math.min(100,pos/dur*100+12)+'%"></div><div class="pos" style="width:'+pos/dur*100+'%"></div><div class="knob" style="left:'+pos/dur*100+'%"></div></div><span>'+fmt(dur)+'</span></div>'+
+    '<div class="ctr"><div class="pb2 f" data-ok="rew">'+svg('rew',1.8)+'</div><div class="pb2 f" data-ok="pp">'+svg('pause')+'</div><div class="pb2 f" data-ok="fwd">'+svg('fwd',1.8)+'</div>'+
+    '<div class="sp"></div><div class="pb2 f" data-ok="subs">'+svg('sub')+'Legendas e áudio</div>'+
+    (ep?'<div class="pb2 f" data-ok="eps">'+svg('eps')+'Episódios</div><div class="pb2 f" data-ok="nextep">'+svg('next')+'Próximo episódio</div>':'')+
+    '</div></div>',{x:x,ep:ep,dur:dur,pos:pos,timers:[]});
+  o.onClose=function(){o.timers.forEach(clearTimeout);clearInterval(o.iv);};
+  if(!(ep&&ep.th))isLight(x.id).then(function(l){if(l){var v=o.el.querySelector('.vid');v.src=art('poster',x.id,'large');v.style.objectFit='contain';}});
+  o.iv=setInterval(function(){if(o.paused)return;o.pos=Math.min(o.dur,o.pos+1);paintSeek(o);},1000);
+  return o;
+}
+function paintSeek(o){
+  var p=o.pos/o.dur*100;
+  o.el.querySelector('.pos').style.width=p+'%';o.el.querySelector('.knob').style.left=p+'%';o.el.querySelector('.tc').textContent=fmt(o.pos);
+}
+function showNext(o){
+  if(!o.ep||o.el.querySelector('.nextc'))return;
+  var n={s:o.ep.s,e:o.ep.e+1,name:'',th:'https://episodes.metahub.space/'+o.x.id+'/'+o.ep.s+'/'+(o.ep.e+1)+'/w780.jpg'};
+  o.pos=o.dur-150;paintSeek(o);
+  var left=10,box=document.createElement('div');box.className='nextc';
+  box.innerHTML='<img src="'+n.th+'"><div class="tx"><small>Próximo episódio em <span class="cd2">10</span> s</small><b>T'+n.s+':E'+n.e+'</b>'+
+    '<div class="row"><div class="tb sm f outline" data-ok="nextep">Assistir agora</div><div class="tb sm f outline" data-ok="credits">Ver créditos</div></div></div><div class="cd" style="width:100%"></div>';
+  var sk=o.el.querySelector('.skip');if(sk)sk.remove();
+  o.el.appendChild(box);o.f=box.querySelector('.f');render();
+  o.cd=setInterval(function(){
+    left--;var c=box.querySelector('.cd2');if(c)c.textContent=left;box.querySelector('.cd').style.width=left*10+'%';
+    if(left<=0){clearInterval(o.cd);nextEpisode(o);}
+  },1000);
+  o.timers.push(o.cd);
+}
+function nextEpisode(o){
+  clearInterval(o.cd);var x=o.x,ep=o.ep;popOv();
+  openPlayer(x,{s:ep.s,e:ep.e+1,name:'',th:'https://episodes.metahub.space/'+x.id+'/'+ep.s+'/'+(ep.e+1)+'/w780.jpg'});
+  toast('Tocando T'+ep.s+':E'+(ep.e+1));
+}
+
+// Jogar na TV: tela de carregamento enquanto o PC prepara o jogo
+function openGame(g){
+  var steps=['Ligando só a TV no PC (1080p, 60 Hz)','Abrindo '+g.name,'Esperando o jogo ficar em tela cheia','Trocando a TV para o HDMI 1'];
+  var o=pushOv('<div class="ov gl"><img class="art" src="'+STEAM+g.id+'/library_hero.jpg"><div class="shade"></div><div class="box">'+
+    '<img src="'+STEAM+g.id+'/logo.png" data-name="'+esc(g.name)+'" data-fb="dtitle" onload="trim(this)" onerror="logoFail(this)">'+
+    '<div class="steps">'+steps.map(function(s){return '<div class="stp"><i></i>'+esc(s)+'</div>';}).join('')+'</div>'+
+    '<div class="brow"><div class="btn f first" data-ok="close">Cancelar</div><div class="btn f" data-ok="giveback">'+svg('screen')+'Devolver tela ao PC</div></div></div></div>',{timers:[]});
+  o.onClose=function(){o.timers.forEach(clearTimeout);};
+  var els=o.el.querySelectorAll('.stp');
+  function step(i){
+    if(i>0){els[i-1].className='stp done';els[i-1].querySelector('i').innerHTML=svg('check',3);}
+    if(i<els.length){els[i].className='stp run';o.timers.push(setTimeout(function(){step(i+1);},[1600,2400,2200,1500][i]));}
+    else o.timers.push(setTimeout(function(){toast('Pronto: '+g.name+' está na TV');},300));
+  }
+  step(0);
+}
+
+// ---------- Telas com layout próprio ----------
+function head(title,extra){return '<div class="vhead"><div class="tb title">'+title+'</div>'+(extra||'')+'</div>';}
+
+function viewSearch(v){
+  var q='';
+  var keys='abcdefghijklmnopqrstuvwxyz1234567890'.split('');
+  v.innerHTML='<div class="search"><div class="kb">'+head('Buscar')+
+    '<div class="query">'+svg('search')+'<span class="qt"></span><i></i></div>'+
+    '<div class="keys">'+keys.map(function(k,i){return '<div class="key f'+(i===0?' first':'')+'" data-ok="key" data-k="'+k+'">'+k+'</div>';}).join('')+
+    '<div class="key wide f" data-ok="key" data-k=" ">'+svg('space')+'Espaço</div><div class="key wide f" data-ok="key" data-k="del">'+svg('del')+'Apagar</div><div class="key wide f" data-ok="key" data-k="clr">Limpar</div></div>'+
+    '</div><div class="results"><div class="vhead"><h2 class="rt" style="margin:0"></h2></div><div class="vs" style="flex:1 1 auto"><div class="grid rg"></div></div></div></div>';
+  var t=0;
+  function paint(){
+    v.querySelector('.qt').innerHTML=q?esc(q):'<span class="ph">Títulos, séries, animes…</span>';
+    clearTimeout(t);
+    t=setTimeout(function(){
+      var p=q.trim().length>=2?search(q.trim()):cat('series','top').then(function(s){return cat('movie','top').then(function(m){return s.slice(0,10).concat(m.slice(0,10));});});
+      v.querySelector('.rt').textContent=q.trim().length>=2?'Resultados para “'+q.trim()+'”':'Buscas em alta';
+      p.then(function(r){
+        if(page!=='search')return;
+        v.querySelector('.rg').innerHTML=r.length?r.map(function(x){return poster(x,'g');}).join(''):'<div class="empty" style="grid-column:1/-1">Nada encontrado. Tente outro nome.</div>';
+      });
+    },q?350:0);
+  }
+  v.type=function(k){if(k==='del')q=q.slice(0,-1);else if(k==='clr')q='';else if(q.length<30)q+=k;paint();};
+  paint();
+}
+
+function viewList(v){
+  var flt='all';
+  v.innerHTML=head('Minha lista','<div class="tb f first sel" data-ok="lf" data-k="all">Tudo</div><div class="tb f" data-ok="lf" data-k="movie">Filmes</div><div class="tb f" data-ok="lf" data-k="series">Séries</div><div class="tb f" data-ok="lf" data-k="anime">Animes</div><div class="tb chip lc"></div>')+
+    '<div class="vs" style="height:calc(100% - 72px)"><div class="grid lg" style="grid-template-columns:repeat(7,1fr)"></div></div>';
+  v.filter=function(k){
+    flt=k;[].forEach.call(v.querySelectorAll('[data-ok=lf]'),function(e){e.classList.toggle('sel',e.dataset.k===k);});
+    myList().then(function(L){
+      var r=L.filter(function(x){var an=(x.genres||[]).indexOf('Animação')>=0;return k==='all'||(k==='anime'?an:x.kind===k&&!an);});
+      v.querySelector('.lc').textContent=r.length+(r.length===1?' título':' títulos');
+      v.querySelector('.lg').innerHTML=r.length?r.map(function(x){return poster(x,'g');}).join(''):'<div class="empty" style="grid-column:1/-1">Nada aqui ainda. Use o botão “Minha lista” nos detalhes de um filme ou série.</div>';
+    });
+  };
+  v.filter('all');
+}
+
+function viewTv(v){
+  v.innerHTML='<div class="vs" style="height:100%">'+head('TV')+
+    '<div class="hrow"><div class="feat f first" data-ok="toast" data-t="Abrindo a TV ao vivo…" style="background:linear-gradient(135deg,#3a0a0e,#18181f 70%)"><span class="live"><i></i>AO VIVO</span>'+svg('antenna',1.4).replace('<svg','<svg class="big"')+'<b>Canais da TV</b><span>Antena e canais abertos</span></div>'+
+    '<div class="feat f" data-ok="toast" data-t="Abrindo o SportzX…" style="background:linear-gradient(135deg,#0f7a45,#18181f 75%)"><span class="live"><i></i>AO VIVO</span>'+svg('ball',1.4).replace('<svg','<svg class="big"')+'<b>Esportes</b><span>Jogos ao vivo no SportzX</span></div></div>'+
+    '<section class="sec"><h2>Apps com transmissão ao vivo</h2><div class="hrow">'+['YouTube','Twitch','Kick','SportzX'].map(function(n){
+      var a=APPS.find(function(y){return y[0]===n;});return appTile(a,'f',' data-ok="toast" data-t="Abrindo '+n+'…"');}).join('')+'</div></section>'+
+    '<section class="sec"><h2>Entradas</h2><div class="hrow">'+inputCards(true)+'</div></section></div>';
+}
+var INPUTS=[
+  {k:'HDMI 1',icon:'pc',name:'PC · FRED',st:'EM USO',desc:'Steam e Hydra · conectado',cur:true},
+  {k:'HDMI 2',icon:'hdmi',name:'HDMI 2',st:'SEM SINAL',desc:'Nada conectado'},
+  {k:'HDMI 3',icon:'hdmi',name:'HDMI 3',st:'SEM SINAL',desc:'Nada conectado'},
+  {k:'Antena',icon:'antenna',name:'Antena',st:'TV',desc:'Canais abertos'}
+];
+function inputCards(small){
+  return INPUTS.map(function(i,n){
+    return '<div class="inp f'+(i.cur?' cur':'')+(small?' sm':'')+(n===0&&!small?' first':'')+'" data-ok="toast" data-t="Trocando para '+i.k+'…"><span class="st">'+i.st+'</span>'+svg(i.icon,1.6)+
+      '<div><b>'+i.name+'</b><span>'+i.k+' · '+i.desc+'</span></div></div>';
+  }).join('');
+}
+function viewInputs(v){
+  v.innerHTML=head('Entradas','<div class="tb chip"><i class="dot"></i>FRED · conectado</div>')+
+    '<div class="hrow">'+inputCards(false)+'</div>'+
+    '<div class="pcbox"><div class="txt"><b>PC na TV</b><span>O PC usa o HDMI 1. A tela da Central cobre a troca de entrada, sem “procurando sinal”.</span></div>'+
+    '<div class="btn f" data-ok="toast" data-t="Mostrando o PC na TV…">'+svg('pc')+'Mostrar o PC</div><div class="btn f" data-ok="toast" data-t="Imagem devolvida ao monitor">'+svg('screen')+'Devolver tela ao PC</div></div>';
+}
+
+function viewApps(v){
+  v.innerHTML='<div class="vs" style="height:100%">'+head('Apps','<div class="tb chip">'+APPS.length+' apps</div>')+
+    '<section class="sec"><h2>Na barra da Início</h2><div class="grid" style="grid-template-columns:repeat(4,1fr)">'+APPS.slice(0,4).map(function(a,i){
+      return appTile(a,'dock f'+(i===0?' first':''),' data-ok="toast" data-t="Abrindo '+a[0]+'…"');}).join('')+'</div></section>'+
+    '<section class="sec"><h2>Todos os apps</h2><div class="grid" style="grid-template-columns:repeat(6,1fr)">'+APPS.slice(4).map(function(a){
+      return appTile(a,'g f',' data-ok="toast" data-t="Abrindo '+a[0]+'…"');}).join('')+'</div></section></div>';
+}
+
+// Configurações: o painel da direita muda conforme o item da esquerda com foco.
+var SET={tr:true,pt:true,skip:true,next:true,boot:true,cover:true,wifiName:'Rede 2',ver:'1.0.'+213};
+var ACCENTS=[['#e50914','Vermelho'],['#7c6cf0','Lavanda'],['#2f80ff','Azul'],['#f5a623','Âmbar'],['#14b8a6','Verde-água']];
+function row(label,small,right,ok,ro){return '<div class="srow'+(ok?' f':'')+(ro?' ro':'')+'"'+(ok?' data-ok="'+ok+'"':'')+'><div><b>'+label+'</b>'+(small?'<small>'+small+'</small>':'')+'</div>'+right+'</div>';}
+function tog(k){return '<span class="tg'+(SET[k]?' y':'')+'"></span>';}
+var CFG=[
+  ['paint','Aparência',function(){
+    var ac=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    return '<h3>Aparência</h3><div class="sws">'+ACCENTS.map(function(a){return '<div class="sw f'+(a[0]===ac?' sel':'')+'" data-ok="accent" data-c="'+a[0]+'" style="background:'+a[0]+'" title="'+a[1]+'"></div>';}).join('')+'</div>'+
+      '<div class="srows">'+row('Cor de destaque','Usada nos botões, no menu e nas barras de progresso','<span class="val">'+(ACCENTS.find(function(a){return a[0]===ac;})||['','Personalizada'])[1]+'</span>','',true)+
+      row('Proteção de tela','Relógio depois de 10 minutos parado','<span class="val">Relógio</span>','toast')+row('Fundo da Início','Arte do título com foco','<span class="val">Automático</span>','toast')+'</div>';}],
+  ['wifi','Rede',function(){return '<h3>Rede</h3><div class="srows">'+row('Wi-Fi',SET.wifiName,'<span class="val">Conectado</span>','android')+
+      row('IP da TV','ADB na porta 5555','<span class="val">192.168.15.10</span>','',true)+row('IP do PC','Cabo, “Rede 2”','<span class="val">192.168.15.9</span>','',true)+'</div>';}],
+  ['movies','Filmes e Séries',function(){return '<h3>Fontes de filmes e séries</h3><div class="srows">'+ADDONS.map(function(a,i){
+      return row(a,i===0?'D:\\Series e Filmes, porta 8765':i<4?'Usado nas recomendações':'Add-on do Stremio','<span class="tg y"></span>','toggle');}).join('')+
+      row('Fonte que falha 3 vezes','Fica de fora por 6 horas','<span class="val">6 h</span>','',true)+'</div>';}],
+  ['ccbox','Legendas e player',function(){return '<h3>Legendas e player</h3><div class="srows">'+
+      row('Traduzir legenda em inglês','Quando não há legenda em português, traduz pelo Google',tog('tr'),'set:tr')+
+      row('Preferir áudio em português','Escolhe a versão dublada quando existir',tog('pt'),'set:pt')+
+      row('Botão Pular abertura','Usa o AniSkip nos animes e as pausas da legenda nos outros',tog('skip'),'set:skip')+
+      row('Próximo episódio automático','Contagem de 10 s a partir dos créditos',tog('next'),'set:next')+
+      row('Cache de traduções','Até 30 MB','<span class="val">12 MB usados</span>','toast')+'</div>';}],
+  ['pc','PC e jogos',function(){return '<h3>PC e jogos</h3><div class="srows">'+
+      row('PC','FRED · 192.168.15.9','<span class="val" style="color:var(--match)">Conectado</span>','',true)+
+      row('Entrada do PC','A TV troca para ela no “Jogar na TV”','<span class="val">HDMI 1</span>','toast')+
+      row('Tela da Central por cima do HDMI','Esconde o “procurando sinal” e a área de trabalho',tog('cover'),'set:cover')+
+      row('Abrir com o Windows','Programa “Central de Jogos (TV)”',tog('boot'),'set:boot')+'</div>';}],
+  ['info','Sobre',function(){return '<h3>Sobre</h3><div class="srows">'+
+      row('BadarasOS','Tela inicial, Filmes e Séries, Jogos e player próprios','<span class="val">'+SET.ver+'</span>','',true)+
+      row('TV','TCL 50P755 · Google TV','<span class="val">Android 12 · 2 GB</span>','',true)+
+      row('Procurar atualização','Compila e instala pelo PC','<span class="val">Em dia</span>','toast')+'</div>';}],
+  ['android','Configurações do Android',function(){return '<h3>Configurações do Android</h3><div class="srows">'+
+      row('Abrir as configurações da TV','Imagem, som, conta Google e o resto do sistema','<span class="val">Abrir</span>','android')+'</div>';}]
+];
+function viewCfg(v){
+  v.innerHTML=head('Configurações')+'<div class="cfg"><div class="slist">'+CFG.map(function(c,i){
+    return '<div class="si f'+(i===0?' first sel':'')+'" data-i="'+i+'" data-ok="cfgsec">'+svg(c[0])+c[1]+'</div>';}).join('')+'</div><div class="spanel vs"></div></div>';
+  var cur=0;
+  v.panel=function(i){cur=i;[].forEach.call(v.querySelectorAll('.si'),function(e){e.classList.toggle('sel',+e.dataset.i===i);});v.querySelector('.spanel').innerHTML=CFG[i][2]();};
+  v.repaint=function(){v.panel(cur);};
+  v.onFocus=function(el){if(el.classList.contains('si')&&+el.dataset.i!==cur)v.panel(+el.dataset.i);};
+  v.panel(0);
+}
+
+// ---------- OK ----------
+var ACT={
+  close:function(){popOv();},
+  eps:function(){popOv();if(!topOv()||!topOv().el.classList.contains('det'))toast('Episódios: abra os detalhes da série');},
+  toast:function(el){toast(el.dataset.t);},
+  detail:function(el){openDetail(X(el));},
+  key:function(el){viewEl.type(el.dataset.k);},
+  lf:function(el){viewEl.filter(el.dataset.k);},
+  cfgsec:function(el){var n=viewEl.querySelector('.spanel .f');if(n){vf=n;render();}},
+  accent:function(el){document.documentElement.style.setProperty('--accent',el.dataset.c);viewEl.repaint();vf=viewEl.querySelector('.sw[data-c="'+el.dataset.c+'"]');render();},
+  toggle:function(el){var t=el.querySelector('.tg');t.classList.toggle('y');toast(el.querySelector('b').textContent+(t.classList.contains('y')?' ligado':' desligado'));},
+  android:function(){toast('Abrindo as configurações do Android…');},
+  dplay:function(){
+    var o=topOv(),x=o.x;if(!x)return;
+    if(x.kind==='series'){var s=x.s||1,e=x.e||1,v=(o.vids||[]).find(function(v){return v.season===s&&v.episode===e;})||{};
+      openSources(x,{s:s,e:e,name:v.name||'',th:v.thumbnail||''});}
+    else openSources(x,null);
+  },
+  dlist:function(el){var x=topOv().x;toggleList(x).then(function(y){el.querySelector('.li').innerHTML=svg(y?'check':'list',2.4);});},
+  trailer:function(){toast('Trailer: abre no YouTube');},
+  season:function(el){fillEps(topOv(),+el.dataset.s);},
+  ep:function(el){openSources(topOv().x,{s:+el.dataset.s,e:+el.dataset.e,name:el.dataset.name,th:el.dataset.th});},
+  fq:function(){var o=topOv();o.q=(o.q+1)%SQ.length;fillSources(o);},
+  fl:function(){var o=topOv();o.l=(o.l+1)%SL.length;fillSources(o);},
+  nuvio:function(){toast('Abrindo no Nuvio…');},
+  src:function(el){
+    var o=topOv(),s=o.all[+el.dataset.i];
+    if(!s.direct)return toast('Torrent: abrindo no Stremio…');
+    var x=o.x,ep=o.ep;popOv();openPlayer(x,ep,s);
+  },
+  skip:function(el){var o=topOv();o.pos=95;paintSeek(o);el.remove();o.f=o.el.querySelector('[data-ok=pp]');render();toast('Abertura pulada');
+    o.timers.push(setTimeout(function(){if(topOv()===o)showNext(o);},4000));},
+  pp:function(el){var o=topOv();o.paused=!o.paused;el.innerHTML=svg(o.paused?'play':'pause');},
+  rew:function(){var o=topOv();o.pos=Math.max(0,o.pos-10);paintSeek(o);},
+  fwd:function(){var o=topOv();o.pos=Math.min(o.dur,o.pos+10);paintSeek(o);},
+  subs:function(){toast('Legenda: Português (traduzida do inglês) · Áudio: Inglês');},
+  nextep:function(){nextEpisode(topOv());},
+  credits:function(el){var o=topOv();clearInterval(o.cd);el.closest('.nextc').remove();o.f=o.el.querySelector('[data-ok=pp]');render();},
+  giveback:function(){popOv();toast('Imagem devolvida ao monitor');}
+};
+ACT['set:tr']=ACT['set:pt']=ACT['set:skip']=ACT['set:next']=ACT['set:boot']=ACT['set:cover']=function(el){
+  var k=el.dataset.ok.slice(4);SET[k]=!SET[k];el.querySelector('.tg').classList.toggle('y',SET[k]);
+};
+function openItem(x,T){
+  if(T==='act')return toast(x.done);
+  if(T==='app')return toast('Abrindo '+x[0]+'…');
+  if(T==='game'||T==='cap')return openGame(x);
+  if(T==='cont'&&x.kind==='yt')return toast('Abrindo no YouTube…');
+  if(T==='cont')return openPlayer(x,x.kind==='series'?{s:x.s,e:x.e,name:'',th:'https://episodes.metahub.space/'+x.id+'/'+x.s+'/'+x.e+'/w780.jpg'}:null);
+  openDetail(x);
+}
+function openMenu(el){
+  menuItems=GENRES;
+  menuEl.innerHTML=GENRES.map(function(g){return '<div class="mi'+(g===mv.genre?' sel':'')+'">'+(g?GEN[g]:'Todos os gêneros')+'</div>';}).join('');
+  menuEl.style.left=(topEl.offsetLeft+el.offsetLeft)+'px';
+  focus.m=Math.max(0,GENRES.indexOf(mv.genre));focus.zone='menu';render();
+}
+function ok(){
+  var ov=topOv(),z=focus.zone;
+  if(ov){if(ov.f&&ACT[ov.f.dataset.ok])ACT[ov.f.dataset.ok](ov.f);return;}
+  if(z==='rail'){var k=navEls[focus.n].dataset.k;if(k!==page)go(k);focus.zone=PAGES[k].view?'view':'rows';return render();}
+  if(z==='view'){if(vf&&ACT[vf.dataset.ok])ACT[vf.dataset.ok](vf);return;}
+  if(z==='menu'){mv.genre=menuItems[focus.m];if(mv.tab==='anime')mv.tab='all';focus.zone='top';go('movies');return;}
+  if(z==='top'){
+    var it=topItem(focus.t);
+    if(it.t==='tab'){if(mv.tab!==it.k){mv.tab=it.k;if(it.k==='anime')mv.genre='';go('movies');}}
+    else if(it.t==='menu')openMenu(topFocusables()[focus.t]);
+    else if(it.k==='search'){go('search');}
+    else toast(it.k==='hdmi'?'Entrada do PC: HDMI 1':'Biblioteca atualizada');
+    return render();
+  }
+  var x=cur(),T=curType();if(!x)return;
+  if(z==='btns'){
+    var b=document.querySelectorAll('#btns .btn')[focus.b].dataset.b;
+    if(b==='info')return (T==='game'||T==='cap')?toast(x.name+': '+x.hours):openDetail(x);
+    if(b==='list')return toggleList(x).then(function(y){$('listIco').innerHTML=svg(y?'check':'list',2.4);});
+    if(T==='land'||T==='port'||T==='top')return x.kind==='series'?openSources(x,{s:1,e:1,name:'',th:'https://episodes.metahub.space/'+x.id+'/1/1/w780.jpg'}):openSources(x,null);
+  }
+  openItem(x,T);
+}
+function back(){
+  var ov=topOv();
+  if(ov)return popOv();
+  if(focus.zone==='menu'){focus.zone='top';return render();}
+  if(focus.zone!=='rail'){focus.zone='rail';focus.n=navEls.findIndex(function(n){return n.classList.contains('sel');});render();}
+}
+addEventListener('keydown',function(e){
+  var k=e.key;
+  if(k==='ArrowLeft')move(-1,0);else if(k==='ArrowRight')move(1,0);
+  else if(k==='ArrowUp')move(0,-1);else if(k==='ArrowDown')move(0,1);
+  else if(k==='Enter')ok();
+  else if(k==='Escape'||k==='Backspace'&&!(page==='search'&&focus.zone==='view'&&!OVS.length))back();
+  else if(page==='search'&&focus.zone==='view'&&!OVS.length&&(k.length===1&&/[\w ]/.test(k)||k==='Backspace'))viewEl.type(k==='Backspace'?'del':k.toLowerCase());
+  else if(k==='c'||k==='C'){
+    var cs=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),i=ACCENTS.findIndex(function(a){return a[0]===cs;});
+    document.documentElement.style.setProperty('--accent',ACCENTS[(i+1)%ACCENTS.length][0]);
+  }
+  else return;
+  e.preventDefault();
+});
+
+// ---------- Relógio ----------
+function tick(){var d=new Date();$('clk').textContent=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  $('dt').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});}
+tick();setInterval(tick,15000);
+
+// Abre direto numa tela com ?p=movies, ?p=games, ?p=cfg etc.
+var start=(location.search.match(/p=(\w+)/)||[])[1];
+go(PAGES[start]?start:'home');
+if(PAGES[start]&&PAGES[start].view)focus.zone='view';
+render();
+// ?keys=Down,Down,Enter aperta essas teclas depois de abrir (para mostrar uma tela específica).
+var keys=(location.search.match(/keys=([\w,]+)/)||[])[1];
+if(keys)keys.split(',').reduce(function(t,k){
+  var key={Up:'ArrowUp',Down:'ArrowDown',Left:'ArrowLeft',Right:'ArrowRight',Back:'Escape'}[k]||k;
+  setTimeout(function(){dispatchEvent(new KeyboardEvent('keydown',{key:key}));},t);
+  return t+(key==='Enter'?3000:500);
+},2500);
+</script>
+</body>
+</html>
