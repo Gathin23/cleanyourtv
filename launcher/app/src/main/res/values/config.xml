@@ -303,6 +303,9 @@
     <!-- A reorder button (two arrows) in the top bar. Off by default: reordering is also in the Settings
          button's long-press menu, so it needs no extra button on screen. -->
     <bool name="reorder_button">false</bool>
+    <!-- A sports recommendation button (trophy icon) in the top bar. Off by default;
+         can be toggled in launcher settings. -->
+    <bool name="sports_recommendation">false</bool>
     <!-- Wi-Fi and Settings as round icon-only buttons (the network name moves to the talkback description);
          Inputs keeps its label. -->
     <bool name="icon_only_buttons">false</bool>

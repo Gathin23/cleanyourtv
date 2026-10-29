@@ -6,6 +6,14 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <!-- Translucent floating drawer theme for Launcher Settings over Home -->
+    <style name="Theme.LauncherSettings" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+    </style>
+
     <!-- Frosted pill, tvOS style. -->
     <style name="TopButtonBase">
         <item name="android:layout_width">wrap_content</item>
@@ -37,20 +45,25 @@
 
     <style name="SettingsRow">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">52dp</item>
+        <item name="android:layout_height">32dp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingStart">18dp</item>
-        <item name="android:paddingEnd">18dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
         <item name="android:background">@drawable/settings_choice_bg</item>
         <item name="android:textColor">#FFFFFFFF</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@string/font_medium</item>
         <item name="android:focusable">true</item>
         <item name="android:clickable">true</item>
     </style>
     <style name="SettingsColumnChoice" parent="SettingsRow">
         <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">26dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_marginEnd">6dp</item>
         <item name="android:gravity">center</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
     </style>
 </resources>

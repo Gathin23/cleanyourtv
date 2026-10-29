@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Frosted glass popup under the Settings gear pill with Launcher and TV options -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settingsPickerPanel"
+    android:layout_width="260dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/glass_panel"
+    android:padding="8dp"
+    android:elevation="14dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="6dp"
+        android:text="@string/settings"
+        android:textColor="#B3FFFFFF"
+        android:textSize="11sp"
+        android:fontFamily="@string/font_medium"
+        android:letterSpacing="0.18"
+        android:textAllCaps="true" />
+
+    <!-- Option 1: Launcher Settings -->
+    <LinearLayout
+        android:id="@+id/optLauncher"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@drawable/input_row_bg"
+        android:focusable="true"
+        android:clickable="true">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@drawable/pill_text"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_settings"
+            android:contentDescription="@null" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical"
+            android:duplicateParentState="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Launcher"
+                android:textColor="@drawable/pill_text"
+                android:textSize="14sp"
+                android:fontFamily="@string/font_medium"
+                android:duplicateParentState="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dock, grid &amp; animations"
+                android:textColor="@drawable/pill_text_dim"
+                android:textSize="10sp"
+                android:fontFamily="@string/font_body"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Option 2: TV Settings -->
+    <LinearLayout
+        android:id="@+id/optTv"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@drawable/input_row_bg"
+        android:focusable="true"
+        android:clickable="true">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="@drawable/pill_text"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_livetv"
+            android:contentDescription="@null" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical"
+            android:duplicateParentState="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TV"
+                android:textColor="@drawable/pill_text"
+                android:textSize="14sp"
+                android:fontFamily="@string/font_medium"
+                android:duplicateParentState="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="System, sound &amp; network"
+                android:textColor="@drawable/pill_text_dim"
+                android:textSize="10sp"
+                android:fontFamily="@string/font_body"
+                android:duplicateParentState="true" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

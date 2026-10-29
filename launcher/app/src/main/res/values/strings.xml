@@ -154,4 +154,22 @@
     <string name="last_opened">Last opened %1$s</string>
     <!-- game_day: a game on now, in the race panel. -->
     <string name="game_live">Live now</string>
+
+    <!-- Sports Recommendations -->
+    <string name="sports">Sports</string>
+    <string name="sports_recommendations">SPORTS RECOMMENDATIONS</string>
+    <string name="sports_recommendation_label">Sports Recommendations</string>
+    <string name="sports_recommendation_state">Sports Recommendations: %1$s</string>
+    <string name="sports_recommendation_help">Show live &amp; upcoming matches tailored to your favorite teams on the home screen.</string>
+    <string name="sports_filter_all">ALL</string>
+    <string name="sports_filter_soccer">SOCCER</string>
+    <string name="sports_filter_tennis">TENNIS</string>
+    <string name="sports_filter_f1">F1</string>
+    <string name="sports_filter_cricket">CRICKET</string>
+    <string name="sports_live">LIVE</string>
+    <string name="sports_watch">WATCH</string>
+    <string name="sports_loading">Checking upcoming fixtures…</string>
+    <string name="sports_empty">No upcoming matches found for current filter.</string>
+    <string name="loading">Loading…</string>
+    <string name="sports_error">Unable to fetch sports feed. Check connection.</string>
 </resources>

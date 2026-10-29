@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:paddingTop="9dp"
+    android:paddingBottom="10dp"
+    android:layout_marginBottom="4dp"
+    android:background="@drawable/input_row_bg"
+    android:focusable="true"
+    android:clickable="true">
+
+    <!-- Top line: competition badge and kickoff / live status -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:duplicateParentState="true">
+
+        <TextView
+            android:id="@+id/fixtureCompetition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@drawable/pill_text_mid"
+            android:textSize="11sp"
+            android:fontFamily="@string/font_medium"
+            android:letterSpacing="0.14"
+            android:textAllCaps="true"
+            android:duplicateParentState="true" />
+
+        <TextView
+            android:id="@+id/fixtureStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="@drawable/pill_text"
+            android:textSize="11sp"
+            android:fontFamily="@string/font_medium"
+            android:letterSpacing="0.08"
+            android:duplicateParentState="true" />
+    </LinearLayout>
+
+    <!-- Bottom line: match title and stream destination -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:duplicateParentState="true">
+
+        <TextView
+            android:id="@+id/fixtureTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@drawable/pill_text"
+            android:textSize="14sp"
+            android:fontFamily="@string/font_medium"
+            android:duplicateParentState="true" />
+
+        <TextView
+            android:id="@+id/fixtureApp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:background="#26FFFFFF"
+            android:textColor="@drawable/pill_text"
+            android:textSize="10sp"
+            android:fontFamily="@string/font_medium"
+            android:letterSpacing="0.06"
+            android:duplicateParentState="true" />
+    </LinearLayout>
+</LinearLayout>

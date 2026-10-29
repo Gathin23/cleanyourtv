@@ -9,6 +9,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- Needed since Android 10 to read the Wi-Fi network name for the network pill. Never requested at
          runtime: build-and-install grants it with pm grant, so lint's Android 12 "ask for COARSE with
          FINE" rule does not apply here. -->
@@ -65,6 +66,12 @@
         <package android:name="com.xiaomi.mitv.settings" />
         <package android:name="com.tcl.settings" />
         <package android:name="com.amazon.tv.launcher" />
+        <package android:name="in.startv.hotstar" />
+        <package android:name="com.sonyliv" />
+        <package android:name="com.jio.media.jiotvplus" />
+        <package android:name="com.jio.media.ondemand" />
+        <package android:name="com.apple.atve.androidtv.appletv" />
+        <package android:name="com.fizzysoftware.fancode" />
         <!-- Coocaa OS sources for the Inputs menu (coocaa_sources); see CoocaaSources. -->
         <provider android:authorities="com.skyworth.tv.provider" />
         <provider android:authorities="com.skyworth.tv.sdk.provider" />
@@ -87,9 +94,6 @@
             android:clearTaskOnLaunch="true"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden|uiMode"
             android:screenOrientation="landscape">
-            <!-- CVTE firmware (ro.CVT_EN_COMMON_HOME_INTENT=1) sends the Home key and boot as MAIN + HOME +
-                 COMMON_HOME, which only matches a filter that lists both (#1201). In this one filter, not a second
-                 one: a plain HOME intent still matches it, and a second filter could list this activity twice. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
@@ -105,7 +109,8 @@
 
         <activity
             android:name=".LauncherSettingsActivity"
-            android:exported="false"
+            android:theme="@style/Theme.LauncherSettings"
+            android:exported="true"
             android:excludeFromRecents="true"
             android:screenOrientation="landscape" />
         <!-- The system input switcher (com.android.tv.action.VIEW_INPUTS), which is what the remote's Input

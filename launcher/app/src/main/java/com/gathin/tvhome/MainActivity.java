@@ -319,6 +319,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** fill_dock false: how many dock slots held an app when reorder mode started. */
     private int dockedAtStart;
     private View btnReorder;
+    private View btnSports;
+    private boolean sportsRecommendation;
     /** dock_apps as loaded (config.xml or a theme): a saved Order only applies while these are unchanged. */
     private List<String> dockApps;
     /** fill_dock false: the dock can have empty slots, which reorder mode leaves out and restores afterwards. */
@@ -464,6 +466,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sourcePanelAction = cfg.sourcePanelAction;
         sourcePanelExtra = cfg.sourcePanelExtra;
         coocaaSources = cfg.coocaaSources;
+        sportsRecommendation = cfg.sportsRecommendation;
 
         root = findViewById(R.id.root);
         root.setBackgroundColor(cfg.backgroundColor);
@@ -780,14 +783,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ((TextView) btnSettings).setText(R.string.launcher_settings);
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_home_settings_pill, 0, 0, 0);
         }
-        btnSettings.setOnClickListener(v -> {
-            if (launcherSettingsButton) startActivityForResult(
-                    new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
-            else open(systemIntent(Settings.ACTION_SETTINGS));
-        });
+        btnSettings.setOnClickListener(v -> showSettingsChoicePopup());
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
         btnReorder.setVisibility(cfg.reorderButton ? View.VISIBLE : View.GONE);
+        btnSports = findViewById(R.id.btnSports);
+        btnSports.setOnClickListener(v -> showSportsPopup());
+        btnSports.setVisibility(cfg.sportsRecommendation ? View.VISIBLE : View.GONE);
         if (!cfg.showNetworkPill) btnWifi.setVisibility(View.GONE);
         showInputsPill = cfg.showInputsPill;
         showInputsMenuRow = cfg.showInputsPill;
@@ -866,10 +868,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnVpn.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
+        btnSports.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnSports, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -3513,6 +3516,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar)
                 ? Gravity.START : Gravity.END);
         rows.getChildAt(0).requestFocus();
+    }
+
+    private void showSettingsChoicePopup() {
+        View anchor = findViewById(R.id.btnSettings);
+        if (anchor == null) return;
+        View panel = getLayoutInflater().inflate(R.layout.popup_settings_picker, root, false);
+        final PopupWindow popup = glassPopup(panel, (int) (260 * density));
+
+        View optLauncher = panel.findViewById(R.id.optLauncher);
+        optLauncher.setOnClickListener(v -> {
+            popup.dismiss();
+            startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
+        });
+
+        View optTv = panel.findViewById(R.id.optTv);
+        optTv.setOnClickListener(v -> {
+            popup.dismiss();
+            open(systemIntent(Settings.ACTION_SETTINGS));
+        });
+
+        dropIn(popup, panel, anchor, getResources().getBoolean(R.bool.rtl_menu_bar) ? Gravity.START : Gravity.END);
+        optLauncher.requestFocus();
+    }
+
+    private void showSportsPopup() {
+        if (btnSports == null) return;
+        SportsPopup sportsPopup = new SportsPopup(this, btnSports, density);
+        sportsPopup.show();
     }
 
     /** A tile configured with launch_actions "input:<id>" (config.xml): switch to that TV input directly,
