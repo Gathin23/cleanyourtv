@@ -182,6 +182,12 @@
          global_keys.xml, no vendor input picker). Off by default: a TV with its own input picker would otherwise
          get a chooser on every press. Also "handle_view_inputs": true in a theme's config.json. -->
     <bool name="handle_view_inputs">false</bool>
+    <!-- Answer android.intent.action.ALL_APPS with the Inputs menu. For remotes whose apps button becomes ALL_APPS,
+         which only the stock launcher answered, so the button does nothing once it is disabled (Philips Google TV
+         TA5: the 3x3 grid button, through org.droidtv.GlobalKey). Off by default; a set that keeps launcherx
+         enabled gets a chooser on the first press, answered once with "Always". Also "apps_key_inputs": true in a
+         theme's config.json. -->
+    <bool name="apps_key_inputs">false</bool>
     <!-- Remote buttons that open an app, as "keycode:package" or "KEYCODE_NAME:package" (INPUT_KEY_SERVICE=1 or
          HOME_KEY_SERVICE=1; both read this one list, and a theme's config.json can set it too). On Google TV the
          YouTube button sends 190 (KEYCODE_BUTTON_3) to the stock launcher, so it does nothing once launcherx

@@ -107,6 +107,7 @@ A new key needs one there in the same pull request.
 | `show_stats` | bool | One line under the clock with CPU, free memory and free storage. Off unless set |
 | `game_day` | string | Each team's next game in the F1 panel's place under the clock ("Minnesota Wild at Dallas Stars", "Puck drop in 2h 18m", "Live now"), rotating every few seconds with the F1 weekend when `race_calendar` is on: the package of an add-on that publishes them, such as the Game Day add-on (`io.github.justinnewman.gameday`). The launcher only reads it and stays offline. Off (empty) unless set |
 | `handle_view_inputs` | bool | Answer the system input switcher (`VIEW_INPUTS`, what the remote's Input button becomes) with the Inputs menu, for sets whose stock launcher was its only handler (Hisense huangshan); `false` by default so a TV with its own input picker never gets a chooser |
+| `apps_key_inputs` | bool | Answer `ALL_APPS`, what a remote's apps button becomes on some sets (the Philips Google TV TA5's 3x3 grid button), with the Inputs menu, for sets where only the stock launcher answered it; `false` by default, and a set that keeps launcherx enabled gets a chooser on the first press |
 | `background_color` | `#RRGGBB` | Colour behind everything; black by default |
 | `sky_intensity` | 0 to 100 | Time-of-day backdrop: a dark gradient that follows the clock, 0 hides it (default) |
 | `wallpaper` | bool | Show the theme's picture, `wallpaper.jpg` or its `wallpapers/` collection (`true`), or draw neither (`false`) |

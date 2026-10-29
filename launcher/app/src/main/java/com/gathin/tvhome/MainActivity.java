@@ -436,7 +436,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // off the list (needs WRITE_SECURE_SETTINGS, granted by build-and-install with RESTORE_KEY_SERVICES=1).
         if (cfg.restoreKeyServices) ServiceRepair.restore(this);
         settingsRevision = settingsRevision();
-        applyViewInputsHandler(cfg.handleViewInputs);
+        applyInputsHandler(InputsRequestActivity.class, cfg.handleViewInputs);
+        applyInputsHandler(AppsKeyInputsActivity.class, cfg.appsKeyInputs);
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
         COLUMNS = cfg.columns;
@@ -913,12 +914,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /**
-     * handle_view_inputs: switch InputsRequestActivity, the VIEW_INPUTS handler, on or off. It is disabled in the
-     * manifest, so a TV with its own input picker never sees it; only the sets that need it turn it on. Written
-     * only when the state differs, so an ordinary start does not touch the package manager.
+     * handle_view_inputs and apps_key_inputs: switch InputsRequestActivity (VIEW_INPUTS) or AppsKeyInputsActivity
+     * (ALL_APPS) on or off. Both are disabled in the manifest, so a TV that answers the action itself never sees a
+     * second candidate; only the sets that need one turn it on. Written only when the state differs, so an
+     * ordinary start does not touch the package manager.
      */
-    private void applyViewInputsHandler(boolean on) {
-        ComponentName handler = new ComponentName(this, InputsRequestActivity.class);
+    private void applyInputsHandler(Class<?> activity, boolean on) {
+        ComponentName handler = new ComponentName(this, activity);
         PackageManager pm = getPackageManager();
         int want = on ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
         if (pm.getComponentEnabledSetting(handler) != want) {

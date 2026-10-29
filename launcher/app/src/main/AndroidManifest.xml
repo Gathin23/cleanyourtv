@@ -121,6 +121,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <!-- ALL_APPS, which a remote's apps button can become (Philips Google TV TA5), answered with the Inputs menu.
+             Disabled here and switched on by MainActivity only while apps_key_inputs is true. -->
+        <activity
+            android:name=".AppsKeyInputsActivity"
+            android:exported="true"
+            android:enabled="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.ALL_APPS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- Remote Settings button panel (settings_key_panel); own task so the app behind stays put.
              No screenOrientation: a translucent activity may not request one on Android 8.0 (API 26),
              which throws IllegalStateException in onCreate (#1122); a TV is landscape anyway. -->
