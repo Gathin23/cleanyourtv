@@ -27,3 +27,9 @@ Metro's live tiles also came in wide and large sizes. Here every tile is one siz
 label rows, not columns of tiles. Change `row_titles` to name your own groups.
 
 Tested on an ASUS/MOKA M1G, Android TV 11.
+
+## Not affiliated
+
+An unofficial tribute, made only from the launcher's own keys: no Microsoft logos, artwork, fonts or code are
+copied. The tiles show each app's own icon and the colours are plain values. Windows, Xbox and Metro are
+trademarks of Microsoft Corporation, named here only to say which look this recalls.
