@@ -33,3 +33,9 @@ launcher. Change `row_titles` to suit (Leanback's own rows were "Apps" and "Game
 search app, the orb says it can't open search.
 
 Tested on an ASUS/MOKA M1G, Android TV 11.
+
+## Not affiliated
+
+An unofficial tribute, made only from the launcher's own keys: no Google logos, artwork or code are copied. The
+microphone is the Material Icons "mic" (Apache 2.0) and the colours are plain values. Android TV and Leanback
+are trademarks of Google LLC, named here only to say which home screen this recalls.
