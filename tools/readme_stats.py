@@ -71,7 +71,7 @@ try:
 except ImportError:
     sys.exit("readme_stats.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt")
 
-STATS = [("360", "TV MODELS"), ("97", "BRANDS"), ("30", "LANGUAGES"), ("561 KB", "LAUNCHER")]
+STATS = [("361", "TV MODELS"), ("98", "BRANDS"), ("30", "LANGUAGES"), ("561 KB", "LAUNCHER")]
 W, H = 1600, 240
 img = Image.new("RGB", (W, H), "#15181e"); d = ImageDraw.Draw(img)
 def f(size, wt):
