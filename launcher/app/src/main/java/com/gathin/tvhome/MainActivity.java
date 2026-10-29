@@ -213,6 +213,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** vpn_pill: the VPN shown as its own pill (btnVpn) instead of a badge in the network pill. Off with top_menu. */
     private boolean vpnPill;
     private TextView btnVpn;
+    /** night_mode: a moon by day and a sun at night, switching the add-on's night mode; gone when off. */
+    private TextView btnNight;
+    private NightMode nightMode;
     /** The VpnBadge pill state btnVpn shows, so a refresh that changes nothing does not restyle it. */
     private int vpnPillState = VpnBadge.PILL_HIDDEN;
     /** icon_only_vpn: the VPN pill is a round lock button; off, it keeps the plain glass look saved here. */
@@ -416,6 +419,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // signal level, so only it needs this minute's binder calls (about 7 ms on the UI thread).
             if (festive) updateWifiLabel();
             sky.update();
+            if (nightMode != null) nightMode.read();
             wallpaperPlayer.update();
             handler.postDelayed(this, MINUTE_MS);
         }
@@ -538,6 +542,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         raceBar = findViewById(R.id.raceBar);
         racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
+        btnNight = findViewById(R.id.btnNight);
+        nightMode = NightMode.create(this, cfg.nightMode, handler, this::updateNightButton);
+        if (nightMode != null) {
+            btnNight.setVisibility(View.VISIBLE);
+            btnNight.setOnClickListener(v -> {
+                try {
+                    startActivity(nightMode.toggle());
+                } catch (ActivityNotFoundException | SecurityException e) {
+                    return;
+                }
+                // The add-on switches at once; read it back for the icon and the wallpapers.
+                handler.postDelayed(nightMode::read, 400);
+            });
+            btnNight.setOnLongClickListener(v -> {
+                Intent settings = nightMode.settings();
+                if (settings != null) open(settings);
+                return true;
+            });
+        }
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
@@ -865,12 +888,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
+        btnNight.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnNight, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -1056,6 +1080,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        if (nightMode != null) nightMode.read();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1292,6 +1317,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onDestroy() {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
+        if (nightMode != null) nightMode.shutdown();
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -3046,6 +3072,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnVpn.setVisibility(View.VISIBLE);
     }
 
+
+    /** night_mode: the add-on's night changed (or was read for the first time). */
+    private void updateNightButton() {
+        Boolean night = nightMode == null ? null : nightMode.night();
+        wallpaperPlayer.setNight(night);
+        wallpaperPlayer.update();   // a picture of the other time of day goes at once
+        if (btnNight == null || nightMode == null) return;
+        boolean on = Boolean.TRUE.equals(night);
+        btnNight.setCompoundDrawablesRelativeWithIntrinsicBounds(on ? R.drawable.ic_day : R.drawable.ic_night, 0, 0, 0);
+        btnNight.setContentDescription(getString(on ? R.string.night_button_day : R.string.night_button_night));
+    }
 
     /** Every settings entry shares the standard intent and the vendor fallback (SystemSettings). */
     private Intent systemIntent(String standardAction) {

@@ -122,4 +122,6 @@
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
+    <string name="night_button_night">Nattläge</string>
+    <string name="night_button_day">Dagläge</string>
 </resources>

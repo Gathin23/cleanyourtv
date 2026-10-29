@@ -445,6 +445,13 @@
          online. A theme can set "game_day". -->
     <string name="game_day" translatable="false"></string>
 
+    <!-- A night-mode add-on on Home: a moon button in the top bar by day and a sun at night that switch its night mode,
+         holding OK opens its settings, and wallpaper_moods' night follows it rather than the clock. The package of an
+         add-on that publishes it (the Brightness add-on: io.github.maxhayim.brightness; contract in docs/modules.md).
+         Empty = off: nothing is read and no button shows. The launcher only reads whether it is night and starts the
+         add-on's own toggle. A theme can set "night_mode". -->
+    <string name="night_mode" translatable="false"></string>
+
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
          sets its opacity. Around 60 reads clearly without hiding a wallpaper. Can also be set with

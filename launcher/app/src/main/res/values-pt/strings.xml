@@ -149,4 +149,6 @@
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
     <string name="game_live">Ao vivo agora</string>
+    <string name="night_button_night">Modo noturno</string>
+    <string name="night_button_day">Modo diurno</string>
 </resources>

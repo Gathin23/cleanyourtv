@@ -68,4 +68,6 @@
     </plurals>
     <string name="greeting_with_name">%1$s %2$s</string>
     <string name="game_live">กำลังถ่ายทอดสด</string>
+    <string name="night_button_night">โหมดกลางคืน</string>
+    <string name="night_button_day">โหมดกลางวัน</string>
 </resources>

@@ -98,4 +98,6 @@
     <string name="race_countdown_days">%1$dd %2$dt</string>
     <string name="last_opened">Sidst åbnet %1$s</string>
     <string name="game_live">Live nu</string>
+    <string name="night_button_night">Nattilstand</string>
+    <string name="night_button_day">Dagtilstand</string>
 </resources>

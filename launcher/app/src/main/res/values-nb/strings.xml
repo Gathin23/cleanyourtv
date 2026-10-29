@@ -111,4 +111,6 @@
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
     <string name="game_live">Direkte nå</string>
+    <string name="night_button_night">Nattmodus</string>
+    <string name="night_button_day">Dagmodus</string>
 </resources>

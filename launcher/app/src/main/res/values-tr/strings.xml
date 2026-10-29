@@ -94,4 +94,6 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Şimdi canlı</string>
+    <string name="night_button_night">Gece modu</string>
+    <string name="night_button_day">Gündüz modu</string>
 </resources>

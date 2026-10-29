@@ -33,6 +33,16 @@ final class WallpaperMood {
         return NIGHT;
     }
 
+    /**
+     * The mood with a night-mode add-on's night (night_mode): its night is night whatever the clock says, and its day
+     * is never night (morning instead). Null, no add-on answer, leaves the clock's mood.
+     */
+    static String withNight(String mood, Boolean night) {
+        if (night == null) return mood;
+        if (night) return NIGHT;
+        return NIGHT.equals(mood) ? MORNING : mood;
+    }
+
     /** That day's {sunrise, sunset} at config.xml's latitude and longitude; the defaults when either is unusable. */
     static int[] sun(LocalDate day, String latitude, String longitude, ZoneId zone) {
         int[] times = null;

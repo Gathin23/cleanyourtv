@@ -109,4 +109,6 @@
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
     <string name="game_live">En directe</string>
+    <string name="night_button_night">Mode nocturn</string>
+    <string name="night_button_day">Mode diürn</string>
 </resources>

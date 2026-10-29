@@ -112,4 +112,6 @@
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
     <string name="game_live">Nu live</string>
+    <string name="night_button_night">Nachtmodus</string>
+    <string name="night_button_day">Dagmodus</string>
 </resources>

@@ -94,4 +94,6 @@
     </plurals>
     <string name="greeting_with_name">%1$s，%2$s</string>
     <string name="game_live">直播中</string>
+    <string name="night_button_night">夜間模式</string>
+    <string name="night_button_day">日間模式</string>
 </resources>

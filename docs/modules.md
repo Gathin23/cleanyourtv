@@ -144,3 +144,37 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
 
 The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.
+
+## Night mode on Home (night_mode)
+
+A night-mode app (one that dims or warms the picture at night) can let Home follow its night: a moon button in the
+top bar by day and a sun at night that switches it, holding OK on the button to open the app, and with
+`wallpaper_moods` the night pictures while the app says it is night rather than by the clock. The launcher only
+reads and starts the app's own switch; it changes no setting itself. The owner opts in by naming the app's package
+in the `night_mode` key (`config.xml` or a theme); there is no card prompt for it.
+
+1. Name a read-only content provider in a `meta-data` on your `<application>`, and give the activity that switches
+   night mode an intent filter for `com.gathin.tvhome.action.TOGGLE_NIGHT`:
+
+   ```xml
+   <meta-data android:name="com.gathin.tvhome.night" android:value="com.example.night" />
+   <provider android:name=".NightProvider" android:authorities="com.example.night" android:exported="true" />
+   <activity android:name=".ToggleActivity" android:exported="true">
+       <intent-filter>
+           <action android:name="com.gathin.tvhome.action.TOGGLE_NIGHT" />
+           <category android:name="android.intent.category.DEFAULT" />
+       </intent-filter>
+   </activity>
+   ```
+
+   The provider must belong to the package the owner named, and the activity must be in it; otherwise there is no
+   button.
+2. Answer a query on `content://<authority>/night` with one row and a `night` column: 1 while it is night for your
+   app (whatever decides it: a schedule, a manual switch), 0 otherwise. An empty cursor leaves night to the clock.
+   Keep it to that: the provider is exported without a permission.
+3. The toggle activity is started with a boolean extra `bar` set to false (switch at once, with nothing on screen)
+   and a string extra `night` of `flip`: the other side for now, day at night and night by day. An app with a
+   schedule should keep it, so the schedule's next start or end takes over again.
+   The launcher reads the row again shortly after, when Home comes back and once a minute while Home is on screen.
+
+The [Brightness](../addons/brightness/README.md) add-on implements this.

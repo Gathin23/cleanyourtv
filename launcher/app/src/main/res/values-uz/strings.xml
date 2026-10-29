@@ -111,4 +111,6 @@
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
     <string name="game_live">Hozir jonli</string>
+    <string name="night_button_night">Tungi rejim</string>
+    <string name="night_button_day">Kunduzgi rejim</string>
 </resources>

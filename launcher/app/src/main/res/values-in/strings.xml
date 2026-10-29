@@ -110,4 +110,6 @@
     <string name="race_finished">Bendera finis</string>
     <string name="last_opened">Terakhir dibuka %1$s</string>
     <string name="game_live">Langsung sekarang</string>
+    <string name="night_button_night">Mode malam</string>
+    <string name="night_button_day">Mode siang</string>
 </resources>

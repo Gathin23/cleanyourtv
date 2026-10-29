@@ -73,4 +73,13 @@ public class WallpaperMoodTest {
         assertEquals(all, WallpaperMood.select(all, groups, WallpaperMood.EVENING));   // no group at all
         assertEquals(all, WallpaperMood.select(all, Collections.emptyMap(), WallpaperMood.NIGHT));
     }
+
+    @Test
+    public void nightModeAddOnDecidesNight() {
+        assertEquals(WallpaperMood.MORNING, WallpaperMood.withNight(WallpaperMood.MORNING, null));
+        assertEquals(WallpaperMood.NIGHT, WallpaperMood.withNight(WallpaperMood.NIGHT, null));
+        assertEquals(WallpaperMood.NIGHT, WallpaperMood.withNight(WallpaperMood.EVENING, true));
+        assertEquals(WallpaperMood.MORNING, WallpaperMood.withNight(WallpaperMood.NIGHT, false));
+        assertEquals(WallpaperMood.EVENING, WallpaperMood.withNight(WallpaperMood.EVENING, false));
+    }
 }

@@ -151,4 +151,6 @@
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Востаннє відкрито %1$s</string>
     <string name="game_live">Наживо зараз</string>
+    <string name="night_button_night">Нічний режим</string>
+    <string name="night_button_day">Денний режим</string>
 </resources>

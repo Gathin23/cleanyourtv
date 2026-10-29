@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Night mode button (night_button): a crescent moon, 22dp like the other top-bar icons. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="22dp" android:height="22dp"
+    android:viewportWidth="24" android:viewportHeight="24" android:tint="#FFFFFFFF">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M14.5,3A9,9 0 1 0 21,15.5A7.2,7.2 0 0 1 14.5,3z"/>
+</vector>

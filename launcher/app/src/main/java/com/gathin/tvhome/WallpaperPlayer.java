@@ -156,7 +156,15 @@ final class WallpaperPlayer {
             sunDay = now.toLocalDate();
             sun = WallpaperMood.sun(sunDay, latitude, longitude, ZoneId.systemDefault());
         }
-        return WallpaperMood.select(files, moods, WallpaperMood.timeOfDay(now.getHour() * 60 + now.getMinute(), sun[0], sun[1]));
+        String mood = WallpaperMood.timeOfDay(now.getHour() * 60 + now.getMinute(), sun[0], sun[1]);
+        return WallpaperMood.select(files, moods, WallpaperMood.withNight(mood, night));
+    }
+
+    /** night_mode: the add-on's night (null: no answer, the clock decides), for the next picture. */
+    private volatile Boolean night;
+
+    void setNight(Boolean night) {
+        this.night = night;
     }
 
     void close() {
