@@ -137,6 +137,22 @@ final class Forecast {
     }
 
     /**
+     * Only the weather now at a place, for Home's line ({@link NowProvider}): one small request, no days and no
+     * air quality.
+     */
+    static Report now(double latitude, double longitude) throws IOException, JSONException {
+        String where = String.format(Locale.ROOT, "latitude=%.4f&longitude=%.4f", latitude, longitude);
+        JSONObject reply = get("https://api.open-meteo.com/v1/forecast?" + where + "&models=icon_seamless"
+                + "&current=temperature_2m,relative_humidity_2m,weather_code,is_day&timezone=auto");
+        JSONObject current = reply.getJSONObject("current");
+        double temp = current.getDouble("temperature_2m");
+        double humidity = current.getDouble("relative_humidity_2m");
+        int code = snowIfCold(current.getInt("weather_code"), temp, humidity);
+        return new Report(temp, temp, code, current.getInt("is_day") == 1, new ArrayList<>(), -1,
+                (int) Math.round(humidity), 0);
+    }
+
+    /**
      * The models type precipitation by the air temperature, and around freezing they call rain what reaches the
      * ground as snow (ICON and GFS: "light rain" at 1 °C in a Ulaanbaatar blizzard). The wet-bulb temperature,
      * which counts how dry the air is, decides better: at 1 °C or below, rain and drizzle become snow of the same

@@ -15,7 +15,8 @@ sky-blue glow; on any other Android TV home it is an ordinary app.
 - **Snow, not rain, near freezing.** The models type precipitation by the air temperature and call snow
   "light rain" at 1 °C (ICON and GFS did, in a Ulaanbaatar blizzard). The app decides by the wet-bulb
   temperature instead, which counts how dry the air is: at 1 °C or below, rain and drizzle are shown as snow.
-- It reads Open-Meteo only while the page is on screen, every 30 minutes, or 5 minutes after a failure.
+- It reads Open-Meteo only while the page is on screen, every 30 minutes, or 5 minutes after a failure, and
+  when Home's weather line asks (below).
 - Degrees Celsius by default (Fahrenheit is an option below); English or French words, with the TV's language; day names follow the TV's language.
 
 ## Options
@@ -32,6 +33,16 @@ Set in `app/src/main/res/values/options.xml` before building. With the defaults 
 
 ![A week, with humidity and wind](https://raw.githubusercontent.com/majnioui/cleanyourtv-contrib/pr-assets/addon-weather-week/weather-options.png)
 
+## The weather now on Home
+
+With the launcher's `weather_now` key set to `io.github.sumyabazar1.weather` (`config.xml` or a theme, see
+[`docs/switches.md`](../../docs/switches.md)), Home shows the weather now under the clock: a sky symbol, the
+temperature and the city, e.g. "☁  14°  Vigo". The launcher has no network access: this app keeps its last
+reading in a small read-only provider (`docs/modules.md`), and when Home asks for it and the reading is older than
+30 minutes, it reads the weather now once more (one small request, no days and no air quality) and tells Home. It
+takes the stats line's place, so it shows only without `show_stats`. The city is this app's: after **Change city**
+the old reading is dropped and Home's line follows the new city within seconds.
+
 ## Permissions
 
 | Permission | Why |
@@ -40,7 +51,9 @@ Set in `app/src/main/res/values/options.xml` before building. With the defaults 
 
 That is all. What is sent: the city name you type in the search, then that place's latitude and longitude. No
 account, no telemetry, no ads, no background service, no location permission. The chosen city stays in the
-app's own storage (backups are off).
+app's own storage (backups are off). The provider for Home's line is exported without a permission, so it holds
+only what Home shows: the city's name, the temperature, the sky and the time of the reading, never the
+coordinates.
 
 ## Build and install
 
@@ -64,6 +77,9 @@ Hisense SmartTV 4K FFM (lushan, MediaTek MT9676), Google TV 12 / Android 12: cit
 the weather page, the card prompt, and the card shown in the launcher's dock.
 
 The options: Xiaomi TV (MiTV-MOOR2), Google TV 11, with `forecast_days` 7, `show_humidity` and `show_wind` on.
+
+Home's line (`weather_now`): Panasonic 4K Google TV (Vestel, MediaTek), Android 14, 29 Oct 2026: the line under
+the clock after Home, from a first reading made with the page never opened.
 
 ## Maintainer
 

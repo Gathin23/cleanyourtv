@@ -15,6 +15,13 @@
         android:supportsRtl="false"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
 
+        <!-- Clean Your TV's weather_now key (docs/modules.md): the weather now, one row, read-only. -->
+        <meta-data android:name="com.gathin.tvhome.weather" android:value="io.github.sumyabazar1.weather.now" />
+        <provider
+            android:name=".NowProvider"
+            android:authorities="io.github.sumyabazar1.weather.now"
+            android:exported="true" />
+
         <activity
             android:name=".WeatherActivity"
             android:exported="true"
