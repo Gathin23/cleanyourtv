@@ -37,19 +37,14 @@ El [prompt de instrucciones](PROMPT.md) guía al asistente de código para inspe
 
 Necesitas un ordenador conectado a la misma red Wi-Fi que el televisor y un asistente de programación (Claude Code, Gemini CLI, Codex, Cursor o Copilot) con permisos de ejecución en terminal.
 
-1. **En el televisor:**
-   * Abre Ajustes > Sistema > Información.
-   * Pulsa repetidamente **Compilación del SO de Android TV** 7 veces hasta ver el mensaje "¡Ya eres desarrollador!".
-   * Entra en Opciones de desarrollador y activa **Depuración por USB** (y Depuración inalámbrica si está disponible).
-   * Consulta la dirección IP del televisor en Ajustes > Red e Internet.
-2. **En tu ordenador:**
-   * Clona este repositorio:
-     ```bash
-     git clone https://github.com/Gathin23/cleanyourtv.git
-     cd cleanyourtv
-     ```
-   * Copia todo el contenido de [`PROMPT.md`](PROMPT.md) y pégalo como primer mensaje a tu asistente de código indicando la dirección IP de tu televisor.
-   * El asistente se conectará mediante ADB, leerá el modelo, te preguntará qué servicios de streaming utilizas y limpiará el sistema de forma segura.
+| Paso | Qué hacer |
+|---|---|
+| 1. En el televisor | Ve a **Ajustes → Sistema (o Preferencias del dispositivo) → Información**, pulsa OK siete veces sobre **Compilación**, vuelve atrás, abre **Opciones de desarrollador** y activa la **Depuración por USB**. Si también hay una opción para depuración inalámbrica o por red, actívala. |
+| 2. En tu ordenador | Clona este repositorio y abre esa carpeta en tu asistente (`git clone https://github.com/Gathin23/cleanyourtv`), luego pega el contenido de [`PROMPT.md`](PROMPT.md) e indica el modelo de tu televisor. |
+| 3. Sigue las instrucciones | Pulsa **Permitir** cuando el televisor solicite autorizar la depuración, luego responde qué aplicaciones utilizas, cuáles deseas en el dock y si prefieres mantener el asistente de voz, Chromecast y actualizaciones del sistema. |
+| 4. Verificación | Sigue el procedimiento de copia de seguridad, limpieza e instalación, y luego prueba a abrir aplicaciones, los botones del mando, el cambio de entradas HDMI y la restauración. |
+
+Por qué clonar: el asistente reutiliza `tools/disable.sh` y `launcher/build-and-install.sh` de este repositorio en lugar de escribir los suyos propios, y ahí es donde residen la copia de seguridad, la protección de la pantalla de inicio y el registro de restauración.
 
 ---
 
@@ -67,7 +62,7 @@ El launcher es deliberadamente ligero (ocupa ~532 KB), no contiene publicidad y 
 ## Qué modelos están soportados
 
 Existen más de 340 modelos testeados por la comunidad de marcas como:
-* Sony Bravia, Philips, TCL, Hisense, Xiaomi / Redmi, Chromecast con Google TV, Fire TV, Nvidia Shield, Nokia, Motorola, Noblex, BGH, Challenger, Kalley, TD Systems, Hyundai, entre otras.
+* Sony Bravia, Philips, TCL, Hisense, Xiaomi / Redmi, Chromecast con Google TV, Fire TV, Nvidia Shield, Nokia, Motorola, Noblex, BGH, Challenger, Kalley, entre otras.
 
 La lista detallada de modelos con sus notas de configuración se encuentra en [`examples/README.md`](examples/README.md).
 
