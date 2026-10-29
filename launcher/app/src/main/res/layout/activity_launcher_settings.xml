@@ -22,9 +22,19 @@
             android:textSize="34sp" />
 
         <TextView
+            android:id="@+id/wallpaperChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp" />
+
+        <TextView
+            android:id="@+id/voiceGreetingChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="16dp" />
+
+        <TextView
             android:id="@+id/reorderChoice"
             style="@style/SettingsRow"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="16dp"
             android:text="@string/reorder"
             android:visibility="gone" />
 
@@ -87,11 +97,6 @@
             <TextView android:id="@+id/dock50" style="@style/SettingsColumnChoice" android:text="50%" />
             <TextView android:id="@+id/dock30" style="@style/SettingsColumnChoice" android:text="30%" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/wallpaperChoice"
-            style="@style/SettingsRow"
-            android:layout_marginTop="28dp" />
 
         <TextView
             android:id="@+id/animationsChoice"

@@ -47,6 +47,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -404,6 +405,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             updateClockVisibility();
+        }
+    };
+    private TextToSpeech tts;
+    private boolean ttsReady = false;
+    private boolean voiceGreetingDue = true;
+    private long lastScreenOffMs = 0;
+    private long lastPausedMs = 0;
+    private long lastGreetingSpokenMs = 0;
+    private int ttsRetryCount = 0;
+    private final IntentFilter screenFilter = new IntentFilter();
+    private final BroadcastReceiver screenReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null) return;
+            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                lastScreenOffMs = SystemClock.elapsedRealtime();
+            } else if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+                long duration = SystemClock.elapsedRealtime() - lastScreenOffMs;
+                if (lastScreenOffMs == 0 || duration >= 8_000L) {
+                    voiceGreetingDue = true;
+                }
+            }
         }
     };
     private final Runnable minuteTick = new Runnable() {
@@ -779,6 +802,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (launcherSettingsButton) {
             ((TextView) btnSettings).setText(R.string.launcher_settings);
             ((TextView) btnSettings).setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_home_settings_pill, 0, 0, 0);
+            makeIconOnly((TextView) btnSettings);
         }
         btnSettings.setOnClickListener(v -> {
             if (launcherSettingsButton) startActivityForResult(
@@ -897,6 +921,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             registerReceiver(packageReceiver, packageFilter);
         }
+
+        screenFilter.addAction(Intent.ACTION_SCREEN_ON);
+        screenFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(screenReceiver, screenFilter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(screenReceiver, screenFilter);
+        }
+        initVoiceGreeting();
 
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -1041,6 +1074,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (openLiveTvAfterBoot()) return;
         updateGreeting();
+        long inactive = lastPausedMs > 0 ? SystemClock.elapsedRealtime() - lastPausedMs : 0;
+        if (inactive >= 20_000L) {
+            voiceGreetingDue = true;
+        }
+        if (voiceGreetingDue) {
+            maybeSpeakGreeting();
+        }
         updatePanel();
         // The network and Inputs pills keep their state while Home is in the background, and callbacks update them
         // when the network or the inputs change, so this refresh only catches anything missed. Its binder calls
@@ -1223,6 +1263,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onPause() {
         super.onPause();
+        lastPausedMs = SystemClock.elapsedRealtime();
         resumed = false;
         root.removeCallbacks(showIdleClock);
         endReorder();   // Home or another app while reordering keeps the order so far
@@ -1292,6 +1333,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
+        try {
+            unregisterReceiver(screenReceiver);
+        } catch (Exception ignored) {}
+        shutdownTts();
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -1299,6 +1344,100 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cm != null) {
             cm.unregisterNetworkCallback(networkCallback);
             cm.unregisterNetworkCallback(vpnCallback);
+        }
+    }
+
+    private void initVoiceGreeting() {
+        if (!isVoiceGreetingEnabled()) return;
+        if (tts != null) return;
+        try {
+            tts = new TextToSpeech(getApplicationContext(), status -> {
+                if (status == TextToSpeech.SUCCESS) {
+                    ttsReady = true;
+                    try {
+                        tts.setLanguage(java.util.Locale.getDefault());
+                        tts.setSpeechRate(0.92f);
+                        tts.setPitch(1.0f);
+                    } catch (Exception e) {
+                        android.util.Log.w("TvHome", "TTS setup: " + e.getMessage());
+                    }
+                    if (voiceGreetingDue && resumed) {
+                        maybeSpeakGreeting();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            android.util.Log.w("TvHome", "TTS init: " + e.getMessage());
+        }
+    }
+
+    private boolean isVoiceGreetingEnabled() {
+        boolean def = getResources().getBoolean(R.bool.voice_greeting);
+        return getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE).getBoolean("voice_greeting", def);
+    }
+
+    private void maybeSpeakGreeting() {
+        if (!isVoiceGreetingEnabled()) {
+            voiceGreetingDue = false;
+            return;
+        }
+        long now = SystemClock.elapsedRealtime();
+        if (lastGreetingSpokenMs > 0 && now - lastGreetingSpokenMs < 40_000L) {
+            voiceGreetingDue = false;
+            return;
+        }
+        voiceGreetingDue = false;
+        lastGreetingSpokenMs = now;
+        handler.postDelayed(this::speakGreetingNow, 1200);
+    }
+
+    private void speakGreetingNow() {
+        if (isFinishing() || isDestroyed() || !resumed) return;
+        if (!isVoiceGreetingEnabled()) return;
+        if (tts == null) {
+            initVoiceGreeting();
+            return;
+        }
+        if (!ttsReady) {
+            if (ttsRetryCount++ < 10) {
+                handler.postDelayed(this::speakGreetingNow, 600);
+            }
+            return;
+        }
+        ttsRetryCount = 0;
+        String text = getVoiceGreetingText();
+        if (text != null && !text.trim().isEmpty()) {
+            Bundle params = new Bundle();
+            params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f);
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "greeting_" + SystemClock.elapsedRealtime());
+        }
+    }
+
+    private String getVoiceGreetingText() {
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        String timeGreeting;
+        if (hour < 12) {
+            timeGreeting = getString(R.string.good_morning);
+        } else if (hour < 17) {
+            timeGreeting = getString(R.string.good_afternoon);
+        } else {
+            timeGreeting = getString(R.string.good_evening);
+        }
+        if (greetingName != null && !greetingName.trim().isEmpty()) {
+            String cleanName = greetingName.replace("&amp;", "and").replace("&", "and").trim();
+            return timeGreeting + ", " + cleanName + "! Welcome home.";
+        }
+        return timeGreeting + "! Welcome home.";
+    }
+
+    private void shutdownTts() {
+        if (tts != null) {
+            try {
+                tts.stop();
+                tts.shutdown();
+            } catch (Exception ignored) {}
+            tts = null;
+            ttsReady = false;
         }
     }
 
@@ -1312,8 +1451,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (int code : settingsKeycodes) {
             if (event.getKeyCode() != code) continue;
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : systemIntent(Settings.ACTION_SETTINGS));
+                if (launcherSettingsButton) {
+                    startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
+                } else {
+                    open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
+                            : systemIntent(Settings.ACTION_SETTINGS));
+                }
             }
             return true;
         }

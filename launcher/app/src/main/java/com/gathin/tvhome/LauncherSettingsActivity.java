@@ -33,6 +33,7 @@ public final class LauncherSettingsActivity extends Activity {
     private static final int[] DOCK_OPACITIES = {100, 70, 50, 30};
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
     private TextView wallpaperChoice;
+    private TextView voiceGreetingChoice;
     private TextView animationsChoice;
     private TextView advancedChoice;
     private TextView followThemeChoice;
@@ -42,6 +43,7 @@ public final class LauncherSettingsActivity extends Activity {
     private int dockOpacity;
     private boolean animations;
     private boolean advancedEffects;
+    private boolean voiceGreeting;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -108,6 +110,14 @@ public final class LauncherSettingsActivity extends Activity {
         }
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
+        voiceGreeting = choices.getBoolean("voice_greeting", getResources().getBoolean(R.bool.voice_greeting));
+        voiceGreetingChoice = findViewById(R.id.voiceGreetingChoice);
+        voiceGreetingChoice.setOnClickListener(v -> {
+            voiceGreeting = !voiceGreeting;
+            choices.edit().putBoolean("voice_greeting", voiceGreeting).apply();
+            changed();
+            refresh();
+        });
         animationsChoice = findViewById(R.id.animationsChoice);
         animationsChoice.setOnClickListener(v -> {
             animations = !animations;
@@ -140,13 +150,14 @@ public final class LauncherSettingsActivity extends Activity {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).commit();
+                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).remove("voice_greeting").commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
             dockOpacity = current.dockOpacity;
             animations = current.animations;
             advancedEffects = current.animations && current.advancedEffects;
+            voiceGreeting = getResources().getBoolean(R.bool.voice_greeting);
             changed();
             refresh();
         });
@@ -167,6 +178,16 @@ public final class LauncherSettingsActivity extends Activity {
         for (int i = views.length - 1; i >= 0; i--) row.addView(views[i]);
     }
 
+    private static String formatWallpaperName(String name) {
+        if (name == null) return "";
+        if (name.contains("Reflection")) return "Beach & Ocean Reflection";
+        if (name.contains("Sunset")) return "Mountain Lake Sunset";
+        if (name.contains("Golden")) return "macOS Golden Gate Bridge";
+        if (name.contains("Sonoma")) return "macOS Sonoma Abstract";
+        if (name.equals(Config.WALLPAPER_NAME)) return "macOS Theme Default";
+        return name.replaceFirst("^\\d+-", "").replaceFirst("\\.[a-zA-Z0-9]+$", "").replace('-', ' ');
+    }
+
     private void showWallpaperPicker() {
         File dir = Config.dir(this);
         List<File> images = new java.util.ArrayList<>(WallpaperRotation.images(
@@ -175,7 +196,7 @@ public final class LauncherSettingsActivity extends Activity {
         File single = dir == null ? null : new File(dir, Config.WALLPAPER_NAME);
         if (single != null && single.isFile()) images.add(0, single);
         String[] labels = new String[images.size() + 1];
-        for (int i = 0; i < images.size(); i++) labels[i] = images.get(i).getName();
+        for (int i = 0; i < images.size(); i++) labels[i] = formatWallpaperName(images.get(i).getName());
         labels[images.size()] = getString(R.string.wallpaper_none);
         String current = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         int checked = "none".equals(current) ? images.size()
@@ -295,8 +316,10 @@ public final class LauncherSettingsActivity extends Activity {
         String wallpaperCurrent = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         wallpaperChoice.setText(getString(R.string.wallpaper_state,
                 "none".equals(wallpaperCurrent) ? getString(R.string.wallpaper_none)
-                        : wallpaperCurrent != null ? wallpaperCurrent
+                        : wallpaperCurrent != null ? formatWallpaperName(wallpaperCurrent)
                         : getString(R.string.wallpaper_theme_default)));
+        voiceGreetingChoice.setText(getString(R.string.voice_greeting_state,
+                getString(voiceGreeting ? R.string.on : R.string.off)));
         openOnStartChoice.setText(getString(R.string.open_on_start_state, openOnStartLabel()));
         followThemeChoice.setSelected(!hasOnTvChoices());
     }
@@ -305,7 +328,7 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
-                || choices.contains(OpenOnStart.KEY);
+                || choices.contains(OpenOnStart.KEY) || choices.contains("voice_greeting");
     }
 
     private void open(Intent intent) {
