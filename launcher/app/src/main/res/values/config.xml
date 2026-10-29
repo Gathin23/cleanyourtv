@@ -258,6 +258,12 @@
     <string name="greeting_name" translatable="false"></string>
     <!-- The greeting above the clock ("Good evening"). false hides it. Can also be set with "show_greeting" in a theme. -->
     <bool name="show_greeting">true</bool>
+    <!-- A large title on the left of the header ("Start") in place of the clock and date; the clock moves to the top
+         right, as with clock_right. Empty by default; a theme can set "home_title". -->
+    <string name="home_title" translatable="false"></string>
+    <!-- The time at the top right, beside the buttons, without the date. Off by default; a theme can set
+         "clock_right": true. -->
+    <bool name="clock_right">false</bool>
     <!-- The date and the line between the clock and the date in the clock's full white instead of dimmed. Can also be
          set with "header_white" in a theme. -->
     <bool name="header_white">false</bool>
@@ -404,6 +410,9 @@
     <!-- With uniform_tiles, the app's name inside the card at its bottom left, always shown, and no name under the
          tile. Off by default; a theme can set "tile_label_inside": true. -->
     <bool name="tile_label_inside">false</bool>
+    <!-- A small heading above each row of tiles, in order, the first over the dock row. Rows past the list get
+         none. Empty by default; a theme can set "row_titles". Needs single_row off. -->
+    <string-array name="row_titles"></string-array>
     <!-- Optional direct Home picker in the app library: OK toggles the checkmark, checked apps first.
          Off by default; a theme can set "app_library_selection": true (also needs app_library). -->
     <bool name="app_library_selection">false</bool>

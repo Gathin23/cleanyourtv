@@ -431,6 +431,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
         tileCornerDp = cfg.tileCornerRadius;
+        rowTitleRoom = cfg.rowTitles.isEmpty() ? 0 : Math.round(AppAdapter.ROW_TITLE_DP * density);
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         appLibrarySelection = cfg.appLibrarySelection;
         libraryOkOpens = cfg.libraryOkOpens;
@@ -550,6 +551,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
+        if (cfg.clockRight) moveClockRight();
+        if (!cfg.homeTitle.isEmpty()) {
+            TextView homeTitle = findViewById(R.id.homeTitle);
+            homeTitle.setText(cfg.homeTitle);
+            homeTitle.setVisibility(View.VISIBLE);
+        }
         if (shamsi) {
             shamsiDate.setVisibility(View.VISIBLE);
             TextView date = findViewById(R.id.date);
@@ -606,6 +613,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (dockRow && getPosition(child) < COLUMNS) return false;
                 int top = child.getTop() + rect.top;
                 int bottom = top + rect.height();
+                // row_titles: the row's heading above it comes into view with it.
+                top -= rowTitleRoom;
                 // A row already fully on screen stays put, even inside the bottom padding (the last row
                 // rows_below_dock leaves visible ends there; nudging it up was the bug). A row that has to scroll
                 // in still stops at the padding line, clear of the screen edge, as before.
@@ -639,6 +648,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
                 singleRow, cfg.dockBandAll, cfg.tileCornerRadius));
+        if (!cfg.rowTitles.isEmpty()) grid.addItemDecoration(new RowTitles(this, cfg.rowTitles, COLUMNS, density));
         if (cfg.fadeRows) TopFade.attach(grid, 48 * density);
         // Reduced motion: the tiles are simply there, with no entrance (reloadApps skips it there too).
         if (animations && !reducedMotion) {
@@ -659,7 +669,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int h = b - t;
             // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
             int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
-            float rowExtraDp = AppAdapter.rowExtraDp(cfg.uniformTiles && cfg.tileLabelInside, cfg.dockRow);
+            float rowExtraDp = AppAdapter.rowExtraDp(!cfg.rowTitles.isEmpty(), cfg.uniformTiles && cfg.tileLabelInside, cfg.dockRow);
             int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow,
                     cfg.squareTiles, rowExtraDp, density);
             int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW, cfg.squareTiles), density)
@@ -1767,7 +1777,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (dockRow && (singleRow || position < COLUMNS)) {
             // Dock: park it at the bottom of the screen and show the top shelf for this app. In a single row
             // every tile is in the dock's row, which never scrolls vertically.
-            int decoratedTop = item.getTop() - (int) (6 * density);
+            // DockDecoration's 6dp, and row_titles' heading room above the row.
+            int decoratedTop = item.getTop() - (int) (6 * density) - rowTitleRoom;
             int dy = decoratedTop - grid.getPaddingTop();
             // A 1px mismatch used to start a scroll on every dock move. Only scroll when the row is
             // actually off; reduced motion does it in one jump so it does not fight the highlight.
@@ -2379,6 +2390,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /**
+     * clock_right (and home_title): the time, with its AM/PM, moves to the top right in front of the buttons, smaller,
+     * and the date with the line before it goes. The clock's row keeps its height for the title.
+     */
+    private void moveClockRight() {
+        TextView clock = findViewById(R.id.clock), ampm = findViewById(R.id.ampm);
+        ViewGroup clockRow = (ViewGroup) clock.getParent();
+        clockRow.setMinimumHeight(Math.round(60 * density));
+        clockRow.removeView(clock);
+        clockRow.removeView(ampm);
+        findViewById(R.id.clockDivider).setVisibility(View.GONE);
+        ((View) findViewById(R.id.date).getParent()).setVisibility(View.GONE);
+        clock.setTextSize(30f);
+        LinearLayout topButtons = findViewById(R.id.topButtons);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER_VERTICAL;
+        topButtons.addView(clock, 0, lp);
+        LinearLayout.LayoutParams ampmLp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ampmLp.gravity = Gravity.CENTER_VERTICAL;
+        ampmLp.setMarginStart(Math.round(5 * density));
+        ampmLp.setMarginEnd(Math.round(20 * density));
+        topButtons.addView(ampm, 1, ampmLp);
+    }
+
+    /**
      * date_below_clock: the date column moves to its own line under the clock, in the vertical LinearLayout that holds
      * the clock's row, and the line between them goes. In Hebrew (rtl_menu_bar) the date and the clock's row sit right.
      */
@@ -2416,7 +2453,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ViewGroup bar = findViewById(R.id.topButtons);
         for (int i = 0; i < bar.getChildCount(); i++) {
             View button = bar.getChildAt(i);
-            if (button != btnInputs && button.getVisibility() == View.VISIBLE) return button;
+            // clock_right puts the clock in the bar too; it takes no focus.
+            if (button != btnInputs && button.isFocusable() && button.getVisibility() == View.VISIBLE) return button;
         }
         return findViewById(R.id.btnSettings);
     }
@@ -2880,6 +2918,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean iconOnlyButtons;
     /** tile_corner_radius, for the glass highlight's corners. */
     private int tileCornerDp = 16;
+    /** row_titles: a row's heading room, kept in view above it when the row scrolls in. */
+    private int rowTitleRoom;
     /** config.xml top_menu: Inputs, Wi-Fi and Settings folded into one gear. */
     private boolean topMenu;
     /** show_inputs_pill as configured: top_menu clears showInputsPill, so its Inputs row reads this. */

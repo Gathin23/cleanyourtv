@@ -65,3 +65,6 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `tile_shape` | <img src="switches/tile_shape.jpg" width="320" alt="tile_shape square on a TV"> |
 | `flat_tiles` | <img src="switches/tile_shape.jpg" width="320" alt="flat_tiles on a TV"> |
 | `tile_label_inside` | <img src="switches/tile_shape.jpg" width="320" alt="tile_label_inside on a TV"> |
+| `row_titles` | <img src="switches/home_title.jpg" width="320" alt="row_titles on a TV"> |
+| `home_title` | <img src="switches/home_title.jpg" width="320" alt="home_title Start on a TV"> |
+| `clock_right` | <img src="switches/home_title.jpg" width="320" alt="clock_right on a TV"> |

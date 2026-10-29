@@ -274,6 +274,12 @@ final class Config {
     final boolean flatTiles;
     /** uniform_tiles: the name inside the card, always shown, none under it (config.xml, tile_label_inside). */
     final boolean tileLabelInside;
+    /** A heading above each row, in order (config.xml, row_titles); empty for none. */
+    final List<String> rowTitles;
+    /** A large title in the clock's place, the clock moved right (config.xml, home_title); empty for none. */
+    final String homeTitle;
+    /** The time at the top right without the date (config.xml, clock_right; home_title implies it). */
+    final boolean clockRight;
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
@@ -290,7 +296,7 @@ final class Config {
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
                    int openOnStartNetworkWait, boolean iconOnlyVpn, int tileCornerRadius, boolean squareTiles, boolean flatTiles,
-                   boolean tileLabelInside) {
+                   boolean tileLabelInside, List<String> rowTitles, String homeTitle, boolean clockRight) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -344,6 +350,9 @@ final class Config {
         this.squareTiles = squareTiles;
         this.flatTiles = flatTiles;
         this.tileLabelInside = tileLabelInside;
+        this.rowTitles = Collections.unmodifiableList(rowTitles);
+        this.homeTitle = homeTitle;
+        this.clockRight = clockRight || !homeTitle.isEmpty();
         this.libraryButton = libraryButton;
         this.showLibraryPill = showLibraryPill;
         this.wifiLabelWidth = wifiLabelWidth;
@@ -533,6 +542,9 @@ final class Config {
         String tileShape = res.getString(R.string.tile_shape);
         boolean flatTiles = res.getBoolean(R.bool.flat_tiles);
         boolean tileLabelInside = res.getBoolean(R.bool.tile_label_inside);
+        List<String> rowTitles = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.row_titles)));
+        String homeTitle = res.getString(R.string.home_title).trim();
+        boolean clockRight = res.getBoolean(R.bool.clock_right);
         boolean applied = false;
 
         File dir = dir(ctx);
@@ -647,6 +659,9 @@ final class Config {
             tileShape = string(json, "tile_shape", tileShape);
             flatTiles = bool(json, "flat_tiles", flatTiles);
             tileLabelInside = bool(json, "tile_label_inside", tileLabelInside);
+            rowTitles = stringList(json, "row_titles", rowTitles);
+            homeTitle = string(json, "home_title", homeTitle);
+            clockRight = bool(json, "clock_right", clockRight);
         }
         // A top-bar app is moved there, not copied: it leaves the grid.
         for (String pkg : topBarApps) if (!hidden.contains(pkg)) hidden.add(pkg);
@@ -710,7 +725,8 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn, Math.max(0, Math.min(24, tileCornerRadius)),
-                "square".equalsIgnoreCase(tileShape.trim()), flatTiles, tileLabelInside);
+                "square".equalsIgnoreCase(tileShape.trim()), flatTiles, tileLabelInside, singleRow ? Collections.emptyList() : rowTitles,
+                homeTitle, clockRight);
     }
 
     /**

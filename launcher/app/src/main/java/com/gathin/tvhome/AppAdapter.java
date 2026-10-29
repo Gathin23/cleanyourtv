@@ -122,10 +122,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return square ? tileWidthPx : Math.round(tileWidthPx * DESIGN_H_DP / DESIGN_W_DP);
     }
 
-    /** Room a row's item gains (dp): less the name tile_label_inside removes under it. */
-    static float rowExtraDp(boolean labelInside, boolean dockRow) {
-        return labelInside ? (dockRow ? -29f : -24f) : 0f;
+    /** Room a row's item gains (dp): row_titles' heading above it, less the name tile_label_inside removes under it. */
+    static float rowExtraDp(boolean rowTitles, boolean labelInside, boolean dockRow) {
+        return (rowTitles ? ROW_TITLE_DP : 0f) - (labelInside ? (dockRow ? 29f : 24f) : 0f);
     }
+
+    /** row_titles: the heading's room above each row. */
+    static final float ROW_TITLE_DP = 30;
 
     /** Height of one grid item: the tile, the name label under it and the item's own padding. */
     static int itemHeightPx(int tileHeightPx, float density) {
@@ -237,7 +240,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** tile_corner_radius, tile_shape square, flat_tiles and tile_label_inside (Config). */
     private final int cornerDp;
     private final boolean squareTiles, flatTiles, labelInside;
-    /** rowExtraDp for tile_label_inside. */
+    /** rowExtraDp for row_titles and tile_label_inside. */
     private final float rowExtraDp;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
@@ -273,7 +276,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.squareTiles = cfg.squareTiles;
         this.flatTiles = cfg.uniformTiles && cfg.flatTiles;
         this.labelInside = cfg.uniformTiles && cfg.tileLabelInside;
-        this.rowExtraDp = rowExtraDp(labelInside, cfg.dockRow);
+        this.rowExtraDp = rowExtraDp(!cfg.rowTitles.isEmpty(), labelInside, cfg.dockRow);
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);

@@ -204,6 +204,17 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:baselineAligned="true">
+                    <!-- home_title: a large title in the clock's place ("Start"). Gone unless a theme sets it. -->
+                    <TextView
+                        android:id="@+id/homeTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="52sp"
+                        android:fontFamily="@string/font_light"
+                        android:includeFontPadding="false"
+                        android:visibility="gone" />
 
                     <TextClock
                         android:id="@+id/clock"

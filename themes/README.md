@@ -84,6 +84,9 @@ A new key needs one there in the same pull request.
 | `tile_shape` | `banner` or `square` | `square` makes every tile as tall as it is wide instead of a 16:9 banner (`banner` by default); best with `uniform_tiles` |
 | `flat_tiles` | bool | With `uniform_tiles`, each card is one bright, flat colour taken from its icon instead of a deep gradient (`false` by default) |
 | `tile_label_inside` | bool | With `uniform_tiles`, the app's name sits inside the card at its bottom left and always shows; no name under the tile (`false` by default) |
+| `row_titles` | list of strings | A small heading above each row of tiles, in order, the first over the dock row (or the first row with `dock_row` false); rows past the list have none. Not with `single_row` |
+| `home_title` | string | A large title on the left of the header ("Start") in place of the clock and date; the clock moves to the top right, as with `clock_right` |
+| `clock_right` | bool | The time at the top right, beside the buttons, without the date (`false` by default) |
 | `icon_tiles` | list of package names, `config.xml` only | Apps drawn from their icon and name instead of their banner, for banners that crop badly; empty by default. Not read from a theme |
 | `app_library_selection` | bool | OK toggles Home checkmarks in the library; checked apps first, both groups alphabetized. Hiding keeps focus on the adjacent next app (previous at the end). Requires `app_library`; `false` preserves the standard open/long-press behavior |
 | `library_ok_opens` | bool | OK opens every app in the library, not only the ones on Home, for a library that holds the apps `hidden_apps` keeps off Home; holding OK still offers Add to Home, and cards drop their "Add to Home" line. Requires `app_library`; `app_library_selection` wins when both are on; `false` by default |
