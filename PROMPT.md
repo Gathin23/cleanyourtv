@@ -233,3 +233,4 @@ Verify
 
 Expect to answer three or four checklist questions (which apps you use, the dock size and app order,
 whether to keep the voice assistant, Chromecast and firmware updates). Everything is reversible.
+
