@@ -1,0 +1,26 @@
+<resources>
+<string name="app_name">Frames Counter</string>
+<string name="description">A TV-local helper measures the foreground Android app. No connected computer is needed after helper startup. Not HDMI FPS or display refresh rate.</string>
+<string name="permission">Allow display over other apps</string>
+<string name="start">Start overlay</string>
+<string name="stop">Stop overlay</string>
+<string name="unavailable">FPS unavailable</string>
+<string name="waiting">Waiting for computer…</string>
+<string name="active">Frames Counter is running</string>
+<string name="error">Overlay permission is required</string>
+<string name="sample">%1$.1f FPS</string>
+<string name="corner">Screen corner</string>
+<string name="top_left">Top left</string>
+<string name="top_right">Top right</string>
+<string name="bottom_left">Bottom left</string>
+<string name="bottom_right">Bottom right</string>
+<string name="enable_warning">Enable local app-FPS measurement? The helper automatically follows the foreground app and hides the reading on Home or when the layer cannot be measured. Stop disables sampling. After a reboot, start the helper again from a computer.</string>
+<string name="state_off">Setup needed</string>
+<string name="state_waiting">Connecting…</string>
+<string name="state_connected">Counter on</string>
+<string name="stopped">FPS counter stopped</string>
+<string name="state_ready">Ready · Off</string>
+<string name="helper_needed">One-time setup</string>
+<string name="helper_setup">One-time standalone setup: review the diagnostic and Usage Access permissions, then run setup-standalone.py --grant from your computer. The grants survive reboot; afterward, Enable works from the TV without a computer or Shizuku. Revoke them using setup-standalone.py --revoke. Some firmware may still require the optional helper.</string>
+<string name="standalone_warning">Enable the counter? The one-time diagnostic and Usage Access grants let it measure locally after reboot, without a computer or Shizuku. Readings stay hidden on Home or when unavailable. Stop pauses measurement. To revoke access, use the setup instructions.</string>
+</resources>

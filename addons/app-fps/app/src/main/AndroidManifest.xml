@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<!-- Optional one-time ADB development grant; no diagnostic access until the owner approves it. -->
+<uses-permission android:name="android.permission.DUMP" tools:ignore="ProtectedPermissions"/>
+<uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions"/>
+<queries><intent><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.HOME"/></intent></queries>
+<uses-feature android:name="android.software.leanback" android:required="true"/><uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/><uses-permission android:name="android.permission.FOREGROUND_SERVICE"/><uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+<application android:allowBackup="false" android:supportsRtl="true" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen" android:label="@string/app_name" android:icon="@drawable/icon" android:banner="@drawable/icon">
+<activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LEANBACK_LAUNCHER"/></intent-filter><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="com.gathin.tvhome.category.DOCK_CARD"/></intent-filter><meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card"/></activity>
+<service android:name=".FpsService" android:exported="false" android:foregroundServiceType="specialUse"><property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-started FPS overlay fed by a TV-local shell helper"/></service>
+<provider android:name=".StateProvider" android:authorities="com.lionlev.tv.fps.state" android:exported="true" android:permission="android.permission.DUMP"/>
+<receiver android:name=".SampleReceiver" android:exported="true" android:permission="android.permission.DUMP"/>
+</application></manifest>

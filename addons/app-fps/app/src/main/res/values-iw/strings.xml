@@ -1,0 +1,26 @@
+<resources>
+<string name="app_name">Frames Counter</string>
+<string name="description">רכיב עזר בטלוויזיה מודד את האפליקציה הפתוחה. לאחר הפעלתו אפשר לנתק את המחשב. לא קצב הפריימים של HDMI או קצב הרענון של המסך.</string>
+<string name="permission">הרשאה להצגה מעל אפליקציות אחרות</string>
+<string name="start">הפעלת המונה</string>
+<string name="stop">עצירת המונה</string>
+<string name="unavailable">נתוני FPS לא זמינים</string>
+<string name="waiting">בהמתנה למחשב…</string>
+<string name="active">המונה פעיל</string>
+<string name="error">נדרשת הרשאה להצגה מעל אפליקציות אחרות</string>
+<string name="sample">%1$.1f FPS</string>
+<string name="corner">פינת המסך</string>
+<string name="top_left">שמאל למעלה</string>
+<string name="top_right">ימין למעלה</string>
+<string name="bottom_left">שמאל למטה</string>
+<string name="bottom_right">ימין למטה</string>
+<string name="enable_warning">להפעיל מדידה מקומית של קצב הפריימים? רכיב העזר עוקב אחר האפליקציה הפתוחה ומסתיר את הנתונים במסך הבית או כשאין אפשרות למדוד. כיבוי המונה מפסיק את המדידה. לאחר הפעלה מחדש של הטלוויזיה יש להפעיל שוב את רכיב העזר מהמחשב.</string>
+<string name="state_off">נדרשת הגדרה</string>
+<string name="state_waiting">מתחבר…</string>
+<string name="state_connected">המונה פעיל</string>
+<string name="stopped">מונה הפריימים כובה</string>
+<string name="state_ready">מוכן · כבוי</string>
+<string name="helper_needed">הגדרה חד־פעמית</string>
+<string name="helper_setup">הגדרה חד־פעמית: לאחר אישור הרשאות האבחון והגישה לנתוני שימוש, יש להפעיל במחשב את setup-standalone.py --grant. ההרשאות נשמרות לאחר הפעלה מחדש, ואז אפשר להפעיל את המונה מהטלוויזיה ללא מחשב או Shizuku. לביטול ההרשאות יש להפעיל setup-standalone.py --revoke. בחלק מהטלוויזיות ייתכן שעדיין יידרש רכיב העזר האופציונלי.</string>
+<string name="standalone_warning">להפעיל את המונה? ההרשאות החד־פעמיות לאבחון ולגישה לנתוני שימוש מאפשרות מדידה מקומית גם לאחר הפעלה מחדש, ללא מחשב או Shizuku. הנתונים מוסתרים במסך הבית או כשאין אפשרות למדוד. כיבוי המונה מפסיק את המדידה. אפשר לבטל את ההרשאות לפי הוראות ההגדרה.</string>
+</resources>
