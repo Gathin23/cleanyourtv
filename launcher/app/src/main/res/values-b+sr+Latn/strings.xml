@@ -76,4 +76,12 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Uživo sada</string>
+    <string name="widget_state">Vidžet početnog ekrana: %1$s</string>
+    <string name="widget_speed_state">Stranica vidžeta: %1$s</string>
+    <string name="widget_seconds">na svakih %1$d s</string>
+    <string name="widget_title">Vidžet početnog ekrana: OK uključuje ili isključuje stranicu</string>
+    <string name="widget_first">Prikaži prvo…</string>
+    <string name="widget_none">ništa</string>
+    <string name="widget_adb">Upozorenje o otklanjanju grešaka</string>
+    <string name="widget_memory">Memorija i skladište</string>
 </resources>

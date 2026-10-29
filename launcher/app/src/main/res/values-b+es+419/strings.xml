@@ -145,4 +145,12 @@
     <string name="race_countdown_hours">%1$dh %2$dm</string>
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Última apertura: %1$s</string>
+    <string name="widget_state">Widget de inicio: %1$s</string>
+    <string name="widget_speed_state">Página del widget de inicio: %1$s</string>
+    <string name="widget_seconds">cada %1$d s</string>
+    <string name="widget_title">Widget de inicio: OK activa o desactiva una página</string>
+    <string name="widget_first">Mostrar primero…</string>
+    <string name="widget_none">nada</string>
+    <string name="widget_adb">Aviso de depuración</string>
+    <string name="widget_memory">Memoria y almacenamiento</string>
 </resources>

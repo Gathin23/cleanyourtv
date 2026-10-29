@@ -71,4 +71,12 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Jetzt live</string>
+    <string name="widget_state">Home-Widget: %1$s</string>
+    <string name="widget_speed_state">Home-Widget-Seite: %1$s</string>
+    <string name="widget_seconds">alle %1$d s</string>
+    <string name="widget_title">Home-Widget: OK schaltet eine Seite ein oder aus</string>
+    <string name="widget_first">Zuerst zeigen…</string>
+    <string name="widget_none">nichts</string>
+    <string name="widget_adb">Debugging-Warnung</string>
+    <string name="widget_memory">Arbeitsspeicher und Speicher</string>
 </resources>

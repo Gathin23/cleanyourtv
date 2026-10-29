@@ -154,4 +154,21 @@
     <string name="last_opened">Last opened %1$s</string>
     <!-- game_day: a game on now, in the race panel. -->
     <string name="game_live">Live now</string>
+    <!-- home_widgets: the Launcher settings rows, then the pages the launcher fills itself. -->
+    <string name="widget_state">Home widget: %1$s</string>
+    <string name="widget_speed_state">Home widget page: %1$s</string>
+    <string name="widget_seconds">every %1$d s</string>
+    <string name="widget_title">Home widget: OK turns a page on or off</string>
+    <string name="widget_first">Show first…</string>
+    <string name="widget_none">nothing</string>
+    <string name="widget_adb">Debugging warning</string>
+    <string name="widget_memory">Memory and storage</string>
+    <string name="widget_security">Security</string>
+    <string name="widget_debugging_on">Debugging is on</string>
+    <string name="widget_debugging_hint">Turn it off in Developer options</string>
+    <string name="widget_debugging_wireless">Paired computers can control the TV over Wi-Fi</string>
+    <string name="widget_memory_kicker">Memory</string>
+    <string name="widget_ram">RAM %1$s used</string>
+    <string name="widget_storage">Storage %1$s used</string>
+    <string name="widget_low">low</string>
 </resources>

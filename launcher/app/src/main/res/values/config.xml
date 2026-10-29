@@ -509,6 +509,17 @@
          halo (the rim with a lighter outer glow). Can also be set with "glass_style": "rim" in a theme's config.json. -->
     <string name="glass_style" translatable="false">glass</string>
 
+    <!-- A glass card under the top buttons that turns through pages (Launcher settings > Home widget picks them on
+         the TV): adb (only while debugging is on), memory (RAM and storage in use), and app:<package> for an add-on
+         whose module card says live="true" (docs/specs/widget-source.md). Hidden while no page has anything to show.
+         Can also be set with "home_widgets": true in a theme's config.json. -->
+    <bool name="home_widgets">false</bool>
+    <!-- The home widget's pages, in this order, until they are changed on the TV. -->
+    <string-array name="widget_sources" translatable="false">
+        <item>adb</item>
+        <item>memory</item>
+    </string-array>
+
     <!-- Tiles drawn from the app's icon and name instead of its banner (for banners that crop badly). -->
     <string-array name="icon_tiles" translatable="false">
     </string-array>

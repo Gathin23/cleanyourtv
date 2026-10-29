@@ -150,4 +150,12 @@
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Востаннє відкрито %1$s</string>
     <string name="game_live">Наживо зараз</string>
+    <string name="widget_state">Віджет головного екрана: %1$s</string>
+    <string name="widget_speed_state">Сторінка віджета: %1$s</string>
+    <string name="widget_seconds">кожні %1$d с</string>
+    <string name="widget_title">Віджет головного екрана: OK вмикає або вимикає сторінку</string>
+    <string name="widget_first">Показувати першою…</string>
+    <string name="widget_none">нічого</string>
+    <string name="widget_adb">Попередження про налагодження</string>
+    <string name="widget_memory">Пам’ять і сховище</string>
 </resources>

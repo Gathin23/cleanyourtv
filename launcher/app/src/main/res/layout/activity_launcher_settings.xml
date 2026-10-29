@@ -118,6 +118,18 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/widgetChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/widgetSpeedChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="18dp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/followThemeChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="18dp"

@@ -148,4 +148,20 @@
     <string name="race_countdown_days">%1$d ימ׳ %2$d שע׳</string>
     <string name="last_opened">פתיחה אחרונה: %1$s</string>
     <string name="game_live">בשידור חי עכשיו</string>
+    <string name="widget_state">ווידג׳ט הבית: %1$s</string>
+    <string name="widget_speed_state">דף ווידג׳ט הבית: %1$s</string>
+    <string name="widget_seconds">כל %1$d שניות</string>
+    <string name="widget_title">ווידג׳ט הבית: OK מפעיל או מכבה דף</string>
+    <string name="widget_first">הצג ראשון…</string>
+    <string name="widget_none">כלום</string>
+    <string name="widget_adb">אזהרת ניפוי באגים</string>
+    <string name="widget_memory">זיכרון ואחסון</string>
+    <string name="widget_security">אבטחה</string>
+    <string name="widget_debugging_on">ניפוי הבאגים מופעל</string>
+    <string name="widget_debugging_hint">כבו אותו באפשרויות למפתחים</string>
+    <string name="widget_debugging_wireless">מחשבים מותאמים יכולים לשלוט בטלוויזיה דרך Wi-Fi</string>
+    <string name="widget_memory_kicker">זיכרון</string>
+    <string name="widget_ram">RAM: %1$s בשימוש</string>
+    <string name="widget_storage">אחסון: %1$s בשימוש</string>
+    <string name="widget_low">נמוך</string>
 </resources>

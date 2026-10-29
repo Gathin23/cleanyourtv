@@ -111,4 +111,12 @@
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
     <string name="game_live">Direkte nå</string>
+    <string name="widget_state">Startwidget: %1$s</string>
+    <string name="widget_speed_state">Startwidget-side: %1$s</string>
+    <string name="widget_seconds">hvert %1$d s</string>
+    <string name="widget_title">Startwidget: OK slår en side på eller av</string>
+    <string name="widget_first">Vis først…</string>
+    <string name="widget_none">ingenting</string>
+    <string name="widget_adb">Advarsel om feilsøking</string>
+    <string name="widget_memory">Minne og lagring</string>
 </resources>

@@ -148,4 +148,12 @@
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
     <string name="game_live">Ao vivo agora</string>
+    <string name="widget_state">Widget da tela inicial: %1$s</string>
+    <string name="widget_speed_state">Página do widget: %1$s</string>
+    <string name="widget_seconds">a cada %1$d s</string>
+    <string name="widget_title">Widget da tela inicial: OK liga ou desliga uma página</string>
+    <string name="widget_first">Mostrar primeiro…</string>
+    <string name="widget_none">nada</string>
+    <string name="widget_adb">Aviso de depuração</string>
+    <string name="widget_memory">Memória e armazenamento</string>
 </resources>

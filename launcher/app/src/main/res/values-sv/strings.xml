@@ -121,4 +121,12 @@
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
+    <string name="widget_state">Startwidget: %1$s</string>
+    <string name="widget_speed_state">Startwidgetsida: %1$s</string>
+    <string name="widget_seconds">var %1$d s</string>
+    <string name="widget_title">Startwidget: OK slår på eller av en sida</string>
+    <string name="widget_first">Visa först…</string>
+    <string name="widget_none">inget</string>
+    <string name="widget_adb">Varning om felsökning</string>
+    <string name="widget_memory">Minne och lagring</string>
 </resources>

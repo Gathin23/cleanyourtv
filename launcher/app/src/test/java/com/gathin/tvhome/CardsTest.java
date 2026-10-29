@@ -161,6 +161,13 @@ public class CardsTest {
     }
 
     @Test
+    public void liveIsOnlyTheWordTrue() throws Exception {
+        assertTrue(Cards.parse(xml(doc().tag("card", attrs("spec", "1", "label", "News", "live", "true")).end())).live);
+        assertFalse(Cards.parse(xml(doc().tag("card", attrs("spec", "1", "label", "News", "live", "yes")).end())).live);
+        assertFalse(Cards.parse(xml(doc().tag("card", attrs("spec", "1", "label", "News")).end())).live);
+    }
+
+    @Test
     public void parsesTheCompiledForms() throws Exception {
         // aapt2 stores spec as an integer and accent as a colour; the parser hands back "1" and "#ffe8a33d".
         Cards.Declared d = Cards.parse(xml(doc().tag("card", attrs("spec", "1", "label", "Retro",

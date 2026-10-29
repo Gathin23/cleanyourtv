@@ -98,4 +98,12 @@
     </plurals>
     <string name="greeting_with_name">%1$s، %2$s</string>
     <string name="game_live">مباشر الآن</string>
+    <string name="widget_state">أداة الشاشة الرئيسية: %1$s</string>
+    <string name="widget_speed_state">صفحة أداة الشاشة الرئيسية: %1$s</string>
+    <string name="widget_seconds">كل %1$d ث</string>
+    <string name="widget_title">أداة الشاشة الرئيسية: OK يشغّل الصفحة أو يوقفها</string>
+    <string name="widget_first">اعرض أولاً…</string>
+    <string name="widget_none">لا شيء</string>
+    <string name="widget_adb">تحذير تصحيح الأخطاء</string>
+    <string name="widget_memory">الذاكرة والتخزين</string>
 </resources>

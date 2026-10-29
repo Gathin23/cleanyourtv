@@ -109,4 +109,12 @@
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
     <string name="game_live">En directe</string>
+    <string name="widget_state">Giny d\'inici: %1$s</string>
+    <string name="widget_speed_state">Pàgina del giny d\'inici: %1$s</string>
+    <string name="widget_seconds">cada %1$d s</string>
+    <string name="widget_title">Giny d\'inici: OK activa o desactiva una pàgina</string>
+    <string name="widget_first">Mostra primer…</string>
+    <string name="widget_none">res</string>
+    <string name="widget_adb">Avís de depuració</string>
+    <string name="widget_memory">Memòria i emmagatzematge</string>
 </resources>

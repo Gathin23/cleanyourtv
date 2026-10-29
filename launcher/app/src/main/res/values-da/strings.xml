@@ -97,4 +97,12 @@
     <string name="race_countdown_days">%1$dd %2$dt</string>
     <string name="last_opened">Sidst åbnet %1$s</string>
     <string name="game_live">Live nu</string>
+    <string name="widget_state">Startwidget: %1$s</string>
+    <string name="widget_speed_state">Startwidget-side: %1$s</string>
+    <string name="widget_seconds">hvert %1$d s</string>
+    <string name="widget_title">Startwidget: OK slår en side til eller fra</string>
+    <string name="widget_first">Vis først…</string>
+    <string name="widget_none">intet</string>
+    <string name="widget_adb">Advarsel om fejlretning</string>
+    <string name="widget_memory">Hukommelse og lagerplads</string>
 </resources>

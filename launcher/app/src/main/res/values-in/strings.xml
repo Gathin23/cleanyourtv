@@ -110,4 +110,12 @@
     <string name="race_finished">Bendera finis</string>
     <string name="last_opened">Terakhir dibuka %1$s</string>
     <string name="game_live">Langsung sekarang</string>
+    <string name="widget_state">Widget beranda: %1$s</string>
+    <string name="widget_speed_state">Halaman widget beranda: %1$s</string>
+    <string name="widget_seconds">setiap %1$d dtk</string>
+    <string name="widget_title">Widget beranda: OK menyalakan atau mematikan halaman</string>
+    <string name="widget_first">Tampilkan dulu…</string>
+    <string name="widget_none">tidak ada</string>
+    <string name="widget_adb">Peringatan debugging</string>
+    <string name="widget_memory">Memori dan penyimpanan</string>
 </resources>

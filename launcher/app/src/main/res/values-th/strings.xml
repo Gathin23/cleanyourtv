@@ -68,4 +68,12 @@
     </plurals>
     <string name="greeting_with_name">%1$s %2$s</string>
     <string name="game_live">กำลังถ่ายทอดสด</string>
+    <string name="widget_state">วิดเจ็ตหน้าหลัก: %1$s</string>
+    <string name="widget_speed_state">หน้าของวิดเจ็ต: %1$s</string>
+    <string name="widget_seconds">ทุก %1$d วินาที</string>
+    <string name="widget_title">วิดเจ็ตหน้าหลัก: OK เปิดหรือปิดหน้า</string>
+    <string name="widget_first">แสดงก่อน…</string>
+    <string name="widget_none">ไม่มี</string>
+    <string name="widget_adb">คำเตือนการแก้ไขข้อบกพร่อง</string>
+    <string name="widget_memory">หน่วยความจำและพื้นที่เก็บข้อมูล</string>
 </resources>

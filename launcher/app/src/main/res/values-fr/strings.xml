@@ -95,4 +95,12 @@
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Dernière ouverture : %1$s</string>
     <string name="game_live">En direct</string>
+    <string name="widget_state">Widget d\'accueil: %1$s</string>
+    <string name="widget_speed_state">Page du widget d\'accueil: %1$s</string>
+    <string name="widget_seconds">toutes les %1$d s</string>
+    <string name="widget_title">Widget d\'accueil: OK active ou désactive une page</string>
+    <string name="widget_first">Afficher en premier…</string>
+    <string name="widget_none">rien</string>
+    <string name="widget_adb">Alerte de débogage</string>
+    <string name="widget_memory">Mémoire et stockage</string>
 </resources>

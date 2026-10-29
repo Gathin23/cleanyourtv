@@ -145,4 +145,12 @@
     <string name="race_countdown_days">%1$dg %2$dh</string>
     <string name="last_opened">Ultima apertura: %1$s</string>
     <string name="game_live">In diretta</string>
+    <string name="widget_state">Widget Home: %1$s</string>
+    <string name="widget_speed_state">Pagina del widget Home: %1$s</string>
+    <string name="widget_seconds">ogni %1$d s</string>
+    <string name="widget_title">Widget Home: OK attiva o disattiva una pagina</string>
+    <string name="widget_first">Mostra per prima…</string>
+    <string name="widget_none">niente</string>
+    <string name="widget_adb">Avviso di debug</string>
+    <string name="widget_memory">Memoria e archiviazione</string>
 </resources>

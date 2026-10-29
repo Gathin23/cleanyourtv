@@ -147,4 +147,12 @@
     <!-- Cinematic top shelf (cinematic_home): %1$s is when it was last opened, e.g. "5분 전". -->
     <string name="last_opened">마지막 실행 %1$s</string>
     <string name="game_live">지금 생중계</string>
+    <string name="widget_state">홈 위젯: %1$s</string>
+    <string name="widget_speed_state">홈 위젯 페이지: %1$s</string>
+    <string name="widget_seconds">%1$d초마다</string>
+    <string name="widget_title">홈 위젯: OK로 페이지를 켜거나 끄기</string>
+    <string name="widget_first">먼저 표시…</string>
+    <string name="widget_none">없음</string>
+    <string name="widget_adb">디버깅 경고</string>
+    <string name="widget_memory">메모리 및 저장공간</string>
 </resources>

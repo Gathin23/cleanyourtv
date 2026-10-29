@@ -122,4 +122,12 @@
     <string name="last_opened">Mở lần cuối %1$s</string>
     <string name="tile_move">Di chuyển</string>
     <string name="game_live">Đang diễn ra</string>
+    <string name="widget_state">Tiện ích màn hình chính: %1$s</string>
+    <string name="widget_speed_state">Trang tiện ích: %1$s</string>
+    <string name="widget_seconds">mỗi %1$d giây</string>
+    <string name="widget_title">Tiện ích màn hình chính: OK bật hoặc tắt một trang</string>
+    <string name="widget_first">Hiện trước…</string>
+    <string name="widget_none">không có</string>
+    <string name="widget_adb">Cảnh báo gỡ lỗi</string>
+    <string name="widget_memory">Bộ nhớ và dung lượng</string>
 </resources>

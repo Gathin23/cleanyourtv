@@ -61,8 +61,12 @@ The launcher's own page has these rows, top to bottom:
   transitions; they may use more memory) once animations are on.
 - **Open on start**, only with `open_on_start_choice`: Off, or an app that opens instead of Home the first
   time Home comes up after the TV starts. Once per boot, so Home and Back still reach the launcher.
+- **Home widget**, only with `home_widgets`: OK on a page turns it on or off (a debugging warning, RAM and
+  storage in use, and each add-on whose card offers a page), and **Show first** moves one to the front.
+  **Home widget page** sets how long each page stays: 6, 10, 15 or 30 seconds. See
+  [specs/widget-source.md](specs/widget-source.md) for how an add-on offers a page.
 - **Follow theme (reset on-TV choices)**, which clears every choice above. Pushing or resetting a theme
-  clears them too.
+  clears them too, except the Home widget's pages and speed, which only Follow theme clears.
 - **Choose default home** opens Android's home picker, and **TV system settings** the TV's own settings
   page.
 

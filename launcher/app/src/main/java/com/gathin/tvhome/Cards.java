@@ -155,12 +155,15 @@ final class Cards {
         final String label;
         final String caption;
         final int accent;
+        /** live="true": the app also serves widget rows at content://<package>.card (docs/specs/widget-source.md). */
+        final boolean live;
 
-        Declared(int spec, String label, String caption, int accent) {
+        Declared(int spec, String label, String caption, int accent, boolean live) {
             this.spec = spec;
             this.label = label;
             this.caption = caption;
             this.accent = accent;
+            this.live = live;
         }
     }
 
@@ -369,6 +372,38 @@ final class Cards {
         return c != 0 ? c : a.pkg.compareTo(b.pkg);
     }
 
+    /**
+     * {package, card label} of every app whose valid card says live="true": the home widget's add-on sources. No
+     * Show prompt is needed here; a source shows only once the owner ticks it in Launcher settings.
+     */
+    static List<String[]> liveSources(Context ctx) {
+        List<String[]> out = new ArrayList<>();
+        PackageManager pm = ctx.getPackageManager();
+        try {
+            List<ResolveInfo> declared = pm.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(CATEGORY),
+                    PackageManager.GET_META_DATA);
+            Set<String> seen = new HashSet<>();
+            for (ResolveInfo ri : declared) {
+                ActivityInfo ai = ri.activityInfo;
+                if (out.size() >= MAX_DECLARED || ai == null || !ai.exported || !ai.enabled) continue;
+                if (ai.packageName.equals(ctx.getPackageName()) || !seen.add(ai.packageName)) continue;
+                XmlResourceParser xml = ai.loadXmlMetaData(pm, META_DATA);
+                if (xml == null) continue;
+                try {
+                    Declared d = parse(xml);
+                    if (d.spec == SPEC_SUPPORTED && d.live) out.add(new String[]{ai.packageName, d.label});
+                } catch (Exception e) {
+                    Log.w(TAG, ai.packageName + ": " + e.getMessage());
+                } finally {
+                    xml.close();
+                }
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "live card query failed: " + e);
+        }
+        return out;
+    }
+
     // ---- parser ----------------------------------------------------------------------------------
 
     /**
@@ -396,7 +431,7 @@ final class Cards {
     private static Declared readCard(XmlPullParser p) throws Exception {
         int count = p.getAttributeCount();
         if (count > MAX_ATTRIBUTES) throw new CardException("more than " + MAX_ATTRIBUTES + " attributes on <card>");
-        String spec = null, label = null, caption = null, accent = null;
+        String spec = null, label = null, caption = null, accent = null, live = null;
         for (int i = 0; i < count; i++) {
             String ns = p.getAttributeNamespace(i);
             if (ns != null && !ns.isEmpty()) continue;
@@ -415,6 +450,9 @@ final class Cards {
                 case "accent":
                     accent = p.getAttributeValue(i);
                     break;
+                case "live":
+                    live = p.getAttributeValue(i);
+                    break;
                 default:
                     break;
             }
@@ -432,7 +470,8 @@ final class Cards {
             colour = parseAccent(accent);
             if (colour == 0) throw new CardException("accent is not #RRGGBB");
         }
-        return new Declared(Integer.parseInt(spec), label, caption == null || caption.isEmpty() ? null : caption, colour);
+        return new Declared(Integer.parseInt(spec), label, caption == null || caption.isEmpty() ? null : caption, colour,
+                "true".equals(live));
     }
 
     // ---- validators (pure Java, unit tested) -----------------------------------------------------

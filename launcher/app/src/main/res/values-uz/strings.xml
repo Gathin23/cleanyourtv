@@ -111,4 +111,12 @@
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
     <string name="game_live">Hozir jonli</string>
+    <string name="widget_state">Bosh ekran vidjeti: %1$s</string>
+    <string name="widget_speed_state">Vidjet sahifasi: %1$s</string>
+    <string name="widget_seconds">har %1$d soniyada</string>
+    <string name="widget_title">Bosh ekran vidjeti: OK sahifani yoqadi yoki o‘chiradi</string>
+    <string name="widget_first">Avval ko‘rsatish…</string>
+    <string name="widget_none">hech narsa</string>
+    <string name="widget_adb">Nosozliklarni tuzatish ogohlantirishi</string>
+    <string name="widget_memory">Xotira va omborxona</string>
 </resources>

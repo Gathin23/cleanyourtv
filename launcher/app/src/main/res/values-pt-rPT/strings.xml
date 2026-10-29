@@ -11,4 +11,12 @@
     <string name="dock_edit_pick_place">Escolha o lugar da dock para esta app e prima OK. Voltar para cancelar.</string>
     <string name="more_inputs">Mais entradas</string>
     <string name="game_live">Em direto</string>
+    <string name="widget_state">Widget do ecrã inicial: %1$s</string>
+    <string name="widget_speed_state">Página do widget: %1$s</string>
+    <string name="widget_seconds">a cada %1$d s</string>
+    <string name="widget_title">Widget do ecrã inicial: OK ativa ou desativa uma página</string>
+    <string name="widget_first">Mostrar primeiro…</string>
+    <string name="widget_none">nada</string>
+    <string name="widget_adb">Aviso de depuração</string>
+    <string name="widget_memory">Memória e armazenamento</string>
 </resources>

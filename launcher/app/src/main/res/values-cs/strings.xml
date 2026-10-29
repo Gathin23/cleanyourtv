@@ -109,4 +109,12 @@
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Naposledy otevřeno: %1$s</string>
     <string name="game_live">Právě živě</string>
+    <string name="widget_state">Widget plochy: %1$s</string>
+    <string name="widget_speed_state">Stránka widgetu: %1$s</string>
+    <string name="widget_seconds">každých %1$d s</string>
+    <string name="widget_title">Widget plochy: OK zapne nebo vypne stránku</string>
+    <string name="widget_first">Zobrazit jako první…</string>
+    <string name="widget_none">nic</string>
+    <string name="widget_adb">Upozornění na ladění</string>
+    <string name="widget_memory">Paměť a úložiště</string>
 </resources>

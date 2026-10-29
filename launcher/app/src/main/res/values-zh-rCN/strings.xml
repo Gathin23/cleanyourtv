@@ -147,4 +147,12 @@
     <string name="tile_move">移动</string>
     <string name="tile_replace_in_dock">替换为其他应用</string>
     <string name="game_live">直播中</string>
+    <string name="widget_state">主屏幕小组件：%1$s</string>
+    <string name="widget_speed_state">小组件页面：%1$s</string>
+    <string name="widget_seconds">每 %1$d 秒</string>
+    <string name="widget_title">主屏幕小组件：按 OK 开启或关闭页面</string>
+    <string name="widget_first">优先显示…</string>
+    <string name="widget_none">无</string>
+    <string name="widget_adb">调试警告</string>
+    <string name="widget_memory">内存和存储</string>
 </resources>

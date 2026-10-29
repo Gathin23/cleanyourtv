@@ -112,4 +112,12 @@
     <string name="race_finished">Ruutulippu</string>
     <string name="last_opened">Viimeksi avattu %1$s</string>
     <string name="game_live">Käynnissä nyt</string>
+    <string name="widget_state">Aloitusnäytön widget: %1$s</string>
+    <string name="widget_speed_state">Widgetin sivu: %1$s</string>
+    <string name="widget_seconds">%1$d s välein</string>
+    <string name="widget_title">Aloitusnäytön widget: OK ottaa sivun käyttöön tai pois</string>
+    <string name="widget_first">Näytä ensin…</string>
+    <string name="widget_none">ei mitään</string>
+    <string name="widget_adb">Virheenkorjausvaroitus</string>
+    <string name="widget_memory">Muisti ja tallennustila</string>
 </resources>

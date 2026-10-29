@@ -99,4 +99,12 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">এখন সরাসরি</string>
+    <string name="widget_state">হোম উইজেট: %1$s</string>
+    <string name="widget_speed_state">হোম উইজেট পৃষ্ঠা: %1$s</string>
+    <string name="widget_seconds">প্রতি %1$d সে</string>
+    <string name="widget_title">হোম উইজেট: OK দিয়ে পৃষ্ঠা চালু বা বন্ধ করুন</string>
+    <string name="widget_first">প্রথমে দেখান…</string>
+    <string name="widget_none">কিছুই না</string>
+    <string name="widget_adb">ডিবাগিং সতর্কতা</string>
+    <string name="widget_memory">মেমরি ও স্টোরেজ</string>
 </resources>

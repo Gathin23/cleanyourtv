@@ -96,4 +96,12 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="game_live">Na żywo</string>
+    <string name="widget_state">Widżet ekranu głównego: %1$s</string>
+    <string name="widget_speed_state">Strona widżetu: %1$s</string>
+    <string name="widget_seconds">co %1$d s</string>
+    <string name="widget_title">Widżet ekranu głównego: OK włącza lub wyłącza stronę</string>
+    <string name="widget_first">Pokaż jako pierwszą…</string>
+    <string name="widget_none">nic</string>
+    <string name="widget_adb">Ostrzeżenie o debugowaniu</string>
+    <string name="widget_memory">Pamięć i miejsce na dane</string>
 </resources>

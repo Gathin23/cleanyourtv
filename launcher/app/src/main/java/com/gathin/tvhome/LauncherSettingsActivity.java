@@ -37,6 +37,10 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView advancedChoice;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
+    private TextView widgetChoice;
+    private TextView widgetSpeedChoice;
+    /** {package, card label} of the installed live cards: the widget's add-on sources. */
+    private List<String[]> liveSources = new ArrayList<>();
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
@@ -135,12 +139,26 @@ public final class LauncherSettingsActivity extends Activity {
             openOnStartChoice.setVisibility(View.VISIBLE);
             openOnStartChoice.setOnClickListener(v -> showOpenOnStartPicker());
         }
+        widgetChoice = findViewById(R.id.widgetChoice);
+        widgetSpeedChoice = findViewById(R.id.widgetSpeedChoice);
+        if (config.homeWidgets) {
+            liveSources = Cards.liveSources(this);
+            widgetChoice.setVisibility(View.VISIBLE);
+            widgetSpeedChoice.setVisibility(View.VISIBLE);
+            widgetChoice.setOnClickListener(v -> showWidgetPicker());
+            widgetSpeedChoice.setOnClickListener(v -> {
+                choices.edit().putInt(WidgetPages.PREF_SECONDS, WidgetPages.nextSeconds(widgetSeconds())).apply();
+                changed();
+                refresh();
+            });
+        }
         followThemeChoice = findViewById(R.id.followThemeChoice);
         followThemeChoice.setOnClickListener(v -> {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).commit();
+                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).remove(WidgetPages.PREF_SOURCES)
+                    .remove(WidgetPages.PREF_SECONDS).commit();
             Config current = Config.load(this);
             columns = current.columns;
             rowsBelowDock = current.rowsBelowDock;
@@ -239,6 +257,67 @@ public final class LauncherSettingsActivity extends Activity {
                 .show();
     }
 
+    private List<String> widgetSources() {
+        return WidgetPages.enabled(choices.getString(WidgetPages.PREF_SOURCES, null), getResources().getStringArray(R.array.widget_sources));
+    }
+
+    private int widgetSeconds() {
+        return WidgetPages.seconds(choices.getInt(WidgetPages.PREF_SECONDS, 0));
+    }
+
+    /** A built-in source's name, an add-on's card label, or the package of an add-on that is gone. */
+    private String widgetLabel(String source) {
+        switch (source) {
+            case WidgetPages.ADB: return getString(R.string.widget_adb);
+            case WidgetPages.MEMORY: return getString(R.string.widget_memory);
+            default:
+                String pkg = source.substring(WidgetPages.APP.length());
+                for (String[] live : liveSources) if (live[0].equals(pkg)) return live[1];
+                return pkg;
+        }
+    }
+
+    /** Ticks for what the widget shows, saved at each OK; "Show first" moves one ticked source to the front. */
+    private void showWidgetPicker() {
+        List<String> apps = new ArrayList<>();
+        for (String[] live : liveSources) apps.add(live[0]);
+        List<String> listed = WidgetPages.listed(widgetSources(), apps);
+        String[] labels = new String[listed.size()];
+        boolean[] on = new boolean[listed.size()];
+        List<String> enabled = widgetSources();
+        for (int i = 0; i < listed.size(); i++) {
+            labels[i] = widgetLabel(listed.get(i));
+            on[i] = enabled.contains(listed.get(i));
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.widget_title)
+                .setMultiChoiceItems(labels, on, (dialog, which, checked) -> saveWidget(WidgetPages.toggle(widgetSources(), listed.get(which))))
+                .setNeutralButton(R.string.widget_first, (dialog, which) -> showWidgetFirstPicker())
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
+    private void showWidgetFirstPicker() {
+        List<String> enabled = widgetSources();
+        if (enabled.size() < 2) return;
+        String[] labels = new String[enabled.size()];
+        for (int i = 0; i < enabled.size(); i++) labels[i] = widgetLabel(enabled.get(i));
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.widget_first)
+                .setSingleChoiceItems(labels, 0, (dialog, which) -> {
+                    dialog.dismiss();
+                    saveWidget(WidgetPages.moveFirst(widgetSources(), enabled.get(which)));
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void saveWidget(List<String> sources) {
+        choices.edit().putString(WidgetPages.PREF_SOURCES, WidgetPages.save(sources)).apply();
+        changed();
+        refresh();
+    }
+
     /** The picked app's name, its package when it is gone, or Off. */
     private String openOnStartLabel() {
         String pkg = choices.getString(OpenOnStart.KEY, "");
@@ -298,6 +377,11 @@ public final class LauncherSettingsActivity extends Activity {
                         : wallpaperCurrent != null ? wallpaperCurrent
                         : getString(R.string.wallpaper_theme_default)));
         openOnStartChoice.setText(getString(R.string.open_on_start_state, openOnStartLabel()));
+        List<String> names = new ArrayList<>();
+        for (String w : widgetSources()) names.add(widgetLabel(w));
+        widgetChoice.setText(getString(R.string.widget_state,
+                names.isEmpty() ? getString(R.string.widget_none) : String.join(", ", names)));
+        widgetSpeedChoice.setText(getString(R.string.widget_speed_state, getString(R.string.widget_seconds, widgetSeconds())));
         followThemeChoice.setSelected(!hasOnTvChoices());
     }
 
@@ -305,7 +389,8 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
-                || choices.contains(OpenOnStart.KEY);
+                || choices.contains(OpenOnStart.KEY) || choices.contains(WidgetPages.PREF_SOURCES)
+                || choices.contains(WidgetPages.PREF_SECONDS);
     }
 
     private void open(Intent intent) {

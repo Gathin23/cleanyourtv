@@ -112,4 +112,12 @@
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
     <string name="game_live">Nu live</string>
+    <string name="widget_state">Startwidget: %1$s</string>
+    <string name="widget_speed_state">Startwidgetpagina: %1$s</string>
+    <string name="widget_seconds">elke %1$d s</string>
+    <string name="widget_title">Startwidget: OK zet een pagina aan of uit</string>
+    <string name="widget_first">Eerst tonen…</string>
+    <string name="widget_none">niets</string>
+    <string name="widget_adb">Foutopsporingswaarschuwing</string>
+    <string name="widget_memory">Geheugen en opslag</string>
 </resources>

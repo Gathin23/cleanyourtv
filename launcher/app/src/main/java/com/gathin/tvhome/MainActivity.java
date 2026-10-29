@@ -193,6 +193,38 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private List<RaceWeekend.Race> raceCalendar;
     private View racePanel;
     private TextView raceKicker, raceHeadline, raceSessions;
+    /** config.xml home_widgets: a card under the top buttons that turns through its pages (WidgetPages). */
+    private boolean homeWidgetsOn;
+    private View homeWidgets;
+    private TextView widgetPageKicker, widgetPageLine, widgetPageMeta;
+    private ImageView widgetPageIcon;
+    private WidgetPages.Text widgetText;
+    /** The widget's sources in order (WidgetPages; config.xml widget_sources, Launcher settings on the TV). */
+    private List<String> widgetOn = new ArrayList<>();
+    private long widgetFlipMs = 6_000L;
+    /** {package, label} of the live module cards, found on widgetIo at each resume. */
+    private volatile List<String[]> liveSources = new ArrayList<>();
+    /** Each source's page as last read on widgetIo; a source with nothing to show has none. */
+    private volatile Map<String, WidgetPages.Item> widgetItems = new HashMap<>();
+    /** SystemClock.elapsedRealtime of the last add-on read; 0 makes the next read ask the add-ons again. */
+    private volatile long addOnReadAt;
+    /** The source on the widget now; null while it is hidden. */
+    private String shownPage;
+    private final Runnable widgetFlip = new Runnable() {
+        @Override
+        public void run() {
+            readWidgetItems(true);
+            handler.postDelayed(this, widgetFlipMs);
+        }
+    };
+    /** System values and add-on rows are read off the UI thread. */
+    private final java.util.concurrent.ExecutorService widgetIo = java.util.concurrent.Executors.newSingleThreadExecutor();
+    /** Add-on rows, one thread per read, so a hung add-on never holds widgetIo past HomeWidgets.LIVE_TIMEOUT_MS. */
+    private final java.util.concurrent.ExecutorService liveIo = java.util.concurrent.Executors.newCachedThreadPool();
+    /** Add-ons whose last read has not returned yet: skipped until it does, so a hung one holds one thread at most. */
+    private static final java.util.Set<String> liveBusy = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    /** One read of the widget's pages at a time; a turn that finds one running keeps the pages it has. */
+    private final java.util.concurrent.atomic.AtomicBoolean widgetReading = new java.util.concurrent.atomic.AtomicBoolean();
     /** game_day: each team's next game from an add-on, rotating in the race panel; null when the key is off. */
     private GameDay gameDay;
     private View raceBar;
@@ -298,7 +330,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Between onResume and onPause: Home is in front. The idle clock only runs then; a key's ACTION_UP can still
      * reach Home after onPause, when that key opened another app, and must not start the clock over the app.
      */
-    private boolean resumed;
+    private volatile boolean resumed;
     /** Rebuild the tiles on the way back to Home only when apps changed meanwhile (TileRefresh). */
     private final TileRefresh tileRefresh = new TileRefresh();
     /** PackageManager's change counter at the last rebuild, to catch a package broadcast that never arrived. */
@@ -534,6 +566,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         raceKicker = findViewById(R.id.raceKicker);
         raceHeadline = findViewById(R.id.raceHeadline);
         raceSessions = findViewById(R.id.raceSessions);
+        homeWidgetsOn = cfg.homeWidgets;
+        homeWidgets = findViewById(R.id.homeWidgets);
+        widgetPageKicker = findViewById(R.id.widgetPageKicker);
+        widgetPageLine = findViewById(R.id.widgetPageLine);
+        widgetPageMeta = findViewById(R.id.widgetPageMeta);
+        widgetPageIcon = findViewById(R.id.widgetPageIcon);
+        widgetText = new WidgetPages.Text(getString(R.string.widget_security), getString(R.string.widget_debugging_on),
+                getString(R.string.widget_debugging_hint), getString(R.string.widget_debugging_wireless),
+                getString(R.string.widget_memory_kicker), getString(R.string.widget_ram),
+                getString(R.string.widget_storage), getString(R.string.widget_low));
         raceBar = findViewById(R.id.raceBar);
         racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
@@ -715,6 +757,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
 
+        // The home widget scrolls away with the grid, like the dock, fading as it reaches the top bar.
+        grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                // Also while hidden, so a panel that comes back sits where the grid is.
+                float offset = rv.computeVerticalScrollOffset();
+                homeWidgets.setTranslationY(-offset);
+                // A few pixels of settle after a rebuild do not count as scrolling away.
+                float past = Math.max(0f, offset - 12 * density);
+                homeWidgets.setAlpha(Math.max(0f, 1f - past / (50 * density)));
+            }
+        });
         // game_day: the panel above the dock rides up with the cards instead of being covered by them, and fades
         // out by the time it reaches the clock. The grid's own offset is read, so a jump (Home, a restored focus)
         // lands right too.
@@ -1058,6 +1112,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
+        handler.removeCallbacks(widgetFlip);
+        if (homeWidgetsOn) {
+            loadWidget();
+            handler.postDelayed(widgetFlip, widgetFlipMs);
+        }
         if (festive && diya != null) {
             diya.start();
             LocalDate today = LocalDate.now();
@@ -1232,6 +1291,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambient.animate().cancel();
         heroArt.animate().cancel();
         handler.removeCallbacks(minuteTick);
+        handler.removeCallbacks(widgetFlip);
         handler.removeCallbacks(openWhenOnline);
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
@@ -1291,6 +1351,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onDestroy() {
         super.onDestroy();
         if (gameDay != null) gameDay.shutdown();
+        widgetIo.shutdownNow();
+        liveIo.shutdownNow();
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
@@ -2622,6 +2684,214 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     // ---- race-weekend panel (a theme's race_calendar) -----------------------------------------------
 
     private static final int RACE_RED = 0xFFFF3B2F;
+
+    /** After new pages: the widget keeps a page that still has something, or hides when none has. */
+    private void showCardPages() {
+        List<String> pages = cardPages();
+        if (pages.isEmpty()) {
+            showPage(null, false);
+        } else {
+            String urgent = urgentPage();
+            showPage(urgent != null ? urgent : pages.contains(shownPage) ? shownPage : pages.get(0), false);
+        }
+    }
+
+    /** The enabled sources that have something to show now, in their order. */
+    private List<String> cardPages() {
+        List<String> out = new ArrayList<>();
+        Map<String, WidgetPages.Item> items = widgetItems;
+        for (String s : widgetOn) {
+            if (items.containsKey(s)) out.add(s);
+        }
+        return out;
+    }
+
+    /** The first enabled page that asks to stay on screen, or null. */
+    private String urgentPage() {
+        Map<String, WidgetPages.Item> items = widgetItems;
+        for (String s : widgetOn) {
+            WidgetPages.Item item = items.get(s);
+            if (item != null && item.urgent) return s;
+        }
+        return null;
+    }
+
+    private String nextPage() {
+        List<String> pages = cardPages();
+        int i = WidgetPages.next(pages.indexOf(shownPage), pages.size());
+        return i < 0 ? null : pages.get(i);
+    }
+
+    /** Fills the widget with {@code page}, fading it in when it is a new page; null hides the widget. */
+    private void showPage(String page, boolean animate) {
+        if (page == null) {
+            homeWidgets.setVisibility(View.GONE);
+            shownPage = null;
+            return;
+        }
+        WidgetPages.Item item = widgetItems.get(page);
+        if (item == null) return;
+        widgetPageIcon.setImageResource(widgetIcon(item));
+        widgetPageKicker.setText(item.kicker);
+        widgetPageKicker.setTextColor(item.alert ? 0xFFFF453A : 0xB3FFFFFF);
+        widgetPageLine.setText(item.line);
+        fitWidgetLine(item.line);
+        widgetPageMeta.setText(item.meta);
+        widgetPageMeta.setTextColor(item.alert ? 0xFFFF8A1F : 0x99FFFFFF);
+        homeWidgets.setVisibility(View.VISIBLE);
+        if (page.equals(shownPage)) return;
+        shownPage = page;
+        if (!animate || reducedMotion) return;
+        for (View v : new View[]{widgetPageIcon, (View) widgetPageLine.getParent()}) {
+            v.animate().cancel();
+            v.setAlpha(0f);
+            v.animate().alpha(1f).setDuration(450).start();
+        }
+    }
+
+    /** The widget keeps one size: a line too long for it at 26sp goes to two lines at 18sp, then is cut. */
+    private void fitWidgetLine(String line) {
+        ViewGroup.MarginLayoutParams icon = (ViewGroup.MarginLayoutParams) widgetPageIcon.getLayoutParams();
+        float room = homeWidgets.getLayoutParams().width - homeWidgets.getPaddingStart() - homeWidgets.getPaddingEnd()
+                - icon.width - icon.getMarginEnd();
+        TextPaint paint = new TextPaint(widgetPageLine.getPaint());
+        paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 26, getResources().getDisplayMetrics()));
+        boolean small = paint.measureText(line) > room;
+        widgetPageLine.setSingleLine(!small);
+        if (small) widgetPageLine.setMaxLines(2);
+        widgetPageLine.setTextSize(TypedValue.COMPLEX_UNIT_SP, small ? 18 : 26);
+    }
+
+    /**
+     * Turns to the next page now ({@code turn}) with the pages last read, then reads every enabled page off the UI
+     * thread unless a read is already running: the launcher's own pages each time, add-on rows when Home comes to the
+     * front and then at most once every HomeWidgets.ADD_ON_READ_MS, so other apps are not polled at the page speed.
+     */
+    private void readWidgetItems(boolean turn) {
+        if (turn && urgentPage() == null) showPage(nextPage(), true);
+        if (widgetIo.isShutdown() || !widgetReading.compareAndSet(false, true)) return;
+        List<String> sources = new ArrayList<>(widgetOn);
+        android.content.ContentResolver resolver = getApplicationContext().getContentResolver();
+        PackageManager pm = getApplicationContext().getPackageManager();
+        try {
+            widgetIo.execute(() -> {
+                Map<String, WidgetPages.Item> items = new HashMap<>();
+                try {
+                    // Read here, after loadWidget's liveSources task on the same thread, not when this was queued.
+                    List<String[]> live = liveSources;
+                    long now = android.os.SystemClock.elapsedRealtime();
+                    boolean readAddOns = addOnReadAt == 0 || now - addOnReadAt >= HomeWidgets.ADD_ON_READ_MS;
+                    Map<String, WidgetPages.Item> last = widgetItems;
+                    Map<String, java.util.concurrent.Future<WidgetPages.Item>> rows = new java.util.LinkedHashMap<>();
+                    for (String s : sources) {
+                        if (!resumed) return;
+                        if (!s.startsWith(WidgetPages.APP)) {
+                            WidgetPages.Item item = statusItem(s);
+                            if (item != null) items.put(s, item);
+                            continue;
+                        }
+                        String pkg = s.substring(WidgetPages.APP.length());
+                        String label = liveLabel(live, pkg);
+                        if (label == null) continue;
+                        if (!readAddOns) {
+                            if (last.containsKey(s)) items.put(s, last.get(s));
+                            continue;
+                        }
+                        if (!liveBusy.add(pkg)) continue;
+                        try {
+                            rows.put(s, liveIo.submit(() -> {
+                                try {
+                                    // A read still queued when Home left the front is not started.
+                                    return resumed ? HomeWidgets.live(resolver, pm, pkg, label) : null;
+                                } finally {
+                                    liveBusy.remove(pkg);
+                                }
+                            }));
+                        } catch (java.util.concurrent.RejectedExecutionException e) {
+                            liveBusy.remove(pkg);
+                        }
+                    }
+                    if (readAddOns) addOnReadAt = now;
+                    long until = android.os.SystemClock.elapsedRealtime() + HomeWidgets.LIVE_TIMEOUT_MS;
+                    for (Map.Entry<String, java.util.concurrent.Future<WidgetPages.Item>> e : rows.entrySet()) {
+                        try {
+                            WidgetPages.Item item = e.getValue().get(Math.max(0, until - android.os.SystemClock.elapsedRealtime()),
+                                    java.util.concurrent.TimeUnit.MILLISECONDS);
+                            if (item != null) items.put(e.getKey(), item);
+                        } catch (java.util.concurrent.TimeoutException t) {
+                            android.util.Log.w("TvHomeWidgets", e.getKey() + " widget row took over "
+                                    + HomeWidgets.LIVE_TIMEOUT_MS + " ms: skipped this turn");
+                        } catch (java.util.concurrent.ExecutionException | InterruptedException x) {
+                            android.util.Log.w("TvHomeWidgets", e.getKey() + " widget row failed", x);
+                            if (x instanceof InterruptedException) return;
+                        }
+                    }
+                } finally {
+                    widgetReading.set(false);
+                }
+                handler.post(() -> {
+                    if (!resumed || isDestroyed()) return;
+                    widgetItems = items;
+                    showCardPages();
+                });
+            });
+        } catch (java.util.concurrent.RejectedExecutionException e) {
+            widgetReading.set(false);
+        }
+    }
+
+    /** The live card's label for {@code pkg}, or null when the package no longer has a live card. */
+    private static String liveLabel(List<String[]> live, String pkg) {
+        for (String[] s : live) {
+            if (s[0].equals(pkg)) return s[1];
+        }
+        return null;
+    }
+
+    /** A source the launcher reads itself; null when it has nothing now. Runs on widgetIo. */
+    private WidgetPages.Item statusItem(String source) {
+        try {
+            switch (source) {
+                case WidgetPages.ADB:
+                    return WidgetPages.adb(Settings.Global.getInt(getContentResolver(), Settings.Global.ADB_ENABLED, 0) == 1,
+                            Settings.Global.getInt(getContentResolver(), "adb_wifi_enabled", 0) == 1, widgetText);
+                case WidgetPages.MEMORY: {
+                    android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                    getSystemService(android.app.ActivityManager.class).getMemoryInfo(mi);
+                    android.os.StatFs data = new android.os.StatFs(android.os.Environment.getDataDirectory().getPath());
+                    return WidgetPages.memory(mi.availMem, mi.totalMem, data.getAvailableBytes(), data.getTotalBytes(),
+                            widgetText);
+                }
+                default:
+                    return null;
+            }
+        } catch (RuntimeException e) {
+            android.util.Log.w("TvHomeWidgets", "widget " + source + " failed", e);
+            return null;
+        }
+    }
+
+    /** A launcher-owned icon: the built-in page's own, else by the add-on row's kind; an add-on never supplies one. */
+    private static int widgetIcon(WidgetPages.Item item) {
+        if (WidgetPages.ADB.equals(item.source)) return R.drawable.ic_lock;
+        if (WidgetPages.MEMORY.equals(item.source)) return R.drawable.ic_memory;
+        switch (item.kind) {
+            case "news": return R.drawable.ic_news;
+            case "alert": return R.drawable.ic_lock;
+            default: return R.drawable.ic_event;
+        }
+    }
+
+    /** The widget's sources and speed (Launcher settings, else config.xml), then the live cards and their rows. */
+    private void loadWidget() {
+        SharedPreferences p = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        widgetOn = WidgetPages.enabled(p.getString(WidgetPages.PREF_SOURCES, null), getResources().getStringArray(R.array.widget_sources));
+        widgetFlipMs = WidgetPages.seconds(p.getInt(WidgetPages.PREF_SECONDS, 0)) * 1000L;
+        addOnReadAt = 0;
+        if (widgetIo.isShutdown()) return;
+        widgetIo.execute(() -> liveSources = Cards.liveSources(this));
+        readWidgetItems(false);
+    }
 
     /**
      * Shows or hides the race-weekend panel for this minute. Text only, set once a minute with the clock:
