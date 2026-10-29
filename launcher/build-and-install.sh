@@ -225,18 +225,24 @@ if [ "${INPUT_KEY_SERVICE:-0}" = 1 ]; then enable_service InputKeyService; fi
 if [ "${HOME_KEY_SERVICE:-0}" = 1 ]; then enable_service HomeKeyService; fi
 # The grant follows the switch on every install: pm install -r keeps a grant, so a run without the switch takes it
 # back. WRITE_SECURE_SETTINGS opens every secure and global setting, not only the accessibility list.
-# tv.py does not hand back the TV shell's exit status, so each side prints its marker only once the TV shows the
+# tv.py does not hand back the TV shell's exit status, so each side prints its marker only once dumpsys shows the
 # state it wants, and the install stops when the marker is missing. The revoke is judged by the package's
-# permission state rather than pm's exit status, so a permission that was never granted counts as revoked, and a
-# dumpsys that does not list the permission at all prints nothing.
+# permission state rather than pm's exit status, so a permission that was never granted counts as revoked; on
+# Android 8 to 11 a revoked install permission leaves only the requested-permissions entry. A dumpsys that does
+# not list the permission at all, fails, or ran out of time (it says DUMP TIMEOUT and still exits 0, cut off
+# before the granted line) prints nothing.
 SECURE=android.permission.WRITE_SECURE_SETTINGS
+READ="s=\$(dumpsys package com.gathin.tvhome) && case \"\$s\" in *\"DUMP TIMEOUT\"*) ;; *\"$SECURE: granted=true\"*)"
 if [ "${RESTORE_KEY_SERVICES:-0}" = 1 ]; then
-  STEP="pm grant com.gathin.tvhome $SECURE && echo restore-granted"; MARK=restore-granted
+  STEP="pm grant com.gathin.tvhome $SECURE && $READ echo restore-granted ;; esac"; MARK=restore-granted
+  HINT="the launcher does not hold it, so restore_key_services cannot put the helpers back"
 else
-  STEP="pm revoke com.gathin.tvhome $SECURE; s=\$(dumpsys package com.gathin.tvhome) && case \"\$s\" in *\"$SECURE: granted=true\"*) ;; *\"$SECURE\"*) echo secure-settings-revoked ;; esac"
+  STEP="pm revoke com.gathin.tvhome $SECURE; $READ ;; *\"$SECURE\"*) echo secure-settings-revoked ;; esac"
   MARK=secure-settings-revoked
+  HINT="the launcher may still hold it; run again with RESTORE_KEY_SERVICES=1 to keep it on purpose"
 fi
-OUT=$("$PY" -I ../tools/tv.py "$STEP")
+# A tv.py that cannot reach the TV fails here too, and gets the same message instead of stopping the script bare.
+OUT=$("$PY" -I ../tools/tv.py "$STEP") || OUT=""
 echo "$OUT"
 # Only a line that is the marker and nothing else counts: the step's own text contains it too.
 ACK_FOUND=0
@@ -244,6 +250,8 @@ while IFS= read -r line; do
   if [ "${line%$'\r'}" = "$MARK" ]; then ACK_FOUND=1; break; fi
 done <<< "$OUT"
 if [ "$ACK_FOUND" != 1 ]; then
-  echo "ERROR: WRITE_SECURE_SETTINGS is not in the state this install asked for ($MARK missing)" >&2; exit 1
+  echo "ERROR: WRITE_SECURE_SETTINGS is not in the state this install asked for ($MARK missing): $HINT." >&2
+  echo "The launcher is installed and is Home. Check by hand: tools/tv.py 'dumpsys package com.gathin.tvhome' | grep $SECURE" >&2
+  exit 1
 fi
 echo "Installed. Press Home on the remote to see it."

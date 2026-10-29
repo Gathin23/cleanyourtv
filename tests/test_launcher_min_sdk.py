@@ -71,23 +71,34 @@ def run(command):
 
 # The WRITE_SECURE_SETTINGS step decides its own marker on the TV, so it runs here as written,
 # in sh, against a pm and a dumpsys that keep the grant in the state file.
+# A refused grant prints pm's exception and exits non-zero; a revoke the TV ignores says nothing.
 PM = """#!/bin/sh
 case "$1" in
-  grant) echo granted > "$FAKE_SECURE" ;;
-  revoke) [ "$(cat "$FAKE_SECURE.works")" = 1 ] && echo denied > "$FAKE_SECURE" ;;
+  grant)
+    if [ "$(cat "$FAKE_SECURE.grant")" != 1 ]; then
+      echo "Exception occurred while executing 'grant':" >&2; exit 255
+    fi
+    echo granted > "$FAKE_SECURE" ;;
+  revoke) [ "$(cat "$FAKE_SECURE.revoke")" = 1 ] && echo denied > "$FAKE_SECURE" ;;
 esac
 exit 0
 """
-# A readback that fails part way has printed the requested-permissions list, which names the
-# permission without its state.
+# Laid out as Android 8 to 11 print it: the requested list always names the permission, and the
+# install-permissions line is there only while it is granted. A failed readback stops after the requested
+# list with a non-zero exit; a timed-out one stops there too, says so, and exits 0 as dumpsys does.
 DUMPSYS = """#!/bin/sh
-if [ "$(cat "$FAKE_SECURE.readback")" = fail ]; then
-  echo "    requested permissions:"
-  echo "      android.permission.WRITE_SECURE_SETTINGS"
-  exit 1
+echo "  Package [com.gathin.tvhome] (1a2b3c):"
+echo "    requested permissions:"
+echo "      android.permission.WRITE_SECURE_SETTINGS"
+case "$(cat "$FAKE_SECURE.readback")" in
+  fail) exit 1 ;;
+  timeout) echo "*** SERVICE 'package' DUMP TIMEOUT (10000ms) EXPIRED ***"; exit 0 ;;
+esac
+if [ "$(cat "$FAKE_SECURE")" = granted ]; then
+  echo "    install permissions:"
+  echo "      android.permission.WRITE_SECURE_SETTINGS: granted=true"
 fi
-g=false; [ "$(cat "$FAKE_SECURE")" = granted ] && g=true
-echo "      android.permission.WRITE_SECURE_SETTINGS: granted=$g"
+echo "    User 0: ceDataInode=4242 installed=true hidden=false suspended=false stopped=false"
 """
 
 
@@ -102,10 +113,11 @@ def secure_step(command):
     secure = shims + "/secure"
     with open(secure, "w") as f:
         f.write(state["secure"] + "\n")
-    with open(secure + ".works", "w") as f:
-        f.write("1\n" if state["revoke_works"] else "0\n")
-    with open(secure + ".readback", "w") as f:
-        f.write("fail\n" if state["readback_fails"] else "ok\n")
+    for suffix, value in ((".grant", "1" if state["grant_works"] else "0"),
+                          (".revoke", "1" if state["revoke_works"] else "0"),
+                          (".readback", state["readback"])):
+        with open(secure + suffix, "w") as f:
+            f.write(value + "\n")
     env = dict(os.environ, PATH=shims + ":" + os.environ["PATH"], FAKE_SECURE=secure)
     out = subprocess.run(["sh", "-c", command], env=env, capture_output=True, text=True).stdout
     with open(secure) as f:
@@ -127,6 +139,10 @@ def main():
         commands = []
     for command in commands:
         state["commands"].append(command)
+        if state["link_fails"] and "WRITE_SECURE_SETTINGS" in command:
+            save()
+            sys.stderr.write("Error: could not reach the TV\n")
+            return 2
         if "--batch" in args:
             # As tools/tv.py does: a batch echoes each command before its output.
             sys.stdout.write(f"$ {command}\n")
@@ -176,7 +192,9 @@ class MinSdkGuardTest(unittest.TestCase):
             "install_output": "Success\n",
             "secure": "denied",
             "revoke_works": True,
-            "readback_fails": False,
+            "grant_works": True,
+            "readback": "ok",
+            "link_fails": False,
             "commands": [],
         }
         state.update(overrides)
@@ -223,11 +241,32 @@ class MinSdkGuardTest(unittest.TestCase):
         self.assertIn("secure-settings-revoked missing", result.stderr)
         self.assertEqual(state["secure"], "granted")
 
-    def test_a_failed_readback_stops_the_install(self):
-        result, state = self.install(secure="granted", revoke_works=False, readback_fails=True)
+    def test_a_failed_or_timed_out_readback_stops_the_revoke(self):
+        for readback in ("fail", "timeout"):
+            with self.subTest(readback=readback):
+                result, state = self.install(secure="granted", revoke_works=False, readback=readback)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("secure-settings-revoked missing", result.stderr)
+                self.assertEqual(state["secure"], "granted")
+
+    def test_a_refused_grant_stops_the_install(self):
+        result, state = self.install(restore=True, grant_works=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("restore-granted missing", result.stderr)
+        self.assertEqual(state["secure"], "denied")
+
+    def test_a_grant_whose_readback_fails_or_times_out_stops_the_install(self):
+        for readback in ("fail", "timeout"):
+            with self.subTest(readback=readback):
+                result, _ = self.install(restore=True, readback=readback)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("restore-granted missing", result.stderr)
+
+    def test_a_tv_that_cannot_be_reached_gets_the_message(self):
+        # tv.py exits non-zero for this step only; set -e must not stop the script before the error.
+        result, _ = self.install(link_fails=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("secure-settings-revoked missing", result.stderr)
-        self.assertEqual(state["secure"], "granted")
 
     def test_a_granted_tv_is_revoked(self):
         result, state = self.install(secure="granted")

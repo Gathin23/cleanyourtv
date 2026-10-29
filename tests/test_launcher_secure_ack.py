@@ -33,6 +33,7 @@ CASES = [
     (f"not-{REVOKE}\n", REVOKE, False),
     (f"{REVOKE}-later\n", REVOKE, False),
     (f"{GRANT}\n", REVOKE, False),
+    (f"{REVOKE.upper()}\n", REVOKE, False),
     ("", GRANT, False),
 ]
 
@@ -51,7 +52,40 @@ def ps_check():
                 if "$mark missing" in line and line.lstrip().startswith("if"))
 
 
+def block(path, first, last):
+    """The lines of `path` from the one starting with `first` to the next one equal to `last`."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    start = next(i for i, line in enumerate(lines) if line.startswith(first))
+    end = next(i for i in range(start, len(lines)) if lines[i] == last)
+    return "\n".join(lines[start:end + 1])
+
+
+def sh_step(restore):
+    script = block(SH, "SECURE=", "fi") + '\nprintf %s "$STEP"'
+    env = dict(os.environ, RESTORE_KEY_SERVICES="1" if restore else "0")
+    return subprocess.run(["bash", "-c", script], capture_output=True, text=True, timeout=30,
+                          env=env, check=True).stdout
+
+
+def ps_step(restore):
+    script = (f"$RestoreKeyServices = ${'true' if restore else 'false'}\n"
+              + block(PS1, "$secure = ", "}") + "\n[Console]::Out.Write($step)")
+    return subprocess.run([PWSH, "-NoProfile", "-Command", script], capture_output=True, text=True,
+                          timeout=60, check=True).stdout
+
+
 class SecureAckTest(unittest.TestCase):
+    def test_the_powershell_steps_are_the_bash_steps(self):
+        # The end-to-end cases in test_launcher_min_sdk run the .sh steps on fake pm and dumpsys; the
+        # .ps1 sends the same text, so they cover it too.
+        if not PWSH or not shutil.which("bash"):
+            raise unittest.SkipTest("needs bash and pwsh")
+        for restore in (False, True):
+            with self.subTest(restore=restore):
+                step = sh_step(restore)
+                self.assertIn("dumpsys package", step)
+                self.assertEqual(ps_step(restore), step)
+
     def test_bash_accepts_only_a_whole_returned_line(self):
         if not shutil.which("bash"):
             raise unittest.SkipTest("needs bash")
