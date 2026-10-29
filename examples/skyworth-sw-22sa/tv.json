@@ -1,0 +1,6 @@
+{
+  "tv": "Skyworth SW-22SA (SW6H, MediaTek), ~1.9 GB",
+  "os": "Android TV 14 (Google TV home)",
+  "brand": "Skyworth",
+  "notes": "Skyworth recommendation rows + partner customizer, ePop/Demo Now retail demos, aftersale (can push APKs at boot; no separate updater package), dailymanage, Tuya preload, disclaimer popups; Miracast/DLNA, Ru keyboard and unused streaming apps off by choice; Assistant + Chromecast kept; port 5555 flaky (drops mid-session; adbd stdout banner corrupts `exec-out` screenshots -- screencap to file + pull); setupwraith owned the setup Wi-Fi (forget + re-join first, then FORCE_SETUPWRAITH=1); launcher works, Input key needs InputKeyService"
+}

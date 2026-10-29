@@ -1,0 +1,6 @@
+{
+  "tv": "Artel smart TV (CVTE TP.MT5510S.PB782, cvt_mt5863_eu, SMART_TV), Uzbekistan",
+  "os": "Android 7.0",
+  "brand": "Artel",
+  "notes": "Seven preinstalled apps, TalkBack and voice services; no Developer options, ADB comes from the full CVTE factory menu; do not disable com.talents.huanclientauth; Live TV is com.cvte.tv.androidsetting/.TvSettingActivity"
+}

@@ -1,0 +1,46 @@
+# BenQ QS01 Android TV dongle for BenQ projectors (model QS01, manufacturer Inspur, Amlogic S905Y2, 2 GB)
+# Android TV 12 (SDK 31), firmware QS01_00.03.00.06_ww
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-qs01/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-qs01/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (Android TV, not Google TV). No HDMI or tuner inputs: the
+# projector switches those itself, so the launcher's Inputs pill hides itself and live_tv_package stays empty.
+# Lived with for four days with the launcher installed, on Wi-Fi.
+#
+# Keep: com.droidlogic.* (Amlogic platform), com.inspur.bluetoothdeviceconnector, com.inspur.BlueToothController,
+# com.inspur.benq.remoterc (remote), com.inspur.wifiload, com.inspur.factory, com.ericsson.tangenrine (setup
+# wizard customiser, including remote pairing), com.ecloud.eshare.server and com.ecloud.eairplay (screen
+# mirroring), com.benq.qota (firmware updates), com.benq.appsmanager (BenQ app store). com.benq.familand
+# ships disabled.
+#
+# Known quirks on this firmware:
+# - The stick is not Netflix certified. The phone app (com.netflix.mediaclient) installs but does not play,
+#   and it has no LEANBACK_LAUNCHER entry.
+# - setupwraith does not claim HOME here, so it stays: build-and-install.sh took Home from tvlauncher directly.
+# - Disabling backdrop leaves screensaver_components pointing at it. Point it at the launcher's clock:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+
+# Content, ads and promos
+android.autoinstalls.config.Inspur.benq.S905Y2   # silently installs partner apps
+com.benq.notification                            # BenQ push messages and promos (Tag Manager)
+com.google.android.tvrecommendations             # recommendation rows for the stock home screen
+com.google.android.backdrop                      # ambient screensaver
+
+# Tracking
+com.inspur.firebase                              # Inspur data collection (DCReceiver)
+
+# Preloaded apps
+com.eshare.tutorial                              # screen-mirroring tutorial (mirroring itself stays)
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.youtube.tvmusic               # off by choice
+
+# Optional: uncomment what you don't use
+# com.amazon.amazonvideo.livingroom              # Prime Video
+# com.google.android.videos                      # Google TV movie store
+# com.google.android.katniss                     # Google Assistant voice
+# com.google.android.apps.mediashell             # Chromecast
+# com.ecloud.eshare.server                       # eShare screen mirroring, together with the next line
+# com.ecloud.eairplay

@@ -1,0 +1,83 @@
+# TCL 43P725 (reports as "Smart TV Pro", device BeyondTV4, product BeyondTV6, board rtd288o),
+# Android TV 11 (API 30), build RP1A.200622.001 release-keys,
+# fingerprint TCL/BeyondTV6/BeyondTV4:11/RP1A.200622.001/AR10:user/release-keys.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43p725/debloat.txt
+#          (or on Windows: tools\disable.ps1 -TvHost <tv ip> examples\tcl-43p725\debloat.txt)
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43p725/debloat.txt
+#          (or on Windows: tools\restore.ps1 -TvHost <tv ip> examples\tcl-43p725\debloat.txt)
+#
+# Everything is DISABLED with `pm disable-user --user 0`, never uninstalled.
+#
+# Stock launcher: com.google.android.tvlauncher (priority 2, disabled after replacement is running).
+# Live TV app: com.tcl.tv, with com.tcl.tvinput for the tuner and 3 HDMI inputs (hardware layer).
+#   TvInputManager lists them normally; keep both enabled so HDMI and antenna work.
+#
+# Tested and verified on a real TCL 43P725 unit:
+# - Screenshots, HDMI inputs, Live TV, Wi-Fi, audio, and Bluetooth remote remain 100% operational.
+# - Do NOT disable com.google.android.tungsten.setupwraith on this set: dumpsys wifi confirms it
+#   owns the saved Wi-Fi network, and disabling it would delete the network credentials and disconnect
+#   the TV from Wi-Fi and ADB.
+#
+# --- The critical entry: TCL re-enables promo packages on reboot
+# Disabling this system service prevents com.tcl.tv.tclhome_passive, com.tcl.notereminder,
+# and other promo services from coming back after reboots or app installs.
+com.tcl.overseasappshow                 # factory promo/app-show service, re-enables partner packages
+
+# --- TCL analytics, telemetry, and tracking
+com.tcl.bi                              # TCL analytics & telemetry (BI service, deviceinfo)
+com.tcl.guard                           # TGuard: device-use tracking, memory cleaner
+
+# --- TCL ads, recommendation waterfall, and push services
+com.tcl.tv.tclhome_passive              # pushes TCL promo content to home screen at boot
+com.tcl.waterfall.overseas              # TCL recommendation waterfall feed
+com.tcl.messagebox                      # pushed messages and promotional popups
+com.tcl.esticker                        # retail demo energy label overlay
+com.tcl.notereminder                    # notes and reminder widget
+com.tcl.channelplus                     # TCL FAST streaming channels
+com.tcl.smartalexa                      # unused Alexa integration
+com.tcl.t_solo                          # TCL background service
+com.tcl.keyhelp                         # remote key help overlay
+
+# --- Google telemetry, attribution, and stock recommendation rows
+com.google.android.feedback             # crash and feedback reporting
+com.google.android.partnersetup         # partner app attribution
+com.google.android.tvrecommendations    # stock launcher recommendation feed
+com.google.android.backdrop             # stock photo screensaver
+com.google.android.apps.nbu.smartconnect.tv # Smart Connect service
+
+# --- Unused preloaded Google media apps (comment out if you use them)
+com.google.android.youtube.tvmusic      # YouTube Music
+com.google.android.videos               # Google Play Movies & TV
+com.google.android.play.games           # Google Play Games
+
+# --- Voice assistant: off by choice (uncomment to disable, keep commented to use voice remote)
+# com.google.android.katniss            # Google Assistant / voice search
+# com.google.android.tv.assistant       # Assistant LED service
+# com.tcl.assistant                     # TCL voice service
+# com.tcl.micmanager                    # TCL microphone manager
+
+# --- Casting & screen mirroring (uncomment if not using Miracast / phone remote)
+# com.tcl.miracast                      # Miracast screen mirroring
+# com.tcl.MultiScreenInteraction_TV     # MagiConnect casting companion
+# com.google.android.tv.remote.service  # Google TV mobile phone remote app service
+# com.google.android.apps.mediashell    # Chromecast built-in (keep for Google Cast)
+
+# --- Firmware OTA updater: kept enabled so security updates still arrive
+# com.tcl.versionUpdateApp              # TCL OTA updater — uncomment to freeze updates
+
+# --- DO NOT DISABLE (load-bearing, required for TV hardware and functions)
+# com.tcl.tvinput                       # HDMI 1-3 and tuner driver (disabling causes "No Signal")
+# com.tcl.tv                            # Live TV / TV Activity
+# com.tcl.autopair                      # Bluetooth remote auto-pairing
+# com.tcl.tcl_bt_rcu_service            # Bluetooth remote service
+# com.tcl.partnercustomizer             # Remote key handling (handles keycode 83, inputs, shortcuts)
+# com.tcl.inputmethod.international     # On-screen keyboard
+# com.google.android.inputmethod.latin  # Gboard keyboard
+# com.tcl.settings                      # TCL device settings
+# com.android.tv.settings               # Android TV core settings
+# com.tcl.initsetup                     # System initialization
+# com.tcl.factory.view                  # Factory view components
+# com.tcl.system.server                 # System server plumbing
+# com.tcl.providers.config              # System configuration provider
+# com.google.android.tungsten.setupwraith # OWNS SAVED WI-FI NETWORK on this build — do NOT disable

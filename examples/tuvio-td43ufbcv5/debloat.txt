@@ -1,0 +1,97 @@
+# Tuvio TD43UFBCV5 (43", 4K, Yandex Market brand), built by Changhong:
+# ro.product.model "AI PONT", product DVB96, device/board central, MediaTek m7632, armv7l,
+# Google TV 14 (API 34), firmware UKNV.260506.001, about 1.9 GB RAM, UI 1920x1080 at 320 dpi.
+# Same platform and firmware as examples/benq-e55-735 (DVB96BQ). No Yandex apps preinstalled.
+#
+# Tested on the TV, batch by batch, with a reboot after batches 1+2, after the Home handover, after
+# the partnercustomizer line and at the end. Home, the Inputs menu (TV_INPUT), switching to HDMI,
+# YouTube playback and the remote checked after each; no FATAL or ANR in logcat, no crash buffer entries.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tuvio-td43ufbcv5/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tuvio-td43ufbcv5/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# restore.sh does not put the screensaver back: the stock value is
+#   com.google.android.apps.tv.dreamx/.service.Backdrop (screensaver_components and _default_component).
+#
+# Already disabled from the factory: com.google.android.marvin.talkback.
+# HOME candidates: launcherx (priority 2), setupwraith/.RecoveryActivity (priority 1), tv.settings/.FallbackHome.
+#
+# Quirks on this firmware, all checked on the TV:
+# - Port 5555 answered after the reboot that follows turning on USB + Wireless debugging (as on the BenQ).
+# - `cmd package set-home-activity com.gathin.tvhome/.MainActivity` prints Success but Home stays on
+#   launcherx while it is enabled (priority 2). Home moves only once launcherx is disabled; set it again
+#   after that and confirm with `dumpsys activity activities | grep mFocusedApp` (held across 4 reboots).
+# - The Wi-Fi network saved in the first-run wizard belonged to setupwraith (cname=...setupwraith).
+#   Forget and re-join it in Settings first; it then belongs to android.uid.system and setupwraith can go.
+#   With setupwraith disabled, RecoveryActivity never started (logcat) and Home has no delay.
+# - com.mediatek.android.leanbacklauncher.partnercustomizer comes back by itself: it lives in
+#   /vendor/odm and is enabled=0 (default) again after every reboot. Disabling it changed nothing
+#   visible and broke nothing (tv.service kept one PID, no tvlauncher.widget errors, Input worked),
+#   so it is left commented out below rather than disabled again.
+# - The IR remote ("MStar Smart TV IR Receiver", vendor 3697 product 0001):
+#   Input sends KEYCODE_TV_INPUT, routed by com.mediatek.tv.service to the system Inputs menu: works
+#   without any helper. KEYCODE_TV opens the Live TV app. YouTube works with the stock launcher gone.
+#   The Settings (gear) button arrives as scancode 498 (KEY_BRL_DOT2) and does nothing once launcherx
+#   is disabled. settings_key_scancodes 498 with HOME_KEY_SERVICE=1 brings it back, BUT with any
+#   key-filtering accessibility helper bound, a held volume button steps only once or twice instead of
+#   ramping (volume repeat is back as soon as the helper is off). Kept off here; Settings stays reachable
+#   from the launcher's Settings pill.
+#   The Netflix button is KEYCODE_STEM_1 -> com.mediatek.tv.service NetflixKeyReceiver; with Netflix
+#   disabled it does nothing (app_keys could map it to another app).
+# - com.mediatek.androidbox (WFDSinkTest_CH) has a MiracastService and uses com.mediatek.wfdsink: on
+#   this set it is the Miracast receiver, not just a test app.
+# - Standby is MediaTek suspend: from deep standby the Bluetooth remote cannot wake the TV, the IR remote
+#   and the power button can. That is not damage.
+# - Private DNS (dns.adguard-dns.com) validates and YouTube plays with it.
+#
+# KEEP, do not disable:
+# - com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.wwtv.tvcenter, com.mediatek.wwtv.setupwizard,
+#   com.google.android.tv.inputplayer, com.mediatek.android.tv.globalkeyoverlay: Live TV, HDMI, Inputs key.
+# - com.mediatek.autopair (remote pairing), com.homwee.synckey (remote keys),
+#   com.google.android.tv.remote.service (phone remote).
+# - com.homwee.factory, com.mediatek.tv.factorykey: also handle key broadcasts. Never LAUNCH them.
+# - com.homwee.dynamicbacklight, com.homwee.lightsensorservice: picture and auto brightness.
+# - com.homwee.upgrade, com.homwee.dmt.upgrade: firmware updates.
+# - com.dolby.android.audio.service, Play Store / Services / GSF, Gboard, WebView.
+
+# Batch 1: telemetry and ad services
+tv.anoki.acr.anokiacroptin                  # automatic content recognition (reports what is on screen)
+com.android.adservices.api                  # Privacy Sandbox ads
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Batch 2: vendor and Google extras
+com.homwee.store                            # Changhong app store
+com.homwee.help
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.google.android.videos                   # Google TV app, source of the home screen's recommendations
+
+# Batch 3: optional, uncomment what you do not use (this home kept the commented ones)
+com.netflix.ninja                           # Netflix
+com.amazon.amazonvideo.livingroom           # Prime Video
+com.google.android.youtube.tvmusic          # YouTube Music
+# com.homwee.mmp.screenshare                # AirPlay receiver (iPhone casting)
+# com.homwee.multiscreenshare               # screen sharing
+# com.mediatek.androidbox                   # WFDSinkTest_CH: the Miracast receiver on this set
+# com.homwee.mmp.fileexplorer               # USB file browser ("Media Player")
+# com.homwee.mmp.imageplayer                # USB photo viewer
+# com.google.android.apps.mediashell        # Chromecast
+# com.google.android.katniss                # voice search / microphone button
+
+# Batch 4: screensaver. First set the launcher's clock as screensaver:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#   settings put secure screensaver_default_component com.gathin.tvhome/.ClockDream
+com.google.android.apps.tv.dreamx           # ambient mode, mixes recommendations into the screensaver
+
+# Batch 5: stock home, LAST, only after launcher/ is installed.
+# Before setupwraith: `dumpsys wifi | grep -o 'cname=[^ ]*'`; if the Wi-Fi network belongs to it,
+# forget and re-join the network in Settings first, or the TV drops off Wi-Fi.
+com.google.android.tungsten.setupwraith      # disable before launcherx; costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+com.google.android.apps.tv.launcherx         # then: cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity
+# Launcher partner customization (MediaTek variant, tvlauncher.config only). The firmware re-enables it at
+# every boot (see above), so there is no point listing it. The Google-named twin
+# (com.google.android.leanbacklauncher.partnercustomizer) is not installed here.
+# com.mediatek.android.leanbacklauncher.partnercustomizer

@@ -1,0 +1,87 @@
+# Home+ (中嘉寬頻, Taiwan) STB-6252C, Inspur "Homeplustv", MediaTek MT5221, 1.85 GB RAM, 32-bit (armeabi-v7a)
+# Android TV 11 (API 30), Operator Tier. Tested on build Homeplustv/STB6252C/STB6252C:11/MAIN/2.22.12 (2024-09-05 patch).
+#
+# Apply:   tools\disable.ps1 -TvHost <box ip> examples\homeplus-stb-6252c\debloat.txt
+# Undo:    tools\restore.ps1 -TvHost <box ip> examples\homeplus-stb-6252c\debloat.txt -Stock com.inspur.isoc.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Connecting: Developer options > USB debugging. service.adb.tcp.port=5555 is baked into the firmware,
+# so port 5555 is open whenever USB debugging is on. ro.adb.secure=1: accept the prompt on screen once.
+# No device owner / MDM. Sideloading is allowed (install_non_market_apps=1).
+#
+# Quirks: `screencap` returns a 0-byte file on this box, so verify Home with
+# `dumpsys window | grep mCurrentFocus` instead of screenshots.
+#
+# Stock launcher: com.inspur.isoc.launcher (CNS_Launcher, HOME priority 2). There is NO Google launcher
+# on this box; the only other HOME claimant is com.android.tv.settings/.system.FallbackHome. The
+# launcher rotates friDay 影音 promo posters every 5 s (RecommendPosterRotationFrameView). Its embedded
+# TvInputService is not a registered TV input (dumpsys tv_input lists only the DVB-C tuner
+# com.inspur.tang.mwtvinput/.MWTvInputService/HW28), so disabling the launcher does not touch cable TV.
+# It is NOT in this list: launcher\build-and-install.ps1 -StockLauncher com.inspur.isoc.launcher disables
+# it once com.gathin.tvhome owns Home. While it stays enabled, HOME priority 2 beats the new launcher's 0
+# and `cmd package set-home-activity` to com.gathin.tvhome is ignored.
+#
+# Live TV: com.android.tv (operator build LiveTv_CNS) on the tuner above. It cannot parse the passthrough
+# channel URI the launcher's Inputs menu sends on a cold start (ContentUriUtils.safeParseId), and its window
+# closes again, which looks like a crash. Set "live_tv_input_id": "none" in a theme so the Live TV row starts
+# the app normally, and "input_sources": ["HW28=-"] to drop the tuner's own row, which sends the same URI.
+#
+# Firmware updater: com.inspur.httpupgrade (the operator's OTA client, a PERSISTENT priv-app) stays ON:
+# its line at the end is commented out. The tested unit had it disabled, because its owner chose to freeze
+# the firmware so that an operator update cannot re-enable the packages below or hand Home back to the
+# stock launcher. Uncomment the line to do the same. Then no firmware, security-patch or channel-table
+# updates arrive while it is off, and being PERSISTENT an empty process still starts at boot (no services,
+# about 5 MB). To take an update later: `pm enable com.inspur.httpupgrade`, let it run, then re-apply the
+# list with tools\check.py --fix.
+#
+# Watchdog: com.inspur.android.daemon is left enabled. From its APK: LightsService (front LED),
+# ProcessMonitorService (force-stops cached processes not on the allow list in assets/processes.json),
+# GlobalKeyReceiver (remote keys such as YouTube), and boot-time sleep/dream/animation/HDMI-CEC settings.
+# Nothing in it re-enables packages or resets Home, and it did not kill com.gathin.tvhome in the
+# background (Android protects the Home process). Disabling it would lose the LED and the YouTube key.
+#
+# Wi-Fi: disabling a uid 1000 com.inspur.* package logs "Remove all networks for app"; the saved networks
+# survived because their creator is android.uid.system. Check `cmd wifi list-networks` before and after.
+#
+# Leave alone: com.inspur.tang.mwtvinput (DVB-C cable tuner, TIF input), com.android.tv (Live TV),
+# com.inspur.cns.settings (channel and time settings), com.atv.keymanage (remote keys), com.atv.setupwizard,
+# com.actions.* (Bluetooth remote firmware, pairing, volume), com.omni.simplesetup (remote's TV/AVR IR setup),
+# com.omni.modeswitch, com.omni.sci, com.mstar.* and com.mtk.systemcontrol (SoC services),
+# com.google.android.tv.remote.service (BT remote), com.google.android.tungsten.setupwraith,
+# Play Store / Play services, the keyboard. Never start com.inspur.factory (factory test).
+#
+# Kept on by the owner's choice (disable them if you do not use them): com.google.android.katniss
+# (voice search, 110-196 MB resident), com.google.android.apps.mediashell (Chromecast built-in, about 137 MB),
+# com.google.android.youtube.tv, com.disney.disneyplus, tw.com.app.watchtv, com.inspur.member.center,
+# com.omni.otademo (ODM OTA), com.inspur.cnsvbm (VbmService + AreaLimitationService; purpose unknown,
+# may be tied to the cable entitlement, untested).
+#
+# Netflix: the box is not Netflix certified (no ro.netflix.* properties); Play Store answers
+# "your device isn't compatible with this version".
+
+# Ads on the home screen and interstitials
+com.inspur.adservice                      # CNS_AD: operator ad service, resident BaseService/ADService (system uid)
+com.litv.interstital                      # LiTV interstitial ad SDK (LiAdSDK)
+com.inspur.cns.ticker                     # 跑馬燈 FloatTextService: scrolling text overlay fed by DVB DSMCC
+
+# Google recommendations / telemetry
+com.google.android.tvrecommendations      # recommendation rows + notification panel service (~26 MB resident)
+com.google.android.feedback               # Google feedback reports
+com.google.android.syncadapters.calendar  # calendar sync, nothing on the box uses it
+
+# Preloads nothing on a TV box needs
+com.google.android.play.games             # Play Games
+
+# Streaming apps the owner does not use (comment out the ones you watch). All but HBO GO are
+# UPDATED_SYSTEM_APP: base APK in /system/product/app, Play update in /data. They auto-start at boot and
+# each holds 130-170 MB while idle, so this group is where the RAM goes.
+com.skysoft.kkbox.android                 # KKBOX (base /system/product/app/KKBOX)
+com.catchplay.asiaplay.common.tv          # CATCHPLAY+
+com.litv.cable.home                       # LiTV
+net.fetnet.fetvod.tv                      # friDay 影音 (base /system/product/app/friDayAPP); the launcher's poster carousel advertises it
+tv.fourgtv.video                          # 四季線上 4gTV (base /system/product/app/4gTVshow)
+com.hbo.asia.androidtv                    # HBO GO (plain third-party app, Play Store reinstalls it)
+com.google.android.videos                 # Google Play Movies & TV (base /system/product/app/VideosPano)
+
+# Operator firmware updater: kept on by default (see header). Uncomment to freeze the firmware.
+# com.inspur.httpupgrade                  # 中嘉 OTA client, resident HttpService, PERSISTENT

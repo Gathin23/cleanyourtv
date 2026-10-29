@@ -10,6 +10,6 @@
   "columns": 6,
   "stock_home_redirect": "com.google.android.tvlauncher",
   "icon_only_buttons": true,
-  "wifi_label_width": 320,
+  "wifi_label_width": 300,
   "tile_menu": true
 }

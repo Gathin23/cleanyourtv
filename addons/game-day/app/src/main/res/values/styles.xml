@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Screen" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@drawable/screen</item>
+        <item name="android:colorAccent">#FF3CBE78</item>
+    </style>
+
+    <style name="Title">
+        <item name="android:textSize">30sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Sub">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#8CFFFFFF</item>
+    </style>
+
+    <style name="Button">
+        <item name="android:background">@drawable/row</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:minHeight">44dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#E6FFFFFF</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+</resources>

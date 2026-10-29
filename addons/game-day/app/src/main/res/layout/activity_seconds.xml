@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Seconds per turn: Left and Right change it by 5, OK saves, Back leaves it as it was. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:paddingStart="48dp" android:paddingEnd="48dp" android:paddingTop="28dp">
+    <TextView style="@style/Title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/seconds" />
+    <TextView style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+        android:text="@string/seconds_text" />
+    <TextView android:id="@+id/value" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="40dp" android:focusable="true" android:focusableInTouchMode="true"
+        android:textSize="72sp" android:fontFamily="sans-serif-thin" android:textColor="#FFFFFFFF" />
+    <TextView style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp"
+        android:text="@string/seconds_hint" />
+</LinearLayout>

@@ -1,0 +1,42 @@
+# Xiaomi Mi Box S (model MIBOX4, codename oneday), Android TV 12 (SDK 31), firmware STTC.230106.001.4560,
+# security patch 2023-09-05, 2 GB RAM, 1920x1080. Upstream's xiaomi-mi-box-s list is the same box on Android 9;
+# this unit runs Xiaomi's Android 12 update.
+# Fingerprint: Xiaomi/oneday/oneday:12/STTC.230106.001/4560:user/release-keys
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/xiaomi-mi-box-s-android12/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/xiaomi-mi-box-s-android12/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# A streaming box: no HDMI-in or tuner. Stock launcher: com.google.android.tvlauncher (the scripts' default).
+# The remote and its buttons on this build: README.md in this folder.
+#
+# Notes from this box (in daily family use since 2026-10-22 with a custom launcher as Home):
+# - Every active line below is disabled on this unit except the two telemetry apps, which were removed for
+#   user 0 on 2026-10-22 before this list existed; disabling them is the reversible way to get the same result.
+# - The remote's mic button is ASSIST and goes to Google Assistant through the TV remote service; no app can
+#   intercept it unless it holds the Assistant role.
+# - Xiaomi's own volume pill (SystemUI VolumeVerticalUIManager) cannot be hidden without root on Android 12.
+# - With PatchWall, the recommendations and Xiaomi's screensaver off, the box idles noticeably cooler and the
+#   launcher scrolls without stutter; nothing else changed in two days of Netflix, Prime Video and YouTube.
+
+# Xiaomi telemetry
+com.miui.tv.analytics                  # Mi analytics: reads logs and app usage
+com.xiaomi.statistic                   # Xiaomi usage stats uploader
+
+# PatchWall, content rows, ad-funded channels
+com.mitv.tvhome.atv                    # PatchWall
+com.mitv.tvhome.michannel              # Mi Channel rows
+com.mitv.tvhome.mitvplus               # Mi TV+ ad-funded channels
+com.google.android.tvrecommendations
+com.xm.webcontent                      # Xiaomi web promos
+
+# Xiaomi updater: left enabled here. This unit has both disabled by the family's choice (no surprise
+# PatchWall reinstalls); uncomment only if you will re-enable them now and then to check for an update.
+# com.xiaomi.mitv.updateservice        # firmware and PatchWall updates, installs apps
+# com.mitv.download.service            # its download helper
+
+# Personal choice: Mi casting
+com.mitv.milinkservice                 # Mi cast (MiLink); Chromecast is separate and keeps working
+
+# Xiaomi screensaver, replaced by the launcher's clock
+com.mitv.dream                         # set screensaver_components to another dream first, or the screen stays on

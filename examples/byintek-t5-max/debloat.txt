@@ -10,7 +10,7 @@
 # Deliberately NOT in this list (measured on this device, 2026-10-20):
 # - com.google.android.tungsten.setupwraith: `dumpsys wifi` shows cname=com.google.android.tungsten.setupwraith,
 #   so disabling it would delete the saved Wi-Fi network and drop the projector off the network
-#   (the Wanbo failure). It stays enabled; rejoin Wi-Fi from Settings first if that ever changes.
+#   (the Wanbo failure). The list leaves it enabled; rejoin Wi-Fi from Settings first if that ever changes.
 # - com.google.android.apps.tv.launcherx and setupwraith were disabled separately, later, only
 #   after the owner forgot and rejoined the Wi-Fi network in Settings (cname then read
 #   android.uid.system:1000): `pm disable-user --user 0` for both, then

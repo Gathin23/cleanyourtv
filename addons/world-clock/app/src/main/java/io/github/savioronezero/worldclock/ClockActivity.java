@@ -36,7 +36,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.json.JSONArray;
-import org.json.JSONException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -75,23 +74,10 @@ public final class ClockActivity extends Activity {
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        preferences = getSharedPreferences("world_clock", MODE_PRIVATE);
-        List<String> saved = new ArrayList<>();
-        try {
-            String raw = preferences.getString("zones_v1", "[]");
-            if (raw != null && raw.length() < 8192) {
-                JSONArray values = new JSONArray(raw);
-                for (int i = 0; i < Math.min(values.length(), 100); i++) {
-                    Object id = values.get(i);
-                    if (id instanceof String) saved.add((String) id);
-                }
-            }
-            format = preferences.getInt("format_v1", 0);
-        } catch (JSONException | ClassCastException ignored) {
-            // Damaged local preferences fall back to the documented defaults; no external data is used.
-        }
-        if (format < 0 || format > 2) format = 0;
-        ids = ClockModel.restore(saved);
+        preferences = ClockPreferences.store(this);
+        ClockPreferences saved = new ClockPreferences(preferences);
+        format = saved.format;
+        ids = saved.ids;
         catalogue = ClockModel.catalogue();
         selected = state == null ? 0 : Math.max(0, Math.min(ids.size() - 1, state.getInt("selected", 0)));
         render();
@@ -160,6 +146,9 @@ public final class ClockActivity extends Activity {
         Button clockFormat = button(getString(R.string.clock_format));
         clockFormat.setOnClickListener(v -> chooseFormat());
         toolbar.addView(clockFormat, buttonParams()); focusNodes.add(clockFormat);
+        Button screensaver = button(getString(R.string.screensaver));
+        screensaver.setOnClickListener(v -> screensaverOptions());
+        toolbar.addView(screensaver, buttonParams()); focusNodes.add(screensaver);
         root.addView(toolbar);
         reference = text("", 15, MUTED);
         root.addView(reference, new LinearLayout.LayoutParams(-1, dp(38)));
@@ -199,7 +188,7 @@ public final class ClockActivity extends Activity {
             node.setNextFocusDownId(target(i, ClockNavigation.DOWN));
         }
         refresh();
-        focusNodes.get(2 + Math.max(0, Math.min(selected, ids.size() - 1))).requestFocus();
+        focusNodes.get(ClockNavigation.TOOLBAR + Math.max(0, Math.min(selected, ids.size() - 1))).requestFocus();
     }
 
     private int target(int node, int direction) {
@@ -261,6 +250,43 @@ public final class ClockActivity extends Activity {
                 .setSingleChoiceItems(new String[]{getString(R.string.format_system), getString(R.string.format_12),
                         getString(R.string.format_24)}, format, (d, which) -> {
                     format = which; save(); refresh(); d.dismiss();
+                }).setNegativeButton(R.string.close, null).create());
+    }
+
+    private void screensaverOptions() {
+        ClockPreferences options = new ClockPreferences(preferences);
+        String[] brightness = {getString(R.string.dim), getString(R.string.medium), getString(R.string.bright)};
+        String[] backgrounds = {getString(R.string.gradient), getString(R.string.starfield),
+                getString(R.string.world_map), getString(R.string.plain)};
+        String[] labels = {getString(R.string.preview),
+                getString(R.string.background_option, backgrounds[options.background]),
+                getString(R.string.motion_option, getString(options.motion ? R.string.motion_on : R.string.motion_reduced)),
+                getString(R.string.brightness_option, brightness[options.brightness]),
+                getString(R.string.tv_screensaver_settings)};
+        show(new AlertDialog.Builder(this).setTitle(R.string.screensaver)
+                .setItems(labels, (d, which) -> {
+                    if (which == 0) startActivity(new Intent(this, ClockPreviewActivity.class));
+                    else if (which == 1) {
+                        show(new AlertDialog.Builder(this).setTitle(R.string.background)
+                                .setSingleChoiceItems(backgrounds, options.background, (choice, value) -> {
+                                    preferences.edit().putInt("dream_background_v1", value).apply();
+                                    choice.dismiss();
+                                }).setNegativeButton(R.string.close, null).create());
+                    } else if (which == 2) {
+                        preferences.edit().putBoolean("dream_motion_v1", !options.motion).apply();
+                        screensaverOptions();
+                    } else if (which == 3) {
+                        show(new AlertDialog.Builder(this).setTitle(R.string.clock_brightness)
+                                .setSingleChoiceItems(brightness, options.brightness, (choice, value) -> {
+                                    preferences.edit().putInt("dream_brightness_v1", value).apply();
+                                    choice.dismiss();
+                                }).setNegativeButton(R.string.close, null).create());
+                    } else {
+                        try { startActivity(new Intent(android.provider.Settings.ACTION_DREAM_SETTINGS)); }
+                        catch (android.content.ActivityNotFoundException | SecurityException unavailable) {
+                            Toast.makeText(this, R.string.screensaver_unavailable, Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }).setNegativeButton(R.string.close, null).create());
     }
 

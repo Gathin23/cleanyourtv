@@ -1,0 +1,110 @@
+# Vidda C1S 4K laser projector (Hisense sub-brand; device MT9669, board m7642), Android 9,
+# build PPR2.180905.006.A1 (02.02.60.02), VIDAA 6.6, China JuUI. 3.6 GB RAM, 1080p UI.
+# Same com.jamdeo.* / com.hisense.* namespace as examples/vidda-mt9653/, an older and
+# stricter firmware: several of its locks are documented below.
+# Stock launcher: com.jamdeo.tv.vod (聚好看 JuUI). It STAYS ENABLED on this list — see
+# the Home-key note; there is no launcher swap here, only the debloat.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/vidda-c1s-mt9669/debloat.txt
+# Undo:    tools/restore.sh examples/vidda-c1s-mt9669/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: unlike the MT9653 sets, ro.adb.secure=1. Turning on debugging shows "允许 USB 调试吗?"
+# on screen and the host's key must be confirmed there (勾选一律允许) before adb works.
+#
+# The firmware ships a package install blacklist (settings global install_black_list; it
+# names Dangbei launcher, IPTV loaders, TVBox forks), but it is not enforced on adb
+# installs — sideloading works. Launchers are fought differently: PackageManager keeps
+# resolving HOME to com.jamdeo.tv.vod no matter what. cmd package set-home-activity
+# reports Success and writes a preferred record (dumpsys package shows it), yet
+# resolve-activity and real Home launches still return the stock launcher.
+# persist.vt.use_home_pkg is shell-writable here but empty by default and the Home key
+# ignores it.
+#
+# Home key: third-party accessibility services receive window changes for ordinary apps
+# but NONE for com.jamdeo.tv.vod — Aerial's unpatched Home Guard never sees 聚好看 come to
+# the front (the binding is not deaf: events for other apps arrive; only the launcher is
+# shielded). UsageStats still records its MOVE_TO_FOREGROUND with the right class, so
+# Aerial works once foregroundCheck runs on every Android version instead of SDK <= M:
+# one-line patch proposed upstream in pengchujin/aerial-tv#545 (applies to 1.47). With
+# that build, Home from any app lands on 聚好看 and is brought back to Aerial in about a
+# second; boot goes straight to Aerial. Keep the stock launcher enabled — it stays the
+# system Home, plays its content from Aerial's grid, and gives the Home key somewhere to
+# land that the guard can see. 聚好看 renders normally with both ad sidecars below
+# disabled (screenshot-checked).
+#
+# ⚠ com.hisense.tv.tiletransition is NOT in this list on purpose: it hosts
+# TileAnimationService, which the source panel binds to before switching inputs. Disabled,
+# picking HDMI does nothing (same as the mt9653 note). Re-enabling fixes it immediately.
+#
+# Voice is deliberately kept on this list (the owner uses the mic): keylab.speech.view.vidaa
+# and the whole com.keylab / iflytek / hisense voice stack stay enabled — unlike
+# examples/vidda-mt9653/, which trades the voice UI for removing its second home screen.
+# On this firmware that app raises no home-screen problem worth the loss.
+#
+# The active screensaver was the desk clock (com.google.android.deskclock), not the ad
+# screensaver below; aerial's install.sh switches screensaver_components to Aerial's
+# dream, so com.jamdeo.screensaver disables safely.
+#
+# Verified: applied in three batches (telemetry/push, ads/screensaver, factory leftovers)
+# with a focus check between batches, then two cold reboots. Home, Wi-Fi, casting, IMEs,
+# Bluetooth remote, voice, 聚好看 playback all checked the same day; not yet lived with
+# for weeks.
+
+# Hisense telemetry, reporting and push
+com.hisense.hitv.das
+com.hisense.logupload
+com.hisense.service.hproxy                      # LoopingService + network-change receiver, polls forever
+com.hisense.service.message                     # the vendor push channel
+
+# Ads and operator content
+com.hisense.business.ad                         # ships Alibaba Baichuan + CIBN shopping SDKs; installed as a user app
+com.hisense.service.ad                          # its WatchingAccessibilityService was registered in enabled_accessibility_services
+com.hisense.tv.weather                          # weather card, a content feed
+
+# Retail, hotel, factory and leftovers
+com.hisense.demonstrate
+com.hisense.hotelmenu
+com.hisense.autotest
+com.hisense.electronictutorial                  # e-manual
+com.hisense.ar.baike
+com.jamdeo.tv.fte                               # first-run wizard, long done
+# com.hisense.usbupgrade                        # kept: the USB firmware upgrade and recovery path
+
+# Duplicate / unused lifestyle apps (casting stacks deliberately kept)
+com.hisense.tv.foodmanage
+com.jamdeo.calendar
+
+# The 拍信创意 ad screensaver; not the active screensaver here, and Aerial's dream owns
+# screensaver_components by the time this list runs
+com.jamdeo.screensaver
+
+# AOSP leftovers on a TV
+com.android.printspooler
+
+# ---------------------------------------------------------------------------------------------
+# Do NOT disable (checked on this device):
+#   com.jamdeo.tv.vod             聚好看, the stock launcher — see the Home-key note above
+#   com.hisense.tv.tiletransition TileAnimationService, required by the source panel (see above)
+#   com.jamdeo.tv.livetv          Live TV / HDMI renderer
+#   com.jamdeo.tv.service         TVServices, the JNI side of source switching
+#   com.hisense.tv.inputs         the source panel and TaskCenter
+#   com.hisense.tv.baseservice    TV base services
+#   com.hisense.bluetoothpair     remote pairing; losing it can leave you without a remote
+#   com.sohu.inputmethod.sogou.tv and com.hisense.padinputmethod  the two IMEs
+#   com.hisense.raycodereceiver   remote code path
+#   com.hisense.uifac, .systeminfo, .hiservice   factory UI, system info, MQTT base
+#   com.hisense.laser.closetv     laser engine service (projector hardware)
+#   com.hisense.screen            projector screen/ambient service
+#   com.hisense.aiod, .aiservice, .ai.service   AI picture quality
+#   com.keylab.speech.core.vidaa, com.keylab.speech.view.vidaa  voice core and UI (kept on purpose)
+#   com.hisense.vidaaassistant, .msvoicetome, .tv.aivirtualassistant  voice assistant
+#   com.iflytek.xiri, com.intelligent.speech, com.hispeech.ai.area  voice stack
+#   com.jamdeo.updateservice      OTA; disable it and firmware updates stop
+# Kept by choice: the five casting stacks (com.ms.weshare, com.ms.ucast.usbcast,
+#   com.multiscreen.airplay, com.ms.hicast.mpcastapp.sink, com.hisense.multiscreen.screenhelper,
+#   com.kookong.tvplus, com.hisense.wifidisplay, com.hisense.ms.webhicastapp), NAS
+#   (com.hisense.nasservice, com.hisense.nas.pt), com.hisense.childlock, com.hisense.quickmenu,
+#   com.hisense.hitv.hicloud.account, com.hisense.hitv.payment.
+# Already disabled at the factory: com.android.contacts, camera2, calendar, music,
+#   providers.userdictionary, providers.contacts.

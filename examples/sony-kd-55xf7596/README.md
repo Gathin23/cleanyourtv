@@ -20,6 +20,22 @@ leftovers [`sony-kd-55xe8596/`](../sony-kd-55xe8596/debloat.txt) disables, with 
   and Home work on the real remote without the accessibility services. Inputs pill switches HDMI 1.
 - No antenna was connected: for DVB-T only the tuner service answering was checked, not reception.
 
+## Second unit (65-inch, EU, 2026-10-28)
+
+`tools/tv.py --probe` on this set returns the same identity as the 55-inch unit: model `BRAVIA 4K GB ATV3`,
+device `BRAVIA_ATV3_4K`, product `BRAVIA_ATV3_4K_EU`, firmware `PTT1.190515.001.S54 672201`. The inch size
+is the owner's; getprop does not carry a KD-65 name. The panel is 3840x2160 and the board is mt5891.
+[`sony-kd-55xf8096/`](../sony-kd-55xf8096/debloat.txt) has this same fingerprint, so the two lists cannot
+be told apart by a fingerprint prefix.
+
+`com.gathin.tvhome` was the focused Home app, and `com.google.android.tvlauncher` was disabled. Already
+disabled from this list: Samba TV, promos, Sony Select, bivlinfo, the recommendation rows, the Bravia
+auto-install, the three demo packages, the Sony and Qterics device agents, both bug reporters, feedback,
+and the three help apps. Still enabled, so not tested on this unit: Discover, both launcher-customizer
+packages, the Sony Select overlay, and every package under "Off by choice" and "Hotel / professional
+mode". This unit was not reboot-checked and has not been lived with for days. `com.sony.dtv.scrums.action`
+is installed and was left enabled.
+
 ## Kept on purpose
 
 Chromecast, screen mirroring, DLNA, the phone remote, Sony IP control (`webapi.core`, `remoteaccess`) and

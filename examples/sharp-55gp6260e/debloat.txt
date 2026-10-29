@@ -1,0 +1,83 @@
+# SHARP 55GP6260E (reported as "Sharp Google TV", device kaitak, MediaTek MTK9612), Google TV, Android 11 (SDK 30)
+# Firmware build: MTK9612PA-userdebug 11 RTM9.241015.013 59. EU set, German UI.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
+# Setup wizard: com.google.android.tungsten.setupwraith (claims HOME with .RecoveryActivity).
+# Live TV app: com.mediatek.wwtv.tvcenter; HDMI/tuner inputs: com.mediatek.tvinput.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-55gp6260e/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-55gp6260e/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Tested on one unit in a single session, not over several days: screenshots after each batch, one reboot
+# (all packages stayed disabled, Home stayed the new launcher, the TV did not open Live TV by itself),
+# the Inputs menu listing HDMI 1-4, and the real remote's gear and YouTube buttons. Live TV and HDMI
+# playback were not opened. Treat it as a starting point and report anything that broke.
+#
+# ro.adb.secure is unset on this build, so port 5555 was open to the whole LAN while debugging was on:
+# switch USB debugging off afterwards and reboot (it stayed closed after the reboot).
+#
+# WARNING: the Wi-Fi network saved during first setup belonged to setupwraith
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`). Forget it and re-join it in Settings before disabling
+# setupwraith, or Android deletes the network and the TV drops off Wi-Fi and ADB. Done here: it then
+# belonged to com.android.tv.settings and stayed connected.
+#
+# Home: set-home-activity alone resolved to setupwraith's RecoveryActivity while it was enabled; the
+# handover only held once setupwraith and then launcherx were disabled (not a CVTE board).
+#
+# Remote (Bluetooth/IR remote): the gear sends KEYCODE_FOCUS (80, scancode 204) and the YouTube button
+# KEYCODE_TV_INPUT_COMPOSITE_1 (scancode 74), both through the MediaTek hotkey dispatcher, which asked the
+# stock launcher and the YouTube app. With them gone the buttons did nothing. Mapped with the launcher's
+# HOME_KEY_SERVICE=1: settings_key_keycodes 80 and app_keys KEYCODE_TV_INPUT_COMPOSITE_1:org.smarttube.stable.
+# Both worked on the real remote; the price was that a held volume key moves one step per press.
+# Input and Home needed no helper. Two more buttons break the same way and were mapped the same way:
+#   Prime Video  KEYCODE_TV_INPUT_COMPONENT_2 (183): the firmware starts com.amazon.amazonvideo.livingroom
+#                directly (AMAZON_BUTTON), so with Prime Video disabled it does nothing. Re-enable the app to get
+#                the stock behaviour back, or map it: app_keys KEYCODE_TV_INPUT_COMPONENT_2:<package>.
+#   FAV APP      KEYCODE_BUTTON_11: com.mediatek.wwtv.setupwizard's FavKeyReceiver opens com.mtc.emanual
+#                (hardcoded, no setting), so with the e-manual disabled it does nothing. Re-enable
+#                com.mtc.emanual to restore it, or map it: app_keys KEYCODE_BUTTON_11:<package>.
+#   Here they open Spotify and LocalSend through HOME_KEY_SERVICE=1; both checked on the real remote.
+#   Netflix      KEYCODE_STEM_1 (scancode 104): firmware opens com.netflix.ninja, so with Netflix disabled it does
+#                nothing; app_keys KEYCODE_STEM_1:<package> maps it (Jellyfin here, checked on the real remote).
+#
+# Private DNS (dns.adguard-dns.com) validated on this set; not part of the list.
+#
+# Re-enabled along the way: only the stock launcher, once and automatically, when launcher/build-and-install.sh
+# rolled the first handover back because setupwraith took Home. Nothing else was re-enabled.
+#
+# Already disabled before this list, left as they were: com.android.tv.settings.mtc.overlay,
+# com.google.android.marvin.talkback, com.mtc.emanual.overlay.ok (also listed below, harmless).
+#
+# Kept on purpose: Play Store + Play Services, Gboard, Dolby audio, com.mediatek.tvinput / com.mediatek.tv.service /
+# com.mediatek.wwtv.tvcenter (Live TV and HDMI), com.mediatek.wwtv.setupwizard (channel scan),
+# com.mediatek.wwtv.mediaplayer (USB media player; tools/disable.sh skips it because it holds
+# TV_INPUT_HARDWARE, but `cmd package query-services --components -a android.media.tv.TvInputService` does not list
+# it here, only com.mediatek.tvinput and the TV agent, so it is probably a false positive. Not tried: no input check), com.mediatek.autopair (remote pairing), com.mediatek.mtc.factory and
+# mediatek.factorymenu.ui (factory tools, never launched), com.mediatek.androidbox (Wi-Fi Display Sink test app),
+# com.google.android.katniss + com.google.android.tv.remote.service (voice), com.google.android.apps.mediashell
+# (Chromecast), com.google.android.tts, com.google.android.apps.tv.dreamx, the user-installed browser and file managers.
+
+# --- Partner rows, store demo and feedback ---
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows for the stock launcher
+com.google.android.partnersetup              # Play partner customizations
+com.google.android.feedback
+fusion.android.tv.demo                       # store/demo mode
+com.mtc.emanual                              # on-screen manual
+com.mtc.emanual.overlay.ok
+com.google.android.syncadapters.calendar
+
+# --- Apps the owner does not use (off by choice; all still installed) ---
+com.netflix.ninja
+com.disney.disneyplus
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tv                # the YouTube button then opens nothing unless remapped (see above)
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.videos
+tv.twitch.android.app
+com.nordvpn.android
+
+# --- Stock Google TV home and setup wizard ---
+# Disable only after installing and verifying the new launcher, and after the Wi-Fi step above!
+com.google.android.tungsten.setupwraith      # first-run wizard; claims HOME. Re-enable before a factory reset
+com.google.android.apps.tv.launcherx         # stock Google TV home

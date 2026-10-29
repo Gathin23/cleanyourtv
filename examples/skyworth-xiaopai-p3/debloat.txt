@@ -1,0 +1,49 @@
+# Skyworth Xiaopai P3 (Q5001, codename cupid-p2), Android 10, firmware
+# cupid_p2-userdebug 10 QP1A.191105.004 eng.Androi.20220117.163650
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-xiaopai-p3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-xiaopai-p3/debloat.txt com.skyworthdigital.sky2dlauncherv4
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Lived on for a few days on a 2019 box with 2 GB RAM: the aim was a box that lands in a clean
+# launcher and starts live TV by itself, for someone who only wants to press the power button.
+#
+# Two things about this firmware, worth knowing before you disable anything:
+#   - Home is filtered by package-name PREFIX. logcat says "PackageManager: block home apk <pkg>"
+#     or "allow home apk <pkg>"; the whitelist is prefix-matched and includes com.ktcp.launcher,
+#     so a sideloaded launcher only becomes selectable when its applicationId starts with one of
+#     those prefixes. `settings put global enable_launcher_components` and
+#     `setprop sys.launcherlist.enable 0` are both reset on boot - do not spend time on them.
+#   - Every third-party boot receiver is blocked: "BroadcastQueue: Block auto start app from
+#     broadcast: <pkg>". BOOT_COMPLETED never reaches a sideloaded app, and neither does a
+#     foreground-service self-restart. The only thing that worked was the launcher itself calling
+#     startForegroundService for our own service on its first start after boot.
+#   - The screensaver is rewritten to the Skyworth ad component on every boot, so setting it back
+#     is not a one-off either.
+#
+# Miracast is off here because nobody casts to this box; comment it back in if you do.
+# The stock launcher is last, and only because a replacement was confirmed as Home first.
+
+# Skyworth ads, shop rows and the first-run guide
+com.tianci.ad                            # ad service behind the stock home and the screensaver
+com.skyworthdigital.ott.guide            # first-run guide, long since completed on this box
+com.mipt.store                           # Skyworth app store
+com.jd.smartservicetwo                   # JD shopping service on the home screen
+
+# Skyworth background services
+com.skyworthdigital.softap               # Wi-Fi hotspot; this box is on Ethernet
+com.skyworthdigital.smarthome
+com.skyworthdigital.skywechatclient      # WeChat TV client
+com.skyworthdigital.optimization         # "optimiser" that only reposts ads
+com.skyworthdigital.skycleandisk         # storage cleaner, same story
+com.skyworthdigital.remotedebug          # vendor remote debugging; close ADB instead
+# com.nanosic.www.otaservice             # firmware updates; disabled on the tested box (uncomment to do the same)
+com.skyworthdigital.miracast             # casting; nobody uses it here
+
+# Allwinner board agents (dragonbox is the board's own test/factory app)
+com.softwinner.dragonbox
+com.softwinner.agingdragonbox            # factory burn-in agent
+
+# Stock launcher: com.skyworthdigital.sky2dlauncherv4, disabled only after the replacement was confirmed as Home.
+# It has to come back first: tools/restore.sh <list> com.skyworthdigital.sky2dlauncherv4
+com.skyworthdigital.sky2dlauncherv4

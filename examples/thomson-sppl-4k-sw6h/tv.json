@@ -1,0 +1,6 @@
+{
+  "tv": "Thomson SPPL 4K Google TV (Skyworth SW6H, MediaTek, same board as `skyworth-sw-22sa/`), India, ~1.9 GB",
+  "os": "Android TV 14 (Google TV home)",
+  "brand": "Thomson",
+  "notes": "Skyworth recommendation rows + partner customizer, aftersale, dailymanage, ePop/Demo Now retail demos, disclaimer popups, Play auto-installs, Android ad services; Play Movies and Play Games off by choice; Assistant, Chromecast, Miracast/DLNA, Prime Video, YouTube Music kept; setupwraith owned the setup Wi-Fi (forget + re-join first); remote's Settings button is keycode 83, set in config.json (HOME_KEY_SERVICE=1); reboot-checked"
+}

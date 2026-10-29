@@ -11,6 +11,10 @@ visibly shorter. Slices whose name matches --highlight are drawn in magenta, and
 BEFORE and AFTER are .pftrace files or folders; for a folder the median run is drawn, by the first of
 time to first frame, median frame time and median RenderThread draw that every run has. Needs the optional packages in
 tools/requirements-perf.txt. Read tools/flamechart.md first.
+
+--out is the PNG to write, and it is checked before the traces are opened: a folder, a name with no
+extension, and a folder that is not there are argument errors (exit 2) rather than a traceback after the
+traces have been read.
 """
 import argparse
 import colorsys
@@ -186,10 +190,37 @@ def draw(panels, rx, title, subtitle, out, width=1600):
     return im.size
 
 
+def output_path(value):
+    """The PNG --out names, judged before the traces are opened and before Pillow is imported.
+
+    im.save() answers a folder with IsADirectoryError (or ValueError: unknown file extension, when the
+    folder's name has no suffix), a name with no extension with that ValueError, and a folder that is not
+    there with FileNotFoundError - each a traceback with exit 1, thrown after Perfetto's query engine has
+    been started and every trace read. 1 is also what a run that drew no chart returns, so the reader
+    cannot tell a typo from a chart that failed. Refused here it is an argument error, before anything is
+    read; a suffixless file cannot be saved at all, so it is refused rather than guessed at.
+    """
+    if not value:
+        raise argparse.ArgumentTypeError("--out is empty: name the PNG to write, e.g. --out chart.png")
+    if os.path.isdir(value):
+        raise argparse.ArgumentTypeError(f"{value} is a folder, so no PNG could be written there: name the "
+                                         f"file, e.g. --out {os.path.join(value, 'chart.png')}")
+    if not os.path.splitext(value)[1]:
+        raise argparse.ArgumentTypeError(f"{value} has no extension, so the format is unknown: name it {value}.png")
+    folder = os.path.dirname(value) or "."
+    if os.path.exists(folder) and not os.path.isdir(folder):
+        raise argparse.ArgumentTypeError(f"{value}: {folder} is a file, not a folder")
+    if not os.path.isdir(folder):
+        raise argparse.ArgumentTypeError(f"{value}: there is no folder {folder} - create it first")
+    if os.path.splitext(value)[1].lower() != ".png":
+        raise argparse.ArgumentTypeError(f"{value}: name the PNG with a .png extension")
+    return value
+
+
 def parse(argv):
     p = argparse.ArgumentParser(description="Before/after flame chart PNG from tools/trace.py traces. See tools/flamechart.md.")
     p.add_argument("traces", nargs="+", metavar="TRACE", help="before, then after: .pftrace files or folders (median run)")
-    p.add_argument("--out", required=True, help="the PNG to write")
+    p.add_argument("--out", required=True, type=output_path, help="the PNG to write")
     p.add_argument("--highlight", default="^(activityResume|RV OnBindView)$",
                    help="regex of slice names to draw in magenta and total (default: onResume and tile binding)")
     p.add_argument("--window", default="first-frame",
@@ -202,6 +233,8 @@ def parse(argv):
     p.add_argument("--engine", metavar="PATH", help="a trace_processor_shell to use instead of downloading one")
     p.add_argument("--width", type=int, default=1600)
     args = p.parse_args(argv)
+    if args.width <= LEFT + 95:
+        p.error(f"--width must be greater than {LEFT + 95} pixels to leave room for the plot")
     if len(args.traces) > 4:
         p.error("at most four traces (panels)")
     if not re.fullmatch(r"first-frame|all|start:\d+(\.\d+)?", args.window):

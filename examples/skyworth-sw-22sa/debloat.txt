@@ -3,7 +3,7 @@
 # Live TV / inputs: com.smartdevice.livetv (+ overlay_SANLUX), com.mediatek.tvinput, com.mediatek.tv.service.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-sw-22sa/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-sw-22sa/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-sw-22sa/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Disabled from the factory, so not listed (restore.sh would turn them ON):

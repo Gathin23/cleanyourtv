@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KD-55XE8596 (2017, \"BRAVIA 4K GB\", BRAVIA_ATV2_EU, MediaTek MT5891), UK",
+  "os": "Android TV 9",
+  "brand": "Sony",
+  "notes": "Same product as `sony-bravia-4k-gb/` on the older S52 build: Samba TV ACR, Sony/Qterics agents, Sony Select/promos/Discover, recommendation rows, partner auto-installs, demo mode, hotel/pro-mode b2b packages; Chromecast, mirroring, DLNA, USB media, Assistant and phone remote kept; UK Live TV hands over to YouView, so launch `com.sony.dtv.tvx`; webapi kept for Home Assistant"
+}

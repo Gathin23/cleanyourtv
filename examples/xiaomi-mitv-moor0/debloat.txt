@@ -1,0 +1,81 @@
+# Xiaomi MiTV-MOOR0 (codename venom), Google TV / Android 11, firmware RTM5.220609.003.1246
+# MediaTek chipset, 1.8 GB RAM.
+#
+# Package names that differ from the repo defaults on this firmware:
+#   stock launcher   com.google.android.apps.tv.launcherx   (NOT com.google.android.tvlauncher)
+#   Live TV app      com.mitv.livetv                        (NOT com.mediatek.wwtv.tvcenter), so set
+#                                                           live_tv_package in config.xml or config.json
+# Both are arguments: launcher/build-and-install.sh takes STOCK_LAUNCHER, tools/restore.sh takes the
+# stock launcher as its second argument.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-moor0/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-moor0/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Kept deliberately, checked with `dumpsys package`:
+#   com.mitv.livetv                              owns .input.SelectInputActivity and .tv.MainActivity (HDMI/AV/tuner switcher)
+#   mitv.service                                 PERSISTENT; core TV service and remote key handling
+#   com.mediatek.network                         PERSISTENT network monitor
+#   com.mitv.overseaservice                      PERSISTENT; hosts .netflixService (Netflix key on the remote)
+#   com.mediatek.tvinput, com.mediatek.tv.service   HDMI / tuner input framework
+#   com.mi.bluetooth                             remote + Bluetooth pairing
+#   com.google.android.tv.remote.service         phone-as-remote pairing
+#   com.xiaomi.android.tvsetup.partnercustomizer holds BleRcActivity (Bluetooth remote pairing) and global key receiver
+#   com.xiaomi.gtv.settings                      provides MainSliceProvider for Settings
+#   com.xiaomi.mitv.scenemode                    MiTVSceneMode picture/sound scene settings
+#   com.google.android.apps.mediashell           Chromecast built-in (kept by owner's choice)
+#   com.xiaomi.mitv.updateservice, com.mitv.upgrader, com.mitv.ABUpdateStatus   firmware updaters (kept by owner's choice)
+#
+# Quirk: com.duokan.factorytest declares the HOME intent at priority 0, the same priority as a third-party
+# launcher. Disable it before disabling launcherx so Home can never fall back to the factory test app.
+
+# ---- Xiaomi and Google telemetry ----
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.xiaomi.tvqs.overseas                        # Firebase analytics + DOWNLOAD_WITHOUT_NOTIFICATION
+com.google.android.feedback                     # crash / feedback reporting
+com.google.android.partnersetup                 # Google RLZ attribution pings
+
+# ---- Ad rows, promos and content providers on the home screen ----
+com.mitv.tvhome.oemtab                          # holds ACCESS_ADSERVICES_AD_ID/_ATTRIBUTION - the ad row
+com.mitv.tvhome.michannel                       # Mi content rows
+com.mitv.tvhome.mitvplus                        # Mi TV+ ad-funded channels
+com.mitv.tvhome.atv                             # PatchWall home
+com.xm.webcontent                               # Xiaomi web promo WebView
+android.autoinstalls.config.xiaomi.amelie       # silent preload installer config
+
+# ---- Retail demo mode, Xiaomi nagware and factory apps ----
+fusion.android.tv.demo                          # in-store demo loop
+com.xiaomi.mitv.tvmanager                       # "TV Manager" cleaner
+com.mitv.toolhouse
+com.xiaomi.mitv.manualhelp                      # on-screen user manual
+com.xiaomo.tv.milegal                           # legal notices app
+com.mstar.android.tv.disclaimercustomization    # legal screen of the first-run setup wizard
+com.mediatek.wwtv.webview                       # vendor web view shell
+com.duokan.factorytest                          # factory test app; claims HOME at priority 0
+mediatek.factorymenu.ui                         # factory menu: disabled, never launched
+
+# ---- Mi Cast / Miracast, voice assistant and Xiaomi media apps (off by choice; Chromecast kept) ----
+com.xiaomi.mitv.smartshare
+com.xiaomi.wfdsinkhelperservice                 # Miracast sink
+com.google.android.katniss                      # Google Assistant voice search
+com.google.android.tv.assistant                 # Google TV Assistant bridge
+com.xiaomi.mitv.mediaexplorer                   # Xiaomi USB media explorer (third-party file manager used instead)
+com.mitv.videoplayer                            # Xiaomi USB video player
+com.mitv.gallery                                # Xiaomi gallery
+
+# ---- Preloaded apps, off by choice - comment out any you use ----
+com.xiaomi.mimusic2                             # Mi Music
+com.google.android.play.games                   # Play Games
+com.google.android.videos                       # Google TV / Play Movies & TV
+com.google.android.youtube.tvmusic              # YouTube Music
+# Disabled on this unit (SmartTube is used instead); uncomment to disable the stock YouTube app:
+# com.google.android.youtube.tv                 # stock YouTube app
+
+# ---------------------------------------------------------------------------------------------
+# ONLY AFTER com.gathin.tvhome IS INSTALLED.
+# com.google.android.tungsten.setupwraith also answers HOME (.RecoveryActivity at priority 1), which
+# outranks a third-party launcher once launcherx is disabled. On this unit all saved Wi-Fi networks
+# belong to android.uid.system:1000 (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so disabling setupwraith
+# leaves Wi-Fi untouched.
+com.google.android.tungsten.setupwraith         # setup wizard; blocks a third-party launcher from Home

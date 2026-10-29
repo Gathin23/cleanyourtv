@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Game Day</string>
+    <string name="subtitle">Le prossime partite delle tue squadre nella Home, dai tuoi calendari</string>
+
+    <string name="add">Aggiungi un calendario</string>
+    <string name="seconds">Secondi per turno</string>
+    <string name="fetch_now">Aggiorna ora</string>
+    <string name="fetching">Aggiornamento</string>
+    <string name="help">Come aggiungere i calendari da un computer</string>
+    <string name="none_yet">Ancora nessun calendario.</string>
+    <string name="none_yet_more">Aggiungi il link del calendario di una squadra (da Stanza, dal sito della squadra o dall’«Indirizzo segreto in formato iCal» di Google Calendar), oppure impostali tutti insieme da un computer con setup.sh.</string>
+    <string name="footer">Aggiornato %1$s · %2$s · i link non vengono mai mostrati per intero</string>
+    <plurals name="calendars">
+        <item quantity="one">%d calendario</item>
+        <item quantity="other">%d calendari</item>
+    </plurals>
+    <plurals name="entries">
+        <item quantity="one">%d evento</item>
+        <item quantity="other">%d eventi</item>
+    </plurals>
+    <string name="full">Al massimo 20 calendari</string>
+    <string name="failed">Ultimo caricamento %1$s. %2$s. Mostro quella copia.</string>
+    <string name="failed_never">Impossibile caricare: %1$s.</string>
+    <string name="help_title">Da un computer</string>
+    <string name="help_text">I link lunghi sono più facili da incollare che da digitare con il telecomando. Su un computer con questo repository e accesso ADB alla TV, scrivi un calendario per riga in addons/game-day/calendars.txt nel formato\n\nsport | nome | link\n\npoi esegui\n\nTV_HOST=&lt;tv ip&gt; addons/game-day/setup.sh\n\n(setup.ps1 su Windows). Sostituisce questo elenco e stampa come è stato caricato ogni calendario. I link non vengono mai stampati.</string>
+    <string name="ok">OK</string>
+
+    <string name="sport">Sport</string>
+    <string name="colour">Colore</string>
+    <string name="name">Nome</string>
+    <string name="link">Link</string>
+    <string name="fetch_one">Aggiorna ora questo calendario</string>
+    <string name="move_up">Sposta in alto nell’elenco</string>
+    <string name="remove">Rimuovi calendario</string>
+    <string name="loaded">Caricato %1$s · prossima: %2$s</string>
+    <string name="remove_title">Rimuovere %1$s?</string>
+    <string name="remove_text">Le sue partite escono dalla Home. Il link viene eliminato dalla TV; il tuo calendario non viene toccato.</string>
+    <string name="keep">Tienilo</string>
+    <string name="remove_short">Rimuovi</string>
+
+    <string name="step_link">1 Link</string>
+    <string name="step_name">2 Nome</string>
+    <string name="step_sport">3 Sport</string>
+    <string name="step_colour">4 Colore</string>
+    <string name="next">Avanti</string>
+    <string name="link_hint">Funzionano anche i link che iniziano con webcal://</string>
+    <string name="link_bad">Questo non è un link a un calendario. Inizia con https://, http:// o webcal://.</string>
+    <string name="link_twice">Quel calendario è già nell’elenco.</string>
+    <string name="checking">Controllo del link</string>
+    <string name="checked">Controllato: trovati %1$s. Il nome serve solo per questo elenco.</string>
+    <string name="name_bad">Il nome è vuoto o supera i 40 caratteri.</string>
+    <string name="colour_hint">Sinistra e Destra per scegliere, Su e Giù per la tonalità, OK per salvare · un punto indica un colore usato da un altro calendario</string>
+    <string name="on_home">Nella Home</string>
+    <string name="no_entry">Niente nei prossimi 7 giorni</string>
+    <string name="live_now">In corso</string>
+    <string name="seconds_text">Quanto resta ogni squadra nella Home prima della successiva</string>
+    <string name="seconds_hint">Da 10 a 120 secondi, a passi di 5 · OK per salvare</string>
+</resources>

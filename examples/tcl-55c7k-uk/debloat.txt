@@ -3,10 +3,12 @@
 # Same G08 board and firmware build as examples/tcl-c755-google-tv; that list was the starting point.
 # Second unit: TCL 50C7K, Poland, EU firmware (product G08_4K_GB, MediaTek mt5896, same UTT2.250416.001 AU02),
 # on its built-in Ethernet port. Its choices and notes are in README.md in this folder.
+# Third unit: TCL C6K, Brazil (product G08_4K_GB, same UTT2.250416.001 AU02), on Ethernet. It kept ttvs
+# and several apps this list disables; its choices and notes are in README.md in this folder.
 #
 # com.tcl.ttvs below is also the firmware updater on this build (its SystemUpdateActivity answers the manual
-# update action): with it disabled there are no system updates. Both units disabled it for the Samba TV ACR
-# tracking it carries. Enable it to check for an update (pm enable com.tcl.ttvs), then disable it again.
+# update action): with it disabled there are no system updates. The first two units disabled it for the Samba TV
+# ACR tracking it carries. Enable it to check for an update (pm enable com.tcl.ttvs), then disable it again.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55c7k-uk/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55c7k-uk/debloat.txt com.google.android.apps.tv.launcherx

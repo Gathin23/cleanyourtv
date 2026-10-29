@@ -1,0 +1,6 @@
+{
+  "tv": "Gadnic PROJ100W projector (built-in Google TV stick: SkyworthDigital YYT, Amlogic HP46B), Argentina",
+  "os": "Google TV 14",
+  "brand": "Gadnic",
+  "notes": "Same stick/firmware family as Wanbo X5 Pro and BYINTEK T5 Max; telemetry, Privacy Sandbox, xCPE, factory test, voice assistant and TalkBack off; setupwraith + launcherx disabled after a Wi-Fi forget/rejoin (see header); DreamOS launcher installed, screensaver handed to the launcher's clock; wireless-debugging pairing, ADB port resets every reboot"
+}

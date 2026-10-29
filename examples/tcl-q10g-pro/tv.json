@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55Q10G Pro (China, tcl_mt5879_cn, MediaTek MT9952)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "No Google services, TCL boot ad + analytics/BI, OTA and account services; ADB opens from Device info + UP/DOWN/LEFT/RIGHT, not the build number; debloat only, stock launcher cannot be replaced (signature check at install time)"
+}

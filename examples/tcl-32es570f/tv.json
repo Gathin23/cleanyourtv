@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 32ES570F (C06, C06_2K_GB, MStar mt5867, 939 MB), Italy",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "Older V8-T221T01-LF1V121 firmware than `tcl-32s5k/`; TCL Home, Quick Panel and T-Solo disabled with the remote still working; ttvs re-enables Rakuten, Alexa and usercenter at every boot; TGuard disables but keeps running; no standby-LED setting"
+}

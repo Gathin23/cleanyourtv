@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65C7K (Smart TV Pro, G08, G08_4K_GB, MediaTek mt5896), Brazil",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Same build as the C755 list (UTT2.250416.001); Samba TV ACR, TCL Live, promos, store/hotel demo, Alexa, partner auto-installs; Assistant, USB media, Claro TV+, Mercado Play off by choice; Chromecast, AirPlay, game bar, soundbar updater and dreamx kept; keep `tv.mopa.ginga` for TV aberta; Wireless debugging needs Wi-Fi (pair, then `adb tcpip 5555`); setupwraith owned the Wi-Fi network, re-join before disabling it"
+}

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Jewish Calendar</string>
+    <string name="settings">Calendar settings</string>
+    <string name="latitude">Latitude (−90 to 90)</string>
+    <string name="longitude">Longitude (−180 to 180)</string>
+    <string name="location_note">Enter coordinates for your city. Sunset is calculated offline using the TV time zone. No location is collected automatically.</string>
+    <string name="missing_location">Set your location for Hebrew dates that change at sunset.</string>
+    <string name="no_sunset">No sunset for this location today; the Hebrew date is unavailable.</string>
+    <string name="invalid_location">Enter valid latitude and longitude, or leave both empty.</string>
+    <string name="greetings">Holiday and Shabbat greetings</string>
+    <string name="region">Holiday schedule</string>
+    <string name="auto_region">Automatic (language and country)</string>
+    <string name="israel">Israel</string>
+    <string name="diaspora">Diaspora</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="screensaver">System screensaver settings</string>
+    <string name="screensaver_missing">Screensaver settings are unavailable on this TV.</string>
+    <string name="timing_note">Approximate sunset display; not candle-lighting or Havdalah times.</string>
+</resources>

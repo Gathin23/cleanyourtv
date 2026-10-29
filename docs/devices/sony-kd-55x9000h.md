@@ -96,3 +96,16 @@ provided.
 
 This report omits network addresses, hardware serials, Android IDs, account
 details, installed-app preferences, screenshots and raw dumps.
+
+## Later remote-key follow-up (24 October 2026)
+
+These checks used a later personal v2.6.0 fork on the same Android 12 firmware above; they do not establish behavior on an unmodified current upstream build.
+
+- With the fork's Apps-only HomeKeyService enabled, holding Volume moved only one step. Disabling only that helper restored continuous adjustment in a physical A/B check, with InputFilterEnabled=false. Unrelated keys returning false in the helper did not avoid the platform filter side effect.
+- Simultaneous kernel and callback capture recorded Volume Down held for approximately 1.98 seconds, while the helper received Apps and Back but neither Volume direction. A software-repeat timer inside that service could not work without press/release callbacks; the unsuccessful fallback was removed.
+- The Sony TV VRC 001 Apps key was observed as Android ALL_APPS (284), scan 580, HID usage 0x000c0544, vendor 054c/product 0c99. This is remote model data, not a device-unique identifier.
+- A separately installed keyboard-layout provider then mapped only that Apps key to an application-launch category, with a direct Library alias in the fork. The owner confirmed Apps from Home and another app, Back and native held Volume, then confirmed the intermediate Home flash was gone. Home ownership and external theme were unchanged, the key-filter helper stayed disabled and no resident watcher remained after the bounded trial.
+
+The [fork's source, setup and rollback notes](https://github.com/Lzchyi/cleanyourtv/blob/v2.6.0-redesign/companions/sony-apps-layout/README.md) describe this opt-in alternative. It reserves the Calculator category and needs one-time shell setup; it is not a stock launcher option or a general recommendation for other TVs. Automatic baseline restoration was practiced before the accepted trial. Restart, sleep/wake and Bluetooth reconnect persistence were not tested for this mapping.
+
+For the general filter/repeat tradeoff and preserving existing accessibility services, see [the troubleshooting guide](../TROUBLESHOOTING.md#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating). No additional package cleanup is proposed.

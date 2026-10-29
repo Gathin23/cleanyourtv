@@ -92,11 +92,15 @@ class ThemePathsTest(unittest.TestCase):
 
     def bash_path(self, path):
         """The path as bash spells it: /tmp/... on Linux and macOS, /c/Users/... under Git Bash."""
+        if os.name != "posix" or not shutil.which("bash"):
+            raise unittest.SkipTest("theme.sh is a POSIX script; it needs bash")
         out = subprocess.run(["bash", "-c", 'cd "$1" && pwd', "_", str(path)],
                              capture_output=True, text=True, check=True)
         return out.stdout.strip()
 
     def run_theme(self, tools, argument, cwd):
+        if os.name != "posix" or not shutil.which("bash"):
+            raise unittest.SkipTest("theme.sh is a POSIX script; it needs bash")
         capture = Path(cwd) / "calls.txt"
         env = dict(os.environ, TV_HOST="192.0.2.1", CAPTURE=str(capture))
         result = subprocess.run(["bash", str(tools / "theme.sh"), argument], cwd=cwd, env=env,

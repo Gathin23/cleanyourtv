@@ -14,8 +14,17 @@ not: `http(s)`, `mailto:`, `data:`, a bare `#anchor`, and the insides of fenced 
 path is an example rather than a link. Anchors are ignored: `note.md#section` still points at the
 file, and a heading's slug is GitHub's, not ours.
 
+The files are read below docs/devices/ rather than one level: a note that displays screenshots sits
+in a folder of its own beside them, and docs/devices/xiaomi-mitv-mteq0/xiaomi-mitv-mteq0.md was such
+a note and was linked from nothing, which reading one level could not see.
+
+The examples table is generated from each folder's tv.json (tools/gen_tables.py), so the links in a
+tv.json's "tv" and "notes" count as links on examples/README.md: a list PR is checked before its row is
+generated.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import json
 import os
 import re
 import tempfile
@@ -54,14 +63,31 @@ def destinations(text):
     return MARKDOWN_LINK.findall(text) + REFERENCE_DEF.findall(text) + HTML_ATTR.findall(text)
 
 
+def tv_json_cells(root):
+    """{folder: the text of its tv.json's "tv" and "notes"}, the cells tools/gen_tables.py puts in its row."""
+    out = {}
+    for path in sorted(Path(root).glob("examples/*/tv.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        out[path.parent.name] = f"{data.get('tv', '')} {data.get('notes', '')}"
+    return out
+
+
+def pages(root):
+    """(page, its text) for every markdown page, plus each tv.json's cells as text on examples/README.md."""
+    for page in markdown_files(root):
+        yield page, page.read_text(encoding="utf-8", errors="replace")
+    for text in tv_json_cells(root).values():
+        yield Path(root) / "examples" / "README.md", text
+
+
 def referenced(root):
     """Repository-relative paths of every file the markdown links to, as posix strings."""
     # Resolved like the link targets below: on macOS the temporary directory /var/folders/... is a symlink to
     # /private/var/folders/..., and an unresolved root put every target outside it.
     root = Path(root).resolve()
     out = set()
-    for page in markdown_files(root):
-        for target in destinations(page.read_text(encoding="utf-8", errors="replace")):
+    for page, text in pages(root):
+        for target in destinations(text):
             if target.startswith(EXTERNAL):
                 continue
             # A link may carry an anchor of its own ("note.md#section"): the file is still the target.
@@ -73,19 +99,28 @@ def referenced(root):
     return out
 
 
+def note_files(root):
+    """(relative path, path) for every file under docs/devices/, in a stable order.
+
+    The walk goes below docs/devices/ because a note may sit in a folder of its own beside the
+    screenshots it shows (docs/devices/xiaomi-mitv-mteq0/ holds two PNGs and the note that displays
+    them), and reading one level missed exactly such a note. The build folders are pruned for the
+    reason markdown_files() prunes them.
+    """
+    root = Path(root)
+    out = []
+    for dirpath, dirnames, filenames in os.walk(root / NOTES):
+        dirnames[:] = sorted(name for name in dirnames if name not in SKIP)
+        for name in sorted(filenames):
+            path = Path(dirpath) / name
+            out.append((os.path.relpath(path, root).replace(os.sep, "/"), path))
+    return sorted(out)
+
+
 def unlinked_notes(root):
     """Repository-relative paths of the files under docs/devices/ that no markdown file links to."""
-    root = Path(root)
     linked = referenced(root)
-    out = []
-    for name in sorted(os.listdir(root / NOTES)):
-        path = root / NOTES / name
-        if not path.is_file():
-            continue
-        rel = f"{NOTES}/{name}"
-        if rel not in linked:
-            out.append(rel)
-    return out
+    return [rel for rel, _ in note_files(root) if rel not in linked]
 
 
 # The heading that opens examples/README.md's list of device reports that have no list of their own.
@@ -124,6 +159,45 @@ def index_notes(root):
     return notes
 
 
+def index_entries(root):
+    """The device notes under the "no tested list yet" heading, as {note: [page line numbers]}.
+
+    Line numbers, not just names: two entries for one note read as two different TVs, and the older
+    of the two is the one that stops being maintained. A link inside a fenced block in the section is
+    not an entry (it is a command or an example), and neither is a note the table above links.
+    """
+    page = Path(root) / "examples" / "README.md"
+    if not page.is_file():
+        return {}
+    prefix = "../docs/devices/"
+    entries, inside, fenced = {}, False, False
+    for number, line in enumerate(page.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        if not inside:
+            inside = NOTE_INDEX_HEADING in line
+            continue
+        if line.startswith("## "):
+            break
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        # One line naming the same note twice ("[TCL 55C728](../docs/devices/x.md), 55C728: ...") is
+        # one entry, so a line is counted once whatever the number of links on it.
+        for target in dict.fromkeys(destinations(line)):
+            if target.startswith(EXTERNAL):
+                continue
+            local = unquote(target.split("#")[0])
+            if local.startswith(prefix):
+                entries.setdefault(local[len(prefix):], []).append(number)
+    return entries
+
+
+def notes_listed_twice(entries):
+    """The notes a page lists more than once, with the lines each one is on."""
+    return {note: lines for note, lines in entries.items() if len(lines) > 1}
+
+
 def own_list(root, note):
     """The list a note claims for its own model - examples/<the note's file name>/debloat.txt - when it links one.
 
@@ -160,15 +234,16 @@ def index_notes_with_their_own_list(root):
 
 
 def table_rows(root):
-    """examples/README.md's folder rows, as {folder: the row's text}."""
+    """examples/README.md's folder rows, as {folder: the row's text}; a folder's tv.json, where it has one,
+    stands in for its row, since the row is generated from it."""
     page = Path(root) / "examples" / "README.md"
-    if not page.is_file():
-        return {}
     rows = {}
-    for line in page.read_text(encoding="utf-8", errors="replace").splitlines():
-        match = FOLDER_ROW.match(line)
-        if match:
-            rows[match.group(1)] = line
+    if page.is_file():
+        for line in page.read_text(encoding="utf-8", errors="replace").splitlines():
+            match = FOLDER_ROW.match(line)
+            if match:
+                rows[match.group(1)] = line
+    rows.update(tv_json_cells(root))
     return rows
 
 
@@ -252,6 +327,59 @@ class DeviceNotesLinkedTest(unittest.TestCase):
             (root / "venv" / "lib" / "third-party.md").write_text(
                 "[note](../../docs/devices/note.md)\n", encoding="utf-8")
             self.assertEqual([f"{NOTES}/note.md"], unlinked_notes(root))
+
+    def test_a_note_in_a_folder_of_its_own_is_reported(self):
+        # A note that shows screenshots sits beside them; reading one level never saw it.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax").mkdir(parents=True)
+            (root / NOTES / "baymax" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / "README.md").write_text("[notes](docs/devices/baymax/other.md)\n", encoding="utf-8")
+            self.assertEqual([f"{NOTES}/baymax/note.md"], unlinked_notes(root))
+
+    def test_a_note_in_a_folder_that_is_linked_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax").mkdir(parents=True)
+            (root / NOTES / "baymax" / "note.md").write_text(
+                "# Note\n\n![the menu](menu.png)\n", encoding="utf-8")
+            (root / NOTES / "baymax" / "menu.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            (root / NOTES / "board.md").write_text(
+                "# Board\n\nSecond unit: [the vendor settings record](baymax/note.md).\n", encoding="utf-8")
+            (root / "README.md").write_text("[board](docs/devices/board.md)\n", encoding="utf-8")
+            self.assertEqual([], unlinked_notes(root))
+
+    def test_a_screenshot_in_a_note_folder_is_reported_when_nothing_shows_it(self):
+        # A picture nobody links is the same stray file a note is.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax").mkdir(parents=True)
+            (root / NOTES / "baymax" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / NOTES / "baymax" / "menu.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            (root / "README.md").write_text("[notes](docs/devices/baymax/note.md)\n", encoding="utf-8")
+            self.assertEqual([f"{NOTES}/baymax/menu.png"], unlinked_notes(root))
+
+    def test_nested_note_folders_are_walked_to_the_bottom(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "a" / "b").mkdir(parents=True)
+            (root / NOTES / "a" / "b" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / "README.md").write_text("[notes](docs/devices/a/b/note.md)\n", encoding="utf-8")
+            (root / NOTES / "a" / "b" / "deep.md").write_text("# Deep\n", encoding="utf-8")
+            self.assertEqual([f"{NOTES}/a/b/deep.md"], unlinked_notes(root))
+
+    def test_a_build_folder_inside_a_note_folder_is_skipped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / NOTES / "baymax" / "build").mkdir(parents=True)
+            (root / NOTES / "baymax" / "build" / "out.md").write_text("# Out\n", encoding="utf-8")
+            (root / NOTES / "baymax" / "note.md").write_text("# Note\n", encoding="utf-8")
+            (root / "README.md").write_text("[notes](docs/devices/baymax/note.md)\n", encoding="utf-8")
+            self.assertEqual([], unlinked_notes(root))
+
+    def test_the_walk_reads_every_note_in_the_tree(self):
+        # So the sweep above cannot pass by walking a folder that has moved or emptied.
+        self.assertGreaterEqual(len(note_files(ROOT)), 50, "the docs/devices walk read too few files")
 
 
 class NoteFiledWithItsListTest(unittest.TestCase):
@@ -350,6 +478,80 @@ class NoteFiledWithItsListTest(unittest.TestCase):
                 encoding="utf-8")
             self.assertEqual(["fpd-cg50-c3.md"], index_notes(root))
             self.assertEqual([], index_notes_with_their_own_list(root))
+
+
+class NoteIndexOneEntryTest(unittest.TestCase):
+    """One entry per note under the "no tested list yet" heading.
+
+    A merge that keeps both sides of a conflicting hunk leaves the old entry next to the new one, and
+    the page then offers the same TV twice: the reader picks either, and the copy that is not being
+    updated is the one they can land on. c7af946d repaired two of these by hand; this is the rule
+    behind that repair, so the next union cannot leave another pair.
+    """
+
+    def test_each_note_is_listed_once(self):
+        entries = index_entries(ROOT)
+        self.assertGreaterEqual(len(entries), 20, "the notes index was not read")
+        twice = notes_listed_twice(entries)
+        message = "\n".join(
+            f"docs/devices/{note} is listed on lines {', '.join(str(n) for n in lines)} of "
+            f"examples/README.md: one entry per note, in the newer text"
+            for note, lines in sorted(twice.items()))
+        self.assertEqual({}, twice, message)
+
+    # --- the reader, against pages written here, so the test above cannot pass by reading nothing ---
+
+    @staticmethod
+    def _page(tmp, body):
+        root = Path(tmp)
+        (root / "examples").mkdir(parents=True)
+        (root / "examples" / "README.md").write_text(
+            f"{NOTE_INDEX_HEADING} live in [`docs/devices/`](../docs/devices/):\n\n{body}", encoding="utf-8")
+        return root
+
+    def test_a_note_listed_twice_is_reported_with_both_lines(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): the newer text.\n"
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): the older text.\n")
+            twice = notes_listed_twice(index_entries(root))
+            self.assertEqual({"tcl-55c728.md": [3, 4]}, twice)
+
+    def test_a_note_listed_once_is_quiet(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): a note.\n"
+                              "- [Sharp 32FI4EA](../docs/devices/sharp-32fi4ea.md): another note.\n")
+            self.assertEqual({}, notes_listed_twice(index_entries(root)))
+
+    def test_two_links_to_one_note_on_one_line_are_one_entry(self):
+        # "[55C728](../docs/devices/tcl-55c728.md) (55C728, G05)" names the note twice on one line.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md), `55C728`, "
+                              "[the same note](../docs/devices/tcl-55c728.md): one set of notes.\n")
+            self.assertEqual({"tcl-55c728.md": [3]}, index_entries(root))
+
+    def test_a_path_in_a_fenced_block_is_not_an_entry(self):
+        # The section explains where these notes live; a command in it is not an index entry.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._page(tmp,
+                              "```\ncat ../docs/devices/tcl-55c728.md\n```\n\n"
+                              "- [TCL `55C728`](../docs/devices/tcl-55c728.md): a note.\n")
+            self.assertEqual({"tcl-55c728.md": [7]}, index_entries(root))
+
+    def test_a_row_above_the_heading_is_not_an_entry(self):
+        # A list's row links its own note too; only the entries under the heading are the index.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "examples").mkdir(parents=True)
+            (root / "examples" / "README.md").write_text(
+                "| `tcl-g05-google-tv/` | TCL G05 | Google TV 11 | see "
+                "[the 55C728 note](../docs/devices/tcl-55c728.md) |\n"
+                f"{NOTE_INDEX_HEADING} live in [`docs/devices/`](../docs/devices/):\n\n"
+                "- [Sharp 32FI4EA](../docs/devices/sharp-32fi4ea.md): a note.\n",
+                encoding="utf-8")
+            self.assertEqual({"sharp-32fi4ea.md": [4]}, index_entries(root))
 
 
 if __name__ == "__main__":

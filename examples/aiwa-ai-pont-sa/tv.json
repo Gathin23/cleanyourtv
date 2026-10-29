@@ -1,0 +1,6 @@
+{
+  "tv": "AIWA AI PONT SA (Changhong, osaka, ISDB86AW)",
+  "os": "Google TV 14",
+  "brand": "AIWA",
+  "notes": "Anoki ACR, ambient mode, partner auto-installs, Homwee store/help; setupwraith before launcherx; Live TV is tvcenter (the input player stays black); remote source button is KEY_G, not mapped yet; config.json puts TV ao vivo first; firmware updater kept"
+}

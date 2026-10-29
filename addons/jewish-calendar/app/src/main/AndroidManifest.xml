@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-feature android:name="android.software.leanback" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <application android:allowBackup="false" android:supportsRtl="true" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"
+        android:label="@string/app_name" android:icon="@drawable/icon" android:banner="@drawable/icon">
+        <activity android:name=".CalendarActivity" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent-filter>
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="com.gathin.tvhome.category.DOCK_CARD" /></intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+        <service android:name=".CalendarDream" android:exported="true" android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter><action android:name="android.service.dreams.DreamService" /></intent-filter>
+        </service>
+    </application>
+</manifest>

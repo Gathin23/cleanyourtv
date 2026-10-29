@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 import sys
 import tempfile
+import types
 import unittest
 from unittest import mock
 
@@ -75,11 +76,12 @@ class FakeDevice:
 class ScenarioTest(unittest.TestCase):
     def test_setup_stays_out_of_the_recording(self):
         setup, steps = trace.scenario("home", LAUNCHER, OTHER)
-        self.assertIn(f"am start -n {OTHER}", setup)
+        self.assertIn(f"am start --activity-reorder-to-front -n {OTHER}", setup)
         self.assertEqual(steps, ["input keyevent KEYCODE_HOME", "sleep 4"])
 
     def test_cold_stops_the_launcher_before_recording_and_starts_it_inside(self):
         setup, steps = trace.scenario("cold", LAUNCHER, OTHER)
+        self.assertIn(f"am start --activity-reorder-to-front -n {OTHER}", setup)
         self.assertIn("am force-stop com.gathin.tvhome", setup)
         self.assertEqual(steps[0], "am start -W -a android.intent.action.MAIN "
                          f"-c android.intent.category.HOME -n {LAUNCHER}")
@@ -125,6 +127,47 @@ class ArgumentTest(unittest.TestCase):
     def test_defaults(self):
         args = trace.parse(["nav"])
         self.assertEqual((args.runs, args.out, args.package), (5, "traces", "com.gathin.tvhome"))
+
+    def test_a_file_where_the_traces_go_is_refused_before_connecting(self):
+        # os.makedirs() threw FileExistsError from main() after the TV had answered the Home query, so a
+        # --out typo read as a recording that failed.
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "traces"
+            target.write_text("not a folder")
+            err = self.parse_error(["home", "--out", str(target)])
+            self.assertIn(str(target), err)
+            self.assertIn("is a file", err)
+            err = self.parse_error(["home", "--out", str(target / "before")])
+            self.assertIn(str(target), err)
+            self.assertIn("passes through the file", err)
+        self.assertIn("--out is empty", self.parse_error(["home", "--out", ""]))
+
+    def test_a_folder_or_a_new_folder_is_still_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            existing = Path(tmp) / "before"
+            existing.mkdir()
+            self.assertEqual(trace.parse(["home", "--out", str(existing)]).out, str(existing))
+            new = Path(tmp) / "after"
+            self.assertEqual(trace.parse(["home", "--out", str(new)]).out, str(new))   # makedirs() creates it
+
+    def test_nothing_is_asked_of_the_tv_when_the_folder_is_a_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "traces"
+            target.write_text("not a folder")
+            connects = []
+            fake_tv = types.ModuleType("tv")
+            fake_tv.HOST, fake_tv.PORT = "192.0.2.7", "5555"
+            fake_tv.connect = lambda: connects.append(1)
+            fake_bench = types.ModuleType("bench")
+            fake_bench.accessibility_services = lambda *a: []
+            fake_bench.restore_accessibility = lambda *a: None
+            with mock.patch.dict(sys.modules, {"tv": fake_tv, "bench": fake_bench}), \
+                 contextlib.redirect_stderr(io.StringIO()) as err:
+                with self.assertRaises(SystemExit) as caught:
+                    trace.main(["coldsys", "--out", str(target)])
+            self.assertEqual(caught.exception.code, 2)
+            self.assertEqual(connects, [], "the TV was never opened")
+            self.assertIn("is a file", err.getvalue())
 
 
 class RecordTest(unittest.TestCase):

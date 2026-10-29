@@ -1,0 +1,6 @@
+{
+  "tv": "Toshiba (Vestel Cosmos170, yeoksam, MediaTek), Spain",
+  "os": "Android TV 11",
+  "brand": "Toshiba",
+  "notes": "First Vestel list: vestelreporter telemetry, retail demo, partner auto-installs, Google recommendation rows/feedback, Freeview Play remnants; voice, stock YouTube/YT Music, Prime Video, USB media player off by choice; OTA and Chromecast kept; 1 GB low-RAM; Live TV is `com.mediatek.wwtv.tvcenter` (`com.cltv.fast` is an OEM-disabled decoy); remote's YouTube/Prime keys are handled below Android and cannot be remapped; uk.co.freeview.* ships factory-disabled on Spain units"
+}

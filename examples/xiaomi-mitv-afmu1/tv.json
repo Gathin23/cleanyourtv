@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi TV Stick 4K 2nd gen (MiTV-AFMU1, twilight, adastra, Amlogic), streaming stick",
+  "os": "Google TV 14",
+  "brand": "Xiaomi",
+  "notes": "Two units on the same build (UKG3.250826.001), one list: Mi analytics, PatchWall/Mi Home tab, Amlogic auto-installs, preloaded apps off; voice, phone remote and Miracast kept on one unit and off on the other; setup wizard off (re-join Wi-Fi first) so launcherx can go; the second unit also took the Privacy Sandbox ad services and the firmware updater (com.xiaomi.mitv.updateservice DISABLED, so no firmware updates); provisional, one day each"
+}

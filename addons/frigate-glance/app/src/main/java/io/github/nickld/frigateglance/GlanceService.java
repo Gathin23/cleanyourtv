@@ -432,7 +432,8 @@ public class GlanceService extends Service {
         }
         long snoozed = controller == null ? 0 : controller.snoozedUntil();
         KeyService.reloadKeys(this);
-        controller = new CardController(card, new ReviewFilter(c), c.cameras, c.dismissSeconds, SystemClock::elapsedRealtime);
+        controller = new CardController(card, new ReviewFilter(c), c.cameras, c.dismissSeconds,
+                c.dismissOnStationary, SystemClock::elapsedRealtime);
         if (snoozed > 0) controller.snooze((int) Math.max(1, (snoozed - SystemClock.elapsedRealtime()) / 60_000));
         String test = pendingTest;
         pendingTest = null;

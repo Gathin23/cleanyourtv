@@ -1,0 +1,6 @@
+{
+  "tv": "XGIMI MoGo 4 Laser projector (WK03K, altai, MediaTek)",
+  "os": "Google TV 14",
+  "brand": "XGIMI",
+  "notes": "Laser version of the MoGo 4, same altai board and packages: factory and burn-in tools, bug-report uploader, Google feedback and ad services, setupwraith, Google preloads, Assistant (phone remote kept); keystone/autofocus/laser services, HDMI and StarMirror kept, eye protection checked after the reboot. setupwraith owned the Wi-Fi in use, so the network was re-joined first. launcherx re-enables itself, so `stock_home_redirect` holds Home; `key_filter` false in config.json keeps the volume ramp and the remote's app buttons with the helper on. One session of a few hours, reboot-checked"
+}

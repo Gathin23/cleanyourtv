@@ -1,0 +1,6 @@
+{
+  "tv": "onn. 4K Plus Streaming (2025, Walmart; coffey, Amlogic S905X5M), US",
+  "os": "Google TV 14",
+  "brand": "onn",
+  "notes": "Same build as the 2023 onn box: Google feedback, Privacy Sandbox APEX modules, Play Games, ambient mode, launcherx + setupwraith; YouTube/Netflix/Chromecast off by choice; keep `tv.remote.service` (it carries the remote mic); setupwraith owned the Wi-Fi saved at setup; remote keycodes listed, YouTube and Free TV buttons remapped with app_keys"
+}

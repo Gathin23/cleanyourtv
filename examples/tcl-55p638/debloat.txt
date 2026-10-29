@@ -29,7 +29,6 @@ com.tcl.usercenter
 com.tcl.dashboard
 com.tcl.notereminder
 com.tcl.ocean.instructions
-com.tcl.ttvs                         # firmware-dependent TCL service; inherited disabled state
 com.tcl.t_solo                       # optional private-listening feature
 
 # Voice assistants — off by choice
@@ -62,6 +61,7 @@ com.tcl.gallery                     # TCL gallery
 
 # Kept: Chromecast, Miracast, USB MediaPlayer, Google ambient screensaver,
 # firmware updater (com.tcl.versionUpdateApp), Google Play services and the Play Store.
+# Keep com.tcl.ttvs enabled: update checks worked again after enabling it and reopening the updater.
 #
 # Keep TV/platform dependencies: com.tcl.tv, com.tcl.tvinput, com.tcl.settings,
 # com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup, com.tcl.factory.view,

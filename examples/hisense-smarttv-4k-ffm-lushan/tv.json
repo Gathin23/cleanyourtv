@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense SmartTV 4K FFM (lushan, MediaTek MT9676), Mongolia",
+  "os": "Google TV 12",
+  "brand": "Hisense",
+  "notes": "Third FFM board (Android 12): ACR (evservice), Google partner tracking and feedback, Hisense browser, Family Moment, store mode and first-time setup, the cleaner with a boot receiver (protector); Prime Video, iQIYI, Mercado Play, HBO Max and Hisense Alexa off by choice; Assistant, casting, OTA kept; smartsense/AIoT never touched; setupwraith must go (its RecoveryActivity claims HOME, the component cannot be disabled alone; it owns saved Wi-Fi); remote YouTube, HDMI, Apps and Subtitle buttons are scancodes 469, 362, 580, 370"
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "Grundig Android UHD TV (Arçelik, GxGrNM, kunyang, MediaTek), Turkey",
+  "os": "Android TV 14",
+  "brand": "Grundig",
+  "notes": "First Arçelik list: Grundig Channel (Hoppr ad tiles), HotelService, TV Care Hub, partner auto-installs, Privacy Sandbox, Google feedback; Assistant, AirScreen/AirCast, Kids, Play Movies/Games off by choice, Chromecast kept; `fusion.android.tv.demo` handles the Input key, keep it; setupwraith claims no HOME; launcher works, every remote button works with no key service; AdGuard DNS validates; 1.8 GB, +290 MB available; reboot-checked"
+}

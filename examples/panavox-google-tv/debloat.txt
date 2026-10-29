@@ -1,0 +1,59 @@
+#TV Brand/Model
+#ro.product.model = PANAVOX Google TV
+#ro.product.device = dongnae
+#ro.build.version.release = 14
+#ro.build.version.sdk = 34
+#ro.build.display.id = UKN6.260116.001
+#ro.product.manufacturer = Expressluck
+#ro.adb.secure = 1
+##################
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panavox-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panavox-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# launcherx and setupwraith go only after the new launcher is installed (launcher/build-and-install.sh hands
+# Home over); if setupwraith owns the saved Wi-Fi, forget and re-join the network first. Disabling setupwraith
+# and mediashell ends phone casting, and katniss and com.google.android.tv.remote.service carry the remote's
+# mic (#1441): comment those out to keep voice.
+
+# Group 1: telemetry, ACR and tracking
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Stock Launcher
+com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith
+
+
+
+# Group 3: preloaded streaming apps, optional
+com.amazon.amazonvideo.livingroom
+com.mediatek.androidbox  #wifi display sink
+#com.google.android.apps.tv.dreamx #salvapantallas de google
+
+# Group 4: unused on a television
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.providers.contacts
+com.mediatek.android.leanbacklauncher.partnercustomizer
+
+
+
+# Voice assistants. The remote's microphone button stops working.
+com.google.android.katniss
+
+
+# Google extras
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.marvin.talkback
+com.google.android.apps.mediashell
+com.google.android.tts
+com.google.android.tv.remote.service
+
+
+

@@ -1,0 +1,6 @@
+{
+  "tv": "Google TV Streamer 4K (kirkwood, GZRNL)",
+  "os": "Google TV 14",
+  "brand": "Google",
+  "notes": "Google telemetry and ad services; setupwraith must go (package level: its RecoveryActivity claims HOME and crash-loops system_server), so the cast credentials have to be re-provisioned with an enable/wait/disable ritual after every reboot; the launcher HOME intent-filter priority is ignored on this build; wireless-debugging pairing, YouTube button remap"
+}

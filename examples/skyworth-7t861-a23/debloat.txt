@@ -1,0 +1,38 @@
+# Skyworth 7T861_A23 (MediaTek MT9638, mt5872), China market, Coocaa OS on Android 10 (API 29)
+# Build QQ2A.200305.004.A1 / eng.nobody.20241225.120706.
+# Stock home: com.skyworth.officehomepage (com.skyworth.officehomepage.view.HomepageActivity).
+# TV/inputs: com.skyworth.tv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-7t861-a23/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-7t861-a23/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# CRITICAL SAFETY NOTE:
+# Do NOT disable com.skyworth.officehomepage directly. On this firmware, disabling the stock home
+# causes the system to hang at the SKYWORTH boot logo (network stack does not start, ADB drops).
+# Recovery requires a factory reset via Recovery Mode.
+# For replacing the home screen safely, see docs/devices/skyworth-7t861-a23.md.
+
+# Telemetry and diagnostics
+com.skyworth.performance.monitors   # Performance monitors and telemetry
+com.skyworth.testtime               # Factory testing timer
+com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
+com.skyworth.device                 # Device information and location reporting
+
+# Ads and manufacturer content
+com.coocaa.tvmanager                # CooCaa content recommendation manager
+com.coocaa.guide                    # EPG program guide and content pushes
+com.tianci.de                       # Tianci DE advertising engine
+com.tianci.user                     # Tianci user account and notification service
+com.coocaa.theme_package_ccos_nine  # Default theme package
+
+# Preloaded content and stores
+com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming
+com.tianci.movieplatform            # Tianci video platform
+com.tianci.appstore                 # Tianci app store
+com.skyworth.skymarket              # Skyworth market
+com.coocaa.app_browser              # CooCaa built-in browser
+
+# Factory and tuning tools
+com.loostone.tuning                 # Factory picture calibration utility
+com.coocaa.factory                  # Factory menu test package (do not launch)

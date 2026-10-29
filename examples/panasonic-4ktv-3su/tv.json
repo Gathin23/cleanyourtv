@@ -1,0 +1,6 @@
+{
+  "tv": "Panasonic 4KTV-3SU (Skyworth-built SW6H, MediaTek, same board as `thomson-sppl-4k-sw6h/`), ~1.9 GB",
+  "os": "Android TV 14 (Google TV home)",
+  "brand": "Panasonic",
+  "notes": "Skyworth recommendation rows + partner customizer, aftersale, dailymanage, ePop/Demo Now retail demos, disclaimer popups, Play auto-installs, Android ad services; Play Games off by choice; Assistant, Chromecast, Miracast/DLNA and streaming apps kept; setupwraith owns the setup Wi-Fi and was kept, so launcherx stays too and the launcher takes Home with `stock_home_redirect` + HOME_KEY_SERVICE=1; reboot-checked"
+}

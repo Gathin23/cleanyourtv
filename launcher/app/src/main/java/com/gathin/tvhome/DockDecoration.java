@@ -28,6 +28,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final boolean evenPadding;
     /** The band's top and bottom the glass gradient was made for; it is remade when they move. */
     private float shaderTop = Float.NaN, shaderBottom = Float.NaN;
+    /** Draw the band and its edge (config.xml dock_band); false leaves the tiles floating on the wallpaper. */
+    private final boolean bandVisible;
     /** single_row: the tiles after the dock share its row, so they take the same offsets to stay level with it. */
     private final boolean singleRow;
     /** dock_band_all: in a single row, the band runs behind every app instead of the dock apps only. */
@@ -39,11 +41,12 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
      * @param opacity     the plain band's opacity in percent (dock_opacity), so a wallpaper can show through it.
      * @param lightGlass  a light frosted band like the pills, for a sky or wallpaper behind it.
      * @param evenPadding the band's padding is the gap between the tiles on all four sides (dock_even_padding).
+     * @param bandVisible false skips the band and its edge, so the tiles float on the wallpaper (dock_band).
      * @param singleRow   every app sits in the dock's row (single_row); the band covers the dock apps only, unless bandAll.
      * @param bandAll     with singleRow, the band runs behind every app in the row (dock_band_all).
      */
     DockDecoration(int dockSize, float density, boolean translucent, boolean names, int opacity, boolean lightGlass,
-                   boolean evenPadding, boolean singleRow, boolean bandAll) {
+                   boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll) {
         this.dockSize = dockSize;
         this.singleRow = singleRow;
         this.bandAll = singleRow && bandAll;
@@ -51,6 +54,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         this.namesRoom = names ? 22 * density : 0;
         this.lightGlass = lightGlass;
         this.evenPadding = evenPadding;
+        this.bandVisible = bandVisible;
         band.setColor(translucent ? 0x8C121014 : (Math.round(opacity * 2.55f) << 24) | 0x141416);
         edge.setStyle(Paint.Style.STROKE);
         edge.setStrokeWidth(density);
@@ -83,6 +87,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        if (!bandVisible) return;
         boolean any = false;
         int cardWidth = 0;
         for (int i = 0; i < parent.getChildCount(); i++) {

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL / FFalcon China (tcl9655_cn, MediaTek MT9655 \"merak\", UTT2.250416.001 AU01)",
+  "os": "Android 14",
+  "brand": "TCL",
+  "notes": "No Google services; no Developer options at all — the ADB toggle opens adbd in TLS mode on a random port with no pairing service, so the only way in is a dual male USB-A cable (PC USB 3.0 → TV USB 2.0) and then `adb tcpip 5555`; every adb install is refused (`Install not allowed` from system_server), only a USB stick through 电视卫士 installs apps; debloat only, stock launcher cannot be replaced (`launcherStrategy` allowlist empty, verifier demands the cyberui signature); reboot-checked; [why the debloat works and the installs do not](../docs/devices/tcl-mt9655-cn-android14.md)"
+}

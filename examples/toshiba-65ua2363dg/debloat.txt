@@ -1,0 +1,77 @@
+# Toshiba 65UA2363DG (Vestel-built, product BODRUM_Toshiba, device finch, MediaTek m7332), Android TV 14 (API 34),
+# firmware UKNV.260428.001. Fingerprint Toshiba/BODRUM_Toshiba/finch:14/UKNV.260428.001/15307670, security patch
+# 2026-05-01. ro.product.manufacturer = vestel, ro.product.model = "Android TV", ro.config.low_ram = true (1.4 GB).
+# France. Based on examples/cecotec-shandao (same Vestel platform, firmware UKNV.260304.001).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-65ua2363dg/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-65ua2363dg/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV, not Google TV). Only
+# com.android.tv.settings/.system.FallbackHome also claims HOME; setupwraith does not, and the saved Wi-Fi
+# network belonged to android.uid.system, not to setupwraith.
+# Live TV app:    com.mediatek.wwtv.tvcenter.
+# Updates:        no separate firmware-update package on this firmware; updates live in Settings.
+#
+# Status: disabled in four batches on one TV on 2026-10-27, the last two lines after launcher/ took Home.
+# Reboot-checked twice: nothing came back enabled, the new launcher was on screen at power-on (the firmware
+# does not open Live TV by itself), Live TV and every HDMI input were listed. Then checked on the real remote
+# by the owner: Home, Input, the app buttons, Back and volume all work. Hours of real use, not days: treat it
+# as a starting point.
+#
+# KEEP, even though the names look like bloat (checked on this TV):
+# - fusion.android.tv.demo: unlike the Cecotec and Toshiba Cosmos lists, it must stay. Its activities are
+#   the only handler of com.mstar.android.intent.action.TV_INPUT_BUTTON (the remote's Input key), as on
+#   examples/jvc-android-tv-menlo.
+# - com.mediatek.android.leanbacklauncher.partnercustomizer: crash-loops com.mediatek.tv.service after a
+#   reboot on MediaTek sets (see examples/cecotec-shandao).
+# - com.mediatek.tvinput and com.mediatek.tv.service: the only hardware TvInputService implementations
+#   (tuner, HDMI, VGA, composite, component, SCART). com.mediatek.wwtv.tvcenter (Live TV and the source
+#   menu), com.mediatek.autopair (remote pairing), com.vestel.tv.service / keycontroller / backlight / eib.
+# - mediatek.factorymenu.ui and com.mediatek.tv.factory: never started, never disabled.
+# - android.autoinstalls.config.vestel.malin: tools/disable.sh skips it (dumpsys shows no permission block,
+#   so its input check cannot read it), and it only acts during first setup. Left enabled.
+# - Owner's choices: YouTube, YouTube Music, Netflix, Prime Video, Play Movies, Play Games, Chromecast
+#   built-in (mediashell), Google Assistant (katniss) and the USB media player (MMP) all stay, and so does
+#   Google TTS, which the Assistant speaks with. TalkBack ships disabled; not listed, so restore leaves it off.
+#
+# Quirks on this firmware:
+# - Port 5555 was open with USB debugging on, and came back by itself after each reboot.
+# - Screenshots work: tools/tv.py --screenshot returns the whole screen.
+# - Closing ADB: USB debugging and Wireless debugging switched off plus a restart from the power button left
+#   5555 answering (adbd still replied AUTH). Turning the Developer options switch off and restarting from
+#   Settings > Device Preferences > About > Restart closed it; tools/adb-closed.py then reported it refused.
+
+# Vestel telemetry, logging and "cleaner"
+com.vestel.vestelreporter                        # Vestel reporter: INTERNET + BOOT_COMPLETED, no UI
+com.vestel.smartlogger                           # Vestel logging service
+com.vestel.tv.speedup                            # "speed up" cleaner, holds READ_LOGS + DUMP + INTERNET
+com.vestel.smartcenter                           # no UI, holds GET_TASKS (sees which apps you run) + INTERNET
+
+# Google ads, personalisation and feedback
+com.android.adservices.api                       # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services     # on-device ad personalisation
+com.android.federatedcompute.services            # federated learning for the above
+com.google.android.partnersetup                  # partner/OEM attribution
+com.google.android.feedback                      # Google feedback reporter
+com.android.tv.feedbackconsent                   # feedback consent prompts
+
+# Dead weight on a TV
+com.android.healthconnect.controller             # Health Connect
+com.android.health.connect.backuprestore         # Health Connect backup
+com.android.managedprovisioning                  # enterprise work-profile provisioning
+com.android.dynsystem                            # Dynamic System Updates
+com.android.cts.ctsshim                          # Android test shim
+com.android.cts.priv.ctsshim                     # Android test shim
+com.google.android.syncadapters.calendar         # calendar sync
+com.android.settings.intelligence                # the search box inside Settings; the menus keep working
+com.android.se                                   # Secure Element (eSIM, NFC payments); no such radio here
+
+# Only safe once com.gathin.tvhome owns Home and com.google.android.tvlauncher is disabled
+com.google.android.tvrecommendations             # launcher recommendation rows
+com.google.android.backdrop                      # ambient screensaver. Point the screensaver at the launcher's clock
+                                                 # first: settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+                                                 # (undo: ... com.google.android.backdrop/.Backdrop)
+
+# Stock launcher, replaced by launcher/
+# com.google.android.tvlauncher   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved

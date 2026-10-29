@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MOSR4 (irobot, MediaTek)",
+  "os": "Google TV 11",
+  "brand": "Xiaomi",
+  "notes": "Mi ad rows and PatchWall, Mi analytics, TV Manager, Miracast sink, OTA off by choice; setup wizard off so a third-party launcher can own Home; `overseaservice` hosts the Netflix key and must stay; second unit: setupwraith before launcherx, remote buttons need both key services and `config.json`, and those services cost the volume's live repeat; [notes](../docs/devices/xiaomi-mitv-mosr4.md)"
+}

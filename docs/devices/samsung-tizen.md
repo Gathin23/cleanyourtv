@@ -5,6 +5,8 @@
 > the Home button still opened Samsung Home and a long-press restart returned to HDMI.
 > Standby resume worked in one sequence; it is not a system launcher replacement.
 > No safe system-app removal or full restorable backup was established.
+> To turn off the tracking on a Samsung (or LG, Roku) TV with the remote instead, see
+> [cleanyour.tv/not-android](https://cleanyour.tv/not-android).
 
 One owner's reconnaissance from a Mac on the same network, not a port and not a tested list. It was
 reported in [#441](https://github.com/Gathin23/cleanyourtv/issues/441) on 2026-10-20 by
@@ -213,3 +215,81 @@ Do not treat this report as an uninstall list. A custom dashboard can limit its 
 without removing applications or risking HDMI, remote-control or streaming functionality.
 The custom Tizen application belongs in a separate repository; this note does not add Tizen support
 to `tools/` or make the Android launcher installable on Samsung firmware.
+
+## NU7405 (2018): the same picture on an older set, checked on 2026-10-24
+
+A third owner's read-only check from a Mac on the same network, with nothing changed on the TV and
+Developer Mode off. Only `GET /api/v2/` on 8001 and TCP connections were used.
+
+| Field | Observed value |
+|---|---|
+| Retail model | UE50NU7405, 50" NU7400 series, 2018, Spain |
+| Model string (`/api/v2/`) | `18_KANTME_UHD` |
+| System | Tizen; the API returned `Unknown` for the firmware version |
+| API | `version` 2.0.25, `TokenAuthSupport: true`, `developerMode: 0` |
+| Network | Wi-Fi |
+
+| Port | NU7405 result | Verification | Limits |
+|---|---|---|---|
+| 8001 | open | HTTP `GET /api/v2/` returned model metadata | Remote-control websocket not tested |
+| 8002 | open | TCP connection | TLS endpoint not read |
+| 8080 | open | TCP connection | Service not identified |
+| 9080 | closed | Connection refused | Open on the AU8000 |
+| 9197 | open | TCP connection | Service not identified independently |
+| 7678 | open | TCP connection | Service not identified independently |
+| 5555 | closed | Connection refused | No ADB on retail firmware |
+| 26101 | closed | Connection refused | Developer Mode off |
+
+Three years older than the AU8000, the set answers the same way: no ADB, no shell and no `sdb`, so
+the lists in `examples/` and the launcher do not apply to it either. The TV did not answer SSDP
+discovery from the Mac and was found only by scanning the subnet for 8001, 9197 and 7678.
+The `/api/v2/` reply also carries the DUID, the Wi-Fi MAC, the access point's MAC, the IP address and
+the name given to the TV; leave those out of anything you publish.
+
+## Q67BA (2022): the useful data point, one region and one year over, checked on 2026-10-24
+
+A fourth owner's read-only check on a fourth set, a year on from the AU8000 and in a different
+region, with nothing changed on the TV and Developer Mode off, reported in
+[#441](https://github.com/Gathin23/cleanyourtv/issues/441) on 2026-10-24 by
+[@niepiekm](https://github.com/niepiekm). Only `GET /api/v2/` on 8001 and 8002, TCP connections on
+the eight ports already documented, and one SSDP probe were used. Nothing here checks a second
+Q67BA or a post-reboot state, and the set was one unit, one session, one read pass.
+
+| Field | Observed value |
+|---|---|
+| Retail model | QE43Q67BAUXXH, 43" Q67BA (QLED Q6 series), 2022, Poland |
+| Model string (`/api/v2/`) | `22_NIKEL_UHD` |
+| System | Tizen; the API returned `Unknown` for the firmware version |
+| API | `version` 2.0.25, `TokenAuthSupport: true`, `developerMode: 0`, `PowerState: on` |
+| Network | Wi-Fi |
+
+| Port | Q67BA result | Verification | Limits |
+|---|---|---|---|
+| 8001 | open | HTTP `GET /api/v2/` returned model metadata | Remote-control websocket not tested |
+| 8002 | open | HTTPS `GET /api/v2/` returned metadata matching 8001 in every device field | Self-signed TLS certificate verification was bypassed for this local read only |
+| 8080 | open | TCP connection | Service not identified |
+| 9080 | open | TCP connection | Service not identified |
+| 9197 | open | TCP connection | Consistent with the AU8000's UPnP DMR; not identified independently here |
+| 7678 | open | TCP connection | Consistent with the AU8000's `nservice`; not identified independently here |
+| 5555 | closed | No response | No ADB on retail firmware |
+| 26101 | closed | No response | Developer Mode off; `sdb` therefore not installed and not tested |
+
+The TV answered on 8001 during the same minute window in which an SSDP M-SEARCH (`ST: ssdp:all`)
+sent once produced no reply. That matches the NU7405 and diverges from the AU8000; only one probe
+was sent, so an unicast or repeated-match retry is untested. Polling 8001 is the reliable way to
+find this set.
+
+Across the four sets on this page, the Q67BA adds two data points:
+
+- **9080** is now observed open on a 2021 unit (AU8000) and on this 2022 unit, and closed on the
+  2018 and 2024 units. The service remains unidentified, and four observations are too few to read
+  a generational rule from.
+- **`firmwareVersion: Unknown`** is now confirmed across four TV years and three regions, which
+  looks like a Samsung API behaviour rather than a per-model defect.
+
+What carries over unchanged: no ADB, no shell on retail firmware, and with `developerMode: 0` no
+`sdb`, so the developer-mode path (signed custom app, debug install, Web Inspector) was neither
+available nor tested on this generation. `TokenAuthSupport: true` is an API-declared flag only: no
+remote-control session was opened, so no "Allow" prompt was triggered, no pairing grant exists from
+this session, and grant duration remains unmeasured on this set. The `/api/v2/` reply carried the
+DUID, the Wi-Fi MAC and the access point's MAC, which are left out of everything published here.

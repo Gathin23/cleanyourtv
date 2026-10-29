@@ -1,0 +1,6 @@
+{
+  "tv": "Lumio Vision 7 55\" (KTC ODM, Realtek, khardi, KTC_LUMIO_4K_EU_23GV1), India",
+  "os": "Google TV 14",
+  "brand": "Lumio",
+  "notes": "First Lumio list: Anoki ACR + Privacy Sandbox ad services, Realtek store-demo/karaoke, Ginga, Google feedback/partner-setup/calendar-sync/ambient screensaver, Play Games, YouTube Music; voice assistant (katniss) off by choice (~100 MB); setupwraith must go with launcherx (active Wi-Fi was system-owned, so Wi-Fi survived; FORCE_SETUPWRAITH=1) and doing so can break Cast; Live TV is com.realtek.tv; remote app buttons YouTube 190 / Netflix 191 / Prime 195 / TL;DR 200; Netflix shipped disabled; reboot-checked"
+}

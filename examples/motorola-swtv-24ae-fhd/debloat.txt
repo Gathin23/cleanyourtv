@@ -1,8 +1,9 @@
-# Motorola SWTV-24AE-FHD (Skyworth OEM, device beomil, product SW11_TG, MediaTek), India/Global
-# Android TV 14 (API 34), build UKN4.250714.138, security patch 2025-10-01.
+# Motorola / Coocaa SWTV-24AE-FHD (Skyworth OEM, device beomil, product SW11_TG, MediaTek mt5867)
+# Unit 1 (Motorola, India): Android TV 14 (API 34), build UKN4.250714.138, security patch 2025-10-01.
+# Unit 2 (Coocaa 24LP6000G / SWTV-24AE-FHD, Vietnam / SEA): Google TV 14 (API 34), build UKN6.260116.048, ~1 GB RAM.
 # Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
 # Setup wizard: com.google.android.tungsten.setupwraith (claims HOME with priority 1).
-# Live TV app: com.cltv.hybrid (iWedia CanaliTV).
+# Live TV app: com.cltv.hybrid (Motorola, iWedia CanaliTV) or com.mediatek.wwtv.tvcenter (Coocaa).
 # HDMI and tuner inputs: com.mediatek.tvinput.
 # Remote: Settings button emits keycode 83 (KEYCODE_NOTIFICATION) on scancode 240; needs HomeKeyService.
 #
@@ -37,6 +38,7 @@ com.android.health.connect.backuprestore
 com.smartdevice.dailymanage                  # TV Guard / cleaner
 com.smartdevice.myapp                        # Daily Key / app manager
 com.google.android.play.games                # Google Play Games
+fusion.android.tv.demo                       # store demo mode (Coocaa)
 
 # Stock Google TV home and setup wizard
 # Disable only after installing and verifying the new launcher!

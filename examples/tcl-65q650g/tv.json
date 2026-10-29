@@ -1,0 +1,7 @@
+{
+  "tv": "TCL 65Q650G (US Q6 2023, BeyondTV4, Realtek RTD2851 / R51MT08, V8-R51MT08-LF1V095, 2 GB)",
+  "os": "Google TV launcher on Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL BI, promos, account/EULA, TCL TV+/Channel, TGuard, partner auto-installs; Tubi, Pluto, ESPN, Alexa off by choice; voice, Chromecast and firmware updater kept; launcherx + setupwraith off (Wi-Fi belonged to android.uid.system); BT remote's gear (scancode 233), Netflix, YouTube and Prime buttons remapped via app_keys/settings_key_scancodes, `APP_AUTO_START` allowed; reboot-checked",
+  "readme_os": "Google TV 11"
+}

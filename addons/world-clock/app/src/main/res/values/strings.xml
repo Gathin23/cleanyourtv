@@ -25,4 +25,23 @@
     <string name="format_12">12-hour time</string>
     <string name="format_24">24-hour time</string>
     <string name="close">Close</string>
+    <string name="screensaver">Screensaver</string>
+    <string name="preview">Preview · any button returns</string>
+    <string name="background_option">Background: %1$s</string>
+    <string name="motion_option">Motion: %1$s</string>
+    <string name="brightness_option">Clock brightness: %1$s</string>
+    <string name="gradient">Sky gradient</string>
+    <string name="plain">Black</string>
+    <string name="motion_on">On</string>
+    <string name="motion_reduced">Reduced (stationary)</string>
+    <string name="clock_brightness">Clock brightness</string>
+    <string name="dim">Dim</string>
+    <string name="medium">Medium</string>
+    <string name="bright">Bright</string>
+    <string name="tv_screensaver_settings">TV screensaver settings</string>
+    <string name="screensaver_unavailable">This TV does not expose screensaver settings. Preview is still available.</string>
+    <string name="background">Background</string>
+    <string name="starfield">Starfield</string>
+    <string name="world_map">World map</string>
+    <string name="zone_detail">%1$s · %2$s</string>
 </resources>

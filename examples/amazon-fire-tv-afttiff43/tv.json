@@ -1,0 +1,6 @@
+{
+  "tv": "Amazon Fire TV 4K smart TV, 50\" and 75\" Omni Series (AFTTIFF43, brandenburg)",
+  "os": "Fire OS 7.7.1.4 / 7.7.1.7, Android 9",
+  "brand": "Amazon Fire TV",
+  "notes": "Done remotely through a Synology subnet router; Toshiba list plus Insignia ad/tracking packages: ACR, metrics, advertising ID, Shopping, demo, tutorials, Music/Photos/Luna/Kids, Alexa extras, Ambient screensaver; four protected packages noted; Alexa core, casting, OTA, Live TV, Silk kept; AdGuard Private DNS works; 75\" Omni unit adds ad-sync, sponsored rows, Fire TV Channels, metrics and notice packages, and notes that Alexa voice re-enables itself on its far-field-mic set; debloat only"
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ore di silenzio</string>
+    <string name="channel_name">Limite del volume</string>
+    <string name="notification_text">Il volume resta sotto il limite. Apri Ore di silenzio per cambiarlo.</string>
+</resources>

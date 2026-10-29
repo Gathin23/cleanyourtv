@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 75P635 (Smart TV, BeyondTV4, G07), AR07 build",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL promos, gallery, voice, unused preloads, TalkBack off; Chromecast, Miracast, USB MediaPlayer and firmware updater kept (casting can stop after a reboot with setupwraith off); launcher replacement works (CleanYourTV Home); setupwraith disabled after set-home-activity; notereminder resets on reboot — re-disable after restart; [Live TV config](tcl-75p635/README.md) sets com.tcl.tv for Inputs"
+}

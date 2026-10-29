@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 55POS9002/12 OLED (TP Vision TPM171E, PH7M_EU_5596, MediaTek MT5891), Europe",
+  "os": "Android TV 8.0",
+  "brand": "Philips",
+  "notes": "Same firmware as the 65PUS8102: DAC/GEL analytics, Inscape ACR, NetTV store, promo stickers; three packages need `TVINPUT_ALLOW=1`; Netflix button remapped by scancode 632; RSA prompt needed revoke + mains power cycle"
+}

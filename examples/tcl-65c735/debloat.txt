@@ -62,8 +62,11 @@
 #   volume key steps the volume twice; an injected KEYCODE_VOLUME_UP steps it once, and consuming the key in the
 #   helper does not stop the double step. key_filter: false brings back one step per press, at the price of every
 #   remote button mapped above.
-# - `appops set com.gathin.tvhome AUTO_START allow` fails here (Unknown operation string). After a theme push only
-#   one of the two helpers was bound at a time; a reboot binds the enabled ones again.
+# - The auto-start op is named APP_AUTO_START here (`appops get <package>`): `appops set com.gathin.tvhome AUTO_START
+#   allow` fails (Unknown operation string), APP_AUTO_START is accepted. Allowed and saved with `appops write-settings`,
+#   it let a third-party screensaver (Aerial Views) bind, and it still did after a reboot (docs/TROUBLESHOOTING.md,
+#   "A third-party screensaver never shows"). After a theme push only one of the two helpers was bound at a time; a
+#   reboot binds the enabled ones again.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65c735/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c735/debloat.txt com.google.android.apps.tv.launcherx

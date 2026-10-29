@@ -1,0 +1,64 @@
+# RCA 2K Android TV (KONKA, device lasalle, board rtd2841a), Android 11 (API 30),
+# firmware RTK4.241026.043, security patch 2025-02-01
+# Fingerprint: RCA/KKRTK2841ISDB_RCA/lasalle:11/RTK4.241026.043/13087690:user/release-keys
+# Realtek RTD2841, armeabi-v7a, 1280x720 at 213 dpi, low-RAM build (ro.config.low_ram=true).
+# Stock launcher: com.google.android.tvlauncher  Live TV / tuner: com.realtek.tv
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/rca-2k-android-tv-lasalle/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/rca-2k-android-tv-lasalle/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested on one set: applied in four batches with a screenshot and a Home check after each, then a
+# reboot. Home still opened the stock launcher and ADB came back; the 15 packages below stayed
+# disabled-user. The launcher in launcher/ was installed afterwards and the stock launcher disabled
+# by launcher/build-and-install.sh, not by this list, so Undo does not bring it back: re-enable
+# com.google.android.tvlauncher by hand if you go back to it.
+#
+# Kept on purpose, do not disable:
+# - com.realtek.tv, com.realtek.tv.*, dtmb, dtv: tuner and Live TV, behind the Inputs menu.
+# - com.realtek.keyintercept: remote keys and FallbackHome.
+# - com.realtek.media.notification (shares its uid with systemui) and com.realtek.display.monitor
+#   (PERSISTENT).
+# - com.google.android.katniss: voice assistant and microphone button.
+# - com.google.android.apps.mediashell: Chromecast / Miracast.
+# - com.google.android.tv.remote.service: controlling the TV from the phone.
+# - com.android.mgstv (MGS TV), Netflix, YouTube, TVCable Xtrim (com.tvcable.xtrim.client.android.tv),
+#   the browser and com.realsil.ota (firmware updater).
+# - com.realtek.setupwizard and com.google.android.tungsten.setupwraith: first boot and pairing. The
+#   saved Wi-Fi network belongs to android.uid.system:1000, not to setupwraith.
+#
+# Not disableable on this firmware (checked with one reboot): the seven factory and legacy backup
+# packages at the end accept pm disable-user and report disabled-user, then come back enabled at the
+# next boot. com.toptech.tvfactory runs a BootUpReceiver and a BootcompleteService as uid 1000.
+# They are commented out as a record; re-applying them on every boot has no effect.
+
+# Google telemetry, recommendations and setup helpers
+com.google.android.tvrecommendations
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.android.dreams.basic
+
+# Preloaded streaming apps this household does not use
+com.amazon.amazonvideo.livingroom      # Prime Video
+com.google.android.youtube.tvmusic     # YouTube Music
+com.google.android.play.games
+com.google.android.videos              # Play Movies & TV; its tile stays until the launcher is replaced
+
+# Visible preloads nobody uses, plus the Ambient screensaver
+com.eltelon.zapping                    # Zapping
+com.alphainventor.filemanager
+com.rtk.mediabrowser                   # Media Player (USB)
+com.google.android.backdrop            # Ambient screensaver
+
+# Factory and engineering menus, and legacy backup transports. Re-enabled by the firmware at every
+# boot (see the header).
+# com.realtek.factorymenu
+# com.rtk.engmenu
+# com.toptech.factorytoolsboe
+# com.toptech.factorytoolsgtv
+# com.toptech.tvfactory
+# com.android.sharedstoragebackup
+# com.android.wallpaperbackup

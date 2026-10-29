@@ -114,7 +114,9 @@ com.snm.upgrade                          # updateos, a second updater
 com.tcl.common.weather                   # weather widget and its background service
 com.tcl.tshop                            # TCL shop / shopping entry
 com.tcl.gamebar                          # game bar
-com.tcl.t_solo                           # game centre
+# OPTIONAL: Bluetooth speaker mode. Leave this enabled if you pair a phone and play music
+# through the TV; disabling it removes the "Bluetooth music" app.
+# com.tcl.t_solo                         # Bluetooth music app ("listen alone"); not a game centre
 com.tcl.micmanager                       # microphone manager (karaoke)
 com.audiocn.karaoke.micmanager           # karaoke microphone manager
 com.tcl.tvsmartalbum                     # smart photo album

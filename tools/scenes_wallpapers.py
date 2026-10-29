@@ -1,7 +1,7 @@
 """Draws the wallpapers of themes/scenes: 14 dark illustrated landscapes, as SVG (1280x720) from code, so the
 collection is this repo's own work and can be changed or extended here.
 
-    python3 tools/scenes_wallpapers.py /tmp/scenes      # writes 01-dusk-peaks.svg ... 14-autumn-valley.svg
+    python3 tools/scenes_wallpapers.py <folder>     # writes 01-dusk-peaks.svg ... 14-autumn-valley.svg
 
 Every scene keeps its lower third dark, because the dock, the grid and the text sit there. The random seeds are
 fixed, so the same code always draws the same SVGs.
@@ -376,12 +376,70 @@ SCENES = [("01-dusk-peaks", dusk_peaks), ("02-golden-coast", golden_coast), ("03
           ("10-city-lights", city_lights), ("11-balloon-sunrise", balloon_sunrise), ("12-monsoon", monsoon),
           ("13-lighthouse-coast", lighthouse_coast), ("14-autumn-valley", autumn_valley)]
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit(__doc__)
-    out = sys.argv[1]
-    os.makedirs(out, exist_ok=True)
-    for name, scene in SCENES:
-        with open(os.path.join(out, f"{name}.svg"), "w") as f:
-            f.write(scene())
+# ---- the one argument ---------------------------------------------------------------------------
+
+USAGE = "usage: scenes_wallpapers.py <folder>     (the folder to write the 14 SVGs into; -h for the rest)"
+
+
+def target(argv):
+    """The folder to write into, from the command line; anything that is not one is refused here.
+
+    'scenes_wallpapers.py --help' used to take the option for the folder: it made a directory called
+    '--help' in whatever directory the reader stood in and filled it with 14 SVGs, and said so with exit 0.
+    So -h/--help now prints this script's own note and writes nothing, any other leading dash is refused
+    ('--out x' would otherwise become a folder called '--out'), and a path that exists but is not a folder
+    is named instead of ending in os.makedirs' FileExistsError traceback. An empty word is not a folder
+    either: os.makedirs('') is a FileNotFoundError whose line names nothing the reader typed.
+    """
+    if argv in (["-h"], ["--help"]):
+        print((__doc__ or USAGE).strip())
+        sys.exit(0)
+    if len(argv) != 1:
+        print(USAGE, file=sys.stderr)
+        sys.exit(2)
+    out = argv[0]
+    if not out:
+        print("scenes_wallpapers.py: the folder to write the scenes into was given as an empty "
+              f"argument.\n{USAGE}", file=sys.stderr)
+        sys.exit(2)
+    if out.startswith("-"):
+        print(f"scenes_wallpapers.py takes one folder and no options, so {out} is not one.\n{USAGE}",
+              file=sys.stderr)
+        sys.exit(2)
+    if os.path.exists(out) and not os.path.isdir(out):
+        print(f"scenes_wallpapers.py: {out} is a file, and the scenes need a folder", file=sys.stderr)
+        sys.exit(2)
+    return out
+
+
+def write(out):
+    """The 14 SVGs into `out`, refusing a folder it cannot create or a file it cannot write.
+
+    Neither used to be answered: a path through a file ('README.md/scenes') ended in os.makedirs'
+    NotADirectoryError, and a folder sitting where one scene's name goes ended in IsADirectoryError
+    from open(), each a traceback with exit 1 - the code a run that wrote nothing returns. Both are
+    the reader's own argument or their own folder, so they are answered in the words the other
+    refusals here use, before anything else is written; the second says how much did land, so a
+    half-filled folder cannot be mistaken for the 14 the script promises.
+    """
+    try:
+        os.makedirs(out, exist_ok=True)
+    except OSError as e:
+        print(f"scenes_wallpapers.py: cannot create {out}: {e.strerror or e}. Nothing was written.",
+              file=sys.stderr)
+        sys.exit(2)
+    for done, (name, scene) in enumerate(SCENES):
+        path = os.path.join(out, f"{name}.svg")
+        try:
+            with open(path, "w") as f:
+                f.write(scene())
+        except OSError as e:
+            print(f"scenes_wallpapers.py: cannot write {path}: {e.strerror or e}", file=sys.stderr)
+            print(f"stopped after {done} of {len(SCENES)} scenes, which are left in {out} as they "
+                  "are.", file=sys.stderr)
+            sys.exit(2)
     print(len(SCENES), "scenes written to", out)
+
+
+if __name__ == "__main__":
+    write(target(sys.argv[1:]))

@@ -1,0 +1,6 @@
+{
+  "tv": "SHARP AQUOS 4T-C43DL1 (AQUOS-TVJ21-2, tcve2uj, MediaTek), Japan",
+  "os": "Android TV 11",
+  "brand": "SHARP",
+  "notes": "Sharp's own Japan-market platform (`jp.co.sharp.av.*`, not CVTE): Sharp analytics, retail demo, PAI auto-installs, COCORO VISION, 番組ランキング, AQUOS City; Google feedback, partner setup, Ambient Mode and recommendations; Assistant, Chromecast, phone remotes, COCORO ID, DLNA and unused streaming off by choice; Live TV is `jp.co.sharp.av.android.aquostvapp`; 3 GB, 32-bit only"
+}

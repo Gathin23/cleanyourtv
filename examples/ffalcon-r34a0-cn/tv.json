@@ -1,0 +1,6 @@
+{
+  "tv": "FFalcon (雷鸟) r34a0, China (V8-A920T01-LF1V147, Amlogic T920), 1 GB",
+  "os": "Android 5.1.1",
+  "brand": "FFalcon",
+  "notes": "First Android 5.x-era FFalcon list; `pm disable-user` denied by SecurityException (shell uid=2000 → package uid=1000), everything uses `pm hide` and survives reboots; adb install blocked until `setprop persist.tcl.debug.installapk 1` + `persist.tcl.installapk.enable 1`; any HOME-category APK refused with INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES — the same signature gate as tcl-ak30a5/q10g-pro, verified by stripping the HOME category from the bundled launcher (minSdk 22), which then installed but crashes on 5.1 with logd off, so debloat only, stock CyberUI stays; boot ad, push popups (c2dm + messagebox), analytics, preloads, iFlytek voice off; TVBox, 云视听小电视, 千寻, 电视卫士, app store kept by choice; ADB opens from System Info with UP DOWN LEFT RIGHT, repeated 2–3 times; reboot-checked"
+}

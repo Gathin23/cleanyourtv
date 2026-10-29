@@ -1,0 +1,72 @@
+# JVC LT-43KM348 (built by KTC, product KTC_JVC_2K_25GV1, device jagalchi, MediaTek mt5867 / T56),
+# Google TV 14 (API 34), firmware UKN7.260716.013, security patch 2026-08-01, about 0.96 GB RAM
+# (ro.config.low_ram=true), 32-bit userspace, UI at 1280x720 on a 1920x1080 panel.
+# Fingerprint: JVC/KTC_JVC_2K_25GV1/jagalchi:14/UKN7.260716.013/16001078:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/jvc-lt-43km348/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/jvc-lt-43km348/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh as above).
+# Live TV: com.mediatek.wwtv.tvcenter. No launcher entry: set live_tv_action (config.json in this folder).
+# TV inputs (com.mediatek.tvinput): HDMI 1 = HW4, HDMI 2 = HW5, composite = HW1, tuners = HW0 / HW6 (analog).
+# Same KTC board as docs/devices/master-g-2k-smart-tv.md (Master-G 2K, jagalchi, Chile, UKN4.250714.046): there
+# com.cltv.hybrid and fusion.android.tv.demo shipped disabled and Live TV was tvcenter.plus; here both are enabled at
+# the factory and tvcenter.plus is the one shipped disabled. Same chip as examples/eko-2k-google-tv-tennoji (MTC).
+# More notes (Settings button, remote keys, picture panel, ACR servers): README.md in this folder.
+#
+# KEEP, even though the names look like bloat:
+# - fusion.android.tv.demo: receives com.mstar.android.intent.action.TV_INPUT_BUTTON (the remote's Input key).
+# - com.mediatek.android.leanbacklauncher.partnercustomizer (+ .overlay): crash-loops com.mediatek.tv.service
+#   on other MediaTek sets if disabled (see examples/chiq-ai-pont).
+# - com.ktc.tv.factory, ktc.factorymenu.ui, mediatek.factorymenu.ui: they own global keys (F5, F9, F11, BUTTON_2/5/8/9
+#   in `dumpsys window`). Left enabled and never launched.
+# - com.mediatek.wwtv.setupwizard, com.mediatek.autopair, com.google.android.tv.remote.service (remote pairing,
+#   the Bluetooth remote's mic and the Google TV phone app's remote, which still finds the TV with this list).
+# - com.google.android.katniss (Assistant) and com.mediatek.miracast, by the owner's choice.
+# - No separate firmware-update package: the build has com.google.android.feature.SILENT_OTA.
+#
+# Status: disabled 2026-10-22 to 2026-10-25 on one TV; survived an unplanned power cut (Home stayed the new
+# launcher, every package stayed disabled, Wi-Fi came back). Three days of real use, not a long soak.
+# Already disabled at the factory, so not listed: com.mediatek.wwtv.tvcenter.plus, com.google.android.youtube.tvmusic.
+
+# Telemetry, content recognition, feedback, partner setup
+tv.anoki.acr.anokiacroptin                      # Anoki ACR (priv-app); config from acr-config.aistrm.net
+# com.cltv.hybrid                               # CLTV free channels; disabled on the tested set (uncomment to do the same). On other CLTV builds this package is the Live TV app (#1578), so it stays on in the shared list
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup                 # Google partner attribution
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
+com.mstar.android.tv.disclaimercustomization    # setup-only disclaimer screen
+
+# Preloads, off by the owner's choice
+com.amazon.amazonvideo.livingroom               # Prime Video
+com.google.android.videos                       # Google TV app (Play Movies)
+com.google.android.play.games
+com.tcl.browser
+com.electronic.manual                           # e-manual
+
+# Background services nobody needs on a TV
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.health.connect.backuprestore
+com.android.healthconnect.controller
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.dynsystem                           # Dynamic System Updates
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.android.dreams.basic
+com.google.android.marvin.talkback
+
+# Launcher handover. setupwraith's RecoveryActivity took Home on the first launcher install (the install
+# script rolled back). It also owned the Wi-Fi network saved at setup: forget the network and join it again
+# in Settings first (owner becomes android.uid.system), or disabling it deletes the network. On this build it
+# also holds the Cast credentials (CastInfoProvider), so Chromecast is expected to fail after a reboot.
+com.google.android.tungsten.setupwraith
+com.google.android.apps.mediashell              # Chromecast built-in, off by choice once setupwraith was gone (casting not retested)
+
+# Stock launcher, replaced by launcher/. Disabling it also kills the remote's Settings-button panel (README.md).
+# com.google.android.apps.tv.launcherx   # launcher/build-and-install.sh disables it itself, after Home has moved

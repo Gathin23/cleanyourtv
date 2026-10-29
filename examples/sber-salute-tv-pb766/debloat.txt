@@ -1,0 +1,62 @@
+# Sber Salute TV 32" (CVTE board TPD.MT9216.PB766, MediaTek MT9256 "mt5867", panel ST3151A07-2, 1 GB RAM, 8 GB eMMC), Russia
+# StarOS 1.103.76 on Android 11, build RP1A.200720.011 (2026-06-11), cvte model MD_CVTE_OVERSEA_MT9256_11_0_1GB_STARKOS
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sber-salute-tv-pb766/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sber-salute-tv-pb766/debloat.txt ru.sberdevices.starlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: ru.sberdevices.starlauncher. This is a CVTE board, so it stays ENABLED and is not in this list:
+# install with STOCK_LAUNCHER=none launcher/build-and-install.sh, which makes the new launcher Home with
+# set-home-activity. Home and ADB came back after a reboot. Unlike at30a6, Developer options open the usual way
+# here (OK on the build number seven times).
+#
+# Sber's platform service (ru.sberdevices.services, cannot be disabled) treats several apps as mandatory: it
+# installed openbeta, starkidsroom, parentcontrol and startube during the session, re-installed Okko, and right
+# after a reboot ru.more.play, ru.sberdevices.subscriptions, ru.sberdevices.smarthome.promo, ru.sberdevices.tv and
+# ru.sberdevices.rcfupdater were enabled again. Hide them in the launcher (config.json) rather than re-running
+# the list after every boot. Uninstalling is pointless: the service puts them back enabled.
+#
+# Keep: ru.sberdevices.services(.core) (platform, OTA, the Salute assistant), ru.sberdevices.assistant,
+# ru.sberdevices.tvinputs, com.mediatek.tvinput and com.mediatek.tv.service (HDMI, AV, tuner),
+# com.cvte.tv.setting (LiveTvGlobal), com.cvte.tv.media ("Файлы", USB media), ru.sberdevices.app.starkeyboard (the
+# only IME), ru.sberdevices.webview, ru.sberdevices.starmarket (Sber's app catalogue: the only way apps get
+# updated here), ru.sberdevices.settings, com.sberbank.settings, every com.cvte.* package (factory and TV API apps
+# among them: do not open com.cvte.fac.menu, com.cvte.factory.*, com.cvte.tv.tools or ru.sberdevices.TvFactoryHelper).
+# No separate OTA package on this firmware; nothing here touches updates.
+
+# Sber background services
+ru.sberdevices.survey                        # surveys
+ru.sberdevices.bugreporter                   # StarBugReporter
+ru.sberdevices.starcleaner                   # StarCleaner, the "Очистка памяти" screen
+ru.sberdevices.rcfupdater                    # remote control firmware updater; the paired remote keeps working; re-enabled at boot
+ru.sberdevices.starprofile                   # user profiles
+ru.sberdevices.openbeta                      # beta programme; installed itself during the session
+ru.sberdevices.tv                            # "Настройка провайдеров", TV provider setup; HDMI unaffected; re-enabled at boot
+
+# Sber screensaver: point screensaver_components at another dream first, see README.md
+ru.sberdevices.starscreensaver
+
+# Sber content apps and promos
+ru.sberdevices.music                         # Zvuk
+ru.sberdevices.videos                        # "Видео" catalogue
+ru.sberdevices.starlivetv                    # StarLiveTv, Sber's online channels
+ru.sberdevices.sberplay                      # SberPlay games
+ru.sberdevices.subscriptions                 # SberPrime; re-enabled at boot
+ru.sberdevices.starbrowser                   # Salute browser
+ru.sberdevices.starkidsroom.prod             # kids room; installed itself during the session
+ru.sberdevices.parentcontrol                 # parental control; installed itself during the session
+ru.sberdevices.smarthome.promo               # smart home promo; re-enabled at boot
+com.salute.star                              # "Умный дом" smart home app
+
+# Screen sharing
+com.mediatek.androidbox                      # WFDSinkTest, the Miracast receiver
+
+# Preinstalled streaming apps the owner does not use (Wink, Kinopoisk, VK Video and Rutube were kept)
+ru.more.play                                 # Okko; re-installed and re-enabled by Sber at boot
+ru.mts.mtstv                                 # KION
+ru.ivi.client                                # Ivi
+com.vgtrk.smotrim                            # Smotrim
+ru.tv1.android.tv                            # Channel One
+tv.lfstrm.smotreshka_stb                     # Smotreshka
+com.yandex.browser.tv                        # Yandex Browser
+org.videolan.vlc                             # VLC (vendor build); USB media still plays in com.cvte.tv.media

@@ -1,0 +1,6 @@
+{
+  "tv": "JVC Android TV (Vestel-built, BARTU_Jvc, menlo, MediaTek mt5867), Spain",
+  "os": "Android TV 11",
+  "brand": "JVC",
+  "notes": "Same Vestel platform as Cecotec shandao: Vestel reporter/speedup/smartcenter, Google feedback/partner setup, Vestel auto-installs; fusion.android.tv.demo KEPT (it handles the Input key here); Assistant, Mango TV, TCL Browser off by choice; USB debugging alone opens 5555; screencap blocked"
+}

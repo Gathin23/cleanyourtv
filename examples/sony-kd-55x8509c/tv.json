@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KD-55X8509C (2015, \"BRAVIA 4K 2015\", SVP-DTV15, MediaTek), EU firmware",
+  "os": "Android TV 7.0",
+  "brand": "Sony",
+  "notes": "Oldest chip in the Sony lists: Qterics/Sony device agents, Discover/BIVL and the recommendation services, Sony Select/shelf, retail demo, help apps, dead Video Unlimited; the stock launcher is `com.google.android.leanbacklauncher`, not tvlauncher, so pass it to `restore.sh`; `com.sony.dtv.tvx` also plays every HDMI input, keep it; voice and YouView off by choice; 1.5 GB, 1,144 → 991 MB used RAM; list only, the launcher half needs Android 8 (minSdk 26, see #146)"
+}

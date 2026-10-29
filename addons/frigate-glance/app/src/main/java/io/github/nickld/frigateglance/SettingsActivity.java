@@ -205,9 +205,11 @@ public class SettingsActivity extends Activity {
                         store.saveSetting("cardScale", SettingsModel.next(SettingsModel.CARD_SCALES, cfg.cardScale))));
                 row("Corner", "Which corner of the screen the card slides into.", CORNER_NAMES.get(c.corner),
                         () -> save(cfg -> store.saveSetting("corner", SettingsModel.next(SettingsModel.CORNERS, cfg.corner))));
-                row("Card stays", "How long the card stays once the event has ended, while the bar on top runs down.",
+                row("Card stays", "How long the card stays once the objects have left, while the bar on top runs down.",
                         c.dismissSeconds + " s", () -> save(cfg -> store.saveSetting(
                         "dismissSeconds", SettingsModel.next(SettingsModel.DISMISS_SECONDS, cfg.dismissSeconds))));
+                row("Parked objects", "A car or person that stops moving counts as gone, so the card starts counting down.",
+                        onOff(c.dismissOnStationary), () -> save(cfg -> store.saveSetting("dismissOnStationary", !cfg.dismissOnStationary)));
                 row("Live video", "Moving picture from the camera. Off, or while another app plays sound, a snapshot every second instead.",
                         onOff(c.liveVideo), () -> save(cfg -> store.saveSetting("liveVideo", !cfg.liveVideo)));
                 row("Boxes", "Outlines around the objects Frigate detected, gone when the object leaves.", onOff(c.boxes), () -> save(cfg -> store.saveSetting("boxes", !cfg.boxes)));

@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-ASTP1 (maverick), China firmware 2.40.641.0514.cn, 1 GB RAM, 720p",
+  "os": "Android TV 9 (CN build)",
+  "brand": "Xiaomi",
+  "notes": "First CN-firmware Xiaomi: no Google apps; stock launcher `com.mitv.tvhome` (pass `STOCK_LAUNCHER`); ADB closes on every reboot; Mi analytics/push/ads, shop plugin, TV Manager, updater off; casting and app store kept"
+}

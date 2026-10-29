@@ -1,0 +1,56 @@
+# SHARP AQUOS-TVX19B (reported as AQUOS-TVX19B; device gangnam, MediaTek m7322), Taiwan
+# Android TV 11 (SDK 30), firmware v3000, build RTOB.250807.002 (2025-08-09), security patch 2025-06-01, kernel 4.9.243+, 32-bit ARM
+# Stock launcher: com.google.android.tvlauncher (disabled last, after the replacement was installed, opened and set as Home)
+# Live TV app: com.mediatek.wwtv.tvcenter; HDMI/tuner inputs: com.mediatek.tvinput / com.mediatek.tv.service
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/sharp-aquos-tvx19b/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/sharp-aquos-tvx19b/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Applied and verified on 2026-10-27 in two small batches plus the launcher handover: `pm list packages -d`
+# checked after every batch and again after a reboot (15 disabled in total; nothing re-enabled itself).
+# Home verified with `cmd package resolve-activity` (replacement is default, isDefault=true) before and
+# after the reboot. Package names never say what they do on this firmware: every entry below was
+# checked against the live TV first. 121 packages installed before the debloat.
+# Ships already disabled from the factory (not in this list): com.google.android.marvin.talkback, com.cltv.fast.
+#
+# Kept on purpose: Google Play Store + Play Services (gms/gsf), Gboard, Bluetooth/remote services,
+# com.mediatek.tv.service / com.mediatek.tvinput / com.mediatek.wwtv.tvcenter (Live TV and HDMI),
+# com.mediatek.wwtv.mediaplayer (USB media), com.google.android.tungsten.setupwraith (see the Wi-Fi note
+# in the launcher section), com.google.android.apps.mediashell (Chromecast built-in, still works),
+# rcota.android.av.sharp.co.jp.rcota (Sharp firmware update channel), com.google.android.tvrecommendations,
+# all com.android.* core packages and all MediaTek factory packages (com.mediatek.tv.factory,
+# com.mediatek.factorymenu.ui - never opened, never disabled).
+# Also set: animation scales 0.5. Private DNS works on this firmware.
+
+# --- Manufacturer telemetry, ACR, retail demo and preloads ---
+com.sharplabs.dmt.aas.analyticsservice # Sharp analytics telemetry
+tv.anoki.acr.controller # Anoki ACR (content recognition)
+fusion.android.tv.demo # retail demo mode
+jp.co.sharp.av.android.epopdemo # Sharp e-pop retail demo
+azan.android.av.sharp.co.jp # preloaded Azan app
+
+# --- Google feedback ---
+com.google.android.feedback
+
+# --- Unused Google / Android services (off by choice; all still installed) ---
+com.google.android.play.games # Play Games
+com.google.android.videos # Play Movies & TV
+com.google.android.music # Play Music
+com.google.android.syncadapters.calendar # calendar sync
+com.android.printspooler # print service
+com.android.dreams.basic # basic daydream
+
+# --- Stock launcher: disable ONLY after the replacement launcher is installed and opened ---
+# On this unit `cmd package set-home-activity` returns Success but Home stays with tvlauncher
+# (priority 2) while it is enabled; Home moved only after this line was applied, with the
+# replacement already set as the preferred Home activity.
+# setupwraith note: com.google.android.tungsten.setupwraith also lives on this set and does NOT
+# claim HOME here, so it is kept. Its saved networks were checked with `dumpsys wifi` first:
+# the in-use network belongs to the system, setupwraith holds only an unused one, and the TV
+# stayed connected with setupwraith enabled.
+# One more HOME claimant to know about: rcota (the Sharp update channel, priority 0) also
+# declares HOME. It did NOT take Home on this unit - after the handover, resolve-activity
+# reports the replacement launcher with isDefault=true, also after a reboot - but verify
+# resolve-activity on your own unit after disabling tvlauncher before you walk away.
+com.google.android.tvlauncher

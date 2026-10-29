@@ -31,9 +31,9 @@ AOSP one, which has no Account & Security page - where the ADB switch lives - wh
 launcher's Settings button would open it. Xiaomi's own entry,
 `com.xiaomi.mitv.settings/.entry.MainActivity`, opens the native settings main page.
 
-With the "Native settings" row in the Settings long-press menu (see the pull request that
-added it), the vendor app is one press away regardless of what the standard action resolves
-to. Its Account & Security page is also reachable directly:
+The Settings long-press menu offers it as **Native settings** - the row is there while one of the
+`settings_fallback_components` entries is installed - so the vendor app is one press away regardless of
+what the standard action resolves to. Its Account & Security page is also reachable directly:
 `com.xiaomi.mitv.settings/.entry.SecurityActivity`.
 
 ## Notes from this set

@@ -1,0 +1,6 @@
+{
+  "tv": "Motorola MT4310 (Newsan; Hisense board, hayward, MediaTek), Argentina",
+  "os": "Android TV 11",
+  "brand": "Motorola",
+  "notes": "Hisense silent auto-installs, store demo and disclaimer, feedback and partner setup, recommendation rows and MediaTek partnercustomizer, printing and calendar; Play Movies, Play Games and TalkBack/TTS off by choice; the factory manager re-enables katniss and tvrecommendations at every boot, so they stay on; 0.9 GB, 720p UI; tvlauncher off for a custom launcher, setupwraith left on (no HOME claim); remote app and Input keys survive the swap; Live TV is `com.mediatek.wwtv.tvcenter`"
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "Home+ STB-6252C (中嘉寬頻, Inspur, MT5221), DVB-C/OTT box",
+  "os": "Android TV 11",
+  "brand": "Home+",
+  "notes": "Operator ad service, LiTV ad SDK, DVB ticker overlay, Google recommendations/feedback, Play Games; KKBOX, CATCHPLAY+, LiTV, friDay, 4gTV, HBO GO, Play Movies off by choice; operator OTA kept on (commented out; the tested unit froze it); operator launcher replaced (HOME priority 2, pass -StockLauncher); watchdog daemon kept; DVB-C tuner must stay; Live TV needs live_tv_input_id none; screencap returns empty; not Netflix certified; 1.85 GB"
+}

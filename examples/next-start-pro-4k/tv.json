@@ -1,0 +1,6 @@
+{
+  "tv": "Next Start Pro 4K TV Box (SDT HPR314-Next, Realtek RTD1325), Turkey, streaming box",
+  "os": "Google TV 14",
+  "brand": "Next",
+  "notes": "Google feedback, on-device ad personalisation, Google TV home and ambient screensaver, setup wizard (took Home and crash-looped; owned the setup Wi-Fi), factory tests, Next IPTV, Roket and JetTV; Dolby service, Realtek and SDT services kept; **Dolby stutter fix**: Surround on Never plus Realtek's hidden MS12 output set to DD+/Atmos ([README](next-start-pro-4k/README.md)); Projectivy as Home; 2 GB; reboot-checked"
+}

@@ -5,7 +5,7 @@
 ### If this adds or changes a TV list
 - [ ] `examples/<brand>-<model>/debloat.txt`, header with model, Android version and firmware build
 - [ ] Only packages I actually disabled and lived with; anything I had to re-enable is noted
-- [ ] A row in `examples/README.md` and one in the README's TV table
+- [ ] `examples/<brand>-<model>/tv.json` with the TV, OS, brand and notes; nothing changed outside my folder (the README tables are generated from it)
 - [ ] Nothing in the list uninstalls
 
 ### If this touches the launcher

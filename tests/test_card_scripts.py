@@ -30,11 +30,12 @@ TOOLS = ROOT / "tools"
 PRESS = ROOT / "docs" / "workflows" / "press.md"
 PERF = TOOLS / "requirements-perf.txt"
 
-# The scripts press.md sends a reader to, with the two arguments each takes: the font, then the file.
+# The scripts press.md sends a reader to, with the picture each one draws. The font they take is not in
+# the repo; the tests below pass a file that exists so the Pillow check is the one they reach.
 CARD_SCRIPTS = {
-    "readme_stats.py": ["Fredoka.ttf", "stats.png"],
-    "readme_featured.py": ["Fredoka.ttf", "featured.png"],
-    "readme_card.py": ["Fredoka.ttf", "card.jpg"],
+    "readme_stats.py": "stats.png",
+    "readme_featured.py": "featured.png",
+    "readme_card.py": "card.jpg",
 }
 
 
@@ -60,10 +61,12 @@ class CardScriptsPillowTest(unittest.TestCase):
 
     def test_each_card_script_is_importable_without_pillow_and_names_the_file(self):
         with tempfile.TemporaryDirectory() as tmp:
-            for name, args in CARD_SCRIPTS.items():
+            font = Path(tmp) / "Fredoka.ttf"
+            font.write_bytes(b"")   # any font path that exists: the scripts check the font before Pillow
+            for name, picture in CARD_SCRIPTS.items():
                 with self.subTest(script=name):
                     self.assertTrue((TOOLS / name).is_file(), f"press.md names {name}, which is not in tools/")
-                    done = run_without_pillow([str(TOOLS / name), *args], tmp)
+                    done = run_without_pillow([str(TOOLS / name), str(font), picture], tmp)
                     self.assertNotEqual(done.returncode, 0, f"{name} ran without Pillow, so the shadow missed it")
                     self.assertIn("requirements-perf.txt", done.stderr, f"{name} does not say where Pillow comes from")
                     self.assertNotIn("Traceback", done.stderr, f"{name} still dies on a bare traceback")

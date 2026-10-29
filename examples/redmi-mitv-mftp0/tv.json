@@ -1,0 +1,6 @@
+{
+  "tv": "Redmi TV (MiTV-MFTP0, alita), China firmware 23.2.10.6129",
+  "os": "Android TV 9 (CN build)",
+  "brand": "Redmi",
+  "notes": "CN-firmware Redmi, no Google apps: Mi analytics, tvqs, after-sales survey upload, cloud control, promo web container, shop plugin and store, preloaded apps, Mi Home off; `pm disable-user` works; **keep PatchWall enabled**: Home is a package-name allowlist like MiTV-AETP0, the `com.ts.launcher` application-ID build became Home and survived a reboot, do not run `build-and-install.sh` with defaults; startup ad off with `boot_ad_switch 0` on launcher 3.49.1601; `com.gitvdemo.video` is 银河奇异果 (iQIYI), kept; push service (installer whitelist), voice, casting, OTA, payments kept"
+}

@@ -2,6 +2,8 @@
 # Realtek RTD2875P SoC, RTD6748 platform, 2 GB RAM. The remote reports as "RC860G Consumer Control".
 # Same hardware family as examples/prismplus-q65-ultra-r10g/, but a different brand build
 # (ACER_FFM) with its own preloads: Claro, Kick, JioTV, CBS, Apple TV and Prime Video.
+# Second unit (#1807), Colombia: same device and firmware, but product KALLEY_FFM
+# (fingerprint KALLEY/KALLEY_FFM/R10G:14/UKR1.260612.001); the boot loop and re-enable notes below are from it.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/kalley-r10g/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/kalley-r10g/debloat.txt com.google.android.apps.tv.launcherx
@@ -12,8 +14,27 @@
 # OTA: keep com.apps.ota and com.apps.authota. Keep com.realsil.ota too: it updates the remote.
 #
 # Input button: the RC860G remote sends KEYCODE_TV_INPUT (kernel scan code 225), not KEYCODE_TV.
-# With the stock launcher gone nothing handles it, so enable the launcher's InputKeyService
-# (INPUT_KEY_SERVICE=1). com.android.tv.action.VIEW_INPUTS resolves to com.realtek.tv/.SelectInputActivity.
+# Enable the launcher's InputKeyService (INPUT_KEY_SERVICE=1) so the new launcher answers it.
+# com.android.tv.action.VIEW_INPUTS resolves to com.realtek.tv/.SelectInputActivity.
+#
+# KEEP launcherx AND setupwraith ENABLED on this set (#1807). With both disabled, system_server crashed
+# 35-75 s into every boot (sys.boot.reason watchdog; IllegalArgumentException: positionChildAt ... in
+# Task.moveToBack) and the TV restarted in a loop until both were enabled again over ADB in the boot window.
+# The setup that works here, from the #1807 report:
+#   - set stock_home_redirect to com.google.android.apps.tv.launcherx (config.xml or a theme), so the
+#     stock home is sent straight back to the new launcher;
+#   - install with the key helpers and without disabling the stock launcher:
+#       STOCK_LAUNCHER=none INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1 launcher/build-and-install.sh
+#       (Windows: launcher\build-and-install.ps1 -StockLauncher none -InputKeyService -HomeKeyService)
+#     The installer stops at its Home check in this mode, since Home still resolves to launcherx: enable
+#     HomeKeyService and InputKeyService by hand afterwards (Settings > Accessibility). Without the helpers
+#     Home goes back to launcherx; set-home-activity does not hold on this build.
+#   - With both helpers bound, holding volume steps once instead of ramping (the trade in
+#     docs/devices/tcl-55p71b-g09-key-repeat.md).
+#
+# The firmware turns most preloads back on at boot, as on the MOKA Acer R4G (docs/devices/acer-r4g.md):
+# after one reboot only com.cbs.ca, com.seraphic.media.tv.interactive.app, com.realtek.kara and
+# com.realtek.karaoke.userguide stayed disabled on the #1807 set.
 #
 # Tested on one set on 2026-10-19/20 with the reference launcher: the apps kept (Netflix, Disney+,
 # Max, Spotify, YouTube, Twitch, GeForce NOW, Stremio) still launch, and HDMI input, Home and the
@@ -41,11 +62,12 @@ com.cbs.ca                                   # CBS
 net.froemling.bombsquad                      # Bombsquad
 com.yodo1.crossyroad                         # Crossy Road
 
-# Stock home and the Google TV setup wizard. Disable only after the new launcher is installed and
-# running. On this build setupwraith's RecoveryActivity claimed Home as soon as launcherx was off,
-# so both had to go; Wi-Fi survived the reboot. Voice ("Hey Google") was not tested afterwards.
-com.google.android.apps.tv.launcherx
-com.google.android.tungsten.setupwraith
+# Stock home and the Google TV setup wizard: keep both. The first set ran with both disabled for two
+# days, but on a second set (#1807) disabling them made system_server crash in a boot loop (watchdog,
+# positionChildAt in Task.moveToBack). With launcherx alone off, setupwraith's RecoveryActivity claims
+# Home. Use stock_home_redirect with the key helpers instead (see the header).
+# com.google.android.apps.tv.launcherx
+# com.google.android.tungsten.setupwraith
 
 # KEEP: com.realtek.dtv, com.realtek.tv.atv (HDMI and other inputs), com.realtek.airplay2,
 #       com.apps.ota, com.apps.authota, com.realsil.ota (firmware and remote updates).

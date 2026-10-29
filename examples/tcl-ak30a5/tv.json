@@ -1,0 +1,6 @@
+{
+  "tv": "TCL ak30a5 (China, Amlogic)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "No Google services, TCL boot ad + analytics, no TvInputManager, installs via USB only; debloat only, third-party launchers cannot be installed on this firmware"
+}

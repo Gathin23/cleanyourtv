@@ -57,9 +57,16 @@ def stated_number(lines):
 
 
 def spelled_number(word):
-    """"seventy-five" -> 75, "seventy" -> 70, "twenty one" -> 21, anything else -> None."""
+    """"seventy-five" -> 75, "seventy" -> 70, "twenty one" -> 21, "a hundred and four" -> 104,
+    anything else -> None."""
     text = word.lower().replace("-", " ").strip()
-    parts = text.split()
+    parts = [p for p in text.split() if p != "and"]
+    # The page passed a hundred rows in Round W: "a hundred", "one hundred and four", "a hundred and twenty".
+    if len(parts) >= 2 and parts[0] in ("a", "one") and parts[1] == "hundred":
+        if len(parts) == 2:
+            return 100
+        rest = spelled_number(" ".join(parts[2:]))
+        return None if rest is None else 100 + rest
     if not parts or len(parts) > 2:
         return None
     if len(parts) == 1:
@@ -78,7 +85,7 @@ def readme_spelled(lines):
     for line in lines:
         for match in re.finditer(r"projects\b", line):
             words = re.findall(r"[A-Za-z-]+", line[: match.start()].rstrip())
-            for take in (2, 1):
+            for take in (5, 4, 3, 2, 1):
                 if len(words) >= take:
                     candidate = " ".join(words[-take:])
                     number = spelled_number(candidate)
@@ -185,6 +192,8 @@ class TheCheckerItself(unittest.TestCase):
     def test_readme_words_are_read_and_an_unreadable_one_is_reported(self):
         self.assertEqual(readme_spelled(["where seventy-five projects already live"]), (75, "seventy-five"))
         self.assertEqual(readme_spelled(["where seventy projects already live"]), (70, "seventy"))
+        self.assertEqual(readme_spelled(["where a hundred and four projects already live"]), (104, "a hundred and four"))
+        self.assertEqual(readme_spelled(["where one hundred and twenty-one projects live"]), (121, "one hundred and twenty-one"))
         self.assertEqual(readme_spelled(["a row with no count at all"]), (None, None))
 
 

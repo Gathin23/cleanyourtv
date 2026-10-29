@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55S470G (G10, G10_4K_US_NF, Realtek), US",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "Same build as the G10 list, but Samba TV, logkit and ttvs ship enabled; ttvs kept (it hosts the firmware updater) and re-enables Samba's front end at boot, so opt out in Settings > Privacy too; Assistant voice and Chromecast off by choice; setupwraith off (Wi-Fi belonged to android.uid.system); remote gear button (keycode 83) opens the quick settings panel and the app buttons are remapped (Pluto TV opens Tubi); `APP_AUTO_START` must be allowed for the launcher or TclAppBoot stops the key service at boot; reboot-checked"
+}

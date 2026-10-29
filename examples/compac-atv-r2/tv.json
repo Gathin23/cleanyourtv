@@ -1,0 +1,6 @@
+{
+  "tv": "Compac ATV R2 (SCBC R2, Realtek RTD285O)",
+  "os": "Android TV 9",
+  "brand": "Compac",
+  "notes": "Same SCBC platform and build as the SANYO ATV R2: data-consent agent, Vewd, S-Channel rows, E-SHOW demo, recommendation rows, partner auto-installs, TV Booster; `com.realtek.leanbacklauncher.partnercustomizer` must stay or the stock Home loses its Inputs button; OTA, Assistant and FastCast kept, Chromecast off by choice"
+}

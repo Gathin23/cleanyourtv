@@ -1,5 +1,7 @@
 # TCL 50DP660 (50DP660*, product "Percee TV", MediaTek MT5658 / board mt5891, armv7), Europe.
 # Android TV 8.0 (API 26), firmware V8-T658T01-LF1V602, build OTT1.180130.001.
+# Second unit: TCL L49C2US (49-inch C2 series, same product "Percee TV", device tcl_eu, board mt5891,
+#   firmware V8-T658T01-LF1V570, build OTT1.180130.001, security patch 2020-07-05, ~2 GB RAM).
 # Checked on a real TV; this list was applied and survived several reboots.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-50dp660/debloat.txt
@@ -63,6 +65,33 @@ android.autoinstalls.config.tcl.device
 com.example.copydatatotv                   # factory test app, persistent
 com.example.tvcapture                      # factory test app
 tv.wuaki.apptv                             # Rakuten TV
+
+# L49C2US (V570), tested on one unit; uncomment to disable:
+# com.google.android.tungsten.setupwraith    # setup wizard; disabling it costs phone Cast pairing
+# com.google.android.leanbacklauncher        # legacy Leanback launcher stub
+# com.google.android.inputmethod.pinyin      # Google Pinyin Chinese IME (com.tcl.inputmethod.international is English)
+# com.iqt.iqqijni.tv.gp.pro                  # iQQi Chinese IME (com.tcl.inputmethod.international is English)
+# com.google.android.music                   # Google Play Music (defunct)
+# com.google.android.tvtutorials             # TV tutorials
+# com.google.android.tv.bugreportsender      # Bug report sender
+# com.google.android.feedback                # Google feedback
+# com.google.android.tts                     # Google TTS engine; re-enable if you use TalkBack
+# com.google.android.marvin.talkback         # TalkBack screen reader
+# com.google.android.syncadapters.calendar   # Calendar sync adapter
+# com.google.android.syncadapters.contacts   # Contacts sync adapter
+# com.android.providers.calendar             # Calendar storage provider
+# com.android.providers.contacts             # Contacts storage provider
+# com.android.providers.userdictionary       # User dictionary provider
+# com.google.android.backuptransport         # Google cloud backup transport
+# com.google.android.onetimeinitializer      # Google one-time initializer
+# com.google.android.partnersetup            # Google partner setup
+# com.android.dreams.basic                   # Basic Colors screensaver
+# com.android.printspooler                   # Print spooler service
+# com.google.android.sss                     # Second Screen Setup
+# com.google.android.sss.authbridge          # Second Screen Setup auth bridge
+# com.google.android.backdrop                # Chromecast Ambient / Backdrop screensaver
+# com.netflix.ninja                          # Netflix preload
+# com.mediatek.partner.netflix               # MediaTek Netflix launch service
 
 # Two quirks worth knowing when the list does less than it says:
 #

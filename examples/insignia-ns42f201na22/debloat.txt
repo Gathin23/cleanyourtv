@@ -1,0 +1,68 @@
+# Insignia 42" F20 Fire TV (NS-42F201NA22, AFTEAMR311, codename blanche), Fire OS 6.7.1.1 (NS6711/5898), Android 7.1.2 (SDK 25).
+# Built from examples/amazon-fire-tv-stick-4k-2018/debloat.txt (same Fire OS 6 build family), cut down to the packages
+# that exist on this TV and with the Live TV packages left alone: this is a TV set, and com.amazon.tv.livetv,
+# com.amazon.franktvinput and com.amazon.hedwig sit under its Live tab and inputs.
+#
+# FIRE OS: DEBLOAT ONLY with the stock repo. Amazon's launcher is a protected package and keeps Home. To replace what
+# Home looks like on this set, see https://github.com/jeanbuntu/cleanyourtv/tree/fire-tv-launcher (a launcher plus a
+# Home watcher, kept in its own fork).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/insignia-ns42f201na22/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/insignia-ns42f201na22/debloat.txt com.amazon.tv.launcher
+# (restore.sh re-enables the stock launcher as a matter of routine; on Fire OS it was never disabled, which is harmless.)
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+# ADB on Fire OS 6: Settings > My Fire TV > Developer options > ADB debugging. If Developer options is hidden,
+# Settings > My Fire TV > About > highlight the first entry and press select 7 times. Port 5555, no pairing.
+#
+# Applied in three batches with the TV checked in between, then one reboot: all 43 stayed disabled. Lived with for three
+# days; the packages left enabled below are the ones used every day.
+# disable.sh skipped com.amazon.bueller.photos, com.amazon.cloud9 and com.amazon.tahoe on its input-handler check (they
+# accept any video link, they do not run an input); with HANDLERS_ALLOW=1 they disabled cleanly and nothing broke.
+#
+# Kept on purpose (personal choices, comment them back in to drop them): Alexa voice search (com.amazon.vizzini and its
+# helpers), Prime Video (com.amazon.firebat), casting and mirroring (com.amazon.cast.sink, dialservice, whisperplay),
+# Hulu, Live TV, OTA updates and the Appstore. The streaming apps this list names are the ones this set did not use.
+
+com.amazon.client.metrics.api
+com.amazon.metrics.api
+com.amazon.tv.fw.metrics
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.dp.logger
+com.amazon.ceviche                      # data collection pipelines
+com.amazon.tv.developer.dataservice     # "Alberto": content personalization data for third-party apps
+com.amazon.wifilocker                   # uploads Wi-Fi passwords to Amazon
+com.amazon.kso.blackbird                # launcher ad sync / bidding (sponsored banner and rows)
+com.amazon.sneakpeek                    # sponsored "Sneak Peek" previews
+com.amazon.hybridadidservice            # advertising ID service
+com.amazon.tv.easyupgrade               # "upgrade your Fire TV" promos
+com.amazon.device.sale.service          # sale / deal campaign service
+com.amazon.shoptv.client                # Amazon Shopping on TV
+com.amazon.shoptv.firetv.client
+com.amazon.livedeviceservice
+com.amazon.gamehub                      # games hub / Luna cards
+com.amazon.imdb.tv.android.app          # Freevee stub
+com.amazon.minitv.android.app           # miniTV stub
+com.amazon.tahoe                        # Amazon Kids (FreeTime)
+com.amazon.bueller.music                # Amazon Music
+com.amazon.bueller.photos               # Amazon Photos
+com.amazon.cloud9                       # Silk browser
+com.amazon.tv.website_launcher          # opens websites in Silk
+com.imdb.livingroom.firetv              # IMDb app
+com.amazon.tmm.tutorial                 # remote tutorial
+com.amazon.storm.lightning.tutorial     # remote app tutorial
+com.amazon.wha.mediabrowserservice
+com.amazon.whisperjoin.middleware.np    # frustration-free setup of other Amazon devices
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.ods.kindleconnect            # "show on Fire TV" from Echo / Fire tablet (Tarazed)
+com.amazon.tv.alexaalerts               # alarms, timers, reminders
+com.amazon.tv.alexanotifications
+com.amazon.alexa.externalmediaplayer.fireos   # Alexa music playback
+com.amazon.alexamediaplayer.runtime.ftv
+com.amazon.aiondec                      # Alexa skill connections
+com.tubitv.ott
+com.amazon.privacypassservice           # privacy pass token service
+com.amazon.providers.contentsupport     # content support provider
+com.amazon.systemnotices                # system notices
+com.amazon.tv.releasenotes              # "what's new" release notes
+com.amazon.uxnotification               # UX notification popups

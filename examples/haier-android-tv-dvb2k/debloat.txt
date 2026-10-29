@@ -1,5 +1,8 @@
 # Haier Android TV DVB2K (ro.product.model, device broadway, product HaierATVT56DVB),
 # Android TV 11 (API 30), firmware RTMA.250416.179, armeabi-v7a, 1280x720 at 213 dpi, about 934 MB RAM.
+# Also sold as the CANDY Android TV DVB2K (product CANDYATVT56): identical broadway board and the same
+# RTMA.250416.179 firmware build (ro.build.flavor and ro.build.description still read HaierATVT56DVB on
+# this unit; only the retail branding differs). See the Candy variant notes below.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/haier-android-tv-dvb2k/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/haier-android-tv-dvb2k/debloat.txt com.google.android.tvlauncher
@@ -22,10 +25,33 @@
 # - com.example.bt_pair_tips, com.mediatek.autopair: Bluetooth remote pairing.
 # - com.telink.lt.ota: remote (Telink BLE) firmware.
 # - com.at.factory.*, com.cvte.tv.at, com.cvte.tv.fac.menu, com.cvte.tv.fac.aging, mediatek.factorymenu.ui: factory.
+#   Never launch these either, not just keep them enabled: on this Haier/CVTE board family, opening one is
+#   reported to flip a factory-mode flag and disable Play Services, Netflix and Chromecast on the next boot
+#   with no way back from the shell. Not deliberately reproduced on either unit; treat it as a real risk.
 # - com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.setupwizard,
 #   com.mediatek.wwtv.mediaplayer (USB media), com.mediatek.androidbox (HaiCast / Miracast).
 # - com.google.android.katniss (Assistant), com.google.android.apps.mediashell (Chromecast).
 # - Streaming apps left installed: Netflix, Prime Video, YouTube, Hotstar, Sun NXT, Zee5 (com.graymatrix.did).
+#
+# CANDY Android TV DVB2K variant (one set, disabled in one batch on 2026-10-27, checked with screenshots and
+# a reboot the same day; same-day only, not yet a multi-day soak):
+# - List differences, by the owner's choice: com.mediatek.androidbox (HaiCast / Miracast, kept above) was also
+#   disabled, since the owner doesn't cast. Also disabled: com.google.android.youtube.tvmusic,
+#   com.google.android.syncadapters.calendar and miada.tv.webbrowser (a bundled browser not mentioned above).
+#   Owner uses Live TV, YouTube, Play Store and the bundled Multi Media (USB) player; Netflix and Prime Video
+#   are kept installed for later. Nothing else on this TV.
+# - com.haier.launcher.haiermatrix and com.google.android.tvrecommendations, both disabled above, came back on
+#   by themselves at the next boot on this unit regardless of pm disable-user; so did
+#   com.google.android.apps.mediashell and com.google.android.katniss, which are on the KEEP list above anyway.
+#   Worth re-checking on the original test set, since the firmware build string matches. Hidden in the
+#   launcher's hidden_apps instead of fought at the package level; with app_library on, the stock library
+#   screen ignored hidden_apps and offered the factory-menu packages above as "Add to Home" entries. Fixed
+#   with the launcher's library_excluded_apps key (#2174), since it isn't specific to
+#   this TV and changes App Library behaviour for every set with app_library on.
+# - The Live TV dock tile needed a small launcher fix to land on HDMI1: a plain tap just reopened
+#   com.mediatek.wwtv.tvcenter to whatever input it last remembered (Composite, on this unit), since
+#   live_tv_input_id only matches TYPE_TUNER inputs, never TYPE_HDMI. Fixed with launch_actions' "input:<id>"
+#   prefix (#2159): com.mediatek.wwtv.tvcenter=input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW5 here.
 
 # Content recognition and retail demo
 tv.anoki.acr.controller                          # Anoki ACR

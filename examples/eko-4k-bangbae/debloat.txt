@@ -1,0 +1,69 @@
+# EKO 4K Android TV (codename bangbae, manufacturer MTC), Android TV 11, firmware RTO8.241211.001.
+# EKO is a Kmart/Big W house brand in Australia; the set is built by MTC on a MediaTek board.
+#
+# Shares its firmware family with examples/mtc-uk-2k-android-tv (RTO8, also MTC, also carries
+# android.autoinstalls.config.JVC) and the same maker as examples/eko-2k-google-tv-tennoji.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/eko-4k-bangbae/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/eko-4k-bangbae/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher is com.google.android.tvlauncher (Android TV leanback), so restore.sh needs no
+# launcher argument. dumpsys works normally on this build, unlike the MTC UK one.
+#
+# KEEP, even though the names look like bloat. Checked with dumpsys package on this set:
+# - fusion.android.tv.demo ("retail mode") owns the remote's Input button: it registers
+#   com.mstar.android.intent.action.TV_INPUT_BUTTON and CONNECT_INPUT and holds
+#   android.permission.TV_INPUT_HARDWARE. Disabling it costs you the Input key.
+#   examples/mtc-uk-2k-android-tv disables this one; on bangbae it is load-bearing.
+# - com.mediatek.wwtv.setupwizard: Bluetooth remote pairing receivers.
+# - com.mediatek.mtc.factory and mediatek.factorymenu.ui: boot and USB-attach receivers.
+#   Never launch either. mediatek.factorymenu.ui has a LAUNCHER entry on this firmware, so it is
+#   reachable from the app grid; hide it with hidden_apps rather than disabling it.
+# - com.airoha.btd: the Bluetooth remote's firmware updater, shown as "RemoteOTA".
+# - com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter (Live TV).
+#
+# Before disabling com.google.android.tungsten.setupwraith on any set in this family, check
+# `dumpsys wifi | grep -E "^ID: |SSID: |cname="`. On this TV it owned one saved network but not the
+# one in use, so it was safe to leave alone; it is not in this list either way.
+
+# Anoki ACR: automatic content recognition. Starts at BOOT_COMPLETED, marked PERSISTENT, and
+# requests REAL_GET_TASKS, INTERNET and com.google.android.gms.permission.AD_ID. It also publishes
+# a FastSupportProvider feeding the FAST channel app below.
+tv.anoki.acr.controller
+
+# FAST: the ad-supported channel grid. Requests AD_ID, ACCESS_WATCHED_PROGRAMS and
+# INSTALL_TV_CHANNELS, with a boot receiver.
+com.cltv.fast
+
+# Google telemetry and partner attribution
+com.google.android.feedback
+com.google.android.partnersetup
+
+# Stock launcher ad and recommendation rows (the launcher itself is disabled by
+# launcher/build-and-install.sh, so it is not listed here)
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.partnercustomizer
+
+# Setup-only disclaimer screens, and MediaTek's picture-quality test tool
+com.mstar.android.tv.disclaimercustomization
+com.mediatek.testpq
+
+# Voice, by choice: katniss is Assistant and voice search, so the remote's mic button stops working
+com.google.android.katniss
+
+# Ambient screensaver; mixes recommendations into the idle screen.
+# com.android.dreams.basic stays enabled as the plain fallback.
+com.google.android.backdrop
+
+# Google extras, by choice
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+
+# Calendar on a television
+com.android.providers.calendar
+com.google.android.syncadapters.calendar
+
+# Print spooler on a television
+com.android.printspooler

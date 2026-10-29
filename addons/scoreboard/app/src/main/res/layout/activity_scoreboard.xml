@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0F141C"
+    android:paddingStart="48dp"
+    android:paddingTop="36dp"
+    android:paddingEnd="48dp"
+    android:paddingBottom="36dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🏆 APP USAGE SCOREBOARD"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black" />
+
+        <TextView
+            android:id="@+id/total_launches_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: 0 launches"
+            android:textColor="#94A3B8"
+            android:textSize="14sp"
+            android:background="#1E293B"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp" />
+    </LinearLayout>
+
+    <!-- Scrollable Leaderboard List -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false">
+
+        <LinearLayout
+            android:id="@+id/scoreboard_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp" />
+    </ScrollView>
+
+    <!-- Footer hint -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Press [Back] to return to Home"
+        android:textColor="#64748B"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:layout_marginTop="12dp" />
+
+</LinearLayout>

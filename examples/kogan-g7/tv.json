@@ -1,0 +1,6 @@
+{
+  "tv": "Kogan G7 (Expressluck, cottongreen, Realtek), Australia",
+  "os": "Google TV (Android 11)",
+  "brand": "Kogan",
+  "notes": "Lean Realtek firmware, no ACR: retail/store demo, partner rows and auto-installs, ambient mode, karaoke guide; setupwraith must go with launcherx; Netflix, YouTube and Prime Video buttons are Realtek's and only reach launcherx, so they cannot be remapped; Disney+ is KEYCODE_BUTTON_6 (`app_keys` 193); HbbTV, OTA, USB media and karaoke kept"
+}

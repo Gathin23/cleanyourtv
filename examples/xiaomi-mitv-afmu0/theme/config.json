@@ -1,0 +1,14 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.truedmp.idtv",
+    "com.android.vending"
+  ],
+  "app_keys": [
+    "KEYCODE_BUTTON_3:com.google.android.youtube.tv",
+    "scan:425:com.google.android.youtube.tv",
+    "KEYCODE_BUTTON_7:com.truedmp.idtv",
+    "scan:207:com.truedmp.idtv"
+  ]
+}

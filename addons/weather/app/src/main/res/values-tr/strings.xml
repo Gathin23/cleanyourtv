@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather</string>
+
+    <string name="feels_like">Hissedilen %1$d°</string>
+    <string name="humidity">Nem %1$d%%</string>
+    <string name="wind">Rüzgar %1$d km/h</string>
+    <string name="wind_mph">Rüzgar %1$d mph</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Hava kalitesi %1$d · %2$s</string>
+    <string name="updated">Güncelleme %1$s · Open-Meteo</string>
+    <string name="change_city">Şehri değiştir</string>
+    <string name="loading">Hava durumu yükleniyor…</string>
+    <string name="offline">Open-Meteo ulaşılabilir değil. TV\'nizin internet bağlantısını kontrol edin; 5 dakika içinde tekrar dener.</string>
+
+    <string name="pick_title">Hangi şehir?</string>
+    <string name="pick_hint">Şehir adı, örn. Ödemiş</string>
+    <string name="pick_search">Ara</string>
+    <string name="pick_none">\"%1$s\" adında bir yer yok</string>
+    <string name="pick_first">Hava durumunu görmek için bir şehir seçin.</string>
+
+    <string name="aqi_good">İyi</string>
+    <string name="aqi_moderate">Orta</string>
+    <string name="aqi_sensitive">Hassas gruplar için sağlıksız</string>
+    <string name="aqi_unhealthy">Sağlıksız</string>
+    <string name="aqi_very_unhealthy">Çok sağlıksız</string>
+    <string name="aqi_hazardous">Tehlikeli</string>
+
+    <string name="sky_clear">Açık</string>
+    <string name="sky_sunny">Güneşli</string>
+    <string name="sky_mostly_clear">Çoğunlukla açık</string>
+    <string name="sky_mostly_sunny">Çoğunlukla güneşli</string>
+    <string name="sky_partly_cloudy">Parçalı bulutlu</string>
+    <string name="sky_cloudy">Bulutlu</string>
+    <string name="sky_fog">Sisli</string>
+    <string name="sky_drizzle">Çisenti</string>
+    <string name="sky_freezing_drizzle">Dondurucu Çisenti</string>
+    <string name="sky_light_rain">Hafif yağmur</string>
+    <string name="sky_rain">Yağmurlu</string>
+    <string name="sky_heavy_rain">Kuvvetli yağmur</string>
+    <string name="sky_freezing_rain">Dondurucu yağmur</string>
+    <string name="sky_light_snow">Hafif kar</string>
+    <string name="sky_snow">Karlı</string>
+    <string name="sky_heavy_snow">Yoğun kar</string>
+    <string name="sky_snow_grains">Kar tanecikleri</string>
+    <string name="sky_showers">Sağanak yağmur</string>
+    <string name="sky_snow_showers">Sağanak kar</string>
+    <string name="sky_thunderstorm">Gök gürültülü sağanak</string>
+</resources>

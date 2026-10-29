@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KD-49X8307C (2015, \"BRAVIA 4K 2015\", SVP-DTV15, MediaTek), EU firmware",
+  "os": "Android TV 7.0",
+  "brand": "Sony",
+  "notes": "MediaTek MT5890 platform: Qterics/Sony device agents, Discover/BIVL recommendation services, Sony shelf, retail demo, help apps, Play Movies; stock launcher is `com.google.android.leanbacklauncher`, not tvlauncher, so pass it to `restore.sh`; `com.sony.dtv.tvx` also plays every HDMI input, keep it; voice and YouView off by choice; 1.5 GB RAM, free RAM increased from ~120 MB to ~500 MB; reboot-checked; list only, the launcher needs Android 8 (minSdk 26, see #146)"
+}

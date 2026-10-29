@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65EP68 (Europe, BeyondTV, Realtek RTD2851 / rtd285o, V8-R851T02-LF1V722)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL analytics, content feed, dashboard, waterfall promos, partner customizer, stickers, message box and consent screen; RLZ, recommendation rows, Backdrop, feedback, Play Games, talkback and TTS off; voice assistant, casting, Miracast and every streaming app but the Nordic ones off by choice; `com.tcl.tv` stays because it is the only handler of the channel MIME type the Inputs menu needs, and `com.tcl.tvinput` carries the HDMI/AV and tuner inputs; firmware updater, Play, the Wi-Fi that setupwraith owns and the phone remote kept; 15 uk.co.freeview.* apps already off at the factory; config.json has the dock"
+}

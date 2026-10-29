@@ -17,9 +17,9 @@
 #
 # Quirks on this firmware, all verified on the TV:
 # - Only Wireless debugging: port 5555 stays closed. Pair once with the stock adb:
-#     adb pair 192.168.1.122:<pairing port> <code>
-#     adb connect 192.168.1.122:<connect port>
-#     adb -s 192.168.1.122:<connect port> tcpip 5555
+#     adb pair <tv ip>:<pairing port> <code>
+#     adb connect <tv ip>:<connect port>
+#     adb -s <tv ip>:<connect port> tcpip 5555
 #   Port 5555 closes on every reboot; repeat `adb connect` + `adb tcpip 5555` each session.
 # - Android switches Wireless debugging off on every reboot; turn it back on in Developer options.
 # - All Wi-Fi networks owned by android.uid.system (not setupwraith) on this unit - safe to disable.

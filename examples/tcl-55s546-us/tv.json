@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55S546 (5-Series, G03_4K_US, BeyondTV4, GTV93), US",
+  "os": "Google TV 11",
+  "brand": "TCL",
+  "notes": "Same G03 platform as tcl-g03-google-tv on the US GTV93 build: TCL telemetry, promos and preloads off; TCL+ and TCL Channel kept; launcherx off with remote app buttons and volume repeat still working, no key helper needed; reboot-checked"
+}

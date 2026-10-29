@@ -1,0 +1,6 @@
+{
+  "tv": "Anker Nebula projector D2426 (D2426_CapsuleIIIPro, baekdu, SDMC/MediaTek m7632, 1.7 GB), Brazil",
+  "os": "Android TV 14",
+  "brand": "Anker Nebula",
+  "notes": "First Nebula list: Nebula log uploader, Privacy Sandbox, Anoki Free TV channels (re-enabled by the firmware at boot, as is katniss), partner installer, store demo, stock tvlauncher + recommendations; Assistant, Ambient, Play Games, TalkBack off by choice; remote, BT pairing, HDMI and picture services kept; setupwraith kept (owns the Wi-Fi, does not claim HOME here); phone Netflix added via the App library; AdGuard Private DNS; config.json has the dock"
+}

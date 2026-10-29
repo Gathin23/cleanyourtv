@@ -1,0 +1,31 @@
+# Sony BRAVIA KD-55X9500G (BRAVIA_UR2_4K_CN), Android TV 10 (API 29), firmware QTG3.200305.006.S97 662301
+# China-market firmware; the sony-bravia-4k-ur2 list covers UC/EU variants with different preloads.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-55x9500g-cn/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-55x9500g-cn/debloat.txt com.dangbei.TVHomeLauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.dangbei.TVHomeLauncher, left enabled as a fallback after the new launcher became Home.
+# Use STOCK_LAUNCHER=none with launcher/build-and-install.sh to keep the original launcher enabled.
+# Live TV: com.sony.dtv.tvx; set live_tv_package to this package in config.xml or a theme.
+# Keep TVX: it also handles HDMI playback. Keep com.sony.dtv.tvinput.*, com.sony.dtv.braviasync*,
+# remote/Bluetooth, keyboards, networking and firmware updaters.
+# This list leaves streaming apps, voice and built-in casting packages alone.
+#
+# Applied on 2026-10-21; owner confirmed normal day-to-day use on 2026-10-26.
+# Home persisted after reboot; physical Home/D-pad/OK/Back/Settings/Input, the long-press settings menu
+# and playback/audio-video checks passed. No package in this list needed re-enabling.
+# Built-in casting and voice were not validated as part of this list.
+# Already disabled before this setup: com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap,
+# screnmirroring.com. They are intentionally not added to the applied list.
+
+# Device diagnostics, remote support and bug reporting
+com.qterics.da.product
+com.sony.dtv.da.service                        # Sony remote support; re-enable if support is needed
+com.sonyericsson.idd.agent
+com.sony.dtv.sonybugreportsys
+
+# Retail / shop demonstrations
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo

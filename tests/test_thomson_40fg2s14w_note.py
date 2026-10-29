@@ -10,14 +10,18 @@ They assert identifiers and commands, not sentences, so rewording the prose does
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
-from pathlib import Path
 import unittest
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTE = ROOT / "docs" / "devices" / "thomson-40fg2s14w.md"
 TROUBLE = ROOT / "docs" / "TROUBLESHOOTING.md"
 EXAMPLES_README = ROOT / "examples" / "README.md"
 DISABLE_SH = ROOT / "tools" / "disable.sh"
+MANIFEST = ROOT / "launcher" / "app" / "src" / "main" / "AndroidManifest.xml"
+GRADLE = ROOT / "launcher" / "app" / "build.gradle"
+ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 LAUNCHER = "com.gathin.tvhome"
 STOCK = "com.google.android.apps.tv.launcherx"
@@ -34,6 +38,15 @@ DISABLED = [
 ]
 
 LINK = re.compile(r"\]\(([^)\s]+)\)")
+
+# The five HOME activities #1350's query answered on this board, highest priority first.
+HOME_ACTIVITIES = [
+    "com.google.android.apps.tv.launcherx/.home.HomeActivity",
+    "com.google.android.tungsten.setupwraith/.RecoveryActivity",
+    "com.gathin.tvhome/.MainActivity",
+    "com.express.at.factory.factorymanager/.FallbackHome",
+    "com.android.tv.settings/.system.FallbackHome",
+]
 
 
 def bullet(text, start):
@@ -61,6 +74,59 @@ def broken_links(path):
 
 def note_text():
     return NOTE.read_text(encoding="utf-8")
+
+
+def cvte_bullet():
+    """The bullet of docs/TROUBLESHOOTING.md that carries the FallbackHome and direct-boot checks."""
+    return bullet(TROUBLE.read_text(encoding="utf-8"),
+                  "- **Black screen at every boot after the launcher change")
+
+
+def application_id():
+    """The launcher's package name, what the manifest's `.MainActivity` expands to."""
+    gradle = GRADLE.read_text(encoding="utf-8")
+    match = re.search(r"launcherApplicationId'\)\.getOrElse\('([^']+)'\)", gradle)
+    if match:
+        return match.group(1)
+    return re.search(r"namespace '([^']+)'", gradle).group(1)
+
+
+def manifest_components(text):
+    """[(name, home, direct_boot_aware)] for every component of a manifest.
+
+    `home` marks the component that `cmd package query-activities -c android.intent.category.HOME`
+    answers with; `direct_boot_aware` is the component's flag, inherited from <application> when the
+    component sets none. Nothing in the manifest is expanded, so names keep their leading dot.
+    """
+    root = ET.fromstring(text)
+    application = root.find("application")
+    if application is None:
+        return []
+    inherited = (application.get(ANDROID + "directBootAware") or "").lower() == "true"
+    out = []
+    for element in application:
+        if element.tag not in ("activity", "service", "receiver", "provider"):
+            continue
+        flag = element.get(ANDROID + "directBootAware")
+        aware = inherited if flag is None else flag.lower() == "true"
+        home = any(
+            "android.intent.action.MAIN" in {a.get(ANDROID + "name") for a in filter_.findall("action")}
+            and "android.intent.category.HOME" in {c.get(ANDROID + "name") for c in filter_.findall("category")}
+            for filter_ in element.findall("intent-filter"))
+        out.append((element.get(ANDROID + "name") or "", home, aware))
+    return out
+
+
+def recipe_commands():
+    """The two boot checks the CVTE bullet hands a reader, with the package placeholder filled in.
+
+    Read out of the bullet rather than copied, so a command the bullet changes has to be changed in
+    the note as well; the backslash before a quote (the bullet escapes it for `grep -o`) is dropped.
+    The resolver command in the same bullet is left out: the note's Home section already carries it.
+    """
+    commands = [command.replace("<new.launcher.package>", application_id()).replace("\\", "")
+                for command in re.findall(r"tools/tv\.py '([^']+)'", cvte_bullet())]
+    return [c for c in commands if "query-activities" in c or "DIRECT_BOOT_AWARE" in c]
 
 
 class ThomsonNoteTest(unittest.TestCase):
@@ -102,6 +168,100 @@ class ThomsonNoteTest(unittest.TestCase):
 
     def test_note_links_resolve(self):
         self.assertEqual(broken_links(NOTE), [])
+
+    def test_note_records_the_two_boot_checks_and_what_they_answered(self):
+        # The note's Home section sends the next session to the checks; #1350 ran them, so the note
+        # has to carry the answers: the five HOME activities, the package-level direct-boot line and
+        # the commands, as the bullet gives them.
+        text = note_text()
+        for command in recipe_commands():
+            with self.subTest(command=command):
+                self.assertIn(command, text, "the note must quote the check the bullet hands a reader")
+        self.assertIn("PARTIALLY_DIRECT_BOOT_AWARE", text)
+        for activity in HOME_ACTIVITIES:
+            with self.subTest(activity=activity):
+                self.assertIn(activity, text)
+
+    def test_note_does_not_say_the_boot_was_tried(self):
+        # What #1350 did was read-only: no fallback launched, no handover attempted. A note that
+        # started handing the board over would need a run on the TV behind it.
+        self.assertIsNone(re.search(r"pm disable-user[^\n]*" + re.escape(STOCK), note_text()))
+        self.assertIn("not been tried", note_text())
+
+
+class DirectBootClaimTest(unittest.TestCase):
+    """The CVTE bullet's claim about this launcher, against the manifest that has to back it.
+
+    The bullet used to say "This repo's launcher is direct-boot-aware", which reads as "the Home
+    activity can start before the first unlock". The manifest says otherwise: one service carries
+    the flag, the activity that answers HOME does not, so the package-level dump answers PARTIALLY
+    and cannot settle the question on a set with no FallbackHome.
+    """
+
+    def setUp(self):
+        self.components = manifest_components(MANIFEST.read_text(encoding="utf-8"))
+        self.home = [name for name, home, _ in self.components if home]
+        self.aware = [name for name, _, aware in self.components if aware]
+
+    def test_the_manifest_is_one_home_activity_a_second_component_marks_aware(self):
+        # Both facts the corrected bullet rests on. If either changes, the bullet and the note have
+        # to be read again rather than left describing a launcher that no longer exists.
+        self.assertGreaterEqual(len(self.components), 8, "the manifest read as almost nothing")
+        self.assertEqual(len(self.home), 1, "the launcher declares one HOME activity")
+        self.assertTrue(self.aware, "no component declares directBootAware: the answer is not PARTIALLY")
+        self.assertNotIn(self.home[0], self.aware,
+                         "the launcher's HOME activity now declares directBootAware: the CVTE bullet and "
+                         "docs/devices/thomson-40fg2s14w.md have to be updated with it")
+
+    def test_the_bullet_names_the_component_that_carries_the_flag(self):
+        cvte = cvte_bullet()
+        for name in self.aware:
+            with self.subTest(component=name):
+                self.assertIn(name.lstrip("."), cvte.replace("`", ""),
+                              "the bullet must say which component is direct-boot aware")
+
+    def test_the_bullet_names_the_home_activity_that_does_not(self):
+        cvte = cvte_bullet().replace("`", "")
+        self.assertIn(self.home[0].lstrip("."), cvte,
+                      "the bullet must name the Home activity it is talking about")
+        self.assertIn("PARTIALLY_DIRECT_BOOT_AWARE", cvte,
+                      "the package-level answer has to be in the bullet, or a reader takes it as a yes")
+
+
+class ManifestReaderTest(unittest.TestCase):
+    """`manifest_components()` must report a real problem, not pass by reading nothing."""
+
+    PAGE = ('<?xml version="1.0" encoding="utf-8"?>\n'
+            '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n'
+            '  <application android:label="x">\n'
+            '    <activity android:name=".Home" android:directBootAware="true">\n'
+            '      <intent-filter>\n'
+            '        <action android:name="android.intent.action.MAIN" />\n'
+            '        <category android:name="android.intent.category.HOME" />\n'
+            '      </intent-filter>\n'
+            '    </activity>\n'
+            '    <activity android:name=".Other">\n'
+            '      <intent-filter>\n'
+            '        <action android:name="android.intent.action.MAIN" />\n'
+            '        <category android:name="android.intent.category.LEANBACK_LAUNCHER" />\n'
+            '      </intent-filter>\n'
+            '    </activity>\n'
+            '    <service android:name=".Plain" />\n'
+            '  </application>\n'
+            '</manifest>\n')
+
+    def test_reads_the_home_filter_and_the_flag(self):
+        self.assertEqual(manifest_components(self.PAGE),
+                         [(".Home", True, True), (".Other", False, False), (".Plain", False, False)])
+
+    def test_the_application_flag_is_inherited(self):
+        page = self.PAGE.replace('<application android:label="x">',
+                                 '<application android:label="x" android:directBootAware="true">')
+        self.assertEqual([(name, aware) for name, _, aware in manifest_components(page)],
+                         [(".Home", True), (".Other", True), (".Plain", True)])
+
+    def test_a_manifest_without_an_application_reads_as_empty(self):
+        self.assertEqual(manifest_components('<manifest xmlns:android="http://schemas.android.com/apk/res/android" />'), [])
 
 
 class TroubleshootingCvteBulletTest(unittest.TestCase):

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Order: New Year, Yom Kippur, Hanukkah, Purim, holiday, Shabbat. All opt-in. -->
+    <string-array name="jewish_greetings">
+        <item>שנה טובה</item>
+        <item>גמר חתימה טובה</item>
+        <item>חנוכה שמח</item>
+        <item>פורים שמח</item>
+        <item>חג שמח</item>
+        <item>שבת שלום</item>
+    </string-array>
+</resources>

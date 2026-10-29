@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MSSP3 (machuca, MediaTek), Android 9 firmware PI.7524",
+  "os": "Android TV 9",
+  "brand": "Xiaomi",
+  "notes": "Same model before its Android 11 update: PatchWall, Mi analytics, TV Manager, OTA; voice assistant re-enables itself at every boot (updated system app rescan); screensaver, preloaded apps off; 1.8 GB, swap full before; notes for the older PI.4663 build (two packages absent, old leanback home to disable)"
+}

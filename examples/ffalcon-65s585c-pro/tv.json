@@ -1,0 +1,6 @@
+{
+  "tv": "FFalcon (雷鸟) 鹤6 PRO 65S585C Pro (China, tcl_mt5879_cn, MediaTek MT9653)",
+  "os": "Android TV 11",
+  "brand": "FFalcon",
+  "notes": "Same platform and firmware build as tcl-q10g-pro; TCL boot ad, analytics, push, home recommendation cards and silent-install channels stay disabled across a reboot; OTA, account, voice, weather, album, WeChat and video call off by choice; debloat only, no third-party launcher or sideloading; reboot-checked"
+}

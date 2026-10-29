@@ -21,12 +21,19 @@ class HebrewResourcesTest(unittest.TestCase):
         hebrew = {v.attrib["name"]: v for v in ET.parse(RES / "values-iw/strings.xml").getroot()}
         placeholders = re.compile(r"%(?:\d+\$)?[-#+ 0,(]*\d*(?:\.\d+)?[a-zA-Z]")
         for value in default:
-            if value.tag != "string" or value.get("translatable") == "false":
+            if value.tag not in ("string", "plurals") or value.get("translatable") == "false":
                 continue
             name = value.attrib["name"]
             with self.subTest(string=name):
                 self.assertIn(name, hebrew)
-                if name in hebrew:
+                if value.tag == "plurals" and name in hebrew:
+                    default_other = value.find("item[@quantity='other']")
+                    translated_other = hebrew[name].find("item[@quantity='other']")
+                    self.assertIsNotNone(translated_other)
+                    if translated_other is not None:
+                        self.assertEqual(sorted(placeholders.findall(default_other.text or "")),
+                                         sorted(placeholders.findall(translated_other.text or "")))
+                elif name in hebrew:
                     self.assertEqual(sorted(placeholders.findall(value.text or "")),
                                      sorted(placeholders.findall(hebrew[name].text or "")))
 

@@ -1,0 +1,63 @@
+# Sony KD-55X75K (Android product BRAVIA_VU3 / BRAVIA_VU3_4K, Realtek rtd2885m)
+# Google TV 14 (Android 14, API 34), build UKR1.240726.001 / 386-60842
+# Region: unknown.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-vu3/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-vu3/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any package you want to keep.
+#
+# Owner reports several days of normal use on this KD-55X75K after applying the list; TV viewing and
+# HDMI/AV inputs continued to work. This list is for the recorded product/build; verify your own TV.
+# Stock launcher: com.google.android.apps.tv.launcherx. The custom launcher was installed and confirmed
+# as Home before this package was disabled; restore.sh takes the stock launcher package above.
+# Second unit (same product and build, India, 25 October 2026): with launcherx disabled the remote's Netflix,
+# YouTube, Prime Video and YouTube Music buttons do nothing, because Realtek's GlobalKeyReceiver hands them to
+# launcherx. Keeping launcherx with stock_home_redirect and key_filter false kept both the buttons and the
+# volume ramp; see README.md in this folder.
+# Live TV: com.android.tv. Keep the Realtek input/tuner packages com.realtek.dtv, com.realtek.tv.atv,
+# com.realtek.tv.passthrough and Sony's com.sony.dtv.smartui (the input menu).
+# Kept during the session: streaming apps, Assistant, Chromecast, AirPlay, Play Store/Services, and
+# the TV's core, remote, Wi-Fi and Bluetooth services. Two packages were already disabled in the initial
+# backup and are not part of this list: com.sony.dtv.b2b.vendorprotocol and com.android.camera2.
+#
+# Second unit: KD-55X75K, India, same build (UKR1.240726.001). Every line applied unchanged, in three
+# batches (setupwraith before launcherx); the same packages were still disabled after a reboot, and power-on
+# goes through com.realtek.advancesetting/.FallbackHome to the new launcher, not to Live TV. Only
+# com.sony.dtv.b2b.vendorprotocol was disabled at the factory here. Port 5555 was closed: Wireless debugging
+# pairing, then `adb tcpip 5555`. The saved Wi-Fi belonged to android.uid.system, so setupwraith was safe to
+# disable. Once launcherx is off, the remote's Netflix, YouTube, YouTube Music and Prime Video buttons do
+# nothing; Input, the settings button, the mic and Home keep working without a helper. Those four buttons are
+# vendor keys told apart by scancode (getevent EV_KEY 0x2f6, 0x239, 0x28d, 0x28c), so config.json maps them as
+# scan:758, scan:569, scan:653 and scan:652 (INPUT_KEY_SERVICE=1). With that helper bound, holding volume
+# moves one step per press (docs/devices/tcl-55p71b-g09-key-repeat.md); leave the helper off to keep the ramp.
+#
+# Sony promos, demo content and help
+com.sony.dtv.promos                       # My BRAVIA promos
+com.sony.dtv.sonyselect                   # Sony Select
+com.sony.dtv.sonytab                      # Sony content tab
+com.sony.dtv.multiscreendemo              # in-store demo
+com.sony.dtv.smarthelp                    # Sony help tile
+com.sony.dtv.helpguidecontents            # help guide content
+com.sonypicturescore                      # Sony Pictures Core preload
+
+# Android ad/personalization services
+com.android.adservices.api                # Privacy Sandbox ad services
+com.android.federatedcompute.services     # federated compute services
+com.android.ondevicepersonalization.services # on-device personalization
+
+# Google reporting, setup leftovers and unused preloads
+com.google.android.feedback               # Google feedback reporter
+com.google.android.play.games             # Play Games
+com.google.android.partnersetup           # partner setup/attribution
+com.google.android.onetimeinitializer     # one-time setup initializer
+com.google.android.syncadapters.calendar  # calendar sync adapter
+com.android.printspooler                  # print service
+android.autoinstalls.config.google.gtvpai # Google TV partner auto-installs
+com.android.gallery3d                     # legacy gallery app
+
+# Google TV Ambient screensaver
+com.google.android.apps.tv.dreamx         # Ambient photos/art screensaver
+
+# Google TV Home handover: setup wizard first, then stock launcher after custom Home was confirmed
+com.google.android.tungsten.setupwraith   # setup wizard; re-enable before a factory reset; costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+com.google.android.apps.tv.launcherx      # stock Google TV launcher

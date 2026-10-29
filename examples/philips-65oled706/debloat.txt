@@ -35,8 +35,16 @@
 #    in more than 7 minutes. Injected keys over adb do not dismiss the logo, and the shell cannot write to the
 #    remote's input device on this firmware (sendevent: Permission denied), so test it with the real remote.
 # 5. The TV powers on to the last source in use: switched off from Home it comes back on Home, switched off on
-#    an HDMI input it comes back on that input. Nothing to fix.
+#    an HDMI input it comes back on that input. It only resumes the PlayTvActivity it left, which sends its
+#    window event once the input has a picture (about 5 s), if at all, so power_on_home alone is late or
+#    misses it. power_on_home_always (with HOME_KEY_SERVICE=1) brings Home up about 1 s after wake, from an
+#    HDMI input or an app. After installing the launcher and after a theme push (which force-stops it),
+#    switch enabled_accessibility_services off and on again, or the helper stays in "Crashed services".
 # 6. Chromecast (mediashell) re-enables itself, as on the 50PUS8517: left out.
+# 7. show_stats and the CPU figure: apps cannot read the CPU load here. /proc/stat and /proc/loadavg are
+#    denied to apps on this Android 11 build, and the kernel has no cpuidle (no
+#    /sys/devices/system/cpu/cpu0/cpuidle). The load average read over adb sits around 36 on 4 cores at
+#    idle, so it would not be a usable stand-in anyway. Memory and storage read fine; the CPU part is left out.
 #
 # Verified with the real remote after the list and the launcher: channel change, TV guide, SOURCES drawer and
 # HDMI switching, sound and Ambilight all work; Home opens the replacement launcher. After a reboot, waiting
@@ -44,6 +52,32 @@
 # about 780 MB stock, about 1.1 GB with this list and the launcher.
 #
 # Kept on purpose (owner's choice): Google Assistant (katniss), Play-Fi, IP control, DLNA, YouTube, Prime Video.
+#
+# Second unit: Philips 55OLED706/12 (55"), Poland, on Wi-Fi. Same board, same build 21029, security patch
+# 2025-10-01. Applied with tools/disable.ps1 in small batches on 2026-10-24, a screenshot and a 30 s idle-log check
+# after each, and checked with the real remote the same day; not yet lived with for days. No replacement launcher.
+# - Already disabled at the factory, as on the French unit: the UK Freeview apps and org.droidtv.aurora (left as
+#   the factory set it). YouTube Music and Apple TV were enabled here. The saved Wi-Fi network belonged to
+#   android.uid.system, not to setupwraith (kept anyway).
+# - The disable scripts skip two entries of this list on this firmware: org.droidtv.usagelogger and
+#   org.droidtv.demome both ask for TV_INPUT_HARDWARE (#321). demome was kept. usagelogger holds INTERNET of its
+#   own, and with the rest of this list applied its ErrEvLogSvc process logged "bindToNetvLoggerService: null
+#   ResolveInfo" about every 10 s (not seen before the list), so it was disabled afterwards with TVINPUT_ALLOW=1:
+#   the retry stopped, and Live TV, channel changes, the SOURCES drawer and the HDMI picture still worked.
+# - Not disabled from this list: com.netflix.ninja (owner's choice) and com.google.android.tvrecommendations (the
+#   stock launcher stays Home).
+# - Disabled on top of this list, none of them used by the owner (labels from the 50PUS8517 list where it has
+#   them): org.droidtv.tv.frameworklogger (as in philips-65pml9506), the gallery apps nettvapp1814 (ARTE),
+#   nettvapp5326 (Toon Goggles), nettvapp5512 (Fishing TV) and nettvapp20004410 (Couchplay Games),
+#   org.droidtv.android.fitness (Fitness Buddy, starts at boot), two Polish VOD apps pl.canalplus.tvod.atv and
+#   com.tvp.vodtv.tv (never launched; the second was installed by the Philips gallery), com.mgmedia.androidApp
+#   (CHILI), com.ted.android.tv, tv.wuaki.apptv (Rakuten TV), com.dsi.ant.service.socket and
+#   com.dsi.ant.plugins.antplus (ANT+ fitness sensors, never launched), com.google.android.youtube.tvmusic,
+#   com.google.android.apps.tachyon (Google Meet) and com.phorus.playfi.softap (Play-Fi itself was not touched).
+# - After a reboot all 38 were still disabled and nothing came back. No retry loop in a 30 s idle log.
+# - The stock launcher keeps a "Google Play Movies & TV" tile in Favourite apps after com.google.android.videos is
+#   disabled, also after a reboot; hold OK on it to remove it.
+# - Free memory at idle (dumpsys meminfo, the two readings straddle a reboot): 674 MB before, 867 MB after.
 
 # TP Vision + Google telemetry. Disable candeebug and gel together (gel runs in candeebug's process).
 org.droidtv.candeebug                     # "DAC" analytics uploader

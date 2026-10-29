@@ -1,0 +1,6 @@
+{
+  "tv": "OK. AI PONT (Changhong, ikebukuro, MediaTek), Italy; also Nikkei DVB91NK",
+  "os": "Android TV 11",
+  "brand": "OK.",
+  "notes": "Same platform as chiq-ai-pont: Anoki ACR, AI PONT portal, Google recommendations, partner auto-installs, Homwee store/help, Google preloads; Assistant, Chromecast, Miracast and unused streaming apps off by choice; 720p, 0.9 GB; setupwraith does not claim HOME here and is left alone; remote buttons work without tvlauncher; config.json has the dock; `com.homwee.dmt.upgrade` crashes on its own (firmware), kept; reboot-checked; second unit Nikkei DVB91NK, same firmware, batch 5 and README.md"
+}

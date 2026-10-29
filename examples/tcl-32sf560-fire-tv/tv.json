@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 32SF560 (TCL Fire TV, AFTSHN02, shine)",
+  "os": "Fire OS 7.7.1.7 / Android 9",
+  "brand": "TCL",
+  "notes": "Same build as `toshiba-fire-tv-aftha004/`: Amazon ACR, metrics and log uploads, ad ID and bidding, Shopping, demo content, tutorials, promos, recommendation rows, Silk, account sync, dummy placeholders and the Alexa helpers (`com.amazon.vizzini` returns at every boot and is not listed); Miracast/DIAL receivers, printing and the forced-OTA promoter off by choice; OTA itself protected and running; Live TV, tuner and input stack, AirPlay, Appstore, Prime Video, sideloads and the stock launcher kept; debloat only, reboot-checked"
+}

@@ -13,6 +13,14 @@ than following the hidden app into the second group. Adding an app focuses it
 in the checked group. Hold-OK actions are omitted in this mode; it only controls
 Home shortcuts and never uninstalls apps.
 
+## Optional: OK opens every app
+
+Set `"library_ok_opens": true` along with `"app_library": true` when the library is where you open the
+apps a theme keeps off Home with `hidden_apps`. OK then opens every app, not only the ones on Home. Hold
+OK for Add to Home or Remove from Home, as before. Cards that are not on Home drop their "Add to Home"
+line (a new app keeps its green dot), and the hint reads "Press to open" for every app. It is off by
+default, and with `app_library_selection` also on, selection mode wins.
+
 ## Standard behavior
 
 Set `"app_library": true` in a theme’s `config.json`, or enable the `app_library`
@@ -36,6 +44,10 @@ subtle tint. Updating an existing app does not mark it as new.
 - Back closes the menu first, then the library. Down from the last Home row or
   Right from the final app reaches the library pill; Up returns to the last row.
   Hebrew mirrors the horizontal direction, so Left from the final app reaches it.
+
+With `"library_button": true` the library also has a round button in the top bar. Add
+`"show_library_pill": false` to drop the pill after the last row; the button is then the way in, and
+Down from the last row and Right from the final app (Left in Hebrew) stay where they are.
 
 With `tile_menu` on, holding OK on a Home tile offers Remove from Home as well, next to Move and App info.
 The remote's Menu key opens that same menu on the focused tile. With `tile_menu` off,

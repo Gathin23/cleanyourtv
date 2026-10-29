@@ -7,6 +7,29 @@
 # `cmd package set-home-activity me.efesser.flauncher/.MainActivity`).
 # Live TV app: stock Live TV was left alone; HDMI input is com.hisense.tv.hitvinput.
 #
+# Second and third units (two more sets, same product, same build PTMR.190127.037 and
+# 2021-02-05 patch, MStar MSD6886, 1.8 GB RAM, US; one on Wi-Fi, one on Ethernet),
+# both with launcher/ as Home for several days, October 2026:
+# - Developer options > USB debugging alone opened port 5555 on both, within seconds and
+#   without a reboot; the Network debugging toggle was never touched. The first unit's
+#   note above still stands for it; expect either.
+# - The smartsense trio (smartsense, smartsense.ui, smartservice) was disabled on both and
+#   both rebooted normally, confirming the first unit's reboot test on this build.
+# - com.google.android.tungsten.setupwraith is the creator of the saved Wi-Fi network on
+#   both (tools/disable.sh refuses it for that reason), so it was KEPT; the launcher/
+#   handover held across reboots with it enabled, so it does not need disabling here.
+# - The remote's Netflix, Prime Video, YouTube and Google Play buttons kept working under
+#   launcher/ with no app_keys mapping. Live TV for the launcher's Inputs menu is
+#   live_tv_package com.mediatek.wwtv.tvcenter.
+# - Kept by choice on both: Backdrop and TTS (voice search still wanted), Chromecast,
+#   Alexa, RemoteNOW, Media Center, the OTA updaters, and com.mstar.netflixobserver (not
+#   tried without it; it may serve the remote's Netflix button). Also disabled on both,
+#   beyond the list: com.google.android.leanbacklauncher (the old launcher; not a Home
+#   claimant on this build), com.google.android.partnersetup, the calendar and contacts
+#   sync adapters, and com.seraphic.browser (Hisense's browser). Nothing was re-enabled.
+# - On this firmware `screencap -p` over `adb exec-out` prints a log line before the PNG
+#   bytes; tools/tv.py --screenshot (a file on the TV, then a pull) is unaffected.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-hg9/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-hg9/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -22,6 +45,7 @@
 # Notes from this firmware:
 # - USB debugging alone does NOT open network ADB; the TV needs its explicit
 #   Network/Wireless debugging toggle too, plus a reboot before port 5555 opens.
+#   (On the two later units below it opened at once; see their notes.)
 # - The Beryl/GL.iNet "block client" toggle deauths the TV entirely (no join at
 #   all), it is not a WAN-only block. Debloat over an isolated offline LAN instead.
 # - com.google.android.tungsten.setupwraith re-enables the stock launcher, so it

@@ -39,6 +39,14 @@
 #   this list plus kso.blackbird, client.metrics.api and hedwig, and with Amazon Kids (tahoe) off as well, which
 #   this list keeps on purpose: free memory after a cold boot went from about 1.0 GB to 1.6 GB and swap from
 #   98 % full to empty.
+# - Second unit: 65U65SFC (U65 Pro series, US), firmware RS8180.3749N, 3.8 GB of RAM. Applied 2026-10-26 in four
+#   batches with a screenshot of Home after each, then rebooted twice: only vizzini came back, everything else stayed
+#   off, and ADB Debugging stayed on. It ran this list (Tubi was not installed) plus the entries marked "tested on
+#   65U65SFC", with AirPlay kept and Amazon Kids (tahoe) off as well. MemAvailable went from about 1.6 GB before to
+#   2.0 GB after a reboot. The saved Wi-Fi network belongs to com.amazon.tv.oobe here too.
+# - On that unit, router-level AdGuard Home blocking amazon-adsystem.com (checked from the TV) did not remove the
+#   Sponsored tile or the hero and bottom banners: they changed after a reboot, so there they come with the
+#   launcher's own feed.
 #
 # Kept on purpose: Amazon Kids (com.amazon.tahoe), OTA updates, Live TV, settings, Silk, Appstore, the stock launcher.
 # Personal choices are marked below: Alexa, AirPlay, Miracast and the preloaded apps.
@@ -60,11 +68,24 @@ com.amazon.perfcollection              # performance telemetry
 com.amazon.perfc                       # performance telemetry
 com.amazon.dp.logger                   # device log upload
 com.amazon.device.telemetry.emitter    # telemetry emitter
+com.amazon.ceviche                     # data collection pipelines; tested on 65U65SFC
+com.amazon.livedeviceservice           # live device reporting; tested on 65U65SFC
+com.amazon.privacypassservice          # privacy pass token service; tested on 65U65SFC
+com.amazon.tv.developer.dataservice    # personalization data for third-party apps; tested on 65U65SFC
+com.amazon.wifilocker                  # uploads Wi-Fi passwords to Amazon; tested on 65U65SFC
 # com.amazon.device.crashmanager       # crash report upload: protected on this firmware
 
 # Tutorials
 com.amazon.storm.lightning.tutorial
 com.amazon.tmm.tutorial
+com.amazon.tv.ffsprovisioneeclient     # frustration-free setup client; tested on 65U65SFC
+
+# Popups and promos (tested on 65U65SFC)
+com.amazon.tv.releasenotes             # "what's new"
+com.amazon.systemnotices               # system notices popups
+com.amazon.uxnotification              # UX notification popups
+com.amazon.tv.easyupgrade              # "upgrade your Fire TV" promos
+com.amazon.providers.contentsupport    # content support provider
 
 # Alexa (personal choice; vizzini comes back at every boot, see the header)
 com.amazon.vizzini                     # Alexa voice on Fire TV
@@ -72,6 +93,10 @@ com.amazon.tv.alexaalerts
 com.amazon.tv.alexanotifications
 com.amazon.alexamediaplayer.runtime.ftv
 com.amazon.alexa.externalmediaplayer.fireos
+com.amazon.aca                         # Alexa hints/cues providers; tested on 65U65SFC
+com.amazon.spotify.mediabrowserservice # Spotify for Alexa (the Spotify app is separate); tested on 65U65SFC
+com.amazon.rtcsessioncontroller        # Alexa calling / Drop In; tested on 65U65SFC
+com.amazon.ods.kindleconnect           # "show on Fire TV" from Echo / Fire tablet; tested on 65U65SFC
 
 # Casting (personal choice)
 com.apple.airplay.amazon.airplay       # AirPlay receiver: keep if you cast from an iPhone or Mac
@@ -86,3 +111,5 @@ com.amazon.naatyam                     # Naatyam
 com.amazon.gamehub                     # games hub
 com.amazon.hedwig                      # Fire TV Channels (free ad-supported channels row); tested on 65U68QF
 com.amazon.tv.ftvambient               # Ambient Experience screensaver
+com.amazon.tv.localgallery             # Gallery; tested on 65U65SFC
+com.amazon.spiderpork                  # Amazon Luna; tested on 65U65SFC

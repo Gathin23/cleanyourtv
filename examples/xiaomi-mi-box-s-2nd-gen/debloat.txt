@@ -1,6 +1,8 @@
 # Xiaomi Mi Box S 2nd gen (model MiTV-AFKR0, codename jaws, Amlogic), Google TV / Android 11 (SDK 30),
 # 2 GB RAM. Fingerprints: Xiaomi/jaws/jaws:11/RTT0.211222.001/772:user/release-keys and
 # RTT0.211222.001.737 (validated 2026-10-19 on a Philco 4K TV)
+# Second unit on 772 (EU box, validated 2026-10-25): same list, launcher owns Home across reboots. Its notes
+# are marked "772" below.
 #
 # Apply:   TV_HOST=<box ip> tools/disable.sh examples/xiaomi-mi-box-s-2nd-gen/debloat.txt
 # Undo:    TV_HOST=<box ip> tools/restore.sh examples/xiaomi-mi-box-s-2nd-gen/debloat.txt com.google.android.apps.tv.launcherx
@@ -23,6 +25,13 @@
 #   set-home-activity` reports Success but does not take effect until setupwraith is disabled too.
 # - Right after disabling setupwraith, Wi-Fi dropped for about 20 seconds and the box asked for the Wi-Fi
 #   password again. Once it was re-entered, it stayed saved across a reboot.
+# - 772: forgetting and re-joining the network was not enough for tools/disable.sh: `dumpsys wifi` still
+#   listed a second, older saved network (a hidden one from first setup) with cname=setupwraith. Forget that
+#   one too (`cmd wifi list-networks` shows its id, `cmd wifi forget-network <id>`), then the guard passes
+#   and Wi-Fi stays up when the wizard is disabled.
+# - 772: Prime Video (com.amazon.amazonvideo.livingroom) came back enabled after the first reboot and again
+#   after the stock launcher was started once; the firmware (or Play) re-enables it. Disable it again or
+#   hide it from the launcher with hidden_apps; tools/check.py reports it as drift.
 # - After living with it: Wi-Fi, USB playback (with debugging off), Google Home, the phone remote,
 #   Chromecast from a Pixel and Google Assistant all still work. On 737, display is 1920x1080 UI
 #   with Settings > Tela e som > Resolução = 4k 60Hz (video 4K, HDR none on Philco 2016 EDID).
@@ -35,10 +44,18 @@
 #   194:<any app> with INPUT_KEY_SERVICE=1 launcher/build-and-install.sh; checked on 737 with the real
 #   remote (190 sent to SmartTube, 194 to Nuvio). The remote sleeps after a few seconds and drops the
 #   first press that wakes it, so press OK before each button while reading them with getevent -lt.
+#   772, from /vendor/usr/keylayout/Vendor_2717_Product_32b9.kl: Xiaomi TV+ is KEY_WWW -> scan 150 ->
+#   BUTTON_5 (192), Apps is KEY_CHAT -> scan 216 -> ALL_APPS (284), and there is a Settings key at scan 577
+#   (SETTINGS, 176) that this remote has no button for. The Apps button makes a good quick-settings button:
+#   settings_key_keycodes 284 with settings_key_panel and HOME_KEY_SERVICE=1 (Android itself grabs ALL_APPS
+#   before any app window sees it, so the Home helper has to filter it). With both helpers enabled a mapped
+#   button fires twice (a mute toggled back at once); enable one of them, HOME_KEY_SERVICE reads app_keys too.
 #
 # Kept on purpose: Google Assistant (katniss), Chromecast (mediashell), phone remote (tv.remote.service),
 # YouTube Music, Xiaomi USB media apps (mimusic2, mitv.gallery, mediaexplorer, mitv.videoplayer),
-# Miracast (smartshare, wfdsinkhelperservice), com.xiaomi.tvqs.overseas (quick settings panel),
+# Miracast (smartshare, wfdsinkhelperservice), com.xiaomi.tvqs.overseas (not a quick settings panel: its
+# receivers are tvqs.action.UPLOAD, LOG, DROPBOX_ENTRY_ADDED and EXPORT_UPLOAD_LOG, a log and crash uploader;
+# untested disabled, so it stays a comment under Telemetry),
 # com.xiaomi.android.tvsetup.partnercustomizer (remote shortcut buttons - safe to disable if you don't
 # use the Netflix/YouTube/Prime shortcut keys; tested disabled on 737 with no other effect), mitv.service,
 # com.mi.bluetooth, com.droidlogic* (Amlogic system), com.xiaomi.gtv.settings.
@@ -48,6 +65,7 @@ com.miui.tv.analytics                  # Mi analytics
 com.xiaomi.statistic                   # Xiaomi usage stats uploader
 com.google.android.feedback
 com.google.android.partnersetup        # Google RLZ attribution pings
+# com.xiaomi.tvqs.overseas             # log and crash uploader (772: untested disabled, see header)
 
 # Ad rows, promos and auto-installs
 com.mitv.tvhome.oemtab                 # Xiaomi ad row

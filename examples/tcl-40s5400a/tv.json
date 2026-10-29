@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 40S5400A (C06, C06_2K_GB, MediaTek MT9221, 1 GB)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL account/TGuard/promo rows, USB players, voice and photo screensaver off by choice; ttvs is the firmware updater, keep it; stock launcher has HOME priority 2, so it must be disabled; also a Brazilian unit (TCL-LA-MT9221-01, \"TV+ OS\"), where usercenter and smartalexa come back at boot and disables need about a minute before a reboot"
+}

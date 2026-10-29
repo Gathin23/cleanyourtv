@@ -44,6 +44,9 @@ public final class WeatherActivity extends Activity {
     private int forecastDays;
     private boolean showHumidity;
     private boolean showWind;
+    /** options.xml: degrees Fahrenheit (and mph) instead of Celsius, and the other unit on the "Feels like" line. */
+    private boolean fahrenheit;
+    private boolean bothUnits;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -53,6 +56,8 @@ public final class WeatherActivity extends Activity {
         forecastDays = Forecast.forecastDays(getResources().getInteger(R.integer.forecast_days));
         showHumidity = getResources().getBoolean(R.bool.show_humidity);
         showWind = getResources().getBoolean(R.bool.show_wind);
+        fahrenheit = "f".equalsIgnoreCase(getString(R.string.temperature_unit).trim());
+        bothUnits = getResources().getBoolean(R.bool.show_both_units);
         root = findViewById(R.id.root);
         content = findViewById(R.id.content);
         message = findViewById(R.id.message);
@@ -108,11 +113,19 @@ public final class WeatherActivity extends Activity {
         shown = true;
         root.setBackground(Forecast.backdrop(r.code, r.day));
         ((TextView) findViewById(R.id.place)).setText(place.getString("name", ""));
-        ((TextView) findViewById(R.id.temp)).setText(r.tempC + "°");
+        ((TextView) findViewById(R.id.temp)).setText(Forecast.degrees(r.tempC, fahrenheit) + "°");
         ((TextView) findViewById(R.id.sky)).setText(Forecast.sky(r.code, r.day));
-        StringBuilder feels = new StringBuilder(getString(R.string.feels_like, r.feelsC));
+        StringBuilder feels = new StringBuilder();
+        if (bothUnits) {
+            feels.append(getString(fahrenheit ? R.string.other_unit_c : R.string.other_unit_f,
+                    Forecast.degrees(r.tempC, !fahrenheit))).append(" · ");
+        }
+        feels.append(getString(R.string.feels_like, Forecast.degrees(r.feelsC, fahrenheit)));
         if (showHumidity) feels.append(" · ").append(getString(R.string.humidity, r.humidity));
-        if (showWind) feels.append(" · ").append(getString(R.string.wind, r.windKmh));
+        if (showWind) {
+            feels.append(" · ").append(fahrenheit ? getString(R.string.wind_mph, Forecast.mph(r.windKmh))
+                    : getString(R.string.wind, r.windKmh));
+        }
         ((TextView) findViewById(R.id.feels)).setText(feels);
 
         TextView air = findViewById(R.id.airQuality);
@@ -141,7 +154,8 @@ public final class WeatherActivity extends Activity {
                     .getDisplayName(compact ? TextStyle.SHORT : TextStyle.FULL, Locale.getDefault()));
             ((TextView) card.findViewById(R.id.daySky)).setText(Forecast.sky(d.code, true));
             TextView temps = card.findViewById(R.id.dayTemps);
-            temps.setText(getString(R.string.high_low, d.maxC, d.minC));
+            temps.setText(getString(R.string.high_low, Forecast.degrees(d.maxC, fahrenheit),
+                    Forecast.degrees(d.minC, fahrenheit)));
             if (compact) {
                 int pad = Math.round(14 * getResources().getDisplayMetrics().density);
                 card.setPadding(pad, pad, pad, pad);

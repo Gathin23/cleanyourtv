@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sources</string>
+    <string name="state_nothing">rien de branché</string>
+    <string name="state_standby">branché, en veille</string>
+    <string name="state_connected">branché</string>
+    <string name="live_tv">TV en direct</string>
+    <string name="live_tv_detail">Le tuner antenne ou câble de la TV.</string>
+    <string name="no_sources">Aucune source</string>
+    <string name="no_sources_detail">Cette TV ne signale aucune entrée HDMI ni aucun tuner.</string>
+    <string name="cant_open">Aucune appli de cette TV n\'ouvre cette source.</string>
+    <plurals name="devices_connected">
+        <item quantity="one">%1$d appareil branché.</item>
+        <item quantity="many">%1$d d\'appareils branchés.</item>
+        <item quantity="other">%1$d appareils branchés.</item>
+    </plurals>
+</resources>

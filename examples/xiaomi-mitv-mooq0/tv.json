@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi Mi TV (MiTV-MOOQ0, croods; includes P1 43\" EU variant)",
+  "os": "Android TV 10 and 11",
+  "brand": "Xiaomi",
+  "notes": "PatchWall, Mi analytics, MiChannel, TV Manager, Alexa bridge; factory test app also claims HOME; selected list entries applied on Android TV 11, optional apps kept, and Netflix boot behavior: [device notes](../docs/devices/xiaomi-mitv-mooq0-android11.md); the remote's Input button sends `KEYCODE_MEDIA_RECORD`, so the header shows how to map it (#1368); notes from #81"
+}

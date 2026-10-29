@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Nepali Calendar</string>
+    <string name="previous">Previous</string>
+    <string name="today">Today</string>
+    <string name="next">Next</string>
+    <string name="screensaver">Screensaver</string>
+    <string name="screensaver_missing">Screensaver settings are unavailable on this TV.</string>
+    <string name="out_of_range">Bikram Sambat dates are available for BS %1$d to %2$d. Check the TV\'s date.</string>
+    <string-array name="national_days">
+        <item>Happy New Year · नयाँ वर्षको शुभकामना</item>
+        <item>Loktantra Diwas · लोकतन्त्र दिवस</item>
+        <item>Republic Day · गणतन्त्र दिवस</item>
+        <item>Constitution Day · संविधान दिवस</item>
+        <item>Prithvi Jayanti · पृथ्वी जयन्ती</item>
+        <item>Maghe Sankranti · माघे संक्रान्ति</item>
+        <item>Martyrs\' Day · शहीद दिवस</item>
+        <item>Democracy Day · प्रजातन्त्र दिवस</item>
+    </string-array>
+</resources>

@@ -49,12 +49,12 @@ final class Forecast {
     }
 
     /**
-     * The weather now: whole degrees Celsius (air and feels-like), the WMO weather code, day or night, the relative
-     * humidity in % and the wind speed in km/h.
+     * The weather now: degrees Celsius as read (air and feels-like; {@link #degrees} rounds them for the page), the
+     * WMO weather code, day or night, the relative humidity in % and the wind speed in km/h.
      */
     static final class Report {
-        final int tempC;
-        final int feelsC;
+        final double tempC;
+        final double feelsC;
         /** The WMO code, rain turned into snow where the air is cold enough for it (see {@link #snowIfCold}). */
         final int code;
         final boolean day;
@@ -65,7 +65,7 @@ final class Forecast {
         final int humidity;
         final int windKmh;
 
-        Report(int tempC, int feelsC, int code, boolean day, List<Day> days, int aqi, int humidity, int windKmh) {
+        Report(double tempC, double feelsC, int code, boolean day, List<Day> days, int aqi, int humidity, int windKmh) {
             this.tempC = tempC;
             this.feelsC = feelsC;
             this.code = code;
@@ -77,14 +77,14 @@ final class Forecast {
         }
     }
 
-    /** One forecast day: its date, the WMO code and the high and low in whole degrees Celsius. */
+    /** One forecast day: its date, the WMO code and the high and low in degrees Celsius as read. */
     static final class Day {
         final LocalDate date;
         final int code;
-        final int maxC;
-        final int minC;
+        final double maxC;
+        final double minC;
 
-        Day(LocalDate date, int code, int maxC, int minC) {
+        Day(LocalDate date, int code, double maxC, double minC) {
             this.date = date;
             this.code = code;
             this.maxC = maxC;
@@ -130,7 +130,7 @@ final class Forecast {
         double temp = current.getDouble("temperature_2m");
         double humidity = current.getDouble("relative_humidity_2m");
         int code = snowIfCold(current.getInt("weather_code"), temp, humidity);
-        return new Report((int) Math.round(temp), (int) Math.round(current.getDouble("apparent_temperature")),
+        return new Report(temp, current.getDouble("apparent_temperature"),
                 code, current.getInt("is_day") == 1,
                 days(reply.getJSONObject("daily")), aqiOrUnknown(where),
                 (int) Math.round(humidity), (int) Math.round(current.optDouble("wind_speed_10m", 0)));
@@ -171,7 +171,7 @@ final class Forecast {
             // A day whose high stays near freezing gets the same rain-to-snow correction, with the high and
             // saturated air, which is the warm end of the day's precipitation.
             out.add(new Day(LocalDate.parse(dates.getString(i)), snowIfCold(codes.getInt(i), max.getDouble(i), 100),
-                    (int) Math.round(max.getDouble(i)), (int) Math.round(min.getDouble(i))));
+                    max.getDouble(i), min.getDouble(i)));
         }
         return out;
     }
@@ -198,6 +198,16 @@ final class Forecast {
         } finally {
             connection.disconnect();
         }
+    }
+
+    /** Whole degrees for the page: Celsius as read, or Fahrenheit converted before rounding (options.xml temperature_unit). */
+    static int degrees(double celsius, boolean fahrenheit) {
+        return (int) Math.round(fahrenheit ? celsius * 9 / 5 + 32 : celsius);
+    }
+
+    /** Whole miles per hour from km/h. */
+    static int mph(int kmh) {
+        return (int) Math.round(kmh / 1.609344);
     }
 
     // ---- words and colours -------------------------------------------------------------------------

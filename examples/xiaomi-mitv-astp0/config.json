@@ -1,0 +1,9 @@
+{
+  "input_action": "com.xiaomi.mitv.tvplayer.EXTSRC_PLAY",
+  "input_sources": [
+    "HW5=23",
+    "HW6=24",
+    "HW7=25",
+    "HW1=2"
+  ]
+}

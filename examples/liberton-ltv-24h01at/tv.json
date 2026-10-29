@@ -1,0 +1,6 @@
+{
+  "tv": "Liberton LTV 24H01AT (Liberton, built by Changhong, device redwood), Ukraine",
+  "os": "Android TV 11",
+  "brand": "Liberton",
+  "notes": "Homwee-layer redwood list adapted from `rca-ai-pont` for a tvlauncher build: brand portal, store, silent installer, TV Manager, vendor updaters kept (commented out), sponsored rows, Google feedback, Alexa, preloads; voice assistant and Chromecast kept; `com.google.android.marvin.talkback` is refused by the firmware (SecurityException, left enabled); Input, mic and all remote buttons work; cold boot opens Live TV, standby wake goes Home; config.json dock: Kyivstar TV, Netflix, YouTube, Spotify; reboot-checked"
+}

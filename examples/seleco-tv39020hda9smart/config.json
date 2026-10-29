@@ -1,0 +1,22 @@
+{
+  "dock_apps": [
+    "com.toptech.tvmenu",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.android.tv.settings"
+  ],
+  "hidden_apps": [
+    "cn.zeasn.launcher.vstoresubclient.toptech"
+  ],
+  "live_tv_package": "",
+  "source_panel_service": "com.toptech.tvmenu/.input.InputActivity",
+  "app_labels": [
+    "com.toptech.tvmenu=Live TV",
+    "com.amazon.amazonvideo.livingroom=Prime Video"
+  ],
+  "app_banners": [
+    "com.toptech.tvmenu=banner_tv"
+  ],
+  "app_library": true,
+  "columns": 4
+}

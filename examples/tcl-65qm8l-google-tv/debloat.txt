@@ -1,0 +1,76 @@
+# TCL 65QM8L Google TV, 2025, US (device G17, model "Smart TV Pro", MediaTek tcl9655)
+# Android 14 (Google TV), firmware UTT2.250416.001 AU27, product G17_4K_US.
+# Same G17 board as examples/tcl-65c8l-google-tv (firmware AU08, Australia). This list is that one minus three
+# packages the US build does not have (com.tcl.waterfall.overseas, com.tcl.guard, com.tcl.magiconnectfree), each
+# checked against this unit with pm list packages. Everything is DISABLED, not uninstalled.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65qm8l-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65qm8l-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Comment out any line you want to keep.
+#
+# ADB: this set offers only Wireless debugging (no plain 5555). Pair with a code, then connect; the connect port
+# changes after every reboot or Wi-Fi drop. Windows: `adb connect <tv ip>:<port>` first, then TV_HOST=<tv ip>:<port>
+# with TV_ADB_BINARY set to adb.exe (tools/native-adb.md), so no `adb tcpip 5555` is needed.
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / tuner / HDMI app: com.tcl.tv.
+# Left alone as load-bearing or unclear: com.tcl.tv / com.tcl.tvinput (Live TV + tuner/HDMI),
+# com.tcl.suspension (Input source panel), com.tcl.initsetup (holds the tuner channel-install service),
+# com.tcl.globalkeyoverlay (remote keys), com.tcl.systemserver, com.tcl.webview (a WebView provider),
+# com.tcl.hearaid (audio), com.tcl.t_solo, com.tcl.useragreement, com.tcl.factory.view (factory - never touch).
+# Kept by this owner: Assistant, Chromecast, AirPlay, Miracast and every installed streaming app. The tiles of
+# com.tcl.tv.plus, com.tcl.browser, com.tcl.ui_mediaCenter, com.tcl.suspension, com.tcl.t_solo and Play Games
+# are hidden in the launcher (hidden_apps), not disabled.
+#
+# Tested 2026-10-26 on a real unit in one session, applied in batches with screenshots between them: Home, the
+# Input source panel, Live TV, the four HDMI inputs, YouTube with AdGuard Private DNS and the remapped remote
+# buttons all kept working. All 24 packages stayed disabled after a reboot; nothing re-enables at boot.
+#
+# Known quirks on this firmware:
+# - The saved Wi-Fi network belonged to setupwraith (dumpsys wifi: cname=...setupwraith). Forget the network and
+#   join it again in Settings (owner moves to com.android.tv.settings) BEFORE setupwraith is disabled, or the TV
+#   drops off Wi-Fi and ADB. tools/disable.sh skips setupwraith until then.
+# - With launcherx gone, the Settings, TV-guide and app-shortcut buttons go dead. They are remapped in this
+#   folder's config.json app_keys by Android keycode: Settings 83, TV guide 4001, Netflix 4062, Prime Video 4099,
+#   YouTube 190 (all confirmed on the real remote). This needs INPUT_KEY_SERVICE=1, and on this board the
+#   key-filter service stops continuous volume-repeat (hold-to-ramp becomes one step per press): a trade, not a
+#   fault. power_on_home in config.json needs HOME_KEY_SERVICE=1 as well.
+# - Custom HDMI input names (e.g. "Cable" on HDMI 3) live in `settings get secure tv_input_custom_labels`, as
+#   `<input id>,<name>` pairs joined by `:`. The launcher's `inputs_connected_only` hides every port here, because
+#   all four report cable_connection_status=0 even with a CEC device plugged in; leave it off.
+
+# TCL telemetry and analytics
+com.tcl.ttvs                           # Samba TV ACR viewing tracking, TCL BI analytics
+com.tcl.logkit                         # log capture and upload
+com.tcl.usercenter                     # TCL account sign-in nags
+
+# TCL content, ads and promos
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.interactive                    # TCL TIAS background service
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.dashboard                      # TCL message/notification promo hub (MessageExtService + DismissService)
+com.mirakulo.astrotv.service           # preloaded "AstroTV" content service
+
+# Retail demo / hotel mode
+com.tcl.exhibit                        # retail demo
+com.tcl.esticker                       # retail e-sticker overlay
+com.tcl.hotelmenu                      # hotel mode menu
+
+# Preloaded apps and services
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide                    # repair guide
+com.tcl.smartlink.core                 # TCL CustomInstallService (silent partner-app installer)
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup        # partner attribution
+com.google.android.feedback            # Google feedback uploader
+com.android.tv.feedbackconsent         # feedback consent prompt
+com.tcl.UpdatePeripheral               # TCL soundbar/speaker firmware updates (no TCL audio gear here)
+
+# Launcher handover. Disable these only AFTER launcher/ is installed and set as Home.
+# setupwraith: forget and re-join the Wi-Fi network first (see header), or the TV drops off Wi-Fi.
+# dreamx: set screensaver_components to com.gathin.tvhome/.ClockDream first.
+# launcherx: with it gone, setupwraith's RecoveryActivity claims HOME; launcher/build-and-install.sh
+#   disables launcherx with its start-first ordering and will skip it until the new launcher owns Home.
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.dreamx
+com.google.android.apps.tv.launcherx

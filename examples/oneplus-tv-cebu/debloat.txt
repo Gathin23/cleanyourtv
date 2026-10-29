@@ -17,6 +17,27 @@
 # and the Assistant mic on the remote work without InputKeyService or HomeKeyService.
 # USB debugging alone opens port 5555, and it stays open across reboots until switched off.
 # Reboot-checked: nothing came back enabled. AdGuard Private DNS validates.
+#
+# Second unit: same model on Android TV 11 (API 30), firmware RTM8.240401.135, India.
+# The telemetry and content groups were applied, plus some extras and preloads by choice;
+# Chromecast, Miracast, TV Mirror, OnePlus Connect and Bluetooth speaker mode were kept. After a reboot
+# the disabled list was unchanged.
+# - Not installed on this firmware: com.google.android.tv.bugreportsender, net.oneplus.odm(.provider),
+#   com.heytap.tv.imagewall and the streaming preloads below except YouTube Music and Play Movies.
+#   The USB gallery, music and video players are activities of com.heytap.tv.filebrowser here, so
+#   disabling that one package takes all four.
+# - Not installed either: com.mstar.netflixobserver and com.mediatek.tvinputservice.arbitratorservice. The
+#   remote's Home, Input, Netflix, YouTube, Prime Video and mic buttons still worked with launcher/ as Home
+#   and no key services.
+# - setupwraith does not claim HOME here either: only the stock launcher and Settings' FallbackHome did.
+# - The remote's Settings (gear) button sends KEY_MENU, which arrives as keycode 82. With
+#   "settings_key_keycodes": [82] and "settings_key_panel": true in a theme, it opens the quick settings
+#   panel on Home without HomeKeyService; inside apps it stays their Menu key.
+# - com.heytap.tv.btspeaker is only the screen that makes the TV discoverable as a Bluetooth speaker; the
+#   A2DP sink is in com.android.bluetooth. Keep it if a phone or laptop plays through the TV.
+# - The kernel reports a MemAvailable far above MemTotal (about 309 GB), so RAM readings that use it
+#   (launcher show_stats, addons/capacity-stats) show 0 MB used. Storage readings are right.
+# - Private DNS (Control D) validates.
 
 # Telemetry and diagnostics
 com.google.android.feedback                  # Google feedback agent
@@ -25,6 +46,8 @@ com.heytap.mcs                               # HeyTap push messaging, with nearx
 com.heytap.tv.remotediagnosing               # HeyTap remote diagnosis
 net.oneplus.odm                              # OnePlus device manager (analytics)
 net.oneplus.odm.provider                     # its data provider
+com.heytap.rom.service                       # ROM log collector and uploader (ZipLogService, UpLoadLogReceiver); Android 11 firmware only
+com.heytap.tv.remotecontrolinspect           # Remote-control diagnostics app; Android 11 firmware only
 
 # OnePlus content, recommendation rows, auto-installs and preloaded extras
 com.oneplus.tv.launcher                      # OxygenPlay content page
@@ -35,6 +58,7 @@ com.coloros.relax.tv                         # "Relax" ambient sounds app, with 
 com.heytap.tv.imagewall                      # Image wall
 com.oneplus.tv.userguide                     # Built-in user guide
 com.heytap.tv.assistant.oneplus              # OnePlus TV Manager (cleaner, bandwidth alerts)
+com.oneplus.tv.screensaver                   # OnePlus screensaver (the system screensaver stays Google's Ambient mode); Android 11 firmware only
 
 # Casting, mirroring and OnePlus extras (off by choice)
 com.google.android.apps.mediashell           # Chromecast built-in

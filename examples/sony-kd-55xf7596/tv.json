@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KD-55XF7596 (2018, \"BRAVIA 4K GB ATV3\", BRAVIA_ATV3_4K_EU, MediaTek MT5891), EU",
+  "os": "Android TV 9",
+  "brand": "Sony",
+  "notes": "Same build as the X900F (ATV3) plus the XE8596 leftovers: Samba TV ACR, Sony/Qterics agents, Sony Select/promos/Discover, launcher customizer, recommendation rows, partner auto-installs, demo mode, hotel/pro-mode b2b; Assistant, USB players, dead Play Music off by choice; Chromecast, mirroring, DLNA, phone remote, Prime Video, firmware updates, Sony IP control and vendorprotocol kept; smarthomesettings is a TV_INPUT_HARDWARE false positive; launcher works; reboot-checked. A 65-inch EU set of the same fingerprint (en-GB, 3840x2160) also runs the launcher as Home; its disabled packages are a subset and that unit was not reboot-checked: [notes](sony-kd-55xf7596/README.md)"
+}

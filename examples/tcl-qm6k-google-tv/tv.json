@@ -1,0 +1,6 @@
+{
+  "tv": "TCL QM6K Pro, 2025 (G08, MediaTek tcl9618)",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Samba TV ACR (ttvs), TCL TV+, TCL Live, store/hotel demo; setupwraith must go for a custom launcher (also AU14, #23); a QM7 (2024) owner ran this list with seven extra packages — [deltas and a hung Cast receiver](../docs/devices/tcl-75qm751g-qm7.md)"
+}
