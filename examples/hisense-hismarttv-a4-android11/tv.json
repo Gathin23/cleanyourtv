@@ -1,6 +1,0 @@
-{
-  "tv": "Hisense HiSmartTV A4 (xiaoyushan, MStar m7322), Android 11 firmware RTT2.221108.001",
-  "os": "Android TV 11",
-  "brand": "Hisense",
-  "notes": "Same set after its Android 11 update, now with the FFM-style namespace: Hisense ACR (evservice), push messages, VIDAA Channels, HiAlexa, hotel mode, store disclaimer, Google partner tracking and auto-installs; streaming apps optional; OTA, casting, Assistant kept; USB debugging opens port 5555; the Input key only works through the stock launcher (VIEW_INPUTS); smartsense kept"
-}

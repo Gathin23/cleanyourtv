@@ -28,11 +28,6 @@ Accept the "Allow USB debugging?" prompt on the TV the first time a command conn
 - **Gear button**: the remote's Settings button only worked through the stock launcher, so the
   launcher's HomeKeyService (an accessibility service) now handles it. If the button stops working,
   check Settings > Accessibility > "Botão Home" is on, or reinstall the launcher as below.
-- **Gear button or volume ramp**: on a third unit (50PUD7408/77, Argentina, same firmware), holding
-  volume up moved one step per press while HomeKeyService was on, and ramped normally again with it off.
-  It is the trade in [docs/devices/tcl-55p71b-g09-key-repeat.md](../../docs/devices/tcl-55p71b-g09-key-repeat.md):
-  pick one. To keep the ramp, install without `HOME_KEY_SERVICE=1`; Settings stays on the launcher's
-  Settings pill.
 
 ## Re-enable an app
 
@@ -41,7 +36,7 @@ On the TV: Settings > Apps > See all apps > Show system apps (or "Disabled apps"
 Over ADB:
 
 ```bash
-TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm enable --user 0 com.netflix.ninja'
+TV_HOST=192.168.0.10 tools/venv/bin/python -I tools/tv.py 'pm enable --user 0 com.netflix.ninja'
 ```
 
 Then delete or comment out its line in `debloat.txt`, so a later run doesn't disable it again. The
@@ -60,7 +55,7 @@ Other package names: Globoplay `com.globo.globotv`, Disney+ `com.disney.disneypl
 `com.nousguide.android.rbtv` (all of them: `tools/tv.py 'pm list packages'`). Then push it; no rebuild:
 
 ```bash
-TV_HOST=<tv ip> tools/theme.sh examples/philips-google-tv-ta7/theme
+TV_HOST=192.168.0.10 tools/theme.sh examples/philips-google-tv-ta7/theme
 ```
 
 You can also reorder on the TV itself: hold OK on the Settings pill and choose the reorder option.
@@ -77,7 +72,7 @@ again. All keys are in [themes/README.md](../../themes/README.md).
 ## Undo everything
 
 ```bash
-TV_HOST=<tv ip> tools/restore.sh examples/philips-google-tv-ta7/debloat.txt com.google.android.apps.tv.launcherx
+TV_HOST=192.168.0.10 tools/restore.sh examples/philips-google-tv-ta7/debloat.txt com.google.android.apps.tv.launcherx
 ```
 
 This works from the state recorded before the first change (`~/.cleanyourtv/`). The apps that
@@ -87,8 +82,8 @@ others listed at the top of `debloat.txt`) stay disabled. Re-enable them one by 
 ## Reinstall or update the launcher
 
 ```bash
-TV_HOST=<tv ip> STOCK_LAUNCHER=com.google.android.apps.tv.launcherx HOME_KEY_SERVICE=1 launcher/build-and-install.sh
-TV_HOST=<tv ip> tools/theme.sh examples/philips-google-tv-ta7/theme
+TV_HOST=192.168.0.10 STOCK_LAUNCHER=com.google.android.apps.tv.launcherx HOME_KEY_SERVICE=1 launcher/build-and-install.sh
+TV_HOST=192.168.0.10 tools/theme.sh examples/philips-google-tv-ta7/theme
 ```
 
 Needs JDK 17+ and the Android SDK (platform 34, build-tools 34). `HOME_KEY_SERVICE=1` keeps the
@@ -99,6 +94,4 @@ gear-button fix on after a reinstall. Before the first install, check that the s
 
 Port 5555 is plaintext, so leave it off: Settings > System > Developer options > switch off USB debugging
 (and Wireless debugging if it is on), choose "Revoke USB debugging authorisations", then restart the TV.
-From the PC, `tools/venv/bin/python -I tools/adb-closed.py <tv ip>` must then say the port is closed.
-Only a refused connection proves that: with `nc -vz <tv ip> 5555`, only "Connection refused" counts, and a
-timeout or "No route to host" proves nothing.
+From the PC, `nc -vz 192.168.0.10 5555` should then fail.

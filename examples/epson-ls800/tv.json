@@ -1,6 +1,0 @@
-{
-  "tv": "Epson LS800 laser projector (Askey HA90 module, sti6202d101, Amlogic)",
-  "os": "Android TV 14",
-  "brand": "Epson",
-  "notes": "First Epson list: Google feedback, ad services, partner auto-installs, print spooler, Play Games, Instagram, Pluto TV, Epson Online Meetings; Epson projector-control packages kept, `com.epson.logcollection` kept (it owns Projector Settings > Information; turn the operation log off there); TV Recommendations is re-enabled by `com.droidlogic`; YouTube button hard-coded to YouTube Music, Apps button dead without tvlauncher; Wireless debugging only; config.json dock; reboot-checked"
-}

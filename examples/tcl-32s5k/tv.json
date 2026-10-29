@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 32S5K (C06, C06_2K_GB, MediaTek MT9221, 918 MB), EU",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "Same build family as the 40S5400A; TCL account/TGuard/promo rows, USB players, voice and photo screensaver off by choice; `com.tcl.usercenter` is re-enabled by ttvs at every boot; setupwraith safe here (Settings owns the Wi-Fi); remote standby is a full power-down"
-}

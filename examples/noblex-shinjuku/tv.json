@@ -1,6 +1,0 @@
-{
-  "tv": "Noblex NoblexTV (Skyworth-built, shinjuku, MediaTek m5621), Argentina",
-  "os": "Android TV 11",
-  "brand": "Noblex",
-  "notes": "Panasonic TH-40HS550K list on the same Skyworth firmware family: Skyworth auto-installs, shop demo and Demo Now, e-manual, MediaTek PQ test tool, Google feedback and smartconnect, recommendation rows and Skyworth's launcher customizer, Assistant, Backdrop; unused apps off by choice; Chromecast kept; 0.9 GB, streaming apps that start on their own at boot are the real RAM cost (appops note); keep `com.mediatek.*`"
-}

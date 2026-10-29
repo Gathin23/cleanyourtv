@@ -1,6 +1,0 @@
-{
-  "tv": "Skyworth / Coocaa 8R40_K5C (Realtek rtd285x, 1 GB, 32-bit), China domestic firmware",
-  "os": "Android 8.0 (not Google TV)",
-  "brand": "Skyworth",
-  "notes": "`com.tianci.*` / `com.coocaa.*` firmware, not the `com.smartdevice.*` Google-TV Skyworth below; 16 packages: Coocaa ad engine, push, app store, Baidu Oases, mall, activity center, browser, PiTV, weather, blockchain and smart-home preloads (six already ship disabled); **keep `com.tianci.de`, `com.skyworthdigital.stb.dataprovider` and `com.coocaa.sky.ccapi`**: disabling them crashes About this TV, which holds the only ADB toggle, and recovery is a factory reset, so install Activity Launcher first (`coocaa.intent.action.TIANCI_FACTORY`); no package declares HOME and `/system/pcfg` resets it at boot, so never disable `com.tianci.movieplatform` (black screen) and no third-party launcher; boot ad off with `persist.sys.bootvideo.time 1`; debloat only; reboot-checked; [device guide](../docs/devices/skyworth-8r40-k5c.md)"
-}

@@ -10,7 +10,6 @@
     <string name="not_connected">Cap dispositiu</string>
     <string name="live_tv">TV en directe</string>
     <string name="no_inputs">No s\'ha trobat cap entrada</string>
-    <string name="more_inputs">Més entrades</string>
     <string name="good_morning">Bon dia</string>
     <string name="good_afternoon">Bona tarda</string>
     <string name="good_evening">Bon vespre</string>
@@ -40,7 +39,6 @@
     <string name="off">Desactivat</string>
     <string name="enable">Activa</string>
     <string name="dock_edit">Edita el dock</string>
-    <string name="power_menu">Reinicia…</string>
     <string name="dock_edit_hint">Tria la posició del dock que vols canviar i prem D\'acord. Enrere per acabar.</string>
     <string name="dock_edit_pick_app">Ara tria l\'aplicació que hi vols posar i prem D\'acord. Enrere per triar una altra posició.</string>
     <string name="tile_add_to_dock">Afegeix al dock</string>
@@ -108,5 +106,4 @@
     <string name="race_live">%1$s · en directe</string>
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
-    <string name="game_live">En directe</string>
 </resources>

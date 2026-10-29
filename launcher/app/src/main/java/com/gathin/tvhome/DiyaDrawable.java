@@ -11,6 +11,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 
@@ -26,7 +27,7 @@ import java.util.Random;
  * frosted and on the white (focused) pill. The flame flickers only while started, at about 15 fps; nothing is
  * allocated per frame. The first {@link #setFlame} call applies its level without an animation.
  */
-public final class DiyaDrawable extends Drawable implements FestiveLamp {
+public final class DiyaDrawable extends Drawable implements Animatable {
 
     private static final float BOX = 24f;
     private static final long FRAME_MS = 66;
@@ -143,7 +144,6 @@ public final class DiyaDrawable extends Drawable implements FestiveLamp {
     // ---- public API ----
 
     /** 0 puts the flame out; 1 to 4 is the signal strength, which sets the flame's height. */
-    @Override
     public void setFlame(int newLevel) {
         int lvl = Math.max(0, Math.min(4, newLevel));
         if (!primed) {
@@ -179,7 +179,6 @@ public final class DiyaDrawable extends Drawable implements FestiveLamp {
     }
 
     /** A steady flame (Ethernet) only breathes slowly and does not sway. */
-    @Override
     public void setSteady(boolean steady) {
         if (this.steady == steady) return;
         this.steady = steady;
@@ -187,7 +186,6 @@ public final class DiyaDrawable extends Drawable implements FestiveLamp {
     }
 
     /** With reduced motion the flame is still, there is no smoke or spark, and level changes are instant. */
-    @Override
     public void setReducedMotion(boolean reducedMotion) {
         if (reduced == reducedMotion) return;
         reduced = reducedMotion;

@@ -7,6 +7,8 @@ import com.faizannazir.cleanyourtv.tv.model.CleanupRecord
 import java.io.File
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 class BackupRestoreEngine(private val context: Context) {
 
@@ -16,11 +18,24 @@ class BackupRestoreEngine(private val context: Context) {
 
     private val latestBackupFile = File(backupDir, "latest_baseline.dat")
 
+    @Synchronized
     fun saveBaseline(baseline: CleanupBaseline): Boolean {
         return try {
-            ObjectOutputStream(latestBackupFile.outputStream()).use { out ->
+            // Write to temp file first
+            val tempFile = File(backupDir, "latest_baseline.tmp")
+            ObjectOutputStream(tempFile.outputStream()).use { out ->
                 out.writeObject(baseline)
             }
+
+            // Atomic rename to avoid truncating latest_baseline.dat
+            Files.move(
+                tempFile.toPath(),
+                latestBackupFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING,
+                StandardCopyOption.ATOMIC_MOVE
+            )
+
+            // Also keep timestamped backup
             val timestampFile = File(backupDir, "baseline_${baseline.timestamp}.dat")
             ObjectOutputStream(timestampFile.outputStream()).use { out ->
                 out.writeObject(baseline)
@@ -31,6 +46,7 @@ class BackupRestoreEngine(private val context: Context) {
         }
     }
 
+    @Synchronized
     fun loadLatestBaseline(): CleanupBaseline? {
         if (!latestBackupFile.exists()) return null
         return try {
@@ -44,14 +60,14 @@ class BackupRestoreEngine(private val context: Context) {
 
     fun generateRestorePlan(baseline: CleanupBaseline): List<CleanupRecord> {
         return baseline.records.filter { record ->
-            record.requestedAction == ActionType.DISABLE_USER && record.previousState
+            record.isRestorable && record.requestedAction == ActionType.DISABLE_USER
         }
     }
 
     fun exportReportJson(baseline: CleanupBaseline?): String {
         val sb = java.lang.StringBuilder()
         sb.append("{\n")
-        sb.append("  \"appName\": \"CleanYourTV TV Edition\",\n")
+        sb.append("  \"appName\": \"CleanYourTV\",\n")
         sb.append("  \"exportTimestamp\": ${System.currentTimeMillis()},\n")
         if (baseline != null) {
             sb.append("  \"baselineTimestamp\": ${baseline.timestamp},\n")
@@ -65,6 +81,9 @@ class BackupRestoreEngine(private val context: Context) {
                 sb.append("      \"packageName\": \"${escapeJson(rec.packageName)}\",\n")
                 sb.append("      \"appLabel\": \"${escapeJson(rec.appLabel)}\",\n")
                 sb.append("      \"action\": \"${rec.requestedAction}\",\n")
+                sb.append("      \"previousState\": ${rec.previousState},\n")
+                sb.append("      \"previousAppOpsState\": \"${escapeJson(rec.previousAppOpsState)}\",\n")
+                sb.append("      \"isRestorable\": ${rec.isRestorable},\n")
                 sb.append("      \"result\": \"${escapeJson(rec.operationResult)}\"\n")
                 sb.append("    }${if (idx < baseline.records.size - 1) "," else ""}\n")
             }

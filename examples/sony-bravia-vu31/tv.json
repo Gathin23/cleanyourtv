@@ -1,6 +1,0 @@
-{
-  "tv": "Sony BRAVIA VU31 4K (BRAVIA_VU31_4K, Realtek), India",
-  "os": "Google TV 14",
-  "brand": "Sony",
-  "notes": "First Realtek Sony list: no Samba/Qterics/IDD agents on this firmware; Sony promos/Select/tab, demo, help; Google feedback/Play Games/partner setup; ambient screensaver (basic dream set first); unused preloads off by choice; Alexa, Chromecast, AirPlay, Assistant kept; USB debugging alone opens 5555; 2 GB; launcher on a second set: setupwraith before launcherx, Live TV/HDMI in com.android.tv, Input key needs no service, applicationdisabler re-enables Eco Dashboard"
-}

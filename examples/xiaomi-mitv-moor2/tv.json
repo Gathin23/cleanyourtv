@@ -1,6 +1,0 @@
-{
-  "tv": "Xiaomi MiTV-MOOR2 / MOOR4 (venom, MediaTek)",
-  "os": "Google TV 11",
-  "brand": "Xiaomi",
-  "notes": "Mi ad row and PatchWall, Mi analytics, MiLink, store demo; setup wizard off so a third-party launcher can own Home; MOOR4 on the same firmware: setupwraith owned the setup Wi-Fi (forget and re-join first), Continue watching is not in the local TV provider"
-}

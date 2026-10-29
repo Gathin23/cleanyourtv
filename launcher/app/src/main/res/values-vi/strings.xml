@@ -10,7 +10,6 @@
     <string name="not_connected">Không có thiết bị</string>
     <string name="live_tv">Truyền hình</string>
     <string name="no_inputs">Không tìm thấy nguồn vào</string>
-    <string name="more_inputs">Nguồn vào khác</string>
     <!-- Vietnamese greets the same way at any hour. -->
     <string name="good_morning">Xin chào</string>
     <string name="good_afternoon">Xin chào</string>
@@ -71,7 +70,6 @@
     <string name="card_state_new_label">Tên mới</string>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="dock_edit">Chỉnh sửa dock</string>
-    <string name="power_menu">Khởi động lại…</string>
     <string name="dock_edit_hint">Chọn vị trí trên dock cần đổi rồi nhấn OK. Nhấn Quay lại để kết thúc.</string>
     <string name="dock_edit_pick_app">Giờ chọn ứng dụng để đặt vào đó rồi nhấn OK. Nhấn Quay lại để chọn vị trí khác.</string>
     <string name="tile_add_to_dock">Thêm vào dock</string>
@@ -79,7 +77,6 @@
     <string name="dock_edit_pick_place">Chọn vị trí trên dock cho ứng dụng này rồi nhấn OK. Nhấn Quay lại để hủy.</string>
     <string name="festival_dussehra_greeting">Chúc mừng lễ Dussehra</string>
     <string name="festival_diwali_greeting">Chúc mừng lễ Diwali</string>
-    <string name="festival_halloween_greeting">Chúc mừng Halloween</string>
     <string name="stats_memory">Bộ nhớ %1$d / %2$d MB</string>
     <string name="stats_storage">Còn trống %1$s</string>
     <string name="rows_below_dock_label">Số hàng dưới dock</string>
@@ -122,5 +119,4 @@
     <string name="race_countdown_days">%1$d ngày %2$d giờ</string>
     <string name="last_opened">Mở lần cuối %1$s</string>
     <string name="tile_move">Di chuyển</string>
-    <string name="game_live">Đang diễn ra</string>
 </resources>

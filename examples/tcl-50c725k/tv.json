@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 50C725K (Smart TV Pro, BeyondTV4/BeyondTV6, RTD2851M, Realtek rtd288o, 2 GB), AR10 build",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "Same BeyondTV4 family as `tcl-65c725/` and `tcl-55c725/`, with the older `tvlauncher` (replaced by `launcher/`); TCL home-content push, TCL Channel, promos, analytics, messagebox, dashboard, browser, gallery, auto-installs and Google feedback/partner setup; Google voice (katniss, ~175 MB RAM), TalkBack/TTS and Netflix/Stan/Play Games off by choice; TCL account, firmware updater, Chromecast, Miracast and screensaver kept; Live TV `com.tcl.tv` and inputs `com.tcl.tvinput` kept; reboot-checked"
-}

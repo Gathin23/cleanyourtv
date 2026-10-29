@@ -1,6 +1,0 @@
-{
-  "tv": "Xiaomi TV S Pro 100 Mini LED 2025 (小米电视 S Pro 100, L100MB-SP, MiTV-MFFU0, finch, MediaTek), China firmware OS3.0.115.0.UFFMATV, 4 GB RAM",
-  "os": "Android 14 (HyperOS 3, CN build)",
-  "brand": "Xiaomi",
-  "notes": "First HyperOS 3 Xiaomi: Mi analytics, MiSight log upload, TV QS reporting, cloud control, video-daily promos with the Mi ad SDK, shopping, web promos, Pictorial, AI translate; alarms, health, game SDK off by choice; **keep TV Manager** (XiaoAI's \"open an app\" voice command runs through its provider) and Home only for a launcher built under an allowlisted package name (`-PlauncherApplicationId=com.thunderstone.idun.dev`, stock launcher disabled; the standard ID and `set-home-activity` do not work); ADB closes on every reboot; CEC set-top-box black-screen note; voice, casting, Mi Home, OTA, Hyper screensaver kept; debloat only"
-}

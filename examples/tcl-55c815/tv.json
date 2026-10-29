@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 55C815 (2020, Europe/Denmark, BeyondTV2, Realtek rtd285o)",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "TCL analytics, content feeds (TCL Channel), message box, sticker, Google recommendation rows, Play Movies/Games; voice, Chromecast, mirroring and updates kept by choice; setupwraith owns a setup Wi-Fi network, so it stays; TCL's updater re-enabled TCL Channel by pushing an update after a reboot (also hide it in the launcher); launcher works (stock `com.google.android.tvlauncher`, Live TV `com.tcl.tv`); reboot-checked"
-}

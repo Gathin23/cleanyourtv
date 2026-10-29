@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 32L5A (C06, model \"Smart TV\", 1 GB)",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "Same C06 platform as `tcl-32s5400a/` (SDK 30, build AR2101); TCL account, TGuard cleaner, promo rows, TCL Channel waterfall, store demo sticker, browser, feedback and Google TV recommendations; custom Apple TV style launcher installed as default home (`com.gathin.tvhome`), stock launcher `com.google.android.tvlauncher` disabled; Live TV `com.tcl.tv` and inputs `com.tcl.tvinput` kept; reboot-checked"
-}

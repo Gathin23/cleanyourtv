@@ -1,6 +1,0 @@
-{
-  "tv": "Sony BRAVIA X9000H (2020, BRAVIA_VH1_CN, MediaTek MT5895), China",
-  "os": "Android TV 12",
-  "brand": "Sony",
-  "notes": "China firmware with no Samba TV, no Google feedback and no Sony promos/Select/tab, so there is no Sony ACR to remove; Qterics/IDD/da.service, demo/help, no-camera packages, JD SmartService, 13 b2b hotel-mode packages and the kids profile off; Dangbei `ChinaHome` replaced by the reference launcher but kept enabled as fallback; Dangbei app store (应用中心) and HappyCast kept; b2b.hotelmode is persistent and its process still starts at boot; idle `iddd` remains; reboot-checked; [handover and firmware notes](../docs/devices/sony-x9000h-cn.md)"
-}

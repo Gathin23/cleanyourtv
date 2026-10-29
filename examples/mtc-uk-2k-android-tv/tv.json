@@ -1,6 +1,0 @@
-{
-  "tv": "MTC UK 2K Android TV (tabata, MediaTek m5621; JVC-family firmware, `android.autoinstalls.config.JVC` present), UK",
-  "os": "Android TV 11",
-  "brand": "MTC",
-  "notes": "Google recommendation rows, partner customizer, feedback, ambient mode (katniss + backdrop), retail demo, MStar disclaimer popups, calendar leftovers; UK Freeview suite ships disabled at the factory (re-disabling throws SecurityException, harmless); dumpsys crippled on this firmware (\"hung system process\"), verify with `pm list packages -d` and screenshots; stock launcher `com.google.android.tvlauncher`, so `restore.sh` needs no launcher argument"
-}

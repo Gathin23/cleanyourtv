@@ -47,8 +47,7 @@ else:
 '''
 
 
-@unittest.skipUnless(os.name == "posix" and shutil.which("bash"),
-                     "sync.sh is a POSIX script; it needs bash on a POSIX system")
+@unittest.skipUnless(shutil.which("bash"), "requires Bash")
 class PhotoSyncTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

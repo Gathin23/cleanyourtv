@@ -47,24 +47,15 @@
          Off by default; a theme can set "open_on_start_choice": true. -->
     <bool name="open_on_start_choice">false</bool>
 
-    <!-- Seconds the first Home after the TV starts waits for a working internet connection before it opens the
-         boot_to_live_tv or Open on start app. A streaming app opened before the network is back shows an error,
-         and after a power cut Wi-Fi can take minutes, as the router starts again too. Home stays on screen
-         meanwhile, and leaving Home cancels the opening. 0, the default: open at once. Up to 600; a theme can
-         set "open_on_start_network_wait": 180. -->
-    <integer name="open_on_start_network_wait">0</integer>
-
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
          to that package instead, and the app starts normally. Leave empty to omit. -->
     <string name="live_tv_action" translatable="false"></string>
 
-    <!-- Optional Live TV source for the Inputs menu. An exact system tuner ID, e.g. DVB-S on
+    <!-- Optional exact system tuner ID for the Inputs menu's Live TV row, e.g. the DVB-S input on
          a TV with separate antenna, cable and satellite tuners. It opens that input's channel
          collection, restricted to live_tv_package. Empty keeps automatic selection and its existing
-         OEM passthrough route. On Xiaomi MiTV-MSSP1 (#1941), set this to the exact value
-         content://android.media.tv/channel to use the stock launcher's root channel URI instead.
-         If the ID is absent or the app cannot handle the collection, open
+         OEM passthrough route. If the ID is absent or the app cannot handle the collection, open
          the Live TV app normally instead of selecting a different input. A wrong but registered ID
          can open the app's tuner setup screen instead; that is not detected as a fallback condition.
          Use a verified input ID, or leave this empty. See docs/devices/haam-r4.md. -->
@@ -72,11 +63,7 @@
 
     <!-- Tiles that open a screen of the app instead of its start screen: "package=action", sent to that package.
          A tile whose action no longer resolves opens the app normally. MagentaTV's program guide:
-         com.telekom.onetv.tv.pl=com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE. "package=input:<input id>" makes
-         the tile switch to that TV input instead (ids from dumpsys tv_input), e.g. a Live TV tile straight to
-         HDMI 1: com.mediatek.wwtv.tvcenter=input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW5. "package=view:uri"
-         opens that URI in the package instead (ACTION_VIEW): Bbox TV's live channels are
-         fr.bouyguestelecom.tv.bbui=view:bbox://live. -->
+         com.telekom.onetv.tv.pl=com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE. -->
     <string-array name="launch_actions">
     </string-array>
 
@@ -123,8 +110,7 @@
 
     <!-- With key_filter on, true makes HomeKeyService and InputKeyService stop filtering keys while a game
          controller is connected, so games see its buttons (Steam Link with an Xbox controller on a TCL G07
-         did not; Moonlight with two controllers put both on player 1, docs/TROUBLESHOOTING.md). The price: the
-         remote buttons below do nothing until the controller disconnects. A voice
+         did not). The price: the remote buttons below do nothing until the controller disconnects. A voice
          remote that reports a joystick does not count. A theme can set it ("gamepad_passthrough"). -->
     <bool name="gamepad_passthrough">false</bool>
 
@@ -137,7 +123,7 @@
     <!-- Vendor source numbers for the Inputs menu, "HW<n>=<number>" by the framework input id's last part
          (`tools/tv.py 'dumpsys tv_input'` lists them). A mapped input opens by sending input_action with the
          number as the int extra "input"; "HW<n>=-" leaves a port the board reports but the set does not have
-         out of the menu. A theme can set the same list. Xiaomi/Redmi China firmware (MiTV-MFTP0) needs input_action
+         out of the menu. Xiaomi/Redmi China firmware (MiTV-MFTP0) needs input_action
          com.xiaomi.mitv.tvplayer.EXTSRC_PLAY and MStar numbers: HW5=23, HW6=24, HW7=25, HW8=-, HW2=2,
          HW3=-, HW4=- (see examples/redmi-mitv-mftp0). Leave empty to omit. -->
     <string-array name="input_sources" translatable="false">
@@ -197,19 +183,11 @@
          for HDMI 3 on a TCL Smart TV Pro; the ids are in `tools/tv.py 'dumpsys tv_input'` (hdmi_port=N under
          TvInputHardwareInfo). An action word in place of a package runs that action instead: back, home, recents,
          mute (toggles the sound, with the TV's volume bar), sleep (standby, Android 9 and later), screensaver (the
-         one chosen in the TV's settings, or the launcher's clock), settings, wifi or ignore (swallows the button: it
-         does nothing, for a shortcut pressed by accident; find its scancode with `tools/tv.py 'getevent -t'`);
-         e.g. KEYCODE_PROG_YELLOW:mute, scan:586:ignore and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
-         entry, e.g. hold:191:io.github.maxhayim.brightness/.QuickActivity for an add-on's quick bar. Prefix an
-         entry with "hold:" for the same button's long press:
+         one chosen in the TV's settings, or the launcher's clock), settings or wifi; e.g. KEYCODE_PROG_YELLOW:mute
+         and hold:KEYCODE_PROG_YELLOW:sleep. Prefix an entry with "hold:" for the same button's long press:
          "hold:KEYCODE_BUTTON_8:org.xbmc.kodi" opens Kodi when held for half a second, while the unprefixed entry
          still opens on a tap; "hold:scan:490:..." works for scancodes. A key with only a hold entry does nothing
-         on a tap. A listed app that is not installed leaves the button doing nothing. Prefix an entry with "front:"
-         for what a tap does while the button's own app is already in front (HOME_KEY_SERVICE=1), and use
-         "guide:<package>" as a target to open that Live TV app's program guide: "172:com.vt.tv.tvcenter" with
-         "front:172:guide:com.vt.tv.tvcenter" makes the Hisense hengshan Live TV button open Live TV, then its guide,
-         where the firmware hands KEYCODE_GUIDE (172) to the stock launcher and no app ever receives it. Leave empty
-         to omit. -->
+         on a tap. A listed app that is not installed leaves the button doing nothing. Leave empty to omit. -->
     <string-array name="app_keys" translatable="false">
     </string-array>
 
@@ -219,40 +197,11 @@
          straight back here. A theme's config.json can set it too. Leave empty to omit. -->
     <string name="stock_home_redirect" translatable="false"></string>
 
-    <!-- For TVs whose firmware opens the Live TV app (live_tv_package) by itself at every power-on, with no setting
-         to change it (Changhong / Homwee boards start com.mediatek.wwtv.tvcenter from its own boot receiver, which
-         adb cannot disable on Android 14). While nobody has pressed a key yet after boot or after the screen turns
-         on, HomeKeyService (HOME_KEY_SERVICE=1) sends a Live TV window back to Home; the first key hands control
-         to the user, so opening Live TV on purpose is never undone. The opposite of boot_to_live_tv, and ignored
-         when that is on. A theme's config.json can set it too. Off by default. -->
-    <bool name="power_on_home">false</bool>
-    <!-- Home at every power-on, whatever the firmware put in front (the last HDMI input, Live TV or an app),
-         for TVs that come back to the last source, like Philips. Needs HOME_KEY_SERVICE=1; a key pressed first
-         wins. Ignored with boot_to_live_tv or an Open on start app. Can also be set with "power_on_home_always". -->
-    <bool name="power_on_home_always">false</bool>
-
-    <!-- Every press of the remote's Home button opens this launcher, a held one too. Android turns a Home press held
-         past the long-press timeout (400 ms) into its long-press action; on Android TV that is ALL_APPS, sent to the
-         system-image launcher, and with the stock launcher disabled nothing answers it, so a firm press on a slow
-         remote does nothing (Philips TPM191E, Android 12). The long_press_timeout setting does not move that limit
-         there. HomeKeyService (HOME_KEY_SERVICE=1) then takes the Home key itself and opens Home on release. Needs
-         key_filter, so held keys such as Volume Up/Down stop repeating (confirmed on that Philips; single presses
-         still step). A theme's config.json can set it too. Off by default. -->
-    <bool name="home_long_press_home">false</bool>
-
     <!-- Show the Solar Hijri (Shamsi) date used in Iran and Afghanistan, e.g. "27 Mehr 1405", above the
          Gregorian date. -->
     <bool name="shamsi_date">false</bool>
-    <!-- Lunisolar (Vietnamese / Chinese / Korean) date under the date; config.json lunar_date, lunar_utc_offset (7, 8 or 9, default by locale). -->
+    <!-- Lunisolar (Vietnamese / Chinese) date under the date; config.json lunar_date, lunar_utc_offset (7 or 8, default by locale). -->
     <bool name="lunar_date">false</bool>
-    <!-- The date (with the Shamsi and lunar lines) on its own line under the clock instead of beside it, for a top bar
-         whose pills leave the date too little room. Can also be set with "date_below_clock" in a theme. -->
-    <bool name="date_below_clock">false</bool>
-    <!-- The language the launcher shows itself in, as a language tag ("vi", "pt-BR", "ar-EG-u-nu-latn"
-         for Arabic with Western digits), instead of the TV's. For firmware
-         that has no menu entry for the owner's language although the launcher is translated into it (a China-market
-         Xiaomi offers Chinese and English only). Empty, the default, follows the TV. A theme can set it ("locale"). -->
-    <string name="locale" translatable="false"></string>
 
     <!-- A name after the greeting: "Mr. Trịnh" shows GOOD MORNING, MR. TRỊNH. Empty: the greeting alone. -->
     <string name="greeting_name" translatable="false"></string>
@@ -265,14 +214,6 @@
          VPN you use. Empty: the pill opens Wi-Fi settings. The green VPN badge shows for any VPN either way;
          with an app set here, a red "VPN off" badge also shows while no VPN is up. -->
     <string name="vpn_app" translatable="false"></string>
-    <!-- The VPN as its own pill after the network pill, instead of a badge inside it: solid green with a lock while a
-         VPN is up, solid red "VPN off" while none is and vpn_app is installed. Pressing it opens vpn_app (without it,
-         the App library, or VPN settings when app_library is off), and the network pill then always opens Wi-Fi
-         settings. Hidden while no VPN is up and vpn_app is empty or not installed, and with top_menu. It keeps its
-         label with icon_only_buttons, since the red state has no icon. A VPN app's kill switch keeps a VPN up while
-         the app says disconnected (it holds the tunnel to block traffic), so the pill stays green then. Can also be
-         set with "vpn_pill" in a theme. -->
-    <bool name="vpn_pill">false</bool>
     <!-- The dock as its own row: a lighter band, no names under the tiles, parked low on the screen with the top
          shelf above it. false makes the dock apps simply the first tiles of one plain grid (still in dock_apps
          order, no empty slots), with names under every tile and the glow behind every focused tile. -->
@@ -287,8 +228,6 @@
          through it. false (the default) keeps the solid near-black band, or the cinematic shelf's dark glass. Can
          also be set with "dock_glass": true in a theme's config.json. -->
     <bool name="dock_glass">false</bool>
-    <!-- Draw the dock band and its edge. false leaves the tiles floating on the wallpaper (config.xml dock_band). -->
-    <bool name="dock_band">true</bool>
     <!-- Every app in one row: the dock apps first, the rest after them, and the row scrolls sideways when focus
          reaches its edge. No grid below; rows_below_dock is ignored. Needs dock_row. Can also be set with
          "single_row" in a theme. -->
@@ -308,10 +247,6 @@
     <bool name="icon_only_buttons">false</bool>
     <!-- The Inputs pill as a round icon button too (the label moves to the talkback description). -->
     <bool name="icon_only_inputs">false</bool>
-    <!-- With vpn_pill, the VPN pill as a round icon button too: an open lock on the plain glass button while no VPN is
-         up, the closed lock in a green outline while one is (solid green only while focused, like the pill). "VPN" /
-         "VPN off" become its talkback description. A theme can set "icon_only_vpn": true. -->
-    <bool name="icon_only_vpn">false</bool>
     <!-- true colours the Wi-Fi pill's icon green while the TV is online and leaves it white while it is not (dark on
          the focused pill either way), so the connection shows at a glance, also as an icon-only button. Can also be
          set with "wifi_status_color": true in a theme's config.json. -->
@@ -322,10 +257,6 @@
     <bool name="wifi_status_warnings">false</bool>
     <!-- The app library as a round button in the top bar, beside Settings (app_library must be on too). -->
     <bool name="library_button">false</bool>
-    <!-- The App library pill after the last Home row. false hides it while library_button is on, so the top-bar
-         button stays the way in, and Down from the last row stays put as with app_library off. Can also be set
-         with "show_library_pill": false in a theme's config.json. -->
-    <bool name="show_library_pill">true</bool>
     <!-- With icon_only_buttons: keep the network name on the Wi-Fi pill up to this width in dp, cut with an ellipsis.
          0 leaves the Wi-Fi pill as an icon. -->
     <integer name="wifi_label_width">0</integer>
@@ -340,12 +271,6 @@
     <!-- The Inputs pill in the top bar, shown when the TV has inputs to list. false hides it for good; what the
          remote's Input button does is unchanged. Can also be set with "show_inputs_pill" in a theme. -->
     <bool name="show_inputs_pill">true</bool>
-    <!-- The Inputs list shows only HDMI ports and CEC devices that report connected. Empty ports, devices asleep in
-         standby (some TVs, TCL among them, report an empty HDMI port as connected-standby, the same state a
-         sleeping device has) and the AV jacks fold behind a "More inputs" row that expands the rest. An HDMI row
-         whose state the TV cannot be trusted with stays. Off by default: every input is listed. Can also be set
-         with "inputs_connected_only" in a theme. -->
-    <bool name="inputs_connected_only">false</bool>
     <!-- Names under every tile, not only the focused one: unfocused names stay dimmed, the focused one is full white.
          With dock_row the band grows down to hold the dock's names too. -->
     <bool name="always_show_names">false</bool>
@@ -396,10 +321,6 @@
     <!-- Optional direct Home picker in the app library: OK toggles the checkmark, checked apps first.
          Off by default; a theme can set "app_library_selection": true (also needs app_library). -->
     <bool name="app_library_selection">false</bool>
-    <!-- OK opens every app in the library, not only the apps on Home: for a library that holds the apps a theme
-         keeps off Home with hidden_apps. Hold OK still offers Add to Home. app_library_selection wins when both are
-         on. Off by default; a theme can set "library_ok_opens": true (also needs app_library). -->
-    <bool name="library_ok_opens">false</bool>
 
     <!-- Apps pre-seeded into the App library's "added" set at startup (config.xml library_apps, or a theme's
          config.json). They show on Home as if the owner had added them in the App library UI, and stay
@@ -407,15 +328,6 @@
          (many China-market TVs, e.g. Coocaa 8R145), a fresh Home with app_library on would otherwise be
          nearly empty. Empty (off) by default, so existing setups change nothing. -->
     <string-array name="library_apps" translatable="false">
-    </string-array>
-
-    <!-- Packages the App library catalogue never offers, even with app_library on (config.xml
-         library_excluded_apps, or a theme's config.json). Different from hidden_apps, which only keeps a
-         package off Home while still listing it here: some boards hide a package because opening it is
-         unsafe (a factory-test menu that can misconfigure the TV), and the catalogue otherwise ignores
-         hidden_apps and offers it as "Add to Home" anyway. Empty (off) by default, so existing setups
-         change nothing. -->
-    <string-array name="library_excluded_apps" translatable="false">
     </string-array>
 
     <!-- Module cards: an app that declares a card (docs/specs/card.md) can stand in for its tile with its own
@@ -438,12 +350,6 @@
     <!-- One line under the clock: CPU, free memory and free storage. Off by default; a theme can set
          "show_stats": true. Nothing is read, and the clock does not move, while this is false. -->
     <bool name="show_stats">false</bool>
-
-    <!-- Each team's next game in the F1 panel's place under the clock, rotating with the theme's F1 weekend: the package
-         of an add-on that publishes them (the Game Day add-on: io.github.justinnewman.gameday; contract in docs/modules.md).
-         Empty = off: nothing is read or watched. The launcher only reads what the add-on publishes and never goes
-         online. A theme can set "game_day". -->
-    <string name="game_day" translatable="false"></string>
 
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
@@ -508,8 +414,4 @@
          faint outer glow), rim (the crisp rim alone, no sheen, fill or glow, for a quiet focus over a wallpaper) or
          halo (the rim with a lighter outer glow). Can also be set with "glass_style": "rim" in a theme's config.json. -->
     <string name="glass_style" translatable="false">glass</string>
-
-    <!-- Tiles drawn from the app's icon and name instead of its banner (for banners that crop badly). -->
-    <string-array name="icon_tiles" translatable="false">
-    </string-array>
 </resources>

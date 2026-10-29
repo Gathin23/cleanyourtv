@@ -1,6 +1,0 @@
-{
-  "tv": "Skyworth Coocaa K3 Pro 90P3D Max (8R145_P3DM, Realtek RTD2885N), China market",
-  "os": "Android 11 (Coocaa OS)",
-  "brand": "Skyworth",
-  "notes": "First China-market Coocaa (Realtek) list; Coocaa ad SDK, ACR, telemetry, push, silent auto-install and Coocaa content apps off; NEVER disable com.tianci.movieplatform (boot hangs on the COOCAA logo, factory reset only); Home key hard-coded to the Coocaa launcher, no BOOT_COMPLETED broadcast; 23 packages, reboot-checked"
-}

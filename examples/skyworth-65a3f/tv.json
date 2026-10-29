@@ -1,6 +1,0 @@
-{
-  "tv": "Skyworth 65A3F (7T641_A3F, MediaTek MT9633), China",
-  "os": "Android 13 (CCOS 10.01.250328)",
-  "brand": "Skyworth",
-  "notes": "Chinese Coocaa firmware, no GMS: boot/shutdown ads (`com.tianci.ad` BootService and PowerOffActivity), vendor screensaver, guide, both stores plus the overseas one, performance monitors, factory test timer, OTA; **keep `com.coocaa.aigc.home`**: disabling it leaves no home at all (hangs on the SKYWORTH logo, no network, factory reset to recover) and the boot screen plus the HOME key are hard-wired to it, so a third-party launcher never owns the boot screen; the launcher can be bound to the remote's colour key (`ShortcutKeySetActivity`) or added to the stock dock, both one press, while `boot_start_tv_source` only switches input source; ADB opens without pairing; a 17 MB APK moves in ~100 s over `toybox nc`, not b64push"
-}

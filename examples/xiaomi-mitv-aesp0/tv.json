@@ -1,6 +1,0 @@
-{
-  "tv": "Xiaomi MiTV-AESP0 stick (aquaman, 1 GB)",
-  "os": "Android TV 9",
-  "brand": "Xiaomi",
-  "notes": "No inputs; Home key sends ALL_APPS, needs `HOME_KEY_SERVICE=1` (a French unit's remote sent HOME); Chromecast kept; the Netflix key (1001) cannot be remapped without root; only the Developer options master switch closes 5555"
-}

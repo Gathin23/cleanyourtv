@@ -1,6 +1,0 @@
-{
-  "tv": "Master-G MGA3200 (SCBC R1, Realtek; Android reports model `ATV R1`), Chile",
-  "os": "Android TV 9",
-  "brand": "Master-G",
-  "notes": "Same SCBC platform as `thomson-t32rtl6000/` and `sanyo-atv-r2/`: Google recommendation rows, telemetry and feedback, SCBC consent agent, S-Channels row, partner auto-installs, E-Show demo, E-Sticker, Vewd store; OTA kept, factory menus left alone; ISDB-T tuner stack, remote/Bluetooth and FastCast must stay; 1.5 GB RAM; 20 packages"
-}

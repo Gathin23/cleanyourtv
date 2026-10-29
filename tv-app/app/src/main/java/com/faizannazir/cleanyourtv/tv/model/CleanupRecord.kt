@@ -20,9 +20,11 @@ data class CleanupRecord(
     val packageName: String,
     val appLabel: String,
     val previousState: Boolean,
+    val previousAppOpsState: String = "allow",
+    val isDataCleared: Boolean = false,
     val requestedAction: ActionType,
     val operationResult: String,
-    val isRestorable: Boolean
+    val isRestorable: Boolean = !isDataCleared
 ) : Serializable
 
 data class CleanupBaseline(

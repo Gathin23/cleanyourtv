@@ -1,6 +1,0 @@
-{
-  "tv": "Tele System TS ON T2/HD (ONT2HD, SDMC, Amlogic), Italy",
-  "os": "Android TV 11",
-  "brand": "Tele System",
-  "notes": "SDMC factory test/hardware info, partner configuration, Google recommendation rows and Play apps; Live TV `com.sdmc.tv` kept, updater and remote services kept; port 5555 open"
-}

@@ -91,8 +91,7 @@ on this set clearing the list unhooks the buttons the helpers were installed for
 disabled, its Input, Settings, YouTube and Netflix buttons reach only
 `com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver`, which starts launcherx activities and
 crashes (the [MOSR4 note](xiaomi-mitv-mosr4.md) has that part, and its install line passes both helpers).
-So "the ramp returns with no service bound" was measured on the G09 alone until the Mi TV 4A below ran that
-control too. And the build string in
+So "the ramp returns with no service bound" is still measured on the G09 alone. And the build string in
 the issue is not the one that note carries (`RTM5.220609.003/1585`, written on another unit of the same
 model), so treat the two as separate units until both fingerprints are read: the model, the firmware
 family and the behaviour are what they agree on.
@@ -156,102 +155,6 @@ own key log (`WindowManager: interceptKeyTi keyCode=24 down=true repeatCount=0`)
 it. The empty-list control was not run there either. The owner kept the helper for the YouTube, Prime
 Video, Disney+, Peacock and gear buttons and lives with one step per press.
 
-## A TCL G08 on Android 12, and `consume_volume_keys`
-
-A TCL 75Q7C (G08, Google TV 12, `STT2.221228.001 AS36`, the second unit in
-[`examples/tcl-g08-eu-android12`](../../examples/tcl-g08-eu-android12/README.md)) does the same with both helpers
-bound: a two-second hold of volume up logs one `handleKeyBeforeQueueing ... ACTION_DOWN ... KEYCODE_VOLUME_UP
-... repeatCount=0`, the `ACTION_UP` two seconds later, and one volume change (`setStreamVolumeIndex`) in between.
-`consume_volume_keys` true did not bring the ramp back there: the launcher's own repeat (`VolumeKeys`) never
-stepped the volume, so the helpers do not seem to receive the volume key on this build, and the switch, made for
-the G03's double step, has nothing to repeat. The empty-list control was not run. The owner kept the helpers for
-the gear, YouTube and TCL buttons.
-
-A TCL 75Q7CXB (G08, Google TV 14, `UTT2.250416.001 AU02`), launcherx and setupwraith disabled with this
-launcher as Home, loses the ramp the same way, and with `HomeKeyService` alone as well: with both helpers bound,
-then with `enabled_accessibility_services` set to `HomeKeyService` only (`dumpsys accessibility` showing one bound
-service), the owner's held volume up moved one step per press each time. That one-helper run also kept the app
-buttons in `app_keys` and the gear in `settings_key_keycodes` working. The 55Q6C in
-[`examples/tcl-q7c-google-tv`](../../examples/tcl-q7c-google-tv/README.md), on the same build, kept ramping
-with `HomeKeyService` bound, but it kept launcherx enabled and went through `stock_home_redirect`; so on this
-build one bound helper is enough to cost the ramp once launcherx is gone. The empty-list control was not run
-here either.
-
-## The path in the Android 12 source, and a Philips set measured both ways
-
-The Hisense reading above holds line by line in AOSP `android12-release`, and a fourth vendor measures the
-same way. With an input filter installed, `InputDispatcher::notifyKey` hands every key to the filter before
-anything is queued. For a key, `AccessibilityInputFilter` goes to `KeyboardInterceptor.onKeyEvent`, whose
-`getEventDelay` asks the window policy first for Volume Up and Down only
-(`mPolicy.interceptKeyBeforeDispatching(null, event, policyFlags)`), and returns without passing the event on
-when the answer is negative. On a TV (`mUseTvRouting`) `PhoneWindowManager.interceptKeyBeforeDispatching`
-answers a volume key with `dispatchDirectAudioEvent(event)` and `key_consumed`, which is `-1`. So the key
-takes its one volume step inside that check and is dropped there: no accessibility service is offered it,
-and it never reaches `InputDispatcher::dispatchKeyLocked`, the only place that records a held key
-(`mKeyRepeatState.lastKeyEntry`) and synthesizes its repeats every `getKeyRepeatDelay()`, 50 ms. That is
-why `onKeyEvent` has nothing to log, and why a helper cannot repeat the key itself either. Source:
-[KeyboardInterceptor.java](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android12-release/services/accessibility/java/com/android/server/accessibility/KeyboardInterceptor.java),
-[PhoneWindowManager.java](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android12-release/services/core/java/com/android/server/policy/PhoneWindowManager.java),
-[InputDispatcher.cpp](https://android.googlesource.com/platform/frameworks/native/+/refs/heads/android12-release/services/inputflinger/dispatcher/InputDispatcher.cpp).
-
-Measured on a Philips 65OLED804/12 (TPM191E, Android TV 12, `STT2.230526.001`, the fifth unit in
-[`examples/philips-tpm191e`](../../examples/philips-tpm191e/debloat.txt)), sound over HDMI ARC to a home
-cinema system, with `getevent -lt` on the remote and the volume event log in `dumpsys audio`. On a TV,
-`AudioService.handleVolumeKey` logs one `adjustSuggestedStreamVolume` for the down (`VOL_ADJUST_START`) and
-one for the up (`VOL_ADJUST_END`), so a pair is one press:
-
-| `enabled_accessibility_services` | Volume Down held | `dumpsys audio` |
-| --- | --- | --- |
-| `HomeKeyService` alone (`capabilities=8`) | 3.0 s | the start and the end, nothing between |
-| `null`, with `accessibility_enabled 0` | 1.07 s | the start, 14 repeats 50 ms apart from about 250 ms on, the end |
-
-The remote sent one `DOWN` and one `UP` per press in both runs, never a repeat of its own, so every step in
-the second row came from the dispatcher; 20 steps a second is also why a held key runs away on this set.
-Single presses step once either way. `settings put secure long_press_timeout` is no way to slow the ramp
-here: the dispatcher marks its first repeat `FLAG_LONG_PRESS`, which is what Home's long-press action waits
-for, and with 800 set that action still fired 400 ms after the down, before and after a reboot.
-
-## A Xiaomi Mi TV 4A on Android TV 10, with the empty-list control run
-
-A version the sections above do not have: Xiaomi Mi TV 4A (MiTV-MOOQ1, `tarzan`, MediaTek), Android TV 10
-(SDK 29), firmware `QTG3.200305.006.6148`, stock Xiaomi Bluetooth remote, launcher built from a `main`
-download of 2026-10-28 ([#2446](https://github.com/Gathin23/cleanyourtv/issues/2446)).
-`com.google.android.tvlauncher` was disabled by `launcher/build-and-install.sh`, and the two buttons this
-owner wanted reach the stock launcher by name rather than through a vendor keycode:
-
-- **Input** (`KEYCODE_TV_INPUT`, 178): the firmware's `GlobalKey` handler does not pass the key on, it starts
-  `com.android.tv.action.VIEW_INPUTS` with an explicit component,
-  `com.google.android.tvlauncher/.inputs.InputsPanelActivity`, so with tvlauncher disabled `logcat` ends
-  `GlobalKey: ActivityNotFound` and the press does nothing at all. `INPUT_KEY_SERVICE=1` with
-  `handle_view_inputs` true brings the button back, but not by answering that intent:
-  `InputKeyService.onKeyEvent` consumes the Input key and starts a **new** `VIEW_INPUTS` intent with no
-  component, and `handle_view_inputs` lets the launcher open its Inputs menu for that new intent. It cannot
-  redirect the firmware's explicit intent, which is addressed to tvlauncher.
-- **PatchWall** (`KEY_WWW`; `getevent -lt` prints `MSC_SCAN 000c0196` and then `KEY_WWW DOWN`): nothing once
-  `com.mitv.tvhome.atv` is disabled. `scan:150:com.spotify.tv.android` in `app_keys` opens Spotify instead -
-  the remap the [redmi-mitv-mooq3 list](../../examples/redmi-mitv-mooq3/debloat.txt) records as not yet tried
-  on a real remote, tried here.
-
-`InputKeyService` was the only helper bound, `HomeKeyService` was never enabled on this set, and
-`dumpsys accessibility` listed it as one `Service[label=Inicio, ..., capabilities=8]`:
-
-| `enabled_accessibility_services` | holding Volume Up |
-| --- | --- |
-| `com.gathin.tvhome/.InputKeyService` | one step per press |
-| `''`, with `accessibility_enabled 0` | ramps continuously |
-| `InputKeyService` written back | one step per press again |
-
-The third row is the measurement [#944](https://github.com/Gathin23/cleanyourtv/issues/944) could not take.
-Clearing the list kills both buttons here too, so it is a test and not a configuration to stay in, but it was
-run to see the ramp come back - which is why the sentence above no longer rests on the G09 alone.
-`consume_volume_keys` was not tried, and `HomeKeyService` alone was not tried either, so this set gives one
-helper's row rather than the all-or-nothing bisect the G09 has.
-
-Android TV 10 is older than the `android12-release` source read above, which was not re-read for SDK 29: the
-mechanism claimed here is the `capabilities=8` in the dump and the three rows, not a line of
-`KeyboardInterceptor`. The owner kept both buttons and lives with the stepped volume - the second Choice
-below - so nothing in that section changes.
-
 ## Choices
 
 - **Keep the repeat and skip the helpers.** Do not pass `INPUT_KEY_SERVICE=1` or `HOME_KEY_SERVICE=1`
@@ -266,76 +169,8 @@ below - so nothing in that section changes.
   survives. This is the only configuration that has both, and the price is the stock home screen the
   cleanup was replacing.
 
-- **Keep both with a listener you start by hand.** A script run by the `shell` user can answer the app
-  buttons without any service bound, so the ramp stays; see "Both at once" below. It does not come back
-  after a reboot, so it is started again each time.
-
 It is a toggle, not a fix: two one-line `settings` writes switch between the two behaviours whenever
 you want, but never both at once.
-
-## Both at once: a listener you start by hand
-
-A unit with the same product, `G09_4K_GB`, and the same build, `STT2.230203.001.AS23` (Android 12, security
-patch 2025-09-05), and a Bluetooth remote that names itself `BT_RC813A_B4`, had the three app buttons and the
-volume ramp together, with no accessibility service bound. That does not contradict the bisect above: it is
-about services that filter keys, and this uses none. One owner, one unit, and the only checks were pressing
-the real Netflix, Prime Video and YouTube buttons, holding volume up and down, and a day of ordinary use.
-
-**What reads the buttons.** With `enabled_accessibility_services` empty and `accessibility_enabled 0` (the
-control in the bisect), a script run by the `shell` user reads the remote's consumer-control input node with
-`getevent` and starts an app when one of three keys goes down. The keys are the scancodes in the table above,
-472, 473 and 569, which `getevent` prints as `0001 01d8`, `0001 01d9` and `0001 0239`. The node is found by
-name, not by `/dev/input/event<N>`, as the [TROUBLESHOOTING](../TROUBLESHOOTING.md) section on remapping the
-buttons without a key helper explains, along with the limit that a reader cannot consume a press. Here that
-costs nothing visible only because these vendor keycodes reach nothing else once launcherx is disabled
-(`KeyDownBehaviorReceiver` above); that is read from this note, not re-measured with the script.
-
-**Keep it reading the right node.** The remote sleeps and reconnects, and each time the system recreates its
-input node. A `getevent` still open on the old one (`ls -l /proc/<pid>/fd` shows `event9 (deleted)`) never
-gets another event and never exits, so the buttons silently stop working until the script is restarted. This
-showed up after about a day. The script below checks for it every three seconds and reopens the new node. It
-is the script that ran, with its log lines dropped and its paths shortened:
-
-```sh
-#!/system/bin/sh
-NAME='BT_RC813A_B4 Consumer Control'   # the node's name in `getevent -p`
-echo $$ > /data/local/tmp/keys.pid
-find_dev() { getevent -p 2>/dev/null | grep -B1 "name: .*\"$NAME\"" | head -1 | sed 's/.*: //'; }
-open_app() { am start -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER -n "$1" >/dev/null 2>&1; }
-while true; do
-  DEV=$(find_dev)
-  if [ -z "$DEV" ]; then sleep 5; continue; fi
-  (
-    getevent "$DEV" 2>/dev/null | while read -r line; do
-      case "$line" in
-        *"0001 01d8 00000001"*) open_app com.netflix.ninja/.MainActivity ;;
-        *"0001 01d9 00000001"*) open_app com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity ;;
-        *"0001 0239 00000001"*) open_app com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity ;;
-      esac
-    done
-  ) &
-  sleep 1
-  while true; do
-    GP=$(pgrep -f "getevent $DEV" | head -1)
-    [ -z "$GP" ] && break
-    if ls -l /proc/$GP/fd 2>/dev/null | grep -q '(deleted)'; then kill $GP 2>/dev/null; break; fi
-    NOW=$(find_dev)
-    if [ -n "$NOW" ] && [ "$NOW" != "$DEV" ]; then kill $GP 2>/dev/null; break; fi
-    sleep 3
-  done
-  wait
-  sleep 2
-done
-```
-
-**Start it by hand**, detached from the debugging session, or it dies with it, as the Streamer section does:
-`setsid nohup sh /data/local/tmp/keys.sh > /dev/null 2>&1 < /dev/null &`. It does not come back after a
-reboot; start it again the same way. The loop waits for the remote when it is not connected and reads again
-when it comes back.
-
-Not covered: the Gear button (that stays with a helper, and so with the lost repeat), the buttons the system
-answers itself, starting it again after a reboot or power loss, standby, a second remote, and whether any
-firmware other than this build lets the `shell` user read the remote's node.
 
 ## Limits
 

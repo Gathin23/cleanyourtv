@@ -10,7 +10,6 @@
     <string name="not_connected">Ingen enhet</string>
     <string name="live_tv">Direkte-TV</string>
     <string name="no_inputs">Fant ingen innganger</string>
-    <string name="more_inputs">Flere innganger</string>
     <string name="good_morning">God morgen</string>
     <string name="good_afternoon">God ettermiddag</string>
     <string name="good_evening">God kveld</string>
@@ -77,7 +76,6 @@
     <string name="card_state_new_key">Ny nøkkel</string>
     <string name="card_state_new_label">Nytt navn</string>
     <string name="dock_edit">Rediger favorittraden</string>
-    <string name="power_menu">Start på nytt…</string>
     <string name="dock_edit_hint">Velg plassen du vil endre i favorittraden, og trykk OK. Trykk Tilbake for å avslutte.</string>
     <string name="dock_edit_pick_app">Velg appen du vil plassere der, og trykk OK. Trykk Tilbake for å velge en annen plass.</string>
     <string name="tile_add_to_dock">Legg til i favorittraden</string>
@@ -110,5 +108,4 @@
     <string name="race_live">%1$s · direkte</string>
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
-    <string name="game_live">Direkte nå</string>
 </resources>

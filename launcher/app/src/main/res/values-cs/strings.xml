@@ -10,7 +10,6 @@
     <string name="not_connected">Žádné zařízení</string>
     <string name="live_tv">Televize</string>
     <string name="no_inputs">Nenašly se žádné vstupy</string>
-    <string name="more_inputs">Další vstupy</string>
     <string name="good_morning">Dobré ráno</string>
     <string name="good_afternoon">Dobré odpoledne</string>
     <string name="good_evening">Dobrý večer</string>
@@ -79,7 +78,6 @@
     <string name="quick_apps">Aplikace</string>
     <string name="quick_apps_hint">Znovu zapnout</string>
     <string name="dock_edit">Upravit dok</string>
-    <string name="power_menu">Restartovat…</string>
     <string name="dock_edit_hint">Vyberte místo v doku, které chcete změnit, a stiskněte OK. Tlačítkem Zpět skončíte.</string>
     <string name="dock_edit_pick_app">Nyní vyberte aplikaci pro toto místo a stiskněte OK. Tlačítkem Zpět vyberete jiné místo.</string>
     <string name="tile_add_to_dock">Přidat do doku</string>
@@ -108,5 +106,4 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Naposledy otevřeno: %1$s</string>
-    <string name="game_live">Právě živě</string>
 </resources>

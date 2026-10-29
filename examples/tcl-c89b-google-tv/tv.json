@@ -1,6 +1,0 @@
-{
-  "tv": "TCL C89B 85\", 2024, a local variant of the C855 (G08, G08_4K_GB, MediaTek tcl9618)",
-  "os": "Google TV 14",
-  "brand": "TCL",
-  "notes": "Same product and build as the 85RM7L list (UTT2.250416.001 AU02), plus T-Cast, TCL HOME (com.tcl.dashboard), game bar, hearing test, T-solo, the Google TV storefront and the Android 14 ad services; Chromecast, AirPlay, Miracast, Assistant and USB media kept; launcherx + setupwraith off for the launcher (on Ethernet; setupwraith owned no network); config.json maps the gear (83) and the Netflix, Prime Video and YouTube buttons (4062, 4099, 190); HomeKeyService needs AUTO_START plus `appops write-settings` to bind after a restart; one day of use"
-}

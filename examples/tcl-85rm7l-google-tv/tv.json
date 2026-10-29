@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 85RM7L (G08, G08_4K_GB, MediaTek tcl9618)",
-  "os": "Google TV 14",
-  "brand": "TCL",
-  "notes": "Same firmware build as the C755 list (UTT2.250416.001 AU02); Samba TV ACR and T-Cast share ttvs, so T-Cast goes with it; TCL Live, promos, store demo, Alexa, partner auto-installs; Chromecast, AirPlay, Miracast, game bar, USB media and Assistant kept; firmware updates come from Play Services; debloat only, stock launcher and setupwraith kept; dreamx off with the basic Colors screensaver; reboot-checked"
-}

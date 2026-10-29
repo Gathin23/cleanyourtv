@@ -1,6 +1,0 @@
-{
-  "tv": "Acer AR55AR2851UDPRO 55\" (SCBC R4, Realtek rtd2851m), India",
-  "os": "Android TV 14",
-  "brand": "Acer",
-  "notes": "Android TV variant of the Acer R4 platform on the same UKR1.260308 build as the R4G note: unlike the Google TV R4G, nothing is re-enabled at cold boot (three checked); SCBC consent agent, Android ad services, feedback, ad-click and auto-install services, recommendation rows, demo/sticker/signage/cleaner apps; YouTube, YouTube Music, FastCast, SCast, Play Movies, TalkBack off by choice; partnercustomizer kept for the Inputs button; setupwraith owns the saved Wi-Fi; Assistant, Chromecast, OTA kept; set-home-activity does not stick, so tvlauncher stays and the launcher takes Home via HomeKeyService + stock_home_redirect (the #1121 boot cover works here); the YouTube key is Realtek's and cannot be remapped; config.json has the dock; reboot-checked"
-}

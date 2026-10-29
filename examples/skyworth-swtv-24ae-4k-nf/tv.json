@@ -1,6 +1,0 @@
-{
-  "tv": "Skyworth SWTV-24AE-4K NF (eleonas, MediaTek mt5896), South Africa/Global",
-  "os": "Google TV 14",
-  "brand": "Skyworth",
-  "notes": "Same eleonas platform as SWTV-24NA-4K NF; Skyworth telemetry (recordactivation, aftersale), ad services, recommendation rows and partner customizer, Ginga/MHEG off; Health Connect, e-manual, TV Guard (dailymanage), Daily Key (myapp), Play Games off; streaming apps and OTA off by choice; custom launcher (com.gathin.tvhome) installed; setupwraith safe to disable (Wi-Fi owned by android.uid.system, not setupwraith); wireless-debugging pairing only; port 5555 closes on reboot; com.cltv.hybrid disabled from factory"
-}

@@ -4,10 +4,6 @@ Thanks for helping more TVs lose their ads. Three kinds of contributions are esp
 
 Working with a coding agent? Point it at [`AGENTS.md`](AGENTS.md): the same rules, written for agents.
 
-The reasons a pull request most often came back for changes or was closed, one example for each, are
-in [`docs/DOS-AND-DONTS.md`](docs/DOS-AND-DONTS.md). It is the short list of mistakes to skip, and it
-does not replace the sections below.
-
 ## Where does my idea go?
 
 The launcher stays small on purpose, so pick the smallest home that fits:
@@ -35,13 +31,8 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
    whether it matches theirs. `tools/tv.py --probe` prints all three.
 3. Only list packages you have actually disabled and lived with for a few days. Note anything that
    broke and what you re-enabled.
-4. Add `examples/<brand>-<model>/tv.json`, the row the TV tables show for your list. Copy
-   `examples/xiaomi-mi-tv-4a/tv.json`: `tv` (the model as the tables name it), `os`, `brand` (spelled as
-   in the README's brand grid; a new brand is fine) and `notes` (one line: what the list disables and
-   keeps). One optional key, `readme_os`, is the OS cell of the short table in `README.nl.md` when it should
-   read shorter than `os` does in `examples/README.md`. Change nothing outside your folder: the TV table in
-   `examples/README.md`, the brand grid in the READMEs and the counts are generated from every folder's
-   `tv.json` after merging, so a PR that edits them only collides with the other open lists.
+4. Add a row to `examples/README.md` and one to the TV table in `README.md`: the tests compare them,
+   so a list with a row in only one of the two fails.
 5. If your TV's Live TV app or stock launcher has a different package name, say so in the header. Where
    a script needs the stock launcher, `tools/restore.sh` takes it as its second argument
    (`tools/restore.sh <list> <package>`) and `launcher/build-and-install.sh` takes it in the
@@ -111,26 +102,6 @@ build-tools 34.0.0; on macOS `brew install openjdk@17 android-commandlinetools` 
 `sdkmanager "platforms;android-34" "build-tools;34.0.0"`; with the newer command-line tools the form is
 `android sdk install platforms/android-34 build-tools/34.0.0`).
 
-No TV on the network, or an APK for someone else to install? Build it on its own: from `launcher/`,
-`./gradlew --no-daemon assembleRelease` leaves it at
-`launcher/app/build/outputs/apk/release/app-release.apk`, which has to stay under 589,824 B (576 KB);
-CI builds with the same command and refuses a bigger one. Gradle also has to find the SDK, and this is
-where a hand build stops: `launcher/build-and-install.sh` writes the gitignored
-`launcher/local.properties` for you, so by hand either run
-`ANDROID_HOME=~/Android/Sdk ./gradlew --no-daemon assembleRelease` or put `sdk.dir=<sdk>` in that file;
-without one or the other Gradle stops at `SDK location not found`. The JDK has to be a full 17 - a JRE
-answers `java -version` as a 17 but has no `jlink`, which the Android Gradle plugin needs (#1255) - and
-Homebrew's `openjdk@17` is keg-only, so point `JAVA_HOME` at it
-(`export JAVA_HOME=$(brew --prefix openjdk@17)`).
-
-With neither a JDK nor an SDK on this computer, build it in a container that has both:
-`tools/docker-build.sh launcher` (Docker only; `addons/<name>` builds an add-on, and the Gradle task
-defaults to `assembleRelease`). It writes the APK to the same place, so
-`SKIP_BUILD=1 TV_HOST=<ip> launcher/build-and-install.sh` installs it. Its debug key lives in the
-`cleanyourtv-gradle` volume rather than `~/.android`, so installing over an APK built here fails with
-`INSTALL_FAILED_UPDATE_INCOMPATIBLE` unless both use the same key (`HOST_KEY_DIR=~/.android`), and
-[`tools/docker-build.md`](tools/docker-build.md) has the rest.
-
 Ideas that fit the direction: an idle screensaver with clock and ambient colour, per-TV icon packs
 for apps without banners, a settings screen to edit the dock from the TV, localisation.
 Ideas that don't: recommendation rows, content feeds, ads, telemetry.
@@ -163,8 +134,6 @@ restyle, a platform port, anything with its own background services or network a
 ## Pull requests
 
 - One topic per PR. Small is fine.
-- Read [`docs/DOS-AND-DONTS.md`](docs/DOS-AND-DONTS.md) before you open one: it is why most PRs come
-  back for a change, with an example for each reason.
 - Say which TV you tested on.
 - No new dependencies in the launcher without discussing it in an issue.
 - Be kind in reviews. Most contributors here are doing this for their parents.

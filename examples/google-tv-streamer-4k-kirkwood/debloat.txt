@@ -11,8 +11,7 @@
 # - ADB on port 5555 is closed (connection refused) until you pair once through Wireless debugging with
 #   the stock adb: Developer options > Wireless debugging > Pair device with pairing code, `adb pair
 #   <ip:pairport> <code>`, `adb connect <ip:connectport>` (`adb mdns services` lists both ports), then
-#   `adb tcpip 5555`. After that tools/tv.py works on 5555
-#   (docs/TROUBLESHOOTING.md, "USB debugging never opens port 5555").
+#   `adb tcpip 5555`. After that tools/tv.py works on 5555 (README, Troubleshooting).
 # - The Cast receiver (com.google.android.apps.mediashell) reads its factory device credentials from a
 #   provider hosted INSIDE the setup wizard package:
 #     Provider{com.google.android.tungsten.setupwraith/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider}
@@ -89,13 +88,6 @@
 #   number) and starts the app itself. It cannot consume the press, so the button's own action still runs
 #   as well - see docs/TROUBLESHOOTING.md, "Remapping the remote's app buttons without a key helper"
 #   (#796).
-#   A second unit (same build, 2026-10-28) kept the YouTube button and the ramp together without a script, the
-#   Sony VU3 way from that same TROUBLESHOOTING section: launcherx re-enabled after the install
-#   (`pm enable com.google.android.apps.tv.launcherx`), the theme's config.json setting
-#   "stock_home_redirect": "com.google.android.apps.tv.launcherx" and "key_filter": false, and HomeKeyService
-#   enabled. YouTube then goes to launcherx's GlobalKeyListener_Receiver as stock, Home flashes launcherx and
-#   lands on this launcher, and held volume ramps. It survived a reboot; the price is launcherx running again.
-#   setupwraith stays disabled, so this does not bring casting back.
 # - com.google.android.tvrecommendations and com.google.android.apps.education.cast2class ship
 #   disabled at the factory; `pm disable-user` on them fails with "Shell cannot change component
 #   state". Don't add them to a restore list either.

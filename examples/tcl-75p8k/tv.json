@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 75P8K, Europe / Nordics (G10, G10_4K_GB / C6KS, Realtek RTD2875P / rtd6748)",
-  "os": "Google TV 12",
-  "brand": "TCL",
-  "notes": "Same G10 build as `tcl-55p8ls/` (STT2.230203.001 AS50, V8-R75PT01-LF1V534); TCL analytics (ttvs, TIAS), TGuard, account/consent prompts, TCL Channel/Live, game bar, ambient screensaver, TalkBack, print/backup stubs, and unused regional preloads (Rakuten TV, discovery+, Yle Areena, TVPlayer, Play Games) off; keep `com.tcl.suspension` (it is the Input/source picker, `VIEW_INPUTS`); Chromecast, AirPlay, phone remote and Assistant kept; setupwraith owned the setup Wi-Fi (re-join in Settings first) and claimed Home (`RecoveryActivity`) once launcherx was disabled; USB debugging opens port 5555 over Wi-Fi directly; reboot-checked"
-}

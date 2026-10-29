@@ -1,6 +1,0 @@
-{
-  "tv": "Amazon Fire TV smart TV (AFTEU014, greta, MediaTek m7322), Germany",
-  "os": "Fire OS 7.6.8.5 / Android 9",
-  "brand": "Amazon Fire TV",
-  "notes": "Amazon telemetry, ad/promo feeders, sale service, tutorials, Music/Photos/Kids/Luna/Freevee/miniTV, Alexa voice, Silk, forced OTA updater, printing; OTA service and the usual Fire OS 7 set protected; Alexa voice (vizzini) returns at every boot; Live TV, tuner, HDMI, casting kept; input switching and Live TV are Amazon-only (TUNE_INPUT, TUNE_CHANNEL); AdGuard Private DNS works; debloat only"
-}

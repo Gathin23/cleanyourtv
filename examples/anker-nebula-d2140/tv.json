@@ -1,6 +1,0 @@
-{
-  "tv": "Anker Nebula Cosmos projector D2140 (D2140-Cosmos, SDMC/Amlogic, 2 GB), Vietnam",
-  "os": "Android TV 9",
-  "brand": "Anker Nebula",
-  "notes": "First Amlogic Nebula list: Google feedback/bug report, partner auto-installs and attribution, recommendation services, stock tvlauncher (~190 MB RAM); Ambient, TalkBack + TTS, calendar/contacts sync and the Nebula factory test off by choice; keystone, remote global keys (`com.sdmc.GlobalKey`), BT pairing/speaker, droidlogic HDMI inputs, Nebula Connect and OTA kept; /data ships 90% full; not Netflix certified"
-}

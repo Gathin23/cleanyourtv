@@ -1,6 +1,0 @@
-{
-  "tv": "Thomson T32RTL6000 (SCBC, Realtek; Android reports model `ATV R1`)",
-  "os": "Android TV 9",
-  "brand": "Thomson",
-  "notes": "Same SCBC platform as `sanyo-atv-r2/`: Google recommendation rows, telemetry and feedback, SCBC consent agent, S-Channels row, partner auto-installs, Assistant, Vewd store, OEM factory/test apps, OTA kept off; tuner stack, remote/Bluetooth and FastCast (FastScreen package) must stay; system TvProvider stays empty (vendor tuner owns EPG) so launcher channel rows are dormant; 34 packages"
-}

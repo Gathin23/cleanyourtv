@@ -1,6 +1,0 @@
-{
-  "tv": "Amazon Fire TV Stick Lite, 1st gen 2020 (AFTSS, sheldon)",
-  "os": "Fire OS 7.7.1.7 / Android 9",
-  "brand": "Amazon Fire TV",
-  "notes": "Same build as the Toshiba list: Amazon telemetry, ACR, ad/recommendation feeders, Live tab, Shopping, Kids, Music/Photos/Silk, whole-home audio, Alexa extras incl. `com.amazon.aca` (Alexa hints, ~44 MB; voice search still works); five protected packages noted; voice search, Prime Video, miniTV, casting, OTA kept; privacy and Featured Content autoplay toggles; debloat only"
-}

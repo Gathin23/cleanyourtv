@@ -1,6 +1,0 @@
-{
-  "tv": "TCL Smart TV Pro (G05, G05_4K_US, MediaTek MT5889); also TCL 55Q750G",
-  "os": "Google TV 11",
-  "brand": "TCL",
-  "notes": "TCL Channel, waterfall, ttvs BI (also the firmware updater on AR71), TGuard; Quick Panel off by choice (the 55Q750G keeps it for the Input key); usercenter and smartalexa come back at every boot; setupwraith returned after a reboot on AR68, launcher half unverified there, but on a 55Q750G (AR71) build-and-install.sh worked and Home held after a reboot, once the setup Wi-Fi was forgotten and re-joined; remote buttons work without the key services (the G05_4K_GB units kept it off too, see the [55C728 note](../docs/devices/tcl-55c728-g05-4k-gb.md))"
-}

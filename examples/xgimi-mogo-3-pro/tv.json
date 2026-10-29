@@ -1,6 +1,0 @@
-{
-  "tv": "XGIMI MoGo 3 Pro projector (G0035, altai, MediaTek)",
-  "os": "Google TV 14",
-  "brand": "XGIMI",
-  "notes": "Factory and burn-in tools, bug-report uploader, Google feedback, setupwraith, Ambient screensaver, Google preloads; keystone/autofocus/HDMI/MagiCast mirroring kept; XGIMI's remote keys re-enable the stock launcher, so it needs `app_keys` and `stock_home_redirect` (header)"
-}

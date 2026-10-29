@@ -12,11 +12,6 @@ import android.os.Bundle;
  */
 public class InputsRequestActivity extends Activity {
     @Override
-    protected void attachBaseContext(android.content.Context base) {
-        super.attachBaseContext(LauncherLocale.wrap(base));   // locale
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         startActivity(new Intent(this, MainActivity.class)

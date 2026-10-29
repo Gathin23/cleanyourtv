@@ -11,16 +11,6 @@ LIST="${1:?usage: disable.sh <debloat list>}"
 LIST_DIR="$(cd "$(dirname "$LIST")" && { pwd -W 2>/dev/null || pwd; })"
 LIST="$LIST_DIR/$(basename "$LIST")"
 cd "$(dirname "$0")/.."
-# The safety overrides are read from the environment. `FORCE_HOME=1 tools/disable.sh ...` lasts one
-# command, but an exported value stays set for the shell and reaches child processes (check.py --fix).
-# Say which ones are on: without it, a later run skips its safety check and nothing in the output says
-# why (#1845).
-for override in FORCE_SETUPWRAITH FORCE_HOME TVINPUT_ALLOW HANDLERS_ALLOW; do
-  if [ -n "${!override:-}" ]; then
-    echo "note: $override=${!override} is set; the safety check it overrides stays off until it is" >&2
-    echo "cleared (unset $override)." >&2
-  fi
-done
 PY=tools/venv/bin/python
 [ -x "$PY" ] || PY=tools/venv/Scripts/python.exe
 export MSYS_NO_PATHCONV=1
@@ -38,7 +28,7 @@ export MSYS_NO_PATHCONV=1
 # so a list whose entries are all commented out (what CONTRIBUTING asks for while one is untested)
 # read exactly like a run that died halfway.
 PKGS=$(LC_ALL=C awk 'NR==1{sub(/^\357\273\277/,"")} {sub(/\r$/,""); print}' "$LIST" \
-  | grep -vE '^\s*(#|$)' | sed -E 's/[[:space:]]+#.*$//' | awk '{print $1}' || true)
+  | grep -vE '^\s*(#|$)' | sed -E 's/\s+#.*$//' | awk '{print $1}' || true)
 BAD=$(printf '%s\n' "$PKGS" | grep -vE '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$' || true)
 if [ -n "$BAD" ]; then
   { echo "refusing $LIST: not a package name:"; printf '%s\n' "$BAD" | sed 's/^/  /'; } >&2
@@ -57,17 +47,12 @@ fi
 # Stick never came back after a list took the permission controller, package installer, ext services,
 # module metadata and the mainline overlays (#884). No switch overrides this. The content providers
 # below CORE_OK are the exception: tested lists turn them off and no TV feature uses them.
-# Some TVs ship ext services and ext shared under AOSP's bare names, android.ext.services and
-# android.ext.shared, with no com.android. or com.google.android. in front (#1711).
-# The TV middleware is guarded the same way: MediaTek's MAL (com.cltv.mal), TV service, agent and input
-# service (com.mediatek.tis). A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off
-# (#1578), and the Haier-built AQUA MatrixTV list keeps all four.
 # Keep CORE_RE and CORE_OK the same in disable.ps1 and recovery.py (tests/test_core_packages.py).
-CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
+CORE_RE='^(android|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$'
 CORE_OK='^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 CORE=$(printf '%s\n' "$PKGS" | grep -E "$CORE_RE" | grep -vE "$CORE_OK" || true)
 if [ -n "$CORE" ]; then
-  { echo "refusing $LIST: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578):"
+  { echo "refusing $LIST: it disables core Android packages, and without them the TV may not boot again (#884):"
     printf '%s\n' "$CORE" | sed 's/^/  /'
     echo "Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."; } >&2
   exit 1
@@ -96,11 +81,8 @@ if printf '%s\n' "$PKGS" | grep -x "$SETUP" >/dev/null && [ -z "${FORCE_SETUPWRA
 fi
 
 # On firmware with ro.adb.secure=0, port 5555 gives a shell to any device on the network without the
-# "Allow" prompt. An empty value counts too: on a debug (userdebug or eng) build, and on Android 4.4,
-# adbd reads a missing ro.adb.secure as 0, and sets in examples/ give a shell that way (#1720). Read it
-# now and say so once the list is done; a failed read only skips the note, so it is kept apart from an
-# empty answer.
-ADB_SECURE="$("$PY" -I tools/tv.py "getprop ro.adb.secure" 2>/dev/null | tr -d '[:space:]')" || ADB_SECURE="unread"
+# "Allow" prompt. Read it now and say so once the list is done; a failed read only skips the note.
+ADB_SECURE="$("$PY" -I tools/tv.py "getprop ro.adb.secure" 2>/dev/null | tr -d '[:space:]')" || ADB_SECURE=""
 
 # Home guard (#239): a list that disables the app owning Home leaves the TV with nothing to start the
 # next time Home is pressed, and on Google TV the setup wizard can take the category instead and
@@ -121,23 +103,14 @@ drop_pkg() { PKGS="$(printf '%s\n' "$PKGS" | grep -vxF "$1" || true)"; }
 # a placeholder the firmware shows when no launcher is enabled, not a home the viewer can use.
 # Nor does a factory-test app: on a Xiaomi Mi TV 4A com.duokan.factorytest/.FactoryLauncher answers
 # HOME, and handing Home to it leaves the viewer on the factory test screen.
-# home_claims prints every HOME component as package/activity; home_launchers keeps the launchers.
-home_claims() {
+home_launchers() {
   local raw claims
   raw=$("$PY" -I tools/tv.py "$CLAIM_QUERY" 2>/dev/null) || return 1
   claims=$(printf '%s\n' "$raw" | tr -d '\r' | grep -oE '^ *[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+' | sed -E 's/^ +//' | sort -u || true)
   [ -n "$claims" ] || return 1
-  printf '%s\n' "$claims"
-}
-launchers_in() {
-  printf '%s\n' "$1" | grep -vE '/[^ ]*FallbackHome$' | cut -d/ -f1 | sort -u \
+  printf '%s\n' "$claims" | grep -vE '/[^ ]*FallbackHome$' | cut -d/ -f1 | sort -u \
     | grep -viE 'factorytest|factory_test|factorymode' \
     | grep -vxF -e com.google.android.tungsten.setupwraith -e com.android.tv.settings -e com.android.settings -e com.android.provision || true
-}
-home_launchers() {
-  local claims
-  claims=$(home_claims) || return 1
-  launchers_in "$claims"
 }
 HOME_PKG=""
 HOME_CHOOSER=""
@@ -168,33 +141,12 @@ if [ -z "${FORCE_HOME:-}" ] && [ -n "$PKGS" ]; then
     if printf '%s\n' "$PKGS" | grep -xF "$HOME_PKG" >/dev/null; then
       # Nothing left to answer Home once the list is applied, or the TV could not say who does: either
       # way the owner is the only Home this run knows about, so it stays enabled.
-      CLAIMS=$(home_claims || true)
-      LAUNCHERS=$(launchers_in "$CLAIMS")
+      LAUNCHERS=$(home_launchers || true)
       OTHERS=$(printf '%s\n' "$LAUNCHERS" | sed '/^$/d' | grep -vxF "$HOME_PKG" | grep -vxF "$PKGS" || true)
-      # Another launcher is not enough while setupwraith answers HOME and stays enabled (not listed, or
-      # skipped above for the Wi-Fi network): on Google TV its .RecoveryActivity answers ahead of an
-      # installed launcher (priority 1 against 0 on a Chromecast with Google TV 4K), so with the owner
-      # disabled Home goes to it, not to the launcher that is merely installed (#1573). A launcher that
-      # already owns Home is a different case: the owner is then not the stock launcher this guards.
-      # grep without -q: an early exit could SIGPIPE printf and fail open under pipefail (see above).
-      SETUP_HOME=""
-      if printf '%s\n' "$CLAIMS" | grep -F "$SETUP/" >/dev/null \
-          && ! printf '%s\n' "$PKGS" | grep -xF "$SETUP" >/dev/null; then
-        SETUP_HOME=1
-      fi
       if [ -z "$OTHERS" ]; then
         echo "Skipping $HOME_PKG: it owns Home, and no other app that can answer Home is installed and" >&2
         echo "staying enabled. Make the new launcher Home first (launcher/build-and-install.sh), then run" >&2
         echo "this list again to disable the old one; or set FORCE_HOME=1 if you can still reach the TV." >&2
-        drop_pkg "$HOME_PKG"
-      elif [ -n "$SETUP_HOME" ]; then
-        echo "Skipping $HOME_PKG: it owns Home, and $SETUP stays enabled and answers Home" >&2
-        echo "ahead of the other launchers here, so with $HOME_PKG disabled Home would go to its" >&2
-        echo "RecoveryActivity, the black screen system_server can crash-loop on (docs/TROUBLESHOOTING.md)." >&2
-        echo "Make the new launcher Home first (launcher/build-and-install.sh), or disable setupwraith in" >&2
-        echo "the same run (if it was skipped for the Wi-Fi network, forget the network and join it again" >&2
-        echo "in Settings > Network & Internet), then run this list again; or set FORCE_HOME=1 if you can" >&2
-        echo "still reach the TV." >&2
         drop_pkg "$HOME_PKG"
       fi
     fi
@@ -261,27 +213,9 @@ if [ -n "$PKGS" ] && [ -z "${TVINPUT_ALLOW:-}" ]; then
   # Trailing `; true`: the loop's status is the last package's `grep -q`, which is nonzero whenever
   # the last listed package is not an input driver — the common case — and would look like a failed
   # check. Only a real failure (tv.py cannot reach the TV) should reach the warning below.
-  # Per package, in the order that costs the least: the "requested permissions" block (Android 6.0+),
-  # then on a dump with no such block at all — Lollipop prints only "grantedPermissions:" — the
-  # package's own granted block, then its Service Resolver Table, which Lollipop's per-package dump
-  # prints and which names what serves android.media.tv.TvInputService. "Unable to find" is a package
-  # that is not on this TV, not a check that failed. A dump with neither block nor error (NOCHK) is
-  # one the guard cannot read: the package is kept off the batch below instead of passing silently.
   if TV_HW="$("$PY" -I tools/tv.py \
-      "for p in $NAMES; do d=\$(dumpsys package \$p 2>/dev/null); case \$d in *'requested permissions:'*) printf '%s\n' \"\$d\" | sed -n -E '/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p;; *'grantedPermissions:'*) printf '%s\n' \"\$d\" | sed -n -E '/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p;; *'Service Resolver Table:'*) printf '%s\n' \"\$d\" | grep -q 'android.media.tv.TvInputService' && echo \$p;; *'Unable to find'*) :;; *) echo \"NOCHK \$p\";; esac; done; true" \
+      "for p in $NAMES; do dumpsys package \$p | sed -n -E '/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p; done; true" \
       </dev/null 2>/dev/null | tr -d '\r')"; then
-    # Packages whose dump shows neither block: keep them enabled (a black input is easy to blame on
-    # the cable, and the ports are the one thing the owner cannot test from here) and say why.
-    UNCHECKED="$(printf '%s\n' "$TV_HW" | sed -n -E 's/^NOCHK ([^[:space:]]+)$/\1/p')"
-    for p in $UNCHECKED; do
-      printf '%s\n' "$PKGS" | grep -xF "$p" >/dev/null || continue
-      echo "Skipping $p: the TV's dumpsys shows neither a requested nor a granted permission block" >&2
-      echo "for it, so this firmware's answer cannot be read for the input-driver check (Android 5.x" >&2
-      echo "prints neither). It stays enabled: once every input still works after a reboot, set" >&2
-      echo "TVINPUT_ALLOW=1 to disable it (#321)." >&2
-      PKGS="$(printf '%s\n' "$PKGS" | grep -vxF "$p" || true)"
-    done
-    TV_HW="$(printf '%s\n' "$TV_HW" | grep -v '^NOCHK ' || true)"
     for p in $TV_HW; do
       # grep without -q: with pipefail an early exit could SIGPIPE printf and fail the run (see above).
       printf '%s\n' "$PKGS" | grep -xF "$p" >/dev/null || continue
@@ -321,14 +255,6 @@ if [ -n "$PKGS" ] && [ -z "${HANDLERS_ALLOW:-}" ]; then
     NAME_RE='s#^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+)/.*#\1#p'
     INPUT_APPS="$(printf '%s\n' "$HANDLERS" | sed '/^==$/,$d' | sed -n -E "$NAME_RE" | sort -u)"
     SETTINGS_APPS="$(printf '%s\n' "$HANDLERS" | sed '1,/^==$/d' | sed -n -E "$NAME_RE" | sort -u)"
-    # A working query always has some app answering android.settings.SETTINGS. An empty answer means
-    # the firmware has no `cmd` (or answered nothing at all): both lists are empty, nothing below is
-    # skipped, and without this line the guard passes in silence (#973, #1089).
-    if [ -z "$SETTINGS_APPS" ]; then
-      echo "Could not check which listed packages open the TV's inputs and Settings: the query" >&2
-      echo "answered with nothing at all (this firmware may have no 'cmd'). After this run, open an" >&2
-      echo "HDMI input and Settings from the launcher before you put the remote down." >&2
-    fi
     for p in $INPUT_APPS; do
       printf '%s\n' "$PKGS" | grep -xF "$p" >/dev/null || continue
       echo "Skipping $p: the TV opens its HDMI/AV inputs and channels with it, so with it disabled the" >&2
@@ -357,54 +283,8 @@ fi
   echo "pm list packages -d"
 } | "$PY" -I tools/tv.py --batch
 
-# Read the TV back instead of trusting the batch's silence (#1376). A `pm disable-user` the firmware
-# refuses is a stack trace scrolling past in the output above, one that does not take says nothing at
-# all, and the run ended with status 0 either way: on a Philips 70PUS8505 one package of a batch was
-# still enabled in two runs out of six, and a TV that refuses every package (#577, #1185) looked like
-# a list that went through. `-e` lists enabled packages only, so a listed package that is not on this
-# TV, or that the factory had already disabled, is never named. Ask for user 0, the user the batch
-# disables for: on Android 14 a plain `pm list packages` merges the answers of every user, and a
-# second Google TV profile, which is another Android user, keeps its own enabled copy of each package,
-# so it would read as one this run left on. Packages a guard above skipped are out of $PKGS already,
-# so their own message is the only one. A read that fails or lists nothing only says the check did
-# not run; the batch itself went through.
-STILL_ON=""
-if [ -n "$PKGS" ]; then
-  ENABLED="$("$PY" -I tools/tv.py 'pm list packages -e --user 0' 2>/dev/null | tr -d '\r' \
-    | sed -n -E 's/^package:([^[:space:]]+).*/\1/p')" || ENABLED=""
-  if [ -z "$ENABLED" ]; then
-    echo "Could not check which listed packages are still enabled: tv.py failed, or the TV listed" \
-      "no package for 'pm list packages -e --user 0'. Compare 'pm list packages -d --user 0'" \
-      "with the list by hand." >&2
-  else
-    # Whole names, in the list's order, each once.
-    STILL_ON="$(printf '%s\n' "$PKGS" | grep -xF "$ENABLED" | awk '!seen[$0]++' || true)"
-    if [ -n "$STILL_ON" ]; then
-      { echo "Still enabled after this run, although the list disables them:"
-        printf '%s\n' "$STILL_ON" | sed 's/^/  /'
-        echo "The TV did not take pm disable-user for these: it refused (its answer is in the output"
-        echo "above), or the change did not hold. Do not run the list again in a loop. Run"
-        echo "tools/tv.py 'pm disable-user --user 0 <package>' once by hand for each, or the list once"
-        echo "more after a reboot. If every listed package stays enabled, this firmware refuses"
-        echo "pm disable-user: stop there and say so (docs/TROUBLESHOOTING.md,"
-        echo "\"Every way of disabling a package is refused\")."; } >&2
-    fi
-  fi
+if [ "$ADB_SECURE" = "0" ]; then
+  echo "Warning: this TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on" >&2
+  echo "your network without the \"Allow\" prompt. When you are done, turn USB debugging and" >&2
+  echo "Network/ADB debugging off on the TV and reboot it (README: \"Isn't ADB access a security hole?\")." >&2
 fi
-
-if [ "$ADB_SECURE" = "0" ] || [ -z "$ADB_SECURE" ]; then
-  if [ -z "$ADB_SECURE" ]; then
-    echo "Warning: this TV does not set ro.adb.secure. On a debug (userdebug) build or Android 4.4 that" >&2
-    echo "is the same as ro.adb.secure=0: network ADB on port 5555 accepts any device on your network" >&2
-    echo "without the \"Allow\" prompt." >&2
-  else
-    echo "Warning: this TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on" >&2
-    echo "your network without the \"Allow\" prompt." >&2
-  fi
-  echo "When you are done, turn USB debugging, Network/ADB debugging and Wireless debugging off on the" >&2
-  echo "TV and reboot it (README: \"Isn't ADB access a security hole?\")." >&2
-fi
-
-# Last, so the warning above is printed either way: a listed package the TV left enabled fails the
-# run, as it does in check.py --fix, and a script or agent that goes on after this one stops here.
-[ -z "$STILL_ON" ] || exit 1

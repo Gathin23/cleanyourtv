@@ -1,6 +1,0 @@
-{
-  "tv": "AQUA MatrixTV EE 50\" 4K (Haier, AQ9676EU, omonia, MediaTek), Indonesia",
-  "os": "Google TV 14",
-  "brand": "AQUA",
-  "notes": "Haier IoT and content apps, Zeasn launcher, cleaner, e-manual, Anoki ACR opt-in, partner rows, retail demo; unused streaming apps off by choice; setupwraith owned a second, unused saved network (forgotten first); gaming bar re-enabled at boot; the gear button is keycode 83 (`settings_key_keycodes`, HOME_KEY_SERVICE trades the volume ramp); config.json has the dock"
-}
