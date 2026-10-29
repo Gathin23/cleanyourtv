@@ -1,9 +1,9 @@
 # TCL C7K (G08, Google TV, Android 14), UK and EU firmware
 
 TCL C7K QD-Mini LED, device `G08`, model "Smart TV Pro", firmware `UTT2.250416.001 AU02`, MediaTek, about
-2.4 GB RAM. Three units have run this list: a 55C7K-UK on Wi-Fi (the first, see the header of `debloat.txt`), a
-50C7K on Ethernet in Poland and a C6K on Ethernet in Brazil (both below). Both halves work on this set: the
-debloat list and the Clean Your TV launcher as Home.
+2.4 GB RAM. Two units have run this list: a 55C7K-UK on Wi-Fi (the first, see the header of `debloat.txt`) and a
+50C7K on Ethernet in Poland (below). Both halves work on this set: the debloat list and the Clean Your TV
+launcher as Home.
 
 | File | What it is |
 |---|---|
@@ -65,71 +65,3 @@ Notes from this unit:
   two further restarts, the last one with USB debugging off.
 - `wm size` reports an override of 1920x1080 on the 3840x2160 panel at density 320 straight from the factory. It
   is not a leftover; leave it.
-
-## Third unit: C6K, Brazil, Ethernet
-
-TCL C6K, model "Smart TV Pro", device `G08`, product `G08_4K_GB`, same `UTT2.250416.001 AU02`, pt-BR market, on
-the built-in Ethernet port. Set up on 24 October 2026 in five batches with screenshots between them, then the
-launcher; rebooted twice. After the first reboot every package on the list was still disabled and Home, Ethernet
-and Private DNS came back. One day of use, not weeks.
-
-**Different choices from the UK unit:** `com.tcl.ttvs` kept, for firmware updates, at the price of the Samba TV
-tracking it carries. Kept on this unit: Netflix, Prime Video, YouTube Music, Assistant (`katniss`), Chromecast,
-AirPlay, the game bar, the USB media player and gallery, and dreamx. Off by choice besides the UK ones: the Google
-TV movie app (`com.google.android.videos`). `com.tcl.channelplus` (TCL Live) was disabled and then re-enabled: it
-registers as a TV input (`com.tcl.iptv.service.InputService`) and has no launcher entry, so its channels play only
-through Live TV. `tv.mopa.ginga` was left alone, as on the 65C7K list from Brazil.
-
-What was checked on the TV: Home after each batch, the Inputs menu (HDMI 1-4 and Live TV), switching to HDMI 1
-(`com.tcl.tv/com.tcl.player.TVActivity` on top), TCL Live in Live TV after re-enabling it, D-pad from every edge,
-and a Home Assistant Android TV Remote key still reaching the TV.
-
-Notes from this unit:
-
-- **Network ADB without Wireless debugging**: with the TV on Ethernet, the Wireless debugging toggle flipped
-  straight back off, and switching on USB debugging alone opened port 5555. `ro.adb.secure` is 1, so the
-  authorisation prompt still appears.
-- **setupwraith owned no network** here (no Wi-Fi was ever saved), so `disable.sh` had nothing to skip. With
-  launcherx off, Home resolved to setupwraith's `RecoveryActivity` until setupwraith went too.
-- **Remote buttons without the helper**: with launcherx off, Settings, Input, the GloboPlay button and the mic kept
-  working; Netflix, YouTube, Prime, TCL and Disney did nothing. The owner kept the volume ramp and enabled no key
-  helper; held volume ramps normally that way.
-- `wm size` shows the same factory override of 1920x1080, density 320.
-
-## Compatibility report: TCL 65P8L-UK, Wi-Fi
-
-Confirmed on 28 October 2026: TCL 65P8L-UK, device `G08`, product `G08_4K_GB`, Google TV 14
-(SDK 34), firmware `UTT2.250416.001 AU02`. The reference launcher installed successfully and remained
-Home after reboot, including a final restart with debugging disabled. The owner confirmed streaming
-playback, Google Cast, AirPlay, Miracast, the Google TV phone remote, Assistant, Live TV and HDMI worked.
-
-The saved Wi-Fi belonged to setupwraith; forgetting and rejoining it through Settings transferred
-ownership before the launcher handover. `InputKeyService` restored Netflix (4062), Prime Video (4099),
-YouTube (190) and Settings (83), at the cost of held-volume repeat; the owner accepted that tradeoff.
-Network ADB was confirmed closed after the final restart. This is a single-session compatibility
-report, not confirmation that the full debloat list above was applied or tested for several days.
-
-## Fourth unit: 65P89L, EU, Ethernet
-
-TCL 65P89L, product `G08_4K_GB`, MediaTek `tcl9618` / `mt5896`, SoC MT9689, same `UTT2.250416.001 AU02`
-(software `V8-T653T01-LF1V641`, client type `TCL-EU-MT9653-S1`), about 2.4 GB RAM, on Ethernet. Set up on
-27 October 2026 with this list as the starting point, then the launcher with `build-and-install.sh`, and rebooted
-three times: Home, Ethernet and the Clock screensaver came back, the Input button opened TCL's source panel, and
-logcat showed no `FATAL EXCEPTION`.
-
-**Different choices from the UK unit:** Google Assistant kept (`katniss` commented out). No `HomeKeyService`.
-
-Notes from this unit:
-
-- **setupwraith and Ethernet**: `disable.sh` skipped setupwraith with "could not check which app owns the saved
-  Wi-Fi networks": `dumpsys wifi` printed no `cname=` on this build. `cmd wifi list-networks` said "No networks"
-  and the TV was on `eth0`, so `FORCE_SETUPWRAITH=1` disabled it and ADB stayed up.
-- **dreamx came back after a reboot**: twice the TV was rebooted within seconds of `pm disable-user` on
-  `com.google.android.apps.tv.dreamx`, and both times it booted enabled (`enabled=0`) and ran from
-  `BackdropBootReceiver`. Disabled again, waited two minutes, then rebooted: it stayed off. The setting had
-  not been written to disk yet. Nothing on the TV re-enables it.
-- **logkit's boot service**: `GeorgedebugLogkitInputEvent` (`/system_ext/etc/init/hw/logkit.rc`, runs
-  `/system_ext/bin/LogkitInputEvent` as root) runs at every boot with `com.tcl.logkit` disabled. It watches
-  `/dev/input` for the key sequence that opens `com.tcl.logkit/.MainActivity`. `logkit.sh` has no network
-  code (it copies to USB or `/data/tcl_log`), `persist.sys.normallog`, `persist.sys.usblog` and
-  `persist.sys.perfettolog` are unset, and `ro.feature.user_logkit` is `false`.

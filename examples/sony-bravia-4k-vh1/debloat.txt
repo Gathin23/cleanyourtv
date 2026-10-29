@@ -1,15 +1,6 @@
 # Sony BRAVIA 4K VH1 (device BRAVIA_VH1, KD-55XH9096, MediaTek MT5895 / MT5835), EU firmware
 # Google TV 12 (API 31), build BRAVIA_VH1_EU-user 12 STT2.230505.001.S137 626241
 # Product codename Valhalla_EU; ro.boot.product.hardware.sku = KD-55XH9096
-# Also Sony XBR-55X900H (2020, BRAVIA_VH1, MediaTek MT5835), US/Canada, Android TV 12 with the same stock
-# tvlauncher, build BRAVIA_VH1_UC-user 12 STT2.230505.001.S67 625001: every package below exists on it except
-# com.spocky.projengmenu, com.youview.poa and tv.samba.ssm.ui (com.sony.dtv.b2b.softap was disabled from the
-# factory). Applied there on 2026-10-26 in two batches, then tvlauncher by launcher/build-and-install.sh, all
-# except Assistant (katniss), Netflix and com.sony.dtv.homekit, kept by choice. With Backdrop disabled the
-# screensaver was set to com.android.dreams.basic/.Colors. setupwraith did not claim HOME there either and stayed
-# enabled; the Wi-Fi in use belonged to android.uid.system. No key helper was needed: Home, gear, Netflix,
-# YouTube, Input, the mic button, held volume and a power cycle all checked on the real remote. Reboot-checked:
-# everything stayed disabled and Home stayed on the launcher. One day of use so far.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh1/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh1/debloat.txt com.google.android.tvlauncher
@@ -27,13 +18,6 @@
 # Closest sibling list: examples/sony-bravia-4k-vh2/ (VH2 / KD-55X80J).
 # Same Android platform (BRAVIA_VH1) as the PA-firmware notes in
 # docs/devices/sony-kd-55x9000h.md (retail KD-55X9000H); this list is the EU build.
-#
-# UK unit: Sony KD-65XH9296 (BRAVIA_VH1_EU, same build S137), Android 12. Applied 2026-10-28 in three batches, then
-# tvlauncher by launcher/build-and-install.sh; Netflix and Assistant kept by choice. Everything stayed disabled and Home
-# stayed on the launcher across a reboot. com.youview.poa was in this list at first and took BBC iPlayer, ITVX, Channel 4
-# and 5 off the TV; enabling it brought them back, so it is now commented out. Those four are web apps run by YouView in
-# Sony's HbbTV player, not packages, so they have no tile of their own: docs/devices/sony-youview-uk-catchup.md says
-# how to launch them and how to give each a Home tile.
 #
 # Lived with for weeks on a KD-55XH9096 (Spain/EU) with CleanYourTV; Live TV, HDMI Inputs, Ethernet
 # and Chromecast still work. If something breaks, re-enable it with `pm enable <package>` and please report it.
@@ -82,8 +66,7 @@ com.google.android.youtube.tvmusic
 com.google.android.videos
 com.google.android.play.games
 com.android.printspooler
-# com.youview.poa                            # KEPT on UK sets: Freeview Play, which hosts BBC iPlayer, ITVX, Channel 4 and 5.
-#                                              Disabled, those four vanish from the TV. Uncomment on a non-UK unit.
+com.youview.poa                                # YouView (UK); unused on this EU unit
 
 # Stock leanback Home (CleanYourTV owns HOME)
 com.google.android.tvlauncher

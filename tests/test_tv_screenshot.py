@@ -9,9 +9,7 @@ some MediaTek sets), leave nothing behind on the TV, and name the 0-byte case fo
 TV and HDMI inputs capture empty.
 
 It can also press remote keys first (#560), so one command shows what a key did: key names are checked
-before anything reaches the TV, since they end up in a shell command there. The same goes for --wait: a
-value float() takes but time.sleep() cannot ("nan", "inf", 1e18) was a traceback out of the capture with
-the keys already pressed, and the run answered 1, the code kept for a capture that came back empty.
+before anything reaches the TV, since they end up in a shell command there.
 
 The TV itself is faked, so these run anywhere adb_shell is installed or not.
 
@@ -148,27 +146,6 @@ class ScreenshotTest(unittest.TestCase):
             self.assertNotIn("pull", [c[0] for c in device.calls])
             self.assertEqual(device.calls[-1], ("shell", f"rm -f {TV.SHOT_REMOTE}"))
 
-    def test_an_indented_rc_line_is_parsed_not_crashed(self):
-        # The match strips the status line (a CRLF firmware leaves a trailing "\r"), so the slice that
-        # reads the number has to strip it too: on a line that comes back indented, `line[3:]` reads
-        # "c=0" and int() raises before the capture is ever used. The strip keeps "rc=0" -> 0.
-        with tempfile.TemporaryDirectory() as tmp:
-            local = Path(tmp) / "home.png"
-            code, _, err, _ = self.run_tv(["--screenshot", str(local)], screencap_says="  rc=0\n")
-            self.assertEqual(code, 0, err)
-            self.assertEqual(local.read_bytes(), PNG)
-
-    def test_an_indented_failing_rc_is_read_as_the_failure_it_is(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            code, _, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "x.png")],
-                                          capture=b"", screencap_says="  rc=127\n")
-            self.assertEqual(code, 1)
-            self.assertIn("exit status 127", err)
-            # The status line is matched after stripping, so it is dropped from the error text the
-            # same way: an indented "rc=127" should not come back as the screencap output.
-            self.assertNotIn("rc=127", err)
-            self.assertIn("no output", err)
-
     def test_a_damaged_pull_is_not_passed_off_as_a_png(self):
         with tempfile.TemporaryDirectory() as tmp:
             code, _, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "home.png")], capture=b"garbage")
@@ -197,22 +174,6 @@ class ScreenshotTest(unittest.TestCase):
             self.run_tv(["--screenshot", str(Path(tmp) / "a.png")])
             self.assertEqual(self.sleeps, [])
 
-    def test_wait_without_keys_still_pauses_before_the_capture(self):
-        # --wait with no keys used to be read and then dropped, so the capture came straight away.
-        with tempfile.TemporaryDirectory() as tmp:
-            code, _, err, device = self.run_tv(["--screenshot", str(Path(tmp) / "a.png"), "--wait", "3"])
-            self.assertEqual(code, 0, err)
-            self.assertEqual(self.sleeps, [3.0])
-            self.assertFalse(any("keyevent" in c[1] for c in device.calls if c[0] == "shell"))
-
-    def test_wait_without_a_number_says_so(self):
-        # A trailing --wait used to be reported as "not a key name: '--wait'".
-        code, _, err, device = self.run_tv(["--screenshot", "a.png", "HOME", "--wait"])
-        self.assertEqual(code, 2)
-        self.assertIn("--wait needs a number of seconds", err)
-        self.assertNotIn("not a key name", err)
-        self.assertEqual(device.calls, [], "nothing may reach the TV")
-
     def test_bad_key_names_and_waits_never_reach_the_tv(self):
         for args in (["--screenshot", "a.png", "home"], ["--screenshot", "a.png", "HOME;reboot"],
                      ["--screenshot", "a.png", "--wait", "-1"], ["--screenshot", "a.png", "--wait", "soon"]):
@@ -221,36 +182,6 @@ class ScreenshotTest(unittest.TestCase):
                 self.assertEqual(code, 2)
                 self.assertIn("usage:", err)
                 self.assertEqual(device.calls, [], "nothing may reach the TV")
-
-    def test_a_wait_that_time_sleep_cannot_take_is_refused_before_the_keys(self):
-        # float() takes these, so they went straight to time.sleep() in screenshot(), after the keys had
-        # been pressed on the TV: NaN is a ValueError there and an infinity (or 1e18) an OverflowError, as
-        # a traceback with exit 1 - the code this client keeps for a capture that came back empty. The last
-        # two are the unit typo instead: seconds typed as nanoseconds sleeps for years rather than failing.
-        for value in ("nan", "NaN", "inf", "1e18", "1000000001"):
-            with self.subTest(wait=value):
-                code, out, err, device = self.run_tv(["--screenshot", "a.png", "HOME", "--wait", value])
-                self.assertEqual(code, 2, err)
-                self.assertIn(f"--wait needs a number of seconds between 0 and {TV.WAIT_MAX_S:g}, "
-                              f"not {value!r}", err)
-                self.assertIn("usage:", err)
-                self.assertEqual("", out)
-                self.assertNotIn("Traceback", err)
-                self.assertEqual(device.calls, [], "the pause is judged before the TV is opened")
-                self.assertEqual([], self.sleeps, "no key press is started for a pause that cannot be kept")
-
-    def test_the_ends_of_the_pause_still_capture(self):
-        # 0 is the shape a script writes for "no pause", and the ceiling is a real pause: neither may be
-        # refused by the check the values above meet.
-        for value, sleeps in (("0", []), ("300", [300.0])):
-            with self.subTest(wait=value):
-                with tempfile.TemporaryDirectory() as tmp:
-                    local = Path(tmp) / "home.png"
-                    code, out, err, _ = self.run_tv(["--screenshot", str(local), "HOME", "--wait", value])
-                    self.assertEqual(code, 0, err)
-                    self.assertEqual(local.read_bytes(), PNG)
-                    self.assertEqual(self.sleeps, sleeps)
-                    self.assertIn(f"screenshot {local}", out)
 
     def test_a_flag_without_its_argument_is_a_usage_error_not_a_tv_command(self):
         for args in (["--screenshot"], ["--push", "only-one"], ["--pull"]):

@@ -1,6 +1,0 @@
-{
-  "tv": "Panasonic TH-40HS550K (Skyworth-built, GS655 shibuya, MediaTek)",
-  "os": "Android TV 11",
-  "brand": "Panasonic",
-  "notes": "Skyworth auto-installs, shop demo and Demo Now, e-manual, MediaTek PQ test tool, Google feedback and smartconnect, recommendation rows and partner customizer; Assistant, USB media player, remote-firmware updater and unused streaming apps off by choice; 0.9 GB; keep `com.mediatek.*` and `com.coocaa.factory`"
-}

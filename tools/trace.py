@@ -15,12 +15,6 @@ and later. Set TV_HOST to the TV's IP (and TV_PORT if it is not 5555). Usage:
     tools/trace.py custom --setup 'input keyevent KEYCODE_HOME' --setup 'sleep 2' \\
                           --step 'input keyevent KEYCODE_DPAD_RIGHT' --step 'sleep 1' --out DIR
 
---out DIR is the folder the traces go into; it is created if it is not there. A file where the folder
-goes, a path through a file, and an empty --out are refused as argument errors (exit 2) before the TV is
-asked anything, so a typo cannot read as a recording that failed. Started with a Python that lacks the
-packages, it runs again under tools/venv's Python, or says how to make that venv, the way tools/bench.py
-does.
-
 Scenarios (setup runs before the recording starts, so it stays out of the trace):
     cold     another app in front, the launcher force-stopped, then started with `am start -W`
     coldsys  Home in front, the launcher force-stopped: Android starts it again by itself
@@ -30,10 +24,8 @@ Scenarios (setup runs before the recording starts, so it stays out of the trace)
 """
 import argparse
 import base64
-import importlib.util
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import time
@@ -41,9 +33,6 @@ import time
 PACKAGE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$")
 COMPONENT = re.compile(r"^[A-Za-z][A-Za-z0-9_.]*/[A-Za-z0-9_.$]+$")
 REMOTE = "/data/misc/perfetto-traces/cleanyourtv.pftrace"   # the folder perfetto may write to on Android 9 and 10
-# Set on the run that starts again under tools/venv's Python, so a venv without the package answers with
-# the line to run instead of starting a third process. tv.py carries the same marker for the same reason.
-VENV_MARKER = "CLEANYOURTV_TRACE_PY_VENV"
 NAV_KEYS = ("RIGHT RIGHT RIGHT LEFT LEFT LEFT DOWN RIGHT DOWN LEFT DOWN UP "
             "UP RIGHT UP LEFT DOWN DOWN RIGHT RIGHT UP UP UP LEFT").split()
 START_MARGIN_S = 3    # recording starts in the background; give it time before the first step
@@ -103,8 +92,7 @@ def recording_ms(steps):
 def scenario(name, launcher_component, other_component, setup=(), steps=()):
     """(setup, steps) shell commands for a scenario. Setup runs before the recording starts."""
     package = launcher_component.split("/")[0]
-    # Reuse the other activity across runs instead of growing its task history.
-    other = f"am start --activity-reorder-to-front -n {other_component}" if other_component else None
+    other = f"am start -n {other_component}" if other_component else None
     if name == "cold":
         return [other, "sleep 2", f"am force-stop {package}", "sleep 2"], \
                [f"am start -W -a android.intent.action.MAIN "
@@ -121,35 +109,12 @@ def scenario(name, launcher_component, other_component, setup=(), steps=()):
     return list(setup), list(steps)
 
 
-def traces_folder(value):
-    """--out as the folder the traces go into, judged before anything is asked of the TV.
-
-    os.makedirs() answers a file where the folder goes with FileExistsError, a path through a file with
-    NotADirectoryError and an empty argument with FileNotFoundError: three tracebacks with exit 1, each
-    thrown from main() after the TV has answered the Home query and the model was read, so the reader
-    cannot tell their argument from a recording that failed. Refusing here makes it an argument error
-    like --runs or --app, with the run never reaching the TV. A folder that does not exist yet is fine:
-    makedirs() creates it, as the default traces/ always has.
-    """
-    if not value:
-        raise argparse.ArgumentTypeError("--out is empty: name the folder for the traces, e.g. --out traces/before")
-    path = Path(value)
-    if path.exists() and not path.is_dir():
-        raise argparse.ArgumentTypeError(f"{value} is a file, and --out is the folder the traces go into: "
-                                         f"nothing could be recorded into it")
-    for parent in path.parents:
-        if parent.exists() and not parent.is_dir():
-            raise argparse.ArgumentTypeError(f"{value} passes through the file {parent}, so the folder the "
-                                             f"traces go into cannot be made")
-    return value
-
-
 def parse(argv):
     p = argparse.ArgumentParser(description="Record Perfetto traces on the TV around a launcher scenario. "
                                             "See tools/trace.md.")
     p.add_argument("scenario", choices=["cold", "coldsys", "home", "nav", "custom"])
     p.add_argument("--runs", type=int, default=5, help="how many traces to record (default 5)")
-    p.add_argument("--out", type=traces_folder, default="traces", help="folder for the traces (default traces/)")
+    p.add_argument("--out", default="traces", help="folder for the traces (default traces/)")
     p.add_argument("--package", default="com.gathin.tvhome", help="the launcher's package (default com.gathin.tvhome)")
     p.add_argument("--app", metavar="COMPONENT",
                    help="the other app for cold and home, as package/activity (default: found on the TV)")
@@ -223,54 +188,10 @@ def _run(run_shell, cmd):
         run_shell(cmd)
 
 
-def venv_python():
-    """tools/venv's interpreter, which has adb_shell, or None."""
-    here = Path(__file__).resolve().parent
-    for candidate in (here / "venv" / "bin" / "python", here / "venv" / "Scripts" / "python.exe"):
-        if candidate.is_file():
-            return candidate
-    return None
-
-
-def client_python_or_exit():
-    """Run again under tools/venv's Python when this one has no adb_shell, or say how to make that venv.
-
-    tv.py, imported below for connect(), the shell and its timeouts, imports adb_shell, and the README
-    installs that into tools/venv only. This file is started both ways: the pages print
-    `tools/venv/bin/python -I tools/trace.py home ...`, and a reader who has just cloned the repository
-    types `python3 tools/trace.py home`. That second run ended in a ModuleNotFoundError traceback out of
-    `import tv`, naming neither tools/requirements.txt nor the venv sitting next to it - while bench.py
-    re-execs itself the same way and tv.py, check.py, privacy.py and recovery.py each answer with the
-    line to run. This is the third place the client is imported, so it answers like they do.
-    """
-    if importlib.util.find_spec("adb_shell") is not None:
-        return
-    venv = venv_python()
-    # Once only, marked in the environment as tv.py does: a venv that lacks adb_shell as well gets the
-    # line below rather than another run of itself. (tools/venv/bin/python is often a symlink to the very
-    # interpreter that started this run, so comparing the two paths would skip the venv that has the
-    # package while the one in hand does not.)
-    if venv and not os.environ.get(VENV_MARKER):
-        os.environ[VENV_MARKER] = "1"
-        # -I as in the printed commands, so a module beside the checkout cannot stand in for adb_shell.
-        os.execv(str(venv), [str(venv), "-I", os.path.abspath(__file__), *sys.argv[1:]])
-    make = (r"python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt"
-            if os.name == "nt" else
-            "python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt")
-    sys.exit("tools/trace.py needs the packages in tools/requirements.txt (No module named 'adb_shell').\n"
-             f"run: {make}")
-
-
 def main(argv=None):
     args = parse(sys.argv[1:] if argv is None else argv)
     # Imported only now, so --help and argument errors work without TV_HOST set.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    # Only a run that started this file as a script may start it again: main(argv) is called by
-    # tests/test_trace.py with a faked TV, and sys.argv there is the test runner's own command line
-    # (`python3 -m unittest discover -s tests`), which execv would hand to trace.py's parser as
-    # 'invalid choice: discover'. A caller that passes its arguments owns the interpreter.
-    if argv is None:
-        client_python_or_exit()
     import bench  # noqa: E402  the accessibility helpers bench.py already tested
     import tv  # noqa: E402
 
@@ -311,7 +232,7 @@ def main(argv=None):
                 bench.restore_accessibility(_Shell(shell), args.package, helpers)
     finally:
         dev.close()
-    print(f"next: tools/venv/bin/python -I tools/trace_report.py {args.out}   (see tools/trace.md)")
+    print(f"next: tools/trace_report.py {args.out}   (see tools/trace.md)")
 
 
 class _Shell:

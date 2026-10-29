@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 55EP640 (Greece, BeyondTV, Realtek RTD2851 / rtd285o, AR04)",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "Same hardware and package set as `tcl-50p615/` (AR05) plus `com.tcl.dashboard`; a saved Wi-Fi network belongs to setupwraith, so it stays enabled; TCL analytics, promos, TCL Channel, TGuard, dashboard and USB media centre off; voice, Spotify, TuneIn and a Play-installed file manager off by choice, Chromecast, Miracast/MagiConnect, OTA and the phone remote kept; nothing re-enabled after a reboot; HDMI 1-3, AV and Live TV through TvInputManager, launcher installed and every real remote button checked"
-}

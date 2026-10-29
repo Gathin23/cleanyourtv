@@ -1,6 +1,0 @@
-{
-  "tv": "EKO 2K Google TV (MTC-built, tennoji, MediaTek mt5867 / T56)",
-  "os": "Google TV 14",
-  "brand": "EKO",
-  "notes": "First EKO list: Anoki ACR opt-in, Android ad services, feedback, partner setup; Assistant, Miracast, Netflix, Prime Video, YouTube Music off by choice, Chromecast kept; setupwraith owned the setup Wi-Fi (forget and re-join first); `fusion.android.tv.demo` handles the Input key; Live TV takes the tvcenter launch entry, not the tuner passthrough URI; reboot-checked"
-}

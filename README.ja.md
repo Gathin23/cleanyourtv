@@ -1,9 +1,9 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="docs/banner-halloween.png" alt="CleanYourTV：テレビのホーム画面をすっきりと" width="800"></a>
+  <a href="https://cleanyour.tv"><img src="docs/banner.png" alt="CleanYourTV：テレビのホーム画面をすっきりと" width="800"></a>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · 日本語 · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.vi.md">Tiếng Việt</a> · 日本語
 </p>
 
 <p align="center">
@@ -23,9 +23,6 @@
 この文書では共通の機能と使い方を紹介します。機種、地域、ファームウェアによってアプリの構成や制限は異なるため、
 まずお使いのテレビと照らし合わせてください。変更があった場合は[英語版 README](README.md) が正となります。
 機種ごとの記録は[機種リスト](examples/README.md)にあります。
-
-**Samsung、LG、Roku など Android 以外のテレビをお使いですか？** CleanYourTV は動きませんが、リモコンで
-順番に操作してトラッキングをオフにできます: [cleanyour.tv/not-android](https://cleanyour.tv/not-android)
 
 ![標準の Google TV ホームと CleanYourTV ランチャーの比較](docs/stock-vs-new-side.jpg)
 
@@ -53,11 +50,9 @@
 | ステップ | やること |
 |---|---|
 | 1. テレビで | **設定 → システム（またはデバイス設定）→ 端末情報** を開き、**ビルド** の項目で OK を 7 回押します。戻って **開発者向けオプション** を開き、**USB デバッグ** をオンにします。ネットワークデバッグ / ADB デバッグのスイッチがあればそれもオンにします。メニューの名前は機種によって異なります。 |
-| 2. パソコンで | リポジトリを複製してそのフォルダをアシスタントで開き（`git clone https://github.com/Gathin23/cleanyourtv`）、[`PROMPT.md`](PROMPT.md) の内容をアシスタントに貼り付けてテレビの機種名を記入します。 |
+| 2. パソコンで | [`PROMPT.md`](PROMPT.md) の内容をアシスタントに貼り付け、テレビの機種名を記入します。 |
 | 3. アシスタントに答える | テレビにデバッグの許可を求められたら **許可** を押し、よく使うアプリ、ドックに置きたいアプリ、音声アシスタント・Chromecast・システムアップデートを残すかどうかをアシスタントに伝えます。 |
 | 4. 確認する | 指示に従ってバックアップ、無効化、インストールを行い、アプリの起動、リモコンのボタン、HDMI 入力の切り替え、復元方法を試します。 |
-
-複製する理由：アシスタントは独自のスクリプトを書かず、このリポジトリの `tools/disable.sh` と `launcher/build-and-install.sh` を使います。バックアップ、ホーム画面の保護、復元用の記録はそこにあります。
 
 ## ランチャーの機能
 
@@ -121,8 +116,7 @@ Android アプリは、マウスやタッチ操作が必要な場合がありま
 - Samsung Tizen と LG webOS では、このプロジェクトの Android ランチャーは動きません。
   [docs/devices/samsung-tizen.md](docs/devices/samsung-tizen.md) には、2021 年製の Tizen テレビがローカルネットワークで
   何を公開しているかを記録しています（ADB がないため、アプリの無効化はできません）。コミュニティによる他プラットフォームへの
-  移植は[コミュニティのプロジェクト](SHOWCASE.md)にあります。Samsung、LG、Roku など Android 以外のテレビで
-  トラッキングをオフにする手順は [cleanyour.tv/not-android](https://cleanyour.tv/not-android) にあります。
+  移植は[コミュニティのプロジェクト](SHOWCASE.md)にあります。
 - Fire TV には手作業で進めるための無効化メモがあります。[アシスタント用プロンプト](PROMPT.md)は Fire TV には使えず、
   Fire OS ではデフォルトのホーム画面を変更できません。
 - 中国本土で販売されている一部のテレビは、外部 APK やサードパーティのランチャーのインストールを拒否します。

@@ -1,9 +1,9 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="docs/banner-halloween.png" alt="CleanYourTV: trả lại cho TV một màn hình chính gọn gàng" width="800"></a>
+  <a href="https://cleanyour.tv"><img src="docs/banner.png" alt="CleanYourTV: trả lại cho TV một màn hình chính gọn gàng" width="800"></a>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · Tiếng Việt · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · Tiếng Việt · <a href="README.ja.md">日本語</a>
 </p>
 
 <p align="center">
@@ -23,9 +23,6 @@ script để khôi phục.
 Tài liệu này giới thiệu các tính năng chung và cách dùng. Mỗi dòng TV, mỗi khu vực và mỗi bản firmware có danh sách
 ứng dụng và giới hạn riêng, nên hãy đối chiếu với TV của bạn trước. Khi có thay đổi, [README tiếng Anh](README.md)
 là bản chuẩn; ghi chú cho từng dòng TV nằm trong [danh sách TV](examples/README.md).
-
-**TV Samsung, LG, Roku hoặc TV không chạy Android khác?** CleanYourTV không chạy được trên đó, nhưng bạn vẫn có thể
-tắt tính năng theo dõi, từng bước bằng điều khiển: [cleanyour.tv/not-android](https://cleanyour.tv/not-android)
 
 ![Màn hình Google TV gốc so với launcher CleanYourTV](docs/stock-vs-new-side.jpg)
 
@@ -53,11 +50,9 @@ Bạn cần một máy tính nối cùng mạng với TV và một trợ lý l�
 | Bước | Làm gì |
 |---|---|
 | 1. Trên TV | Vào **Cài đặt → Hệ thống (hoặc Tuỳ chọn thiết bị) → Giới thiệu**, bấm OK bảy lần vào mục **Bản dựng / Build**, quay lại mở **Tuỳ chọn nhà phát triển** và bật **USB debugging**. Nếu có thêm công tắc gỡ lỗi mạng / ADB thì bật luôn. Tên menu khác nhau tuỳ máy. |
-| 2. Trên máy tính | Sao chép kho lưu trữ và mở thư mục đó trong trợ lý (`git clone https://github.com/Gathin23/cleanyourtv`), rồi dán nội dung [`PROMPT.md`](PROMPT.md) cho trợ lý và điền model TV của bạn. |
+| 2. Trên máy tính | Dán nội dung [`PROMPT.md`](PROMPT.md) cho trợ lý và điền model TV của bạn. |
 | 3. Trả lời trợ lý | Bấm **Allow** khi TV hỏi cho phép gỡ lỗi, rồi cho trợ lý biết bạn hay dùng ứng dụng nào, muốn để app nào trên thanh dock, có giữ trợ lý giọng nói, Chromecast và cập nhật hệ thống hay không. |
 | 4. Kiểm tra | Làm theo hướng dẫn để sao lưu, dọn dẹp và cài đặt, rồi thử mở ứng dụng, nút remote, chuyển nguồn HDMI và cách khôi phục. |
-
-Vì sao cần sao chép kho lưu trữ: trợ lý dùng luôn `tools/disable.sh` và `launcher/build-and-install.sh` của kho này thay vì tự viết bộ công cụ riêng, và bản sao lưu, lớp bảo vệ Home cùng bản ghi khôi phục đều nằm trong đó.
 
 ## Launcher có gì
 
@@ -121,8 +116,7 @@ sách dọn dẹp chưa chắc đã cài được launcher. Hãy đối chiếu 
 - Samsung Tizen và LG webOS không chạy được launcher Android của dự án;
   [docs/devices/samsung-tizen.md](docs/devices/samsung-tizen.md) ghi lại những gì một TV Tizen đời 2021 mở ra trong
   mạng nội bộ (không có ADB, nên không tắt được ứng dụng). Các bản chuyển sang nền tảng khác của cộng đồng nằm trong
-  [Dự án cộng đồng](SHOWCASE.md). Để tắt tính năng theo dõi trên Samsung, LG, Roku và các TV không chạy Android khác:
-  [cleanyour.tv/not-android](https://cleanyour.tv/not-android).
+  [Dự án cộng đồng](SHOWCASE.md).
 - Fire TV có các ghi chú dọn dẹp để tự làm theo; [câu lệnh cho trợ lý](PROMPT.md) không dùng cho Fire TV, và Fire OS
   không cho thay màn hình chính mặc định.
 - Một số TV bán tại Trung Quốc đại lục từ chối cài APK ngoài hoặc launcher bên thứ ba. Đừng đoán khả năng tương thích

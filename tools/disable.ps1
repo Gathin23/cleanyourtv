@@ -17,31 +17,6 @@ if (-not (Test-Path $py)) { throw 'run: python -m venv tools\venv; tools\venv\Sc
 if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }
 $env:TV_HOST = $TvHost
 
-# The four guard overrides are read once here and then removed from the process environment, so an
-# override set the way the README and the scripts' own messages suggest covers exactly this run
-# (#1845): a value meant for one TV and one list must not silently skip the setupwraith, Home,
-# input-driver and input/Settings guards of every later run in the same window, including
-# `check.py --fix`. TV_HOST stays: it is per window by design.
-$forceSetupwraith = [bool]$env:FORCE_SETUPWRAITH
-$forceHome = [bool]$env:FORCE_HOME
-$tvinputAllow = [bool]$env:TVINPUT_ALLOW
-$handlersAllow = [bool]$env:HANDLERS_ALLOW
-# Name each one as it was set and say how to clear it (#1845): with `powershell ... -File` the script
-# runs in a child process, so removing it here does not clear the caller's window.
-$overrideCost = [ordered]@{
-    FORCE_SETUPWRAITH = 'setupwraith is disabled even if it owns the saved Wi-Fi network'
-    FORCE_HOME = 'the Home guard is skipped'
-    TVINPUT_ALLOW = 'input-driver packages are disabled even if they ask for TV_INPUT_HARDWARE'
-    HANDLERS_ALLOW = 'input and Settings handlers are disabled even if the launcher needs them'
-}
-foreach ($name in $overrideCost.Keys) {
-    $value = [Environment]::GetEnvironmentVariable($name)
-    if ($value) {
-        Write-Warning "$name=$value is set: the safety check it overrides stays off for this run only ($($overrideCost[$name])). If this note comes back on the next run, clear it in your window with Remove-Item env:$name."
-    }
-    Remove-Item -Path "Env:$name" -ErrorAction SilentlyContinue
-}
-
 $pkgs = Get-Content $List | ForEach-Object { ($_ -replace '#.*$', '').Trim() } | Where-Object { $_ } | ForEach-Object { ($_ -split '\s+')[0] }
 # Lists come from contributors and each name is pasted into a shell command on the TV (#165).
 $bad = @($pkgs | Where-Object { $_ -notmatch '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$' })
@@ -55,20 +30,18 @@ if (-not $pkgs -or $pkgs.Count -eq 0) {
     throw "refusing ${List}: no package names in it (every line is a comment or blank), so nothing was sent to the TV and no recovery record was written."
 }
 # Core Android packages, the same block as disable.sh: with one of these disabled Android itself can stop
-# booting (#884, an original Mi TV Stick). No switch overrides it. Ext services and ext shared also
-# ship under AOSP's bare names, android.ext.services and android.ext.shared (#1711). Keep both
-# patterns in step with disable.sh and recovery.py (tests/test_core_packages.py). The TV middleware
-# (com.cltv.mal, com.mediatek.tis / tv.service / tv.agent) is guarded too (#1578, a Haier boot loop).
-$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
+# booting (#884, an original Mi TV Stick). No switch overrides it. Keep both patterns in step with
+# disable.sh and recovery.py (tests/test_core_packages.py).
+$coreRe = '^(android|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*)$'
 $coreOk = '^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 $core = @($pkgs | Where-Object { $_ -cmatch $coreRe -and $_ -cnotmatch $coreOk })
 if ($core.Count -gt 0) {
-    throw "refusing ${List}: it disables core Android or TV middleware packages, and without them the TV may not boot again (#884, #1578): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
+    throw "refusing ${List}: it disables core Android packages, and without them the TV may not boot again (#884): $($core -join ', '). Take these lines out of the list (or comment them) and run it again. Nothing was changed on the TV."
 }
 # A Wi-Fi network saved during the first-run wizard belongs to setupwraith, and Android deletes it when
 # setupwraith is disabled. Skip it while it owns the saved network; `$env:FORCE_SETUPWRAITH=1` overrides.
 $setup = 'com.google.android.tungsten.setupwraith'
-if ($pkgs -contains $setup -and -not $forceSetupwraith) {
+if ($pkgs -contains $setup -and -not $env:FORCE_SETUPWRAITH) {
     $wifi = (& $py -I (Join-Path $repo 'tools\tv.py') 'dumpsys wifi') -join "`n"
     # Be safe: if we cannot read the owners (tv.py failed, timed out, or showed no network at all),
     # do not disable setupwraith, so the TV cannot lose the network it is on.
@@ -81,13 +54,11 @@ if ($pkgs -contains $setup -and -not $forceSetupwraith) {
     }
 }
 # Same as disable.sh: on firmware with ro.adb.secure=0, port 5555 gives a shell to any device on the
-# network without the "Allow" prompt, and an empty value counts too (a debug build or Android 4.4 reads
-# a missing ro.adb.secure as 0, #1720). Read it now and say so once the list is done; a failed read
-# only skips the note, so it is $null, apart from an empty answer. Windows PowerShell turns redirected
-# stderr into an error that 'Stop' would throw.
+# network without the "Allow" prompt. Read it now and say so once the list is done; a failed read only
+# skips the note. Windows PowerShell turns redirected stderr into an error that 'Stop' would throw.
 $ErrorActionPreference = 'Continue'
 $adbSecure = ((& $py -I (Join-Path $repo 'tools\tv.py') 'getprop ro.adb.secure' 2>$null) -join '').Trim()
-if ($LASTEXITCODE -ne 0) { $adbSecure = $null }
+if ($LASTEXITCODE -ne 0) { $adbSecure = '' }
 $ErrorActionPreference = 'Stop'
 
 # Home guard (#239), the same check as disable.sh: a list that disables the app owning Home leaves the
@@ -114,11 +85,9 @@ function Read-HomeLaunchers {
     # Nor is a factory-test app (com.duokan.factorytest/.FactoryLauncher answers HOME on a Mi TV 4A).
     $usable = @($parsed | Where-Object { $_.Cls -notmatch 'FallbackHome$' -and $notLaunchers -notcontains $_.Pkg -and $_.Pkg -notmatch 'factorytest|factory_test|factorymode' } |
         ForEach-Object { $_.Pkg } | Sort-Object -Unique)
-    # Whether setupwraith answers HOME, for the check below (#1573).
-    $setupAnswers = @($parsed | Where-Object { $_.Pkg -eq $setup }).Count -gt 0
-    [pscustomobject]@{ Ok = ($answered -and $parsed.Count -gt 0); Launchers = $usable; SetupAnswers = $setupAnswers }
+    [pscustomobject]@{ Ok = ($answered -and $parsed.Count -gt 0); Launchers = $usable }
 }
-if (-not $forceHome -and $pkgs.Count -gt 0) {
+if (-not $env:FORCE_HOME -and $pkgs.Count -gt 0) {
     $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
     $ErrorActionPreference = 'Continue'
     $homeLine = @(& $py -I $tvPy $homeQuery 2>$null) | Where-Object { $_ -match '\S' } | Select-Object -Last 1
@@ -147,12 +116,6 @@ if (-not $forceHome -and $pkgs.Count -gt 0) {
             $others = @(@($found.Launchers) | Where-Object { $_ -ne $homePkg -and $pkgs -notcontains $_ })
             if (-not $found.Ok -or $others.Count -eq 0) {
                 Write-Warning "Skipping ${homePkg}: it owns Home, and no other app that can answer Home is installed and staying enabled. Make the new launcher Home first (launcher\build-and-install.ps1), then run this list again to disable the old one; or set `$env:FORCE_HOME=1 if you can still reach the TV."
-                $pkgs = @($pkgs | Where-Object { $_ -ne $homePkg })
-            } elseif ($found.SetupAnswers -and $pkgs -notcontains $setup) {
-                # Same as disable.sh (#1573): setupwraith answers HOME ahead of an installed launcher and
-                # stays enabled (not listed, or skipped above for the Wi-Fi network), so with the owner
-                # disabled Home goes to its RecoveryActivity, not to the other launcher.
-                Write-Warning "Skipping ${homePkg}: it owns Home, and $setup stays enabled and answers Home ahead of the other launchers here, so with $homePkg disabled Home would go to its RecoveryActivity, the black screen system_server can crash-loop on (docs\TROUBLESHOOTING.md). Make the new launcher Home first (launcher\build-and-install.ps1), or disable setupwraith in the same run (if it was skipped for the Wi-Fi network, forget the network and join it again in Settings > Network & Internet), then run this list again; or set `$env:FORCE_HOME=1 if you can still reach the TV."
                 $pkgs = @($pkgs | Where-Object { $_ -ne $homePkg })
             }
         }
@@ -188,15 +151,10 @@ if (-not $forceHome -and $pkgs.Count -gt 0) {
 # layer under the HDMI, AV and tuner inputs. Disable one and the port still notices the cable but shows
 # "No Signal" for good; re-enabling the pieces in batches does not bring the picture back, a full restore
 # and a cold boot do. Keep them; `$env:TVINPUT_ALLOW=1` disables them anyway.
-if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
+if (-not $env:TVINPUT_ALLOW -and $pkgs.Count -gt 0) {
     # Trailing `; true`: the loop's status is the last package's `grep -q`, which is nonzero whenever the
     # last listed package is not an input driver, and would look like a failed check.
-    # Per package: the "requested permissions" block (Android 6.0+); on a dump with no such block —
-    # Lollipop prints only "grantedPermissions:" — the package's own granted block; then its Service
-    # Resolver Table, which Lollipop's per-package dump prints and which names what serves
-    # android.media.tv.TvInputService. "Unable to find" is a package not on this TV. A dump with
-    # neither block nor error (NOCHK) is one the guard cannot read: the package is kept on (#1753).
-    $loop = 'for p in ' + ($pkgs -join ' ') + '; do d=$(dumpsys package $p 2>/dev/null); case $d in *"requested permissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"grantedPermissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"Service Resolver Table:"*) printf ''%s\n'' "$d" | grep -q ''android.media.tv.TvInputService'' && echo $p;; *"Unable to find"*) :;; *) echo "NOCHK $p";; esac; done; true'
+    $loop = 'for p in ' + ($pkgs -join ' ') + '; do dumpsys package $p | sed -n -E ''/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p; done; true'
     # Windows PowerShell turns redirected stderr into an error that 'Stop' would throw (see getprop).
     $ErrorActionPreference = 'Continue'
     $tvhw = @(& $py -I (Join-Path $repo 'tools\tv.py') $loop 2>$null)
@@ -205,14 +163,7 @@ if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
     if (-not $checked) {
         Write-Warning 'Could not check which listed packages drive the HDMI/AV inputs (tv.py failed). Check every input after this run: a port that notices the cable and stays black means one of them was disabled, and only a full restore and a cold boot bring it back (#321).'
     } else {
-        foreach ($p in ($tvhw | Where-Object { $_ -match '^NOCHK ' })) {
-            $p = ($p -replace '^NOCHK ', '').Trim()
-            if ($pkgs -contains $p) {
-                Write-Warning "Skipping ${p}: the TV's dumpsys shows neither a requested nor a granted permission block for it, so this firmware's answer cannot be read for the input-driver check (Android 5.x prints neither). It stays enabled: once every input still works after a reboot, set `$env:TVINPUT_ALLOW=1 to disable it (#321)."
-                $pkgs = @($pkgs | Where-Object { $_ -ne $p })
-            }
-        }
-        foreach ($p in ($tvhw | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -notmatch '^NOCHK ' })) {
+        foreach ($p in ($tvhw | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
             if ($pkgs -contains $p) {
                 Write-Warning "Skipping ${p}: it asks for android.permission.TV_INPUT_HARDWARE, so it is the software layer under the HDMI/AV/tuner inputs. With it disabled those inputs still notice the cable but stay black (No Signal), and re-enabling the pieces in batches does not restore the picture: a full restore plus a cold boot does (#321). Set `$env:TVINPUT_ALLOW=1 to disable it."
                 $pkgs = @($pkgs | Where-Object { $_ -ne $p })
@@ -222,7 +173,7 @@ if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
 }
 # Same as disable.sh: keep the apps the TV opens its HDMI inputs (VIEW on a passthrough channel) and
 # Settings with, asked from the TV rather than guessed by name. `$env:HANDLERS_ALLOW=1` disables them anyway.
-if (-not $handlersAllow -and $pkgs.Count -gt 0) {
+if (-not $env:HANDLERS_ALLOW -and $pkgs.Count -gt 0) {
     $q = 'cmd package query-activities --brief'
     $ErrorActionPreference = 'Continue'
     $handlers = @(& $py -I (Join-Path $repo 'tools\tv.py') "$q -a android.intent.action.VIEW -t vnd.android.cursor.item/channel 2>/dev/null; echo ==; $q -a android.settings.SETTINGS 2>/dev/null; true" 2>$null)
@@ -234,17 +185,6 @@ if (-not $handlersAllow -and $pkgs.Count -gt 0) {
         # `@()` so an empty or one-line answer is still an array: IndexOf throws on $null.
         $lines = @($handlers | ForEach-Object { $_.Trim() })
         $split = [array]::IndexOf($lines, '==')
-        # A working query always has some app answering android.settings.SETTINGS. No name after the
-        # "==" line means the firmware has no `cmd` (or answered nothing), and the loop below would
-        # pass in silence (#973, #1089).
-        $settingsSeen = $false
-        for ($i = 0; $i -lt $lines.Count; $i++) {
-            if ($lines[$i] -notmatch '^([A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+)/') { continue }
-            if ($split -ge 0 -and $i -gt $split) { $settingsSeen = $true; break }
-        }
-        if (-not $settingsSeen) {
-            Write-Warning 'Could not check which listed packages open the TV''s inputs and Settings: the query answered with nothing at all (this firmware may have no ''cmd''). After this run, open an HDMI input and Settings from the launcher before you put the remote down.'
-        }
         for ($i = 0; $i -lt $lines.Count; $i++) {
             if ($lines[$i] -notmatch '^([A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+)/') { continue }
             $p = $Matches[1]
@@ -265,41 +205,7 @@ if ($LASTEXITCODE -ne 0) { throw 'no recovery record was written, so nothing was
 
 $cmds = @($pkgs | ForEach-Object { "pm disable-user --user 0 $_" }) + 'pm list packages -d'
 $cmds | & $py -I (Join-Path $repo 'tools\tv.py') --batch
-$batchExit = $LASTEXITCODE
 
-# Same as disable.sh (#1376): read the TV back instead of trusting the batch's silence. `-e` lists enabled
-# packages only, so one that is not on this TV, or that the factory had already disabled, is never named.
-# Ask for user 0, the user the batch disables for: on Android 14 a plain `pm list packages` merges the
-# answers of every user, and a second Google TV profile (another Android user) keeps its own enabled copy
-# of each package. A listed package still enabled fails the run; a read that fails or lists nothing only
-# says the check did not run. Packages a guard above skipped are out of $pkgs already.
-$stillOn = @()
-if ($pkgs.Count -gt 0) {
-    # Windows PowerShell turns redirected stderr into an error that 'Stop' would throw (see getprop).
-    $ErrorActionPreference = 'Continue'
-    $answer = @(& $py -I $tvPy 'pm list packages -e --user 0' 2>$null)
-    $read = $LASTEXITCODE -eq 0
-    $ErrorActionPreference = 'Stop'
-    # A failed read is discarded whole, as disable.sh does: partial output is not the enabled list.
-    $enabled = @()
-    if ($read) {
-        $enabled = @($answer | ForEach-Object { if ("$_".Trim() -match '^package:(\S+)') { $Matches[1] } })
-    }
-    if ($enabled.Count -eq 0) {
-        Write-Warning "Could not check which listed packages are still enabled: tv.py failed, or the TV listed no package for 'pm list packages -e --user 0'. Compare 'pm list packages -d --user 0' with the list by hand."
-    } else {
-        $stillOn = @($pkgs | Where-Object { $enabled -contains $_ } | Select-Object -Unique)
-        if ($stillOn.Count -gt 0) {
-            Write-Warning "Still enabled after this run, although the list disables them: $($stillOn -join ', '). The TV did not take pm disable-user for these: it refused (its answer is in the output above), or the change did not hold. Do not run the list again in a loop. Run tools\tv.py 'pm disable-user --user 0 <package>' once by hand for each, or the list once more after a reboot. If every listed package stays enabled, this firmware refuses pm disable-user: stop there and say so (docs\TROUBLESHOOTING.md, `"Every way of disabling a package is refused`")."
-        }
-    }
+if ($adbSecure -eq '0') {
+    Write-Warning "This TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on your network without the `"Allow`" prompt. When you are done, turn USB debugging and Network/ADB debugging off on the TV and reboot it (README: `"Isn't ADB access a security hole?`")."
 }
-
-if ($null -ne $adbSecure -and ($adbSecure -eq '0' -or $adbSecure -eq '')) {
-    $why = if ($adbSecure -eq '') { 'This TV does not set ro.adb.secure. On a debug (userdebug) build or Android 4.4 that is the same as ro.adb.secure=0: network ADB on port 5555 accepts any device on your network without the "Allow" prompt.' } else { 'This TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on your network without the "Allow" prompt.' }
-    Write-Warning "$why When you are done, turn USB debugging, Network/ADB debugging and Wireless debugging off on the TV and reboot it (README: `"Isn't ADB access a security hole?`")."
-}
-if ($batchExit -ne 0) { throw "tv.py --batch failed (exit code $batchExit): the list may be only partly applied; run it again once the TV answers" }
-# Last, so the warnings above are printed either way: a listed package the TV left enabled fails the
-# run, as in disable.sh.
-if ($stillOn.Count -gt 0) { exit 1 }

@@ -1,6 +1,0 @@
-{
-  "tv": "Sony BRAVIA KDL-43W950D (2015/2016, SVP-DTV15, MediaTek), India (\"PA\") firmware",
-  "os": "Android TV 8.0.0",
-  "brand": "Sony",
-  "notes": "Same build (6.827) as `sony-xbr-55x850d`; Sony Select/Discover/BIVL/India meta-recommendation, generic ad-tracking \"Hisense Odin\" browser, device agents, help/tutorials/demo, hotel/pro-mode b2b (minus hotelmode, confirmed load-bearing for Settings on this board); every streaming/utility/casting/voice app off by owner choice (installs own apps afterwards); stock-launcher chain (leanbacklauncher, setupwraith, tvrecommendations, tvtutorials, backdrop) deferred until the new launcher was confirmed Home; setupwraith owned no saved Wi-Fi network; firmware updates kept; reboot-checked"
-}

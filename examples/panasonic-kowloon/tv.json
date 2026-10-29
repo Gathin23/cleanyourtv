@@ -1,6 +1,0 @@
-{
-  "tv": "Panasonic Google TV LCD (OZUM_Panasonic, kowloon, MediaTek)",
-  "os": "Android 14",
-  "brand": "Panasonic",
-  "notes": "Streaming and music apps off, tested on this set: Netflix `com.netflix.ninja` disabled, Prime Video `com.amazon.amazonvideo.livingroom` disabled, Disney+ `com.disney.disneyplus` disabled, Viaplay `com.viaplay.android` disabled, YouTube Music `com.google.android.youtube.tvmusic` disabled, Play Games `com.google.android.play.games` disabled; setupwraith owns the saved Wi-Fi and is not listed; Assistant, Chromecast and updates kept"
-}

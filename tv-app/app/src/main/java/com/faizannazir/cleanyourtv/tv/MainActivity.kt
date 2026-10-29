@@ -248,7 +248,6 @@ class MainActivity : Activity() {
 
             val records = mutableListOf<CleanupRecord>()
 
-            // 1. Capture Pre-Mutation Original States
             for (app in targets) {
                 val pkgName = app.packageName.replace("\r", "").trim()
                 if (safetyRulesEngine.isProtected(pkgName)) continue
@@ -274,7 +273,6 @@ class MainActivity : Activity() {
                 )
             }
 
-            // Preserved pre-existing baseline if available
             val existingBaseline = backupRestoreEngine.loadLatestBaseline()
             val mergedRecords = if (existingBaseline != null) {
                 val existingMap = existingBaseline.records.associateBy { it.packageName }.toMutableMap()
@@ -294,7 +292,6 @@ class MainActivity : Activity() {
                 records = mergedRecords
             )
 
-            // 2. Durable Baseline Persistence BEFORE touch/mutation
             val saved = backupRestoreEngine.saveBaseline(baseline)
             if (!saved) {
                 if (isAdbAvailable) adbConn.disconnect()
@@ -304,7 +301,6 @@ class MainActivity : Activity() {
                 return@execute
             }
 
-            // 3. Execute Reversible Mutations (Preserve App Data)
             val resultLog = StringBuilder()
             resultLog.append("Debloat Execution Log ($host:$port):\n")
             resultLog.append("------------------------------------\n")
@@ -361,14 +357,18 @@ class MainActivity : Activity() {
 
                 var assetStream: InputStream? = null
                 try {
-                    assetStream = assets.open("clean_launcher.apk")
+                    assetStream = resources.openRawResource(R.raw.clean_launcher)
                 } catch (_: Exception) {
                     try {
-                        assetStream = assets.openFd("clean_launcher.apk").createInputStream()
+                        assetStream = assets.open("clean_launcher.apk")
                     } catch (_: Exception) {
                         try {
-                            assetStream = javaClass.classLoader?.getResourceAsStream("assets/clean_launcher.apk")
-                        } catch (_: Exception) {}
+                            assetStream = assets.openFd("clean_launcher.apk").createInputStream()
+                        } catch (_: Exception) {
+                            try {
+                                assetStream = javaClass.classLoader?.getResourceAsStream("assets/clean_launcher.apk")
+                            } catch (_: Exception) {}
+                        }
                     }
                 }
 
@@ -405,7 +405,7 @@ class MainActivity : Activity() {
                         log.append(" • Target ADB service at $host:$port unavailable.\n  Turn Wireless Debugging ON in TV Developer Options.\n")
                     }
                 } else {
-                    log.append("Error: Clean Launcher APK asset stream could not be opened.\n")
+                    log.append("Error: Clean Launcher APK resource stream could not be opened.\n")
                 }
             } catch (e: Exception) {
                 log.append("Error during launcher deployment: ${e.localizedMessage ?: e.toString()}\n")

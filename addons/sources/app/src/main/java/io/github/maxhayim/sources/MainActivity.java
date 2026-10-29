@@ -74,8 +74,7 @@ public class MainActivity extends Activity {
                 }
             }
         }
-        List<Sources.Row> list = Sources.rows(inputs, new String[] {getString(R.string.state_nothing),
-                getString(R.string.state_standby), getString(R.string.state_connected)});
+        List<Sources.Row> list = Sources.rows(inputs);
         Row first = null;
         int connected = 0;
         for (Sources.Row r : list) {
@@ -87,15 +86,15 @@ public class MainActivity extends Activity {
         }
         if (tuner != null) {
             final TvInputInfo live = tuner;
-            Row row = add(new Row(this, getString(R.string.live_tv), getString(R.string.live_tv_detail), () -> open(
+            Row row = add(new Row(this, "Live TV", "The TV's antenna or cable tuner.", () -> open(
                     new Intent(Intent.ACTION_VIEW, TvContract.buildChannelsUriForInput(live.getId())))));
             if (first == null) first = row;
         }
         if (first == null) {
-            add(new Row(this, getString(R.string.no_sources), getString(R.string.no_sources_detail), null));
+            add(new Row(this, "No sources", "This TV reports no HDMI or tuner inputs.", null));
             status.setText("");
         } else {
-            status.setText(getResources().getQuantityString(R.plurals.devices_connected, connected, connected));
+            status.setText(connected == 1 ? "1 device connected." : connected + " devices connected.");
             first.requestFocus();
         }
     }
@@ -109,7 +108,7 @@ public class MainActivity extends Activity {
         try {
             startActivity(i);
         } catch (ActivityNotFoundException | SecurityException e) {
-            status.setText(R.string.cant_open);
+            status.setText("This TV has no app that opens that source.");
         }
     }
 

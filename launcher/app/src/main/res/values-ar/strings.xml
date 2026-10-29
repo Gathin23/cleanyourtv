@@ -10,7 +10,6 @@
     <string name="not_connected">لا يوجد جهاز</string>
     <string name="live_tv">البث المباشر</string>
     <string name="no_inputs">لم يتم العثور على مدخلات</string>
-    <string name="more_inputs">مدخلات أخرى</string>
     <string name="good_morning">صباح الخير</string>
     <string name="good_afternoon">مساء الخير</string>
     <string name="good_evening">مساء الخير</string>
@@ -67,7 +66,6 @@
     <string name="off">إيقاف</string>
     <string name="enable">تفعيل</string>
     <string name="dock_edit">تعديل شريط التطبيقات</string>
-    <string name="power_menu">إعادة التشغيل…</string>
     <string name="dock_edit_hint">اختر الموضع الذي تريد تغييره في الشريط واضغط موافق. اضغط رجوع للإنهاء.</string>
     <string name="dock_edit_pick_app">اختر الآن التطبيق الذي تريد وضعه هناك واضغط موافق. اضغط رجوع لاختيار موضع آخر.</string>
     <string name="tile_add_to_dock">إضافة إلى الشريط</string>
@@ -97,5 +95,4 @@
         <item quantity="other">%1$d تطبيق</item>
     </plurals>
     <string name="greeting_with_name">%1$s، %2$s</string>
-    <string name="game_live">مباشر الآن</string>
 </resources>

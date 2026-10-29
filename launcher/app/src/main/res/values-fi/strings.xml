@@ -10,7 +10,6 @@
     <string name="not_connected">Ei laitetta</string>
     <string name="live_tv">TV-kanavat</string>
     <string name="no_inputs">Lähteitä ei löytynyt</string>
-    <string name="more_inputs">Lisää lähteitä</string>
     <string name="good_morning">Hyvää huomenta</string>
     <string name="good_afternoon">Hyvää päivää</string>
     <string name="good_evening">Hyvää iltaa</string>
@@ -92,24 +91,9 @@
         <item quantity="other">%1$d sovellusta</item>
     </plurals>
     <string name="dock_edit">Muokkaa telakkaa</string>
-    <string name="power_menu">Käynnistä uudelleen…</string>
     <string name="dock_edit_hint">Valitse muutettava telakan paikka ja paina OK. Takaisin lopettaa.</string>
     <string name="dock_edit_pick_app">Valitse nyt sinne tuleva sovellus ja paina OK. Takaisin valitsee toisen paikan.</string>
     <string name="tile_add_to_dock">Lisää telakkaan</string>
     <string name="tile_replace_in_dock">Korvaa toisella sovelluksella</string>
     <string name="dock_edit_pick_place">Valitse telakan paikka tälle sovellukselle ja paina OK. Takaisin peruuttaa.</string>
-    <string name="rows_below_dock_label">Rivit telakan alla</string>
-    <string name="wallpaper_label">Taustakuva</string>
-    <string name="wallpaper_state">Taustakuva: %1$s</string>
-    <string name="wallpaper_none">Ei taustakuvaa</string>
-    <string name="wallpaper_applied">Taustakuva vaihdettu</string>
-    <string name="wallpaper_theme_default">Teeman oletus</string>
-    <string name="race_kicker">Osakilpailu %1$d · %2$s · %3$s</string>
-    <string name="race_kicker_no_place">Osakilpailu %1$d · %2$s</string>
-    <string name="race_next">%1$s alkuun %2$s</string>
-    <string name="race_lights_out">Lähtöön %1$s</string>
-    <string name="race_live">%1$s · käynnissä</string>
-    <string name="race_finished">Ruutulippu</string>
-    <string name="last_opened">Viimeksi avattu %1$s</string>
-    <string name="game_live">Käynnissä nyt</string>
 </resources>

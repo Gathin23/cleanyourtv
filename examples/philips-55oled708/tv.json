@@ -1,6 +1,0 @@
-{
-  "tv": "Philips 55OLED708/12 (TPV, PH1M_WW_9972, MediaTek), Poland",
-  "os": "Google TV 12",
-  "brand": "Philips",
-  "notes": "Google TV generation, not the 707's board: DAC analytics, frameworklogger, Samba TV ACR, NFT Collection, Play-Fi, Control4, Matter, Mimi, Alexa, Chromecast, setupwraith (Wi-Fi re-joined first) and the Philips launcher tab; `demome` holds TV_INPUT_HARDWARE so it stays; the remote's gear and Apps buttons need HomeKeyService (gear by scancode 141); nothing re-enabled after a reboot"
-}

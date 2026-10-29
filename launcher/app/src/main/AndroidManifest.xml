@@ -56,13 +56,9 @@
             android:clearTaskOnLaunch="true"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden|uiMode"
             android:screenOrientation="landscape">
-            <!-- CVTE firmware (ro.CVT_EN_COMMON_HOME_INTENT=1) sends the Home key and boot as MAIN + HOME +
-                 COMMON_HOME, which only matches a filter that lists both (#1201). In this one filter, not a second
-                 one: a plain HOME intent still matches it, and a second filter could list this activity twice. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.COMMON_HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
@@ -167,30 +163,6 @@
             android:authorities="${applicationId}.theme"
             android:exported="true"
             android:permission="android.permission.WRITE_SECURE_SETTINGS" />
-
-        <!-- The remote's Input button (KEYCODE_TV or KEYCODE_TV_INPUT) opens the input switcher, and input_key_keycodes and
-         app_keys (config.xml or a theme) bring back other remote buttons; see InputKeyService. -->
-        <!-- Bound again by the system after a force stop, which restarts Home on firmware that kills
-             third-party apps (TCL tc8000_ay30a2). It reads no notification.
-             cmd notification allow_listener com.gathin.tvhome/.GuardRevival -->
-        <service
-            android:name=".GuardRevival"
-            android:directBootAware="true"
-            android:exported="true"
-            android:label="@string/home_key_name"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-            <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
-            </intent-filter>
-        </service>
-        <receiver
-            android:name=".GuardConfig"
-            android:exported="true"
-            android:permission="android.permission.WRITE_SECURE_SETTINGS">
-            <intent-filter>
-                <action android:name="com.gathin.tvhome.GUARD" />
-            </intent-filter>
-        </receiver>
 
         <service
             android:name=".InputKeyService"

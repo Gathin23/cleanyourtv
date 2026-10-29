@@ -1,6 +1,0 @@
-{
-  "tv": "Hisense SmartTV 4K FFM (huangshan, MediaTek), Latin America; also the US Hisense U9DG",
-  "os": "Android TV 10",
-  "brand": "Hisense",
-  "notes": "ACR (evservice), VIDAA preload, store/hotel mode, OTA, Google partner tracking and PAI auto-installs; US (U9DG) preloads, Alexa, Assistant, Miracast and RemoteNOW off by choice; smartsense must stay enabled; setupwraith kept (no HOME claim); Input button is KEYCODE_TV_INPUT → VIEW_INPUTS, which only the stock launcher answered, so config.json sets handle_view_inputs"
-}

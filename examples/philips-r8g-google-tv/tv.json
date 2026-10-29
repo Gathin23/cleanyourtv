@@ -1,6 +1,0 @@
-{
-  "tv": "Philips R8G Google TV (MOKA, whitefield, Realtek RTD2851F), US",
-  "os": "Google TV 14",
-  "brand": "Philips",
-  "notes": "Anoki ACR, store-demo overlay, Realtek partner customizer, HbbTV (unused with ATSC), Android ad services; voice and ambient mode off by choice; port 5555 opens without pairing; setupwraith owned the Wi-Fi saved at setup and disabling it deleted the network; the standby light can be switched off over ADB ([note](../docs/devices/philips-r8g.md))"
-}

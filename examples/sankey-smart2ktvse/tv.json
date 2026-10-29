@@ -1,6 +1,0 @@
-{
-  "tv": "Sankey SMART2KTVSE (Whale OS, SiliconPlayer am30bm)",
-  "os": "Android TV 13",
-  "brand": "Sankey",
-  "notes": "Whale OS (Zeasn) telemetry/services, factory apps, AI voice assistant, ad services, updaters; stock launcher `com.whaletv.launcher` replaced with CleanYourTV; Live TV `com.zeasn.livetv` kept (needed for HDMI inputs); camera `com.android.camera2` left out of the list (disabled by hand on that unit; system app, so `pm disable-user` works and `pm uninstall` fails); MENU+1147 does NOT work on this model; ADB enabled via Activity Launcher app; 1 GB RAM; ADB over WiFi on port 5555 after enabling Developer Options via Activity Launcher app"
-}

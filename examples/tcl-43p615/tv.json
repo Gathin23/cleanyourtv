@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 43P615 (Europe, BeyondTV, Realtek RTD2851, AR06)",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "Sibling of the BeyondTV2 Android 11 above (AR05); same TCL set plus dashboard, useragreement, copydatatotv and notereminder; **`com.google.android.videos` re-enables on every boot** (and YouTube came back via a Play update), `usercenter` stays off unlike the Android 9 RTD2851 sets; 2 HDMI + AV through TvInputManager, Inputs pill works, setupwraith does not claim HOME; voice, Miracast/MagiConnect, stock screensaver and TCL Dashboard off by choice, Chromecast, OTA and phone remote kept; launcher installed and reboot-checked, TV Bro replaces a Play-installed white-label browser"
-}

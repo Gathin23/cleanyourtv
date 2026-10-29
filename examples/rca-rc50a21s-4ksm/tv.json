@@ -1,6 +1,0 @@
-{
-  "tv": "RCA RC50A21S-4KSM, Zeasn home (Toptech firmware RTK2851P, Realtek RTD2851P, board mac6p)",
-  "os": "Android TV 9",
-  "brand": "RCA",
-  "notes": "Zeasn ad portal, weather service and store, partner auto-installs; userdebug build, no ADB prompt; Inputs pill opens RCA's own panel (`com.toptech.tvmenu/.input.InputActivity`) since nothing handles the channel VIEW intent (#805); Input key needs `handle_view_inputs` and `restore_key_services` (accessibility list cleared at every boot), not yet tested here; ~1.5 GB"
-}

@@ -1,6 +1,0 @@
-{
-  "tv": "INCLO Google TV 4K (KTC, Realtek, khardi, KTC_INCLO_4K_EU_23GV1), Taiwan",
-  "os": "Google TV 11",
-  "brand": "INCLO",
-  "notes": "First INCLO list, the same KTC `khardi` board as `lumio-vision-7/` on Android 11 (one-day test): Google auto-installs, feedback, partner rows, store demo, e-manual, Play Games; setupwraith owned the active Wi-Fi (forgotten and re-joined first), yet iPhone casting survived its disable; the Netflix/YouTube buttons (IR keycodes 3001/3003) only work through launcherx; gear is keycode 83"
-}

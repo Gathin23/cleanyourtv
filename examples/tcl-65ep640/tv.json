@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 65EP640 (Finland, BeyondTV, Realtek RTD2851 / rtd285o, AP06)",
-  "os": "Android TV 9",
-  "brand": "TCL",
-  "notes": "Same board as `tcl-55ep640/` on older firmware with its own package set: TCL analytics, promos, TV Guard cleaner, TCL app store and content service off; voice, Play Music, Play Games, Miracast/MagiConnect and the phone remote off by choice, Chromecast and the TV, remote and soundbar updaters kept; nothing re-enabled after a reboot; HDMI 1-3 and AV through TvInputManager, launcher installed and every real remote button checked"
-}

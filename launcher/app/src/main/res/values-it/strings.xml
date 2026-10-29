@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Home</string>
     <string name="inputs">Ingressi</string>
-    <string name="wifi">Wi-Fi</string>
     <string name="settings">Impostazioni</string>
     <string name="choose_input">Ingressi</string>
     <string name="connected">Collegato</string>
@@ -10,39 +8,17 @@
     <string name="not_connected">Nessun dispositivo</string>
     <string name="live_tv">TV in diretta</string>
     <string name="no_inputs">Nessun ingresso trovato</string>
-    <string name="more_inputs">Altri ingressi</string>
     <string name="good_morning">Buongiorno</string>
     <string name="good_afternoon">Buon pomeriggio</string>
     <string name="good_evening">Buonasera</string>
-    <string name="good_forenoon">Buona tarda mattinata</string>
     <string name="good_night">Buonanotte</string>
-    <string name="festival_dussehra_greeting">Buon Dussehra</string>
-    <string name="festival_diwali_greeting">Buon Diwali</string>
-    <string name="festival_halloween_greeting">Buon Halloween</string>
-    <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Non disponibile su questa TV</string>
     <string name="cant_open">Impossibile aprire %1$s</string>
-    <string name="date_format">EEEE d MMMM</string>
-    <string name="shamsi_month_farvardin">Farvardin</string>
-    <string name="shamsi_month_ordibehesht">Ordibehesht</string>
-    <string name="shamsi_month_khordad">Khordad</string>
-    <string name="shamsi_month_tir">Tir</string>
-    <string name="shamsi_month_mordad">Mordad</string>
-    <string name="shamsi_month_shahrivar">Shahrivar</string>
-    <string name="shamsi_month_mehr">Mehr</string>
-    <string name="shamsi_month_aban">Aban</string>
-    <string name="shamsi_month_azar">Azar</string>
-    <string name="shamsi_month_dey">Dey</string>
-    <string name="shamsi_month_bahman">Bahman</string>
-    <string name="shamsi_month_esfand">Esfand</string>
     <string name="stats_cpu">CPU %1$d%%</string>
     <string name="stats_memory">Memoria: %1$d / %2$d MB</string>
     <string name="stats_storage">Spazio: %1$s liberi</string>
-    <string name="storage_gb_whole">%1$.0f GB</string>
-    <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">Orologio</string>
-    <string name="vpn">VPN</string>
     <string name="vpn_off">VPN disattivata</string>
     <string name="home_settings">Scegli la home predefinita</string>
     <string name="home_settings_help">Seleziona la home originale per smettere di usare CleanYourTV come Home, oppure CleanYourTV per tornare indietro. Il launcher originale deve essere attivo e la TV deve offrire la scelta della home; se era disattivato, usa prima lo script di ripristino.</string>
@@ -95,7 +71,6 @@
     <string name="card_state_new_key">Nuova chiave</string>
     <string name="card_state_new_label">Nuovo nome</string>
     <string name="dock_edit">Modifica dock</string>
-    <string name="power_menu">Riavvia…</string>
     <string name="dock_edit_hint">Scegli il posto del dock da cambiare e premi OK. Indietro per finire.</string>
     <string name="dock_edit_pick_app">Ora scegli l\'app da mettere lì e premi OK. Indietro per scegliere un altro posto.</string>
     <string name="tile_add_to_dock">Aggiungi al dock</string>
@@ -120,30 +95,11 @@
         <item quantity="one">%1$d app</item>
         <item quantity="other">%1$d app</item>
     </plurals>
-    <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="race_kicker">Gara %1$d · %2$s · %3$s</string>
     <string name="race_kicker_no_place">Gara %1$d · %2$s</string>
     <string name="race_next">%1$s tra %2$s</string>
     <string name="race_lights_out">Via tra %1$s</string>
     <string name="race_live">%1$s · in diretta</string>
     <string name="race_finished">Bandiera a scacchi</string>
-    <string name="race_practice_1">Prove libere 1</string>
-    <string name="race_practice_2">Prove libere 2</string>
-    <string name="race_practice_3">Prove libere 3</string>
-    <string name="race_sprint_qualifying">Qualifiche sprint</string>
-    <string name="race_sprint">Sprint</string>
-    <string name="race_qualifying">Qualifiche</string>
-    <string name="race_race">Gara</string>
-    <string name="race_practice_1_short">PL1</string>
-    <string name="race_practice_2_short">PL2</string>
-    <string name="race_practice_3_short">PL3</string>
-    <string name="race_sprint_qualifying_short">SQ</string>
-    <string name="race_sprint_short">SPRINT</string>
-    <string name="race_qualifying_short">QUALI</string>
-    <string name="race_race_short">GARA</string>
-    <string name="race_countdown_minutes">%1$d min</string>
-    <string name="race_countdown_hours">%1$dh %2$dm</string>
-    <string name="race_countdown_days">%1$dg %2$dh</string>
     <string name="last_opened">Ultima apertura: %1$s</string>
-    <string name="game_live">In diretta</string>
 </resources>

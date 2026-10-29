@@ -38,16 +38,6 @@ Nothing broke between batches.
   `HomeKeyService` catches `KEYCODE_ALL_APPS`, so enabling it (`-HomeKeyService` on
   `launcher/build-and-install.ps1`) turns the Apps button into a second Home button. Checked with the
   real remote from inside VLC: the press started `com.gathin.tvhome/.MainActivity`.
-- **The remote's Live button opens Google Play if not overridden.** On remotes with a dedicated "Live"
-  button (MDZ-22-AB remote revisions), it sends scancode 399 (mapped to `BUTTON_4` in `Vendor_2717_Product_32b9.kl`).
-  Once `com.google.android.tv` (Live Channels) is disabled, pressing
-  it causes `com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver` to fire a Play Store lookup
-  for the missing package ("Item not found").
-  Map it with `app_keys`: `"scan:399:<package>"` (e.g. `"scan:399:org.smarttube.stable"`) and install
-  with `INPUT_KEY_SERVICE=1` (`-InputKeyService` on Windows) so `InputKeyService` consumes the scancode
-  before `partnercustomizer` sees it. **Do not map it as keycode 191 (`KEYCODE_BUTTON_4`):** that keycode
-  may be shared with other buttons on some remotes/key layouts. The scancode form `scan:399` targets specifically
-  the physical Live button.
 - The other buttons, checked with the real remote and `getevent -lt`: Home (`KEY_HOMEPAGE`), Back,
   voice (`KEY_VOICECOMMAND`, Assistant kept) and Netflix (`KEY_VIDEO`, scancode 393 is `NETFLIX` in
   the same `.kl`) all work with the stock launcher disabled.
@@ -55,108 +45,10 @@ Nothing broke between batches.
 An empty `live_tv_package` (no tuner) can be pushed as a theme `config.json` with `tools/theme.ps1`,
 so `config.xml` stays at its defaults.
 
-## Fourth unit (2026-10-24)
-
-A fourth Mi Box S, done on Windows with Claude and a plain-language version of `PROMPT.md`, no terminal
-for the owner. Same build as the first three: `Xiaomi/oneday/oneday:9/PI/3933:user/release-keys`, SDK 28,
-2 GB RAM, 1920x1080 at 320 dpi, 5 GB `/data`. The launcher is 2.6.0 (`0bb7f7ed`); nothing in `launcher/`
-was changed. The theme is [`examples/xiaomi-mi-box-s/theme/`](../../examples/xiaomi-mi-box-s/theme/README.md).
-
-The result, photographed from the TV itself. LumiFlow rotates the owner's own photos, shuffled, one a minute:
-
-| ![LumiFlow with a cloudy sky: glass dock, stats line under the clock](xiaomi-mi-box-s-lumiflow.jpg) | ![LumiFlow with a monastery photo](xiaomi-mi-box-s-lumiflow-monastery.jpg) | ![LumiFlow with a rider on a lake road](xiaomi-mi-box-s-lumiflow-rider.jpg) |
-|---|---|---|
-| *LumiFlow: glass dock, stats line, a darkened photo* | *The next photo in the rotation* | *And the next (greeting name differs: shot before it was renamed)* |
-
-| ![The same Home with no wallpaper](xiaomi-mi-box-s-plain-home.jpg) | ![The launcher's Clock screensaver](xiaomi-mi-box-s-clock-screensaver.jpg) |
-|---|---|
-| *The same Home with no wallpaper* | *Clock screensaver (time and date, no pictures)* |
-
-The Wi-Fi network name is blurred in the screenshots. The photos are the owner's own and are not part of the theme.
-
-What differed from the other units:
-
-- **Already half done.** 15 packages were disabled before we started: the whole PatchWall, analytics,
-  Alphonso, auto-install and update-service group, plus Live Channels, TalkBack, the print spooler and Play
-  Games. We added YouTube Music, Play Movies & TV and Camera (`com.android.camera2`). Prime Video stayed,
-  because the owner uses it.
-- **Casting and voice kept.** `com.google.android.apps.mediashell`, `com.google.android.katniss`,
-  `com.google.android.speech.pumpkin`, `com.google.android.tv.remote.service`, `com.mitv.milinkservice` and
-  `com.mitv.videoplayer` stay enabled. After a reboot `mediashell` was installed and enabled and `logcat` had no
-  "No private key"; the owner confirmed casting from a phone.
-- **setupwraith not needed.** `dumpsys wifi | grep -o 'cname=[^ ]*'` showed only `android.uid.system:1000` and
-  `com.google.uid.shared:10004`, so the setup wizard stayed enabled, as on the second unit.
-- **Apps button.** Turned into a second Home button without the script switch: with
-  `enabled_accessibility_services` unset (`null`), `settings put secure enabled_accessibility_services
-  com.gathin.tvhome/.HomeKeyService` and `settings put secure accessibility_enabled 1` (the owner confirmed the
-  button opens Home). `theme.ps1` keeps the service across its Home restart. The `AUTO_START` appop line in
-  `build-and-install.ps1` prints `Unknown operation string` here; harmless.
-- **Screensaver.** `screensaver_components` was `com.google.android.backdrop/...Backdrop`. Switched to
-  `com.gathin.tvhome/.ClockDream` first, then disabled Backdrop. `service call dreams 1` is refused to the shell
-  (`WRITE_DREAM_STATE`); `am start -n com.android.systemui/.Somnambulator` starts the chosen screensaver
-  instead, and `dumpsys dreams` showed `mCurrentDreamName=...ClockDream`.
-- **Private DNS** was unset (`null`/`null`). `private_dns_specifier dns.adguard-dns.com` and
-  `private_dns_mode hostname` worked: sites loaded, and `doubleclick.net` answered from the local host
-  (about 0.2 ms), i.e. blocked. To undo, delete both keys rather than writing a default.
-- **Play Store automatic updates** are off from Play Store, profile picture, Settings, "Auto-update apps",
-  "Don't auto-update apps". `uiautomator dump` returns `null root node` on the Play Store, so the steps were
-  key presses with a screenshot after each. Four updates were waiting; Xstream Play and Prime Video were
-  updated by hand. "TV Setup" and "Android TV Remote Service" were left alone on purpose: they are system
-  parts that touch Home and pairing.
-- **Storage.** `/data` was 68% full (1.6 GB free) with 656 MB of app caches, mostly Hotstar, Zee5 and
-  Xstream. `pm trim-caches 4G` took it to 2.3 GB free (53% used) with no sign-ins lost.
-- **USB debugging off.** `settings put global adb_enabled 0` closed port 5555 at once (checked from the PC);
-  8008 stays open because casting uses it. Turn debugging on again to change anything.
-
-Numbers (the "before" box had been on 26 minutes, the "after" 3 minutes after a reboot, so some of the gain
-is the reboot): `MemAvailable` 908 MB, then 1,028 MB; memory in use 1,079 MB, then 959 MB; swap 14 MB, then
-12 MB. The stock home held 74 MB, the new one 22 MB; Backdrop held about 63 MB when it ran.
-
-Two things worth knowing:
-
-- Wallpaper rotation is in whole minutes (`integer(..., 0, 1440)` in `Config.java`), so `0.25` becomes `0`
-  and the rotation stops. One minute is the fastest the 2.6.0 launcher can do.
-- The launcher's Clock screensaver shows time and date only, never pictures.
-
-## Fifth unit (2026-10-25)
-
-A fifth Mi Box S, done on Windows with `tools/tv.py` and the `.ps1` scripts. Same build:
-`Xiaomi/oneday/oneday:9/PI/3933:user/release-keys`, SDK 28, `ro.adb.secure=1`, on Wi-Fi. Nothing in
-`launcher/` was changed apart from the dock and `columns` in `config.xml`.
-
-- **The Apps button costs the volume ramp.** With `com.gathin.tvhome/.HomeKeyService` bound (`dumpsys
-  accessibility` lists `Service[label=Home button, ..., capabilities=8]`), the Apps button opened Home, but a
-  held Volume up moved one step per press. With `enabled_accessibility_services` set to `''` and
-  `accessibility_enabled 0`, the same held button ramped again. Both checked by the owner on the real remote.
-  This is the trade in [the key-repeat note](tcl-55p71b-g09-key-repeat.md), here on Android TV 9. The second
-  unit enabled the helper for the Apps button and did not check a held volume key. This owner kept the ramp,
-  so the Apps button does nothing, as on the stock launcher.
-- **Projectivy Launcher was Home**, holding the Home key through its own accessibility service
-  (`ProjectivyAccessibilityService`, also a key filter). `resolve-activity` still named
-  `com.google.android.tvlauncher`, so `build-and-install.ps1` took that as the stock launcher. Projectivy was
-  disabled afterwards, in a later batch, once `mResumedActivity` showed the new launcher after Home.
-- **Two Play auto-install configs:** besides the list's `android.autoinstalls.config.xioami.mibox3` in
-  `/system/app`, an update in `/data/app` had installed `android.autoinstalls.config.xiaomi.mibox3`, spelled
-  correctly. Both were disabled with no side effects.
-- **Live Channels kept by the script:** the handler check in the disable script skipped Live Channels
-  (`com.google.android.tv`) because it answers VIEW on a channel item. That was left alone, so it is still
-  enabled.
-- The saved Wi-Fi belonged to `android.uid.system`, not setupwraith, as on the second and fourth units.
-  After a reboot all 20 disabled packages stayed disabled, and five minutes later neither PatchWall nor the
-  updater was enabled.
-
 ## Building on Windows without Android Studio
 
 `launcher/build-and-install.ps1` looks for a JDK only in `JAVA_HOME` or Android Studio's `jbr`. A
 Temurin JDK 17 zip plus the Android command-line tools (`sdkmanager "platforms;android-34"
 "build-tools;34.0.0"`, SDK in `%LOCALAPPDATA%\Android\Sdk`) worked with `JAVA_HOME` set to the JDK.
 
-On the fourth unit Android Studio's `jbr` was found by the script, but the Gradle wrapper failed with
-`Downloading ... gradle-8.9-bin.zip failed: timeout (10000ms)` on a slow line (twice, also at 120 s).
-`curl -L -C - --retry 20 --retry-all-errors` fetched the zip in about 8 minutes; its SHA-256 matched
-`distributionSha256Sum` in `launcher/gradle/wrapper/gradle-wrapper.properties`. Pointing `distributionUrl` at the
-local file (`file:///C:/.../gradle-8.9-bin.zip`) for that one build let it finish, and the properties file was
-put back with `git checkout` afterwards. `tools/venv` is also needed before the script runs
-(`python -m venv tools\venv` then `tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt`).
-
-Lived with: one day so far on the fourth unit; still to soak for a few days as CONTRIBUTING.md asks.
+Lived with: one day so far; still to soak for a few days as CONTRIBUTING.md asks.

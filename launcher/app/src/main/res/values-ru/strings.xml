@@ -10,14 +10,12 @@
     <string name="not_connected">Нет устройства</string>
     <string name="live_tv">Телеканалы</string>
     <string name="no_inputs">Источники не найдены</string>
-    <string name="more_inputs">Другие источники</string>
     <string name="good_morning">Доброе утро</string>
     <string name="good_afternoon">Добрый день</string>
     <string name="good_evening">Добрый вечер</string>
     <string name="good_night">Доброй ночи</string>
     <string name="festival_dussehra_greeting">С праздником Дашахра!</string>
     <string name="festival_diwali_greeting">С праздником Дивали!</string>
-    <string name="festival_halloween_greeting">Счастливого Хэллоуина!</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Нет сети</string>
     <string name="not_available">Недоступно на этом телевизоре</string>
@@ -95,7 +93,6 @@
     <string name="off">Выкл.</string>
     <string name="enable">Включить</string>
     <string name="dock_edit">Изменить док</string>
-    <string name="power_menu">Перезагрузить…</string>
     <string name="dock_edit_hint">Выберите место в доке и нажмите ОК. Назад — готово.</string>
     <string name="dock_edit_pick_app">Теперь выберите приложение для этого места и нажмите ОК. Назад — выбрать другое место.</string>
     <string name="tile_add_to_dock">Добавить в док</string>
@@ -151,5 +148,4 @@
     <!-- Cinematic top shelf (cinematic_home): the line under the focused dock app's name; %1$s is when it was
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Последний запуск: %1$s</string>
-    <string name="game_live">Сейчас в эфире</string>
 </resources>

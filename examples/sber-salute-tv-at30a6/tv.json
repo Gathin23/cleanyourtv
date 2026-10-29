@@ -1,6 +1,0 @@
-{
-  "tv": "Sber Salute TV 43\" (CVTE TP.T962D4.PC756, Amlogic T962D4, at30a6, 2 GB), Russia",
-  "os": "StarOS 1.101 / Android 13",
-  "brand": "Sber",
-  "notes": "First StarOS list: Sber content apps, SberPrime, kids room, smart home, Salute browser and screensaver, app catalogue, surveys, beta, bug reporter, cleaner, Huawei Cast/MHshare/DLNA receivers; OTA kept by default; Sber's platform service reinstalls removed apps (disable only) and cannot itself be disabled (its core re-enables it, component disables are refused), so the Salute voice assistant stays; Developer options locked and Sber Studio's ADB switch did not open 5555, see README; app \"rotation\" limit lowered with `sys_storage_threshold_percentage`; Inputs work through `ru.sberdevices.tvinputs`; reboot-checked"
-}

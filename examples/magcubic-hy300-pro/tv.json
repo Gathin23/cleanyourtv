@@ -1,6 +1,0 @@
-{
-  "tv": "Magcubic HY300 Pro projector (rk3566_rgo, device adt3, Askey)",
-  "os": "Android 11",
-  "brand": "Magcubic",
-  "notes": "Calculator, music, file manager, video player, Office, Miracast, HTC store and printing off; same Allwinner/HTC firmware family as the Portronics Beem 470; `com.htc.htcsettings` (projector settings), firmware updaters and factory packages kept; stock HTC launcher left enabled, `set-home-activity` takes Home; HDMI1-3 and CVBS1 list in the Inputs menu; config.json puts SmartTube, YouTube, Nuvio, VLC in the dock"
-}

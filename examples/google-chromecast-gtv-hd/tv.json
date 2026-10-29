@@ -1,6 +1,0 @@
-{
-  "tv": "Google Chromecast with Google TV HD (boreal)",
-  "os": "Google TV 14",
-  "brand": "Google",
-  "notes": "Same build as the 4K: Google telemetry and ad services, ambient mode, launcherx + setupwraith; casting needs setupwraith (Cast Fix re-provisions the receiver at boot), and setupwraith owns Wi-Fi joined during setup; 1.4 GB, tight storage"
-}

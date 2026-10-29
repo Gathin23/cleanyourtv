@@ -10,7 +10,6 @@
     <string name="not_connected">Cihaz Yok</string>
     <string name="live_tv">Canlı TV</string>
     <string name="no_inputs">Giriş Bulunamadı</string>
-    <string name="more_inputs">Diğer girişler</string>
     <string name="good_morning">Günaydın</string>
     <string name="good_afternoon">İyi Günler</string>
     <string name="good_evening">İyi Akşamlar</string>
@@ -67,7 +66,6 @@
     <string name="off">Kapalı</string>
     <string name="enable">Etkinleştir</string>
     <string name="dock_edit">Dock\'u düzenle</string>
-    <string name="power_menu">Yeniden başlat…</string>
     <string name="dock_edit_hint">Değiştirilecek dock yerini seçip Tamam\'a basın. Bitirmek için Geri.</string>
     <string name="dock_edit_pick_app">Şimdi oraya konacak uygulamayı seçip Tamam\'a basın. Başka bir yer seçmek için Geri.</string>
     <string name="tile_add_to_dock">Dock\'a ekle</string>
@@ -93,5 +91,4 @@
         <item quantity="other">%1$d uygulama</item>
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
-    <string name="game_live">Şimdi canlı</string>
 </resources>

@@ -1,6 +1,0 @@
-{
-  "tv": "BYINTEK Love U4 projector, 1080P (Skyworth RG_HS352, HiSilicon Hi3751V350, 1 GB), Brazil",
-  "os": "Android 9",
-  "brand": "BYINTEK",
-  "notes": "Zeasn ad/portal service (also hidden with root: it is persistent) and store, WPS Office, RuStore (reinstalled at boot if uninstalled), phone and setup leftovers, wired USB casting; ADB is behind a key sequence in BYINTEK settings, not Developer options; userdebug firmware; Inputs pill opens BYINTEK's own picker; launcher works (stock `com.zeasn.whale.saas`); config.json has the dock"
-}

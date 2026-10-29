@@ -17,7 +17,6 @@ Run from the repository root:
     python -m unittest tests.test_bench_accessibility -v
 """
 import unittest
-from unittest import mock
 
 from tools import bench
 
@@ -98,8 +97,11 @@ class ColdStartOrderTest(unittest.TestCase):
             return out
         tv.shell = shell_with_start
 
-        with mock.patch.object(bench, "other_app", lambda _tv: "com.android.tv.settings/.MainSettings"):
+        bench.other_app = lambda _tv: "com.android.tv.settings/.MainSettings"
+        try:
             bench.cold_start(tv, "com.gathin.tvhome/.MainActivity", 1)
+        finally:
+            pass
 
         self.assertIn("measure", order, order)
         self.assertIn("restore", order, order)

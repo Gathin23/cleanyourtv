@@ -1,6 +1,0 @@
-{
-  "tv": "Xiaomi TV EA Pro 55\" (MiTV-MTEQ0, baymax, MediaTek), China firmware 23.6.26.4028",
-  "os": "Android TV 10 (CN build)",
-  "brand": "Xiaomi",
-  "notes": "No Google apps; Mi analytics/push/cloud control, shop and pay, XiaoAI, casting and preloads off; HOME allowlist (the `com.ts.launcher` build works); standby force-stops third-party apps; ADB closes at boot; Wi-Fi country falls back to CN (5 GHz ch. 100-144 hidden, `service_region`); no CONFIRM_INSTALL so split-APK installs hang; Sogou is the only IME; [firmware notes](../docs/devices/xiaomi-mitv-mteq0-baymax.md)"
-}

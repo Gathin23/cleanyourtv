@@ -1,6 +1,0 @@
-{
-  "tv": "Sony BRAVIA KD-55XF8096 (2018, \"BRAVIA 4K GB ATV3\", BRAVIA_ATV3_4K_EU, MediaTek MT5891), Spain",
-  "os": "Android TV 9",
-  "brand": "Sony",
-  "notes": "Same hardware as `sony-kd-55xe8596/` on the S54 build (ATV3 vs ATV2): Samba TV ACR, Sony/Qterics agents, Sony Select/promos/Discover, Discover feeds (bivlinfo), Alexa setup (smarthomesettings, runs at boot), recommendation rows, partner auto-installs, demo mode, hotel/pro-mode b2b packages; DLNA, IR universal remote and HbbTV (red button) kept; webapi kept for Home Assistant; reboot-checked"
-}

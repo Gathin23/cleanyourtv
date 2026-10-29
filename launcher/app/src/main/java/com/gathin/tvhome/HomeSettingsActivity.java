@@ -10,11 +10,6 @@ import android.widget.Toast;
 /** Lets the user change HOME through the system UI, without shell or privileged permissions. */
 public class HomeSettingsActivity extends Activity {
     @Override
-    protected void attachBaseContext(android.content.Context base) {
-        super.attachBaseContext(LauncherLocale.wrap(base));   // locale
-    }
-
-    @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         try {

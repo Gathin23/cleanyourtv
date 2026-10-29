@@ -1,14 +1,13 @@
-# TCL G03 / BeyondTV4 (Google TV 11): 43C645, 50C635, 60C635
+# TCL G03 / BeyondTV4 (Google TV 11): 43C645, 60C635
 
 One list for TCL's G03 / BeyondTV4 firmware `V8-R51MT05-LF1V652` (`AR11`), the same build as
-`docs/devices/tcl-75c63b.md`. All units report `ro.product.model` `Smart TV Pro`.
+`docs/devices/tcl-75c63b.md`. Both TVs report `ro.product.model` `Smart TV Pro`.
 
 ## Tested models
 
 | Model | Tested | SoC / RAM | Network | Groups applied |
 |---|---|---|---|---|
 | TCL 43C645 | 2026-10-19 | Realtek RTD2851 / R51MT05 | Ethernet | 1, 1b, 2, 3 |
-| TCL 50C635 (`G03_4K_GB`, Spain) | 2026-10-24 | Realtek `rtd288o`, 2 GB | Ethernet | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, plus launcherx via `build-and-install.sh` |
 | TCL 60C635 (`G03_4K_GB`, Spain) | 2026-10-20 | Realtek `rtd288o`, 2 GB | Wi-Fi | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, 5, plus launcherx via `build-and-install.sh` |
 
 Groups 4 and 5 have not been run on a 43C645 yet, nor group 3, webview or keyhelp on a 60C635.
@@ -24,19 +23,17 @@ If you try them, say how it went in an issue.
 |---|---|
 | `debloat.txt` | Groups 1-3 (both TVs' telemetry, promos and extras, setupwraith), 4 (more TCL telemetry, content and unused preloads) and 5 (voice assistant, by choice) |
 | `config.json` | Launcher overlay for these TVs: dock, Live TV app, remote buttons |
-
-This folder used to ship its own `build-and-install.sh` and `restore.sh`. They skipped the shared tools' Wi-Fi
-guard and the record that undo works from (#1717), so use the shared ones:
+| `build-and-install.sh` | Builds `launcher/`, installs it, pushes `config.json`, makes it Home, disables launcherx and setupwraith, switches the key services on |
+| `restore.sh` | Re-enables everything in `debloat.txt`, gives Home back to launcherx, switches the key services off (`--uninstall` also removes the launcher) |
 
 ```sh
-TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt          # or one group at a time
-TV_HOST=<tv ip> HOME_KEY_SERVICE=1 INPUT_KEY_SERVICE=1 launcher/build-and-install.sh
-TV_HOST=<tv ip> tools/theme.sh examples/tcl-43c645                        # dock, Live TV app, remote buttons
-TV_HOST=<tv ip> tools/restore.sh examples/tcl-43c645/debloat.txt com.google.android.apps.tv.launcherx   # undo
+TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt   # or one group at a time
+TV_HOST=<tv ip> examples/tcl-43c645/build-and-install.sh
+TV_HOST=<tv ip> examples/tcl-43c645/restore.sh                     # undo
 ```
 
-On WSL2 the adb daemon hung while forking; `adb -P 15037 nodaemon server` in another terminal plus
-`ADB_PORT=15037` worked.
+The scripts use the stock `adb` from platform-tools (`$ANDROID_HOME/platform-tools/adb`). On WSL2 the adb
+daemon hung while forking; `adb -P 15037 nodaemon server` in another terminal plus `ADB_PORT=15037` worked.
 
 ## Re-enable one app
 
@@ -48,7 +45,7 @@ adb shell pm enable <package>          # e.g. com.tcl.ui_mediaCenter for USB dri
 
 ## Change the dock order or the wallpaper
 
-Edit `dock_apps` in `config.json` (four package names, left to right) and run `tools/theme.sh examples/tcl-43c645` again.
+Edit `dock_apps` in `config.json` (four package names, left to right) and run `build-and-install.sh` again.
 Package names: `adb shell pm list packages -3`.
 
 For a wallpaper, copy this folder's `config.json` into a theme folder, add `"wallpaper": true` and a dark
@@ -81,7 +78,7 @@ remote. Injected keys never reach the accessibility services, so `input keyevent
 
 - **Accessibility services after a reinstall**: Android unbinds them on reinstall and binds them again only
   when `enabled_accessibility_services` changes. Writing the same value back leaves them enabled but unbound
-  and the remote buttons dead, so the old per-folder script cleared the list first (the shared tools check the helpers are bound, #1237). Do not `am force-stop` the
+  and the remote buttons dead, so `build-and-install.sh` clears the list first. Do not `am force-stop` the
   launcher: the services land in "Crashed services" until the next reinstall.
 - `TclAppBoot` refuses to bind services of packages without TCL's `OP_AUTO_START` while their process is not
   running (`callee_does't_have_OP_AUTO_START_permission` in logcat). After a cold reboot the launcher's
@@ -108,6 +105,4 @@ Not tested: casting, Miracast, firmware update, several-day stability.
 ## When you are done
 
 Network ADB on port 5555 is plaintext. On the TV: Developer options → USB debugging off, and
-"Revoke USB debugging authorisations"; reboot, then check that
-`tools/venv/bin/python -I tools/adb-closed.py <tv ip>` says the port is closed. Only a refusal counts: a
-timeout or "No route to host" proves nothing.
+"Revoke USB debugging authorisations"; reboot, then check `nc -vz <tv ip> 5555` fails.

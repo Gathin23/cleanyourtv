@@ -1,6 +1,0 @@
-{
-  "tv": "Haier MatrixTV GE (HR9216EU, haeundae, MediaTek), EU",
-  "os": "Google TV 14",
-  "brand": "Haier",
-  "notes": "Haier IoT and content apps, Zeasn launcher, cleaner, e-manual, Anoki ACR opt-in, partner rows, retail demo; YouTube Music and Ambient off by choice; Netflix re-enabled from factory-disabled and docked; setupwraith owns the saved Wi-Fi until forget and re-join, then goes with launcherx; the firmware re-enables oemtabprovider and the Zeasn launcher at every boot; the gear button is KEY_UNKNOWN scancode 240 (add it to config.xml locally), HOME_KEY_SERVICE trades the volume ramp; wireless debugging can switch itself off at boot; config.json has the dock"
-}

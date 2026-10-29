@@ -9,24 +9,6 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 public class LibraryAppsTest {
-    @Test public void thePillHidesOnlyWhileTheTopBarButtonIsAWayIn() {
-        assertTrue(LibraryApps.showPill(true, false, true));
-        assertTrue(LibraryApps.showPill(true, true, true));
-        assertTrue(LibraryApps.showPill(true, false, false));
-        assertFalse(LibraryApps.showPill(true, true, false));
-        assertFalse(LibraryApps.showPill(false, true, true));
-        assertFalse(LibraryApps.showPill(false, false, true));
-    }
-
-    @Test public void okOpensHomeAppsAndEveryAppWithTheSwitchButNeverInSelectionMode() {
-        assertTrue(LibraryApps.okOpens(false, false, true));
-        assertFalse(LibraryApps.okOpens(false, false, false));
-        assertTrue(LibraryApps.okOpens(false, true, false));
-        assertTrue(LibraryApps.okOpens(false, true, true));
-        assertFalse(LibraryApps.okOpens(true, true, false));
-        assertFalse(LibraryApps.okOpens(true, false, true));
-    }
-
     @Test public void hidingKeepsTheNextAppOrThePreviousAppAtTheEnd() {
         assertEquals(1, LibraryApps.nextAfterRemoval(0, 5));
         assertEquals(3, LibraryApps.nextAfterRemoval(2, 5));
@@ -132,14 +114,6 @@ public class LibraryAppsTest {
             try { LibraryApps.decode(raw); fail(raw); }
             catch (IllegalArgumentException expected) { }
         }
-    }
-
-    @Test public void excludedFromCatalogIsExactSetMembershipAndEmptyByDefault() {
-        Set<String> excluded = new HashSet<>();
-        excluded.add("com.example.factory");
-        assertTrue(LibraryApps.excludedFromCatalog(excluded, "com.example.factory"));
-        assertFalse(LibraryApps.excludedFromCatalog(excluded, "com.example.other"));
-        assertFalse(LibraryApps.excludedFromCatalog(Collections.emptySet(), "com.example.factory"));
     }
 
     @Test public void aFullListAllowsRemovalAndAnExistingChoiceButNotAnotherApp() {

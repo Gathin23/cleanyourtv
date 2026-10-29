@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Spanish "miércoles 21 de octubre" is cut off next to a wide clock; two lines, as in Portuguese. -->
-    <bool name="date_single_line">false</bool>
-</resources>

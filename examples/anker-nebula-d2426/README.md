@@ -8,7 +8,7 @@ All commands below run from the repository root. Replace the IP with the project
 (Settings > Network on the projector).
 
 ```bash
-export TV_HOST=192.168.1.50
+export TV_HOST=192.168.68.51
 ```
 
 ## What was changed
@@ -27,9 +27,8 @@ A backup of the state before any change (package lists, getprop, all settings, H
 ## Undo everything
 
 ```bash
-tools/restore.sh examples/anker-nebula-d2426/debloat.txt com.google.android.tvlauncher   # re-enable all 17, stock Home back
-tools/venv/bin/python -I tools/tv.py 'settings put secure screensaver_components com.google.android.backdrop/.Backdrop'   # Ambient back
-tools/venv/bin/python -I tools/tv.py 'pm uninstall com.gathin.tvhome'   # only to remove the new launcher too
+examples/anker-nebula-d2426/restore.sh                     # re-enable all 17, stock Home back, screensaver back
+examples/anker-nebula-d2426/restore.sh --remove-launcher   # same, and uninstall the new launcher
 ```
 
 ## Re-enable one app
@@ -81,16 +80,11 @@ Delete `wallpaper.jpg` and push again for the plain black background. `themes/` 
 ## Rebuild and reinstall the launcher
 
 ```bash
-STOCK_LAUNCHER=none launcher/build-and-install.sh
-tools/disable.sh examples/anker-nebula-d2426/debloat.txt
-tools/venv/bin/python -I tools/tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
-tools/theme.sh examples/anker-nebula-d2426
+examples/anker-nebula-d2426/build-and-install.sh
 ```
 
-The first line builds and installs the launcher and leaves the stock home alone. If it fails, stop there: the
-list disables the stock home, which is only safe once the new one is installed. The list then disables the 17
-packages, the third line makes the new launcher Home and the last one pushes `config.json`. Press Home on the
-remote: if it does not land on the new launcher, undo as above.
+It builds the APK, installs it, applies `debloat.txt` (which disables the stock home only once the new one can
+take over), makes the new launcher Home and pushes `config.json`.
 
 ## Notes from this projector
 
@@ -102,22 +96,6 @@ remote: if it does not land on the new launcher, undo as above.
 - All remote buttons (Home, Back, Settings, app buttons, mic, focus) were tested on the real remote after the
   stock home was disabled and still work.
 
-### Second unit (France, 2026-10-27, same build)
-
-- Everything above held on a second D2426 on `UKNV.260603.001`, through three reboots. Seven more packages
-  off by choice are in `debloat.txt` as commented lines (Play Movies, YouTube Music, text-to-speech, Calendar
-  sync, Health Connect, Nearby). `com.android.devicelockcontroller` is a protected package: `pm disable-user`
-  refuses it.
-- **What the kept Nebula packages send.** `com.oceanwing.nebulalinker` (kept: shutdown, firmware updates)
-  posts to `aiot-nebula-api-pr.goroav.com` about two minutes after every boot: `/app/news/get_device_exception`
-  and `/app/news/get_popup_from_device` (pop-ups the maker can push to the home screen), then checks
-  `display-ota.goroav.com/v1/app/ota/get_rom_version` three times. The APK also names
-  `vsaas-api-qa.eufylife.com` as a fallback host. `com.zhixin.logservice.nebula`, although disabled by the
-  list, still has a process after boot (persistent, system uid) and contacts the same goroav host.
-  `tools/tv.py 'logcat -d | grep OkHttp'` shows all of it.
-- The Wi-Fi pill says "Wi-Fi" and never the network name on this unit, with `ACCESS_FINE_LOCATION` and
-  `ACCESS_COARSE_LOCATION` granted and location switched on (`dumpsys wifi` shows the SSID). Not solved.
-
 ## ADB
 
 ADB was left on at the end of the setup, by choice. Port 5555 is plaintext, so close it when you no longer need it:
@@ -125,7 +103,7 @@ Settings > Device Preferences > Developer options > revoke USB debugging authori
 debugging and USB debugging, restart, then check from the repo:
 
 ```bash
-tools/venv/bin/python tools/adb-closed.py 192.168.1.50
+tools/venv/bin/python tools/adb-closed.py 192.168.68.51
 ```
 
 Only "Connection refused" (exit 0) proves the port is closed; `nc` on macOS can be blocked by Local Network

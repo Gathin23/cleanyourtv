@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 43P725 (Smart TV Pro, BeyondTV4, Realtek rtd288o), Italy",
-  "os": "Android TV 11",
-  "brand": "TCL",
-  "notes": "TCL BI analytics, TGuard, promo content feeds and messages, retail demo, sticker, notereminder; `com.tcl.overseasappshow` must be disabled first to prevent promo packages re-enabling on boot; `com.google.android.tungsten.setupwraith` owns the setup Wi-Fi (do not disable); hardware inputs and Live TV kept; AdGuard Private DNS works; launcher works with 4-app dock"
-}

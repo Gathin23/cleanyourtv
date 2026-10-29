@@ -8,8 +8,6 @@
     <locale android:name="de" />
     <locale android:name="ca" />
     <locale android:name="es" />
-    <!-- Latin American Spanish (values-b+es+419). -->
-    <locale android:name="es-419" />
     <locale android:name="fr" />
     <locale android:name="ru" />
     <locale android:name="zh-CN" />
@@ -22,8 +20,6 @@
     <locale android:name="iw" />
     <locale android:name="tr" />
     <locale android:name="pt" />
-    <!-- values-pt is Brazilian Portuguese; values-pt-rPT holds the European wording where it differs. -->
-    <locale android:name="pt-PT" />
     <locale android:name="fi" />
     <locale android:name="vi" />
     <locale android:name="bn" />
@@ -33,7 +29,4 @@
     <locale android:name="nl" />
     <locale android:name="uz" />
     <locale android:name="uk" />
-    <locale android:name="ko" />
-    <locale android:name="da" />
-    <locale android:name="sv" />
 </locale-config>

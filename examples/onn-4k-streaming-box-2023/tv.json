@@ -1,6 +1,0 @@
-{
-  "tv": "onn 4K Streaming Box (2023, Walmart; YOC, Amlogic), US",
-  "os": "Google TV 14",
-  "brand": "onn",
-  "notes": "Google feedback, Play Games, Play Movies, ambient mode, launcherx + setupwraith; port 5555 opens without pairing; setupwraith owned the Wi-Fi saved at setup; remote app buttons and mic keep working (keep `com.gretzky.GlobalKey`); second unit (Vietnam): Privacy Sandbox modules off, its remote's YouTube/profile/Settings buttons and voice search for titles need launcherx"
-}
