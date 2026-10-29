@@ -144,3 +144,37 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
 
 The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.
+
+## The weather now on Home (weather_now)
+
+An app can hand Home the weather now, which the launcher shows under the clock in the stats line's place, as a
+sky symbol, the temperature and the place ("☁  14°  Vigo"). The launcher only reads; it never writes to the app
+and never goes online, so the app does the fetching. The owner opts in by naming the app's package in the
+`weather_now` key (`config.xml` or a theme); there is no card prompt for it.
+
+1. Name a read-only content provider in a `meta-data` on your `<application>`:
+
+   ```xml
+   <meta-data android:name="com.gathin.tvhome.weather" android:value="com.example.weather" />
+   <provider android:name=".NowProvider" android:authorities="com.example.weather" android:exported="true" />
+   ```
+
+   The provider must belong to the package the owner named; the launcher ignores an authority another app holds.
+2. Answer a query on `content://<authority>/now` with one row and these columns:
+
+   | Column | Type | What |
+   |---|---|---|
+   | `place` | text | The place's name, shown after the temperature. Empty shows the temperature alone. |
+   | `temperature` | integer | Degrees, rounded, in the app's own unit; the launcher adds only "°". |
+   | `unit` | text | `C` or `F`; not shown. |
+   | `code` | integer | The WMO weather code, which picks the sky symbol. |
+   | `is_day` | integer | 1 by day, 0 at night (a moon for a clear night). |
+   | `updated_ms` | integer | Epoch milliseconds of the reading. A row without it, or older than three hours, hides the line. |
+
+   An empty cursor hides the line. Keep it to what Home shows: the provider is exported without a permission, so
+   it must hold no coordinates, accounts or other private data.
+3. Call `notifyChange` on that URI when a new reading arrives. The launcher queries when Home comes back and on
+   each change, and watches only while Home is on screen; a query is the app's cue to refresh a reading that is
+   getting old.
+
+The [Weather](../addons/weather/README.md) add-on implements this with Open-Meteo.

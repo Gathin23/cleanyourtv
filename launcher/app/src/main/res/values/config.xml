@@ -445,6 +445,12 @@
          online. A theme can set "game_day". -->
     <string name="game_day" translatable="false"></string>
 
+    <!-- The weather now under the clock, in the stats line's place (so only without show_stats): a sky glyph, the
+         temperature and the place, e.g. "14°  Vigo". The package of an add-on that publishes it (the Weather add-on:
+         io.github.sumyabazar1.weather; contract in docs/modules.md). Empty = off: nothing is read or watched. The
+         launcher only reads what the add-on publishes and never goes online. A theme can set "weather_now". -->
+    <string name="weather_now" translatable="false"></string>
+
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
          sets its opacity. Around 60 reads clearly without hiding a wallpaper. Can also be set with

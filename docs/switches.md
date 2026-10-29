@@ -61,3 +61,4 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
+| `weather_now` | <img src="switches/weather_now.jpg" width="320" alt="weather_now: a moon, 14° and Vigo under the clock on a TV at night"> |
