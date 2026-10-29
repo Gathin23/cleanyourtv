@@ -1,0 +1,21 @@
+# NVY SMART TV, device t950s_be30ae, Android 14 (SDK 34)
+# Firmware: t950s_be30ae-userdebug 14 UP1A.231005.007.A1 eng.builde.20250730.204933 test-keys
+#
+# STATUS: PROVISIONAL. Some Candidate packages below are commented out because
+# multi-day stability testing is not yet complete.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/nvy-gaia-t950s-be30ae/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/nvy-gaia-t950s-be30ae/debloat.txt
+#
+# Stock launcher, intentionally kept enabled:
+# com.cvte.tv.launcher.mars
+#
+# Privacy candidate: Google Partner Setup / partner attribution
+ com.google.android.partnersetup
+#
+# Privacy candidate: Google feedback reports
+ com.google.android.feedback
+#
+# GAIA advertising service candidate; effect not yet verified
+ com.cvte.gaia.ad.service
+#
