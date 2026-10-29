@@ -47,3 +47,10 @@ someone else's list are judgement calls, so say in the PR which TV you tested on
 should say something new, change the folder's `tv.json`, not the tables.
 
 Then run the tests: `python3 -m unittest discover -s tests -v`.
+git checkout -b agregar-skyworth-2ktv
+git add PROMPT.md
+git commit -m "Add Skyworth 2K TV"
+git push -u origin agregar-skyworth-2ktv
+mkdir -p examples/skyworth
+touch examples/skyworth/2k-tv.txt
+git commit -m "Add Skyworth 2K TV debloat list"
