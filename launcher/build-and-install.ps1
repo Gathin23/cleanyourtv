@@ -163,10 +163,11 @@ $secure = 'android.permission.WRITE_SECURE_SETTINGS'
 if ($RestoreKeyServices) {
     $step = "pm grant com.gathin.tvhome $secure && echo restore-granted"; $mark = 'restore-granted'
 } else {
-    $step = "pm revoke com.gathin.tvhome $secure; s=`$(dumpsys package com.gathin.tvhome); case `"`$s`" in *`"${secure}: granted=true`"*) ;; *`"$secure`"*) echo secure-settings-revoked ;; esac"
+    $step = "pm revoke com.gathin.tvhome $secure; s=`$(dumpsys package com.gathin.tvhome) && case `"`$s`" in *`"${secure}: granted=true`"*) ;; *`"$secure`"*) echo secure-settings-revoked ;; esac"
     $mark = 'secure-settings-revoked'
 }
 $out = ($step | & $py -I ..\tools\tv.py --batch) -join "`n"
 Write-Host $out
-if ($out -notmatch [regex]::Escape($mark)) { throw "WRITE_SECURE_SETTINGS is not in the state this install asked for ($mark missing)" }
+# Only a line that is the marker and nothing else counts: tv.py --batch echoes the step, which contains it too.
+if (($out -split '\r?\n') -notcontains $mark) { throw "WRITE_SECURE_SETTINGS is not in the state this install asked for ($mark missing)" }
 Write-Host 'Installed. Press Home on the remote to see it.'

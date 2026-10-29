@@ -78,7 +78,14 @@ case "$1" in
 esac
 exit 0
 """
+# A readback that fails part way has printed the requested-permissions list, which names the
+# permission without its state.
 DUMPSYS = """#!/bin/sh
+if [ "$(cat "$FAKE_SECURE.readback")" = fail ]; then
+  echo "    requested permissions:"
+  echo "      android.permission.WRITE_SECURE_SETTINGS"
+  exit 1
+fi
 g=false; [ "$(cat "$FAKE_SECURE")" = granted ] && g=true
 echo "      android.permission.WRITE_SECURE_SETTINGS: granted=$g"
 """
@@ -97,6 +104,8 @@ def secure_step(command):
         f.write(state["secure"] + "\n")
     with open(secure + ".works", "w") as f:
         f.write("1\n" if state["revoke_works"] else "0\n")
+    with open(secure + ".readback", "w") as f:
+        f.write("fail\n" if state["readback_fails"] else "ok\n")
     env = dict(os.environ, PATH=shims + ":" + os.environ["PATH"], FAKE_SECURE=secure)
     out = subprocess.run(["sh", "-c", command], env=env, capture_output=True, text=True).stdout
     with open(secure) as f:
@@ -118,6 +127,9 @@ def main():
         commands = []
     for command in commands:
         state["commands"].append(command)
+        if "--batch" in args:
+            # As tools/tv.py does: a batch echoes each command before its output.
+            sys.stdout.write(f"$ {command}\n")
         sys.stdout.write(run(command))
         sys.stdout.flush()
     save()
@@ -164,6 +176,7 @@ class MinSdkGuardTest(unittest.TestCase):
             "install_output": "Success\n",
             "secure": "denied",
             "revoke_works": True,
+            "readback_fails": False,
             "commands": [],
         }
         state.update(overrides)
@@ -206,6 +219,12 @@ class MinSdkGuardTest(unittest.TestCase):
 
     def test_a_grant_the_tv_keeps_stops_the_install(self):
         result, state = self.install(secure="granted", revoke_works=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("secure-settings-revoked missing", result.stderr)
+        self.assertEqual(state["secure"], "granted")
+
+    def test_a_failed_readback_stops_the_install(self):
+        result, state = self.install(secure="granted", revoke_works=False, readback_fails=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("secure-settings-revoked missing", result.stderr)
         self.assertEqual(state["secure"], "granted")

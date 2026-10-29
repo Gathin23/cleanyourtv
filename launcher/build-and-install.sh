@@ -233,10 +233,17 @@ SECURE=android.permission.WRITE_SECURE_SETTINGS
 if [ "${RESTORE_KEY_SERVICES:-0}" = 1 ]; then
   STEP="pm grant com.gathin.tvhome $SECURE && echo restore-granted"; MARK=restore-granted
 else
-  STEP="pm revoke com.gathin.tvhome $SECURE; s=\$(dumpsys package com.gathin.tvhome); case \"\$s\" in *\"$SECURE: granted=true\"*) ;; *\"$SECURE\"*) echo secure-settings-revoked ;; esac"
+  STEP="pm revoke com.gathin.tvhome $SECURE; s=\$(dumpsys package com.gathin.tvhome) && case \"\$s\" in *\"$SECURE: granted=true\"*) ;; *\"$SECURE\"*) echo secure-settings-revoked ;; esac"
   MARK=secure-settings-revoked
 fi
 OUT=$("$PY" -I ../tools/tv.py "$STEP")
 echo "$OUT"
-case "$OUT" in *"$MARK"*) ;; *) echo "ERROR: WRITE_SECURE_SETTINGS is not in the state this install asked for ($MARK missing)" >&2; exit 1 ;; esac
+# Only a line that is the marker and nothing else counts: the step's own text contains it too.
+ACK_FOUND=0
+while IFS= read -r line; do
+  if [ "${line%$'\r'}" = "$MARK" ]; then ACK_FOUND=1; break; fi
+done <<< "$OUT"
+if [ "$ACK_FOUND" != 1 ]; then
+  echo "ERROR: WRITE_SECURE_SETTINGS is not in the state this install asked for ($MARK missing)" >&2; exit 1
+fi
 echo "Installed. Press Home on the remote to see it."
