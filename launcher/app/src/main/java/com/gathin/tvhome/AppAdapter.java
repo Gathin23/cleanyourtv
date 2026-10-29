@@ -63,6 +63,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onLibraryUp();
         /** A tile whose launch_actions entry is "input:<id>": switch to that TV input instead of opening an app. */
         void onOpenInput(String inputId);
+        /** buttons_at_end: the header's buttons, which the footer after the last row takes in. */
+        View footerButtons();
     }
 
     static final class Entry {
@@ -222,6 +224,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean animations;
     private final boolean advancedEffects;
     private final boolean showLibrary;
+    /** buttons_at_end: the footer holds the header's buttons instead of the library pill. */
+    private final boolean buttonsAtEnd;
     /** Packages with a leanback entry at the last reload(): their tiles launch with the leanback category. */
     private Set<String> leanbackPackages = new HashSet<>();
     private final boolean showHomeSettings;
@@ -257,7 +261,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.animations = cfg.animations;
         this.advancedEffects = cfg.animations && cfg.advancedEffects;
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
-        this.showLibrary = LibraryApps.showPill(cfg.appLibrary, cfg.libraryButton, cfg.showLibraryPill);
+        this.buttonsAtEnd = cfg.buttonsAtEnd;
+        // buttons_at_end: the library opens from its button among the others, so there is no pill.
+        this.showLibrary = !buttonsAtEnd && LibraryApps.showPill(cfg.appLibrary, cfg.libraryButton, cfg.showLibraryPill);
         this.reducedMotion = cfg.reducedMotion;
         this.focusOvershoot = cfg.focusOvershoot;
         this.rowsBelowDock = cfg.rowsBelowDock;
@@ -430,6 +436,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == 1) {
             View row = LayoutInflater.from(ctx).inflate(R.layout.row_app_library, parent, false);
             View button = row.findViewById(R.id.btnLibrary);
+            if (buttonsAtEnd) {
+                // The one footer: round copies of the header's buttons, left-aligned under the first column.
+                button.setVisibility(View.GONE);
+                ((ViewGroup) row).setClipChildren(false);   // room for a focused button's zoom
+                View buttons = listener.footerButtons();
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT, android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL);
+                lp.setMarginStart(Math.round(14 * ctx.getResources().getDisplayMetrics().density));
+                ((ViewGroup) row).addView(buttons, lp);
+                return new RecyclerView.ViewHolder(row) { };
+            }
             button.setOnClickListener(v -> listener.onLibraryRequested());
             button.setOnFocusChangeListener((v, focused) -> { if (focused) listener.onLibraryFocused(); });
             button.setOnKeyListener((v, key, event) -> {
@@ -601,12 +618,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return items.size() + (showLibrary ? 1 : 0);
+        return items.size() + (showLibrary || buttonsAtEnd ? 1 : 0);
     }
 
     int appCount() { return items.size(); }
 
-    boolean isLibraryAt(int position) { return showLibrary && position == items.size(); }
+    /** The footer after the last row: the library pill, or buttons_at_end's buttons. */
+    boolean isLibraryAt(int position) { return (showLibrary || buttonsAtEnd) && position == items.size(); }
 
     @Override public int getItemViewType(int position) { return isLibraryAt(position) ? 1 : 0; }
 
