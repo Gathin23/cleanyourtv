@@ -50,6 +50,18 @@ class SafetyRulesEngine {
         )
 
         val KNOWN_DEBLOAT_PATTERNS = mapOf(
+            // Messaging, Camera & Phone Utilities (Unneeded on TV)
+            "com.android.mms" to Pair("SMS/MMS Messaging (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.messaging" to Pair("Android Messaging app (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.samsung.android.messaging" to Pair("Samsung Messaging (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.camera" to Pair("Stock Camera app (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.camera2" to Pair("Camera2 app (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.printspooler" to Pair("Print Spooler service (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.fmradio" to Pair("FM Radio app (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.stk" to Pair("SIM Toolkit app (unneeded on TV)", AppCategory.OPTIONAL),
+            "com.android.cellbroadcastreceiver" to Pair("Cell Broadcast Receiver (unneeded on TV)", AppCategory.OPTIONAL),
+
+            // TCL Specific Bloatware & Telemetry
             "com.tcl.partnercustomizer" to Pair("TCL Partner Customizer bloatware", AppCategory.OPTIONAL),
             "com.tcl.tv.recommendations" to Pair("TCL recommendation telemetry", AppCategory.OPTIONAL),
             "com.tcl.shop" to Pair("TCL Store bloatware", AppCategory.OPTIONAL),
@@ -62,11 +74,13 @@ class SafetyRulesEngine {
             "com.tcl.messagebox" to Pair("TCL Promotional Notifications", AppCategory.OPTIONAL),
             "com.tcl.videoplayer" to Pair("TCL Default Video Player bloatware", AppCategory.OPTIONAL),
 
+            // Google TV / Android TV Non-Essential Promos & Recommendations
             "com.google.android.tv.recommendations" to Pair("Google TV recommendation channel", AppCategory.OPTIONAL),
             "com.google.android.tv.adservices" to Pair("Google TV Ad Services telemetry", AppCategory.OPTIONAL),
             "com.google.android.videos" to Pair("Google TV / Play Movies app", AppCategory.OPTIONAL),
             "com.google.android.music" to Pair("Google Play Music legacy app", AppCategory.OPTIONAL),
 
+            // Pre-installed Third-Party Streaming / Promo Apps
             "com.amazon.amazonvideo.livingroom" to Pair("Amazon Prime Video preinstall", AppCategory.OPTIONAL),
             "com.netflix.ninja" to Pair("Netflix TV app preinstall", AppCategory.OPTIONAL),
             "com.spotify.tv.android" to Pair("Spotify TV preinstall", AppCategory.OPTIONAL),
@@ -79,11 +93,12 @@ class SafetyRulesEngine {
 
         val BLOATWARE_KEYWORDS = listOf(
             "partner", "customizer", "recommendation", "telemetry", "shop", "promo",
-            "advert", "analytics", "banner", "metrics", "tracker", "overlay"
+            "advert", "analytics", "banner", "metrics", "tracker", "overlay",
+            "camera", "messaging", "mms", "printspooler", "fmradio", "simtoolkit"
         )
 
         val CRITICAL_HARDWARE_KEYWORDS = listOf(
-            "bluetooth", "power", "standby", "cec", "input", "remote", "key", "telephony", "wifi"
+            "bluetooth", "power", "standby", "cec", "input", "remote", "key", "wifi"
         )
     }
 
@@ -99,7 +114,6 @@ class SafetyRulesEngine {
         if (HARD_PROTECTED_PACKAGES.contains(packageName) || userProtectedPackages.contains(packageName)) {
             return true
         }
-        // Protect critical remote, bluetooth, standby & power drivers
         return CRITICAL_HARDWARE_KEYWORDS.any { lowerPkg.contains(it) }
     }
 
@@ -141,7 +155,7 @@ class SafetyRulesEngine {
                 isSystem = isSystem,
                 isEnabled = isEnabled,
                 category = AppCategory.OPTIONAL,
-                recommendationReason = "Detected promotional, telemetry, or partner bloatware pattern",
+                recommendationReason = "Detected promotional, camera, messaging, or partner bloatware pattern",
                 confidenceLevel = ConfidenceLevel.MEDIUM,
                 safetyCategory = "Safe Debloat Candidate"
             )
