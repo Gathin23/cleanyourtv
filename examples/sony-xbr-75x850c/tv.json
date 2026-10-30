@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA XBR-75X850C (2015, \"BRAVIA 4K 2015\", SVP-DTV15, MediaTek), US firmware",
+  "os": "Android TV 8.0",
+  "brand": "Sony",
+  "notes": "Second unit of the [55-inch](sony-xbr-55x850c/) build, cut down to a display for an Apple TV: adds Sony's interactive-TV measurement plugins (Kantar/Kuyun/ShopTv over the audio and video buffers) and log collectors, the Sony Firebase push listener and the Backdrop screensaver; voice, every streaming app, Chromecast, DIAL, Miracast, DLNA, the phone-remote service, USB media players and Google account plumbing off by choice; Bravia Sync (HDMI-CEC), updates, Play Services kept; Inputs lists HDMI 1-4 with the CEC name; no key services needed; reboot-checked"
+}
