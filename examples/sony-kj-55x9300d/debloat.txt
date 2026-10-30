@@ -3,8 +3,11 @@
 # Same panel family as examples/sony-kd-65x9300d (Asia-Pacific, Android TV 8.0); this Japanese firmware
 # never got the 8.0 update ("system is up to date"), and ships jp.sony.mybravia.
 #
+# DEBLOAT ONLY: the reference launcher needs Android 8.0 (minSdk 26) and does not run on this 7.0 set,
+# so the stock leanbacklauncher keeps Home and stays enabled. There is no config.json.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kj-55x9300d/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kj-55x9300d/debloat.txt com.google.android.leanbacklauncher
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kj-55x9300d/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # ADB: Developer options has only "USB debugging" (no Network/Wireless debugging toggle); it alone opens
@@ -23,16 +26,8 @@
 # Notes from this firmware:
 # - Wait ~30 s after the last pm disable-user before rebooting: a reboot right after the last batch brought
 #   that batch back enabled (package-restrictions not yet written). Re-disabled, waited, rebooted: all stuck.
-# - The reference launcher needs minSdk 26, so it does not install here as is. A local build with minSdk 24
-#   (core library desugaring for java.time, plus guards around getChangedPackages, Files.readAllLines,
-#   Bitmap.Config.HARDWARE and Resources.getFont) ran fine: Home, dock, D-pad, Inputs (HDMI 1-4 with CEC
-#   state, Video 1/2, Live TV) and a reboot, ~20 MB PSS. Proposed upstream in an issue, not part of this list.
-# - With that launcher, `cmd package set-home-activity` returns nothing and leanbacklauncher (priority 2)
-#   keeps Home; disabling leanbacklauncher (last line below) hands Home over.
 # - Remote: the Google Play button sends keycode 195 (KEYCODE_BUTTON_8) through
-#   com.sony.dtv.systemapp's RemoteKeyGlobalKeyReceiver. app_keys "195:com.google.android.youtube.tv" with
-#   INPUT_KEY_SERVICE=1 turns it into a YouTube button from any app; volume hold still repeats, and the
-#   service rebinds after a reboot.
+#   com.sony.dtv.systemapp's RemoteKeyGlobalKeyReceiver.
 # - Screenshots come back empty (0 bytes) while the tuner plays behind Home right after boot.
 # - The KKTV / MyVideo / Puffin TV tiles on the stock home are Sony promos for apps that are not installed.
 
@@ -65,8 +60,8 @@ com.sony.dtv.osat.music                        # re-enable to play music from US
 com.sony.dtv.osat.album                        # re-enable to view photos from USB
 com.sony.dtv.osat.video                        # re-enable to play videos from USB
 
-# Stock launcher, only with a replacement Home installed (see notes above)
-com.google.android.leanbacklauncher
+# Stock launcher: kept, nothing installable on 7.0 can take Home (see header)
+# com.google.android.leanbacklauncher
 
 # Kept by owner's choice: DLNA (huey.dlna.*, sonyericsson.dlna*), the ambient screensaver (backdrop),
 # Chromecast (apps.mediashell), phone remote (tv.remote.service), screen mirroring (screnmirroring.com,
