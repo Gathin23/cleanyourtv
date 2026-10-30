@@ -37,4 +37,5 @@
     <locale android:name="da" />
     <locale android:name="sv" />
     <locale android:name="ast" />
+    <locale android:name="sl" />
 </locale-config>

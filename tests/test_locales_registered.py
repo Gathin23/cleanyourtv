@@ -61,6 +61,7 @@ NAMES = {
     "pt": "Portuguese",
     "pt-PT": "Portuguese",
     "ru": "Russian",
+    "sl": "Slovenian",
     "th": "Thai",
     "tr": "Turkish",
     "uk": "Ukrainian",
