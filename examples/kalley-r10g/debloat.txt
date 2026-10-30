@@ -34,7 +34,13 @@
 #
 # The firmware turns most preloads back on at boot, as on the MOKA Acer R4G (docs/devices/acer-r4g.md):
 # after one reboot only com.cbs.ca, com.seraphic.media.tv.interactive.app, com.realtek.kara and
-# com.realtek.karaoke.userguide stayed disabled on the #1807 set.
+# com.realtek.karaoke.userguide stayed disabled on the first #1807 set pass.
+# On the second pass, the privacy, telemetry, hotspot, partner and regional streaming packages
+# (com.android.adservices.api, com.android.ondevicepersonalization.services,
+# com.android.federatedcompute.services, com.android.tv.feedbackconsent,
+# com.realtek.leanbacklauncher.partnercustomizer, com.apps.wifihotspot,
+# com.mercadolibre.android.mplay_tv, com.iqiyi.i18n.tv) also stayed disabled across reboots.
+# config.json in this folder sets the 4-column dock with frosted glass and stock_home_redirect.
 #
 # Tested on one set on 2026-10-19/20 with the reference launcher: the apps kept (Netflix, Disney+,
 # Max, Spotify, YouTube, Twitch, GeForce NOW, Stremio) still launch, and HDMI input, Home and the
@@ -48,6 +54,18 @@ com.google.android.youtube.tvmusic           # YouTube Music TV, off by choice
 # Preloaded services
 com.seraphic.media.tv.interactive.app
 com.amazon.amazonvideo.livingroom            # Prime Video preinstall, off by choice
+com.realtek.leanbacklauncher.partnercustomizer
+com.apps.wifihotspot
+
+# Privacy Sandbox and telemetry
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
+
+# Health Connect
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
 
 # Karaoke
 com.realtek.kara
@@ -61,6 +79,8 @@ com.jio.web.androidtv                        # JioTV
 com.cbs.ca                                   # CBS
 net.froemling.bombsquad                      # Bombsquad
 com.yodo1.crossyroad                         # Crossy Road
+com.mercadolibre.android.mplay_tv             # Mercado Play
+com.iqiyi.i18n.tv                             # iQiyi TV
 
 # Stock home and the Google TV setup wizard: keep both. The first set ran with both disabled for two
 # days, but on a second set (#1807) disabling them made system_server crash in a boot loop (watchdog,
