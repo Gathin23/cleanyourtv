@@ -41,7 +41,7 @@ updated. Add-ons with custom shell installers still need Bash; this native Windo
 | `default/` | The built-in look written out as JSON, as a starting point for your own | <img src="default/screenshot.jpg" width="320" alt="default theme"> |
 | `aurora/` | A dark aurora wallpaper (teal and violet on navy, darker at the bottom) with a matching background colour | <img src="aurora/screenshot.jpg" width="320" alt="aurora theme"> |
 | `blocky/` | Eleven blocky pixel-art scenes that follow the time of day: a meadow by day, at dusk and at night, plains, desert, a snowy forest, jungle, ocean, a blossom grove, a cave and a lava cavern, each with its name under the buttons and behind the clock screensaver; the sun, moon and clouds sit behind the hills and trees. Drawn in code by `tools/blocky_wallpapers.py`, and the header rows stay plain sky | <img src="blocky/screenshot.jpg" width="320" alt="blocky theme"> |
-| `cinematic/` | OLED and cinema look: true-colour wallpaper, a 6-column frosted-glass dock, no ambient glow and the idle clock after two minutes | <img src="cinematic/screenshot.jpg" width="320" alt="cinematic theme"> |
+| `cinematic/` | OLED and cinema look: true-colour wallpaper, a 6-column frosted-glass dock, no ambient glow and the idle clock after two minutes. The wallpaper is CC0, not MIT: see `cinematic/CREDITS.md` | <img src="cinematic/screenshot.jpg" width="320" alt="cinematic theme"> |
 | `dussehra/` | Festive skin for Dussehra (ends 21 Oct 2026): a marigold toran, a faint gold rangoli, a diya for Wi-Fi, a bell for Inputs, a marigold for Settings and a petal shower | <img src="dussehra/screenshot.jpg" width="320" alt="dussehra theme"> |
 | `glass/` | Dark navy wallpaper with soft teal and violet light, the cinematic top shelf, a frosted-glass dock, icon-only buttons and the focus glow in the app's colour, gliding without overshoot | <img src="glass/screenshot.jpg" width="320" alt="glass theme"> |
 | `halloween/` | Halloween until 1 Nov 2026: an illustrated haunted house (our own, CC0) and seven night photos from Wikimedia Commons (jack-o'-lanterns by candlelight, a full moon behind a sequoia grove and over a Swedish fjord, a moonrise, two cemeteries in fog), a new one every 30 minutes (credited in `halloween/CREDITS.md`, not on screen), and a frosted-glass dock. With a launcher that knows `seasonal_skin`, the Halloween skin too: a jack-o'-lantern for Wi-Fi that glows while online, a bat for Inputs, a ghost for Settings, bats over the first Home of the day and "Happy Halloween"; it switches itself off after 1 November, the pictures stay until `--reset`. The illustration is CC0; the photos are CC0, public domain, CC BY and CC BY-SA, not MIT: see `halloween/CREDITS.md` | <img src="halloween/screenshot.jpg" width="320" alt="halloween theme"> |
@@ -55,6 +55,11 @@ updated. Add-ons with custom shell installers still need Bash; this native Windo
 
 Every theme folder has a `screenshot.jpg` of Home with that theme on a real TV. `tools/theme.sh` never
 pushes it; it is only here so you can see a theme before you try it.
+
+A theme that did not draw its own pictures says where each one came from, and under which licence, in a
+`CREDITS.md` in its folder (`docs/DOS-AND-DONTS.md` has the rule and `themes/CREATE_A_THEME.md` the
+format). Its row in the table above names that file, so a reader picking a theme can see before pushing
+it whether its pictures are MIT or, say, CC BY-SA.
 
 ## Keys
 
