@@ -1,7 +1,9 @@
 # Sony BRAVIA 4K VH22 (2023 4K LED, device BRAVIA_VH22, MediaTek MT5835, modelgroup SONYANDROIDTV2023M5),
 # India retail, firmware region BRAVIA_VH22_M_PA (preloads mix Indian and South-East Asian apps)
 # Android 12 (Google TV, API 31), build STT2.230505.001.S136/682241, 3 GB RAM
-# Same build tag as the EU firmware in docs/devices/sony-bravia-4k-vh22-settings-key.md; the preloads differ.
+# Same India firmware as examples/sony-kd-65x82l (KD-65X82L/KD-55X82L) and the same build tag as the EU
+# examples/sony-kd-43x80l and docs/devices/sony-bravia-4k-vh22-settings-key.md; the preloads differ. This
+# family-level list adds the HbbTV suite, the Jio/miniTV preloads and the full 13-package B2B suite.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh22-in/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh22-in/debloat.txt com.google.android.apps.tv.launcherx
@@ -53,14 +55,12 @@ com.jio.media.jiotvplus           # JioTV+
 com.jio.media.stb.ondemand        # Jio set-top on-demand app
 com.tcl.browser                   # preloaded browser (TCL's APK on this Sony set)
 
-# streaming (off by choice)
-com.amazon.amazonvideo.livingroom # Prime Video
-com.apple.atve.sony.appletv       # Apple TV app
-com.google.android.youtube.tvmusic # YouTube Music
-
-# storefronts (off by choice)
-com.google.android.videos         # Google TV movies (loses access to purchases in it)
-com.sonypicturescore              # Sony Pictures Core
+# streaming and storefronts (off by choice on this set; uncomment a line to disable that app too)
+# com.amazon.amazonvideo.livingroom  # Prime Video
+# com.apple.atve.sony.appletv        # Apple TV app
+# com.google.android.youtube.tvmusic # YouTube Music
+# com.google.android.videos          # Google TV movies (loses access to purchases in it)
+# com.sonypicturescore               # Sony Pictures Core
 
 # BRAVIA CAM suite (no camera attached)
 com.sony.dtv.sensingcamera.fwupdate
