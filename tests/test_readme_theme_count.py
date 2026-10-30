@@ -12,12 +12,19 @@ main both still say ten while themes/ holds eleven, so the German and Dutch page
 fewer look than the English one does - the gap #2132 and #2461 closed for the press counts, on the
 number a theme PR moves.
 
+README.uk.md is the fourth such page, and it is the case the table below missed: the Ukrainian page
+landed with the row in its own words ("У themes/ постачається чотирнадцять"), while the table carried
+English, German and Dutch only, so claims() read nothing on it and the pinned set of pages that state
+a count stayed the three it named. A page left at the previous count - the failure the German and
+Dutch pages were - would have passed here without a word.
+
 The number is never copied here. A page's count is read out of the sentence it writes it in, through
-one table of the words these three languages state a number in, so a theme folder added by a PR moves
+one table of the words these four languages state a number in, so a theme folder added by a PR moves
 this test with that page, and a page that starts stating the count is held the same way. A word the
 table does not carry names the page that wrote it rather than reading as no claim at all; one is left
 out of the table on purpose, since "een" and "ein" are also the articles these languages put before a
-noun, and a single-theme repo is not a thing.
+noun, and a single-theme repo is not a thing. A fifth language means a fifth line in that table: the
+last page added did not fail here, it simply became a page this file could not see.
 
 That one table is what README.md's row is read through too. The row had a twelve-word table of its own
 while the sentences were read through one that carries twenty, and the two agreed only while themes/
@@ -46,10 +53,10 @@ FRONT = ROOT / "README.md"
 ROW_START = "| **Themes** |"
 
 # Every feature row that names themes/ and states how many ship there, whatever language it is in:
-# English "eleven ship in", German "Zehn liegen in", Dutch "staan tien thema's". The words come from
-# the three languages the front pages are written in today, two to twenty each; one is left out
-# because "een" and "ein" are also the articles those languages put before a noun, so an English
-# "one" would read a Dutch sentence as a claim of one theme.
+# English "eleven ship in", German "Zehn liegen in", Dutch "staan tien thema's", Ukrainian
+# "постачається чотирнадцять". The words come from the four languages the front pages are written in
+# today, two to twenty each; one is left out because "een" and "ein" are also the articles those
+# languages put before a noun, so an English "one" would read a Dutch sentence as a claim of one theme.
 NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
                 "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
                 "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
@@ -60,7 +67,13 @@ NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7
                 "zwanzig": 20,
                 "twee": 2, "drie": 3, "vijf": 5, "zes": 6, "zeven": 7, "negen": 9, "tien": 10,
                 "twaalf": 12, "dertien": 13, "veertien": 14, "vijftien": 15, "zestien": 16,
-                "zeventien": 17, "achttien": 18, "negentien": 19, "twintig": 20}
+                "zeventien": 17, "achttien": 18, "negentien": 19, "twintig": 20,
+                # Ukrainian, README.uk.md's row as it is written today. The apostrophe is the page's
+                # own: п'ять, дев'ять and п'ятнадцять carry a straight one there.
+                "два": 2, "три": 3, "чотири": 4, "п'ять": 5, "шість": 6, "сім": 7, "вісім": 8,
+                "дев'ять": 9, "десять": 10, "одинадцять": 11, "дванадцять": 12, "тринадцять": 13,
+                "чотирнадцять": 14, "п'ятнадцять": 15, "шістнадцять": 16, "сімнадцять": 17,
+                "вісімнадцять": 18, "дев'ятнадцять": 19, "двадцять": 20}
 # The row is read through that same table, so a thirteenth theme is "thirteen ship in themes/" and not
 # a row that states nothing. A second table for the row - one that stopped at twelve while this one
 # carried twenty - is what made the thirteenth theme fail as "the Themes row states no count".
@@ -156,10 +169,12 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these three pages state the count today, so one that stops
-        # saying it fails here rather than quietly leaving the check.
-        self.assertEqual(sorted(set(stating)), ["README.de.md", "README.md", "README.nl.md"],
-                         "the front pages that state the theme count are not the three that did: "
+        # stale in the first place: these four pages state the count today, so one that stops
+        # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
+        # the Ukrainian words above; before that it stated its count and this list still read three.
+        self.assertEqual(sorted(set(stating)),
+                         ["README.de.md", "README.md", "README.nl.md", "README.uk.md"],
+                         "the front pages that state the theme count are not the four that did: "
                          f"{sorted(set(stating))}")
 
 
@@ -199,6 +214,21 @@ class CountTest(unittest.TestCase):
         dutch = "| **Thema's** | In [`themes/`](themes/) staan elf thema's |"
         self.assertEqual([({11}, german)], claims(german))
         self.assertEqual([({11}, dutch)], claims(dutch))
+
+    def test_a_ukrainian_sentence_is_read(self):
+        """README.uk.md's row as the page writes it: the count follows the link, then the gloss."""
+        ukrainian = ("| **Теми** | Тло, шпалери й розкладка з `config.json`, надісланого через Wi-Fi, "
+                     "без перезбирання. У [`themes/`](themes/) постачається чотирнадцять, включно з "
+                     "вбудованою `default/` |")
+        self.assertEqual([({14}, ukrainian)], claims(ukrainian))
+
+    def test_the_ukrainian_fourteen_is_not_read_as_the_four_it_starts_with(self):
+        # "чотирнадцять" opens with "чотири", "тринадцять" with "три", "дванадцять" with "два": the
+        # longest-first alternation is what keeps a count of twelve from being read as two.
+        for word, number in (("чотирнадцять", 14), ("тринадцять", 13), ("дванадцять", 12)):
+            with self.subTest(word=word):
+                line = f"| **Теми** | У [`themes/`](themes/) постачається {word} |"
+                self.assertEqual([({number}, line)], claims(line))
 
     def test_a_digits_count_is_read_in_any_sentence(self):
         self.assertEqual([({12}, "| **Themes** | 12 liegen in [`themes/`](themes/) |")],
