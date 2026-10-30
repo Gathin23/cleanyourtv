@@ -65,13 +65,15 @@
         <package android:name="com.xiaomi.mitv.settings" />
         <package android:name="com.tcl.settings" />
         <package android:name="com.amazon.tv.launcher" />
+        <package android:name="com.google.android.apps.bard" />
+        <package android:name="com.android.vending" />
         <!-- Coocaa OS sources for the Inputs menu (coocaa_sources); see CoocaaSources. -->
         <provider android:authorities="com.skyworth.tv.provider" />
         <provider android:authorities="com.skyworth.tv.sdk.provider" />
     </queries>
 
     <application
-        android:label="@string/app_name"
+        android:label="@string/personal_app_name"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
         android:theme="@style/Theme.TvHome"
@@ -79,29 +81,31 @@
         android:localeConfig="@xml/locales_config">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".PersonalHomeActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:stateNotNeeded="true"
             android:excludeFromRecents="true"
+            android:stateNotNeeded="true"
             android:clearTaskOnLaunch="true"
-            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|uiMode"
-            android:screenOrientation="landscape">
-            <!-- CVTE firmware (ro.CVT_EN_COMMON_HOME_INTENT=1) sends the Home key and boot as MAIN + HOME +
-                 COMMON_HOME, which only matches a filter that lists both (#1201). In this one filter, not a second
-                 one: a plain HOME intent still matches it, and a second filter could list this activity twice. -->
+            android:label="@string/personal_app_name" />
+        <!-- Keep the installed Home component stable across upgrades and existing ADB tooling. -->
+        <activity-alias
+            android:name=".MainActivity"
+            android:targetActivity=".PersonalHomeActivity"
+            android:exported="true"
+            android:label="@string/personal_app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.COMMON_HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <!-- Listed in the TV's own app list, so it can be opened from the stock home screen too. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
 
         <activity
             android:name=".LauncherSettingsActivity"
@@ -136,12 +140,14 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <!-- Stays alive until the system Home-role request returns; NoDisplay would require finishing
+             before onResume and cannot host startActivityForResult. -->
         <activity
             android:name=".HomeSettingsActivity"
             android:exported="false"
             android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <!-- Home button for remotes that send KEYCODE_ALL_APPS (Xiaomi). Opt-in: HOME_KEY_SERVICE=1
              build-and-install.sh; see HomeKeyService. -->
         <service

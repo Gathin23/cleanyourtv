@@ -32,6 +32,42 @@ and `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. On Linux the insta
 
 Themes set the same keys plus a background colour and a wallpaper.
 
+## Personal Home in this fork
+
+This fork opens a responsive Personal Home screen on both phones and TVs. Its header shows the name
+entered in the first-run profile dialog and an optional photo chosen through Android's document picker.
+The profile is stored only on this device; it does not sign in to Google or read an account photo.
+Use Settings → Profile to change the name/photo later. If a TV has no document picker, the name still works.
+
+Search apps opens Google Play search; installation uses the Play Store's normal confirmation flow.
+Gemini opens the installed Gemini app, or its Play Store page (with a browser fallback). App availability,
+device compatibility and sign-in are handled by those apps; this launcher does not embed Gemini.
+
+The center clock uses 12-hour AM/PM time in the device's timezone, with a small date below it.
+Its drawn sun/moon and blue backdrop
+follow a fixed local-time day/night schedule, with gradual dawn/dusk colours; they do not calculate
+astronomical sunrise or use location. The backdrop updates once a minute while visible.
+The bundled Midnight Cyan mountain/lake wallpaper was generated for this personal fork and is stored
+as an optimised WebP; it is not downloaded at runtime.
+The network indicator is green only when Android reports validated internet access and red otherwise,
+including a Wi-Fi connection with no validated internet. It also recognises other active transports.
+
+Quick settings offers profile, launcher columns, Wi-Fi, Bluetooth, display settings, default Home and,
+on TVs, available input sources. The brightness slider changes this launcher's window brightness only;
+device/TV brightness opens the system display settings. Firmware may not expose every system setting.
+Both the app grid and settings support touch and D-pad focus. Phone columns adapt to screen width;
+portrait and landscape use the same responsive screen.
+
+The package and `.MainActivity` Home component remain stable: that component is now an alias for
+`PersonalHomeActivity`. No stock launcher is disabled automatically. Keep the stock Home enabled until
+the actual remote Home button and a reboot have been verified on the device.
+
+Build from `launcher/` with `./gradlew --no-daemon testReleaseUnitTest lintRelease assembleRelease`.
+Install the generated `app/build/outputs/apk/release/app-release.apk` using Android's normal package
+installer, or `adb install -r` when ADB is already authorised. Choose Personal Home in the system's
+default-Home picker. Android 8.0+ is required on phones as well as TVs. This fork's new personal UI uses
+its own local preferences; the classic theme/config options described below apply to the original UI.
+
 ## Launcher settings and the default home
 
 Click **Settings** for the TV's own settings. Hold OK on it for its menu:
@@ -67,10 +103,16 @@ The launcher's own page has these rows, top to bottom:
   page.
 
 **Change the default home:** Launcher settings and the optional Default-home tile
-(`show_home_settings_shortcut`) open Android's home picker. Choose the original launcher to stop using
+(`show_home_settings_shortcut`) request the Home role on Android 10 and newer when CleanYourTV is not
+already the default. Accept the system prompt to make the remote's standard Home button open CleanYourTV.
+If the role request is unavailable, or CleanYourTV already holds it, they open Android's home settings.
+Choose the original launcher to stop using
 CleanYourTV as Home, or CleanYourTV to return. The original launcher must be enabled; if the install
 script disabled it, run the [restore script](../README.md#restoring-your-tv) first. Some TVs provide no
-home picker.
+home picker. Choosing Home does not disable the original launcher. Keep it enabled until the real remote's
+Home button and a reboot both return to CleanYourTV. Some firmware depends on the original launcher even
+when another app is Home; disabling it can leave a black screen or break remote buttons. A successful
+system prompt alone does not establish that a particular TV supports disabling its stock launcher.
 
 ## Languages
 
