@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65MQLED80 (Smart TV Pro, G08, MediaTek tcl9618), Norway",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Same build as the 65C7L list (UTT2.250416.001 AU02); Samba TV ACR, TCL Live, promos, store demo, Alexa, Assistant, Chromecast, Miracast/T-Cast, USB media and Rakuten off; AirPlay, game bar and soundbar updater kept; setupwraith owned the Wi-Fi network even on Ethernet; gear, YouTube, Netflix and Prime buttons need HOME_KEY_SERVICE=1 with launcherx off; one session, reboot-checked"
+}

@@ -1,0 +1,86 @@
+# TCL 65MQLED80 Google TV, Norway (device G08, model "Smart TV Pro", MediaTek tcl9618)
+# Android 14 (Google TV), firmware UTT2.250416.001 AU02. Same board and firmware build as
+# examples/tcl-65c7l-google-tv and examples/tcl-c755-google-tv; the 65C7L list was the starting point.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65mqled80-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65mqled80-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: USB debugging alone opened port 5555 (Wireless debugging stayed off). Built-in Ethernet.
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Keep (as on the C755/65C7L): com.tcl.tv, com.tcl.tvinput, com.tcl.suspension (the Input button's source
+# panel), com.tcl.dashboard, com.tcl.autopair, com.tcl.systemserver, com.tcl.providers.config,
+# com.tcl.initsetup, com.tcl.factory.view, com.tcl.inputmethod.international, com.tcl.globalkeyoverlay,
+# com.google.android.tv.remote.service and all com.mediatek.* except AirPlay. com.tcl.hotelmenu is not
+# installed on this model. The TCL soundbar updater (com.tcl.UpdatePeripheral) was left on; firmware
+# updates come through Google Play Services.
+#
+# Applied 2026-10-30 on a real unit in seven batches with screenshots between them, then reboot-checked twice:
+# all 32 packages stayed disabled, nothing is re-enabled at boot, and power-on lands on the new Home (not
+# Live TV). All four HDMI inputs, AV and the tuner stayed registered in tv_input, Live TV opened from the
+# launcher's Inputs menu, and YouTube loaded with AdGuard Private DNS. One session; not yet lived with for days.
+#
+# Known quirks on this firmware:
+# - The saved Wi-Fi network belonged to setupwraith (dumpsys wifi: cname=...setupwraith) although the TV runs
+#   on Ethernet. The owner let it go: FORCE_SETUPWRAITH=1 disabled setupwraith, Android deleted that network,
+#   Ethernet was unaffected. On Wi-Fi, forget the network and join it again in Settings first.
+# - Unlike the 65C7L, four remote buttons went dead with launcherx disabled: gear (keycode 83, scancode 561),
+#   YouTube (190, 569), Netflix (4062, 566) and Prime Video (4099, 752). Input (178, KEYCODE_TV_INPUT) and
+#   volume kept working. HOME_KEY_SERVICE=1 with this folder's config.json brought all four back (pressed on the
+#   real remote). The cost: a held Volume Up (sent over CEC to a soundbar here) moved about two steps instead
+#   of ramping, reported by the owner, not measured (docs/devices/tcl-55p71b-g09-key-repeat.md).
+# - Disabling dreamx: set screensaver_components to com.gathin.tvhome/.ClockDream first.
+
+# TCL tracking and analytics
+com.tcl.ttvs                           # Samba TV ACR viewing tracking, TCL "BI" analytics, Alexa core, T-Cast
+com.tcl.logkit                         # log capture and upload
+com.tcl.usercenter                     # TCL account sign-in nags
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# TCL content, ads and promos
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.interactive                    # TCL TIAS background service
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup        # partner attribution
+
+# Retail demo, cleaner and preloads
+com.tcl.exhibit
+com.tcl.esticker
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide
+com.tcl.guard                          # TCL "cleaner" / app manager
+com.tcl.smartalexa                     # Alexa
+com.google.android.play.games
+
+# Off by choice on this unit
+com.google.android.katniss             # Google Assistant voice (the mic button then does nothing)
+com.google.android.apps.mediashell     # Chromecast
+com.tcl.miracast                       # Miracast screen mirroring
+com.tcl.magiconnectfree                # TCL T-Cast phone mirroring
+com.tcl.ui_mediaCenter                 # USB media player
+com.tcl.gallery                        # USB photo gallery + TCL screensaver
+com.google.android.youtube.tvmusic
+com.google.android.videos              # Google TV movie store app
+tv.wuaki.apptv                         # Rakuten TV
+
+# Needed for the custom launcher. Disable only AFTER launcher/ is installed and set as Home:
+# with launcherx gone, setupwraith's RecoveryActivity claims HOME at priority 1 (blank screen).
+com.google.android.apps.tv.dreamx      # ambient screensaver (promos); switch screensaver_components first
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx
+
+# Kept on this unit: uncomment if you don't use them
+# com.tcl.airplay2                     # AirPlay, together with the next two lines
+# com.mediatek.AirplayAPK
+# com.mediatek.airplaydaemon
+# com.tcl.gamebar                      # game mode / VRR overlay for consoles
+# com.tcl.UpdatePeripheral             # TCL soundbar/speaker firmware updates
+# com.netflix.ninja                    # Netflix, together with the next line
+# com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom    # Prime Video
+# com.google.android.youtube.tv
