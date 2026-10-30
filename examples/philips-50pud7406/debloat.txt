@@ -102,6 +102,28 @@
 # and starts tv.wuaki.apptv, which this unit ships disabled, so the key does nothing. app_keys "249:<package>"
 # (HOME_KEY_SERVICE=1) gets the key first and opens that app instead (checked on the real remote).
 # Not checked here: HDMI picture and DVB-T (IPTV only), held volume (external audio).
+#
+# FIFTH UNIT (Latin America): Philips 50PUD7406/77, on Wi-Fi, nothing in the USB ports. The build of the first unit:
+# TPM215L_R.105.000.097.000, persist.odm.tpv.region=lt, ro.product.name=PH0M_LT_T32, incremental 200321, 1.38 GB,
+# low_ram. Tested the same evening only, with two reboots.
+# Applied: the four telemetry lines, nettv.market, fusion.android.tv.demo, disclaimercustomization (tools/disable.sh
+# took it here, unlike on the fourth unit), partnercustomizer, tvrecommendations, backdrop (screensaver moved to
+# com.gathin.tvhome/.ClockDream, quirk 1) and Prime Video, plus com.google.android.katniss (Assistant) by the owner's
+# choice. Kept by choice: mediashell (Chromecast), Netflix, Disney+ and YouTube. videos, youtube.tvmusic, play.games
+# and fitness were already disabled before the session; Spotify is not installed. org.droidtv.eum,
+# nettvregistration and the MMP player stayed enabled.
+# After batch 2 the stock launcher's top bar lost its Input and Wi-Fi icons (which of the five packages does it was
+# not bisected); that matters only to someone who keeps the stock launcher. Inputs stayed registered in
+# `dumpsys tv_input`.
+# setupwraith owns the saved Wi-Fi network (cname in `dumpsys wifi`) but is not a HOME claimant; it was left enabled.
+# Home handed over to launcher/ on the first try. After each reboot the disabled list matched what was applied.
+# Quirk 5 shows here too: after a reboot the firmware resumes com.mediatek.wwtv.tvcenter on the last input.
+# power_on_home_always with HOME_KEY_SERVICE=1 brought Home back about 2 s later, but with that helper bound a held
+# Volume Up stepped once per press instead of ramping (TV speakers, real remote), and ramped again once the helper
+# was off: the trade in docs/devices/tcl-55p71b-g09-key-repeat.md. The owner kept the ramp and no helper.
+# Real remote, no helper: Home, Source/Input, Settings and the Netflix key work, and held volume ramps. Switching to a
+# PlayStation 5 on HDMI 3 from the launcher's Inputs list resumed tvcenter on that input. YouTube plays with Private
+# DNS (dns.adguard-dns.com) on. Not checked: DVB-T or cable channels, Bluetooth devices.
 
 # TPV / Philips telemetry
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517
