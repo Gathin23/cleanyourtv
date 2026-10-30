@@ -71,17 +71,20 @@
         <TextView
             android:id="@+id/animationsChoice"
             style="@style/SettingsRow"
+            android:visibility="gone"
             android:layout_marginTop="28dp" />
 
         <TextView
             android:id="@+id/advancedChoice"
             style="@style/SettingsRow"
+            android:visibility="gone"
             android:layout_marginTop="10dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:visibility="gone"
             android:text="@string/advanced_effects_warning"
             android:textColor="#FFACB8C1"
             android:textSize="14sp" />

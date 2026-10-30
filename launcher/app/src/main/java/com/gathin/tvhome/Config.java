@@ -308,6 +308,9 @@ final class Config {
         if (chosenColumns >= 4 && chosenColumns <= 7) columns = chosenColumns;
         int chosenRows = choices.getInt(ROWS_BELOW_DOCK_KEY, rowsBelow);
         if (chosenRows >= 0 && chosenRows <= 3) rowsBelow = chosenRows;
+        if (choices.contains("animations") || choices.contains("advanced_effects")) {
+            choices.edit().remove("animations").remove("advanced_effects").apply();
+        }
         animations = choices.getBoolean("animations", animations);
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;

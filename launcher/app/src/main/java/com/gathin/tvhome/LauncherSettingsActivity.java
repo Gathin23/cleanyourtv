@@ -73,27 +73,9 @@ public final class LauncherSettingsActivity extends Activity {
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
         animationsChoice = findViewById(R.id.animationsChoice);
-        animationsChoice.setOnClickListener(v -> {
-            animations = !animations;
-            if (!animations) advancedEffects = false;
-            choices.edit().putBoolean("animations", animations)
-                    .putBoolean("advanced_effects", advancedEffects).apply();
-            setResult(RESULT_OK);
-            refresh();
-        });
+        if (animationsChoice != null) animationsChoice.setVisibility(android.view.View.GONE);
         advancedChoice = findViewById(R.id.advancedChoice);
-        advancedChoice.setOnClickListener(v -> {
-            if (advancedEffects) {
-                setAdvanced(false);
-            } else {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.advanced_effects)
-                        .setMessage(R.string.advanced_effects_warning)
-                        .setPositiveButton(R.string.enable, (dialog, which) -> setAdvanced(true))
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
-            }
-        });
+        if (advancedChoice != null) advancedChoice.setVisibility(android.view.View.GONE);
         followThemeChoice = findViewById(R.id.followThemeChoice);
         followThemeChoice.setOnClickListener(v -> {
             if (!hasOnTvChoices()) return;
@@ -181,12 +163,16 @@ public final class LauncherSettingsActivity extends Activity {
         for (int i = 0; i < rowChoices.length; i++) {
             rowChoices[i].setSelected(rowsBelowDock == i);
         }
-        animationsChoice.setText(getString(R.string.animations_state,
-                getString(animations ? R.string.on : R.string.off)));
-        advancedChoice.setText(getString(R.string.advanced_effects_state,
-                getString(advancedEffects ? R.string.on : R.string.off)));
-        advancedChoice.setEnabled(animations);
-        advancedChoice.setAlpha(animations ? 1f : 0.5f);
+        if (animationsChoice != null && animationsChoice.getVisibility() != android.view.View.GONE) {
+            animationsChoice.setText(getString(R.string.animations_state,
+                    getString(animations ? R.string.on : R.string.off)));
+        }
+        if (advancedChoice != null && advancedChoice.getVisibility() != android.view.View.GONE) {
+            advancedChoice.setText(getString(R.string.advanced_effects_state,
+                    getString(advancedEffects ? R.string.on : R.string.off)));
+            advancedChoice.setEnabled(animations);
+            advancedChoice.setAlpha(animations ? 1f : 0.5f);
+        }
         String wallpaperCurrent = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         wallpaperChoice.setText(getString(R.string.wallpaper_state,
                 "none".equals(wallpaperCurrent) ? getString(R.string.wallpaper_none)
@@ -197,7 +183,6 @@ public final class LauncherSettingsActivity extends Activity {
 
     private boolean hasOnTvChoices() {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
-                || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY);
     }
 

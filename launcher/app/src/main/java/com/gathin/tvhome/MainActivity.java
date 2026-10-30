@@ -3918,25 +3918,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             recreate();
         });
 
-        // Animations row
-        boolean anims = config.animations;
-        String animLabel = "Animations: " + (anims ? getString(R.string.on) : getString(R.string.off));
-        addSettingsMenuRow(rows, popup, animLabel, () -> {
-            boolean next = !anims;
-            choices.edit().putBoolean("animations", next)
-                    .putBoolean("advanced_effects", next && config.advancedEffects).apply();
-            recreate();
-        });
-
-        // Advanced effects row
-        boolean adv = config.animations && config.advancedEffects;
-        String advLabel = "Advanced effects: " + (adv ? getString(R.string.on) : getString(R.string.off));
-        addSettingsMenuRow(rows, popup, advLabel, () -> {
-            boolean next = !adv;
-            choices.edit().putBoolean("advanced_effects", next).apply();
-            recreate();
-        });
-
         // Screensaver choice: "solat" (Countdown Solat) vs "clock" (Clocks)
         String currentScreensaverType = choices.getString("screensaver_type", "solat");
         final boolean[] isSolatScreensaver = {"solat".equals(currentScreensaverType)};

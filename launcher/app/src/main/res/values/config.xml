@@ -161,9 +161,9 @@
          shrink to fit from 5 up (about 144dp at 5, 117dp at 6 on a 1080p TV). -->
     <integer name="columns">7</integer>
 
-    <!-- Basic motion is on; advanced effects are opt-in in the launcher's own Settings screen. -->
+    <!-- Basic motion and advanced effects are on by default. -->
     <bool name="animations">true</bool>
-    <bool name="advanced_effects">false</bool>
+    <bool name="advanced_effects">true</bool>
 
     <!-- Optional Default-home tile; keep this key for existing themes and tile-ordering work.
          Off by default because the chooser is also available from launcher settings. -->
