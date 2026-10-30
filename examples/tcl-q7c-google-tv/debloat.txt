@@ -98,8 +98,11 @@ com.google.android.tungsten.setupwraith
 #   Play Games         com.google.android.play.games
 #
 # ALSO DISABLED on that unit, on top of the list above:
-com.tcl.dashboard                      # TCL dashboard rows; the remote's Input key (178) still opens
-                                       # TCL's own source panel, which comes from com.tcl.suspension
+com.tcl.dashboard                      # TCL dashboard rows. Verified with this disabled on that unit:
+                                       # the remote's Input key still opens TCL's own source panel
+                                       # (KEYCODE_TV_INPUT 178 -> Home / AirPlay / HDMI rows, then apps).
+                                       # The panel comes from com.tcl.suspension, which stays enabled,
+                                       # so the lists that keep dashboard do not need it for the Input key
 com.tcl.partnercustomizer
 com.tcl.interactive
 com.tcl.hotelmenu                      # hotel mode menu
