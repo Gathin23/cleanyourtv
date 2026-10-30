@@ -138,9 +138,9 @@ add-ons have been published.
 
 | Customization tested on this unit | Possible reusable form; remaining work |
 |---|---|
-| Current weather with an icon, condition, temperature and approximate area | Separate module-card add-on; disclose location/network use and keep the core offline. |
-| Prayer timetable, next-prayer countdown and underline | Separate add-on using official Indonesian city timetables with date/region validation and offline caches; regional calculations elsewhere must remain labeled estimates. |
-| Capacity and widget status summaries | A small local diagnostic add-on, or a separately proposed opt-in feature after checking existing modules. Values are snapshots, not a RAM-cleaning service. |
+| Current weather with an icon, condition, temperature and approximate area | Extend the [existing Weather add-on](../../addons/weather/README.md); disclose any added location/network use and keep the core offline. |
+| Prayer timetable, next-prayer countdown and underline | Propose an official Indonesian timetable provider and date/region-validated offline cache for the [existing Prayer Times add-on](../../addons/prayer-times/README.md); calculations elsewhere remain estimates. |
+| Capacity and widget status summaries | Build on [Capacity Stats](../../addons/capacity-stats/README.md) and existing diagnostics; dynamic Home captions need separate module-contract discussion. No RAM-cleaning service. |
 | Personal appearance and app-order backup | A separately scoped feature with bounded validation and recovery tests; the private JSON backup excludes wallpaper image bytes and is not a whole-device backup. |
 | Wallpaper, dock and icon styling | A generic theme using existing supported keys, with licensed images and a real-TV screenshot stripped of personal details. |
 
@@ -148,5 +148,6 @@ The private fork's network access, additional dependency and permissions, hard-c
 and larger APK do not meet the core launcher's contribution constraints as-is. No private source,
 wallpaper collection, branded artwork, personal configuration or prebuilt APK is distributed by this
 note. These are extension ideas and tested behavior, not ready-to-use add-on downloads. Any future
-implementation belongs in the appropriate independent project or `addons/` workflow, with its own
+implementation should extend the matching add-on with its maintainer, or use an appropriate independent
+project, with its own
 license, permission disclosure and reproducible source.
