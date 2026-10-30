@@ -505,6 +505,108 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- All Apps Modal Popup Overlay with Blurred Backdrop -->
+    <FrameLayout
+        android:id="@+id/allAppsModalOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="false"
+        android:elevation="35dp">
+
+        <!-- Blurred Background ImageView -->
+        <ImageView
+            android:id="@+id/allAppsBlurredBackdrop"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:importantForAccessibility="no" />
+
+        <!-- Frosted Scrim Dim Overlay -->
+        <View
+            android:id="@+id/allAppsBackdropScrim"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#B8050508"
+            android:importantForAccessibility="no" />
+
+        <!-- Centered Modal Glass Panel (5 x 5 layout) -->
+        <LinearLayout
+            android:id="@+id/allAppsModalPanel"
+            android:layout_width="820dp"
+            android:layout_height="450dp"
+            android:layout_gravity="center"
+            android:background="@drawable/glass_panel"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:elevation="16dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <!-- Modal Header -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_apps"
+                        android:layout_marginEnd="10dp"
+                        android:tint="#FFFFFFFF" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/all_apps"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="22sp"
+                        android:fontFamily="@font/inter_semibold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/allAppsCountBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/inter_medium"
+                    android:background="@drawable/pill_badge_bg"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+            </RelativeLayout>
+
+            <!-- 5-column small icon grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/allAppsModalGrid"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                android:descendantFocusability="afterDescendants" />
+        </LinearLayout>
+    </FrameLayout>
+
     <!-- The single floating glass highlight that springs between tiles. -->
     <com.gathin.tvhome.GlassView
         android:id="@+id/glass"

@@ -67,7 +67,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static final class Entry {
-        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3;
+        static final int APP = 0, HOME_SETTINGS = 1, CARD = 2, EMPTY = 3, ALL_APPS = 4;
 
         final int kind;
         final String label;
@@ -187,7 +187,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** cinematic_home: only then does a launch record the last-opened app the shelf uses. */
     private final boolean cinematic;
     /** Dock order (config.xml dock_apps, or a theme's config.json). */
-    private final List<String> favourites;
+    private List<String> favourites;
     /** Grid apps fill the dock slots dock_apps leaves free (config.xml, fill_dock). */
     private final boolean fillDock;
     /** Dock apps found at the last reload, and the empty slots after them. */
@@ -213,7 +213,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.ctx = ctx;
         this.listener = listener;
         this.dockSize = dockSize;
-        this.favourites = cfg.dockApps;
+        this.favourites = new ArrayList<>(cfg.dockApps);
         this.fillDock = cfg.fillDock;
         this.hidden = new HashSet<>(cfg.hiddenApps);
         this.animations = cfg.animations;
@@ -311,14 +311,20 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         docked = 0;
         while (docked < fresh.size() && favourites.contains(fresh.get(docked).pkg)) docked++;
-        emptySlots = dockRow && !reordering ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
+        emptySlots = !dockRow && !reordering ? DockSlots.empty(docked, dockSize, fresh.size(), fillDock) : 0;
         for (int i = 0; i < emptySlots; i++) {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
         }
         items.clear();
         if (dockRow) {
-            items.addAll(fresh.subList(0, Math.min(dockSize, fresh.size())));
+            int actualDock = docked > 0 ? docked : Math.min(dockSize, fresh.size());
+            items.addAll(fresh.subList(0, actualDock));
+            // Add "All Apps" tile right beside the end app of the dock
+            Drawable allAppsIcon = ctx.getDrawable(R.drawable.ic_apps);
+            items.add(new Entry(Entry.ALL_APPS, ctx.getString(R.string.all_apps),
+                    new ComponentName(ctx.getPackageName(), "com.gathin.tvhome.AllApps"),
+                    null, allAppsIcon, null, 0));
         } else {
             items.addAll(fresh);
         }
@@ -507,6 +513,29 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             h.card.setLayoutParams(cardLp);
         }
 
+        if (e.kind == Entry.ALL_APPS) {
+            h.banner.setVisibility(View.GONE);
+            h.icon.setVisibility(View.VISIBLE);
+            h.icon.setImageDrawable(ctx.getDrawable(R.drawable.ic_apps));
+            h.icon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
+            int isz = Math.round((focused ? 40 : 28) * density);
+            iconLp.width = isz;
+            iconLp.height = isz;
+            iconLp.gravity = Gravity.CENTER;
+            iconLp.bottomMargin = 0;
+            h.icon.setLayoutParams(iconLp);
+
+            final int cr = Math.round((focused ? 18 : 14) * density);
+            GradientDrawable gd = new GradientDrawable();
+            gd.setCornerRadius(cr);
+            gd.setColor(focused ? 0x33FFFFFF : 0x221A1A1E);
+            gd.setStroke(Math.round(1f * density), focused ? 0x80FFFFFF : 0x26FFFFFF);
+            h.card.setBackground(gd);
+            h.label.setVisibility(View.GONE);
+            return;
+        }
+
         FrameLayout.LayoutParams bannerLp = (FrameLayout.LayoutParams) h.banner.getLayoutParams();
         Drawable small = getSmallIcon(e.pkg, e.label);
         Drawable iconToShow = small != null ? small : (e.banner != null ? e.banner : e.icon);
@@ -658,6 +687,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
     private void launch(Entry e) {
         SoundManager.getInstance(ctx).playEnter();
+        if (e.kind == Entry.ALL_APPS) {
+            if (listener != null) listener.onLibraryRequested();
+            return;
+        }
         if (e.pkg.equals(ctx.getPackageName())) {
             if (ctx instanceof MainActivity) {
                 ((MainActivity) ctx).scrollToTop();
@@ -721,6 +754,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         savedRanks = ranks;
     }
 
+    void setFavourites(List<String> favs) {
+        this.favourites = favs != null ? new ArrayList<>(favs) : new ArrayList<>();
+    }
+
     /** Reorder mode on or off; takes effect at the next reload() (empty dock slots are left out while on). */
     void setReordering(boolean on) {
         reordering = on;
@@ -730,10 +767,25 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return emptySlots > 0;
     }
 
-    /** Tiles that can be moved: everything but the "Default home" tile, which always stays last. */
+    /** Tiles that can be moved: everything but the "Default home" and "All Apps" tiles, which stay last. */
     int movableCount() {
         int n = items.size();
-        return n > 0 && items.get(n - 1).kind == Entry.HOME_SETTINGS ? n - 1 : n;
+        while (n > 0 && (items.get(n - 1).kind == Entry.HOME_SETTINGS || items.get(n - 1).kind == Entry.ALL_APPS)) {
+            n--;
+        }
+        return n;
+    }
+
+    boolean isAllAppsAt(int position) {
+        return position >= 0 && position < items.size() && items.get(position).kind == Entry.ALL_APPS;
+    }
+
+    int dockAppCount() {
+        int count = 0;
+        for (Entry e : items) {
+            if (e.kind == Entry.APP || e.kind == Entry.CARD) count++;
+        }
+        return count;
     }
 
     /** Keys of the movable tiles in their current order, for Order (empty dock slots are not tiles). */
@@ -783,17 +835,26 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     String labelAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).label : "";
+        if (position >= 0 && position < items.size()) {
+            if (items.get(position).kind == Entry.ALL_APPS) return ctx.getString(R.string.all_apps);
+            return items.get(position).label;
+        }
+        return "";
     }
 
     String packageAt(int position) {
-        return position >= 0 && position < items.size() ? items.get(position).pkg : null;
+        if (position >= 0 && position < items.size()) {
+            if (items.get(position).kind == Entry.ALL_APPS) return "__all_apps__";
+            return items.get(position).pkg;
+        }
+        return null;
     }
 
     /** The tile's artwork, its banner or else its icon, for the cinematic shelf's backdrop (HeroArt). */
     Drawable artworkAt(int position) {
         if (position < 0 || position >= items.size()) return null;
         Entry e = items.get(position);
+        if (e.kind == Entry.ALL_APPS) return ctx.getDrawable(R.drawable.wallpaper_top_bar);
         return e.banner != null ? e.banner : e.icon;
     }
 
@@ -805,6 +866,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     int ambientColorAt(int position) {
         if (position < 0 || position >= items.size()) return 0xFF444444;
         Entry e = items.get(position);
+        if (e.kind == Entry.ALL_APPS) return 0x504070A0;
         if (e.ambient == 0) e.ambient = vividColor(e.banner != null ? e.banner : e.icon);
         return e.ambient;
     }
@@ -923,7 +985,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 float a = 1.0f;
                 view.setScaleX(1.0f);
                 view.setScaleY(1.0f);
-                if (animations && !reducedMotion && adapter.dockRow && pos < adapter.dockSize) {
+                if (animations && !reducedMotion && adapter.dockRow && pos < adapter.items.size()) {
                     if (focused) {
                         view.animate()
                                 .translationZ(8f * density)

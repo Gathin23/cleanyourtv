@@ -39,10 +39,11 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent,
                                @NonNull RecyclerView.State state) {
         int pos = parent.getChildAdapterPosition(view);
-        if (pos >= 0 && pos < dockSize) {
+        int total = parent.getAdapter() != null ? parent.getAdapter().getItemCount() : dockSize;
+        if (pos >= 0 && pos < total) {
             outRect.top = (int) (6 * density);
             outRect.bottom = (int) (12 * density);
-            if (pos < dockSize - 1) {
+            if (pos < total - 1) {
                 outRect.right = (int) (12 * density);
             } else {
                 // Trailing clearance so the last app can scroll all the way to slot 1

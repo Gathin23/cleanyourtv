@@ -294,6 +294,16 @@ final class Config {
         SharedPreferences choices = ctx.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
         // Unmounted storage looks like a theme reset; compare only once the file is readable.
         if (mounted) syncThemeChoices(choices, dir, file);
+        String customDock = choices.getString("dock_apps", null);
+        if (customDock != null && !customDock.trim().isEmpty()) {
+            String[] split = customDock.split(",");
+            List<String> userDock = new ArrayList<>();
+            for (String s : split) {
+                String trimmed = s.trim();
+                if (!trimmed.isEmpty()) userDock.add(trimmed);
+            }
+            if (!userDock.isEmpty()) dock = userDock;
+        }
         int chosenColumns = choices.getInt("columns", columns);
         if (chosenColumns >= 4 && chosenColumns <= 7) columns = chosenColumns;
         int chosenRows = choices.getInt(ROWS_BELOW_DOCK_KEY, rowsBelow);

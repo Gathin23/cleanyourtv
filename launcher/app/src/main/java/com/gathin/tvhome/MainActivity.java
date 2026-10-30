@@ -317,9 +317,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean dockEditing;
     /** Dock place being changed in edit-dock mode, or -1 while the place is still being chosen. */
     private int dockEditSlot = -1;
+    private boolean dockRemoving;
     private AppLibraryDialog appLibrary;
     private boolean libraryFocusPending;
     private RecyclerView.OnScrollListener pendingFocusScroll;
+
+    private FrameLayout allAppsModalOverlay;
+    private ImageView allAppsBlurredBackdrop;
+    private LinearLayout allAppsModalPanel;
+    private TextView allAppsCountBadge;
+    private RecyclerView allAppsModalGrid;
+    private AllAppsAdapter allAppsModalAdapter;
 
     // ── Focused dock app wallpapers ───────────────────────────────────────────
     private static final Map<String, Integer> DOCK_WALLPAPERS = new HashMap<>();
@@ -333,6 +341,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         DOCK_WALLPAPERS.put("com.vidio.android.tv", R.drawable.wallpaper_vidio);
         DOCK_WALLPAPERS.put("com.android.vending", R.drawable.wallpaper_googleplay);
         DOCK_WALLPAPERS.put("appnovatica.tv", R.drawable.wallpaper_ottnavigator);
+        DOCK_WALLPAPERS.put("__all_apps__", R.drawable.wallpaper_top_bar);
     }
     private ImageView dockWallpaperA;
     private ImageView dockWallpaperB;
@@ -678,6 +687,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             allAppsAdapter.reload();
         }
 
+        allAppsModalOverlay = findViewById(R.id.allAppsModalOverlay);
+        allAppsBlurredBackdrop = findViewById(R.id.allAppsBlurredBackdrop);
+        allAppsModalPanel = findViewById(R.id.allAppsModalPanel);
+        allAppsCountBadge = findViewById(R.id.allAppsCountBadge);
+        allAppsModalGrid = findViewById(R.id.allAppsModalGrid);
+        if (allAppsModalGrid != null) {
+            allAppsModalGrid.setLayoutManager(new GridLayoutManager(this, 5));
+            final float gDensity = getResources().getDisplayMetrics().density;
+            final int hGap = Math.round(8 * gDensity);
+            final int vGap = Math.round(8 * gDensity);
+            allAppsModalGrid.addItemDecoration(new RecyclerView.ItemDecoration() {
+                @Override
+                public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
+                                           @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                    outRect.set(hGap, vGap, hGap, vGap);
+                }
+            });
+            allAppsModalAdapter = new AllAppsAdapter(this);
+            allAppsModalGrid.setAdapter(allAppsModalAdapter);
+        }
+        if (allAppsModalOverlay != null) {
+            allAppsModalOverlay.setOnClickListener(v -> hideAllAppsModal());
+        }
+
         if (tabHome != null) {
             tabHome.setOnFocusChangeListener((v, hasFocus) -> {
                 if (hasFocus) selectHomeTab();
@@ -686,7 +719,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             tabHome.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                    focusTile(lastFocused % COLUMNS);
+                    focusTile(dockReturnPosition());
                     return true;
                 }
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
@@ -770,13 +803,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
                 SoundManager.getInstance(MainActivity.this).playBack();
-                focusTile(lastFocused % COLUMNS);
+                focusTile(dockReturnPosition());
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Back to the dock tile Up came from, not wherever the focus finder lands.
-                focusTile(lastFocused % COLUMNS);
+                focusTile(dockReturnPosition());
                 return true;
             }
 
@@ -952,7 +985,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateDockWallpaper(adapter.packageAt(pos), pos);
         updateAppStats(adapter.packageAt(pos), false);
         hideGlass();
-        focusTile(lastFocused % COLUMNS);
+        focusTile(dockReturnPosition());
     }
 
     private void selectAppsTab() {
@@ -1133,6 +1166,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     private void reloadTiles() {
         if (reordering) endReorder();   // an app installed or removed while reordering: keep the order so far
+        Config cfg = Config.load(this);
+        if (cfg != null && cfg.dockApps != null) {
+            dockApps = cfg.dockApps;
+            adapter.setFavourites(dockApps);
+        }
         // Read these before reload(): rebinding can move focus to the first tile and overwrite them.
         final String returnKey = lastFocusedKey;
         final int returnSlot = lastFocused;
@@ -1337,6 +1375,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             return true;
         }
+        if (allAppsModalOverlay != null && allAppsModalOverlay.getVisibility() == View.VISIBLE) {
+            if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    hideAllAppsModal();
+                }
+                return true;
+            }
+        }
+        if (dockRemoving) {
+            return dispatchDockRemove(event);
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if ((code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) && isAppsTab) {
                 selectHomeTab();
@@ -1530,6 +1579,177 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (fillDockLeavesSlots) reloadTiles();   // the empty dock slots left out while reordering come back
     }
 
+    /** Remove app from dock (Settings menu): focus goes to the dock, user chooses an app, OK removes it. */
+    private void startDockRemove() {
+        if (openPopup != null) {
+            openPopup.dismiss();
+            openPopup = null;
+        }
+        if (reordering) endReorder();
+        if (adapter.dockAppCount() <= 1) {
+            Toast.makeText(this, R.string.dock_remove_min_error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        dockRemoving = true;
+        glassAccent = 0xFFE53935;
+        glass.setAccent(0xFFE53935);
+        focusTile(0);
+        Toast.makeText(this, R.string.dock_remove_hint, Toast.LENGTH_LONG).show();
+    }
+
+    private void endDockRemove() {
+        if (!dockRemoving) return;
+        dockRemoving = false;
+        glassAccent = 0;
+        glass.setAccent(festive ? festival.accentColor() : 0);
+    }
+
+    private boolean dispatchDockRemove(KeyEvent event) {
+        boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+        int code = event.getKeyCode();
+        boolean ok = code == KeyEvent.KEYCODE_DPAD_CENTER || code == KeyEvent.KEYCODE_ENTER
+                || code == KeyEvent.KEYCODE_NUMPAD_ENTER;
+        boolean back = code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE;
+        if (back) {
+            if (!down) {
+                endDockRemove();
+            }
+            return true;
+        }
+        int pos = focusedTilePosition();
+        if (ok && pos >= 0) {
+            if (!down) {
+                removeAppFromDock(pos);
+            }
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    private void removeAppFromDock(int pos) {
+        if (!dockRemoving) return;
+        if (adapter.isAllAppsAt(pos)) {
+            Toast.makeText(this, "Cannot remove All Apps shortcut", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (adapter.dockAppCount() <= 1) {
+            Toast.makeText(this, R.string.dock_remove_min_error, Toast.LENGTH_SHORT).show();
+            endDockRemove();
+            return;
+        }
+        String pkgToRemove = adapter.packageAt(pos);
+        String label = adapter.labelAt(pos);
+        if (pkgToRemove == null || pkgToRemove.startsWith("__")) {
+            return;
+        }
+        List<String> updated = new ArrayList<>(dockApps);
+        updated.remove(pkgToRemove);
+        dockApps = updated;
+        SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        choices.edit().putString("dock_apps", TextUtils.join(",", updated)).apply();
+        try {
+            File orderFile = Order.file(this);
+            if (orderFile != null && orderFile.exists()) {
+                orderFile.delete();
+            }
+        } catch (Throwable ignored) {}
+        adapter.setFavourites(dockApps);
+        adapter.setSavedOrder(Collections.emptyMap());
+        endDockRemove();
+        reloadApps(false);
+        Toast.makeText(this, "Removed " + label + " from dock", Toast.LENGTH_SHORT).show();
+        focusTile(Math.max(0, Math.min(pos, adapter.getItemCount() - 1)));
+    }
+
+    public void showAllAppsModal() {
+        if (allAppsModalOverlay == null) return;
+        if (allAppsModalAdapter != null) {
+            allAppsModalAdapter.reload();
+            if (allAppsCountBadge != null) {
+                int count = allAppsModalAdapter.getAppCount();
+                allAppsCountBadge.setText(count + " " + (count == 1 ? "app" : "apps"));
+            }
+        }
+        // Generate blurred backdrop from active wallpaper
+        Drawable bgDrawable = null;
+        if (dockWallpaperA != null && dockWallpaperA.getVisibility() == View.VISIBLE && dockWallpaperA.getAlpha() > 0.3f) {
+            bgDrawable = dockWallpaperA.getDrawable();
+        } else if (dockWallpaperB != null && dockWallpaperB.getVisibility() == View.VISIBLE && dockWallpaperB.getAlpha() > 0.3f) {
+            bgDrawable = dockWallpaperB.getDrawable();
+        }
+        if (bgDrawable == null && findViewById(R.id.root) != null) {
+            bgDrawable = findViewById(R.id.root).getBackground();
+        }
+        if (bgDrawable != null && allAppsBlurredBackdrop != null) {
+            try {
+                Bitmap blurred = HeroArt.from(bgDrawable);
+                if (blurred != null) {
+                    allAppsBlurredBackdrop.setImageBitmap(blurred);
+                }
+            } catch (Throwable ignored) {}
+        }
+        allAppsModalOverlay.setVisibility(View.VISIBLE);
+        if (animations && !reducedMotion) {
+            allAppsModalOverlay.setAlpha(0f);
+            allAppsModalOverlay.animate().alpha(1f).setDuration(220).start();
+            if (allAppsModalPanel != null) {
+                allAppsModalPanel.setScaleX(0.92f);
+                allAppsModalPanel.setScaleY(0.92f);
+                allAppsModalPanel.animate().scaleX(1f).scaleY(1f).setDuration(240)
+                        .setInterpolator(new DecelerateInterpolator(1.8f)).start();
+            }
+        } else {
+            allAppsModalOverlay.setAlpha(1f);
+            if (allAppsModalPanel != null) {
+                allAppsModalPanel.setScaleX(1f);
+                allAppsModalPanel.setScaleY(1f);
+            }
+        }
+        if (allAppsModalGrid != null) {
+            allAppsModalGrid.post(() -> {
+                if (allAppsModalGrid.getChildCount() > 0) {
+                    View first = allAppsModalGrid.getChildAt(0);
+                    View card = first.findViewById(R.id.appCard);
+                    if (card != null) card.requestFocus();
+                    else first.requestFocus();
+                } else {
+                    allAppsModalGrid.requestFocus();
+                }
+            });
+        }
+    }
+
+    public void hideAllAppsModal() {
+        if (allAppsModalOverlay == null || allAppsModalOverlay.getVisibility() != View.VISIBLE) return;
+        SoundManager.getInstance(this).playBack();
+        if (animations && !reducedMotion) {
+            allAppsModalOverlay.animate().alpha(0f).setDuration(180).withEndAction(() -> {
+                allAppsModalOverlay.setVisibility(View.GONE);
+                focusDockAllAppsOrLast();
+            }).start();
+        } else {
+            allAppsModalOverlay.setVisibility(View.GONE);
+            focusDockAllAppsOrLast();
+        }
+    }
+
+    private void focusDockAllAppsOrLast() {
+        if (adapter != null && grid != null) {
+            int allAppsPos = -1;
+            for (int i = 0; i < adapter.getItemCount(); i++) {
+                if (adapter.isAllAppsAt(i)) {
+                    allAppsPos = i;
+                    break;
+                }
+            }
+            if (allAppsPos >= 0) {
+                focusTile(allAppsPos);
+            } else {
+                focusTile(Math.max(0, Math.min(lastFocused, adapter.getItemCount() - 1)));
+            }
+        }
+    }
+
     /**
      * Moves the carried tile one step. Left and Right wrap across rows, like a list; Up and Down move a whole row,
      * and Down into a short last row lands on its last tile. Nothing moves past either end or up into the top bar.
@@ -1592,6 +1812,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onBackPressed() {
+        if (allAppsModalOverlay != null && allAppsModalOverlay.getVisibility() == View.VISIBLE) {
+            hideAllAppsModal();
+            return;
+        }
+        if (dockRemoving) {
+            endDockRemove();
+            return;
+        }
         SoundManager.getInstance(this).playBack();
         View currentFocus = getCurrentFocus();
         if (currentFocus != null && (currentFocus.getId() == R.id.btnInputs
@@ -1600,7 +1828,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 || currentFocus.getId() == R.id.weatherPill
                 || currentFocus.getId() == R.id.btnReorder
                 || currentFocus.getId() == R.id.btnLibraryTop)) {
-            focusTile(lastFocused % COLUMNS);
+            focusTile(dockReturnPosition());
             return;
         }
         // Home screen: Back goes nowhere.
@@ -1753,25 +1981,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onLibraryRequested() {
-        if (appLibrary != null) appLibrary.close();
-        if (openPopup != null) openPopup.dismiss();
-        libraryFocusPending = false;
-        libraryFromTopBar = false;
-        appLibrary = new AppLibraryDialog(this, animations, reducedMotion, adapter::containsPackage, () -> reloadApps(false), () -> {
-            appLibrary = null;
-            openPopup = null;
-            if (libraryFromTopBar) {
-                libraryFromTopBar = false;
-                btnLibraryTop.requestFocus();
-                return;
-            }
-            libraryFocusPending = true;
-            grid.post(() -> {
-                if (libraryFocusPending && appLibrary == null && hasWindowFocus() && !isFinishing()) focusLibrary();
-            });
-        });
-        openPopup = appLibrary.popup;
-        appLibrary.show();
+        showAllAppsModal();
     }
 
     @Override
@@ -1791,7 +2001,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         float pad = 6f * density;        // matches GlassView's glow inset
         float scale = adapter.focusScale();
 
-        if (dockRow && position < COLUMNS) {
+        if (dockRow && position < adapter.getItemCount()) {
             // Horizontal PS5 carousel scrolling:
             // Slot 1 (X_focus) is the fixed anchor for any focused app from index 1 onwards.
             // Position 0 aligns at slot 0 (X = 0).
@@ -1830,7 +2040,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     glass.setRadius(18f * density);
                 }
 
-                int accent = cinematic && !festive ? adapter.ambientColorAt(position) : 0;
+                int accent = dockRemoving ? 0xFFE53935 : (cinematic && !festive ? adapter.ambientColorAt(position) : 0);
                 if (accent != glassAccent) {
                     glassAccent = accent;
                     glass.setAccent(accent);
@@ -1894,8 +2104,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             glassTargetX = x;
             glassTargetY = y;
             // Cinematic shelf: the highlight glows in the dock app's colour, plain white in the grid.
-            int accent = cinematic && !festive && position < COLUMNS ? adapter.ambientColorAt(position) : 0;
-            if (cinematic && !festive && accent != glassAccent) {
+            int accent = dockRemoving ? 0xFFE53935 : (cinematic && !festive && position < adapter.getItemCount() ? adapter.ambientColorAt(position) : 0);
+            if (accent != glassAccent) {
                 glassAccent = accent;
                 glass.setAccent(accent);
             }
@@ -1920,7 +2130,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void refitGlass() {
         if (isDestroyed() || adapter.appCount() == 0 || libraryFocusPending) return;
         int pos = Math.max(0, Math.min(lastFocused, adapter.appCount() - 1));
-        if (dockRow && pos < COLUMNS) return;
+        if (dockRow && pos < adapter.getItemCount()) return;
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
         if (card == null || card.getWidth() <= 0 || !card.isFocused()) return;
@@ -2055,7 +2265,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** One dot per dock app, the focused one drawn long and white. Hebrew docks start on the right, so do the dots. */
     private void updateHeroDots(int position) {
-        int count = Math.min(adapter.dockFilled(), COLUMNS);
+        int count = dockRow ? adapter.getItemCount() : Math.min(adapter.dockFilled(), COLUMNS);
         heroDots.setVisibility(count > 1 ? View.VISIBLE : View.INVISIBLE);
         if (heroDots.getChildCount() != count) {
             heroDots.removeAllViews();
@@ -2413,7 +2623,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void updateAppStats(String pkg, boolean changed) {
         if (appStats == null) return;
         currentStatsPkg = pkg != null ? pkg : "";
-        if (currentStatsPkg.isEmpty()) {
+        if (currentStatsPkg.isEmpty() || currentStatsPkg.startsWith("__")) {
             hideAppStats();
             return;
         }
@@ -2770,26 +2980,37 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // escapes up into the top bar. Mid-row moves fall through to the default focus search.
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
             boolean forward = rtlAppGrid ? keyCode == KeyEvent.KEYCODE_DPAD_LEFT : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
-            if (forward && position == adapter.focusablePosition(count - 1) && adapter.isLibraryAt(count)) {
-                focusLibrary();
-                return true;
-            }
-            // In the dock, navigating right from the last app moves to the weather icon!
-            if (forward && position < COLUMNS) {
-                int lastDockPos = Math.max(0, Math.min(adapter.dockFilled() - 1, COLUMNS - 1));
-                if (position == lastDockPos) {
-                    if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
-                        weatherPill.requestFocus();
+            if (dockRow) {
+                int lastPos = adapter.getItemCount() - 1;
+                if (forward) {
+                    if (position >= lastPos) {
+                        if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
+                            weatherPill.requestFocus();
+                            return true;
+                        }
+                    } else {
+                        focusTile(position + 1);
+                        return true;
+                    }
+                } else {
+                    if (position == 0) {
+                        return true;
+                    } else {
+                        focusTile(position - 1);
                         return true;
                     }
                 }
+            }
+            if (forward && position == adapter.focusablePosition(count - 1) && adapter.isLibraryAt(count)) {
+                focusLibrary();
+                return true;
             }
             int rowCount = position < COLUMNS ? Math.min(count, adapter.dockFilled()) : count;
             return GridNavigation.atHorizontalEdge(position, rowCount, COLUMNS,
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) {
+            if (dockRow || position < COLUMNS) {
                 // Dock row: moving UP focuses weather icon first!
                 if (weatherPill != null && weatherPill.getVisibility() == View.VISIBLE) {
                     weatherPill.requestFocus();
@@ -2804,6 +3025,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             target = position - COLUMNS;
         } else {
+            if (dockRow) return true;
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
             if (position >= lastRowStart) {
                 if (adapter.isLibraryAt(count)) focusLibrary();
@@ -2881,6 +3103,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pendingFocusScroll = null;
             grid.stopScroll();
         }
+    }
+
+    private int dockReturnPosition() {
+        if (dockRow && adapter != null) {
+            return Math.max(0, Math.min(lastFocused, adapter.getItemCount() - 1));
+        }
+        return lastFocused % COLUMNS;
     }
 
     private void focusTile(int position) {
@@ -3318,7 +3547,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (openPopup == popup) openPopup = null;
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
-            focusTile(lastFocused % COLUMNS);
+            focusTile(dockReturnPosition());
         });
 
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -3554,7 +3783,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (openPopup == popup) openPopup = null;
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
-            focusTile(lastFocused % COLUMNS);
+            focusTile(dockReturnPosition());
         });
 
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -3642,7 +3871,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
             if (!reordering && !dockEditing) {
-                focusTile(lastFocused % COLUMNS);
+                focusTile(dockReturnPosition());
             }
         });
 
@@ -3687,9 +3916,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return "Screensaver: " + (isSolatScreensaver[0] ? "Countdown Solat" : "Clocks");
         });
 
-        // Edit dock
+        // Remove app from dock
         if (dockRow) {
-            addSettingsMenuRow(rows, popup, R.string.dock_edit, this::startDockEdit);
+            addSettingsMenuRow(rows, popup, R.string.dock_remove, this::startDockRemove);
         }
 
         // Reorder apps
@@ -3703,7 +3932,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY)
                     .remove("animations").remove("advanced_effects")
                     .remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove("screensaver_type").apply();
+                    .remove("screensaver_type")
+                    .remove("dock_apps").apply();
+            try {
+                File orderFile = Order.file(this);
+                if (orderFile != null && orderFile.exists()) orderFile.delete();
+            } catch (Throwable ignored) {}
             recreate();
         });
 
@@ -3866,7 +4100,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
-            focusTile(lastFocused % COLUMNS);
+            focusTile(dockReturnPosition());
         });
 
         SharedPreferences sp = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
@@ -4071,7 +4305,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (openPopup == popup) openPopup = null;
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
-            focusTile(lastFocused % COLUMNS);
+            focusTile(dockReturnPosition());
         });
         List<Cards.Card> listed = new ArrayList<>(cards);
         Collections.sort(listed, Cards::byLabel);

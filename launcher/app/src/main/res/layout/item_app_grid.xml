@@ -2,10 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:paddingTop="14dp"
-    android:paddingBottom="18dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="10dp"
     android:clipChildren="false"
     android:clipToPadding="false">
 
@@ -22,8 +22,8 @@
 
         <FrameLayout
             android:id="@+id/cardContainer"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:layout_gravity="center_horizontal"
             android:duplicateParentState="true"
             android:background="@drawable/tile_grid_selector"
@@ -35,15 +35,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
+                android:visibility="gone"
                 android:contentDescription="@null" />
 
             <ImageView
                 android:id="@+id/appIcon"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:contentDescription="@null" />
         </FrameLayout>
 
@@ -51,12 +52,12 @@
             android:id="@+id/appName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:gravity="center"
             android:singleLine="true"
             android:ellipsize="end"
             android:textColor="#CCFFFFFF"
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:fontFamily="@font/inter_medium" />
     </LinearLayout>
 </FrameLayout>

@@ -66,10 +66,18 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
     private final View tabApp;
     private final Map<String, Bitmap> smallIconsCache = new HashMap<>();
 
+    public AllAppsAdapter(Context ctx) {
+        this(ctx, null);
+    }
+
     public AllAppsAdapter(Context ctx, View tabApp) {
         this.ctx = ctx;
         this.tabApp = tabApp;
         this.density = ctx.getResources().getDisplayMetrics().density;
+    }
+
+    public int getAppCount() {
+        return items.size();
     }
 
     public void reload() {
@@ -249,49 +257,41 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
         h.name.setText(item.label);
 
         if (item.smallIcon != null) {
-            h.banner.setImageBitmap(item.smallIcon);
-            h.banner.setVisibility(View.VISIBLE);
-            h.icon.setVisibility(View.GONE);
-        } else if (item.banner != null) {
-            h.banner.setImageDrawable(item.banner);
-            h.banner.setVisibility(View.VISIBLE);
-            h.icon.setVisibility(View.GONE);
+            h.icon.setImageBitmap(item.smallIcon);
+            h.icon.setVisibility(View.VISIBLE);
+            h.banner.setVisibility(View.GONE);
         } else if (item.icon != null) {
             h.icon.setImageDrawable(item.icon);
             h.icon.setVisibility(View.VISIBLE);
             h.banner.setVisibility(View.GONE);
+        } else if (item.banner != null) {
+            h.banner.setImageDrawable(item.banner);
+            h.banner.setVisibility(View.VISIBLE);
+            h.icon.setVisibility(View.GONE);
         } else {
             h.banner.setVisibility(View.GONE);
             h.icon.setVisibility(View.GONE);
         }
 
         h.card.setOnFocusChangeListener((v, hasFocus) -> {
-            float s = hasFocus ? 1.06f : 1.0f;
-            float tz = hasFocus ? 8f * density : 0f;
+            float s = hasFocus ? 1.08f : 1.0f;
+            float tz = hasFocus ? 6f * density : 0f;
             h.card.animate().scaleX(s).scaleY(s).translationZ(tz).setDuration(120).start();
             h.name.setTextColor(hasFocus ? 0xFFFFFFFF : 0xCCFFFFFF);
-        });
-
-        h.card.setOnKeyListener((v, keyCode, event) -> {
-            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                int pos = h.getAdapterPosition();
-                if (pos >= 0 && pos < 5) {
-                    if (tabApp != null) {
-                        tabApp.requestFocus();
-                        return true;
-                    }
-                }
+            if (hasFocus) {
+                SoundManager.getInstance(ctx).playNavigation();
             }
-            return false;
         });
 
         h.card.setOnClickListener(v -> {
+            SoundManager.getInstance(ctx).playEnter();
             Intent intent = new Intent(Intent.ACTION_MAIN).setComponent(item.component)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
             if (item.isLeanback) intent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
             try {
                 ctx.startActivity(intent);
                 if (ctx instanceof MainActivity) {
+                    ((MainActivity) ctx).hideAllAppsModal();
                     ((MainActivity) ctx).setLastOpenedApp(item.pkg);
                 }
             } catch (Exception e) {
