@@ -77,14 +77,6 @@ Do not use that success message alone as proof of a completed Home handover.
 On the Android 14 unit, the Home query listed launcherx at priority 2 and
 `com.google.android.tungsten.setupwraith/.RecoveryActivity` at priority 1.
 
-The owner chose to keep both launcherx and setupwraith enabled. A locally customized
-`com.gathin.tvhome` used `stock_home_redirect` and `HomeKeyService` instead; the owner
-confirmed the real Home button returned to it, sometimes after a brief stock-Home
-flash, and that it appeared automatically after a reboot on each unit. Those are
-observations of that customized build, **not validation of the current unmodified
-launcher**. The casting receiver was kept enabled, but end-to-end casting was not
-tested, so this report does not establish casting compatibility.
-
 Only a subset of the optional telemetry/demo packages was disabled, in small
 batches. On the Android 14 unit, the post-reboot check found recordactivation,
 recommendation, Google feedback, the two store demos and the launcher customizer
