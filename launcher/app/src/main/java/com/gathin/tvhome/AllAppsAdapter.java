@@ -39,6 +39,10 @@ import java.util.Set;
 
 public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> {
 
+    public interface OnAppSelectedListener {
+        void onAppSelected(AppItem item);
+    }
+
     public static class AppItem {
         public final String pkg;
         public final String label;
@@ -66,6 +70,37 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
     private final View tabApp;
     private final Map<String, Bitmap> smallIconsCache = new HashMap<>();
     private RecyclerView recyclerView;
+    private boolean isAddToDockMode = false;
+    private final Set<String> dockPackages = new HashSet<>();
+    private OnAppSelectedListener onAppSelectedListener;
+
+    public void setAddToDockMode(boolean addToDockMode) {
+        this.isAddToDockMode = addToDockMode;
+    }
+
+    public boolean isAddToDockMode() {
+        return isAddToDockMode;
+    }
+
+    public void setDockPackages(java.util.Collection<String> pkgs) {
+        this.dockPackages.clear();
+        if (pkgs != null) {
+            this.dockPackages.addAll(pkgs);
+        }
+    }
+
+    public void setOnAppSelectedListener(OnAppSelectedListener listener) {
+        this.onAppSelectedListener = listener;
+    }
+
+    public int getFirstAvailablePosition() {
+        for (int i = 0; i < items.size(); i++) {
+            if (!dockPackages.contains(items.get(i).pkg)) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
     public AllAppsAdapter(Context ctx) {
         this(ctx, null);
@@ -284,6 +319,7 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
     public void onBindViewHolder(@NonNull Holder h, int position) {
         AppItem item = items.get(position);
         h.name.setText(item.label);
+        boolean inDock = isAddToDockMode && dockPackages.contains(item.pkg);
 
         if (item.smallIcon != null) {
             h.icon.setImageBitmap(item.smallIcon);
@@ -302,11 +338,26 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
             h.icon.setVisibility(View.GONE);
         }
 
+        if (inDock) {
+            h.card.setAlpha(0.35f);
+            h.name.setTextColor(0x88FFFFFF);
+        } else {
+            h.card.setAlpha(1.0f);
+            h.name.setTextColor(0xCCFFFFFF);
+        }
+
         h.card.setOnFocusChangeListener((v, hasFocus) -> {
+            boolean currentInDock = isAddToDockMode && dockPackages.contains(item.pkg);
             float s = hasFocus ? 1.08f : 1.0f;
             float tz = hasFocus ? 6f * density : 0f;
             h.card.animate().scaleX(s).scaleY(s).translationZ(tz).setDuration(120).start();
-            h.name.setTextColor(hasFocus ? 0xFFFFFFFF : 0xCCFFFFFF);
+            if (currentInDock) {
+                h.card.setAlpha(hasFocus ? 0.55f : 0.35f);
+                h.name.setTextColor(hasFocus ? 0xCCFFFFFF : 0x88FFFFFF);
+            } else {
+                h.card.setAlpha(1.0f);
+                h.name.setTextColor(hasFocus ? 0xFFFFFFFF : 0xCCFFFFFF);
+            }
             if (hasFocus) {
                 SoundManager.getInstance(ctx).playNavigation();
             }
@@ -377,6 +428,18 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
         });
 
         h.card.setOnClickListener(v -> {
+            if (isAddToDockMode) {
+                if (dockPackages.contains(item.pkg)) {
+                    Toast.makeText(ctx, item.label + " is already in the dock", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                SoundManager.getInstance(ctx).playEnter();
+                if (onAppSelectedListener != null) {
+                    onAppSelectedListener.onAppSelected(item);
+                }
+                return;
+            }
+
             SoundManager.getInstance(ctx).playEnter();
             Intent intent = new Intent(Intent.ACTION_MAIN).setComponent(item.component)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
@@ -393,6 +456,7 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
         });
 
         h.card.setOnLongClickListener(v -> {
+            if (isAddToDockMode) return true;
             Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + item.pkg));
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try { ctx.startActivity(i); } catch (Exception ignored) {}

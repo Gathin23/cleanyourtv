@@ -76,6 +76,7 @@
     <string name="dock_edit">Edit dock</string>
     <string name="dock_edit_hint">Choose the dock place to change and press OK. Back to finish.</string>
     <string name="dock_edit_pick_app">Now choose the app to put there and press OK. Back to choose another place.</string>
+    <string name="dock_add">Add Apps on Docks</string>
     <string name="dock_remove">Remove app from dock</string>
     <string name="dock_remove_hint">Select an app to remove and press OK. Back to finish.</string>
     <string name="dock_remove_min_error">Cannot remove the only app on the dock</string>

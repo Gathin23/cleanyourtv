@@ -325,6 +325,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private FrameLayout allAppsModalOverlay;
     private ImageView allAppsBlurredBackdrop;
     private LinearLayout allAppsModalPanel;
+    private TextView allAppsModalTitle;
     private TextView allAppsCountBadge;
     private RecyclerView allAppsModalGrid;
     private AllAppsAdapter allAppsModalAdapter;
@@ -692,6 +693,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         allAppsModalOverlay = findViewById(R.id.allAppsModalOverlay);
         allAppsBlurredBackdrop = findViewById(R.id.allAppsBlurredBackdrop);
         allAppsModalPanel = findViewById(R.id.allAppsModalPanel);
+        allAppsModalTitle = findViewById(R.id.allAppsModalTitle);
         allAppsCountBadge = findViewById(R.id.allAppsCountBadge);
         allAppsModalGrid = findViewById(R.id.allAppsModalGrid);
         if (allAppsModalGrid != null) {
@@ -1692,15 +1694,73 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         focusTile(Math.max(0, Math.min(pos, adapter.getItemCount() - 1)));
     }
 
-    public void showAllAppsModal() {
+    public void addAppToDock(String pkgToAdd, String label) {
+        if (pkgToAdd == null || pkgToAdd.isEmpty()) return;
+        List<String> updated = new ArrayList<>(dockApps);
+        if (updated.contains(pkgToAdd)) {
+            Toast.makeText(this, label + " is already in the dock", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        updated.add(pkgToAdd);
+        dockApps = updated;
+        SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        choices.edit().putString("dock_apps", TextUtils.join(",", updated)).apply();
+        try {
+            File orderFile = Order.file(this);
+            if (orderFile != null && orderFile.exists()) {
+                orderFile.delete();
+            }
+        } catch (Throwable ignored) {}
+        adapter.setFavourites(dockApps);
+        adapter.setSavedOrder(Collections.emptyMap());
+        reloadApps(false);
+        Toast.makeText(this, "Added " + label + " to dock", Toast.LENGTH_SHORT).show();
+        int newPos = updated.indexOf(pkgToAdd);
+        if (newPos >= 0) {
+            lastFocused = newPos;
+        }
+    }
+
+    public void showAddAppsOnDockModal() {
         if (allAppsModalOverlay == null) return;
+        if (allAppsModalTitle != null) {
+            allAppsModalTitle.setText(R.string.dock_add);
+        }
         if (allAppsModalAdapter != null) {
+            allAppsModalAdapter.setAddToDockMode(true);
+            allAppsModalAdapter.setDockPackages(dockApps);
+            allAppsModalAdapter.setOnAppSelectedListener(item -> {
+                addAppToDock(item.pkg, item.label);
+                hideAllAppsModal();
+            });
             allAppsModalAdapter.reload();
             if (allAppsCountBadge != null) {
                 int count = allAppsModalAdapter.getAppCount();
                 allAppsCountBadge.setText(count + " " + (count == 1 ? "app" : "apps"));
             }
         }
+        showAllAppsModalInternal(true);
+    }
+
+    public void showAllAppsModal() {
+        if (allAppsModalOverlay == null) return;
+        if (allAppsModalTitle != null) {
+            allAppsModalTitle.setText(R.string.all_apps);
+        }
+        if (allAppsModalAdapter != null) {
+            allAppsModalAdapter.setAddToDockMode(false);
+            allAppsModalAdapter.setDockPackages(Collections.emptySet());
+            allAppsModalAdapter.setOnAppSelectedListener(null);
+            allAppsModalAdapter.reload();
+            if (allAppsCountBadge != null) {
+                int count = allAppsModalAdapter.getAppCount();
+                allAppsCountBadge.setText(count + " " + (count == 1 ? "app" : "apps"));
+            }
+        }
+        showAllAppsModalInternal(false);
+    }
+
+    private void showAllAppsModalInternal(boolean isAddToDock) {
         // Generate blurred backdrop from active wallpaper
         Drawable bgDrawable = null;
         if (dockWallpaperA != null && dockWallpaperA.getVisibility() == View.VISIBLE && dockWallpaperA.getAlpha() > 0.3f) {
@@ -1738,13 +1798,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (allAppsModalGrid != null) {
             allAppsModalGrid.post(() -> {
-                if (allAppsModalGrid.getChildCount() > 0) {
-                    View first = allAppsModalGrid.getChildAt(0);
-                    View card = first.findViewById(R.id.appCard);
-                    if (card != null) card.requestFocus();
-                    else first.requestFocus();
-                } else {
-                    allAppsModalGrid.requestFocus();
+                int targetFocus = 0;
+                if (isAddToDock && allAppsModalAdapter != null) {
+                    targetFocus = allAppsModalAdapter.getFirstAvailablePosition();
+                }
+                if (allAppsModalAdapter != null) {
+                    allAppsModalAdapter.focusPosition(targetFocus);
                 }
             });
         }
@@ -1766,6 +1825,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void focusDockAllAppsOrLast() {
         if (adapter != null && grid != null) {
+            if (allAppsModalAdapter != null && allAppsModalAdapter.isAddToDockMode()) {
+                focusTile(Math.max(0, Math.min(lastFocused, adapter.getItemCount() - 1)));
+                return;
+            }
             int allAppsPos = -1;
             for (int i = 0; i < adapter.getItemCount(); i++) {
                 if (adapter.isAllAppsAt(i)) {
@@ -3911,15 +3974,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         SharedPreferences choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         Config config = Config.load(this);
 
-        // Columns row (4 -> 5 -> 6 -> 7 -> 4)
-        int currentCols = config.columns;
-        String colsLabel = getString(R.string.columns_label) + ": " + currentCols;
-        addSettingsMenuRow(rows, popup, colsLabel, () -> {
-            int nextCols = currentCols >= 7 ? 4 : currentCols + 1;
-            choices.edit().putInt("columns", nextCols).apply();
-            recreate();
-        });
-
         // Sound toggle row: "Sound: On" / "Sound: Off"
         SoundManager soundManager = SoundManager.getInstance(this);
         addSettingsToggleRow(rows, "Sound: " + (soundManager.isEnabled() ? getString(R.string.on) : getString(R.string.off)), () -> {
@@ -3937,6 +3991,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             choices.edit().putString("screensaver_type", nextType).apply();
             return "Screensaver: " + (isSolatScreensaver[0] ? "Countdown Solat" : "Clocks");
         });
+
+        // Add app to dock
+        if (dockRow) {
+            addSettingsMenuRow(rows, popup, R.string.dock_add, this::showAddAppsOnDockModal);
+        }
 
         // Remove app from dock
         if (dockRow) {
