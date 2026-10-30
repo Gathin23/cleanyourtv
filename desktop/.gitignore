@@ -1,0 +1,6 @@
+# Dependencies, build output and the capability schemas Tauri generates on every build. Kept here
+# rather than in the repository's root .gitignore so the desktop app owns its own files.
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/schemas/

@@ -1,0 +1,33 @@
+[package]
+name = "cleanyourtv-desktop"
+version = "0.1.0"
+description = "Clean your Android TV from the desktop: debloat, launcher themes, files and remote over ADB."
+authors = ["CleanYourTV contributors"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "cleanyourtv_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+regex = "1"
+base64 = "0.22"
+wait-timeout = "0.2"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+md-5 = "0.10"
+quick-xml = "0.37"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
