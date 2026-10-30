@@ -245,6 +245,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean settingsKeyPanel;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     private boolean reducedMotion;
+    /** dpad_repeat_interval_ms: re-pace a held D-pad key on the grid; 0 keeps the system repeat. */
+    private int dpadRepeatIntervalMs;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
     private boolean dockRow;
     /** config single_row: every app in the dock's row, scrolling sideways, no grid below. */
@@ -310,6 +312,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private PopupWindow openPopup;
     /** Reorder mode is on (top-bar button). */
     private boolean reordering;
+    /** Custom DPAD repeat: true while a held key is being re-paced by our timer. */
+    private boolean keyRepeatActive;
+    /** The DPAD key code being repeated (KEYCODE_DPAD_LEFT / RIGHT / UP / DOWN). */
+    private int keyRepeatCode;
+    /** Runnable that fires on each repeat tick. */
+    private final Runnable keyRepeatAction = this::onKeyRepeatTick;
     /** Key of the tile being carried in reorder mode, or null. */
     private String movingKey;
     /** Tile order when reorder mode started, to save only when something moved. */
@@ -452,6 +460,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
         reducedMotion = cfg.reducedMotion;
+        dpadRepeatIntervalMs = cfg.dpadRepeatIntervalMs;
         dockRow = cfg.dockRow;
         singleRow = cfg.singleRow;
         focusOvershoot = cfg.focusOvershoot;
@@ -1234,6 +1243,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onPause() {
         super.onPause();
         resumed = false;
+        cancelKeyRepeat();
         // No UP reaches a paused Home, so a vendor-key hold it saw go down would still open its app later.
         // Only Home's own share is dropped: a key service that saw the same DOWN keeps its hold.
         RemoteKeys.release(this);
@@ -1263,6 +1273,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onStop() {
         super.onStop();
         started = false;
+        cancelKeyRepeat();
         unregisterReceiver(timeReceiver);
         handler.removeCallbacks(clockCheck);
         stopped = true;
@@ -1300,6 +1311,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             showCardPrompt();
         } else {
             cancelHoldOk();   // a dialog or another window took the remote while OK was held
+            cancelKeyRepeat();   // the repeat must not outlive the window that owns the key
         }
     }
 
@@ -1318,6 +1330,94 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             cm.unregisterNetworkCallback(networkCallback);
             cm.unregisterNetworkCallback(vpnCallback);
         }
+    }
+
+    // ---- custom DPAD key repeat (replaces the fast system repeat) ----------------------------------
+
+    /** Cancels any active custom DPAD repeat timer. */
+    private void cancelKeyRepeat() {
+        keyRepeatActive = false;
+        handler.removeCallbacks(keyRepeatAction);
+    }
+
+    /**
+     * The system has seen the key held past its own repeat timeout: begin our repeat. The first
+     * custom move happens now, then every dpad_repeat_interval_ms. Called only for
+     * ACTION_DOWN events with repeatCount > 0, so a quick tap never starts a repeat, however
+     * slow the TV is at delivering the matching ACTION_UP.
+     */
+    private void startKeyRepeat(int keyCode) {
+        keyRepeatActive = true;
+        keyRepeatCode = keyCode;
+        onKeyRepeatTick();
+    }
+
+    /**
+     * Calculates the next tile position to focus when a DPAD key is held. Returns the current
+     * position when there is no further tile in that direction (row edge, first/last row), so
+     * the caller stops moving but keeps swallowing the held key's repeats.
+     */
+    private int repeatTargetPosition(int currentPos, int keyCode) {
+        int direction;
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT: direction = GridNavigation.LEFT; break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT: direction = GridNavigation.RIGHT; break;
+            case KeyEvent.KEYCODE_DPAD_UP: direction = GridNavigation.UP; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN: direction = GridNavigation.DOWN; break;
+            default: return currentPos;
+        }
+        return GridNavigation.repeatTarget(currentPos, direction, adapter.appCount(),
+                COLUMNS, adapter.dockFilled(), rtlAppGrid);
+    }
+
+    /**
+     * Fires from the Handler when it is time for the next repeat tick.
+     * Moves focus one tile in the held direction and schedules the next tick unless the
+     * grid edge has been reached. At the edge the repeat stays armed (so the held key's
+     * system repeats keep being swallowed) but stops moving until the key is released.
+     */
+    private void onKeyRepeatTick() {
+        if (!keyRepeatActive) return;
+        // The tick owns the repeat only while Home is resumed and focused, on the ordinary grid:
+        // a dialog, the app library, reorder mode or a lost window focus must stop it even when
+        // the matching ACTION_UP never arrives.
+        if (!resumed || !hasWindowFocus() || reordering || singleRow
+                || openPopup != null || cardPrompt != null) {
+            cancelKeyRepeat();
+            return;
+        }
+        // Keep the idle clock from starting while the user is holding a key.
+        restartIdleClock();
+        View focused = getCurrentFocus();
+        if (focused == null || focused.getId() != R.id.card) {
+            cancelKeyRepeat();
+            return;
+        }
+        int pos = focusedTilePosition();
+        if (pos < 0) {
+            cancelKeyRepeat();
+            return;
+        }
+        int target = repeatTargetPosition(pos, keyRepeatCode);
+        if (target == pos) {
+            // At the grid edge: no further tile. For DOWN, the library button follows the last row.
+            if (keyRepeatCode == KeyEvent.KEYCODE_DPAD_DOWN && adapter.isLibraryAt(adapter.appCount())) {
+                focusLibrary();
+                cancelKeyRepeat();
+            }
+            return;
+        }
+        focusTile(target);
+        // Same navigation sound the first press gets, so a held key clicks at the slower pace.
+        grid.playSoundEffect(keyRepeatCode == KeyEvent.KEYCODE_DPAD_UP
+                ? SoundEffectConstants.NAVIGATION_UP
+                : keyRepeatCode == KeyEvent.KEYCODE_DPAD_DOWN
+                ? SoundEffectConstants.NAVIGATION_DOWN
+                : keyRepeatCode == KeyEvent.KEYCODE_DPAD_LEFT
+                ? SoundEffectConstants.NAVIGATION_LEFT
+                : SoundEffectConstants.NAVIGATION_RIGHT);
+        // Schedule the next tick at the configured repeat interval.
+        handler.postDelayed(keyRepeatAction, dpadRepeatIntervalMs);
     }
 
     /**
@@ -1369,6 +1469,42 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 }
                 return true;
             }
+        }
+        // Custom DPAD-key repeat handling: block the fast system repeat (every 50 ms) and
+        // drive our own paced repeat (one tile per dpad_repeat_interval_ms). The first press
+        // (repeatCount==0) passes through normally and starts no timer, so a quick tap
+        // always moves exactly one tile. The system's first repeat event means the key has
+        // been held for ~400 ms; from then on the repeats are consumed here and our timer
+        // moves focus. This only applies while focus is on a grid tile (R.id.card); popups,
+        // the top bar and other views keep the system's default repeat behavior.
+        // single_row scrolls sideways and keeps the system repeat; reorder/edit-dock mode
+        // moves the carried tile and is handled below.
+        if (dpadRepeatIntervalMs > 0 && resumed && hasWindowFocus()
+                && !reordering && !singleRow && openPopup == null && cardPrompt == null) {
+            int code = event.getKeyCode();
+            boolean isDpad = code == KeyEvent.KEYCODE_DPAD_LEFT
+                    || code == KeyEvent.KEYCODE_DPAD_RIGHT
+                    || code == KeyEvent.KEYCODE_DPAD_UP
+                    || code == KeyEvent.KEYCODE_DPAD_DOWN;
+            if (isDpad && event.getAction() == KeyEvent.ACTION_UP) {
+                // A D-pad UP ends the repeat even if focus moved off the tile meanwhile.
+                cancelKeyRepeat();
+                return super.dispatchKeyEvent(event);
+            }
+            View focused = getCurrentFocus();
+            boolean onTile = focused != null && focused.getId() == R.id.card;
+            if (isDpad && onTile && event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() == 0) {
+                    // First press: normal handling moves focus one tile; no timer.
+                    cancelKeyRepeat();
+                    return super.dispatchKeyEvent(event);
+                }
+                // System repeat: the key is genuinely held. Swallow the fast system
+                // repeats and move at the paced interval instead.
+                if (!keyRepeatActive) startKeyRepeat(code);
+                return true;
+            }
+            return super.dispatchKeyEvent(event);
         }
         if (!reordering) return super.dispatchKeyEvent(event);
         if (dockEditing) return dispatchDockEdit(event);

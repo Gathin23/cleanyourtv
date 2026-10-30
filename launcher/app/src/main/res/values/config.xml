@@ -436,6 +436,13 @@
          here or with "reduced_motion": true in a theme's config.json; false keeps the normal motion. -->
     <bool name="reduced_motion">false</bool>
 
+    <!-- Re-pace a held D-pad key while focus is on Home's grid: one tile per interval in
+         milliseconds; 0 (default) keeps Android's system repeat. 180 is about 5.5 tiles/s, for TVs
+         whose system repeat (about 20/s) outruns the glass highlight and focus animations. Popups,
+         the top bar and other views keep the system repeat. Can also be set with
+         "dpad_repeat_interval_ms": 180 in a theme's config.json. -->
+    <integer name="dpad_repeat_interval_ms">0</integer>
+
     <!-- The glass highlight springs past the tile it moves to and the focused tile zooms past its size
          before settling. false: both go straight there, with no bounce, while scrolling stays smooth
          (reduced_motion also removes the overshoot, but scrolls in one jump). Can also be set with

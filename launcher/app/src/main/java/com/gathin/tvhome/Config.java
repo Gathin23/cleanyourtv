@@ -104,6 +104,9 @@ final class Config {
     final boolean moduleCards;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     final boolean reducedMotion;
+    /** Re-pace a held D-pad key on Home's grid to one tile per interval; 0 keeps the system repeat
+     *  (config.xml or a theme, dpad_repeat_interval_ms). */
+    final int dpadRepeatIntervalMs;
     /** Open the Live TV app on the first Home after the TV starts (config.xml, boot_to_live_tv). */
     final boolean bootToLiveTv;
     /** Show the Open on start row in Launcher settings (config.xml, open_on_start_choice). */
@@ -286,7 +289,8 @@ final class Config {
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
                    Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly,
-                   int openOnStartNetworkWait, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock) {
+                   int openOnStartNetworkWait, boolean iconOnlyVpn, String clockFormat, boolean backOpensClock,
+                   int dpadRepeatIntervalMs) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -324,6 +328,7 @@ final class Config {
         this.greetingName = greetingName;
         this.moduleCards = moduleCards;
         this.reducedMotion = reducedMotion;
+        this.dpadRepeatIntervalMs = dpadRepeatIntervalMs;
         this.bootToLiveTv = bootToLiveTv;
         this.openOnStartChoice = openOnStartChoice;
         this.dockTitle = dockTitle;
@@ -450,6 +455,7 @@ final class Config {
         String greetingName = res.getString(R.string.greeting_name).trim();
         boolean moduleCards = res.getBoolean(R.bool.module_cards);
         boolean reducedMotion = res.getBoolean(R.bool.reduced_motion);
+        int dpadRepeatIntervalMs = res.getInteger(R.integer.dpad_repeat_interval_ms);
         boolean bootToLiveTv = res.getBoolean(R.bool.boot_to_live_tv);
         boolean openOnStartChoice = res.getBoolean(R.bool.open_on_start_choice);
         int openOnStartNetworkWait = res.getInteger(R.integer.open_on_start_network_wait);
@@ -561,6 +567,7 @@ final class Config {
             greetingName = string(json, "greeting_name", greetingName).trim();
             moduleCards = bool(json, "module_cards", moduleCards);
             reducedMotion = bool(json, "reduced_motion", reducedMotion);
+            dpadRepeatIntervalMs = integer(json, "dpad_repeat_interval_ms", dpadRepeatIntervalMs, 0, 2000);
             bootToLiveTv = bool(json, "boot_to_live_tv", bootToLiveTv);
             openOnStartChoice = bool(json, "open_on_start_choice", openOnStartChoice);
             openOnStartNetworkWait = integer(json, "open_on_start_network_wait", openOnStartNetworkWait, 0, 600);
@@ -700,7 +707,8 @@ final class Config {
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly,
-                Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn, clockFormat, backOpensClock);
+                Math.max(0, Math.min(600, openOnStartNetworkWait)), iconOnlyVpn, clockFormat, backOpensClock,
+                Math.max(0, Math.min(2000, dpadRepeatIntervalMs)));
     }
 
     /**

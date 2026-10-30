@@ -104,6 +104,59 @@ public class GridNavigationTest {
         }
     }
 
+    @Test public void repeatMovesOneTileAlongTheRowAndStopsAtItsEnds() {
+        // 4 columns, a full 4-slot dock, then two full grid rows.
+        assertEquals(1, GridNavigation.repeatTarget(0, GridNavigation.RIGHT, 12, 4, 4, false));
+        assertEquals(3, GridNavigation.repeatTarget(2, GridNavigation.RIGHT, 12, 4, 4, false));
+        assertEquals("dock end", 3, GridNavigation.repeatTarget(3, GridNavigation.RIGHT, 12, 4, 4, false));
+        assertEquals("grid row end", 7, GridNavigation.repeatTarget(7, GridNavigation.RIGHT, 12, 4, 4, false));
+        assertEquals("left within row", 5, GridNavigation.repeatTarget(6, GridNavigation.LEFT, 12, 4, 4, false));
+        assertEquals("row start", 4, GridNavigation.repeatTarget(4, GridNavigation.LEFT, 12, 4, 4, false));
+        assertEquals("dock start", 0, GridNavigation.repeatTarget(0, GridNavigation.LEFT, 12, 4, 4, false));
+    }
+
+    @Test public void repeatStopsAtTheDockCountSoEmptySlotsTakeNoFocus() {
+        // fill_dock false: two dock apps and two empty slots before the grid.
+        assertEquals("last filled dock slot", 1, GridNavigation.repeatTarget(1, GridNavigation.RIGHT, 10, 4, 2, false));
+        assertEquals("the first grid app moves right within its row", 5,
+                GridNavigation.repeatTarget(4, GridNavigation.RIGHT, 10, 4, 2, false));
+        assertEquals("left stops at the row start, never on an empty dock slot", 4,
+                GridNavigation.repeatTarget(4, GridNavigation.LEFT, 10, 4, 2, false));
+    }
+
+    @Test public void repeatStopsOnAShortLastRow() {
+        // 4 columns, 11 apps: the last row holds positions 8, 9, 10.
+        assertEquals(9, GridNavigation.repeatTarget(8, GridNavigation.RIGHT, 11, 4, 4, false));
+        assertEquals(10, GridNavigation.repeatTarget(9, GridNavigation.RIGHT, 11, 4, 4, false));
+        assertEquals("short row end", 10, GridNavigation.repeatTarget(10, GridNavigation.RIGHT, 11, 4, 4, false));
+        assertEquals("down lands on the short row's last tile", 10,
+                GridNavigation.repeatTarget(7, GridNavigation.DOWN, 11, 4, 4, false));
+    }
+
+    @Test public void repeatMirrorsTheRowInHebrew() {
+        assertEquals("forward is left in RTL", 1, GridNavigation.repeatTarget(0, GridNavigation.LEFT, 12, 4, 4, true));
+        assertEquals("row end", 3, GridNavigation.repeatTarget(3, GridNavigation.LEFT, 12, 4, 4, true));
+        assertEquals("backward is right in RTL", 2, GridNavigation.repeatTarget(3, GridNavigation.RIGHT, 12, 4, 4, true));
+        assertEquals("row start", 0, GridNavigation.repeatTarget(0, GridNavigation.RIGHT, 12, 4, 4, true));
+    }
+
+    @Test public void repeatMovesWholeRowsUpAndDown() {
+        // Dock (0..3) plus three grid rows (4..15).
+        assertEquals(4, GridNavigation.repeatTarget(8, GridNavigation.UP, 16, 4, 4, false));
+        assertEquals(0, GridNavigation.repeatTarget(4, GridNavigation.UP, 16, 4, 4, false));
+        assertEquals("the dock row is the top: repeat stops", 0,
+                GridNavigation.repeatTarget(0, GridNavigation.UP, 16, 4, 4, false));
+        assertEquals(8, GridNavigation.repeatTarget(4, GridNavigation.DOWN, 16, 4, 4, false));
+        assertEquals(14, GridNavigation.repeatTarget(10, GridNavigation.DOWN, 16, 4, 4, false));
+        assertEquals("last row", 14, GridNavigation.repeatTarget(14, GridNavigation.DOWN, 16, 4, 4, false));
+    }
+
+    @Test public void repeatTargetLeavesOutOfRangePositionsAlone() {
+        assertEquals(-1, GridNavigation.repeatTarget(-1, GridNavigation.DOWN, 12, 4, 4, false));
+        assertEquals(12, GridNavigation.repeatTarget(12, GridNavigation.DOWN, 12, 4, 4, false));
+        assertEquals(0, GridNavigation.repeatTarget(0, GridNavigation.DOWN, 0, 4, 4, false));
+    }
+
     private static List<GridCase> grids() {
         List<GridCase> grids = new ArrayList<>();
         for (int columns = 1; columns <= 8; columns++) {
