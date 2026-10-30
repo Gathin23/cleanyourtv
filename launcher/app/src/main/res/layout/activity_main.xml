@@ -321,6 +321,76 @@
                 android:focusable="false"
                 android:visibility="gone" />
 
+            <!-- now_playing: what plays right now, full width under the clock; gone while nothing plays. -->
+            <LinearLayout
+                android:id="@+id/nowControls"
+                android:layout_width="wrap_content"
+                android:layout_height="62dp"
+                android:layout_below="@id/leftBlock"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView style="@style/NowButton" android:text="\u23EE" android:contentDescription="Previous" />
+                <TextView style="@style/NowButton" android:text="\u23ED" android:contentDescription="Next" />
+                <TextView style="@style/NowButton" android:text="\u25A0" android:contentDescription="Stop" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnNowPlaying"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:layout_below="@id/leftBlock"
+                android:layout_toStartOf="@id/nowControls"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/pill_bg"
+                android:focusable="true"
+                android:clickable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingEnd="24dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:duplicateParentState="true"
+                    android:importantForAccessibility="no" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:duplicateParentState="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:textColor="@drawable/pill_text"
+                        android:textSize="19sp"
+                        android:fontFamily="@string/font_medium" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:duplicateParentState="true"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textColor="@drawable/pill_text"
+                        android:textSize="14sp"
+                        android:fontFamily="@string/font_medium" />
+                </LinearLayout>
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"
@@ -355,6 +425,18 @@
                     android:visibility="gone"
                     android:singleLine="true"
                     android:text="@string/vpn"
+                    android:nextFocusDown="@+id/grid" />
+
+                <TextView
+                    android:id="@+id/btnNowMini"
+                    style="@style/TopButton"
+                    android:visibility="gone"
+                    android:maxWidth="160dp"
+                    android:textSize="14sp"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:drawablePadding="9dp"
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView

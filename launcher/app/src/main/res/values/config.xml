@@ -502,6 +502,12 @@
          home_idle_clock_minutes). Back keeps working as usual inside apps and Settings; only Home's own Back
          press changes. Off by default (Back does nothing on Home); a theme can set "back_opens_clock": true. -->
     <bool name="back_opens_clock">false</bool>
+    <!-- A "now playing" bar under the clock while an app plays media (Spotify, SmartTube, a cast): the art, moving
+         bars, title, artist and app, live from the app's media session, with previous, next and stop beside it; OK on
+         the bar pauses and resumes. Below the dock it folds into a pill in the top bar. Needs the GuardRevival
+         notification listener allowed (cmd notification allow_listener com.gathin.tvhome/.GuardRevival); without it
+         the bar stays hidden. Off by default; a theme can set "now_playing": true. -->
+    <bool name="now_playing">false</bool>
     <!-- The clock screensaver (Home idle clock and the system screensaver) over Home's wallpaper instead of black with
          a coloured glow. The clock still moves every minute. Can also be set with "clock_wallpaper" in a theme. -->
     <bool name="clock_wallpaper">false</bool>

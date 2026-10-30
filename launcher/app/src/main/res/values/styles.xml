@@ -26,6 +26,17 @@
     </style>
     <style name="TopButton" parent="TopButtonBase" />
 
+    <!-- now_playing: the round transport buttons beside the bar. -->
+    <style name="NowButton" parent="TopButtonBase">
+        <item name="android:layout_width">42dp</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:alpha">0.9</item>
+    </style>
+
     <!-- Icon-only pill: a 42dp circle (pill_bg's 21dp corners) with the 22dp icon centred by even padding. Give it a
          contentDescription, since there is no text. -->
     <style name="TopButtonIcon" parent="TopButtonBase">
