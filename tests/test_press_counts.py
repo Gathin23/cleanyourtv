@@ -8,12 +8,19 @@ PR that adds a row and forgets the counts fails here instead of shipping a card 
 list of 74.
 
 The Videos section at the end of the same page is read the same way, and had nothing reading it: the
-intro ends "[147 videos](#videos) follow the articles", the section's own line says when the view
-counts were read ("views as of 27 Oct"), and both numbers are derived from the rows underneath - a
-press PR that adds a video (147 of them so far) has to move them, and a video dated after the day the
+intro ends "[229 videos](#videos) follow the articles", the section's own line says when the view
+counts were read ("views as of 30 Oct"), and both numbers are derived from the rows underneath - a
+press PR that adds a video (229 of them so far) has to move them, and a video dated after the day the
 views were read leaves the line above the table claiming an older read. The article half is held down
 to one link and three cells per row and no repeated URL; the video half is held to the same, to
 newest first (the section says so) and to those two numbers.
+
+The same three numbers are written a second time, in prose, at the end of the story section of every
+front page that shows the card ("The coverage: 351 articles from 46 countries and 229 videos on
+YouTube and Bilibili, all in docs/PRESS.md") - and nothing read that sentence, so a press sweep that
+moved the intro, the card's alt text and the card source left the four pages telling a reader one
+number in the picture and another in the story section two screens below it. The clause is read here too, in the order every
+translation writes it (article total, countries, videos), so the page and the list cannot disagree.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -46,6 +53,13 @@ VIDEO_LINK = re.compile(r"\((https?://[^)\s]*(?:youtube\.com|bilibili\.com)/[^)\
 # in Dutch and README.de.md in German, and any translation that copies the picture later. The words
 # around the numbers are translated; the numbers are not.
 CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
+# The story paragraph's closing sentence, which repeats the three numbers in prose: "The coverage: 351
+# articles from 46 countries and 229 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)".
+# Every translation writes its own words around the numbers but keeps them in that order, so they are read
+# as tokens out of the clause after the paragraph's last colon - no word table that a new language, or a
+# rewording, quietly falls out of.
+PRESS_LINK = re.compile(r"\[docs/PRESS\.md\]\(docs/PRESS\.md\)")
+NUMBER = re.compile(r"\d[\d.,]*")
 
 
 def card_alt_texts():
@@ -56,6 +70,47 @@ def card_alt_texts():
         if match:
             out[path.name] = match.group(1)
     return out
+
+
+def paragraphs(text):
+    """A page split into paragraphs, one per entry, a sentence wrapped over two lines joined back up.
+
+    README.md and README.uk.md break the coverage sentence after "articles from"; README.nl.md puts the
+    whole story in one line. Reading paragraph by paragraph is what makes the four pages look alike.
+    """
+    out, current = [], []
+    for line in text.split("\n"):
+        if line.strip():
+            current.append(line.strip())
+        elif current:
+            out.append(" ".join(current))
+            current = []
+    if current:
+        out.append(" ".join(current))
+    return out
+
+
+def coverage_numbers(text):
+    """(articles, countries, videos) the story paragraph states, or None when the page has no such paragraph.
+
+    The paragraph is the one naming both docs/PRESS.md and YouTube: the end of the story section on every
+    front page that shows the press card. Its last colon opens the clause that carries the three numbers,
+    in the order every translation uses, so the numbers are read without knowing the words around them.
+    A tuple of any other length is returned as it was read, so a sentence that grew a fourth number is
+    reported with what the reader found instead of being trusted.
+    """
+    for paragraph in paragraphs(text):
+        if "docs/PRESS.md" not in paragraph or "YouTube" not in paragraph:
+            continue
+        link = PRESS_LINK.search(paragraph)
+        if link is None:
+            continue
+        colon = paragraph.rfind(":", 0, link.start())
+        if colon < 0:
+            return ()
+        found = NUMBER.findall(paragraph[colon + 1:link.start()])
+        return tuple(int(number.replace(",", "").replace(".", "")) for number in found)
+    return None
 
 
 def sections():
@@ -304,7 +359,7 @@ class PressVideosTest(unittest.TestCase):
         self.assertEqual([], problems, "\n".join(problems))
 
     def test_the_walk_reads_the_videos_this_file_was_written_for(self):
-        # A reader that found no rows would pass the rule above; the section holds 147 of them.
+        # A reader that found no rows would pass the rule above; the section holds 229 of them.
         rows = videos(self.text)
         self.assertGreaterEqual(len(rows), 100, f"the Videos section has {len(rows)} rows")
         self.assertGreaterEqual(len([cells for cells in rows if row_date(cells[2])]), 100,
@@ -313,6 +368,87 @@ class PressVideosTest(unittest.TestCase):
                              "the intro no longer states '[N videos](#videos)'")
         self.assertIsNotNone(views_as_of(self.text),
                              "the Videos section no longer says when the views were read")
+
+
+class FrontPageCoverageTest(unittest.TestCase):
+    """The story paragraph's closing sentence, which repeats the three numbers in prose and nothing read."""
+
+    def setUp(self):
+        text = PRESS.read_text(encoding="utf-8")
+        self.numbers = intro()
+        self.expected = (self.numbers["total"], self.numbers["countries"], len(videos(text)))
+        self.pages = card_alt_texts()
+
+    def test_every_page_that_shows_the_card_repeats_the_counts(self):
+        # The clause is the page's own copy of the three numbers its card's alt text states, so one page can show
+        # a count in the picture and a stale one in prose; the pages come from the card, like the alt-text test, so
+        # a translation that copies the picture is read without this list being edited first.
+        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md"}, set(self.pages),
+                             "README.md, README.de.md, README.nl.md and README.uk.md no longer show "
+                             "docs/card-halloween.jpg with an alt text")
+        for name in sorted(self.pages):
+            read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
+            with self.subTest(readme=name):
+                self.assertIsNotNone(
+                    read, f"{name} has no story paragraph that names docs/PRESS.md and YouTube, so the "
+                          f"coverage numbers it used to repeat are gone")
+                self.assertEqual(
+                    self.expected, read,
+                    f"{name} states (articles, countries, videos) {read} in its coverage sentence and "
+                    f"docs/PRESS.md holds {self.expected}")
+
+    def test_the_walk_reads_the_sentence_this_file_was_written_for(self):
+        # A reader answering () or None for every page would pass nothing above; each page carries three
+        # numbers today, and the English one is the page this file's own example is quoted from.
+        self.assertGreaterEqual(len(self.pages), 4, f"only {len(self.pages)} front pages show the card")
+        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md"):
+            read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
+            with self.subTest(readme=name):
+                self.assertEqual(3, len(read or ()), f"{name}'s coverage sentence reads as {read}")
+
+
+class CoverageReaderTest(unittest.TestCase):
+    """The reader, over pages written here: the languages, a wrap, the separators, a stale number."""
+
+    @staticmethod
+    def page(clause, extra=""):
+        return ("# CleanYourTV\n\n"
+                "Two weeks on, it was the #1 trending repository on GitHub, with over 46K stars.\n\n"
+                f"The coverage: {clause}, all in [docs/PRESS.md](docs/PRESS.md){extra}\n"
+                "(numbers as of 30 October 2026).\n")
+
+    def test_the_four_languages_are_read_the_same_way(self):
+        for clause in ("351 articles from 46 countries and 229 videos on YouTube and Bilibili",
+                       "351 Artikel aus 46 Ländern und 229 Videos auf YouTube und Bilibili",
+                       "351 artikelen uit 46 landen en 229 video's op YouTube en Bilibili",
+                       "351 стаття з 46 країн і 229 відео на YouTube та Bilibili"):
+            with self.subTest(clause=clause):
+                self.assertEqual((351, 46, 229), coverage_numbers(self.page(clause)))
+
+    def test_a_sentence_wrapped_over_two_lines_is_read(self):
+        page = self.page("351 articles from 46 countries and 229 videos on YouTube and Bilibili")
+        self.assertEqual((351, 46, 229), coverage_numbers(page.replace("and 229 videos", "\nand 229 videos")))
+
+    def test_a_thousand_separator_is_not_read_as_a_smaller_number(self):
+        # README.nl.md writes its other counts the Dutch way; a country count of 46 written 46.000 is 46000.
+        self.assertEqual((351, 46000, 229),
+                         coverage_numbers(self.page("351 artikelen uit 46.000 landen en 229 video's op YouTube")))
+
+    def test_a_stale_number_is_read_as_it_is_written(self):
+        self.assertEqual((351, 46, 188),
+                         coverage_numbers(self.page("351 articles from 46 countries and 188 videos on YouTube")))
+
+    def test_a_sentence_with_a_fourth_number_is_reported(self):
+        self.assertEqual((351, 46, 229, 30),
+                         coverage_numbers(self.page("351 articles from 46 countries and 229 videos on YouTube, "
+                                                   "read on 30 Oct")))
+
+    def test_a_page_without_the_paragraph_is_quiet_about_it(self):
+        self.assertIsNone(coverage_numbers("# CleanYourTV\n\nNo story section here.\n"))
+
+    def test_a_paragraph_that_names_no_link_is_not_read_as_one(self):
+        page = self.page("351 articles from 46 countries and 229 videos on YouTube")
+        self.assertIsNone(coverage_numbers(page.replace("[docs/PRESS.md](docs/PRESS.md)", "docs/PRESS.md")))
 
 
 class VideoReaderTest(unittest.TestCase):
