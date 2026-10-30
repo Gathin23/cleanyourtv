@@ -4,6 +4,10 @@ UK firmware `G09_4K_GB` (STT2.230203.001 AS24, Amlogic T5M, 2 GB RAM), set up in
 work on this set: the debloat list and the Clean Your TV launcher as Home. Tested on 19 October 2026,
 including a reboot.
 
+For the **55P7L on AS23**, see [the stock-home redirect route below](#tcl-55p7l-g09-as23-stock-home-redirect).
+That unit keeps Google TV's home and setup wizard enabled; its tested package choices differ from
+the AS24 list and install sequence that follow.
+
 | File | What it is |
 |---|---|
 | `debloat.txt` | The 36 packages that were disabled, grouped and commented |
@@ -90,6 +94,59 @@ service stay bound with filtering off, which is the repeat-keeping half of that 
 [docs/TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md) and
 [the unit's note](../../docs/devices/tcl-55p71b-pro-g09.md). The same unit also lost the volume beep for
 good when launcherx was disabled — re-enabling every debloated package did not bring it back.
+
+## TCL 55P7L (G09, AS23): stock-home redirect
+
+An additional unit reported in [#2268](https://github.com/Gathin23/cleanyourtv/issues/2268): owner-reported
+TCL 55P7L, system model `Smart TV Pro`, device `G09`, Google TV / Android 12 (SDK 31), firmware
+`STT2.230203.001.AS23`. Tested on 27 October 2026 with launcher 3.1 built from
+`6ffa7fa5df7c38714cd89fd77fe636c53e759083`, including a reboot and physical remote checks.
+
+This unit uses the redirect route rather than disabling the stock home:
+
+- Keep `com.google.android.apps.tv.launcherx` and `com.google.android.tungsten.setupwraith` enabled.
+- Enable and bind CleanYourTV's `HomeKeyService`. No Projectivy accessibility service remained active.
+- Set `stock_home_redirect` to `com.google.android.apps.tv.launcherx` in `config.xml`.
+- Set `home_long_press_home=true` and `power_on_home_always=true` in the theme.
+- `APP_AUTO_START=allow` was also persisted for `com.gathin.tvhome` on this firmware.
+
+With `stock_home_redirect` alone, the helper stayed bound but Google TV's home remained on screen
+after reboot until CleanYourTV was opened manually. With both theme options added, CleanYourTV's
+`MainActivity` became the focused window after reboot without opening it manually. The two options
+were added together, not bisected separately; this records the working combination, not a claim
+about which option was necessary.
+
+The owner confirmed physical Home, Netflix, Prime Video, YouTube, TCL Channel, Settings and channels
+working. **Keep `com.tcl.waterfall.overseas` enabled if the dedicated TCL Channel button is wanted**:
+it was initially disabled, then re-enabled to recover that button. Disabling
+`com.google.android.videos` did not mean disabling the distinct Google TV home package `launcherx`.
+
+Volume repeat remains a tradeoff on this unit too. With key filtering active, holding Volume Up or
+Down changed one step per press. An earlier comparison with the stock home/setup wizard disabled
+and no accessibility helper restored repeat but lost several vendor shortcuts. The owner chose
+working shortcuts with stepwise volume and restored the stock packages. This is not a volume-repeat
+fix; see [the G09 key-repeat note](../../docs/devices/tcl-55p71b-g09-key-repeat.md).
+
+The 55P7L report recorded the following packages still disabled after reboot, using the project's
+guarded disable/restore tools. These are this owner's choices, not validation of the shared
+`debloat.txt` above for this unit:
+
+```text
+com.tcl.logkit
+com.google.android.feedback
+com.tcl.interactive
+com.tcl.tv.tclhome_passive
+com.tcl.messagebox
+com.google.android.videos
+com.google.android.play.games
+com.tcl.ocean.instructions
+com.tcl.exhibit
+com.tcl.hotelmenu
+```
+
+Voice assistants, casting, HDMI, tuner, keyboard, remote/Bluetooth, Play Store/Services and updates
+were preserved. The owner kept Netflix, YouTube, UniTV, Prime Video, F1 TV, Globoplay, YouTube Music,
+Moonlight and Downloader. No measured performance improvement is claimed.
 
 ## Notes for this set
 
