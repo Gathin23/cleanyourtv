@@ -7,7 +7,9 @@
 #
 # Google's setup wizard (com.google.android.tungsten.setupwraith) is in the list: after the stock
 # launcher is disabled Home resolved to its RecoveryActivity and the install script refuses to
-# finish. Wi-Fi is owned by uid system here, so disabling it is safe on this build.
+# finish. Disabling com.google.android.tungsten.setupwraith gives Home back but can cost casting
+# (Chromecast); re-enable it if you need cast. Wi-Fi is owned by uid system here, so disabling it
+# is safe on this build.
 # Skyworth's own copy of the wizard (com.smartdevice.setupwraith) is KEPT: it does not claim HOME
 # here and the twin-wizard caution in TROUBLESHOOTING is about the Realtek R10G family, not this board.
 #
