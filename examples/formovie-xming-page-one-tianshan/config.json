@@ -1,0 +1,12 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.disney.disneyplus"
+  ],
+  "hidden_apps": ["com.mediatek.wwtv.tvcenter"],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "columns": 4,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+}
