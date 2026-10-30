@@ -103,11 +103,14 @@ def manifest_components(text):
     if application is None:
         return []
     inherited = (application.get(ANDROID + "directBootAware") or "").lower() == "true"
+    activities = {a.get(ANDROID + "name"): a for a in application.findall("activity")}
     out = []
     for element in application:
-        if element.tag not in ("activity", "service", "receiver", "provider"):
+        if element.tag not in ("activity", "activity-alias", "service", "receiver", "provider"):
             continue
-        flag = element.get(ANDROID + "directBootAware")
+        # Android resolves the alias name but runs the target activity, including its boot-awareness.
+        target = activities[element.get(ANDROID + "targetActivity")] if element.tag == "activity-alias" else element
+        flag = target.get(ANDROID + "directBootAware")
         aware = inherited if flag is None else flag.lower() == "true"
         home = any(
             "android.intent.action.MAIN" in {a.get(ANDROID + "name") for a in filter_.findall("action")}
@@ -259,6 +262,15 @@ class ManifestReaderTest(unittest.TestCase):
                                  '<application android:label="x" android:directBootAware="true">')
         self.assertEqual([(name, aware) for name, _, aware in manifest_components(page)],
                          [(".Home", True), (".Other", True), (".Plain", True)])
+
+    def test_a_home_alias_keeps_the_targets_direct_boot_requirement(self):
+        page = self.PAGE.replace('    <service android:name=".Plain" />',
+            '<activity-alias android:name=".HomeAlias" android:targetActivity=".Home">'
+            '<intent-filter><action android:name="android.intent.action.MAIN" />'
+            '<category android:name="android.intent.category.HOME" /></intent-filter></activity-alias>')
+        self.assertIn((".HomeAlias", True, True), manifest_components(page))
+        page = page.replace('android:directBootAware="true"', 'android:directBootAware="false"')
+        self.assertIn((".HomeAlias", True, False), manifest_components(page))
 
     def test_a_manifest_without_an_application_reads_as_empty(self):
         self.assertEqual(manifest_components('<manifest xmlns:android="http://schemas.android.com/apk/res/android" />'), [])
