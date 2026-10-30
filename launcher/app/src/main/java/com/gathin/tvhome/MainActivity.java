@@ -1684,6 +1684,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onBackPressed() {
         // Home screen: Back goes nowhere, unless back_opens_clock is on.
         if (backOpensClock) startActivity(new Intent(this, ClockActivity.class));
@@ -2797,6 +2798,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
+    @SuppressWarnings("deprecation")
     private void updateWifiLabel() {
         String text = getString(R.string.wifi);
         boolean vpn = false, online = false, validated = false;
