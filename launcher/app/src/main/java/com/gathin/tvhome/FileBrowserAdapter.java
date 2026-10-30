@@ -49,6 +49,7 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     private final File rootDir;
     private File currentDir;
     private boolean hasCustomWallpaper = false;
+    private int pendingFocusPosition = 0;
     private final List<FileItem> items = new ArrayList<>();
     private OnFileBrowserListener listener;
     private RecyclerView recyclerView;
@@ -71,6 +72,10 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         this.hasCustomWallpaper = hasCustom;
     }
 
+    public void setPendingFocusPosition(int pos) {
+        this.pendingFocusPosition = pos;
+    }
+
     public File getCurrentDir() {
         return currentDir;
     }
@@ -86,25 +91,44 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     public boolean canNavigateUp() {
-        if (currentDir == null || currentDir.equals(rootDir)) return false;
+        if (currentDir == null) return false;
+        try {
+            if (currentDir.getCanonicalPath().equals(rootDir.getCanonicalPath())) return false;
+        } catch (Exception e) {
+            if (currentDir.equals(rootDir) || currentDir.getAbsolutePath().equals(rootDir.getAbsolutePath())) return false;
+        }
         File parent = currentDir.getParentFile();
         return parent != null && parent.canRead();
     }
 
     public boolean navigateUp() {
         if (canNavigateUp()) {
+            File previousDir = currentDir;
             currentDir = currentDir.getParentFile();
             reload();
-            focusPosition(0);
+            int targetPos = findPositionForFile(previousDir);
+            focusPosition(targetPos >= 0 ? targetPos : 0);
             return true;
         }
         return false;
     }
 
+    public int findPositionForFile(File file) {
+        if (file == null || items.isEmpty()) return -1;
+        String name = file.getName();
+        for (int i = 0; i < items.size(); i++) {
+            FileItem item = items.get(i);
+            if (item.file != null && name.equalsIgnoreCase(item.file.getName())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void reload() {
         items.clear();
 
-        if (hasCustomWallpaper) {
+        if (hasCustomWallpaper && !canNavigateUp()) {
             items.add(new FileItem(FileItem.TYPE_RESTORE, null, "Restore Default Wallpaper", "Reset to original launcher wallpaper"));
         }
 
@@ -147,28 +171,28 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
     }
 
     public void focusPosition(int pos) {
-        if (recyclerView == null || items.isEmpty()) return;
-        final int target = Math.max(0, Math.min(pos, items.size() - 1));
-        RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
-        View view = lm != null ? lm.findViewByPosition(target) : null;
-        if (view != null) {
-            view.requestFocus();
-        } else {
-            recyclerView.scrollToPosition(target);
-            recyclerView.post(() -> {
-                RecyclerView.LayoutManager lmPost = recyclerView.getLayoutManager();
-                View v = lmPost != null ? lmPost.findViewByPosition(target) : null;
-                if (v != null) {
-                    v.requestFocus();
-                } else {
-                    recyclerView.postDelayed(() -> {
-                        RecyclerView.LayoutManager lmRetry = recyclerView.getLayoutManager();
-                        View vr = lmRetry != null ? lmRetry.findViewByPosition(target) : null;
-                        if (vr != null) vr.requestFocus();
-                    }, 60);
-                }
-            });
-        }
+        if (recyclerView == null) return;
+        final int target = items.isEmpty() ? 0 : Math.max(0, Math.min(pos, items.size() - 1));
+        this.pendingFocusPosition = target;
+        recyclerView.scrollToPosition(target);
+        recyclerView.post(() -> {
+            RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+            View v = lm != null ? lm.findViewByPosition(target) : null;
+            if (v != null) {
+                v.requestFocus();
+            } else {
+                recyclerView.postDelayed(() -> {
+                    RecyclerView.LayoutManager lmRetry = recyclerView.getLayoutManager();
+                    View vr = lmRetry != null ? lmRetry.findViewByPosition(target) : null;
+                    if (vr != null) {
+                        vr.requestFocus();
+                    } else if (recyclerView.getChildCount() > 0) {
+                        View child = recyclerView.getChildAt(0);
+                        if (child != null) child.requestFocus();
+                    }
+                }, 40);
+            }
+        });
     }
 
     private static boolean isImageFile(File f) {
@@ -204,6 +228,13 @@ public class FileBrowserAdapter extends RecyclerView.Adapter<FileBrowserAdapter.
         FileItem item = items.get(position);
         holder.fileName.setText(item.name);
         holder.fileSubtitle.setText(item.subtitle);
+
+        if (position == pendingFocusPosition) {
+            pendingFocusPosition = -1;
+            holder.itemView.post(() -> {
+                holder.itemView.requestFocus();
+            });
+        }
 
         switch (item.type) {
             case FileItem.TYPE_RESTORE:

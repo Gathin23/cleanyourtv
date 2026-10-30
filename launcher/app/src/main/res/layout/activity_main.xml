@@ -614,6 +614,7 @@
                 android:clipChildren="false"
                 android:overScrollMode="never"
                 android:scrollbars="none"
+                android:focusable="true"
                 android:descendantFocusability="afterDescendants" />
         </LinearLayout>
     </FrameLayout>
@@ -734,6 +735,7 @@
                 android:clipChildren="false"
                 android:overScrollMode="never"
                 android:scrollbars="none"
+                android:focusable="true"
                 android:descendantFocusability="afterDescendants" />
 
             <!-- Empty Notice -->

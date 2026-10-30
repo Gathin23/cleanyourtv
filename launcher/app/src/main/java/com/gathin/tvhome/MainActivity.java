@@ -2011,6 +2011,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void handleFileBrowserBack() {
         if (fileBrowserAdapter != null && fileBrowserAdapter.canNavigateUp()) {
+            SoundManager.getInstance(this).playBack();
             fileBrowserAdapter.navigateUp();
         } else {
             hideFileBrowser();
@@ -4296,6 +4297,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
             if (!reordering && !dockEditing
+                    && !"opening_modal".equals(panel.getTag())
                     && (allAppsModalOverlay == null || allAppsModalOverlay.getVisibility() != View.VISIBLE)
                     && (fileBrowserOverlay == null || fileBrowserOverlay.getVisibility() != View.VISIBLE)) {
                 focusTile(dockReturnPosition());
@@ -4325,12 +4327,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // Add app to dock
         if (dockRow) {
-            addSettingsMenuRow(rows, popup, R.string.dock_add, this::showAddAppsOnDockModal);
+            addSettingsMenuRow(rows, popup, R.string.dock_add, () -> {
+                panel.setTag("opening_modal");
+                showAddAppsOnDockModal();
+            });
         }
 
         // Change wallpaper apps dock
         if (dockRow) {
-            addSettingsMenuRow(rows, popup, R.string.dock_wallpaper_change, this::showChangeWallpaperDockAppsPicker);
+            addSettingsMenuRow(rows, popup, R.string.dock_wallpaper_change, () -> {
+                panel.setTag("opening_modal");
+                showChangeWallpaperDockAppsPicker();
+            });
         }
 
         // Remove app from dock
