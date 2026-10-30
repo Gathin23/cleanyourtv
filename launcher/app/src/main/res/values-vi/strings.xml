@@ -79,6 +79,7 @@
     <string name="dock_edit_pick_place">Chọn vị trí trên dock cho ứng dụng này rồi nhấn OK. Nhấn Quay lại để hủy.</string>
     <string name="festival_dussehra_greeting">Chúc mừng lễ Dussehra</string>
     <string name="festival_diwali_greeting">Chúc mừng lễ Diwali</string>
+    <string name="festival_halloween_greeting">Chúc mừng Halloween</string>
     <string name="stats_memory">Bộ nhớ %1$d / %2$d MB</string>
     <string name="stats_storage">Còn trống %1$s</string>
     <string name="rows_below_dock_label">Số hàng dưới dock</string>

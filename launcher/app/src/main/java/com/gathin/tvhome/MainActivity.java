@@ -252,7 +252,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Festive skin from the theme (see Festival); applied while it is active today. */
     private Festival festival = Festival.NONE;
     private boolean festive;
-    private DiyaDrawable diya;
+    /** The network pill's festive light: the diya, or the jack-o'-lantern for Halloween. */
+    private FestiveLamp lamp;
     private BellDrawable bell;
     private MarigoldDrawable marigold;
     private int greetingColor;
@@ -411,7 +412,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updatePanel();
-            // The pill follows the network callbacks and each return to Home; only the diya's flame follows the
+            // The pill follows the network callbacks and each return to Home; only the festive light follows the
             // signal level, so only it needs this minute's binder calls (about 7 ms on the UI thread).
             if (festive) updateWifiLabel();
             sky.update();
@@ -1058,8 +1059,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
-        if (festive && diya != null) {
-            diya.start();
+        if (festive && lamp != null) {
+            lamp.start();
             LocalDate today = LocalDate.now();
             if (!reducedMotion && !today.equals(lastPetalShower)) {
                 lastPetalShower = today;
@@ -1237,7 +1238,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         stopStats();
         if (gameDay != null) gameDay.stop();
         handler.removeCallbacks(turnTick);
-        if (diya != null) diya.stop();
+        if (lamp != null) lamp.stop();
         cancelPendingFocusScroll();
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
         if (cardPrompt != null) cardPrompt.dismiss();
@@ -2776,7 +2777,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String text = getString(R.string.wifi);
         boolean vpn = false, online = false, validated = false;
         int icon = R.drawable.ic_wifi;
-        // The diya's flame: 0 is out (offline), 1 to 4 follow the Wi-Fi signal, Ethernet burns steady at 4.
+        // The festive light (diya flame or jack-o'-lantern candle): 0 is out (offline), 1 to 4 follow the Wi-Fi
+        // signal, Ethernet burns steady at 4.
         int flame = 0;
         boolean steady = false;
         try {
@@ -2852,10 +2854,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             btnWifi.setContentDescription(btnWifi.getText());
             btnWifi.setText(null);
         }
-        if (festive && diya != null) {
+        if (festive && lamp != null) {
             if (online && flame == 0) flame = 3;   // online some other way (cellular, USB tethering)
-            diya.setSteady(steady);
-            diya.setFlame(flame);
+            lamp.setSteady(steady);
+            lamp.setFlame(flame);
         } else {
             if (icon != wifiIcon) {
                 wifiIcon = icon;
@@ -2905,15 +2907,33 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /**
      * Swaps the pill icons for the festival's: a bell for Inputs that swings when focused, a diya for the
-     * network whose flame follows the connection, and a marigold for Settings that turns when focused.
+     * network whose flame follows the connection, and a marigold for Settings that turns when focused. Halloween
+     * has its own: a bat for Inputs that flaps, a jack-o'-lantern whose face glows while online, and a ghost for
+     * Settings that floats up.
      */
     private void applyFestiveSkin(TextView inputs, TextView settings) {
+        if (festival.isHalloween()) {
+            SpookyIconDrawable bat = new SpookyIconDrawable(getResources(), density, SpookyIconDrawable.BAT);
+            SpookyIconDrawable ghost = new SpookyIconDrawable(getResources(), density, SpookyIconDrawable.GHOST);
+            JackOLanternDrawable pumpkin = new JackOLanternDrawable(getResources(), density);
+            bat.setReducedMotion(reducedMotion);
+            ghost.setReducedMotion(reducedMotion);
+            pumpkin.setReducedMotion(reducedMotion);
+            lamp = pumpkin;
+            setFestiveIcon(inputs, bat);
+            setFestiveIcon(btnWifi, pumpkin);
+            setFestiveIcon(settings, ghost);
+            addFocusAction(inputs, bat::nudge);
+            addFocusAction(settings, ghost::nudge);
+            return;
+        }
         bell = new BellDrawable(density);
         marigold = new MarigoldDrawable(density);
-        diya = new DiyaDrawable(density);
+        DiyaDrawable diya = new DiyaDrawable(density);
         bell.setReducedMotion(reducedMotion);
         marigold.setReducedMotion(reducedMotion);
         diya.setReducedMotion(reducedMotion);
+        lamp = diya;
         setFestiveIcon(inputs, bell);
         setFestiveIcon(btnWifi, diya);
         setFestiveIcon(settings, marigold);
@@ -2938,6 +2958,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void playPetalShower() {
         if (isFinishing() || isDestroyed()) return;
+        if (festival.isHalloween()) {
+            BatFlightView bats = new BatFlightView(this);
+            root.addView(bats, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            bats.play(16, 2800, () -> root.removeView(bats));
+            return;
+        }
         PetalShowerView shower = new PetalShowerView(this);
         root.addView(shower, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

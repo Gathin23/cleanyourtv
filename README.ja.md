@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="docs/banner.png" alt="CleanYourTV：テレビのホーム画面をすっきりと" width="800"></a>
+  <a href="https://cleanyour.tv"><img src="docs/banner-halloween.png" alt="CleanYourTV：テレビのホーム画面をすっきりと" width="800"></a>
 </p>
 
 <p align="center">

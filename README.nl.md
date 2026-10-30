@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Je tv, zonder advertenties. Verwijder overbodige software van elke Android TV of Google TV via wifi en vervang het startscherm vol advertenties door een overzichtelijke launcher die eruitziet als Apple TV. Geen root, geen kabel, niets wordt verwijderd en herstellen kan met één opdracht." width="800"></a>
+  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner-halloween.png" alt="CleanYourTV. Je tv, zonder advertenties. Verwijder overbodige software van elke Android TV of Google TV via wifi en vervang het startscherm vol advertenties door een overzichtelijke launcher die eruitziet als Apple TV. Geen root, geen kabel, niets wordt verwijderd en herstellen kan met één opdracht." width="800"></a>
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="360 tv-modellen · 97 merken · 30 talen · launcher van 532 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 298 media: 314 artikelen uit 44 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="360 tv-modellen · 97 merken · 30 talen · launcher van 561 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 298 media: 314 artikelen uit 44 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -551,7 +551,7 @@ tools/theme.sh themes/aurora                                 # push a theme; --r
 | [`tools/flamechart.py`](tools/flamechart.py) | Maakt voor een pull request een flame chart vóór en na de wijziging op basis van die traces: één baan per thread op een gedeelde tijdschaal, met het werk waarop de wijziging zich richt in magenta en met de totale duur. Optioneel, net als de trace-hulpmiddelen. [Handleiding](tools/flamechart.md). |
 | [`tools/screendiff.py`](tools/screendiff.py) | Vergelijkt schermafbeeldingen van vóór en na pixel voor pixel, laat de klok en alles wat je maskeert buiten beschouwing en slaat beide afbeeldingen op met de wifi-naam vervaagd. Optioneel, net als de trace-hulpmiddelen. [Handleiding](tools/screendiff.md). |
 | [`tools/race_calendar.py`](tools/race_calendar.py) | Schrijft de F1-kalender van dit seizoen in een thema voor de raceweekendmodus, via de gratis Jolpica-API. |
-| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Bouwt een verkleinde release (ongeveer 532 KB), installeert deze, schakelt het startscherm om en draait de wijziging terug als de nieuwe launcher niet het startscherm wordt. |
+| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Bouwt een verkleinde release (ongeveer 561 KB), installeert deze, schakelt het startscherm om en draait de wijziging terug als de nieuwe launcher niet het startscherm wordt. |
 
 De scripts zorgen er altijd voor dat de tv een startscherm-app behoudt: ze schakelen alleen een herkende standaardlauncher uit en slaan die app in een lijst over totdat een andere launcher op HOME reageert. Zie hieronder voor meer informatie.
 
@@ -599,7 +599,7 @@ De controle kan niet bewijzen wat de bedoeling is. `appops` laat zien dat een be
 <a id="the-launcher"></a>
 ## De launcher
 
-Een klein, native startscherm voor Android TV: **ongeveer 532 KB**, geschreven in gewone Java en ontworpen voor tv's met 1 GB RAM. Geen vervagingseffecten, geen video, geen netwerktoestemming en geen achtergrondservices.
+Een klein, native startscherm voor Android TV: **ongeveer 561 KB**, geschreven in gewone Java en ontworpen voor tv's met 1 GB RAM. Geen vervagingseffecten, geen video, geen netwerktoestemming en geen achtergrondservices.
 
 De **tv** moet Android 8.0 (API 26) of nieuwer gebruiken. `minSdk` stelt de minimale versie in tijdens het bouwen in [`launcher/app/build.gradle`](launcher/app/build.gradle). Het installatiescript vraagt vóór het bouwen de waarde van `ro.build.version.sdk` op, zodat een oudere tv beide versienummers te zien krijgt in plaats van pas bij `pm install` te mislukken. Zie [Problemen oplossen](docs/TROUBLESHOOTING.md) voor wat op zo'n tv nog mogelijk is.
 
@@ -607,7 +607,7 @@ De **tv** moet Android 8.0 (API 26) of nieuwer gebruiken. `minSdk` stelt de mini
 |---|---|
 | **Configuratie** | Volgorde van het dock, verborgen apps, Live-tv-app, 4 tot 7 tegels per rij en minder beweging. Alles staat in [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Instellingen op de tv** | Houd OK ingedrukt op Instellingen om de launcherinstellingen te openen. Met de optionele instelling `launcher_settings_button` opent een gewone klik ze direct; de tv-instellingen blijven beschikbaar via de instellingenpagina en de tegel van die app. |
-| **Thema's** | Achtergrond, wallpaper en indeling komen uit een via wifi verzonden `config.json`; opnieuw bouwen is niet nodig. In [`themes/`](themes/) staan elf thema's, inclusief het ingebouwde `default/`. |
+| **Thema's** | Achtergrond, wallpaper en indeling komen uit een via wifi verzonden `config.json`; opnieuw bouwen is niet nodig. In [`themes/`](themes/) staan twaalf thema's, inclusief het ingebouwde `default/`. |
 | **30 talen** | Volgt de taal van de tv, met een volledig gespiegeld rechts-naar-links ontwerp voor Hebreeuws. |
 | **Appbibliotheek** | Optioneel: bekijk alle geïnstalleerde apps en voeg snelkoppelingen op het startscherm toe of verwijder ze. Zie [de handleiding voor de appbibliotheek](docs/app-library.md). |
 | **Tegelmenu** | Optioneel (`tile_menu`): houd OK ingedrukt op een tegel voor Verplaatsen, Verwijderen van startscherm en App-info. Staat dit uit, dan opent lang indrukken de app-info. |

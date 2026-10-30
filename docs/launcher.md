@@ -2,7 +2,7 @@
 
 [Back to the README](../README.md#the-launcher)
 
-A small native home screen for Android TV: **about 532 KB**, plain Java, built for TVs with 1 GB of RAM.
+A small native home screen for Android TV: **about 561 KB**, plain Java, built for TVs with 1 GB of RAM.
 No blur, no video, no network permission, no background services. This page has the details the
 README leaves out: settings, languages, remote keys and building it yourself. Every key a theme can
 set is in [`themes/README.md`](../themes/README.md#keys), and the opt-in switches with their

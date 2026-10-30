@@ -32,7 +32,7 @@
 7. Check the size gate before you push. A language's strings ship in the release APK, and that APK has to
    stay under 589,824 B (576 KB): `launcher/app/build/outputs/apk/release/app-release.apk`, measured with
    `stat -c %s` on Linux or `stat -f %z` on macOS, and checked by the "Launcher build and unit tests" job
-   on every pull request. `README.md` quotes the launcher at about 532 KB, so a full language can be the
+   on every pull request. `README.md` quotes the launcher at about 561 KB, so a full language can be the
    difference between green and a failed build. A language that does not fit is a maintainer decision, not
    something to land by dropping strings ([#1271](https://github.com/Gathin23/cleanyourtv/issues/1271)).
 8. Build the launcher, set the TV's language (Android 13+: `tools/tv.py 'cmd locale set-app-locales com.gathin.tvhome --locales <tag>'`)

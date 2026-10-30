@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="docs/banner.png" alt="CleanYourTV. Dein Fernseher, ohne Werbung. Entferne die vorinstallierte Software von jedem Android TV oder Google TV über WLAN und ersetze den werbelastigen Startbildschirm durch einen aufgeräumten Launcher, der wie ein Apple TV aussieht. Kein Root, kein Kabel, nichts wird deinstalliert, und die Wiederherstellung ist eine Zeile." width="800"></a>
+  <a href="https://cleanyour.tv"><img src="docs/banner-halloween.png" alt="CleanYourTV. Dein Fernseher, ohne Werbung. Entferne die vorinstallierte Software von jedem Android TV oder Google TV über WLAN und ersetze den werbelastigen Startbildschirm durch einen aufgeräumten Launcher, der wie ein Apple TV aussieht. Kein Root, kein Kabel, nichts wird deinstalliert, und die Wiederherstellung ist eine Zeile." width="800"></a>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="360 TV-Modelle · 97 Marken · 30 Sprachen · Launcher mit 532 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 298 weitere: 314 Artikel aus 44 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="360 TV-Modelle · 97 Marken · 30 Sprachen · Launcher mit 561 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 298 weitere: 314 Artikel aus 44 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
 </p>
 
 ## Einstieg
@@ -192,7 +192,7 @@ tools/theme.sh themes/aurora                                 # ein Theme aufspie
 | [`tools/flamechart.py`](tools/flamechart.py) | Zeichnet aus diesen Traces ein Vorher/Nachher-Flammendiagramm für einen Pull Request: eine Spur je Thread auf gemeinsamer Zeitachse, die Arbeit, die eine Änderung trifft, in Magenta mit ihrer Summe. Optional, wie die Trace-Werkzeuge. [Anleitung](tools/flamechart.md). |
 | [`tools/screendiff.py`](tools/screendiff.py) | Vergleicht ein Vorher- und ein Nachher-Bild Pixel für Pixel, lässt die Uhr oder das aus, was du maskierst, und schreibt das Paar mit unkenntlich gemachtem WLAN-Namen. Optional, wie die Trace-Werkzeuge. [Anleitung](tools/screendiff.md). |
 | [`tools/race_calendar.py`](tools/race_calendar.py) | Schreibt den F1-Kalender dieser Saison in ein Theme für den Rennwochenend-Modus, aus der freien Jolpica-API. |
-| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Baut ein geschrumpftes Release (etwa 532 KB), installiert es, schaltet Home um und rollt zurück, wenn Home nicht darauf landet. |
+| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Baut ein geschrumpftes Release (etwa 561 KB), installiert es, schaltet Home um und rollt zurück, wenn Home nicht darauf landet. |
 
 Die Skripte lassen den Fernseher nie ohne Home-App: sie deaktivieren nur einen Hersteller-Launcher, den sie erkennen,
 und überspringen die Home-App in einer Liste, bis ein anderer Launcher auf HOME antwortet. Eigene Listen können außerhalb
@@ -247,7 +247,7 @@ Debloat-Liste. Was die Prüfung nicht kann, ist Absicht beweisen: [docs/privacy.
 
 ## Der Launcher
 
-Ein kleiner nativer Startbildschirm für Android TV: **etwa 532 KB**, einfaches Java, gebaut für Fernseher mit 1 GB RAM.
+Ein kleiner nativer Startbildschirm für Android TV: **etwa 561 KB**, einfaches Java, gebaut für Fernseher mit 1 GB RAM.
 Kein Weichzeichnen, kein Video, keine Netzwerkberechtigung, keine Hintergrunddienste. Der **Fernseher** braucht Android 8.0 (API 26)
 oder neuer, das `minSdk` in [`launcher/app/build.gradle`](launcher/app/build.gradle); was auf einem älteren
 Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).
@@ -256,7 +256,7 @@ Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).
 |---|---|
 | **Einrichten** | Dock-Reihenfolge, versteckte Apps, Live-TV-App, 4 bis 7 Kacheln je Zeile, reduzierte Bewegung. Alles in [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Einstellungen am Fernseher** | OK auf Einstellungen halten für die Launcher-Einstellungen. Ein optionales `launcher_settings_button` lässt einen normalen Klick sie direkt öffnen; die TV-Einstellungen bleiben auf der Einstellungsseite und ihrer App-Kachel. |
-| **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Elf liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
+| **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Zwölf liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
 | **30 Sprachen** | Folgt der Sprache des Fernsehers, mit vollständig gespiegeltem Layout von rechts nach links für Hebräisch |
 | **App-Bibliothek** | Optional: jede installierte App durchsehen und Home-Verknüpfungen hinzufügen oder entfernen. Siehe [die Anleitung zur App-Bibliothek](docs/app-library.md) |
 | **Kachelmenü** | Optional (`tile_menu`): OK auf einer Kachel halten für Verschieben, Von Home entfernen und App-Info. Aus: OK halten öffnet App-Info |

@@ -44,7 +44,7 @@ YOUTUBE_LINK = re.compile(r"\((https?://[^)\s]*youtube\.com/[^)\s]+)\)")
 # The card image the numbers are drawn on, wherever a README shows it: README.md in English, README.nl.md
 # in Dutch and README.de.md in German, and any translation that copies the picture later. The words
 # around the numbers are translated; the numbers are not.
-CARD_ALT = re.compile(r'src="docs/card\.jpg"[^>]*?alt="([^"]*)"')
+CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
 
 
 def card_alt_texts():

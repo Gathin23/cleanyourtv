@@ -1,0 +1,27 @@
+The Halloween skin's pictures in app/src/main/res/drawable-nodpi/ (halloween_pumpkin_lit.webp,
+halloween_pumpkin_dark.webp, halloween_bat.webp, halloween_ghost.webp) are from Microsoft's Fluent Emoji 3D
+(https://github.com/microsoft/fluentui-emoji: Jack-o-lantern, Bat, Ghost), resized to WebP. The lit and dark pumpkins
+are the same picture with the carved face recoloured as a candle-lit and an unlit face. Fluent Emoji is under the MIT
+licence below.
+
+MIT License
+
+Copyright (c) Microsoft Corporation.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE

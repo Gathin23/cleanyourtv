@@ -5,7 +5,7 @@ in `values/strings.xml`, so a full language is by far the largest thing a transl
 adds to `launcher/app/src/main/res/` - and the release APK has a hard budget:
 `.github/workflows/ci.yml`'s `launcher` job, which runs on every pull request in `launcher/`, measures
 `launcher/app/build/outputs/apk/release/app-release.apk` and fails the build at 589,824 B. The launcher
-ships just under that (README.md quotes about 532 KB), and #1271 is a full Korean translation that did
+ships just under that (README.md quotes about 561 KB), and #1271 is a full Korean translation that did
 not fit. Until now the page said nothing about it, so a translator could follow the recipe exactly and
 land a red build at a step the page never mentions.
 

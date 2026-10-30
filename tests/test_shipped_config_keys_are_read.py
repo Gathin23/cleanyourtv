@@ -31,12 +31,14 @@ THEMES_README = ROOT / "themes" / "README.md"
 # two plain lookups a nested value takes, json.optJSONObject("wallpaper_moods") and
 # json.optJSONArray("race_calendar").
 NAMED_READER = re.compile(r"\b(?:bool|string|stringList|intArray|color|integer)\(\s*json\s*,\s*\"([a-z0-9_]+)\"")
+# Config.festivalName(o) reads the festival from the overlay under another variable name.
+FESTIVAL_READER = re.compile(r"\bstring\(\s*o\s*,\s*\"(festival|seasonal_skin)\"")
 LOOKUP = re.compile(r"json\.optJSON(?:Object|Array)\(\s*\"([a-z0-9_]+)\"")
 
 
 def overlay_keys(java_text):
     """Every key Config.java reads out of the pushed config.json."""
-    return set(NAMED_READER.findall(java_text)) | set(LOOKUP.findall(java_text))
+    return set(NAMED_READER.findall(java_text)) | set(LOOKUP.findall(java_text)) | set(FESTIVAL_READER.findall(java_text))
 
 
 def shipped_configs():
