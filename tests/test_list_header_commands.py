@@ -1,4 +1,4 @@
-"""Two list headers whose commands could not work as written.
+"""List headers whose commands could not work as written, or that the header's Undo could not reverse.
 
 examples/ffalcon-r34a0-cn: the header says this firmware denies `pm disable-user` to the shell, yet its
 Apply line ran tools/disable.sh, which sends nothing else. It now hides with the `pm hide` batch that
@@ -15,8 +15,14 @@ choice stays: the shipped list still leaves Assistant on. That half reuses the d
 fake tools/tv.py from tests/test_drift_check.py, and runs the real disable.sh and restore.sh against
 it with run_script from tests/test_recovery_record.py.
 
+examples/sony-bravia-bf1: step 2 of the Home steps disabled setupwraith with `pm disable-user` by hand.
+That skipped disable.sh's check of who owns the saved Wi-Fi network, and the recovery record never held
+setupwraith, so Undo left it off. Step 2 now says to uncomment its line and run Apply again. The test
+does that on the same fake TV, with the Wi-Fi owned by the system and by setupwraith, and runs Undo.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import json
 import os
 from pathlib import Path
 import re
@@ -38,6 +44,8 @@ HIDE_LISTS = ("redmi-mitv-antl0", "ffalcon-r34a0-cn")
 ANKER = ROOT / "examples" / "anker-nebula-mars-3-air"
 ASSISTANT = ("com.google.android.katniss", "com.google.android.tv.assistant")
 LAUNCHERX = "com.google.android.apps.tv.launcherx"
+SONY_BF1 = ROOT / "examples" / "sony-bravia-bf1"
+SETUPWRAITH = "com.google.android.tungsten.setupwraith"
 
 # Stands in for tools/venv/bin/python running tools/tv.py: keeps the arguments, TV_HOST and the
 # --batch input instead of sending anything to a TV.
@@ -233,6 +241,106 @@ class AnkerAssistantTest(unittest.TestCase):
         # The run that records them for Undo comes before check.py --fix, as in the header.
         told = row.split("uncomment", 1)[1].split("check.py", 1)[0]
         self.assertIn("tools/disable.sh", told)
+
+
+def wifi_owned_by(owner):
+    """A saved network in `dumpsys wifi`, the way test_drift_check.py writes one."""
+    return f" cuid=1000 cname={owner}:1000 allowAutojoin=true"
+
+
+# The drift check's fake tv.py answers queries only through connect(), but disable.sh runs
+# `tools/tv.py "dumpsys wifi"` itself for the setupwraith check: this copy answers that too.
+FAKE_TV_WIFI = drift.FAKE_TV.replace(
+    '    return 0\n\n\nif __name__',
+    '    elif args == ["dumpsys wifi"]:\n        sys.stdout.write(answer(args[0]))\n    return 0\n\n\nif __name__')
+
+
+class SonyBf1SetupwraithTest(unittest.TestCase):
+    # The same harness as AnkerAssistantTest: fake TV state, the real disable.sh, restore.sh and recovery.py.
+    write_list = drift.DriftCheckTest.write_list
+    tv = drift.DriftCheckTest.tv
+    sent = drift.DriftCheckTest.sent
+    run_script = record_test.RecoveryRecordTest.run_script
+
+    def setUp(self):
+        drift.DriftCheckTest.setUp(self)
+        self.assertNotEqual(FAKE_TV_WIFI, drift.FAKE_TV, "the fake tv.py's main() changed shape")
+        (self.repo / "tools" / "tv.py").write_text(FAKE_TV_WIFI)
+        self.text = (SONY_BF1 / "debloat.txt").read_text(encoding="utf-8")
+        lines = self.text.splitlines()
+        start = next(i for i, line in enumerate(lines) if re.match(r"#\s+2\. ", line))
+        end = next(i for i, line in enumerate(lines) if re.match(r"#\s+3\. ", line))
+        self.step = " ".join(line.lstrip("#").strip() for line in lines[start:end])
+
+    def uncommented(self):
+        text, count = re.subn(rf"^# ({re.escape(SETUPWRAITH)})(?=\s+#|\s*$)", r"\1", self.text, flags=re.M)
+        self.assertEqual(count, 1, "no commented-out setupwraith line in the list")
+        return text
+
+    def set_wifi(self, owner):
+        state = json.loads(self.state_path.read_text())
+        state["wifi"] = wifi_owned_by(owner)
+        self.state_path.write_text(json.dumps(state))
+
+    def test_step_2_goes_through_apply(self):
+        self.assertIn("uncomment the setupwraith line", self.step)
+        self.assertIn("run Apply again", self.step)
+        self.assertNotIn("pm disable-user", self.step, "a pm run by hand is not in the record Undo reads")
+        # The record is kept per TV address: an Apply at a new one starts a record of its own.
+        self.assertIn("same TV_HOST", self.step)
+        lines = header(SONY_BF1 / "debloat.txt")
+        undo = next(line for line in lines if line.startswith("# Undo:"))
+        self.assertTrue(undo.endswith(f"tools/restore.sh examples/sony-bravia-bf1/debloat.txt {LAUNCHERX}"))
+
+    def undo_after_step_2(self, owner):
+        for script in ("disable.sh", "restore.sh"):
+            shutil.copy2(ROOT / "tools" / script, self.repo / "tools" / script)
+        # The scripts call tools/venv/bin/python: run the real interpreter (AnkerAssistantTest).
+        client = self.repo / "tools" / "venv" / "bin" / "python"
+        client.parent.mkdir(parents=True)
+        client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+        client.chmod(0o755)
+
+        # The first Apply, of the shipped list, after step 1: Google TV is still Home.
+        self.list_path.write_text(self.text, encoding="utf-8")
+        listed = recovery.read_list(self.list_path)
+        self.assertNotIn(SETUPWRAITH, listed)
+        self.tv(installed=listed + [SETUPWRAITH, LAUNCHERX, drift.CUSTOM], disabled=[],
+                home=f"{LAUNCHERX}/.MainActivity",
+                home_activities=[f"{LAUNCHERX}/.MainActivity", f"{drift.CUSTOM}/.MainActivity",
+                                 f"{SETUPWRAITH}/.RecoveryActivity"],
+                wifi=wifi_owned_by(owner))
+        result = self.run_script("disable.sh", str(self.list_path))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        disable = f"pm disable-user --user 0 {SETUPWRAITH}"
+        self.assertNotIn(disable, self.sent())
+
+        # Step 2: uncomment the line and run Apply again.
+        self.list_path.write_text(self.uncommented(), encoding="utf-8")
+        result = self.run_script("disable.sh", str(self.list_path))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(f"to the recovery record: {SETUPWRAITH}", result.stdout)
+        if owner == SETUPWRAITH:
+            # The guard keeps the TV on Wi-Fi; after the forget and re-join the system owns it.
+            self.assertIn(f"Skipping {SETUPWRAITH}", result.stderr)
+            self.assertNotIn(disable, self.sent())
+            self.set_wifi("android.uid.system")
+            result = self.run_script("disable.sh", str(self.list_path))
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        applied = self.sent()
+        self.assertIn(disable, applied)
+
+        # Undo, as the header's Undo line runs it.
+        result = self.run_script("restore.sh", str(self.list_path), LAUNCHERX)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertNotIn("not in the record", result.stderr)
+        self.assertIn(f"pm enable {SETUPWRAITH}", self.sent()[len(applied):])
+
+    def test_undo_brings_setupwraith_back_when_the_system_owns_the_wifi(self):
+        self.undo_after_step_2("android.uid.system")
+
+    def test_undo_brings_setupwraith_back_after_the_wifi_re_join(self):
+        self.undo_after_step_2(SETUPWRAITH)
 
 
 if __name__ == "__main__":
