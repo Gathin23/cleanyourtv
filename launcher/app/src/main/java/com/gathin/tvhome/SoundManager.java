@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.SystemClock;
@@ -15,6 +16,7 @@ public final class SoundManager {
     private static final String TAG = "TvHome.Sound";
     private static SoundManager instance;
 
+    private final Context appContext;
     private SoundPool soundPool;
     private int soundNav = 0;
     private int soundEnter = 0;
@@ -45,7 +47,10 @@ public final class SoundManager {
     }
 
     private SoundManager(Context context) {
-        init(context);
+        this.appContext = context.getApplicationContext();
+        SharedPreferences sp = this.appContext.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+        this.enabled = sp.getBoolean("sound_effects_enabled", true);
+        init(this.appContext);
     }
 
     private synchronized void init(Context context) {
@@ -100,6 +105,10 @@ public final class SoundManager {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+        if (appContext != null) {
+            SharedPreferences sp = appContext.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE);
+            sp.edit().putBoolean("sound_effects_enabled", enabled).apply();
+        }
     }
 
     public boolean isEnabled() {

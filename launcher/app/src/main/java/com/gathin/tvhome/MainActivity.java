@@ -3066,8 +3066,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         focusTile(target);
         // The default focus search clicks for Left/Right; Up/Down are handled here, so click for them too.
-        grid.playSoundEffect(keyCode == KeyEvent.KEYCODE_DPAD_UP
-                ? SoundEffectConstants.NAVIGATION_UP : SoundEffectConstants.NAVIGATION_DOWN);
+        if (SoundManager.getInstance(this).isEnabled()) {
+            grid.playSoundEffect(keyCode == KeyEvent.KEYCODE_DPAD_UP
+                    ? SoundEffectConstants.NAVIGATION_UP : SoundEffectConstants.NAVIGATION_DOWN);
+        }
         return true;
     }
 
@@ -3918,6 +3920,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             recreate();
         });
 
+        // Sound toggle row: "Sound: On" / "Sound: Off"
+        SoundManager soundManager = SoundManager.getInstance(this);
+        addSettingsToggleRow(rows, "Sound: " + (soundManager.isEnabled() ? getString(R.string.on) : getString(R.string.off)), () -> {
+            boolean next = !soundManager.isEnabled();
+            soundManager.setEnabled(next);
+            return "Sound: " + (next ? getString(R.string.on) : getString(R.string.off));
+        });
+
         // Screensaver choice: "solat" (Countdown Solat) vs "clock" (Clocks)
         String currentScreensaverType = choices.getString("screensaver_type", "solat");
         final boolean[] isSolatScreensaver = {"solat".equals(currentScreensaverType)};
@@ -3945,7 +3955,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     .remove("animations").remove("advanced_effects")
                     .remove(Config.WALLPAPER_CHOICE_KEY)
                     .remove("screensaver_type")
+                    .remove("sound_effects_enabled")
                     .remove("dock_apps").apply();
+            SoundManager.getInstance(this).setEnabled(true);
             try {
                 File orderFile = Order.file(this);
                 if (orderFile != null && orderFile.exists()) orderFile.delete();
@@ -4151,9 +4163,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TextView tvTitle = row.findViewById(R.id.title);
         tvTitle.setText(title);
         Runnable toggle = () -> {
+            boolean wasEnabled = SoundManager.getInstance(MainActivity.this).isEnabled();
             SoundManager.getInstance(MainActivity.this).playEnter();
             String newTitle = onToggle.get();
             if (newTitle != null) tvTitle.setText(newTitle);
+            if (!wasEnabled && SoundManager.getInstance(MainActivity.this).isEnabled()) {
+                SoundManager.getInstance(MainActivity.this).playEnter();
+            }
         };
         row.setOnClickListener(v -> toggle.run());
         final boolean[] pressed = {false};
