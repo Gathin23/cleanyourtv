@@ -23,6 +23,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -94,6 +95,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -329,6 +332,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView allAppsCountBadge;
     private RecyclerView allAppsModalGrid;
     private AllAppsAdapter allAppsModalAdapter;
+
+    private FrameLayout fileBrowserOverlay;
+    private ImageView fileBrowserBlurredBackdrop;
+    private TextView fileBrowserTitle;
+    private TextView fileBrowserPath;
+    private TextView fileBrowserItemCount;
+    private TextView fileBrowserEmptyText;
+    private RecyclerView fileBrowserList;
+    private FileBrowserAdapter fileBrowserAdapter;
+    private String wallpaperTargetPkg;
+    private String wallpaperTargetLabel;
 
     // ── Focused dock app wallpapers ───────────────────────────────────────────
     private static final Map<String, Integer> DOCK_WALLPAPERS = new HashMap<>();
@@ -713,6 +727,48 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (allAppsModalOverlay != null) {
             allAppsModalOverlay.setOnClickListener(v -> hideAllAppsModal());
+        }
+
+        fileBrowserOverlay = findViewById(R.id.fileBrowserOverlay);
+        fileBrowserBlurredBackdrop = findViewById(R.id.fileBrowserBlurredBackdrop);
+        fileBrowserTitle = findViewById(R.id.fileBrowserTitle);
+        fileBrowserPath = findViewById(R.id.fileBrowserPath);
+        fileBrowserItemCount = findViewById(R.id.fileBrowserItemCount);
+        fileBrowserEmptyText = findViewById(R.id.fileBrowserEmptyText);
+        fileBrowserList = findViewById(R.id.fileBrowserList);
+        if (fileBrowserList != null) {
+            fileBrowserList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+            fileBrowserAdapter = new FileBrowserAdapter(this);
+            fileBrowserList.setAdapter(fileBrowserAdapter);
+            fileBrowserAdapter.setListener(new FileBrowserAdapter.OnFileBrowserListener() {
+                @Override
+                public void onImageSelected(File imageFile) {
+                    applyCustomDockWallpaper(wallpaperTargetPkg, wallpaperTargetLabel, imageFile);
+                    hideFileBrowser();
+                }
+
+                @Override
+                public void onRestoreDefault() {
+                    restoreDefaultDockWallpaper(wallpaperTargetPkg, wallpaperTargetLabel);
+                    hideFileBrowser();
+                }
+
+                @Override
+                public void onDirectoryChanged(File dir, int itemCount) {
+                    if (fileBrowserPath != null) {
+                        fileBrowserPath.setText(dir != null ? dir.getAbsolutePath() : "/sdcard");
+                    }
+                    if (fileBrowserItemCount != null) {
+                        fileBrowserItemCount.setText(itemCount + " " + (itemCount == 1 ? "item" : "items"));
+                    }
+                    if (fileBrowserEmptyText != null) {
+                        fileBrowserEmptyText.setVisibility(itemCount == 0 ? View.VISIBLE : View.GONE);
+                    }
+                }
+            });
+        }
+        if (fileBrowserOverlay != null) {
+            fileBrowserOverlay.setOnClickListener(v -> handleFileBrowserBack());
         }
 
         if (tabHome != null) {
@@ -1380,6 +1436,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             return true;
         }
+        if (fileBrowserOverlay != null && fileBrowserOverlay.getVisibility() == View.VISIBLE) {
+            if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    handleFileBrowserBack();
+                }
+                return true;
+            }
+        }
         if (allAppsModalOverlay != null && allAppsModalOverlay.getVisibility() == View.VISIBLE) {
             if (code == KeyEvent.KEYCODE_BACK || code == KeyEvent.KEYCODE_ESCAPE) {
                 if (event.getAction() == KeyEvent.ACTION_UP) {
@@ -1727,6 +1791,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             allAppsModalTitle.setText(R.string.dock_add);
         }
         if (allAppsModalAdapter != null) {
+            allAppsModalAdapter.setFilterPackages(null);
             allAppsModalAdapter.setAddToDockMode(true);
             allAppsModalAdapter.setDockPackages(dockApps);
             allAppsModalAdapter.setOnAppSelectedListener(item -> {
@@ -1742,12 +1807,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showAllAppsModalInternal(true);
     }
 
+    public void showChangeWallpaperDockAppsPicker() {
+        if (allAppsModalOverlay == null) return;
+        if (allAppsModalTitle != null) {
+            allAppsModalTitle.setText(R.string.dock_wallpaper_change);
+        }
+        if (allAppsModalAdapter != null) {
+            allAppsModalAdapter.setAddToDockMode(false);
+            allAppsModalAdapter.setDockPackages(Collections.emptySet());
+            allAppsModalAdapter.setFilterPackages(dockApps);
+            allAppsModalAdapter.setOnAppSelectedListener(item -> {
+                hideAllAppsModalDirect();
+                showFileBrowserModal(item.pkg, item.label);
+            });
+            allAppsModalAdapter.reload();
+            if (allAppsCountBadge != null) {
+                int count = allAppsModalAdapter.getAppCount();
+                allAppsCountBadge.setText(count + " " + (count == 1 ? "app" : "apps"));
+            }
+        }
+        showAllAppsModalInternal(false);
+    }
+
     public void showAllAppsModal() {
         if (allAppsModalOverlay == null) return;
         if (allAppsModalTitle != null) {
             allAppsModalTitle.setText(R.string.all_apps);
         }
         if (allAppsModalAdapter != null) {
+            allAppsModalAdapter.setFilterPackages(null);
             allAppsModalAdapter.setAddToDockMode(false);
             allAppsModalAdapter.setDockPackages(Collections.emptySet());
             allAppsModalAdapter.setOnAppSelectedListener(null);
@@ -1844,6 +1932,233 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    private void hideAllAppsModalDirect() {
+        if (allAppsModalOverlay != null) {
+            allAppsModalOverlay.setVisibility(View.GONE);
+            allAppsModalOverlay.setAlpha(1f);
+        }
+    }
+
+    public void showFileBrowserModal(String pkg, String label) {
+        if (fileBrowserOverlay == null) return;
+        this.wallpaperTargetPkg = pkg;
+        this.wallpaperTargetLabel = label;
+
+        if (fileBrowserTitle != null) {
+            fileBrowserTitle.setText("Choose Wallpaper: " + (label != null ? label : pkg));
+        }
+
+        // Generate blurred backdrop from active wallpaper
+        Drawable bgDrawable = null;
+        if (dockWallpaperA != null && dockWallpaperA.getVisibility() == View.VISIBLE && dockWallpaperA.getAlpha() > 0.3f) {
+            bgDrawable = dockWallpaperA.getDrawable();
+        } else if (dockWallpaperB != null && dockWallpaperB.getVisibility() == View.VISIBLE && dockWallpaperB.getAlpha() > 0.3f) {
+            bgDrawable = dockWallpaperB.getDrawable();
+        }
+        if (bgDrawable == null && findViewById(R.id.root) != null) {
+            bgDrawable = findViewById(R.id.root).getBackground();
+        }
+        if (bgDrawable != null && fileBrowserBlurredBackdrop != null) {
+            try {
+                Bitmap blurred = HeroArt.from(bgDrawable);
+                if (blurred != null) {
+                    fileBrowserBlurredBackdrop.setImageBitmap(blurred);
+                }
+            } catch (Throwable ignored) {}
+        }
+
+        if (fileBrowserAdapter != null) {
+            fileBrowserAdapter.setHasCustomWallpaper(hasCustomDockWallpaper(pkg));
+            fileBrowserAdapter.resetToRoot();
+            fileBrowserAdapter.reload();
+        }
+
+        fileBrowserOverlay.setVisibility(View.VISIBLE);
+        if (animations && !reducedMotion) {
+            fileBrowserOverlay.setAlpha(0f);
+            fileBrowserOverlay.animate().alpha(1f).setDuration(220).withEndAction(() -> {
+                if (fileBrowserAdapter != null) {
+                    fileBrowserAdapter.focusPosition(0);
+                }
+            }).start();
+        } else {
+            fileBrowserOverlay.setAlpha(1f);
+            if (fileBrowserAdapter != null) {
+                fileBrowserAdapter.focusPosition(0);
+            }
+        }
+    }
+
+    public void hideFileBrowser() {
+        if (fileBrowserOverlay == null || fileBrowserOverlay.getVisibility() != View.VISIBLE) return;
+        SoundManager.getInstance(this).playBack();
+        if (animations && !reducedMotion) {
+            fileBrowserOverlay.animate().alpha(0f).setDuration(180).withEndAction(() -> {
+                fileBrowserOverlay.setVisibility(View.GONE);
+                if (fileBrowserBlurredBackdrop != null) {
+                    fileBrowserBlurredBackdrop.setImageDrawable(null);
+                }
+                focusTile(Math.max(0, Math.min(lastFocused, adapter != null ? adapter.getItemCount() - 1 : 0)));
+            }).start();
+        } else {
+            fileBrowserOverlay.setVisibility(View.GONE);
+            if (fileBrowserBlurredBackdrop != null) {
+                fileBrowserBlurredBackdrop.setImageDrawable(null);
+            }
+            focusTile(Math.max(0, Math.min(lastFocused, adapter != null ? adapter.getItemCount() - 1 : 0)));
+        }
+    }
+
+    private void handleFileBrowserBack() {
+        if (fileBrowserAdapter != null && fileBrowserAdapter.canNavigateUp()) {
+            fileBrowserAdapter.navigateUp();
+        } else {
+            hideFileBrowser();
+        }
+    }
+
+    private File getCustomDockWallpapersDir() {
+        File dir = new File(getFilesDir(), "dock_wallpapers");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    private File getCustomDockWallpaperFile(String pkg) {
+        if (pkg == null) return null;
+        File file = new File(getCustomDockWallpapersDir(), pkg + ".custom");
+        return file.exists() ? file : null;
+    }
+
+    private boolean hasCustomDockWallpaper(String pkg) {
+        File f = getCustomDockWallpaperFile(pkg);
+        return f != null && f.exists();
+    }
+
+    private void clearCustomDockWallpapers() {
+        File dir = new File(getFilesDir(), "dock_wallpapers");
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    try { f.delete(); } catch (Throwable ignored) {}
+                }
+            }
+        }
+    }
+
+    private void restoreDefaultDockWallpaper(String pkg, String label) {
+        if (pkg == null) return;
+        File f = new File(getCustomDockWallpapersDir(), pkg + ".custom");
+        if (f.exists()) {
+            f.delete();
+        }
+        Toast.makeText(this, "Default wallpaper restored for " + (label != null ? label : pkg), Toast.LENGTH_SHORT).show();
+        if (pkg.equals(currentWallpaperPkg)) {
+            updateDockWallpaper(pkg, lastFocused, true);
+        }
+    }
+
+    private void applyCustomDockWallpaper(String pkg, String label, File srcImageFile) {
+        if (pkg == null || srcImageFile == null || !srcImageFile.exists()) return;
+        try {
+            File dest = new File(getCustomDockWallpapersDir(), pkg + ".custom");
+            copyFile(srcImageFile, dest);
+            Toast.makeText(this, "Wallpaper updated for " + (label != null ? label : pkg), Toast.LENGTH_SHORT).show();
+            if (pkg.equals(currentWallpaperPkg)) {
+                updateDockWallpaper(pkg, lastFocused, true);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to set wallpaper: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static void copyFile(File src, File dst) throws IOException {
+        try (FileInputStream in = new FileInputStream(src);
+             FileOutputStream out = new FileOutputStream(dst)) {
+            byte[] buf = new byte[8192];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        }
+    }
+
+    private Bitmap decodeWallpaperFile(File file) {
+        try {
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
+            int origW = opts.outWidth;
+            int origH = opts.outHeight;
+            if (origW <= 0 || origH <= 0) return null;
+
+            int screenW = getResources().getDisplayMetrics().widthPixels;
+            int screenH = getResources().getDisplayMetrics().heightPixels;
+            int sampleSize = 1;
+            while ((origW / (sampleSize * 2)) >= screenW && (origH / (sampleSize * 2)) >= screenH) {
+                sampleSize *= 2;
+            }
+
+            opts.inJustDecodeBounds = false;
+            opts.inSampleSize = sampleSize;
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            return BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    private void setSpecificWallpaperBitmap(Bitmap bitmap, int direction) {
+        if (dockWallpaperA == null || dockWallpaperB == null || bitmap == null) return;
+
+        final ImageView incoming = wallpaperShowingA ? dockWallpaperB : dockWallpaperA;
+        final ImageView outgoing = wallpaperShowingA ? dockWallpaperA : dockWallpaperB;
+        wallpaperShowingA = !wallpaperShowingA;
+
+        incoming.animate().cancel();
+        outgoing.animate().cancel();
+
+        incoming.setImageBitmap(bitmap);
+        incoming.setVisibility(View.VISIBLE);
+
+        if (animations && !reducedMotion && outgoing.getVisibility() == View.VISIBLE && outgoing.getAlpha() > 0.05f) {
+            incoming.setAlpha(0f);
+            incoming.animate()
+                    .alpha(1f)
+                    .setDuration(350)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+            outgoing.animate()
+                    .alpha(0f)
+                    .setDuration(350)
+                    .withEndAction(() -> {
+                        outgoing.setAlpha(0f);
+                        outgoing.setScaleX(1.0f);
+                        outgoing.setScaleY(1.0f);
+                        outgoing.setTranslationX(0f);
+                        outgoing.setTranslationY(0f);
+                        outgoing.setImageDrawable(null);
+                    })
+                    .start();
+        } else {
+            incoming.setAlpha(1f);
+            outgoing.setAlpha(0f);
+            outgoing.setScaleX(1.0f);
+            outgoing.setScaleY(1.0f);
+            outgoing.setTranslationX(0f);
+            outgoing.setTranslationY(0f);
+            outgoing.setImageDrawable(null);
+        }
+        if (wallpaperScrim != null) {
+            wallpaperScrim.setVisibility(View.VISIBLE);
+            wallpaperScrim.setAlpha(1f);
+        }
+
+        startKenBurnsEffect(incoming, direction);
+    }
+
     /**
      * Moves the carried tile one step. Left and Right wrap across rows, like a list; Up and Down move a whole row,
      * and Down into a short last row lands on its last tile. Nothing moves past either end or up into the top bar.
@@ -1906,6 +2221,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onBackPressed() {
+        if (fileBrowserOverlay != null && fileBrowserOverlay.getVisibility() == View.VISIBLE) {
+            handleFileBrowserBack();
+            return;
+        }
         if (allAppsModalOverlay != null && allAppsModalOverlay.getVisibility() == View.VISIBLE) {
             hideAllAppsModal();
             return;
@@ -2515,6 +2834,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (pkg == null) return;
         if (!force && pkg.equals(currentWallpaperPkg)) return;
         currentWallpaperPkg = pkg;
+
+        File customWpFile = getCustomDockWallpaperFile(pkg);
+        if (customWpFile != null && customWpFile.exists()) {
+            Bitmap bmp = decodeWallpaperFile(customWpFile);
+            if (bmp != null) {
+                setSpecificWallpaperBitmap(bmp, position);
+                return;
+            }
+        }
+
         Integer resId = DOCK_WALLPAPERS.get(pkg);
         if (resId == null) {
             // Dynamic auto-detection: no Java edits or AI needed!
@@ -3966,7 +4295,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             anchor.setSelected(false);
             setPillHighlighted(anchor, false);
-            if (!reordering && !dockEditing) {
+            if (!reordering && !dockEditing
+                    && (allAppsModalOverlay == null || allAppsModalOverlay.getVisibility() != View.VISIBLE)
+                    && (fileBrowserOverlay == null || fileBrowserOverlay.getVisibility() != View.VISIBLE)) {
                 focusTile(dockReturnPosition());
             }
         });
@@ -3997,6 +4328,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             addSettingsMenuRow(rows, popup, R.string.dock_add, this::showAddAppsOnDockModal);
         }
 
+        // Change wallpaper apps dock
+        if (dockRow) {
+            addSettingsMenuRow(rows, popup, R.string.dock_wallpaper_change, this::showChangeWallpaperDockAppsPicker);
+        }
+
         // Remove app from dock
         if (dockRow) {
             addSettingsMenuRow(rows, popup, R.string.dock_remove, this::startDockRemove);
@@ -4021,6 +4357,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 File orderFile = Order.file(this);
                 if (orderFile != null && orderFile.exists()) orderFile.delete();
             } catch (Throwable ignored) {}
+            clearCustomDockWallpapers();
             recreate();
         });
 

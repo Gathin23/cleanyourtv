@@ -72,6 +72,7 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
     private RecyclerView recyclerView;
     private boolean isAddToDockMode = false;
     private final Set<String> dockPackages = new HashSet<>();
+    private List<String> filterPackages = null;
     private OnAppSelectedListener onAppSelectedListener;
 
     public void setAddToDockMode(boolean addToDockMode) {
@@ -80,6 +81,14 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
 
     public boolean isAddToDockMode() {
         return isAddToDockMode;
+    }
+
+    public void setFilterPackages(java.util.List<String> pkgs) {
+        if (pkgs == null) {
+            this.filterPackages = null;
+        } else {
+            this.filterPackages = new ArrayList<>(pkgs);
+        }
     }
 
     public void setDockPackages(java.util.Collection<String> pkgs) {
@@ -167,48 +176,71 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
             }
         }
 
+        if (filterPackages != null) {
+            for (String pkg : filterPackages) {
+                if (!combined.containsKey(pkg)) {
+                    try {
+                        Intent launch = pm.getLaunchIntentForPackage(pkg);
+                        if (launch != null) {
+                            ResolveInfo ri = pm.resolveActivity(launch, 0);
+                            if (ri != null && ri.activityInfo != null) {
+                                combined.put(pkg, ri);
+                            }
+                        }
+                    } catch (Throwable ignored) {}
+                }
+            }
+        }
+
         List<AppItem> list = new ArrayList<>();
         for (ResolveInfo ri : combined.values()) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
             if (pkg.equals(ctx.getPackageName())) continue;
 
+            boolean isFilterApp = filterPackages != null && filterPackages.contains(pkg);
+            if (filterPackages != null && !isFilterApp) {
+                continue;
+            }
+
             String label = String.valueOf(ri.loadLabel(pm));
             String lowerPkg = pkg.toLowerCase();
             String lowerLabel = label.toLowerCase();
 
-            // Exclude unwanted OEM/system packages: copyDataToTV, Initial Setup, OTA, TCL_BT.., TV Settings, TVKitServer, User Center
-            if (lowerPkg.startsWith("com.tcl.")
-                    || lowerPkg.contains("copydatato")
-                    || lowerPkg.contains("initsetup")
-                    || lowerPkg.contains(".ota")
-                    || lowerPkg.contains("tcl_bt")
-                    || lowerPkg.contains("tvkit")
-                    || lowerPkg.contains("usercenter")
-                    || lowerPkg.contains("settings")
-                    || lowerLabel.contains("copydatato")
-                    || lowerLabel.contains("initial setup")
-                    || lowerLabel.contains("ota")
-                    || lowerLabel.contains("tcl_bt")
-                    || lowerLabel.contains("tv settings")
-                    || lowerLabel.contains("tvkit")
-                    || lowerLabel.contains("user center")) {
-                continue;
-            }
+            if (!isFilterApp) {
+                // Exclude unwanted OEM/system packages: copyDataToTV, Initial Setup, OTA, TCL_BT.., TV Settings, TVKitServer, User Center
+                if (lowerPkg.startsWith("com.tcl.")
+                        || lowerPkg.contains("copydatato")
+                        || lowerPkg.contains("initsetup")
+                        || lowerPkg.contains(".ota")
+                        || lowerPkg.contains("tcl_bt")
+                        || lowerPkg.contains("tvkit")
+                        || lowerPkg.contains("usercenter")
+                        || lowerPkg.contains("settings")
+                        || lowerLabel.contains("copydatato")
+                        || lowerLabel.contains("initial setup")
+                        || lowerLabel.contains("ota")
+                        || lowerLabel.contains("tcl_bt")
+                        || lowerLabel.contains("tv settings")
+                        || lowerLabel.contains("tvkit")
+                        || lowerLabel.contains("user center")) {
+                    continue;
+                }
 
-            // Only apps installed from Google Play Store (or Play Store itself)
-            String installer = null;
-            try {
-                installer = pm.getInstallerPackageName(pkg);
-            } catch (Exception ignored) {}
+                // Only apps installed from Google Play Store (or Play Store itself)
+                String installer = null;
+                try {
+                    installer = pm.getInstallerPackageName(pkg);
+                } catch (Exception ignored) {}
 
-            boolean isPlayStoreInstalled = "com.android.vending".equals(installer);
-            boolean isPlayStoreItself = "com.android.vending".equals(pkg);
-            boolean isUserInstalled = (ri.activityInfo.applicationInfo != null &&
-                    (ri.activityInfo.applicationInfo.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) == 0);
+                boolean isPlayStoreInstalled = "com.android.vending".equals(installer);
+                boolean isPlayStoreItself = "com.android.vending".equals(pkg);
+                boolean isUserInstalled = (ri.activityInfo.applicationInfo != null &&
+                        (ri.activityInfo.applicationInfo.flags & android.content.pm.ApplicationInfo.FLAG_SYSTEM) == 0);
 
-            if (!isPlayStoreInstalled && !isPlayStoreItself && !isUserInstalled) {
-                continue;
+                if (!isPlayStoreInstalled && !isPlayStoreItself && !isUserInstalled) {
+                    continue;
+                }
             }
 
             ComponentName component = new ComponentName(pkg, ri.activityInfo.name);
@@ -223,7 +255,18 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
             list.add(new AppItem(pkg, label, component, banner, icon, smallIcon, isLeanback));
         }
 
-        Collections.sort(list, (a, b) -> a.label.compareToIgnoreCase(b.label));
+        if (filterPackages != null) {
+            Collections.sort(list, (a, b) -> {
+                int ia = filterPackages.indexOf(a.pkg);
+                int ib = filterPackages.indexOf(b.pkg);
+                if (ia >= 0 && ib >= 0) return Integer.compare(ia, ib);
+                if (ia >= 0) return -1;
+                if (ib >= 0) return 1;
+                return a.label.compareToIgnoreCase(b.label);
+            });
+        } else {
+            Collections.sort(list, (a, b) -> a.label.compareToIgnoreCase(b.label));
+        }
 
         items.clear();
         items.addAll(list);
@@ -440,6 +483,12 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
                 return;
             }
 
+            if (onAppSelectedListener != null) {
+                SoundManager.getInstance(ctx).playEnter();
+                onAppSelectedListener.onAppSelected(item);
+                return;
+            }
+
             SoundManager.getInstance(ctx).playEnter();
             Intent intent = new Intent(Intent.ACTION_MAIN).setComponent(item.component)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
@@ -456,7 +505,7 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
         });
 
         h.card.setOnLongClickListener(v -> {
-            if (isAddToDockMode) return true;
+            if (isAddToDockMode || onAppSelectedListener != null) return true;
             Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + item.pkg));
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try { ctx.startActivity(i); } catch (Exception ignored) {}
