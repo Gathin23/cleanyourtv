@@ -343,6 +343,17 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
                     int upTarget = pos - COLUMNS;
                     if (upTarget >= 0) {
                         focusPosition(upTarget);
+                    } else {
+                        // At the top row: wrap to bottom in the same column
+                        int col = pos % COLUMNS;
+                        int totalRows = (items.size() + COLUMNS - 1) / COLUMNS;
+                        int bottomTarget = (totalRows - 1) * COLUMNS + col;
+                        if (bottomTarget >= items.size()) {
+                            bottomTarget -= COLUMNS;
+                        }
+                        if (bottomTarget >= 0 && bottomTarget < items.size()) {
+                            focusPosition(bottomTarget);
+                        }
                     }
                     return true;
 
@@ -351,7 +362,14 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
                     if (downTarget < items.size()) {
                         focusPosition(downTarget);
                     } else if (row < (items.size() - 1) / COLUMNS) {
+                        // There is a row below, but this column is past the end
                         focusPosition(items.size() - 1);
+                    } else {
+                        // At the end of apps / bottom row: wrap back to the top (row 0) in the same column!
+                        int col = pos % COLUMNS;
+                        if (col < items.size()) {
+                            focusPosition(col);
+                        }
                     }
                     return true;
             }
