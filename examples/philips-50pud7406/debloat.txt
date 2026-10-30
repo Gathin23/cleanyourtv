@@ -102,6 +102,28 @@
 # and starts tv.wuaki.apptv, which this unit ships disabled, so the key does nothing. app_keys "249:<package>"
 # (HOME_KEY_SERVICE=1) gets the key first and opens that app instead (checked on the real remote).
 # Not checked here: HDMI picture and DVB-T (IPTV only), held volume (external audio).
+#
+# FIFTH UNIT (EU): Philips 50PUS8107/12, on Wi-Fi, nothing in the USB ports. The first unit here on ANDROID 14:
+# persist.odm.tpv.fw.revision=TPM216E_R.201.000.169.001, build UTT1.240424.001, ro.product.name=PH0M_EA_T32_2G,
+# ro.product.device=PH0M_EA_T32, board m7332, ro.config.low_ram=true; About says "Philips UHD Android TV".
+# Fingerprint: Philips/PH0M_EA_T32_2G/PH0M_EA_T32:14/UTT1.240424.001/201000169001:user/release-keys
+# Tested the same evening only, with three reboots. USB debugging alone opens 5555 (the RSA prompt appears).
+# Applied: the four telemetry lines, nettv.market, fusion.android.tv.demo, disclaimercustomization,
+# partnercustomizer, tvrecommendations, backdrop (quirk 1, screensaver moved to ClockDream) and Disney+, plus the two
+# candidates for this firmware at the end of the list. Kept by choice: mediashell, katniss, Netflix, Prime Video,
+# YouTube Music, Play Movies and Play Games; fitness and Spotify are not installed. After each reboot the disabled list
+# matched what was applied. Home handed over to launcher/ on the first try (the only other HOME claimant is
+# com.android.tv.settings/.system.FallbackHome).
+# setupwraith is installed and is not a HOME claimant, but on this unit it OWNS the saved Wi-Fi network
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'` reads cname=com.google.android.tungsten.setupwraith): leave it enabled.
+# Quirk 5 (boot to Live TV) shows here too. power_on_home with HOME_KEY_SERVICE=1 brings Home back 5 to 11 s after
+# the firmware opens com.mediatek.wwtv.tvcenter. With the helper filtering keys, a held Volume Up stepped once per
+# press on the real remote; consume_volume_keys did not bring the ramp back (one step per tap, no repeat). key_filter
+# false (in a theme's config.json, then the helper rebound) brought the ramp back, and power_on_home still landed on
+# Home after a reboot. Real remote with the launcher as Home: Home, Source/Input, Settings, Netflix, Rakuten and
+# Ambilight keys work. The Inputs pill lists HDMI 1-4 and Live TV. org.droidtv.ambisvc (Ambilight) left alone.
+# Remote is IR only (MStar Smart TV IR Receiver), so Assistant voice needs a Bluetooth-paired remote or the phone app.
+# Not checked: HDMI picture and live channels with the list applied (the Source key and Inputs menu open).
 
 # TPV / Philips telemetry
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517
@@ -144,6 +166,10 @@ com.spotify.tv.android
 # android.autoinstalls.config.tpv.device      # PlayAutoInstallConfig: TPV's auto-install list
 # com.android.providers.calendar              # no calendar app on a TV; boot receiver, runs in the background
 # com.google.android.syncadapters.calendar
+#
+# Candidates from the fifth unit (Android 14, TPM216E), disabled there with no regression in one evening:
+# org.droidtv.fastip                          # Philips free-channel promos: promo, TOU and advertising-ID activities
+# org.droidtv.tv.packageinfo                  # InstalledPkgListService: INTERNET, boot receiver, reports installed apps
 #
 # Kept on purpose: com.google.android.katniss (Assistant/voice; the owners of the second and third unit disabled it), com.android.tv.ota (updates),
 # com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, org.droidtv,
