@@ -1,5 +1,6 @@
 package com.gathin.tvhome;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,6 +33,13 @@ import java.util.concurrent.Executors;
 
 /** Displays and rotates a theme's local wallpaper images while Home is visible. */
 final class WallpaperPlayer {
+    /** How far the drift zooms in before reversing; the drift's reach is that overshoot, so no edge ever shows. */
+    private static final float DRIFT_ZOOM = 0.08f;
+    /** One direction of the drift, minutes each way; a rotation walks the list so every picture moves its own way. */
+    private static final long DRIFT_MS = 7 * 60_000L;
+    private static final int[] DRIFT_X = {-1, -1, -1, 0, 0, 1, 1, 1};
+    private static final int[] DRIFT_Y = {-1, 0, 1, -1, 1, -1, 0, 1};
+
     private final FrameLayout root;
     private final ImageView image;
     private final int backgroundColor;
@@ -46,6 +55,15 @@ final class WallpaperPlayer {
     private final int height;
     /** wallpaper_dim as an ARGB black, painted into each picture once instead of a full-screen shade view. */
     private final int dimColor;
+    /** config wallpaper_motion: the picture slowly zooms and drifts; reduced_motion keeps it still. */
+    private final boolean motion;
+    /** The drift's reach, nine tenths of the room the full zoom's overshoot leaves on each axis. */
+    private final float driftMaxX, driftMaxY;
+    /** One animator for Home's whole life; it sets the transform from its fraction, nothing is allocated per frame. */
+    private ValueAnimator drift;
+    /** The drift direction of the picture on screen, advanced at every change. */
+    private float driftX, driftY;
+    private int driftStep;
     /** The picture on screen, released once the next one has been drawn. */
     private Bitmap current;
     private boolean active;
@@ -85,6 +103,9 @@ final class WallpaperPlayer {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         width = metrics.widthPixels;
         height = metrics.heightPixels;
+        motion = config.wallpaperMotion && !config.reducedMotion;
+        driftMaxX = DRIFT_ZOOM / 2f * 0.9f * width;
+        driftMaxY = DRIFT_ZOOM / 2f * 0.9f * height;
         image = new ImageView(context);
         image.setScaleType(ImageView.ScaleType.CENTER_CROP);
         image.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -130,17 +151,23 @@ final class WallpaperPlayer {
 
     void start() {
         active = true;
+        // The picture already on screen comes back with its drift restarted; stop() ended it.
+        startDrift();
         update();
     }
 
     void stop() {
         active = false;
+        // No transform updates while Home is hidden behind another screen.
+        if (drift != null) drift.cancel();
     }
 
     /** Drops the wallpaper texture when Home is hidden and Android asks the process to free memory. */
     void releaseForMemoryPressure() {
         if (current == null) return;
+        if (drift != null) drift.cancel();
         image.setImageDrawable(null);
+        resetDriftTransform();
         // The renderer may still have a queued frame that references this hardware bitmap. Drop our references and
         // let Android reclaim its native buffer after rendering releases it instead of recycling it mid-frame.
         current = null;
@@ -162,6 +189,7 @@ final class WallpaperPlayer {
     void close() {
         active = false;
         closed = true;
+        if (drift != null) drift.cancel();
         decoder.shutdownNow();
     }
 
@@ -266,7 +294,48 @@ final class WallpaperPlayer {
         // The wallpaper covers the whole root; avoid drawing the fallback colour under it.
         root.setBackground(null);
         image.setImageBitmap(bitmap);
+        startDrift();
         if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
+    }
+
+    /**
+     * wallpaper_motion: the picture zooms up to {@link #DRIFT_ZOOM} over about seven minutes and back while it
+     * drifts inside that zoom's overshoot, so an edge never shows at any point of the move. One animator drives
+     * the whole life of a picture: it sets the transform from its fraction on the UI thread and the GPU does the
+     * rest. The swap to another picture is already a cut, so restarting the drift from its start is invisible.
+     */
+    private void startDrift() {
+        if (!motion || current == null) return;
+        if (drift == null) {
+            drift = ValueAnimator.ofFloat(0f, 1f);
+            drift.setDuration(DRIFT_MS);
+            drift.setInterpolator(new LinearInterpolator());
+            drift.setRepeatCount(ValueAnimator.INFINITE);
+            drift.setRepeatMode(ValueAnimator.REVERSE);
+            drift.addUpdateListener(animation -> {
+                float fraction = (float) animation.getAnimatedValue();
+                float zoom = 1f + DRIFT_ZOOM * fraction;
+                image.setScaleX(zoom);
+                image.setScaleY(zoom);
+                image.setTranslationX(driftX * fraction);
+                image.setTranslationY(driftY * fraction);
+            });
+        } else {
+            drift.cancel();
+        }
+        int step = driftStep++ % DRIFT_X.length;
+        driftX = DRIFT_X[step] * driftMaxX;
+        driftY = DRIFT_Y[step] * driftMaxY;
+        resetDriftTransform();
+        drift.start();
+    }
+
+    /** Back to the undrifted picture, at zoom one and centred. */
+    private void resetDriftTransform() {
+        image.setScaleX(1f);
+        image.setScaleY(1f);
+        image.setTranslationX(0f);
+        image.setTranslationY(0f);
     }
 
     private Bitmap decode(File file) {

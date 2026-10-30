@@ -363,6 +363,11 @@
          pictures in wallpapers/ ("01-dusk.jpg<TAB>Dusk over the peaks", one per line). A picture without a line
          shows no name. Can also be set with "wallpaper_captions": true in a theme's config.json. -->
     <bool name="wallpaper_captions">false</bool>
+    <!-- The wallpaper slowly zooms and drifts while Home is visible: up to 8 % over about seven minutes and back,
+         within the zoom's own overshoot so an edge never shows, in a direction that changes with every picture of
+         a rotation. One animator sets the transform from its fraction and the GPU does the rest; nothing runs per
+         frame on the CPU. reduced_motion turns it off. Can also be set with "wallpaper_motion": true in a theme. -->
+    <bool name="wallpaper_motion">false</bool>
     <!-- Rotating wallpapers grouped by the time of day, as JSON: {"morning": [file names], "evening": [...],
          "night": [...]}. While set, the rotation picks only from the group that fits now: morning from sunrise to
          noon, evening until half an hour after sunset, night the rest, with the sun at latitude and longitude (07:00
