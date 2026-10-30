@@ -65,6 +65,7 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
     private final List<AppItem> items = new ArrayList<>();
     private final View tabApp;
     private final Map<String, Bitmap> smallIconsCache = new HashMap<>();
+    private RecyclerView recyclerView;
 
     public AllAppsAdapter(Context ctx) {
         this(ctx, null);
@@ -74,6 +75,34 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
         this.ctx = ctx;
         this.tabApp = tabApp;
         this.density = ctx.getResources().getDisplayMetrics().density;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    public void focusPosition(int targetPos) {
+        if (recyclerView == null || targetPos < 0 || targetPos >= items.size()) return;
+        RecyclerView.LayoutManager lm = recyclerView.getLayoutManager();
+        View view = lm != null ? lm.findViewByPosition(targetPos) : null;
+        if (view != null) {
+            View card = view.findViewById(R.id.appCard);
+            if (card != null) card.requestFocus();
+            else view.requestFocus();
+        } else {
+            recyclerView.scrollToPosition(targetPos);
+            recyclerView.post(() -> {
+                RecyclerView.LayoutManager lmPost = recyclerView.getLayoutManager();
+                View v = lmPost != null ? lmPost.findViewByPosition(targetPos) : null;
+                if (v != null) {
+                    View card = v.findViewById(R.id.appCard);
+                    if (card != null) card.requestFocus();
+                    else v.requestFocus();
+                }
+            });
+        }
     }
 
     public int getAppCount() {
@@ -281,6 +310,52 @@ public class AllAppsAdapter extends RecyclerView.Adapter<AllAppsAdapter.Holder> 
             if (hasFocus) {
                 SoundManager.getInstance(ctx).playNavigation();
             }
+        });
+
+        h.card.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            int pos = h.getBindingAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION || items.isEmpty()) return false;
+
+            final int COLUMNS = 5;
+            int row = pos / COLUMNS;
+            int rowStart = row * COLUMNS;
+            int rowEnd = Math.min(rowStart + COLUMNS - 1, items.size() - 1);
+
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    if (pos >= rowEnd) {
+                        focusPosition(rowStart);
+                    } else {
+                        focusPosition(pos + 1);
+                    }
+                    return true;
+
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                    if (pos <= rowStart) {
+                        focusPosition(rowEnd);
+                    } else {
+                        focusPosition(pos - 1);
+                    }
+                    return true;
+
+                case KeyEvent.KEYCODE_DPAD_UP:
+                    int upTarget = pos - COLUMNS;
+                    if (upTarget >= 0) {
+                        focusPosition(upTarget);
+                    }
+                    return true;
+
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    int downTarget = pos + COLUMNS;
+                    if (downTarget < items.size()) {
+                        focusPosition(downTarget);
+                    } else if (row < (items.size() - 1) / COLUMNS) {
+                        focusPosition(items.size() - 1);
+                    }
+                    return true;
+            }
+            return false;
         });
 
         h.card.setOnClickListener(v -> {

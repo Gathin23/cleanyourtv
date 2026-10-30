@@ -56,6 +56,16 @@
         android:alpha="0"
         android:importantForAccessibility="no" />
 
+    <!-- Darkening scrim for edit mode (reorder apps or remove dock app) -->
+    <View
+        android:id="@+id/editModeScrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B8000000"
+        android:alpha="0"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
     <!-- Race-weekend panel (a theme's race_calendar, see RaceWeekend): in the free space under the clock,
          shown only from shortly before a weekend's first session until the race is over. Updated once a
          minute with the clock, never animated. -->

@@ -349,6 +349,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ValueAnimator kbAnimatorB;
     private boolean dockHidden = false;
     private View wallpaperScrim;
+    private View editModeScrim;
     private boolean wallpaperShowingA = false;
     private String currentWallpaperPkg = "";
     private String lastOpenedAppPackage = null;
@@ -541,6 +542,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockWallpaperA = findViewById(R.id.dockWallpaperA);
         dockWallpaperB = findViewById(R.id.dockWallpaperB);
         wallpaperScrim = findViewById(R.id.wallpaperScrim);
+        editModeScrim = findViewById(R.id.editModeScrim);
 
         appStats = findViewById(R.id.appStats);
         statWeeklyTime = findViewById(R.id.statWeeklyTime);
@@ -1222,6 +1224,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onPause();
         root.removeCallbacks(showIdleClock);
         endReorder();   // Home or another app while reordering keeps the order so far
+        endDockRemove();
         wallpaperPlayer.stop();
         stopAmbientAnimation();
         hero.animate().cancel();
@@ -1447,6 +1450,30 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         Toast.makeText(this, R.string.reorder_hint, Toast.LENGTH_LONG).show();
     }
 
+    private void showEditModeScrim() {
+        if (editModeScrim == null) return;
+        editModeScrim.setVisibility(View.VISIBLE);
+        if (animations && !reducedMotion) {
+            editModeScrim.animate().cancel();
+            editModeScrim.animate().alpha(1f).setDuration(240).start();
+        } else {
+            editModeScrim.setAlpha(1f);
+        }
+    }
+
+    private void hideEditModeScrim() {
+        if (editModeScrim == null) return;
+        if (animations && !reducedMotion) {
+            editModeScrim.animate().cancel();
+            editModeScrim.animate().alpha(0f).setDuration(200).withEndAction(() -> {
+                editModeScrim.setVisibility(View.GONE);
+            }).start();
+        } else {
+            editModeScrim.setAlpha(0f);
+            editModeScrim.setVisibility(View.GONE);
+        }
+    }
+
     /** The start shared by reorder and edit-dock mode. False when there is nothing to move. */
     private boolean beginReorder() {
         if (adapter.movableCount() < 2) return false;
@@ -1456,6 +1483,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         orderAtStart = adapter.movableKeys();
         glass.setAccent(REORDER_ACCENT);
         btnReorder.setActivated(true);
+        showEditModeScrim();
         return true;
     }
 
@@ -1565,6 +1593,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         adapter.setReordering(false);
         glass.setAccent(festive ? festival.accentColor() : 0);
         btnReorder.setActivated(false);
+        hideEditModeScrim();
         List<String> keys = adapter.movableKeys();
         List<String> before = orderAtStart;
         orderAtStart = null;
@@ -1593,6 +1622,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockRemoving = true;
         glassAccent = 0xFFE53935;
         glass.setAccent(0xFFE53935);
+        showEditModeScrim();
         focusTile(0);
         Toast.makeText(this, R.string.dock_remove_hint, Toast.LENGTH_LONG).show();
     }
@@ -1602,6 +1632,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockRemoving = false;
         glassAccent = 0;
         glass.setAccent(festive ? festival.accentColor() : 0);
+        hideEditModeScrim();
     }
 
     private boolean dispatchDockRemove(KeyEvent event) {
