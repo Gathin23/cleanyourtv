@@ -116,6 +116,27 @@
 # - Voice stayed on with launcherx disabled. The first mic press afterwards answered that the Assistant had trouble
 #   processing; later presses, and presses after a reboot, worked.
 #
+# TCL 50S546, 2026-10-29: same G03_4K_GB / AR09 / V8-R51MT05-LF1V620 build, client TCL-CA-RTD51M-S1, security
+# patch 2024-03-05. Applied groups 1-3, group 4 minus Netflix, Prime Video, YouTube Music and the USB player, group 5
+# minus voice (katniss, tv.assistant, tcl.assistant, micmanager) and Chromecast, then groups 6 and 7 and launcherx, in
+# batches with a screenshot after each; rebooted twice. Every package stayed disabled, the TV booted to the new Home
+# (FallbackHome, then the launcher; no RecoveryActivity), Wi-Fi stayed up, and HDMI 1-4, AV and the tuner stayed in
+# `dumpsys tv_input`. Tested the same day, not yet lived with for days. Differences on this unit:
+# - com.tcl.gallery, com.tcl.ui_mediaCenter and com.tcl.t_solo all show TV_INPUT_HARDWARE granted in dumpsys on this
+#   AR09 unit (unlike the AR11 50C641 above), so gallery and the USB player were left enabled; tools/disable.sh
+#   would skip them anyway.
+# - setupwraith did not own the Wi-Fi (android.uid.system and com.android.tv.settings did), so it was disabled
+#   without a re-join.
+# - gtvpai was skipped by tools/disable.sh (no permission block), then disabled with TVINPUT_ALLOW=1 after a reboot
+#   showed every input still listed; it holds only a DummyReceiver.
+# - Remote: Bluetooth "TCL_RC902N_M1" (Generic.kl), same HID usages as the M1/M2 above: Netflix 0x0c0051, YouTube
+#   0x0c0057, Prime Video 0x0c005f, gear 0x0c0055. All four did nothing with launcherx off; HOME_KEY_SERVICE=1 with
+#   this folder's app_keys and settings_key_keycodes brought them back (real remote). 0x0c0050 (KEY_MENU) opens
+#   TCL's quick-settings panel (com.tcl.settings) with no helper. The star button is 0x0c0053 (KEY_SWITCHVIDEOMODE,
+#   scancode 227, TCL_QUICK_MENU in Generic.kl) and does nothing by default; "scan:227:<package>" in app_keys maps it.
+# - With "consume_volume_keys": true, a held volume button kept ramping with the key helper bound (real remote).
+# - Voice stayed on with launcherx disabled; the first mic press afterwards did nothing, later presses worked.
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
