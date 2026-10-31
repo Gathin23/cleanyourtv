@@ -142,6 +142,20 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   testing with key presses.
 - **Git Bash rewrites paths** like `/data/local/tmp` into Windows paths. The scripts set
   `MSYS_NO_PATHCONV=1` for you. Set `JAVA_HOME` and `ANDROID_HOME` before building there.
+- **`pip install -r tools/requirements.txt` fails on Windows on ARM** with `Failed building wheel for
+  cryptography` ([#2855](https://github.com/Gathin23/cleanyourtv/issues/2855)). The ARM64 build of Python
+  reports `win_arm64`, PyPI's newest `win_arm64` wheel for `cryptography` is 46.0.3, and the file asks for
+  `>=46.0.7`, so pip falls back to the source tarball, which needs Rust and OpenSSL. Nothing about the TV
+  is involved, and there are two ways through on the PC. Make `tools\venv` with the x64 build of Python
+  from python.org instead: Windows 11 on ARM runs it, and 46.0.7 has a `win_amd64` wheel. Or stay on the
+  ARM64 build and install the three packages by hand, `cryptography` first:
+  `pip install --only-binary=:all: cryptography==46.0.3`, then `pip install adb-shell==0.4.4 rsa==4.9.1`,
+  which leaves `cryptography` at 46.0.3 because `adb-shell` names no version for it. Either way
+  `cryptography` has to be importable: `tv.py` imports `adb_shell.auth.keygen` with the rest of the
+  client, and only *calls* it when there is no key to offer yet. Don't run the whole file again
+  afterwards - it asks for 46.0.7 again and the build fails again. Whether that floor can come down is
+  [#2855](https://github.com/Gathin23/cleanyourtv/issues/2855)'s question for the maintainer, not a step
+  in a cleanup.
 
 ## Working on the TV
 
