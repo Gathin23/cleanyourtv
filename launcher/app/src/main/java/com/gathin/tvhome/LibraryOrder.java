@@ -47,7 +47,7 @@ final class LibraryOrder {
 
     LibraryOrder pin(String pkg, List<String> catalog) {
         if (!LibraryApps.validPackage(pkg)) throw new IllegalArgumentException("Invalid package");
-        List<String> next = new ArrayList<>(sort(catalog));
+        List<String> next = editOrder(sort(catalog));
         if (!next.contains(pkg)) next.add(pkg);
         next.remove(pkg);
         next.add(0, pkg);
@@ -63,15 +63,28 @@ final class LibraryOrder {
     }
 
     LibraryOrder move(String pkg, int delta, List<String> catalog) {
-        List<String> next = new ArrayList<>(sort(catalog));
-        int from = next.indexOf(pkg);
+        List<String> visible = sort(catalog);
+        int from = visible.indexOf(pkg);
         if (from < 0) return this;
-        int to = Math.max(0, Math.min(next.size() - 1, from + delta));
+        int to = Math.max(0, Math.min(visible.size() - 1, from + delta));
+        List<String> next = editOrder(visible);
         if (from != to) {
             next.remove(from);
             next.add(to, pkg);
         }
         return new LibraryOrder(next, pinned);
+    }
+
+    /**
+     * The visible order plus the saved pins the catalogue no longer lists, so a pin outlives the app being
+     * disabled or uninstalled and comes back with it. Unpinned entries the catalogue dropped stay dropped.
+     */
+    private List<String> editOrder(List<String> visible) {
+        List<String> next = new ArrayList<>(visible);
+        for (String key : keys) {
+            if (pinned.contains(key) && !next.contains(key)) next.add(key);
+        }
+        return next;
     }
 
     List<String> topBarApps(List<String> configured) {

@@ -78,6 +78,35 @@ public class LibraryOrderTest {
         assertEquals(Collections.singletonList("com.example.gamma"), order.topBarApps(Collections.emptyList()));
     }
 
+    @Test public void pinKeepsASavedPinTheCatalogueNoLongerLists() {
+        LibraryOrder order = new LibraryOrder(
+                Arrays.asList("com.example.alpha", "com.example.beta", "com.example.gamma"),
+                Collections.singleton("com.example.alpha"));
+        List<String> installed = Arrays.asList("com.example.beta", "com.example.gamma");
+
+        LibraryOrder pinned = order.pin("com.example.beta", installed);
+
+        assertTrue(pinned.isPinned("com.example.alpha"));
+        assertTrue(pinned.isPinned("com.example.beta"));
+        assertEquals(Arrays.asList("com.example.beta", "com.example.gamma"), pinned.sort(installed));
+        assertEquals(pinned.pinned, LibraryOrder.decode(LibraryOrder.encode(pinned)).pinned);
+        assertEquals(Arrays.asList("com.example.beta", "com.example.alpha", "com.example.gamma"),
+                pinned.sort(Arrays.asList("com.example.alpha", "com.example.beta", "com.example.gamma")));
+    }
+
+    @Test public void movingAnAppKeepsASavedPinTheCatalogueNoLongerLists() {
+        LibraryOrder order = new LibraryOrder(
+                Arrays.asList("com.example.alpha", "com.example.beta", "com.example.gamma"),
+                Collections.singleton("com.example.alpha"));
+        List<String> installed = Arrays.asList("com.example.beta", "com.example.gamma");
+
+        LibraryOrder moved = order.move("com.example.gamma", -1, installed);
+
+        assertTrue(moved.isPinned("com.example.alpha"));
+        assertTrue(moved.keys.contains("com.example.alpha"));
+        assertEquals(Arrays.asList("com.example.gamma", "com.example.beta"), moved.sort(installed));
+    }
+
     @Test public void malformedOrderIsRejected() {
         assertEquals(null, LibraryOrder.decode("tvhome-library 1\norder com.example\norder com.example\n"));
         assertEquals(null, LibraryOrder.decode("tvhome-library 1\npinned com.example\n"));
