@@ -31,10 +31,12 @@
 # HDMI and Live TV checked from the Inputs menu. Animation scales set to 0.5 and `pm trim-caches` run
 # (/data went from 43% to 27% full).
 # Applied 2026-10-24 in four batches with a screenshot and crash-log check after each, then reboot-checked:
-# all 44 listed packages and launcherx stayed disabled, and Home stayed on the launcher. At that boot
-# com.sony.dtv.sonysystemservice crashed once ("GoToSleepInterface has already initialized") and restarted on
-# its own, as on the KD-65X82L. In daily family use for a week since (checked 2026-10-31): every package
-# in this list is still disabled, nothing had to be re-enabled, and no app has gone missing or misbehaved.
+# all 43 packages disabled on that TV, and launcherx, stayed disabled, and Home stayed on the launcher.
+# At that boot com.sony.dtv.sonysystemservice crashed once ("GoToSleepInterface has already initialized")
+# and restarted on its own, as on the KD-65X82L. In daily family use for a week since (checked
+# 2026-10-31): every one of them is still disabled, nothing had to be re-enabled, and no app has gone
+# missing or misbehaved. Four of those 43 are commented out below as app choices rather than clutter,
+# so this list disables 39 by default; uncomment them if you don't want those apps either.
 
 # Batch 1: tracking, ads, demo mode
 tv.samba.ssm                                   # Samba TV fingerprints what's on screen (ACR)
@@ -75,9 +77,12 @@ com.sony.dtv.distancealert                     # BRAVIA CAM distance alert
 com.sony.dtv.sensingcamera.settings
 com.sony.dtv.sensingcamera.fwupdate
 
-# Batch 3: features the owner doesn't use
-com.sony.dtv.airplayapp                        # AirPlay (~53 MB with its server process)
-com.sony.dtv.homekit
+# Batch 3: features this owner doesn't use
+# The four commented out here are app choices, not clutter: they were disabled on the TV this list
+# came from, and all four were still off after a week, but a shared list shouldn't make that choice
+# for everyone. Uncomment the ones you don't want.
+# com.sony.dtv.airplayapp                      # AirPlay (~53 MB with its server process)
+# com.sony.dtv.homekit                         # HomeKit, alongside AirPlay
 com.uei.quicksetsdk.sony                       # UEI QuickSet IR control (~41 MB); HDMI-CEC unaffected
 com.sony.dtv.seeds.iot                         # BRAVIA Connect phone link
 # com.sony.dtv.seeds.iot.remotestart          # KEEP: with it disabled the TV drops off the network in standby
@@ -87,8 +92,8 @@ com.sony.dtv.seeds.iot                         # BRAVIA Connect phone link
 #                                              # TV. After ~45 min of standby it stopped answering ping either way,
 #                                              # so the difference is how soon the network goes, not whether.
 com.sony.dtv.seeds.auth
-com.google.android.youtube.tvmusic
-com.google.android.play.games
+# com.google.android.youtube.tvmusic           # YouTube Music, an app choice (see the note above)
+# com.google.android.play.games                # Play Games, an app choice (see the note above)
 
 # Batch 4: Google TV setup wizard. Its RecoveryActivity claims HOME (priority 1) and would keep Home
 # away from the new launcher once launcherx is disabled. Re-enable before a factory reset.
