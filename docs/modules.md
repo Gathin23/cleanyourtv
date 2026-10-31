@@ -148,3 +148,38 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
 
 The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.
+
+## The weather under the clock (header_weather)
+
+An app can also hand Home one line of text for the space under the clock, for example the weather for the
+owner's city. As with `game_day` the launcher only reads: it never writes to the app and never goes online,
+so the app does the fetching. The owner opts in by naming the app's package in the `header_weather` key
+(`config.xml` or a theme); there is no card prompt for it, and the app's card (if it has one) is only the way
+to open its own screen.
+
+1. Name a read-only content provider in a `meta-data` on your `<application>`:
+
+   ```xml
+   <meta-data android:name="com.gathin.tvhome.weather" android:value="com.example.weather.now" />
+   <provider android:name=".NowProvider" android:authorities="com.example.weather.now" android:exported="true" />
+   ```
+
+   The provider must belong to the package the owner named; the launcher ignores an authority another app holds.
+2. Answer a query on `content://<authority>/now` with these columns, at most one row:
+
+   | Column | Type | What |
+   |---|---|---|
+   | `icon` | text | Optional short glyph drawn before the text, for example a sun or an umbrella. Keep it to one character: the row is one line. |
+   | `text` | text | The line itself, for example "14° Drizzle · Takizawa". A row without it hides the line. It is drawn in small capitals, so write it as you want it read; about 30 characters fit before the date column. |
+
+   An empty cursor hides the line, as does a key that names nothing. The provider is exported without a
+   permission, so it must hold nothing private: a glyph and a line of weather are fine, a home address, an
+   account or a set of links is not. Resolve nothing at query time that can block - Home reads this on its
+   first frame, and a stalled query is a stalled Home. Fetch in the background and answer from a cache.
+3. Call `notifyChange` on that URI when the line changes. Home queries when it comes back, when Home is pressed
+   on Home, and on each change, and watches only while Home is on screen: so refresh while your own screen is
+   open, or on a schedule of your own, and notify when the new line is stored.
+
+Home adds nothing of its own to the row, so the line is exactly what the app publishes.
+
+The [Weather Glance](../addons/README.md) add-on implements this for one city from Open-Meteo.

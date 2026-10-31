@@ -65,3 +65,4 @@ rule sit on its wanted list until a screenshot arrives.
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
 | `clock_format` | <img src="switches/clock_format.jpg" width="320" alt="clock_format on a TV"> |
+| `header_weather` | <img src="switches/header_weather.jpg" width="320" alt="header_weather: a cloud and 10° Overcast · London under the clock on a TV"> |

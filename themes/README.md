@@ -133,6 +133,7 @@ A new key needs one there in the same pull request.
 | `show_home_settings_shortcut` | bool | Keep the optional Default-home tile visible when the TV has a home picker; false by default |
 | `show_stats` | bool | One line under the clock with CPU, free memory and free storage. Off unless set |
 | `game_day` | string | Each team's next game in the F1 panel's place under the clock ("Minnesota Wild at Dallas Stars", "Puck drop in 2h 18m", "Live now"), rotating every few seconds with the F1 weekend when `race_calendar` is on: the package of an add-on that publishes them, such as the Game Day add-on (`io.github.justinnewman.gameday`). The launcher only reads it and stays offline. Off (empty) unless set |
+| `header_weather` | string | The weather line under the clock ("\u2600 14\u00b0 Clear \u00b7 Takizawa"), from an add-on that publishes it, such as Weather Glance (`io.github.lostininaka.weatherglance`). The launcher only reads it and stays offline. Off (empty) unless set |
 | `handle_view_inputs` | bool | Answer the system input switcher (`VIEW_INPUTS`, what the remote's Input button becomes) with the Inputs menu, for sets whose stock launcher was its only handler (Hisense huangshan); `false` by default so a TV with its own input picker never gets a chooser |
 | `background_color` | `#RRGGBB` | Colour behind everything; black by default |
 | `sky_intensity` | 0 to 100 | Time-of-day backdrop: a dark gradient that follows the clock, 0 hides it (default) |
