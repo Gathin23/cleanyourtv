@@ -53,4 +53,4 @@ com.google.android.youtube.tvmusic
 com.google.android.marvin.talkback # Google's screen reader
 com.google.android.apps.mediashell # Cast
 com.google.android.tts # Text-to-speech
-# com.google.android.tv.remote.service  # phone remote, kept on in shared lists (this set has it off)
+com.google.android.tv.remote.service # Control the TV from a phone (carries the mic, #1441; see the header)
