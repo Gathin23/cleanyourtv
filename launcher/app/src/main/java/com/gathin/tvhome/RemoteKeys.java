@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * so both may call handle() for one event, and it answers each press once.
  * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app, a target
  * of "inputs" opens the input switcher, for a remote whose source button sends a key Android does not map,
- * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi) does that action, and
+ * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi, library) does that action, and
  * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say).
  */
 final class RemoteKeys {
@@ -343,7 +343,7 @@ final class RemoteKeys {
     static boolean isAction(String target) {
         switch (target) {
             case "back": case "home": case "recents": case "mute": case "sleep":
-            case "screensaver": case "settings": case "wifi": case "ignore":
+            case "screensaver": case "settings": case "wifi": case "library": case "ignore":
                 return true;
             default:
                 return false;
@@ -378,6 +378,10 @@ final class RemoteKeys {
                 break;
             case "wifi":
                 start(ctx, SystemSettings.intent(ctx, Settings.ACTION_WIFI_SETTINGS));
+                break;
+            case "library":
+                // Home with the App library open on top; Home does nothing when app_library is off.
+                start(ctx, new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_APP_LIBRARY));
                 break;
             default:
                 break;   // "ignore", or "sleep" below Android 9: consumed, nothing to do

@@ -200,7 +200,9 @@
          for HDMI 3 on a TCL Smart TV Pro; the ids are in `tools/tv.py 'dumpsys tv_input'` (hdmi_port=N under
          TvInputHardwareInfo). An action word in place of a package runs that action instead: back, home, recents,
          mute (toggles the sound, with the TV's volume bar), sleep (standby, Android 9 and later), screensaver (the
-         one chosen in the TV's settings, or the launcher's clock), settings, wifi or ignore (swallows the button: it
+         one chosen in the TV's settings, or the launcher's clock), settings, wifi, library (Home with the App
+         library open; with app_library off it only brings Home forward, so a remote's Apps button, which sends
+         284 KEYCODE_ALL_APPS, can open it: 284:library) or ignore (swallows the button: it
          does nothing, for a shortcut pressed by accident; find its scancode with `tools/tv.py 'getevent -t'`);
          e.g. KEYCODE_PROG_YELLOW:mute, scan:586:ignore and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
          entry, e.g. hold:191:io.github.maxhayim.brightness/.QuickActivity for an add-on's quick bar. Prefix an
