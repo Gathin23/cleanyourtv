@@ -1,0 +1,51 @@
+{
+  "dock_apps": [
+    "org.smarttube.stable",
+    "com.netflix.ninja",
+    "com.oumi.utility.media.hub"
+  ],
+  "columns": 4,
+  "fill_dock": false,
+  "live_tv_package": "",
+  "input_action": "com.xgimi.action.hdmiPlayer",
+  "stock_home_redirect": "com.xgimi.home",
+  "key_filter": false,
+  "restore_key_services": true,
+  "app_library": true,
+  "tile_menu": true,
+  "rows_below_dock": 0,
+  "library_apps": [
+    "com.xgimi.wirelessscreen",
+    "com.xgimi.filemanager"
+  ],
+  "hidden_apps": [
+    "com.xgimi.home",
+    "com.android.newsettings",
+    "com.xgimi.newappmarket",
+    "com.xgimi.account",
+    "com.xgimi.user",
+    "com.xgimi.payview",
+    "com.xgimi.upgrade",
+    "com.xgimi.adservice",
+    "com.xgimi.instruction30",
+    "com.xgimi.bootwizard",
+    "com.xgimi.minitvfactory",
+    "mediatek.factorymenu.ui",
+    "com.xgimi.atmosphere",
+    "com.xgimi.doubanfm",
+    "com.netease.cloudmusic.tv",
+    "com.ktcp.tvvideo",
+    "com.hunantv.license",
+    "cn.com.wasu.main",
+    "com.gitv.dvb.live",
+    "com.xgimi.gimiplayer",
+    "com.xgimi.xhplayer",
+    "com.xgimi.stream.video",
+    "com.smarttv.manager"
+  ],
+  "library_excluded_apps": [
+    "mediatek.factorymenu.ui",
+    "com.xgimi.minitvfactory",
+    "com.xgimi.bootwizard"
+  ]
+}
