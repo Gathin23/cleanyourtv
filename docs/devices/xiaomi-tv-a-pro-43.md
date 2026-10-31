@@ -63,7 +63,6 @@ request. SmartTube and TV Bro were pinned in the launcher's dock. The package st
 checked in one session and after one reboot; use this report as provisional until the owner has lived
 with the setup for several days.
 
-
 ## Independent owner-reported 43-inch 2026 unit (31 October 2026)
 
 This is a separate unit from the original report above. Its owner identifies it as **Xiaomi TV A Pro
@@ -121,33 +120,4 @@ reproduce the original crash-loop or claim to diagnose identical firmware behavi
 The physical YouTube button required the launcher's `InputKeyService` after launcherx was disabled.
 The owner confirmed that YouTube opened, but holding a volume button became one step per press while
 the helper was active; the owner chose to keep the YouTube mapping. After the latest reboot the helper
-was bound, and the owner confirmed the physical YouTube button and short/long OK on the Settings icon.
-The latter long press is part of a private customized launcher, not a new upstream feature.
-
-The custom build includes additional network widgets and permissions and is **not** evidence that the
-unmodified reference launcher has those features or its performance. No private configuration,
-wallpapers, screenshots, raw dumps, keys or install scripts are included in this documentation change.
-
-
-### Private customization and possible add-on boundaries
-
-The owner also tested a personal fork with an uncluttered five-slot dock, local hourly wallpaper
-rotation, a compact icon bar and a long-press Settings sidebar. This is a report of working private
-customizations, not a claim that the reference launcher ships these features or that installable
-add-ons have been published.
-
-| Customization tested on this unit | Possible reusable form; remaining work |
-|---|---|
-| Current weather with an icon, condition, temperature and approximate area | Extend the [existing Weather add-on](../../addons/weather/README.md); disclose any added location/network use and keep the core offline. |
-| Prayer timetable, next-prayer countdown and underline | Propose an official Indonesian timetable provider and date/region-validated offline cache for the [existing Prayer Times add-on](../../addons/prayer-times/README.md); calculations elsewhere remain estimates. |
-| Capacity and widget status summaries | Build on [Capacity Stats](../../addons/capacity-stats/README.md) and existing diagnostics; dynamic Home captions need separate module-contract discussion. No RAM-cleaning service. |
-| Personal appearance and app-order backup | A separately scoped feature with bounded validation and recovery tests; the private JSON backup excludes wallpaper image bytes and is not a whole-device backup. |
-| Wallpaper, dock and icon styling | A generic theme using existing supported keys, with licensed images and a real-TV screenshot stripped of personal details. |
-
-The private fork's network access, additional dependency and permissions, hard-coded personal layout
-and larger APK do not meet the core launcher's contribution constraints as-is. No private source,
-wallpaper collection, branded artwork, personal configuration or prebuilt APK is distributed by this
-note. These are extension ideas and tested behavior, not ready-to-use add-on downloads. Any future
-implementation should extend the matching add-on with its maintainer, or use an appropriate independent
-project, with its own
-license, permission disclosure and reproducible source.
+was bound, and the owner confirmed the physical YouTube button worked.
