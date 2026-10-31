@@ -77,7 +77,7 @@ com.google.android.videos                      # Google Play Movies
 com.google.android.play.games
 com.google.android.music                       # Google Play Music, shut down in 2020
 com.amazon.aiv.us                              # US Prime Video stub
-com.google.android.inputmethod.japanese        # Japanese keyboard; com.sony.dtv.ime.chww stays the active keyboard
+# com.google.android.inputmethod.japanese      # Japanese keyboard; off on the 75" unit while com.sony.dtv.ime.chww is the active keyboard (keyboards stay on in shared lists)
 com.sony.dtv.osat.album                        # USB photo player, off by owner's choice (nothing on USB)
 com.sony.dtv.osat.music                        # USB music player
 com.sony.dtv.osat.video                        # USB video player
