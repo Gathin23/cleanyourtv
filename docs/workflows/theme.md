@@ -13,10 +13,12 @@
    emulator. `tests/test_themes.py` fails without it.
 4. Add a row to the table in `themes/README.md` showing the screenshot, like the others.
 5. Bump the count in the Themes feature row of every front page that states it: today `README.md`
-   ("`N ship in themes/`"), `README.de.md` and `README.nl.md`, each in its own words; the three are
-   today's pages rather than the rule. `tests/test_readme_theme_count.py` counts the folders that carry a
-   `config.json` and fails on a page whose number is not that count, naming the page and the folders
-   (`README.nl.md says 10 themes and themes/ holds 11: aurora, ...`).
+   ("`N ship in themes/`"), `README.de.md`, `README.nl.md` and `README.uk.md`, each in its own
+   words; the four are today's pages rather than the rule. `tests/test_readme_theme_count.py` counts
+   the folders that carry a `config.json` and fails on a page whose number is not that count, naming
+   the page and the folders (`README.nl.md says 10 themes and themes/ holds 11: aurora, ...`). A
+   language whose number words the test does not carry yet is a page it cannot read, so a new
+   translation that states the count needs those words in its table.
 6. A look that needs a new key is a launcher switch first, in its own PR.
 
 Then run the tests: `python3 -m unittest discover -s tests -v`.
