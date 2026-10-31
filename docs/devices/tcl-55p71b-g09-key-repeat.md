@@ -252,6 +252,47 @@ mechanism claimed here is the `capabilities=8` in the dump and the three rows, n
 `KeyboardInterceptor`. The owner kept both buttons and lives with the stepped volume - the second Choice
 below - so nothing in that section changes.
 
+## A Sony BRAVIA VH21 where the buttons survive the control
+
+The sets above all pay for the ramp with buttons. One does not. Sony BRAVIA XR-55A95K (`BRAVIA_VH21`,
+product `BRAVIA_VH21_M_UC`, MediaTek), Google TV 12 (Android 12, SDK 31), build
+`BRAVIA_VH21_M_UC-user 12 STT2.230505.001.S136 682241`, US firmware, wired Ethernet, the second unit in
+[`examples/sony-bravia-4k-vh21-us`](../../examples/sony-bravia-4k-vh21-us/debloat.txt). `launcherx` and
+`setupwraith` both disabled, this launcher Home. One unit, one evening.
+
+Installed with `INPUT_KEY_SERVICE=1`, as that folder's first unit was:
+
+| `enabled_accessibility_services` | holding Volume Up |
+| --- | --- |
+| `com.gathin.tvhome/.InputKeyService` (the only service bound) | one step per press |
+| `""`, with `accessibility_enabled 0` | ramps continuously |
+
+So far this is the Mi TV 4A's pair of rows on a fifth vendor. What differs is what the control costs,
+which on every set above was the buttons:
+
+| Button, with no service bound | |
+| --- | --- |
+| Input | still opens an input list |
+| Settings | still works |
+| Home | still works |
+| Back | still works |
+
+All four were pressed on the real remote, which is the only way to tell: an injected key proves nothing
+for a button that may go through a helper. So on this build the helper is not a trade at all - it buys
+nothing the firmware was not already doing, and costs the ramp. The owner cleared the list and kept it
+cleared.
+
+Which package answers the Input button here was not established. `com.sony.dtv.globalkeyoverlay` and
+`com.sony.dtv.devicecontrolservice` are installed and enabled on this set and are the obvious
+candidates, but no `logcat` line was captured naming one, so the row above records the behaviour and
+not its cause. Nor was it checked whether the panel that opens is the launcher's own Inputs menu or
+Sony's - only that the button opens one. `HomeKeyService` was never bound, so there is no all-or-nothing
+bisect here, just the one helper's row and the control.
+
+The practical reading for a Sony set on this firmware: install without `-InputKeyService`, then press
+the buttons. Enable a helper only for a button that is actually dead, and expect the ramp to go when
+you do.
+
 ## Choices
 
 - **Keep the repeat and skip the helpers.** Do not pass `INPUT_KEY_SERVICE=1` or `HOME_KEY_SERVICE=1`
