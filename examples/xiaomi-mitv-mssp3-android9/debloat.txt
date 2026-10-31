@@ -58,6 +58,11 @@
 #   after boot), unlike PI.7524 above.
 # - After 7 days of uptime MemAvailable was about 740 MB and adbd stalled; a minute after a cold boot with
 #   this list and the launcher it was about 850 MB.
+# - Second PI.4663 unit, the EU retail Mi TV 4S 55" (L55M5-5ASP), Wi-Fi. Status: applied 2026-10-28 in four
+#   batches with a screenshot after each, two reboots, HDMI, Live TV and the real remote checked the same day;
+#   in daily use only since then, so treat its notes as provisional until the owner reports back. What it
+#   disables and keeps, where it differs from this list, and the remote-button results are in README.md in
+#   this folder.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
@@ -74,7 +79,7 @@ android.autoinstalls.config.xiaomi.amelie   # Play auto-install of partner apps
 
 # Xiaomi background services
 com.xiaomi.mitv.tvmanager                   # "TV Manager" cleaner
-com.xiaomi.mitv.updateservice               # firmware updates: re-enable to check for one
+# com.xiaomi.mitv.updateservice             # firmware updates: better left enabled (docs/DOS-AND-DONTS.md); uncomment to switch it off
 
 # Personal choice: voice assistant
 com.google.android.katniss                  # comes back at boot, see header
