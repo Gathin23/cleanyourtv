@@ -1,0 +1,48 @@
+# Siragon 58DA7000 (KTC ODM; MediaTek MT7632, device zhongshan, product KTC_SIRAGON_4K_SA_21V2), Venezuela
+# Android TV 11 (API 30), build RTM3.211215.203 (2022-05-10), security patch 2022-04-01.
+# Stock launcher: com.google.android.tvlauncher (not the Google TV launcherx). Live TV: com.mediatek.wwtv.tvcenter.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/siragon-58da7000/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/siragon-58da7000/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-10-19 and used daily since, in batches with a screenshot after each, then
+# rebooted several times and power cycled. Working: Home, Live TV, HDMI 1-3 and Composite, Wi-Fi,
+# Settings, Play Store, SmartTube, and the remote including its raw-scancode YouTube/colour buttons.
+# Not tested: casting from a phone, Bluetooth pairing, and a firmware update (this build has no OTA
+# package or update service).
+#
+# Kept on purpose: Play Store and Play Services, Google Assistant (com.google.android.katniss and
+# com.google.android.tv.assistant), Chromecast, Netflix, Bluetooth and remote pairing, the Latin IME,
+# TalkBack and TTS. The KTC factory-menu and serial-console packages (com.ktc.tv.factory,
+# ktc.factorymenu.ui, com.ktc.serialport) are kept too: this list does not disable them.
+
+# Google ads, recommendations and telemetry
+com.google.android.tvrecommendations             # sponsored rows and surveys on the stock home
+com.google.android.feedback                      # crash and feedback telemetry
+com.google.android.partnersetup                  # partner preload installer
+
+# Google preloads this set does not use
+com.google.android.videos                        # Play Movies & TV store
+com.google.android.youtube.tvmusic               # YouTube Music preload
+com.google.android.play.games                    # Play Games service
+
+# Other preloads and unused utilities
+com.amazon.amazonvideo.livingroom                # Prime Video preload
+fusion.android.tv.demo                           # vendor demo app
+com.google.android.backdrop                      # stock ambient screensaver (a new launcher can supply the clock)
+com.google.android.syncadapters.calendar         # calendar sync
+com.android.printspooler                         # no printing on a TV
+com.android.wallpaperbackup                      # wallpaper backup service
+
+# Vendor (KTC / MediaTek)
+com.mediatek.tv.freeviewplay                     # Freeview Play, UK-only
+
+# Setup and remote extras
+android.autoinstalls.config.ktc.pai              # KTC preload installer
+com.google.android.tv.remote.service             # phone remote service; re-enable to use the Google TV app
+com.google.android.tungsten.setupwraith          # can own the saved Wi-Fi, and casting stops without it on
+                                                 # Google TV; install the new launcher before disabling it
+
+# Home handover (last: install the new launcher and check Home before disabling this one)
+com.google.android.tvlauncher                    # stock Android TV launcher
