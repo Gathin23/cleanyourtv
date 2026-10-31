@@ -5,7 +5,7 @@ Tested on Redmi Smart TV A75 2025 energy edition, sold in China as L75MA-RAE; in
 (HyperOS era, 2026-03), Amlogic, 2 GB RAM. **32-bit only**: `ro.product.cpu.abilist` is
 `armeabi-v7a,armeabi`, so arm64-only apps (Tubi, Red Bull TV, Rakuten TV) fail to install. Stock
 Home is `com.mitv.tvhome/.MainActivityUserMode`. Debloat list:
-[`examples/redmi-l75ma-rae/debloat.txt`](../../examples/redmi-l75ma-rae/debloat.txt).
+[`examples/xiaomi-mitv-astp0/debloat.txt`](../../examples/xiaomi-mitv-astp0/debloat.txt) (this set is its 2026-firmware unit).
 
 This record covers the debloat plus what it took to make a third-party launcher usable as the
 actual Home screen on this 2026 firmware. The debloat half alone works exactly like the older
@@ -29,6 +29,8 @@ actual Home screen on this 2026 firmware. The debloat half alone works exactly l
   firmware, so the MIUI-style grants in `launcher/build-and-install.sh` are no-ops here.
 
 ## What works: consume the key, start by explicit component
+
+The HomeKeyService, GlobalHomeActivity and ServiceRepair changes below are the owner's local patches; they are not part of this repo's launcher.
 
 `HomeKeyService` (HOME_KEY_SERVICE=1) receives the remote's HOME key before the system resolves
 it. Two local patches to `launcher/`:
