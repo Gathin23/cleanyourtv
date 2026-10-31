@@ -16,18 +16,6 @@
 #      asks for, so treat the 20250401 notes below as unverified for daily use. Nothing in the
 #      package list itself was changed for this unit.
 #      Differences measured on that unit:
-#      - Network ADB survives reboots on this build (unlike 20250610): port 5555 answered again
-#        after both reboots without re-enabling anything.
-#      - `pm install` reaches PackageManager and the verifier is what refuses sideloads
-#        (INSTALL_FAILED_VERIFICATION_FAILURE), like 20250610 — but `settings get global
-#        verifier_verify_adb_installs` is 1 here, not null. Both verifier settings to 0 and
-#        `pm install -r` succeeds. Restore both to 1 afterwards.
-#      - A third-party launcher CAN be installed and can own Home on this generation, contrary to
-#        the 20230208 note below: com.gathin.tvhome (this repo's launcher) installed with the
-#        verifier off, `cmd package set-home-activity` worked, and Home survived two reboots with
-#        com.tcl.cyberui disabled. In the launcher's config: live_tv_package com.tcl.tv plus
-#        live_tv_action android.intent.action.MAIN (com.tcl.tv has no leanback launcher activity
-#        on this build either; the action opens its .TVActivity directly).
 #      - Disabling com.tcl.cyberui has a quirk: its old task can still be brought to the front
 #        once in a while within the same boot (logcat shows am_on_start_called for the disabled
 #        package). It stays dead across a reboot; pressing Home after a re-assert of
