@@ -44,6 +44,14 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
   Music"). Stremio (`com.stremio.one`) published none either; it keeps a preview channel named "Continue
   Watching" whose rows carry `last_playback_position_millis` and `duration_millis` but no date column at all, so
   they cannot be sorted or aged by time.
+- **Seen on a TCL 55C655** (G10, Google TV 12, `STT2.230203.001 AS16`), the same kind of probe with launcherx still
+  enabled: 34 Watch Next rows, RaiPlay (`it.rainet.androidtv`) 17, DAZN 10, Prime Video 5 and Netflix 2; Disney+
+  and Mediaset Infinity, both installed, had none. The newest four were the first four cards of Google TV's own
+  Continue watching row, in the same order, so on this set the stock row comes from the local table. Every poster
+  was `https://` (raiplay.it, Netflix's nflxso.net, Amazon's image CDN), and some RaiPlay rows had none. RaiPlay
+  often puts a tagline in `title` instead of the show's name ("Ogni giorno un nuovo episodio" for one daily
+  series), so a text-only card can be unreadable. The DAZN rows were channels, `watch_next_type` 2, last engaged
+  433 days before. Preview programs: DAZN 55, Prime Video 30, TCL `channelplus` 30, Netflix 16, YouTube 7.
 
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that
