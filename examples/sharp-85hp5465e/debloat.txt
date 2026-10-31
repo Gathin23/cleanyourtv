@@ -1,0 +1,63 @@
+# SHARP 85HP5465E, 85" QLED (reported as "SHARP 4K UHDTV", product MT9676_Sharp, device maniatika, MediaTek MT9676, platform merak), Google TV, Android 14 (SDK 34)
+# Firmware build: UKN7.260716.012 (user/release-keys). EU set, German UI.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
+# Setup wizard: com.google.android.tungsten.setupwraith (claims HOME with .RecoveryActivity, priority 1).
+# Live TV app: com.mediatek.tv.oneworld.tvcenter (not com.mediatek.wwtv.tvcenter); HDMI inputs: com.mediatek.tis.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-85hp5465e/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-85hp5465e/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Tested on one unit in a single session, not over several days: screenshots after the changes, one reboot (all
+# packages but the e-manual stayed disabled, Home came back as the new launcher, the TV did not open Live TV by
+# itself), an HDMI 1 tile, HDMI playback, Chromecast, and the real remote's buttons. Live TV channels, voice search
+# and Private DNS were not tried. Treat it as a starting point and report anything that broke.
+#
+# ro.adb.secure=1 on this build. Port 5555 still answers while debugging is on: switch it off afterwards and reboot.
+#
+# WARNING: the Wi-Fi network saved during first setup belonged to setupwraith
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`). Forget it and re-join it in Settings before disabling
+# setupwraith, or Android deletes the network and the TV drops off Wi-Fi and ADB. Done here: it then
+# belonged to android.uid.system:1000 and stayed connected after setupwraith was disabled. Re-joining Wi-Fi
+# switched network ADB off; it had to be turned on again in Developer options.
+#
+# Home: setupwraith was disabled first (with launcherx still Home), then launcher/build-and-install.ps1 handed
+# Home over and disabled launcherx in one pass; no rollback was needed.
+#
+# Remote (Bluetooth remote, vendor 0381 product e004): only the Settings (gear) button stopped working once
+# launcherx was gone. It sends KEY_MENU, scancode 139 (MSC_SCAN 000c0040). Mapped with HOME_KEY_SERVICE=1 and
+# settings_key_scancodes 139 in config.xml; checked on the real remote. Holding volume up still ramps with the
+# helper on (about 12 steps in 1-2 seconds). Home, Input, Netflix, YouTube and Prime Video needed no helper.
+#
+# HDMI 1 is com.mediatek.tis/.HdmiInputService/HW2 (hdmi_port=1); a tile for it worked with launch_actions
+# com.mediatek.tv.oneworld.tvcenter=input:com.mediatek.tis/.HdmiInputService/HW2. Set live_tv_package to
+# com.mediatek.tv.oneworld.tvcenter in config.xml for the Inputs menu's Live TV row.
+#
+# Firmware re-enables com.mtc.emanual at every boot (disabled here, back after the reboot); it is commented
+# out below rather than disabled again after each boot.
+#
+# Already disabled before this list, by an earlier attempt with another tool, left as they were: com.cltv.hybrid,
+# com.cltv.mal, com.mediatek.opapp, com.mediatek.dtv.tvinput.atsctuner, com.mediatek.dtv.tvinput.isdbtuner,
+# com.google.android.feedback. com.cltv.mal is TV middleware that tools/disable.sh refuses (#1578); it is not part
+# of this list and should be re-enabled (`pm enable com.cltv.mal`).
+#
+# Kept on purpose: Play Store + Play Services, Gboard, Dolby audio, com.mediatek.tis and com.mediatek.tv.agent
+# (inputs), com.mediatek.tv.oneworld.tvcenter (Live TV), com.mediatek.dtv.tvinput.dvbtuner (DVB tuner),
+# com.mediatek.autopair (remote pairing), com.mediatek.tv.systemupdater (firmware updates), mediatek.factorymenu.ui
+# (factory tool, never launched), com.google.android.katniss + com.google.android.tv.remote.service (voice),
+# com.google.android.apps.mediashell (Chromecast), com.mediatek.miracast, com.google.android.apps.tv.dreamx.
+
+# --- Tracking, partner rows and store demo ---
+tv.anoki.acr.anokiacroptin                   # Anoki ACR: automatic content recognition (viewing tracking)
+com.mediatek.tv.launcher.partner             # partner rows for the stock launcher
+com.mediatek.tv.retaildemo                   # store/demo mode
+# com.mtc.emanual                            # on-screen manual; firmware re-enables it at every boot
+
+# --- Apps the owner does not use (off by choice; all still installed) ---
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tvmusic
+
+# --- Stock Google TV home and setup wizard ---
+# Disable only after installing and verifying the new launcher, and after the Wi-Fi step above!
+com.google.android.tungsten.setupwraith      # first-run wizard; claims HOME. Re-enable before a factory reset
+com.google.android.apps.tv.launcherx         # stock Google TV home
