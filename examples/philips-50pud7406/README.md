@@ -24,17 +24,7 @@ OFF, but three ADB navigation rounds per condition gave mixed results: median
 round p95 31.18 to 27.07 ms, aggregate jank 8.08% to 8.89%. Logger rounds likewise
 did not establish a consistent rendering improvement.
 
-A separately approved, locally adapted launcher trial based on
-`985bbd14d0b01517988724668e310211d72d86fc` ended with `com.gathin.tvhome` as Home
-and stock `com.google.android.tvlauncher` disabled-user, APK/data retained.
-Initially, assigning the candidate while stock was enabled reported success but
-still resolved to stock; that assignment was restored before the later handover.
-This is an observation, not validation of current main or a handover recipe.
-
-The owner confirmed Home/remote, Settings and YouTube after the package changes,
-and physical Home return from YouTube and opening Inputs after the handover.
-The chosen launcher appearance felt very fluid; there was no controlled final
-benchmark. Opening Inputs does not test HDMI signal/CEC. Several-day use, reboot,
-cold boot, actual HDMI/CEC, channels, OTA, Cast and voice remain untested.
-YouTube's own menu stutter was not demonstrated fixed. These session notes do not
-make the adjacent list a validated default for this model.
+The owner confirmed Home/remote, Settings and YouTube after the package changes.
+Several-day use, reboot, cold boot, actual HDMI/CEC, channels, OTA, Cast and voice
+remain untested. YouTube's own menu stutter was not demonstrated fixed. These session
+notes do not make the adjacent list a validated default for this model.
