@@ -73,6 +73,8 @@ def fir(x, base, h, lit):
                   fill=(150, 170, 190))
     if lit:  # string lights
         cols = [(255, 90, 80), (255, 200, 80), (110, 200, 255), (140, 235, 130)]
+        ov = Image.new("RGBA", img.size)
+        od = ImageDraw.Draw(ov)
         k = 0
         for i in range(tiers):
             ty = base - h * 0.06 - i * h * 0.17
@@ -83,12 +85,9 @@ def fir(x, base, h, lit):
                 ly = ty - h * 0.02 + math.sin(t * math.pi) * h * 0.035
                 c = cols[k % 4]
                 k += 1
-                for rr, a in [(9, 0.18), (5, 0.4), (3, 1)]:
-                    ov = Image.new("RGB", img.size)
-                    ImageDraw.Draw(ov).ellipse([s(lx - rr), s(ly - rr), s(lx + rr), s(ly + rr)], fill=c)
-                    mask = Image.new("L", img.size)
-                    ImageDraw.Draw(mask).ellipse([s(lx - rr), s(ly - rr), s(lx + rr), s(ly + rr)], fill=int(255 * a))
-                    img.paste(ov, mask=mask)
+                for rr, a in [(9, 46), (5, 102), (3, 255)]:  # halo, glow, bulb
+                    od.ellipse([s(lx - rr), s(ly - rr), s(lx + rr), s(ly + rr)], fill=c + (a,))
+        img.paste(ov, mask=ov)
         sx, sy = x, base - h * 0.06 - (tiers - 1) * h * 0.17 - h * 0.30
         d.polygon([(s(sx + 14 * math.sin(a * 2 * math.pi / 5)), s(sy - 14 * math.cos(a * 2 * math.pi / 5 + 0))) for a in range(5)],
                   fill=(255, 215, 110))
@@ -182,7 +181,6 @@ for y in range(H * S):
     sd.line([(0, y), (W * S, y)], fill=int(190 * t ** 1.2))
 tl = Image.new("L", img.size, 0)
 ImageDraw.Draw(tl).ellipse([-s(300), -s(300), s(900), s(500)], fill=110)
-shade = Image.composite(shade, shade, shade)
 img = Image.composite(Image.new("RGB", img.size, (3, 6, 16)), img, shade)
 img = Image.composite(Image.new("RGB", img.size, (3, 6, 16)), img, tl.filter(ImageFilter.GaussianBlur(s(160))))
 
