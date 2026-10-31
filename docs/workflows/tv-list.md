@@ -29,11 +29,11 @@
    has room for `Google TV launcher on Android TV 11`, the short one for `Google TV 11`.
    `tests/test_examples.py` checks the file.
 5. Change nothing outside the folder. The tables in `examples/README.md` and `README.nl.md`, the brand grid in
-   `README.md`, `README.nl.md` and `README.de.md`, and the counts (the `TV models` number in the card's alt text)
+   `README.md`, `README.nl.md`, `README.de.md`, `README.uk.md` and `README.tr.md`, and the counts (the `TV models` number in the card's alt text)
    are generated from every `tv.json` by `tools/gen_tables.py`, which a maintainer runs after merging; CI compares
    them only on `main`.
    One copy of those counts is outside the generated blocks: the story sentence that shows the card on the same
-   four front pages ("The lists now cover 387 TV models from 103 brands") is prose, so a regeneration moves the
+   five front pages ("The lists now cover 387 TV models from 103 brands") is prose, so a regeneration moves the
    picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
    story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
    to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its

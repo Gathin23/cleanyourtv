@@ -169,12 +169,13 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these four pages state the count today, so one that stops
+        # stale in the first place: these five pages state the count today, so one that stops
         # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
         # the Ukrainian words above; before that it stated its count and this list still read three.
+        # README.tr.md states its count in digits, so it needs no words in the table.
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.md", "README.nl.md", "README.uk.md"],
-                         "the front pages that state the theme count are not the four that did: "
+                         ["README.de.md", "README.md", "README.nl.md", "README.tr.md", "README.uk.md"],
+                         "the front pages that state the theme count are not the five that did: "
                          f"{sorted(set(stating))}")
 
 
