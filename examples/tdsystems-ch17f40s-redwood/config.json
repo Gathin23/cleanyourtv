@@ -1,0 +1,17 @@
+{
+  "columns": 4,
+  "dock_apps": [
+    "com.mediatek.wwtv.tvcenter",
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.android.vending"
+  ],
+  "app_labels": {
+    "com.mediatek.wwtv.tvcenter": "TDT"
+  },
+  "hidden_apps": [
+    "com.mitv.gallery"
+  ],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "power_on_home": true
+}

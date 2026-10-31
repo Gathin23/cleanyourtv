@@ -1,0 +1,46 @@
+# TD Systems CH17F40S (Changhong, device redwood, product DVB92TD)
+# Android 14, firmware UKNV.260514.001
+# Stock launcher: com.google.android.tvlauncher
+# Live TV / tuner: com.mediatek.wwtv.tvcenter (leave enabled for TV channels & Inputs)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.ps1 examples/tdsystems-ch17f40s-redwood/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.ps1 examples/tdsystems-ch17f40s-redwood/debloat.txt com.google.android.tvlauncher
+#
+# Hardware & vendor notes:
+# - Leave com.homwee.factory, com.mediatek.wwtv.setupwizard and com.homwee.synckey enabled.
+# - KEEP com.homwee.dynamicbacklight (system UID 1000, display hardware backlight).
+# - KEEP com.google.android.leanbacklauncher.partnercustomizer (required by mediatek.tv.service).
+# - Firmware updaters (com.homwee.dmt.upgrade) and Miracast (com.changhong.inface.net.wfd) kept by user choice.
+# - Private DNS (dns.adguard-dns.com) validated and active.
+
+# Homwee store, ads, cleaners and installers
+com.homwee.aipont
+com.homwee.store
+com.homwee.help
+com.homwee.chinstallapk
+com.homwee.chtvmanager
+android.autoinstalls.config.homwee
+com.homwee.alexacontrol
+com.homwee.mmp.screenshare
+com.homwee.multiscreenshare
+
+# Telemetry, content recognition and Google partner setup
+tv.anoki.acr.anokiacroptin
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+
+# Content recommendations & FAST channels
+com.google.android.tvrecommendations
+com.cltv.fast
+
+# Preloaded unused media / games apps
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+
+# Stock launcher (replaced by launcher/ and disabled after new launcher takeover)
+# com.google.android.tvlauncher
