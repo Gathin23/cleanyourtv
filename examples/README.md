@@ -403,6 +403,8 @@ on that firmware, grouped and commented. These are starting points: comment out 
 
 Notes for models that have no tested list yet live in [`docs/devices/`](../docs/devices/):
 
+- [Kodak PATH_7XPRO / LEDTV32HD](../docs/devices/kodak-path-7xpro.md), SPPL, Android TV 9 `PI.20210601`: same-day Home handover and reboot observations, protected input handlers, owner-selected cleanup, aerial playback and unresolved Bluetooth voice pairing; no several-day debloat list.
+
 - [Dangbei DBOX02 (Mars Pro 2)](../docs/devices/dangbei-dbox02.md), Android TV 11 `RTM9.241015.060`: single-session Home handover and ten package changes, the saved Wi-Fi check before disabling setupwraith, physical-remote and reboot checks, and closed debugging; no several-day debloat list.
 - [Xiaomi MiTV-MOSR1](../docs/devices/xiaomi-mitv-mosr1.md), Android TV 11, `RTT8.210119.001.1239`: short-session Home handover and package-persistence observations; PatchWall opens after reboot despite the Home preference, its input popup was retained, and the Home key helper costs held-volume repeat; physical Apps scancode and test limits; no several-day debloat list.
 - [Homatics Box R 4K Plus](../docs/devices/homatics-box-r-4k-plus.md), `SEI804HM` / `YYJ`, Android TV 14 build `8963`: paired encrypted ADB from a wired computer, standard Home handover, theme and physical-remote checks, package state retained after cold boot, and closing both debugging modes; single-session observations, no several-day debloat list.
