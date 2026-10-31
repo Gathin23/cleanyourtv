@@ -1,0 +1,108 @@
+# Sony XR-77A80L (77-inch OLED, 2023, device BRAVIA_VH22, model string "BRAVIA 4K VH22"), North America
+# Google TV 12 (API 31), build BRAVIA_VH22_M_UC-user 12 STT2.230505.001.S136 682241, 3 GB RAM
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-xr-77a80l/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xr-77a80l/debloat.txt com.google.android.apps.tv.launcherx
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\sony-xr-77a80l\debloat.txt, and tools\restore.ps1 with
+#          -Stock com.google.android.apps.tv.launcherx (this list was applied that way, from Windows on ARM).
+# Everything is DISABLED with pm disable-user --user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Based on examples/sony-kd-65x82l (same VH22 platform and build) plus the OLED extras in
+# examples/sony-xr-65a80j (hotel-mode runtime, launcherx customizer, partner auto-installs).
+# Stock launcher: com.google.android.apps.tv.launcherx. On this UC firmware it claims HOME at priority=2,
+# so build-and-install disables it (see examples/sony-bravia-4k-vh2). Not in this list.
+# Live TV / tuner and input app: com.sony.dtv.tvx. Keep tvinput.*, braviasync*, tvapi, sonysystemservice,
+# settingsprovider, imeproxy, irblaster/irbservice, HomeTheatreControl, audiooutput, systemupdate/update,
+# webapi.core and all com.mediatek.*.
+# Kept by owner's choice: Google Assistant (katniss, voicesearch, assistantadapter), text-to-speech,
+# Chromecast (mediashell), DLNA (huey.dlna, sonyericsson.dlna), Google TV app (videos), firmware updates.
+# Kept as unclear: com.sony.dtv.sensingfusionservice (ambient light sensor), com.sony.dtv.frame,
+# com.sony.dtv.livingfit and the other com.sony.dtv.b2b.* settings packages.
+# Already disabled before this list (left alone by undo): com.apple.atve.sony.appletv,
+# com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap, com.netflix.ninja, com.disney.disneyplus.
+#
+# Network is the TV's own LAN port (internally a USB 10/100/1000 LAN chip); it stayed up with debugging on.
+# Saved Wi-Fi networks belong to android.uid.system:1000, not setupwraith, so batch 4 needs no override.
+# No BRAVIA CAM attached (dumpsys media.camera: 0 devices).
+#
+# Launcher: build-and-install.ps1 disabled launcherx and set Home on the first try once setupwraith was off.
+# live_tv_package and hidden_apps set to com.sony.dtv.tvx, 5 columns. No key services needed: with launcherx
+# off, the real remote's gear, Input, app and mic buttons and held volume all still worked (owner-checked).
+# HDMI and Live TV checked from the Inputs menu. Animation scales set to 0.5 and `pm trim-caches` run
+# (/data went from 43% to 27% full).
+# Applied 2026-10-24 in four batches with a screenshot and crash-log check after each, then reboot-checked:
+# all 43 packages disabled on that TV, and launcherx, stayed disabled, and Home stayed on the launcher.
+# At that boot com.sony.dtv.sonysystemservice crashed once ("GoToSleepInterface has already initialized")
+# and restarted on its own, as on the KD-65X82L. In daily family use for a week since (checked
+# 2026-10-31): every one of them is still disabled, nothing had to be re-enabled, and no app has gone
+# missing or misbehaved. Four of those 43 are commented out below as app choices rather than clutter,
+# so this list disables 39 by default; uncomment them if you don't want those apps either.
+
+# Batch 1: tracking, ads, demo mode
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen (ACR)
+tv.samba.ssm.ui
+com.sonyericsson.idd.agent                     # Sony IDD usage-data agent
+com.sony.dtv.usercontext                       # user context providers
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # remote-support session service
+com.sony.dtv.sonybugreportsys
+com.google.android.feedback
+com.sony.dtv.promos                            # "Freeplay" promo tile
+com.sony.dtv.sonyselect                        # Sony Select app recommendations
+com.sony.dtv.sonytab                           # Sony tab / partner rows on the Google TV home
+com.sony.dtv.launcherxcustomizer               # Sony config for the Google TV home
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+com.vewd.core.service                          # Vewd
+
+# Batch 2: hotel mode, help, setup leftovers, BRAVIA CAM (not attached)
+com.sony.dtv.b2b.hotelmode                     # always-running hotel-mode service
+com.sony.dtv.b2b.noderuntime.normal            # Node.js runtime for hotel apps
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.noderuntimeextension.bpk
+com.sony.dtv.b2b.noderuntimeextension.node_20_11_1
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.helpguidecontents
+com.sony.dtv.ecodashboard
+com.sony.dtv.notificationcenter                # "BRAVIA notifications" inbox
+com.sony.dtv.QuickSetupCustomizer              # partner customisation for first setup
+com.google.android.partnersetup                # RLZ install-attribution provider
+com.google.android.onetimeinitializer          # runs once after first setup
+com.android.printspooler
+com.sony.dtv.gestureapp                        # BRAVIA CAM gestures
+com.sony.dtv.distancealert                     # BRAVIA CAM distance alert
+com.sony.dtv.sensingcamera.settings
+com.sony.dtv.sensingcamera.fwupdate
+
+# Batch 3: features this owner doesn't use
+# The four commented out here are app choices, not clutter: they were disabled on the TV this list
+# came from, and all four were still off after a week, but a shared list shouldn't make that choice
+# for everyone. Uncomment the ones you don't want.
+# com.sony.dtv.airplayapp                      # AirPlay (~53 MB with its server process)
+# com.sony.dtv.homekit                         # HomeKit, alongside AirPlay
+com.uei.quicksetsdk.sony                       # UEI QuickSet IR control (~41 MB); HDMI-CEC unaffected
+com.sony.dtv.seeds.iot                         # BRAVIA Connect phone link
+# com.sony.dtv.seeds.iot.remotestart          # KEEP: with it disabled the TV drops off the network in standby
+#                                              # even with Settings > Remote start on, so Chromecast and IP control
+#                                              # cannot wake it. Re-enabled 2026-10-24; with it on, ping, 8008 and
+#                                              # 5555 still answered 25 s into standby and KEYCODE_WAKEUP woke the
+#                                              # TV. After ~45 min of standby it stopped answering ping either way,
+#                                              # so the difference is how soon the network goes, not whether.
+com.sony.dtv.seeds.auth
+# com.google.android.youtube.tvmusic           # YouTube Music, an app choice (see the note above)
+# com.google.android.play.games                # Play Games, an app choice (see the note above)
+
+# Batch 4: Google TV setup wizard. Its RecoveryActivity claims HOME (priority 1) and would keep Home
+# away from the new launcher once launcherx is disabled. Re-enable before a factory reset.
+# Cost on this firmware: com.sony.dtv.sonysystemservice then looks up setupwraith's provider every 500 ms
+# ("Failed to find provider info for com.google.android.tungsten.setupwraith", ~7,000 log lines an hour);
+# it stopped the moment setupwraith was enabled again. Idle CPU still went from 22.6% to 9% overall.
+# Ambient mode's "Select albums" needs both launcherx and setupwraith enabled: with launcherx off it closes at
+# once (AccountModeContentProvider missing), with setupwraith off it says "Unable to load content".
+# Casting with setupwraith off: mediashell logs "Failed to find provider info for ...CastInfoProvider" and
+# "Got empty cast Id from setup, falling back to MediaShell", but no "No private key" or "Cannot get device
+# credentials" line in a whole boot's log, and cast_shell kept logging "MdnsAppFilter: Done announcing."
+com.google.android.tungsten.setupwraith
