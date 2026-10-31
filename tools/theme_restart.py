@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Restart Home after a theme push and verify its previously enabled key helpers (#994).
 
-Used by theme.sh and theme.ps1. No theme files or app configuration are changed here.
+Used by theme.sh and theme.ps1, and it takes no arguments: --help prints this text (no tools/venv, no
+TV_HOST and no TV needed for it), and a word it does not take is refused before the TV is asked anything.
 
-Exit status: 0 Home is up and the key helpers it had are bound again; 1 the TV ran the restart and it failed
-(a command it refused, or a helper that did not stay bound); 2 nothing was asked of the TV - tools/venv is
-missing, TV_HOST is unset, or the TV did not answer. The three shapes in 2 are the ones tv.py words, so they
-name the port, the pair-once step and the "not an Android TV" way out, as bench.py, trace.py and manage.py do.
+Exit status: 0 Home is up and the key helpers it had are bound again, or --help printed this text; 1 the TV
+ran the restart and it failed (a command it refused, or a helper that did not stay bound); 2 nothing was
+asked of the TV - a word it does not take, tools/venv is missing, TV_HOST is unset, or the TV did not
+answer. The three shapes at the end are the ones tv.py words, so they name the port, the pair-once step and
+the "not an Android TV" way out, as bench.py, trace.py and manage.py do.
 """
 import os
 import re
@@ -156,7 +158,24 @@ def restart(dev, pause=time.sleep):
         raise
 
 
-def main():
+def main(argv=None):
+    """The script's whole command line, then the restart. `argv` is sys.argv[1:] unless a caller passes
+    its own words (the tests do), so an in-process caller's arguments are never read here."""
+    words = list(sys.argv[1:] if argv is None else argv)
+    # tv.py is the module this script loads, and it answers --help at import time with its own usage: so
+    # `theme_restart.py --help` printed the ADB client's flags (--probe, --batch, --push, --screenshot,
+    # --reboot), none of which this script takes, and said nothing about what it does. Answered here from
+    # this file's own docstring, before `import tv`: no venv, no TV_HOST and no TV are needed for it.
+    if words[:1] in (["-h"], ["--help"]):
+        print(__doc__.strip())
+        return 0
+    # It takes no arguments, so a word that is not one used to be dropped without a word: `--reset` (the
+    # neighbouring theme.sh word) reached the TV as a plain restart. theme.sh refuses a second word the same
+    # way and for the same reason.
+    if words:
+        print(f"theme_restart.py takes no arguments: {', '.join(words)} would not have been used. "
+              "Nothing was restarted: Home was not asked to start again.", file=sys.stderr)
+        return 2
     # Both callers use Python -I, which excludes the script directory from sys.path.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     dev = None
@@ -177,7 +196,7 @@ def main():
         except SystemExit as exit_request:
             # tv.py exits at import time with its own "Set TV_HOST to your TV's IP address" text, which only
             # the interpreter would print for that exit: written here, so catching it does not hide it. A
-            # module that exits 0 answered the call itself (its --help), and that status stands.
+            # module that exits 0 answered the call itself, and that status stands.
             if not exit_request.code:
                 raise
             if isinstance(exit_request.code, str):

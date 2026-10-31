@@ -348,7 +348,7 @@ class ExitStatus(unittest.TestCase):
         stderr = io.StringIO()
         with patch.dict(sys.modules, tv=module), patch.object(restart, 'restart', side_effect=RuntimeError('unbound')):
             with contextlib.redirect_stderr(stderr):
-                self.assertEqual(restart.main(), 1)
+                self.assertEqual(restart.main([]), 1)
         self.assertTrue(tv.closed)
         self.assertIn('Theme restart failed', stderr.getvalue())
 
@@ -367,7 +367,7 @@ class ExitStatus(unittest.TestCase):
         stderr, stdout = io.StringIO(), io.StringIO()
         with patch.dict(sys.modules, tv=module):
             with contextlib.redirect_stderr(stderr), contextlib.redirect_stdout(stdout):
-                self.assertEqual(restart.main(), 2)
+                self.assertEqual(restart.main([]), 2)
         self.assertEqual([True], opened)
         self.assertIn(sentence, stderr.getvalue())
         self.assertIn('Nothing was restarted', stderr.getvalue())
@@ -384,7 +384,7 @@ class ExitStatus(unittest.TestCase):
         stderr = io.StringIO()
         with patch.dict(sys.modules, tv=module):
             with contextlib.redirect_stderr(stderr):
-                self.assertEqual(restart.main(), 1)
+                self.assertEqual(restart.main([]), 1)
         self.assertIn('Theme restart failed', stderr.getvalue())
         self.assertNotIn('Nothing was restarted', stderr.getvalue())
 
@@ -392,7 +392,7 @@ class ExitStatus(unittest.TestCase):
         stderr = io.StringIO()
         with patch.dict(sys.modules, tv=None):  # `import tv` answers ImportError, as with no adb_shell
             with contextlib.redirect_stderr(stderr):
-                self.assertEqual(restart.main(), 2)
+                self.assertEqual(restart.main([]), 2)
         self.assertIn('cannot load tools/tv.py', stderr.getvalue())
         self.assertIn('tools/venv/bin/python', stderr.getvalue())
         self.assertIn('Nothing was restarted', stderr.getvalue())
@@ -410,11 +410,77 @@ class ExitStatus(unittest.TestCase):
         stderr = io.StringIO()
         with patch('builtins.__import__', refusing):
             with contextlib.redirect_stderr(stderr):
-                self.assertEqual(restart.main(), 2)
+                self.assertEqual(restart.main([]), 2)
         self.assertIn("Set TV_HOST to your TV's IP address", stderr.getvalue(),
                       'tv.py wrote that text for its own exit, so catching the exit must not swallow it')
         self.assertIn('Nothing was restarted', stderr.getvalue())
         self.assertNotIn('Theme restart failed', stderr.getvalue())
+
+    def test_help_is_this_scripts_text_and_needs_no_client(self):
+        # tv.py answers --help itself at import time with the ADB client's usage, so this script's own
+        # --help printed --probe, --batch, --push and --screenshot, none of which it takes. Its text is
+        # answered from the docstring, before the client is imported, so a reader needs no venv and no TV.
+        def no_imports(name, *args, **kwargs):
+            raise AssertionError(f'--help imported {name}')
+
+        for word in ('--help', '-h'):
+            with self.subTest(word=word):
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with patch('builtins.__import__', no_imports), \
+                        contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    self.assertEqual(0, restart.main([word]))
+                text = stdout.getvalue()
+                self.assertIn('Restart Home after a theme push', text)
+                self.assertIn('takes no arguments', text)
+                self.assertIn('Exit status', text)
+                for flag in ('--probe', '--batch', '--push', '--pull', '--screenshot', '--reboot'):
+                    self.assertNotIn(flag, text, f'{flag} is tv.py\'s flag, not this script\'s')
+                self.assertEqual('', stderr.getvalue())
+
+    def test_a_word_it_does_not_take_is_refused_before_the_tv_is_asked(self):
+        # It takes no arguments, and a word was dropped without a word: `--reset` (theme.sh's word) ran a
+        # plain restart, so a reader who meant something else still had Home restarted.
+        opened = []
+        module = types.SimpleNamespace(connect=lambda: opened.append(True),
+                                       connect_error=lambda error: 'nothing to add')
+        stderr, stdout = io.StringIO(), io.StringIO()
+        with patch.dict(sys.modules, tv=module), \
+                contextlib.redirect_stderr(stderr), contextlib.redirect_stdout(stdout):
+            self.assertEqual(2, restart.main(['--reset']))
+        self.assertEqual([], opened, 'the TV must not be asked anything for a word that is refused')
+        self.assertIn('takes no arguments', stderr.getvalue())
+        self.assertIn('--reset', stderr.getvalue())
+        self.assertIn('Nothing was restarted', stderr.getvalue())
+        self.assertNotIn('Theme restart failed', stderr.getvalue())
+        self.assertEqual('', stdout.getvalue())
+
+    def test_several_words_are_all_named_in_the_refusal(self):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            self.assertEqual(2, restart.main(['--reset', 'now']))
+        self.assertIn('--reset, now', stderr.getvalue())
+
+    def test_the_script_end_to_end_answers_help_and_a_word_it_does_not_take(self):
+        """No fake module: the real script, in a process with no TV_HOST, as theme.sh would run it."""
+        root = Path(__file__).resolve().parents[1]
+        env = dict(os.environ, TV_HOST='127.0.0.1', TV_PORT='1')
+        env.pop('TV_ADB_BINARY', None)
+        script = str(root / 'tools' / 'theme_restart.py')
+
+        helped = subprocess.run([sys.executable, '-I', script, '--help'], cwd=str(root), text=True,
+                                capture_output=True, timeout=120, env=env)
+        self.assertEqual(0, helped.returncode, helped.stdout + helped.stderr)
+        self.assertIn('Restart Home after a theme push', helped.stdout)
+        self.assertNotIn('--probe', helped.stdout)
+        self.assertEqual('', helped.stderr)
+
+        refused = subprocess.run([sys.executable, '-I', script, '--reset'], cwd=str(root), text=True,
+                                 capture_output=True, timeout=120, env=env)
+        self.assertEqual(2, refused.returncode, refused.stdout + refused.stderr)
+        self.assertIn('takes no arguments', refused.stderr)
+        self.assertIn('Nothing was restarted', refused.stderr)
+        self.assertNotIn('Theme restart failed', refused.stderr)
+        self.assertEqual('', refused.stdout)
 
     def test_the_real_client_and_a_refused_port_exit_2_with_nothing_restarted(self):
         """The script end to end: no fake module, and a port on this computer that refuses."""
