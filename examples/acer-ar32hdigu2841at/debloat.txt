@@ -1,0 +1,72 @@
+# Acer AR32HDIGU2841AT 32" HD (device R3_GTV, MOKA, Realtek RTD2841A), India, Google TV 14, firmware UKR1.260612
+# Build UKR1.260612, incremental 2624, fingerprint ACER/ACER/R3_GTV:14/UKR1.260612/2624:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/acer-ar32hdigu2841at/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/acer-ar32hdigu2841at/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV and inputs: com.apps.passthrough.
+#
+# DO NOT disable launcherx or com.google.android.tungsten.setupwraith on this TV. The firmware re-enables
+# setupwraith early in every boot, so with launcherx off its RecoveryActivity loops and takes Home on the
+# next cold boot (see docs/devices/acer-r4g.md and examples/kalley-43g200).
+# Also, setupwraith owns the saved Wi-Fi network (dumpsys wifi | grep -o 'cname=[^ ]*').
+# Keep launcherx enabled and use HOME_KEY_SERVICE with stock_home_redirect=com.google.android.apps.tv.launcherx
+# to redirect Home to the new launcher without triggering RecoveryActivity loops.
+#
+# Cold boot behavior: Acer/Realtek's modified settings runs SetPmodServiceJob at cold boot which re-enables
+# packages from a hard-coded list (see docs/devices/acer-r4g.md). On this firmware, 7 packages stay permanently
+# disabled across cold boots (com.apps.usbmediaplayer, com.apps.mk.wd, android.autoinstalls.config.scbc.device,
+# com.android.tv.feedbackconsent, com.realtek.leanbacklauncher.partnercustomizer, com.mxtech.videoplayer.television,
+# com.apps.wifihotspot). The remaining packages stay disabled across warm reboots and sleep/wake, but are
+# re-enabled by the firmware if the TV undergoes a full cold boot.
+#
+# Kept on purpose: com.google.android.apps.tv.launcherx (stock home, needed for boot safety),
+#   com.google.android.tungsten.setupwraith (owns Wi-Fi network), com.apps.passthrough (HDMI / inputs),
+#   com.apps.smartmenu (picture/display menu), key handlers (com.apps.smartkey, com.apps.virtualkey,
+#   com.mk.tv.fivekey, com.realtek.keyinterceptserver, com.apps.bluetoothremote), com.apps.sys,
+#   com.mk.service.tvmidware, Google Assistant (com.google.android.katniss), and user streaming apps
+#   (YouTube, Netflix, Prime Video, Hotstar, Aha, Crunchyroll, Zee5, Airtel Xstream).
+#
+# Firmware updaters: com.apps.ota, com.apps.authota, com.realsil.ota, and com.google.android.tv.dfuservice
+#   were disabled by user preference. Comment them out if you wish to receive firmware or remote updates.
+
+# SCBC / Google telemetry and feedback
+com.apps.function.gdpr                       # SCBC data consent agent
+com.google.android.feedback                  # Google feedback bug reporter
+com.android.tv.feedbackconsent               # TV feedback consent dialog (persists across cold boots)
+
+# Partner setup, auto-installs and ad boot receivers
+com.apps.mk.wd                               # boot receiver with ClickAd/ClickApp/ClickChannel activities (persists across cold boots)
+android.autoinstalls.config.scbc.device      # Play store auto-installs of partner apps (persists across cold boots)
+com.realtek.leanbacklauncher.partnercustomizer # partner config injecting rows/apps into home screen (persists across cold boots)
+com.google.android.partnersetup              # Google partner setup wizard client
+
+# OEM background bloat, demo and signage
+com.apps.esticker                            # ShowService overlay, demo stickers
+com.apps.esticker3                           # in-store feature sticker animation
+com.apps.biz.mt                              # MOKA background telemetry service
+com.apps.biz.ds                              # MOKA digital signage service
+com.apps.tvmanager                           # background memory cleaner / app auto-start manager
+com.mk.tv.meeting.service                    # MOKA enterprise meeting service
+com.apps.wifihotspot                         # Wi-Fi hotspot toggle not needed on a TV (persists across cold boots)
+com.apps.function.audiolink                  # Bluetooth audio receiver / link service
+com.mk.tv.timeclock                          # on-screen clock overlay service
+com.google.android.apps.tv.dreamx            # ambient mode screensaver
+
+# Casting and games (disabled by user choice)
+com.google.android.apps.mediashell           # Chromecast built-in receiver
+com.creative.fastscreen.tv                   # FastCast / Miracast screen mirroring
+com.apps.scast                               # SCast screen receiver
+com.google.android.play.games                # Google Play Games app & sync
+
+# Firmware updaters (disabled by user choice; comment out to keep updates)
+com.apps.ota                                 # MOKA system OTA updater
+com.apps.authota                             # authenticated OTA check service
+com.realsil.ota                              # Realtek Bluetooth remote OTA updater
+com.google.android.tv.dfuservice             # Google TV accessory firmware update service
+
+# Preloaded media apps (disabled by user choice)
+com.mxtech.videoplayer.television            # preloaded MX Player TV edition (persists across cold boots)
+com.apps.usbmediaplayer                      # stock MOKA USB media player app (persists across cold boots)
+com.google.android.youtube.tvmusic           # YouTube Music stub app
