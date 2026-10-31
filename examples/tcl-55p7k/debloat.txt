@@ -2,6 +2,10 @@
 # Android 12 (Google TV), firmware STT2.230203.001 AS16
 # Same G10 platform and build as tcl-g10-google-tv/, but with Middle East preloads (OSN+, Disney+ MEA,
 # iQIYI, Shahid) and nothing disabled at the factory: logkit, Samba TV ACR and ttvs all ship ENABLED.
+# Second unit: TCL 55C655 (2024), Italy, same build (G10_4K_GB, STT2.230203.001 AS16, BT_RC833_U1 remote).
+# Same factory state; it ran everything above except the streaming apps, Alexa and T-Solo (kept by choice)
+# plus the extras at the end, for a day and two reboots. No com.tcl.browser and no com.tcl.hotelmenu on it.
+# Remote buttons, the Web key and power-on on that unit: README.md.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55p7k/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55p7k/debloat.txt com.google.android.apps.tv.launcherx
@@ -63,3 +67,11 @@ com.osn.go                             # OSN+
 com.iqiyi.i18n.tv                      # iQIYI
 com.spotify.tv.android
 com.google.android.videos              # Google TV / Play Movies
+
+# Extras, disabled on the 55C655 unit (Italy)
+com.tcl.UpdatePeripheral               # TCL soundbar firmware updater; keep it if a TCL soundbar is connected
+com.android.printspooler
+com.google.android.syncadapters.calendar
+com.google.android.onetimeinitializer
+com.google.android.youtube.tvmusic     # YouTube Music
+com.google.android.play.games          # Play Games
