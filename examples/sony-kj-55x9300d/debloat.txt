@@ -1,0 +1,68 @@
+# Sony BRAVIA KJ-55X9300D (2016, SVP-DTV15 "BRAVIA 4K 2015" platform, MediaTek mt5890), Japan firmware
+# Android TV 7.0, build NRD91N.S43 (5.455), SVP4KDTV15_JP, 32-bit ARM (armeabi-v7a)
+# Same panel family as examples/sony-kd-65x9300d (Asia-Pacific, Android TV 8.0); this Japanese firmware
+# never got the 8.0 update ("system is up to date"), and ships jp.sony.mybravia.
+#
+# DEBLOAT ONLY: the reference launcher needs Android 8.0 (minSdk 26) and does not run on this 7.0 set,
+# so the stock leanbacklauncher keeps Home and stays enabled. There is no config.json.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kj-55x9300d/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kj-55x9300d/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: Developer options has only "USB debugging" (no Network/Wireless debugging toggle); it alone opens
+#   port 5555, and the "Allow USB debugging?" prompt appears on first connect.
+# Stock launcher: com.google.android.leanbacklauncher (Android 7, no tvlauncher). The only other HOME
+#   handler is com.android.tv.settings/.system.FallbackHome.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it also plays every HDMI input.
+# Keep: com.sony.dtv.tvinput.*, tvplayer*, braviasync* (HDMI-CEC), remotepairing, remotecontrolsettings,
+#   uinputservice, imeproxy, settingsprovider, netflixmanager (Netflix button), duid.generator,
+#   enclave.service, systemupdate, systemapp (remote global keys), timers, all com.mediatek.*, mtktvapi.agent
+#   and the aribapp.* / tvx.search.* packages (Japanese broadcast and EPG).
+# Active keyboard is com.google.android.leanback.ime, so the Japanese one can go.
+# Already disabled at the factory: com.sony.dtv.b2b.hotellanguage, com.sony.dtv.b2b.hotelmenu,
+#   com.amazon.aiv.fe. Not in this list so restore.sh leaves them off.
+#
+# Notes from this firmware:
+# - Wait ~30 s after the last pm disable-user before rebooting: a reboot right after the last batch brought
+#   that batch back enabled (package-restrictions not yet written). Re-disabled, waited, rebooted: all stuck.
+# - Remote: the Google Play button sends keycode 195 (KEYCODE_BUTTON_8) through
+#   com.sony.dtv.systemapp's RemoteKeyGlobalKeyReceiver.
+# - Screenshots come back empty (0 bytes) while the tuner plays behind Home right after boot.
+# - The KKTV / MyVideo / Puffin TV tiles on the stock home are Sony promos for apps that are not installed.
+
+# Sony and Google content, ads and promos
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+jp.sony.mybravia                               # "My BRAVIAからのおすすめ" promo row on the stock home (Japan)
+
+# Telemetry, remote support and feedback
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.sony.dtv.b2b.vendorprotocol                # SDDP model/MAC/IP broadcast; re-enable for Control4-style home automation
+
+# Preloaded apps and tutorials
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+com.sony.dtv.touchpad.tutorial                 # touchpad remote tutorial
+com.google.android.videos                      # Google Play Movies
+com.google.android.play.games
+com.google.android.music                       # Google Play Music, shut down in 2020
+
+# Optional features, off by owner's choice
+com.google.android.inputmethod.japanese        # Japanese keyboard (not the active one)
+com.sony.dtv.osat.music                        # re-enable to play music from USB
+com.sony.dtv.osat.album                        # re-enable to view photos from USB
+com.sony.dtv.osat.video                        # re-enable to play videos from USB
+
+# Stock launcher: kept, nothing installable on 7.0 can take Home (see header)
+# com.google.android.leanbacklauncher
+
+# Kept by owner's choice: DLNA (huey.dlna.*, sonyericsson.dlna*), the ambient screensaver (backdrop),
+# Chromecast (apps.mediashell), phone remote (tv.remote.service), screen mirroring (screnmirroring.com,
+# networkapp.wifidirect), voice search (katniss, speech.pumpkin), Prime Video, Disney+ and recordings.
