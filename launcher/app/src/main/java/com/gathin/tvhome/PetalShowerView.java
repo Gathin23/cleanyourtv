@@ -149,9 +149,6 @@ public final class PetalShowerView extends View {
             float y = -len * 1.5f + (h * drop[i] + len * 1.5f) * fall;
             double sway = TAU * swayFreq[i] * secs + swayPhase[i];
             float x = xFrac[i] * w + swayAmp[i] * density * (float) Math.sin(sway);
-            float angle = rot0[i] + spin[i] * secs + 22f * (float) Math.cos(sway); // tilts into the sway
-            float flip = (float) Math.cos(TAU * flipFreq[i] * secs + flipPhase[i]);
-            float sx = Math.abs(flip) < 0.08f ? (flip < 0f ? -0.08f : 0.08f) : flip;
             int a = p > 0.75f ? (int) (255 * (1f - (p - 0.75f) / 0.25f)) : 255;
             if (snow) {
                 fill.setColor(0xFFF4F8FF);
@@ -160,6 +157,9 @@ public final class PetalShowerView extends View {
                 continue;
             }
 
+            float angle = rot0[i] + spin[i] * secs + 22f * (float) Math.cos(sway); // tilts into the sway
+            float flip = (float) Math.cos(TAU * flipFreq[i] * secs + flipPhase[i]);
+            float sx = Math.abs(flip) < 0.08f ? (flip < 0f ? -0.08f : 0.08f) : flip;
             // turned edge-on it looks darker; the back is darker still
             float shade = (flip < 0f ? 0.78f : 1f) * (0.8f + 0.2f * Math.abs(flip));
             int base = COLORS[color[i]];

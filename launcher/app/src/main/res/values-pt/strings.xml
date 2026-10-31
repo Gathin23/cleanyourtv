@@ -152,5 +152,5 @@
     <string name="clock_format_system">Sistema</string>
     <string name="clock_format_12">12 horas</string>
     <string name="clock_format_24">24 horas</string>
-    <string name="christmas_greetings">|Feliz Dia da Imaculada Conceição|Feliz Natal||Feliz Réveillon|Feliz Ano Novo|Feliz Dia de Reis|pt</string>
+    <string name="christmas_greetings">|Feliz Imaculada Conceição|Feliz Natal||Feliz Réveillon|Feliz Ano Novo|Feliz Dia de Reis|pt</string>
 </resources>

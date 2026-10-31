@@ -151,4 +151,5 @@
     <string name="clock_format_system">系统</string>
     <string name="clock_format_12">12 小时制</string>
     <string name="clock_format_24">24 小时制</string>
+    <string name="christmas_greetings">||圣诞快乐|||新年快乐||zh</string>
 </resources>

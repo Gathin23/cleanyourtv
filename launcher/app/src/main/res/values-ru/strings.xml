@@ -155,4 +155,5 @@
     <string name="clock_format_system">Системные</string>
     <string name="clock_format_12">12-часовой</string>
     <string name="clock_format_24">24-часовой</string>
+    <string name="christmas_greetings">|||||С Новым годом!||ru</string>
 </resources>

@@ -1,10 +1,13 @@
 package com.gathin.tvhome;
 
 import android.content.res.Resources;
+import android.os.LocaleList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -84,8 +87,7 @@ final class Festival {
             case HALLOWEEN:
                 return res.getString(R.string.festival_halloween_greeting);
             case CHRISTMAS:
-                return pick(res.getString(R.string.christmas_greetings), christmasSlot(today),
-                        res.getConfiguration().getLocales().get(0).getLanguage());
+                return pick(res.getString(R.string.christmas_greetings), christmasSlot(today), locales(res));
             default:
                 return "";
         }
@@ -109,14 +111,32 @@ final class Festival {
 
     /**
      * One greeting of a {@code |}-separated list, or "" when its slot is empty (a language with no real equivalent of
-     * that day) or the list is not in {@code lang}: the last item names the language it is written in, so a language
-     * with no translation, which shows the English default, keeps its time-of-day greeting.
+     * that day), or when none of the device's locales is the language the list is written in (its last item): a
+     * language with no translation shows the English default, which keeps its time-of-day greeting instead. The
+     * locales are tried in order, as Android picks resources, so a TV set to [ru, it] still gets the Italian list.
+     * Thanksgiving (slot 0) only goes to an en-US locale.
      */
-    static String pick(String packed, int slot, String lang) {
+    static String pick(String packed, int slot, List<Locale> locales) {
         String[] all = packed.split("\\|", -1);
+        if (slot < 0 || slot >= all.length - 1) return "";
         String of = all[all.length - 1];
-        if (!of.equals(lang) && !(of.equals("iw") && lang.equals("he"))) return "";
-        return slot < 0 || slot >= all.length - 1 ? "" : all[slot];
+        for (Locale l : locales) {
+            if (!legacy(l.getLanguage()).equals(of)) continue;
+            return slot == 0 && !"US".equals(l.getCountry()) ? "" : all[slot];
+        }
+        return "";
+    }
+
+    private static List<Locale> locales(Resources res) {
+        LocaleList list = res.getConfiguration().getLocales();
+        List<Locale> out = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) out.add(list.get(i));
+        return out;
+    }
+
+    /** Android's Locale still names Hebrew and Indonesian by their old codes, as the greeting lists do. */
+    private static String legacy(String language) {
+        return language.equals("he") ? "iw" : language.equals("id") ? "in" : language;
     }
 
     /** Whether this is the Christmas skin rather than the diya, bell and marigold. */

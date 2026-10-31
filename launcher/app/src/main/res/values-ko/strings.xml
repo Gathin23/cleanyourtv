@@ -151,4 +151,5 @@
     <string name="clock_format_system">시스템</string>
     <string name="clock_format_12">12시간</string>
     <string name="clock_format_24">24시간</string>
+    <string name="christmas_greetings">||메리 크리스마스|||새해 복 많이 받으세요||ko</string>
 </resources>

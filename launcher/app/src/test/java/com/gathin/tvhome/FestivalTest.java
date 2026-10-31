@@ -6,6 +6,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -98,24 +101,48 @@ public class FestivalTest {
         assertEquals(-1, Festival.christmasSlot(LocalDate.of(2027, 1, 7)));
     }
 
+    private static List<Locale> locales(String... tags) {
+        List<Locale> out = new ArrayList<>();
+        for (String tag : tags) out.add(Locale.forLanguageTag(tag));
+        return out;
+    }
+
+    private static final String IT =
+            "|Buona Immacolata|Buon Natale|Buon Santo Stefano|Buon San Silvestro|Buon Capodanno|Buona Befana|it";
+    private static final String EN = "Happy Thanksgiving||Merry Christmas|Happy Boxing Day|Happy New Year's Eve"
+            + "|Happy New Year|Happy Epiphany|en";
+
     @Test
     public void emptyOrMissingSlotsKeepTheTimeOfDayGreeting() {
-        String it = "|Buona Immacolata|Buon Natale|Buon Santo Stefano|Buon San Silvestro|Buon Capodanno|Buona Befana|it";
-        assertEquals("Buon Natale", Festival.pick(it, 2, "it"));
-        assertEquals("Buona Befana", Festival.pick(it, 6, "it"));
-        assertEquals("", Festival.pick(it, 0, "it"));
-        assertEquals("", Festival.pick(it, -1, "it"));
-        assertEquals("", Festival.pick("Happy Thanksgiving||Merry Christmas||||Happy Epiphany|en", 3, "en"));
-        assertEquals("", Festival.pick("", 2, "it"));
+        assertEquals("Buon Natale", Festival.pick(IT, 2, locales("it-IT")));
+        assertEquals("Buona Befana", Festival.pick(IT, 6, locales("it")));
+        assertEquals("", Festival.pick(IT, 0, locales("it")));
+        assertEquals("", Festival.pick(IT, -1, locales("it")));
+        assertEquals("", Festival.pick("||||||", 3, locales("it")));
+        assertEquals("", Festival.pick("", 2, locales("it")));
     }
 
     @Test
     public void aLanguageWithoutATranslationKeepsItsTimeOfDayGreeting() {
-        String en = "Happy Thanksgiving||Merry Christmas|Happy Boxing Day|Happy New Year's Eve|Happy New Year|Happy Epiphany|en";
-        assertEquals("Merry Christmas", Festival.pick(en, 2, "en"));
-        assertEquals("", Festival.pick(en, 2, "ru"));
-        assertEquals("x", Festival.pick("||x|||||iw", 2, "iw"));
-        assertEquals("x", Festival.pick("||x|||||iw", 2, "he"));
+        assertEquals("Merry Christmas", Festival.pick(EN, 2, locales("en-GB")));
+        assertEquals("", Festival.pick(EN, 2, locales("ru")));
+        assertEquals("x", Festival.pick("||x|||||iw", 2, locales("he")));
+        assertEquals("x", Festival.pick("||x|||||in", 2, locales("id")));
+    }
+
+    @Test
+    public void theFirstLocaleWithATranslationWins() {
+        assertEquals("Buon Natale", Festival.pick(IT, 2, locales("ru", "it")));
+        assertEquals("", Festival.pick(IT, 2, locales("ru", "en")));
+    }
+
+    @Test
+    public void thanksgivingIsOnlyForEnglishUs() {
+        assertEquals("Happy Thanksgiving", Festival.pick(EN, 0, locales("en-US")));
+        assertEquals("", Festival.pick(EN, 0, locales("en-GB")));
+        assertEquals("", Festival.pick(EN, 0, locales("en-AU")));
+        assertEquals("", Festival.pick(EN, 0, locales("en")));
+        assertEquals("Happy Thanksgiving", Festival.pick(EN, 0, locales("de", "en-US")));
     }
 
     @Test
