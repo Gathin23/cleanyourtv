@@ -1,0 +1,116 @@
+# Sony BRAVIA XBR-75X850C (2015, SVP-DTV15 "BRAVIA 4K 2015" platform, MediaTek), US firmware
+# Android TV 8.0 (API 26), build SVP4KDTV15_UC-user 8.0.0 OPR2.170623.027.S16 6.827, 1.5 GB RAM
+#
+# Second unit of this folder, the 75-inch, on the same build as the 55-inch in debloat.txt. A "display-only"
+# variant: this set is a screen for an Apple TV on HDMI, with no Google account, no streaming apps, no casting
+# and no voice, so it goes further than debloat.txt, which is the list to start from if you keep Netflix,
+# YouTube or Chromecast. Applied as written here on 30 Oct 2026 (the commented-out groups included, see below).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-xbr-55x850c/debloat-display-only.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xbr-55x850c/debloat-display-only.txt
+# Check:   TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/sony-xbr-55x850c/debloat-display-only.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (restore.sh's default), as in debloat.txt. The only other HOME
+# handler is com.android.tv.settings/.system.FallbackHome; setupwraith has no HOME activity and is left alone.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it also plays every HDMI input. Hide it in config.xml and set
+# live_tv_package to it; the Inputs menu then lists HDMI 1, HDMI 2/MHL, HDMI 3, HDMI 4/ARC (with the CEC device's
+# name), Video 1, Video 2/Component and Live TV. With the stock launcher and tvlaunchercustomizer off, the Input
+# button still works through com.sony.dtv.tvx.
+# Keep, as in debloat.txt: com.sony.dtv.tvinput.*, tvplayer*, braviasync* (HDMI-CEC: the Apple TV remote's power
+# and volume), remotepairing, remotecontrolsettings, uinputservice, braviabluetoothservice, imeproxy,
+# settingsprovider, systemupdate, duid.generator, enclave.service, timers, homenetwork (holds the power
+# settings), all com.mediatek.* and mtktvapi.agent, Play Store and Play Services.
+# Left alone on purpose: the rest of com.sony.dtv.b2b.* (hotel/pro mode plumbing), webapi.core, remoteaccess and
+# netproxyservice (Sony IP control, uid 1000), privacypolicy, sonyselect.overlay (a /vendor/overlay RRO).
+# Nothing was disabled at the factory. Eight streaming apps in debloat.txt (Disney+, HBO, Pandora, Tubi, Pluto,
+# Twitch, PBS Kids, AccuWeather) were not on this unit after a factory reset with no Google account.
+#
+# New compared with debloat.txt, each checked with `dumpsys package` on this firmware:
+# - com.sony.dtv.interactivetvplatform carries Kantar, Kuyun and ShopTv audience-measurement services over the
+#   audio and video shared-memory buffers; interactivetvutil carries the action and application log collectors.
+#   Other Sony lists keep them as voice plumbing; with voice off nothing was lost here.
+# - com.sony.dtv.servermgr is a Firebase Cloud Messaging listener (Sony push messages).
+# - com.google.android.backdrop is the Backdrop screensaver, which downloads its pictures from Google.
+# - DLNA, DIAL, Miracast and Chromecast are network listeners that go together once nothing casts to the set.
+#
+# Two groups are commented out below so the list stays useful beyond this one set: the streaming apps (this unit
+# has them off; uncomment the ones you do not use) and the Android TV phone-remote service (off on this unit with
+# the IR remote unaffected; left enabled here so the Android TV Remote phone app keeps working for everyone else).
+#
+# Applied in eight batches with a screenshot and Home check after each; no crash loops
+# (com.sony.dtv.systembootmonitor crashes once at boot on this firmware, as on the 55-inch; it is not listed).
+# Launcher installed with build-and-install.sh and no key services; Home handed over cleanly. Reboot-checked once:
+# Home came back on the new launcher, nothing re-enabled itself. Not yet lived with for weeks; if something breaks,
+# re-enable it with `pm enable <package>` and please report it.
+
+# ACR viewing tracker, telemetry, remote support, push channel
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.sony.dtv.b2b.vendorprotocol                # SDDP model/MAC/IP broadcast for Control4-style automation
+com.sony.dtv.servermgr                         # Firebase Cloud Messaging listener (Sony push messages)
+
+# Sony "interactive TV" measurement and logging
+com.sony.dtv.interactivetvplatform             # Kantar / Kuyun / ShopTv audience-measurement plugins
+com.sony.dtv.interactivetvutil                 # ActionLogCollector / ApplicationLogCollector services
+com.sony.dtv.interactivetvutil.output
+
+# Sony and Google content, ads, promos, recommendation rows
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.sony.dtv.tvlaunchercustomizer              # Sony tweaks to the stock home rows
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+com.google.android.backdrop                    # Backdrop screensaver, downloads images from Google
+
+# Preloaded apps and tutorials
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+com.sony.dtv.touchpad.tutorial
+com.google.android.tvtutorials
+com.google.android.videos                      # Google Play Movies
+com.google.android.play.games
+com.google.android.music                       # Google Play Music, shut down in 2020
+com.amazon.aiv.us                              # US Prime Video stub
+com.google.android.inputmethod.japanese        # Japanese keyboard; com.sony.dtv.ime.chww stays the active keyboard
+com.sony.dtv.osat.album                        # USB photo player, off by owner's choice (nothing on USB)
+com.sony.dtv.osat.music                        # USB music player
+com.sony.dtv.osat.video                        # USB video player
+
+# Voice assistant, off by owner's choice (removes the remote's mic search)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.sony.dtv.voicerecognitionconfirmation
+
+# Streaming apps: off on this unit, commented out here so you choose. Uncomment the ones you do not use.
+#com.netflix.ninja
+#com.google.android.youtube.tv
+#com.amazon.amazonvideo.livingroom             # Prime Video
+#com.crackle.androidtv
+#air.com.vudu.air.DownloaderTablet             # Vudu
+#com.sony.rvu                                  # DIRECTV Ready (RVU client)
+#com.sony.dtv.netflixmanager                   # the remote's Netflix button; nothing to open with Netflix off
+
+# Casting, mirroring and DLNA (network listeners), off by owner's choice
+com.google.android.apps.mediashell             # Chromecast built-in
+com.sony.dtv.dialservice                       # DIAL discovery for YouTube/Netflix casting
+screnmirroring.com                             # Miracast stack
+com.sony.dtv.networkapp.wifidirect             # Screen mirroring app
+com.sony.huey.dlna.module                      # DLNA renderer
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna
+com.sonyericsson.dlna.dtcpplayer
+# Off on this unit with the IR remote unaffected; kept enabled in the list for the Android TV Remote phone app.
+#com.google.android.tv.remote.service          # Android TV Remote phone-app service (ports 6466/6467)
+
+# Google account plumbing, unused with no account signed in
+com.google.android.partnersetup                # RLZ install attribution
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.google.android.backuptransport
