@@ -69,7 +69,8 @@ com.spotify.tv.android
 com.google.android.videos              # Google TV / Play Movies
 
 # Extras, disabled on the 55C655 unit (Italy)
-com.tcl.UpdatePeripheral               # TCL soundbar firmware updater; keep it if a TCL soundbar is connected
+# com.tcl.UpdatePeripheral             # TCL soundbar firmware updater, kept here as shared lists keep updaters;
+#                                      # the 55C655 unit (no TCL soundbar) has it disabled
 com.android.printspooler
 com.google.android.syncadapters.calendar
 com.google.android.onetimeinitializer
