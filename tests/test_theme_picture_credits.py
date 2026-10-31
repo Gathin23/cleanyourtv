@@ -181,18 +181,19 @@ class ThemeCreditsTest(unittest.TestCase):
     def test_the_walk_reads_the_files_and_the_pictures_the_tree_carries(self):
         # A walk that stops reading finds no problems either, so what it walked is checked here.
         credited = [f for f in themes() if (f / "CREDITS.md").is_file()]
-        self.assertGreaterEqual(len(credited), 6, "fewer than six themes carry a CREDITS.md")
+        # The floors leave the seasonal halloween theme out, so they hold after its 1 Nov revert as well.
+        self.assertGreaterEqual(len(credited), 5, "fewer than five themes carry a CREDITS.md")
         counted = sum(len(pictures(f)) for f in credited)
-        self.assertGreaterEqual(counted, 31, f"the walk read {counted} pictures, not the 31 credited today")
+        self.assertGreaterEqual(counted, 23, f"the walk read {counted} pictures, not the 23 the lasting themes credit")
         compared = 0
         for folder in credited:
             text = (folder / "CREDITS.md").read_text(encoding="utf-8")
             for name, caption in captions(folder).items():
                 if licence(caption) and licence(credit_line(text, name) or ""):
                     compared += 1
-        self.assertGreaterEqual(compared, 20,
+        self.assertGreaterEqual(compared, 19,
                                 f"only {compared} pictures had their caption's licence and the credit's compared")
-        for name in ("halloween", "nature-calm", "storm", "sweden", "retro", "cinematic"):
+        for name in ("nature-calm", "storm", "sweden", "retro", "cinematic"):
             with self.subTest(theme=name):
                 self.assertTrue((THEMES / name / "CREDITS.md").is_file(),
                                 f"themes/{name}/CREDITS.md is gone: the walk reads nothing")
