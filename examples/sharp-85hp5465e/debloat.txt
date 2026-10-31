@@ -1,16 +1,17 @@
-# SHARP 4K UHDTV (reported as "SHARP 4K UHDTV", product MT9676_Sharp, device maniatika, MediaTek MT9676, platform merak), Google TV, Android 14 (SDK 34)
-# Firmware build: UKN7.260716.012 (user/release-keys). Swiss set, German UI.
+# SHARP 85HP5465E, 85" QLED (reported as "SHARP 4K UHDTV", product MT9676_Sharp, device maniatika, MediaTek MT9676, platform merak), Google TV, Android 14 (SDK 34)
+# Firmware build: UKN7.260716.012 (user/release-keys). EU set, German UI.
 # Stock launcher: com.google.android.apps.tv.launcherx (Google TV).
 # Setup wizard: com.google.android.tungsten.setupwraith (claims HOME with .RecoveryActivity, priority 1).
 # Live TV app: com.mediatek.tv.oneworld.tvcenter (not com.mediatek.wwtv.tvcenter); HDMI inputs: com.mediatek.tis.
 #
-# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-mt9676-maniatika/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-mt9676-maniatika/debloat.txt com.google.android.apps.tv.launcherx
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-85hp5465e/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-85hp5465e/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 #
 # Tested on one unit in a single session, not over several days: screenshots after the changes, one reboot (all
 # packages but the e-manual stayed disabled, Home came back as the new launcher, the TV did not open Live TV by
-# itself), an HDMI 1 tile, and the real remote's buttons. Treat it as a starting point and report anything that broke.
+# itself), an HDMI 1 tile, HDMI playback, Chromecast, and the real remote's buttons. Live TV channels, voice search
+# and Private DNS were not tried. Treat it as a starting point and report anything that broke.
 #
 # ro.adb.secure=1 on this build. Port 5555 still answers while debugging is on: switch it off afterwards and reboot.
 #

@@ -1,0 +1,6 @@
+{
+  "tv": "SHARP 85HP5465E (Sharp Google TV, maniatika, MediaTek MT9676), EU",
+  "os": "Google TV 14",
+  "brand": "SHARP",
+  "notes": "Anoki ACR, partner rows, retail demo; Prime Video and YouTube Music off by choice; e-manual comes back at every boot; setupwraith owned the Wi-Fi saved at setup and claims Home; Settings button is KEY_MENU (scancode 139, mapped with HOME_KEY_SERVICE=1); Live TV `com.mediatek.tv.oneworld.tvcenter`, HDMI 1 is `HdmiInputService/HW2`; HDMI and Chromecast checked; one session, not days"
+}
