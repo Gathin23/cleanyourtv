@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55C69B, EU (G10, Realtek, 2024)",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "Same G10 build as `tcl-g10-google-tv/`; Samba TV ACR, logkit, TCL Channel, promos, demo, Alexa, preloaded streaming off; keep ttvs for updates, live TV/HDMI on com.tcl.tv; setupwraith Wi-Fi re-join before disabling; Settings key 83"
+}

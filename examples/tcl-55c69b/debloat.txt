@@ -1,0 +1,59 @@
+# TCL 55C69B, EU (device G10, product G10_4K_GB, Realtek RTD2875P)
+# Android 12 (Google TV), firmware STT2.230203.001, software V8-R75PT01-LF1V548
+# Same Realtek G10 platform family as tcl-g10-google-tv/, tested in France / EU.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55c69b/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55c69b/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx.
+# Live TV / HDMI app: com.tcl.tv (keep it, it also owns HDMI and tuner playback).
+# Keep: com.tcl.tv, com.tcl.tvinput, com.tcl.dashboard, com.tcl.suspension,
+# com.tcl.autopair, com.tcl.systemserver, com.tcl.ttvs (firmware updater).
+#
+# Known quirks:
+# - setupwraith owns the initial setup Wi-Fi network: forget and re-join the Wi-Fi
+#   in Settings BEFORE disabling setupwraith, otherwise Wi-Fi drops.
+# - setupwraith claims Home when launcherx is disabled: disable both.
+# - Remote BT_RC833 sends Netflix 4062, YouTube 4065, Prime Video 4099, Settings 83.
+# - TclAppBoot requires APP_AUTO_START for the launcher's key services.
+
+# TCL tracking and analytics
+tv.samba.ssm.ui                        # Samba TV ACR viewing tracking
+com.tcl.logkit                         # log capture and upload
+com.google.android.feedback            # crash feedback
+
+# TCL content, ads and promos
+com.tcl.waterfall.overseas             # TCL Channel / content feed
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.interactive                    # TCL TIAS background service
+com.tcl.messagebox                     # TCL push messages and promos
+android.autoinstalls.config.google.gtvpai   # partner app silent installer
+
+# Retail demo / store mode
+com.tcl.exhibit
+com.tcl.esticker
+
+# Preloaded apps and bloat
+com.tcl.guard                          # TGuard memory cleaner
+com.tcl.magiconnectfree                # MagiConnect phone app
+com.tcl.usercenter                     # TCL account nags
+com.tcl.smartalexa                     # Alexa integration
+com.tcl.t_solo
+com.tcl.hearaid
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide
+com.tcl.gamebar
+
+# Preloaded streaming and voice assistant (off by choice)
+com.google.android.katniss             # Google Assistant
+fr.francetv.pluzz                      # France TV
+fr.tf1.mytf1                           # TF1+
+fr.m6.m6replay                         # M6+
+tv.wuaki.apptv                         # Rakuten TV
+
+# Stock launcher & setup wizard
+com.google.android.tungsten.setupwraith # setup wizard (disable only after Wi-Fi re-join)
+com.google.android.apps.tv.launcherx   # stock Google TV launcher
