@@ -6,7 +6,7 @@ Tested on an Acer AR32HDIGU2841AT 32" HD Google TV (`ro.product.model=R3G`, `ro.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 28 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 24 packages that were disabled, grouped and commented |
 | `config.json` | Dock configuration with 5 streaming apps, frosted glass dock and glow |
 | `tv.json` | Entry for the CleanYourTV supported TV models index |
 

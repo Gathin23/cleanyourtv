@@ -29,7 +29,7 @@
 #   (YouTube, Netflix, Prime Video, Hotstar, Aha, Crunchyroll, Zee5, Airtel Xstream).
 #
 # Firmware updaters: com.apps.ota, com.apps.authota, com.realsil.ota, and com.google.android.tv.dfuservice
-#   were disabled by user preference. Comment them out if you wish to receive firmware or remote updates.
+#   are kept enabled by default (commented out below). They are turned off by choice on the author's TV.
 
 # SCBC / Google telemetry and feedback
 com.apps.function.gdpr                       # SCBC data consent agent
@@ -60,11 +60,11 @@ com.creative.fastscreen.tv                   # FastCast / Miracast screen mirror
 com.apps.scast                               # SCast screen receiver
 com.google.android.play.games                # Google Play Games app & sync
 
-# Firmware updaters (disabled by user choice; comment out to keep updates)
-com.apps.ota                                 # MOKA system OTA updater
-com.apps.authota                             # authenticated OTA check service
-com.realsil.ota                              # Realtek Bluetooth remote OTA updater
-com.google.android.tv.dfuservice             # Google TV accessory firmware update service
+# Firmware updaters (kept enabled by default; disabled on author's TV by choice)
+# com.apps.ota                                 # MOKA system OTA updater
+# com.apps.authota                             # authenticated OTA check service
+# com.realsil.ota                              # Realtek Bluetooth remote OTA updater
+# com.google.android.tv.dfuservice             # Google TV accessory firmware update service
 
 # Preloaded media apps (disabled by user choice)
 com.mxtech.videoplayer.television            # preloaded MX Player TV edition (persists across cold boots)

@@ -2,5 +2,5 @@
   "tv": "Acer AR32HDIGU2841AT 32\" HD (device R3_GTV, MOKA, Realtek RTD2841A), India",
   "os": "Google TV 14",
   "brand": "Acer",
-  "notes": "MOKA retail demo, telemetry, cleaner and background link stubs; keep launcherx and setupwraith (cold boot RecoveryActivity loop); launcher takes Home via HomeKeyService; MOKA re-enables some packages on cold boot; 28 packages disabled"
+  "notes": "MOKA retail demo, telemetry, cleaner and background link stubs; keep launcherx and setupwraith (cold boot RecoveryActivity loop); launcher takes Home via HomeKeyService; MOKA re-enables some packages on cold boot; 24 packages disabled"
 }
