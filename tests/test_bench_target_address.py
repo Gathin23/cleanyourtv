@@ -16,7 +16,9 @@ both itself, and neither as tools/tv.py does:
 bench.py now leaves both to tools/tv.py: `--port`/`TV_PORT` is passed on as text, and TV._connect reads
 back the HOST and PORT tv.py parsed out of the environment bench.py set for it - where the split and the
 1..65535 refusal already are, in tv.py's own words (`not a port number: '70000'`, which bench.py already
-reached for an out-of-range port, because importing tools/tv.py checks it).
+reached for an out-of-range port, because importing tools/tv.py checks it). That refusal comes out of the
+import before any connection, so the run measured nothing and answers 2, as it does with no address at
+all; 1 stays for the run that measured and could not write its result.json.
 
 The tests run the real tools/tv.py against a stub adb_shell that records the host and port
 `AdbDeviceTcp` was built with, so the target is observed rather than assumed; HOME points at a temporary
@@ -113,14 +115,20 @@ class BenchTargetAddressTest(unittest.TestCase):
         return r.returncode, r.stdout, r.stderr, opened
 
     def refused(self, args, tv_host="192.0.2.20", tv_port=None, value=None):
-        """A port bench.py will not use: a sentence naming it, no traceback, nothing opened."""
+        """A port bench.py will not use: a sentence naming it, no traceback, nothing opened.
+
+        tools/tv.py refuses such a port while it is imported, before a connection exists, so nothing
+        was measured: bench.py answers 2, the status its docstring gives a run that never reached the
+        TV, rather than the 1 a run keeps when its numbers exist and result.json could not be written.
+        """
         status, out, err, opened = self.run_bench(args, tv_host=tv_host, tv_port=tv_port)
         self.assertIsNone(opened, f"nothing should have been opened: {out}{err}")
         self.assertNotIn("Traceback", err, err)
         self.assertIn("not a port number", err, err)
+        self.assertIn("Nothing was measured", err, err)
         if value is not None:
             self.assertIn(value, err, err)
-        self.assertEqual(status, 1, f"{out}{err}")
+        self.assertEqual(status, 2, f"{out}{err}")
 
     def test_a_host_with_a_port_is_split(self):
         # tools/relay.md gives the TV's port with the address. This reached the client as a machine
