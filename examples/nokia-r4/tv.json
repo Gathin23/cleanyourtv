@@ -1,0 +1,6 @@
+{
+  "tv": "Nokia R4 smart TV (Realtek, R4)",
+  "os": "Android TV 11",
+  "brand": "Nokia",
+  "notes": "Realtek Android TV 11 panel: `pm disable-user` works and the stock launcher can be replaced (unlike the Streaming Box 8000); the tuner, screen-cast and USB-player entries need `TVINPUT_ALLOW=1`; Assistant, Chromecast and official YouTube off by owner choice; the firmware updater and the com.apps key/remote/menu middleware are kept; network ADB survives reboots; reboot-checked"
+}

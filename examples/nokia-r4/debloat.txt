@@ -1,0 +1,85 @@
+# Nokia R4 smart TV (Realtek board, product R4, device R4)
+# Android TV 11 (SDK 30), build RTT7.210923.001,
+# fingerprint NOKIA/NOKIA/R4:11/RTT7.210923.001/059:user/release-keys
+#
+# Apply:   launcher/build-and-install.sh first (this list disables the stock launcher), then
+#          TV_HOST=<tv ip> tools/disable.sh examples/nokia-r4/debloat.txt
+#          The tuner, USB-player and screen-cast entries hold TV_INPUT_HARDWARE, so tools/disable.sh
+#          refuses them until TV_INPUT reaches them: set TVINPUT_ALLOW=1 for the run, or comment
+#          them out if you keep the tuner or cast (owners who keep the tuner: the Live TV app is
+#          com.apps.livetv; point the launcher's live_tv_package at it in config.xml).
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/nokia-r4/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Tested on the owner's set on 2026-10-31, applied with tools/disable.ps1 and reboot-checked once:
+# every package stayed disabled after the reboot, Home and the remote's Home key land on the new
+# launcher, and the kept apps play. Longer soak in progress.
+#
+# Connecting: Developer options > USB debugging; network ADB (ro.adb.secure=1) needs the on-screen
+# accept once, then survives a reboot (checked), so switch it off again when done, port 5555 is
+# plaintext. Private DNS (AdGuard) works on this Android 11 build.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV, HOME priority 2, with Shop and
+# Discover tabs). Only it and the FallbackHome stubs claim HOME; setupwraith is installed but does
+# not claim HOME on this build. Location off on the owner's set, so the launcher's network pill
+# reads "Wi-Fi" rather than the network name.
+#
+# The com.apps middleware suite: virtualkey, smartkey, fivekey and bluetoothremote are the remote
+# and its key handling - never disable those. smartmenu is the TV's own picture/sound/screen menu
+# (SoundAdjust, WideMode, TunerMode), passthrough the HDMI input path, puresound/audiolink audio -
+# all kept. Factory tools below were never opened during discovery (enabled only by dumpsys).
+# Firmware updater (com.apps.ota, com.apps.authota) and the GMS companion
+# com.google.android.sss.authbridge are kept on purpose.
+#
+# Disabled from the factory on this set: com.cybermedia.cyberflx, com.google.android.videos,
+# com.mk.tv.timeclock, com.mk.tv.meeting, com.netflix.ninja. Not in this list, so restore.sh leaves
+# them exactly where they were.
+
+# Ad tech, telemetry and feedback
+com.google.android.tvrecommendations
+com.realtek.leanbacklauncher.partnercustomizer   # recommendation-row config for the stock home
+android.autoinstalls.config.scbc.device          # Play auto-install of partner apps
+com.google.android.partnersetup                  # Google RLZ partner attribution pings
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.google.android.marvin.talkback              # re-enable if you need the screen reader
+com.google.android.tts
+com.vewd.core.service                           # Opera/vewd webapp runtime of the preloaded suite
+
+# Voice, cast and streaming the owner declined
+com.google.android.katniss                      # Assistant: the remote's mic button stops working
+com.google.android.apps.mediashell
+com.google.android.youtube.tv                   # replaced by SmartTube (owner's choice)
+com.apps.scast                                  # OEM screen cast; TV input, needs TVINPUT_ALLOW=1
+
+# Streaming apps the owner does not use
+in.startv.hotstar
+com.sonyliv
+com.jio.jioplay.tv
+com.jio.media.stb.ondemand
+tv.airtel.xstream.tvapp
+com.spotify.tv.android
+com.amazon.amazonvideo.livingroom
+
+# Tuner / broadcast / USB media, owner declined (TVINPUT_ALLOW=1)
+com.apps.livetv
+com.apps.dtv
+com.apps.atv
+com.apps.atsc                                   # foreign-standard tuner, unused here
+com.apps.isdb                                   # foreign-standard tuner, unused here
+com.apps.usbmediaplayer
+
+# Junk overlays and factory tools (never launched during discovery)
+com.apps.networkspeed
+com.apps.esticker
+com.apps.eshow
+com.apps.clear
+com.realtek.factorytools
+com.apps.factory.ui
+com.google.android.backdrop                     # ambient screensaver; point the launcher's ClockDream
+                                                # at the screensaver first:
+                                                # settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+
+# Stock launcher, replaced by launcher/
+com.google.android.tvlauncher
