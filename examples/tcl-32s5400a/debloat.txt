@@ -24,7 +24,8 @@
 # com.tcl.tv (Live TV + HDMI), com.tcl.tvinput (HDMI/AV/tuner), com.tcl.tcl_bt_rcu_service
 # (Bluetooth remote), com.tcl.system.server (remote-key plumbing), com.tcl.autopair (Bluetooth
 # remote pairing), com.tcl.settings (picture/sound), com.tcl.dashboard (TCL HOME tile),
-# com.tcl.messagebox (carries the ttvs receiver), com.tcl.suspension (Quick Panel).
+# com.tcl.messagebox (carries the ttvs receiver), com.tcl.suspension (Quick Panel),
+# com.android.location.fused (boot-looped a 43S5400A into recovery on V325, #2803).
 #
 # Applied on 2026-10-20 and checked the same day (shorter than CONTRIBUTING.md asks; I will report
 # back if anything breaks). The first pass also disabled com.tcl.system.server, com.tcl.autopair,
