@@ -1,10 +1,10 @@
 # CleanYourTV in the press
 
-Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **412 articles**, 349 of them from outlets in 49 countries, 14 from Spanish-language sites in Latin America and 49 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [229 videos](#videos) follow the articles.
+Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **412 articles**, 360 of them from outlets in 54 countries and 52 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [229 videos](#videos) follow the articles.
 
 Wrote about it and not here? Open an issue or a pull request with the link.
 
-[United States](#united-states)&nbsp;30 · [United Kingdom](#united-kingdom)&nbsp;5 · [India](#india)&nbsp;12 · [Denmark](#denmark)&nbsp;1 · [Japan](#japan)&nbsp;5 · [Bangladesh](#bangladesh)&nbsp;2 · [United Arab Emirates](#united-arab-emirates)&nbsp;2 · [France](#france)&nbsp;22 · [Germany](#germany)&nbsp;12 · [Spain](#spain)&nbsp;18 · [Italy](#italy)&nbsp;23 · [Norway](#norway)&nbsp;1 · [Portugal](#portugal)&nbsp;6 · [Czechia](#czechia)&nbsp;7 · [Ukraine](#ukraine)&nbsp;6 · [Greece](#greece)&nbsp;9 · [Egypt](#egypt)&nbsp;6 · [Brazil](#brazil)&nbsp;19 · [Latin America (Spanish-language)](#latin-america-spanish-language)&nbsp;14 · [China](#china)&nbsp;40 · [Taiwan](#taiwan)&nbsp;12 · [Indonesia](#indonesia)&nbsp;19 · [Thailand](#thailand)&nbsp;3 · [Vietnam](#vietnam)&nbsp;11 · [Netherlands](#netherlands)&nbsp;5 · [Poland](#poland)&nbsp;9 · [Russia](#russia)&nbsp;17 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;4 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;5 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;2 · [Hungary](#hungary)&nbsp;2 · [Saudi Arabia](#saudi-arabia)&nbsp;1 · [Romania](#romania)&nbsp;4 · [Sweden](#sweden)&nbsp;2 · [Hong Kong](#hong-kong)&nbsp;4 · [Bulgaria](#bulgaria)&nbsp;2 · [Slovakia](#slovakia)&nbsp;3 · [Belgium](#belgium)&nbsp;1 · [Kenya](#kenya)&nbsp;1 · [Israel](#israel)&nbsp;2 · [Finland](#finland)&nbsp;2 · [Serbia](#serbia)&nbsp;1 · [Lithuania](#lithuania)&nbsp;1 · [Morocco](#morocco)&nbsp;1 · [Croatia](#croatia)&nbsp;2 · [Iran](#iran)&nbsp;1 · [Slovenia](#slovenia)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;49
+[United States](#united-states)&nbsp;31 · [United Kingdom](#united-kingdom)&nbsp;5 · [India](#india)&nbsp;12 · [Denmark](#denmark)&nbsp;1 · [Japan](#japan)&nbsp;5 · [Bangladesh](#bangladesh)&nbsp;2 · [United Arab Emirates](#united-arab-emirates)&nbsp;2 · [France](#france)&nbsp;22 · [Germany](#germany)&nbsp;12 · [Spain](#spain)&nbsp;18 · [Italy](#italy)&nbsp;23 · [Norway](#norway)&nbsp;1 · [Portugal](#portugal)&nbsp;6 · [Czechia](#czechia)&nbsp;7 · [Ukraine](#ukraine)&nbsp;6 · [Greece](#greece)&nbsp;9 · [Egypt](#egypt)&nbsp;6 · [Brazil](#brazil)&nbsp;19 · [Argentina](#argentina)&nbsp;3 · [Chile](#chile)&nbsp;2 · [Colombia](#colombia)&nbsp;2 · [Costa Rica](#costa-rica)&nbsp;1 · [Mexico](#mexico)&nbsp;2 · [China](#china)&nbsp;40 · [Taiwan](#taiwan)&nbsp;12 · [Indonesia](#indonesia)&nbsp;19 · [Thailand](#thailand)&nbsp;3 · [Vietnam](#vietnam)&nbsp;11 · [Netherlands](#netherlands)&nbsp;5 · [Poland](#poland)&nbsp;9 · [Russia](#russia)&nbsp;17 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;4 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;5 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;2 · [Hungary](#hungary)&nbsp;2 · [Saudi Arabia](#saudi-arabia)&nbsp;1 · [Romania](#romania)&nbsp;4 · [Sweden](#sweden)&nbsp;2 · [Hong Kong](#hong-kong)&nbsp;4 · [Bulgaria](#bulgaria)&nbsp;2 · [Slovakia](#slovakia)&nbsp;3 · [Belgium](#belgium)&nbsp;1 · [Kenya](#kenya)&nbsp;1 · [Israel](#israel)&nbsp;2 · [Finland](#finland)&nbsp;2 · [Serbia](#serbia)&nbsp;1 · [Lithuania](#lithuania)&nbsp;1 · [Morocco](#morocco)&nbsp;1 · [Croatia](#croatia)&nbsp;2 · [Iran](#iran)&nbsp;1 · [Slovenia](#slovenia)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;52
 
 ## United States
 
@@ -40,6 +40,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Decrypt | ['Privacy Horror': Researcher Uncovers Extent of Samsung Smart TV User Tracking](https://decrypt.co/381801/privacy-horror-researcher-uncovers-extent-of-samsung-smart-tv-user-tracking) | 26&nbsp;Oct |
 | TFTC | [People Are Using AI to Rip the Spyware Out of Their TVs](https://www.tftc.io/ai-hacking-smart-tvs-remove-spyware) | 23&nbsp;Oct |
 | CableTV.com | [What Is Smart TV Vibes Coding? How People Are Blocking TV Ads With AI](https://www.cabletv.com/news/what-is-smart-tv-vibes-coding) | 28&nbsp;Oct |
+| Digital Trends Español | [Cómo usar IA para convertir tu Smart TV en una TV “tonta” y eliminar anuncios, rastreo y bloatware](https://es.digitaltrends.com/inteligente/como-usar-ia-convertir-smart-tv-tv-tonta-guia/) | 20&nbsp;Oct |
 
 ## United Kingdom
 
@@ -282,24 +283,40 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Observatório Tech | [Adeus lentidão e anúncios: projeto viral promete limpeza visual em Smart TVs](https://observatoriotech.com.br/noticia/adeus-lentidao-e-anuncios-projeto-viral-promete-limpeza-visual-em-smart-tvs/) | 29&nbsp;Oct |
 | Jornal 24 Horas | [Usuários estão deixando suas smart tvs mais rápidas com IA; confira como fazer](https://jornal24horas.com.br/?p=69300) | 20&nbsp;Oct |
 
-## Latin America (Spanish-language)
+## Argentina
 
 | Outlet | Article | Date |
 | --- | --- | --- |
-| Qore | [Desarrolladores usan IA para quitar anuncios de smart TVs](https://www.qore.com/tecnologia/desarrolladores-usan-ia-para-quitar-anuncios-de-smart-tvs/) | 20&nbsp;Oct |
-| DiarioBitcoin | [Usuarios usan IA para quitar anuncios y bloatware de sus televisores inteligentes](https://www.diariobitcoin.com/tecnologia/usuarios-usan-ia-para-quitar-anuncios-y-bloatware-de-sus-televisores-inteligentes/) | 19&nbsp;Oct |
-| Ecosistema Startup | [dumbtv: el hack con IA que elimina los anuncios del TV](https://ecosistemastartup.com/dumbtv-el-hack-con-ia-que-elimina-los-anuncios-del-tv/) | 19&nbsp;Oct |
-| TecToc | [Usuarios están usando IA para quitar anuncios y «limpiar» sus Smart TV](https://tectoc.blog/2026/10/19/usuarios-estan-usando-ia-para-quitar-anuncios-y-limpiar-sus-smart-tv/) | 19&nbsp;Oct |
-| Tecnobits | [Cómo hacer debloat a tu Smart TV con IA y CleanYourTV](https://tecnobits.net/como-hacer-debloat-a-tu-smart-tv-con-ia-cleanyourtv/) | 21&nbsp;Oct |
-| The Clinic | [La nueva moda de "hackear" Smart TV con inteligencia artificial: usuarios logran eliminar anuncios y aplicaciones de rastreo](https://www.theclinic.cl/2026/10/21/hackear-televisores-ia-eliminar-anuncios/) | 21&nbsp;Oct |
 | Cadena 3 | [El auge de los hacks de IA para convertir televisores inteligentes en modelos simples](https://www.cadena3.com/noticia/tecnologia/el-auge-de-los-hacks-de-ia-para-convertir-televisores-inteligentes-en-modelos-simples_604870) | 19&nbsp;Oct |
-| OneDigital | [CleanYourTV limpia tu Android TV de publicidad con IA](https://onedigital.mx/2026/10/21/cleanyourtv-limpiar-android-tv/) | 21&nbsp;Oct |
+| TN | [La nueva tendencia es usar IA para hacer "menos inteligentes" los Smart TV: de qué se trata, cuáles son las ventajas y los riesgos](https://tn.com.ar/tecno/tutoriales/2026/10/24/la-nueva-tendencia-es-usar-ia-para-hacer-menos-inteligentes-los-smart-tv-de-que-se-trata-cuales-son-las-ventajas-y-los-riesgos/) | 24&nbsp;Oct |
+| La 100 | [La inteligencia artificial que busca hacer menos inteligentes a los Smart TV: para qué sirve y cuáles son los beneficios](https://la100.cienradios.com/tecnologia/la-inteligencia-artificial-que-busca-hacer-menos-inteligentes-a-los-smart-tv-para-que-sirve-y-cuales-son-los-beneficios/) | 25&nbsp;Oct |
+
+## Chile
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| The Clinic | [La nueva moda de "hackear" Smart TV con inteligencia artificial: usuarios logran eliminar anuncios y aplicaciones de rastreo](https://www.theclinic.cl/2026/10/21/hackear-televisores-ia-eliminar-anuncios/) | 21&nbsp;Oct |
+| Ecosistema Startup | [dumbtv: el hack con IA que elimina los anuncios del TV](https://ecosistemastartup.com/dumbtv-el-hack-con-ia-que-elimina-los-anuncios-del-tv/) | 19&nbsp;Oct |
+
+## Colombia
+
+| Outlet | Article | Date |
+| --- | --- | --- |
 | ENTER.CO | [¿Cómo volver 'tonto' tu smart TV con IA para quitarle los anuncios?](https://www.enter.co/chips-bits/como-volver-tonto-smart-tv-ia-anuncios/) | 21&nbsp;Oct |
-| Digital Trends Español | [Cómo usar IA para convertir tu Smart TV en una TV “tonta” y eliminar anuncios, rastreo y bloatware](https://es.digitaltrends.com/inteligente/como-usar-ia-convertir-smart-tv-tv-tonta-guia/) | 20&nbsp;Oct |
 | Semana | [Cómo quitar los anuncios de los televisores con inteligencia artificial: el truco para reducir la publicidad invasiva](https://www.semana.com/tecnologia/articulo/como-quitar-los-anuncios-de-los-televisores-con-inteligencia-artificial-el-truco-para-reducir-la-publicidad-invasiva/202654/) | 28&nbsp;Oct |
-| TN (Argentina) | [La nueva tendencia es usar IA para hacer "menos inteligentes" los Smart TV: de qué se trata, cuáles son las ventajas y los riesgos](https://tn.com.ar/tecno/tutoriales/2026/10/24/la-nueva-tendencia-es-usar-ia-para-hacer-menos-inteligentes-los-smart-tv-de-que-se-trata-cuales-son-las-ventajas-y-los-riesgos/) | 24&nbsp;Oct |
-| DiarioBitcoin | [Investigador alerta sobre posibles funciones de rastreo en Smart TV de Samsung](https://www.diariobitcoin.com/tecnologia/investigador-alerta-sobre-posibles-funciones-de-rastreo-en-smart-tv-de-samsung/) | 26&nbsp;Oct |
-| La 100 (Argentina) | [La inteligencia artificial que busca hacer menos inteligentes a los Smart TV: para qué sirve y cuáles son los beneficios](https://la100.cienradios.com/tecnologia/la-inteligencia-artificial-que-busca-hacer-menos-inteligentes-a-los-smart-tv-para-que-sirve-y-cuales-son-los-beneficios/) | 25&nbsp;Oct |
+
+## Costa Rica
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| TecToc | [Usuarios están usando IA para quitar anuncios y «limpiar» sus Smart TV](https://tectoc.blog/2026/10/19/usuarios-estan-usando-ia-para-quitar-anuncios-y-limpiar-sus-smart-tv/) | 19&nbsp;Oct |
+
+## Mexico
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| OneDigital | [CleanYourTV limpia tu Android TV de publicidad con IA](https://onedigital.mx/2026/10/21/cleanyourtv-limpiar-android-tv/) | 21&nbsp;Oct |
+| Qore | [Desarrolladores usan IA para quitar anuncios de smart TVs](https://www.qore.com/tecnologia/desarrolladores-usan-ia-para-quitar-anuncios-de-smart-tvs/) | 20&nbsp;Oct |
 
 ## China
 
@@ -672,6 +689,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | AI Daily Post | [AI Tools Help Users Disable Smart TV Ads](https://aidailypost.com/news/people-use-ai-make-smart-tvs) | 19&nbsp;Oct |
 | The Brief | [AI Prompts Are Turning Smart TVs Simple Again](https://www.thebrief.news/en/standard/article/33931/ai-prompts-are-turning-smart-tvs-simple-again) | 19&nbsp;Oct |
 | The Daily Tech Feed | [Users Turning Smart TVs into "Dumb TVs" Using AI Hacks](https://thedailytechfeed.com/users-turning-smart-tvs-into-dumb-tvs-using-ai-hacks/) | 19&nbsp;Oct |
+| DiarioBitcoin | [Usuarios usan IA para quitar anuncios y bloatware de sus televisores inteligentes](https://www.diariobitcoin.com/tecnologia/usuarios-usan-ia-para-quitar-anuncios-y-bloatware-de-sus-televisores-inteligentes/) | 19&nbsp;Oct |
+| Tecnobits | [Cómo hacer debloat a tu Smart TV con IA y CleanYourTV](https://tecnobits.net/como-hacer-debloat-a-tu-smart-tv-con-ia-cleanyourtv/) | 21&nbsp;Oct |
+| DiarioBitcoin | [Investigador alerta sobre posibles funciones de rastreo en Smart TV de Samsung](https://www.diariobitcoin.com/tecnologia/investigador-alerta-sobre-posibles-funciones-de-rastreo-en-smart-tv-de-samsung/) | 26&nbsp;Oct |
 
 ## Videos
 

@@ -128,20 +128,21 @@ def sections():
 
 
 def intro():
-    """The four numbers the PRESS.md intro states, as ints."""
+    """The numbers the PRESS.md intro states, as ints. The Latin America clause is optional: since 31 Oct every
+    Spanish-language outlet sits under its own country, and the intro names the group only while it has rows."""
     text = PRESS.read_text(encoding="utf-8").split("\n")[2]
     total = re.search(r"\*\*(\d+) articles\*\*", text)
     countries = re.search(r"(\d+) of them from outlets in (\d+) countries", text)
     latam = re.search(r"(\d+) from Spanish-language sites", text)
     online = re.search(r"(\d+) from newsletters", text)
-    for name, match in (("total", total), ("countries", countries), ("Latin America", latam), ("online", online)):
+    for name, match in (("total", total), ("countries", countries), ("online", online)):
         if match is None:
             raise AssertionError(f"docs/PRESS.md line 3 no longer states the {name} number")
     return {
         "total": int(total.group(1)),
         "country_articles": int(countries.group(1)),
         "countries": int(countries.group(2)),
-        "latam": int(latam.group(1)),
+        "latam": int(latam.group(1)) if latam else 0,
         "online": int(online.group(1)),
     }
 
@@ -277,11 +278,11 @@ class PressCountsTest(unittest.TestCase):
         with self.subTest(part="country rows"):
             self.assertEqual(country_rows, self.numbers["country_articles"])
         with self.subTest(part="Latin America"):
-            self.assertEqual(self.counts[LATAM], self.numbers["latam"])
+            self.assertEqual(self.counts.get(LATAM, 0), self.numbers["latam"])
         with self.subTest(part="online"):
             self.assertEqual(self.counts[ONLINE], self.numbers["online"])
         with self.subTest(part="sum"):
-            self.assertEqual(country_rows + self.counts[LATAM] + self.counts[ONLINE], self.numbers["total"])
+            self.assertEqual(country_rows + self.counts.get(LATAM, 0) + self.counts[ONLINE], self.numbers["total"])
 
     def test_readme_alt_text_matches_the_list(self):
         alt = re.search(r'and (\d+) more: (\d+) articles from (\d+) countries', README.read_text(encoding="utf-8"))
@@ -472,7 +473,7 @@ class VideoReaderTest(unittest.TestCase):
         self.assertEqual([], video_problems(self.page(rows, count=2)))
 
     def test_the_article_rows_are_not_read_as_videos(self):
-        # The real page opens with 412 article rows over 51 sections; only what follows '## Videos' is a video.
+        # The real page opens with 412 article rows over 55 sections; only what follows '## Videos' is a video.
         problems = video_problems(self.page([self.row(1)], count=1))
         self.assertEqual([], problems)
         self.assertEqual(1, len(videos(self.page([self.row(1)], count=1))))
