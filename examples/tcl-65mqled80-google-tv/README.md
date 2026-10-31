@@ -6,16 +6,17 @@ lists. Bought in Norway, on built-in Ethernet. Replace 192.168.1.50 below with y
 
 What changed:
 
-- **32 packages disabled**, none uninstalled. They are listed with reasons in [debloat.txt](debloat.txt):
+- **23 packages disabled**, none uninstalled. They are listed with reasons in [debloat.txt](debloat.txt):
   TCL tracking (Samba TV, TCL analytics, logs), TCL promos and FAST channels, the retail demo, TCL's cleaner,
-  the partner-app auto-installer and Alexa, plus what this owner does not use: Google Assistant, Chromecast,
-  Miracast and T-Cast, the USB media player and gallery, YouTube Music, the Google TV store app and Rakuten TV.
+  the partner-app auto-installer and Alexa. What this owner also turned off (Google Assistant, Chromecast,
+  Miracast and T-Cast, the USB media player and gallery, YouTube Music, the Google TV store app and Rakuten TV)
+  is commented out in the list: uncomment the ones you don't use.
 - **Google TV home replaced** by the launcher from `launcher/`: a frosted-glass dock of YouTube, Netflix,
   HBO Max, Prime Video and Disney+, five columns, and the launcher's clock as the screensaver.
 
 Checked on the TV afterwards: all four HDMI inputs, AV and the tuner stay registered, Live TV opens from the
-Inputs menu, YouTube loads with AdGuard Private DNS, power-on lands on the new Home, and all 32 packages stayed
-disabled across two reboots. One session so far, not yet lived with for days.
+Inputs menu, YouTube loads with AdGuard Private DNS, power-on lands on the new Home, and all 32 packages the owner
+disabled stayed off across two reboots. One session so far, not yet lived with for days.
 
 ## Differences from the 65C7L
 

@@ -16,7 +16,7 @@
 # updates come through Google Play Services.
 #
 # Applied 2026-10-30 on a real unit in seven batches with screenshots between them, then reboot-checked twice:
-# all 32 packages stayed disabled, nothing is re-enabled at boot, and power-on lands on the new Home (not
+# all 32 packages the owner disabled stayed off (23 active here, the owner's 9 commented out), nothing is re-enabled at boot, and power-on lands on the new Home (not
 # Live TV). All four HDMI inputs, AV and the tuner stayed registered in tv_input, Live TV opened from the
 # launcher's Inputs menu, and YouTube loaded with AdGuard Private DNS. One session; not yet lived with for days.
 #
@@ -57,19 +57,20 @@ com.tcl.guard                          # TCL "cleaner" / app manager
 com.tcl.smartalexa                     # Alexa
 com.google.android.play.games
 
-# Off by choice on this unit
-com.google.android.katniss             # Google Assistant voice (the mic button then does nothing)
-com.google.android.apps.mediashell     # Chromecast
-com.tcl.miracast                       # Miracast screen mirroring
-com.tcl.magiconnectfree                # TCL T-Cast phone mirroring
-com.tcl.ui_mediaCenter                 # USB media player
-com.tcl.gallery                        # USB photo gallery + TCL screensaver
-com.google.android.youtube.tvmusic
-com.google.android.videos              # Google TV movie store app
-tv.wuaki.apptv                         # Rakuten TV
+# Off by choice on this unit. This set has these off; uncomment the ones you don't use:
+# com.google.android.katniss             # Google Assistant voice (the mic button then does nothing)
+# com.google.android.apps.mediashell     # Chromecast
+# com.tcl.miracast                       # Miracast screen mirroring
+# com.tcl.magiconnectfree                # TCL T-Cast phone mirroring
+# com.tcl.ui_mediaCenter                 # USB media player
+# com.tcl.gallery                        # USB photo gallery + TCL screensaver
+# com.google.android.youtube.tvmusic
+# com.google.android.videos              # Google TV movie store app
+# tv.wuaki.apptv                         # Rakuten TV
 
 # Needed for the custom launcher. Disable only AFTER launcher/ is installed and set as Home:
 # with launcherx gone, setupwraith's RecoveryActivity claims HOME at priority 1 (blank screen).
+# Disabling setupwraith gives Home back but costs casting.
 com.google.android.apps.tv.dreamx      # ambient screensaver (promos); switch screensaver_components first
 com.google.android.tungsten.setupwraith
 com.google.android.apps.tv.launcherx
