@@ -2,7 +2,7 @@
 
 A China-market Haier set on the Aliyun YunOS stack (Ali6G board), Android 9, 2 GB of RAM,
 firmware PPR1.180610.011.20220314. The stock Home is Youku's launcher; the debloat list
-disables 40 packages: YunOS ad and telemetry services, the Aligenie voice stack, AirPlay and
+disables 38 packages: YunOS ad and telemetry services, the Aligenie voice stack, AirPlay and
 Miracast receivers, the Haier U+ IoT apps and preloaded content; the Youku home lines are commented out
 until your launcher build answers the firmware's Home intent (below). The full adaptation report is
 [docs/devices/haier-hra962x2-ali6g-cn.md](../../docs/devices/haier-hra962x2-ali6g-cn.md).
