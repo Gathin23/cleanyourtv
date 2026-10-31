@@ -1,6 +1,8 @@
 The Halloween skin's pictures in app/src/main/res/drawable-nodpi/ (halloween_pumpkin_lit.webp,
 halloween_pumpkin_dark.webp, halloween_bat.webp, halloween_ghost.webp) are from Microsoft's Fluent Emoji 3D
-(https://github.com/microsoft/fluentui-emoji: Jack-o-lantern, Bat, Ghost), resized to WebP. The lit and dark pumpkins
+(https://github.com/microsoft/fluentui-emoji: Jack-o-lantern, Bat, Ghost), resized to WebP. The Christmas
+skin's pictures (christmas_santa.webp, christmas_tree_lit.webp) are its Santa claus and
+Christmas tree, resized to WebP. The lit and dark pumpkins
 are the same picture with the carved face recoloured as a candle-lit and an unlit face. Fluent Emoji is under the MIT
 licence below.
 

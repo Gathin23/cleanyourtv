@@ -101,4 +101,5 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 timer</string>
     <string name="clock_format_24">24 timer</string>
+    <string name="christmas_greetings">||Glædelig jul|Glædelig 2. juledag|Godt nytår|Godt nytår||da</string>
 </resources>

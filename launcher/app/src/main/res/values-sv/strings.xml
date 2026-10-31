@@ -125,4 +125,5 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 timmar</string>
     <string name="clock_format_24">24 timmar</string>
+    <string name="christmas_greetings">||God jul|Trevlig annandag jul|Gott nytt år|Gott nytt år||sv</string>
 </resources>

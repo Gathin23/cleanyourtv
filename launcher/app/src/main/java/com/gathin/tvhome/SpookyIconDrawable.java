@@ -18,13 +18,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * A Halloween pill icon from a picture (Microsoft's Fluent Emoji 3D, MIT): a bat for Inputs that flaps its wings
- * twice when focused, or a ghost for Settings that drifts up and settles. The motion is a short scale or
+ * A festive pill icon from a picture (Microsoft's Fluent Emoji 3D, MIT): Halloween's bat for Inputs that flaps its
+ * wings twice when focused, its ghost for Settings that drifts up and settles, or Christmas's Santa for Settings,
+ * which moves like the ghost. The motion is a short scale or
  * offset of the same picture, played once per {@link #nudge()}; reduced motion leaves it still.
  */
 public final class SpookyIconDrawable extends Drawable {
 
-    static final int BAT = 0, GHOST = 1;
+    static final int BAT = 0, GHOST = 1, SANTA = 2;
 
     private static final float BOX_DP = 24f;
     private static final long BAT_MS = 520, GHOST_MS = 900;
@@ -42,8 +43,8 @@ public final class SpookyIconDrawable extends Drawable {
     public SpookyIconDrawable(Resources res, float density, int kind) {
         this.kind = kind;
         this.density = density;
-        bitmap = BitmapFactory.decodeResource(res,
-                kind == BAT ? R.drawable.halloween_bat : R.drawable.halloween_ghost);
+        bitmap = BitmapFactory.decodeResource(res, kind == BAT ? R.drawable.halloween_bat
+                : kind == SANTA ? R.drawable.christmas_santa : R.drawable.halloween_ghost);
         animator = ValueAnimator.ofFloat(0f, 1f);
         animator.setDuration(kind == BAT ? BAT_MS : GHOST_MS);
         animator.setInterpolator(new LinearInterpolator());

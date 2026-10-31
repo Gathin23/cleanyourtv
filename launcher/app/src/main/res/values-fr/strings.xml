@@ -98,4 +98,5 @@
     <string name="clock_format_system">Système</string>
     <string name="clock_format_12">12 heures</string>
     <string name="clock_format_24">24 heures</string>
+    <string name="christmas_greetings">||Joyeux Noël||Bon réveillon|Bonne année|Bonne Épiphanie|fr</string>
 </resources>

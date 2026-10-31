@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
@@ -50,9 +52,26 @@ public final class JackOLanternDrawable extends Drawable implements FestiveLamp 
     };
 
     public JackOLanternDrawable(Resources res, float density) {
+        this(res, density, R.drawable.halloween_pumpkin_dark, R.drawable.halloween_pumpkin_lit);
+    }
+
+    /** A dim grey copy of {@code lit}, for a light with no picture of its own for the unlit state. */
+    private static Bitmap unlit(Bitmap lit) {
+        Bitmap out = Bitmap.createBitmap(lit.getWidth(), lit.getHeight(), Bitmap.Config.ARGB_8888);
+        ColorMatrix m = new ColorMatrix();
+        m.setSaturation(0f);
+        m.postConcat(new ColorMatrix(new float[]{.4f, 0, 0, 0, 0, 0, .4f, 0, 0, 0, 0, 0, .4f, 0, 0, 0, 0, 0, 1, 0}));
+        Paint p = new Paint(Paint.FILTER_BITMAP_FLAG);
+        p.setColorFilter(new ColorMatrixColorFilter(m));
+        new Canvas(out).drawBitmap(lit, 0, 0, p);
+        return out;
+    }
+
+    /** The same light with other pictures: the Christmas skin's tree uses it, its lights going out when offline. */
+    public JackOLanternDrawable(Resources res, float density, int darkId, int litId) {
         this.density = density;
-        dark = BitmapFactory.decodeResource(res, R.drawable.halloween_pumpkin_dark);
-        lit = BitmapFactory.decodeResource(res, R.drawable.halloween_pumpkin_lit);
+        lit = BitmapFactory.decodeResource(res, litId);
+        dark = darkId != 0 ? BitmapFactory.decodeResource(res, darkId) : unlit(lit);
         Random rnd = new Random(0xC731L);
         for (int i = 0; i < noise.length; i++) noise[i] = rnd.nextFloat();
     }

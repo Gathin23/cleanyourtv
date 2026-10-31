@@ -2679,7 +2679,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             else if (hour < 22) res = R.string.good_evening;
             else res = R.string.good_night;
         }
-        String festiveGreeting = festive ? festival.greetingText(getResources()) : "";
+        String festiveGreeting = festive ? festival.greetingText(getResources(), LocalDate.now()) : "";
         if (!festiveGreeting.isEmpty()) {
             greeting.setText(festiveGreeting);
             greeting.setTextColor(liftTowardsWhite(festival.accentColor(), 0.25f));
@@ -2982,7 +2982,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * Swaps the pill icons for the festival's: a bell for Inputs that swings when focused, a diya for the
      * network whose flame follows the connection, and a marigold for Settings that turns when focused. Halloween
      * has its own: a bat for Inputs that flaps, a jack-o'-lantern whose face glows while online, and a ghost for
-     * Settings that floats up.
+     * Settings that floats up. Christmas has a tree whose lights go out when offline, the same bell, and Santa
+     * for Settings.
      */
     private void applyFestiveSkin(TextView inputs, TextView settings) {
         if (festival.isHalloween()) {
@@ -2998,6 +2999,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             setFestiveIcon(settings, ghost);
             addFocusAction(inputs, bat::nudge);
             addFocusAction(settings, ghost::nudge);
+            return;
+        }
+        if (festival.isChristmas()) {
+            SpookyIconDrawable santa = new SpookyIconDrawable(getResources(), density, SpookyIconDrawable.SANTA);
+            JackOLanternDrawable tree = new JackOLanternDrawable(getResources(), density,
+                    0, R.drawable.christmas_tree_lit);
+            bell = new BellDrawable(density);
+            bell.setReducedMotion(reducedMotion);
+            santa.setReducedMotion(reducedMotion);
+            tree.setReducedMotion(reducedMotion);
+            lamp = tree;
+            setFestiveIcon(inputs, bell);
+            setFestiveIcon(btnWifi, tree);
+            setFestiveIcon(settings, santa);
+            addFocusAction(inputs, bell::ring);
+            addFocusAction(settings, santa::nudge);
             return;
         }
         bell = new BellDrawable(density);
@@ -3039,6 +3056,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         PetalShowerView shower = new PetalShowerView(this);
+        shower.setSnow(festival.isChristmas());
         root.addView(shower, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         shower.play(60, 2200, () -> root.removeView(shower));

@@ -114,4 +114,5 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 timer</string>
     <string name="clock_format_24">24 timer</string>
+    <string name="christmas_greetings">||God jul|God 2. juledag|Godt nytt år|Godt nytt år||nb</string>
 </resources>

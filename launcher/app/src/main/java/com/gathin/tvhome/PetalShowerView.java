@@ -11,7 +11,8 @@ import android.view.View;
 import java.util.Random;
 
 /**
- * A transparent full-screen overlay that plays a one-off shower of marigold petals. Each petal drops in from
+ * A transparent full-screen overlay that plays a one-off shower of marigold petals, or of snowflakes for the
+ * Christmas skin ({@link #setSnow}). Each petal drops in from
  * just above the top edge, gathers speed as it falls, sways from side to side, spins, flips over (showing its
  * darker back) and fades out over the last quarter of its fall. Everything finishes within the given duration,
  * then the callback runs on the main thread. The view takes no focus, clicks or accessibility, uses a hardware
@@ -38,6 +39,7 @@ public final class PetalShowerView extends View {
             rot0 = new float[0], spin = new float[0], flipFreq = new float[0], flipPhase = new float[0];
     private int[] color = new int[0], shape = new int[0];
 
+    private boolean snow;
     private boolean playing;
     private long start, duration;
     private Runnable onDone;
@@ -71,6 +73,11 @@ public final class PetalShowerView extends View {
         vein.setStrokeWidth(0.035f);
         vein.setStrokeCap(Paint.Cap.ROUND);
         vein.setColor(EDGE);
+    }
+
+    /** Falls as soft white snowflakes instead of petals: round, not flipping, fading out like the petals do. */
+    public void setSnow(boolean snow) {
+        this.snow = snow;
     }
 
     /**
@@ -146,6 +153,12 @@ public final class PetalShowerView extends View {
             float flip = (float) Math.cos(TAU * flipFreq[i] * secs + flipPhase[i]);
             float sx = Math.abs(flip) < 0.08f ? (flip < 0f ? -0.08f : 0.08f) : flip;
             int a = p > 0.75f ? (int) (255 * (1f - (p - 0.75f) / 0.25f)) : 255;
+            if (snow) {
+                fill.setColor(0xFFF4F8FF);
+                fill.setAlpha(a * 7 / 8);
+                c.drawCircle(x, y, len * 0.22f, fill);
+                continue;
+            }
 
             // turned edge-on it looks darker; the back is darker still
             float shade = (flip < 0f ? 0.78f : 1f) * (0.8f + 0.2f * Math.abs(flip));
