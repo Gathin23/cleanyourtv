@@ -1,0 +1,60 @@
+# Xiaomi MiTV4I (codename magnolia), Android TV 9 (SDK 28), firmware PI.3698 release-keys, Amlogic SoC.
+# Stock launcher: com.google.android.tvlauncher (disabled only after launcher takeover).
+# Live TV app: com.droidlogic.droidlivetv (preserved for tuner & HDMI).
+# TV input service: com.droidlogic.tvinput (HDMI 1, HDMI 2, HDMI 3, AV).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv4i-magnolia/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv4i-magnolia/debloat.txt
+# PowerShell:
+#   tools\disable.ps1 -TvHost <tv ip> examples\xiaomi-mitv4i-magnolia\debloat.txt
+#   tools\restore.ps1 -TvHost <tv ip> examples\xiaomi-mitv4i-magnolia\debloat.txt
+# Everything is DISABLED with `pm disable-user --user 0`, never uninstalled.
+#
+# Notes:
+# - Live TV & HDMI inputs are handled by com.droidlogic.droidlivetv and com.droidlogic.tvinput.
+#   Never disable them.
+# - Xiaomi audio services (com.xiaomi.android.TV.audio, mitv.service) are kept.
+# - Chromecast built-in (com.google.android.apps.mediashell) is kept.
+# - Firmware updater (com.xiaomi.mitv.updateservice) is commented out below so updates work;
+#   uncomment to disable if desired.
+# - Voice search, screensaver, and optional streaming apps are commented out below by default.
+# - RAM impact: available memory increases from ~336 MB to ~426 MB (+90 MB free); swap usage
+#   drops from 143 MB (56%) down to 40 MB (15%).
+
+# Xiaomi & Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+
+# PatchWall, content & promo rows
+com.mitv.tvhome.atv
+com.mitv.tvhome.mitvplus
+com.xm.webcontent
+co.sensara.tv.mitv
+co.sensara.tv.mitv.res
+android.autoinstalls.config.xiaomi.amelie
+android.autoinstalls.config.xioami.dangal
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+
+# Xiaomi background services & cleaners
+com.xiaomi.mitv.tvmanager
+com.mitv.milinkservice
+com.mitv.tvlock
+com.xiaomo.tv.milegal
+com.xiaomi.android.tvsetup.partnercustomizer
+com.google.android.tv.bugreportsender
+
+# Preloaded media & tools
+com.xiaomi.mimusic2
+com.google.android.play.games
+com.google.android.videos
+com.mitv.gallery
+com.mitv.videoplayer
+
+# Optional / User choice (commented out by default; uncomment if not needed)
+# com.google.android.katniss             # Google Assistant / voice search
+# com.xiaomi.mitv.updateservice          # Xiaomi firmware updater; re-enable to check for updates
+# com.google.android.backdrop            # Ambient screensaver
+# com.graymatrix.did                     # ZEE5 streaming app
+# com.crunchyroll.crunchyroid            # Crunchyroll streaming app
