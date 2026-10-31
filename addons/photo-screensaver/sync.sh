@@ -31,6 +31,18 @@ IDLE_MINUTES="${IDLE_MINUTES:-0}"
 SECONDS_PER_PICTURE="${SECONDS_PER_PICTURE:-20}"
 tv() { "$PY" -I tv.py "$@"; }
 md5() { "$PY" -I -c 'import hashlib,sys; print(hashlib.md5(open(sys.argv[1],"rb").read()).hexdigest())' "$1"; }
+checked_write() {
+  local source="$1" uri="$2" seconds="${3:-}" out stage=""
+  # tv.py loses the remote exit status, and Android's content write can print an error with exit 0.
+  # Stage the timing value in this same remote shell and stop before the provider write if printf fails.
+  [ -z "$seconds" ] || stage="if ! printf '%s' $seconds > $source; then rm -f $source; echo __PHOTO_STAGE_FAILED__; exit; fi; "
+  out=$(tv "${stage}write_out=\$(content write --user 0 --uri $uri < $source 2>&1); write_rc=\$?; if rm -f $source && [ \"\$write_rc\" -eq 0 ] && [ -z \"\$write_out\" ]; then echo __PHOTO_WRITE_OK__; else printf '%s\n' \"\$write_out\"; fi")
+  case "$out" in
+    __PHOTO_WRITE_OK__) ;;
+    __PHOTO_STAGE_FAILED__) echo "could not stage $source on the TV" >&2; return 1 ;;
+    *) echo "$out" >&2; echo "could not write $uri on the TV" >&2; return 1 ;;
+  esac
+}
 
 [[ "$IDLE_MINUTES" =~ ^[0-9]+$ ]] && [ "$IDLE_MINUTES" -le 1440 ] || { echo "IDLE_MINUTES takes 1 to 1440" >&2; exit 1; }
 [[ "$SECONDS_PER_PICTURE" =~ ^[0-9]+$ ]] && [ "$SECONDS_PER_PICTURE" -ge 5 ] && [ "$SECONDS_PER_PICTURE" -le 3600 ] \
@@ -78,11 +90,15 @@ for F in ${FILES[@]+"${FILES[@]}"}; do
   echo "sending $NAME"
   "$PY" -I b64push.py "$F" "$TMP-$NAME" | grep md5 || { echo "sending $NAME failed; run the script again to resume" >&2; exit 1; }
   # Written through the app's FilesProvider so the app owns the file (on TCL G10 a copied one gives EACCES).
-  tv "rm -f $DIR/$NAME 2>/dev/null; content write --uri $URI/$NAME < $TMP-$NAME 2>/dev/null || { mkdir -p $DIR; cp $TMP-$NAME $DIR/$NAME; }; rm -f $TMP-$NAME" >/dev/null
+  OUT=$(tv "rm -f $DIR/$NAME 2>/dev/null; write_out=\$(content write --user 0 --uri $URI/$NAME < $TMP-$NAME 2>&1); write_rc=\$?; ok=0; if [ \"\$write_rc\" -eq 0 ] && [ -z \"\$write_out\" ]; then ok=1; elif mkdir -p $DIR && cp $TMP-$NAME $DIR/$NAME; then ok=1; fi; if rm -f $TMP-$NAME && [ \"\$ok\" -eq 1 ]; then echo __PHOTO_IMAGE_OK__; else printf '%s\n' \"\$write_out\"; fi")
+  case "$OUT" in
+    __PHOTO_IMAGE_OK__) ;;
+    *) echo "$OUT" >&2; echo "sending $NAME failed; run the script again to resume" >&2; exit 1 ;;
+  esac
   SENT=$((SENT + 1))
 done
 
-tv "printf '%s' $SECONDS_PER_PICTURE > $TMP-seconds.txt; content write --uri content://$PKG.files/seconds.txt < $TMP-seconds.txt; rm -f $TMP-seconds.txt" >/dev/null
+checked_write "$TMP-seconds.txt" "content://$PKG.files/seconds.txt" "$SECONDS_PER_PICTURE"
 tv "[ -f $BEFORE ] || { settings get secure screensaver_components; settings get secure screensaver_enabled; } > $BEFORE; settings put secure screensaver_components $DREAM; settings put secure screensaver_enabled 1" >/dev/null
 [ "$IDLE_MINUTES" -eq 0 ] || tv "settings put system screen_off_timeout $((IDLE_MINUTES * 60000))" >/dev/null
 COUNT=$(tv "ls $DIR 2>/dev/null | wc -l" | tr -d '\r ')

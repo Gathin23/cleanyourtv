@@ -30,11 +30,14 @@ else:
     elif command.startswith("cd "):
         for p in sorted(pictures.iterdir()):
             print(hashlib.md5(p.read_bytes()).hexdigest() + "  " + p.name)
-    elif "content write --uri " + uri in command:
+    elif "content write --user 0 --uri " + uri in command:
         name = command.split(uri, 1)[1].split()[0]
         source = stage / ("cyt-screensaver-" + name)
         shutil.copyfile(source, pictures / name)
         source.unlink()
+        print("__PHOTO_IMAGE_OK__")
+    elif "content write --user 0 --uri content://com.gathin.photodream.files/seconds.txt" in command:
+        print("__PHOTO_WRITE_OK__")
     elif "content delete --uri " + uri in command:
         target = pictures / command.split(uri, 1)[1].split()[0]
         if target.exists(): target.unlink()
