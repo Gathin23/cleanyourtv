@@ -1,0 +1,42 @@
+# OnePlus TV Model Y 32-inch (Y Series, codename shibuya), Android TV 11 (API 30), firmware RTO9.231122.002
+# Vendor fingerprint OnePlus/OnePlus_Y_Series/shibuya:11/RTO9.231122.002/11136549.
+# armeabi-v7a, UI at 1280x720, 213 dpi.
+#
+# This is the narrower list tested on the 32-inch Model Y only. The sibling Y1 43-inch uses debloat.txt.
+# Stock launcher:  com.google.android.tvlauncher
+# Live TV app:     com.mediatek.wwtv.tvcenter (Live TV tuner and HDMI input panel; keep it)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/oneplus-tv-y1/debloat-32-inch.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oneplus-tv-y1/debloat-32-inch.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# I have lived with this disabled-package set for several days without trouble. I checked Home,
+# Live TV/tuner, HDMI, Bluetooth remote/pairing, audio and streaming apps on 2026-10-31.
+# This is one 32-inch unit on this firmware; other Y Series sizes should be checked separately.
+#
+# I did not launch factory test packages to inspect them. I included com.coocaa.factory because it has
+# remained disabled on this TV without side effects; the matching OnePlus Y1 43-inch example also records
+# testing it on this firmware.
+#
+# TalkBack was already disabled before I prepared this list, so it is not listed (restore.sh would turn
+# it on). Keep com.google.android.marvin.talkback enabled if you use its screen reader.
+# Disable the stock launcher only after a replacement is installed, selected as Home and verified.
+
+# Skyworth auto-installs, retail demo and built-in manual
+android.autoinstalls.config.skyworth          # Skyworth OEM partner configuration
+com.smartdevice.common.demonow                # In-store retail demo
+com.Smartdevice.emanual                       # Built-in electronic user manual
+
+# Google feedback, calendar sync and recommendation rows
+com.google.android.feedback                   # Google feedback agent
+com.google.android.syncadapters.calendar      # Calendar background synchronization
+com.google.android.tvrecommendations          # Stock home recommendation and ad service
+
+# Factory test suite (never launch it)
+com.coocaa.factory                            # Coocaa factory test suite
+
+# Unused preload
+com.google.android.play.games                 # Google Play Games
+
+# Stock home replaced by launcher/; disable only after confirming the replacement works
+com.google.android.tvlauncher

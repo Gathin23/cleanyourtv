@@ -1,6 +1,6 @@
 {
-  "tv": "OnePlus Y1 43\" (Y Series, shibuya)",
+  "tv": "OnePlus Y1 43\" / Model Y 32\" (Y Series, shibuya)",
   "os": "Android TV 11",
   "brand": "OnePlus",
-  "notes": "Skyworth telemetry, ad rows, demos, preloaded bloat; voice & Chromecast preserved"
+  "notes": "Skyworth telemetry, ad rows, demos, preloaded bloat; voice & Chromecast preserved; 32-inch Model Y variant tested separately; see debloat-32-inch.txt"
 }
