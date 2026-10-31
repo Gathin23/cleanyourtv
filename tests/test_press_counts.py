@@ -1,8 +1,9 @@
 """Keeps the press numbers in docs/PRESS.md, the README cards and the card source in step.
 
 The article total is written in every place that states it: the PRESS.md intro, its per-country index
-line, the alt text of the card in README.md, the alt text of the same card in README.nl.md (in Dutch)
-and in README.de.md (in German), and tools/readme_featured.py (which draws the line onto
+line, the alt text of the card in README.md, the alt text of the same card in README.nl.md (in Dutch),
+README.de.md (in German), README.uk.md (in Ukrainian) and README.tr.md (in Turkish), and
+tools/readme_featured.py (which draws the line onto
 docs/featured.png). Adding one article by hand means editing all of them; this checks they agree, so a
 PR that adds a row and forgets the counts fails here instead of shipping a card that says 73 over a
 list of 74.
@@ -436,8 +437,8 @@ class FrontPageCoverageTest(unittest.TestCase):
         # The clause is the page's own copy of the three numbers its card's alt text states, so one page can show
         # a count in the picture and a stale one in prose; the pages come from the card, like the alt-text test, so
         # a translation that copies the picture is read without this list being edited first.
-        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md"}, set(self.pages),
-                             "README.md, README.de.md, README.nl.md and README.uk.md no longer show "
+        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md"}, set(self.pages),
+                             "README.md, README.de.md, README.nl.md, README.uk.md and README.tr.md no longer show "
                              "docs/card-halloween.jpg with an alt text")
         for name in sorted(self.pages):
             read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
@@ -454,7 +455,7 @@ class FrontPageCoverageTest(unittest.TestCase):
         # A reader answering () or None for every page would pass nothing above; each page carries three
         # numbers today, and the English one is the page this file's own example is quoted from.
         self.assertGreaterEqual(len(self.pages), 4, f"only {len(self.pages)} front pages show the card")
-        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md"):
+        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md"):
             read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
             with self.subTest(readme=name):
                 self.assertEqual(3, len(read or ()), f"{name}'s coverage sentence reads as {read}")
@@ -472,8 +473,8 @@ class FrontPageTotalsTest(unittest.TestCase):
         # picture and 380 in the story two screens below it. A contributor adding a list folder edits
         # neither (docs/workflows/tv-list.md step 5 leaves the tables to a maintainer), so this only bites
         # the run that regenerates the card.
-        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md"}, set(self.pages),
-                             "README.md, README.de.md, README.nl.md and README.uk.md no longer show "
+        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md"}, set(self.pages),
+                             "README.md, README.de.md, README.nl.md, README.uk.md and README.tr.md no longer show "
                              "docs/card-halloween.jpg with an alt text")
         for name in sorted(self.pages):
             card = card_totals(self.pages[name])
@@ -493,7 +494,7 @@ class FrontPageTotalsTest(unittest.TestCase):
         # A reader answering () or None for every page would pass the rule above; each page carries two
         # numbers today, and README.md is the page this file's own example is quoted from.
         self.assertGreaterEqual(len(self.pages), 4, f"only {len(self.pages)} front pages show the card")
-        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md"):
+        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md"):
             read = catalogue_numbers((ROOT / name).read_text(encoding="utf-8"))
             with self.subTest(readme=name):
                 self.assertEqual(2, len(read or ()), f"{name}'s story sentence reads as {read}")
