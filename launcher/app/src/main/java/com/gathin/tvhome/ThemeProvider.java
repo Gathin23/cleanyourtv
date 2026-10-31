@@ -50,6 +50,11 @@ public class ThemeProvider extends ContentProvider {
             if (images != null) for (File f : images) if (f.delete()) n++;
             return n;
         }
+        // A theme reset deletes config.json here (often after a shell rm): drop the kept copy too, or Config's
+        // early-boot fallback would bring the removed theme back.
+        if (Config.FILE_NAME.equals(ThemeFiles.path(uri.getPathSegments()))) {
+            new File(getContext().getFilesDir(), Config.FILE_NAME).delete();
+        }
         try {
             return file(uri).delete() ? 1 : 0;
         } catch (FileNotFoundException e) {

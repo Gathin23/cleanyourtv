@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -644,7 +645,8 @@ final class Config {
         // current theme without clearing choices from an older launcher version.
         SharedPreferences choices = ctx.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE);
         // Unmounted storage looks like a theme reset; compare only once the file is readable.
-        if (mounted) syncThemeChoices(choices, dir, file);
+        // The kept copy stands in for a folder not readable yet; comparing then would reset the owner's choices.
+        if (mounted && !overlayFromCopy) syncThemeChoices(choices, dir, file);
         int chosenColumns = choices.getInt("columns", columns);
         if (chosenColumns >= 4 && chosenColumns <= 7) columns = chosenColumns;
         int chosenRows = choices.getInt(ROWS_BELOW_DOCK_KEY, rowsBelow);
@@ -773,6 +775,16 @@ final class Config {
         }
     }
 
+    /** How long after boot an unreadable config.json is taken for a folder that is not ready yet. */
+    static final long EARLY_BOOT_MS = 5 * 60 * 1000L;
+    /** The last load used the kept copy, not config.json itself; MainActivity reads again until it can. */
+    static volatile boolean overlayFromCopy;
+
+    /** Whether to read the kept copy because config.json could not be read this soon after boot. */
+    static boolean useCopyEarly(boolean fileRead, long uptimeMs, boolean copyExists) {
+        return !fileRead && copyExists && uptimeMs < EARLY_BOOT_MS;
+    }
+
     /** Reads and parses the overlay; any problem means "no overlay", never a crash on the home screen. */
     /**
      * The overlay, or before external storage is mounted, the copy kept from the last time it was read. Home can
@@ -781,8 +793,21 @@ final class Config {
      */
     private static JSONObject readOverlay(Context ctx, File file, boolean mounted) {
         File copy = new File(ctx.getFilesDir(), FILE_NAME);
-        if (!mounted) return read(copy);
+        overlayFromCopy = false;
+        if (!mounted) {
+            overlayFromCopy = true;
+            return read(copy);
+        }
         JSONObject json = read(file);
+        // Right after boot Android 11+ can report the card mounted while this app cannot read its folder yet (Xiaomi
+        // MiTV-MOEU0, Android 11: after a power cut Home came up with no wallpaper and no weather, and the copy was
+        // deleted here, so it stayed that way until the next change). Early in the boot keep the copy; MainActivity
+        // reads again until the file is readable.
+        if (useCopyEarly(json != null, SystemClock.elapsedRealtime(), copy.isFile())) {
+            overlayFromCopy = true;
+            Log.i(TAG, "config.json not readable yet, using the kept copy");
+            return read(copy);
+        }
         if (json == null) {
             copy.delete();
         } else {
@@ -793,6 +818,13 @@ final class Config {
             }
         }
         return json;
+    }
+
+    /** Whether the next load would take config.json itself: storage mounted and the file parses. No side effects. */
+    static boolean overlayReadable(Context ctx) {
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) return false;
+        File dir = dir(ctx);
+        return dir != null && read(new File(dir, FILE_NAME)) != null;
     }
 
     private static JSONObject read(File file) {

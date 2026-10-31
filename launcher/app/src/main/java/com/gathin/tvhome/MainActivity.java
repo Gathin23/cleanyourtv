@@ -435,6 +435,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
+        // Home started before config.json could be read (right after a power cut): read again until it can, then
+        // rebuild, so the wallpaper and the weather come back by themselves.
+        if (Config.overlayFromCopy) watchConfigReadable();
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         clockFormat = cfg.clockFormat;
         ClockFormat.apply(getWindow().getDecorView(), clockFormat);
@@ -1312,12 +1315,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** How long Home keeps checking for config.json after starting on the kept copy. */
+    private static final long CONFIG_WATCH_MS = 3 * 60 * 1000L;
+    private final Handler configWatch = new Handler(Looper.getMainLooper());
+
+    private void watchConfigReadable() {
+        final long until = SystemClock.elapsedRealtime() + CONFIG_WATCH_MS;
+        configWatch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (isFinishing() || isDestroyed()) return;
+                // Recreate only when the next load will take config.json: a partly written or invalid file would
+                // send it back to the copy and start another watcher, every five seconds.
+                if (Config.overlayReadable(MainActivity.this)) {
+                    recreate();
+                } else if (SystemClock.elapsedRealtime() < until) {
+                    configWatch.postDelayed(this, 5000);
+                }
+            }
+        }, 5000);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         RemoteKeys.release(this);
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
+        configWatch.removeCallbacksAndMessages(null);
         unregisterReceiver(packageReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
