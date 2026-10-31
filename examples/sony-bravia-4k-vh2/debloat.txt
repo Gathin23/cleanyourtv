@@ -136,6 +136,31 @@
 #    confirms the second unit's finding that Sony's firmware answers the buttons alone, on a BRAVIA_VH2_UC build.
 #  - The Play Store has a LEANBACK_LAUNCHER entry here, so it shows as a tile in the replacement launcher.
 
+# Seventh unit, Latin American firmware: XR-55X90JK, product BRAVIA_VH2_SA, Android 12/API 31, fingerprint
+# Sony/BRAVIA_VH2_SA/BRAVIA_VH2:12/STT2.230505.001.S136/682241 (the same build number as every unit above),
+# ro.adb.secure=1, on Ethernet with Wi-Fi off. Applied on 25 and 26 October 2026 in eight small batches with a
+# screenshot between them, with a custom launcher of the owner's own (not this repo's); lived with since,
+# reboots included, and nothing has broken (owner's report, 31 October). What this unit adds:
+#
+#  - Factory-disabled here: promos, seeds.iot, b2b.vendorprotocol, sonypicturescore, youtube.tvmusic,
+#    homekit and b2b.softap. Not installed: the India preloads (Amazon Music, Gaana, iTuner).
+#  - Disabled from the list: the tracker, telemetry, demo and preloaded groups, sonyselect,
+#    seeds.iot.remotestart, the Asia-Pacific agents (sonytab, autoinstalls, lastaccess, usercontext, vewd,
+#    helpguidecontents, livingfit), google.android.videos, setupwraith, and from the commented groups at the
+#    end b2b.hotelmode, b2b.rs232csupport, accessibility.tutorial, gestureapp, launcherx and
+#    launcherxcustomizer. Also com.sony.dtv.ecodashboard, which no list here disabled before (commented line
+#    at the end). DLNA, Sony's Media Player, AirPlay, Assistant, Chromecast built-in and firmware updates kept.
+#  - osat.music (Sony's music player) was disabled on 25 October and re-enabled by the owner on 31 October
+#    to use it, not because anything broke.
+#  - launcherx registers HOME at priority=2 here as on the UC and PA units, so it had to be disabled once the
+#    new launcher was Home. With it off, Sony's firmware answered the remote's Input, gear and app buttons
+#    without any key service, checked on the real remote.
+#  - The remote's Apps button (scan 580, ALL_APPS) then does nothing, as on the KD-65A8F; the key-layout
+#    overlay from ../../docs/devices/sony-bravia-4k-vh22-settings-key.md brings it back without an
+#    accessibility service. See ../../docs/devices/sony-bravia-4k-vh2-remote-keys.md for this remote.
+#  - The Audio button closes the tuner app (com.sony.dtv.tvx) while watching TV. That is a crash in TVX
+#    itself, not this list: it still crashed with b2b.hotelmode and b2b.rs232csupport enabled again. Same note.
+
 # ACR viewing tracker
 tv.samba.ssm                                   # Samba TV fingerprints what's on screen
 tv.samba.ssm.ui
@@ -183,7 +208,9 @@ com.sonypicturescore                           # Sony Pictures Core (factory-dis
 com.google.android.videos                      # Google TV Movies & TV
 
 # Asia-Pacific unit, one day only so far: disabled on the third unit four days after the rest, no
-# problem yet. Uncomment to try them.
+# problem yet. Uncomment to try them. On the seventh (Latin American) unit hotelmode, rs232csupport,
+# accessibility.tutorial and gestureapp were disabled on 25-26 October and lived with for at least five days; the DLNA
+# packages were kept there by choice.
 # com.sony.dtv.b2b.hotelmode                   # hotel/pro mode
 # com.sony.dtv.b2b.rs232csupport               # RS-232C control for hotel installs
 # com.sony.dtv.accessibility.tutorial
@@ -191,6 +218,7 @@ com.google.android.videos                      # Google TV Movies & TV
 # com.sonyericsson.dlna                        # DLNA media server/renderer; Chromecast is separate
 # com.sony.huey.dlna.module
 # com.sony.huey.dlna.renderersettings
+# com.sony.dtv.ecodashboard                    # Eco dashboard; seventh unit only, lived with six days
 
 # Google TV setup wizard: claims HOME and takes over once the stock launcher is disabled
 com.google.android.tungsten.setupwraith
