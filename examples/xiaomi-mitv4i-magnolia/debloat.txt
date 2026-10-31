@@ -39,7 +39,7 @@ com.google.android.leanbacklauncher.recommendations
 
 # Xiaomi background services & cleaners
 com.xiaomi.mitv.tvmanager
-com.mitv.milinkservice
+# com.mitv.milinkservice  # phone-remote service; shared lists keep it on, this set had it off
 com.mitv.tvlock
 com.xiaomo.tv.milegal
 com.xiaomi.android.tvsetup.partnercustomizer
