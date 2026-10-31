@@ -73,7 +73,8 @@ VERSION = 1
 # carry the same two patterns (tests/test_core_packages.py keeps the three in step).
 # The TV middleware too: com.cltv.mal (a Haier H50H5F looped with it off, #1578), com.mediatek.tis, tv.service, tv.agent.
 # Protect the exact SDK sandbox package (#2557); the reported boot-failure cause is unconfirmed.
-CORE_RE = re.compile(r"^(android|android\.ext\.(services|shared)|com\.android\.sdksandbox|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$")
+# And com.android.location.fused: a TCL 43S5400A (V325) boot-looped into recovery with only it off (#2803).
+CORE_RE = re.compile(r"^(android|android\.ext\.(services|shared)|com\.android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$")
 CORE_OK = re.compile(r"^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$")
 
 

@@ -106,6 +106,7 @@
 # com.tcl.settings                     # picture/sound settings
 # com.tcl.dashboard                    # "TCL HOME" tile; kept, only hidden in the launcher config
 # com.tcl.suspension                   # Quick Panel; kept, not tested without it
+# com.android.location.fused           # boot-looped a 43S5400A into recovery on V325 (#2803)
 # com.tcl.providers.config             # reported to drop Wi-Fi on the 65C725; not tried here
 # com.tcl.keyhelp                      # remote-key help/virtual keys; kept
 

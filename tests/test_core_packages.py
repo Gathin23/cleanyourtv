@@ -37,6 +37,8 @@ CORE = [
     "com.google.android.modulemetadata", "com.android.modulemetadata",
     "com.google.android.overlay.modules.ext.services", "com.google.android.overlay.modules.permissioncontroller",
     "com.android.sdksandbox",
+    # A TCL 43S5400A boot-looped into recovery with this one off (#2803).
+    "com.android.location.fused",
     "com.android.systemui", "com.android.shell", "com.android.phone",
     "com.android.settings", "com.android.tv.settings",
     "com.android.providers.settings", "com.android.providers.tv", "com.android.providers.media",
@@ -60,6 +62,8 @@ NOT_CORE = [
     "com.android.adservices.api", "com.android.ondevicepersonalization.services",
     "com.android.federatedcompute.services", "com.android.sdksandbox.overlay",
     "com.android.sdksandbox2", "com.example.sdksandbox",
+    # Only the exact fused location package is protected for #2803.
+    "com.android.location.fused.overlay", "com.google.android.location.fused",
 ]
 
 
