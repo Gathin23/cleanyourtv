@@ -16,22 +16,45 @@
 # and mediashell ends phone casting, and katniss and com.google.android.tv.remote.service carry the remote's
 # mic (#1441): comment those out to keep voice.
 
-# Group 1: telemetry, ACR and tracking
-com.google.android.partnersetup
-com.google.android.feedback
-com.android.tv.feedbackconsent
-com.android.adservices.api
-com.android.ondevicepersonalization.services
-com.android.federatedcompute.services
+# Telemetry, ACR and tracking
+com.google.android.partnersetup # Applies settings the manufacturer agreed with Google
+com.google.android.feedback # Collects and sends error reports and optional screenshots
+com.android.tv.feedbackconsent # Consent screen for automatic diagnostic logs and bug reports
+com.android.adservices.api # Core of Android's Privacy Sandbox ad system
+com.android.ondevicepersonalization.services # On-device personalised recommendations for apps
+com.android.federatedcompute.services # Federated Compute service
+tv.anoki.acr.anokiacroptin # Commercial ACR and ad telemetry client
 
-# Stock Launcher
+# Not used
+fusion.android.tv.demo # Demo mode
+
+# Stock launcher
 com.google.android.apps.tv.launcherx
+
+# TV setup wizard
 com.google.android.tungsten.setupwraith
 
+# Preloaded extras, optional
+com.mediatek.androidbox # Wi-Fi display sink
+com.google.android.apps.tv.dreamx # Google screensaver
 
 
-# Group 3: preloaded streaming apps, optional
-com.amazon.amazonvideo.livingroom
+# Unused on a television
+com.google.android.syncadapters.calendar # Google Calendar sync
+com.android.providers.calendar # Calendar storage
+com.android.providers.contacts # Contacts storage
+com.mediatek.android.leanbacklauncher.partnercustomizer # Partner customizer
+com.cltv.hybrid
+# Voice assistants. The remote's microphone button stops working.
+com.google.android.katniss # Voice search and Google Assistant
+
+# Google extras
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.marvin.talkback # Google's screen reader
+com.google.android.apps.mediashell # Cast
+com.google.android.tts # Text-to-speech
+com.google.android.tv.remote.service # Control the TV from a phone
 com.mediatek.androidbox  #wifi display sink
 #com.google.android.apps.tv.dreamx #salvapantallas de google
 
