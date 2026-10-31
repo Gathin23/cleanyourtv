@@ -1,0 +1,6 @@
+{
+  "tv": "Hotack D08-series projector (Allwinner, reports ADT-3; Magcubic HY300/HY320 family)",
+  "os": "Android 11",
+  "brand": "HOTACK",
+  "notes": "Hotack event upload and the Allwinner logger off, plus the factory test suites (disabled, never launched), the OEM store and the printing/cell-broadcast bloat; projector settings (`com.htc.htcsettings`, also the saved Wi-Fi's owner), power dialog, inputs, keyboard and FallbackHome kept; stock HTC launcher disabled for the handover; needs `app_library` (Netflix and many IPTV/OTT apps are LAUNCHER-only here); Inputs pill opens Allwinner's source picker with `HW2`-`HW4` hidden (one physical HDMI port); same ADT-3 family as the Beem 470, HY300 Pro and HY320 Mini folders"
+}

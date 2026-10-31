@@ -1,0 +1,10 @@
+{
+  "app_library": true,
+  "live_tv_package": "com.softwinner.awlivetv",
+  "source_panel_service": "com.softwinner.awsource/com.softwinner.awsource.MainActivity",
+  "input_sources": [
+    "HW2=-",
+    "HW3=-",
+    "HW4=-"
+  ]
+}
