@@ -33,6 +33,7 @@ $apk = Join-Path $here 'app\build\outputs\apk\release\app-release.apk'
 & $py -I (Join-Path $tools 'b64push.py') $apk /data/local/tmp/newsdream.apk | Out-Null
 if ($LASTEXITCODE) { throw 'sending the APK failed' }
 Tv 'pm install -r /data/local/tmp/newsdream.apk; rm -f /data/local/tmp/newsdream.apk'
-# TCL's TclAppBoot blocks the app's provider until it may auto-start; elsewhere the op doesn't exist.
-Tv "appops set $pkg APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" | Out-Null
+# TCL's TclAppBoot blocks the app's provider until it may auto-start (AUTO_START on G08 builds, APP_AUTO_START
+# on G10); elsewhere the op doesn't exist. write-settings saves it before the next reboot.
+Tv "appops set $pkg AUTO_START allow 2>/dev/null; appops set $pkg APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; true" | Out-Null
 Write-Host "Installed. Now: addons\news-screensaver\setup.ps1 -TvHost $TvHost"
