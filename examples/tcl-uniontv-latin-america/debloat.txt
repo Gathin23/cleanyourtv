@@ -27,6 +27,16 @@
 # one step per press instead of ramping (the key-repeat loss in docs/devices/tcl-55p71b-g09-key-repeat.md,
 # seen here too). The owner chose the volume ramp and pressing Home once after power-on, so the helper is off.
 #
+# Also confirmed 2026-10-31 on a TCL UnionTV with persist.tcl.client_type TCL-CA-RT41KA-S1 and a later build
+# of the same release (PPR2.180905.006.A1, builder.20210125), Wi-Fi only. Applied in five batches with
+# screenshots between them. Both TVINPUT_ALLOW lines below disabled cleanly on this unit, and after two
+# reboots every disabled package stayed disabled, com.tcl.usercenter included. This unit has no
+# com.tcl.tvpassthrough or com.tcl.sourcemananger; the Input key, HDMI switching, Settings, the app keys and
+# the Volume Up ramp all worked on the real remote. It opens com.tcl.tv at every boot too, and the owner kept
+# that (no HOME_KEY_SERVICE). launcher/ installed, Home confirmed with mResumedActivity, Inputs menu (HDMI 1/2,
+# AV, Live TV) and D-pad edges checked. Tested the same day. It adds com.tcl.dashboard and
+# com.tcl.tv.tclhome_passive below, and two off-by-choice apps, commented out.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -99,6 +109,8 @@ com.tcl.partnercustomizer               # TCL promo rows / T-key content
 com.tcl.partnercustomizer.resource      # 32S6500S unit only
 com.google.android.leanbacklauncher.partnerwidget      # 32S6500S unit only
 com.google.android.leanbacklauncher.partnercustomizer  # 32S6500S unit only
+com.tcl.dashboard                       # "TCL HOME" tile: message box, gift box and promos; RT41KA unit only
+com.tcl.tv.tclhome_passive              # pushes TCL content to the home screen at boot; RT41KA unit only
 android.autoinstalls.config.tcl.device  # Play auto-installs of partner apps; TVINPUT_ALLOW=1 may be needed
 com.tcl.esticker                        # retail demo stickers
 com.tcl.appmarket2                      # TCL app store (Google Play Store stays)
@@ -127,6 +139,8 @@ tv.twitch.android.app
 # com.spotify.tv.android
 # com.google.android.apps.mediashell      # Chromecast receiver
 # com.tcl.MultiScreenInteraction_TV       # TCL's Miracast-like screen mirroring/DLNA app
+# com.ionitech.airscreen                  # AirScreen (AirPlay/Miracast receiver), RT41KA unit
+# com.azteca.live                         # Azteca Live, RT41KA unit
 
 # Second pass, applied the same day. The launcher's Clock screensaver replaces Ambient Mode:
 #   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
