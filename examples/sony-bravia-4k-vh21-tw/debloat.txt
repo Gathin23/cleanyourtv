@@ -16,8 +16,8 @@
 # Keep the com.sony.dtv.tvinput.* services, tvx, tvapi, sonysystemservice, sonyvendorservice, imeproxy,
 # settingsprovider, systemupdate/update, braviasync* and all com.mediatek.*: they drive HDMI, the input screen,
 # Bravia Sync, updates and the remote.
-# Kept by owner's choice: Netflix, YouTube, Apple TV, AirPlay/HomeKit, Google Assistant, firmware updates, DLNA
-# and Sony IP control (com.sony.dtv.webapi.core).
+# Kept by owner's choice: Netflix, YouTube, Apple TV, AirPlay/HomeKit, Google Assistant, firmware updates, DLNA,
+# Sony IP control (com.sony.dtv.webapi.core) and UEI QuickSet (see its line below).
 # Already disabled at the factory: com.sony.dtv.tvinput.tuner, com.sony.dtv.seeds.iot, com.sony.dtv.smarthelp,
 # com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap. Not in this list, so restore.sh leaves them alone.
 #
@@ -28,7 +28,7 @@
 # (Assistant), the YouTube and Netflix buttons and the Settings (gear) button all work, so no key service was
 # enabled. (The EU list found KEYCODE_SETTINGS dead without launcherx; on this set's remote it still opens.)
 # Reboot-checked: everything below stayed disabled, and the TV boots to the new launcher (no Live TV at power-on).
-# Applied 26 Oct 2026 and checked the same day; not yet lived with for days. If something breaks,
+# Applied 26 Oct 2026; QuickSet re-enabled on 27 Oct (see its line). If something breaks,
 # `pm enable <package>` and please report it.
 
 # ACR viewing tracker
@@ -60,7 +60,9 @@ com.vewd.core.integration.dia     # Vewd
 com.vewd.core.service
 
 # always-running services, off to free memory
-com.uei.quicksetsdk.sony          # UEI QuickSet: IR control of cable boxes/soundbars; HDMI-CEC unaffected
+# com.uei.quicksetsdk.sony        # UEI QuickSet: kept. The TV remote drives a set-top box (Chunghwa MOD) over
+#                                 # IR through it; disabled on 26 Oct, the box stopped answering the remote, so
+#                                 # re-enabled on 27 Oct. Reboot after pm enable: irbservice binds it only at boot.
 com.google.android.tts            # Google text-to-speech: TalkBack and read-aloud stop working
 com.sony.dtv.gestureapp           # BRAVIA CAM gestures (no camera attached)
 
