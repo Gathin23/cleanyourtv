@@ -1,0 +1,52 @@
+# Sony BRAVIA XR-85X90L (2023, device BRAVIA_VH22, MediaTek MT5835), China firmware
+# Google TV 12 (API 31), build BRAVIA_VH22_M_CN-user 12 STT2.230505.001.S136 682241
+# Applied on 2026-10-31 in three batches with a screenshot check after each, then reboot-checked:
+# every package below stayed disabled and Home survived the reboot. Not lived with for days yet.
+#
+# China firmware notes, for anyone on BRAVIA_VH22_M_CN:
+# - No GMS and no Google TV launcher on board: no launcherx, no Samba TV, no Sony Select/promos.
+#   Home ships as com.dangbei.TVHomeLauncher (Dangbei launcher, the CN stock home), and the set
+#   preloads CN streaming apps (Tencent/ Mango/ Migu/ CCTV/ NewTV/ CIBN/ GITV/ bilibili/ NetEase
+#   Cloud Music/ JD services) plus Dangbei Market as the app store.
+# - com.oversea.aslauncher on this set IS the Emotn UI launcher (v1.0.9.0, factory-preloaded),
+#   not adware. The owner chose it as the new Home, so this list hands Home to Emotn UI instead
+#   of the repo launcher: Dangbei goes off, Emotn stays on.
+# - `cmd package set-home-activity com.oversea.aslauncher/...` prints Success and changes nothing
+#   on this firmware; disabling the Dangbei home is what actually moves HOME. With Dangbei off,
+#   HOME falls through to Emotn UI, confirmed by dumpsys after reboot.
+# - setupwraith is present but owns no Wi-Fi networks on a wired set (cname=android.uid.system),
+#   and with no Google launcher to replace, it was left enabled.
+# - Ethernet on the built-in port, so no USB power/ADB caveats applied.
+#
+# Kept by owner's choice: Tencent Video TV (xiaodianshi.tv.yst + ktcp.video + ktcp.tvvideo),
+# Mango TV (hunantv.market), Migu Video (miguvideo.migutv), CCTV Video (cctv.tv), HPPlay screen
+# cast (hpplay.happyplay.aw), KTV app (origjoy.local.ktv), NetEase Cloud Music TV
+# (netease.cloudmusic.tv), bilibili TV (bilibili.tv), Dangbei Market (dangbeimarket +
+# oversea appstore), Sony voicesearch, Sony update/systemupdate/otaurlprovisioning,
+# file manager (tv.filemanager).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-xr-85x90l-cn/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xr-85x90l-cn/debloat.txt com.dangbei.TVHomeLauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+
+# Batch 1: Sony telemetry, analytics, demo mode
+com.sonyericsson.idd.agent        # Sony IDD usage-data agent
+com.sony.dtv.usercontext          # user context providers
+com.sony.dtv.da.service           # remote-support session service
+com.qterics.da.product            # Qterics device agent
+com.sony.dtv.sonybugreportsys     # bug report collector
+com.sony.dtv.demosupport          # retail demo mode
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# Batch 2: CN content apps the owner doesn't use (kept: Tencent, Mango, Migu, CCTV Video - see header)
+com.jd.smartservicetwo            # JD smart services
+com.newtv.login                   # NewTV (CCTV future TV)
+com.newtv.cboxtv
+com.cibn.tv                       # CIBN
+com.gitvdemo.video                # GITV
+
+# Batch 3: the CN stock launcher, AFTER another launcher (here Emotn UI, already on the set)
+# answers HOME. With both Dangbei entries off, HOME falls to com.oversea.aslauncher.
+com.dangbei.TVHomeLauncher        # CN stock home (Dangbei)
+com.dangbei.lerad.videoposter     # Dangbei home's poster component
