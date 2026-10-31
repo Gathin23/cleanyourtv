@@ -1465,8 +1465,12 @@ MGA3200 that cleared the errors:
 tools/tv.py 'settings put global private_dns_mode opportunistic'
 ```
 
-The other failure mode reads differently: when the TV itself says "No internet", the resolver is down
-or unreachable, and the same command restores it. What the optional resolver does, and what it costs,
+The other failure mode reads differently: when the TV itself says "No internet", either the resolver is
+down or unreachable, or — on a streaming box with no battery-backed clock after a mains power loss (or
+with `auto_time` off) — the clock booted at the firmware build date (`Sat Aug 17 2024` on a Xiaomi TV
+Box S 2nd Gen, `MiTV-AFKR0`, `jaws`, Google TV 11, `RTT0.211222.001.772`), so DNS-over-TLS rejects the
+resolver's certificate as not yet valid while NTP cannot resolve its time server to fix the clock.
+Switching back to `opportunistic` and ensuring `auto_time` is `1` breaks the deadlock (`settings put global auto_time 1` after the command above). What the optional resolver does, and what it costs,
 is in the README's "Can it block ads inside apps too?".
 
 When you report how an app does on your TV, say how far it got, because each step can fail on its
