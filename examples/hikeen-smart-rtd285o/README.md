@@ -2,7 +2,8 @@
 
 A white-label smart TV: the set itself reports only "Smart" / "SmartTV"; "Hikeen" is the OEM whose
 packages (`com.hikeen.*`, `cn.zeasn.overseas.tv.hikeen.orion`) the firmware carries. Zeasn's "orion"
-launcher is the stock Home. The debloat list disables 26 packages.
+launcher is the stock Home. The debloat list disables 12 packages; 14 more - this owner's preloaded
+apps, casting and voice - are commented out for a reader to choose.
 
 ## Quirks of this board
 
