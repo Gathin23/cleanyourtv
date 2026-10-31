@@ -1,0 +1,17 @@
+# disabled packages captured from Chromecast on 2026-11-01; tools/profile.py reads this file
+com.android.printspooler
+com.android.tv.feedbackconsent
+com.google.android.adservices.api
+com.google.android.apps.education.cast2class
+com.google.android.apps.tv.dreamx
+com.google.android.apps.tv.launcherx
+com.google.android.apps.tv.netoscope
+com.google.android.backdrop
+com.google.android.ext.adservices.api
+com.google.android.federatedcompute
+com.google.android.feedback
+com.google.android.marvin.talkback
+com.google.android.ondevicepersonalization.services
+com.google.android.tungsten.setupwraith
+com.google.android.tv.remotecontrol.logging
+com.google.android.tvrecommendations
