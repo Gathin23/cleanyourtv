@@ -43,13 +43,14 @@ and the port is closed. Plan the work in one sitting, or expect to walk to the p
    a phone hotspot, not the network in use:
 
    ```bash
-   TV_HOST=<projector-ip> tools/tv.py "dumpsys wifi | grep -E '^(\*? ?ID: [0-9])'"
+   TV_HOST=<projector-ip> tools/tv.py "dumpsys wifi | grep -oE 'Currently Connected: [a-z]*|cname=[^ ]*'"
    ```
 
-   The entry marked `Currently Connected: true` is the one that matters. If its `cname` is
-   `android.uid.system`, disabling setupwraith is safe and `FORCE_SETUPWRAITH=1` is the right
-   override. If it is `com.google.android.tungsten.setupwraith`, forget the network and join it again
-   on the projector first.
+   Each saved network prints its `Currently Connected:` flag, then its owner. The `cname=` right
+   after `Currently Connected: true` is the one that matters. If it is `android.uid.system`,
+   disabling setupwraith is safe and `FORCE_SETUPWRAITH=1` is the right override. If it is
+   `com.google.android.tungsten.setupwraith`, forget the network and join it again on the projector
+   first.
 
 2. Run:
 
@@ -61,6 +62,18 @@ TV_HOST=<projector-ip> tools/theme.sh examples/xgimi-mogo-4
 
 `HOME_KEY_SERVICE=1` is not optional on this projector — see below. Pass it on every reinstall;
 Android drops the service each time.
+
+## Undo
+
+```bash
+TV_HOST=<projector-ip> tools/restore.sh examples/xgimi-mogo-4/debloat.txt com.google.android.apps.tv.launcherx
+TV_HOST=<projector-ip> tools/tv.py "settings put secure enabled_accessibility_services ''; settings put secure accessibility_enabled 0"
+```
+
+The second line switches the helper off. While it is bound, `stock_home_redirect` keeps sending
+launcherx's home screen back to the new launcher, so `restore.sh` alone does not give Home back.
+It switches off every accessibility service, not only the helper: if another one was on before
+the install, turn it back on under Accessibility in the projector's settings.
 
 ## The stock launcher does not stay disabled
 

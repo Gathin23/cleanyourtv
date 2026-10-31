@@ -3,6 +3,8 @@
 #
 # Apply:   TV_HOST=<projector ip> tools/disable.sh examples/xgimi-mogo-4/debloat.txt
 # Undo:    TV_HOST=<projector ip> tools/restore.sh examples/xgimi-mogo-4/debloat.txt com.google.android.apps.tv.launcherx
+#          then switch HomeKeyService off (README.md, Undo): while it is bound, stock_home_redirect
+#          keeps sending Home back to the new launcher.
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Tested for one session (a few hours) on 2026-10-24, including one reboot, not the several days
