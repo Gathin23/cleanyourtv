@@ -13,7 +13,7 @@
 # android.media.tv.TvInputService at all.
 #
 # This box does not carry much ARRIS/CommScope bloat once content apps are left alone: the default
-# list below is 13 packages - telemetry, two stub apps with no logic at all, and five Google TV
+# list below is 12 packages - telemetry, two stub apps with no logic at all, and five Google TV
 # services most owners would not miss (Play Games, Play Movies & TV, YouTube Music, Android TV's
 # own feedback reporter, and the stock recommendation-row service, which this box's own launcher
 # doesn't even read). Each of those five is still a real, separate thing, not telemetry; comment
@@ -33,17 +33,18 @@
 # genuinely doesn't use one. Assistant voice search, Chromecast casting and the phone-as-remote app
 # are NOT in that block: unlike UPnP or Play Auto Install, those are mainstream features most owners
 # would reach for and miss immediately, so they're not offered at all - see "Kept deliberately" at
-# the end. Six other ARRIS/CommScope packages this list also looked at are not in this file at all,
-# in any form either: each declares a real feature (factory reset, diagnostics, find-my-remote,
-# network setup, remote-key/power-button/HDMI-CEC handling), and a debloat list is for bloat - see
-# "Kept deliberately" for what each one does and why it's excluded, not just held back.
+# the end. Seven other ARRIS/CommScope packages this list also looked at are not in this file at
+# all, in any form either: six declare a real feature (factory reset, diagnostics, find-my-remote,
+# network setup, remote-key/power-button/HDMI-CEC handling), and the seventh (com.arris.oemdata)
+# looks like telemetry but breaks another package if disabled - a debloat list is for bloat, and
+# none of these seven qualify - see "Kept deliberately" for what each one does and why it's
+# excluded, not just held back.
 
 # Bell / ARRIS / CommScope telemetry and reporting
 com.commscope.report.bell
 com.commscope.report.companion.bell
 com.commscope.notification.bell.merlin
 com.arris.notificationlistener.bell
-com.arris.oemdata
 com.arris.bugreport
 
 # ARRIS stub packages with no logic at all: no activities, services or receivers of their own,
@@ -126,6 +127,16 @@ com.google.android.tvrecommendations    # populates the stock Google TV home scr
 # com.google.android.youtube.tv           # YouTube
 
 # Kept deliberately, not in this file at all - needed by most people, not offered even as opt-in:
+# - com.arris.oemdata: looked like plain telemetry from its manifest (no components, no special
+#   permissions) and was in this list through several drafts, but disabling it breaks
+#   com.arris.remoteservice. remoteservice's config loader (VIP7802wBell.loadConfig) queries
+#   oemdata's content provider for device config; with oemdata disabled the provider lookup fails
+#   ("Failed to find provider info for com.arris.oemdata.provider"), remoteservice's App.onCreate
+#   throws a NullPointerException, and because remoteservice is PERSISTENT, Android restarts it
+#   immediately, crash loop, confirmed reproducible by toggling oemdata off and back on twice. The
+#   loop itself ran a CPU core at a sustained ~80% in logd alone from the crash-trace volume, which
+#   is probably why playback felt sluggish in anything running at the time. Re-enabling oemdata
+#   stopped it immediately, confirmed both ways.
 # - com.google.android.katniss (Assistant voice search from the remote's mic button),
 #   com.google.android.apps.mediashell (Chromecast casting from a phone/laptop) and
 #   com.google.android.tv.remote.service + .rro (lets a phone act as a second remote/keyboard):
@@ -155,7 +166,10 @@ com.google.android.tvrecommendations    # populates the stock Google TV home scr
 #   out-of-box network/Wi-Fi setup wizard), com.commscope.network.bell.merlin (a network-diagnostics
 #   screen), com.commscope.nexusservice (RECEIVE_KEY_PRESS, RECEIVE_POWER_BUTTON_OVERRIDE,
 #   SWITCH_DISPLAY_MODES, HDMI_CEC), com.arris.customizer (the Netflix remote key, reboot/recovery
-#   permissions) and com.arris.remoteservice (most likely the Bluetooth-remote pairing helper): an
+#   permissions) and com.arris.remoteservice (confirmed from decompiled source: its Application
+#   class, VIP7802wBell, reads the IR model from com.arris.oemdata on every start and picks a
+#   Bluetooth pairing trigger - IR-assisted or advertising-only - accordingly; it is the Bluetooth
+#   remote's pairing/unpairing/finding service, not the always-on key routing): an
 #   earlier draft of this list offered all eight as opt-in. That was also wrong - a debloat list is
 #   for bloat, and none of these is bloat: they're normal device functionality (factory reset,
 #   diagnostics, finding a lost remote, Wi-Fi setup, network troubleshooting, remote/power/HDMI-CEC

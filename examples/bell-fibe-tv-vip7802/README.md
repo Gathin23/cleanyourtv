@@ -8,9 +8,9 @@ The launcher (`com.custom.tvlauncher`) and the remote's button and Netflix-key r
 `pm query-services --components -a android.media.tv.TvInputService` names nothing on this box. Fibe TV
 content plays through `ca.bell.chiclet.fibehelper`, kept enabled - see "Not disabled" below.
 
-## What this list actually removes: 13 packages, no apps
+## What this list actually removes: 12 packages, no apps
 
-`debloat.txt` disables ARRIS/CommScope telemetry and reporting (6 packages, the ones registering
+`debloat.txt` disables ARRIS/CommScope telemetry and reporting (5 packages, the ones registering
 `BOOT_COMPLETED` or reporting usage back to CommScope), two packages confirmed to be dead stubs
 (`com.arris.android.stb.fti`, which ships as `SetupCustomizerRecoveryStub`, a stub rather than the
 real first-time-install app; and `com.arris.quickactions`, whose name suggests a quick-actions menu
@@ -34,15 +34,54 @@ This box genuinely does not carry much ARRIS/CommScope bloat beyond the telemetr
 stubs. Compared with this repo's Fire TV lists, which run 150-250+ lines because Amazon ships
 metrics, crashmanager, logmanager, wirelessmetrics, telemetry.emitter and a dozen more standalone
 telemetry packages plus sponsored-content services on the launcher itself, this box's confirmed
-telemetry footprint is six packages, and there's no sponsored row visible on this launcher to block
+telemetry footprint is five packages, and there's no sponsored row visible on this launcher to block
 with DNS either.
+
+## A dependency that was missed: `com.arris.oemdata` breaks `com.arris.remoteservice`
+
+Earlier drafts had `com.arris.oemdata` in the default-disabled telemetry block. It looked like plain
+telemetry from its manifest alone (no components of its own, no unusual permissions), so it stayed
+there through several drafts of this list. Actually running SmartTube (an unrelated third-party
+YouTube client, installed separately for testing) on a debloated box surfaced the problem: playback
+felt sluggish, and `top` showed `logd` pinned at ~80% of one CPU core with the system otherwise idle.
+
+The cause, confirmed from both APKs' decompiled source (`jadx`, pulled straight off this box):
+`com.arris.oemdata` is a thin bridge to a vendor HIDL service (`vendor.arris.oemdata@1.0`), exposing
+six small hardware facts through a content provider: IR receiver model, LED state, network, SoC,
+thermal and HDMI data. `com.arris.remoteservice` (a `PERSISTENT` package, kept enabled - see "Kept
+deliberately" below) reads exactly one of those on startup: the IR receiver model number, from
+`content://com.arris.oemdata.provider/ir`, to decide which Bluetooth pairing strategy the physical
+remote should use (`VIP7802wBell.loadConfig`) - IR-assisted pairing if an IR receiver model is
+present, pure Bluetooth-advertising pairing if not. With `oemdata` disabled that query returns
+`null` instead of a `Cursor`, the very next line (`cursorQuery.moveToFirst()`) throws a
+`NullPointerException` with no null-check, and because `remoteservice` is `PERSISTENT`, Android
+restarts it immediately - a fast crash loop that never stops on its own, logging a full stack trace
+and a DropBox entry on every cycle. That log volume is what was pinning `logd`'s CPU, and the crash
+loop itself was competing for CPU with everything else running, SmartTube (an unrelated third-party
+YouTube client installed for separate testing) included - that's what first surfaced the sluggish
+playback that led to this investigation. The practical cost, beyond the CPU: if the remote ever
+needs to re-pair (a battery change, a factory reset) while `oemdata` is disabled, `remoteservice`
+can't tell which pairing method to use for it.
+
+Confirmed in both directions, twice each: disabling `oemdata` reproduced the crash loop every time
+(300+ matching stack-trace lines within seconds of toggling it off); re-enabling it stopped the loop
+immediately, confirmed by `logcat` returning to normal playback-related lines and `top` showing the
+CPU core's idle time recover from roughly 88% to over 300% (of 400% across four cores) within
+seconds. `com.arris.oemdata` has been removed from this list entirely - not disabled, not opt-in -
+and is now in "Kept deliberately" below with this evidence. If you've already applied an earlier
+version of this list and things feel sluggish, run
+`TV_HOST=<box ip> tools/venv/bin/python -I tools/tv.py "pm enable --user 0 com.arris.oemdata"` and
+check `logcat` for `com.arris.remoteservice` crash traces to confirm before and after.
 
 ## What a reboot actually showed
 
 Earlier drafts of this README said the content apps and the Google TV services "checked once, not
-over sustained use" and left it there. Two actual reboot cycles (enable the 13, reboot, measure;
-disable the 13, reboot, measure again) turned up real, specific behaviour worth recording instead of
-a general caveat:
+over sustained use" and left it there. Two actual reboot cycles (enable the 13 packages this list
+held at the time, including `com.arris.oemdata`, reboot, measure; disable them, reboot, measure
+again) turned up real, specific behaviour worth recording instead of a general caveat. `oemdata` has
+since been removed from this list entirely (see above); the measurements below predate that fix and
+are reported as taken, not adjusted, since the six processes that follow do not include `oemdata`
+itself:
 
 - **`com.google.android.tvrecommendations` re-enables itself at every boot on this firmware.**
   Disabled with `pm disable-user`, confirmed `enabled=3` (disabled) right before each reboot,
@@ -60,14 +99,16 @@ a general caveat:
   processes from both. They were confirmed gone only after a further full reboot. If you apply this
   list and immediately check `ps -A`, don't be surprised to see these three for one more boot cycle;
   a second reboot clears them.
-- **On a freshly booted box with all 13 re-enabled**, six processes started automatically without
-  anyone opening anything: the three `PERSISTENT` packages above, plus
-  `com.google.android.tvrecommendations`, `com.google.android.videos` and
-  `com.google.android.play.games`, together holding about 103 MB PSS (9+4+11+18+34+27 MB). The other
-  seven of the 13 (the remaining telemetry/stub packages, YouTube Music, feedback) did not start on
-  their own; they only run if something invokes them. Disabling all 13 removes that ~103 MB and the
-  CPU/boot time of six fewer processes starting, modest on a 3.9 GB box but real, not a theoretical
-  savings.
+- **On a freshly booted box with all 13 (the list's membership at the time) re-enabled**, six
+  processes started automatically without anyone opening anything: `com.commscope.report.bell`,
+  `com.commscope.notification.bell.merlin` and `com.arris.quickactions` (the three `PERSISTENT`
+  packages above), plus `com.google.android.tvrecommendations`, `com.google.android.videos` and
+  `com.google.android.play.games`, together holding about 103 MB PSS (9+4+11+18+34+27 MB). None of
+  these six is `com.arris.oemdata`, so this figure is unaffected by its later removal from the list.
+  The remaining packages (the rest of the telemetry/stub set, YouTube Music, feedback) did not start
+  on their own; they only run if something invokes them. Disabling the 12 packages in the current
+  list removes that ~103 MB and the CPU/boot time of six fewer processes starting, modest on a 3.9 GB
+  box but real, not a theoretical savings.
 
 ## Not disabled by default, but a real opt-in line each: preloaded content apps
 
@@ -125,14 +166,16 @@ or after a factory reset, this is what silently re-pushes Bell's chosen app set 
 it already did its one job if your box is past first setup, harmless to disable now, but re-enable
 it first if you ever want the Bell app set restored automatically after a reset).
 
-## Not in this file at all: six ARRIS/CommScope packages that aren't bloat
+## Not in this file at all: seven ARRIS/CommScope packages that aren't bloat
 
 An earlier draft of this list offered `com.arris.gtvs`, `com.arris.chmframework`,
 `com.commscope.rcu.bell`, `com.commscope.android.fti.bell.merlin`,
-`com.commscope.network.bell.merlin` and `com.commscope.nexusservice` as opt-in, the same tier as the
-Google TV features below. That was also wrong: `debloat.txt` is a bloat list, and none of these six
-is bloat by any definition - each backs a normal device function, the same category CONTRIBUTING.md
-tells contributors to leave out entirely for AOSP's own core packages:
+`com.commscope.network.bell.merlin`, `com.commscope.nexusservice` and `com.arris.oemdata` as opt-in
+or (for `oemdata`) disabled by default. That was wrong on both counts: `debloat.txt` is a bloat
+list, and none of these seven is bloat by any definition - six back a normal device function, and
+the seventh (`oemdata`) looked like telemetry but turned out to be a real dependency another kept
+package needs (see above). The same category CONTRIBUTING.md tells contributors to leave out
+entirely for AOSP's own core packages:
 
 | Package | What it does |
 |---|---|
@@ -142,17 +185,20 @@ tells contributors to leave out entirely for AOSP's own core packages:
 | `com.commscope.android.fti.bell.merlin` | The box's out-of-box network/Wi-Fi setup wizard (`NetworkSetupActivity`, `WifiHandoffWaitActivity`, `UpgradeActivity`) - the Bell/ARRIS equivalent of Google TV's own setupwraith, below. |
 | `com.commscope.network.bell.merlin` | Has a live `MainActivity`, not a dormant service - likely a network-diagnostics screen Bell support could ask you to open. |
 | `com.commscope.nexusservice` | Requests `RECEIVE_KEY_PRESS`, `RECEIVE_POWER_BUTTON_OVERRIDE`, `SWITCH_DISPLAY_MODES` and `HDMI_CEC`: remote-key, power-button and display-mode handling. |
+| `com.arris.oemdata` | Bridges six small hardware facts (IR receiver model, LED, network, SoC, thermal, HDMI) from a vendor HIDL service to a content provider. `com.arris.remoteservice` reads the IR model to pick the physical remote's Bluetooth pairing strategy; disabled, that query crashes it (see "A dependency that was missed" above). |
 
 `com.arris.customizer` (requests `com.netflix.ninja.permission.NETFLIX_KEY` alongside its own
 reboot/recovery permissions) and `com.arris.remoteservice` (ships `ArrisRemoteBroadcastReceiver` and
-`ArrisRemoteContentProvider`, most likely the Bluetooth-remote pairing helper rather than the
-always-on key routing, which is `com.arris.globalkeyactions` and stays enabled) are excluded for the
+`ArrisRemoteContentProvider`, confirmed from decompiled source: its Application class
+(`VIP7802wBell`) reads the IR receiver model from `com.arris.oemdata` on every start and picks a
+Bluetooth pairing trigger accordingly, so it is the Bluetooth remote's pairing/unpairing/finding
+service, not the always-on key routing, which is `com.arris.globalkeyactions` and stays enabled) are excluded for the
 same reason: both touch the remote, and neither is telemetry or a content app.
 
 This section exists so a reviewer or a future contributor can see what was looked at and ruled out,
-without re-running the same checks. None of the eight showed anything resembling telemetry or RAM
-pressure; they're absent because a debloat list isn't the place to offer them, not because they're
-risky.
+without re-running the same checks. Six of the seven showed nothing resembling telemetry or RAM
+pressure; the seventh showed something worse than either - a hard dependency from another kept
+package.
 
 ## Held back: the firmware updater
 
@@ -184,9 +230,9 @@ you don't use. Disabling `com.netflix.ninja` does not touch `com.arris.globalkey
 remote's dedicated Netflix button, either way - that package stays enabled regardless, since it also
 handles ordinary button routing.
 
-The box this was tested on runs the 13-package default list plus the opt-in ARRIS lines, with
+The box this was tested on runs the 12-package default list plus the opt-in ARRIS lines, with
 Netflix, Prime Video and YouTube all kept - that is one owner's own choice, not the recommended
-default. Most people should stop at the 13 and decide the rest line by line.
+default. Most people should stop at the 12 and decide the rest line by line.
 
 ## Not offered at all: the setup wizard (`com.google.android.tungsten.setupwraith`)
 
@@ -207,22 +253,26 @@ Dead weight once setup is done, real risk for no lasting gain - not worth offeri
 
 ## Status
 
-Applied and reboot-checked: across two full reboot cycles (13 enabled then rebooted; 13 disabled
-then rebooted again), `pm list packages -d` held 12 of the 13 - `com.google.android.tvrecommendations`
-re-enables itself at every boot on this firmware, see "What a reboot actually showed" above - Settings
-opened from the launcher (`com.android.tv.settings/.MainSettings`, still the only app answering
-`android.settings.SETTINGS`), and `com.custom.tvlauncher` remained the sole app answering HOME
-throughout. `com.google.android.tungsten.setupwraith` happened to already be disabled on the tester's
-box from earlier, unrelated work, with the saved Wi-Fi network already forgotten and rejoined
-beforehand; nothing broke, but see above for why this isn't offered as something to do on purpose.
-Provisional beyond these reboot cycles: nobody has lived with this list day to day yet; please add a
-note here if you have.
+Applied and reboot-checked: across two full reboot cycles with the list at its 13-package membership
+at the time (13 enabled then rebooted; 13 disabled then rebooted again), `pm list packages -d` held
+12 of the 13 - `com.google.android.tvrecommendations` re-enables itself at every boot on this
+firmware, see "What a reboot actually showed" above. One of those 13, `com.arris.oemdata`, was later
+found to crash-loop `com.arris.remoteservice` when disabled (see above) and has been removed from
+the list entirely; the current list is 12 packages. Settings opened from the launcher
+(`com.android.tv.settings/.MainSettings`, still the only app answering `android.settings.SETTINGS`),
+and `com.custom.tvlauncher` remained the sole app answering HOME throughout, including while
+`remoteservice` was crash-looping. `com.google.android.tungsten.setupwraith` happened to already be
+disabled on the tester's box from earlier, unrelated work, with the saved Wi-Fi network already
+forgotten and rejoined beforehand; nothing broke, but see above for why this isn't offered as
+something to do on purpose. Provisional beyond these reboot cycles: nobody has lived with this list
+day to day yet; please add a note here if you have.
 
 ## Kept deliberately, not offered even as opt-in
 
 | Package | Why |
 |---|---|
 | `com.arris.globalkeyactions` | Requests `ca.bell.fiberemote.permission.BUTTON` and `com.netflix.ninja.permission.NETFLIX_KEY`: the Bell remote's button and Netflix-key routing. |
+| `com.arris.oemdata` | `com.arris.remoteservice` reads the IR receiver model through this provider to pick the remote's Bluetooth pairing strategy; see "A dependency that was missed" above. |
 | `com.broadcom.nrdphelper` | Requests `android.permission.HDMI_CEC`. |
 | `com.custom.tvlauncher` | The only package that answers HOME on this box. |
 | `com.apple.atve.androidtv.appletv` | Preloaded Apple TV app with EPG write access (`com.android.providers.tv.permission.WRITE_EPG_DATA`); content, not telemetry, same as the Bell-preloaded apps above. |
