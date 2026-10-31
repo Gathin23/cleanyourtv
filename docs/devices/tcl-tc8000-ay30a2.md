@@ -3,6 +3,10 @@
 Checked on a real set on 2026-10-24. The debloat list and the Inputs config live in
 [`examples/tcl-tc8000-ay30a2/`](../../examples/tcl-tc8000-ay30a2/debloat.txt).
 
+Checked again on 2026-10-31 on build `RQ3A.210705.001.2026042801`: the debloat half still works,
+but the launcher half no longer does — the newer verifier refuses every HOME package
+([Newer firmware blocks the launcher](#newer-firmware-2026042801-blocks-the-launcher)).
+
 ## Identify the firmware
 
 | Field | Observed value |
@@ -11,16 +15,59 @@ Checked on a real set on 2026-10-24. The debloat list and the Inputs config live
 | `ro.product.board` / `ro.board.platform` | `ohm` / `TC8000` |
 | `ro.hardware` | `amlogic` |
 | Android / SDK | `11` / `30` |
-| `ro.build.display.id` | `RQ3A.210705.001.2024101221 release-keys` |
+| `ro.build.display.id` | `RQ3A.210705.001.2024101221 release-keys` (2026-10-24); `RQ3A.210705.001.2026042801 release-keys` (2026-10-31) |
 | Security patch | `2022-09-05` |
 | ABI | `armeabi-v7a`, `armeabi` (no arm64) |
 | RAM | 3.8 GB (3,933,552 K) |
 | Stock home | `com.tcl.cyberui` 7.6.08 (灵控桌面), the only HOME activity until another is installed |
 
 This is an older China image than [`tcl-mt9655-cn-android14`](tcl-mt9655-cn-android14.md).
-`adb install` of an APK that declares HOME succeeded here. The same `InstallConfig` row is
-present (`launcherStrategy` enabled, packages empty), but this build's verifier did not enforce it.
-Network ADB on port 5555 survived a reboot while the set's ADB switch stayed on.
+On build `2024101221`, `adb install` of an APK that declares HOME succeeded: the same
+`InstallConfig` row was present (`launcherStrategy` enabled, packages empty), but that build's
+verifier did not enforce it. Build `2026042801` does — see below. Network ADB on port 5555
+survived a reboot on both builds while the set's ADB switch stayed on.
+
+## Newer firmware (2026042801) blocks the launcher
+
+On the 2026-10-31 set, `pm install -r` of the launcher built from source (SDK 30 ≥ `minSdk` 26,
+585,805-byte APK) failed before anything was changed on the TV:
+
+```
+Failure [INSTALL_FAILED_VERIFICATION_FAILURE]
+```
+
+The system log names the gate — it is the stock launcher's signature, not a parse error:
+
+```
+D OverseasAppConfig: pkgName = com.gathin.tvhome
+I ActivityManager: Start proc ... com.android.packageinstaller/.verifier.VerifierReciver
+W verifier: fetch signature info from: com.tcl.cyberui
+W verifier: signature does not match for tcl com.gathin.tvhome, will not be installed!
+```
+
+`content query --uri content://com.tcl.providers.config/all` shows the same row as the older build
+(`launcherStrategy` enabled, `packages` empty), so on this build a HOME package is accepted only if
+it is signed with `com.tcl.cyberui`'s key. The TCL app store (and 电视卫士's USB installer, if it is
+left enabled) may still install ordinary apps; neither was tried for a HOME package here, and the
+MT9655 notes show the USB installer ending in the same signature refusal there
+([`tcl-mt9655-cn-android14`](tcl-mt9655-cn-android14.md#the-launcher-cannot-be-replaced)).
+
+A factory reset on the same set (2026-10-31) left the `InstallConfig` row and the refusal exactly
+as they were, so resetting the TV does not unlock the launcher either; the row lives on the system
+partition. After the reset the preloads changed slightly (`com.quark.yun.tv`, `com.tcl.qiyiguo`,
+`com.newtv.cboxtv` and `com.gitv.dvb.live` were gone; `com.tcl.ffeducation`, `com.tcl.gamecenter`
+and `com.tcl.tshop` appeared), and the list still applied cleanly.
+
+So on `2026042801` the honest summary is **debloat only**: do not spend the session retrying
+`adb install`, and do not disable `com.tcl.cyberui`. Replacing Home would need a TCL-signed build,
+root, or a firmware downgrade.
+
+What was checked after the debloat on that build: 26 packages disabled with `pm disable-user`
+(27 after the factory reset, with the three preloads above), the same list still disabled after one
+full reboot (`pm list packages -d`), no entries in the crash
+buffer, Wi-Fi and DNS working, and `com.tcl.tv`, `com.tcl.settings`, `com.tcl.systemserver`,
+`com.sohu.inputmethod.sogou.tv`, `com.tcl.autopair`, `com.droidlogic.tvinput` (12 TV input
+services bound) and `com.tcl.cyberui` all left enabled.
 
 ## Do not disable the stock launcher
 
