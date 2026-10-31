@@ -1,0 +1,57 @@
+# Redmi Smart TV A75 2025 energy edition (L75MA-RAE, MiTV-ASTP0, codename mulan),
+# China-market firmware 26.3.17.OS3.0.101.0.PSTAATV (HyperOS era, 2026-03), Android 9 (SDK 28),
+# Amlogic, 2 GB RAM, 75" 4K, 144 Hz panel. 32-bit only: ro.product.cpu.abilist is
+# "armeabi-v7a,armeabi" (arm64-only apps such as Tubi, Red Bull TV and Rakuten TV cannot install).
+# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode) - KEEP IT ENABLED, see
+# "Home" below and docs/devices/redmi-l75ma-rae.md.
+#
+# Applied 2026-10-23; owner lived with it for days (streaming, casting, voice remote all fine).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/redmi-l75ma-rae/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/redmi-l75ma-rae/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - ADB: Settings -> About -> press OK on 产品型号 (product model) 7 times to unlock developer
+#   options, then Settings -> 账号与安全 -> ADB 调试 -> 允许. Network ADB (5555) closes on every
+#   power cycle and must be turned back on there; standby drops Wi-Fi too.
+# - Startup ad: `settings put system boot_ad_switch 0` (null before) removes it; undo with
+#   `settings delete system boot_ad_switch`. The stock launcher's ad-consent screen can write the
+#   key back to 1, so re-check after launcher updates.
+# - Home: unlike the older MiTV-ASTP0 firmware in examples/xiaomi-mitv-astp0 and MiTV-MFTP0
+#   (where the com.ts.launcher application-ID build became Home and survived a reboot), this
+#   2026-03 firmware defers every third-party HOME-category start until the stock launcher has
+#   fully settled (4-5 s flash of PatchWall) and ignores `cmd package set-home-activity`. The
+#   owner's setup instead consumes the Home key in HomeKeyService and opens the launcher by
+#   explicit component (source patch), plus a small bridge app that goes through the service's
+#   GLOBAL_ACTION_HOME to reach PatchWall on demand. See docs/devices/redmi-l75ma-rae.md.
+# - ServiceRepair: force-stop puts accessibility services off the enabled list, and this firmware
+#   clears enabled_accessibility_services over standby via a normal unbind, so the record must
+#   survive onUnbind. With `pm grant com.ts.launcher android.permission.WRITE_SECURE_SETTINGS` and
+#   `restore_key_services: true`, ServiceRepair restores the service unconditionally (v14 patch).
+# - Deliberately NOT disabled: voice (com.xiaomi.voicecontrol, com.xiaomi.wakeupservice), casting
+#   (com.xiaomi.miplay, com.xiaomi.mitv.smartshare, com.xiaomi.mi_connect_service,
+#   com.xiaomi.hyper_connect.tv), OTA (com.xiaomi.mitv.upgrade), app store
+#   (com.xiaomi.mitv.appstore), settings, inputs (com.droidlogic.tvinput), the only input method
+#   (com.sohu.inputmethod.sogou.tv), account, screensaver (com.xiaomi.mitv.hyper.screensaver) and
+#   all streaming apps (com.cibn.tv Youku TV, com.ktcp.video Tencent, com.xiaodianshi.tv.yst
+#   Bilibili TV, com.netease.cloudmusic.tv NetEase Cloud Music).
+# - APK install (b64push + pm install) works; YouTube TV installs as base + config.armeabi_v7a
+#   splits via pm install-create.
+
+# Xiaomi telemetry / push / cloud control
+com.miui.tv.analytics                       # TV usage statistics
+com.xiaomi.tvqs                             # quality/crash uploads
+com.mitv.cloudcontrol                       # cloud control: remote config, pushes apps
+com.xiaomi.mitv.tvpush.tvpushservice        # push service
+
+# Ads / promoted content / shopping
+com.xm.webcontent                           # promo web container, also fetches screensaver ads
+com.mitv.shoplugin                          # TV Taobao shopping plugin
+
+# Background junk
+com.xiaomi.mitv.tvmanager                   # "TV Manager" cleaner
+com.xiaomi.gamecenter.sdk.service.mibox     # game centre SDK
+com.xiaomi.mitv.karaoke.service             # karaoke service
+com.xiaomi.mitv.healthdiagnosis             # self-diagnosis
+com.mitv.gallery                            # photo album (USB files still open in media explorer)
