@@ -216,14 +216,36 @@ def between(text, name, body, path):
     return "\n".join(lines[:start[0] + 1] + [""] + body + [""] + lines[end[0]:])
 
 
+def word_for(word, n):
+    """The form of a count word that goes after n. A word is one string, or (one, few, many) for a
+    language that changes the noun with the number, East Slavic style: 1, 21, 31 take the first form,
+    2-4, 22-24 the second, everything else (11-14 too) the third. README.uk.md said "387 модель
+    телевізорів · 103 брендів" with one fixed form; it is "387 моделей телевізорів · 103 бренди"."""
+    if isinstance(word, str):
+        return word
+    one, few, many = word
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return few
+    return many
+
+
+def word_pattern(word):
+    """A regex for any form of a count word, the longest first so a form is not cut short by a shorter one."""
+    forms = [word] if isinstance(word, str) else sorted(set(word), key=len, reverse=True)
+    return "(?:" + "|".join(re.escape(f) for f in forms) + ")"
+
+
 def counts(text, entries, root, words=WORDS):
     """The three numbers a page states, in that page's own words: the card's alt text and the row."""
     n, b, l = len(entries), len(brands(entries)), languages(root)
     models, brand_word, language_word = words
-    text = re.sub(rf"\b\d+ {re.escape(models)} · \d+ {re.escape(brand_word)} · \d+ {re.escape(language_word)} · ",
-                  f"{n} {models} · {b} {brand_word} · {l} {language_word} · ", text)
-    return re.sub(rf"^(\| \*\*)\d+ {re.escape(language_word)}(\*\* \|)",
-                  rf"\g<1>{l} {language_word}\g<2>", text, flags=re.M)
+    text = re.sub(rf"\b\d+ {word_pattern(models)} · \d+ {word_pattern(brand_word)} · \d+ {word_pattern(language_word)} · ",
+                  f"{n} {word_for(models, n)} · {b} {word_for(brand_word, b)} · {l} {word_for(language_word, l)} · ",
+                  text)
+    return re.sub(rf"^(\| \*\*)\d+ {word_pattern(language_word)}(\*\* \|)",
+                  rf"\g<1>{l} {word_for(language_word, l)}\g<2>", text, flags=re.M)
 
 
 def stats(text, entries, root):
@@ -246,7 +268,8 @@ OWNED = ("README.md", "examples/README.md", "tools/readme_stats.py")
 # +53, and no run moved it.
 TRANSLATIONS = {"README.nl.md": ("tv-modellen", "merken", "talen"),
                 "README.de.md": ("TV-Modelle", "Marken", "Sprachen"),
-                "README.uk.md": ("модель телевізорів", "брендів", "мова")}
+                "README.uk.md": (("модель телевізорів", "моделі телевізорів", "моделей телевізорів"),
+                                 ("бренд", "бренди", "брендів"), ("мова", "мови", "мов"))}
 
 
 def readme(text, entries, root, path, words=WORDS):
