@@ -1,6 +1,8 @@
 # Google TV Streamer (2024, device kirkwood, model "Google TV Streamer" / GZRNL), 4 GB RAM
 # Google TV 14 (SDK 34), build UTTK.260317.003
 #
+# Cast-preserving five-package alternative, tested on a second unit: see README.md and debloat-keep-cast.txt.
+#
 # Apply:   TV_HOST=<ip> tools/disable.sh examples/google-tv-streamer-4k-kirkwood/debloat.txt
 # Undo:    TV_HOST=<ip> tools/restore.sh examples/google-tv-streamer-4k-kirkwood/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
