@@ -30,6 +30,8 @@ worked with the stock launcher disabled and **no key helper enabled**, and holdi
 differs from the C7K units in `examples/tcl-55c7k-uk/README.md`, which needed InputKeyService for the app
 buttons; it was one owner's check on one remote. YouTube still loaded with AdGuard Private DNS. The Weather add-on
 and the scenes and cinematic themes ran on this unit too (the cinematic theme's `dock_apps` replaced by the owner's).
+Wireless debugging was off throughout; after USB debugging was switched off and the authorisations revoked,
+`tools/adb-closed.py` reported port 5555 closed, and again after a restart.
 
 Undo, as in the list's own Undo line:
 
