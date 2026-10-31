@@ -504,6 +504,11 @@
          home_idle_clock_minutes). Back keeps working as usual inside apps and Settings; only Home's own Back
          press changes. Off by default (Back does nothing on Home); a theme can set "back_opens_clock": true. -->
     <bool name="back_opens_clock">false</bool>
+    <!-- A soft tick from res/raw/nav_tick.wav on every focus move on Home, in place of Android's navigation click.
+         Android's click only follows Settings > System sounds, so turn that off as well
+         (`settings put system sound_effects_enabled 0`), or each move clicks twice. Replace the wav to use another
+         sound. Off by default; a theme can set "nav_tick": true. -->
+    <bool name="nav_tick">false</bool>
     <!-- The clock screensaver (Home idle clock and the system screensaver) over Home's wallpaper instead of black with
          a coloured glow. The clock still moves every minute. Can also be set with "clock_wallpaper" in a theme. -->
     <bool name="clock_wallpaper">false</bool>
