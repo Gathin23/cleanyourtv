@@ -8,7 +8,7 @@ multi-day soak.
 | File | What it is |
 |---|---|
 | `debloat.txt` | The 18 packages that were disabled, grouped and commented |
-| `config.json` | Live TV app, the gear button, and animations off; add your own `dock_apps` |
+| `config.json` | Live TV app and animations off; add your own `dock_apps` |
 
 All commands run from the repo root, with the TV's IP in `TV_HOST`.
 
@@ -24,7 +24,7 @@ Check the Wi-Fi note in `debloat.txt` first, then the list while Google TV's hom
 
 ```bash
 TV_HOST=<tv-ip> tools/disable.sh examples/haier-matrixtv-de/debloat.txt
-HOME_KEY_SERVICE=1 TV_HOST=<tv-ip> launcher/build-and-install.sh
+TV_HOST=<tv-ip> launcher/build-and-install.sh
 TV_HOST=<tv-ip> tools/theme.sh examples/haier-matrixtv-de
 ```
 
@@ -37,9 +37,11 @@ TV_HOST=<tv-ip> tools/restore.sh examples/haier-matrixtv-de/debloat.txt com.goog
 ## Quirks on this firmware, all checked on the TV
 
 - The gear sends `KEYCODE_NOTIFICATION` (83), a global key for launcherx's `GlobalKeyListener`, so it does nothing once
-  launcherx is disabled. `settings_key_keycodes` `[83]`, `consume_volume_keys` and `HOME_KEY_SERVICE=1` brought it back,
-  and a held volume button still ramped, checked by the owner on the real remote. That is the opposite of the trade
-  noted for the AQUA and the [MatrixTV GE](../haier-hr9216eu/). It has not been through a reboot yet.
+  launcherx is disabled, and Settings opens from the launcher's top bar. `settings_key_keycodes` `[83]`,
+  `consume_volume_keys` and `HOME_KEY_SERVICE=1` brought it back with the volume ramp intact, checked by the owner on the
+  real remote. That is the opposite of the trade noted for the AQUA and the [MatrixTV GE](../haier-hr9216eu/). But the
+  owner found the TV laggy with the helper on and better with it off, so this set runs without it. That was how it felt,
+  not a measurement, and the first check came right after a restart.
 - Launcher animations cost a lot here: 49% of frames were late with a 57 ms median moving along the dock with them on,
   and none, at 12 ms, with `animations` off. Wallpaper made almost no difference.
 - `com.netflix.ninja` comes back enabled at every boot, and started itself through a scheduled job. Hide it with

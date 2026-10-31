@@ -3,7 +3,5 @@
     "com.google.android.youtube.tv"
   ],
   "live_tv_package": "com.mediatek.tv.oneworld.tvcenter",
-  "animations": false,
-  "settings_key_keycodes": [83],
-  "consume_volume_keys": true
+  "animations": false
 }

@@ -2,5 +2,5 @@
   "tv": "Haier MatrixTV DE (HR9676EUF, omonia, MediaTek)",
   "os": "Google TV 14",
   "brand": "Haier",
-  "notes": "Haier content apps, Zeasn launcher, cleaner, e-manual, Anoki ACR, partner rows, retail demo; unused apps off by choice; setupwraith owned a second, unused saved network (forgotten first); Netflix comes back at every boot; the gear button is keycode 83, and with `consume_volume_keys` the volume ramp survived HOME_KEY_SERVICE; config.json has the dock"
+  "notes": "Haier content apps, Zeasn launcher, cleaner, e-manual, Anoki ACR, partner rows, retail demo; unused apps off by choice; setupwraith owned a second, unused saved network (forgotten first); Netflix comes back at every boot; the gear button is keycode 83: `consume_volume_keys` kept the ramp with HOME_KEY_SERVICE, but the TV felt laggy with the helper, so it stays off; config.json has the Live TV app"
 }
