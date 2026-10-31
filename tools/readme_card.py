@@ -222,7 +222,7 @@ def decorate(card):
 stats, featured = load("docs/stats-halloween.png" if HALLOWEEN else "docs/stats.png"), load("docs/featured.png")
 if HALLOWEEN:
     heading(featured, (650, 50, 950, 85))     # "FEATURED IN"
-    tint(featured, (1090, 315, 1135, 352))    # the arrow after "351 articles"
+    tint(featured, (1090, 315, 1135, 352))    # the arrow after "412 articles"
 parts = [stats, featured, tv]
 SEP = 24  # extra air on each side of a divider
 H = sum(p.height for p in parts) + 2 * SEP * (len(parts) - 1)

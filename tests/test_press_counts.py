@@ -472,7 +472,7 @@ class VideoReaderTest(unittest.TestCase):
         self.assertEqual([], video_problems(self.page(rows, count=2)))
 
     def test_the_article_rows_are_not_read_as_videos(self):
-        # The real page opens with 351 article rows over 48 sections; only what follows '## Videos' is a video.
+        # The real page opens with 412 article rows over 51 sections; only what follows '## Videos' is a video.
         problems = video_problems(self.page([self.row(1)], count=1))
         self.assertEqual([], problems)
         self.assertEqual(1, len(videos(self.page([self.row(1)], count=1))))

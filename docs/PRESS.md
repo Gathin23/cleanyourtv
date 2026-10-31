@@ -1,10 +1,10 @@
 # CleanYourTV in the press
 
-Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **351 articles**, 299 of them from outlets in 46 countries, 11 from Spanish-language sites in Latin America and 41 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [229 videos](#videos) follow the articles.
+Every article about CleanYourTV (called tv-vibehack until 19 October 2026) that we could open and check: **412 articles**, 349 of them from outlets in 49 countries, 14 from Spanish-language sites in Latin America and 49 from newsletters, blogs and AI news sites. Headlines are in the language they were published in. Syndicated copies and auto-generated listings are left out. [229 videos](#videos) follow the articles.
 
 Wrote about it and not here? Open an issue or a pull request with the link.
 
-[United States](#united-states)&nbsp;24 · [United Kingdom](#united-kingdom)&nbsp;5 · [India](#india)&nbsp;11 · [Denmark](#denmark)&nbsp;1 · [Japan](#japan)&nbsp;5 · [Bangladesh](#bangladesh)&nbsp;2 · [United Arab Emirates](#united-arab-emirates)&nbsp;1 · [France](#france)&nbsp;21 · [Germany](#germany)&nbsp;10 · [Spain](#spain)&nbsp;14 · [Italy](#italy)&nbsp;19 · [Norway](#norway)&nbsp;1 · [Portugal](#portugal)&nbsp;6 · [Czechia](#czechia)&nbsp;4 · [Ukraine](#ukraine)&nbsp;4 · [Greece](#greece)&nbsp;6 · [Egypt](#egypt)&nbsp;6 · [Brazil](#brazil)&nbsp;18 · [Latin America (Spanish-language)](#latin-america-spanish-language)&nbsp;11 · [China](#china)&nbsp;35 · [Taiwan](#taiwan)&nbsp;8 · [Indonesia](#indonesia)&nbsp;18 · [Thailand](#thailand)&nbsp;3 · [Vietnam](#vietnam)&nbsp;11 · [Netherlands](#netherlands)&nbsp;4 · [Poland](#poland)&nbsp;8 · [Russia](#russia)&nbsp;15 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;4 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;4 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;2 · [Hungary](#hungary)&nbsp;2 · [Saudi Arabia](#saudi-arabia)&nbsp;1 · [Romania](#romania)&nbsp;3 · [Sweden](#sweden)&nbsp;2 · [Hong Kong](#hong-kong)&nbsp;3 · [Bulgaria](#bulgaria)&nbsp;2 · [Slovakia](#slovakia)&nbsp;3 · [Belgium](#belgium)&nbsp;1 · [Kenya](#kenya)&nbsp;1 · [Israel](#israel)&nbsp;2 · [Finland](#finland)&nbsp;1 · [Serbia](#serbia)&nbsp;1 · [Lithuania](#lithuania)&nbsp;1 · [Morocco](#morocco)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;41
+[United States](#united-states)&nbsp;30 · [United Kingdom](#united-kingdom)&nbsp;5 · [India](#india)&nbsp;12 · [Denmark](#denmark)&nbsp;1 · [Japan](#japan)&nbsp;5 · [Bangladesh](#bangladesh)&nbsp;2 · [United Arab Emirates](#united-arab-emirates)&nbsp;2 · [France](#france)&nbsp;22 · [Germany](#germany)&nbsp;12 · [Spain](#spain)&nbsp;18 · [Italy](#italy)&nbsp;23 · [Norway](#norway)&nbsp;1 · [Portugal](#portugal)&nbsp;6 · [Czechia](#czechia)&nbsp;7 · [Ukraine](#ukraine)&nbsp;6 · [Greece](#greece)&nbsp;9 · [Egypt](#egypt)&nbsp;6 · [Brazil](#brazil)&nbsp;19 · [Latin America (Spanish-language)](#latin-america-spanish-language)&nbsp;14 · [China](#china)&nbsp;40 · [Taiwan](#taiwan)&nbsp;12 · [Indonesia](#indonesia)&nbsp;19 · [Thailand](#thailand)&nbsp;3 · [Vietnam](#vietnam)&nbsp;11 · [Netherlands](#netherlands)&nbsp;5 · [Poland](#poland)&nbsp;9 · [Russia](#russia)&nbsp;17 · [Belarus](#belarus)&nbsp;2 · [Turkey](#turkey)&nbsp;4 · [Jordan](#jordan)&nbsp;1 · [South Korea](#south-korea)&nbsp;5 · [Australia](#australia)&nbsp;2 · [Pakistan](#pakistan)&nbsp;2 · [Hungary](#hungary)&nbsp;2 · [Saudi Arabia](#saudi-arabia)&nbsp;1 · [Romania](#romania)&nbsp;4 · [Sweden](#sweden)&nbsp;2 · [Hong Kong](#hong-kong)&nbsp;4 · [Bulgaria](#bulgaria)&nbsp;2 · [Slovakia](#slovakia)&nbsp;3 · [Belgium](#belgium)&nbsp;1 · [Kenya](#kenya)&nbsp;1 · [Israel](#israel)&nbsp;2 · [Finland](#finland)&nbsp;2 · [Serbia](#serbia)&nbsp;1 · [Lithuania](#lithuania)&nbsp;1 · [Morocco](#morocco)&nbsp;1 · [Croatia](#croatia)&nbsp;2 · [Iran](#iran)&nbsp;1 · [Slovenia](#slovenia)&nbsp;1 · [Online (newsletters, blogs, AI news)](#online-newsletters-blogs-ai-news)&nbsp;49
 
 ## United States
 
@@ -34,6 +34,12 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | The Verge | [People are fixing their TV OSes with Claude](https://www.theverge.com/tech/1016116/vibe-coding-tv-os) | 23&nbsp;Oct |
 | Business Model Analyst | [Smart TV Owners Are Using AI to Delete the Ads That Paid for Them](https://businessmodelanalyst.com/smart-tv-ads-ai-hack-subsidy-economics/) | 26&nbsp;Oct |
 | Wccftech | [CleanYourTV 3.0 Lets You Remove Ads And Bloatware From Android And Google TVs, Now Supports 300 Models](https://wccftech.com/cleanyourtv-3-0-lets-you-remove-ads-and-bloatware-from-android-and-google-tvs-now-supports-300-models/) | – |
+| ZDNET | [You can hack your TVs and gadgets with AI for free now - but should you?](https://www.zdnet.com/innovation/ai-reverse-engineering-old-gadgets-smart-tvs/) | 26&nbsp;Oct |
+| PCMag | [You Don't Need AI to Dumb Down Your Smart TV. Do This Instead](https://www.pcmag.com/explainers/you-dont-need-ai-to-dumb-down-your-smart-tv-do-this-instead) | 24&nbsp;Oct |
+| Slashdot | [People Are Vibe Coding Their Way to Better TVs](https://entertainment.slashdot.org/story/26/10/23/2034217/people-are-vibe-coding-their-way-to-better-tvs) | 23&nbsp;Oct |
+| Decrypt | ['Privacy Horror': Researcher Uncovers Extent of Samsung Smart TV User Tracking](https://decrypt.co/381801/privacy-horror-researcher-uncovers-extent-of-samsung-smart-tv-user-tracking) | 26&nbsp;Oct |
+| TFTC | [People Are Using AI to Rip the Spyware Out of Their TVs](https://www.tftc.io/ai-hacking-smart-tvs-remove-spyware) | 23&nbsp;Oct |
+| CableTV.com | [What Is Smart TV Vibes Coding? How People Are Blocking TV Ads With AI](https://www.cabletv.com/news/what-is-smart-tv-vibes-coding) | 28&nbsp;Oct |
 
 ## United Kingdom
 
@@ -60,6 +66,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Moneycontrol | [How Claude AI can boost your Google TV speed and make it faster](https://www.moneycontrol.com/technology/how-claude-ai-can-boost-your-google-tv-speed-and-make-it-faster-article-14060577.html) | 26&nbsp;Oct |
 | Hindustan Times | [Claude Code and your Google TV: Vibe coding, and a new lease of life](https://www.hindustantimes.com/business/claude-code-and-your-google-tv-vibe-coding-and-a-new-lease-of-life-101793083497752.html) | 28&nbsp;Oct |
 | नवभारत टाइम्स Navbharat Times | [AI TV Repair: माता-पिता का Smart TV पड़ गया था सुस्त, AI से यूजर ने किया बड़ा बदलाव, जानें फिर क्या बदला](https://navbharattimes.indiatimes.com/tech/ai-news/claude-ai-old-android-tv-feel-brand-new/articleshow/135023977.cms) | 18&nbsp;Oct |
+| SSBCrack News | [How to Reduce Smart TV Spying Without Complicated Tech Methods](https://news.ssbcrack.com/how-to-reduce-smart-tv-spying-without-complicated-tech-methods/) | 25&nbsp;Oct |
 
 ## Denmark
 
@@ -89,6 +96,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Outlet | Article | Date |
 | --- | --- | --- |
 | tbreak | [People are using AI agents to strip ads and tracking from their smart TVs](https://tbreak.com/debloat-smart-tv-ai-dumbtv-cleanyourtv/) | 20&nbsp;Oct |
+| Fast Company Middle East | [These people are cutting the clutter and redesigning their smart TVs with AI](https://fastcompanyme.com/co-design/these-people-are-cutting-the-clutter-and-redesigning-their-smart-tvs-with-ai/) | 29&nbsp;Oct |
 
 ## France
 
@@ -115,6 +123,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | BuzzArena | [Ils supprimaient la publicité de leur TV Xiaomi avec Claude, Anthropic leur bloque l'accès à l'IA](https://www.buzzarena.com/ils-supprimaient-la-publicite-de-leur-tv-xiaomi-avec-claude-anthropic-leur-bloque-lacces-a-lia-4566360) | 26&nbsp;Oct |
 | Frandroid | [Samsung sous Tizen OS : on a construit un accueil sans pub avec l’IA](https://www.frandroid.com/marques/samsung/3298629_samsung-sous-tizen-os-on-a-construit-un-accueil-sans-pub-avec-lia) | 26&nbsp;Oct |
 | jeuxvideo.com | [Pour retirer les publicités et rendre la navigation plus fluide sur leur TV, les gamers ont trouvé une nouvelle solution](https://www.jeuxvideo.com/news/2111356/pour-retirer-les-publicites-et-rendre-la-navigation-plus-fluide-sur-leur-tv-les-gamers-ont-trouve-une-nouvelle-solution.htm) | 30&nbsp;Oct |
+| Next (next.ink) | [Smart TV : de l'intelligence artificielle contre la bêtise réelle](https://next.ink/264547/smart-tv-de-lintelligence-artificielle-contre-la-betise-reelle/) | 29&nbsp;Oct |
 
 ## Germany
 
@@ -130,6 +139,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Golem.de | [Entrümpelung per Agent-KI: Agenten entfernen Werbung von Smart-TVs](https://www.golem.de/news/entruempelung-per-agent-ki-agenten-entfernen-werbung-von-smart-tvs-2610-214283.html) | – |
 | MEEDIA | [Vibe Coding gegen die Werbeflut: Wenn Smart-TV-Besitzer das Betriebssystem hacken](https://meedia.de/news/beitrag/25333-vibe-coding-gegen-werbung-wenn-smart-tv-besitzer-das-betriebssystem-hacken.html) | 30&nbsp;Oct |
 | Mein-MMO | [Ein Nutzer baut eine App mit Claude, um das TV-Gerät seiner Eltern von unnötiger Software zu befreien](https://mein-mmo.de/vibecoder-baut-app-claude-tv-reinigen/) | 28&nbsp;Oct |
+| futurezone.de | [Fernseher: Diese Anwendung geht plötzlich viral - "Startbildschirm im Apple TV-Stil"](https://www.futurezone.de/digital-life/article761002/fernseher-diese-anwendung-geht-ploetzlich-viral-startbildschirm-im-apple-tv-stil.html) | 30&nbsp;Oct |
+| COMPUTER BILD | [Netflix suchen, Werbung finden? KI soll Smart-TVs aufräumen](https://www.computerbild.de/artikel/News-Smart-Home-Netflix-suchen-Werbung-finden-KI-soll-Smart-TVs-aufraeumen-2c74c6e-42356123.html) | 22&nbsp;Oct |
 
 ## Spain
 
@@ -149,6 +160,10 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | ADSLZone | [Mi Smart TV estaba llena de basura, publicidad y aplicaciones que nunca pedí: he recuperado el control sin pagar un duro](https://www.adslzone.net/noticias/streaming-tv/cleanyourtv-limpiar-smart-tv-android-tv-google/) | 27&nbsp;Oct |
 | La Razón | [Usuarios hartos de la publicidad en sus televisores recurren a la IA para eliminarla](https://www.larazon.es/tecnologia/usuarios-hartos-publicidad-sus-televisores-recurren-eliminarla_202610276ae0e294a2570c1961b34b6a.html) | 27&nbsp;Oct |
 | BandaAncha (forum) | [Clean Your TV: limpia la publicidad y el bloatware de tu Android TV desde el móvil, sin PC ni cables.](https://bandaancha.eu/foros/clean-your-tv-limpia-publicidad-1761313) | 25&nbsp;Oct |
+| La Razón | [Cómo eliminar gratis todos los anuncios y el rastreo de tu televisor Android TV o Google TV en cinco minutos con CleanYourTV](https://www.larazon.es/tecnologia-consumo/hogar/eliminar-anuncios-rastreo-android-tv-google-tv-cleanyourtv_202610306ae4e1a4004b78127aba703d.html) | 30&nbsp;Oct |
+| 20minutos | [La última moda viral es usar IA para hacer más 'tonta' una smart TV: así se consigue y estas son las ventajas](https://www.20minutos.es/tecnologia/moviles-dispositivos/moda-viral-usar-ia-hacer-mas-tonta-smart-tv-asi-se-consigue-ventajas_7051602_0.html) | 24&nbsp;Oct |
+| Hipertextual | [El truco con IA para quitar todos los anuncios y hacer tu Smart TV más rápida](https://hipertextual.com/inteligencia-artificial/eliminar-anuncios-bloatware-smart-tv-ia/) | 25&nbsp;Oct |
+| Enrique Dans | [Cuando mejorar tu televisión consiste en quitarle cosas](https://www.enriquedans.com/2026/10/cuando-mejorar-tu-television-consiste-en-quitarle-cosas.html) | 26&nbsp;Oct |
 
 ## Italy
 
@@ -173,6 +188,10 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Pasquale Pillitteri | [Claude Opus 5.5 blocca il reverse engineering delle smart TV?](https://pasqualepillitteri.it/news/27019/claude-opus-5-5-blocca-reverse-engineering-smart-tv) | 25&nbsp;Oct |
 | TecnoAndroid | [Claude Code libera le smart TV da pubblicità e tracciamento](https://www.tecnoandroid.it/news/claude-code-libera-le-smart-tv-da-pubblicita-e-tracciamento-2000117/) | 28&nbsp;Oct |
 | IlSoftware.it | [CleanYourTV 3.0 elimina pubblicità e bloatware da 300 modelli di TV](https://www.ilsoftware.it/cleanyourtv-3-0-elimina-pubblicita-e-bloatware-da-300-modelli-di-tv/) | 28&nbsp;Oct |
+| Rivista.AI | [Vibe Coding sulla smart tv: l'intelligenza artificiale cancella la pubblicità, ma rischia di rompere il televisore](https://www.rivista.ai/2026/10/24/vibe-coding-sulla-smart-tv-lintelligenza-artificiale-cancella-la-pubblicita-ma-rischia-di-rompere-il-televisore/) | 24&nbsp;Oct |
+| Dagospia | [l'intelligenza artificiale fa anche cose buone: ci libera dalle pubblicità rompicojoni!](http://www.dagospia.com/cronache/l-intelligenza-artificiale-fa-cose-buone-ci-libera-dalle-pubblicita-491198) | 23&nbsp;Oct |
+| Zeus News | [Claude ripulisce le smart TV: meno pubblicità, più velocità e maggiore controllo per gli utenti](https://www.zeusnews.it/n.php?c=32621) | 20&nbsp;Oct |
+| DDay.it | [Hardware in affitto: perché il reverse engineering con l'AI fa paura a chi vende prodotti](https://www.dday.it/redazione/59215/hardware-in-affitto-perche-il-reverse-engineering-con-lai-fa-paura-a-chi-vende-prodotti) | 25&nbsp;Oct |
 
 ## Norway
 
@@ -199,6 +218,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | CzechCrunch | [Chytré televize jsou plné reklam a balastu. Lidé ale našli šikovný trik a pomocí AI je upravují](https://cc.cz/chytre-televize-jsou-plne-reklam-a-balastu-lide-ale-nasli-sikovny-trik-a-pomoci-ai-je-upravuji/) | 25&nbsp;Oct |
 | AVmania (Živě.cz) | [Udělejme chytré televize zase hloupější. AI agenti z nich umí vyhodit všechno, co otravuje](https://avmania.zive.cz/archiv-clanku/udelejme-chytre-televize-zase-hloupejsi) | 20&nbsp;Oct |
 | SMARTmania.cz | [Reklamy z televize pryč za čtvrt hodiny? Lidé si je čistí sami s pomocí Claude Code](https://smartmania.cz/reklamy-z-televize-pryc-za-ctvrt-hodiny-lide-si-je-cisti-sami-s-pomoci-claude-code/) | 26&nbsp;Oct |
+| Mobilizujeme.cz | [Konec přeplácaným chytrým televizím. Lidé je pomocí AI mění zase na „hloupé“](https://mobilizujeme.cz/clanky/konec-preplacanym-chytrym-televizim-lide-je-pomoci-ai-meni-zase-na-hloupe) | 20&nbsp;Oct |
+| CIAD.cz | [Chytré televize zahlcují reklamami, uživatelé je čistí s AI](https://ciad.cz/blog/chytre-televize-zahlcuji-reklamami-uzivatele-je-cisti-s-ai/) | 25&nbsp;Oct |
+| Smartmania.cz | [Reklamy z televize pryč za čtvrt hodiny? Lidé si je čistí sami s pomocí Claude Code](https://smartmania.cz/?p=440601) | 26&nbsp;Oct |
 
 ## Ukraine
 
@@ -208,6 +230,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Межа (Mezha) | [Проєкти з використанням ШІ допомагають прибирати рекламу й трекери зі смарттелевізорів](https://mezha.net/ua/news/mezha-af9669c2926dde16a80b745c_proiekti_z_vikoristannyam/) | 20&nbsp;Oct |
 | dev.ua | [«Можеш це зламати?». Користувачі просять ШІ-агентів прибрати рекламу зі смарт-телевізорів і прискорити їхню роботу](https://dev.ua/news/robliat-smart-tv-tupym-1792480473) | 20&nbsp;Oct |
 | TechToday | [Користувачі застосовують штучний інтелект для перетворення розумних телевізорів у пристрої без реклами](https://techtoday.in.ua/news/korystuvachi-zastosovuyut-shtuchnyy-intelekt-dlya-peretvorennya-rozumnyh-televizoriv-u-prystroyi-bez-reklamy-224182.html) | 24&nbsp;Oct |
+| InternetUA | [Люди використовують штучний інтелект, щоб знову зробити свої розумні телевізори дурними](http://internetua.com/luadi-vikoristovuuat-shtucsnii-intelekt-sxob-znovu-zrobiti-svoyi-rozumni-televizori-durnimi) | 21&nbsp;Oct |
+| PROIT | [Як штучний інтелект покращує смарт-телевізори](https://proit.com.ua/tech/yak-shtuchnyj-intelekt-dopomagaye-korystuvacham/) | 19&nbsp;Oct |
 
 ## Greece
 
@@ -219,6 +243,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Flash.gr | [Οι άνθρωποι χρησιμοποιούν την ΑΙ για να κάνουν πιο «έξυπνες» τις τηλεοράσεις τους](https://www.flash.gr/oi-anthropoi-chrisimopoioyn-tin-ai-gia-na-kanoyn-pio-exypnes-tis-tileoraseis-toys-1087235) | 21&nbsp;Oct |
 | PowerGame.gr | [Οι Smart TV έχουν γεμίσει διαφημίσεις - Χρήστες επιστρατεύουν την AI για να καθαρίσουν την οθόνη τους](https://www.powergame.gr/start-ups-digital/1439076/oi-smart-tv-echoun-gemisei-diafimiseis-christes-epistratevoun-tin-ai-gia-na-katharisoun-tin-othoni-tous/) | 21&nbsp;Oct |
 | Techmaniacs | [CleanYourTV: Απογειώστε τις επιδόσεις σε TVboxes, smart TVs και σε Magenta TV εντελώς δωρεάν](https://techmaniacs.gr/clean-your-tv-android-tv-debloat-antigravity/) | 23&nbsp;Oct |
+| Digital Life | [Η AI κάνει τις Smart TV ξανά "χαζές"! Τέλος στις διαφημίσεις και το ενοχλητικό λογισμικό](https://digitallife.gr/i-ai-kanei-tis-smart-tv-xana-chazes-telos-stis-diafimiseis-kai-to-enochlitiko-logismiko-24561/) | 20&nbsp;Oct |
+| SBC TV | [AI agents μετατρέπουν τα smart TV σε "χαζές" αλλά γρήγορες συσκευές](https://www.sbctv.gr/2026/10/ai-agents-2/) | 19&nbsp;Oct |
+| Gizchina.gr | [Android TV: Το AI κόλπο που αφαιρεί διαφημίσεις και κάνει την τηλεόραση πιο γρήγορη](https://www.gizchina.gr/2026/10/29/android-tv-choris-diafimiseis-claude-code-ai/) | 29&nbsp;Oct |
 
 ## Egypt
 
@@ -253,6 +280,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | O Cafezinho | [Donos de smart TV usam IA para tirar anúncios e rastreamento, diz TechCrunch](https://www.ocafezinho.com/2026-10-19/donos-de-smart-tv-usam-ia-para-tirar-anuncios-e-rastreamento-diz-techcrunch/) | 19&nbsp;Oct |
 | Ver-o-Fato | [Inteligência artificial permite modificar smart TVs e eliminar aplicativos indesejados](https://ver-o-fato.com.br/inteligencia-artificial-permite-modificar-smart-tvs-e-eliminar-aplicativos-indesejados/) | 23&nbsp;Oct |
 | Observatório Tech | [Adeus lentidão e anúncios: projeto viral promete limpeza visual em Smart TVs](https://observatoriotech.com.br/noticia/adeus-lentidao-e-anuncios-projeto-viral-promete-limpeza-visual-em-smart-tvs/) | 29&nbsp;Oct |
+| Jornal 24 Horas | [Usuários estão deixando suas smart tvs mais rápidas com IA; confira como fazer](https://jornal24horas.com.br/?p=69300) | 20&nbsp;Oct |
 
 ## Latin America (Spanish-language)
 
@@ -269,6 +297,9 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | ENTER.CO | [¿Cómo volver 'tonto' tu smart TV con IA para quitarle los anuncios?](https://www.enter.co/chips-bits/como-volver-tonto-smart-tv-ia-anuncios/) | 21&nbsp;Oct |
 | Digital Trends Español | [Cómo usar IA para convertir tu Smart TV en una TV “tonta” y eliminar anuncios, rastreo y bloatware](https://es.digitaltrends.com/inteligente/como-usar-ia-convertir-smart-tv-tv-tonta-guia/) | 20&nbsp;Oct |
 | Semana | [Cómo quitar los anuncios de los televisores con inteligencia artificial: el truco para reducir la publicidad invasiva](https://www.semana.com/tecnologia/articulo/como-quitar-los-anuncios-de-los-televisores-con-inteligencia-artificial-el-truco-para-reducir-la-publicidad-invasiva/202654/) | 28&nbsp;Oct |
+| TN (Argentina) | [La nueva tendencia es usar IA para hacer "menos inteligentes" los Smart TV: de qué se trata, cuáles son las ventajas y los riesgos](https://tn.com.ar/tecno/tutoriales/2026/10/24/la-nueva-tendencia-es-usar-ia-para-hacer-menos-inteligentes-los-smart-tv-de-que-se-trata-cuales-son-las-ventajas-y-los-riesgos/) | 24&nbsp;Oct |
+| DiarioBitcoin | [Investigador alerta sobre posibles funciones de rastreo en Smart TV de Samsung](https://www.diariobitcoin.com/tecnologia/investigador-alerta-sobre-posibles-funciones-de-rastreo-en-smart-tv-de-samsung/) | 26&nbsp;Oct |
+| La 100 (Argentina) | [La inteligencia artificial que busca hacer menos inteligentes a los Smart TV: para qué sirve y cuáles son los beneficios](https://la100.cienradios.com/tecnologia/la-inteligencia-artificial-que-busca-hacer-menos-inteligentes-a-los-smart-tv-para-que-sirve-y-cuales-son-los-beneficios/) | 25&nbsp;Oct |
 
 ## China
 
@@ -309,6 +340,11 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | 搜狐 Sohu | [电视去广告、小米跑iOS和鸿蒙？！AI总算干点“人事”了……](https://m.sohu.com/a/1094844169_463965) | 30&nbsp;Oct |
 | 中华网 China.com | [网友嫌广告太多用AI爆改电视 智能电视大扫除](https://news.china.com/socialgd/10000169/20261029/49826394.html) | 29&nbsp;Oct |
 | 21财经 | [用AI“一键清理”智能电视广告：门槛消失后，法律红线在哪？](https://www.21jingji.com/article/20261027/herald/dfe53dfe0806e95afe60d64053079ea7.html) | 27&nbsp;Oct |
+| 至顶网 ZDNet China | [人们开始用AI给智能电视"降智"，去除广告和臃肿功能](https://www.zhiding.cn/edge-ai/2026/1021/3203032.shtml) | 21&nbsp;Oct |
+| 什么值得买 SMZDM | [风向变了：软件刚拆完，AI开始“逆向现实世界”](https://post.smzdm.com/p/az8o0kk5/) | 26&nbsp;Oct |
+| 极客公园 GeekPark | [曝高通启动全球裁员；上线 40 天，Muse 下载量突破 1000 万次；ChatGPT 上线幻灯片工具](http://www.geekpark.net/news/372650) | 21&nbsp;Oct |
+| cnBeta | [外国小哥"虐待"自家电视，42小时后遭OpenAI封号 Claude也下狠手](http://m.cnbeta.com.tw/view/1583874.htm) | 26&nbsp;Oct |
+| 极客分享 GeekShare | [8 款开源电视桌面工具，让 Android TV 告别广告和推荐流](https://geekshare.org/613/) | 21&nbsp;Oct |
 
 ## Taiwan
 
@@ -322,6 +358,10 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | 商傳媒 SUN MEDIA | [厭煩廣告追蹤 用戶利用AI工具讓智慧電視「變笨」](https://sunmedia.tw/news/technology/1792450714-%E5%8E%AD%E7%85%A9%E5%BB%A3%E5%91%8A%E8%BF%BD%E8%B9%A4%E3%80%80%E7%94%A8%E6%88%B6%E5%88%A9%E7%94%A8AI%E5%B7%A5%E5%85%B7%E8%AE%93%E6%99%BA%E6%85%A7%E9%9B%BB%E8%A6%96%E3%80%8C%E8%AE%8A%E7%AC%A8%E3%80%8D) | 20&nbsp;Oct |
 | 方格子 Vocus (HKT實驗室) | [告別煩人廣告！用 CleanYourTV 把你的 Android TV 變成 Apple TV 風格](https://vocus.cc/article/6ad814e1fd89780001ca9516) | – |
 | BigGo 財經 | [電視使用者靠 Claude Code 移除廣告與追蹤軟體](https://finance.biggo.com.tw/news/241f874a-3b79-487d-a7d2-3774ed007a45) | 21&nbsp;Oct |
+| FREE 免費資源網路社群 | [Android TV 去廣告教學：CleanYourTV 免 Root 換主畫面](https://free.com.tw/cleanyourtv/) | 27&nbsp;Oct |
+| OYAG | [做廣告的人，把自己電視的廣告拆了! &#91;CleanYourTV&#93;專案奪回你的數位電視首頁掌控權](https://oyag.com/%E5%81%9A%E5%BB%A3%E5%91%8A%E7%9A%84%E4%BA%BA%EF%BC%8C%E6%8A%8A%E8%87%AA%E5%B7%B1%E9%9B%BB%E8%A6%96%E7%9A%84%E5%BB%A3%E5%91%8A%E6%8B%86%E4%BA%86-cleanyourtv%E5%B0%88%E6%A1%88%E5%A5%AA%E5%9B%9E/) | 29&nbsp;Oct |
+| 手機AI mobileai.net | [受夠智慧電視滿版廣告又卡頓嗎？CleanYourTV 手機版 APK 實測教學：免電腦、免 Root、免訂閱 AI，一鍵把 Android TV 變成極簡 Apple TV 風格！](https://mobileai.net/2026/10/24/cleanyourtv/) | 24&nbsp;Oct |
+| LIFE 生活網 (life.tw) | [智慧電視AI瘦身術藏風險 用錯恐讓愛機變磚](https://life.tw/article/%E6%99%BA%E6%85%A7%E9%9B%BB%E8%A6%96ai%E7%98%A6%E8%BA%AB%E8%A1%93%E8%97%8F%E9%A2%A8%E9%9A%AA-%E7%94%A8%E9%8C%AF%E6%81%90%E8%AE%93%E6%84%9B%E6%A9%9F%E8%AE%8A%E7%A3%9A-3191803) | 24&nbsp;Oct |
 
 ## Indonesia
 
@@ -345,6 +385,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Peradaban.id | [Developer Ubah Smart TV Xiaomi Jadi Mirip Apple TV dengan AI](https://peradaban.id/developer-modifikasi-tv-xiaomi-ai) | 19&nbsp;Oct |
 | Peradaban.id | [Developer Ubah Smart TV Xiaomi Bebas Iklan dengan Bantuan AI](https://peradaban.id/developer-modifikasi-smart-tv-xiaomi) | 19&nbsp;Oct |
 | ChatNews | [Pengguna Manfaatkan AI untuk Bersihkan Iklan di Smart TV](https://chatnews.id/ai-bersihkan-iklan-smart-tv) | 21&nbsp;Oct |
+| SuaraGarut.ID | [AI Tools Help TV Owners Remove Ads and Tracking](https://suaragarut.id/en/ai-tools-tv-ads-tracking) | 23&nbsp;Oct |
 
 ## Thailand
 
@@ -378,6 +419,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | AI Wereld | [Goedemorgen AI: een game in drie uur en ChatGPT in het restaurant](https://aiwereld.nl/nieuws/goedemorgen-ai-een-game-in-drie-uur-en-chatgpt-in-het-restaurant) | 21&nbsp;Oct |
 | Bright | [Slimmeriken gebruiken AI om hun smart-tv juist dom te maken](https://www.bright.nl/nieuws/2148884/slimmeriken-gebruiken-ai-om-hun-smart-tv-juist-dom-te-maken.html) | 20&nbsp;Oct |
 | Tweakers | [Vibecoders schrijven zelf firmware die ads en bloatware uit tv's verwijdert](https://tweakers.net/geek/253576/vibecoders-schrijven-zelf-firmware-die-ads-en-bloatware-uit-tvs-verwijdert.html) | – |
+| WorldNL Magazine | [TV OS frustrations are leading people to vibe-code](https://worldnl.com/tv-os-frustrations-are-leading-people-to-vibe-code-531049.html) | 23&nbsp;Oct |
 
 ## Poland
 
@@ -391,6 +433,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Instalki | [Magia ery kodowania z AI. Użytkownicy sami ulepszają swoje telewizory](https://www.instalki.pl/news/tv-audio/magia-ery-kodowania-z-ai-uzytkownicy-sami-ulepszaja-swoje-telewizory/) | 23&nbsp;Oct |
 | Elektroda.pl | [AI w walce z nachalnymi reklamami - agenci AI czyszczą smart TV z reklam i śledzenia](https://www.elektroda.pl/rtvforum/topic4185760.html) | – |
 | Audiostereo.pl | [Koniec z reklamami w Smart TV. Użytkownicy używają AI, by odzyskać własne telewizory](https://www.audiostereo.pl/magazyn/magazyn-kulturalny/newsy/koniec-z-reklamami-w-smart-tv-u%C5%BCytkownicy-u%C5%BCywaj%C4%85-ai-by-odzyska%C4%87-w%C5%82asne-telewizory-r2002) | – |
+| Wolne Media | [AI pomaga usunąć szpiegusie i reklamy z telewizorów smart](https://wolnemedia.net/ai-pomaga-usunac-szpiegusie-i-reklamy-z-telewizorow-smart/) | 21&nbsp;Oct |
 
 ## Russia
 
@@ -411,6 +454,8 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Клуб DNS | [Владельцы умных телевизоров стали использовать ИИ для отключения рекламы и слежки](https://club.dns-shop.ru/digest/186725-vladeltsyi-umnyih-televizorov-stali-ispolzovat-ii-dlya-otklucheniya/) | 20&nbsp;Oct |
 | Respawn | [Что на самом деле умеет смарт-ТВ, если подключить к нему ИИ](https://respawn.media/tech/7v6ex-chto-na-samom-dele-umeet-smart-tv-esli-podklyuchit-k-nemu-ii) | 28&nbsp;Oct |
 | Habr | [Вылечил лагающий телевизор Xiaomi за 10 минут: реклама, слежка и YouTube — без root и с откатом](https://habr.com/ru/articles/1097472/) | 21&nbsp;Oct |
+| SecurityLab.ru | [Как нейросети очищают телевизоры от рекламы и почему CleanYourTV может быть опасен](http://www.securitylab.ru/blog/personal/xiaomite-journal/363222.php) | 26&nbsp;Oct |
+| REGIONS.RU | [Ваш телевизор слишком умный: как отключить рекламу и слежку с помощью ИИ](https://regions.ru/bezopasnost/vash-televizor-slishkom-umnyj-kak-otkljuchit-reklamu-i-slezhku-s-pomoschju-ii) | 22&nbsp;Oct |
 
 ## Belarus
 
@@ -442,6 +487,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | AI포스트 (AIPOST) | [스마트TV 홈 화면 갈아엎는 '바이브 코딩' 기법 화제…"스폰서 광고·시청 추적에 질렸다"](https://www.aipostkorea.com/news/articleView.html?idxno=13025) | 20&nbsp;Oct |
 | 위키트리 (WikiTree) | [스마트TV 광고 떼는 클로드 코드 열풍…조회 620만 속 벽돌 된 TV도 나왔다](https://www.wikitree.co.kr/articles/1168141) | 21&nbsp;Oct |
 | 위키트리 (WikiTree) | [클로드 코드로 TCL 구글TV 앱 25개를 껐더니 메모리 192MB가 83MB로 줄었다](https://www.wikitree.co.kr/articles/1167807) | 21&nbsp;Oct |
+| GeekNews | [CleanYourTV - Android TV의 불필요한 앱을 끄고 Apple TV 스타일](https://news.hada.io/topic?id=36315) | 31&nbsp;Oct |
 
 ## Australia
 
@@ -477,6 +523,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | connect.ro | [Utilizatorii folosesc AI-ul pentru programarea unor aplicații fără reclame sau funcții inutile](https://www.connect.ro/2026/10/20/utilizatorii-folosesc-ai-ul-pentru-programarea-unor-aplicatii-fara-reclame-sau-functii-inutile/) | 20&nbsp;Oct |
 | Mobilissimo.ro | [Oamenii folosesc AI ca să-și facă televizoarele smart mai simple, fără reclame în meniu](https://www.mobilissimo.ro/stiri-diverse/oamenii-folosesc-ai-ca-sa-si-faca-televizoarele-smart-mai-simple-fara-reclame-in-meniu) | 23&nbsp;Oct |
 | Playtech.ro | [Oamenii folosesc inteligența artificială ca să scape de reclamele de pe Smart TV. Claude Code poate transforma un televizor lent într-unul mult mai rapid](https://playtech.ro/2026/oamenii-folosesc-inteligenta-artificiala-ca-sa-scape-de-reclamele-de-pe-smart-tv-claude-code-poate-transforma-un-televizor-lent-intr-unul-mult-mai-rapid/) | 20&nbsp;Oct |
+| Arena IT | [CleanYourTV - aplicația open-source care te scapă de reclamele și bloatware-ul din Android TV](https://arenait.ro/cleanyourtv-aplicatia-open-source-care-scapa-reclamele-bloatware-android/) | 27&nbsp;Oct |
 
 ## Sweden
 
@@ -492,6 +539,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | 流動日報 New Mobile Life | [CleanYourTV 經 Wi-Fi 清理 Android 電視　換上 Apple TV 風格主畫面](https://www.newmobilelife.com/2026/10/24/cleanyourtv-android-tv-cleanup/) | 24&nbsp;Oct |
 | ezone.hk | [智能電視成日滿屏廣告？外國掀起「Dumb TV」熱潮　用 AI 清走廣告廢 App 還原極簡風格【附熱門工具推薦】](https://ezone.hk/article/20115279) | 26&nbsp;Oct |
 | 香港01 HK01 | [Android TV廣告多好Lag？教你靠AI提速　主畫面秒變Apple TV](https://www.hk01.com/%E5%AF%A6%E7%94%A8%E6%95%99%E5%AD%B8/60404790/android-tv%E5%BB%A3%E5%91%8A%E5%A4%9A%E5%A5%BDlag-%E6%95%99%E4%BD%A0%E9%9D%A0ai%E6%8F%90%E9%80%9F-%E4%B8%BB%E7%95%AB%E9%9D%A2%E7%A7%92%E8%AE%8Aapple-tv) | 29&nbsp;Oct |
+| Techapple.com | [CleanYourTV　11 日 4.3 萬星　為 Android TV 剷廣告](https://techapple.com/archives/64873) | 29&nbsp;Oct |
 
 ## Bulgaria
 
@@ -532,6 +580,7 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Outlet | Article | Date |
 | --- | --- | --- |
 | Tivi | [Uusi ilmiö leviää: Näin älytelevisiosta poistetaan mainokset ja seuranta](https://www.tivi.fi/uutiset/a/a53cf770-c442-48dc-ae8b-79f148d40a88) | 20&nbsp;Oct |
+| Iltalehti | [Näin käyttäjät "tyhmentävät" älytelkkareitaan - Eroon turhista ominaisuuksista ja seurannasta](https://www.iltalehti.fi/digiuutiset/a/6f180c8f-59c9-4790-acc7-582467adaacf) | 24&nbsp;Oct |
 
 ## Serbia
 
@@ -550,6 +599,25 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Outlet | Article | Date |
 | --- | --- | --- |
 | Nichan (نيشان) | [الذكاء الاصطناعي يقود تمرداً على إعلانات التلفزيونات الذكية وجمع بيانات المشاهدة](https://nichan.ma/373118/) | 27&nbsp;Oct |
+
+## Croatia
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| Bug.hr | [Očistite pametni televizor uz CleanYourTV: bolje sučelje bez reklama nastalo vibe kodiranjem](https://www.bug.hr/televizori/ocistite-pametni-televizor-uz-cleanyourtv-bolje-sucelje-bez-reklama-nastalo-63714) | 21&nbsp;Oct |
+| Logično | [Philips televizor bez reklama uz GitHub i AI asistenta](https://www.logicno.com/zivotni-stil/philips-televizor-bez-reklama-uz-github-i-ai-asistenta.html) | 19&nbsp;Oct |
+
+## Iran
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| Techna (تکنا) | [توسعه دهندگان با کلاد، تبلیغات تلویزیون های Android TV و Google TV را حذف میکنند](https://techna.news/news-139161.html) | 22&nbsp;Oct |
+
+## Slovenia
+
+| Outlet | Article | Date |
+| --- | --- | --- |
+| Monitor.si | [Uporabniki z umetno inteligenco "čistijo" pametne televizorje](https://www.monitor.si/novica/uporabniki-z-umetno-inteligenco-cistijo--pametne-televizorje/252067/) | 26&nbsp;Oct |
 
 ## Online (newsletters, blogs, AI news)
 
@@ -596,6 +664,14 @@ Wrote about it and not here? Open an issue or a pull request with the link.
 | Bitdoze | [Replace Smart TV Home Screen & Remove Ads (Every TV OS)](https://www.bitdoze.com/smart-tv-custom-home-screen-remove-ads/) | 26&nbsp;Oct |
 | Bitdoze (Español) | [Cambia la Pantalla de Inicio de tu Smart TV sin Anuncios](https://www.bitdoze.com/es/pantalla-inicio-smart-tv-sin-anuncios/) | 26&nbsp;Oct |
 | Quickfever | [How to Debloat Your Android TV Using Antigravity (CleanYourTV Guide)](https://quickfever.com/how-to-debloat-your-android-tv-using-antigravity) | 28&nbsp;Oct |
+| Tekticia | [CleanYourTV project hits 41K GitHub stars in 10 days](https://tekticia.com/cleanyourtv-project-hits-41k-github-stars-in-10-days/) | 28&nbsp;Oct |
+| LionTree LT Weekly | [LT Weekly: Oct 23, 2026](https://liontree.com/lt-weekly/lt-weekly-oct-23-2026/) | 27&nbsp;Oct |
+| TechKnowledge | [مستخدمو أجهزة التلفزيون الذكية يوظفون الذكاء الاصطناعي للإطاحة بالإعلانات وحجب تتبع المشاهدة](https://techknowledge.news/%D9%85%D8%B3%D8%AA%D8%AE%D8%AF%D9%85%D9%88-%D8%A3%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D8%AA%D9%84%D9%81%D8%B2%D9%8A%D9%88%D9%86-%D8%A7%D9%84%D8%B0%D9%83%D9%8A%D8%A9-%D9%8A%D9%88%D8%B8%D9%81%D9%88/) | 24&nbsp;Oct |
+| GSMDome | [Developers Are Using AI and ADB to Strip Down Smart TV Interfaces](https://www.gsmdome.com/developers-are-using-ai-and-adb-to-strip-down-smart-tv-interfaces) | 23&nbsp;Oct |
+| Columbus Post | [Consumers Are Using AI to Make Smart TVs Simple Again as Frustration Grows Over Ads and Privacy](https://columbuspost.com/consumers-are-using-ai-to-make-smart-tvs-simple-again-as-frustration-grows-over-ads-and-privacy/) | 21&nbsp;Oct |
+| AI Daily Post | [AI Tools Help Users Disable Smart TV Ads](https://aidailypost.com/news/people-use-ai-make-smart-tvs) | 19&nbsp;Oct |
+| The Brief | [AI Prompts Are Turning Smart TVs Simple Again](https://www.thebrief.news/en/standard/article/33931/ai-prompts-are-turning-smart-tvs-simple-again) | 19&nbsp;Oct |
+| The Daily Tech Feed | [Users Turning Smart TVs into "Dumb TVs" Using AI Hacks](https://thedailytechfeed.com/users-turning-smart-tvs-into-dumb-tvs-using-ai-hacks/) | 19&nbsp;Oct |
 
 ## Videos
 
