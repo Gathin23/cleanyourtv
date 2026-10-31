@@ -68,10 +68,10 @@ See [`examples/lyncast-x3aq/debloat.txt`](../../examples/lyncast-x3aq/debloat.tx
 - `com.android.dreams.basic` (AOSP screensaver)
 - `com.android.traceur` (System tracing)
 - `com.android.htmlviewer` (HTML viewer)
-- `com.toofifi.lineserver` (Cast server)
-- `com.mphotool.usbcastserver` (USB mirror server)
 
 ### Off by Choice (Commented Out in `debloat.txt`)
+- `com.toofifi.lineserver` (Cast server)
+- `com.mphotool.usbcastserver` (USB mirror server)
 - `com.google.android.youtube.tv` (Stock YouTube TV)
 - `com.google.android.katniss` (Google Assistant / voice search)
 

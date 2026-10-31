@@ -29,8 +29,8 @@ com.android.companiondevicemanager
 com.android.dreams.basic
 com.android.traceur
 com.android.htmlviewer
-com.toofifi.lineserver
-com.mphotool.usbcastserver
+# com.toofifi.lineserver  # cast receiver; casting stays on in shared lists (this set has it off)
+# com.mphotool.usbcastserver  # USB mirroring receiver; casting stays on in shared lists (this set has it off)
 
 # Off by choice (owner's choice; uncomment to disable)
 # com.google.android.youtube.tv
