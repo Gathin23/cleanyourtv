@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi/Fengmi (Formovie) MiProjM05 projector (eva, Amlogic)",
+  "os": "Android TV 9",
+  "brand": "Xiaomi",
+  "notes": "Google/Xiaomi telemetry and partner auto-installs, preloaded apps, factory test suite, voice assistant (off by choice), legacy leanback launcher pieces; keystone, focus, Wi-Fi (setupwraith) and Amlogic system kept; theme for the dock and Live TV: [notes](xiaomi-miprojm05/README.md)"
+}

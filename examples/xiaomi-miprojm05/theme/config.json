@@ -1,0 +1,9 @@
+{
+  "dock_apps": ["com.netflix.ninja", "com.google.android.youtube.tv", "com.amazon.amazonvideo.livingroom", "com.canal.android.canal"],
+  "hidden_apps": ["com.google.android.tv"],
+  "live_tv_package": "com.google.android.tv",
+  "columns": 4,
+  "rows_below_dock": 0,
+  "background_color": "#000000",
+  "wallpaper": false
+}

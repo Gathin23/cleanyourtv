@@ -1,0 +1,52 @@
+# Xiaomi/Fengmi (Formovie) MiProjM05 projector (codename eva), Android 9 (SDK 28), build PQ3B.190705.003.1912,
+# security patch 2021-09-05, ~2 GB RAM (about 230 MB free at stock boot). Stock launcher: com.google.android.tvlauncher.
+# Fingerprint: MI/eva/eva:9/PQ3B.190705.003/1912:user/release-keys
+#
+# Apply:   TV_HOST=<ip> tools/disable.sh examples/xiaomi-miprojm05/debloat.txt
+# Undo:    TV_HOST=<ip> tools/restore.sh examples/xiaomi-miprojm05/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this projector:
+# - Leave alone: com.fengmi.projector.imaging (keystone, focus, imaging guide), com.formovie.gsettings (voice key,
+#   USB receivers), com.fengmi.fmsettings, com.fengmi.platform and com.formovie.fmutils (persistent),
+#   com.android.camera2 (autofocus camera), com.fengmi.projector045G/055G/135MGN (overlays), com.droidlogic*
+#   (Amlogic system, tuner/HDMI inputs, Bluetooth).
+# - The saved Wi-Fi network belongs to com.google.android.tungsten.setupwraith: not listed, disabling it would
+#   delete the network and take the projector off Wi-Fi.
+
+# Google / Xiaomi telemetry, feedback, partner auto-installs
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.google.android.partnersetup           # RLZ ping, partner tracking
+android.autoinstalls.config.xiaomi        # Play auto-install of partner apps
+
+# Preloaded apps nobody asked for
+com.ted.android.tv
+com.nousguide.android.rbtv                # Red Bull TV
+com.cbsnews.ott
+com.espn.score_center
+com.google.android.play.games
+com.google.android.videos                 # Play Movies & TV
+com.google.android.youtube.tvmusic
+cn.formovie.fengos.usermanual
+com.fengmi.testsuite                      # factory test suite
+
+# Voice assistant (owner does not use it; the remote's mic button does nothing afterwards)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+
+# Apps the owner installed and does not use
+de.gymondo.app.gymondo
+com.tinymission.dailyworkoutsfree
+com.dfwj
+com.vectorunit.purple.googleplay
+com.mar.btdelay
+
+# Legacy launcher pieces and Google's ambient screensaver
+com.google.android.leanbacklauncher
+com.google.android.leanbacklauncher.recommendations
+com.google.android.backdrop
+
+# Stock launcher's recommendation rows (the stock launcher itself is disabled by launcher/build-and-install.sh;
+# tools/restore.sh re-enables it)
+com.google.android.tvrecommendations
