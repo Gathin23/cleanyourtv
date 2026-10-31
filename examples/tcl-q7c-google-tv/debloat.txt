@@ -159,3 +159,39 @@ com.google.android.tungsten.setupwraith
 # tcl extras
 # com.tcl.factory.view
 # com.tpa.kb
+# ---------------------------------------------------------------------------
+# Second unit: zh-TW region, same board and same build (G08_4K_GB, UTT2.250416.001 AU02).
+# Set up 18 October 2026, lived with for five days. Applied by hand, then checked with
+# `pm list packages -d` (36 entries). The differences from the list above:
+#
+# KEPT on that unit - comment the matching line above if you apply this list to it:
+#   AirPlay            com.tcl.airplay2, com.mediatek.AirplayAPK, com.mediatek.airplaydaemon
+#   Google Assistant   com.google.android.katniss
+#   TCL account        com.tcl.usercenter
+#   TCL guard          com.tcl.guard
+#   Alexa              com.tcl.smartalexa
+#   soundbar updater   com.tcl.UpdatePeripheral
+#   hearing test       com.tcl.hearaid
+#   USB/DLNA player    com.tcl.ui_mediaCenter
+#   Play Movies        com.google.android.videos
+#   Play Games         com.google.android.play.games
+#
+# ALSO DISABLED on that unit, on top of the list above:
+com.tcl.dashboard                      # TCL dashboard rows. Verified with this disabled on that unit:
+                                       # the remote's Input key still opens TCL's own source panel
+                                       # (KEYCODE_TV_INPUT 178 -> Home / AirPlay / HDMI rows, then apps).
+                                       # The panel comes from com.tcl.suspension, which stays enabled,
+                                       # so the lists that keep dashboard do not need it for the Input key
+com.tcl.partnercustomizer
+com.tcl.interactive
+com.tcl.hotelmenu                      # hotel mode menu
+com.tcl.useragreement                  # EULA screen
+com.tcl.eva                            # TCL voice assistant (no katniss on a zh-TW set either)
+tv.mopa.ginga                          # Ginga middleware, not used outside Brazil
+com.google.android.partnersetup
+com.google.android.tv.remote.service   # Google TV phone-app virtual remote
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.uwb.resources              # no UWB radio
+com.android.cameraextensions           # no camera
+com.android.wallpaperbackup

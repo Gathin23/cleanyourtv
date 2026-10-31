@@ -49,6 +49,20 @@ join it again in Settings before you disable the wizard.
 TV_HOST=<tv-ip> tools/restore.sh examples/tcl-q7c-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 ```
 
+## Why the Home key takes `pm disable-user` and nothing else
+
+Confirmed again on the zh-TW unit of this board. Four other routes were tried on a live set and do not work on
+this firmware:
+
+| Route | Result |
+|---|---|
+| `cmd package set-home-activity --user 0 <component>` | Prints `Success`, but nothing changes: `resolve-activity` still returns the old launcher and no preferred activity is recorded. A no-op on this build. |
+| `android:priority` on the HOME `<intent-filter>` | Ignored for third-party apps. The installed APK was pulled back and verified to carry `priority="2"`, then `"1000"`; the package manager still reported `priority=0` and kept resolving to `setupwraith`. |
+| `cmd role add-role-holder android.app.role.HOME <pkg>` | Succeeds — `dumpsys role` shows `holders=<pkg>` — but HOME resolution ignores it. |
+| `pm disable-user <setupwraith>/<...>.RecoveryActivity` | Refused: `SecurityException: Shell cannot change component state for ...` |
+
+The last one is why the whole `setupwraith` package has to go, and why the Wi-Fi-owner check above matters.
+
 ## Remote buttons
 
 Every button on this remote arrives as scancode 240 (`KEY_UNKNOWN`). TCL's `TclKeyLayoutMap` tells them apart by HID
