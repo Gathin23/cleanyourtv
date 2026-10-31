@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <!-- Deep space indigo background -->
+    <path android:fillColor="#0B132B" android:pathData="M0,0h320v180h-320z" />
+    <!-- Outer orbital ring -->
+    <path android:strokeColor="#2210B981" android:strokeWidth="3"
+        android:pathData="M160,90m-68,0a68,68 0,1 1,136 0a68,68 0,1 1,-136 0" />
+    <!-- Poppy Emerald-Cyan Globe -->
+    <path android:fillColor="#0E7490"
+        android:pathData="M160,90m-46,0a46,46 0,1 1,92 0a46,46 0,1 1,-92 0" />
+    <!-- Continents -->
+    <path android:fillColor="#10B981"
+        android:pathData="M136,64c10,-4 22,2 26,12c4,10 -6,22 -14,28c-8,6 -18,2 -20,-8c-2,-10 0,-28 8,-32zM172,72c12,-2 20,8 18,20c-2,12 -10,22 -18,20c-8,-2 -10,-14 -8,-24c2,-10 2,-15 8,-16z" />
+    <!-- Golden Star Badge -->
+    <path android:fillColor="#FBBF24"
+        android:pathData="M196,46l4,9l10,1l-7,7l2,10l-9,-5l-9,5l2,-10l-7,-7l10,-1z" />
+</vector>
+
