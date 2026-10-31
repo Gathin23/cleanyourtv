@@ -36,7 +36,7 @@ com.android.health.connect.backuprestore
 
 # Content recommendations & FAST channels
 com.google.android.tvrecommendations
-com.cltv.fast
+# com.cltv.fast   # this set has it off; TV middleware, commented out for shared lists
 
 # Preloaded unused media / games apps
 com.google.android.youtube.tvmusic

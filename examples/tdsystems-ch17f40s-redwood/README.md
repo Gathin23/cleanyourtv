@@ -53,34 +53,12 @@ tools\theme.ps1 -TvHost <tv ip> -Wallpaper ruta\a\tu\imagen.jpg
 ```
 O aplicar alguno de los temas incluidos en la carpeta `themes/`:
 ```powershell
-tools\theme.ps1 -TvHost <tv ip> themes\apple-tv
+tools\theme.ps1 -TvHost <tv ip> themes\glass
 ```
 
 ---
 
-## 4. Desactivar el DNS Privado AdGuard (Undo)
-
-Si en algún momento deseas desactivar el bloqueador de anuncios AdGuard DNS y volver al DNS predeterminado:
-```powershell
-tools\venv\Scripts\python.exe tools\tv.py "settings put global private_dns_mode opportunistic"
-```
-
----
-
-## 5. Panel de Control y Automatización
-
-Puedes gestionar y volver a aplicar todas las configuraciones fácilmente ejecutando:
-
-- **`reaplicar-tdsystems.bat`** (doble clic en la raíz de la carpeta).
-  - Te pregunta la IP de la TV por si hubiera cambiado.
-  - **Opción 1 (Hacer todo a la vez):** Quita telemetría y bloatware, activa AdGuard DNS, asegura el launcher Apple TV con tu dock fijo (TDT, Netflix, YouTube, Play Store) y te permite elegir el tema o fondo de pantalla que quieras (o una foto propia).
-  - **Opción 2 (Cambiar tema / fondo):** Cambia el tema visual o pon cualquier foto propia como wallpaper conservando tu orden de aplicaciones.
-  - **Opción 3 (Revertir todo a estado de fábrica):** Reactiva todas las aplicaciones originales, restaura el launcher de fábrica y el DNS original.
-  - **Ventana de confirmación:** Al terminar cada proceso, muestra un diálogo gráfico interactivo con botones **Aceptar**, **Reintentar** o **Cancelar**.
-
----
-
-## 6. Cierre seguro de ADB al terminar
+## 4. Cierre seguro de ADB al terminar
 
 Por seguridad, una vez concluida la configuración en el televisor:
 1. En el televisor ve a: **Ajustes** → **Preferencias del dispositivo** → **Opciones de desarrollador**.
