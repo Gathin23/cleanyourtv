@@ -311,6 +311,45 @@
                             android:includeFontPadding="false" />
                     </LinearLayout>
 
+                    <!-- The weather line under the clock (header_weather, see HeaderWeather), mirrored for a
+                         right-to-left header: gone until there is a line to show. -->
+                    <LinearLayout
+                        android:id="@+id/weatherRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:textDirection="rtl"
+                        android:gravity="center_vertical|end"
+                        android:focusable="false"
+                        android:importantForAccessibility="no"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/weatherIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:singleLine="true"
+                            android:textColor="#E6FFFFFF"
+                            android:textSize="16sp"
+                            android:fontFamily="@string/font_regular"
+                            android:includeFontPadding="false" />
+
+                        <TextView
+                            android:id="@+id/weatherText"
+                            android:gravity="right"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:textColor="#A6FFFFFF"
+                            android:textSize="14sp"
+                            android:fontFamily="@string/font_regular"
+                            android:letterSpacing="0.14" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
 

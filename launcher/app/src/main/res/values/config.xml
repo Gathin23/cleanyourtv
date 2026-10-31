@@ -18,9 +18,9 @@
     <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->
     <string-array name="dock_apps">
         <item>com.netflix.ninja</item>
-        <item>com.amazon.amazonvideo.livingroom</item>
         <item>com.google.android.youtube.tv</item>
-        <item>in.startv.hotstar</item>
+        <item>org.jellyfin.androidtv</item>
+        <item>jp.co.sharp.av.android.aquostvapp</item>
     </string-array>
     <!-- With fewer dock_apps than columns (or a dock app that is not installed), the free dock slots take
          the first grid apps, so the dock never shows a gap. false leaves them empty (#162); a theme can
@@ -34,7 +34,7 @@
     </string-array>
 
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
-    <string name="live_tv_package" translatable="false">com.mediatek.wwtv.tvcenter</string>
+    <string name="live_tv_package" translatable="false">jp.co.sharp.av.android.aquostvapp</string>
 
     <!-- Open the Live TV app above the first time Home comes up after the TV is switched on, for sets that are
          mostly used for broadcast TV. Once per boot: Home after that stays Home. Can also be set with
@@ -451,6 +451,12 @@
          Empty = off: nothing is read or watched. The launcher only reads what the add-on publishes and never goes
          online. A theme can set "game_day". -->
     <string name="game_day" translatable="false"></string>
+
+    <!-- The weather line under the clock: the package of an add-on that publishes it (the Weather Glance
+         add-on: io.github.lostininaka.weatherglance; contract in docs/modules.md). Empty = off: nothing is read
+         or watched. The launcher only reads what the add-on publishes and never goes online - the add-on does
+         the fetching. A theme can set "header_weather". -->
+    <string name="header_weather" translatable="false"></string>
 
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100

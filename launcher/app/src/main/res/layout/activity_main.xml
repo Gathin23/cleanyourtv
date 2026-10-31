@@ -300,6 +300,46 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- The weather line under the clock (header_weather, from an add-on's provider, see
+                     HeaderWeather): the condition's glyph and "14° DRIZZLE · TAKIZAWA", gone until the launcher
+                     actually has a line to show. -->
+                <LinearLayout
+                    android:id="@+id/weatherRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:focusable="false"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/weatherIcon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textColor="#E6FFFFFF"
+                        android:textSize="16sp"
+                        android:fontFamily="@string/font_regular"
+                        android:includeFontPadding="false" />
+
+                    <TextView
+                        android:id="@+id/weatherText"
+                        android:gravity="left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:textColor="#A6FFFFFF"
+                        android:textSize="14sp"
+                        android:fontFamily="@string/font_regular"
+                        android:letterSpacing="0.14"
+                        android:textAllCaps="true" />
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- Shown only when show_stats is on. Outside leftBlock, so the top buttons stay level with the clock
