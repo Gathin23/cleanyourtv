@@ -50,6 +50,10 @@ state = load()
 def run(command):
     if "pm install" in command:
         return "Success\n"
+    # A TV that never held WRITE_SECURE_SETTINGS: the revoke step finds it denied. The step itself is run
+    # against fake pm and dumpsys in test_launcher_min_sdk; here only the handover is under test.
+    if "pm revoke" in command and "WRITE_SECURE_SETTINGS" in command:
+        return "secure-settings-revoked\n"
     if "am start" in command:
         if state["start_fails"]:
             return ("Starting: Intent { cmp=com.gathin.tvhome/.MainActivity }\n"
@@ -153,7 +157,7 @@ class HandoverTest(unittest.TestCase):
         state.update(overrides)
         self.state_path.write_text(json.dumps(state))
         env = {k: v for k, v in os.environ.items()
-               if k not in ("STOCK_LAUNCHER", "INPUT_KEY_SERVICE", "HOME_KEY_SERVICE")}
+               if k not in ("STOCK_LAUNCHER", "INPUT_KEY_SERVICE", "HOME_KEY_SERVICE", "RESTORE_KEY_SERVICES")}
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))

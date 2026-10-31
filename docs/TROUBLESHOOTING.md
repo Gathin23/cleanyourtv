@@ -987,8 +987,9 @@ tools/tv.py 'dumpsys accessibility'
 
 A force stop of the launcher (Settings > Apps, a cleaner app, `am force-stop`) takes both helpers off
 that list. With `restore_key_services` on (`config.xml` or a theme) and `WRITE_SECURE_SETTINGS` granted
-(`RESTORE_KEY_SERVICES=1` at install, `-RestoreKeyServices` on Windows), Home puts the helpers that were
-running back on the list the next time it starts; a helper turned off in Settings stays off.
+(`RESTORE_KEY_SERVICES=1` on every install, `-RestoreKeyServices` on Windows; an install without it takes
+the grant back), Home puts the helpers that were running back on the list the next time it starts; a helper
+turned off in Settings stays off.
 
 - **Home puts the helper back on the list after a force stop, and it still is not bound.** `dumpsys
   accessibility` then shows `Bound services:{}`, `accessibility_enabled` falls back to `0`, and the helper
@@ -1380,8 +1381,10 @@ first two writes are what make the opt-in survive, so read why:
 
 - `WRITE_SECURE_SETTINGS` is what lets the launcher write the helper back onto the list at screen-on.
   Without it `GuardKeep` gives up silently and the helper stays off after the first standby, which looks
-  like the helper having died. `RESTORE_KEY_SERVICES=1` at install already grants it
-  ([the force-stop section](#accessibility-helper-enabled-but-the-remote-button-does-nothing)).
+  like the helper having died. `RESTORE_KEY_SERVICES=1` at install (`-RestoreKeyServices` on Windows)
+  already grants it ([the force-stop section](#accessibility-helper-enabled-but-the-remote-button-does-nothing)),
+  and an install without it takes the grant back, the one made by hand above included, so once the opt-in is
+  on, pass it on every reinstall.
 - `GuardRevival` is the listener the system re-binds once the process is gone, and firmware that kills
   third-party apps in standby takes the screen-on watch with it. The rebind is what re-arms it.
 
