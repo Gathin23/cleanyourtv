@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - Norma Launcher</title>
+  <style>
+    :root {
+      --bg: #090c10;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --heading: #ffffff;
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.15);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand img {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(88, 166, 255, 0.25);
+    }
+    h1 {
+      color: var(--heading);
+      margin: 0;
+      font-size: 28px;
+    }
+    .badge {
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    h2 {
+      color: var(--heading);
+      margin-top: 32px;
+      margin-bottom: 12px;
+      font-size: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    h3 {
+      color: var(--accent);
+      margin-top: 20px;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    p, li {
+      color: var(--text);
+    }
+    ul {
+      padding-left: 20px;
+    }
+    .notice {
+      background: var(--accent-glow);
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      border-radius: 6px;
+      margin: 20px 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 13px;
+      color: #8b949e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand">
+      <div>
+        <h1>Norma Launcher</h1>
+        <div class="badge">Privacy Policy & Project Lineage</div>
+      </div>
+    </div>
+
+    <p><em>Last Updated: October 31, 2026</em></p>
+
+    <div class="notice">
+      <strong>Open Source Attribution:</strong> Norma Launcher is developed as an enhanced customization and continuation of the open-source <strong>CleanYourTV</strong> project by <strong>gathin32</strong> under the MIT License. We express our deepest gratitude to gathin32 and all upstream contributors for their pioneering work on Android TV customization.
+    </div>
+
+    <h2>1. Introduction</h2>
+    <p>Norma Launcher ("we", "our", or "the app") provides a cinematic, high-performance home screen replacement for Android TV devices. We are committed to protecting your privacy. This Privacy Policy outlines what information is accessed, how it is handled, and confirms that <strong>no personal information is collected or transmitted outside your local device</strong>.</p>
+
+    <h2>2. Data Collection & Usage</h2>
+    <p>Norma Launcher adheres to a strict <strong>offline-first, privacy-by-design</strong> model. We do not maintain any servers, databases, or user accounts.</p>
+
+    <h3>A. Installed Applications</h3>
+    <p>The launcher accesses the list of applications installed on your TV via Android's built-in <code>PackageManager</code> API. This is necessary solely to display your apps on the home screen dock and 5×5 app drawer, and to allow you to launch, reorder, or organize them. This data never leaves your TV.</p>
+
+    <h3>B. Location Data (Weather & Timezone)</h3>
+    <p>Norma Launcher requests location permissions exclusively to provide accurate real-time local weather forecasts (temperature and conditions) and to keep the clock synchronized to your local timezone. Location coordinates are used only on-device to query open, public meteorological APIs (e.g., Open-Meteo). We do not record, store, or profile your location history.</p>
+
+    <h3>C. Local Storage & File Access</h3>
+    <p>When you customize wallpapers from internal storage, the built-in file browser reads image files located on your TV storage. All image processing and caching are stored locally within the app's private sandbox directory.</p>
+
+    <h3>D. Device Preferences & Audio</h3>
+    <p>Settings such as sound effect toggles, wallpaper themes, screensaver modes (Countdown Solat or Clocks), and dock layout preferences are stored strictly in private Android <code>SharedPreferences</code>.</p>
+
+    <h2>3. Third-Party Services and Advertising</h2>
+    <p>Norma Launcher is <strong>100% ad-free</strong>. We do not integrate any third-party advertising SDKs, commercial tracking mechanisms, or behavioral analytics tools.</p>
+
+    <h2>4. Children’s Privacy</h2>
+    <p>Norma Launcher does not collect any data from anyone, including children under the age of 13. The application is family-friendly and safe for all TV users.</p>
+
+    <h2>5. Security</h2>
+    <p>Because all data remains strictly confined to your TV, your settings and personal preferences are protected by Android's internal operating system sandbox security architecture.</p>
+
+    <h2>6. Contact & Open Source Repository</h2>
+    <p>For inquiries, feedback, or bug reports regarding Norma Launcher, please visit our GitHub repository issues tracker.</p>
+
+    <footer>
+      &copy; 2026 Norma Launcher. Built upon CleanYourTV by gathin32 under the MIT License.
+    </footer>
+  </div>
+</body>
+</html>
