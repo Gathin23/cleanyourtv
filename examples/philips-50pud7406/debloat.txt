@@ -103,10 +103,17 @@
 # (HOME_KEY_SERVICE=1) gets the key first and opens that app instead (checked on the real remote).
 # Not checked here: HDMI picture and DVB-T (IPTV only), held volume (external audio).
 
+# FIFTH UNIT (Italy): Philips 43PUS7406/12, Android TV 11, RTM2.210929.098.
+# Status: 2026-10-30 -- lived with after the changes. The five candidate Google packages below, `org.droidtv.tv.packageinfo`, `com.google.android.sss.authbridge`,
+# Freeview Play, CHILI and TalkBack stayed disabled after reboot. Home, Source, Settings, Netflix, YouTube
+# and Prime Video keys work on the real remote; Live TV and HDMI 4 show a picture. Assistant, Chromecast,
+# OTA and the MMP player stayed enabled.
+#
 # TPV / Philips telemetry
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517
 org.droidtv.gel                             # metrics collector running in candeebug's process
 org.droidtv.tv.frameworklogger              # persistent TPV logger: GET_TOP_ACTIVITY_INFO, EPG read, boot receiver
+org.droidtv.tv.packageinfo                  # PackageInfo service; disabled on the Italian unit
 com.tpv.xmic.ots.cms.client                 # TPV "CMS client" 0.6.04_ad: INTERNET, boot receiver, channel/EPG write
 
 # Philips content, store and demo
@@ -117,6 +124,7 @@ org.droidtv.android.fitness                 # Fitness Buddy
 fusion.android.tv.demo                      # retail demo
 com.mstar.android.tv.disclaimercustomization # vendor disclaimer screen
 com.mediatek.android.leanbacklauncher.partnercustomizer # partner rows for the stock launcher
+# com.mediatek.tv.freeviewplay              # UK service; off on the Italian 43PUS7406/12 unit
 # com.mediatek.wwtv.mediaplayer               # MMP USB media player; disabled on the EU unit, HDMI unchecked (see Second unit); needs TVINPUT_ALLOW=1
 
 # Google recommendations, ambient mode and casting
@@ -128,22 +136,25 @@ com.google.android.apps.mediashell          # Chromecast built-in; see quirk 2
 com.google.android.videos
 com.google.android.youtube.tvmusic
 com.google.android.play.games
+# com.google.android.marvin.talkback        # screen reader; off on the Italian 43PUS7406/12 unit, disable only when nobody needs it
+com.google.android.feedback                 # Market Feedback Agent
+com.google.android.partnersetup              # partner referrer and attribution
+com.google.android.onetimeinitializer        # first-setup task, not needed afterwards
+com.google.android.sss.authbridge            # set-up-from-phone helper; disabled on the Italian unit
+com.google.android.syncadapters.calendar     # no calendar app on the Italian unit
+android.autoinstalls.config.tpv.device       # TPV's Play auto-install list
 
 # Preinstalled streaming apps, off by the owner's choice
 com.netflix.ninja
 com.amazon.amazonvideo.livingroom
 com.spotify.tv.android
+# com.mgmedia.androidApp                     # CHILI; off on the Italian 43PUS7406/12 unit
 
 # Stock launcher, replaced by launcher/ -- build-and-install disables it after Home has moved
 # com.google.android.tvlauncher
 
-# Candidates from the third unit, disabled there with no regression in one evening (not yet lived with):
-# com.google.android.partnersetup             # Google partner setup: INTERNET, boot receiver
-# com.google.android.feedback
-# com.google.android.onetimeinitializer
-# android.autoinstalls.config.tpv.device      # PlayAutoInstallConfig: TPV's auto-install list
+# Candidate from the third unit, disabled there with no regression in one evening (not yet lived with):
 # com.android.providers.calendar              # no calendar app on a TV; boot receiver, runs in the background
-# com.google.android.syncadapters.calendar
 #
 # Kept on purpose: com.google.android.katniss (Assistant/voice; the owners of the second and third unit disabled it), com.android.tv.ota (updates),
 # com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, org.droidtv,
