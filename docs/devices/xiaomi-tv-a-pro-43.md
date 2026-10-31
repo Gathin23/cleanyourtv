@@ -1,4 +1,4 @@
-# Xiaomi TV A Pro 43-inch (`MiTV-MZTU0` / `river`): one-session report
+# Xiaomi TV A Pro 43-inch (`MiTV-MZTU0` / `river`): original report and independent 2026 audit
 
 Owner-reported 43-inch Xiaomi TV A Pro. Android reports the same `MiTV-MZTU0` model and `river`
 codename as the existing 75-inch 2026 profile ([examples/xiaomi-tv-a-pro-2026](../../examples/xiaomi-tv-a-pro-2026/debloat.txt)), but this unit has a different firmware build. This is
