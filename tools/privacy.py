@@ -23,10 +23,11 @@ record written before the first change, replayed by `tools/restore.sh`.
 Exit status: 0 the audit ran (the report printed, or the list written), 1 it reached the TV and then
 failed (the list could not be written, nothing was identified to write, a file that appeared while
 the audit ran), 2 the run never got as far as the TV: an argument was refused, the `--write` target
-cannot be written, `tools/tv.py` could not be loaded, or the connection failed in one of the ways
-tv.py explains (a refused port, a Wireless debugging port, a handshake that timed out, a TV that
-cannot be reached). Why it stopped goes to stderr, which a wrapper that throws the report on stdout
-away still shows.
+cannot be written, `tools/tv.py` could not be loaded, `TV_HOST` is not set or `TV_PORT` is not a port
+number (tv.py judges those at import and says so in its own words), or the connection failed in one of
+the ways tv.py explains (a refused port, a Wireless debugging port, a handshake that timed out, a TV
+that cannot be reached). Why it stopped goes to stderr, which a wrapper that throws the report on
+stdout away still shows.
 """
 import os
 import re
@@ -160,6 +161,22 @@ def connect():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     try:
         import tv
+    except SystemExit as exit_request:
+        # tv.py judges its own command line and its address at import time: with no TV_HOST it exits
+        # with "Set TV_HOST to your TV's IP address" and a TV_PORT it cannot read with "not a port
+        # number", each a string, so the interpreter printed it and exited 1 - the status this file
+        # keeps for "it reached the TV and then failed", which is what a wrapper around it reads, and
+        # what the owner reads when the audit was never run. Written here, so catching the exit does
+        # not hide the text; 2 is the status the docstring already gives a run that never got as far
+        # as the TV. theme_restart.py (#2763), recovery.py (#2767) and manage.py (#2692) answer the
+        # same import-time exits the same way. A module that exits 0 answered the call itself, and
+        # that status stands.
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            sys.stderr.write(exit_request.code + "\n")
+        sys.stderr.write("Nothing was asked of the TV.\n")
+        raise SystemExit(2)
     except ImportError as e:
         # Exit 2, where SystemExit(str) exits 1 by itself: no command was sent, and 1 is the status
         # this file keeps for a run that reached the TV and then failed. b64push.py, check.py and
