@@ -1,0 +1,16 @@
+{
+  "seasonal_skin": "christmas",
+  "festival_until": "2027-01-06",
+  "accent_color": "#E0262F",
+  "background_color": "#050A1C",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 0,
+  "wallpaper_dim": 12,
+  "dock_glass": true,
+  "dock_opacity": 40,
+  "dock_even_padding": true,
+  "ambient_glow": false,
+  "fade_rows": true,
+  "clock_wallpaper": true,
+  "clock_wallpaper_dim": 45
+}
