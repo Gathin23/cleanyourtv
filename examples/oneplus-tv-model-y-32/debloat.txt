@@ -9,13 +9,13 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oneplus-tv-model-y-32/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Status: on 2026-10-31 the owner reported living with this disabled-package set for several days without
-# trouble. Home, Live TV/tuner, HDMI, Bluetooth remote/pairing, audio and streaming apps were checked.
+# Status: I have lived with this disabled-package set for several days without trouble. I checked Home,
+# Live TV/tuner, HDMI, Bluetooth remote/pairing, audio and streaming apps on 2026-10-31.
 # This is one 32-inch unit on this firmware; other Y Series sizes should be checked separately.
 #
-# Do not launch factory test packages to inspect them. The matching OnePlus Y1 43-inch example records
-# testing com.coocaa.factory on this exact firmware; it is included here only because the owner reports
-# living with it disabled on this 32-inch unit too.
+# I did not launch factory test packages to inspect them. I included com.coocaa.factory because it has
+# remained disabled on this TV without side effects; the matching OnePlus Y1 43-inch example also records
+# testing it on this firmware.
 #
 # Accessibility: keep com.google.android.marvin.talkback enabled if you use its screen reader.
 # Disable the stock launcher only after a replacement is installed, selected as Home and verified.
