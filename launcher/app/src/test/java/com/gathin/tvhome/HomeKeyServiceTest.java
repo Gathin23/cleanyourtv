@@ -1,6 +1,7 @@
 package com.gathin.tvhome;
 
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -56,5 +57,18 @@ public class HomeKeyServiceTest {
     @Test public void alwaysGoesHomeAfterScreenOnUntilAKey() {
         assertTrue(HomeKeyService.stillArmed(SOON, SOON + HomeKeyService.SCREEN_ON_WINDOW_MS));
         assertFalse(HomeKeyService.stillArmed(SOON, 0));
+    }
+    @Test public void stockHomeRedirectsAtOnceWithNoProfile() {
+        assertEquals(HomeKeyService.REDIRECT, HomeKeyService.stockHomeAction(false, false, false));
+    }
+    @Test public void kidsProfileRunningKeepsTheStockHome() {
+        assertEquals(HomeKeyService.HOLD, HomeKeyService.stockHomeAction(true, false, false));
+        assertEquals(HomeKeyService.HOLD, HomeKeyService.stockHomeAction(true, true, true));
+    }
+    @Test public void homeAfterTheChooserWaitsForAProfileToStart() {
+        assertEquals(HomeKeyService.WAIT, HomeKeyService.stockHomeAction(false, true, false));
+    }
+    @Test public void theHomeReportingItselfTwiceKeepsWaiting() {
+        assertEquals(HomeKeyService.WAIT, HomeKeyService.stockHomeAction(false, false, true));
     }
 }

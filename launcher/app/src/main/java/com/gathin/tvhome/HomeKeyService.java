@@ -13,7 +13,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.Process;
 import android.os.SystemClock;
+import android.os.UserHandle;
 import android.os.UserManager;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -84,6 +86,12 @@ public class HomeKeyService extends AccessibilityService {
     private boolean powerOnAlways;
     /** power_on_home: re-arms after the screen turns on; null unless the key is on. */
     private BroadcastReceiver screenOnReceiver;
+    /** stock_home_redirect held back while a profile ran (profileRunning), and the stock home is still in front. */
+    private boolean heldForProfile;
+    /** The last screen was one of the stock launcher's own, not its home: its profile chooser, PIN or account check. */
+    private boolean afterProfileScreen;
+    /** Registered the first time the redirect holds back for a profile: the profile stopping releases it. */
+    private BroadcastReceiver profileStopped;
     /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter, or before the unlock. */
     private GamepadPassthrough gamepads;
     /** Screen-off receiver while guard_off_in_standby is set; null otherwise. */
@@ -141,6 +149,7 @@ public class HomeKeyService extends AccessibilityService {
         RemoteKeys.release(this);
         stopWaitingForUnlock();
         if (screenOnReceiver != null) unregisterReceiver(screenOnReceiver);
+        releaseProfileHold();
         if (standbyExit != null) {
             try {
                 unregisterReceiver(standbyExit);
@@ -297,6 +306,7 @@ public class HomeKeyService extends AccessibilityService {
     public boolean onUnbind(Intent intent) {
         RemoteKeys.release(this);
         if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
+        releaseProfileHold();
         return super.onUnbind(intent);
     }
 
@@ -321,7 +331,109 @@ public class HomeKeyService extends AccessibilityService {
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
         CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+        if (stockHome.isEmpty() || cls == null) return;
+        if (stockHome.contains(cls.toString())) {
+            int action = stockHomeAction(profileRunning(), afterProfileScreen, heldForProfile);
+            if (action == HOLD) {
+                holdForProfile();
+            } else if (action == WAIT) {
+                heldForProfile = true;
+                handler.removeCallbacks(profilePickCheck);
+                handler.postDelayed(profilePickCheck, PROFILE_START_MS);
+            } else {
+                openHome();
+            }
+            afterProfileScreen = false;
+        } else if (event.getPackageName() != null) {
+            try {
+                getPackageManager().getActivityInfo(new ComponentName(event.getPackageName().toString(), cls.toString()), 0);
+                boolean stockScreen = stockHomePackage.equals(event.getPackageName().toString());
+                // Another app came up. The stock launcher's own screens (its chooser, PIN, account check) close back
+                // onto its home with no window event for the home, so they keep a held redirect.
+                if (!stockScreen) heldForProfile = false;
+                else if (profileRunning()) holdForProfile();
+                afterProfileScreen = stockScreen;
+            } catch (PackageManager.NameNotFoundException notAnActivity) {
+                // a dialog, panel or overlay: the stock home is still in front
+            }
+        }
+    }
+
+    static final int REDIRECT = 0;
+    static final int HOLD = 1;
+    static final int WAIT = 2;
+
+    /** What stock_home_redirect does when the stock home comes up. A running profile (Google TV's kids profile) keeps
+     *  it: HOLD until the profile stops. Straight after one of the stock launcher's own screens, a profile picked in
+     *  its chooser may still be starting, and the home can report itself twice meanwhile: WAIT PROFILE_START_MS, then
+     *  decide. Otherwise REDIRECT here at once. */
+    static int stockHomeAction(boolean profileRunning, boolean afterStockScreen, boolean held) {
+        if (profileRunning) return HOLD;
+        if (afterStockScreen || held) return WAIT;
+        return REDIRECT;
+    }
+
+    /** How long a profile picked in the stock chooser gets to start (it took about 0.5 s on a Chromecast with Google TV). */
+    static final long PROFILE_START_MS = 2000;
+    private final Runnable profilePickCheck = this::afterProfilePick;
+
+    private void afterProfilePick() {
+        if (!heldForProfile) return;   // something else came up meanwhile
+        if (profileRunning()) {
+            holdForProfile();
+        } else {
+            heldForProfile = false;
+            openHome();
+        }
+    }
+
+    /** The profile hold, its timer and its receiver go with this binding: GuardKeep.stepOut keeps the process, so
+     *  a check left queued or a receiver left registered could still open Home after the service has left. */
+    private void releaseProfileHold() {
+        heldForProfile = false;
+        afterProfileScreen = false;
+        handler.removeCallbacks(profilePickCheck);
+        if (profileStopped != null) {
+            try {
+                unregisterReceiver(profileStopped);
+            } catch (RuntimeException ignored) {
+            }
+            profileStopped = null;
+        }
+    }
+
+    /** Back from the kids profile, the owner's stock home comes up a second or two before the profile has stopped,
+     *  and with key_filter off no Home key reaches this service to redirect it later. So the redirect waits for the
+     *  profile to stop, and goes ahead then if the stock home is still in front. */
+    private void holdForProfile() {
+        heldForProfile = true;
+        if (profileStopped != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        profileStopped = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (heldForProfile && !profileRunning()) {
+                    heldForProfile = false;
+                    openHome();
+                }
+            }
+        };
+        registerReceiver(profileStopped, new IntentFilter(Intent.ACTION_PROFILE_INACCESSIBLE));
+    }
+
+    /** A profile of this user is running: Google TV's kids profile, picked in its profile chooser. Its home is the
+     *  stock launcher's, locked to the kids' apps, so stock_home_redirect leaves it on screen instead of sending it
+     *  here. Switching back to the owner stops the profile, and the redirect works again. */
+    private boolean profileRunning() {
+        UserManager users = getSystemService(UserManager.class);
+        if (users == null) return false;
+        try {
+            for (UserHandle profile : users.getUserProfiles()) {
+                if (!profile.equals(Process.myUserHandle()) && users.isUserRunning(profile)) return true;
+            }
+        } catch (SecurityException e) {
+            // a firmware that will not say: redirect as before
+        }
+        return false;
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
@@ -406,7 +518,9 @@ public class HomeKeyService extends AccessibilityService {
     private void redirectHomeKey(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()
                 && isShortPress(event.getDownTime(), event.getEventTime(), ViewConfiguration.getLongPressTimeout())) {
-            handler.postDelayed(this::openHome, HOME_KEY_DELAY_MS);
+            handler.postDelayed(() -> {
+                if (!profileRunning()) openHome();
+            }, HOME_KEY_DELAY_MS);
         }
     }
 
