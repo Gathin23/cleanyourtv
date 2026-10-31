@@ -141,7 +141,7 @@
             android:exported="false"
             android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@style/Theme.TvHome" />
         <!-- Home button for remotes that send KEYCODE_ALL_APPS (Xiaomi). Opt-in: HOME_KEY_SERVICE=1
              build-and-install.sh; see HomeKeyService. -->
         <service
