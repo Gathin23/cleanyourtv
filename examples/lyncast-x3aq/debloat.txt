@@ -1,0 +1,37 @@
+# LYNCAST X3AQ / Allwinner H726 (LuminaOS): ro.product.model="rk3562_projector",
+# board sun50iw15p1 (H726 Focus), Android 14 (API 34).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/lyncast-x3aq/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/lyncast-x3aq/debloat.txt com.htc.luminaos
+#
+# Tested on retail unit, reboot-checked: CleanYourTV (com.gathin.tvhome) set as default Home
+# via cmd package set-home-activity persists across cold reboots with LuminaOS kept enabled.
+# Keystone, autofocus, remote pairing and HDMI inputs remain operational.
+#
+# ADB NOTE: Stock firmware actively reverts adb_enabled to 0 in SettingsProvider on user builds,
+# preventing standard ADB authorization. Mitigating this vendor restriction requires external
+# key provisioning or privileged access, which is outside the scope of CleanYourTV's non-root debloater.
+#
+# WARNING: Do NOT disable com.htc.luminaos completely! It hosts the projector's keystone correction
+# receivers and remote pairings. CleanYourTV becomes Home via set-home-activity without disabling LuminaOS.
+#
+# Telemetry, stock bloat and unneeded services:
+com.android.ytb
+com.android.nfx
+com.android.music
+com.softwinner.TvdVideo
+com.softwinner.awlogsettings
+com.htc.hyk_test
+com.htc.screensaver
+com.hotack.screensaversdk
+com.android.bips
+com.android.companiondevicemanager
+com.android.dreams.basic
+com.android.traceur
+com.android.htmlviewer
+# com.toofifi.lineserver  # cast receiver; casting stays on in shared lists (this set has it off)
+# com.mphotool.usbcastserver  # USB mirroring receiver; casting stays on in shared lists (this set has it off)
+
+# Off by choice (owner's choice; uncomment to disable)
+# com.google.android.youtube.tv
+# com.google.android.katniss

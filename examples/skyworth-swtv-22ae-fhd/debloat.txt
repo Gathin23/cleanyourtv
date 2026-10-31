@@ -1,5 +1,8 @@
 # Skyworth SWTV-22AE-FHD (codename umeda, MediaTek), Google TV / Android 14 (SDK 34),
 # firmware UKNV.260211.001.
+# Third unit: sold as Spanio (ro.product.model "2K NSTV", odm model SWTV-22AE-FHD, India), same firmware
+# UKNV.260211.001. Status: tested on 2026-10-31, one long session rather than several days; after a reboot Home came up on the
+# new launcher, and the HDMI input switch, YouTube and the Bluetooth pairing screen worked. Three lines below are commented out because the remote's app button needs them.
 # Live TV app: com.mediatek.wwtv.tvcenter (set it as live_tv_package and hide it in launcher config.xml).
 # Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh and build-and-install.sh:
 #   STOCK_LAUNCHER=com.google.android.apps.tv.launcherx launcher/build-and-install.sh).
@@ -24,13 +27,16 @@ com.smartdevice.factory
 mediatek.factorymenu.ui
 
 # Skyworth telemetry, ads, recommendation rows
+# Remote app button: with these three disabled it did nothing on the third unit. It sends HID 0x0C023D to
+# SkwGlobalKeyReceiver (com.smartdevice.global.service), which opens them. The owner re-enabled all three and the
+# button worked; which one it needs was not isolated. Add the three back to your own copy if you never press it.
 com.smartdevice.aftersale
 com.smartdevice.recordactivation
-com.smartdevice.dailymanage
-com.smartdevice.dailyshortcut
+# com.smartdevice.dailymanage  (Daily Manage; kept, see the note on the app button above)
+# com.smartdevice.dailyshortcut  (Skyworth quick panel: sources, shortcuts, recent apps; kept, see the note on the app button above)
 com.smartdevice.recommendation
 com.smartdevice.leanbacklauncher.customizer
-com.smartdevice.myapp
+# com.smartdevice.myapp  (Daily Key; kept, see the note on the app button above)
 com.Smartdevice.emanual
 
 # Google feedback

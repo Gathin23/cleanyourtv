@@ -1,0 +1,45 @@
+# Formovie XMing Page One projector (XMM2101, codename tianshan, MediaTek MT9630 / T32), Google TV on Android 11 (SDK 30),
+# firmware build RTM9.241015.132, security patch 2024-12-01. Native 1080p, Wi-Fi only, Bluetooth remote.
+# Stock launcher: com.google.android.apps.tv.launcherx (left enabled; see below). Live TV / input app: com.mediatek.wwtv.tvcenter.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/formovie-xming-page-one-tianshan/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/formovie-xming-page-one-tianshan/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# A light list, used daily for six days: all 14 packages were still disabled after a reboot, and HDMI, the Bluetooth
+# remote, focus and keystone worked after every batch (disabled in three batches); the owner reports nothing broke.
+# The saved Wi-Fi network belongs to com.google.android.tungsten.setupwraith (dumpsys wifi | grep -o 'cname=[^ ]*'),
+# so setupwraith and the stock launcher stay enabled: disabling setupwraith deletes that network.
+# setupwraith/.RecoveryActivity (HOME priority 1) outranks a third-party launcher, so the launcher cannot become Home by
+# disabling launcherx alone; that needs setupwraith off too, which also costs the saved Wi-Fi (and risks Chromecast).
+# Instead the reference launcher (com.gathin.tvhome) was installed with launcherx left enabled, HOME_KEY_SERVICE=1 and
+# "stock_home_redirect": "com.google.android.apps.tv.launcherx" (config.json in this folder). Home, the app buttons,
+# Input and the launcher's Inputs pill (HDMI) work. Trade-off measured on this set: with the helper on, holding Volume Up
+# gives one step per press instead of a ramp. Sideloading the launcher works (no verification failure).
+# Kept on purpose: com.fengmi.* (projector imaging = focus and keystone, Autopair = BLE remote, fmsettings, platform),
+# com.mediatek.* (tv service, tvinput, tvcenter), com.dolby.android.audio.service, fusion.android.tv.demo (RetailDisplay),
+# com.mstar.android.tv.disclaimercustomization, Play Store and Services, Gboard, the Google Assistant (katniss, tv.assistant),
+# Chromecast (mediashell), TalkBack and every streaming app (Netflix, YouTube, Prime Video, Disney+, HBO Max, Canal+,
+# TVN Player, TVP VOD) because the owner uses them.
+# Never launch com.fengmi.testsuite or mediatek.factorymenu.ui (factory tools). No firmware updater package of its own was seen.
+# Optional extra, not part of this list: Private DNS with an ad-blocking resolver (see README).
+
+# Google telemetry and partner auto-installs
+com.google.android.feedback
+com.google.android.partnersetup               # Google RLZ attribution pings
+android.autoinstalls.config.fomovie           # Play auto-install of partner apps (sic, "fomovie")
+com.google.android.apps.nbu.smartconnect.tv   # Google data meter / VPN client
+
+# Unused system services
+com.android.printspooler
+com.android.htmlviewer
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.android.hotspot2.osulogin
+com.google.android.syncadapters.calendar
+com.google.android.apps.tv.dreamx             # Ambient Mode screensaver
+
+# Preloaded Google apps nobody asked for
+com.google.android.play.games
+com.google.android.youtube.tvmusic

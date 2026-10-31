@@ -69,6 +69,11 @@ def connect():
     return Device()
 
 
+def connect_error(error):
+    # tools/tv.py words the failures it knows; the fake says the same for the one it raises.
+    return "192.168.1.50:5555 refused the connection: nothing listens for ADB there."
+
+
 def main():
     args = sys.argv[1:]
     if "--batch" in args:
@@ -184,7 +189,10 @@ class RecoveryRecordTest(unittest.TestCase):
     def test_failed_save_disables_nothing(self):
         self.tv(unreachable=True)
         result = self.run_script("disable.sh", str(self.list_path))
-        self.assertNotEqual(result.returncode, 0)
+        # 2, not 1: nothing was asked of the TV, so this is not a save that ran and failed (tools/
+        # recovery.py's reach(), and tests/test_recovery_unreached_tv.py).
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("Nothing was recorded and nothing was sent to the TV.", result.stderr)
         self.assertEqual(self.sent(), [], "a failed record must not be followed by a mutation")
         self.assertIsNone(self.record())
 

@@ -12,6 +12,12 @@
    `README.uk.md` ("та ще N видань: N статей із N країн") - and `MORE` in
    `tools/readme_featured.py`. Every page shows the same picture, so a translation that copies it states the
    same numbers in its own words: the three named here are the pages that carry it today, not the rule.
+   The end of each page's story section repeats the three numbers once more, in prose ("The coverage: 351
+   articles from 46 countries and 229 videos on YouTube and Bilibili, all in `docs/PRESS.md`"), and the same
+   test reads that sentence too: the page states the count twice, once in the card's alt text and once in
+   that sentence, so a reader who sees 352 in the picture and 351 in the story section is looking at a page
+   that was half updated. Leave the counts out of the sentence and the test says the paragraph no longer
+   carries them.
    Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the performance requirements install:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
    `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and
@@ -24,6 +30,6 @@
    the `[N videos]` count at the end of the intro line (its link points at the section itself), and the day
    in `views as of <date>` - no earlier than the newest row's date, so a video posted after the last read leaves the line
    stale ("the views are 'as of 27 Oct' and the newest video is dated 28 Oct"). A row added without moving
-   the count fails as "the intro says 147 videos and the Videos section holds 148 rows".
+   the count fails as "the intro says 229 videos and the Videos section holds 230 rows".
 
 Then run the tests: `python3 -m unittest discover -s tests -v`.

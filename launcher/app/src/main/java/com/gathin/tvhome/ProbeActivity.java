@@ -15,6 +15,7 @@ public class ProbeActivity extends Activity {
         getWindow().getDecorView().post(this::close);
     }
 
+    @SuppressWarnings("deprecation")
     private void close() {
         finish();
         overridePendingTransition(0, 0);

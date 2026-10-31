@@ -29,6 +29,9 @@ Before `tools/disable.sh` changes anything it writes down what the TV looked lik
 
 That record lives in `~/.cleanyourtv/`, one file per TV and list.
 
+- The file is named after the address the TV was reached at, so `TV_HOST` is what picks the record:
+  a run without it stops with tv.py's line and sends nothing to the TV, rather than falling back to
+  the whole list for a record it cannot name.
 - A second run of the same list keeps the first record instead of saving the cleaned-up state over it.
 - If you added packages to the list since, that run adds them to the record before disabling them, and
   a listed package that was not installed then but is installed and enabled now is recorded as enabled.
