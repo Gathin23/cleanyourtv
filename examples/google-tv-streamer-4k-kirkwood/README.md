@@ -25,10 +25,7 @@ HOME, even though `cmd package set-home-activity` reported success. I immediatel
 stock launcher and never disabled setupwraith. Keeping both enabled preserved Cast and the stock
 remote buttons without the credential enable/wait/disable ritual.
 
-I used a locally modified launcher and the existing Home accessibility helper for custom Home,
-boot and standby-wake behavior. Those launcher changes are outside this contribution and are
-not needed for the five-package list. This list alone leaves Google TV as default Home; it does
-not configure automatic custom-launcher startup with the unmodified reference launcher.
+This list alone leaves Google TV as default Home.
 
 ## Verification
 
@@ -37,8 +34,5 @@ in small batches, one package command per shell call, and checked screenshots an
 the device. I tested the physical Home, Netflix, YouTube, Settings/dashboard and Input buttons,
 and phone-to-TV YouTube casting after reboot. All worked.
 
-On 28 October, I checked that all five packages were still disabled, the Cast receiver and both
-stock Home packages were enabled, and the Home helper was bound with no crashed services.
-The device had the same boot ID as 21 October. A screenshot showed the custom launcher, and its
-process-exit history contained only my earlier package updates and deliberate force-stops, with
-no later crash or ANR exit recorded.
+On 28 October, I checked that all five packages were still disabled, and that the Cast receiver and both
+stock Home packages were enabled.
