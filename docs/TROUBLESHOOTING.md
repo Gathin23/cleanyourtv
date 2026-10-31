@@ -53,6 +53,14 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   as `_adb-tls-connect._tcp` while it is open: note it before switching Wireless debugging off, and
   run `tools/adb-closed.py <tv ip> <port>` straight after, before the reboot. After the reboot the old
   number reads closed either way, because Wireless debugging takes a new port each time it starts.
+- **ADB never stays on by itself.** Wireless debugging is not a persistent setting: it goes off with every
+  Wi-Fi drop, including each boot, and takes a new port each time it comes back, so there is nothing to
+  pin. On an unrooted Google TV the way to get it back without a person is an app that re-enables it on
+  boot, with the permission that writes the setting granted to it once over ADB:
+  `TV_HOST=<ip> tools/venv/bin/python -I tools/tv.py 'pm grant <package> android.permission.WRITE_SECURE_SETTINGS'`,
+  plus an exemption from battery optimisation. `com.tpn.adbautoenable` and tvQuick Actions Pro both do it;
+  wait one reboot before believing it. Remember what an always-on ADB means: port 5555 is plaintext, and
+  anything on the LAN that has the key gets a shell. Leave it off and turn it on for the job.
 - **Port 5555 stays closed and there is no Wireless debugging entry either**, so the pair-once recipe
   above has nothing to pair with: a [Philips 58PUS8505/62 The One, Android TV 12,
   `STT2.230526.001`](https://github.com/Gathin23/cleanyourtv/issues/1489) reported USB debugging on, no

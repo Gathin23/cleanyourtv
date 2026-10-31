@@ -11,7 +11,8 @@ com.looker.droidify
 com.phlox.tvwebbrowser
 com.tpn.adbautoenable
 de.twokit.castbrowser
-dev.vodik7.tvquickactions
+# dev.vodik7.tvquickactions   paid app: an APK copied from here carries no licence, so
+#                             install it from the Play Store on each unit with the buying account
 dnsfilter.android
 it.mediaset.infinitytv
 it.rainet.androidtv

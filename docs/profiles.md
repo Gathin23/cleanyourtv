@@ -62,6 +62,13 @@ backup. Launcher colours, dock and layout live in a [theme](../themes/README.md)
 [`tools/theme.sh`](../tools/theme.sh) pushes to any unit; a profile and a theme pushed together are
 the same home screen on both TVs.
 
+**Paid and account-bound apps do not belong in a profile.** An APK copied from another unit carries no
+licence: Play checks the purchase against the Google account signed in on *that* unit, so a paid app
+arrives and then refuses to run, as tvQuick Actions Pro does. Install those from the Play Store on each
+unit with the account that bought them, and keep them out of `apps.txt` — a line commented out there is
+read as "not part of this profile" and is never installed. The same applies to a patched or re-signed
+package built on one unit: `app.revanced.android.gms` is left out of `profiles/master/` for that reason.
+
 ## After a firmware update
 
 A firmware update re-enables packages and can hand Home back to the stock launcher. Run `check` to
