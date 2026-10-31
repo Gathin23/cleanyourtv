@@ -1,0 +1,75 @@
+# Haier HRA962X2_2G_ALI6G_A (Ali6G board), Android TV 9 (SDK 28), firmware PPR1.180610.011.20220314 test-keys
+# A China-market set on the Aliyun YunOS stack: the stock Home is Youku's launcher, and the
+# firmware's own packages are com.yunos.* / com.haier.*. Works as a starting point for other
+# Haier sets on Ali6G with the same package set.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/haier-hra962x2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/haier-hra962x2/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# The updater is disabled here on purpose: on this set com.yunos.osupdate pushed a new preload
+# (com.haier.aitv, an Aligenie content app) to /data/app while it was enabled. Re-enable it to
+# check for firmware updates (remove the whole line to let check.py --fix re-disable it).
+# Firmware updates arrive only while it is enabled.
+#
+# See README.md in this folder before installing the launcher: this firmware intercepts the
+# remote's Home key in YunOSTVPolicy and sends a private intent instead of the standard HOME
+# broadcast, so a stock launcher build does not receive the Home key without a manifest filter.
+
+# YunOS advertising and telemetry
+com.yunos.advert.service
+com.yunos.adoplayer.service            # the "Yun Huabao" ad screensaver content
+com.yunos.tv.probe
+com.yunos.ottauthclient
+com.aliyun.uuid
+com.alira.info
+com.haier.activeuser
+com.haier.tv.idst
+
+# Haier promos, retail and webview ad shells
+com.app.webapplication                 # Rendanheyi webview shell
+com.haier.tv.downloadapk               # silently installs pushed preloads
+com.haier.yushuo
+com.haier.tv.modelintroduction
+com.haier.tv.speakingtest
+
+# Aligenie voice assistant (remote voice button goes quiet)
+com.alibaba.ailabs.genievision
+com.yunos.tv.alitvasr
+com.haier.tv.intelligentvoice
+com.haier.voicehelper
+com.haier.aitv                         # Aligenie content app pushed by the updater
+
+# Casting
+com.yunos.tv.airplayserver             # AirPlay receiver; Chromecast/Miracast unaffected by this line alone
+com.droidlogic.miracast                # Miracast receiver
+
+# Haier U+ IoT
+com.haier.uhome.uplustv
+com.haier.uhome.messageboard
+com.haier.uhome.push
+com.haierubic.usmartdevice
+com.haier.tv.iotprovider
+
+# Preloaded content nobody asked for
+com.yunos.tv.edu
+com.yunos.music
+com.yunos.tv.bluray
+com.yunos.tv.offline_downloader
+com.haier.tv.kidsmode
+com.audiocn.karaoke.micmanager         # karaoke microphone manager
+com.tv.gesturehaier                    # hand-gesture control
+com.nibiru.play                        # VR video player
+com.nibiru.alipaytv
+com.haier.tv.hm                        # pushed Haier content app
+com.haier.haiertv.ims                  # pushed Haier content app
+
+# System tools replaced by the launcher
+com.yunos.tvmgr                        # "Security Manager" cleaner app
+
+# Firmware updater (see header)
+com.yunos.osupdate
+
+# Stock launchers, disabled only after launcher/build-and-install.sh made the new launcher Home
+com.youku.taitan.tv                    # Youku stock home with sponsored rows
+com.yunos.tv.homeshell
