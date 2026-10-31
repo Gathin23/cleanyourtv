@@ -57,3 +57,30 @@ STOCK_LAUNCHER=com.google.android.apps.tv.launcherx TV_HOST=<tv ip> launcher/bui
 - Debloat applied cleanly
 - CleanYourTV launcher (`com.gathin.tvhome`) installed and set as default HOME
 - Stock `com.google.android.apps.tv.launcherx` disabled
+
+## Additional SWTV-22SA-FHD units (28 October 2026)
+
+Owner report: [#2726](https://github.com/Gathin23/cleanyourtv/issues/2726).
+
+The similar **SWTV-22SA-FHD** model also reports `umeda` and product `SW7_B`.
+Two separate units were inspected during setup; this was not an Android 11-to-14
+upgrade test, and their builds do not replace the SWTV-22AE-FHD information above.
+
+| Reported model | Android / SDK | Firmware build |
+| --- | --- | --- |
+| SWTV-22SA-FHD | 11 / 30 | `RTM6.230109.128` |
+| SWTV-22SA-FHD | 14 / 34 | `UKNV.260211.001` |
+
+On these units, `cmd package set-home-activity` reported success while the Home
+resolver still selected `com.google.android.apps.tv.launcherx/.home.HomeActivity`.
+Do not use that success message alone as proof of a completed Home handover.
+On the Android 14 unit, the Home query listed launcherx at priority 2 and
+`com.google.android.tungsten.setupwraith/.RecoveryActivity` at priority 1.
+
+Only a subset of the optional telemetry/demo packages was disabled, in small
+batches. On the Android 14 unit, the post-reboot check found recordactivation,
+recommendation, Google feedback, the two store demos and the launcher customizer
+still disabled; recommendation had already been disabled before the session.
+The full list in this folder, its factory/test entries and the setupwraith removal
+path were **not** validated on these units. This note adds observations only; it
+does not expand the tested package list or change its defaults.
