@@ -1,0 +1,74 @@
+# Toshiba 55M550LP, Android 11 / SDK 30, firmware RTT2.220118.001 / 01.03.02.01 (security patch 2022-03-05),
+# Malaysia-market unit (RTM's RTMKLIK TV preinstalled). Android model string "Toshiba TV with MIC".
+# Fingerprint: Toshiba/songshan_emT_FFM/songshan:11/RTT2.220118.001/01.03.02.01:user/release-keys
+#
+# Hisense-built, not Vestel: ro.product.manufacturer=Hisense, device songshan, board m7632 (MediaTek). It is the
+# same board and build as examples/hisense-smarttv-4k-ffm-android11 (seven units there), so that header's notes
+# apply here too; this folder exists so a Toshiba owner finds it under Toshiba. Nothing in the Vestel-built
+# Toshiba lists (toshiba-cosmos-android-tv, toshiba-65ua2363dg) applies to this set.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/toshiba-55m550lp/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/toshiba-55m550lp/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED with pm disable-user, never uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (the Google TV home), disabled by
+# launcher/build-and-install.sh, not by this list. Live TV and HDMI: com.mediatek.wwtv.tvcenter.
+# Keep, as on the Hisense list: com.mediatek.*, com.hisense.tv.hitvinput, com.vt.tv.input,
+# com.hisense.tv.smartservice, com.hisense.tv.customerlauncher, com.hisense.tv.protector, and never
+# com.hisense.tv.smartsense, com.vt.tv.smartsense.ui or com.vt.tv.aiot (Recovery on the Hisense huangshan list).
+# Never open com.hisense.uifac (HisenseFactoryUI), not even to look.
+# Left on by the owner: firmware updaters (com.hisense.tv.ota, com.hisense.remoteupgrade, com.vt.tv.usbota),
+# AirPlay, Miracast and DLNA, YouTube, YouTube Music, RTM and Play Store.
+#
+# One session on 2026-10-31 with two reboots, applied in four batches from Windows (tools/disable.ps1) with a
+# screenshot after each, then the launcher. Nothing came disabled from the factory. Every package stayed disabled
+# across both reboots, and power-on goes FallbackHome, then the new launcher (the firmware does not put Live TV in
+# front by itself). Notes:
+# - disable.ps1 disabled gtvpai and disclaimercustomization without TVINPUT_ALLOW, unlike disable.sh on the
+#   Hisense fifth to seventh units; the inputs row (TV, HDMI, AV) was still there afterwards.
+# - setupwraith owned one saved Wi-Fi network the TV was not using; the active one belonged to
+#   android.uid.system, so FORCE_SETUPWRAITH=1 disabled it, that saved network was deleted and the TV stayed on
+#   Wi-Fi and ADB. Disable setupwraith while launcherx still holds Home, before the launcher install.
+# - Remote: with launcherx disabled and no key helper, Home and Input worked when pressed for real; the gear
+#   (keycode 83, scancode 598) and YouTube (keycode 293, scancode 469) did nothing. Netflix was disabled here, so
+#   its button was not tried. app_keys 83:com.android.tv.settings and 293:com.google.android.youtube.tv with
+#   INPUT_KEY_SERVICE=1 brought both back, and a held Volume Up then moved one step per press instead of ramping
+#   (docs/devices/tcl-55p71b-g09-key-repeat.md). The owner kept the buttons.
+# - Holding Power on the remote offers Shut down, not Restart; Settings has the restart.
+# - Private DNS (dns.adguard-dns.com) works; YouTube still plays.
+
+# Retail / store demo
+com.hisense.storemode
+fusion.android.tv.demo
+
+# First-time experience (setup already complete)
+com.hisense.fte
+
+# Google partner auto-install stub (silent partner app installs)
+android.autoinstalls.config.google.gtvpai
+
+# On-screen disclaimer app
+com.mstar.android.tv.disclaimercustomization
+
+# Google partner referral tracking and the crash/feedback uploader
+com.google.android.partnersetup
+com.google.android.feedback
+
+# Google TV setup wizard. Its RecoveryActivity claims HOME once launcherx is disabled. It also owns a saved
+# Wi-Fi network: check `dumpsys wifi | grep -o 'cname=[^ ]*'` first, and if the network the TV is connected to
+# belongs to setupwraith, forget and re-join it in Settings before running this.
+com.google.android.tungsten.setupwraith
+
+# --- Owner's checklist choices: comment out what you use ---
+com.netflix.ninja                             # Netflix
+com.amazon.amazonvideo.livingroom             # Prime Video
+com.wbd.stream                                # Max
+in.startv.hotstar.dplus.tv                    # Disney+ Hotstar
+com.iqiyi.i18n.tv                             # iQIYI
+com.google.android.videos                     # Google TV Movies storefront
+com.google.android.play.games                 # Play Games
+com.hisense.hibrowser                         # HiBrowser (Hisense web browser)
+com.google.android.katniss                    # Google Assistant (the remote's mic button)
+com.google.android.tv.assistant               # Assistant LED/voice service (LedService)
+com.hisense.alexa                             # Alexa
+com.google.android.apps.mediashell            # Chromecast built-in

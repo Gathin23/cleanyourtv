@@ -1,0 +1,6 @@
+{
+  "tv": "Toshiba 55M550LP (Hisense-built, songshan, MediaTek m7632), Malaysia",
+  "os": "Android 11 (SDK 30)",
+  "brand": "Toshiba",
+  "notes": "Hisense board and build, same as `hisense-smarttv-4k-ffm-android11/` (not the Vestel Toshiba lists): store demo, first-time experience, Google partner auto-install and setup, disclaimer, feedback; setupwraith owns an unused saved Wi-Fi network, so it needs FORCE_SETUPWRAITH; gear (83) and YouTube (293) need InputKeyService, which costs the held-volume ramp; streaming, voice and Chromecast off by choice; AirPlay, Miracast, DLNA and OTA kept"
+}
