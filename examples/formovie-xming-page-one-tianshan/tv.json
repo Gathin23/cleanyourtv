@@ -1,0 +1,6 @@
+{
+  "tv": "Formovie XMing Page One projector (XMM2101, tianshan, MediaTek MT9630)",
+  "os": "Google TV (Android 11)",
+  "brand": "Formovie",
+  "notes": "Light list of 14 Google telemetry, partner auto-install and unused system packages, used daily for six days, kept through a reboot; saved Wi-Fi belongs to setupwraith, so setupwraith and the stock launcherx stay enabled and the reference launcher gets Home through the Home-key redirect (HOME_KEY_SERVICE=1, config.json; Volume Up repeat is lost); com.fengmi.* (focus, keystone, BLE remote) and com.mediatek.* kept; streaming apps, Assistant, Chromecast and TalkBack kept by choice; Wi-Fi only"
+}
