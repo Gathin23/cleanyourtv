@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * The tile and module card open this: your Home Assistant's scenes, lights and switches, climate, sensors, doors
@@ -35,6 +36,10 @@ public class MainActivity extends Activity {
     private Config config;
     private List<Ha.Entity> entities = new ArrayList<>();
     private String problem;
+    private final ReadGate reads = new ReadGate();
+    private final Targets targets = new Targets();
+    /** One state read 600 ms after the latest command's reply, however many commands went out. */
+    private final Runnable afterCommand = this::load;
     private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
@@ -72,14 +77,19 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Config.importPushed(this);
+        Config was = config;
         config = Config.load(this);
+        if (was != null && (!was.url.equals(config.url) || !was.token.equals(config.token))) forget();
         build();
         if (config.complete()) main.post(refresh);
     }
 
     @Override
     protected void onPause() {
-        main.removeCallbacks(refresh);
+        // Every pending refresh and reply, and reads already queued: nothing runs once the screen is gone.
+        main.removeCallbacksAndMessages(null);
+        reads.reset();
+        targets.clear();
         super.onPause();
     }
 
@@ -89,9 +99,30 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    /** A new address or token: the old server's rows go, so none of them is sent to the new one. */
+    private void forget() {
+        reads.reset();
+        targets.clear();
+        main.removeCallbacks(afterCommand);
+        problem = null;
+        entities = new ArrayList<>();
+    }
+
+    private void submit(Runnable job) {
+        try {
+            net.execute(job);
+        } catch (RejectedExecutionException ignored) {
+            // Shut down with the screen.
+        }
+    }
+
     private void load() {
+        int gen = reads.start();
+        if (gen < 0) return;
+        int since = targets.epoch();
         Config c = config;
-        net.execute(() -> {
+        submit(() -> {
+            if (!reads.current(gen)) return;
             HaClient.Reply r = new HaClient(c.url, c.token).get("/api/states");
             List<Ha.Entity> found = null;
             String why = null;
@@ -107,10 +138,14 @@ public class MainActivity extends Activity {
             List<Ha.Entity> f = found;
             String w = why;
             main.post(() -> {
-                if (isFinishing()) return;
+                if (isFinishing() || !reads.finish(gen)) return;
                 problem = w;
-                if (f != null) entities = f;
+                if (f != null) {
+                    entities = f;
+                    targets.read(since);
+                }
                 build();
+                if (reads.takeAgain()) load();
             });
         });
     }
@@ -118,18 +153,33 @@ public class MainActivity extends Activity {
     private void send(Ha.Call call) {
         if (call == null) return;
         Config c = config;
-        net.execute(() -> {
+        targets.sent();
+        submit(() -> {
             HaClient.Reply r = new HaClient(c.url, c.token).post(call.path, call.body);
             main.post(() -> {
+                if (isFinishing()) return;
+                targets.replied();
                 if (!r.ok()) status.setText(Ha.problem(r.code));
-                main.postDelayed(this::load, 600);
+                main.removeCallbacks(afterCommand);
+                main.postDelayed(afterCommand, 600);
             });
         });
     }
 
-    /** Rebuilds the list; focus stays on the row it was on. */
+    /** Left or Right on a row: lights step by 10 %, thermostats by 0.5° from the last target sent. */
+    private void step(Ha.Entity e, int direction) {
+        if (e.kind == Ha.Kind.CLIMATE && !Double.isNaN(e.target)) {
+            if (e.available()) send(Ha.temperature(e, targets.next(e, direction)));
+        } else {
+            send(Ha.step(e, direction));
+        }
+    }
+
+    /** Rebuilds the list; focus stays on the same entity's row, wherever the refresh put it. */
     private void build() {
-        int focused = rows.indexOfChild(rows.getFocusedChild());
+        View had = rows.getFocusedChild();
+        Object focusedKey = had == null ? null : had.getTag();
+        int focused = rows.indexOfChild(had);
         rows.removeAllViews();
         if (!config.complete()) {
             status.setText("Add your Home Assistant's address and a long-lived access token (your profile page in"
@@ -149,7 +199,8 @@ public class MainActivity extends Activity {
             boolean steps = Ha.step(e, 1) != null;
             boolean bar = e.kind == Ha.Kind.TOGGLE && e.brightness >= 0;
             Row r = add(new Row(this, e.name, null, bar, press == null ? null : () -> send(Ha.press(e)),
-                    steps ? d -> send(Ha.step(e, d)) : null));
+                    steps ? d -> step(e, d) : null));
+            r.setTag(e.id);
             r.setValue(e.value());
             if (bar) r.setBar("on".equals(e.state) ? e.brightness / 100f : 0f);
             if (!e.available()) r.setAlpha(0.5f);
@@ -158,11 +209,15 @@ public class MainActivity extends Activity {
         heading("Connection");
         Row url = add(new Row(this, "Home Assistant address", "For example http://192.168.1.10:8123", false,
                 this::editUrl, null));
+        url.setTag("connection:url");
         url.setValue(config.url.isEmpty() ? "Not set" : config.url);
         Row token = add(new Row(this, "Access token", "Stored on this TV only.", false, this::editToken, null));
+        token.setTag("connection:token");
         token.setValue(config.token.isEmpty() ? "Not set" : "Set");
 
-        View keep = focused >= 0 && focused < rows.getChildCount() ? rows.getChildAt(focused) : null;
+        View keep = focusedKey == null ? null : rows.findViewWithTag(focusedKey);
+        // Its entity gone: the row now in its place, as before.
+        if (keep == null && focused >= 0 && focused < rows.getChildCount()) keep = rows.getChildAt(focused);
         if (keep != null && keep.isFocusable()) keep.requestFocus();
         else if (!config.complete()) url.requestFocus();
         else for (int i = 0; i < rows.getChildCount(); i++) {
@@ -196,8 +251,7 @@ public class MainActivity extends Activity {
 
     private void reload() {
         config = Config.load(this);
-        problem = null;
-        entities = new ArrayList<>();
+        forget();
         main.removeCallbacks(refresh);
         build();
         if (config.complete()) main.post(refresh);
