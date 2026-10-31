@@ -64,8 +64,8 @@ com.android.federatedcompute.services
 com.android.ondevicepersonalization.services
 
 # Health Connect
-com.android.healthconnect.controller
-com.android.health.connect.backuprestore
+# com.android.healthconnect.controller  # untested across reboots
+# com.android.health.connect.backuprestore  # untested across reboots
 
 # Karaoke
 com.realtek.kara

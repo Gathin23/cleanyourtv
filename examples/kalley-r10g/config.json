@@ -2,8 +2,7 @@
   "dock_apps": [
     "com.google.android.youtube.tv",
     "com.netflix.ninja",
-    "com.disney.disneyplus",
-    "com.amazon.amazonvideo.livingroom"
+    "com.disney.disneyplus"
   ],
   "columns": 4,
   "dock_glass": true,
