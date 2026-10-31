@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- A sun behind a cloud, drawn here so the add-on ships no borrowed artwork. -->
+    <path
+        android:fillColor="#F2B33D"
+        android:pathData="M64,34 m-14,0 a14,14 0 1,1 28,0 a14,14 0 1,1 -28,0" />
+    <path
+        android:fillColor="#5FA8E0"
+        android:pathData="M16,74 L16,58 A22,22 0 0,1 44,44 A19,19 0 0,1 78,54 A12,12 0 0,1 78,74 Z" />
+</vector>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather Glance</string>
+    <string name="no_city">No city yet</string>
+    <string name="no_city_hint">Search for a city below: the city, then the prefecture or state, then the country, so the right one of the world\'s many same-named places comes up. Home shows the line under its clock once Clean Your TV names this app in header_weather.</string>
+    <string name="waiting">Fetching the weather…</string>
+    <string name="waiting_hint">The first reading appears in a few seconds.</string>
+    <string name="city_hint">City, prefecture or state, country — e.g. Takizawa, Iwate, Japan</string>
+    <string name="search">Search</string>
+    <string name="refresh">Refresh now</string>
+    <string name="change_city">Change city</string>
+    <string name="refreshing">Refreshing…</string>
+    <string name="searching">Searching…</string>
+    <string name="need_name">Type a city name first.</string>
+    <string name="no_match">No place by that name. Add the prefecture or state and the country, in the spelling the map uses.</string>
+    <string name="pick_place">Pick the right place:</string>
+    <string name="offline">No answer from Open-Meteo. Check the TV\'s network and try again.</string>
+    <string name="line_hint">%1$s · %2$d min ago</string>
+    <string name="about">Weather from Open-Meteo (no key, no account). Clean Your TV reads this line from the content provider this app publishes; the launcher itself never goes online. The line refreshes when you open this screen and when Home reads it after 20 minutes, and the request carries nothing but the coordinates.</string>
+</resources>

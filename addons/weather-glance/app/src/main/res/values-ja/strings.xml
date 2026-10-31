@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ウェザー・グランス</string>
+    <string name="no_city">都市が未設定です</string>
+    <string name="no_city_hint">下で都市を検索してください。同じ名前の街が多いので、市町村・都道府県・国の順に入力してください。Clean Your TV の header_weather でこのアプリを指定すると、ホームの時計の下に表示されます。</string>
+    <string name="waiting">天気を取得中…</string>
+    <string name="waiting_hint">数秒で最初の観測が出ます。</string>
+    <string name="city_hint">市町村、都道府県、国（例：滝沢, 岩手, 日本）</string>
+    <string name="search">検索</string>
+    <string name="refresh">今すぐ更新</string>
+    <string name="change_city">都市を変更</string>
+    <string name="refreshing">更新中…</string>
+    <string name="searching">検索中…</string>
+    <string name="need_name">都市名を入力してください。</string>
+    <string name="no_match">該当する地名がありません。都道府県と国を、地図の表記で加えてお試しください。</string>
+    <string name="pick_place">正しい場所を選んでください：</string>
+    <string name="offline">Open-Meteo に接続できません。テレビのネットワークを確認してください。</string>
+    <string name="line_hint">%1$s ・ %2$d 分前</string>
+    <string name="about">天気データは Open-Meteo（キー不要・アカウント不要）。Clean Your TV はこのアプリが公開するコンテンツプロバイダから行を読むだけで、ランチャー自身は通信しません。更新はこの画面を開いたときと、20 分経過後にホームが読んだときに行われます。送信されるのは座標だけです。</string>
+</resources>
