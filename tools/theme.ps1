@@ -5,8 +5,9 @@
 #        tools\theme.ps1 -TvHost 192.168.1.50 -Reset
 #
 # One argument, and -Reset takes none: both together are refused rather than one of them dropped (below).
-# Exit status as in theme.sh: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed; 2 the
-# command line is not one theme folder or -Reset, so nothing was sent.
+# Exit status: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not
+# restart after it (a failure of the shared helper stops this script with that status); 2 the command line is
+# not one theme folder or -Reset, so nothing was sent.
 param(
     [Parameter(Position = 0)][string]$Theme,
     [switch]$Reset,

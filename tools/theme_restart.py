@@ -2,6 +2,11 @@
 """Restart Home after a theme push and verify its previously enabled key helpers (#994).
 
 Used by theme.sh and theme.ps1. No theme files or app configuration are changed here.
+
+Exit status: 0 Home is up and the key helpers it had are bound again; 1 the TV ran the restart and it failed
+(a command it refused, or a helper that did not stay bound); 2 nothing was asked of the TV - tools/venv is
+missing, TV_HOST is unset, or the TV did not answer. The three shapes in 2 are the ones tv.py words, so they
+name the port, the pair-once step and the "not an Android TV" way out, as bench.py, trace.py and manage.py do.
 """
 import os
 import re
@@ -156,8 +161,41 @@ def main():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     dev = None
     try:
-        from tv import connect
-        dev = connect()
+        # The three shapes that never ask the TV anything are answered here, before connect(): a checkout
+        # without tools/venv (no adb_shell), a shell with no TV_HOST (tv.py exits at import), and a TV that
+        # does not answer. Each used to end in "Theme restart failed: ..." with exit 1 - the status this
+        # script keeps for a restart it sent and that failed - so a set that was merely asleep read as a
+        # theme that was pushed and would not restart. bench.py (#2559), trace.py (#2683) and manage.py
+        # (#2692) answer the same shapes with 2 and say what they did not do.
+        try:
+            import tv as tv_client
+            connect, connect_error = tv_client.connect, tv_client.connect_error
+        except ImportError as error:
+            print(f"cannot load tools/tv.py ({error}): run this with tools/venv/bin/python, as "
+                  "tools/theme.sh does. Nothing was restarted.", file=sys.stderr)
+            return 2
+        except SystemExit as exit_request:
+            # tv.py exits at import time with its own "Set TV_HOST to your TV's IP address" text, which only
+            # the interpreter would print for that exit: written here, so catching it does not hide it. A
+            # module that exits 0 answered the call itself (its --help), and that status stands.
+            if not exit_request.code:
+                raise
+            if isinstance(exit_request.code, str):
+                print(exit_request.code, file=sys.stderr)
+            print("Nothing was restarted: Home was not asked to start again.", file=sys.stderr)
+            return 2
+        try:
+            dev = connect()
+        except Exception as error:
+            # A refused port, a Wireless debugging port that asks for TLS, a TV behind a network that does
+            # not route: tv.py words those, and they carry the pair-once advice and the "not an Android TV"
+            # way out that "Connection refused" alone does not. An error it has nothing to add to (an ADB
+            # key it cannot read) keeps this script's own line and status.
+            why = connect_error(error)
+            if why is None:
+                raise
+            print(f"{why}\nNothing was restarted: Home was not asked to start again.", file=sys.stderr)
+            return 2
         restart(dev)
     except Exception as error:
         print(f"Theme restart failed: {error}", file=sys.stderr)

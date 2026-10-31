@@ -344,13 +344,89 @@ class ExitStatus(unittest.TestCase):
 
     def test_cli_returns_failure_and_closes_transport(self):
         tv = TV()
-        module = types.SimpleNamespace(connect=lambda: tv)
+        module = types.SimpleNamespace(connect=lambda: tv, connect_error=lambda error: 'nothing to add')
         stderr = io.StringIO()
         with patch.dict(sys.modules, tv=module), patch.object(restart, 'restart', side_effect=RuntimeError('unbound')):
             with contextlib.redirect_stderr(stderr):
                 self.assertEqual(restart.main(), 1)
         self.assertTrue(tv.closed)
         self.assertIn('Theme restart failed', stderr.getvalue())
+
+    def test_cli_answers_a_tv_it_never_reached_with_tv_py_s_words_and_2(self):
+        # "Connection refused" alone was exit 1, the status this script keeps for a restart it sent and
+        # that failed: a set that was asleep read as a theme that would not restart.
+        refused = ConnectionRefusedError(111, 'Connection refused')
+        sentence = '127.0.0.1:1 refused the connection: nothing listens for ADB there.'
+        opened = []
+
+        def connect():
+            opened.append(True)
+            raise refused
+
+        module = types.SimpleNamespace(connect=connect, connect_error=lambda error: sentence)
+        stderr, stdout = io.StringIO(), io.StringIO()
+        with patch.dict(sys.modules, tv=module):
+            with contextlib.redirect_stderr(stderr), contextlib.redirect_stdout(stdout):
+                self.assertEqual(restart.main(), 2)
+        self.assertEqual([True], opened)
+        self.assertIn(sentence, stderr.getvalue())
+        self.assertIn('Nothing was restarted', stderr.getvalue())
+        self.assertNotIn('Theme restart failed', stderr.getvalue())
+        self.assertEqual('', stdout.getvalue())
+
+    def test_cli_keeps_its_own_status_for_an_error_tv_py_cannot_word(self):
+        # An ADB key it cannot read carries the file's name, which tv.py's connect_error() has nothing to
+        # add to: this script's line and exit 1 are what a reader gets, as before.
+        def connect():
+            raise PermissionError(13, 'Permission denied', '/home/me/.android/adbkey')
+
+        module = types.SimpleNamespace(connect=connect, connect_error=lambda error: None)
+        stderr = io.StringIO()
+        with patch.dict(sys.modules, tv=module):
+            with contextlib.redirect_stderr(stderr):
+                self.assertEqual(restart.main(), 1)
+        self.assertIn('Theme restart failed', stderr.getvalue())
+        self.assertNotIn('Nothing was restarted', stderr.getvalue())
+
+    def test_cli_answers_a_checkout_without_the_client_before_asking_anything(self):
+        stderr = io.StringIO()
+        with patch.dict(sys.modules, tv=None):  # `import tv` answers ImportError, as with no adb_shell
+            with contextlib.redirect_stderr(stderr):
+                self.assertEqual(restart.main(), 2)
+        self.assertIn('cannot load tools/tv.py', stderr.getvalue())
+        self.assertIn('tools/venv/bin/python', stderr.getvalue())
+        self.assertIn('Nothing was restarted', stderr.getvalue())
+
+    def test_cli_answers_tv_py_s_exit_for_a_missing_tv_host_with_2(self):
+        # tv.py exits at import time when TV_HOST is unset, which is a process exit and not an exception
+        # this script can answer with its own line: 1 there read as a restart that ran on the TV.
+        real_import = __import__
+
+        def refusing(name, *args, **kwargs):
+            if name == 'tv':
+                raise SystemExit('Set TV_HOST to your TV\'s IP address')
+            return real_import(name, *args, **kwargs)
+
+        stderr = io.StringIO()
+        with patch('builtins.__import__', refusing):
+            with contextlib.redirect_stderr(stderr):
+                self.assertEqual(restart.main(), 2)
+        self.assertIn("Set TV_HOST to your TV's IP address", stderr.getvalue(),
+                      'tv.py wrote that text for its own exit, so catching the exit must not swallow it')
+        self.assertIn('Nothing was restarted', stderr.getvalue())
+        self.assertNotIn('Theme restart failed', stderr.getvalue())
+
+    def test_the_real_client_and_a_refused_port_exit_2_with_nothing_restarted(self):
+        """The script end to end: no fake module, and a port on this computer that refuses."""
+        env = dict(os.environ, TV_HOST='127.0.0.1', TV_PORT='1')
+        env.pop('TV_ADB_BINARY', None)
+        root = Path(__file__).resolve().parents[1]
+        result = subprocess.run([sys.executable, '-I', str(root / 'tools' / 'theme_restart.py')],
+                                cwd=str(root), text=True, capture_output=True, env=env, timeout=120)
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertIn('Nothing was restarted', result.stderr)
+        self.assertNotIn('Theme restart failed', result.stderr)
+        self.assertEqual('', result.stdout)
 
 
 if __name__ == '__main__':
