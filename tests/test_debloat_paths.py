@@ -66,9 +66,12 @@ class DebloatPathsTest(unittest.TestCase):
         if os.name != "posix" or not shutil.which("bash"):
             raise unittest.SkipTest("disable.sh and restore.sh are POSIX scripts; they need bash")
         capture = base / "commands.txt"
-        # No TV_HOST, so recovery.py looks for a record that cannot exist: that is the fallback these
-        # tests exercise. HOME is isolated so a record from a real run cannot answer instead.
+        # No record under this address, so recovery.py falls back to enabling the whole list: that is
+        # the plan these tests exercise. TV_HOST names the record (recovery.py refuses to guess one
+        # without it) and never reaches a TV here; HOME is isolated so a record from a real run
+        # cannot answer instead.
         env = {k: v for k, v in os.environ.items() if k != "TV_HOST"}
+        env["TV_HOST"] = "192.168.1.50"
         env.update(CAPTURE=str(capture), HOME=str(home))
         # The fake tv.py reads its stdin, so an inherited terminal would leave it waiting.
         result = subprocess.run(

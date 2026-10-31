@@ -5,6 +5,10 @@
     recovery.py --commands <list> [stock launcher]   print a batch for tools/tv.py --batch that puts
                                                      the recorded states back
 
+Both read the record for this TV and list, and the record is one file per TV and list named after
+the address the TV was reached at, so both need TV_HOST. `--commands` asks the TV nothing: it needs
+no TV and no ADB client, only the address that names the record.
+
 `tools/restore.sh` used to enable every package in the list, including ones the owner had already
 disabled, and reset Home and the animation scales to fixed values instead of to what was there
 before. Both scripts now go through this record: `disable.sh` writes it before the first command
@@ -589,6 +593,17 @@ def restore_commands(list_path, stock, host):
     return commands
 
 
+# Why a --commands run without TV_HOST stops instead of printing a plan: the record is one file per TV
+# and list, named after the address the TV was reached at (record_path), so there is no name to look
+# under, and the one it fell back to - "no-host", from record_name's tag - is a name save() cannot
+# write. The run then found no record and printed the no-record fallback, the batch that enables every
+# listed package, for a TV whose record may well be there (#239 is what that record exists to prevent).
+# Nothing reaches a TV without an address either, so this is a run that never asked the TV anything:
+# tv.py's own line, then exit 2.
+NO_ADDRESS = ("The record is one file per TV and list, named after the address the TV was reached at, "
+              "so a run without TV_HOST cannot say which one to read.")
+
+
 def main():
     args = sys.argv[1:]
     host = os.environ.get("TV_HOST", "")
@@ -596,7 +611,12 @@ def main():
         return save(args[1], host)
     if len(args) in (2, 3) and args[0] == "--commands":
         if not host:
-            sys.stderr.write("Set TV_HOST to your TV's IP address, e.g. TV_HOST=192.168.1.50\n")
+            # tv.py's own words, then why this run cannot go on, then exit 2. The address is not
+            # reachable from here and nothing is sent to a TV; it is only what names the record.
+            sys.stderr.write("Set TV_HOST to your TV's IP address, e.g. TV_HOST=192.168.1.50\n"
+                             f"{NO_ADDRESS}\n"
+                             "Nothing was sent to the TV.\n")
+            return 2
         stock = args[2] if len(args) == 3 else "com.google.android.tvlauncher"
         for command in restore_commands(args[1], stock, host):
             print(command)
