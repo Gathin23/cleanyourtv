@@ -18,12 +18,13 @@
 # Launcher config/theme: set live_tv_package to org.droidtv.playtv and add it to hidden_apps.
 #
 # Verified on the 55PUS7503: replacement Home, Netflix launch/return, HDMI 1-4, YPbPr and Live TV.
-# On the 55PUS7503, the packages below remained disabled across standby and overnight use;
-# a several-day soak on that unit is not recorded.
+# On the 55PUS7503, the packages below remained disabled across standby and overnight use.
+# Status: 2026-10-31, 55PUS7503/12: the five ACR and analytics packages have been off since
+# 2026-10-25; the owner reports six days of daily use without issues, and they stayed disabled.
 # Status: 2026-10-29, 50PUS7303/12: the owner reports several days of use without issues.
 # Confirmed on the 50PUS7303: replacement Home, HDMI playback, tuner reception, USB media
 # playback through the built-in app and the physical Input button's Philips Sources menu.
-# Additional packages disabled on the 50PUS7303 are commented options below; see README.md.
+# Its other additional disables are commented options below; see README.md.
 #
 # USB debugging alone opens ADB on TCP 5555. If the RSA authorisation prompt does not appear,
 # fully restart the TV (not standby), return to Android Home and connect again.
@@ -34,8 +35,8 @@
 # org.droidtv.GlobalKey, org.droidtv.playtv, org.droidtv.xtv, com.mediatek.tvinput,
 # com.mediatek.tunerservice, org.droidtv.tvsystemui or org.droidtv.settings.
 # The newer Philips list identifies org.droidtv.candeebug + org.droidtv.gel as the DAC analytics
-# pair; both exist here but remain enabled until they have been exercised on this older firmware.
-# That precaution describes the 55PUS7503; the pair was disabled on the 50PUS7303.
+# pair; they are disabled below on both models, together with the framework logger, Inscape ACR
+# and Google partner setup, after tools/privacy.py named them on the 55PUS7503.
 # Keep org.droidtv.eum (Philips Help) enabled: on the 50PUS7303, disabling it made the Sources
 # drawer close with a NullPointerException in bindToEumService. Re-enabling it restored the
 # menu, confirmed with the physical Input button.
@@ -55,11 +56,16 @@ com.google.android.tvlauncher
 com.google.android.tvrecommendations              # Android TV recommendations/content rows
 com.google.android.leanbacklauncher.recommendations
 
+# ACR and analytics named by tools/privacy.py (no microphone use; none is a TV or input service).
+# Inscape and the DAC pair were disabled on both models; the logger and partner setup on the 55PUS7503.
+tv.inscape.tvclient.inscapeacr                    # Inscape ACR: identifies what is on screen, HDMI included
+org.droidtv.candeebug                             # "DAC" analytics (runs together with org.droidtv.gel)
+org.droidtv.gel                                   # "GEL" analytics
+org.droidtv.tv.frameworklogger                    # Framework and reboot logging
+com.google.android.partnersetup                   # Google Partner Setup: RLZ attribution pings
+
 # Additional packages disabled on the 50PUS7303/12, not tested on the 55PUS7503.
 # Commented to preserve the original list's choices; uncomment only the options you want.
-# tv.inscape.tvclient.inscapeacr                  # Inscape ACR client
-# org.droidtv.candeebug                           # Philips DAC analytics; disabled together with gel
-# org.droidtv.gel                                 # Philips metrics collector
 # org.droidtv.sticker                             # Philips store-demo stickers
 # org.droidtv.twittershare                        # Philips Twitter sharing
 # org.droidtv.nettv.market                        # Philips NetTV app gallery; Play Store kept

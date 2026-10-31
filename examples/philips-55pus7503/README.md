@@ -23,11 +23,12 @@ but its additional package choices have not been validated on this 50PUS7303.
 ## Tested package choices
 
 The 50PUS7303 setup disabled the seven feedback, tutorial, promotional, logging and recommendation
-packages active in [debloat.txt](debloat.txt). The stock launcher was replaced by CleanYourTV.
-It also disabled the eight packages shown as commented options at the end of that file:
-Inscape ACR, the Philips DAC pair, store-demo stickers, Twitter sharing, the NetTV app gallery,
-Prime Video and Alexa. Those options remain commented to preserve the 55PUS7503 list's defaults
-and to leave streaming apps and voice assistants available unless an owner chooses otherwise.
+packages in the first sections of [debloat.txt](debloat.txt). The stock launcher was replaced by CleanYourTV.
+It also disabled Inscape ACR and the Philips DAC pair (`org.droidtv.candeebug`, `org.droidtv.gel`),
+which the list now disables on both models, and the five packages shown as commented options at the
+end of that file: store-demo stickers, Twitter sharing, the NetTV app gallery, Prime Video and Alexa.
+Those options remain commented to preserve the 55PUS7503 list's defaults and to leave streaming apps
+and voice assistants available unless an owner chooses otherwise.
 
 Use the Apply and Undo instructions in the list header. The 55PUS7503's HDMI-port, YPbPr and
 Netflix checks are not test claims for the 50PUS7303.
