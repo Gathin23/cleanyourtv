@@ -7,8 +7,9 @@
 #        TV_HOST=192.168.1.50 tools/theme.sh --reset        # remove the overlay, back to config.xml
 #
 # One argument, and --reset takes none: a second word is refused rather than dropped (see below). Exit status:
-# 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed; 2 the command line is not one
-# theme folder or --reset, so nothing was sent.
+# 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not restart after
+# it; 2 the run stopped before the theme was up - the command line is not one theme folder or --reset, or the
+# TV was not reached (tv.py's and theme_restart.py's own message says which).
 set -euo pipefail
 # Resolve the theme folder against the caller's directory before moving into tools/.
 # Git Bash's pwd says /c/Users/..., which the Windows Python cannot open; pwd -W gives C:/Users/... (as in disable.sh).
