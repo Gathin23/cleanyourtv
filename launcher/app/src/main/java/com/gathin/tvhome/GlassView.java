@@ -15,6 +15,11 @@ import android.view.View;
  */
 public class GlassView extends View {
 
+    @Override
+    public boolean hasOverlappingRendering() {
+        return false;
+    }
+
     private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint specular = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint rim = new Paint(Paint.ANTI_ALIAS_FLAG);
