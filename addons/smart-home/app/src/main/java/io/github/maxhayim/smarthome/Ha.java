@@ -164,10 +164,13 @@ final class Ha {
         if (e.kind == Kind.TOGGLE && e.domain().equals("light")) {
             return call("light", "turn_on", e.id, "\"brightness_step_pct\":" + (direction * 10));
         }
-        if (e.kind == Kind.CLIMATE && !Double.isNaN(e.target)) {
-            return call("climate", "set_temperature", e.id, "\"temperature\":" + number(e.target + direction * 0.5));
-        }
+        if (e.kind == Kind.CLIMATE && !Double.isNaN(e.target)) return temperature(e, e.target + direction * 0.5);
         return null;
+    }
+
+    /** A thermostat's new target, in degrees. */
+    static Call temperature(Entity e, double target) {
+        return call("climate", "set_temperature", e.id, "\"temperature\":" + number(target));
     }
 
     private static Call call(String domain, String service, String entity, String extra) {
