@@ -54,6 +54,25 @@ def answer(state, command):
 
 def apply(state, command):
     state["commands"].append(command)
+    words = command.split()
+    if command.startswith("pm install-create"):
+        state["session"] = {"id": "7", "pkgs": []}
+        return "Success: created install session [7]\n"
+    if command.startswith("pm install-write "):
+        pkg = state["apks"].get(words[-1])
+        if pkg and pkg not in state["session"]["pkgs"]:
+            state["session"]["pkgs"].append(pkg)
+        return "Success: streamed\n"
+    if command.startswith("pm install-commit "):
+        for pkg in state["session"]["pkgs"]:
+            if pkg not in state["installed"]:
+                state["installed"].append(pkg)
+                state["third_party"].append(pkg)
+        state["session"] = {"id": "", "pkgs": []}
+        return "Success\n"
+    if command.startswith("pm install-abandon "):
+        state["session"] = {"id": "", "pkgs": []}
+        return "Success\n"
     if command.startswith("pm disable-user --user 0 "):
         name = command.split()[-1]
         if name not in state["disabled"]:
@@ -67,15 +86,19 @@ def apply(state, command):
         if name and name not in state["installed"]:
             state["installed"].append(name)
             state["third_party"].append(name)
+    return ""
 
 
 class Device:
     def shell(self, command, read_timeout_s=None):
         current = load()
-        if command.startswith(("pm disable-user", "pm enable", "pm install")):
-            apply(current, command)
+        words = command.split()
+        if words and words[0] == "pm" and len(words) > 1 and words[1] in (
+                "disable-user", "enable", "install", "install-create", "install-write",
+                "install-commit", "install-abandon"):
+            out = apply(current, command)
             save(current)
-            return ""
+            return out
         return answer(current, command)
 
     def close(self):
@@ -121,9 +144,12 @@ def main():
         return 0
     command = " ".join(args)
     words = command.split()
-    if words and words[0] == "pm" and len(words) > 1 and words[1] in ("disable-user", "enable", "install"):
-        apply(state, command)
+    if words and words[0] == "pm" and len(words) > 1 and words[1] in (
+            "disable-user", "enable", "install", "install-create", "install-write",
+            "install-commit", "install-abandon"):
+        out = apply(state, command)
         save(state)
+        sys.stdout.write(out)
         return 0
     sys.stdout.write(answer(state, command))
     return 0
@@ -147,6 +173,7 @@ def tv_state(installed, third_party, disabled=(), paths=None, props=None):
                                 "ro.build.version.sdk": "34"}),
         "files": {},
         "apks": {},
+        "session": {"id": "", "pkgs": []},
         "commands": [],
     }
 

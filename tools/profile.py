@@ -16,6 +16,7 @@ dry run that has work to do; 2 the run could not check at all (no TV, no profile
 """
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -162,13 +163,16 @@ def apk_paths(host, pkg):
 
 
 def transfer(host, pkg, workdir):
-    """Pull a single-APK package off the master and install it on TV_HOST. None means "install by hand"."""
+    """Copy a package off the master and install it on TV_HOST. None means "install by hand"."""
     paths = apk_paths(host, pkg)
-    if len(paths) != 1:
-        # shortcut: a split package needs pm install-create/install-write; until then it stays manual
+    if not paths:
+        # installed on the master but its APK is not readable from the shell (a stub, or a package
+        # whose files are not world-readable): nothing to copy.
         return None
-    local = os.path.join(workdir, os.path.basename(paths[0]))
     try:
+        if len(paths) > 1:
+            return install_split(host, pkg, paths, workdir)
+        local = os.path.join(workdir, os.path.basename(paths[0]))
         tv_cli(host, "--pull", paths[0], local)
         remote = f"{REMOTE_DIR}/{pkg}.apk"
         tv_cli(None, "--push", local, remote)
@@ -178,6 +182,31 @@ def transfer(host, pkg, workdir):
         # One APK that cannot travel leaves the package manual; it must not stop the rest of the sync.
         print(f"could not transfer {pkg}: {e}", file=sys.stderr)
         return None
+    return "Success" in out
+
+
+def install_split(host, pkg, paths, workdir):
+    """Install a split package in one session: install-create, one install-write per APK, install-commit."""
+    files = []
+    for number, path in enumerate(paths, 1):
+        local = os.path.join(workdir, f"{number}-{os.path.basename(path)}")
+        tv_cli(host, "--pull", path, local)
+        files.append(local)
+    created = tv_cli(None, "pm install-create -r")
+    session = re.search(r"\[(\d+)\]", created)
+    if not session:
+        return None
+    session_id = session.group(1)
+    try:
+        for number, local in enumerate(files, 1):
+            remote = f"{REMOTE_DIR}/{pkg}-{number}.apk"
+            tv_cli(None, "--push", local, remote)
+            tv_cli(None, f"pm install-write -S {os.path.getsize(local)} {session_id} {number}.apk {remote}")
+            tv_cli(None, f"rm -f {remote}")
+        out = tv_cli(None, f"pm install-commit {session_id}")
+    except Transport:
+        tv_cli(None, f"pm install-abandon {session_id}")
+        raise
     return "Success" in out
 
 
@@ -204,7 +233,7 @@ def sync(directory, source_host, apply):
     manual = [pkg for pkg in installable if transfer(source_host, pkg, workdir) is None]
     if manual:
         print(f"install by hand ({len(manual)}): {', '.join(manual)} "
-              f"(a split package, or its APK did not travel; files land in {workdir})")
+              f"(its APK is not readable on the master; files land in {workdir})")
     for pkg in disable:
         tv_cli(None, f"pm disable-user --user 0 {pkg}")
     for pkg in enable:

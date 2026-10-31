@@ -84,12 +84,35 @@ class SyncTest(unittest.TestCase):
             self.assertNotIn("uninstall", command)
             self.assertNotIn("pm hide", command)
 
-    def test_a_split_package_is_reported_for_a_manual_install(self):
+    def test_a_split_package_is_installed_in_one_session(self):
         master = self.h.state(MASTER)
         master["paths"]["com.example.tube"] = [
             "/data/app/tube/base.apk", "/data/app/tube/split_config.arm64_v8a.apk"]
+        master["files"]["/data/app/tube/base.apk"] = "BASE"
+        master["files"]["/data/app/tube/split_config.arm64_v8a.apk"] = "SPLIT"
         self.h.put(MASTER, master)
+        target = self.h.state(TARGET)
+        for index in (1, 2):
+            target["apks"][f"/data/local/tmp/com.example.tube-{index}.apk"] = "com.example.tube"
+        self.h.put(TARGET, target)
+
         result = self.h.run("sync", str(self.h.profile), "--source", MASTER, "--apply", host=TARGET)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("com.example.tube", self.h.state(TARGET)["installed"])
+        commands = self.h.commands(TARGET)
+        self.assertTrue(any(c.startswith("pm install-create") for c in commands))
+        self.assertEqual(2, sum(1 for c in commands if c.startswith("pm install-write ")))
+        self.assertTrue(any(c.startswith("pm install-commit") for c in commands))
+        self.assertNotIn("install by hand", result.stdout)
+
+    def test_a_package_with_no_apk_on_the_master_is_reported(self):
+        master = self.h.state(MASTER)
+        master["paths"]["com.example.tube"] = []
+        self.h.put(MASTER, master)
+
+        result = self.h.run("sync", str(self.h.profile), "--source", MASTER, "--apply", host=TARGET)
+
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("install by hand (1): com.example.tube", result.stdout)
         self.assertFalse(any("install" in c and "tube" in c for c in self.h.commands(TARGET)))

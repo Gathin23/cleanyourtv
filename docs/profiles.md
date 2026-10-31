@@ -46,8 +46,9 @@ TV_HOST=<target ip> tools/venv/bin/python -I tools/profile.py sync profiles/sabr
 Without `--apply` the run prints the plan and exits `1`; with it, the run:
 
 - installs the profile's apps the target is missing, pulled from the master with `pm path` and
-  installed with `pm install -r`. A split APK, or an APK that could not travel, is listed for a
-  manual install and its files are left in a temporary folder;
+  installed with `pm install -r`, or for a split APK in one `pm install-create` / `install-write` /
+  `install-commit` session. A package whose APK the master's shell cannot read, or whose install
+  fails, is listed for a manual install and its files are left in a temporary folder;
 - disables the packages the profile disables, and enables the ones the master has enabled;
 - prints the undo commands for everything it disabled;
 - reports the apps that are only on the target and leaves them alone.
