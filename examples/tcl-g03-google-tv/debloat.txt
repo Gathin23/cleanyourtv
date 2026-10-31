@@ -137,6 +137,31 @@
 # - With "consume_volume_keys": true, a held volume button kept ramping with the key helper bound (real remote).
 # - Voice stayed on with launcherx disabled; the first mic press afterwards did nothing, later presses worked.
 #
+# TCL 43P739, Italy, 2026-10-31: Smart TV Pro G03_4K_GB (BeyondTV4, Realtek rtd288o / RTD2851M, software
+# V8-R51MT05-LF1V652, client TCL-EU-RTD51M-S1), Google TV 11, build RP1A.200622.001 AR11, security patch 2024-12-05:
+# the same build as the 50C641 above. A subset of this list was applied in three batches with a screenshot after
+# each: TCL analytics, tracking and promo (overseasappshow, bi, guard, tclhome_passive, waterfall.overseas,
+# messagebox, esticker, channelplus, smartalexa, t_solo, keyhelp), Google telemetry and unused media apps
+# (feedback, partnersetup, SmartConnect, YouTube Music, Google TV, Play Games), then setupwraith and launcherx.
+# Voice, Chromecast, the phone remote, Miracast and firmware updates were kept by choice. Rebooted once: every
+# package stayed disabled, Home came up on the new launcher with no RecoveryActivity, Wi-Fi stayed up. Tested the
+# same day, not yet lived with for days. Differences on this unit:
+# - setupwraith owned a hidden saved network that was not in use, while the network in use belonged to
+#   com.android.tv.settings after a forget and re-join. disable.sh still skipped it; FORCE_SETUPWRAITH=1 let it
+#   through, and only that unused network was deleted.
+# - com.tcl.partnercustomizer stays enabled (remote shortcut keys), but its TKeyActivity has a launcher entry that
+#   shows as the "TCL CHANNEL" tile and opens a "coming soon" page. "hidden_apps" in config.json or config.xml
+#   keeps the tile off Home without disabling the package.
+# - Remote: Bluetooth "TCL_RC902V_U1" (/dev/input/event3, Generic.kl). HID usages: Netflix 0x0c0051 (scancode 242),
+#   YouTube 0x0c0057 (245), Prime Video 0x0c005f (752), gear 0x0c0055 (233), Live TV 0x0c005b (KEY_EPG, 365). All
+#   five did nothing with launcherx off. HOME_KEY_SERVICE=1 with "scan:242:com.netflix.ninja",
+#   "scan:245:com.google.android.youtube.tv", "scan:752:com.amazon.amazonvideo.livingroom" and "scan:365:com.tcl.tv"
+#   in app_keys, plus 233 in settings_key_scancodes (config.xml only), brought them back (real remote).
+# - With HomeKeyService bound, one tap of volume moved two steps; "consume_volume_keys": true made it one step and a
+#   held button kept ramping (real remote).
+# - "tile_menu": true makes holding OK on a tile open Move, instead of the app's App info page.
+# - Private DNS (AdGuard) was set and Netflix still resolved; playback was not checked.
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
