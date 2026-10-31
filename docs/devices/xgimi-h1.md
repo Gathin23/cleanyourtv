@@ -68,11 +68,8 @@ Which of the system-uid packages made it was not narrowed down.
 | TCP 16740, 16741 | system uid (XGIMI phone-remote and file-push apps) |
 | TCP 5000, 7000, 7100, 7700, 49153, 55560, 55570 | `com.waxrain.airplaydmr` |
 
-### Samba runs as root from a world-writable folder
+### Samba runs as root at every boot
 
-`/system/bin/debug.sh` (init service `debug-sh`, no `user`, so root) starts `smbd` and `nmbd` from
-`/data/data/com.xgimi.filemanager/samba/` at every boot and restarts them whenever a file named `restart` appears
-there. On this unit that folder and the script it runs were world-writable (`ls -l` shows `rwxrwxrwx`), and
-`smb.conf` uses `security = SHARE` with a guest account. Disabling or hiding FileManager does not stop it, because
-init starts it, not the app. Without root there is no way to switch it off from the projector: keep this
-projector on a network of its own, and off the internet if it only needs the LAN.
+An init service starts `smbd` and `nmbd` as root at every boot, with guest access to shares. Disabling or hiding
+FileManager does not stop it, because init starts it, not the app, and without root it can't be switched off from
+the projector: keep this projector on a network of its own, and off the internet if it only needs the LAN.

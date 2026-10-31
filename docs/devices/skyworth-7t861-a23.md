@@ -160,6 +160,7 @@ TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.cls com.coocaa.hom
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.skyworth.officehomepage'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.skyworth.officehomepage.view.HomepageActivity'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.name OfficeMode'
+TV_HOST=<tv ip> tools/tv.py 'cmd appops set com.ccos.tv.homepage SYSTEM_ALERT_WINDOW default'
 
 # 2. Launch stock desktop
 TV_HOST=<tv ip> tools/tv.py 'am start -n com.skyworth.officehomepage/.view.HomepageActivity'

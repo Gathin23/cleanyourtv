@@ -14,7 +14,7 @@ weeks.
 **Different choices from the first unit:** YouTube Music (`com.google.android.youtube.tvmusic`), Assistant
 (`com.google.android.katniss`) and the soundbar updater (`com.tcl.UpdatePeripheral`) kept, so those three lines
 were commented out; Prime Video (`com.amazon.amazonvideo.livingroom`) disabled, its "Kept on this unit" line
-uncommented. Chromecast, AirPlay, Miracast, T-Cast, the game bar, the USB media player and gallery, Netflix and
+uncommented. Chromecast (casting stops once setupwraith is off), AirPlay, Miracast, T-Cast, the game bar, the USB media player and gallery, Netflix and
 YouTube kept, as on the first unit. The local apps (FPT Play, VTVcab Prime, TV360, VTV Go) were installed by the
 owner and are not in the list.
 
@@ -22,7 +22,8 @@ owner and are not in the list.
 (`dumpsys wifi | grep -o 'cname=[^ ]*'`). The first run of `launcher/build-and-install.sh` disabled launcherx, found
 Home on setupwraith's `.RecoveryActivity` and put launcherx back by itself. Forgetting the network and joining it
 again in Settings > Network & Internet moved it to `com.android.tv.settings`; then setupwraith was disabled with
-`tools/disable.sh` (Wi-Fi and ADB stayed up) and the second run took Home, with launcherx disabled.
+`tools/disable.sh` (Wi-Fi and ADB stayed up) and the second run took Home, with launcherx disabled. With setupwraith off,
+casting to this TV stops working; enabling it again brings casting back.
 
 What was checked on the TV: Home and the Inputs menu (HDMI 1-4 and Live TV, `live_tv_package` `com.tcl.tv`) after
 the handover; after the reboot, the owner pressed the real Input, Settings, app and microphone buttons and all

@@ -59,8 +59,8 @@ partition. After the reset the preloads changed slightly (`com.quark.yun.tv`, `c
 and `com.tcl.tshop` appeared), and the list still applied cleanly.
 
 So on `2026042801` the honest summary is **debloat only**: do not spend the session retrying
-`adb install`, and do not disable `com.tcl.cyberui`. Replacing Home would need a TCL-signed build,
-root, or a firmware downgrade.
+`adb install`, and do not disable `com.tcl.cyberui`. Only a TCL-signed build could replace Home
+here, so CleanYourTV cannot on this build.
 
 What was checked after the debloat on that build: 26 packages disabled with `pm disable-user`
 (27 after the factory reset, with the three preloads above), the same list still disabled after one

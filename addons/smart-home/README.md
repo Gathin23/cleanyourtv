@@ -7,7 +7,7 @@ thermostat by half a degree. A community add-on, not made by or affiliated with 
 the [Clean Your TV](../../README.md) launcher it declares a [module card](../../docs/modules.md): once you answer
 **Show card** its tile reads "Smart Home" with a blue glow. On any other Android TV home it is an ordinary app.
 
-![Smart Home on a TV, with demo data](screenshot.jpg)
+![Smart Home on a TV, with the glance header](screenshot.jpg)
 
 | Section | Shows | With the remote |
 |---|---|---|
@@ -77,7 +77,7 @@ change to the glance header.
 
 ## Tested on
 
-MOKA R8G (Android 14), on a home app that implements the module-card spec, against a stand-in server on the home network answering with Home Assistant's documented response shapes: the config pushed through `ConfigProvider`, reading the states, running a scene and dimming a light (the requests arrived as the REST API documents them). The screenshot shows that demo data, with the address blurred. Also tried on a Sony BRAVIA (Android 9) against a real Home Assistant: weather and a euro fuel-price sensor on the glance header (with unit). The JVM tests cover parsing, the service calls, the request headers against a local stand-in, and errors.
+MOKA R8G (Android 14), on a home app that implements the module-card spec, against a stand-in server on the home network answering with Home Assistant's documented response shapes: the config pushed through `ConfigProvider`, reading the states, running a scene and dimming a light (the requests arrived as the REST API documents them). The screenshot shows the glance header on the Sony BRAVIA, with the address blurred. Also tried on a Sony BRAVIA (Android 9) against a real Home Assistant: weather and a euro fuel-price sensor on the glance header (with unit). The JVM tests cover parsing, the service calls, the request headers against a local stand-in, and errors.
 
 ## Maintainer
 

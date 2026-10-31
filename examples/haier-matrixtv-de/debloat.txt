@@ -44,12 +44,13 @@ com.google.android.play.games                    # preloaded
 com.haier.overseastv.bluetoothspeaker            # TV as Bluetooth speaker, not wanted
 com.google.android.marvin.talkback               # TalkBack, not used
 
-# By owner choice: apps the owner does not use
+# By owner choice: apps the owner does not use. This set has these off; uncomment the ones you don't use.
 # com.netflix.ninja                              # not used; the firmware re-enables it at every boot, so hidden with hidden_apps
-com.amazon.amazonvideo.livingroom                # Prime Video, not used
-com.google.android.youtube.tvmusic               # YouTube Music, not used
-com.mediatek.miracast                            # Miracast, not used
-com.google.android.apps.tv.dreamx                # Ambient, not used; the screensaver default points at it
+# com.amazon.amazonvideo.livingroom              # Prime Video, not used
+# com.google.android.youtube.tvmusic             # YouTube Music, not used
+# com.mediatek.miracast                          # Miracast, not used
+# com.google.android.apps.tv.dreamx              # Ambient, not used; the screensaver default points at it
 
 # Google TV home handover. Check the Wi-Fi note above before disabling it.
+# Disabling setupwraith gives Home back to the new launcher but costs casting (Chromecast built-in).
 com.google.android.tungsten.setupwraith

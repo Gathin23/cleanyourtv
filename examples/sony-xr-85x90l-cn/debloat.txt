@@ -39,12 +39,13 @@ com.sony.dtv.demosupport          # retail demo mode
 com.sony.dtv.demosystemsupport
 com.sony.dtv.multiscreendemo
 
-# Batch 2: CN content apps the owner doesn't use (kept: Tencent, Mango, Migu, CCTV Video - see header)
-com.jd.smartservicetwo            # JD smart services
-com.newtv.login                   # NewTV (CCTV future TV)
-com.newtv.cboxtv
-com.cibn.tv                       # CIBN
-com.gitvdemo.video                # GITV
+# Batch 2: CN content apps; this set has them off by the owner's choice (kept: Tencent, Mango, Migu,
+# CCTV Video - see header). Uncomment the ones you don't use.
+# com.jd.smartservicetwo            # JD smart services
+# com.newtv.login                   # NewTV (CCTV future TV)
+# com.newtv.cboxtv
+# com.cibn.tv                       # CIBN
+# com.gitvdemo.video                # GITV
 
 # Batch 3: the CN stock launcher, AFTER another launcher (here Emotn UI, already on the set)
 # answers HOME. With both Dangbei entries off, HOME falls to com.oversea.aslauncher.

@@ -57,6 +57,7 @@ com.google.android.feedback
 # Google TV setup wizard. Its RecoveryActivity claims HOME once launcherx is disabled. It also owns a saved
 # Wi-Fi network: check `dumpsys wifi | grep -o 'cname=[^ ]*'` first, and if the network the TV is connected to
 # belongs to setupwraith, forget and re-join it in Settings before running this.
+# Disabling it gives Home back to the new launcher but costs casting (Chromecast built-in stops working).
 com.google.android.tungsten.setupwraith
 
 # --- Owner's checklist choices: this set had these off; uncomment only what you don't use ---

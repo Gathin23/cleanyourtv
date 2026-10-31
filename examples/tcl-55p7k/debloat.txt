@@ -74,5 +74,5 @@ com.google.android.videos              # Google TV / Play Movies
 com.android.printspooler
 com.google.android.syncadapters.calendar
 com.google.android.onetimeinitializer
-com.google.android.youtube.tvmusic     # YouTube Music
+# com.google.android.youtube.tvmusic   # YouTube Music; the 55C655 unit has it off
 com.google.android.play.games          # Play Games

@@ -995,7 +995,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         setIntent(new Intent(Intent.ACTION_MAIN));
         if (!appLibraryEnabled) return true;
         getWindow().getDecorView().post(() -> {
-            if (!isFinishing()) onLibraryRequested();
+            if (!isFinishing() && !isDestroyed()) onLibraryRequested();
         });
         return true;
     }

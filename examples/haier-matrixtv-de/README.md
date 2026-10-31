@@ -7,7 +7,7 @@ multi-day soak.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 18 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 14 packages the list disables, grouped and commented (four more were off on this set by the owner's choice and are commented out) |
 | `config.json` | Live TV app and animations off; add your own `dock_apps` |
 
 All commands run from the repo root, with the TV's IP in `TV_HOST`.

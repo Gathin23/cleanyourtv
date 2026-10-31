@@ -21,7 +21,7 @@ public class HomeSettingsActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        if (state != null) return;
+        if (state != null) { left = true; return; }
         try {
             startActivity(new Intent(Settings.ACTION_HOME_SETTINGS));
             Toast.makeText(this, R.string.home_settings_help, Toast.LENGTH_LONG).show();

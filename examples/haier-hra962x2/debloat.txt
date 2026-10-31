@@ -70,6 +70,8 @@ com.yunos.tvmgr                        # "Security Manager" cleaner app
 # Firmware updater (see header)
 com.yunos.osupdate
 
-# Stock launchers, disabled only after launcher/build-and-install.sh made the new launcher Home
-com.youku.taitan.tv                    # Youku stock home with sponsored rows
-com.yunos.tv.homeshell
+# Stock launchers, disabled only after launcher/build-and-install.sh made the new launcher Home.
+# Disable them only if your launcher build answers yunostv_homeshell://start_home (see README.md);
+# with a stock build the Home key would do nothing.
+# com.youku.taitan.tv                  # Youku stock home with sponsored rows
+# com.yunos.tv.homeshell

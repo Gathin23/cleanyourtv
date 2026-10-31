@@ -2,5 +2,5 @@
   "tv": "TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P); also TCL 55C655, Italy (same build)",
   "os": "Google TV 12",
   "brand": "TCL",
-  "notes": "Same G10 build as `tcl-g10-google-tv/` but logkit, Samba TV ACR and ttvs ship enabled; TCL Channel, push messages, TGuard, T-Solo, Alexa, hotel/demo; OSN+, Disney+ MEA, iQIYI off by choice; setupwraith before launcherx; Settings key is KEYCODE_NOTIFICATION, Web key 4159; [remote keycodes](tcl-55p7k/README.md) for Netflix, YouTube, Prime, Guide and TCL Home; TCL Audio Only turns the panel off with sound playing"
+  "notes": "Same G10 build as `tcl-g10-google-tv/` but logkit, Samba TV ACR and ttvs ship enabled; TCL Channel, push messages, TGuard, T-Solo, Alexa, hotel/demo; OSN+, Disney+ MEA, iQIYI off by choice; setupwraith before launcherx; Settings key is KEYCODE_NOTIFICATION, Web key 4159; remote keycodes in this folder's README.md for Netflix, YouTube, Prime, Guide and TCL Home; TCL Audio Only turns the panel off with sound playing"
 }

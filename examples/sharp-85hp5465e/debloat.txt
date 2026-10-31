@@ -54,8 +54,9 @@ com.mediatek.tv.retaildemo                   # store/demo mode
 # com.mtc.emanual                            # on-screen manual; firmware re-enables it at every boot
 
 # --- Apps the owner does not use (off by choice; all still installed) ---
-com.amazon.amazonvideo.livingroom
-com.google.android.youtube.tvmusic
+# Off on this set by the owner's choice; uncomment to disable.
+# com.amazon.amazonvideo.livingroom
+# com.google.android.youtube.tvmusic
 
 # --- Stock Google TV home and setup wizard ---
 # Disable only after installing and verifying the new launcher, and after the Wi-Fi step above!
