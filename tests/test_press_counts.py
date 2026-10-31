@@ -19,8 +19,16 @@ The same three numbers are written a second time, in prose, at the end of the st
 front page that shows the card ("The coverage: 351 articles from 46 countries and 229 videos on
 YouTube and Bilibili, all in docs/PRESS.md") - and nothing read that sentence, so a press sweep that
 moved the intro, the card's alt text and the card source left the four pages telling a reader one
-number in the picture and another in the story section two screens below it. The clause is read here too, in the order every
-translation writes it (article total, countries, videos), so the page and the list cannot disagree.
+number in the picture and another in the story section two screens below it. The clause is read here too, in
+the order every translation writes it (article total, countries, videos), so the page and the list cannot disagree.
+
+The sentence just before it carries a second pair of numbers - the tree's own totals, "The lists now cover
+380 TV models from 101 brands" - which the card's alt text states as well ("387 TV models · 103 brands ·").
+tools/gen_tables.py rewrites the alt text and every table from examples/*/tv.json, so a maintainer
+regenerating them gets the new totals there and not in this sentence: main spent a round with 387 in the
+picture and 380 in the story below it, and nothing noticed. The pair is read here and held to the alt text
+beside it, which is where a regeneration lands - a contributor adding a list folder touches neither, so
+their PR stays green.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -60,6 +68,11 @@ CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
 # rewording, quietly falls out of.
 PRESS_LINK = re.compile(r"\[docs/PRESS\.md\]\(docs/PRESS\.md\)")
 NUMBER = re.compile(r"\d[\d.,]*")
+# The same paragraph's other sentence, "The lists now cover 380 TV models from 101 brands": the totals
+# examples/*/tv.json adds up to, which the card states too. A sentence ends where a period, "!" or "?" is
+# followed by space, so the counts written with a separator ("46.000 sterren", "5.700 forks", "1.4M
+# views") stay inside their sentence rather than being split off into a shorter one.
+SENTENCE = re.compile(r"(?<=[.!?])\s+")
 
 
 def card_alt_texts():
@@ -109,6 +122,45 @@ def coverage_numbers(text):
         if colon < 0:
             return ()
         found = NUMBER.findall(paragraph[colon + 1:link.start()])
+        return tuple(int(number.replace(",", "").replace(".", "")) for number in found)
+    return None
+
+
+def card_totals(alt):
+    """(TV models, brands) the card's alt text states, in the order gen_tables.py writes them.
+
+    The alt text reads "387 TV models · 103 brands · 31 languages · 572 KB launcher" in each page's own
+    words, and tools/gen_tables.py's counts() rewrites those numbers in place from examples/*/tv.json, so
+    the first two integers are the tree's totals wherever the words around them were translated.
+    """
+    numbers = [int(number.replace(",", "").replace(".", "")) for number in NUMBER.findall(alt)]
+    return tuple(numbers[:2])
+
+
+def catalogue_numbers(text):
+    """(TV models, brands) the story sentence before the coverage clause states, or None without the paragraph.
+
+    That sentence - "The lists now cover 380 TV models from 101 brands" - is the page's own copy of the
+    totals its card states, and every translation writes the model count first and the brand count second.
+    Only the last sentence before the coverage colon is read: the numbers above it are the repository's
+    46K stars, 5.7K forks, 1.4M views and 260K clones, which are not the tree's totals. A tuple of any
+    other length is returned as it was read, so a sentence that grew a third number is reported with what
+    the reader found instead of being trusted.
+    """
+    for paragraph in paragraphs(text):
+        if "docs/PRESS.md" not in paragraph or "YouTube" not in paragraph:
+            continue
+        link = PRESS_LINK.search(paragraph)
+        if link is None:
+            continue
+        # The coverage clause is the sentence whose colon opens it ("The coverage: ..."); the totals are
+        # the sentence just before it. The colon itself carries no number, so cutting at it and reading
+        # the tail would read the words "The coverage" as a sentence.
+        sentences = SENTENCE.split(paragraph[:link.start()].strip())
+        clause = [i for i, sentence in enumerate(sentences) if ":" in sentence]
+        if not clause or clause[-1] == 0:
+            return ()
+        found = NUMBER.findall(sentences[clause[-1] - 1])
         return tuple(int(number.replace(",", "").replace(".", "")) for number in found)
     return None
 
@@ -406,6 +458,96 @@ class FrontPageCoverageTest(unittest.TestCase):
             read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
             with self.subTest(readme=name):
                 self.assertEqual(3, len(read or ()), f"{name}'s coverage sentence reads as {read}")
+
+
+class FrontPageTotalsTest(unittest.TestCase):
+    """The story's model and brand totals, which no test read and which tools/gen_tables.py cannot rewrite."""
+
+    def setUp(self):
+        self.pages = card_alt_texts()
+
+    def test_every_page_states_the_totals_its_card_states(self):
+        # The card's alt text is generated from examples/*/tv.json, so it is the copy a regeneration moves;
+        # the sentence above it is written by hand, which is how main came to show 387 models in the
+        # picture and 380 in the story two screens below it. A contributor adding a list folder edits
+        # neither (docs/workflows/tv-list.md step 5 leaves the tables to a maintainer), so this only bites
+        # the run that regenerates the card.
+        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md"}, set(self.pages),
+                             "README.md, README.de.md, README.nl.md and README.uk.md no longer show "
+                             "docs/card-halloween.jpg with an alt text")
+        for name in sorted(self.pages):
+            card = card_totals(self.pages[name])
+            read = catalogue_numbers((ROOT / name).read_text(encoding="utf-8"))
+            with self.subTest(readme=name):
+                self.assertEqual(2, len(card),
+                                 f"{name}'s card alt text states {self.pages[name]!r} instead of the two totals")
+                self.assertIsNotNone(
+                    read, f"{name} has no story sentence before its coverage clause, so the totals it "
+                          f"used to repeat are gone")
+                self.assertEqual(
+                    card, read,
+                    f"{name} states (TV models, brands) {read} in its story sentence and its card states "
+                    f"{card}; tools/gen_tables.py does not rewrite that sentence, so it moves with the card")
+
+    def test_the_walk_reads_the_totals_this_file_was_written_for(self):
+        # A reader answering () or None for every page would pass the rule above; each page carries two
+        # numbers today, and README.md is the page this file's own example is quoted from.
+        self.assertGreaterEqual(len(self.pages), 4, f"only {len(self.pages)} front pages show the card")
+        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md"):
+            read = catalogue_numbers((ROOT / name).read_text(encoding="utf-8"))
+            with self.subTest(readme=name):
+                self.assertEqual(2, len(read or ()), f"{name}'s story sentence reads as {read}")
+
+
+class TotalsReaderTest(unittest.TestCase):
+    """The totals reader, over pages written here: the languages, a wrap, a separator, a third number."""
+
+    @staticmethod
+    def page(sentence):
+        return ("# CleanYourTV\n\n"
+                "Two weeks on, it was the #1 trending repository on GitHub, with over 46K stars and 5.7K\n"
+                "forks, and 1.4M views and 260K clones in 14 days.\n\n"
+                f"{sentence}\n"
+                "The coverage: 351 articles from 46 countries and 229 videos on YouTube and Bilibili, all in\n"
+                "[docs/PRESS.md](docs/PRESS.md) (numbers as of 30 October 2026).\n")
+
+    def test_the_four_languages_are_read_the_same_way(self):
+        for sentence in ("The lists now cover 387 TV models from 103 brands.",
+                         "Die Listen umfassen jetzt 387 TV-Modelle von 103 Marken.",
+                         "De lijsten tellen nu 387 tv-modellen van 103 merken.",
+                         "Тепер списки охоплюють 387 моделей телевізорів від 103 бренду."):
+            with self.subTest(sentence=sentence):
+                self.assertEqual((387, 103), catalogue_numbers(self.page(sentence)))
+
+    def test_a_sentence_wrapped_over_two_lines_is_read(self):
+        # README.uk.md wraps this sentence after the model count, as the page's hand-wrapped prose does.
+        page = self.page("Тепер списки охоплюють 387 моделей телевізорів від\n103 бренду.")
+        self.assertEqual((387, 103), catalogue_numbers(page))
+
+    def test_a_thousand_separator_is_not_read_as_a_smaller_number(self):
+        self.assertEqual((1387, 103),
+                         catalogue_numbers(self.page("De lijsten tellen nu 1.387 tv-modellen van 103 merken.")))
+
+    def test_a_stale_pair_is_read_as_it_is_written(self):
+        page = self.page("The lists now cover 380 TV models from 101 brands.")
+        self.assertEqual((380, 101), catalogue_numbers(page))
+
+    def test_a_sentence_with_a_third_number_is_reported(self):
+        self.assertEqual((387, 103, 30),
+                         catalogue_numbers(self.page("The lists now cover 387 TV models from 103 brands "
+                                                     "as of 30 October.")))
+
+    def test_the_repository_numbers_above_it_are_not_read_as_the_totals(self):
+        # 46K stars, 5.7K forks, 1.4M views and 260K clones are in the sentence before this one; only the
+        # last sentence carries the tree's totals.
+        self.assertEqual((387, 103),
+                         catalogue_numbers(self.page("The lists now cover 387 TV models from 103 brands.")))
+        without = self.page("Two weeks on, it was the #1 trending repository on GitHub.")
+        self.assertNotEqual((387, 103), catalogue_numbers(without),
+                            "a page that stopped stating the totals is reported, not passed")
+
+    def test_a_page_without_the_story_paragraph_is_quiet_about_it(self):
+        self.assertIsNone(catalogue_numbers("# CleanYourTV\n\nNo story section here.\n"))
 
 
 class CoverageReaderTest(unittest.TestCase):

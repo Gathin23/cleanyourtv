@@ -32,6 +32,12 @@
    `README.md`, `README.nl.md` and `README.de.md`, and the counts (the `TV models` number in the card's alt text)
    are generated from every `tv.json` by `tools/gen_tables.py`, which a maintainer runs after merging; CI compares
    them only on `main`.
+   One copy of those counts is outside the generated blocks: the story sentence that shows the card on the same
+   four front pages ("The lists now cover 387 TV models from 103 brands") is prose, so a regeneration moves the
+   picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
+   story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
+   to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
+   card states (387, 103)`), so they move in the same commit.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
    free prose; three things in a README are read back, two of them against the list beside it.
    A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
