@@ -98,30 +98,48 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/b64push.py launcher/app/build/out
 TV_HOST=<tv ip> tools/tv.py 'pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk'
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/b64push.py coocaa-home-shim.apk /data/local/tmp/shim.apk
 TV_HOST=<tv ip> tools/tv.py 'pm install -r /data/local/tmp/shim.apk; rm -f /data/local/tmp/shim.apk'
+TV_HOST=<tv ip> tools/tv.py 'cmd appops set com.ccos.tv.homepage SYSTEM_ALERT_WINDOW allow'
 ```
 
-### Step 3: Redirect Coocaa Home properties
+> [!NOTE]
+> On Android 10, the background activity start restriction requires granting `SYSTEM_ALERT_WINDOW` permission to `com.ccos.tv.homepage` (`cmd appops set com.ccos.tv.homepage SYSTEM_ALERT_WINDOW allow`) so the shim can reliably bring CleanYourTV to the foreground when the physical remote Home button is pressed from within background apps.
 
-Point both pairs of system homepage properties to the shim using `tools/tv.py`. Coocaa OS uses a dual-track
-dispatch mechanism for physical remote Home button presses:
-- `persist.service.homepage.*` controls dispatch in standard video, elder, and children's modes.
-- `persist.service.model.*` controls dispatch when the TV is set to or was previously in "Home Office" mode (`com.skyworth.officehomepage`).
+### Step 3: Redirect Coocaa Home properties (Direct Cold-Boot + Remote Key Dispatch)
 
-Both pairs must point to the shim. If `persist.service.model.*` is omitted or left on its default, pressing the remote's Home button while the TV is in Home Office mode bypasses Android's default home and bounces back to `com.skyworth.officehomepage`.
+Coocaa OS uses a dual-track home dispatch mechanism governed by `/system/etc/bootintent.xml` in `system_server`:
+- **Cold-boot priority (`modelhome`)**: On system boot, `sky_launcher` evaluates `modelhome` first:
+  ```xml
+  <home name="modelhome" relation="and" propcomp="persist.service.model.pkg/persist.service.model.cls">
+      <prop name="persist.service.model.pkg" type="exists"></prop>
+      <prop name="persist.service.model.cls" type="exists"></prop>
+  </home>
+  ```
+  Pointing `persist.service.model.*` directly to CleanYourTV (`com.coocaa.tvhome/com.gathin.tvhome.MainActivity`) allows `system_server` to launch CleanYourTV directly upon boot without flashing OEM desktop layouts or triggering intermediate "正在准备..." loading screens.
+- **Physical Remote Home key dispatch (`persist.service.homepage.*`)**: When third-party apps are running, remote Home button presses are routed to `persist.service.homepage.*`. Pointing these to `com.ccos.tv.homepage` allows `coocaa-home-shim` to instantly return focus to CleanYourTV.
+
+Apply the properties using `tools/tv.py`:
 
 ```bash
+# 1. Cold boot: launch CleanYourTV directly via modelhome
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.coocaa.tvhome'
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.gathin.tvhome.MainActivity'
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.name CleanYourTV'
+
+# 2. Remote Home key: dispatch through shim
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.pkg com.ccos.tv.homepage'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.cls com.ccos.tv.homepage.LaunchActivity'
-TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.ccos.tv.homepage'
-TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.ccos.tv.homepage.LaunchActivity'
 ```
+
+> [!TIP]
+> Setting `persist.service.model.name` to `CleanYourTV` replaces the native desktop mode identifier. In system Settings, "系统模式 (System Mode)" will appear unselected, preventing the system from automatically triggering OEM mode initialization delays.
 
 ---
 
 ## Cold boot behavior
 
 After a cold boot (power unplugged and restored):
-- Coocaa OS reads the `persist.service.homepage` properties, initiates `com.ccos.tv.homepage.LaunchActivity`, and immediately transitions focus to `com.coocaa.tvhome.MainActivity`.
+- Coocaa OS `system_server` matches `modelhome` from `/system/etc/bootintent.xml` and launches `com.coocaa.tvhome.MainActivity` directly.
+- Boots into CleanYourTV seamlessly with zero intermediate loading screens ("正在准备...") and zero desktop flash.
 - `dumpsys window | grep mCurrentFocus` settles directly on:
   ```text
   mCurrentFocus=Window{... u0 com.coocaa.tvhome/com.gathin.tvhome.MainActivity}
@@ -141,6 +159,7 @@ TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.pkg com.tianci.mov
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.cls com.coocaa.homepage.vast.HomePageActivity'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.skyworth.officehomepage'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.skyworth.officehomepage.view.HomepageActivity'
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.name OfficeMode'
 
 # 2. Launch stock desktop
 TV_HOST=<tv ip> tools/tv.py 'am start -n com.skyworth.officehomepage/.view.HomepageActivity'
