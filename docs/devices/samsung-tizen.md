@@ -188,7 +188,44 @@ The owner then tested with Smart Hub startup off and last-app autorun on:
 This establishes **standby resume in one tested sequence**, not guaranteed startup or Home takeover.
 Samsung [warns that not every application supports last-app autorun](https://www.samsung.com/ae/support/tv-audio-video/use-autorun-start-screen-options-on-your-samsung-tv/).
 Power removal/reconnection, repeated restart trials and startup after using other applications were
-not tested. No supported way to replace the physical Home button's destination was established.
+not tested. Through this **Start Screen Options** settings menu, no supported way to replace the
+physical Home button's destination was established. A later session on the same unit reached it by a
+different, privileged route that this menu does not expose (see **Native Home reassignment**, below).
+
+### Native Home reassignment: achieved on this unit in a later session (2026-10-27)
+
+A follow-up session on the **same** DU7000 did reassign the physical **Home** button to the owner's
+custom application, which the settings-menu tests above could not. This corrects, for this one unit,
+the earlier conclusion that "no supported way to replace the physical Home button's destination was
+established." It does **not** generalise: the AU8000 in #441 had Developer Mode off and no SDB, so
+its "no Home takeover" result stands, and nothing here is root.
+
+What the owner confirmed, by hand, on the TV:
+
+| Test | Observed result |
+|---|---|
+| Physical Home button after apply | Opened the owner's custom application, not Samsung Home |
+| Samsung Home shortcut (Smart Hub) | Still opened Samsung Home |
+| Quick power cycle and full restart | Came back to the custom application |
+| `restore` | Returned the exact original Home and startup values; the physical Home button opened Samsung Home again |
+
+Preconditions and limits:
+
+- The same DU7000 with Developer Mode on and an SDB connection, the owner's own signing profile, and
+  a separately signed native helper. Everything ran as the non-root SDK user (uid 901); **no root was
+  used or gained**, and no system package was removed.
+- The helper wrote Tizen's own documented Home/startup configuration (the `db/appfw/home_appid`
+  family) and read every value back, with a `restore` path that rewrote the captured originals. The
+  configuration keys are public Tizen internals; reassigning Home is a configuration change, not a
+  modified system component.
+- **The execution method is deliberately withheld.** Running the helper depended on a technique that
+  gets around the retail TV's normal install/verification path, which this repository does not publish
+  (see the hard rules in `AGENTS.md` and private disclosure in `SECURITY.md`). The fact that Home
+  reassignment is possible on this unit is the finding; the route to run it is not reproduced here.
+- This stays a capability note for one unit, one firmware. It is **not** a tested debloat list, not a
+  measured improvement, and not root. The full launcher and the tooling to install and reassign it
+  belong in their **own repository**, with a row in [SHOWCASE.md](../../SHOWCASE.md); this note does
+  not add any of it to `tools/`.
 
 ### Inventory export, backup limits and removal
 
