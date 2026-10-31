@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA XR-85X90L (2023, BRAVIA_VH22, MediaTek), China",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "CN firmware: no GMS/Google launcher, Dangbei is the stock home; Sony/Qterics agents, IDD, bug report, demo mode, JD services, NewTV/CIBN/GITV off by choice; HOME handed to the factory-preloaded Emotn UI (com.oversea.aslauncher) by disabling Dangbei - set-home-activity is a silent no-op on this firmware; Tencent/Mango/Migu/CCTV video, HPPlay cast, Dangbei Market, voicesearch and firmware updates kept; reboot-checked"
+}
