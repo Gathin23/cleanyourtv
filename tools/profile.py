@@ -207,7 +207,11 @@ def install_split(host, pkg, paths, workdir):
     except Transport:
         tv_cli(None, f"pm install-abandon {session_id}")
         raise
-    return "Success" in out
+    if "Success" not in out:
+        # A commit the TV refuses leaves the session open, and Android caps how many can be open.
+        tv_cli(None, f"pm install-abandon {session_id}")
+        return None
+    return True
 
 
 def sync(directory, source_host, apply):

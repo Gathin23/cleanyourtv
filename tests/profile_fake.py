@@ -64,6 +64,8 @@ def apply(state, command):
             state["session"]["pkgs"].append(pkg)
         return "Success: streamed\n"
     if command.startswith("pm install-commit "):
+        if state.get("commit_fails"):
+            return "Failure [INSTALL_FAILED_INVALID_APK]\n"
         for pkg in state["session"]["pkgs"]:
             if pkg not in state["installed"]:
                 state["installed"].append(pkg)

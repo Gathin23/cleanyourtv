@@ -106,6 +106,27 @@ class SyncTest(unittest.TestCase):
         self.assertTrue(any(c.startswith("pm install-commit") for c in commands))
         self.assertNotIn("install by hand", result.stdout)
 
+    def test_a_failed_commit_abandons_the_session_instead_of_leaving_it_open(self):
+        master = self.h.state(MASTER)
+        master["paths"]["com.example.tube"] = [
+            "/data/app/tube/base.apk", "/data/app/tube/split_config.arm64_v8a.apk"]
+        master["files"]["/data/app/tube/base.apk"] = "BASE"
+        master["files"]["/data/app/tube/split_config.arm64_v8a.apk"] = "SPLIT"
+        self.h.put(MASTER, master)
+        target = self.h.state(TARGET)
+        target["commit_fails"] = True
+        for index in (1, 2):
+            target["apks"][f"/data/local/tmp/com.example.tube-{index}.apk"] = "com.example.tube"
+        self.h.put(TARGET, target)
+
+        result = self.h.run("sync", str(self.h.profile), "--source", MASTER, "--apply", host=TARGET)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        commands = self.h.commands(TARGET)
+        self.assertTrue(any(c.startswith("pm install-abandon ") for c in commands))
+        self.assertIn("install by hand (1): com.example.tube", result.stdout)
+        self.assertNotIn("com.example.tube", self.h.state(TARGET)["installed"])
+
     def test_a_package_with_no_apk_on_the_master_is_reported(self):
         master = self.h.state(MASTER)
         master["paths"]["com.example.tube"] = []
