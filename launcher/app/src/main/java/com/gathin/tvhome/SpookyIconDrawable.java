@@ -131,6 +131,7 @@ public final class SpookyIconDrawable extends Drawable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }
