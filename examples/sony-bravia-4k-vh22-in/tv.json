@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH22 (2023, BRAVIA_VH22, MediaTek MT5835), India retail",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Samba ACR, Sony IDD/Qterics agents, Sony Select, demo mode, BRAVIA CAM suite, Sony IoT remote-start, HbbTV, Vewd, Jio and Amazon miniTV preloads, B2B hotel suite; Prime Video, Apple TV, YouTube Music, Google TV movies and Sony Pictures Core off by choice on this set (their lines are commented out); Assistant, Netflix, Chromecast, firmware updates kept; setupwraith off for the launcher (it can own the saved Wi-Fi; casting stops without it); reboot-checked"
+}

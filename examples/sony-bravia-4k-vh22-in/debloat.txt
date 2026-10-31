@@ -1,0 +1,112 @@
+# Sony BRAVIA 4K VH22 (2023 4K LED, device BRAVIA_VH22, MediaTek MT5835, modelgroup SONYANDROIDTV2023M5),
+# India retail, firmware region BRAVIA_VH22_M_PA (preloads mix Indian and South-East Asian apps)
+# Android 12 (Google TV, API 31), build STT2.230505.001.S136/682241, 3 GB RAM
+# Same India firmware as examples/sony-kd-65x82l (KD-65X82L/KD-55X82L) and the same build tag as the EU
+# examples/sony-kd-43x80l and docs/devices/sony-bravia-4k-vh22-settings-key.md; the preloads differ. This
+# family-level list adds the HbbTV suite, the Jio/miniTV preloads and the full 13-package B2B suite.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh22-in/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh22-in/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV); launcher/build-and-install.sh disables it
+# and hands Home over to the CleanYourTV launcher. Live TV / tuner app: com.sony.dtv.tvx. Keep the
+# com.sony.dtv.tvinput.* services, sonysystemservice, sonyvendorservice, imeproxy, settingsprovider,
+# systemupdate and all com.mediatek.*: they drive HDMI, the tuner, the Input overlay, Bravia Sync, updates
+# and the remote's app buttons.
+# Remote: sonyvendorservice (kept) routes the app buttons, as on the VH21, so they survive launcherx being
+# disabled. The Settings key goes dead instead: on this model use the keyboard-layout overlay in
+# docs/devices/sony-bravia-4k-vh22-settings-key.md, not HomeKeyService, which breaks held-volume repeat
+# here (#1680).
+# Kept by owner's choice: Netflix, the YouTube app, Google Play Games, the Google Assistant stack
+# (katniss, voicesearch, assistantadapter), Chromecast built-in (mediashell), firmware updates and Sony IP
+# control (com.sony.dtv.webapi.core). Factory-disabled before any of this, so not listed:
+# com.sony.dtv.b2b.softap and com.sony.dtv.b2b.vendorprotocol.
+# interactivetvutil is disabled here (no broadcast use); the VH21 EU list keeps it for a TokenProvider other
+# Sony apps may read - re-enable it if a Sony app misbehaves.
+#
+# Reboot-checked: everything below stayed disabled (checked twice). Applied 30 Oct 2026, same-day report.
+# If something breaks, `pm enable <package>` and please report it.
+
+# ACR viewing tracker
+tv.samba.ssm                      # Samba TV fingerprints what's on screen
+tv.samba.ssm.ui
+
+# telemetry and remote support
+com.sonyericsson.idd.agent        # Sony IDD usage-data agent
+com.sony.dtv.usercontext          # user context providers, boot receiver only
+com.qterics.da.product            # Qterics device agent
+com.sony.dtv.da.service           # remote-support session service
+com.google.android.feedback
+
+# Sony ads, recommendations and promos
+com.sony.dtv.sonyselect           # Sony Select app recommendations
+com.sony.dtv.promos
+
+# demo / shop mode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.kenhchonloc          # shop promo app, Vietnamese despite Indian retail
+
+# regional preloads (off by choice; India/SEA firmware)
+com.amazon.minitv.androidtv.app   # Amazon miniTV (India)
+com.jio.media.jiotvplus           # JioTV+
+com.jio.media.stb.ondemand        # Jio set-top on-demand app
+com.tcl.browser                   # preloaded browser (TCL's APK on this Sony set)
+
+# streaming and storefronts (off by choice on this set; uncomment a line to disable that app too)
+# com.amazon.amazonvideo.livingroom  # Prime Video
+# com.apple.atve.sony.appletv        # Apple TV app
+# com.google.android.youtube.tvmusic # YouTube Music
+# com.google.android.videos          # Google TV movies (loses access to purchases in it)
+# com.sonypicturescore               # Sony Pictures Core
+
+# BRAVIA CAM suite (no camera attached)
+com.sony.dtv.sensingcamera.fwupdate
+com.sony.dtv.sensingcamera.settings
+com.sony.dtv.sensingfusionservice
+com.sony.dtv.distancealert        # ambient distance alert (needs the cam)
+com.sony.dtv.gestureapp           # cam gestures
+
+# Sony IoT / remote start (SEEDS)
+com.sony.dtv.seeds.auth
+com.sony.dtv.seeds.iot
+com.sony.dtv.seeds.iot.remotestart
+
+# help guide / smart help
+com.sony.dtv.helpguidecontents
+com.sony.dtv.smarthelp
+
+# HbbTV / broadcast interactive (unused without an antenna; see the interactivetvutil note above)
+com.sony.dtv.hbbtvplayer
+com.sony.dtv.broadcastservicesetup
+com.sony.dtv.interactivetvutil
+com.sony.dtv.interactivetvutil.output
+com.sony.dtv.broadcastclock.broadcastrequirementcontrol
+com.sony.dtv.broadcastclock.clocksyncservice
+
+# Vewd operator platform
+com.vewd.core.service
+com.vewd.core.integration.dia
+
+# B2B hotel/commercial suite (a home set does not need it)
+com.sony.dtv.b2b.adminpassword
+com.sony.dtv.b2b.deviceadminsettings
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.ipcontrolsettings
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.noderuntimeextension.bpk
+com.sony.dtv.b2b.noderuntimeextension.node_20_11_1
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.webappruntimedrm
+
+# Google TV setup wizard: with launcherx disabled its RecoveryActivity takes Home. It can own the Wi-Fi
+# network saved during first setup (forget and re-join it in Settings first, or the TV drops off Wi-Fi when
+# it goes) and on Google TV casting to the set stops while it is off. launcher/build-and-install.sh handles
+# the handover. Re-enable before a factory reset. On this unit disabling it kept Wi-Fi and ADB up.
+com.google.android.tungsten.setupwraith
