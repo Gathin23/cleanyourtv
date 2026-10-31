@@ -169,6 +169,22 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   launcher with `stock_home_redirect` (`themes/README.md`) instead of disabling it. Seen on a TCL Smart TV
   Pro (`G03_4K_US`, Google TV 11, GTV93,
   [#1653](https://github.com/Gathin23/cleanyourtv/issues/1653)).
+- **Ambient mode's "Select albums" closes at once, or says "Unable to load content"**, while the
+  slideshow itself keeps playing with launcherx and setupwraith off. Screen saver > Ambient mode
+  settings (`am start -a dreamx.two.panel.SETTINGS -p com.google.android.apps.tv.dreamx`) > Google
+  Photos Settings > Select albums starts `PhotosSetupActivityV2`, which stops with the same
+  `Failed to find provider info for
+  com.google.android.apps.tv.launcherx.coreservices.account.AccountModeContentProvider` the Google
+  Home panel bullet above names: the album list is launcherx's. Setupwraith is needed as well - with
+  launcherx on and the wizard off the identity check passes, and then launcherx's
+  `OnboardingActivity` answers "Unable to load content. There was a problem loading your albums."
+  Turn both on (`pm enable com.google.android.apps.tv.launcherx`,
+  `pm enable com.google.android.tungsten.setupwraith`), force-stop launcherx so its onboarding does
+  not come up in the picker's place, change the albums, then return Home and let `check.py --fix`
+  disable both again and put the new launcher back on Home. Home is
+  launcherx's while it is enabled. Seen on a Sony XR-77A80L (`BRAVIA_VH22`, Google TV 12,
+  `STT2.230505.001.S136`,
+  [#2854](https://github.com/Gathin23/cleanyourtv/issues/2854)).
 - **Large pushes hang** through the Python client. Use `tools/b64push.py` for APKs.
 - **`tools/tv.py reboot` never comes back.** `reboot` is a shell command, and adbd stops before it
   sends the shell's last `CLSE`, so the client waits for a reply that cannot arrive: two minutes,
