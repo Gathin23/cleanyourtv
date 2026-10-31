@@ -1,0 +1,177 @@
+# Bell Fibe TV (ARRIS VIP7802, codename vip7802_bell), Android TV 11 (SDK 30),
+# firmware RTT4.240509.001 (build 11.02.02.02.160-RC.149, release-keys).
+# This is Bell Canada's IPTV set-top box, not a TV: Bell's launcher and remote key handling
+# stay, and this list leaves the HDMI/CEC and Netflix-key packages alone (see below).
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/bell-fibe-tv-vip7802/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/bell-fibe-tv-vip7802/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.custom.tvlauncher (Bell/ARRIS, not AOSP's com.google.android.tvlauncher).
+# There is no separate Live TV package: Fibe content plays through ca.bell.chiclet.fibehelper,
+# a real content app (see "Not disabled" below), and this box registers no
+# android.media.tv.TvInputService at all.
+#
+# This box does not carry much ARRIS/CommScope bloat once content apps are left alone: the default
+# list below is 12 packages - telemetry, two stub apps with no logic at all, and five Google TV
+# services most owners would not miss (Play Games, Play Movies & TV, YouTube Music, Android TV's
+# own feedback reporter, and the stock recommendation-row service, which this box's own launcher
+# doesn't even read). Each of those five is still a real, separate thing, not telemetry; comment
+# out any line below if you want it back - that's the convention this repo's other lists use for a
+# package that's genuinely a personal call (see examples/anker-nebula-d2140, examples/asus-m1g for
+# the same pattern: disabled by default with a comment, not held back as opt-in).
+#
+# It does not touch content apps, including the ones Bell preloaded (CTV, TSN, Noovo, TOU.TV, the
+# Weather Network, iHeartRadio, Tubi, the Fibe player itself): those are free, ad-supported services
+# real people use, the same way Fire TV lists in this repo keep Prime Video, Amazon Music and Luna
+# by default and only flag them as the owner's own choice to remove.
+#
+# A separate, opt-in block lower down holds mainstream streaming apps (Netflix, Prime Video,
+# YouTube) and three ARRIS features with a minor, skippable function (UPnP/DLNA, the customizer's
+# resource overlay, Play Auto Install) - the streaming apps the same way examples/acer-ar3-r3 and
+# examples/dexp-a651 in this repo offer Netflix and Prime Video as removable, for an owner who
+# genuinely doesn't use one. Assistant voice search, Chromecast casting and the phone-as-remote app
+# are NOT in that block: unlike UPnP or Play Auto Install, those are mainstream features most owners
+# would reach for and miss immediately, so they're not offered at all - see "Kept deliberately" at
+# the end. Seven other ARRIS/CommScope packages this list also looked at are not in this file at
+# all, in any form either: six declare a real feature (factory reset, diagnostics, find-my-remote,
+# network setup, remote-key/power-button/HDMI-CEC handling), and the seventh (com.arris.oemdata)
+# looks like telemetry but breaks another package if disabled - a debloat list is for bloat, and
+# none of these seven qualify - see "Kept deliberately" for what each one does and why it's
+# excluded, not just held back.
+
+# Bell / ARRIS / CommScope telemetry and reporting
+com.commscope.report.bell
+com.commscope.report.companion.bell
+com.commscope.notification.bell.merlin
+com.arris.notificationlistener.bell
+com.arris.bugreport
+
+# ARRIS stub packages with no logic at all: no activities, services or receivers of their own,
+# permission shells only (BIND_ATTENTION_SERVICE, BIND_JOB_SERVICE,
+# BIND_NETWORK_RECOMMENDATION_SERVICE, shared with other packages on this box's UID).
+# com.arris.android.stb.fti ships as SetupCustomizerRecoveryStub - a stub, not the real first-time-
+# install app. com.arris.quickactions's name suggests a quick-actions menu, but it declares no
+# component that could show one; whatever it once did, it does nothing on this firmware.
+com.arris.android.stb.fti
+com.arris.quickactions
+
+# Google TV services most owners would not miss. Comment out any line if you want it back.
+# com.google.android.tvrecommendations re-enables itself at every boot on this firmware,
+# confirmed across two reboots (pm disable-user takes, dumpsys shows enabled=1 again after each
+# restart) - the same pattern this repo's anker-nebula lists document for com.google.android.katniss.
+# Disabling it again after each boot only lasts until the next one; left in the list anyway since
+# re-running tools/check.py --fix (or this list) after a reboot puts it back, and with this box's
+# own launcher in place the stock recommendation rows it would feed have nowhere to show.
+com.google.android.play.games           # Play Games: achievements/leaderboards/cloud saves for
+                                         # Android games, rarely used on a TV box
+com.google.android.videos               # Google Play Movies & TV, Google's own movie storefront;
+                                         # does not touch Netflix, Prime Video or any Bell app
+com.google.android.youtube.tvmusic      # YouTube Music; the regular YouTube app is a separate
+                                         # package (com.google.android.youtube.tv) and is untouched
+com.google.android.feedback             # Android TV's own crash/feedback reporter to Google,
+                                         # separate from anything Bell/ARRIS collects
+com.google.android.tvrecommendations    # populates the stock Google TV home screen's "recommended
+                                         # for you" rows; this box runs Bell's own launcher, not
+                                         # Google's, so these rows likely aren't even shown. Comes
+                                         # back enabled at every boot on this firmware; see above.
+
+# ARRIS firmware updater (RC-146+ branch): not in this list, so firmware updates keep arriving.
+# Uncomment the line below yourself to stop them; see docs/firmware-updates.md.
+# com.arris.arus.updater
+
+# --- Opt-in: preloaded content apps. Not disabled by default - kept the same way Fire TV lists in
+# --- this repo keep Prime Video, Amazon Music and Luna by default - but each is a real, separate
+# --- app you can remove yourself if you don't use it. None of these auto-launches a player or a UI
+# --- at boot: six of the seven register androidx.work's own RescheduleReceiver, the standard
+# --- WorkManager library's boilerplate for rescheduling background jobs after a reboot, not
+# --- app-specific code, and none showed up in `ps -A` at rest this session. Two
+# --- (tv.toutv.androidtv, com.clearchannel.iheartradio.tv) also register a recommendations-refresh
+# --- receiver of their own, which can populate a row on a launcher that reads it - this launcher
+# --- doesn't.
+# ca.bell.chiclet.fibehelper               # the Fibe TV player itself - disables live TV entirely
+# ca.bellmedia.cravetv                     # CraveTV, a paid Bell Media service (needs a subscription,
+                                            # like Netflix, opt-in further down too)
+# ca.ctv.ctvgo                             # CTV, Bell Media's free ad-supported network app
+# ca.tsn.mobile.android                    # TSN: free scores/highlights, paid tier for live games
+# com.vmediagroup.noovo                    # Noovo, Bell Media's free French-language network
+# tv.toutv.androidtv                       # ICI TOU.TV, Radio-Canada's free streaming app
+# com.clearchannel.iheartradio.tv          # iHeartRadio: free radio, not Bell-specific
+# com.pelmorex.WeatherEyeAndroid.tv        # the Weather Network, Canada's most-used weather app
+# com.tubitv                               # Tubi: free ad-supported movies and TV, not Bell-specific
+# com.quickplay.android.bellmediaplayer    # see the README for its permissions; also content
+
+# --- Opt-in: minor ARRIS features. Commented out by default; each line says what it does.
+# com.arris.upnpapp                       # UPnP/DLNA discovery - lets other devices on your network
+                                           # find this box, and it find UPnP media servers. Skip this
+                                           # line if you use neither.
+# com.arris.customizer.rro.merlin         # Runtime Resource Overlay for com.arris.customizer, kept -
+                                           # see below; disabling the overlay without its app leaves
+                                           # customizer running on default resources.
+# android.autoinstalls.config.arris.vip7802w  # Play Auto Install config: on a fresh box or after a
+                                           # factory reset, this is what silently re-pushes Bell's
+                                           # chosen app set from Play Store. Already did its one job
+                                           # if your box is past first setup; harmless to disable now,
+                                           # but re-enable it before a factory reset if you want the
+                                           # Bell app set restored automatically afterwards.
+
+# --- Opt-in: mainstream streaming apps. Not disabled by default - these are the services most
+# --- people on this box actually use - but offered the same way several other lists in this repo
+# --- offer Netflix and Prime Video (examples/acer-ar3-r3, examples/benq-qs01,
+# --- examples/dexp-a651): some owners genuinely don't use one or the other. Uncomment only what you
+# --- are sure you don't use.
+# com.netflix.ninja                       # Netflix. The remote's dedicated Netflix button needs
+                                           # com.arris.globalkeyactions, a separate package, kept -
+                                           # see below.
+# com.amazon.amazonvideo.livingroom       # Prime Video
+# com.google.android.youtube.tv           # YouTube
+
+# Kept deliberately, not in this file at all - needed by most people, not offered even as opt-in:
+# - com.arris.oemdata: looked like plain telemetry from its manifest (no components, no special
+#   permissions) and was in this list through several drafts, but disabling it breaks
+#   com.arris.remoteservice. remoteservice's config loader (VIP7802wBell.loadConfig) queries
+#   oemdata's content provider for device config; with oemdata disabled the provider lookup fails
+#   ("Failed to find provider info for com.arris.oemdata.provider"), remoteservice's App.onCreate
+#   throws a NullPointerException, and because remoteservice is PERSISTENT, Android restarts it
+#   immediately, crash loop, confirmed reproducible by toggling oemdata off and back on twice. The
+#   loop itself ran a CPU core at a sustained ~80% in logd alone from the crash-trace volume, which
+#   is probably why playback felt sluggish in anything running at the time. Re-enabling oemdata
+#   stopped it immediately, confirmed both ways.
+# - com.google.android.katniss (Assistant voice search from the remote's mic button),
+#   com.google.android.apps.mediashell (Chromecast casting from a phone/laptop) and
+#   com.google.android.tv.remote.service + .rro (lets a phone act as a second remote/keyboard):
+#   mainstream features most owners would reach for and miss immediately, not minor conveniences
+#   like UPnP or Play Auto Install. An earlier draft offered these three as opt-in; moved here
+#   instead, the same tier as the physical remote and HDMI-CEC below.
+# - com.arris.globalkeyactions: requests ca.bell.fiberemote.permission.BUTTON and
+#   com.netflix.ninja.permission.NETFLIX_KEY, the Bell remote's Netflix key and button routing.
+#   Disabling com.netflix.ninja above does not touch this package either way.
+# - com.broadcom.nrdphelper: requests android.permission.HDMI_CEC.
+# - com.apple.atve.androidtv.appletv: preloaded Apple TV app with EPG write access; content, not
+#   telemetry, same as the Bell-preloaded apps above.
+# - com.custom.tvlauncher: the only package that answers HOME on this box; disabling it before a
+#   replacement is installed leaves nothing to start.
+# - com.google.android.tungsten.setupwraith: Google's first-run setup wizard. A factory reset
+#   restores the system partition to its factory image, which brings this package straight back
+#   regardless of any pm disable-user state beforehand, so disabling it today buys nothing that
+#   survives the one event (a reset) where it would matter again. What's left is only the downside:
+#   on this box the saved Wi-Fi network had already been forgotten and rejoined and no other
+#   installed app answered HOME, so tools/disable.sh's Home guard let a disable through without
+#   FORCE_SETUPWRAITH=1 - but on a box where it still owns the Wi-Fi network, disabling it deletes
+#   that network, and on Google TV it can crash-loop system_server if no other launcher answers
+#   HOME yet. Dead weight once setup is done, real risk for no lasting gain, not worth offering.
+# - com.arris.gtvs (factory reset: MasterClearReceiver), com.arris.chmframework (diagnostics and
+#   developer unlock: DiagReceiver, DevUnlockReceiver), com.commscope.rcu.bell (the remote's own
+#   app: find-my-remote, remote firmware upgrade), com.commscope.android.fti.bell.merlin (the
+#   out-of-box network/Wi-Fi setup wizard), com.commscope.network.bell.merlin (a network-diagnostics
+#   screen), com.commscope.nexusservice (RECEIVE_KEY_PRESS, RECEIVE_POWER_BUTTON_OVERRIDE,
+#   SWITCH_DISPLAY_MODES, HDMI_CEC), com.arris.customizer (the Netflix remote key, reboot/recovery
+#   permissions) and com.arris.remoteservice (confirmed from decompiled source: its Application
+#   class, VIP7802wBell, reads the IR model from com.arris.oemdata on every start and picks a
+#   Bluetooth pairing trigger - IR-assisted or advertising-only - accordingly; it is the Bluetooth
+#   remote's pairing/unpairing/finding service, not the always-on key routing): an
+#   earlier draft of this list offered all eight as opt-in. That was also wrong - a debloat list is
+#   for bloat, and none of these is bloat: they're normal device functionality (factory reset,
+#   diagnostics, finding a lost remote, Wi-Fi setup, network troubleshooting, remote/power/HDMI-CEC
+#   input), the same category CONTRIBUTING.md excludes for AOSP's own core packages. They're not in
+#   this file in any form.
