@@ -24,7 +24,7 @@
 #   com.mediatek.* (inputs, Live TV, Bluetooth remote pairing), com.dolby.android.audio.service.
 # - Never opened: com.mediatek.tv.factory, mediatek.factorymenu.ui (factory menus).
 #
-# Owner's choices: Viu, Crunchyroll, YouTube and TV Bro stay. Chromecast built-in stays.
+# Owner's choices: Crunchyroll, YouTube and TV Bro stay. Chromecast built-in stays.
 #
 # Also disabled by hand on this set, after the launcher took Home: com.google.android.tvlauncher (set-home-activity
 # said Success but Home stayed with it until it was disabled) and com.google.android.tvrecommendations.
