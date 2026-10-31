@@ -294,7 +294,7 @@ def connect_error(e):
     A refused port and a Wireless debugging port used to end tv.py with a traceback, which says nothing
     about the port to use instead (#1578). connect() itself still raises: check.py (through
     recovery.connect()) and privacy.py catch its errors with wording and exit codes of their own, and
-    recovery.py --save still lets them through (a follow-up)."""
+    recovery.py --save asks this same function through recovery.reach()."""
     if isinstance(e, NativeAdbError):
         return str(e)
     # Imported here rather than with the client above, so the stub adb_shell in the tests (adb_device
