@@ -10,8 +10,10 @@ final class Access {
     /**
      * What ADB can be reached by. adb_enabled is the developer-options switch; a TCP port (adb tcpip) or wireless
      * debugging makes it reachable over the network, which is what matters on a TV with no USB cable in.
+     * Some firmware keeps wireless debugging, and its port, up with adb_enabled at 0 (Xiaomi MiTV-AFMU0).
      */
     static Adb adb(boolean enabled, boolean wireless, int tcpPort) {
+        if (wireless) return Adb.NETWORK;
         if (!enabled) return Adb.OFF;
         return wireless || tcpPort > 0 ? Adb.NETWORK : Adb.USB_ONLY;
     }
