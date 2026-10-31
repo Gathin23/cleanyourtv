@@ -1,0 +1,54 @@
+# TCL 55Q650G-CA (G03_4K_US_NF_DB, Android TV 11 / SDK 30), firmware AR37
+# Tested on Ethernet (not USB adapter), nothing plugged into USB ports during session.
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q650g-ca/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q650g-ca/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+
+# TCL voice assistant and smart services
+com.tcl.assistant
+com.tcl.smartalexa
+
+# TCL telemetry / analytics / user tracking
+com.tcl.guard
+com.tcl.bi
+com.tcl.usercenter
+
+# TCL content and media services (not Live TV / input services)
+com.tcl.tv.plus
+com.tcl.tv.tclchannel
+com.tcl.channelplus
+com.tcl.suspension
+com.tcl.ocean.instructions
+com.tcl.waterfall.overseas
+com.tcl.initsetup
+com.tcl.tvweishi
+
+# TCL UI / framework / overlay bloat
+com.tcl.ui_mediaCenter
+com.tcl.dashboard
+com.tcl.autopair
+com.tcl.messagebox
+com.tcl.partnercustomizer
+com.tcl.systemuioverlay
+com.tcl.imageplayer
+com.tcl.videoplayer
+com.tcl.appstatecontroller
+com.tcl.showmode
+
+# TCL remote / input helpers (not core input service)
+com.tcl.keycustomfunctionservice
+com.tcl.inputmethod.international
+
+# TCL update / boot / setup bloat (firmware updater kept enabled by choice)
+com.tcl.rc.ota
+
+# Preloaded apps
+com.google.android.play.games
+com.netflix.ninja
+
+# Kodi (disabled; Jellyfin used instead)
+org.xbmc.kodi
+
+# Stock Google TV launcher and setup wizard, replaced by launcher/
+com.google.android.tvlauncher
+com.google.android.tungsten.setupwraith

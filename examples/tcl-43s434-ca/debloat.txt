@@ -1,0 +1,34 @@
+# TCL 43S434-CA (GTV, SDK 28, Android 11), firmware unknown
+# Tested on Ethernet (not USB adapter), nothing plugged into USB ports during session.
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43s434-ca/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43s434-ca/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+
+# TCL voice assistant and smart services
+com.tcl.assistant
+com.tcl.smartalexa
+
+# TCL telemetry / analytics / user tracking
+com.tcl.bi
+com.tcl.usercenter
+
+# TCL content and media services
+com.tcl.tvweishi
+
+# TCL framework / overlay / service bloat
+com.tcl.ui_mediaCenter
+com.tcl.autopair
+com.tcl.messagebox
+com.tcl.partnercustomizer
+com.tcl.systemuioverlay
+
+# TCL remote / input helpers (not core input service)
+com.tcl.keycustomfunctionservice
+
+# Preloaded apps not used
+com.google.android.play.games
+com.netflix.ninja
+
+# Stock Google TV launcher and setup wizard, replaced by launcher/
+com.google.android.tvlauncher
+com.google.android.tungsten.setupwraith
