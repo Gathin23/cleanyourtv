@@ -70,6 +70,11 @@ boot, the TV is busy starting its own services: the launcher hit an ANR ("no win
 was restarted, and a Home press then took about 6.5 s. After that it answered normally. `loadavg` reads 70 to 80 at
 that point and stays there afterwards with the CPUs mostly idle, so it is not a useful figure on this set.
 
+## Remote
+
+With these packages disabled and the reference launcher as Home, the owner checked the remote's Home, TV and Source
+buttons: TV opens Live TV and Source opens the Philips sources menu.
+
 ## Not checked
 
-The remote's TV, Source and microphone buttons, HDMI inputs and waking from standby were not tested in this session.
+The microphone button, playback on each HDMI input and waking from standby were not tested in this session.
