@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Hindi Panchang</string>
+    <string name="prev_month">◀ पिछला माह · Prev</string>
+    <string name="today_btn">आज · Today</string>
+    <string name="next_month">अगला माह · Next ▶</string>
+    <string name="screensaver">स्क्रीनसेवर · Screensaver</string>
+    <string name="screensaver_missing">Screensaver settings are not available on this TV</string>
+</resources>
+
