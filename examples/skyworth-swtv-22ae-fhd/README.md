@@ -16,6 +16,23 @@ written on Android 14 (SDK 34), firmware `UKNV.260211.001`, and this Android 11 
 list. An entry this build does not ship reads the same as one it does, so run `pm list packages` and
 comment out what your set does not have before applying it.
 
+## Third unit: sold as Spanio (2K NSTV)
+Same firmware (`UKNV.260211.001`, Android 14) and `ro.product.odm.model` `SWTV-22AE-FHD`; `ro.product.model` reads
+`2K NSTV` and the brand string is the maker's own. Tested on 2026-10-31, one long session, with a reboot after the
+last change; not yet several days. Everything in `debloat.txt` was applied except three lines, see below.
+
+- **Remote app button:** with `com.smartdevice.dailyshortcut`, `com.smartdevice.dailymanage` and
+  `com.smartdevice.myapp` disabled the button did nothing. The kernel logs it as `KEY_EDIT`, Skyworth's
+  `SkwGlobalKeyReceiver` receives it, and the owner re-enabled all three; the button then opened Skyworth's panel.
+  Those three are commented out in the list for that reason.
+- **Remote gear button:** it sends Android's `KEYCODE_NOTIFICATION` (83), which only the stock Google TV launcher
+  answered. With the stock launcher disabled it did nothing. The launcher's `HomeKeyService` with
+  `settings_key_keycodes` set to `[83]` opened Settings, but any bound key-filtering service made a held volume
+  key step once per press (also with the helper in its own process, and with `consume_volume_keys`). The owner kept
+  smooth volume and left the gear button unmapped.
+- **Casting:** not re-tested after setupwraith was disabled.
+- **Private DNS** (`dns.adguard-dns.com`) worked: YouTube still loaded.
+
 ## Stock launcher
 - **Launcher:** `com.google.android.apps.tv.launcherx` (`.home.HomeActivity`)
 - When restoring, pass it to `tools/restore.sh` as the second argument; when building/installing, pass `STOCK_LAUNCHER=com.google.android.apps.tv.launcherx` to `launcher/build-and-install.sh`.
