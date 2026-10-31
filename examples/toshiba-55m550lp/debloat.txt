@@ -59,16 +59,16 @@ com.google.android.feedback
 # belongs to setupwraith, forget and re-join it in Settings before running this.
 com.google.android.tungsten.setupwraith
 
-# --- Owner's checklist choices: comment out what you use ---
-com.netflix.ninja                             # Netflix
-com.amazon.amazonvideo.livingroom             # Prime Video
-com.wbd.stream                                # Max
-in.startv.hotstar.dplus.tv                    # Disney+ Hotstar
-com.iqiyi.i18n.tv                             # iQIYI
-com.google.android.videos                     # Google TV Movies storefront
-com.google.android.play.games                 # Play Games
-com.hisense.hibrowser                         # HiBrowser (Hisense web browser)
-com.google.android.katniss                    # Google Assistant (the remote's mic button)
-com.google.android.tv.assistant               # Assistant LED/voice service (LedService)
-com.hisense.alexa                             # Alexa
-com.google.android.apps.mediashell            # Chromecast built-in
+# --- Owner's checklist choices: this set had these off; uncomment only what you don't use ---
+# com.netflix.ninja                           # Netflix
+# com.amazon.amazonvideo.livingroom           # Prime Video
+# com.wbd.stream                              # Max
+# in.startv.hotstar.dplus.tv                  # Disney+ Hotstar
+# com.iqiyi.i18n.tv                           # iQIYI
+# com.google.android.videos                   # Google TV Movies storefront
+# com.google.android.play.games               # Play Games
+# com.hisense.hibrowser                       # HiBrowser (Hisense web browser)
+# com.google.android.katniss                  # Google Assistant (the remote's mic button)
+# com.google.android.tv.assistant             # Assistant LED/voice service (LedService)
+# com.hisense.alexa                           # Alexa
+# com.google.android.apps.mediashell          # Chromecast built-in
