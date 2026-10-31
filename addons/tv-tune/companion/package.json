@@ -1,0 +1,14 @@
+{
+  "name": "tv-tune-companion",
+  "version": "0.2.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage test/*.test.js",
+    "check": "node --check src/probe.js && node --check src/capture.js && node --check src/app.js && node --check src/patterns.js && node --check src/qr.js && node --check src/vendor/qrcodegen.js && node test/generate-native-qr.mjs --check"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

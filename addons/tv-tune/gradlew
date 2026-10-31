@@ -1,0 +1,4 @@
+#!/bin/sh
+# Build this independent add-on using the repository's pinned wrapper.
+addon_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd) || exit 1
+exec sh "$addon_dir/../../launcher/gradlew" -p "$addon_dir" "$@"
