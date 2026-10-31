@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Build Smart Home, install it on the TV and, optionally, push its Home Assistant address and token.
-#   TV_HOST=<tv ip> addons/smart-home/install.sh [config.json]   # {"url": "http://192.168.1.10:8123", "token": "..."}
+#   TV_HOST=<tv ip> addons/smart-home/install.sh [config.json]
+#   # {"url": "http://192.168.1.10:8123", "token": "...", "glance": ["weather.home", "sensor.station_e10"]}
 set -euo pipefail
 CONFIG="${1:-}"
 if [ -n "$CONFIG" ]; then

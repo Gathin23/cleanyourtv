@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Against the shapes Home Assistant's REST API documents for GET /api/states and the service calls. */
@@ -26,7 +28,11 @@ public class HaTest {
             + "{\"entity_id\":\"binary_sensor.front_door\",\"state\":\"off\",\"attributes\":{\"friendly_name\":\"Front door\",\"device_class\":\"door\"}},"
             + "{\"entity_id\":\"binary_sensor.motion\",\"state\":\"on\",\"attributes\":{\"device_class\":\"motion\"}},"
             + "{\"entity_id\":\"lock.front_door\",\"state\":\"locked\",\"attributes\":{\"friendly_name\":\"Front door lock\"}},"
-            + "{\"entity_id\":\"light.garage\",\"state\":\"unavailable\",\"attributes\":{\"friendly_name\":\"Garage\"}}"
+            + "{\"entity_id\":\"light.garage\",\"state\":\"unavailable\",\"attributes\":{\"friendly_name\":\"Garage\"}},"
+            + "{\"entity_id\":\"weather.home\",\"state\":\"partlycloudy\",\"attributes\":{\"friendly_name\":\"Home\",\"temperature\":21.3}},"
+            + "{\"entity_id\":\"sensor.station_e10\",\"state\":\"1.689\",\"attributes\":{\"friendly_name\":\"E10\",\"unit_of_measurement\":\"€/L\"}},"
+            + "{\"entity_id\":\"sensor.station_diesel\",\"state\":\"1.549\",\"attributes\":{\"friendly_name\":\"Diesel\",\"unit_of_measurement\":\"EUR/L\"}},"
+            + "{\"entity_id\":\"sensor.other_money\",\"state\":\"12\",\"attributes\":{\"friendly_name\":\"Balance\",\"unit_of_measurement\":\"USD\"}}"
             + "]";
 
     private static Ha.Entity find(List<Ha.Entity> all, String id) {
@@ -40,9 +46,10 @@ public class HaTest {
         assertNull(find(all, "sun.sun"));
         assertNull(find(all, "sensor.power"));
         assertNull(find(all, "binary_sensor.motion"));
-        assertEquals(Ha.Kind.SCENE, all.get(0).kind);
+        assertNull("non-euro money stays out", find(all, "sensor.other_money"));
+        assertEquals(Ha.Kind.WEATHER, all.get(0).kind);
         assertEquals(Ha.Kind.LOCK, all.get(all.size() - 1).kind);
-        assertEquals(10, all.size());
+        assertEquals(13, all.size());
     }
 
     @Test
@@ -57,6 +64,49 @@ public class HaTest {
         assertEquals("Locked", find(all, "lock.front_door").value());
         assertEquals("Unavailable", find(all, "light.garage").value());
         assertEquals("Run", find(all, "scene.good_night").value());
+        assertEquals("21.3°", find(all, "weather.home").value());
+        assertEquals("1.7 €/L", find(all, "sensor.station_e10").value());
+    }
+
+    @Test
+    public void glancePicksWeatherAndFuelPrices() throws Exception {
+        List<Ha.Entity> all = Ha.parse(STATES);
+        Ha.Glance g = Ha.glance(all, Collections.emptyList());
+        assertEquals("weather.home", g.weather.id);
+        assertEquals("cloudy", g.icon);
+        assertEquals(2, g.prices.size());
+        assertEquals("21.3° · Diesel 1.5 EUR/L · E10 1.7 €/L", g.text);
+        assertFalse(g.empty());
+    }
+
+    @Test
+    public void glanceUsesNamedIdsInOrder() throws Exception {
+        List<Ha.Entity> all = Ha.parse(STATES);
+        Ha.Glance g = Ha.glance(all, Arrays.asList("sensor.station_diesel", "weather.home", "sensor.station_e10"));
+        assertEquals("weather.home", g.weather.id);
+        assertEquals("sensor.station_diesel", g.prices.get(0).id);
+        assertEquals("sensor.station_e10", g.prices.get(1).id);
+        assertTrue(g.text.startsWith("21.3° · Diesel"));
+    }
+
+    @Test
+    public void weatherAndPricesStayOutOfTheRemoteList() throws Exception {
+        List<Ha.Entity> all = Ha.parse(STATES);
+        assertFalse(Ha.inList(find(all, "weather.home")));
+        assertFalse(Ha.inList(find(all, "sensor.station_e10")));
+        assertTrue(Ha.inList(find(all, "light.living_room")));
+    }
+
+    @Test
+    public void weatherIcons() {
+        assertEquals("clear", Ha.weatherIcon("sunny"));
+        assertEquals("night", Ha.weatherIcon("clear-night"));
+        assertEquals("rain", Ha.weatherIcon("pouring"));
+        assertEquals("snow", Ha.weatherIcon("snowy"));
+        assertEquals("storm", Ha.weatherIcon("lightning-rainy"));
+        assertEquals("fog", Ha.weatherIcon("fog"));
+        assertEquals("cloudy", Ha.weatherIcon("partlycloudy"));
+        assertEquals("cloudy", Ha.weatherIcon("unknown-condition"));
     }
 
     @Test
@@ -82,6 +132,7 @@ public class HaTest {
         assertNull(Ha.press(find(all, "sensor.nursery_temperature")));
         assertNull(Ha.press(find(all, "light.garage")));
         assertNull("switches don't dim", Ha.step(find(all, "switch.fan_plug"), 1));
+        assertNull(Ha.press(find(all, "weather.home")));
     }
 
     @Test
@@ -93,6 +144,74 @@ public class HaTest {
         }
         assertEquals(Ha.MAX_ENTITIES, Ha.parse(b.append(']').toString()).size());
     }
+
+    /** n entities of one shape: switch.s0…, sensor.p0… (a price) or weather.w0…. */
+    private static void add(StringBuilder b, String kind, int n) {
+        for (int i = 0; i < n; i++) {
+            if (b.length() > 1) b.append(',');
+            if (kind.equals("switch")) {
+                b.append("{\"entity_id\":\"switch.s").append(i).append("\",\"state\":\"off\",\"attributes\":{}}");
+            } else if (kind.equals("price")) {
+                b.append("{\"entity_id\":\"sensor.p").append(i)
+                        .append("\",\"state\":\"1.5\",\"attributes\":{\"unit_of_measurement\":\"€/L\"}}");
+            } else {
+                b.append("{\"entity_id\":\"weather.w").append(i)
+                        .append("\",\"state\":\"sunny\",\"attributes\":{\"temperature\":20}}");
+            }
+        }
+    }
+
+    private static long listRows(List<Ha.Entity> all) {
+        return all.stream().filter(Ha::inList).count();
+    }
+
+    @Test
+    public void manyPricesDontPushTheSwitchesOut() throws Exception {
+        StringBuilder b = new StringBuilder("[");
+        add(b, "price", 80);
+        add(b, "switch", 1);
+        List<Ha.Entity> all = Ha.parse(b.append(']').toString());
+        assertEquals(1, listRows(all));
+        assertEquals(Ha.MAX_PRICES, Ha.glance(all, Collections.emptyList()).prices.size());
+        assertEquals(1 + Ha.MAX_PRICES, all.size());
+    }
+
+    @Test
+    public void manyWeathersDontPushTheSwitchesOut() throws Exception {
+        StringBuilder b = new StringBuilder("[");
+        add(b, "weather", 80);
+        add(b, "switch", 1);
+        List<Ha.Entity> all = Ha.parse(b.append(']').toString());
+        assertEquals(1, listRows(all));
+        assertEquals("weather.w0", Ha.glance(all, Collections.emptyList()).weather.id);
+    }
+
+    @Test
+    public void theHeaderDoesntCountAgainstTheRowCap() throws Exception {
+        StringBuilder b = new StringBuilder("[");
+        add(b, "price", 6);
+        add(b, "weather", 1);
+        add(b, "switch", 200);
+        List<Ha.Entity> all = Ha.parse(b.append(']').toString());
+        assertEquals(Ha.MAX_ENTITIES, listRows(all));
+        Ha.Glance g = Ha.glance(all, Collections.emptyList());
+        assertEquals(6, g.prices.size());
+        assertEquals("weather.w0", g.weather.id);
+    }
+
+    @Test
+    public void aChosenPriceBeyondTheOldCutoffIsKept() throws Exception {
+        StringBuilder b = new StringBuilder("[");
+        add(b, "price", 90);
+        add(b, "switch", 3);
+        List<String> ids = Arrays.asList("sensor.p89", "sensor.p88");
+        List<Ha.Entity> all = Ha.parse(b.append(']').toString(), ids);
+        Ha.Glance g = Ha.glance(all, ids);
+        assertEquals(2, g.prices.size());
+        assertEquals("sensor.p89", g.prices.get(0).id);
+        assertEquals(3, listRows(all));
+    }
+
 
     @Test
     public void addresses() {
