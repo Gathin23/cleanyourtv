@@ -9,8 +9,8 @@ and
 
 The allowlist was first written up for a K9 65 (`OPPOCNM652`, ColorOS TV 2.4) in
 [aerial-tv's device note](https://github.com/pengchujin/aerial-tv/blob/master/docs/devices/oppo-coloros-tv.md).
-The checks below are this 55" set. How to build a launcher that ColorOS will boot is in the
-launcher follow-up and in `docs/TROUBLESHOOTING.md` once that change lands.
+The checks below are this 55" set. How to build a launcher that ColorOS will boot, and what not to
+name as `STOCK_LAUNCHER`, is in the ColorOS bullet in `docs/TROUBLESHOOTING.md`.
 
 ## The three allowlisted package ids
 

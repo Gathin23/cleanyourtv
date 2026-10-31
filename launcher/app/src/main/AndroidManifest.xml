@@ -95,6 +95,9 @@
                 <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.COMMON_HOME" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <!-- ColorOS TV: boot only promotes a HOME that declares this category.
+                     docs/devices/oppo-k9-55-oppocnm632.md (prior art: aerial-tv oppo-coloros-tv.md). -->
+                <category android:name="com.heytap.tv.launcher.category.MODERN_HOME" />
             </intent-filter>
             <!-- Listed in the TV's own app list, so it can be opened from the stock home screen too. -->
             <intent-filter>
