@@ -217,3 +217,20 @@ Notes from this unit:
   with no `TclAppBoot` refusal. The owner sets volume on an optical-connected sound system's own remote, so the
   held-volume trade-off did not apply.
 - `wm size` shows the same factory override of 1920x1080, density 320.
+
+## Compatibility report: TCL 55Q6C, Netherlands, Wi-Fi
+
+TCL 55Q6C QD-Mini LED (2025), product `G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU02`, on Wi-Fi. Set up on
+27 October 2026 from the [G08 US list](../tcl-g08-us-google-tv/debloat.txt): 31 packages in four batches, all
+still disabled after a reboot, then setupwraith and the launcher. Kept: `ttvs`, `interactive`, Chromecast,
+AirPlay, the game bar and the main streaming apps. Off by choice: Assistant, `com.tcl.eva`, Miracast, Alexa,
+MagiConnect, Disney+.
+
+- **ADB** only over Wireless debugging (`tools/native-adb.md`); the port changes after every reboot.
+- **setupwraith owned all four saved networks.** Re-joining the current one in Settings moved all four to
+  `com.android.tv.settings`, and the TV stayed on Wi-Fi after setupwraith was disabled.
+- **Remote** (scancode 240, launcherx off): Settings 83, Netflix 4062 and YouTube 190 do nothing; Prime Video
+  4099 and the media player 4057 are opened by TCL itself; TCL Channel 4020 and Disney+ 4141 try their
+  (disabled) apps. `app_keys` with `INPUT_KEY_SERVICE=1` brings back the first three.
+- **`InputKeyService` alone costs the volume ramp**: held volume ramped with no helper, one step per press with
+  it, on the real remote.
