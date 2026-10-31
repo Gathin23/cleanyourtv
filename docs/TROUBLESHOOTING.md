@@ -329,6 +329,26 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   tools/tv.py 'pm enable --user 0 com.google.android.apps.mediashell'
   ```
   Keep the package out of your list if you use Stremio on the TV, or cast from a phone.
+- **HDMI ports detect the cable and CEC device, but switching to an HDMI input shows "No Signal"** on a
+  OnePlus TV (65" C00 `Cebu`, Android TV 11 build `RTM8.240401.135`,
+  [#321](https://github.com/Gathin23/cleanyourtv/issues/321); [list](../examples/oneplus-tv-cebu/debloat.txt)).
+  `dumpsys hdmi_control` still sees the connected device (e.g. a PlayStation 5 on HDMI 3,
+  `physical_address: 0x3000`, `port_id: 3`), yet opening the port shows `"No Signal, please check the
+  connection of input source."` after three seconds. When the OnePlus Live TV / input app
+  (`com.heytap.tv.livetv`) opens an HDMI port, its `IPCManager` binds to
+  `com.heytap.tv.support/.server.TvSupportService` (`action: com.heytap.tv.ACTION_SUPPORT`) before
+  tuning the MediaTek hardware session (`com.mediatek.tvinput/.hdmi.HDMIInputService/HDMI300004`). With
+  `com.heytap.tv.support` disabled (its name reads like a customer-support app, so a hand or assistant
+  run that calls `pm disable-user` directly can disable it; `tools/disable.sh` skips it because it asks
+  for `android.permission.TV_INPUT_HARDWARE`), `logcat` prints
+  `Unable to start service Intent { cmp=com.heytap.tv.support/.server.TvSupportService } U=0: not found`
+  and `IPCManager: [IPCManager.java.bind#177]bind:: tv start service is null`, and `dumpsys tv_input`
+  shows `mainSessionToken: null`. A full restore and cold boot are not needed — re-enabling that single
+  package restores the HDMI signal immediately with no reboot:
+  ```sh
+  tools/tv.py 'pm list packages -d | grep com.heytap.tv.support'
+  tools/tv.py 'pm enable --user 0 com.heytap.tv.support'
+  ```
 - **Picking HDMI 1 in the Inputs menu opened an unrelated app**, seen on an RCA Android TV 9
   (Toptech/Zeasn firmware `RTK2851P`, Realtek RTD2851P,
   [#805](https://github.com/Gathin23/cleanyourtv/issues/805)). The launcher switches to a passthrough
