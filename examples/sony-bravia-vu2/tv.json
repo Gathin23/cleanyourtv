@@ -1,6 +1,6 @@
 {
   "tv": "Sony BRAVIA VU2 (BRAVIA_VU2, Realtek rtd2885m), India",
-  "os": "Android TV 11",
+  "os": "Android TV 11, 14",
   "brand": "Sony",
-  "notes": "VU1 platform family on build RTT7.210923.001: Google feedback/partner setup, Sony retail demo, calendar/print/camera/gallery leftovers; text-to-speech, ZEE5 and Ambient off by choice; Assistant, Chromecast and setupwraith kept; Play Store had been disabled by hand and was turned back on; every remote button works with no key helper; USB debugging alone opens 5555"
+  "notes": "VU1 platform family on builds RTT7.210923.001 (Android 11) and UKR1.240726.001 (Android 14): Google feedback/partner setup, Sony retail demo, calendar/print/camera/gallery leftovers; text-to-speech, Play Movies, ZEE5 and Ambient off by choice; Assistant, Chromecast and setupwraith kept; the Play Store had been disabled by hand on one unit and was turned back on; every remote button works with no key helper; USB debugging alone opens 5555"
 }
