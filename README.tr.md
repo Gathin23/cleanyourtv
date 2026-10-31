@@ -3,10 +3,6 @@
 </p>
 
 <p align="center">
-  🎃 <b>Yeni: Cadılar Bayramı paketi</b> (1 Kasım'a kadar): <a href="https://cleanyour.tv/halloween">cleanyour.tv/halloween</a>
-</p>
-
-<p align="center">
   Diğer diller: <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · Türkçe
 </p>
 
@@ -488,7 +484,7 @@ Bir kodlama asistanı aracılığıyla mı katkıda bulunuyorsunuz? [AGENTS.md](
 |---|---|
 | **TV'nizin temizlik listesi** | En faydalısı: aynı modele sahip bir sonraki kişi keşif adımını atlar. |
 | **Başlatıcı ve istem** | Başlatıcı iyileştirmeleri ve istemin daha net ifade edilmesi de memnuniyetle karşılanır. |
-| **Üzerine bir şey mi yaptınız?** | Bir başlatıcı, bir uyarlama, bir tema: [SHOWCASE.md](SHOWCASE.md) dosyasına ekleyin; orada ana ekranlar, fork'lar, eklentiler, araçlar ve diğer platformlar olarak sınıflandırılmış, TV markasına göre dizinli yüz yetmiş iki proje zaten bulunuyor. |
+| **Üzerine bir şey mi yaptınız?** | Bir başlatıcı, bir uyarlama, bir tema: [SHOWCASE.md](SHOWCASE.md) dosyasına ekleyin; orada ana ekranlar, fork'lar, eklentiler, araçlar ve diğer platformlar olarak sınıflandırılmış, TV markasına göre dizinli projeler zaten bulunuyor. |
 
 Çalışmaları bu depoda yer alan kişiler:
 
