@@ -7,7 +7,7 @@
 # cmd package set-home-activity is ignored. A third-party launcher can be installed and started,
 # but it cannot be made the default Home.
 #
-# Apply:   HANDLERS_ALLOW=1 TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-4k-max-2023/debloat.txt
+# Apply:   TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-4k-max-2023/debloat.txt
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/amazon-fire-tv-stick-4k-max-2023/debloat.txt com.amazon.tv.launcher
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 # ADB on Fire OS 8: Settings > My Fire TV > About > press select 7 times on the device name, back > Developer Options >
@@ -34,7 +34,7 @@
 # Ambient (com.amazon.tv.ftvambient), accessibility (com.amazon.logan), notification center.
 #
 # What the list cannot remove: the hero banner and sponsored rows come from the launcher's own feed.
-# Point the stick's DNS at a blocker for those (Pi-hole, or Private DNS dns.adguard-dns.com on Android 11).
+# Private DNS works on this set (see the optional DNS extra in the main README).
 # Also turn off Settings > Preferences > Privacy Settings (Device Usage Data, Collect App Usage Data,
 # Interest-based Ads) and Featured Content autoplay in the menus: those values sync with the Amazon
 # account, so the menu is the place to change them, not `settings put`.
@@ -68,7 +68,7 @@ com.amazon.tv.easyupgrade                               # "upgrade your Fire TV"
 com.amazon.shoptv.client                                # Amazon Shopping on TV
 com.amazon.shoptv.firetv.client
 com.amazon.hedwig                                       # Fire TV Channels
-com.amazon.tv.livetv                                    # Live tab and guide (no tuner on a stick; needs HANDLERS_ALLOW=1, it answers VIEW channel intents)
+# com.amazon.tv.livetv                                  # Live tab and guide; commented out for everyone, this set has it off (no tuner on a stick; needs HANDLERS_ALLOW=1)
 com.amazon.franktvinput                                 # live TV input feeding the Live tab
 com.amazon.tifobserver                                  # TV input framework observer
 com.amazon.systemnotices
