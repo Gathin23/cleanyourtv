@@ -29,6 +29,14 @@ Port 5555 was closed out of the box and Wireless debugging was the way in: `adb 
 code from the TV. setupwraith owned one saved network that was not in use; it was forgotten with
 `cmd wifi forget-network <id>` before setupwraith was disabled.
 
+## Gear button and volume ramp
+
+The gear sends `KEYCODE_NOTIFICATION` (83), a global key for launcherx's `GlobalKeyListener`, so it does nothing once
+launcherx is disabled. `settings_key_keycodes` `[83]`, `consume_volume_keys` true and `HOME_KEY_SERVICE=1` brought it
+back, and a held volume button still ramped, checked by the owner on the real remote. That is the opposite of the
+trade noted for the AQUA MatrixTV EE 50 and the MatrixTV GE, where the ramp was lost and this switch was not
+reported as tried. It was tested the same day, without a reboot in between.
+
 ## Power and sleep
 
 - The remote's power button is a light sleep: no boot, and ADB can still answer for a few seconds. Open on start does
