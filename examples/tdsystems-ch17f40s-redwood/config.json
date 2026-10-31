@@ -6,9 +6,9 @@
     "com.google.android.youtube.tv",
     "com.android.vending"
   ],
-  "app_labels": {
-    "com.mediatek.wwtv.tvcenter": "TDT"
-  },
+  "app_labels": [
+    "com.mediatek.wwtv.tvcenter=TDT"
+  ],
   "hidden_apps": [
     "com.mitv.gallery"
   ],

@@ -4,7 +4,7 @@
 # Live TV / tuner: com.mediatek.wwtv.tvcenter (leave enabled for TV channels & Inputs)
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.ps1 examples/tdsystems-ch17f40s-redwood/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.ps1 examples/tdsystems-ch17f40s-redwood/debloat.txt com.google.android.tvlauncher
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tdsystems-ch17f40s-redwood/debloat.txt com.google.android.tvlauncher
 #
 # Hardware & vendor notes:
 # - Leave com.homwee.factory, com.mediatek.wwtv.setupwizard and com.homwee.synckey enabled.

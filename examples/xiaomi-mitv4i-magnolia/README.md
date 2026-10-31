@@ -79,5 +79,5 @@ tools\restore.ps1 -TvHost <tv ip> examples\xiaomi-mitv4i-magnolia\debloat.txt
 
 ### Re-enable an Individual Package
 ```bash
-tools/tv.py --tv <tv ip> "pm enable --user 0 <package_name>"
+TV_HOST=<tv ip> tools/tv.py "pm enable --user 0 <package_name>"
 ```

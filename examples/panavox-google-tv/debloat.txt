@@ -38,7 +38,6 @@ com.google.android.tungsten.setupwraith
 com.mediatek.androidbox # Wi-Fi display sink
 com.google.android.apps.tv.dreamx # Google screensaver
 
-
 # Unused on a television
 com.google.android.syncadapters.calendar # Google Calendar sync
 com.android.providers.calendar # Calendar storage
@@ -55,26 +54,3 @@ com.google.android.marvin.talkback # Google's screen reader
 com.google.android.apps.mediashell # Cast
 com.google.android.tts # Text-to-speech
 # com.google.android.tv.remote.service  # phone remote, kept on in shared lists (this set has it off)
-
-# Group 4: unused on a television
-com.google.android.syncadapters.calendar
-com.android.providers.calendar
-com.android.providers.contacts
-com.mediatek.android.leanbacklauncher.partnercustomizer
-
-
-
-# Voice assistants. The remote's microphone button stops working.
-com.google.android.katniss
-
-
-# Google extras
-com.google.android.play.games
-com.google.android.youtube.tvmusic
-com.google.android.marvin.talkback
-com.google.android.apps.mediashell
-com.google.android.tts
-com.google.android.tv.remote.service
-
-
-

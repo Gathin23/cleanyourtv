@@ -13,7 +13,7 @@
 Para restaurar todos los paquetes desactivados y volver a poner el launcher de fábrica como pantalla de inicio:
 
 ```powershell
-tools\restore.ps1 -TvHost <tv ip> examples\tdsystems-ch17f40s-redwood\debloat.txt com.google.android.tvlauncher
+tools\restore.ps1 -TvHost <tv ip> examples\tdsystems-ch17f40s-redwood\debloat.txt -Stock com.google.android.tvlauncher
 ```
 
 O para restaurar una aplicación individual por comando:
@@ -47,11 +47,7 @@ Para modificar las aplicaciones del Dock:
 
 ## 3. Cambiar el Fondo de Pantalla (Wallpaper)
 
-Puedes enviar cualquier imagen JPEG o PNG como fondo de pantalla del televisor utilizando el script `tools\theme.ps1`:
-```powershell
-tools\theme.ps1 -TvHost <tv ip> -Wallpaper ruta\a\tu\imagen.jpg
-```
-O aplicar alguno de los temas incluidos en la carpeta `themes/`:
+Aplica alguno de los temas incluidos en la carpeta `themes/` con `tools\theme.ps1` (cada tema lleva su propio fondo; para una foto propia, mira [themes/CREATE_A_THEME.md](../../themes/CREATE_A_THEME.md)):
 ```powershell
 tools\theme.ps1 -TvHost <tv ip> themes\glass
 ```
