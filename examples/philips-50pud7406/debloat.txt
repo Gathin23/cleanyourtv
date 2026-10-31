@@ -103,7 +103,7 @@
 # (HOME_KEY_SERVICE=1) gets the key first and opens that app instead (checked on the real remote).
 # Not checked here: HDMI picture and DVB-T (IPTV only), held volume (external audio).
 #
-# FIFTH UNIT (Latin America): Philips 50PUD7406/77, on Wi-Fi, nothing in the USB ports. The build of the first unit:
+# SIXTH UNIT (Latin America): Philips 50PUD7406/77, on Wi-Fi, nothing in the USB ports. The build of the first unit:
 # TPM215L_R.105.000.097.000, persist.odm.tpv.region=lt, ro.product.name=PH0M_LT_T32, incremental 200321, 1.38 GB,
 # low_ram. Tested the same evening only, with two reboots.
 # Applied: the four telemetry lines, nettv.market, fusion.android.tv.demo, disclaimercustomization (tools/disable.sh
@@ -124,7 +124,7 @@
 # Real remote, no helper: Home, Source/Input, Settings and the Netflix key work, and held volume ramps. Switching to a
 # PlayStation 5 on HDMI 3 from the launcher's Inputs list resumed tvcenter on that input. YouTube plays with Private
 # DNS (dns.adguard-dns.com) on. Not checked: DVB-T or cable channels, Bluetooth devices.
-# FIFTH UNIT (EU): Philips 50PUS8107/12, on Wi-Fi, nothing in the USB ports. The first unit here on ANDROID 14:
+# SEVENTH UNIT (EU): Philips 50PUS8107/12, on Wi-Fi, nothing in the USB ports. The first unit here on ANDROID 14:
 # persist.odm.tpv.fw.revision=TPM216E_R.201.000.169.001, build UTT1.240424.001, ro.product.name=PH0M_EA_T32_2G,
 # ro.product.device=PH0M_EA_T32, board m7332, ro.config.low_ram=true; About says "Philips UHD Android TV".
 # Fingerprint: Philips/PH0M_EA_T32_2G/PH0M_EA_T32:14/UTT1.240424.001/201000169001:user/release-keys
@@ -156,7 +156,7 @@
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517
 org.droidtv.gel                             # metrics collector running in candeebug's process
 org.droidtv.tv.frameworklogger              # persistent TPV logger: GET_TOP_ACTIVITY_INFO, EPG read, boot receiver
-org.droidtv.tv.packageinfo                  # PackageInfo service; disabled on the Italian unit
+# org.droidtv.tv.packageinfo                # PackageInfo service; candidate from the fifth unit (Italy), one unit only
 com.tpv.xmic.ots.cms.client                 # TPV "CMS client" 0.6.04_ad: INTERNET, boot receiver, channel/EPG write
 
 # Philips content, store and demo
@@ -183,7 +183,7 @@ com.google.android.play.games
 com.google.android.feedback                 # Market Feedback Agent
 com.google.android.partnersetup              # partner referrer and attribution
 com.google.android.onetimeinitializer        # first-setup task, not needed afterwards
-com.google.android.sss.authbridge            # set-up-from-phone helper; disabled on the Italian unit
+# com.google.android.sss.authbridge          # set-up-from-phone helper; candidate from the fifth unit (Italy), one unit only
 com.google.android.syncadapters.calendar     # no calendar app on the Italian unit
 android.autoinstalls.config.tpv.device       # TPV's Play auto-install list
 
@@ -199,7 +199,7 @@ com.spotify.tv.android
 # Candidate from the third unit, disabled there with no regression in one evening (not yet lived with):
 # com.android.providers.calendar              # no calendar app on a TV; boot receiver, runs in the background
 #
-# Candidates from the fifth unit (Android 14, TPM216E), disabled there with no regression in one evening:
+# Candidates from the seventh unit (Android 14, TPM216E), disabled there with no regression in one evening:
 # org.droidtv.fastip                          # Philips free-channel promos: promo, TOU and advertising-ID activities
 # org.droidtv.tv.packageinfo                  # InstalledPkgListService: INTERNET, boot receiver, reports installed apps
 #
