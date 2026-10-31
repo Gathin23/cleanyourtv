@@ -12,10 +12,19 @@
 # and the remote.
 # Already disabled at the factory: com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap,
 # screnmirroring.com.
+# KEEP com.vewd.core.service (Vewd, it looks like a preloaded app store): com.sony.dtv.airplayapp binds
+# to its BrowserServiceImpl and crash-loops several times a second without it ("Unable to bind to
+# com.vewd.core.service/.BrowserServiceImpl"), which kept the load average near 30. Seen on the third
+# unit below; re-enabling Vewd stopped it at once.
 #
 # Applied on US firmware (dock: Netflix, YouTube, Disney+, ZEE5) and re-confirmed on an EU retail
 # KD-55XG9505 (BRAVIA_UR2_4K_EU) with the Apple TV style launcher (dock: Netflix, Prime Video,
 # YouTube, Spotify). HDMI 1-4/eARC, TVX tuner, Bravia Sync, and remote control verified across reboots.
+# Third unit: US UC firmware, same build, on Ethernet, with the Apple TV style launcher as Home (dock: YouTube,
+# SportzX, Stremio and a sideloaded app). Lived with 10 days (from 2026-10-20) with the Assistant, Chromecast,
+# Miracast, Apple TV and YouTube Music kept on. It also disabled the four commented-out "third unit" lines below,
+# which stay optional here because only that unit tried them: uncomment any you want off too.
+# Nothing re-enabled itself after a reboot.
 
 # tracking / ads / recommendations
 tv.samba.ssm                                   # Samba TV (ACR viewing data)
@@ -29,6 +38,12 @@ com.google.android.feedback
 com.google.android.tv.bugreportsender
 com.sony.dtv.sonybugreportsys
 com.sony.dtv.sonyloglevelsettingsys
+# com.mediatek.dmagent                         # MediaTek device-management agent, network access, no UI (third unit)
+
+# Sony help and media apps (third unit, optional: uncomment to disable)
+# com.sony.dtv.helpguidecontents               # on-screen help guide
+# com.sony.dtv.smarthelp                       # Smart Help, also offers a search provider
+# com.sony.dtv.osat.music                      # Sony music player (plays music from USB)
 
 # demo / shop mode
 com.sony.dtv.demosupport
