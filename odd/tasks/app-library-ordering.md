@@ -18,6 +18,8 @@ All work remains local until explicitly delivered.
 - T5 — S2 — Surface pinned App Library apps in the Home top bar while preserving configured top_bar_apps — commit: a7fdb3f
 - T6 — S2 — Add regression tests, documentation, build, and Chromecast verification for pinned top-bar apps — commit: a7fdb3f
 - T7 — S2 — Create and push the user's remote fork — commit: a2bca54; PR #2466
+- T8 — S2 — Keep a saved pin when its app leaves the catalogue (SaviorOneZero's review repro): fixed with the shared editOrder() helper and two tests — commit: ac71562d
+- T9 — S2 — List the fork in SHOWCASE.md with the brand-index line and both project counts, as the maintainer asked — commit: dea0a9c3
 - T8 — S3 — Evaluate a safe installation path for Shizuku Next and its store for future ADB-wireless utility apps — commit: dcdce12c on fork branch research/shizuku-next
 
 ## Log
@@ -35,3 +37,6 @@ All work remains local until explicitly delivered.
 - L11: Si confermo darkrei08 poi prosegui coi task eseguendo sempre pi herder orchestration e po extensible workflow
 - L12: Fork darkrei08/cleanyourtv was cloned at /root/git/fork/cleanyourtv, feature/app-library-ordering was pushed, issue #2465 and PR #2466 were opened; target CI is pending and GitHub refused the feature-idea label update because the fork account cannot update the official repository PR.
 - L13: Research-only Shizuku findings were recorded in fork branch research/shizuku-next as dcdce12c; installation remains a separate decision because official Shizuku and the third-party Shizuku-Next fork share a package identity but differ in trust, signing, and TV setup behavior.
+- L14: PR #2466 was closed, not merged: none of the branch commits is in upstream/main and launcher/app/src/main/java/com/gathin/tvhome/LibraryOrder.java does not exist there. Gathin23 asked for the uninstall crash to be fixed and for the feature to live in the fork with a SHOWCASE.md row; darkrei08 published no reply to the review.
+- L15: The crash reproduced in two new LibraryOrderTest cases (java.lang.IllegalArgumentException before the fix) and was fixed by appending saved pins the catalogue no longer lists in the shared editOrder(); move() still clamps to the visible range. Launcher gate after the fix: 304 unit tests, 0 failures; lint 0 errors, 95 warnings; release APK 554,261 B against the 589,824 B gate; tests/ suite 2183 tests OK (32 skipped).
+- L16: Device work on the second Chromecast 4K (192.168.87.245, same build): the same configuration as the living-room unit, that is the full launcher takeover plus debloat.txt, ClockDream, and the salotto theme; 18 packages disabled with two recovery records, Home confirmed after a reboot, and network ADB closed (5555 and the wireless port both refuse). The fix itself was verified by the JVM tests only, not on the device.
