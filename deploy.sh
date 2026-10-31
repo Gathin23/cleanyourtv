@@ -21,11 +21,11 @@ if [ -n "$CONNECTED_DEVICE" ]; then
     echo "Target device: $CONNECTED_DEVICE"
     echo "Installing $APK..."
     adb -s "$CONNECTED_DEVICE" install -r "$APK"
-    adb -s "$CONNECTED_DEVICE" shell appops set com.gathin.tvhome GET_USAGE_STATS allow
+    adb -s "$CONNECTED_DEVICE" shell appops set com.norma.tvlauncher GET_USAGE_STATS allow
     adb -s "$CONNECTED_DEVICE" shell settings put system sound_effects_enabled 0 2>/dev/null || true
     echo "Starting launcher..."
-    adb -s "$CONNECTED_DEVICE" shell am force-stop com.gathin.tvhome
-    adb -s "$CONNECTED_DEVICE" shell am start -n com.gathin.tvhome/.MainActivity
+    adb -s "$CONNECTED_DEVICE" shell am force-stop com.norma.tvlauncher
+    adb -s "$CONNECTED_DEVICE" shell am start -n com.norma.tvlauncher/.MainActivity
     echo "Done! Launcher successfully updated on TV."
 else
     echo "TV is not reachable over ADB right now. Please ensure the TV screen is on and connected to Wi-Fi."

@@ -87,7 +87,7 @@
             android:layout_height="320dp"
             android:layout_gravity="center_horizontal">
 
-            <com.gathin.tvhome.PrayerCircleTimerView
+            <com.norma.tvlauncher.PrayerCircleTimerView
                 android:id="@+id/prayerCircleTimer"
                 android:layout_width="320dp"
                 android:layout_height="320dp"
