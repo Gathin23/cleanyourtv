@@ -267,6 +267,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean openOnStartChoice;
     /** open_on_start_network_wait, in ms; the boot's app while it waits for the network, and until when. */
     private long openOnStartWaitMs;
+    /** open_on_start_on_wake: wakeReceiver is registered for this activity's life. */
+    private boolean openOnStartOnWake;
     private volatile Intent startPending;
     private long startDeadline;
     /** Opens the boot's app once the network is validated (networkCallback posts this) or the wait is over. */
@@ -280,6 +282,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             Intent i = startPending;
             startPending = null;
             open(i);
+        }
+    };
+    private final BroadcastReceiver wakeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            openStartAppOnWake();
         }
     };
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
@@ -463,6 +471,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         bootToLiveTv = cfg.bootToLiveTv;
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
+        openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
         liveTvAction = cfg.liveTvAction;
         liveTvInputId = cfg.liveTvInputId;
         appLibraryEnabled = cfg.appLibrary;
@@ -916,6 +925,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             registerReceiver(packageReceiver, packageFilter);
         }
+        if (openOnStartOnWake) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON), Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(wakeReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+            }
+        }
 
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -1319,6 +1335,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
+        if (openOnStartOnWake) unregisterReceiver(wakeReceiver);
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
@@ -3161,6 +3178,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!prefs.edit().putInt(OpenOnStart.BOOT_KEY, boot).commit()) return false;
         Intent i = bootToLiveTv ? liveTvIntent() : OpenOnStart.intent(getPackageManager(), app);
         if (i == null) return false;
+        return openWhenReady(i);
+    }
+
+    /** open_on_start_on_wake: the remote's power button is a light sleep on some sets, with no boot for
+     *  openLiveTvAfterBoot to catch. */
+    private void openStartAppOnWake() {
+        String app = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE).getString(OpenOnStart.KEY, "");
+        if (app.isEmpty() || app.equals(getPackageName())) return;
+        Intent i = OpenOnStart.intent(getPackageManager(), app);
+        if (i != null) openWhenReady(i);
+    }
+
+    private boolean openWhenReady(Intent i) {
         // open_on_start_network_wait: Home stays on screen until the network is back or the wait is over.
         if (openOnStartWaitMs > 0 && !OpenOnStart.online(this)) {
             startPending = i;
