@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense LED65M5600UC (VIDAA_TV, MStar MSD6A828)",
+  "os": "Android 5.1.1",
+  "brand": "Hisense",
+  "notes": "Hisense ads/telemetry, preloaded junk and voice apps removed; keeps Live TV, store, OTA, keyboards. Firmware refuses pm disable-user (Permission Denial) - removed via pm uninstall instead, re-enable from TV Settings -> Apps"
+}

@@ -1,0 +1,61 @@
+# Hisense LED65M5600UC (VIDAA_TV, MStar MSD6A828), China market, Android 5.1.1 (SDK 22)
+# Firmware LVY48C release-keys. Discovered 2026-10-25 from the package list over network ADB.
+#
+# WARNING (tested 2026-10-25 and re-verified 2026-10-26): this firmware refuses `pm disable-user`
+# from ADB for every package (34/34 got "Permission Denial", and `su` does not exist). tools/
+# disable.sh will NOT work on this set. The packages below were removed on 2026-10-25 via
+# `pm uninstall` (a system package so marked stays listed under `pm list packages -u` and can be
+# reinstalled from the TV's Settings -> Apps). Verified 2026-10-26: none of these packages are in
+# `pm list packages -e` any more; 27 of 34 show as uninstalled under `pm list packages -u`, and no
+# corresponding process is running (`ps`).
+#
+# Stock launcher (Home) is com.jamdeo.launcher (CinesenseLauncher1); it is NOT in this list, and the
+# install scripts' Home guard would skip it anyway. The CleanYourTV launcher needs Android 8.0
+# (minSdk 26), so on this Android 5.1.1 set only the debloat half applies.
+#
+# Kept on purpose: com.jamdeo.launcher (Home), com.android.systemui, com.jamdeo.tv.service,
+#   com.jamdeo.tv.resources, com.jamdeo.tv.livetv / com.hisense.livetvhome / com.hisense.channel
+#   (live TV), com.hisense.store.tv (app store), com.hisense.hitv.hicloud.account (account),
+#   com.jamdeo.tv.mediacenter, com.jamdeo.updateservice and com.hisense.tvplatform.upgrade (OTA),
+#   com.sohu.inputmethod.sogouoem / com.android.inputmethod.latin (keyboards), all user-installed apps
+#   (TVBox, IPTV, 微信, 小白文件管理器, 乐播投屏, 虎牙, 咪咕, 小电视 etc).
+#
+# Selected by the owner on 2026-10-25: A (ads/telemetry), B (preloaded junk), C (voice) all disabled.
+#
+# --- A. Ads and telemetry ---
+com.hisense.tv.advertisementproxy        # 广告代理
+com.hisense.business.ad                  # 商业广告
+com.hisense.service.ad                   # 广告服务
+com.dangbei.lerad.videoposter            # 当贝视频海报/广告
+com.hisense.hireport                     # HiReport 数据上报
+com.hisense.tv.catlog                    # 日志
+com.jamdeo.data.tokenizer                # 数据采集
+com.hisense.infocontroller               # 信息控制/推送
+com.hisense.service.message              # 消息服务
+com.hisense.hicloud.edca                 # 云数据组件
+com.hisense.hiservice                    # Hiservice 服务
+com.hisense.service.hproxy               # 代理服务
+com.hisense.hitv.das                     # 数据服务
+com.hisense.epos                         # 未知数据应用
+# --- B. Preloaded junk ---
+com.hisense.tv.gamecenter                # 游戏中心
+com.jamdeo.tv.silohostapplication.gamecenter  # 游戏中心组件
+com.tencent.tvgamehall                  # 腾讯电视游戏大厅
+com.duomi.androidtv                     # 多米音乐
+com.hisense.electronictutorial          # 电子说明书
+com.jamdeo.tv.systemtutorial            # 系统教程
+com.jamdeo.tv.fte                       # 开机引导(已设置完成)
+com.hisense.ctsapp                      # 认证测试
+com.android.soundrecorder               # 录音机
+com.hisense.demonstrate                 # 演示模式
+com.hisense.hitv.shopping               # 海信购物
+com.jamdeo.screensaver                  # 屏保(含广告)
+com.hisense.hitv.payment                # 支付组件(影响购买付费内容)
+# --- C. Voice assistant ---
+com.hisense.voicecontrol                # 语音控制(禁用后语音键失效)
+com.keylab.speech.core.vidaa            # 语音核心
+com.keylab.speech.view.vidaa            # 语音视图
+com.speech.chatroom                     # 语音聊天
+com.intelligent.speech                  # 智能语音
+com.hispeech.ai.area                    # 语音区域
+com.hisense.speech.aiupgrade            # 语音升级
