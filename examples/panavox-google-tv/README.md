@@ -49,34 +49,9 @@ tools/venv/bin/python -I tools/tv.py "settings put secure screensaver_components
 
 When you are done, turn USB debugging off in Developer options.
 
-## Packages disabled (24)
+## Packages disabled
 
-```
-com.cltv.hybrid
-com.android.ondevicepersonalization.services
-com.android.providers.contacts
-com.google.android.syncadapters.calendar
-tv.anoki.acr.anokiacroptin
-fusion.android.tv.demo
-com.android.adservices.api
-com.google.android.youtube.tvmusic
-com.android.providers.calendar
-com.android.federatedcompute.services
-com.mediatek.android.leanbacklauncher.partnercustomizer
-com.android.tv.feedbackconsent
-com.google.android.marvin.talkback
-com.google.android.feedback
-com.google.android.apps.mediashell
-com.google.android.tv.remote.service
-com.google.android.tungsten.setupwraith
-com.google.android.apps.tv.dreamx
-com.google.android.play.games
-com.google.android.partnersetup
-com.mediatek.androidbox
-com.google.android.tts
-com.google.android.apps.tv.launcherx
-com.google.android.katniss
-```
+The list is in [debloat.txt](debloat.txt).
 
 ## Restore
 

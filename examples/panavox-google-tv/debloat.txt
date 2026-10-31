@@ -44,7 +44,7 @@ com.google.android.syncadapters.calendar # Google Calendar sync
 com.android.providers.calendar # Calendar storage
 com.android.providers.contacts # Contacts storage
 com.mediatek.android.leanbacklauncher.partnercustomizer # Partner customizer
-com.cltv.hybrid
+# com.cltv.hybrid  # TV middleware, kept on in shared lists (this set has it off)
 # Voice assistants. The remote's microphone button stops working.
 com.google.android.katniss # Voice search and Google Assistant
 
@@ -54,9 +54,7 @@ com.google.android.youtube.tvmusic
 com.google.android.marvin.talkback # Google's screen reader
 com.google.android.apps.mediashell # Cast
 com.google.android.tts # Text-to-speech
-com.google.android.tv.remote.service # Control the TV from a phone
-com.mediatek.androidbox  #wifi display sink
-#com.google.android.apps.tv.dreamx #salvapantallas de google
+# com.google.android.tv.remote.service  # phone remote, kept on in shared lists (this set has it off)
 
 # Group 4: unused on a television
 com.google.android.syncadapters.calendar
