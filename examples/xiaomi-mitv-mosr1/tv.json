@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MOSR1 (hermano)",
+  "os": "Android TV 11",
+  "brand": "Xiaomi",
+  "notes": "6 packages after 7 days: test shims, feedback, TalkBack, retail demo and the stock launcher, replaced by the CleanYourTV launcher; Xiaomi's own apps not tried here; exported with TiviKit; a one-session note from another unit (Xiaomi analytics and promo packages, PatchWall at power-on): [device note](../docs/devices/xiaomi-mitv-mosr1.md)"
+}

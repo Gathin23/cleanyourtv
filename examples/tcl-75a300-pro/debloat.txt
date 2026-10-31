@@ -1,0 +1,81 @@
+# TCL 75A300 Pro (device G08, product G08_4K_GB_NF, model "Smart TV"), Google TV / Android 12 (SDK 31),
+# build STT2.221228.001 AS19, software V8-T653T01-LF1V199.
+# Fingerprint TCL/G08_4K_GB_NF/G08:12/STT2.221228.001/AS19:user/release-keys.
+# Same G08 board family as examples/tcl-55a300w (the US A300, STT2.230203.001) and
+# examples/tcl-g08-eu-android12 (G08_4K_GB, STT2.221228.001), but this product and firmware are in neither,
+# and the packages differ from both lists, so it has its own folder. From @d0pexx (#2820).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-75a300-pro/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-75a300-pro/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Kept enabled on purpose: AirPlay (com.tcl.airplay2, com.mediatek.AirplayAPK, com.mediatek.airplaydaemon),
+# TCL Live (com.tcl.channelplus), com.tcl.UpdatePeripheral (TCL soundbar), com.tcl.autopair, com.tcl.suspension,
+# com.tcl.ttvs, com.tcl.tv, com.tcl.tvinput. See tcl-g08-eu-android12 for why autopair, suspension and ttvs stay.
+#
+# First set up with Claude Code and PROMPT.md, launcher installed 18 October 2026. On 31 October the launcher
+# went from 2.0 to 3.2 (build-and-install.sh, SKIP_BUILD=1, over the old build) and the last five packages
+# below were disabled with tools/disable.sh. After each of two reboots Home came back on the launcher (about
+# 3 s of FallbackHome first) and all 40 stayed disabled; no launcher crashes in the crash log.
+# android.autoinstalls.config.google.gtvpai was still enabled after the disable.sh run; a manual
+# `pm disable-user --user 0` took.
+#
+# Remote (no key helper): YouTube, HDMI, volume, mute, Home and Back work and the soundbar connects. With
+# launcherx off, Netflix (keycode 4062, scancode 566) and Settings (4077 / 561) did nothing: Settings logs
+# "Start tcl set short press" and then nothing resolves TOGGLE_NOTIFICATION_HANDLER_PANEL (launcherx handled it).
+# Fix: app_keys "4062:com.netflix.ninja" and "4077:settings" with INPUT_KEY_SERVICE=1. Checked on the real
+# remote, and a held volume button still ramps normally here with the helper on. YouTube sends 4065 / 569.
+# show_stats shows memory and storage but no CPU figure on this set.
+
+# TCL promos, demo, telemetry and account
+com.tcl.esticker                       # retail-demo sticker
+com.tcl.exhibit                        # store demo
+com.tcl.tv.tclhome_passive             # TCL content pushed to the home screen at boot
+com.tcl.messagebox                     # TCL pushed messages and promos
+com.tcl.logkit                         # log capture
+com.tcl.usercenter                     # TCL account
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+com.tcl.ocean.instructions             # on-TV manual
+com.tcl.partnercustomizer
+com.tcl.guard                          # TCL "cleaner". On a G08 EU set the system retried its service every 5 s
+                                       # once it was off (tcl-g08-eu-android12); re-enable it if logcat shows that
+com.google.android.feedback
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.android.dynsystem
+com.android.settings.intelligence
+
+# Off by choice
+com.tcl.smartalexa                     # Alexa
+com.tcl.gamebar                        # game bar overlay
+com.tcl.hearaid                        # hearing test / accessibility helper
+com.tcl.t_solo                         # Bluetooth "listen alone"
+com.tcl.magiconnectfree                # TCL phone-to-TV app
+com.tcl.miracast                       # screen mirroring sink
+tv.mopa.ginga                          # Ginga interactive TV middleware (Brazil)
+com.amazon.amazonvideo.livingroom      # Prime Video
+com.google.android.apps.mediashell     # Chromecast built-in: skip it to keep casting
+com.google.android.katniss             # voice search: skip it to keep the mic button
+com.google.android.tv.remote.service   # Google TV phone remote
+com.google.android.tts
+com.google.android.marvin.talkback     # TalkBack screen reader: keep it if anyone uses it
+com.google.android.apps.tv.dreamx      # photo screensaver
+com.google.android.videos              # Google TV / Play Movies storefront
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.inputmethod.latin   # Gboard. Off on this set; check `ime list -s` shows another keyboard first,
+                                       # or there is none for Wi-Fi passwords and search
+
+# Setup wizard: disable only after re-joining Wi-Fi in Settings if setupwraith saved it (see tcl-55a300w)
+com.google.android.tungsten.setupwraith
+
+# Stock launcher, off once the new launcher is Home (build-and-install.sh does this)
+com.google.android.apps.tv.launcherx
+
+# Disabled 31 October 2026: one reboot so far, no days of use yet
+android.autoinstalls.config.google.gtvpai   # partner auto-installs; needed a manual pm disable-user here
+com.google.android.onetimeinitializer
+com.google.android.partnersetup
+com.tcl.dashboard                      # TCL Home panel and its promos
+com.tcl.eva

@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="387 модель телевізорів · 103 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 396 видань: 412 статей з 54 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="389 моделей телевізорів · 103 бренди · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 396 видань: 412 статей з 54 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
 </p>
 
 ## З чого почати
@@ -34,6 +34,7 @@
 
 **Офіційні посилання:** [cleanyour.tv](https://cleanyour.tv) і цей репозиторій. Інші домени з цією назвою,
 як-от cleanyourtv.com, до цього проєкту не належать ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)).
+CleanYourTV не публікує застосунків у жодному магазині застосунків, і clean-your-tv.net теж не наш.
 
 [Як це працює](#як-це-працює) · [Швидкий старт](#швидкий-старт) · [Що ви отримаєте](#що-ви-отримаєте) ·
 [Підтримувані телевізори](#підтримувані-телевізори) · [Зробити вручну](#зробити-вручну) · [Лончер](#лончер) ·
@@ -132,7 +133,7 @@ platform 34 із build-tools 34 (там асистент збирає лонче
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 79 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 42 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 36 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 21 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 15 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 14 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 80 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 42 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 37 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 21 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 15 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 14 |
 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 6 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 |
 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 |
 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 |
