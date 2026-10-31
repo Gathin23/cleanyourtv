@@ -1,0 +1,6 @@
+{
+  "tv": "Bell Fibe TV (ARRIS VIP7802)",
+  "os": "Android TV 11",
+  "brand": "Bell Canada",
+  "notes": "IPTV set-top box, not a TV: disables ARRIS/CommScope telemetry, two dead stubs and five low-value Google TV apps (13 packages), no preloaded content app touched: [notes](bell-fibe-tv-vip7802/README.md)"
+}
