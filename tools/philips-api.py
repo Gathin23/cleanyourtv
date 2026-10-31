@@ -40,9 +40,10 @@ PORTS = ((1926, "https"), (1925, "http"))
 PROBE = ("ambilight/topology", "ambilight/power", "ambilight/mode", "ambilight/currentconfiguration",
          "powerstate")
 # errno values that mean this computer never reached the TV: a timeout, a network that is not the
-# set's, a host that is gone. What the port said in those cases is about the route, not the TV.
+# set's, a host that is gone, or a local permission or sandbox denial that stopped the connect here.
+# What the port said in those cases is about the route, not the TV.
 UNREACHED = (errno.EHOSTUNREACH, errno.ENETUNREACH, errno.EHOSTDOWN, errno.ENETDOWN, errno.ETIMEDOUT,
-             errno.ECONNABORTED)
+             errno.ECONNABORTED, errno.EACCES, errno.EPERM)
 
 
 def answered(failure):

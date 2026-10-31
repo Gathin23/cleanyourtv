@@ -175,7 +175,9 @@ class Answered(unittest.TestCase):
 
     def test_never_reaching_the_tv_is_not(self):
         for failure in (TIMEOUT, urllib.error.URLError(TIMEOUT), NO_ROUTE, urllib.error.URLError(NO_ROUTE),
-                        NO_NAME, urllib.error.URLError(NO_NAME)):
+                        NO_NAME, urllib.error.URLError(NO_NAME),
+                        PermissionError(errno.EACCES, "Permission denied"),
+                        urllib.error.URLError(PermissionError(errno.EPERM, "Operation not permitted"))):
             with self.subTest(failure=type(failure).__name__ + str(getattr(failure, "reason", ""))):
                 self.assertFalse(philips_api.answered(failure))
 
