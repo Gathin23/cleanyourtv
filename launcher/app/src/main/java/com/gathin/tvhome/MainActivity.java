@@ -515,6 +515,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         clockBlock = findViewById(R.id.leftBlock);
         greetingColor = greeting.getCurrentTextColor();
         if (!cfg.showGreeting) greeting.setVisibility(View.GONE);
+        // Keep the other header layouts as designed: their extra lines change the block's centre.
+        if (!cfg.showGreeting && !cfg.dateBelowClock && !cfg.shamsiDate && !cfg.lunarDate
+                && !cfg.topMenu && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
+            centerCompactHeader();
+        }
         if (cfg.headerWhite) {
             // The clock's own white for the date and the line before it, instead of their dimmed whites.
             ((TextView) findViewById(R.id.date)).setTextColor(Color.WHITE);
@@ -558,6 +563,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
+        if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
+                && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
+            alignDateBelowIconsWithClock();
+        }
         if (shamsi) {
             shamsiDate.setVisibility(View.VISIBLE);
             TextView date = findViewById(R.id.date);
@@ -2429,6 +2438,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             textLp.gravity = ((TextView) text).getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK;
             text.setLayoutParams(textLp);
         }
+    }
+
+    /** Centre the one-row header when the greeting and extra date lines are absent (#2265). */
+    private void centerCompactHeader() {
+        LinearLayout clockRow = (LinearLayout) findViewById(R.id.clock).getParent();
+        clockRow.setGravity(Gravity.CENTER_VERTICAL);
+        clockRow.setBaselineAligned(false);
+        View[] columns = {findViewById(R.id.clockDivider), (View) findViewById(R.id.date).getParent()};
+        for (View column : columns) {
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) column.getLayoutParams();
+            lp.gravity = Gravity.CENTER_VERTICAL;
+            lp.bottomMargin = 0;
+            column.setLayoutParams(lp);
+        }
+        LinearLayout buttons = findViewById(R.id.topButtons);
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) buttons.getLayoutParams();
+        lp.addRule(RelativeLayout.ALIGN_TOP, R.id.leftBlock);
+        lp.bottomMargin = 0;
+        buttons.setLayoutParams(lp);
+        buttons.setGravity(Gravity.CENTER_VERTICAL);
+    }
+
+    /** With the date below, keep the icons beside the clock rather than beside the last date line. */
+    private void alignDateBelowIconsWithClock() {
+        View clock = findViewById(R.id.clock);
+        View clockRow = (View) clock.getParent();
+        LinearLayout buttons = findViewById(R.id.topButtons);
+        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) buttons.getLayoutParams();
+        lp.addRule(RelativeLayout.ALIGN_TOP, R.id.leftBlock);
+        lp.removeRule(RelativeLayout.ALIGN_BOTTOM);
+        lp.topMargin = 0;
+        lp.bottomMargin = 0;
+        buttons.setLayoutParams(lp);
+        // Either side can be laid out first; update after both without requesting another layout mid-pass.
+        Runnable align = () -> buttons.setTranslationY(clockRow.getTop() + clock.getTop()
+                + (clock.getHeight() - buttons.getHeight()) / 2f);
+        clockRow.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> align.run());
+        buttons.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> align.run());
     }
 
     /** The first top-bar button after Inputs that is shown, in bar order (top_bar_apps, the network pill, ...); Settings is always there. */
