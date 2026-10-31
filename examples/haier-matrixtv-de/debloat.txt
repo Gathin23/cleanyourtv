@@ -1,0 +1,55 @@
+# Haier MatrixTV DE (ro.product.model "Haier MatrixTV DE", product HR9676EUF, device omonia), Google TV 14 (API 34),
+# firmware UKN2.241219.053, MediaTek mt5896, 32-bit userspace, 1.8 GB RAM. 3840x2160 panel, UI at 1920x1080 (wm size
+# override, factory), 320 dpi. Same board as examples/aqua-matrixtv-ee-50.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/haier-matrixtv-de/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/haier-matrixtv-de/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (.home.HomeActivity); the install script disables it.
+# Live TV: com.mediatek.tv.oneworld.tvcenter. Already disabled from the factory: com.cltv.hybrid, com.cltv.mal,
+# com.haierubic.usmartdevice, com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.dtv.tvinput.atsctuner.
+#
+# setupwraith owned one saved Wi-Fi network that was not the one in use; it was forgotten
+# (cmd wifi forget-network) before setupwraith was disabled. The network in use belonged to android.uid.system.
+#
+# Tested on 31 October 2026 on one set, over several reboots, with the real remote. Same-day test, not a multi-day soak.
+# Order used: the whole list while launcherx still owned Home, then launcher/build-and-install.sh.
+# com.netflix.ninja comes back enabled at every boot, so it is commented out below. com.haier.gamingbar was left alone:
+# it came back at every boot on the AQUA set.
+#
+# KEEP, even though the names look like bloat (see the AQUA header for the components):
+# - com.haier.appmanager.dispatcher, com.haier.hkcfac, com.haier.tv.hmagicboard: global key receivers.
+# - com.mediatek.autopair, com.haier.bt_pair_tips, com.google.android.tv.googletvremotepairer: remote pairing.
+# - com.telink.lt: remote firmware (the "RC update" tile, hide it with hidden_apps).
+# - com.cvte.tv.at, com.cvte.autobacklight, com.at.factory.androidtvaidlservice, mediatek.factorymenu.ui: factory - never open.
+# - com.mediatek.tis, com.mediatek.dtv.tvinput.dvbtuner, com.mediatek.tv.oneworld.tvcenter, com.mediatek.tv.agent,
+#   com.mediatek.extservice (CEC), com.mediatek.tv.settings, com.google.android.tv.inputplayer, com.mediatek.wwtv.mediaplayer.
+# - By owner choice: Assistant (katniss), Chromecast (mediashell), system updater, YouTube.
+
+# Haier content, IoT, cleaner, e-manual
+it.hon.service                                   # Haier hOn IoT service
+com.haier.apps                                   # Haier promo content app
+com.haier.tvhousekeeper                          # "TV housekeeper" cleaner
+com.haier.emanual9603                            # e-manual
+com.haier.oemtabprovider                         # the "Haier" tab on the Google TV home
+com.haier.launcher.haiermatrix                   # Zeasn content launcher, not the system Home
+
+# Telemetry, partner rows, retail demo, preloads
+com.google.android.feedback                      # Google usage feedback
+tv.anoki.acr.controller                          # Anoki ACR: recognises what is on screen, persistent, boot receiver
+com.mediatek.tv.launcher.partner                 # partner rows on the stock home
+com.mediatek.tv.retaildemo                       # retail demo mode
+com.google.android.play.games                    # preloaded
+com.haier.overseastv.bluetoothspeaker            # TV as Bluetooth speaker, not wanted
+com.google.android.marvin.talkback               # TalkBack, not used
+
+# By owner choice: apps the owner does not use
+# com.netflix.ninja                              # not used; the firmware re-enables it at every boot, so hidden with hidden_apps
+com.amazon.amazonvideo.livingroom                # Prime Video, not used
+com.google.android.youtube.tvmusic               # YouTube Music, not used
+com.mediatek.miracast                            # Miracast, not used
+com.google.android.apps.tv.dreamx                # Ambient, not used; the screensaver default points at it
+
+# Google TV home handover. Check the Wi-Fi note above before disabling it.
+com.google.android.tungsten.setupwraith
