@@ -27,6 +27,8 @@
 #   Left to xrmservice, the profile button starts launcherx's profile chooser, which a disabled launcherx no
 #   longer has: xrmservice crashes, and about 11 s after each restart the projector runs its autofocus.
 #   "KEYCODE_F6:ignore" takes the button so nothing crashes; it then does nothing (verified 2026-11-03).
+#   With launcherx enabled, xrmservice opens the profile chooser straight away, without the stock home under it,
+#   so stock_home_redirect_delay_ms (#2779) is not needed here.
 # - HDMI 1 opens through com.google.android.tv.inputplayer from the Inputs menu, so no input_action is needed
 #   (unlike the Horizon S Pro).
 # - The default Backdrop screensaver (dreamx) is disabled below: point the screensaver at

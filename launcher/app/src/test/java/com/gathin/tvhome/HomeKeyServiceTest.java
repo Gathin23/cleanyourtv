@@ -1,6 +1,9 @@
 package com.gathin.tvhome;
 
 import org.junit.Test;
+import java.util.Collections;
+import java.util.Set;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -51,6 +54,41 @@ public class HomeKeyServiceTest {
 
     @Test public void offMeansNothing() {
         assertFalse(HomeKeyService.powerOnRedirect("", TV, SOON, HomeKeyService.BOOT_WINDOW_MS));
+    }
+
+    private static final String LAUNCHERX = "com.google.android.apps.tv.launcherx";
+    private static final Set<String> STOCK_HOME = Collections.singleton(LAUNCHERX + ".home.HomeActivity");
+
+    @Test public void theStockHomeIsRedirectedAtOnceByDefault() {
+        assertEquals(HomeKeyService.Redirect.NOW,
+                HomeKeyService.stockHomeRedirect(STOCK_HOME, LAUNCHERX, LAUNCHERX, LAUNCHERX + ".home.HomeActivity", 0));
+    }
+
+    @Test public void withADelayTheStockHomeIsRedirectedLater() {
+        assertEquals(HomeKeyService.Redirect.LATER,
+                HomeKeyService.stockHomeRedirect(STOCK_HOME, LAUNCHERX, LAUNCHERX, LAUNCHERX + ".home.HomeActivity", 200));
+    }
+
+    @Test public void aScreenTheStockLauncherOpensOverItsHomeCancelsTheRedirect() {
+        assertEquals(HomeKeyService.Redirect.CANCEL,
+                HomeKeyService.stockHomeRedirect(STOCK_HOME, LAUNCHERX, LAUNCHERX, LAUNCHERX + ".profile.chooser.ProfileChooserActivity", 200));
+    }
+
+    @Test public void withoutADelayOtherStockScreensMeanNothing() {
+        assertEquals(HomeKeyService.Redirect.NONE,
+                HomeKeyService.stockHomeRedirect(STOCK_HOME, LAUNCHERX, LAUNCHERX, LAUNCHERX + ".profile.chooser.ProfileChooserActivity", 0));
+    }
+
+    @Test public void otherAppsNeverTouchTheRedirect() {
+        assertEquals(HomeKeyService.Redirect.NONE,
+                HomeKeyService.stockHomeRedirect(STOCK_HOME, LAUNCHERX, "com.netflix.ninja", "com.netflix.ninja.MainActivity", 200));
+        assertEquals(HomeKeyService.Redirect.NONE,
+                HomeKeyService.stockHomeRedirect(STOCK_HOME, LAUNCHERX, LAUNCHERX, null, 200));
+    }
+
+    @Test public void redirectOffMeansNothing() {
+        assertEquals(HomeKeyService.Redirect.NONE,
+                HomeKeyService.stockHomeRedirect(Collections.emptySet(), "", LAUNCHERX, LAUNCHERX + ".home.HomeActivity", 200));
     }
 
     @Test public void alwaysGoesHomeAfterScreenOnUntilAKey() {

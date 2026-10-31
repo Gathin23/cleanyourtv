@@ -228,6 +228,13 @@
          straight back here. A theme's config.json can set it too. Leave empty to omit. -->
     <string name="stock_home_redirect" translatable="false"></string>
 
+    <!-- Milliseconds stock_home_redirect waits before it sends the stock launcher's home screen back here, so a
+         screen that launcher opens over its home right after it is left on screen: Google TV's profile button
+         opens launcherx's home and then its profile chooser about 70 ms later, and an immediate redirect buried
+         the chooser (#2779). The chooser's window can take 200-300 ms to show, so wait longer than that. While the wait runs, any other window of that launcher cancels the redirect. 0, the
+         default: redirect at once, as before. Up to 2000; a theme can set "stock_home_redirect_delay_ms": 400. -->
+    <integer name="stock_home_redirect_delay_ms">0</integer>
+
     <!-- For TVs whose firmware opens the Live TV app (live_tv_package) by itself at every power-on, with no setting
          to change it (Changhong / Homwee boards start com.mediatek.wwtv.tvcenter from its own boot receiver, which
          adb cannot disable on Android 14). While nobody has pressed a key yet after boot or after the screen turns
