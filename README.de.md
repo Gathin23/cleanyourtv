@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="387 TV-Modelle · 103 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 396 weitere: 412 Artikel aus 54 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="387 TV-Modelle · 103 Marken · 31 Sprachen · Launcher mit 575 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 396 weitere: 412 Artikel aus 54 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
 </p>
 
 ## Einstieg
@@ -192,7 +192,7 @@ tools/theme.sh themes/aurora                                 # ein Theme aufspie
 | [`tools/flamechart.py`](tools/flamechart.py) | Zeichnet aus diesen Traces ein Vorher/Nachher-Flammendiagramm für einen Pull Request: eine Spur je Thread auf gemeinsamer Zeitachse, die Arbeit, die eine Änderung trifft, in Magenta mit ihrer Summe. Optional, wie die Trace-Werkzeuge. [Anleitung](tools/flamechart.md). |
 | [`tools/screendiff.py`](tools/screendiff.py) | Vergleicht ein Vorher- und ein Nachher-Bild Pixel für Pixel, lässt die Uhr oder das aus, was du maskierst, und schreibt das Paar mit unkenntlich gemachtem WLAN-Namen. Optional, wie die Trace-Werkzeuge. [Anleitung](tools/screendiff.md). |
 | [`tools/race_calendar.py`](tools/race_calendar.py) | Schreibt den F1-Kalender dieser Saison in ein Theme für den Rennwochenend-Modus, aus der freien Jolpica-API. |
-| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Baut ein geschrumpftes Release (etwa 572 KB), installiert es, schaltet Home um und rollt zurück, wenn Home nicht darauf landet. |
+| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Baut ein geschrumpftes Release (etwa 575 KB), installiert es, schaltet Home um und rollt zurück, wenn Home nicht darauf landet. |
 
 Die Skripte lassen den Fernseher nie ohne Home-App: sie deaktivieren nur einen Hersteller-Launcher, den sie erkennen,
 und überspringen die Home-App in einer Liste, bis ein anderer Launcher auf HOME antwortet. Eigene Listen können außerhalb
@@ -247,7 +247,7 @@ Debloat-Liste. Was die Prüfung nicht kann, ist Absicht beweisen: [docs/privacy.
 
 ## Der Launcher
 
-Ein kleiner nativer Startbildschirm für Android TV: **etwa 572 KB**, einfaches Java, gebaut für Fernseher mit 1 GB RAM.
+Ein kleiner nativer Startbildschirm für Android TV: **etwa 575 KB**, einfaches Java, gebaut für Fernseher mit 1 GB RAM.
 Kein Weichzeichnen, kein Video, keine Netzwerkberechtigung, keine Hintergrunddienste. Der **Fernseher** braucht Android 8.0 (API 26)
 oder neuer, das `minSdk` in [`launcher/app/build.gradle`](launcher/app/build.gradle); was auf einem älteren
 Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).

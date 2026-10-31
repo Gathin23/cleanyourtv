@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="387 модель телевізорів · 103 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 396 видань: 412 статей з 54 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="387 модель телевізорів · 103 брендів · 31 мова · лончер на 575 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 396 видань: 412 статей з 54 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
 </p>
 
 ## З чого почати
@@ -203,7 +203,7 @@ tools/theme.sh themes/aurora                                 # надіслат�
 | [`tools/flamechart.py`](tools/flamechart.py) | Малює діаграму полум'я «до/після» з цих трейсів — для pull request: одна смуга на потік на спільній шкалі часу, а робота, на яку спрямована зміна, — пурпуровим із підсумком. Необов'язково, як і інструменти трейсів. [Посібник](tools/flamechart.md). |
 | [`tools/screendiff.py`](tools/screendiff.py) | Порівнює знімки «до» і «після» попіксельно, ігноруючи годинник чи будь-що замасковане, і записує пару з розмитою назвою вашої мережі Wi-Fi. Необов'язково, як і інструменти трейсів. [Посібник](tools/screendiff.md). |
 | [`tools/race_calendar.py`](tools/race_calendar.py) | Записує календар Формули-1 цього сезону в тему для режиму гоночних вихідних, беручи дані з безкоштовного API Jolpica. |
-| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Збирає зменшений реліз (близько 572 КБ), встановлює його, перемикає головний екран і відкочується, якщо той не став на нього. |
+| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Збирає зменшений реліз (близько 575 КБ), встановлює його, перемикає головний екран і відкочується, якщо той не став на нього. |
 
 Скрипти ніколи не лишають телевізор без застосунку головного екрана: вони вимикають лише штатний лончер,
 який розпізнають, і пропускають застосунок головного екрана у списку, доки якийсь лончер не відповість на
@@ -269,7 +269,7 @@ Xiaomi (PatchWall). Передайте `STOCK_LAUNCHER=<package>` (`-StockLaunch
 
 ## Лончер
 
-Невеликий нативний головний екран для Android TV: **близько 572 КБ**, чистий Java, зібраний для телевізорів
+Невеликий нативний головний екран для Android TV: **близько 575 КБ**, чистий Java, зібраний для телевізорів
 із 1 ГБ оперативної пам'яті. Без розмиття, без відео, без дозволу на мережу, без фонових служб.
 **Телевізору** потрібен Android 8.0 (API 26) або новіший — це `minSdk` у
 [`launcher/app/build.gradle`](launcher/app/build.gradle); що лишається на старішому наборі, є в
