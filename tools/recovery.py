@@ -16,6 +16,12 @@ reached at, so a set that takes a new address gets a new record: save() warns wh
 another address still holds, as enabled, a package it just found disabled (#2139). A later run, and check.py --fix,
 only add the names the list gained since then, with their state before this list disabled them, and
 record a package that was absent then and is installed and enabled now as enabled.
+
+Exit codes: 2 is a run that never asked the TV anything - no TV_HOST, a checkout without tools/venv,
+or a TV that was not reached - and it prints tv.py's own sentence before it stops; 0 the record was
+written, or kept as it was; 1 anything else that stopped the run, such as a save that read the TV and
+then failed, or a list or stock launcher name --commands refuses. disable.sh stops on any non-zero:
+no record, nothing disabled.
 """
 import hashlib
 import ipaddress
@@ -32,6 +38,9 @@ PACKAGE_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")
 HOME_RE = re.compile(r"[A-Za-z_][\w.]*/[\w.$]+")
 SCALE_RE = re.compile(r"-?\d+(\.\d+)?")
 SETTINGS = ("window_animation_scale", "transition_animation_scale", "animator_duration_scale")
+# What a save that never asked the TV anything adds after tv.py's sentence: exit 2 is that shape, 1 is
+# a save that read the TV and then failed (see reach()).
+NOTHING_RECORDED = "Nothing was recorded and nothing was sent to the TV."
 # This project's own launcher. When it already owned Home before debloating while the stock launcher
 # was on, restoring Home to it would leave the stock launcher's Home unused, so restore goes back to the
 # stock one instead. When the stock launcher was already off then, this launcher keeps Home (#1714).
@@ -355,16 +364,56 @@ def query_home(dev):
     return candidate if HOME_RE.fullmatch(candidate) else None
 
 
-def connect():
-    # Imported here so --commands works on a machine where adb_shell is not installed: printing the
-    # restore batch needs no TV. tv.py itself exits with a readable message when TV_HOST is unset.
+def client():
+    """tools/tv.py as a module.
+
+    Imported where it is used so --commands works on a machine where adb_shell is not installed:
+    printing the restore batch needs no TV. tv.py itself exits with a readable message when TV_HOST
+    is unset.
+    """
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     try:
         import tv
     except ImportError as e:
         raise SystemExit(f"cannot load tools/tv.py ({e}).\nrun: python3 -m venv tools/venv && "
                          "tools/venv/bin/pip install -r tools/requirements.txt")
-    return tv.connect()
+    return tv
+
+
+def connect():
+    return client().connect()
+
+
+def reach():
+    """The TV, or the answer 2 for a run the TV was never asked anything by.
+
+    Exit 1 is what this script returns for a save that read the TV and then failed - a record that
+    cannot be read or updated, a TV that answered no packages - and disable.sh reports that as a
+    failed save, with the TV untouched. A TV that was never reached, a checkout without the ADB
+    client and a run with no TV_HOST are not that: nothing was asked of the TV, so they print
+    tv.py's own words (or the line that builds the venv) and exit 2, as check.py, privacy.py,
+    manage.py, bench.py, trace.py and theme_restart.py already do for the same shapes.
+    """
+    try:
+        return client().connect()
+    except SystemExit as e:
+        # tv.py stops with its own words at import time when TV_HOST is unset, and client() stops
+        # with the line that builds the venv: both are a process exit, not an exception this can
+        # answer with a line of its own.
+        if not isinstance(e.code, str):
+            raise
+        sys.stderr.write(f"{e.code}\n{NOTHING_RECORDED}\n")
+        raise SystemExit(2)
+    except Exception as e:
+        # adb_shell raises its own errors, not OSError: a refused port, a Wireless debugging port
+        # that asks for TLS, a handshake nobody accepted. tv.py words each of them, with the port to
+        # use instead and the page for a set with no ADB at all; an error it has nothing to add to
+        # (an ADB key file this account cannot read) keeps its traceback, which names the file.
+        sentence = client().connect_error(e)
+        if sentence is None:
+            raise
+        sys.stderr.write(f"{sentence}\n{NOTHING_RECORDED}\n")
+        raise SystemExit(2)
 
 
 def package_state(name, installed, disabled):
@@ -419,7 +468,7 @@ def save(list_path, host):
         if all(record["packages"].get(name, "absent") != "absent" for name in packages):
             print("nothing was recorded again: it holds the state from before the first run.")
             return 0
-        dev = connect()
+        dev = reach()
         try:
             installed, disabled = query_packages(dev)
         finally:
@@ -430,7 +479,7 @@ def save(list_path, host):
         return 0
 
     packages = read_list(list_path)
-    dev = connect()
+    dev = reach()
     try:
         installed, disabled = query_packages(dev)
         home = query_home(dev)
