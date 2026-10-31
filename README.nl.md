@@ -11,6 +11,7 @@
   <a href="README.it.md"><img src="https://img.shields.io/badge/README-Italiano-cfffcf?style=flat&labelColor=15181e" alt="Italiano"></a>
   <a href="README.de.md"><img src="https://img.shields.io/badge/README-Deutsch-cfffcf?style=flat&labelColor=15181e" alt="Deutsch"></a>
   <a href="README.uk.md"><img src="https://img.shields.io/badge/README-%D0%A3%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B0-cfffcf?style=flat&labelColor=15181e" alt="Українська"></a>
+  <a href="README.tr.md"><img src="https://img.shields.io/badge/README-T%C3%BCrk%C3%A7e-cfffcf?style=flat&labelColor=15181e" alt="Türkçe"></a>
 </p>
 
 <p align="center">

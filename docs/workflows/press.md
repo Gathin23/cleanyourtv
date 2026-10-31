@@ -8,10 +8,11 @@
 2. Update the counts in every place `tests/test_press_counts.py` checks: the `docs/PRESS.md` intro line, its
    index line, the card's alt text in every `README*.md` that shows `docs/card.jpg` - today `README.md` ("and N
    more: N articles from N countries"), the Dutch `README.nl.md` ("nog N media: N artikelen uit N landen") and
-   the German `README.de.md` ("und N weitere: N Artikel aus N Ländern") and the Ukrainian
-   `README.uk.md` ("та ще N видань: N статей із N країн") - and `MORE` in
+   the German `README.de.md` ("und N weitere: N Artikel aus N Ländern"), the Ukrainian
+   `README.uk.md` ("та ще N видань: N статей із N країн") and the Turkish `README.tr.md`
+   ("ve N yayın daha: N ülkeden N makale") - and `MORE` in
    `tools/readme_featured.py`. Every page shows the same picture, so a translation that copies it states the
-   same numbers in its own words: the three named here are the pages that carry it today, not the rule.
+   same numbers in its own words: the pages named here are the ones that carry it today, not the rule.
    The end of each page's story section repeats the three numbers once more, in prose ("The coverage: 351
    articles from 46 countries and 229 videos on YouTube and Bilibili, all in `docs/PRESS.md`"), and the same
    test reads that sentence too: the page states the count twice, once in the card's alt text and once in

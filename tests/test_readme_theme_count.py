@@ -23,8 +23,10 @@ one table of the words these four languages state a number in, so a theme folder
 this test with that page, and a page that starts stating the count is held the same way. A word the
 table does not carry names the page that wrote it rather than reading as no claim at all; one is left
 out of the table on purpose, since "een" and "ein" are also the articles these languages put before a
-noun, and a single-theme repo is not a thing. A fifth language means a fifth line in that table: the
-last page added did not fail here, it simply became a page this file could not see.
+noun, and a single-theme repo is not a thing. Another language that writes the count as a word means
+another line in that table: the last page added did not fail here, it simply became a page this file
+could not see. README.tr.md, the fifth page, writes it in digits ("15 tema"), which NUMBER reads
+without a table line.
 
 That one table is what README.md's row is read through too. The row had a twelve-word table of its own
 while the sentences were read through one that carries twenty, and the two agreed only while themes/
@@ -54,8 +56,8 @@ ROW_START = "| **Themes** |"
 
 # Every feature row that names themes/ and states how many ship there, whatever language it is in:
 # English "eleven ship in", German "Zehn liegen in", Dutch "staan tien thema's", Ukrainian
-# "постачається чотирнадцять". The words come from the four languages the front pages are written in
-# today, two to twenty each; one is left out because "een" and "ein" are also the articles those
+# "постачається чотирнадцять". The words come from the four languages whose front pages write the
+# count as a word today (README.tr.md writes digits), two to twenty each; one is left out because "een" and "ein" are also the articles those
 # languages put before a noun, so an English "one" would read a Dutch sentence as a claim of one theme.
 NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
                 "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
@@ -169,12 +171,13 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these four pages state the count today, so one that stops
+        # stale in the first place: these five pages state the count today, so one that stops
         # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
         # the Ukrainian words above; before that it stated its count and this list still read three.
+        # README.tr.md states its count in digits, so it needs no words in the table.
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.md", "README.nl.md", "README.uk.md"],
-                         "the front pages that state the theme count are not the four that did: "
+                         ["README.de.md", "README.md", "README.nl.md", "README.tr.md", "README.uk.md"],
+                         "the front pages that state the theme count are not the five that did: "
                          f"{sorted(set(stating))}")
 
 

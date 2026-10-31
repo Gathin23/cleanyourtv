@@ -26,8 +26,8 @@ folders in the same order, alphabetical by "tv" (case ignored), so a brand's mod
 The full table lives in examples/README.md between <!-- tv-table:start ... --> and <!-- tv-table:end -->.
 README.md has no table of its own: its brand grid (the TOP brands with the most lists, linked to the site's
 search, and the rest in a <details>) sits between <!-- tv-brands:start ... --> and <!-- tv-brands:end -->.
-README.nl.md and README.de.md carry the same brand block and the same counts in their own words ("N
-tv-modellen · B merken · L talen · " and "N TV-Modelle · B Marken · L Sprachen · "), and a README that still
+README.nl.md, README.de.md, README.uk.md and README.tr.md carry the same brand block and the same counts in
+their own words ("N tv-modellen · B merken · L talen · ", "N TV-Modelle · B Marken · L Sprachen · ", ...), and a README that still
 has tv-table markers gets the short table there too. Everything outside the markers is hand-written.
 The counts are the card's alt text ("N TV models · B brands · L languages · "), the "| **L languages** |"
 feature row and STATS in tools/readme_stats.py. Exit codes: 0 up to date (or written), 1 out of date
@@ -269,7 +269,8 @@ OWNED = ("README.md", "examples/README.md", "tools/readme_stats.py")
 TRANSLATIONS = {"README.nl.md": ("tv-modellen", "merken", "talen"),
                 "README.de.md": ("TV-Modelle", "Marken", "Sprachen"),
                 "README.uk.md": (("модель телевізорів", "моделі телевізорів", "моделей телевізорів"),
-                                 ("бренд", "бренди", "брендів"), ("мова", "мови", "мов"))}
+                                 ("бренд", "бренди", "брендів"), ("мова", "мови", "мов")),
+                "README.tr.md": ("TV modeli", "marka", "dil")}
 
 
 def readme(text, entries, root, path, words=WORDS):

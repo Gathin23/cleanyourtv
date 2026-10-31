@@ -1,8 +1,9 @@
 """Keeps the press numbers in docs/PRESS.md, the README cards and the card source in step.
 
 The article total is written in every place that states it: the PRESS.md intro, its per-country index
-line, the alt text of the card in README.md, the alt text of the same card in README.nl.md (in Dutch)
-and in README.de.md (in German), and tools/readme_featured.py (which draws the line onto
+line, the alt text of the card in README.md, the alt text of the same card in README.nl.md (in Dutch),
+README.de.md (in German), README.uk.md (in Ukrainian) and README.tr.md (in Turkish), and
+tools/readme_featured.py (which draws the line onto
 docs/featured.png). Adding one article by hand means editing all of them; this checks they agree, so a
 PR that adds a row and forgets the counts fails here instead of shipping a card that says 73 over a
 list of 74.
@@ -61,6 +62,8 @@ VIDEO_LINK = re.compile(r"\((https?://[^)\s]*(?:youtube\.com|bilibili\.com)/[^)\
 # in Dutch and README.de.md in German, and any translation that copies the picture later. The words
 # around the numbers are translated; the numbers are not.
 CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
+# The front pages that show the card and repeat its numbers in the story section today.
+STORY_PAGES = ("README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md")
 # The story paragraph's closing sentence, which repeats the three numbers in prose: "The coverage: 351
 # articles from 46 countries and 229 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)".
 # Every translation writes its own words around the numbers but keeps them in that order, so they are read
@@ -436,9 +439,8 @@ class FrontPageCoverageTest(unittest.TestCase):
         # The clause is the page's own copy of the three numbers its card's alt text states, so one page can show
         # a count in the picture and a stale one in prose; the pages come from the card, like the alt-text test, so
         # a translation that copies the picture is read without this list being edited first.
-        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md"}, set(self.pages),
-                             "README.md, README.de.md, README.nl.md and README.uk.md no longer show "
-                             "docs/card-halloween.jpg with an alt text")
+        self.assertLessEqual(set(STORY_PAGES), set(self.pages),
+                             f"{', '.join(STORY_PAGES)} no longer all show docs/card-halloween.jpg with an alt text")
         for name in sorted(self.pages):
             read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
             with self.subTest(readme=name):
@@ -453,8 +455,8 @@ class FrontPageCoverageTest(unittest.TestCase):
     def test_the_walk_reads_the_sentence_this_file_was_written_for(self):
         # A reader answering () or None for every page would pass nothing above; each page carries three
         # numbers today, and the English one is the page this file's own example is quoted from.
-        self.assertGreaterEqual(len(self.pages), 4, f"only {len(self.pages)} front pages show the card")
-        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md"):
+        self.assertGreaterEqual(len(self.pages), len(STORY_PAGES), f"only {len(self.pages)} front pages show the card")
+        for name in STORY_PAGES:
             read = coverage_numbers((ROOT / name).read_text(encoding="utf-8"))
             with self.subTest(readme=name):
                 self.assertEqual(3, len(read or ()), f"{name}'s coverage sentence reads as {read}")
@@ -472,9 +474,8 @@ class FrontPageTotalsTest(unittest.TestCase):
         # picture and 380 in the story two screens below it. A contributor adding a list folder edits
         # neither (docs/workflows/tv-list.md step 5 leaves the tables to a maintainer), so this only bites
         # the run that regenerates the card.
-        self.assertLessEqual({"README.md", "README.de.md", "README.nl.md", "README.uk.md"}, set(self.pages),
-                             "README.md, README.de.md, README.nl.md and README.uk.md no longer show "
-                             "docs/card-halloween.jpg with an alt text")
+        self.assertLessEqual(set(STORY_PAGES), set(self.pages),
+                             f"{', '.join(STORY_PAGES)} no longer all show docs/card-halloween.jpg with an alt text")
         for name in sorted(self.pages):
             card = card_totals(self.pages[name])
             read = catalogue_numbers((ROOT / name).read_text(encoding="utf-8"))
@@ -492,8 +493,8 @@ class FrontPageTotalsTest(unittest.TestCase):
     def test_the_walk_reads_the_totals_this_file_was_written_for(self):
         # A reader answering () or None for every page would pass the rule above; each page carries two
         # numbers today, and README.md is the page this file's own example is quoted from.
-        self.assertGreaterEqual(len(self.pages), 4, f"only {len(self.pages)} front pages show the card")
-        for name in ("README.md", "README.de.md", "README.nl.md", "README.uk.md"):
+        self.assertGreaterEqual(len(self.pages), len(STORY_PAGES), f"only {len(self.pages)} front pages show the card")
+        for name in STORY_PAGES:
             read = catalogue_numbers((ROOT / name).read_text(encoding="utf-8"))
             with self.subTest(readme=name):
                 self.assertEqual(2, len(read or ()), f"{name}'s story sentence reads as {read}")
@@ -511,11 +512,12 @@ class TotalsReaderTest(unittest.TestCase):
                 "The coverage: 351 articles from 46 countries and 229 videos on YouTube and Bilibili, all in\n"
                 "[docs/PRESS.md](docs/PRESS.md) (numbers as of 30 October 2026).\n")
 
-    def test_the_four_languages_are_read_the_same_way(self):
+    def test_the_five_languages_are_read_the_same_way(self):
         for sentence in ("The lists now cover 387 TV models from 103 brands.",
                          "Die Listen umfassen jetzt 387 TV-Modelle von 103 Marken.",
                          "De lijsten tellen nu 387 tv-modellen van 103 merken.",
-                         "Тепер списки охоплюють 387 моделей телевізорів від 103 бренду."):
+                         "Тепер списки охоплюють 387 моделей телевізорів від 103 бренду.",
+                         "Listeler artık 387 TV modelini ve 103 markayı kapsıyor."):
             with self.subTest(sentence=sentence):
                 self.assertEqual((387, 103), catalogue_numbers(self.page(sentence)))
 
@@ -560,11 +562,14 @@ class CoverageReaderTest(unittest.TestCase):
                 f"The coverage: {clause}, all in [docs/PRESS.md](docs/PRESS.md){extra}\n"
                 "(numbers as of 30 October 2026).\n")
 
-    def test_the_four_languages_are_read_the_same_way(self):
+    def test_the_five_languages_are_read_the_same_way(self):
+        # Turkish puts the country before the article count ("46 ülkeden 351 makale"), so README.tr.md writes
+        # the articles first, the order this reader takes the numbers in.
         for clause in ("351 articles from 46 countries and 229 videos on YouTube and Bilibili",
                        "351 Artikel aus 46 Ländern und 229 Videos auf YouTube und Bilibili",
                        "351 artikelen uit 46 landen en 229 video's op YouTube en Bilibili",
-                       "351 стаття з 46 країн і 229 відео на YouTube та Bilibili"):
+                       "351 стаття з 46 країн і 229 відео на YouTube та Bilibili",
+                       "351 makale (46 ülkeden) ve YouTube ile Bilibili'de 229 video"):
             with self.subTest(clause=clause):
                 self.assertEqual((351, 46, 229), coverage_numbers(self.page(clause)))
 
