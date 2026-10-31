@@ -39,6 +39,22 @@
 #   com.google.android.tvrecommendations. Disabled, it is back to enabled=1 within minutes, with
 #   `dumpsys package` naming com.droidlogic (Amlogic's system package) as lastDisabledCaller. It only feeds
 #   the stock launcher's rows, so with that launcher gone it is harmless; don't keep disabling it.
+#
+# Notes from a second unit (same HA90 module and firmware, sold as an Epson HA90, 25 October 2026):
+# - com.google.android.katniss (Assistant) gets the same treatment as tvrecommendations: disabled, it is back
+#   within minutes with lastDisabledCaller com.droidlogic. `pm uninstall --user 0` on either sticks (the factory
+#   copy stays; `cmd package install-existing --user 0 <package>` brings it back), but that is outside what
+#   this list does, so neither is listed.
+# - Amlogic's TV extras app carries a hidden "Startup Setting" (Settings.System tv_start_up_enter_app, 0 =
+#   launcher, 1 = TV app) and a "Power on behavior" slice; set over adb and reboot-checked, the key changes
+#   nothing on this firmware: Home still comes up. To start on an HDMI port, use the launcher instead
+#   (boot_to_live_tv opens com.droidlogic.android.tv, which returns to the last source).
+# - On this unit USB debugging alone had port 5555 open, no wireless pairing needed; the TV does not answer
+#   ping, so check the port. Android 14 names the foreground activity topResumedActivity in
+#   `dumpsys activity activities`; HDMI on screen gives a 0-byte screencap.
+# - Disabling com.epson.fwupdate, com.droidlogic.updater and com.askey.autousbota (updates off by choice) and
+#   com.epson.onlinemeetings, com.epson.logcollection kept as above: Projector Settings > Picture, Sound,
+#   Installation, Information and Bluetooth Speaker Mode all still open.
 
 # Batch 1: telemetry
 com.google.android.feedback             # Google feedback reporter
