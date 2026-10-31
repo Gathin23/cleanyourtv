@@ -1,0 +1,6 @@
+{
+  "tv": "Sony XR-77A80L (77-inch OLED, 2023, BRAVIA_VH22, MediaTek), North America",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Same VH22 build as the KD-65X82L list: Samba TV ACR, Sony/Qterics agents, IDD, Sony promos/Select/tab, partner auto-installs, demo and hotel mode; AirPlay/HomeKit, QuickSet, BRAVIA Connect, YouTube Music, Play Games and BRAVIA CAM extras off by choice, but BRAVIA Connect's remotestart kept for network standby; setupwraith off for the launcher (on Ethernet), which makes sonysystemservice poll for it; Ambient mode album picking needs launcherx and setupwraith back on; Assistant, TTS, Chromecast, DLNA, firmware updates kept; reboot-checked"
+}
