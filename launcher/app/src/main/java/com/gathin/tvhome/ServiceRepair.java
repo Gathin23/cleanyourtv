@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.provider.Settings;
 
 import java.util.ArrayList;
@@ -37,6 +39,12 @@ final class ServiceRepair {
     static void restore(Context context) {
         if (context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
                 != PackageManager.PERMISSION_GRANTED) return;
+        // Only while this launcher is still the TV's Home. Once the stock desktop is enabled again this process
+        // can still be started — by a leftover mapping, by an app, by the switcher itself — and putting the key
+        // filter back then would leave it swallowing buttons under the other desktop: a mapping that belongs to
+        // this Home would keep firing there. The record is kept, so a real force stop under this Home still
+        // repairs itself; under the other Home it just stays dormant until the switch back.
+        if (!homeIsOurs(context)) return;
         try {
             ContentResolver cr = context.getContentResolver();
             String list = Settings.Secure.getString(cr, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
@@ -77,13 +85,23 @@ final class ServiceRepair {
             // that way instead of being overwritten by a snapshot.
             final String without = others.toString();
             final String with = updated.toString();
+            // Ask again before every write, not once at the top: the cycle sleeps a second between steps and Home
+            // can change in that gap, and the list comparisons only notice edits to the list itself — switching
+            // Home does not touch it — so an answer taken at the top would still put the helper back under the
+            // other desktop. Nothing already written is rolled back; the last check before the global enable is
+            // the one that keeps a completed cycle from being switched on for somebody else's Home.
+            final Context app = context.getApplicationContext();
             new Thread(() -> {
                 try {
+                    if (!homeIsOurs(app)) return;
                     if (!replaceList(cr, list, with)) return;
                     Thread.sleep(1000);
+                    if (!homeIsOurs(app)) return;
                     if (!replaceList(cr, with, without)) return;
                     Thread.sleep(1000);
+                    if (!homeIsOurs(app)) return;
                     if (!replaceList(cr, without, with)) return;
+                    if (!homeIsOurs(app)) return;
                     Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);
                 } catch (RuntimeException | InterruptedException ignored) {
                     // The setting is the system's; a refusal leaves the helper off, as before.
@@ -99,6 +117,32 @@ final class ServiceRepair {
         String now = Settings.Secure.getString(cr, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
         return Objects.equals(now == null ? "" : now, expected == null ? "" : expected)
                 && Settings.Secure.putString(cr, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, updated);
+    }
+
+    /**
+     * True while this launcher is the TV's Home, i.e. while a key filter of ours belongs on the enabled list.
+     * Nothing else answering HOME is the ordinary case and repairs as before. When something else does answer it,
+     * which Home Android actually resolves decides: the stock desktop after a switch back, but also Settings'
+     * FallbackHome and the factory-test launchers some TVs leave enabled, and those would otherwise keep the
+     * repair from ever running. A disabled Home is not returned by the query, so a switch back is seen here.
+     * Anything unexpected reads as "not ours": switching a system-wide key filter on inside somebody else's Home
+     * is worse than leaving it off until the next switch back.
+     */
+    private static boolean homeIsOurs(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
+            String me = context.getPackageName();
+            for (ResolveInfo info : pm.queryIntentActivities(home, 0)) {
+                if (info.activityInfo == null || me.equals(info.activityInfo.packageName)) continue;
+                ResolveInfo resolved = pm.resolveActivity(home, 0);
+                return resolved != null && resolved.activityInfo != null
+                        && me.equals(resolved.activityInfo.packageName);
+            }
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private static SharedPreferences prefs(Context context) {
