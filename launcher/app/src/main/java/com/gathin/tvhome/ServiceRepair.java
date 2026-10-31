@@ -4,8 +4,10 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.provider.Settings;
 
 import java.util.ArrayList;
@@ -37,6 +39,13 @@ final class ServiceRepair {
     static void restore(Context context) {
         if (context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
                 != PackageManager.PERMISSION_GRANTED) return;
+        // Only while this launcher is still the TV's Home. Once the stock desktop is enabled again this process
+        // can still be started — by a leftover mapping, by an app, by the switcher itself — and putting the key
+        // filter back then would leave it swallowing buttons under the other desktop: a mapping that belongs to
+        // this Home would keep firing there, and the app_keys "library" action would pull this launcher (and its
+        // app library) up over the stock Home. The record is kept, so a real force stop under this Home still
+        // repairs itself; under the other Home it just stays dormant until the switch back.
+        if (!isOnlyHome(context)) return;
         try {
             ContentResolver cr = context.getContentResolver();
             String list = Settings.Secure.getString(cr, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
@@ -99,6 +108,25 @@ final class ServiceRepair {
         String now = Settings.Secure.getString(cr, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
         return Objects.equals(now == null ? "" : now, expected == null ? "" : expected)
                 && Settings.Secure.putString(cr, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, updated);
+    }
+
+    /**
+     * True when no other Home activity is enabled, i.e. this launcher is still what the TV boots into. A disabled
+     * Home package is not returned by the query, so right after a switch back the stock launcher shows up here.
+     * Anything unexpected reads as "not ours", because enabling a system-wide key filter in the wrong Home is
+     * worse than leaving it off until the next switch.
+     */
+    private static boolean isOnlyHome(Context context) {
+        try {
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
+            String me = context.getPackageName();
+            for (ResolveInfo info : context.getPackageManager().queryIntentActivities(home, 0)) {
+                if (info.activityInfo != null && !me.equals(info.activityInfo.packageName)) return false;
+            }
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private static SharedPreferences prefs(Context context) {
