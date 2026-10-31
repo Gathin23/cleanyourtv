@@ -35,6 +35,9 @@
 # - The source panel's Apps row keeps the TCL Channel and User Guide tiles, which no longer open (as on the
 #   85RM7L).
 # - The source panel lists an HDMI port only while the device on it is switched on.
+#
+# Second unit: TCL 55C6K, Vietnam, same G08_4K_GB build, with the reference launcher (setupwraith off after the
+# Wi-Fi was re-joined); its different choices and the handover are in README.md beside this list.
 
 # TCL tracking and analytics
 com.tcl.logkit                         # log capture and upload
