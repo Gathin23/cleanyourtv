@@ -52,6 +52,7 @@ updated. Add-ons with custom shell installers still need Bash; this native Windo
 | `scenes/` | 14 dark illustrated landscapes in `wallpapers/`, a new one every hour; drawn from code by `tools/scenes_wallpapers.py` | <img src="scenes/screenshot.jpg" width="320" alt="scenes theme"> |
 | `six-columns/` | Six smaller tiles per row and one grid row visible under the dock | <img src="six-columns/screenshot.jpg" width="320" alt="six-columns theme"> |
 | `retro/` | Pure black, a dock with no band or border, a rim-only focus highlight (`glass_style: rim`), no colour gradient, icon-only top buttons, and a wallpaper for morning, afternoon and night. The three pictures are the author's own; see `retro/CREDITS.md`. By [REGT-URRED](https://github.com/REGT-URRED) | <img src="retro/screenshot.jpg" width="320" alt="retro theme"> |
+| `weeb/` | Pure black with five original neon-outline anime characters, a new one every 30 minutes in order, a frosted-glass dock and round icon-only buttons. The pictures were made with Google Gemini; see `weeb/CREDITS.md`. Bring your own in [Wallpapers](#wallpapers) | <img src="weeb/screenshot.jpg" width="320" alt="weeb theme"> |
 | `storm/` | Four lightning photos from Wikimedia Commons (a strike over North Texas, bolts ahead of a shelf cloud, three strikes in one exposure, a thunderstorm near Pritzerbe), a new one every hour in order with its photographer under the buttons, darkened under the clock and the dock; five tiles in a frosted-glass dock, round icon-only buttons, no hero name and no app-colour glow. The photos are CC BY / CC BY-SA, not MIT: see `storm/CREDITS.md` | <img src="storm/screenshot.jpg" width="320" alt="storm theme"> |
 | `sweden/` | Three photos of Sweden from Wikimedia Commons (the aurora over Abisko, Vasabron at dusk, Skeppsbron in the evening), a new one every hour with its place and photographer under the buttons; six small tiles in a frosted-glass dock, round icon-only buttons, no hero name. The photos are CC BY / CC BY-SA, not MIT: see `sweden/CREDITS.md` | <img src="sweden/screenshot.jpg" width="320" alt="sweden theme"> |
 
@@ -228,6 +229,8 @@ The original system idle screensaver is left unchanged.
 On the TV, Launcher settings has a Wallpaper row: pick one picture from the collection (or the theme's
 `wallpaper.jpg`), or None. A pick shows that one picture and stops the rotation until you choose Theme
 default, press Follow theme, or push a theme again.
+
+**Your own walls with `weeb`.** Copy `themes/weeb` to a folder outside this checkout, so pictures you only have for your own use are never committed, put your pictures in its `wallpapers/` folder, then run `tools/theme.sh <that folder>`.
 
 ## Reduced motion
 
