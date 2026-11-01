@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH22 (2023, BRAVIA_VH22, MediaTek MT5895), Australia",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Same build as `sony-bravia-4k-vh21/` (same-day test): Samba TV ACR, Sony/Qterics agents, IDD, bug report, Sony promos/Select/tab, help tiles, demo mode, Vewd, BRAVIA CAM suite; 9Now, ABC iview, 7plus, Apple TV, Google TV Movies, Play Games, HbbTV and TTS off by choice; Assistant, Chromecast, AirPlay, BRAVIA Connect, QuickSet and firmware updates kept; redirect route on Wi-Fi (launcherx and setupwraith on, `set-home-activity` prints Success and changes nothing); reboot-checked"
+}

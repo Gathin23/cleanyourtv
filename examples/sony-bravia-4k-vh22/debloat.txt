@@ -1,0 +1,62 @@
+# Sony BRAVIA 4K VH22 (2023, device BRAVIA_VH22, MediaTek MT5895), Asia-Pacific (Australia)
+# Android 12 (Google TV, API 31), build BRAVIA_VH22_M_PA-user 12 STT2.230505.001.S136 682241 release-keys
+# The same build as examples/sony-bravia-4k-vh21/, and every package on that list is present here.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh22/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh22/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx, kept ENABLED (redirect route, see README.md), so the
+# Undo line passes no launcher. Live TV / tuner app: com.sony.dtv.tvx.
+# Keep the com.sony.dtv.tvinput.* services, braviasync, tvapi, sonysystemservice, the Sony settings apps,
+# systemupdate and all com.mediatek.*: they drive HDMI, the tuner, Bravia Sync, updates and the remote.
+# Kept by owner's choice: Google Assistant / voice (katniss, voicesearch, assistantadapter), Chromecast
+# (mediashell), AirPlay/HomeKit, BRAVIA Connect phone link (seeds.iot, seeds.auth, remotestart), QuickSet,
+# Netflix, Prime Video, Spotify, YouTube, firmware updates.
+# Already disabled at the factory: com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.kenhchonloc,
+# com.sony.dtv.b2b.softap. Not in this list, so restore.sh leaves them alone.
+#
+# On Wi-Fi, the saved network belonged to android.uid.system, not setupwraith (cname=android.uid.system:1000),
+# but setupwraith's RecoveryActivity still claims HOME, so it and launcherx stay enabled.
+# The screensaver ships as com.google.android.apps.tv.dreamx/.service.Backdrop, not Living Fit, so livingfit
+# was disabled with no screensaver change.
+# Applied in three batches with a screenshot between, synced, then rebooted: nothing came back on.
+# Same-day test (one evening, two reboots).
+# Batch 1: telemetry and tracking
+tv.samba.ssm                        # Samba TV fingerprints what's on screen
+tv.samba.ssm.ui
+com.sonyericsson.idd.agent          # Sony IDD usage-data agent
+com.sony.dtv.usercontext            # user context providers
+com.qterics.da.product              # Qterics device agent
+com.sony.dtv.da.service             # remote-support session service
+com.sony.dtv.sonybugreportsys       # Sony bug report service
+com.google.android.feedback
+
+# Batch 2: ads, promos, help tiles, demo mode
+com.sony.dtv.promos
+com.sony.dtv.sonyselect             # Sony Select app recommendations
+com.sony.dtv.sonytab                # Sony content tab / partner rows
+com.sony.dtv.smarthelp
+com.sony.dtv.helpguidecontents
+com.sony.dtv.ecodashboard
+com.sony.dtv.customersupport
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+com.vewd.core.integration.dia       # Vewd
+com.vewd.core.service
+
+# Batch 3: BRAVIA CAM (no camera), unused apps, text-to-speech
+com.sony.dtv.gestureapp
+com.sony.dtv.sensingcamera.fwupdate
+com.sony.dtv.sensingcamera.settings
+com.sony.dtv.distancealert
+com.sony.dtv.livingfit
+au.com.ninenow.ctv                  # 9Now
+au.net.abc.iview                    # ABC iview
+com.swm.live                        # 7plus
+com.apple.atve.sony.appletv         # Apple TV app
+com.google.android.videos           # Google TV movies (purchases in it become unreachable)
+com.google.android.play.games
+com.sony.dtv.hbbtvplayer            # HbbTV / red button
+com.google.android.tts              # text-to-speech: TalkBack and read-aloud stop working
