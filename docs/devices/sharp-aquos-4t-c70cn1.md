@@ -12,21 +12,22 @@ This is **not a debloat list** and not a tested list of any kind. Packages have 
 unit, but not through the process the [TV list workflow](../workflows/tv-list.md) asks for, so nothing
 below is offered as one.
 
-**Provenance of the identity block.** The set was in standby for this pass — `adb connect` to its LAN
-address timed out and the panel was not woken, because turning the TV on needs the owner's permission.
-The build and property values below are from a full `getprop` dump taken on this same unit over ADB on
-**2026-10-30 21:55 JST**, kept with the owner's change log; they were not re-read on 2026-11-01.
-Anything that needed the screen or a live shell that day is listed under
-[what was not tested](#what-was-not-tested) instead of guessed at.
+**Provenance of the identity block.** The set did not answer for this pass: `adb connect` to its LAN
+address timed out, ping lost 100 % of two packets, and 5555, 6466 and 6467 came back filtered, so it is
+described here as being in standby — an inference from those three results, not a reading of the panel.
+It was not woken and no command ran on it. The build and property values below are from a full `getprop`
+dump taken on this same unit over ADB on **2026-10-30 21:55 JST**, kept with the owner's change log;
+they were not re-read on 2026-11-01. Anything that needed the screen or a live shell that day is listed
+under [what was not tested](#what-was-not-tested) instead of guessed at.
 
 | Field | Observed value |
 |---|---|
-| Retail model / Android model | `4T-C70CN1` on the set / `ro.product.model=AQUOS-TVJ19` |
+| Retail model / Android model | `4T-C70CN1` (owner's change record) / `ro.product.model=AQUOS-TVJ19` |
 | Product device / name / board | `tcmeruj` / `tcmeruj` / `balto`, `ro.board.platform=mt5893` (MediaTek MT5598) |
 | Android / API | `10` / `29` |
 | Build | `ro.build.display.id=55200Q QTG3.210505.001`, built `Tue Jul 25 02:30:49 JST 2023` |
 | Fingerprint | `SHARP/tcmeruj/tcmeruj:10/QTG3.210505.001/20230725:user/release-keys` (user, release-keys) |
-| Characteristics | `nosdcard,tv` — no SD slot, so there is no removable storage to move apps or media to |
+| Characteristics | `nosdcard,tv` — the build declares no SD card slot; this says nothing about USB storage |
 | Application ABI | `armeabi-v7a` only (`abilist32=armeabi-v7a,armeabi`, `abilist64` empty): sideloads must be 32-bit |
 | RAM | `MemTotal: 3027948 kB` (about 2.9 GB), `MemAvailable: 893844 kB` at capture |
 | `/data` | `/dev/block/mmcblk0p37` 9,080,192 KB, 89 % used before the owner's changes |
@@ -50,8 +51,9 @@ Anything that needed the screen or a live shell that day is listed under
 [ro.adb.secure]: [1]
 ```
 
-`abilist64` is empty: the userspace is 32-bit only, and that is the one value that decides whether an
-APK will install.
+`abilist64` is empty: the userspace is 32-bit only, so an APK has to carry `armeabi-v7a` or be
+universal. That is not the only thing that decides an install — density, `minSdk` and a matching
+signature decide it too.
 
 ## The tuner is Sharp's app, and `live_tv_package` has to say so
 
@@ -62,31 +64,38 @@ The launcher's default names MediaTek's TV centre:
 <string name="live_tv_package" translatable="false">com.mediatek.wwtv.tvcenter</string>
 ```
 
-That package is **not installed on this set**. `pm list packages` on 2026-10-30 lists the MediaTek
-pieces this firmware does keep — `com.mediatek.tvinput`, `com.mediatek.tunerservice`,
+That package is **not installed on this set**. The 2026-10-30 capture of `pm list packages` lists the
+MediaTek pieces this firmware does keep — `com.mediatek.tvinput`, `com.mediatek.tunerservice`,
 `com.mediatek.wwtv.mediaplayer`, `com.mediatek.tvinputservice.arbitratorservice` — and no
 `com.mediatek.wwtv.tvcenter`. The tuner app is Sharp's:
 
 ```text
-$ adb shell pm list packages | grep -E "aquostvapp|tvinput|tunerservice"
-package:jp.co.sharp.av.android.aquostvapp
-package:jp.co.sharp.av.android.dtvinputtif
+# these ten lines, in this order, out of 176: `pm list packages` on this set, 2026-10-30
 package:jp.co.sharp.av.android.uhdtvinputtif
 package:com.mediatek.tvinput
+package:jp.co.sharp.av.android.aquostvapp
+package:com.mediatek.backgrounddetection
+package:com.mediatek.wwtv.mediaplayer
 package:com.mediatek.tunerservice
+package:com.mediatek.tvinputservice.arbitratorservice
+package:com.mediatek.network
+package:com.mediatek.tv.agent
+package:jp.co.sharp.av.android.dtvinputtif
 ```
 
 `dtvinputtif` and `uhdtvinputtif` are the TV input framework providers behind the terrestrial and 4K
-tuner rows, which is what the Inputs menu reads; `aquostvapp` is the app the Live TV row launches.
+tuner rows — an inference from the package names, since `dumpsys tv_input` never ran on this set — and
+`aquostvapp` is the app the Live TV row launches.
 This unit's build sets the key to it (the checkout the APK for this set was built from):
 
 ```xml
+<!-- the owner's build checkout, 2026-10-30 -->
 <string name="live_tv_package" translatable="false">jp.co.sharp.av.android.aquostvapp</string>
 ```
 
-The same key is set on the sibling [4T-C43DL1](../../examples/sharp-4t-c43dl1/config.json)
-(`AQUOS-TVJ21-2`, Android TV 11) of the same Sharp platform, whose note records that the Inputs menu
-then "lists HDMI 1-4 and 入力5 through the TV input framework and switches without extra config".
+The same key is set on the sibling [4T-C43DL1](../../examples/sharp-4t-c43dl1/debloat.txt)
+(`AQUOS-TVJ21-2`, Android TV 11) of the same Sharp platform, whose debloat list records that the Inputs
+menu then "lists HDMI 1-4 and 入力5 through the TV input framework and switches without extra config".
 
 `live_tv_package` is also a theme key: a `config.json` pushed with `tools/theme.sh` overlays
 `config.xml`, so a theme written for another family and carrying the MediaTek default wins over the
@@ -108,11 +117,12 @@ private Intent liveTvIntent() {
 ```
 
 With a package that is not installed, both branches return null, so the Inputs menu simply has no Live
-TV row. The Inputs pill itself survives as long as there is something else to list —
-`updateInputsButton()` keeps it visible for a `live_tv_action`, a source panel, or any non-hidden
-passthrough input from `TvInputManager`, and this set has HDMI ports — so the failure is quiet: an
-Inputs menu that opens onto HDMI 1–4 and the aerial set, with the tuner missing from it. That degraded
-state was **not** seen on this unit; the key was already corrected when the launcher was built for it.
+TV row. The Inputs pill stays visible when `liveTvIntent() != null`, when `sourcePanelService` is set,
+when the Coocaa source list is non-empty, or when any non-hidden passthrough input comes back from
+`TvInputManager` (`MainActivity.java:3129`, `:3134`-`:3145`); `live_tv_action` is not a visibility
+condition, and this set has HDMI ports, so the failure is quiet: an Inputs menu that opens onto the HDMI ports it
+finds and the aerial set, with the tuner missing from it. That degraded state was **not** seen on this unit;
+the key was already corrected when the launcher was built for it.
 A set whose tuner app also declares no `LEANBACK_LAUNCHER` entry needs `live_tv_action` as well, as the
 [Changhong 58D4P](changhong-58d4p.md) note shows; whether `aquostvapp` declares one was not checked
 here, because the key works and the resolve call was not run against the set.
@@ -140,8 +150,8 @@ this note either.
 `dumpsys tv_input` / `cmd tv_input` output was **not captured** on this unit, so this note does not
 publish a source list. What the package inventory says is that the inputs come from the TV input
 framework providers above (`dtvinputtif`, `uhdtvinputtif`, `com.mediatek.tvinput`) rather than from a
-vendor source-panel service, which is why the launcher's Inputs menu works on this family at all — it
-reads `TvInputManager`, so a set with the tuner correctly named needs no `source_panel_*` key. The
+vendor source-panel service, and the launcher reads `TvInputManager`, so a set with the tuner correctly
+named should need no `source_panel_*` key — plausible for this family, not measured on this set. The
 command to settle the list is:
 
 ```text
@@ -149,19 +159,25 @@ $ adb shell dumpsys tv_input
 ```
 
 One consequence worth knowing before testing it: the Inputs pill is hidden outright when the list would
-be empty (`updateInputsButton()`), so "no Inputs button" on a Sharp set is a symptom of a wrong
-`live_tv_package` plus no HDMI, not of the pill being switched off.
+be empty (`updateInputsButton()`), so "no Inputs button" on a Sharp set is most often a wrong
+`live_tv_package` with no HDMI source to fall back on; `show_inputs_pill=false` hides the pill at the
+same place and looks identical (`MainActivity.java:3130`-`:3132`, default `true` at `config.xml:349`,
+themable through `Config.java:573`), so check that key before blaming the tuner.
 
 ## Module cards and the card prompt
 
 Nothing about module cards was observed on this set in this pass; the mechanism is the repository's,
-not Sharp's. With `module_cards` on (the default), an app that declares a
-`com.gathin.tvhome.card` meta-data is offered **once** as a card and the owner answers Show or Hide on
-the TV; a Hide is remembered, and the same card key later re-asks only if its `card_key` changes. A
-card whose label or caption repeats a name the launcher already uses (or an input name such as HDMI) is
-dropped rather than prompted for, and `logcat -s TvHomeCards` prints one line per rejection. The
-contract is [`docs/specs/card.md`](../specs/card.md) and the short version is
-[`docs/modules.md`](../modules.md).
+not Sharp's. With `module_cards` on (the default), an app that declares a `com.gathin.tvhome.card`
+meta-data on an activity that also carries a `MAIN` + `DOCK_CARD` filter is offered **once** as a card
+and the owner answers Show or Hide on the TV; a Hide is remembered. The decision is keyed on package +
+signer digest + folded label (`Cards.java:312`-`:317`, [`card.md`](../specs/card.md) §3-5), so it
+survives an update that changes neither, and the same card re-asks when either the signer or the label
+changes. The `DOCK_CARD` category is what discovery queries by, so a card without it is never seen at
+all (`card.md:24`). Reserved names — the launcher's own UI names and the input names `HDMI*` and `AV` —
+are enforced on the **label**, not the caption (`Cards.java:325`); captions are checked only for
+length, characters, resource references and the words `verified`/`official` (`Cards.java:452`-`:459`),
+and `logcat -s TvHomeCards` prints one line per rejection. The contract is
+[`docs/specs/card.md`](../specs/card.md) and the short version is [`docs/modules.md`](../modules.md).
 
 ## What was not tested
 
