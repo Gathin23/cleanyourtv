@@ -27,8 +27,8 @@
 # examples/sony-bravia-4k-vh21 units): cmd package set-home-activity prints Success and changes nothing on this
 # unit, so launcher/build-and-install.sh with STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 (on Windows
 # launcher/build-and-install.ps1 -StockLauncher none -HomeKeyService: parameters, not environment variables)
-# ends on its Home check before it enables the helper; HomeKeyService was then enabled the way the script's
-# enable_service does, with stock_home_redirect com.google.android.apps.tv.launcherx in config.xml. The
+# ends on its Home check before it enables the helper; HomeKeyService was then enabled by hand, the same
+# settings the script writes, with stock_home_redirect com.google.android.apps.tv.launcherx in config.xml. The
 # screensaver ships as dreamx's Backdrop, so livingfit went with no screensaver change. Reboot-checked twice:
 # nothing came back on, power-on lands on the new Home with the helper bound, and the real remote's Home button
 # opens it from inside an app. Same-day test, not lived with for days yet.
