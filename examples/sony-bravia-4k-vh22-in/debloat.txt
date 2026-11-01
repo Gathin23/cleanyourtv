@@ -1,7 +1,9 @@
 # Sony BRAVIA 4K VH22 (2023 4K LED, device BRAVIA_VH22, MediaTek MT5835, modelgroup SONYANDROIDTV2023M5),
 # India retail, firmware region BRAVIA_VH22_M_PA (preloads mix Indian and South-East Asian apps)
 # Android 12 (Google TV, API 31), build STT2.230505.001.S136/682241, 3 GB RAM
-# Same India firmware as examples/sony-kd-65x82l (KD-65X82L/KD-55X82L) and the same build tag as the EU
+# A different retail model from the KD-65X82L/KD-55X82L sets: sold as its own line, BRAVIA 4K VH22
+# (ro.sony.device "BRAVIA 4K VH22", ro.product.model BRAVIA_VH22), so it keeps its own folder. Same India
+# firmware as examples/sony-kd-65x82l (KD-65X82L/KD-55X82L) and the same build tag as the EU
 # examples/sony-kd-43x80l and docs/devices/sony-bravia-4k-vh22-settings-key.md; the preloads differ. This
 # family-level list adds the HbbTV suite, the Jio/miniTV preloads and the full 13-package B2B suite.
 #
