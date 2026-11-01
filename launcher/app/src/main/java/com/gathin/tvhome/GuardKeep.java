@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.PowerManager;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -35,8 +36,8 @@ final class GuardKeep {
     }
 
     static boolean offInStandby(Context context) {
-        UserManager users = context.getSystemService(UserManager.class);
-        if (users != null && !users.isUserUnlocked()) return false;
+        UserManager users = PortCompat.userManager(context); // PORT CHANGE: getSystemService(Class) needs API 23
+        if (!PortCompat.userUnlocked(users)) return false; // PORT CHANGE: isUserUnlocked needs API 24
         return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(KEY_OFF, false);
     }
 
@@ -50,9 +51,11 @@ final class GuardKeep {
         // that arrives after that, so the first screen-off does nothing (Philips 65PUS8102).
         HomeKeyService.applyStandbyOptIn();
         if (!offInStandby(context)) return;
-        if (context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
+        // PORT CHANGE: checkSelfPermission needs API 23; skip the check on older runtimes.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS)
                 != PackageManager.PERMISSION_GRANTED) return;
-        PowerManager power = context.getSystemService(PowerManager.class);
+        PowerManager power = PortCompat.powerManager(context); // PORT CHANGE
         // Still off: binding the helper again would sit on the power key. Wait for the screen.
         if (power != null && !power.isInteractive()) {
             watchScreenOn(context.getApplicationContext());
@@ -86,7 +89,9 @@ final class GuardKeep {
     /** Drops the service from the list and puts it back on the next SCREEN_ON. The process has to stay up. */
     static void stepOut(AccessibilityService service) {
         watchScreenOn(service.getApplicationContext());
-        service.disableSelf();
+        // PORT CHANGE: disableSelf needs API 24; stopSelf is the closest older equivalent.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) service.disableSelf();
+        else service.stopSelf();
     }
 
     private static void watchScreenOn(Context app) {

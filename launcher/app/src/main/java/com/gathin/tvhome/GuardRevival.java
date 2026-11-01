@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.os.Build;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserManager;
@@ -19,8 +20,8 @@ public class GuardRevival extends NotificationListenerService {
 
     @Override
     public void onListenerConnected() {
-        UserManager users = getSystemService(UserManager.class);
-        if (users != null && !users.isUserUnlocked()) {
+        UserManager users = PortCompat.userManager(this); // PORT CHANGE
+        if (!PortCompat.userUnlocked(users)) { // PORT CHANGE: isUserUnlocked needs API 24
             if (unlocked != null) return;
             unlocked = new BroadcastReceiver() {
                 @Override
@@ -30,7 +31,7 @@ public class GuardRevival extends NotificationListenerService {
                 }
             };
             registerReceiver(unlocked, new IntentFilter(Intent.ACTION_USER_UNLOCKED));
-            if (users.isUserUnlocked()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && users.isUserUnlocked()) { // PORT CHANGE
                 stopWaiting();
                 GuardKeep.ensureHomeKey(this);
             }

@@ -39,7 +39,16 @@ final class WallpaperCaptions {
         File file = folder == null ? null : new File(folder, FILE_NAME);
         if (file == null || !file.isFile() || file.length() > 256 * 1024) return Collections.emptyMap();
         try {
-            return parse(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
+            // PORT CHANGE: java.nio.file.Files is desugared, but a plain reader avoids the dependency.
+            java.util.List<String> lines = new java.util.ArrayList<>();
+            java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(new java.io.FileInputStream(file), StandardCharsets.UTF_8));
+            try {
+                for (String line; (line = reader.readLine()) != null;) lines.add(line);
+            } finally {
+                reader.close();
+            }
+            return parse(lines);
         } catch (Exception e) {
             return Collections.emptyMap();
         }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PORT CHANGE: android:drawableTint needs API 23, so the pill styles re-add it here. -->
+<resources>
+    <style name="TopButtonBase">
+        <item name="android:drawableTint">@drawable/pill_text</item>
+    </style>
+</resources>

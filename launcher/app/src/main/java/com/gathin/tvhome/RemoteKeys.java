@@ -361,7 +361,7 @@ final class RemoteKeys {
         switch (target) {
             case "mute":
                 // The media stream a TV plays everything on, with its own volume bar, as a remote's mute button would.
-                AudioManager audio = ctx.getSystemService(AudioManager.class);
+                AudioManager audio = PortCompat.audioManager(ctx); // PORT CHANGE
                 if (audio != null) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
                         AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
                 break;
