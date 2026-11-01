@@ -4367,6 +4367,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             isSolatScreensaver[0] = !isSolatScreensaver[0];
             String nextType = isSolatScreensaver[0] ? "solat" : "clock";
             choices.edit().putString("screensaver_type", nextType).apply();
+            tryConfigureScreensaverComponent();
             return "Screensaver: " + (isSolatScreensaver[0] ? "Countdown Solat" : "Clocks");
         });
 
@@ -4487,8 +4488,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Throwable ignored) {}
     }
 
+    public void tryConfigureScreensaverComponent() {
+        try {
+            android.provider.Settings.Secure.putString(getContentResolver(), "screensaver_components", getPackageName() + "/.ClockDream");
+            android.provider.Settings.Secure.putInt(getContentResolver(), "screensaver_enabled", 1);
+        } catch (Throwable ignored) {}
+    }
+
     private void checkAndPromptDefaultLauncher() {
         trySilentSetDefaultLauncher();
+        tryConfigureScreensaverComponent();
         if (isDefaultLauncher()) return;
         SharedPreferences prefs = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         boolean promptDismissed = prefs.getBoolean("default_launcher_prompt_dismissed", false);

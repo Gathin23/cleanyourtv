@@ -31,6 +31,11 @@ if [ -n "$CONNECTED_DEVICE" ]; then
     echo "Setting Norma Launcher as default home launcher..."
     adb -s "$CONNECTED_DEVICE" shell cmd package set-home-activity --user 0 com.norma.tvlauncher/.MainActivity 2>/dev/null || true
     
+    # Configure Norma Launcher as default screensaver
+    echo "Setting Norma Launcher as default screensaver..."
+    adb -s "$CONNECTED_DEVICE" shell settings put secure screensaver_components com.norma.tvlauncher/.ClockDream 2>/dev/null || true
+    adb -s "$CONNECTED_DEVICE" shell settings put secure screensaver_enabled 1 2>/dev/null || true
+
     # Enable accessibility service for Home Key remote interception
     echo "Configuring remote Home key handler..."
     adb -s "$CONNECTED_DEVICE" shell settings put secure enabled_accessibility_services com.norma.tvlauncher/.HomeKeyService 2>/dev/null || true
