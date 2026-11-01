@@ -45,7 +45,7 @@ com.mitv.toolhouse
 
 # Background Xiaomi daemons and updaters
 com.xiaomi.mitv.tvmanager
-com.xiaomi.mitv.updateservice
+# com.xiaomi.mitv.updateservice    # kept on: firmware updates (this set had it off)
 # com.mitv.upgrader                # kept on: the TV's firmware updater (this set had it off)
 com.mitv.ABUpdateStatus
 com.xiaomi.mitv.manualhelp
