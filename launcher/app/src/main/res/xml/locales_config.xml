@@ -33,6 +33,7 @@
     <locale android:name="nl" />
     <locale android:name="uz" />
     <locale android:name="uk" />
+    <locale android:name="ja" />
     <locale android:name="ko" />
     <locale android:name="da" />
     <locale android:name="sv" />
