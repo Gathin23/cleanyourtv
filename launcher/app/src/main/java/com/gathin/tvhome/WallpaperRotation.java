@@ -82,6 +82,14 @@ final class WallpaperRotation {
         return ORDER_SEQUENTIAL.equals(order) ? next(images, previous) : pick(images, previous, random);
     }
 
+    private static final int[] BUTTON_MINUTES = {1, 5, 10, 15, 30, 60, 120, 240, 720, 1440};
+
+    /** wallpaper_button: the next longer interval on offer, back to the shortest after the longest. */
+    static int nextMinutes(int now) {
+        for (int minutes : BUTTON_MINUTES) if (minutes > now) return minutes;
+        return BUTTON_MINUTES[0];
+    }
+
     static boolean due(long previous, long now, long interval) {
         // The minute tick is a Handler postDelayed, so it drifts by tens of milliseconds and often lands a few
         // hundred short of the interval. Compared exactly, that pass is skipped and the picture waits a whole

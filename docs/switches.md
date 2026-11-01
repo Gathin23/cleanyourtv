@@ -55,6 +55,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `library_ok_opens` | <img src="switches/library_ok_opens.jpg" width="320" alt="library_ok_opens on a TV"> |
 | `library_excluded_apps` | <img src="switches/library_excluded_apps.png" width="320" alt="library_excluded_apps on a TV: a CANDY Android TV DVB2K's App library catalogue, factory-menu packages excluded"> |
 | `date_below_clock` | <img src="switches/date_below_clock.jpg" width="320" alt="date_below_clock on a TV"> |
+| `wallpaper_button` | <img src="switches/wallpaper_button.jpg" width="320" alt="wallpaper_button: its menu open under the top bar button"> |
 | `locale` | <img src="switches/locale.jpg" width="320" alt="locale set to en on a TV whose system language is Vietnamese"> |
 | `power_on_home` | <img src="switches/power_on_home.jpg" width="320" alt="power_on_home on a TV"> |
 | `home_long_press_home` | <img src="switches/home_long_press_home.jpg" width="320" alt="home_long_press_home on a TV"> |

@@ -790,6 +790,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> openNetworkPill());
         btnVpn.setOnClickListener(v -> openVpnPill());
+        View btnWallpaper = findViewById(R.id.btnWallpaper);
+        btnWallpaper.setOnClickListener(this::showWallpaperMenu);
+        btnWallpaper.setVisibility(cfg.wallpaperButton && wallpaperPlayer.count() > 1 ? View.VISIBLE : View.GONE);
         btnWifi.setOnLongClickListener(v -> {
             open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
             return true;
@@ -883,12 +886,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
+        btnWallpaper.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
         btnLibraryTop.setOnKeyListener(pillKeys);
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
-            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnWallpaper, btnReorder, btnLibraryTop, btnSettings));
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -3511,6 +3515,49 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static void fold(View view, List<View> folded) {
         view.setVisibility(View.GONE);
         folded.add(view);
+    }
+
+    /** wallpaper_button's menu. Stays open while you press its rows, so Next can be pressed until the right picture is up. */
+    private void showWallpaperMenu(View anchor) {
+        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        PopupWindow popup = glassPopup(panel, (int) (290 * density));
+        View next = addWallpaperRow(rows, R.drawable.ic_picture);
+        ((TextView) next.findViewById(R.id.title)).setText(R.string.wallpaper_next);
+        next.setOnClickListener(v -> wallpaperPlayer.next());
+        View still = addWallpaperRow(rows, R.drawable.ic_lock);
+        View every = addWallpaperRow(rows, R.drawable.ic_settings);
+        Runnable labels = () -> {
+            ((TextView) still.findViewById(R.id.title)).setText(getString(R.string.wallpaper_static,
+                    getString(wallpaperPlayer.isStatic() ? R.string.on : R.string.off)));
+            ((TextView) every.findViewById(R.id.title)).setText(getString(R.string.wallpaper_every,
+                    minutesLabel(wallpaperPlayer.minutes())));
+            every.setAlpha(wallpaperPlayer.isStatic() ? 0.45f : 1f);
+        };
+        labels.run();
+        still.setOnClickListener(v -> {
+            wallpaperPlayer.setStatic(!wallpaperPlayer.isStatic());
+            labels.run();
+        });
+        every.setOnClickListener(v -> {
+            wallpaperPlayer.setMinutes(WallpaperRotation.nextMinutes(wallpaperPlayer.minutes()));
+            labels.run();
+        });
+        dropIn(popup, panel, anchor, Gravity.END);
+        next.requestFocus();
+    }
+
+    private View addWallpaperRow(LinearLayout rows, int iconRes) {
+        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
+        ((ImageView) row.findViewById(R.id.icon)).setImageResource(iconRes);
+        row.findViewById(R.id.status).setVisibility(View.GONE);
+        row.findViewById(R.id.dot).setVisibility(View.GONE);
+        rows.addView(row);
+        return row;
+    }
+
+    private static String minutesLabel(int minutes) {
+        return minutes >= 60 ? minutes / 60 + " h" : minutes + " min";
     }
 
     private PopupWindow glassPopup(View panel, int width) {

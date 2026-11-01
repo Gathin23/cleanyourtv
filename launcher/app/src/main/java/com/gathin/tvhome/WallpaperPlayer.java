@@ -35,7 +35,10 @@ final class WallpaperPlayer {
     private final ImageView image;
     private final int backgroundColor;
     private final List<File> files;
-    private final long interval;
+    private long interval;
+    /** wallpaper_button's choices, kept across restarts: stay on this picture, and minutes between changes. */
+    private static final String STATIC_KEY = "static", MINUTES_KEY = "minutes";
+    private boolean staticPicture;
     private final String order;
     private final SharedPreferences preferences;
     private final ExecutorService decoder = Executors.newSingleThreadExecutor();
@@ -72,6 +75,11 @@ final class WallpaperPlayer {
         dimColor = config.wallpaperDim > 0 ? (config.wallpaperDim * 255 / 100) << 24 : 0;
         order = config.wallpaperOrder;
         preferences = context.getSharedPreferences("wallpaper_rotation", Context.MODE_PRIVATE);
+        if (config.wallpaperButton) {
+            staticPicture = preferences.getBoolean(STATIC_KEY, false);
+            int minutes = preferences.getInt(MINUTES_KEY, 0);
+            if (minutes > 0) interval = minutes * 60_000L;
+        }
         moods = config.wallpaperMoods;
         latitude = moods.isEmpty() ? "" : context.getString(R.string.latitude);
         longitude = moods.isEmpty() ? "" : context.getString(R.string.longitude);
@@ -172,11 +180,44 @@ final class WallpaperPlayer {
         List<File> playable = playable();
         File selected = WallpaperRotation.find(playable, previous);
         long changed = preferences.getLong("changed", 0);
-        if (selected == null || WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
+        if (selected == null || !staticPicture && WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
             selected = WallpaperRotation.pick(playable, previous, order, random);
         }
         if (selected == null || selected.getName().equals(displayed)) return;
-        File next = selected;
+        load(selected, previous, changed);
+    }
+
+    /** wallpaper_button: the next picture now, static or not. */
+    void next() {
+        if (!active || closed || loading || files.size() < 2) return;
+        String previous = preferences.getString("image", "");
+        File selected = WallpaperRotation.pick(playable(), previous, order, random);
+        if (selected != null && !selected.getName().equals(displayed)) load(selected, previous, 0);
+    }
+
+    int count() {
+        return files.size();
+    }
+
+    boolean isStatic() {
+        return staticPicture;
+    }
+
+    void setStatic(boolean on) {
+        staticPicture = on;
+        preferences.edit().putBoolean(STATIC_KEY, on).apply();
+    }
+
+    int minutes() {
+        return (int) (interval / 60_000L);
+    }
+
+    void setMinutes(int minutes) {
+        interval = minutes * 60_000L;
+        preferences.edit().putInt(MINUTES_KEY, minutes).apply();
+    }
+
+    private void load(File next, String previous, long changed) {
         loading = true;
         decoder.execute(() -> {
             Bitmap bitmap = decode(next);
