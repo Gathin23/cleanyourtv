@@ -307,6 +307,11 @@ you do.
   survives. This is the only configuration that has both, and the price is the stock home screen the
   cleanup was replacing.
 
+- **Keep both with a log reader that starts by itself.** On a G10 the buttons came back with no key filter
+  bound: an accessibility service that filters nothing reads the window manager's key log (`READ_LOGS`) and
+  opens the app, and the system binds it again after each boot. See
+  [`tcl-g10-app-keys.md`](tcl-g10-app-keys.md); it was not tried on this G09.
+
 - **Keep both with a listener you start by hand.** A script run by the `shell` user can answer the app
   buttons without any service bound, so the ramp stays; see "Both at once" below. It does not come back
   after a reboot, so it is started again each time.
