@@ -1,0 +1,70 @@
+# Jio STB C200A (Jio, product 4KOTTSTB, device MSTB, Amlogic), 2 GB RAM
+# AOSP Android 11 (SDK 30), build JioSTB-JMSC200A-23.1.11, 32-bit (armeabi-v7a)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/jio-stb-c200a/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/jio-stb-c200a/debloat.txt com.iwedia.ui.rjio.launcher.reliance
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.iwedia.ui.rjio.launcher.reliance (Iwedia, Reliance build). It is not in the list:
+# launcher/build-and-install.sh disables it once the new launcher has taken Home, and restore.sh brings it
+# back, so the handover stays in one place.
+# Live TV app: com.jio.stb.catv, the streaming engine behind the tuner input, with
+# com.jio.media.stb.ondemand.patchwall (JioTV+); both are kept.
+#
+# Kept on purpose (load-bearing, checked with dumpsys package):
+#   com.jio.media.stb.ondemand.patchwall   JioTV+ app and live guide
+#   com.jio.stb.catv                       live/streaming engine behind the tuner input
+#   com.media.jio.sso.stb                  Jio single sign-on; keeps JioTV+ and JioCinema logins valid
+#   com.jio.dialserver                     DIAL, so a phone can cast to the box
+#   com.jio.remote.btserver                Bluetooth remote driver
+#   com.jio.universalsetup                 IR setup; the remote's volume and power keys drive the TV
+#   com.rjil.jio.stb.commandreceiver       remote input events
+#   com.rjl.mobileremote.receiver          JioHome phone-remote receiver
+#   com.android.app.jio.voiceassist        remote mic and voice search
+#   com.jio.stbwidget                      launcher icon popups
+#   com.jio.sdk, com.jio.overlay.common, com.jio.stb.*.overlay   shared vendor framework
+#
+# The firmware updater (com.jio.httpupdate), the USB updater and the TR-069 remote-management client
+# (com.jio.tr069client) are the only ways Jio can push firmware or turn the packages below back on. They
+# stay commented out by default; this box's own guide uncomments them to freeze automatic updates.
+#
+# Applied on a real unit on 2026-11-01, on build JioSTB-JMSC200A-23.1.11, as `pm uninstall --user 0`; the
+# lines below are the same set written as disable.sh's reversible `pm disable-user`, and the states were read
+# back with `dumpsys package`. Live TV, casting and the remote kept working. Not yet lived with for days.
+#
+# Known quirks on this firmware:
+# - com.jio.appoptimizer is a PERSISTENT privileged system app (/system/priv-app/JioAppOptimizer).
+#   `pm disable-user` marks it disabled, but its running process is exempt from `am force-stop` and keeps
+#   killing background apps until the box restarts; reboot once after the list for it to take effect.
+# - Port 5555 opens as soon as USB/Network debugging is on, no pairing. The box also advertises _adb._tcp
+#   over mDNS, the quickest way to find it when DHCP moves it.
+# - Jio enables ADB through its TR-069 server, not Developer options alone, and a factory reset closes it
+#   again (this box's guide has the direct-Ethernet procedure).
+
+# Jio ads, telemetry and tracking
+com.jio.stbadservice
+com.jio.systemstats
+com.rjil.podlogservice
+com.jio.adc.aka
+com.jio.adc.embedded
+com.jio.bioscopecontentservice
+
+# Background daemons and task killers
+com.jio.smartmemorymanager            # aggressive background task killer
+com.jio.appoptimizer                  # aggressive background task killer; PERSISTENT, needs a reboot
+com.jio.backgroundscheduler           # periodic telemetry wake-up daemon
+com.jio.stb.remotediagnose            # remote diagnostics daemon
+com.jiostb.inactivitytimer            # inactivity timeout timer
+
+# Jio store and preloads nobody asked for
+com.jio.store                         # Jio App Store; Aurora Store or Universal Installer replace it
+com.aksys.jiogamepad                  # gamepad helper
+com.jio.screensaver                   # Jio promo screensaver; replaced by the launcher's Clock screensaver
+
+# Off by choice, and not applied on the reference unit (uncomment to use)
+# com.iwedia.ui.rjio.launcher.reliance   # stock Home; launcher/build-and-install.sh does the handover
+# com.jio.httpupdate                     # FOTA updater; uncomment to freeze firmware updates
+# com.jio.usbupdate                      # USB firmware updater
+# com.jio.tr069client                    # TR-069 remote management; uncomment to stop Jio's remote push
+# com.jiostb.fti                         # first-time setup; disable after setup has run
+# com.rjil.jiostbsetting                 # Jio's settings app; a third-party Home may need it for its menus
