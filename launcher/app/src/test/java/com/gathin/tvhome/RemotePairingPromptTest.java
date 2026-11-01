@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -18,5 +19,20 @@ public class RemotePairingPromptTest {
         // External physical DPAD/keyboard/gamepad counts as a remote/controller
         assertTrue(MainActivity.isRemoteOrKeyboard(0x00000201, true, false));
         assertTrue(MainActivity.isRemoteOrKeyboard(0x00000101, true, false));
+    }
+
+    @Test
+    public void checksOnlyOncePerKnownBoot() {
+        assertTrue(RemotePairingPrompt.due(12, -1));
+        assertTrue(RemotePairingPrompt.due(12, 11));
+        assertFalse(RemotePairingPrompt.due(12, 12));
+        assertFalse(RemotePairingPrompt.due(-1, -1));
+    }
+
+    @Test
+    public void gracePeriodAccountsForTimeSinceFirstCheck() {
+        assertEquals(30_000L, RemotePairingPrompt.remainingDelay(10_000L, 10_000L));
+        assertEquals(20_000L, RemotePairingPrompt.remainingDelay(10_000L, 20_000L));
+        assertEquals(0L, RemotePairingPrompt.remainingDelay(10_000L, 40_000L));
     }
 }

@@ -11,6 +11,8 @@
 # config.xml. Stock launcher: com.google.android.tvlauncher (the scripts' default).
 #
 # Notes from this box:
+# - Optional launcher configuration and the remote-pairing prompt's limits are in README.md and config.json;
+#   the debloat list does not apply either file.
 # - Leave alone: com.xiaomi.android.tvsetup.partnercustomizer (receives the remote's shortcut buttons as
 #   GLOBAL_BUTTON, and runs the remote-pairing steps of setup), mitv.service (Xiaomi TvServer, persistent),
 #   com.google.android.tungsten.setupwraith (remote pairing), com.droidlogic* (Amlogic system, Bluetooth).

@@ -309,7 +309,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     };
     /** prompt_remote_pairing: prompt to pair a remote if no external input device is connected. */
     private boolean promptRemotePairing;
-    private boolean remotePairingPrompted;
+    private int remotePairingCheckBoot = -1;
+    private final Runnable remotePairingCheck = this::runRemotePairingCheck;
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
     private Set<String> hiddenApps = Collections.emptySet();
     /** library_excluded_apps: packages the App library catalogue never offers. */
@@ -1125,7 +1126,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 break;
         }
         if (openLiveTvAfterBoot()) return;
-        if (checkRemotePairingPrompt()) return;
+        checkRemotePairingPrompt();
         updateGreeting();
         updatePanel();
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
@@ -1318,6 +1319,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RemoteKeys.release(this);
         cancelHoldOk();
         root.removeCallbacks(showIdleClock);
+        handler.removeCallbacks(remotePairingCheck);
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
         stopAmbientAnimation();
@@ -3302,15 +3304,55 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     /**
-     * When prompt_remote_pairing is on (config.xml / theme), checks whether any physical external
-     * remote, keyboard, or gamepad is connected. If none is found, launches the system remote pairing wizard.
-     * Only prompts once per session to avoid looping if the user dismisses the pairing screen.
+     * Wait for input devices to settle on the first Home of each boot. The result is saved by boot count,
+     * so an activity/process restart cannot turn a temporary startup gap into another pairing prompt.
      */
-    private boolean checkRemotePairingPrompt() {
-        if (!promptRemotePairing || remotePairingPrompted) return false;
-        remotePairingPrompted = true;
-        if (hasConnectedRemoteOrKeyboard()) return false;
-        return launchRemotePairingWizard();
+    private void checkRemotePairingPrompt() {
+        if (!promptRemotePairing) return;
+        int boot = OpenOnStart.boot(this);
+        SharedPreferences prefs = getSharedPreferences(OpenOnStart.BOOT_PREFS, MODE_PRIVATE);
+        if (!RemotePairingPrompt.due(boot, prefs.getInt(RemotePairingPrompt.CHECKED_BOOT_KEY, -1))) return;
+        if (hasConnectedRemoteOrKeyboard()) {
+            markRemotePairingChecked(prefs, boot);
+            return;
+        }
+
+        int startedBoot = prefs.getInt(RemotePairingPrompt.STARTED_BOOT_KEY, -1);
+        long startedAt = prefs.getLong(RemotePairingPrompt.STARTED_UPTIME_KEY, -1L);
+        if (startedBoot != boot || startedAt < 0L) {
+            startedAt = SystemClock.elapsedRealtime();
+            if (!prefs.edit()
+                    .putInt(RemotePairingPrompt.STARTED_BOOT_KEY, boot)
+                    .putLong(RemotePairingPrompt.STARTED_UPTIME_KEY, startedAt)
+                    .commit()) {
+                return;
+            }
+        }
+
+        remotePairingCheckBoot = boot;
+        handler.removeCallbacks(remotePairingCheck);
+        handler.postDelayed(remotePairingCheck,
+                RemotePairingPrompt.remainingDelay(startedAt, SystemClock.elapsedRealtime()));
+    }
+
+    private void runRemotePairingCheck() {
+        int boot = OpenOnStart.boot(this);
+        if (boot != remotePairingCheckBoot) return;
+        SharedPreferences prefs = getSharedPreferences(OpenOnStart.BOOT_PREFS, MODE_PRIVATE);
+        if (!RemotePairingPrompt.due(boot, prefs.getInt(RemotePairingPrompt.CHECKED_BOOT_KEY, -1))) return;
+        if (hasConnectedRemoteOrKeyboard()) {
+            markRemotePairingChecked(prefs, boot);
+            return;
+        }
+        if (markRemotePairingChecked(prefs, boot)) launchRemotePairingWizard();
+    }
+
+    private boolean markRemotePairingChecked(SharedPreferences prefs, int boot) {
+        return prefs.edit()
+                .putInt(RemotePairingPrompt.CHECKED_BOOT_KEY, boot)
+                .remove(RemotePairingPrompt.STARTED_BOOT_KEY)
+                .remove(RemotePairingPrompt.STARTED_UPTIME_KEY)
+                .commit();
     }
 
     static boolean isRemoteOrKeyboard(int sources, boolean isExternal, boolean isVirtual) {
