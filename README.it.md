@@ -36,7 +36,7 @@ tracciamento, passo per passo con il telecomando: [cleanyour.tv/not-android](htt
 |---|---|
 | **Una Android TV o una Google TV** | [Avvio rapido](#avvio-rapido): un assistente di programmazione fa il lavoro in una quindicina di minuti. |
 | **Una TV Samsung, LG, Roku, Vizio o Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV lì non funziona, ma puoi disattivare il tracciamento con il telecomando. |
-| **Solo un telefono Android** | L'[app Clean Your TV](https://cleanyour.tv/app) creata dalla community: niente portatile, niente assistente di programmazione. |
+| **Telefono o portatile, senza assistente** | Una delle [app della community](https://cleanyour.tv/app) per telefoni Android, Mac e Windows, create da sviluppatori indipendenti. |
 | **Vuoi prima vedere com'è** | [Cosa offre il launcher](#cosa-offre-il-launcher): schermate della nuova Home. |
 
 **Link ufficiali:** [cleanyour.tv](https://cleanyour.tv) e questo repository. Altri domini che usano il nome, come
@@ -59,9 +59,9 @@ di programmazione a controllare prima la TV reale, poi a chiederti quali app e f
 
 ## Avvio rapido
 
-Senza computer c'è l'[app Clean Your TV](https://cleanyour.tv/app) per Android, creata dalla community: collega la
-TV, mostra prima un piano, salva un punto di ripristino e si limita a disattivare le app. Senza assistente di
-programmazione, ma con un computer, puoi fare gli stessi passi a mano: vedi [Fai da te](#fai-da-te).
+Senza computer o senza assistente di programmazione ci sono le [app della community](https://cleanyour.tv/app) per
+telefoni Android, Mac e Windows, create da sviluppatori indipendenti: mostrano prima un piano e si limitano a disattivare
+le app. Con un computer puoi anche fare gli stessi passi a mano: vedi [Fai da te](#fai-da-te).
 
 Con l'assistente ti servono un computer sulla stessa rete della TV e un assistente di programmazione che sappia eseguire comandi da
 terminale, per esempio [Claude Code](https://claude.com/product/claude-code), [Codex](https://github.com/openai/codex)
@@ -398,9 +398,20 @@ La guida completa (in inglese) è in [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHO
 
 **Non programmo e non ho un portatile: posso farlo lo stesso?**
 
-Sì. L'[app per telefono Android](https://cleanyour.tv/app), gratuita, open source e creata dalla community, fa la stessa
-pulizia via Wi-Fi: si collega alla TV, mostra prima un piano, salva un punto di ripristino e si limita a disattivare
-le app, quindi tutto si può rimettere a posto.
+Sì. Sviluppatori indipendenti hanno creato app gratuite e open source basate sulle liste di CleanYourTV, che fanno la
+stessa pulizia via Wi-Fi senza assistente di programmazione. Ognuna mostra prima un piano, si limita a disattivare le app
+e può rimettere tutto a posto:
+
+| App | Per | Di |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Telefono Android | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Telefono Android | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Telefono Android, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac e Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+Queste app sono progetti indipendenti, non affiliati a CleanYourTV o al suo maintainer né approvati da loro, e ognuna è
+fornita così com'è con la propria licenza. Segnala i problemi di un'app nel suo repository. Altro su
+[cleanyour.tv/app](https://cleanyour.tv/app).
 
 **Reinstalla il firmware o rimuove le app di sistema?**
 

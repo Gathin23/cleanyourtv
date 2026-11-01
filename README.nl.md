@@ -63,7 +63,7 @@ De overbodige software verschilt per merk. Daarom laat de prompt je codeerassist
 | Je hebt | Dit doe je |
 |---|---|
 | **Een computer** | Gebruik de prompt met een codeerassistent en volg de drie stappen hieronder. |
-| **Alleen een Android-telefoon** | Gebruik de door de community gebouwde [Clean Your TV-app](https://cleanyour.tv/app) van [@udhaykumarbala](https://github.com/udhaykumarbala): verbinden, analyseren en opschonen in ongeveer vijf minuten. Geen laptop of codeeragent nodig. |
+| **Een telefoon of laptop, geen codeerassistent** | Kies een van de [community-apps](https://cleanyour.tv/app): gratis opensource-apps op basis van deze tv-lijsten, gemaakt door onafhankelijke ontwikkelaars. |
 
 Met een computer moet je verbonden zijn met hetzelfde wifi-netwerk als de tv en een codeerassistent gebruiken die shell-opdrachten kan uitvoeren.
 
@@ -830,7 +830,16 @@ Een volledig overzicht van bekende problemen staat in [docs/TROUBLESHOOTING.md](
 <details>
 <summary><b>Ik kan niet programmeren en heb geen laptop. Kan ik dit toch doen?</b></summary>
 
-Ja. [@udhaykumarbala](https://github.com/udhaykumarbala) heeft een gratis, opensource-[Android-app](https://cleanyour.tv/app) voor telefoons gebouwd die via wifi dezelfde opschoonactie uitvoert: de app maakt verbinding met de tv, toont eerst een plan, slaat een herstelpunt op en schakelt alleen apps uit, zodat alles teruggezet kan worden. De app is door de community gemaakt.
+Ja. Onafhankelijke ontwikkelaars hebben gratis opensource-apps gebouwd op de tv-lijsten van CleanYourTV die via wifi dezelfde opschoonactie uitvoeren, zonder codeeragent. Elke app toont eerst een plan, schakelt alleen apps uit en kan alles terugzetten:
+
+| App | Voor | Door |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Android-telefoon | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Android-telefoon | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Android-telefoon, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac en Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+Deze apps zijn onafhankelijke projecten, niet verbonden aan of goedgekeurd door CleanYourTV of de maintainer, en elke app wordt geleverd zoals hij is, onder een eigen licentie. Meld problemen met een app in de repo van die app. Meer op [cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 

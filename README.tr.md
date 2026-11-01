@@ -29,7 +29,7 @@
 |---|---|
 | **Bir Android TV veya Google TV** | [Hızlı başlangıç](#hızlı-başlangıç): işi yaklaşık on beş dakikada bir kodlama asistanı yapar. |
 | **Samsung, LG, Roku, Vizio veya Hisense VIDAA bir TV** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV orada çalışamaz, ancak takibi kumandanızla kapatabilirsiniz. |
-| **Yalnızca bir Android telefon** | Topluluk tarafından geliştirilen [Clean Your TV uygulaması](https://cleanyour.tv/app): dizüstü bilgisayar yok, kodlama asistanı yok. |
+| **Telefon veya dizüstü bilgisayar, kodlama asistanı yok** | Android telefonlar, Mac ve Windows için bağımsız geliştiricilerin yaptığı [topluluk uygulamalarından](https://cleanyour.tv/app) biri. |
 | **Önce görmek istiyorum** | [Neler elde edersiniz](#neler-elde-edersiniz): yeni ana ekranın ekran görüntüleri. |
 
 **Resmî bağlantılar:** [cleanyour.tv](https://cleanyour.tv) ve bu depo. Bu adı kullanan diğer alan adları,
@@ -64,7 +64,7 @@ kendisinin bulmasını ve kullanıyor olabileceğiniz bir şeye dokunmadan önce
 |---|---|
 | **Bir bilgisayar** | İstemi bir kodlama asistanıyla kullanın: aşağıdaki üç adım. |
 | **Bir bilgisayar, ama kodlama asistanı yok** | Üç adımı kendiniz çalıştırın: komutlar [Elle yapmak](#elle-yapmak) bölümünde. |
-| **Yalnızca bir Android telefon** | [@udhaykumarbala](https://github.com/udhaykumarbala) tarafından geliştirilen topluluk uygulaması [Clean Your TV](https://cleanyour.tv/app)'yi kullanın: bağlan, analiz et, temizle, yaklaşık beş dakikada. Dizüstü bilgisayar yok, kodlama asistanı yok. |
+| **Telefon veya dizüstü bilgisayar, kodlama asistanı yok** | [Topluluk uygulamalarından](https://cleanyour.tv/app) birini seçin: bu TV listeleri üzerine bağımsız geliştiricilerin yaptığı ücretsiz, açık kaynaklı uygulamalar. |
 
 Aşağıdaki üç adım bir kodlama asistanı için yazılmıştır: bilgisayarın TV ile aynı Wi-Fi ağında olması,
 üzerinde bir kabuk (shell), Python 3, 17 ile 22 arası bir JDK ve build-tools 34 ile birlikte Android SDK
@@ -346,10 +346,20 @@ Başımıza gelen her şeyin tam listesi [docs/TROUBLESHOOTING.md](docs/TROUBLES
 <details>
 <summary><b>Kod yazmayı bilmiyorum ve dizüstü bilgisayarım yok. Yine de yapabilir miyim?</b></summary>
 
-Evet. [@udhaykumarbala](https://github.com/udhaykumarbala), aynı temizliği Wi-Fi üzerinden yapan, Android için
-ücretsiz ve açık kaynaklı bir [telefon uygulaması](https://cleanyour.tv/app) geliştirdi: TV'ye bağlanır, önce bir plan
-gösterir, bir geri yükleme noktası kaydeder ve yalnızca uygulamaları devre dışı bırakır; böylece her şey geri alınabilir.
-Topluluk tarafından geliştirilmiştir.
+Evet. Bağımsız geliştiriciler, CleanYourTV'nin TV listeleri üzerine aynı temizliği Wi-Fi üzerinden kodlama asistanı
+olmadan yapan ücretsiz, açık kaynaklı uygulamalar geliştirdi. Her biri önce bir plan gösterir, yalnızca uygulamaları
+devre dışı bırakır ve her şeyi geri alabilir:
+
+| Uygulama | Platform | Geliştiren |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Android telefon | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Android telefon | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Android telefon, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac ve Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+Bu uygulamalar bağımsız projelerdir; CleanYourTV veya bakımcısıyla bağlantılı değildir ve onlar tarafından
+onaylanmamıştır. Her biri kendi lisansıyla, olduğu gibi sunulur. Bir uygulamayla ilgili sorunları o uygulamanın deposuna
+bildirin. Daha fazlası: [cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 

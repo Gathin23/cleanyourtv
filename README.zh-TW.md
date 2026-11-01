@@ -41,7 +41,7 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 |---|---|
 | 電腦與程式開發助理 | 按照下方步驟，將操作提示詞交給助理。 |
 | 電腦，但沒有程式開發助理 | 依照[手動操作](#手動操作)自行執行。 |
-| 只有 Android 手機 | 可使用 [@udhaykumarbala](https://github.com/udhaykumarbala) 開發的社群版 [Clean Your TV 應用程式](https://cleanyour.tv/app)，透過 Wi-Fi 連線、分析並清理電視。 |
+| 只有手機或筆電，沒有程式開發助理 | 可使用由獨立開發者打造的[社群應用程式](https://cleanyour.tv/app)（Android 手機、Mac 與 Windows）。這些應用程式與 CleanYourTV 無隸屬關係，問題請回報至各應用程式的儲存庫。 |
 
 使用助理時，請準備與電視連接同一個 Wi-Fi 網路、可執行終端機指令的電腦，並安裝 Python 3、完整的 JDK 17 至 22、Android SDK Platform 34 與 34.x Build Tools，供助理編譯啟動器。可使用的助理包括 [Claude Code](https://claude.com/product/claude-code)、[Codex](https://github.com/openai/codex)、[Gemini CLI](https://github.com/google-gemini/gemini-cli) 或 [Antigravity CLI](https://antigravity.google/product/antigravity-cli)。
 
