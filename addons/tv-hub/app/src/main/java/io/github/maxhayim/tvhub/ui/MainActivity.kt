@@ -93,7 +93,10 @@ class MainActivity : Activity() {
             repo.refreshIfStale()
             // savedInstanceState == null: a fresh launch, not Android rebuilding the window, so
             // coming back from the player with Back leaves you on the hub instead of looping.
-            if (savedInstanceState == null && repo.prefs.autoPlay) autoPlayWhenReady()
+            // An explicit page (EXTRA_PAGE) means the caller asked for that screen, so opening the
+            // player over it would throw the request away.
+            val askedForPage = intent.hasExtra(EXTRA_PAGE)
+            if (savedInstanceState == null && !askedForPage && repo.prefs.autoPlay) autoPlayWhenReady()
         }
     }
 
