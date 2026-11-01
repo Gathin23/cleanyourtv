@@ -22,12 +22,13 @@ moment those come back into play: the update can turn setupwraith back on for a 
 owns, and a fix that skipped the checks would take that TV off Wi-Fi with no way back in.
 
 Exit codes: 0 in sync (or fixed), 1 drift, an incomplete fix, or packages a safety check left on,
-2 the TV or the list could not be read, which includes ADB timing out or failing partway (after which a
---fix may be partial, and the next check says what is left), or the command line asked for something this
-script does not do, which includes naming a launcher the TV does not have. That last one matters:
-README.md tells an owner to run this from a weekly job and hear about it on exit 1, so a mistyped flag
-must not come back as drift, nor a mistyped launcher as "nothing drifted". A recovery record --fix
-cannot read or update is 2 as well, with nothing changed on the TV.
+2 the TV or the list could not be read, which includes ADB timing out or failing partway (after which
+a --fix may be partial, and the next check says what is left), a run with no TV_HOST set or no ADB
+client to read the TV with, or the command line asked for something this script does not do, which
+includes naming a launcher the TV does not have. That last one matters: README.md tells an owner to
+run this from a weekly job and hear about it on exit 1, so a mistyped flag must not come back as
+drift, nor a mistyped launcher as "nothing drifted". A recovery record --fix cannot read or update is
+2 as well, with nothing changed on the TV.
 """
 import os
 import re
@@ -60,6 +61,9 @@ FACTORY_HOME_RE = re.compile(r"factorytest|factory_test|factorymode", re.I)
 # The first-run wizard's app. Android deletes a Wi-Fi network saved by it the moment it is disabled.
 SETUPWRAITH = "com.google.android.tungsten.setupwraith"
 INPUT_PERMISSION = "android.permission.TV_INPUT_HARDWARE"
+# What asks_for_input_hardware answers when Android's watchdog has switched dumps off: "Service dumps
+# disabled due to hung system process" until a reboot (docs/TROUBLESHOOTING.md).
+HUNG = "hung"
 # Only the package's own "requested permissions" block counts: a vendor app in a shared UID would
 # otherwise match through its shared user's permissions, the same reason disable.sh scopes its grep.
 REQUESTED_RE = re.compile(r"requested permissions:(.*?)"
@@ -98,7 +102,9 @@ def launcher_to_use(dev, listed, preferred=None):
     if preferred:
         if not recovery.PACKAGE_RE.fullmatch(preferred):
             raise SystemExit(f"not a package name: {preferred!r}")
-        match = [c for c in home_activities(dev) if home_of(c) == preferred]
+        # A package can register a FallbackHome next to its real Home; only the real one will do.
+        match = [c for c in home_activities(dev)
+                 if home_of(c) == preferred and not FALLBACK_HOME_RE.search(c)]
         if not match:
             raise SystemExit(f"{preferred} has no HOME activity on this TV: is the launcher "
                              f"installed? (launcher/build-and-install.sh)")
@@ -169,11 +175,12 @@ def setupwraith_owns_wifi(dev):
     return any("setupwraith" in owner for owner in owners)
 
 
-def asks_for_input_hardware(dev, name):
+def asks_for_input_hardware(dev, name, sdk):
     """Whether the package itself asks for TV_INPUT_HARDWARE, i.e. it drives the HDMI/AV inputs.
 
     True or False from a dump that can be read; None when the dump shows neither a requested nor a
-    granted permission block, so the check could not run — Android 5.x prints neither (#1753)."""
+    granted permission block, so the check could not run — Android 5.x prints neither (#1753); HUNG
+    when the watchdog has switched every dump off. `sdk` is ro.build.version.sdk, None if unread."""
     dump = recovery.shell(dev, f"dumpsys package {name}")
     block = REQUESTED_RE.search(dump)
     if block:
@@ -185,6 +192,12 @@ def asks_for_input_hardware(dev, name):
         # Lollipop's per-package dump has no permission block but lists what serves the input
         # service: the decisive check the requested-permission grep stands in for.
         return "android.media.tv.TvInputService" in dump
+    if "hung system process" in dump:
+        return HUNG
+    if sdk is not None and sdk >= 23 and f"Package [{name}]" in dump:
+        # From Android 6.0 a package that asks for anything has a requested block, so a readable dump
+        # without one asks for nothing (#2398), the same as disable.sh.
+        return False
     return None
 
 
@@ -219,11 +232,19 @@ def safety_checks(dev, names):
                    "showed none); set FORCE_SETUPWRAITH=1 if the TV uses Ethernet")
             skipped.append((SETUPWRAITH, why))
     if not os.environ.get("TVINPUT_ALLOW"):
+        sdk = recovery.shell(dev, "getprop ro.build.version.sdk")
+        sdk = int(sdk) if sdk.isdigit() else None
         for name in names:
             if any(name == skipped_name for skipped_name, _ in skipped):
                 continue
-            hw = asks_for_input_hardware(dev, name)
-            if hw is None:
+            hw = asks_for_input_hardware(dev, name, sdk)
+            if hw is HUNG:
+                skipped.append((name, "the TV answers dumpsys with \"Service dumps disabled due to hung "
+                                      "system process\", so the input-driver check cannot read it: "
+                                      "reboot the TV first (tools/tv.py --reboot), then run --fix "
+                                      "again; TVINPUT_ALLOW=1 is not the way past this, the check "
+                                      "did not run"))
+            elif hw is None:
                 # Fail closed, the same as disable.sh: a dump this firmware cannot be read from
                 # keeps the package on (#1753), and the owner is told what it costs.
                 skipped.append((name, "could not check whether it drives the HDMI/AV inputs (the "
@@ -272,11 +293,13 @@ def fix(dev, listed, back_on, home_drifted, preferred):
         recovery.shell(dev, f"cmd package set-home-activity --user 0 {target}")
         home = recovery.query_home(dev)
         if home != target:
+            # Stop here, as the comment above says: Home is still on what it was, which may be a
+            # package this list disables, and disabling it now leaves the TV with setupwraith's
+            # RecoveryActivity or a placeholder for Home (#1573).
             print(f"Home: asked for {target} but the TV still resolves {home or 'nothing'}; "
-                  f"reboot it and check again")
-            failed = True
-        else:
-            print(f"Home: set to {target}")
+                  f"nothing was disabled. Reboot it and check again")
+            return 1
+        print(f"Home: set to {target}")
     left_on = []
     if back_on:
         left_on = safety_checks(dev, back_on)
@@ -350,10 +373,23 @@ def main():
         # out: read_list stops with a message, which Python turns into exit 1.
         sys.stderr.write(f"{e}. Nothing was checked or changed.\n")
         return 2
+    # The launcher argument has to be a Home the TV can stay on: not one this list disables (--fix would
+    # set Home to it and then disable it), and none of what answers HOME without being a launcher. With
+    # `check.py --fix <list> com.google.android.tungsten.setupwraith`, --fix set Home to setupwraith's
+    # RecoveryActivity and called it fixed (#1573).
+    if preferred and (preferred in listed or preferred in NOT_LAUNCHERS
+                      or FACTORY_HOME_RE.search(preferred)):
+        why = ("this list disables it" if preferred in listed else
+               "it answers Home without being a launcher (a setup wizard, a settings app or a "
+               "factory test)")
+        sys.stderr.write(f"check.py: {preferred} cannot be the launcher Home is on: {why}. Pass the "
+                         f"launcher Home should stay on, or no launcher at all. Nothing was checked "
+                         f"or changed.\n")
+        return 2
     core = recovery.core_packages(listed)
     if core:
         # The same refusal as disable.sh: --fix would disable these again (#884).
-        sys.stderr.write(f"refusing {list_path}: it disables core Android packages, and without them "
+        sys.stderr.write(f"refusing {list_path}: it disables core Android or TV middleware packages, and without them "
                          f"the TV may not boot again (#884): {', '.join(core)}. Take these lines out "
                          f"of the list and run it again. Nothing was checked or changed.\n")
         return 2
@@ -363,12 +399,20 @@ def main():
     # authorisations were revoked, or for a key the TV has not seen) or when the TV goes to standby
     # partway, and AdbTimeoutError and DeviceAuthError. Left alone they end the run with a traceback
     # and exit 1, which a cron job reads as drift, so every Exception here is exit 2, the TV could
-    # not be read. SystemExit and KeyboardInterrupt are not Exceptions: tv.py's own exits (TV_HOST
-    # unset), the refusals in recovery.py and in this file once --fix has started, and Ctrl-C still
-    # stop the run as before.
+    # not be read. The two shapes that stop the run before any connection are SystemExit rather than
+    # Exception, so they need the clause below: tv.py stops with its own message when TV_HOST is
+    # unset, and recovery.connect() stops with one when adb_shell is not installed. Both mean the TV
+    # was never asked, and both used to answer 1 - "the TV drifted" for a job that never ran.
     probe = "tools/venv/bin/python -I tools/tv.py --probe"
     try:
         dev = recovery.connect()
+    except SystemExit as e:
+        # A string code is one of those two messages: print it and answer 2. Nothing else in tv.py
+        # or recovery.py exits with a string, so a numeric one (or none) keeps its own meaning.
+        if not isinstance(e.code, str):
+            raise
+        sys.stderr.write(f"{e.code}\nNothing was checked or changed.\n")
+        return 2
     except (OSError, ConnectionError) as e:
         sys.stderr.write(f"could not reach the TV ({e}). Check it is on and TV_HOST is right "
                          f"({probe}).\n")

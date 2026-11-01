@@ -60,3 +60,6 @@ com.google.android.tungsten.setupwraith
 # button is scancode 362 (KEY_PROGRAM, e.g. "scan:362:input:<HDMI input id>"), Apps is scancode 580
 # (KEY_APPSELECT) and Subtitle is scancode 370 (KEY_SUBTITLE). Only the stock launcher answered them.
 # A remote app button resumes the app where it was left (YouTube reopened on Subscriptions).
+# The gear does nothing once launcherx is disabled. Reinstall with HOME_KEY_SERVICE=1,
+# settings_key_panel on, and 83 in settings_key_keycodes. That opens the launcher's quick settings
+# panel, and the helper stayed bound after a reboot. Holding volume may step only once while it is bound.

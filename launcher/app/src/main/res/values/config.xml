@@ -46,16 +46,29 @@
          both are set); Home after that stays Home, and an app that is gone or disabled leaves Home on screen.
          Off by default; a theme can set "open_on_start_choice": true. -->
     <bool name="open_on_start_choice">false</bool>
+    <!-- With open_on_start_choice: the picked app also opens each time the screen comes back on, for sets whose
+         remote powers them into a light sleep with no boot. It opens over whatever was in front, an HDMI input
+         included. Off by default; a theme can set "open_on_start_on_wake": true. -->
+    <bool name="open_on_start_on_wake">false</bool>
+
+    <!-- Seconds the first Home after the TV starts waits for a working internet connection before it opens the
+         boot_to_live_tv or Open on start app. A streaming app opened before the network is back shows an error,
+         and after a power cut Wi-Fi can take minutes, as the router starts again too. Home stays on screen
+         meanwhile, and leaving Home cancels the opening. 0, the default: open at once. Up to 600; a theme can
+         set "open_on_start_network_wait": 180. -->
+    <integer name="open_on_start_network_wait">0</integer>
 
     <!-- Some TVs give their Live TV app no leanback entry point at all, so `live_tv_package` above
          resolves to nothing (TCL Android TV 9 on China-market sets is one). This action is then sent
          to that package instead, and the app starts normally. Leave empty to omit. -->
     <string name="live_tv_action" translatable="false"></string>
 
-    <!-- Optional exact system tuner ID for the Inputs menu's Live TV row, e.g. the DVB-S input on
+    <!-- Optional Live TV source for the Inputs menu. An exact system tuner ID, e.g. DVB-S on
          a TV with separate antenna, cable and satellite tuners. It opens that input's channel
          collection, restricted to live_tv_package. Empty keeps automatic selection and its existing
-         OEM passthrough route. If the ID is absent or the app cannot handle the collection, open
+         OEM passthrough route. On Xiaomi MiTV-MSSP1 (#1941), set this to the exact value
+         content://android.media.tv/channel to use the stock launcher's root channel URI instead.
+         If the ID is absent or the app cannot handle the collection, open
          the Live TV app normally instead of selecting a different input. A wrong but registered ID
          can open the app's tuner setup screen instead; that is not detected as a fallback condition.
          Use a verified input ID, or leave this empty. See docs/devices/haam-r4.md. -->
@@ -63,7 +76,11 @@
 
     <!-- Tiles that open a screen of the app instead of its start screen: "package=action", sent to that package.
          A tile whose action no longer resolves opens the app normally. MagentaTV's program guide:
-         com.telekom.onetv.tv.pl=com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE. -->
+         com.telekom.onetv.tv.pl=com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE. "package=input:<input id>" makes
+         the tile switch to that TV input instead (ids from dumpsys tv_input), e.g. a Live TV tile straight to
+         HDMI 1: com.mediatek.wwtv.tvcenter=input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW5. "package=view:uri"
+         opens that URI in the package instead (ACTION_VIEW): Bbox TV's live channels are
+         fr.bouyguestelecom.tv.bbui=view:bbox://live. -->
     <string-array name="launch_actions">
     </string-array>
 
@@ -95,7 +112,10 @@
 
     <!-- Inputs menu: HDMI and AV rows normally open with ACTION_VIEW on the input's channel URI, which the
          Live TV app handles. Where nothing answers that, this action is sent with the same URI instead
-         (XGIMI projectors: com.xgimi.action.hdmiPlayer). Leave empty to omit. -->
+         (XGIMI projectors: com.xgimi.action.hdmiPlayer). Written as "package/.Activity" it names the vendor's
+         own source picker instead, started by itself for every row, ahead of the standard way: for firmware that
+         answers the channel URI with "unsupported" (Redmi X65, MiTV-NSOP0:
+         com.xiaomi.mitv.tvplayer/.ExternalSourceActivity opens its HDMI 1 / HDMI 2 / AV overlay). Leave empty to omit. -->
     <string name="input_action" translatable="false"></string>
     <!-- Inputs menu: a scheme to send the input's passthrough URI with instead of content:// (and no channel MIME
          type). YaOS: live-tv. Its source player answers live-tv://android.media.tv/passthrough/<input>, while the
@@ -155,7 +175,7 @@
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
          Settings stays off. Needs WRITE_SECURE_SETTINGS, which build-and-install grants with RESTORE_KEY_SERVICES=1
-         (-RestoreKeyServices on Windows). Can also be set with "restore_key_services": true in a theme's config.json. -->
+         (-RestoreKeyServices on Windows) and takes back on an install without it. Can also be set with "restore_key_services": true in a theme's config.json. -->
     <bool name="restore_key_services">false</bool>
 
     <!-- More remote buttons that open the input switcher, by Android keycode (INPUT_KEY_SERVICE=1
@@ -184,8 +204,11 @@
          for HDMI 3 on a TCL Smart TV Pro; the ids are in `tools/tv.py 'dumpsys tv_input'` (hdmi_port=N under
          TvInputHardwareInfo). An action word in place of a package runs that action instead: back, home, recents,
          mute (toggles the sound, with the TV's volume bar), sleep (standby, Android 9 and later), screensaver (the
-         one chosen in the TV's settings, or the launcher's clock), settings or wifi; e.g. KEYCODE_PROG_YELLOW:mute
-         and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
+         one chosen in the TV's settings, or the launcher's clock), settings, wifi, library (Home with the App
+         library open; with app_library off it only brings Home forward, so a remote's Apps button, which sends
+         284 KEYCODE_ALL_APPS, can open it: 284:library) or ignore (swallows the button: it
+         does nothing, for a shortcut pressed by accident; find its scancode with `tools/tv.py 'getevent -t'`);
+         e.g. KEYCODE_PROG_YELLOW:mute, scan:586:ignore and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
          entry, e.g. hold:191:io.github.maxhayim.brightness/.QuickActivity for an add-on's quick bar. Prefix an
          entry with "hold:" for the same button's long press:
          "hold:KEYCODE_BUTTON_8:org.xbmc.kodi" opens Kodi when held for half a second, while the unprefixed entry
@@ -294,6 +317,14 @@
     <bool name="icon_only_buttons">false</bool>
     <!-- The Inputs pill as a round icon button too (the label moves to the talkback description). -->
     <bool name="icon_only_inputs">false</bool>
+    <!-- With vpn_pill, the VPN pill as a round icon button too: an open lock on the plain glass button while no VPN is
+         up, the closed lock in a green outline while one is (solid green only while focused, like the pill). "VPN" /
+         "VPN off" become its talkback description. A theme can set "icon_only_vpn": true. -->
+    <bool name="icon_only_vpn">false</bool>
+    <!-- The launcher's clocks (Home, the clock screensaver and the Clock screen) in 12- or 24-hour time whatever the TV
+         is set to: "12", "24", or "system", the default, which follows the TV. Launcher settings' Clock row overrides
+         it, and a theme can set "clock_format": "24". -->
+    <string name="clock_format" translatable="false">system</string>
     <!-- true colours the Wi-Fi pill's icon green while the TV is online and leaves it white while it is not (dark on
          the focused pill either way), so the connection shows at a glance, also as an icon-only button. Can also be
          set with "wifi_status_color": true in a theme's config.json. -->
@@ -346,9 +377,9 @@
          "wallpaper_moods" as an object. -->
     <string name="wallpaper_moods" translatable="false"></string>
     <!-- Hold OK on a tile opens a small menu: Move (picks the tile up for reordering), Remove from Home (only with
-         app_library) and App info. false keeps the old behaviour: holding OK opens the app's App info page.
-         Can also be set with "tile_menu": true in a theme's config.json. -->
-    <bool name="tile_menu">false</bool>
+         app_library) and App info. On by default since 3.3; false keeps the old behaviour: holding OK opens the app's
+         App info page. A theme's config.json can set "tile_menu" either way. -->
+    <bool name="tile_menu">true</bool>
 
     <!-- Grid rows left visible under the dock on the home screen. 0 = dock sits at the very bottom. Tiles shrink if
          the dock, its title and this many rows would not otherwise fit the screen height. -->
@@ -391,6 +422,15 @@
     <string-array name="library_apps" translatable="false">
     </string-array>
 
+    <!-- Packages the App library catalogue never offers, even with app_library on (config.xml
+         library_excluded_apps, or a theme's config.json). Different from hidden_apps, which only keeps a
+         package off Home while still listing it here: some boards hide a package because opening it is
+         unsafe (a factory-test menu that can misconfigure the TV), and the catalogue otherwise ignores
+         hidden_apps and offers it as "Add to Home" anyway. Empty (off) by default, so existing setups
+         change nothing. -->
+    <string-array name="library_excluded_apps" translatable="false">
+    </string-array>
+
     <!-- Module cards: an app that declares a card (docs/specs/card.md) can stand in for its tile with its own
          label, caption and glow colour, once you answer Show on the prompt. false: never look for cards or ask. -->
     <bool name="module_cards">true</bool>
@@ -411,6 +451,12 @@
     <!-- One line under the clock: CPU, free memory and free storage. Off by default; a theme can set
          "show_stats": true. Nothing is read, and the clock does not move, while this is false. -->
     <bool name="show_stats">false</bool>
+
+    <!-- Each team's next game in the F1 panel's place under the clock, rotating with the theme's F1 weekend: the package
+         of an add-on that publishes them (the Game Day add-on: io.github.justinnewman.gameday; contract in docs/modules.md).
+         Empty = off: nothing is read or watched. The launcher only reads what the add-on publishes and never goes
+         online. A theme can set "game_day". -->
+    <string name="game_day" translatable="false"></string>
 
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
@@ -446,6 +492,11 @@
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a
          theme's config.json. -->
     <bool name="ambient_glow">true</bool>
+    <!-- true: when the focus moves to an app of another colour, the ambient glow takes the new colour in one frame
+         instead of dimming and fading back in. Each frame of that fade repaints the whole screen, about 40 per key
+         press, which a slow GPU such as the Mali-G52 cannot keep up with. Can also be set with "glow_snap" in a
+         theme's config.json. -->
+    <bool name="glow_snap">false</bool>
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
     <bool name="app_glow">false</bool>
@@ -458,6 +509,10 @@
          Live TV window does not keep the screen on (CVTE): there the system screensaver would start in the
          middle of a programme. Can also be set with "home_idle_clock_minutes": 10 in a theme's config.json. -->
     <integer name="home_idle_clock_minutes">0</integer>
+    <!-- Back on the Home screen opens the clock screensaver (ClockActivity, the same screen as
+         home_idle_clock_minutes). Back keeps working as usual inside apps and Settings; only Home's own Back
+         press changes. Off by default (Back does nothing on Home); a theme can set "back_opens_clock": true. -->
+    <bool name="back_opens_clock">false</bool>
     <!-- The clock screensaver (Home idle clock and the system screensaver) over Home's wallpaper instead of black with
          a coloured glow. The clock still moves every minute. Can also be set with "clock_wallpaper" in a theme. -->
     <bool name="clock_wallpaper">false</bool>

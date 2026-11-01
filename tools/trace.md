@@ -12,7 +12,10 @@ tools/venv/bin/pip install -r tools/requirements-perf.txt
 
 Recording needs only `tools/requirements.txt` and a TV on Android 9 or later. The report's first run
 downloads Perfetto's query engine (about 13 MB, SHA-256 checked) to `~/.local/share/perfetto`. To avoid
-that, download `trace_processor_shell` yourself and pass `--engine PATH`.
+that, download `trace_processor_shell` yourself and pass `--engine PATH`. The path is read before any
+trace is opened, so it has to be a file with its execute bit set: an empty one, a typo, a folder or a
+file you forgot to `chmod +x` is answered with exit 2 and the path named, rather than a traceback out of
+Perfetto that names neither. `tools/flamechart.py` takes the same option and answers the same way.
 
 On Android 9 and 10, the TV's tracing services must be enabled first; they are enabled by default only
 from Android 11. See Perfetto's [tracing-service setup](https://perfetto.dev/docs/quickstart/android-tracing#starting-the-tracing-services)
@@ -27,6 +30,12 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/trace.py home --runs 5 --out trac
 
 `--out` is the folder the traces are written into, and it is created if it is not there. A file where the
 folder goes, a path through a file and an empty `--out` are refused before the TV is asked anything.
+
+A TV that cannot be reached stops the run with `tools/tv.py`'s sentence - a port that refuses, a Wireless
+debugging port that asks for TLS, an address nothing answers on, or, before the TV is asked anything at
+all, no `TV_HOST` and a `TV_PORT` that is not a port number - and exit 2, before the folder is made.
+Nothing was recorded, so nothing is half-written: `tools/bench.py`, `tools/check.py` and
+`tools/b64push.py` answer a TV like that the same way.
 
 | Scenario | Recorded | Use for |
 |---|---|---|

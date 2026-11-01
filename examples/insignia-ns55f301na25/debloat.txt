@@ -85,7 +85,6 @@ com.amazon.tv.legalresources
 com.amazon.tv.support
 com.amazon.cardinal
 com.amazon.csm.htmlruntime
-com.amazon.spiderpork
 com.amazon.recess
 com.amazon.diode
 com.amazon.platform.fdrw
@@ -101,6 +100,7 @@ com.amazon.tv.legal.notices.overlay.localisation.common
 com.amazon.bueller.photos              # Amazon Photos
 com.amazon.bueller.music               # Amazon Music
 com.amazon.gamehub                     # Amazon Luna / GameHub
+com.amazon.spiderpork                  # Amazon Luna game player: Luna's "Open app" needs it (keep it with gamehub)
 com.amazon.tv.localgallery
 com.amazon.minitv.android.app          # Amazon MiniTV
 com.amazon.tv.website_launcher

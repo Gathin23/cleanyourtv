@@ -1,0 +1,63 @@
+# Sony BRAVIA 4K VH21 (KD-43X80K, 2022, device BRAVIA_VH21, product BRAVIA_VH21_SA, MediaTek), Latin America
+# Android 12 (Google TV, API 31), build BRAVIA_VH21_SA-user 12 STT2.230505.001.S136 682241, 3 GB RAM
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh21-sa/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh21-sa/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same device, platform and build number as sony-bravia-4k-vh21 (Australia), -eu, -us and -tw: ro.hardware and
+# ro.board.platform read mt5895, ro.soc.model reads MT5835. The Latin American firmware ships 242 packages, preloads
+# Pluto TV and Zapping (a Chilean live-TV app) as user apps, and tunes ISDB-T with Sony's Brazilian tuner service
+# (com.sony.dtv.tvinput.tuner, BrzTunerInputService); it has no HbbTV player and no broadcaster apps.
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV), HOME priority 2. Pass it to restore.sh as above;
+# launcher/build-and-install.sh disables it, so it is not in this list.
+# Live TV / tuner app: com.sony.dtv.tvx (set it as live_tv_package in the launcher's config.xml and hide it).
+# Keep the com.sony.dtv.tvinput.* services, tvx, tvapi, sonysystemservice, sonyvendorservice, imeproxy,
+# settingsprovider, systemupdate/update, braviasync* and all com.mediatek.*: they drive HDMI, the tuner, the Input
+# overlay, Bravia Sync, updates and the remote.
+# Kept by owner's choice: Netflix, YouTube, Prime Video, Disney+, Apple TV, Max, Crunchyroll, Spotify, Sony's Music
+# player (com.sony.dtv.osat.music), Google Assistant (katniss), Chromecast built-in (mediashell), AirPlay/HomeKit,
+# Sony Select, firmware updates and Sony IP control (com.sony.dtv.webapi.core).
+# Already disabled at the factory: com.sony.dtv.promos, com.sony.dtv.seeds.iot, com.sonypicturescore,
+# com.sony.dtv.b2b.vendorprotocol, com.sony.dtv.b2b.softap and com.google.android.youtube.tvmusic. Not in this
+# list, so restore.sh leaves them as they are.
+# The remote that came with this set has no Apps button.
+#
+# Status: applied 24 Oct 2026 in three batches with a screenshot between, then setupwraith; reboot-checked: every
+# package stayed disabled and Home came back on the replacement launcher. Lived with until 31 Oct 2026 (a week).
+# Re-enabled: none from this list. Spotify was disabled in the third batch and the owner reinstalled it two days
+# later, so it is a commented line below.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+tv.samba.ssm.ui
+
+# telemetry and remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # remote-support session service
+com.google.android.feedback
+
+# demo and dashboard
+com.sony.dtv.multiscreendemo                   # shop-mode demo
+com.sony.dtv.ecodashboard                      # eco settings dashboard tile
+
+# BRAVIA CAM apps (no camera on this set)
+com.sony.dtv.gestureapp
+com.sony.dtv.livingfit                         # fitness app for BRAVIA CAM
+
+# unused Google preloads (owner's choice: comment out to keep)
+com.google.android.play.games
+com.google.android.videos                      # Google TV movies & shows
+
+# Latin American preloads (owner's choice: comment out to keep)
+tv.pluto.android                               # Pluto TV
+com.eltelon.zapping                            # Zapping, paid live TV for Chile
+# com.spotify.tv.android                       # disabled here, then reinstalled by the owner: kept
+
+# Google TV setup wizard: with launcherx disabled its RecoveryActivity (HOME priority 1) outranks
+# set-home-activity. Disable it only after Home resolves to the new launcher, and re-enable it before a
+# factory reset. It can own the Wi-Fi network saved during first setup, and disabling it deletes the networks it
+# owns: check `dumpsys wifi | grep -o 'cname=[^ ]*'` first. On this set (on Wi-Fi) the network read
+# cname=android.uid.system, so it stayed; if it reads setupwraith, forget and re-join the network in Settings
+# first. On Google TV, casting is reported to stop without it; this set was not used for casting.
+com.google.android.tungsten.setupwraith

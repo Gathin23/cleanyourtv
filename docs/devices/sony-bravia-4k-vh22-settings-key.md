@@ -94,6 +94,10 @@ A second VH22 owner in [#1680](https://github.com/Gathin23/cleanyourtv/issues/16
 used the same idea for the TV key as well, and reports it held across a
 standby/wake and a remote reconnect.
 
+On a VH2 (XR-55X90JK, Latin American firmware) the same overlay brought back
+the Apps key, which does nothing once launcherx is disabled; see the
+[VH2 remote-keys note](sony-bravia-4k-vh2-remote-keys.md).
+
 ## What it does not fix
 
 - Only the keys named in the overlay change. Anything else `HomeKeyService`

@@ -40,6 +40,7 @@ class SetValueTest(unittest.TestCase):
         # cmd_set ends by pushing the theme with tools/theme.sh; the tests stop before the TV.
         patcher = mock.patch.object(manage, "run")
         self.push = patcher.start()
+        self.push.return_value = 0
         self.addCleanup(patcher.stop)
 
     def set_key(self, key, value):
@@ -225,6 +226,7 @@ class SetThemeFolderTest(unittest.TestCase):
         self.config = self.theme / "config.json"
         patcher = mock.patch.object(manage, "run")
         self.push = patcher.start()
+        self.push.return_value = 0
         self.addCleanup(patcher.stop)
 
     def set_key(self, key="dock_band", value="true", folder=None):
@@ -249,7 +251,8 @@ class SetThemeFolderTest(unittest.TestCase):
                 with self.subTest(encoding=encoding, newline=newline):
                     self.config.write_bytes(text.replace("\n", newline).encode(encoding))
                     self.push.reset_mock()
-                    self.assertIsNone(self.set_key("dock_band", "true"))
+                    with mock.patch.object(sys, "platform", "linux"):
+                        self.assertIsNone(self.set_key("dock_band", "true"))
                     written = self.config.read_bytes()
                     self.assertFalse(written.startswith(b"\xef\xbb\xbf"))
                     updated = json.loads(written.decode("utf-8"))
@@ -295,6 +298,29 @@ class SetThemeFolderTest(unittest.TestCase):
         refusal = self.set_key(folder=afile)
         self.assertIn(f"{afile} is a file, not a folder", refusal)
         self.push.assert_not_called()
+
+    def test_a_theme_folder_that_is_not_there_is_named_and_not_made(self):
+        # --theme with a typo used to be mkdir -p'd, given a one-key config.json and pushed: the push replaces
+        # the theme on the TV and empties the wallpapers/ it pushed before, so the theme the owner had was gone
+        # and the TV showed one key's worth of it. Resolved first, as manage resolves the path it is given.
+        missing = (Path(self.tmp.name) / "my-them").resolve()
+        with mock.patch("sys.stdout"):
+            with self.assertRaises(SystemExit, msg="a folder that is not there was accepted") as stop:
+                manage.cmd_set("dock_band", "true", str(missing))
+        refusal = str(stop.exception.code)
+        self.assertIn(f"{missing} is not there", refusal)
+        self.assertIn("--theme", refusal)
+        self.assertIn("Nothing was written or pushed", refusal)
+        self.assertFalse(missing.exists(), "a folder that is not there must not be made")
+        self.push.assert_not_called()
+
+    def test_an_empty_folder_of_their_own_is_still_started(self):
+        # The other half: a folder that exists with no config.json yet is where set starts the file.
+        mine = Path(self.tmp.name) / "fresh-theme"
+        mine.mkdir()
+        self.assertIsNone(self.set_key(folder=mine))
+        self.assertIs(json.loads((mine / "config.json").read_text(encoding="utf-8"))["dock_band"], True)
+        self.push.assert_called_once()
 
     def test_a_write_it_cannot_make_is_named(self):
         # A file in the middle of the path: mkdir cannot create a folder under one.

@@ -1,0 +1,104 @@
+# Sony BRAVIA KD-49X8000G (HK region: device BRAVIA_ATV3_4K, product BRAVIA 4K GB ATV3). Android TV 9 (API 28).
+# Firmware BRAVIA_ATV3_4K_HK-user 9 PTT1.190515.001.S54 672201 release-keys
+# Same platform/build as examples/sony-kd-43x8000g (APAC/PA), this is the Hong Kong region variant with a
+# larger app set: Netflix, Disney+, Spotify, Amazon Prime Video, Mango TV, a Taiwan anime app and three
+# separate screen-mirroring apps were preloaded in addition to the APAC list's packages.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-49x8000g-hk/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-49x8000g-hk/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Kept on purpose for this household: Netflix, YouTube (+ YouTube Music kept in the 43x8000g list but
+# disabled here, not used), Chromecast built-in, Spotify, Disney+, Google Assistant (katniss, remote mic
+# button), Play Store/Services, TalkBack. Two packages (com.supertws.dubokutv,
+# com.sony.dtv.smarthomesettings) were already disabled on this set before this list was written.
+# com.uei.quicksetsdk.sony and com.sony.dtv.hbbtvlauncher from the sibling 43x8000g list are not
+# installed on this firmware, so they are not repeated here.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+
+# Sony and Google content, ads, and promos
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.sony.dtv.tvlaunchercustomizer              # Sony tweaks to the stock home rows
+com.sony.dtv.tvlaunchercustomizer.overlay.apporder
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Retail demo
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+
+# Telemetry, remote support, logging and diagnostics
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.sonybugreportsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.mediatek.agent                             # MediaTek diagnostics agent
+com.mediatek.dmagent                           # MediaTek device management agent
+com.sony.dtv.sonyloglevelsettingsys            # system log level daemon
+com.sony.dtv.sonyloglevelsettingvnd            # vendor log level daemon
+
+# Commercial and B2B services
+com.sony.dtv.b2b.vendorprotocol                # SDDP Control4 broadcast service
+com.sony.dtv.b2b.rs232csupport                 # RS232 serial control
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.webappruntimedrm
+
+# Broadcast and unused extensions
+com.sony.dtv.browser.webappruntimeextension
+com.sony.dtv.tuningconfirmation_dvbt
+com.sony.dtv.serviceinformation
+
+# Preloaded apps
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+# this set has these off; uncomment if you don't use them
+# com.google.android.youtube.tvmusic           # not used, YouTube (video) is kept
+# com.google.android.videos                    # Google Play Movies, not used
+# com.google.android.play.games                # Play Games, not used
+com.google.android.backdrop                    # ambient screensaver
+
+# Streaming and OEM extras not used in this household
+# this set has these off; uncomment if you don't use them
+# com.amazon.amazonvideo.livingroom            # Prime Video, not used
+# com.mgtv.tv.intl                             # Mango TV
+# tw.com.gamer.android.animad                  # Taiwan anime streaming app (Gamer/動畫瘋)
+# tunein.player                                # TuneIn Radio
+
+# OEM apps that don't belong to this Sony line
+com.benq.instaqlive                            # BenQ InstaQ Live screencast companion
+com.aospstudio.tvsearch                        # third-party search overlay
+com.tcl.browser                                # TCL-branded browser; the Sony HbbTV browser stays
+
+# Screen mirroring and DLNA, superseded by Chromecast built-in (kept)
+screnmirroring.com                             # Screen mirroring (Miracast)
+com.nero.swiftlink.mirror.tv                   # Nero SwiftLink mirroring
+com.smartdevice.tv.aircast                     # AirCast mirroring
+com.sony.dtv.networkapp.wifidirect
+com.sony.huey.dlna.module                      # DLNA renderer
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna
+
+# Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
+# com.sony.dtv.scrums.action                   # Action Menu overlay & remote button (TvDotAction.apk)
+# com.google.android.apps.mediashell           # Chromecast built-in, kept for iPad casting
+# com.sony.dtv.smartmediaapp                   # Media Player, plays files from USB
+# com.sony.dtv.osat.music                      # plays music from USB
+# com.google.android.tv.remote.service         # Android TV phone-app remote
+# com.sony.dtv.systemupdate                    # Sony system firmware updater
+# com.google.android.katniss                   # Google Assistant, kept for the remote's mic button
+# com.sony.dtv.browser.webappruntime            # HbbTV / interactive broadcast red-button browser
+# com.sony.dtv.browser.ceb
+# com.sony.dtv.browser.webappservice

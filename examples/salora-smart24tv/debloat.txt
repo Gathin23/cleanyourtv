@@ -1,0 +1,72 @@
+# Salora SMART24TV (Vestel-built, product Ata/Aslan, device tokyo, MediaTek m5621), Android TV 11 (API 30),
+# firmware RTOC.250820.001. Fingerprint My/Aslan/tokyo:11/RTOC.250820.001/13968254:user/release-keys,
+# build date 2025-08-21, security patch 2025-06-01. ro.product.brand = My, ro.product.manufacturer = My
+# (Vestel in the odm/product/system partitions), ro.product.model = "Android TV", ro.config.low_ram = true
+# (~1 GB), 1280x720 panel, armeabi-v7a. Italy. Same Vestel family as examples/toshiba-cosmos-android-tv
+# (firmware RTOC.251019.001) and examples/jvc-android-tv-menlo (also reports manufacturer "My").
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/salora-smart24tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/salora-smart24tv/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV, not Google TV). Only
+# com.android.tv.settings/.system.FallbackHome also claims HOME; setupwraith does not, and the saved Wi-Fi
+# network belonged to com.google.uid.shared, not to setupwraith.
+# Live TV app:    com.mediatek.wwtv.tvcenter (also the Inputs menu's Live TV entry) - never disable it.
+# Updates:        no separate firmware-update package; com.vestel.tv.servicepatch and com.vestel.tv.rcupdater kept.
+#
+# Status: disabled in five batches on one TV on 2026-10-29, the stock-launcher rows after launcher/ took Home.
+# Reboot-checked: nothing came back enabled, the new launcher was on screen at power-on (the firmware does
+# not open Live TV by itself), Live TV and every input (HDMI 1-3, AV, VGA, YPbPr) were listed. Then checked
+# on the real remote by the owner: Home, Input, the YouTube button and held volume (it ramps) all work.
+# Hours of real use, not days: treat it as a starting point.
+#
+# KEEP, even though the names look like bloat (checked on this TV):
+# - fusion.android.tv.demo: the only handler of com.mstar.android.intent.action.TV_INPUT_BUTTON (the remote's
+#   Input key), as on examples/jvc-android-tv-menlo. The Toshiba Cosmos list disables it; do not copy that here.
+# - com.cltv.fast ("FAST" channels, iWedia): its activities ship disabled by Vestel (disabledComponents), so it
+#   shows no tile; left alone.
+# - com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter (tuner/HDMI/source menu),
+#   com.vestel.tv.service / keycontroller / backlight / servicepatch / rcupdater, com.vestel.overlay.*.
+# - mediatek.factorymenu.ui and com.mediatek.tv.factory: never started, never disabled.
+# - Play Store, Play Services, Gboard, TTS, YouTube (owner's choice).
+#
+# Quirks on this firmware:
+# - USB debugging alone opened port 5555 (no separate network-debugging switch, no Wireless debugging menu).
+#   With USB debugging switched off and the TV restarted, tools/adb-closed.py reported 5555 closed.
+# - ro.adb.secure = 1: port 5555 shows the "Allow USB debugging?" prompt.
+# - Screenshots work: tools/tv.py --screenshot returns the whole screen.
+# - The uk.co.freeview.* pack ships already disabled on this Italian unit; not listed, so restore leaves it off.
+# - Private DNS (hostname mode) validates and apps still stream.
+
+# --- Vestel telemetry and junk ---
+com.vestel.vestelreporter                       # Vestel analytics/telemetry uploader
+com.vestel.tv.speedup                           # "speed up" cleaner
+com.mstar.android.tv.disclaimercustomization    # MStar setup disclaimer popup
+android.autoinstalls.config.vestel.cosmos       # partner auto-preinstall config
+com.vestel.tv.eib                               # E-User Manual viewer: one activity, no services or receivers
+
+# --- Google services nobody asked for ---
+com.google.android.feedback                     # crash/feedback uploader to Google
+com.google.android.syncadapters.calendar        # calendar sync, on a TV
+com.android.providers.calendar                  # calendar storage, on a TV
+com.google.android.videos                       # Play Movies / Google TV storefront
+com.google.android.play.games                   # Play Games
+com.mediatek.tv.freeviewplay                    # UK Freeview Play integration, dead weight in Italy
+
+# --- Owner's checklist choices: keep any you use ---
+# Off on the tested set by the owner's choice; uncomment the ones you don't use.
+# com.netflix.ninja                               # Netflix
+# com.amazon.amazonvideo.livingroom               # Prime Video
+# com.google.android.youtube.tvmusic              # YouTube Music
+# com.google.android.katniss                      # Google Assistant / voice search (remote mic button)
+# com.google.android.apps.mediashell              # Chromecast built-in
+# com.mediatek.wwtv.mediaplayer                   # USB media player
+
+# --- Stock launcher content, disabled after launcher/build-and-install.sh took Home ---
+com.google.android.tvrecommendations            # recommendation rows for the stock launcher
+com.google.android.leanbacklauncher.partnercustomizer  # partner/sponsored rows for the stock launcher
+com.google.android.backdrop                     # ambient photo screensaver (launcher's clock replaces it)
+
+# --- Stock launcher: tools/disable.sh skips it until another app answers HOME ---
+com.google.android.tvlauncher                   # disable LAST, after launcher/build-and-install.sh

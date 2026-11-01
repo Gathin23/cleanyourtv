@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV (G06, G06_2K_US, MediaTek MT9221 / T221, AR2101, V8-T221T04-LF1V122), US firmware",
+  "os": "Google TV 11",
+  "brand": "TCL",
+  "notes": "Same G06 board as the Indonesia list, US T04 firmware, with the launcher half: TCL promos, popups, dashboard, TGuard, Google partner plumbing, TCL Live/Channel/TV+, Play Movies, Play Games and TalkBack off; ttvs, Chromecast (still casts with setupwraith off), voice and Prime Video kept, Netflix commented out (off on this set); USB debugging alone opens ADB; setupwraith owned the Wi-Fi (forget and re-join); launcherx kept behind stock_home_redirect so the YouTube and Prime Video buttons and the volume ramp work; config.json dock; reboot-checked"
+}

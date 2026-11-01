@@ -78,11 +78,15 @@ then shows "Vérifiez votre connexion réseau", switch DNS back and log in to Sp
 ## When you're done: close ADB
 
 Port 5555 is plaintext. On the TV: Developer options > Revoke USB debugging authorisations, then
-turn USB debugging off. Check from the Mac that this fails:
+turn USB debugging off. Then check from the Mac that the player refuses the port:
 
 ```bash
-nc -vz <player-ip> 5555
+tools/venv/bin/python -I tools/adb-closed.py <player-ip>
 ```
+
+It must say the port is closed (exit 0); only a refused connection proves that. A timeout or "No route to
+host" proves nothing. Use the venv's Python here: Local Network privacy blocked the Command Line Tools
+Python on this Mac (see `debloat.txt`).
 
 Also: a Freebox system update that re-enables packages means running `tools/disable.sh` on the list
 again.

@@ -170,6 +170,79 @@ class ArgumentTest(unittest.TestCase):
             self.assertIn("is a file", err.getvalue())
 
 
+class ReachTest(unittest.TestCase):
+    """A TV the client cannot reach: tools/tv.py's sentence and exit 2, before anything is recorded.
+
+    The handler used to catch OSError only and answer with a line of this file's own and exit 1, which is
+    the status a recording that started and then failed leaves - and a Wireless debugging port, which
+    adb_shell reports as an InvalidCommandError that is not an OSError, was not caught at all and ended in
+    a traceback naming neither the port nor the way to it.
+    """
+
+    REFUSED = ("192.0.2.7:5555 refused the connection: nothing listens for ADB there, so network ADB is "
+               "off or on another port.")
+    TLS = "192.0.2.7:5555 is a Wireless debugging port: it asks for TLS, which tv.py cannot use."
+
+    def run_main(self, connect, connect_error=None):
+        """main() with a faked tv/bench, as tests/test_trace.py fakes them everywhere else."""
+        fake_tv = types.ModuleType("tv")
+        fake_tv.HOST, fake_tv.PORT = "192.0.2.7", "5555"
+        fake_tv.connect = connect
+        fake_tv.connect_error = connect_error or (lambda error: None)
+        fake_bench = types.ModuleType("bench")
+        fake_bench.accessibility_services = lambda *a: []
+        fake_bench.restore_accessibility = lambda *a: None
+        return mock.patch.dict(sys.modules, {"tv": fake_tv, "bench": fake_bench})
+
+    def test_a_refused_port_is_the_client_s_sentence_and_exit_2(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "before"
+
+            def refuse():
+                raise ConnectionRefusedError(111, "Connection refused")
+
+            with self.run_main(refuse, lambda error: self.REFUSED \
+                    if isinstance(error, ConnectionRefusedError) else None), \
+                 contextlib.redirect_stderr(io.StringIO()) as err, \
+                 contextlib.redirect_stdout(io.StringIO()) as out_text, \
+                 self.assertRaises(SystemExit) as caught:
+                trace.main(["coldsys", "--out", str(out)])
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn("refused the connection", err.getvalue())
+            self.assertIn("Nothing was recorded", err.getvalue())
+            self.assertEqual(out_text.getvalue(), "", "a run that never started wrote to stdout")
+            self.assertFalse(out.exists(), "the folder was made for a run that never started")
+
+    def test_a_port_that_asks_for_tls_is_answered_too(self):
+        # adb_shell's InvalidCommandError carries this one, and it is not an OSError: the old handler let it
+        # through as a traceback with exit 1.
+        class NotAnOSError(Exception):
+            pass
+
+        def ask_for_tls():
+            raise NotAnOSError("STLS requested")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "before"
+            with self.run_main(ask_for_tls, lambda error: self.TLS \
+                    if isinstance(error, NotAnOSError) else None), \
+                 contextlib.redirect_stderr(io.StringIO()) as err, \
+                 self.assertRaises(SystemExit) as caught:
+                trace.main(["nav", "--out", str(out)])
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn("asks for TLS", err.getvalue())
+            self.assertFalse(out.exists())
+
+    def test_an_error_the_client_has_nothing_to_add_to_keeps_its_traceback(self):
+        def unreadable_key():
+            raise RuntimeError("cannot read the ADB key")
+
+        with tempfile.TemporaryDirectory() as tmp, self.run_main(unreadable_key), \
+             contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(RuntimeError):
+                trace.main(["coldsys", "--out", str(tmp)])
+
+
 class RecordTest(unittest.TestCase):
     def record(self, device, setup, steps):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.object(trace.time, "sleep") as sleep:

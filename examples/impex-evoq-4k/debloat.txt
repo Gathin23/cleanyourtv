@@ -1,0 +1,80 @@
+# Impex evoQ 4K (Changhong, product GTVU64IP, board alimos), Google TV 14 (SDK 34), firmware UKN3.250415.053,
+# MediaTek mt5896 (platform merak), India. MemTotal about 1.8 GB. ro.product.manufacturer Changhong.
+# Same Changhong board ("alimos") as examples/benq-e55-760 (GTVU64BQ) on an older UKN3 build, and the same
+# UKN3 platform as examples/kogan-gtvu65kg.
+#
+# Apply:   TV_HOST=<tv ip>:<port> TV_ADB_BINARY=adb tools/disable.sh examples/impex-evoq-4k/debloat.txt
+# Undo:    TV_HOST=<tv ip>:<port> TV_ADB_BINARY=adb tools/restore.sh examples/impex-evoq-4k/debloat.txt com.google.android.apps.tv.launcherx
+# Install: TV_HOST=<tv ip>:<port> TV_ADB_BINARY=adb launcher/build-and-install.sh   (after this list)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (build-and-install.sh disables it; pass it to restore.sh).
+# Live TV: com.cltv.hybrid (iWedia TV app, enabled here; set live_tv_package to it).
+# Already disabled from the factory: com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.dtv.tvinput.atsctuner,
+# com.mediatek.opapp, com.mediatek.tv.oneworld.tvcenter.
+#
+# Tested on one set the same day, not a multi-day soak: after each batch Home opens and the Input menu still
+# lists Live TV, AV and HDMI 1-4; HDMI 1 switches and Home returns; YouTube and JioHotstar launch and play.
+# After a reboot with the whole list and the launcher: the disabled list is identical (no package re-enabled at
+# boot), Home is com.gathin.tvhome at power-on (no Live TV autostart, so neither power_on_home nor
+# boot_to_live_tv), the crash buffer is empty. AdGuard Private DNS (dns.adguard-dns.com) validates.
+#
+# KEEP, even though the names look like bloat:
+# - com.cltv.hybrid, com.cltv.mal, com.mediatek.tis, com.mediatek.tv.agent, com.mediatek.dtv.tvinput.dvbtuner:
+#   Live TV and the inputs.
+# - com.mediatek.extservice (CEC, Bluetooth mic), com.mediatek.autopair (remote pairing),
+#   com.mediatek.tv.oneworld.wizardkt (its BluetoothActivityVoice is the "pair your remote" screen the mic opens).
+# - com.homwee.factory (not started, not disabled), com.homwee.dynamicbacklight, com.gdch.gameoptimiser.
+# - com.homwee.mmp.screenshare and com.homwee.multiscreenshare: the AirPlay receiver, kept by choice here.
+# - com.gdch.wwtv.mediaplayer: the USB media player. tools/disable.sh skips it (it asks for TV_INPUT_HARDWARE);
+#   examples/benq-e55-760 found that a false positive on the same board, not re-checked on this set.
+# - com.homwee.upgrade, com.homwee.dmt.upgrade, com.mediatek.tv.systemupdater: firmware and app updates.
+#
+# Quirks on this firmware, all checked on the TV:
+# - Port 5555 is closed with USB debugging on; Wireless debugging (on Wi-Fi) pairs and works, with
+#   TV_ADB_BINARY=adb (tools/native-adb.md). Its port changes at every reboot: read it with `adb mdns services`.
+# - The saved Wi-Fi network is owned by setupwraith (`dumpsys wifi | grep -o 'cname=[^ ]*'`): forget and re-join
+#   it in Settings, switch Wireless debugging on again, then apply the list. Without setupwraith disabled its
+#   .RecoveryActivity (HOME priority 1) takes Home once launcherx is off, as on examples/chiq-gtvu65.
+# - The remote here is IR (MTK Smart TV IR Receiver, vendor 0x3697). Its gear button arrives as evdev code 498
+#   (0x1F2), with no Android keycode, so it does nothing once launcherx is disabled. The kernel logs every IR key
+#   (`logcat | grep MIRC_Keydown`), which is how 498 was read; getevent showed nothing. settings_key_scancodes 498
+#   with HOME_KEY_SERVICE=1 makes it open Settings, but a bound helper then drops the volume key repeats (one
+#   step per press while held, as in docs/devices/tcl-55p71b-g09-key-repeat.md). The owner kept the ramp and no
+#   helper; Settings is the pill on Home. The mic button (evdev 0x242) opens the wizard's "pair your remote"
+#   screen while no Bluetooth remote is bonded.
+# - Injected `input keyevent` presses sometimes moved focus two rows (a synthesized repeat); the real remote
+#   moves one row. Check navigation with the remote.
+
+# Telemetry, ACR and ad services
+tv.anoki.acr.controller                     # Anoki automatic content recognition, boot receiver
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+android.autoinstalls.config.google.gtvpai   # Play partner auto-installs
+com.google.android.partnersetup             # RLZ partner-attribution pings
+
+# Changhong / Homwee store and help
+com.homwee.store                            # Changhong app-store service
+com.homwee.help                             # e-manual
+
+# Preloaded apps and services
+tv.mopa.ginga                               # Brazilian Ginga interactive TV, not used in India
+com.android.printspooler
+com.google.android.play.games
+
+# Streaming apps not used in this home (by choice; keep the ones you use)
+com.google.android.youtube.tvmusic
+com.apple.atve.androidtv.appletv
+com.graymatrix.did                          # ZEE5
+com.jio.media.stb.ondemand
+tv.airtel.xstream.tvapp
+
+# Features not used in this home (by choice)
+com.mediatek.miracast                       # Miracast screen-mirroring receiver
+com.audiocn.karaoke.global.micmanager       # karaoke microphone app
+com.google.android.apps.tv.dreamx           # Google ambient screensaver; the basic screensaver stays
+com.google.android.marvin.talkback          # re-enable if you use the screen reader
+
+# Google TV setup wizard: forget and re-join the Wi-Fi first (see above)
+com.google.android.tungsten.setupwraith

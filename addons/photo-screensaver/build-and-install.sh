@@ -5,7 +5,7 @@
 # Usage: TV_HOST=192.168.1.50 addons/photo-screensaver/build-and-install.sh
 #        TV_HOST=192.168.1.50 addons/photo-screensaver/build-and-install.sh --uninstall
 set -euo pipefail
-HERE="$(cd "$(dirname "$0")" && pwd)"
+HERE="$(cd "$(dirname "$0")" && (pwd -W 2>/dev/null || pwd))"
 TOOLS="$HERE/../../tools"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0}"
 PY="$TOOLS/venv/bin/python"

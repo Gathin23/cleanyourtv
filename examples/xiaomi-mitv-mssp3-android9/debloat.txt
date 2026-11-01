@@ -33,6 +33,21 @@
 # - Netflix, Prime Video, Pluto TV, YouTube Music and Chromecast kept by choice; com.mstar.netflixobserver
 #   starts Netflix at boot (about 130 MB) and needs the same treatment as in examples/xiaomi-mitv-mssp3.
 #
+# ---- Physical Input/Source button (related to #1368; different model from MOOQ0) ----
+# Checked on MiTV-MSSP3 / machuca, Android TV 9, builds PI.7524 and PI.4663.
+# On PI.7524 the physical button sends KEYCODE_TV_INPUT (178). Xiaomi's
+# com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver explicitly starts
+# com.google.android.tvlauncher/.inputs.InputsPanelActivity, which is unavailable after
+# the stock launcher is disabled. The Inputs pill still works, but the remote button does not.
+# Setting "handle_view_inputs": true alone did not fix the physical button on PI.7524.
+# Set "handle_view_inputs": true in config.xml or the theme's config.json and install
+# with INPUT_KEY_SERVICE=1. InputKeyService handles 178 already; no extra keycode is needed.
+# The owner confirmed the physical button works with that configuration on both builds;
+# pressing it from inside Spotify was checked on PI.7524. Injected keys do not test the helper.
+# Tradeoff observed on PI.7524: holding Volume Up advances just one step while the helper
+# is bound. The owner accepted this tradeoff in exchange for the Input shortcut.
+# These observations concern the remote-button setup only, not every package in this list.
+#
 # Older Android 9 firmware PI.4663 (ro.build.display.id "PI.4663 release-keys", same 1.8 GB set), Italy:
 # - com.mitv.tvhome.michannel and com.mitv.dream are not installed. The screensaver there is
 #   com.google.android.backdrop/.Backdrop, which this list already disables.

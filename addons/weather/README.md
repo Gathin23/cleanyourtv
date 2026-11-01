@@ -20,7 +20,16 @@ sky-blue glow; on any other Android TV home it is an ordinary app.
 
 ## Options
 
-Set in `app/src/main/res/values/options.xml` before building. With the defaults the page is as above.
+Open **Weather settings** beside **Change city** at the bottom of the page. Use Up/Down and OK to change
+units, forecast length, both units, humidity and wind. Back cancels a unit/day picker; **Done** or Back
+closes settings. Choices are saved on this TV and survive closing the app and restarting the TV.
+
+Display changes use the current reading, without another network request or changing its update time.
+Changing the forecast length fetches once when settings closes. **Reset weather settings** restores the
+build defaults without changing the city.
+
+`app/src/main/res/values/options.xml` still sets the defaults for a fresh installation and for Reset.
+Saved choices override these defaults. With no saved choices the page is as above.
 
 | Option | Default | What it does |
 |---|---|---|

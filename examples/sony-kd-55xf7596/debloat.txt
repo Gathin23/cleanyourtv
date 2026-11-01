@@ -24,6 +24,25 @@
 # Applied 2026-10-21 in six batches (the sections below), checking Home, Netflix, HDMI 1 and the DVB-T input
 # after each one, then rebooted: all 38 still disabled, nothing re-enabled by the firmware, no crashes,
 # display values unchanged, MemAvailable up from about 200 MB to about 500 MB after boot.
+# Second unit, 2026-10-28: a 65-inch EU set. getprop has no KD-65 name (model "BRAVIA 4K GB ATV3",
+# device BRAVIA_ATV3_4K, product BRAVIA_ATV3_4K_EU, panel 3840x2160, board mt5891) and the fingerprint
+# is the one above, which examples/sony-kd-55xf8096 also has, so a fingerprint prefix cannot tell the
+# two lists apart. com.gathin.tvhome was Home (`dumpsys window | grep mFocusedApp`) and
+# com.google.android.tvlauncher was disabled. Already off from this list: Samba TV, promos, Sony Select,
+# bivlinfo, tvrecommendations, the Bravia auto-install, the three demo packages, da.service, Qterics,
+# both bug reporters, feedback, customersupport, smarthelp and imanual. Still enabled, so not tested
+# on this unit: discovery, both launcher-customizer packages, sonyselect.overlay, and every package
+# under "Off by choice" and "Hotel / professional mode" below. Not reboot-checked here and not lived
+# with for days. com.sony.dtv.scrums.action is installed and was left enabled.
+# Third unit, 2026-10-31: another 65-inch EU set, same fingerprint, nothing disabled before the run and
+# com.google.android.tvlauncher as Home. Applied in six batches with tools/disable.sh, checking Home, Live TV
+# and Netflix after each one: 35 of the 38 lines above. inputmethod.japanese and music are not installed on
+# it, and disable.sh skipped smarthomesettings (enabled from the factory on this unit), which was left on.
+# By the owner's choice it also disabled the DLNA trio and com.google.android.tv.remote.service from the
+# "Left enabled" block below, with no crash and no change to Home, Live TV, Netflix or the remote's buttons.
+# Rebooted twice: everything stayed disabled, MemAvailable up from about 230 MB to about 770 MB after boot.
+# A Projectivy Launcher the owner had installed also answered HOME and was disabled before the launcher went
+# in. Same day only, not lived with for days.
 # Notes from this firmware:
 # - Android 9 has no topResumedActivity line: check apps and inputs with
 #   `dumpsys activity activities | grep mResumedActivity`, and the input with

@@ -56,6 +56,7 @@
                 android:layout_width="3dp"
                 android:layout_height="13dp"
                 android:layout_marginEnd="10dp"
+                android:id="@+id/raceBar"
                 android:background="@drawable/race_bar" />
 
             <TextView
@@ -92,6 +93,15 @@
             android:textSize="12sp"
             android:fontFamily="@string/font_medium"
             android:letterSpacing="0.12" />
+
+        <!-- game_day: one dot per turn when the panel rotates between games (and the F1 weekend). -->
+        <LinearLayout
+            android:id="@+id/racePager"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Cinematic top shelf: darkens the edge behind the shelf and the lower half, so the text and the

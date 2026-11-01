@@ -54,19 +54,28 @@ Back up first
   through a USB Ethernet adapter: "nothing plugged in" can be true while the network itself is on that
   port. Some devices cut their power while USB debugging is on, so warn me, and remind me to switch
   debugging off once you're done. On a set that reaches the network over USB Ethernet, check before you
-  change anything: `dumpsys usb | grep host_connected` (`host_connected=false` means the adapter is
-  already gone) and `dumpsys connectivity | grep -o 'Transports: [A-Z]*'` (`WIFI` on a TV I call wired
-  means the box fell back, and ADB is running over Wi-Fi). Finish the whole job in one sitting, not
-  two: there the port only returns with USB debugging off, and that closes port 5555 as well. Prefer
-  Wireless debugging if the TV has it.
-- When you finish, close network ADB instead of leaving it open: switch USB debugging and
-  Network/ADB debugging off on the TV, revoke the USB debugging authorisations, reboot, and check
-  with `tools/adb-closed.py <tv ip>` that the port refuses the connection. If the TV's network came
-  over a USB Ethernet adapter, unplug and replug the adapter once debugging is off - the port comes
-  back with it - and have me confirm the TV is on Ethernet again, not Wi-Fi. Don't trust `nc` on macOS:
-  Local Network privacy can block it too, and its "No route to host" proves nothing; only "Connection
-  refused" does. Port 5555 is plaintext, and on firmware with `ro.adb.secure=0` any device on the LAN
-  can get a shell.
+  change anything: `dumpsys usb | grep host_connected` (`host_connected=false` is no proof the adapter
+  is gone: some sets read false with it still up as `eth0`, so go by the next check) and
+  `dumpsys connectivity | grep -o 'Transports: [A-Z]*'` (`WIFI` on a TV I call wired means the box
+  fell back, and ADB is running over Wi-Fi). Finish the whole job in one sitting, not two: there the
+  port only returns with USB debugging off, and that closes port 5555 as well. Prefer Wireless
+  debugging if the TV has it.
+- When you finish, close network ADB instead of leaving it open: switch Wireless debugging and
+  Network/ADB debugging off on the TV (whichever it has), and USB debugging too unless I ask to keep
+  it, and revoke the USB debugging authorisations. Wireless debugging has a port of its own and can
+  stay open when USB debugging goes off: note that port from `adb mdns services`
+  (`_adb-tls-connect._tcp`) before switching it off, and check it with
+  `tools/adb-closed.py <tv ip> <port>` straight after, before the reboot, because it takes a new port
+  each time it starts. Then reboot, check with `tools/adb-closed.py <tv ip>` that port 5555 refuses
+  the connection, and confirm Wireless debugging is still off. If 5555 still answers while USB
+  debugging stays on, that toggle is what keeps it open on this TV: switch it off too and check
+  again. Only the tool saying the port is closed counts, not how the toggles look or a connection
+  that dropped. If the TV's network came over a USB Ethernet adapter, unplug and replug the adapter
+  once debugging is off - the port comes back with it - and have me confirm the TV is on Ethernet
+  again, not Wi-Fi. Don't trust `nc` on macOS: Local Network privacy can block it too, and its "No
+  route to host" proves nothing; only "Connection refused" does. Port 5555 is plaintext, and on
+  firmware with `ro.adb.secure=0` (or with it unset, on a debug build or Android 4.4) any device on
+  the LAN can get a shell.
 
 Debloat
 - List installed packages and sort them into: manufacturer telemetry/analytics, manufacturer content
@@ -80,10 +89,13 @@ Debloat
   still unclear.
 - Never disable Android's own core packages, or the TV may not boot again: the permission controller,
   the package installer, ext services and ext shared, module metadata (each as `com.android.*` or
-  `com.google.android.*`), `com.google.android.overlay.modules*`, `com.android.providers.*` (calendar,
+  `com.google.android.*`, and ext services and ext shared also as the bare `android.ext.services` and
+  `android.ext.shared`), `com.google.android.overlay.modules*`, `com.android.providers.*` (calendar,
   contacts, user dictionary and blocked numbers aside), `com.android.systemui`, `com.android.shell`,
-  `com.android.phone`, `com.android.settings`, `com.android.tv.settings` and `android`. An original Mi TV
-  Stick never booted again after a list took the first six
+  `com.android.phone`, `com.android.settings`, `com.android.tv.settings` and `android`, nor the TV
+  middleware (`com.cltv.mal`, `com.mediatek.tis`, `com.mediatek.tv.service`, `com.mediatek.tv.agent`:
+  a Haier set restarted in a loop with `com.cltv.mal` off,
+  [#1578](https://github.com/Gathin23/cleanyourtv/issues/1578)). An original Mi TV Stick never booted again after a list took the first six
   ([#884](https://github.com/Gathin23/cleanyourtv/issues/884)); `tools/disable.sh` refuses such a list.
 - Before touching streaming apps, voice assistant, Chromecast, Miracast or the update service, ask me
   which ones I use with a checklist question and disable only what I don't tick.

@@ -15,7 +15,8 @@ and goes with the install script disabling launcherx. So the README names the li
 of `examples/<your tv>/debloat.txt`: filled in for the sabrina, that placeholder reported all three
 as back on every run, and `--fix` disabled them.
 
-These tests pin that the README's "After a firmware update" section, the sabrina list's "Home by
+These tests pin that the "After a firmware update" page (docs/firmware-updates.md, moved out of the
+README, which links it), the sabrina list's "Home by
 redirect" note and the keep-cast list's Check line carry the argument with the right list, and then
 run the real check.py against the fake TV from tests/test_drift_check.py, set up the way the sabrina
 answered on UTTC.250917.004, so the command the docs hand out is checked against the tool instead of
@@ -41,7 +42,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 import recovery  # noqa: E402
 from test_drift_check import FAKE_TV  # noqa: E402
 
-README = ROOT / "README.md"
+README = ROOT / "docs" / "firmware-updates.md"  # the README's "After a firmware update" page
 FOLDER = ROOT / "examples" / "google-chromecast-gtv-4k"
 DEBLOAT = FOLDER / "debloat.txt"
 KEEP_CAST = FOLDER / "debloat-keep-cast.txt"
@@ -55,13 +56,11 @@ CHECK = re.compile(r"tools/check\.py\s+(?P<list>examples/.+?\.txt)(?:\s+(?P<laun
 
 
 def firmware_section():
-    """The README's "After a firmware update" section, up to the next heading of the same level."""
+    """docs/firmware-updates.md, the README's "After a firmware update" page, whole."""
     text = README.read_text(encoding="utf-8")
-    start = text.find("\n## After a firmware update\n")
-    if start == -1:
+    if not text.startswith("# After a firmware update\n"):
         return None
-    end = text.find("\n## ", start + 1)
-    return text[start:] if end == -1 else text[start:end]
+    return text
 
 
 def check_commands(lines):

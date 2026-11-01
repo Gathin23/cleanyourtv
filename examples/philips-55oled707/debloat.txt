@@ -73,6 +73,51 @@
 # - Home, SOURCES, Netflix, Ambilight and Quick menu worked on the real remote afterwards; this remote has
 #   no Settings or YouTube button. Private DNS (AdGuard) works.
 #
+# Fourth unit: Philips 77OLED806/12 (77" OLED with Ambilight), Germany, on Ethernet. Same board and the same
+# RTT2.211108.001 build 21029 as the first unit (fingerprint byte-identical), security patch 2025-10-01.
+# ro.boot.device_name reads 77OLED806/12 while ro.product.model is the generic string above, so match this
+# list on the board and the build, not the model name. MemTotal 2,958,184 kB (2.82 GiB).
+# Applied 2026-10-25 in three batches with tools/disable.sh, the launcher from launcher/ in between and
+# tvrecommendations last, then rebooted; nothing below changes the list.
+# - Disabled there from this file: candeebug, gel, usagelogger, nettvrecommender, recommendation,
+#   nettv.market, nettvapps, amazonalexa, demome, playfi.softap, feedback, setupwraith, play.games, videos,
+#   youtube.tvmusic, and tvrecommendations after the replacement launcher was Home. On top of it (owner's
+#   choice): partnersetup, onetimeinitializer, sss.authbridge, syncadapters.calendar, YouTube
+#   (com.google.android.youtube.tv), Apple TV (com.apple.atve.androidtv.appletv), Disney+
+#   (com.disney.disneyplus) and Twitch (tv.twitch.android.app). Not installed on that unit: the nettvapp* web
+#   apps other than ARTE, Fitness Buddy, CHILI, Singa, TED, WhaleLive, Pluto TV, Rakuten TV and Boosteroid.
+# - Kept there (owner's choice): katniss (Assistant), Chromecast, ARTE (nettvapp1814), Netflix, Prime Video,
+#   Spotify, Tidal, ARD, Joyn, DLNA, IP control, the Philips side menu, the firmware updaters, and Play-Fi
+#   (note 2). This remote has no YouTube button, so disabling YouTube cost no key.
+# - Out of the box org.droidtv.aurora, org.droidtv.freeviewplayers and 15 uk.co.freeview.* apps were already
+#   disabled, as on the second unit. With aurora off from the factory, the 50PUS8517 quirk 5 check on an idle
+#   TV found no handleConnectAurora lines at all, so it was left as found rather than enabled.
+# - setupwraith is installed but does NOT claim Home on this build: `cmd package query-activities -a
+#   android.intent.action.MAIN -c android.intent.category.HOME` answered only com.google.android.tvlauncher
+#   and com.android.tv.settings/.system.FallbackHome. The saved network belongs to android.uid.system
+#   (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so disabling setupwraith kept the TV on the network.
+# - After the reboot `pm list packages -d` was unchanged: nothing re-enabled itself. Twice `pm disable-user`
+#   printed success for a package (usagelogger, demome) that `pm list packages -d` did not list a few seconds
+#   later; disabling it again held, through the reboot too (50PUS8517 quirk 1).
+# - Screensaver: "When to start" is `system screen_off_timeout`, which read 604800000 ("Never") out of the box.
+#   Writing `secure sleep_timeout` over ADB took the value and changed nothing. With "When to start" at 5
+#   minutes from the TV's settings, the system screensaver started after 5 min 40 s idle
+#   (`dumpsys power`: mWakefulness=Dreaming). Not re-read after a reboot on this unit; see the second unit
+#   above for tptvservice putting it back at boot, and home_idle_clock_minutes for what survives.
+# - Switching off: Android's screensaver menu has no "Put device to sleep" here. The TV switches itself off
+#   from Eco settings > Switch off timer, which is Philips firmware (org.droidtv.tv.inactivityservice, kept).
+#   Every `input keyevent` sent over ADB counts as a key press and restarts that timer, so a TV being driven
+#   over ADB will not switch itself off.
+# - Home Assistant: the owner controls the TV and its Ambilight from Home Assistant's built-in Philips TV
+#   (philips_js) integration, over the JointSpace API that org.droidtv.xtv serves (50PUS8517 DO NOT
+#   DISABLE). After the list it still answered on https://<tv ip>:1926/6/system without pairing (self-signed
+#   certificate, so `curl -k`): api_version 6.1.0, pairing_type digest_auth_pairing, Ambilight features
+#   LoungeLight, Hue, Ambilight and HueStreaming. Port 1925, which older guides name, is open on this unit but
+#   answers nothing. For the TV to stay reachable in standby, Eco settings > Quick start has to be on.
+# - `tools/tv.py --push` timed out after its full 300 s on a 300 KB file on this adbd, while
+#   `tools/b64push.py` sent the same file in about a second. theme.sh and build-and-install.sh push with
+#   b64push, so themes and the launcher went through; use b64push for anything else.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-55oled707/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55oled707/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

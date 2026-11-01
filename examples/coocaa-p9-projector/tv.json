@@ -1,0 +1,6 @@
+{
+  "tv": "Coocaa P9 projector (MediaTek mt5862), China",
+  "os": "Android 9 (Coocaa OS)",
+  "brand": "Skyworth",
+  "notes": "Coocaa ad engine, push, auto-installer, telemetry, stores and theme packages off; ADB entry via 7x LEFT on About this TV; persist.sys.bootvideo.time=1 skips boot ad; keep `com.tianci.movieplatform` and projector plugin `com.coocaa.home.plug.projection`; launcher handover via `setprop persist.service.homepage` + `set-home-activity`; reboot-checked"
+}

@@ -41,7 +41,8 @@ disabled by `launcher/build-and-install.sh` after `com.gathin.tvhome` was confir
 
 ## Differences from the Android 10 list
 
-- `com.xiaomi.floatingframe` is not installed on this build.
+- `com.xiaomi.floatingframe` is not installed on this build. On `RTM4.220307.164.8277` (below) the package is
+  on the system image but not installed for user 0: only `pm list packages -u` lists it.
 - `com.xiaomi.mitv.updateservice` was kept enabled (firmware updates).
 - `com.google.android.tvrecommendations`, `com.google.android.play.games`, `com.xiaomi.mimusic2` and
   `com.google.android.apps.tachyon` (not installed here) were left alone, as were the USB media players
@@ -67,3 +68,46 @@ disabled by `launcher/build-and-install.sh` after `com.gathin.tvhome` was confir
 With the real remote: navigation, volume, the microphone button and switching to HDMI. Home was
 `com.gathin.tvhome` after the launcher install, and D-pad Up and Down moved between the dock, the grid and the
 top bar as expected. Chromecast and Miracast were not separately re-tested.
+
+## A third unit: Android TV 11, firmware `RTM4.220307.164.8277`
+
+MiTV-MOOQ1 on SDK 30, `release-keys`, on Ethernet. The whole subset above was applied, plus the packages
+below, in five batches with a screenshot of Home after each. It survived one reboot: `pm list packages -d` was
+identical before and after (29 packages, counting the three that were already off). Provisional as well: applied
+and reboot-checked in one session. Alexa, Prime Video and Netflix were already disabled on this unit too.
+
+```
+# Xiaomi preloads
+com.xiaomo.tv.milegal                         # Xiaomi legal / privacy screens
+# stock launcher plumbing, disabled after com.gathin.tvhome was confirmed as Home
+com.google.android.tvrecommendations
+# by the owner's choice; keep them for a set you share
+com.mitv.tvlock                               # Xiaomi TV lock / parental PIN
+com.google.android.apps.mediashell            # Chromecast built-in
+com.xiaomi.mitv.updateservice                 # firmware updates
+com.google.android.youtube.tvmusic
+com.google.android.videos                     # Play Movies & TV
+com.google.android.play.games
+com.xiaomi.mimusic2
+```
+
+- Kept by the owner: Google Assistant (`com.google.android.katniss`), the official YouTube app and the USB media
+  players (`com.xiaomi.mitv.mediaexplorer`, `com.mitv.videoplayer`, `com.mitv.gallery`).
+- `android.autoinstalls.config.xiaomi.amelie` and `com.mstar.android.tv.disclaimercustomization` request no
+  permissions. Neither serves a TV input: `pm query-services --components -a android.media.tv.TvInputService`
+  names only `com.mediatek.tvinput`, `com.mediatek.tv.service` and the preview inputs of
+  `com.google.android.videos` and `com.vk.tv`. When this unit was cleaned, `tools/disable.sh` still skipped both
+  ("neither a requested nor a granted permission block"), so they were disabled with `TVINPUT_ALLOW=1` once HDMI
+  showed a picture after the reboot. Since the fix for [#2398](https://github.com/Gathin23/cleanyourtv/issues/2398),
+  the script reads a package like these as one that asks for nothing on Android 6 and newer, and the list applies in
+  full without `TVINPUT_ALLOW`.
+- Only `com.google.android.tvlauncher` and `com.android.tv.settings/.system.FallbackHome` claim HOME, as on
+  `.9021`.
+- At power-on before the debloat, the first resumed activity was PatchWall's `com.mitv.tvhome.atv/.app.BannerLogoB`,
+  then the stock launcher. Afterwards `logcat -b events | grep wm_set_resumed_activity` goes from `FallbackHome`
+  straight to `com.gathin.tvhome`; the set does not open Live TV by itself, so neither `power_on_home` nor
+  `boot_to_live_tv` is needed.
+- With the real remote after the debloat and the launcher, with neither key helper enabled (no
+  `HOME_KEY_SERVICE` or `INPUT_KEY_SERVICE`): Home, the microphone, the Input/Source button and holding volume
+  (it keeps repeating) all worked, and HDMI showed a picture from the launcher's Inputs menu, which lists HDMI 1-3,
+  AV and Live TV.

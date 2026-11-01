@@ -28,9 +28,38 @@ public class LaunchActionsTest {
                 (pkg, action) -> { throw new AssertionError("No action configured for this package"); }));
     }
 
+    @Test public void viewPrefixGivesTheUri() {
+        assertEquals("bbox://live", LaunchActions.viewUri("view:bbox://live"));
+        assertEquals("bbox://live?a=b", LaunchActions.viewUri("view: bbox://live?a=b "));
+    }
+
+    @Test public void plainActionOrEmptyViewHasNoUri() {
+        assertNull(LaunchActions.viewUri("com.telekom.onetv.tv.pl.action.PROGRAM_GUIDE"));
+        assertNull(LaunchActions.viewUri("view:"));
+        assertNull(LaunchActions.viewUri(null));
+    }
+
     @Test public void emptyConfigurationRetainsNormalEntryWithoutResolving() {
         Object normal = new Object();
         assertSame(normal, LaunchActions.select("store", Map.of(), normal,
                 (pkg, action) -> { throw new AssertionError("Unnecessary resolution"); }));
+    }
+
+    @Test public void inputIdStripsThePrefixAndTrimsTheId() {
+        assertEquals("com.mediatek.tvinput/.hdmi.HDMIInputService/HW5",
+                LaunchActions.inputId("input:com.mediatek.tvinput/.hdmi.HDMIInputService/HW5"));
+        assertEquals("HW5", LaunchActions.inputId("input: HW5 "));
+    }
+
+    @Test public void inputIdIsNullForEverythingElse() {
+        assertNull(LaunchActions.inputId(null));
+        assertNull(LaunchActions.inputId("FEATURED_LAUNCH"));
+        assertNull(LaunchActions.inputId("INPUT:HW5"));
+        assertNull(LaunchActions.inputId("not-input:HW5"));
+    }
+
+    @Test public void emptyInputIdFallsBackToANormalLaunchInsteadOfAnEmptySwitch() {
+        assertNull(LaunchActions.inputId("input:"));
+        assertNull(LaunchActions.inputId("input:   "));
     }
 }

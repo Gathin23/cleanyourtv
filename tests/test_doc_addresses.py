@@ -8,8 +8,15 @@ Windows user name in a `JAVA_HOME` path, and docs/REMOTE.md an example address o
 rule names. These tests keep the lists, the TV pages and the guides on the placeholders.
 
 What is not a TV's address: a route such as `192.168.1.0/24` (the subnet a helper advertises in
-docs/REMOTE.md). The add-on pages are not read: the address they show is the reader's own server
-(Pi-hole, Home Assistant), given as an example.
+docs/REMOTE.md), and Tailscale's own DNS server `100.100.100.100`, which is the same number on every
+tailnet and so says nothing about a set. The add-on pages are not read: the address they show is the
+reader's own server (Pi-hole, Home Assistant), given as an example.
+
+A TV reached through Tailscale is at a `100.x.y.z` address, which is what docs/REMOTE.md tells a reader
+to connect to, and the four RFC 1918 networks above are not where one of those lives: the range is
+100.64.0.0/10, the carrier-grade NAT block Tailscale hands out from, and a `100.64`-`100.127` address is
+as much a real set's address as a `192.168` one. A note written from a remote session that pasted the
+address it connected to went in unnoticed while this read only the RFC 1918 ranges.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -23,11 +30,15 @@ ROOT = Path(__file__).resolve().parents[1]
 FOLDERS = ("examples", "docs", "themes")
 SUFFIXES = (".md", ".txt", ".json", ".sh", ".ps1")
 EXAMPLE = "192.168.1.50"
+# Tailscale's DNS server: inside the range below, and the one address there a page may name.
+TAILSCALE_DNS = "100.100.100.100"
 
-# An RFC 1918 IPv4 address, not part of a longer dotted number such as a firmware build; a full stop
-# after it ends the sentence.
+# A private IPv4 address: RFC 1918, or 100.64.0.0/10, the carrier-grade NAT block a tailnet hands out
+# from. Not part of a longer dotted number such as a firmware build; a full stop after it ends the
+# sentence.
 PRIVATE = re.compile(
-    r"(?<![\w.])(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}(?!\d|\.\d)")
+    r"(?<![\w.])(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7]))"
+    r"\.\d{1,3}\.\d{1,3}(?!\d|\.\d)")
 # A home folder with a person's name in it; `<user name>` and the shared folders are fine.
 HOME_FOLDER = re.compile(
     r"(?:\b[A-Za-z]:[\\/]|(?<![\w.])/)Users[\\/](?!<|Shared\b|Public\b|Default\b)[^\\/\s'\"`]+")
@@ -45,10 +56,10 @@ def pages(root):
 
 
 def addresses(line):
-    """The LAN addresses in one line that name a host, leaving out the example address and routes."""
+    """The private addresses in one line that name a host, leaving out the example address and routes."""
     out = []
     for match in PRIVATE.finditer(line):
-        if match.group(0) == EXAMPLE:
+        if match.group(0) in (EXAMPLE, TAILSCALE_DNS):
             continue
         if match.group(0).endswith(".0") and line[match.end():match.end() + 1] == "/":
             continue  # a route: the network address with its prefix length
@@ -86,6 +97,21 @@ class ReaderTest(unittest.TestCase):
         self.assertEqual([], addresses("build 10.0.0.1.5 of the firmware"))
         self.assertEqual([], addresses("Tailscale's DNS (100.100.100.100)"))
         self.assertEqual([], addresses("both `192.168.1.x`, say"))
+
+    def test_a_tailnet_address_is_found(self):
+        """A set reached through Tailscale is at 100.64.0.0/10, which is a real address too."""
+        self.assertEqual(["100.83.14.7"], addresses("TV_HOST=100.83.14.7 tools/tv.py --probe"))
+        self.assertEqual(["100.64.0.1"], addresses("the TV answered at 100.64.0.1."))
+        self.assertEqual(["100.127.255.254"], addresses("`adb connect 100.127.255.254:5555`"))
+        self.assertEqual(["100.100.1.7", "100.101.2.8"],
+                         addresses("100.100.1.7 and 100.101.2.8 were the two nodes"))
+
+    def test_the_edges_of_the_tailnet_range_and_its_one_name_are_not(self):
+        # 100.63 and 100.128 are outside 100.64.0.0/10, so they are somebody else's public address.
+        self.assertEqual([], addresses("the resolver answered from 100.63.255.255"))
+        self.assertEqual([], addresses("the resolver answered from 100.128.0.1"))
+        self.assertEqual([], addresses("TV_HOST=100.x.y.z tools/tv.py --probe"))
+        self.assertEqual([], addresses("`100.x.y.z` is what the Tailscale app shows"))
 
     def test_a_home_folder_is_found_and_a_placeholder_is_not(self):
         self.assertTrue(HOME_FOLDER.search(r"$env:JAVA_HOME='C:\Users\Someone\.jdks\jbr-17'"))

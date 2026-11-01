@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.justinnewman.gameday'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.justinnewman.gameday'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            // Sideloaded over ADB like the launcher: signed with the debug key. Sign your own releases with your key.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Test only (never in the APK): plain JVM tests for the calendar reading and the schedule, src/test.
+    testImplementation 'junit:junit:4.13.2'
+    // Android's own org.json, which the JVM tests cannot reach through android.jar's stubs.
+    testImplementation 'org.json:json:20231013'
+}

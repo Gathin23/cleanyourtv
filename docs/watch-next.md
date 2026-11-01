@@ -11,6 +11,9 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
   the caller's own rows plus every row marked `searchable`.
 - **Query without a selection:** a caller without `ACCESS_ALL_EPG_DATA` gets a `SecurityException`
   when it passes one. Read the whole table and filter in code.
+- **Name the columns:** pass the projection you read rather than `null`. On a Philips TPM191E (Android TV 12) the
+  provider's default projection includes `split_id`, a column its `watch_next_programs` table does not have, so a
+  query with a `null` projection fails with `SQLiteException: no such column: split_id`.
 - **Some apps publish nothing.** Rows exist only if the app writes them and marks them
   searchable, and some apps do neither, so query on the target TV before relying on an app.
   Query from an app that holds `READ_TV_LISTINGS`, not from the shell: the shell lacks it, so
@@ -44,6 +47,19 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
   Music"). Stremio (`com.stremio.one`) published none either; it keeps a preview channel named "Continue
   Watching" whose rows carry `last_playback_position_millis` and `duration_millis` but no date column at all, so
   they cannot be sorted or aged by time.
+- **Seen on a TCL 55C655** (G10, Google TV 12, `STT2.230203.001 AS16`), the same kind of probe with launcherx still
+  enabled: 34 Watch Next rows, RaiPlay (`it.rainet.androidtv`) 17, DAZN 10, Prime Video 5 and Netflix 2; Disney+
+  and Mediaset Infinity, both installed, had none. The newest four were the first four cards of Google TV's own
+  Continue watching row, in the same order, so on this set the stock row comes from the local table. Every poster
+  was `https://` (raiplay.it, Netflix's nflxso.net, Amazon's image CDN), and some RaiPlay rows had none. RaiPlay
+  often puts a tagline in `title` instead of the show's name ("Ogni giorno un nuovo episodio" for one daily
+  series), so a text-only card can be unreadable. The DAZN rows were channels, `watch_next_type` 2, last engaged
+  433 days before. Preview programs: DAZN 55, Prime Video 30, TCL `channelplus` 30, Netflix 16, YouTube 7.
+- **Seen on a Philips 65PUS7354/12** (TPM191E, Android TV 12, `STT2.230526.001`): a launcher build holding
+  `READ_TV_LISTINGS`, querying without a selection, failed on `split_id` with a `null` projection (above) and worked
+  once it named the 13 columns it reads. It then saw one Watch Next row, from RTP Play (`pt.rtp.play`). Plex
+  (`com.plexapp.android`) had none visible, not even after a title was played part-way and stopped, so on this set
+  a sideloaded launcher's Continue watching row cannot show Plex. Preview programs were not read.
 
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that

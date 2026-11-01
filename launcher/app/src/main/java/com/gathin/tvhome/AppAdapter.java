@@ -61,6 +61,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** Hold OK on a tile: the activity shows the tile menu (move, remove from Home, app info). */
         void onTileLongPress(int position, View card);
         void onLibraryUp();
+        /** A tile whose launch_actions entry is "input:<id>": switch to that TV input instead of opening an app. */
+        void onOpenInput(String inputId);
     }
 
     static final class Entry {
@@ -454,6 +456,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLibraryAt(position)) return;
         Holder h = (Holder) holder;
@@ -474,13 +477,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.name.setText(e.name);
         // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
         // In a single row every tile is the dock's kind: the big title above names it.
-        boolean dockKind = dockRow && (singleRow || position < dockSize);
+        boolean dockKind = DockSlots.inDockRow(dockRow, singleRow, position, dockSize);
         h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
+        h.inDock = dockKind;
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
         h.name.setAlpha(focused ? 1f : restNameAlpha);
         h.card.setScaleX(focused && animations ? focusScale() : 1f);
         h.card.setScaleY(focused && animations ? focusScale() : 1f);
-        h.card.setTranslationY(focused && advancedEffects ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
+        h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
         h.card.setTranslationZ(focused && advancedEffects ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
         h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
         h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
@@ -522,6 +526,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
+    @SuppressWarnings("deprecation")
     private void launch(Entry e) {
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
@@ -535,10 +540,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // already running resumes instead of restarting; only phone apps added from the library use plain MAIN.
         if (leanbackPackages.contains(e.pkg)) i.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         String action = launchActions.get(e.pkg);
+        String inputId = LaunchActions.inputId(action);
+        if (inputId != null) {
+            listener.onOpenInput(inputId);
+            return;
+        }
         if (action != null) {
             // NEW_TASK only: with RESET_TASK_IF_NEEDED, Android just brings a running task of the app to the front
             // ("Activity not started"), so the screen never opens while the app is up, e.g. MagentaTV's boot-time task.
-            Intent byAction = new Intent(action).setPackage(e.pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent byAction = LaunchActions.intent(e.pkg, action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (ctx.getPackageManager().resolveActivity(byAction, 0) != null) i = byAction;
         }
         try {
@@ -698,6 +708,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float[] weight = new float[12];
         float[][] sum = new float[12][3];
         float[] hsv = new float[3];
+        float totalWeight = 0;
         for (int y = 0; y < n; y++) {
             for (int x = 0; x < n; x++) {
                 int p = bmp.getPixel(x, y);
@@ -707,15 +718,20 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 int bin = (int) (hsv[0] / 30f) % 12;
                 float w = hsv[1] * hsv[2];
                 weight[bin] += w;
+                totalWeight += w;
                 sum[bin][0] += Color.red(p) * w;
                 sum[bin][1] += Color.green(p) * w;
                 sum[bin][2] += Color.blue(p) * w;
             }
         }
         bmp.recycle();
+        if (totalWeight < n * n * 0.03f) return 0xFF6E6E73;   // a monochrome icon, like a grey gear
         int best = 0;
         for (int i = 1; i < 12; i++) if (weight[i] > weight[best]) best = i;
-        if (weight[best] < n * n * 0.03f) return 0xFF6E6E73;   // a monochrome icon, like a grey gear
+        if (weight[best] < n * n * 0.03f) {
+            // Multicolored icon without a single dominant hue: pick its most vivid colour
+            return vividColor(live);
+        }
         float w = weight[best];
         return Color.rgb((int) (sum[best][0] / w), (int) (sum[best][1] / w), (int) (sum[best][2] / w));
     }
@@ -754,10 +770,20 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         d.setBounds(saved);
         // Just inside a rounded square's corners; one side may go a step further in, past a corner badge.
         // An icon padded on both sides is a small plate in the middle, which no fill would meet.
-        int a = plateColor(bmp, 7, n), b = plateColor(bmp, n - 8, n);
         int topRow = 7, bottomRow = n - 8;
-        if (a == 0 && b != 0) a = plateColor(bmp, topRow = 10, n);
-        else if (b == 0 && a != 0) b = plateColor(bmp, bottomRow = n - 11, n);
+        int a = plateColor(bmp, topRow, n), b = plateColor(bmp, bottomRow, n);
+        if (a == 0) {
+            for (int r : new int[]{5, 6, 4, 10}) {
+                int c = plateColor(bmp, r, n);
+                if (c != 0) { a = c; topRow = r; break; }
+            }
+        }
+        if (b == 0) {
+            for (int r : new int[]{n - 6, n - 7, n - 5, n - 11}) {
+                int c = plateColor(bmp, r, n);
+                if (c != 0) { b = c; bottomRow = r; break; }
+            }
+        }
         bmp.recycle();
         if (a == 0 || b == 0) return null;
         // The sampled rows sit at these heights of the tile; extend the line through them to its edges. A row
@@ -887,6 +913,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** Alpha of the name while the tile is not focused (always_show_names). */
         final float restNameAlpha;
         final boolean overshoot;
+        /** A dock tile: it grows in place without advanced_effects' lift, which reads as off-centre in the band (#2135). */
+        boolean inDock;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
                boolean reducedMotion, float restNameAlpha, boolean overshoot) {
@@ -940,7 +968,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // A short zoom with no hardware layer: building a layer for so short an animation costs more
                     // frames than it saves. The name just appears instead of fading.
                     view.animate().scaleX(s).scaleY(s)
-                            .translationY(focused && advancedEffects ? -4f * density : 0f)
+                            .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
                             .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(focused ? Motion.REDUCED_MS : 60)
                             .setInterpolator(new DecelerateInterpolator())
@@ -952,7 +980,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (focused) name.setTranslationY(density * 4f);
                 } else {
                     view.animate().scaleX(s).scaleY(s)
-                            .translationY(focused && advancedEffects ? -4f * density : 0f)
+                            .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
                             .translationZ(focused && advancedEffects ? 8f * density : 0f)
                             .setDuration(advancedEffects ? (focused ? 220 : 170) : (focused ? 260 : 180))
                             .setInterpolator(focused && !overshoot ? new DecelerateInterpolator(1.5f)

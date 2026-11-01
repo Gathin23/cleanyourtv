@@ -12,8 +12,9 @@ print; the scripts are run here to show that is what they do.
 Two more things the bullet has to say. `$env:HANDLERS_ALLOW=1` stays set in the PowerShell window,
 so the next disable.ps1 or check.py --fix on the main list would skip the guard as well; the bullet
 says to clear it. And the undo is `pm enable` for that app: the one-app list's record holds this
-project's launcher as Home and nothing for the stock launcher, so restore.sh with it turns the stock
-launcher back on and makes it Home, as it does for any list; that is run here too.
+project's launcher as Home and the stock launcher as disabled (launcher/build-and-install.sh turned it
+off before), so restore.sh with it turns the app back on and leaves Home on this project's launcher
+(#1714); that is run here too.
 
 The doc tests borrow the bullet reader of tests/test_input_intent_note.py, the disable.sh tests the
 fake client of tests/test_handler_guard.py, the check.py tests the fake TV of
@@ -90,7 +91,8 @@ class WrongHandlerNoteTest(unittest.TestCase):
     def test_the_bullet_says_what_restore_does_to_home(self):
         # Pinned by WrongHandlerRestoreTest below.
         self.assertIn("`tools/restore.sh` with that list", self.note)
-        self.assertIn("turns the stock launcher back on and makes it Home", self.note)
+        self.assertIn("leaves Home on this project's launcher", self.note)
+        self.assertIn("only if the stock launcher was on when the list was applied", self.note)
 
 
 class WrongHandlerDisableTest(unittest.TestCase):
@@ -148,9 +150,11 @@ class WrongHandlerRestoreTest(unittest.TestCase):
     sent = rec.RecoveryRecordTest.sent
     clear_sent = rec.RecoveryRecordTest.clear_sent
 
-    def test_restoring_the_one_app_list_brings_the_stock_launcher_back_as_home(self):
+    def test_restoring_the_one_app_list_leaves_this_projects_launcher_on_home(self):
         # The main list is applied and launcher/build-and-install.sh has made this project's
         # launcher Home, disabling the stock launcher outside any list. Then the one-app list goes on.
+        # The record notes the stock launcher as disabled, so undo leaves it off and Home where it
+        # was (#1714); it used to turn the stock launcher on and hand it Home.
         custom = "com.gathin.tvhome/.MainActivity"
         stock = "com.google.android.tvlauncher"
         self.write_list([ES])
@@ -160,18 +164,16 @@ class WrongHandlerRestoreTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(f"pm disable-user --user 0 {ES}", self.sent())
         self.assertEqual(self.record()["home"], custom)
-        self.assertNotIn(stock, self.record()["packages"])
+        self.assertEqual(self.record()["packages"][stock], "disabled")
         self.clear_sent()
 
         result = self.run_script("restore.sh", str(self.list_path))
         self.assertEqual(result.returncode, 0, result.stderr)
         sent = self.sent()
         self.assertIn(f"pm enable {ES}", sent)
-        self.assertIn(f"pm enable {stock}", sent)
+        self.assertNotIn(f"pm enable {stock}", sent)
         home = [c for c in sent if c.startswith("cmd package set-home-activity")]
-        self.assertEqual(len(home), 1, sent)
-        self.assertIn("resolve-activity", home[0])
-        self.assertIn(stock, home[0])
+        self.assertEqual(home, [f"cmd package set-home-activity --user 0 {custom}"])
 
 
 if __name__ == "__main__":

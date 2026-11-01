@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · 正體中文 · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · 正體中文 · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -41,15 +41,17 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 |---|---|
 | 電腦與程式開發助理 | 按照下方步驟，將操作提示詞交給助理。 |
 | 電腦，但沒有程式開發助理 | 依照[手動操作](#手動操作)自行執行。 |
-| 只有 Android 手機 | 可使用 [@udhaykumarbala](https://github.com/udhaykumarbala) 開發的社群版 [Clean Your TV 應用程式](https://cleanyour.tv/app)，透過 Wi-Fi 連線、分析並清理電視。 |
+| 只有手機或筆電，沒有程式開發助理 | 可使用由獨立開發者打造的[社群應用程式](https://cleanyour.tv/app)（Android 手機、Mac 與 Windows）。這些應用程式與 CleanYourTV 無隸屬關係，問題請回報至各應用程式的儲存庫。 |
 
-使用助理時，請準備與電視連接同一個 Wi-Fi 網路、可執行終端機指令的電腦。可使用的助理包括 [Claude Code](https://claude.com/product/claude-code)、[Codex](https://github.com/openai/codex)、[Gemini CLI](https://github.com/google-gemini/gemini-cli) 或 [Antigravity CLI](https://antigravity.google/product/antigravity-cli)。
+使用助理時，請準備與電視連接同一個 Wi-Fi 網路、可執行終端機指令的電腦，並安裝 Python 3、完整的 JDK 17 至 22、Android SDK Platform 34 與 34.x Build Tools，供助理編譯啟動器。可使用的助理包括 [Claude Code](https://claude.com/product/claude-code)、[Codex](https://github.com/openai/codex)、[Gemini CLI](https://github.com/google-gemini/gemini-cli) 或 [Antigravity CLI](https://antigravity.google/product/antigravity-cli)。
+
+開啟偵錯前，請確認電視 USB 埠接了哪些裝置，以及是否透過 USB 乙太網路轉接器上網：部分電視開啟 USB 偵錯時會切斷 USB 埠電源。使用 USB 乙太網路時，先依 [`PROMPT.md`](PROMPT.md) 確認實際網路連線、盡量在同一次作業完成；若支援無線偵錯，可優先使用。
 
 | 步驟 | 操作 |
 |---|---|
-| 1. 電視端 | 開啟「設定 → 裝置偏好設定 → 關於」，在「版本號碼／Build」上連按七次確定，返回後進入開發人員選項，開啟 USB 偵錯。如果另有網路偵錯或 ADB 偵錯開關，也要開啟。選單名稱會因機型而異。 |
+| 1. 電視端 | 開啟「設定 → 裝置偏好設定 → 關於」，在「版本號碼／Build」上連按七次確定，返回後進入開發人員選項。傳統 5555 連線需開啟 USB 偵錯；如果另有網路偵錯或 ADB 偵錯開關，也要開啟。支援加密無線偵錯的電視可依[配對指南](tools/native-adb.md)連線。選單名稱會因機型而異。 |
 | 2. 電腦端 | 複製儲存庫（`git clone https://github.com/Gathin23/cleanyourtv`），在助理中開啟該資料夾，再貼上 [`PROMPT.md`](PROMPT.md) 的內容並填入電視型號。 |
-| 3. 確認需求 | 在電視上接受「允許 USB 偵錯？」授權，告訴助理常用的應用程式、快捷列的大小與排列順序，以及是否保留語音助理、Chromecast 和系統更新。 |
+| 3. 確認需求 | 依連線方式在電視上接受「允許 USB 偵錯？」授權或完成無線偵錯配對；告訴助理常用的應用程式、快捷列的大小與排列順序，以及是否保留語音助理、Chromecast、Miracast 和系統更新。 |
 | 4. 檢查結果 | 按提示完成備份、清理和安裝，檢查應用程式啟動、遙控器、輸入來源與還原方式；最後[關閉偵錯並確認連接埠已關閉](#完成後關閉-adb)。 |
 
 先複製儲存庫，助理才能直接使用本專案的 `tools/disable.sh` 和 `launcher/build-and-install.sh`。Home 保護機制與還原紀錄由這些既有工具處理；完整備份仍須依操作提示詞另行保存。
@@ -97,7 +99,7 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 
 在「設定」按鈕上長按確定，選擇應用程式排序。按確定拿起應用程式，用方向鍵移動，再按確定或返回放下；沒有拿起應用程式時，按返回會離開並儲存排列。頂端的獨立排序按鈕預設隱藏，可透過 `reorder_button` 開啟。
 
-`tile_menu` 預設關閉；啟用後，在圖塊上長按確定可選擇移動、從主畫面移除或檢視應用程式資訊。未啟用時，長按會開啟應用程式資訊。
+`tile_menu` 預設開啟：在圖塊上長按確定可選擇移動、從主畫面移除或檢視應用程式資訊。關閉時，長按會開啟應用程式資訊。
 
 應用程式庫也預設關閉。啟用 `app_library` 後，入口位於主畫面應用程式的最後一列下方，可瀏覽具備電視或一般 Android 啟動入口的應用程式；一般 Android 應用程式可能仍需要觸控或滑鼠操作。
 
@@ -107,6 +109,15 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 - 另有預設關閉的 `app_library_selection`，啟用後按確定即可切換勾選，決定是否顯示在主畫面。
 
 完整行為請見[應用程式庫說明](docs/app-library.md)。
+
+### 其他可選功能
+
+下列設定預設關閉，除 `icon_tiles` 外可在 `config.xml` 或主題中啟用；完整設定與截圖見[功能開關](docs/switches.md)和[主題設定](themes/README.md#keys)。
+
+- **輸入來源與圖塊：**`inputs_connected_only` 將未連接的輸入來源收進「更多輸入」；`icon_tiles` 以圖示顯示橫幅裁切不佳的應用程式，套件清單只能在 `config.xml` 設定，主題不會讀取此鍵。
+- **啟動應用程式：**`open_on_start_network_wait` 可讓開機後要開啟的應用程式等待網路連線，設定 0 至 600 秒；預設 0 秒，不等待。離開 Home 會取消這次開啟。
+- **VPN 按鈕：**搭配 `vpn_pill` 使用 `icon_only_vpn`，以圓形鎖頭顯示 VPN 連線狀態。
+- **賽事倒數：**`game_day` 可讀取 [Game Day 附加元件](addons/game-day/README.md)提供的賽事日曆快照，在時鐘下方輪流顯示下一場賽事與倒數。附加元件使用你提供的日曆連結，啟動器只讀取資料，沒有網路權限；不顯示即時比分。
 
 ## 支援哪些裝置
 
@@ -149,7 +160,19 @@ tools/venv/bin/python -I tools/tv.py 'pm list packages'
 
 ### 2. 依需求套用停用清單
 
+**CVTE 主機板例外：**如果電視有任何 `com.cvte.*` 套件，完成備份後，先依下方方式核對清單、分成小批並保存，不要先執行停用指令。對每份將套用的清單執行下方 `recovery.py --save`，將原廠 Home 與套件狀態記入還原紀錄；紀錄失敗就停止。再依[下方 CVTE 說明](#3-編譯並安裝啟動器)保留原廠啟動器、設定新 Home，重新開機並確認 Home 與 ADB 都恢復，才繼續其他變更；同一輪不要啟用遙控器按鍵輔助服務。
+
+```bash
+tools/venv/bin/python -I tools/recovery.py --save "work/<your batch>.txt"
+```
+
+換成實際核對過的清單路徑；Windows 使用 `tools\venv\Scripts\python.exe -I tools\recovery.py --save "work\<your batch>.txt"`。這些指令需要先設定 `TV_HOST`；同一份清單再次套用時會保留最初的紀錄。
+
+新建紀錄時，請核對輸出的 `HOME before:` 是這台電視實際的原廠 Home 元件。已有紀錄時，工具會保留它而不重新顯示 `HOME before:`，請核對紀錄中的原始 Home；若是空值、系統選擇器或無法確認，請停止並先釐清還原方式。這些紀錄留在電腦上，不要公開分享。
+
 **下方小米路徑僅供示範，請換成與自己的電視相符、且已核對過的清單。不要直接套用其他機型的清單。**
+
+`disable.sh` 每次會套用整份指定清單，不會自動在批次間暫停。先依機型與家人的需求核對，將要套用的套件分成小份清單，逐份執行並在批次間截圖檢查；保留每份清單及其各自的還原紀錄。
 
 ```bash
 tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
@@ -157,11 +180,13 @@ tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
 
 清單路徑以執行指令時的目錄為準，也可使用絕對路徑。請保留實際套用的清單及 `~/.cleanyourtv/` 中的還原紀錄。依 [`PROMPT.md`](PROMPT.md) 小批次停用、逐次檢查截圖，先確認家人要保留的串流應用程式、語音助理、Chromecast、Miracast 與韌體更新功能。
 
+最後一批停用後，重新開機前先等待約 15 秒讓套件狀態寫入；重啟後以 `pm list packages -d` 比對實際停用的套件。若韌體重新啟用了某些套件，依操作提示詞檢查，不要反覆嘗試停用。
+
 不要停用電視與輸入服務、遙控器和藍牙配對、螢幕鍵盤、Play 商店、Play 服務或 Android 核心套件。不要啟動工廠或測試應用程式；完整保護規則以 [`PROMPT.md`](PROMPT.md) 和 [`AGENTS.md`](AGENTS.md) 為準。
 
 ### 3. 編譯並安裝啟動器
 
-啟動器的套件名稱是 `com.gathin.tvhome`。編譯需要完整的 JDK 17（僅有 JRE 不足）、Android SDK Platform 34 與 Build Tools 34.0.0。macOS 可使用：
+啟動器的套件名稱是 `com.gathin.tvhome`。本機編譯需要完整的 JDK 17 至 22（僅有 JRE 不足）、Android SDK Platform 34 與 Build Tools 34.0.0 或更新的 34.x 版本。JDK 23 以上無法配合目前的 Gradle 8.9；較新的 Android SDK Platform 不能取代 Platform 34。macOS 可使用：
 
 ```bash
 brew install openjdk@17 android-commandlinetools
@@ -174,6 +199,8 @@ Linux 安裝腳本會尋找 `~/Android/Sdk` 和 `PATH` 中的 Java。環境準�
 TV_HOST=192.168.1.50 launcher/build-and-install.sh
 ```
 
+也可用 Docker 在自己的電腦從原始碼編譯啟動器或附加元件，無須在本機安裝 JDK 與 Android SDK；連線工具仍需要 Python。編譯後由安裝腳本以 `SKIP_BUILD=1` 安裝既有 APK，Home 與 SDK 檢查仍會執行。Docker 與本機編譯的簽章可能不同，切換建置方式時 Android 可能拒絕更新；操作方式、簽章與還原選項請先閱讀 [Docker 建置指南](tools/docker-build.md)。
+
 **安裝腳本會編譯及安裝 APK、切換預設 Home，並依偵測結果停用原廠啟動器。** Home 未成功切換時，腳本會嘗試回復。可自動識別的原廠套件為 `com.google.android.tvlauncher`、`com.google.android.apps.tv.launcherx`、`com.google.android.leanbacklauncher` 與 `com.mitv.tvhome`。
 
 若需指定原廠套件，使用 `STOCK_LAUNCHER=<套件名稱>`；若要保留原廠啟動器的啟用狀態，使用：
@@ -182,7 +209,7 @@ TV_HOST=192.168.1.50 launcher/build-and-install.sh
 TV_HOST=192.168.1.50 STOCK_LAUNCHER=none launcher/build-and-install.sh
 ```
 
-`none` 代表不停用原廠啟動器，並不代表略過 Home 的設定。`tools/disable.sh` 也會保護 Home：尚無可用的替代啟動器時，會略過清單中目前擁有 Home 的套件。完成新啟動器的切換後，再套用同一份清單即可處理該項目。
+`none` 代表不停用原廠啟動器，安裝腳本仍會嘗試設定並確認新 Home。部分電視使用 `stock_home_redirect`，刻意保留原廠 Home，再以按鍵服務轉到新啟動器；請依[該機型的清單與說明](examples/README.md)設定。`tools/disable.sh` 也會保護 Home：尚無可用的替代啟動器時，會略過清單中目前擁有 Home 的套件；Google TV 的 setupwraith 若仍啟用並優先回應 Home，工具也會保留原本的 Home。確認適用的切換方式後，才重新套用清單。
 
 **CVTE 主機板須特別留意：**只要有 `com.cvte.*` 套件，除非完全相符的機型範例明確停用原廠啟動器，否則應保留 `com.cvte.tv.launcher.*` 啟用。依 [`PROMPT.md`](PROMPT.md) 設定新 Home 後，先重新開機一次，確認 Home 與 ADB 都恢復，再繼續其他變更；不要在同一輪啟用遙控器按鍵輔助服務。
 
@@ -199,7 +226,7 @@ $env:TV_HOST = '192.168.1.50'
 tools\venv\Scripts\python.exe -I tools\tv.py --probe
 ```
 
-同樣先完成備份與清單核對，再套用停用清單、安裝啟動器。先執行停用工具，才能在原廠 Home 被變更前保存還原紀錄；Home 保護機制會略過尚無可用替代啟動器的 Home 項目。以下清單路徑仍須換成自己已核對的機型：
+同樣先完成備份與清單核對。CVTE 主機板應先依[上述例外步驟](#2-依需求套用停用清單)設定 Home、重新開機並確認 ADB，不要先照下列順序停用。其他機型可先套用停用清單，再安裝啟動器：先執行停用工具，才能在原廠 Home 被變更前保存還原紀錄；Home 保護機制會略過尚無可用替代啟動器的 Home 項目。以下清單路徑仍須換成自己已核對的機型：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools\disable.ps1 -TvHost 192.168.1.50 examples\xiaomi-mi-tv-4a\debloat.txt
@@ -217,6 +244,7 @@ PowerShell 安裝腳本以 `-StockLauncher <套件名稱>` 指定原廠啟動器
 | 工具 | 用途 |
 |---|---|
 | [`tools/tv.py`](tools/tv.py) | Python ADB 用戶端：執行指令、批次操作、上傳、下載、重新開機與擷取畫面，也可先模擬遙控器按鍵。 |
+| [`tools/docker-build.sh`](tools/docker-build.sh)／[`docker-build.ps1`](tools/docker-build.ps1) | 在 Docker 中編譯啟動器或附加元件。見[建置指南](tools/docker-build.md)。 |
 | [`tools/b64push.py`](tools/b64push.py) | 分塊上傳 APK 等大型檔案，並驗證檢查碼。 |
 | [`tools/relay.py`](tools/relay.py) | 將本機連接埠轉送到電視的 ADB，供無法直接存取區域網路的助理使用；只在本機監聽。見[指南](tools/relay.md)。 |
 | [`tools/disable.sh`](tools/disable.sh)／[`restore.sh`](tools/restore.sh) | 套用停用清單，或依變更前的紀錄還原。 |
@@ -269,13 +297,13 @@ TV_HOST=192.168.1.50 tools/theme.sh --reset
 
 ### 語言、螢幕保護程式與遙控器
 
-- **語言：**啟動器跟隨電視的系統語言，已包含正體中文（臺灣），沒有內建語言切換開關。Android 13 以上可只設定啟動器的語言：
+- **語言：**啟動器預設跟隨電視的系統語言，已包含正體中文（臺灣）。可在 `config.xml` 或主題的 `locale` 指定語言標籤，例如 `zh-TW`；留空則使用系統語言。Android 13 以上也可透過系統為啟動器單獨設定語言；如要使用系統設定，請先清空內建設定與目前主題的 `locale`，並重新建置或推送所需的設定：
 
   ```bash
   tools/venv/bin/python -I tools/tv.py 'cmd locale set-app-locales com.gathin.tvhome --locales zh-TW'
   ```
 
-  查詢目前設定可用 `cmd locale get-app-locales com.gathin.tvhome`；改為英文時將 `zh-TW` 換成 `en`。Android 12 以下請變更電視系統語言。
+  查詢系統的應用程式語言設定可用 `cmd locale get-app-locales com.gathin.tvhome`；改為英文時將 `zh-TW` 換成 `en`。Android 12 以下沒有此系統指令，可使用上述 `locale` 設定或變更電視系統語言。
 
 - **時鐘螢幕保護程式：**在電視的螢幕保護程式設定中選擇「時鐘（Clock）」，或執行：
 
@@ -284,9 +312,9 @@ TV_HOST=192.168.1.50 tools/theme.sh --reset
   ```
 
 - **輸入來源鍵：**macOS／Linux 安裝時可使用 `INPUT_KEY_SERVICE=1` 啟用無障礙服務，支援 Google TV 遙控器的輸入來源按鈕；Windows 使用 `-InputKeyService`。
-- **Home／設定鍵與應用程式按鍵：**macOS／Linux 安裝時可使用 `HOME_KEY_SERVICE=1`，搭配 `config.xml` 或主題中的 `app_keys` 等設定；Windows 使用 `-HomeKeyService`。`settings_key_panel` 可讓設定鍵開啟快捷設定面板。詳細按鍵設定見[英文啟動器說明](README.md#the-launcher)。
+- **Home／設定鍵與應用程式按鍵：**macOS／Linux 安裝時可使用 `HOME_KEY_SERVICE=1`，搭配 `config.xml` 或主題中的 `app_keys` 等設定；Windows 使用 `-HomeKeyService`。`settings_key_panel` 可讓設定鍵開啟快捷設定面板。詳細按鍵設定見[英文啟動器說明](docs/launcher.md#remote-keys)。
 
-無障礙按鍵服務必須用**實體遙控器**驗證，注入按鍵不算驗證。`am force-stop com.gathin.tvhome` 會關閉這些輔助服務，詳見[疑難排解](docs/TROUBLESHOOTING.md)。
+無障礙按鍵服務必須用**實體遙控器**驗證，注入按鍵不算驗證。`am force-stop com.gathin.tvhome` 預設會關閉這些輔助服務；若啟用 `restore_key_services` 並在安裝時使用 `RESTORE_KEY_SERVICES=1` 授權，回到 Home 後會嘗試恢復。詳見[疑難排解](docs/TROUBLESHOOTING.md)與[功能設定](themes/README.md#keys)。
 
 ### 模組卡片
 
@@ -296,7 +324,7 @@ TV_HOST=192.168.1.50 tools/theme.sh --reset
 
 ## 還原原廠主畫面與應用程式
 
-`tools/disable.sh` 在停用前記錄清單中各套件的狀態（已啟用、已停用或未安裝）、原本擁有 Home 的元件，以及三項系統動畫縮放設定。紀錄位於電腦的 `~/.cleanyourtv/`，每台電視與每份清單各自儲存。再次套用同一清單不會覆寫最初紀錄；新增項目會在停用前補入紀錄。
+`tools/disable.sh` 在停用前記錄清單中各套件的狀態（已啟用、已停用或未安裝）、已知原廠啟動器的狀態、原本擁有 Home 的元件，以及三項系統動畫縮放設定。紀錄位於電腦的 `~/.cleanyourtv/`，每台電視與每份清單各自儲存。再次套用同一清單不會覆寫最初紀錄；新增項目會在停用前補入紀錄。
 
 將下列路徑換成**實際套用過的清單**：
 
@@ -311,7 +339,7 @@ TV_HOST=192.168.1.50 tools/restore.sh "examples/<your tv>/debloat.txt" com.googl
 ```
 
 - 有紀錄時，Home 優先還原給當時擁有它的元件；若當時沒有 Home，或由 CleanYourTV 擁有，才使用備用套件。未指定備用套件時，預設嘗試 `com.google.android.tvlauncher`。
-- 原本已停用的套件會保持停用。原廠啟動器會重新啟用，但若紀錄顯示它原本已停用，便維持原狀；請先核對備用套件名稱。
+- 原本已停用的套件會保持停用。紀錄顯示原廠啟動器原本已啟用時才會重新啟用；較舊的紀錄若沒有原廠啟動器的狀態，腳本會維持現狀並顯示手動啟用指令。請先核對備用套件名稱。詳見[還原紀錄說明](docs/restore.md#the-stock-launcher-argument)。
 - 沒有紀錄時，腳本會提示並改為啟用整份清單中的套件、將動畫縮放設回 `1.0`，並非精確還原變更前的狀態。
 - 還原不會解除安裝 CleanYourTV，也不會撤銷清單之外的手動變更。若要移除啟動器，可從電視的「設定 → 應用程式」操作。
 - 無法連接 ADB 時，也可嘗試在電視系統設定中重新啟用套件。
@@ -326,11 +354,11 @@ TV_HOST=192.168.1.50 tools/restore.sh "examples/<your tv>/debloat.txt" com.googl
 TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py "examples/<your tv>/debloat.txt"
 ```
 
-結束碼 `0` 表示符合清單，`1` 表示有變動，`2` 表示無法完成檢查（例如無法連線、授權逾時或清單無效）。`TV_HOST` 未設定會提前以結束碼 `1` 結束，因此執行時務必設定它。
+結束碼 `0` 表示符合清單，`1` 表示有變動，`2` 表示無法完成檢查（例如無法連線、授權逾時、清單無效、未設定 `TV_HOST` 或缺少 ADB 用戶端）。
 
 `--fix` 會先處理 Home，再重新停用恢復啟用的項目，並讀回狀態確認；它會使用和停用工具相同的保護檢查。若已有最初的還原紀錄，會先補入新增套件狀態，不會另建一份把清理後狀態當成原始狀態的紀錄。
 
-若採用 `stock_home_redirect` 並刻意保留原廠 Home，請依[英文更新後說明](README.md#after-a-firmware-update)使用對應清單，並把原廠套件作為第二個參數，避免誤判。若清單停用了韌體更新服務，須先重新啟用才能更新。檢查完成後，請再次關閉 ADB。
+若採用 `stock_home_redirect` 並刻意保留原廠 Home，請依[英文更新後說明](docs/firmware-updates.md#when-the-stock-launcher-stays-home-on-purpose)使用對應清單，並把原廠套件作為第二個參數，避免誤判；清單本身會停用原廠啟動器時，不能將它指定為預期 Home。若清單停用了韌體更新服務，須先重新啟用才能更新。檢查完成後，請再次關閉 ADB。
 
 ## 疑難排解
 
@@ -351,6 +379,8 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py "examples/<your tv>
 
 請將 `<tv ip>` 與 `<port>` 換成實際值。Windows 將 `python3` 換成 `python`。`adb-closed.py` 的結束碼 `0` 才表示連線遭拒、連接埠已關閉；`1` 表示仍開啟，`2` 表示無法確認。網路錯誤或逾時不能當成關閉的證明。啟動器在關閉偵錯後仍可正常使用。
 
+若電視透過 USB 乙太網路轉接器上網，關閉偵錯後請重新插拔轉接器，並在電視上確認乙太網路已恢復，而非使用 Wi-Fi。詳見 [`PROMPT.md`](PROMPT.md)。
+
 ## 常見問題
 
 **會刷機或刪除系統應用程式嗎？會讓電視無法開機嗎？**
@@ -367,11 +397,11 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py "examples/<your tv>
 
 **也能封鎖應用程式內的廣告嗎？支援 AirPlay 嗎？**
 
-Android 9 以上的私人 DNS 是可選用的系統功能，並非啟動器本身的廣告過濾能力。DNS 解析服務會看見電視的 DNS 查詢，也無法移除和影片來自相同伺服器的 YouTube 廣告。AirPlay 並非內建功能，需要其他應用程式。這些選用方案與還原方式見[英文常見問題](README.md#questions-people-ask)。
+Android 9 以上的私人 DNS 是可選用的系統功能，並非啟動器本身的廣告過濾能力。DNS 解析服務會看見電視的 DNS 查詢，也無法移除和影片來自相同伺服器的 YouTube 廣告。AirPlay 並非內建功能，需要其他應用程式。私人 DNS 的選用方案與還原方式見[英文常見問題](docs/faq.md#can-it-block-ads-inside-apps-too)，AirPlay 見[主頁常見問題](README.md#questions-people-ask)。
 
 **電視設定中還有哪些隱私選項可調整？**
 
-Google TV 可檢查廣告個人化、位置、使用情況與診斷、持續掃描 Wi-Fi 等設定；選單位置依機型而異。部分選項由清單會停用的套件提供，應在清理前設定。原廠啟動器保留時也可考慮「僅限應用程式模式」，但會關閉搜尋與助理。各平台路徑和限制見[英文常見問題](README.md#questions-people-ask)。
+Google TV 可檢查廣告個人化、位置、使用情況與診斷、持續掃描 Wi-Fi 等設定；選單位置依機型而異。部分選項由清單會停用的套件提供，應在清理前設定。原廠啟動器保留時也可考慮「僅限應用程式模式」，但會關閉搜尋與助理。各平台路徑和限制見[英文常見問題](docs/faq.md#are-there-switches-in-the-tvs-own-settings-worth-flipping-too)。
 
 **有現成的 APK 可以下載嗎？**
 

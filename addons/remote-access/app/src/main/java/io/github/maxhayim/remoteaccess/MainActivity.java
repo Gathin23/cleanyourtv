@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
     }
 
     private void adbPressed() {
-        boolean on = global("adb_enabled") == 1;
+        boolean on = global("adb_enabled") == 1 || global("adb_wifi_enabled") == 1;
         if (!on) return;
         if (!canWrite()) {
             open(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));

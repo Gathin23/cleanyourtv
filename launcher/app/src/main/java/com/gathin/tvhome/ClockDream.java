@@ -17,6 +17,7 @@ public class ClockDream extends DreamService {
         setFullscreen(true);
         setScreenBright(false);
         setContentView(R.layout.dream_clock);
+        ClockFormat.apply(getWindow().getDecorView(), Config.load(this).clockFormat);
         scene = new ClockScene(getWindow().getDecorView());
         scene.useHomeWallpaper(this);
     }

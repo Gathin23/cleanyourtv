@@ -14,7 +14,9 @@ tools/venv/bin/python tools/flamechart.py traces/before traces/after \
 ```
 
 `--out` is the PNG to write; a folder, a name with no extension and a folder that is not there are refused
-before the traces are opened, so a typo cannot read as a chart that failed.
+before the traces are opened, so a typo cannot read as a chart that failed. A `TRACE` path is checked the
+same way, before the trace engine is started: a path that is not there is `not a file: <path>`, the words
+`tools/trace_report.py` uses, and a folder with no `.pftrace` in it names the folder.
 
 | Option | Default | Notes |
 |---|---|---|

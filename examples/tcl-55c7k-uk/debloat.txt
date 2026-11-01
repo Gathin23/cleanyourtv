@@ -5,6 +5,10 @@
 # on its built-in Ethernet port. Its choices and notes are in README.md in this folder.
 # Third unit: TCL C6K, Brazil (product G08_4K_GB, same UTT2.250416.001 AU02), on Ethernet. It kept ttvs
 # and several apps this list disables; its choices and notes are in README.md in this folder.
+# Compatibility report: TCL 55P8K, Google TV 14, same G08 board and UTT2.250416.001 AU02 firmware,
+# on its built-in Ethernet port. It kept ttvs, Channel+, Chromecast, AirPlay and dreamx; 30 selected
+# packages stayed disabled after reboot. This was a single-session check, not several days with this
+# complete list; its verified choices and launcher notes are in README.md in this folder.
 #
 # com.tcl.ttvs below is also the firmware updater on this build (its SystemUpdateActivity answers the manual
 # update action): with it disabled there are no system updates. The first two units disabled it for the Samba TV

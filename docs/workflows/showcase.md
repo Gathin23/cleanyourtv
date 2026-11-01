@@ -4,7 +4,11 @@
 
 1. Add one row to the section of `SHOWCASE.md` that fits (home screens, forks, screensavers and add-ons,
    tools, other platforms), and the project under its TV brand in "Find a project by TV brand" - or under
-   "Any Android TV (emulator or generic)" when it names no single brand, as the phone apps do.
+   "Any Android TV (emulator or generic)" when it names no single brand, as the phone apps do. Each brand
+   keeps one line in that index: add the link to the line the brand already has, never a second bullet for
+   the same brand. `tests/test_showcase_brand_index.py` fails on a brand named twice - "a brand is listed
+   twice in 'Find a project by TV brand', so a project on one of the lines is hard to find" - and prints
+   the links only one of the two lines carries, which is a fork nobody scrolling the first line sees.
 2. Bump the two counts by one: `SHOWCASE.md` opens with an `N projects so far.` line, and the "Built
    something on top?" row in `README.md` spells the same number in words. `tests/test_showcase_project_count.py`
    refuses a row that leaves either of them behind.

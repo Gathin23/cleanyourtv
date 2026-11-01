@@ -228,4 +228,22 @@ public class DimmingTest {
         assertEquals("12:30 PM", Dimming.clock(12 * 60 + 30, false));
         assertEquals("9:00 PM", Dimming.clock(21 * 60, false));
     }
+
+    @Test
+    public void nightToggleTurnsOnWhateverItReplaced() {
+        assertEquals(Dimming.Night.ON, Dimming.nightAfterToggle(true, null));
+        assertEquals(Dimming.Night.ON, Dimming.nightAfterToggle(true, Dimming.Night.SCHEDULED));
+    }
+
+    @Test
+    public void nightToggleOffPutsAReplacedScheduleBack() {
+        assertEquals(Dimming.Night.SCHEDULED, Dimming.nightAfterToggle(false, Dimming.Night.SCHEDULED));
+    }
+
+    @Test
+    public void nightToggleOffIsOffWhenItReplacedNothingOrOff() {
+        assertEquals(Dimming.Night.OFF, Dimming.nightAfterToggle(false, null));
+        assertEquals(Dimming.Night.OFF, Dimming.nightAfterToggle(false, Dimming.Night.OFF));
+        assertEquals(Dimming.Night.OFF, Dimming.nightAfterToggle(false, Dimming.Night.ON));
+    }
 }

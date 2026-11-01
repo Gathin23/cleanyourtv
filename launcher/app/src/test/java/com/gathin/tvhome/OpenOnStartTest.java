@@ -29,4 +29,20 @@ public class OpenOnStartTest {
     @Test public void theLauncherItselfIsNeverOpened() {
         assertFalse(OpenOnStart.due(12, 11, SELF, SELF));
     }
+
+    @Test public void onlineTheAppOpensAtOnce() {
+        assertTrue(OpenOnStart.opensNow(true, 1_000, 60_000));
+    }
+
+    @Test public void offlineTheAppWaitsUntilTheEndOfTheWait() {
+        assertFalse(OpenOnStart.opensNow(false, 59_999, 60_000));
+        assertTrue(OpenOnStart.opensNow(false, 60_000, 60_000));
+    }
+
+    @Test
+    public void wakeNeedsBothTheRowAndTheSwitch() {
+        assertTrue(OpenOnStart.onWake(true, true));
+        assertFalse(OpenOnStart.onWake(true, false));
+        assertFalse(OpenOnStart.onWake(false, true));
+    }
 }

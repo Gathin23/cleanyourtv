@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 65OLED807/12 (TP Vision, PH1M_EA_9970A, MediaTek MT5895), Germany",
+  "os": "Android TV 11",
+  "brand": "Philips",
+  "notes": "Same board and firmware build as `philips-50pus8517/`, `philips-55oled707/`, `philips-65oled706/` and `philips-65oled907/`: DAC analytics, frameworklogger, Top Picks, app gallery, DLNA, IP control, Mimi, HD+/M7, setupwraith and tvrecommendations off; owner-only streaming apps and Assistant left as comments; Play-Fi re-enables at every boot; analog inputs HW1-HW4 hidden with input_sources; reboot-checked, a week in daily use"
+}

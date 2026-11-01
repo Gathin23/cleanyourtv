@@ -169,6 +169,20 @@ class StartMetricsTest(unittest.TestCase):
 
 
 class NavMetricsTest(unittest.TestCase):
+    def test_frame_p90_uses_nearest_rank_for_unsorted_samples(self):
+        for n, expected in ((1, 1), (5, 5), (9, 9), (10, 9), (11, 10), (20, 18), (100, 90)):
+            with self.subTest(n=n):
+                q = fake_trace(frames=list(range(n, 0, -1)))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], expected)
+
+    def test_frame_p90_excludes_the_slowest_tenth_at_the_boundary(self):
+        for n in (10, 20, 100):
+            with self.subTest(n=n):
+                q = fake_trace(frames=[16] * (9 * n // 10) + [1000] * (n // 10))
+                self.addCleanup(q.close)
+                self.assertEqual(report.nav_metrics(q, PKG)["frame p90"], 16)
+
     def test_frame_times_draws_gpu_and_missed_deadlines(self):
         q = fake_trace(frames=[10, 12, 14, 16, 40], missed=2, draws=[(1100, 6), (1120, 8)], gpu=[(1101, 2), (1121, 4)])
         m = report.nav_metrics(q, PKG)
@@ -338,6 +352,85 @@ class FilesTest(unittest.TestCase):
                 contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as caught:
             report.opener()
         self.assertIn("requirements-perf.txt", str(caught.exception.code))
+
+
+class EnginePathTest(unittest.TestCase):
+    """--engine is judged before Perfetto is imported and before a trace is opened.
+
+    Perfetto answers a path that is not a binary with a bare Exception("Path to binary is not valid
+    (<path>)") and a file without its execute bit with PermissionError out of subprocess: both a traceback
+    with exit 1, the status a run that read a trace and failed returns, naming neither --engine nor
+    tools/trace.md. Perfetto is made unimportable here, so a value that slips past the check is answered
+    with its install line instead of an engine being started.
+    """
+
+    def refuse(self, engine):
+        """stderr from opener(engine), with the run refusing it as an argument error."""
+        err, out = io.StringIO(), io.StringIO()
+        with mock.patch.dict(sys.modules, {"perfetto": None, "perfetto.trace_processor": None}), \
+                contextlib.redirect_stderr(err), contextlib.redirect_stdout(out), \
+                self.assertRaises(SystemExit) as caught:
+            report.opener(engine)
+        self.assertEqual(caught.exception.code, 2, f"{engine!r} was not answered as an argument error")
+        self.assertEqual(out.getvalue(), "")
+        message = err.getvalue()
+        self.assertNotIn("Traceback", message)
+        self.assertNotIn("requirements-perf.txt", message)   # not Perfetto's answer: ours, before the import
+        self.assertIn("No trace was read.", message)
+        return message
+
+    def test_a_path_that_is_not_there_names_the_path_and_the_way_out(self):
+        message = self.refuse("/nope/trace_processor_shell")
+        self.assertIn("--engine /nope/trace_processor_shell is not a file", message)
+        self.assertIn("tools/trace.md", message)
+
+    def test_an_empty_engine_is_not_read_as_no_engine(self):
+        for engine in ("", "   "):
+            with self.subTest(engine=engine):
+                self.assertIn("--engine is empty", self.refuse(engine))
+
+    def test_a_folder_is_not_a_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            message = self.refuse(tmp)
+        self.assertIn(f"--engine {tmp} is not a file", message)
+
+    @unittest.skipUnless(os.name == "posix", "the execute bit is POSIX's; on Windows the engine is an .exe")
+    def test_a_downloaded_engine_without_its_execute_bit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            engine = Path(tmp, "trace_processor_shell")
+            engine.write_bytes(b"#!/bin/sh\n")
+            engine.chmod(0o644)
+            message = self.refuse(str(engine))
+            self.assertIn(f"--engine {engine} is not executable", message)
+            self.assertIn("chmod +x", message)
+
+    def test_an_engine_that_can_be_run_still_reaches_perfetto(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            engine = Path(tmp, "trace_processor_shell")
+            engine.write_bytes(b"#!/bin/sh\n")
+            engine.chmod(0o755)
+            with mock.patch.dict(sys.modules, {"perfetto": None, "perfetto.trace_processor": None}), \
+                    contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as caught:
+                report.opener(str(engine))
+        self.assertIn("requirements-perf.txt", str(caught.exception.code),
+                      "the good path was refused instead of tried")
+
+    def test_no_engine_at_all_is_left_to_perfetto_to_download(self):
+        with mock.patch.dict(sys.modules, {"perfetto": None, "perfetto.trace_processor": None}), \
+                contextlib.redirect_stderr(io.StringIO()) as err, self.assertRaises(SystemExit) as caught:
+            report.opener(None)
+        self.assertIn("requirements-perf.txt", str(caught.exception.code))
+
+    def test_the_report_answers_a_typo_before_it_reads_the_trace(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "home-1.pftrace")
+            trace.write_bytes(b"")
+            with contextlib.redirect_stderr(io.StringIO()) as err, \
+                    contextlib.redirect_stdout(io.StringIO()) as out, self.assertRaises(SystemExit) as caught:
+                report.main([str(trace), "--engine", "/nope/trace_processor_shell"])
+        self.assertEqual(caught.exception.code, 2)
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("/nope/trace_processor_shell is not a file", err.getvalue())
 
 
 class MainTest(unittest.TestCase):

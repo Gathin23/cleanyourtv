@@ -83,8 +83,11 @@ class RecoveryHomeNotALauncherTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 record = self.record()
                 self.assertIsNone(record["home"])
-                # The package keeps its entry: it was enabled before cleanup.
-                self.assertEqual(record["packages"], {**LIST_STATES, home.split("/", 1)[0]: "enabled"})
+                # The package keeps its entry: it was enabled before cleanup. So do the two stock
+                # launchers installed here, which undo turns back on only because they were on (#1714).
+                self.assertEqual(record["packages"], {**LIST_STATES, home.split("/", 1)[0]: "enabled",
+                                                      "com.google.android.tvlauncher": "enabled",
+                                                      LAUNCHERX: "enabled"})
                 self.assertIn(f"HOME before: {home}, which is not a launcher", result.stdout)
 
     def test_a_launcher_is_still_recorded(self):
@@ -99,7 +102,8 @@ class RecoveryHomeNotALauncherTest(unittest.TestCase):
 
     def test_restore_after_the_recovery_screen_resolves_the_stock_launcher(self):
         # The Acer R4G case: launcherx is the stock launcher, and Home goes to what it resolves to,
-        # never to setupwraith's recovery screen.
+        # never to setupwraith's recovery screen. Both stock launchers were on when the record was
+        # taken, so both are in it and both come back, in the record's order (#1714).
         self.tv_on(RECOVERY)
         self.assertEqual(self.run_script("disable.sh", str(self.list_path)).returncode, 0)
         self.clear_sent()
@@ -107,8 +111,9 @@ class RecoveryHomeNotALauncherTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.sent(), [
             "pm enable com.example.enabled",
-            f"pm enable {SETUPWRAITH}",
             f"pm enable {LAUNCHERX}",
+            f"pm enable {SETUPWRAITH}",
+            "pm enable com.google.android.tvlauncher",
             "cmd package set-home-activity --user 0 $(cmd package resolve-activity --brief -a "
             f"android.intent.action.MAIN -c android.intent.category.HOME {LAUNCHERX} | tail -n 1)",
             "settings put global window_animation_scale 0.5",

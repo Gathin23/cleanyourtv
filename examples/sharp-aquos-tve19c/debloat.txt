@@ -1,0 +1,40 @@
+# Sharp AQUOS-TVE19C (codename sindang, CVTE board, MStar/MediaTek SoC), Android TV 11,
+# firmware RTOB.250721.001, manufacturer SHARP (UMC Europe). Stock launcher is
+# com.google.android.tvlauncher with the Google-TV-style home. Running since 2026-10-19.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-aquos-tve19c/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-aquos-tve19c/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Quirks on this firmware: ADB over TCP (port 5555) opens only after a REBOOT with USB
+# debugging on - enabling the toggle alone is not enough. The setup wizard
+# (com.google.android.tungsten.setupwraith) is present but never took Home here, so it is
+# not in this list. The UK Freeview apps (uk.co.freeview.*) came factory-disabled on this
+# unit. The firmware updater was left enabled on purpose.
+
+# Tracking and ads
+tv.anoki.acr.controller                # Anoki ACR: watches what you watch, for ads
+# com.cltv.fast                        # ad-supported FAST channels (middleware; keep unless you never use them)
+fusion.android.tv.demo                 # store demo mode
+com.google.android.feedback            # Google crash/telemetry reporting
+
+# Preloaded apps (owner's choice)
+com.mediatek.dmp.mediaplayer           # DLNA/USB "Digitalmedia Player"
+umc.com.emanual                        # Sharp on-screen manual
+
+# Unused streaming apps - this set has these off (owner's choice)
+# com.netflix.ninja
+# com.mediatek.partner.netflix         # Netflix partner service; the remote's Netflix
+                                       # button (KEYCODE_STEM_1) can be remapped, see README.md
+# com.google.android.videos            # Google TV / Play Movies
+# com.google.android.youtube.tvmusic
+# com.google.android.play.games
+
+# Google services (owner's choice; Chromecast built-in was kept)
+com.google.android.katniss             # Assistant / voice search
+com.google.android.apps.nbu.smartconnect.tv
+com.google.android.backdrop            # ambient mode screensaver with promoted content
+
+# Stock launcher and its recommendation rows, replaced by launcher/
+com.google.android.tvlauncher
+com.google.android.tvrecommendations

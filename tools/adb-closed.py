@@ -8,10 +8,16 @@ could not tell: nothing answered (the TV off, asleep or rebooting, at another ad
 from here), nothing listened on 127.0.0.1, or the check itself could not run (a name that does not
 resolve or is not a hostname, no route to the TV). Only the TV's own refusal shows the port closed.
 
+On macOS a "No route to host" (`EHOSTUNREACH`) is also what Local Network privacy looks like: the
+permission belongs to the app that runs this check, not to python or adb, so a terminal that was never
+granted it is denied the subnet and this tool cannot tell an open port from a closed one. The message
+says so and gives the way to grant it (tools/tv.py names the same permission at connect time).
+
 A TV_PORT exported with TV_HOST=127.0.0.1, or set to relay.py's 15555, is a relay's (tools/relay.md), so
 it is not used for a TV's own IP. 127.0.0.1 is this computer: a relay answers there for itself, not for
 the TV, so a refusal there is not the TV's.
 """
+import errno
 import ipaddress
 import os
 import socket
@@ -133,7 +139,22 @@ def main():
         sys.stderr.write(f"could not check {host}:{port}: not a hostname. Check the address.\n")
         return 2
     except OSError as e:
-        sys.stderr.write(f"could not check {host}:{port} ({e}). Is the TV on and on this network?\n")
+        # macOS Local Network privacy denies a process the local subnet and the kernel reports that as
+        # EHOSTUNREACH, the same errno as a TV that is switched off, so "is the TV on?" sends people
+        # rebuilding a network that was never broken. tools/tv.py says so at connect time since #1982; this
+        # is the other client, and the one the closing step depends on (PROMPT.md, AGENTS.md and the README
+        # accept only its "closed"), so an assistant on a Mac whose terminal was never granted the
+        # permission was told the TV was off or on another network while the port it was asked about may
+        # be open or closed: nothing was learned about it either way. Exit 2 already means that.
+        note = ""
+        if sys.platform == "darwin" and e.errno == errno.EHOSTUNREACH:
+            note = ("On macOS this is also what Local Network privacy looks like. Allow the app that runs "
+                    "this check (Terminal, iTerm2, VS Code) under System Settings > Privacy & Security > "
+                    "Local Network, then quit and reopen it; granting it to python or adb does nothing. To "
+                    "tell the two apart, try the default gateway: if it answers while every other address "
+                    "on the subnet gives this error, it is the permission and not the TV. Nothing was "
+                    "learned about the port.\n")
+        sys.stderr.write(f"could not check {host}:{port} ({e}). Is the TV on and on this network?\n" + note)
         return 2
     # Wireless debugging has a port of its own and stays open when USB debugging goes off, so the advice
     # names it too. The second check comes before the reboot: if this is the Wireless debugging port, a

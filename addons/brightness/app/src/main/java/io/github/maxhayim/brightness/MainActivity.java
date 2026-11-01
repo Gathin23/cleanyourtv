@@ -109,13 +109,7 @@ public class MainActivity extends Activity {
                     s.brightness = Dimming.stepBrightness(s.brightness, d);
                     changed();
                 }));
-        nightRow = add(new Row(this, "Night mode", null, false, () -> {
-            s.night = Dimming.Night.values()[(s.night.ordinal() + 1) % 3];
-            changed();
-        }, d -> {
-            s.night = Dimming.Night.values()[(s.night.ordinal() + d + 3) % 3];
-            changed();
-        }));
+        nightRow = add(new Row(this, "Night mode", null, false, () -> stepNight(1), this::stepNight));
         nightBrightnessRow = add(new Row(this, "Night brightness", "How bright the picture is in night mode.", true,
                 null, d -> {
                     s.nightBrightness = Dimming.stepBrightness(s.nightBrightness, d);
@@ -202,6 +196,13 @@ public class MainActivity extends Activity {
     private Row add(Row r) {
         rows.addView(r, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return r;
+    }
+
+    /** Night mode picked here; it replaces whatever the one-press toggle remembered. */
+    private void stepNight(int d) {
+        s.night = Dimming.Night.values()[(s.night.ordinal() + d + 3) % 3];
+        Prefs.setNightBeforeToggle(this, null);
+        changed();
     }
 
     /** Saves, which the running service sees at once; starts it when the new settings need it. */

@@ -1,0 +1,6 @@
+{
+  "tv": "HOTACK L018 Smart Projector (Allwinner H713, reports ADT-3, LuminaOS)",
+  "os": "Android 11",
+  "brand": "HOTACK",
+  "notes": "Hotack ad screensaver (zeasn SDK), memory cleaner, HTC store, Office, printing and casting off; stock LuminaOS launcher kept, as the projector settings live in it (`settings_fallback_components` entry in the list header); focus/keystone, HDMI/AV, USB media and firmware updaters kept; katniss comes back at every boot; `reduced_motion` in config.json; 1 GB, 32-bit"
+}

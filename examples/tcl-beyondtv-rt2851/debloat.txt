@@ -2,6 +2,8 @@
 # software V8-R851T02-LF1V606), Android TV 9 (API 28), build PPR1.180610.011 AP06, security patch 2020-09-05,
 # 2 GB RAM. Freeview UK apps preloaded (factory-disabled). Different firmware from the India BeyondTV in
 # examples/tcl-beyondtv/, which is a separate list.
+# For the Brazilian/LATAM SEMP TCL 50P8M on Android 11 (V8-R851T02-LF1V728.000041 V728), see
+# examples/semp-tcl-50p8m/, which carries its own list tested on that firmware.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-beyondtv-rt2851/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-beyondtv-rt2851/debloat.txt
@@ -33,7 +35,10 @@
 # com.tcl.gallery, Prime Video, Stan, ZEE5, LINE TV, Rakuten TV, Play Music, Play Games.
 #
 # DO NOT DISABLE (load-bearing on this firmware):
-# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough  # Live TV, tuner, HDMI
+# com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough  # Live TV, tuner, HDMI. On R851T02, TclPhoneWindowManager
+# dispatches short presses of KEYCODE_POWER (key 26) via IPC to com.tcl.tv.service.GlobalKeyService inside
+# com.tcl.tv. If com.tcl.tv is disabled, short-pressing Power on the remote is silently dropped
+# (only long-press forced shutdown works).
 # com.tcl.sourcemananger                            # source/input menu (TIF_SourceMenu)
 # com.tcl.keycustomfunctionservice                  # remote key handling, fallback home
 # com.tcl.framework.custom                          # TCL key receiver
@@ -86,5 +91,5 @@ com.tcl.appmarket2                          # TCL app store (Play Store stays)
 com.google.android.katniss                  # Google voice search and the mic button
 com.google.android.speech.pumpkin           # offline speech recognition
 com.tcl.assistant                           # TCL's Google Assistant bridge (TV/media/settings control by voice)
-com.tcl.micmanager                          # remote microphone manager
+com.tcl.micmanager                          # remote microphone manager (~83 MB footprint)
 com.google.android.tv.assistant             # Assistant LED service

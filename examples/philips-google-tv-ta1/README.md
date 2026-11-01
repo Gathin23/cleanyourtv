@@ -30,6 +30,54 @@ USB debugging on, and accept the "Allow USB debugging?" prompt the first time a 
 A cold reboot after the list brings the TV back to Home with ADB and Wi-Fi, no crashes in the crash log.
 HDMI and Live TV were not exercised on this unit.
 
+## Second set: Philips Google TV TA5
+
+Same device (`PH1M_WW_9972`) and build (`UKN2.241117.001/3000669`, patch 2026-07-05), Netherlands, sound over
+HDMI eARC to a soundbar, no tuner in use. Batch 3 of `debloat.txt` is this set's; its header says what was kept.
+Free memory on Home went from about 0.71 GB to 0.98 GB after a reboot (`MemAvailable`).
+
+### Remote buttons with launcherx disabled
+
+`org.droidtv.GlobalKey` routes the remote. Logged on this set with the stock launcher disabled:
+
+| Button | Scancode / keycode | What GlobalKey does | Without launcherx |
+|---|---|---|---|
+| Gear | 141 / `KEYCODE_GLOBAL_FUNCTION` | starts `launcherx/.dashboard.DashboardActivity` by component | nothing (result code -92) |
+| Apps (3x3 grid) | 801 / `KEYCODE_LOCAL_OTT1` | starts `android.intent.action.ALL_APPS` | nothing (-91: no handler) |
+| Netflix, YouTube, Prime Video | - | starts the app itself | works |
+| Volume | - | - | works, and keeps repeating when held |
+
+`HomeKeyService` or `InputKeyService` bound with key filtering on cost the volume ramp here (one step per press),
+as on the other sets in `docs/devices/tcl-55p71b-g09-key-repeat.md`.
+
+### All buttons and the volume ramp together
+
+The owner wanted every button and the ramp, which took the Sony VU3 setup from `docs/TROUBLESHOOTING.md`:
+
+1. `pm enable com.google.android.apps.tv.launcherx`, and in the theme's `config.json`
+   `"stock_home_redirect": "com.google.android.apps.tv.launcherx"` and `"key_filter": false`.
+2. `HomeKeyService` enabled (`HOME_KEY_SERVICE=1`). Home now opens launcherx for a moment and lands on this
+   launcher; the gear opens the Google TV dashboard again; holding volume still ramps.
+3. With launcherx enabled, GlobalKey hands the Netflix, YouTube and Prime Video launches to launcherx, and
+   Android blocks them as background starts (`BAL_BLOCK`, result code 102) while this launcher is in front.
+   `appops set com.google.android.apps.tv.launcherx SYSTEM_ALERT_WINDOW allow` brought all three back.
+4. The apps button sends `ALL_APPS`, which launcherx now answers too, so Android showed a chooser on the first
+   press; choosing this launcher and "Always" once settled it.
+
+### "Switching to audio system" at every power-on
+
+With a soundbar on eARC, every power-on showed a two-second toast from `org.droidtv.tv.tpvaudiomanager`:
+"Switching to audio system. We recommend using an Ultra High Speed HDMI cable." The cable was fine. The
+package's notification importance is fixed, Do Not Disturb does not stop it, and taking launcherx out of
+`android.app.role.SYSTEM_TELEVISION_NOTIFICATION_HANDLER` (`cmd role remove-role-holder`) only lasts until
+the next boot. What stayed off across reboots is launcherx's notification listener, which draws these toasts:
+
+```bash
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'cmd notification disallow_listener com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.coreservices.notificationlistener.TvNotificationListenerService'
+```
+
+No other notification pops up on screen after that. Undo with `allow_listener` and the same component.
+
 ## Re-enable an app
 
 On the TV: Settings > Apps > See all apps > Show system apps (or "Disabled apps"), pick the app, Enable.

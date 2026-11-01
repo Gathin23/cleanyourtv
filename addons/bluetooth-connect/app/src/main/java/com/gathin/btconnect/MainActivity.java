@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -75,7 +76,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 31
+                && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
             return;
         }
@@ -125,7 +127,7 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
-    /** Only runs after onResume has checked the Nearby devices permission. */
+    /** Only runs after onResume has checked Nearby devices on Android 12+. */
     @SuppressLint("MissingPermission")
     private void refresh() {
         if (a2dp == null) return;

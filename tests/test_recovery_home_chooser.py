@@ -50,10 +50,12 @@ class RecoveryHomeChooserTest(unittest.TestCase):
         record = self.record()
         self.assertIsNone(record["home"])
         # No "android" entry: it is not a package name, and a record holding it cannot be read back.
+        # The installed stock launcher is recorded too, so undo knows it was on (#1714).
         self.assertEqual(record["packages"], {
             "com.example.enabled": "enabled",
             "com.example.already_off": "disabled",
             "com.example.absent": "absent",
+            STOCK: "enabled",
         })
         self.assertIn("Android's chooser", result.stdout)
 

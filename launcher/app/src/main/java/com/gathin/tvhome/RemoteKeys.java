@@ -17,6 +17,7 @@ import android.view.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -33,7 +34,7 @@ import java.util.regex.Pattern;
  * so both may call handle() for one event, and it answers each press once.
  * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app, a target
  * of "inputs" opens the input switcher, for a remote whose source button sends a key Android does not map,
- * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi) does that action, and
+ * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi, library) does that action, and
  * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say).
  */
 final class RemoteKeys {
@@ -196,12 +197,22 @@ final class RemoteKeys {
         }
         String button = event.getDeviceId() + ":" + event.getKeyCode() + ":" + event.getScanCode();
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            presses.down(button, event.getEventTime(), event.getRepeatCount(), holdApp, target -> launch(ctx, target));
+            presses.down(button, event.getEventTime(), event.getRepeatCount(), holdApp, ctx,
+                    target -> launch(ctx, target));
         } else if (event.getAction() == KeyEvent.ACTION_UP) {
             presses.up(button, event.getEventTime(), event.getDownTime(), event.isCanceled(), app, holdApp,
                     target -> launch(ctx, target));
         }
         return true;
+    }
+
+    /**
+     * For a helper that stops receiving keys (unbound, destroyed, or no longer filtering): no UP will reach it to
+     * cancel a hold it saw go down, so the hold goes to the other helper if that one saw the DOWN too, and is
+     * cancelled otherwise. Safe to call more than once.
+     */
+    static void release(Context helper) {
+        if (presses != null) presses.release(helper);
     }
 
     /**
@@ -220,6 +231,8 @@ final class RemoteKeys {
             long downAt = -1, upAt = -1;
             boolean fired;
             Runnable hold;
+            /** The helpers that saw this DOWN while its hold is pending, each with the way it opens a target. */
+            final Map<Object, Consumer<String>> owners = new LinkedHashMap<>();
         }
 
         private final Map<String, Press> buttons = new HashMap<>();
@@ -229,21 +242,40 @@ final class RemoteKeys {
             this.timer = timer;
         }
 
-        void down(String button, long eventTime, int repeatCount, String holdApp, Consumer<String> open) {
+        void down(String button, long eventTime, int repeatCount, String holdApp, Object owner,
+                Consumer<String> open) {
             if (repeatCount != 0) return;
             Press press = buttons.computeIfAbsent(button, b -> new Press());
-            if (press.downAt == eventTime) return;
+            if (press.downAt == eventTime) {
+                // The other helper's copy: it can answer the hold too, should the first one leave.
+                if (press.hold != null) press.owners.putIfAbsent(owner, open);
+                return;
+            }
             if (press.hold != null) timer.cancel(press.hold);   // its UP never came
             press.downAt = eventTime;
             press.fired = false;
             press.hold = null;
+            press.owners.clear();
             if (holdApp == null) return;
+            press.owners.put(owner, open);
             press.hold = () -> {
+                Consumer<String> first = press.owners.values().iterator().next();
                 press.hold = null;
+                press.owners.clear();
                 press.fired = true;
-                open.accept(holdApp);
+                first.accept(holdApp);
             };
             timer.post(press.hold, HOLD_MS);
+        }
+
+        /** Drops this helper from every pending hold, cancelling a hold it was the last to own. */
+        void release(Object owner) {
+            for (Press press : buttons.values()) {
+                if (press.hold == null || press.owners.remove(owner) == null || !press.owners.isEmpty()) continue;
+                timer.cancel(press.hold);
+                press.hold = null;
+                press.fired = true;   // the press is over: an UP that still comes later opens nothing
+            }
         }
 
         void up(String button, long eventTime, long downTime, boolean canceled, String app, String holdApp,
@@ -255,11 +287,27 @@ final class RemoteKeys {
             if (press.hold != null) {
                 timer.cancel(press.hold);
                 press.hold = null;
+                press.owners.clear();
             }
             if (canceled || (sawDown && press.fired)) return;
             // Without its DOWN (the service started while the button was held), the event's own down time will do.
             open.accept(target(app, holdApp, eventTime - (sawDown ? press.downAt : downTime)));
         }
+    }
+
+    /**
+     * The flags on the KEYCODE_MENU pair that Xiaomi's China firmware (MiTV-MFTR0, Android 11) injects for a short
+     * press of the remote's Menu key, after keeping the real press for itself (#1637). They include FLAG_CANCELED,
+     * so the pair reads as a cancelled press, and the undocumented 0x1000, 0x2000 and 0x4000, which no real
+     * cancelled press carries.
+     */
+    static final int XIAOMI_SHORT_MENU_FLAGS = 0x7531;
+
+    /** True for the UP that ends a Menu press: not cancelled, or cancelled only as Xiaomi's injected short press is. */
+    static boolean menuReleased(int action, int flags) {
+        if (action != KeyEvent.ACTION_UP) return false;
+        return (flags & KeyEvent.FLAG_CANCELED) == 0
+                || (flags & XIAOMI_SHORT_MENU_FLAGS) == XIAOMI_SHORT_MENU_FLAGS;
     }
 
     /** The app a mapped key opens: its hold entry after HOLD_MS, otherwise its normal one. */
@@ -288,11 +336,14 @@ final class RemoteKeys {
         }
     }
 
-    /** Whether a target is an action word rather than an app or an input. A package name always has a dot. */
+    /**
+     * Whether a target is an action word rather than an app or an input. A package name always has a dot.
+     * "ignore" does nothing on purpose: the button is swallowed, for a remote shortcut that is pressed by accident.
+     */
     static boolean isAction(String target) {
         switch (target) {
             case "back": case "home": case "recents": case "mute": case "sleep":
-            case "screensaver": case "settings": case "wifi":
+            case "screensaver": case "settings": case "wifi": case "library": case "ignore":
                 return true;
             default:
                 return false;
@@ -328,8 +379,12 @@ final class RemoteKeys {
             case "wifi":
                 start(ctx, SystemSettings.intent(ctx, Settings.ACTION_WIFI_SETTINGS));
                 break;
+            case "library":
+                // Home with the App library open on top; Home does nothing when app_library is off.
+                start(ctx, new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_APP_LIBRARY));
+                break;
             default:
-                break;   // "sleep" below Android 9: consumed, nothing to do
+                break;   // "ignore", or "sleep" below Android 9: consumed, nothing to do
         }
         return true;
     }

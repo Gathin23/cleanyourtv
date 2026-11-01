@@ -6,9 +6,14 @@ drift and nothing else had a name. check.py answers `0` when the TV still matche
 something drifted, and `2` when the run could not check at all (the TV did not answer, nobody accepted
 the "Allow USB debugging?" prompt, the list path is not there, the list disables Android's core
 packages); its own source says why the two are kept apart - "exit 2, not the 1 a weekly job reads as
-drift". A job built from the page alone could therefore not tell "the TV drifted" from "the check
-never ran", and one more case ends at 1 as well: with `TV_HOST` unset the run stops in tools/tv.py
-before any of the above, with tv.py's own message and its own exit code, which is 1.
+"drift". A job built from the page alone could therefore not tell "the TV drifted" from "the check
+never ran". Two shapes that stop before any connection used to end at 1 for the same reason: with
+`TV_HOST` unset the run stops in tools/tv.py with its own message, and on a computer without the ADB
+client recovery.connect() stops with the line that builds the venv - both SystemExit, not Exception,
+so the clause that answers 2 never saw them.
+
+The section has since moved out of the README into docs/firmware-updates.md ("Exit codes, and a weekly
+job"), which the README's "After a firmware update" links; the checks below read it there.
 
 So: the codes are read out of tools/check.py and out of real runs, and the README section that gives
 the job has to name each of them. Nothing here reads the page's wording: a number on a line that
@@ -31,6 +36,8 @@ from test_drift_check import FAKE_TV  # noqa: E402  (the simulated TV check.py a
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
+GUIDE = ROOT / "docs" / "firmware-updates.md"
+JOB = "## Exit codes, and a weekly job"
 CHECK = ROOT / "tools" / "check.py"
 STOCK = "com.google.android.tvlauncher"
 CUSTOM = "com.gathin.tvhome"
@@ -126,15 +133,19 @@ class CheckExitCodeTest(unittest.TestCase):
         state.update(overrides)
         self.state_path.write_text(json.dumps(state))
 
-    def run_check(self, *args, host="192.168.1.50"):
+    def run_check(self, *args, host="192.168.1.50", python_args=()):
         env = dict(os.environ, HOME=str(self.home), FAKE_TV_STATE=str(self.state_path))
         env.pop("TV_HOST", None)
         if host is not None:
             env["TV_HOST"] = host
         return subprocess.run(
-            [sys.executable, str(self.repo / "tools" / "check.py"), *args],
+            [sys.executable, *python_args, str(self.repo / "tools" / "check.py"), *args],
             cwd=self.repo, env=env, capture_output=True, text=True, timeout=120,
         )
+
+    def commands_sent(self):
+        """What the run sent the (simulated) TV: empty means it was never asked."""
+        return json.loads(self.state_path.read_text()).get("commands", [])
 
     def test_the_checker_answers_three_codes(self):
         codes = literal_returns(CHECK.read_text(encoding="utf-8"))
@@ -163,11 +174,12 @@ class CheckExitCodeTest(unittest.TestCase):
         result = self.run_check(str(self.base / "gone.txt"))
         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
 
-    def test_a_run_without_tv_host_ends_at_1(self):
-        # The real tv.py, not the fake: it stops at import time with its own message and exit code
-        # 1 - the same code the page calls drift. Two messages are possible: the TV_HOST note from
-        # tv.py, or recovery.py's note when adb_shell is not installed (CI runs the suite without
-        # the venv the tools use).
+    def test_a_run_without_tv_host_is_2(self):
+        # The real tv.py, not the fake: it stops at import time with its own message, before any
+        # connection, so the TV was never asked and the run answers 2 - the code the page calls "a
+        # check that never ran" - rather than 1, which the page tells a weekly job to mail about.
+        # Which of the two messages comes back depends on the interpreter: the TV_HOST note here, or
+        # recovery.py's note when adb_shell is not installed (CI runs the suite without the venv).
         source = (ROOT / "tools" / "recovery.py").read_text(encoding="utf-8")
         host_note = "Set TV_HOST to your TV's IP address"
         loader_note = "cannot load tools/tv.py"
@@ -176,13 +188,33 @@ class CheckExitCodeTest(unittest.TestCase):
         shutil.copy2(ROOT / "tools" / "tv.py", self.repo / "tools" / "tv.py")
         self.tv()
         result = self.run_check(str(self.list_path), host=None)
-        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertTrue(host_note in result.stderr or loader_note in result.stderr, result.stderr)
+        self.assertIn("Nothing was checked or changed.", result.stderr)
         self.assertNotIn("could not read the TV", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(result.stdout, "", "the report of a run that never asked the TV")
+        self.assertEqual([], self.commands_sent(), "the TV was asked by a run that could not read it")
+
+    def test_a_run_without_the_adb_client_is_2(self):
+        # -S drops site-packages, so adb_shell cannot be imported even under tools/venv's Python: the
+        # same shape on a computer where the venv is gone, which is the other message recovery.py
+        # stops with. The line that builds the venv is the whole answer the owner needs.
+        shutil.copy2(ROOT / "tools" / "tv.py", self.repo / "tools" / "tv.py")
+        self.tv()
+        result = self.run_check(str(self.list_path), python_args=("-S",))
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("cannot load tools/tv.py", result.stderr)
+        self.assertIn("python3 -m venv tools/venv", result.stderr)
+        self.assertIn("Nothing was checked or changed.", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(result.stdout, "")
+        self.assertEqual([], self.commands_sent())
 
     def test_the_readme_names_every_code_the_checker_can_return(self):
-        section = readme_section(README.read_text(encoding="utf-8"))
-        self.assertIsNotNone(section, "%s is gone from README.md: the weekly job has no page" % HEADING)
+        self.assertIn("(docs/firmware-updates.md)", "\n".join(readme_section(README.read_text(encoding="utf-8"))))
+        section = readme_section(GUIDE.read_text(encoding="utf-8"), JOB)
+        self.assertIsNotNone(section, "%s is gone from docs/firmware-updates.md: the weekly job has no page" % JOB)
         self.assertGreaterEqual(len(paragraphs(section)), 4, "the section reads as nearly empty")
         named = codes_named(section)
         codes = literal_returns(CHECK.read_text(encoding="utf-8"))
@@ -192,7 +224,7 @@ class CheckExitCodeTest(unittest.TestCase):
                          % (sorted(codes), sorted(named)))
 
     def test_the_readme_still_carries_the_weekly_job(self):
-        section = readme_section(README.read_text(encoding="utf-8"))
+        section = readme_section(GUIDE.read_text(encoding="utf-8"), JOB)
         self.assertIsNotNone(section)
         self.assertTrue(any(re.match(r"^\s*\d+\s+\d+\s+\*", line) for line in section),
                         "the cron line a home server runs is gone from the section")

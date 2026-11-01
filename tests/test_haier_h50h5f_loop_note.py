@@ -16,6 +16,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 TROUBLE = ROOT / "docs" / "TROUBLESHOOTING.md"
 README = ROOT / "README.md"
+FAQ = ROOT / "docs" / "faq.md"
 AQUA = ROOT / "examples" / "aqua-matrixtv-ee-50" / "debloat.txt"
 TITLE = "- **The TV restarts in a loop after a debloat**"
 
@@ -103,13 +104,20 @@ class HaierLoopBulletTest(unittest.TestCase):
 
 class ReadmeSafetyAnswerTest(unittest.TestCase):
     def test_readme_points_to_the_factory_reset_and_the_bullet(self):
+        # The README keeps the short answer and sends the reader to docs/faq.md for the rest.
         text = README.read_text(encoding="utf-8")
         answer = text.split("<b>Is this safe? Can it brick the TV?</b>", 1)[1].split("</details>", 1)[0]
         answer = re.sub(r"\s+", " ", answer)
-        for token in ("factory reset from its recovery menu", "issues/1578", "issues/1592",
-                      "docs/TROUBLESHOOTING.md#working-on-the-tv"):
+        for token in ("factory reset from its recovery menu", "docs/faq.md#is-this-safe-can-it-brick-the-tv"):
             with self.subTest(token=token):
                 self.assertIn(token, answer)
+        faq = FAQ.read_text(encoding="utf-8")
+        long_answer = faq.split("## Is this safe? Can it brick the TV?", 1)[1].split("\n## ", 1)[0]
+        long_answer = re.sub(r"\s+", " ", long_answer)
+        for token in ("factory reset from its recovery menu", "issues/1578", "issues/1592",
+                      "(TROUBLESHOOTING.md#working-on-the-tv)"):
+            with self.subTest(token=token):
+                self.assertIn(token, long_answer)
 
 
 if __name__ == "__main__":

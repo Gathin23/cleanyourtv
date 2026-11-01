@@ -1,4 +1,4 @@
-# Sony BRAVIA 4K VH21 (XR-65A95K, 2022 QD-OLED, device BRAVIA_VH21, product BRAVIA_VH21_M_UC, MediaTek), US firmware
+# Sony BRAVIA 4K VH21 (XR-65A95K and XR-55A95K, 2022 QD-OLED, device BRAVIA_VH21, product BRAVIA_VH21_M_UC, MediaTek), US firmware
 # Android 12 (Google TV, API 31), build BRAVIA_VH21_M_UC-user 12 STT2.230505.001.S136 682241, security patch 2026-05-01
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh21-us/debloat.txt
@@ -20,6 +20,25 @@
 # updates, and the BRAVIA CAM packages (sensingcamera.*, gestureapp), which this model supports.
 # Already disabled at the factory: com.sony.dtv.b2b.softap, com.sony.dtv.b2b.vendorprotocol. Not in this
 # list, so restore.sh leaves them as they are.
+#
+# Second unit of THIS folder, 31 Oct 2026: Sony BRAVIA XR-55A95K, the 55" of the same 2022 QD-OLED
+# range, US firmware. Same device BRAVIA_VH21, same product BRAVIA_VH21_M_UC, same build
+# BRAVIA_VH21_M_UC-user 12 STT2.230505.001.S136 682241 and the same 2026-05-01 patch as the 65" above,
+# so it belongs here and not in a folder of its own. 230 packages, not 250; the one line of this list
+# it could not use is com.sony.dtv.sonyselect, which is not installed on it. Everything else applied,
+# and Home came back on the new launcher over two reboots, with nothing re-enabled by the firmware.
+# One sitting, not a week: the 65" entry above is the lived-with one.
+#  - Wired Ethernet, no Wi-Fi network ever saved. `dumpsys wifi` then prints no cname= line at all,
+#    and tools/disable.sh and tools/disable.ps1 fail closed on that rather than reading it as "nobody
+#    owns it", so setupwraith was skipped with a warning until FORCE_SETUPWRAITH=1 was passed - the
+#    case that warning names.
+#  - Installed with NO key helper, unlike the 65" above, and the remote is better for it: with nothing
+#    bound, the Input, Settings, Home and Back buttons all still work, and holding volume ramps again.
+#    With INPUT_KEY_SERVICE=1 bound, volume moved one step per press instead. On this set the helper
+#    costs the ramp and buys nothing: docs/devices/tcl-55p71b-g09-key-repeat.md has the two rows.
+#  - The owner also disabled the streaming apps, voice search, AirPlay/HomeKit and the BRAVIA CAM
+#    packages. Those are preferences, not findings, so they are not lines in this list, which stays
+#    the privacy and ads core it says it is above.
 #
 # Applied 19 Oct 2026 in two batches with a screenshot between; launcher 2.3 installed with the
 # Input-button service (INPUT_KEY_SERVICE=1). Reboot-checked twice:

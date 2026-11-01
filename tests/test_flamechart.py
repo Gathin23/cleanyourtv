@@ -18,6 +18,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+import warnings
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -161,7 +162,9 @@ class ArgumentTest(unittest.TestCase):
 
 class OutputArgumentTest(unittest.TestCase):
     def assert_rejected_before_trace_work(self, argv, out, flag):
-        with (mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
+        # Another test's unclosed file can be finalised mid-call; its ResourceWarning would then be stderr's last line.
+        with (warnings.catch_warnings(action="ignore", category=ResourceWarning),
+              mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
               mock.patch.object(flamechart.trace_report, "opener") as opener,
               mock.patch.object(flamechart.trace_report, "expand") as expand,
               mock.patch("builtins.__import__", wraps=__import__) as imports,

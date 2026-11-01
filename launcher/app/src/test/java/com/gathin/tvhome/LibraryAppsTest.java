@@ -134,6 +134,14 @@ public class LibraryAppsTest {
         }
     }
 
+    @Test public void excludedFromCatalogIsExactSetMembershipAndEmptyByDefault() {
+        Set<String> excluded = new HashSet<>();
+        excluded.add("com.example.factory");
+        assertTrue(LibraryApps.excludedFromCatalog(excluded, "com.example.factory"));
+        assertFalse(LibraryApps.excludedFromCatalog(excluded, "com.example.other"));
+        assertFalse(LibraryApps.excludedFromCatalog(Collections.emptySet(), "com.example.factory"));
+    }
+
     @Test public void aFullListAllowsRemovalAndAnExistingChoiceButNotAnotherApp() {
         Set<String> apps = new HashSet<>();
         for (int i = 0; i < LibraryApps.MAX_ADDED; i++) apps.add("com.example.app" + i);

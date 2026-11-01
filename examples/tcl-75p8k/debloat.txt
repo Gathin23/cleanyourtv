@@ -2,6 +2,9 @@
 # Android 12 (Google TV, SDK 31), firmware STT2.230203.001 AS50, software V8-R75PT01-LF1V534 (client TCL-EU-RTD75P-S1)
 # Same Realtek G10 platform as tcl-g10-google-tv/, tcl-55p7k/ and tcl-55p8ls/, with European / Nordic preloads
 # (Rakuten TV, discovery+, Yle Areena, TVPlayer) and nothing disabled at the factory (0 packages disabled out of 151).
+# Second unit: a 55" set (panel_size 55, model year 2024, Germany), same client type and build, 0 of 148 disabled.
+# It took this list minus com.tcl.gamebar, setupwraith and launcherx (kept for Chromecast, see quirks), plus the
+# commented entries at the bottom, through two reboots. Its German preloads are listed there too.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-75p8k/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-75p8k/debloat.txt com.google.android.apps.tv.launcherx
@@ -28,6 +31,14 @@
 #   is owned by com.android.tv.settings), or Android will delete the saved Wi-Fi network when setupwraith is disabled.
 # - com.tcl.suspension is TCL's Input/source picker (`VIEW_INPUTS`), not an ad overlay: keep it enabled.
 # - HDMI 1 is `com.tcl.tvinput/.passthroughinput.TvPassThroughService/HW15` (with HDMI-CEC child inputs under it).
+# - On the 55" unit the saved Wi-Fi already belonged to android.uid.system, so setupwraith did not own it there.
+# - tools/disable.sh skips android.autoinstalls.config.google.gtvpai, com.android.wallpaperbackup, waipu.tv and
+#   Joyn here: their dumpsys has no permission block, so the input-driver check cannot read them. Only
+#   com.tcl.tvinput serves TvInputService (`pm query-services --components -a android.media.tv.TvInputService`);
+#   once HDMI works after a reboot, TVINPUT_ALLOW=1 disables them.
+# - To keep casting, the 55" unit kept setupwraith and launcherx and took Home with stock_home_redirect
+#   (key_filter false, HomeKeyService only, as in tcl-q7c-google-tv/). Remote buttons, HDMI and the volume ramp all
+#   worked, but after a cold boot the TV stays on Google TV's home until Home is pressed once (#1546).
 
 # TCL / Google tracking, analytics and consent prompts
 com.tcl.ttvs                           # TCL analytics service; re-enable if firmware updates stop arriving
@@ -64,7 +75,8 @@ com.yle.webtv                          # Yle Areena
 ar.tvplayer.tv                         # TVPlayer
 com.google.android.play.games
 
-# Also present on this firmware (untested on this unit; disabled on tcl-55p8ls/ and tcl-55p7k/)
+# Also present on this firmware (untested on the 75P8K; all but UpdatePeripheral disabled on the 55" unit,
+# and on tcl-55p8ls/ and tcl-55p7k/)
 # tv.samba.ssm.ui                      # Samba TV ACR viewing tracking
 # com.tcl.logkit                       # log capture and upload
 # com.tcl.tv.tclhome_passive           # pushes TCL content to the home screen at boot
@@ -80,3 +92,8 @@ com.google.android.play.games
 # com.tcl.t_solo                       # T-Solo "listen alone"
 # com.tcl.magiconnectfree              # MagiConnect / T-Cast companion
 # com.tcl.miracast                     # screen mirroring from Android phones
+
+# German preloads on the 55" unit (disabled there by choice)
+# de.exaring.waipu                     # waipu.tv
+# de.prosiebensat1digital.seventv      # Joyn; its rows were the ads left on Google TV's home
+# com.nousguide.android.orftvthek      # ORF ON

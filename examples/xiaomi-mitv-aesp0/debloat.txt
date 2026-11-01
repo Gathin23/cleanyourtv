@@ -35,6 +35,22 @@
 # - Closing ADB: switching off "USB debugging" alone, then rebooting, left 5555 open. Switching off the
 #   Developer options master switch and rebooting closed it (tools/adb-closed.py: refused).
 # - Free memory: about 150 MB stock, about 265 MB right after a reboot with the list and the launcher.
+#
+# Fourth verified set (Peru unit, older firmware PI.1241, debloated 29 Oct 2026 with the launcher, HOME_KEY_SERVICE=1
+# and a dock of Netflix / YouTube / Disney+ / Prime Video). Every uncommented line below that this firmware has was
+# disabled, except setupwraith; the commented-out ones (voice, Mi Cast, the updater) stayed enabled, and so did
+# Chromecast. Notes from that unit:
+# - setupwraith owned the saved Wi-Fi network (`dumpsys wifi | grep -o 'cname=[^ ]*'` showed
+#   cname=com.google.android.tungsten.setupwraith), so it stayed enabled: disabling it would have taken the stick off
+#   Wi-Fi and ADB. Check this before applying the list as it is.
+# - Not installed on PI.1241: android.autoinstalls.config.xiaomi.mibox3 (only the "xioami" one is), com.dazn, Red Bull TV,
+#   Duo, the TCL browser, com.mitv.tvhome.atv, com.mitv.download.service, com.mitv.videoplayer, com.xm.webcontent and
+#   Alphonso. tools/disable.sh reports those lines and goes on.
+# - After the last batch, `sync` and a 15 s wait were not enough: after the reboot the last eight packages
+#   were enabled again. Disabling them again and waiting about 40 s before the reboot kept all of them.
+# - The real Home button returned to the launcher with HOME_KEY_SERVICE=1.
+# - Closing ADB: revoking the USB debugging authorisations, switching off the Developer options master switch and
+#   rebooting closed 5555 (tools/adb-closed.py: refused), as on the third set.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
@@ -80,7 +96,7 @@ com.google.android.tv                       # Live Channels; the stick has no tu
 # (com.android.providers.tv, the TV content provider, stays enabled: the repo never disables it)
 com.google.android.videos                   # Google Play Movies & TV
 com.google.android.youtube.tvmusic         # YouTube Music TV
-com.google.android.tungsten.setupwraith     # setup wizard: gives Home back, costs casting (comment out to keep casting)
+com.google.android.tungsten.setupwraith     # setup wizard: gives Home back, costs casting (comment out to keep casting); keep it if it owns the saved Wi-Fi (fourth set)
 com.google.android.partnersetup
 com.google.android.onetimeinitializer
 com.android.onetimeinitializer

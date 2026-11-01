@@ -49,6 +49,20 @@ join it again in Settings before you disable the wizard.
 TV_HOST=<tv-ip> tools/restore.sh examples/tcl-q7c-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 ```
 
+## Why the Home key takes `pm disable-user` and nothing else
+
+Confirmed again on the zh-TW unit of this board. Four other routes were tried on a live set and do not work on
+this firmware:
+
+| Route | Result |
+|---|---|
+| `cmd package set-home-activity --user 0 <component>` | Prints `Success`, but nothing changes: `resolve-activity` still returns the old launcher and no preferred activity is recorded. A no-op on this build. |
+| `android:priority` on the HOME `<intent-filter>` | Ignored for third-party apps. The installed APK was pulled back and verified to carry `priority="2"`, then `"1000"`; the package manager still reported `priority=0` and kept resolving to `setupwraith`. |
+| `cmd role add-role-holder android.app.role.HOME <pkg>` | Succeeds — `dumpsys role` shows `holders=<pkg>` — but HOME resolution ignores it. |
+| `pm disable-user <setupwraith>/<...>.RecoveryActivity` | Refused: `SecurityException: Shell cannot change component state for ...` |
+
+The last one is why the whole `setupwraith` package has to go, and why the Wi-Fi-owner check above matters.
+
 ## Remote buttons
 
 Every button on this remote arrives as scancode 240 (`KEY_UNKNOWN`). TCL's `TclKeyLayoutMap` tells them apart by HID
@@ -540,3 +554,63 @@ this firmware's own volume handling, not the helper trade described in the G09 n
   header line naming this unit.
 - Nothing was connected to the HDMI inputs; the tuner, channel scanning and Live TV playback were not tested.
 - Casting and mirroring were turned off by choice, so they were not tested after the list.
+
+## Seventh unit: 65Q7C (Wi-Fi)
+
+Applied on 2026-10-24. Same build as the Q7C above: `ro.product.model` `Smart TV Pro`, Android 14 (SDK 34), `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`. 21 packages were disabled by hand with `adb shell pm disable-user --user 0`
+
+The Clean Your TV launcher was not installed, so launcherx & setupwraith are untouched
+
+### Notes for this unit
+
+- **`com.tpa.kb` is not a keyboard**. It is a preinstalled system app (`/product/app/Tpakb`) & is absent from `ime list -a`. Its exact purpose is unconfirmed - do not confuse it with the actual input methods listed below
+
+```sh
+λ adb -s $S shell ime list -a -s
+com.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME
+com.google.android.tts/com.google.android.apps.speech.tts.googletts.settings.asr.voiceime.VoiceInputMethodService
+com.google.android.tv.remote.service/.ImeBridgeService
+com.tcl.inputmethod.international/.T_IME
+com.tcl.ttvs/.tcast.core.stringinput.SoftKeyboard
+```
+
+> The primary, default input method is `T-IME`; Gboard was unselectable/grayed out in the keyboard settings
+
+- **ZDF**: the ZDF Mediathek app is disabled & ZDF HD live still works after a reboot
+- **ARTE:** the app opens but needs an account to play - it is disabled
+- **Chromecast**: `com.google.android.apps.mediashell` is disabled & casting from an android phone using the default youtube still works
+- **Connecting**: Wireless debugging with `adb pair` & `adb connect`. `tools/tv.py` failed with an `STLS` error from `adb_shell`. `adb tcpip 5555` was not tried; instead, the `adb` cli was used directly
+
+### Test limits
+
+- applied on 2026-10-24, multiple reboots & subsequent use
+- hdmi inputs, airplay & the tuner were not tested
+- following preinstalled apps & buttons on the remote continued to work seamlessly after applying the list:
+  - voice recognition
+  - quick panel
+  - t-solo
+  - netflix
+  - prime video (only opened, no account)
+  - youtube
+  - local media integration (gallery, videos)
+  - tcl channel
+  - disney plus (only opened, no account)
+
+> prime video & disney plus apps opened fine, i do not claim that playback works
+
+## Eighth unit: 65Q7CX1 (Italy, Wi-Fi)
+
+Same build: `G08_4K_GB`, Android 14, `UTT2.250416.001 AU02`. Set up on 28-29 October 2026. The launcher first ran
+with `stock_home_redirect`, then launcherx and setupwraith were disabled so Google TV no longer flashes at power-on.
+
+- **Chromecast works with setupwraith and launcherx disabled**, after a reboot too: logcat has `Cast.Auth.OK=1` and
+  6/6 `CastV2.Authenticate.Challenge.In`/`Response.Out`, no `No private key`. The Cast receiver signs with
+  `jni_client_auth_creds_mediadrm`, so on this build its key does not come from setupwraith (unlike Google's own
+  Chromecast hardware). The Wi-Fi network belonged to setupwraith: it was forgotten and rejoined first.
+- **Home held** opened Google TV's notification panel, which is launcherx's
+  (`.dashboard.DashboardHandler` answers `TOGGLE_NOTIFICATION_HANDLER_PANEL`). With launcherx disabled nothing opens it,
+  and Settings has no notification screen. `app_keys` `3:home` and `hold:3:com.gathin.tvhome/.QuickSettingsActivity`
+  put the launcher's quick panel there instead.
+- **TCL Channel** (4020) → `4020:com.tcl.tv` opens Live TV. Settings (gear) needs `settings_key_keycodes` `[83]`.
+- **Not looked into:** there is no recents screen (`KEYCODE_APP_SWITCH` does nothing), and the mic answers "Google
+  Assistant is having trouble processing your request", already with launcherx enabled.

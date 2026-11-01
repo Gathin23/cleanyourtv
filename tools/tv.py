@@ -13,8 +13,10 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
     tv.py --help                       this text; needs neither the venv nor a TV
 
 Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
-empty or failed, 2 it was refused before anything ran on the TV - a flag it does not have, a local
-path that cannot be used, a port it could not open.
+empty or failed, or a command's answer was lost when the TV dropped the connection,
+2 it was refused before anything ran on the TV - a flag it does not have, one of its own with the wrong
+number of words, a local path that cannot be used, a port it could not open. A flag and its count are
+judged before TV_HOST is read, so a typo names the usage instead of the TV's address.
 
 Set TV_ADB_BINARY to the Google adb executable to use an already connected, paired transport
 (including encrypted Wireless debugging). See tools/native-adb.md.
@@ -32,6 +34,55 @@ import time
 if sys.argv[1:2] and sys.argv[1] in ("-h", "--help"):
     print((__doc__ or "").strip())
     sys.exit(0)
+
+USAGE = """usage:
+    tv.py --probe
+    tv.py --screenshot <local.png> [KEY ...] [--wait SECONDS]
+    tv.py --push <local> <remote>
+    tv.py --pull <remote> <local>
+    tv.py --batch < commands.txt
+    tv.py --reboot
+    tv.py --help
+    tv.py <shell command...>
+"""
+# Arguments each known flag takes, the flag included. The shell branch takes anything, so a flag
+# with the wrong count listed here is a typo, not a command for the TV.
+# --screenshot takes its file and then any number of keys, so it is checked by screenshot_args instead.
+ARITY = {"--probe": 1, "--push": 3, "--pull": 3, "--batch": 1, "--reboot": 1}
+
+
+def usage_error(message):
+    sys.stderr.write(f"{message}\n{USAGE}")
+    sys.exit(2)
+
+
+def check_flags(args):
+    """A flag tv.py does not have, or one of its own with the wrong number of words, before TV_HOST.
+
+    The TV_HOST check below exits at import time, so a command line that is wrong could only ever be
+    answered with the TV's address: `--proob` and `--push only-two.apk` both printed "Set TV_HOST to
+    your TV's IP address" and exited 1 - the status this client keeps for a command the TV ran and
+    failed, while the docstring's 2 is "refused before anything ran on the TV" - and the reader who
+    set the address they were told to set then got the usage. A typo in a flag is answered from the
+    usage, which needs neither the venv nor a TV, so it is judged here beside -h/--help.
+    """
+    if args and args[0] in ARITY and len(args) != ARITY[args[0]]:
+        sys.stderr.write(USAGE)
+        sys.exit(2)
+    if not args or not args[0].startswith("-"):
+        return                      # a shell command, or the bare run that is a probe
+    if args[0] == "--screenshot":
+        if len(args) == 1:
+            usage_error("--screenshot needs the file to save to")
+        return
+    if args[0] not in ARITY:
+        usage_error(f"not a flag of tv.py: {args[0]!r}")
+
+
+if __name__ == "__main__":
+    # Only tv.py's own command line: recovery.py, privacy.py, bench.py and the tests import this file,
+    # and the words their commands take are not this script's flags.
+    check_flags(sys.argv[1:])
 
 # The docs type `tools/tv.py ...`, which starts the first python3 on PATH, and that one seldom has
 # adb_shell: the README installs it into tools/venv only. Run that way, tv.py starts again under the
@@ -55,7 +106,6 @@ except ImportError as e:
         _args = [_venv, "-I", os.path.abspath(__file__), *sys.argv[1:]]
         if os.name == "nt":
             # No exec on Windows: os.execv starts a second process, and the shell takes its prompt back.
-            import subprocess
             sys.exit(subprocess.call(_args))
         os.execv(_venv, _args)
     _make = (r"python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt"
@@ -244,7 +294,7 @@ def connect_error(e):
     A refused port and a Wireless debugging port used to end tv.py with a traceback, which says nothing
     about the port to use instead (#1578). connect() itself still raises: check.py (through
     recovery.connect()) and privacy.py catch its errors with wording and exit codes of their own, and
-    recovery.py --save still lets them through (a follow-up)."""
+    recovery.py --save asks this same function through recovery.reach()."""
     if isinstance(e, NativeAdbError):
         return str(e)
     # Imported here rather than with the client above, so the stub adb_shell in the tests (adb_device
@@ -295,47 +345,67 @@ def connect_error(e):
     return None
 
 
-USAGE = """usage:
-    tv.py --probe
-    tv.py --screenshot <local.png> [KEY ...] [--wait SECONDS]
-    tv.py --push <local> <remote>
-    tv.py --pull <remote> <local>
-    tv.py --batch < commands.txt
-    tv.py --reboot
-    tv.py --help
-    tv.py <shell command...>
-"""
-# Arguments each known flag takes, the flag included. The shell branch takes anything, so a flag
-# with the wrong count listed here is a typo, not a command for the TV.
-# --screenshot takes its file and then any number of keys, so it is checked by screenshot_args instead.
-ARITY = {"--probe": 1, "--push": 3, "--pull": 3, "--batch": 1, "--reboot": 1}
+def lost_connection(e, command, position=None):
+    """What to print when a shell command failed because the TV dropped the connection, or None.
+
+    A TV that resets the TCP connection between two commands of a batch ended tv.py with adb_shell's
+    ConnectionResetError traceback (#2663). Under `set -euo pipefail` tools/disable.sh stopped there, and
+    the traceback named neither the command that was running nor whether the TV had run it: on the
+    SHIELD in that report it had, and only its answer was lost. So the drop is answered in words, with
+    the command and, in a batch, its place among the commands sent - comments and blank lines are not
+    commands, so the count lines up with the `$ command` headings printed above it.
+
+    The exit status stays 1, which is what a run that reached the TV and failed already answered (the
+    traceback exited 1 too). Anything that is not a lost connection keeps its traceback: that is a bug
+    in this script or in adb_shell, and a traceback is where it shows.
+    """
+    # Imported here rather than with the client above, as connect_error does, so a stub adb_shell that
+    # answers only adb_device and auth still loads this file.
+    from adb_shell.exceptions import AdbConnectionError, AdbTimeoutError, TcpTimeoutException
+    if not isinstance(e, (OSError, NativeAdbError, AdbConnectionError, AdbTimeoutError,
+                          TcpTimeoutException)):
+        return None
+    where = f" (command {position} of this batch)" if position else ""
+    rest = ("and the commands after it were not sent: look at the TV before running the batch again"
+            if position else
+            "look at the TV before running it again")
+    return (f'the connection to the TV dropped while running "{command}"{where}: '
+            f"{type(e).__name__}: {e}\n"
+            f"The TV may or may not have run it, {rest} (`tv.py \"pm list packages -d\"` names the "
+            f"packages a debloat batch disabled). See docs/TROUBLESHOOTING.md#connecting.")
+
 
 # screencap writes the PNG on the TV and we pull the file afterwards: adb_shell's shell() decodes
 # what comes back as text, which corrupts an image, and `exec-out screencap -p` returns a broken
 # PNG on some MediaTek sets (docs/TROUBLESHOOTING.md). /data/local/tmp is writable from shell.
 SHOT_REMOTE = "/data/local/tmp/cleanyourtv-shot.png"
 PNG = b"\x89PNG\r\n\x1a\n"
+# The last 8 bytes of every PNG: the IEND chunk's type and CRC. `screencap -p` writes one, so a file
+# that starts with the signature and does not end with this is a picture the pull stopped in the middle
+# of - not a screen. The signature alone let that through: the file was announced with its size and
+# exit 0, and the reader got half a screenshot that GitHub draws as a picture cut off at the bottom.
+PNG_END = b"IEND\xaeB`\x82"
 # Key names go into a shell command on the TV, so only plain key names and numeric keycodes get through.
 KEY_NAME = re.compile(r"^[A-Z0-9_]+$")
 KEY_GAP_S = 0.6   # between two keys, so the UI has finished reacting to the first
+# The pause after the last key is there for a screen to settle. The capture's read timeout is 120 s and
+# the pull's 300 s, so a pause longer than that is a unit typo rather than a settle: "seconds" typed as
+# milliseconds or nanoseconds ("--wait 1000000000") used to hang the run for years instead of returning.
+WAIT_MAX_S = 300.0
 
 
 def check_arity(args):
-    """Reject a known flag with the wrong argument count before connecting.
+    """Judge --screenshot's arguments and the two paths of --push/--pull before the TV is opened.
 
-    Without this, `--screenshot` with a destination missing falls through to the shell branch and
-    the TV tries to run `--screenshot` as a command. The same goes for a flag this script does not
-    have at all: `--proob` used to be sent to the TV, whose shell answered "inaccessible or not
-    found" while tv.py exited 0, so a mistyped flag looked like a command that ran."""
-    if args and args[0] in ARITY and len(args) != ARITY[args[0]]:
-        sys.stderr.write(USAGE)
-        sys.exit(2)
+    The flag itself, and how many words it takes, is check_flags() above, which runs before TV_HOST is
+    read. What is left here is the file a flag takes: `--screenshot` with its destination missing would
+    otherwise fall through to the shell branch and the TV would try to run `--screenshot` as a command.
+    """
+    check_flags(args)
     if args and args[0] == "--screenshot":
         screenshot_args(args[1:])
     elif args and args[0] in ("--push", "--pull"):
         transfer_args(args)
-    elif args and args[0].startswith("-") and args[0] not in ARITY:
-        usage_error(f"not a flag of tv.py: {args[0]!r}")
 
 
 def transfer_args(args):
@@ -429,7 +499,8 @@ def screenshot_args(rest):
     KEY is an Android key name without the KEYCODE_ prefix (HOME, DPAD_RIGHT), a full name (KEYCODE_BACK)
     or a numeric keycode (83). The screenshot is taken --wait seconds after the last key (default 1). With no
     keys, --wait still pauses before the capture, so a screen that is still loading can settle; without it,
-    no keys means no pause."""
+    no keys means no pause. The pause is 0 to 300 seconds: a value time.sleep() cannot take, or one that is
+    a unit typo, is a usage error here rather than a traceback after the keys have been pressed."""
     local, keys, wait = None, [], None
     i = 0
     while i < len(rest):
@@ -441,8 +512,15 @@ def screenshot_args(rest):
                 wait = float(rest[i + 1])
             except ValueError:
                 wait = -1
-            if wait < 0:
-                usage_error(f"--wait needs a number of seconds, not {rest[i + 1]!r}")
+            # Judged here, with the destination and before connect(), because time.sleep() cannot take
+            # every float: NaN is a ValueError and an infinity (or 1e18) an OverflowError, both raised in
+            # screenshot() *after* the keys have been pressed on the TV - exit 1, the code this client
+            # keeps for a capture that came back empty, so a typo in the pause read as a TV with nothing
+            # on screen, with no PNG and the capture never taken. A NaN fails both comparisons, so this
+            # one test covers it too.
+            if not 0 <= wait <= WAIT_MAX_S:
+                usage_error(f"--wait needs a number of seconds between 0 and {WAIT_MAX_S:g}, "
+                            f"not {rest[i + 1]!r}")
             i += 2
             continue
         if local is None and not arg.startswith("--"):
@@ -459,11 +537,6 @@ def screenshot_args(rest):
     if wait is None:
         wait = 1.0 if keys else 0.0
     return local, keys, wait
-
-
-def usage_error(message):
-    sys.stderr.write(f"{message}\n{USAGE}")
-    sys.exit(2)
 
 
 def path_error(message):
@@ -516,6 +589,16 @@ def screenshot(dev, local, keys=(), wait=0.0):
         if f.read(len(PNG)) != PNG:
             print(f"{local} is not a PNG: the pull from the TV came back damaged; try again", file=sys.stderr)
             return 1
+        # A PNG that stops before its IEND chunk kept the signature and went through the check above:
+        # the run printed "screenshot <file> (N bytes)", returned 0 and left the reader a picture that
+        # ends in the middle - a pull that ran out (a transport that dropped, a fill that stopped on
+        # the TV) reads as a plain short screenshot, and the docs ask for those to go in a PR
+        # description. The end marker is what tells the two apart.
+        f.seek(max(0, size - len(PNG_END)))
+        if f.read() != PNG_END:
+            print(f"{local} is {size} bytes of a PNG that stops before its IEND chunk: the pull from the "
+                  "TV ended before the picture did; try again", file=sys.stderr)
+            return 1
     print(f"screenshot {local} ({size} bytes)")
     return 0
 
@@ -558,17 +641,34 @@ def main():
         # one shell command per stdin line, each run separately on the same connection.
         # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
         sys.stdin.reconfigure(encoding="utf-8-sig")
+        sent = 0
         for line in sys.stdin:
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
-            out = dev.shell(line, read_timeout_s=120.0)
+            sent += 1
+            try:
+                out = dev.shell(line, read_timeout_s=120.0)
+            except Exception as e:
+                why = lost_connection(e, line, sent)
+                if why is None:
+                    raise
+                print(why, file=sys.stderr)
+                return 1
             sys.stdout.write(f"$ {line}\n{out}")
             if out and not out.endswith("\n"):
                 sys.stdout.write("\n")
             sys.stdout.flush()
     else:
-        out = dev.shell(" ".join(args), read_timeout_s=120.0)
+        line = " ".join(args)
+        try:
+            out = dev.shell(line, read_timeout_s=120.0)
+        except Exception as e:
+            why = lost_connection(e, line)
+            if why is None:
+                raise
+            print(why, file=sys.stderr)
+            return 1
         sys.stdout.write(out)
     dev.close()
     return status

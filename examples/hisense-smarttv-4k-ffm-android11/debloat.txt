@@ -1,7 +1,8 @@
 # Hisense SmartTV 4K FFM (device songshan, product songshan_emH_FFM, board m7632, MediaTek),
 # Android 11 / SDK 30, firmware RTT2.220118.001 / 01.00.05.04. The Android model string is
 # "SmartTV 4K FFM".
-# Also sold as the Hisense 50A6H4 (US), Android model string "SmartTV 4K": the third unit below.
+# Also sold as the Hisense 50A6H4 (US), Hisense 65U6G and Hisense 65A6H: the third, fourth and fifth units
+# below.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-smarttv-4k-ffm-android11/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-smarttv-4k-ffm-android11/debloat.txt com.google.android.apps.tv.launcherx
@@ -66,6 +67,53 @@
 #   (README, "Are there switches in the TV's own Settings worth flipping too?"); not checked on this set. Set it before
 #   this list disables setupwraith.
 # - Private DNS (dns.adguard-dns.com) works; YouTube and the streaming apps still play.
+#
+# Fourth unit: the Hisense 65U6G (retail model; same device songshan and build RTT2.220118.001,
+# Android model string "SmartTV 4K FFM", Android 11 / SDK 30). One session on 2026-10-27 with reboots:
+# - setupwraith passed the Wi-Fi guard without FORCE_SETUPWRAITH (active network owned by com.android.tv.settings).
+# - Applied debloat (setupwraith, mediashell, YouTube Music, Google TV Movies) and clean launcher swap.
+# - Remote keycodes match the SmartRC layout: YouTube 293, Prime Video 295, Disney+ 607 (scancode 484),
+#   Tubi 606, and gear 83.
+# - Private DNS (dns.adguard-dns.com) verified persistent across reboots; streaming apps play normally.
+#
+# Fifth unit: the Hisense 65A6H (same device songshan, build RTT2.220118.001, incremental 00.00.00.53,
+# security patch 2025-06-01, Android model string "SmartTV 4K"). One session on 2026-10-28 with two reboots:
+# this list plus the three commented entries marked "third unit" at the end, applied in batches, then the
+# launcher. Nothing came disabled from the factory; storemode is not installed, evservice is. Notes from it:
+# - tools/disable.sh held back gtvpai and disclaimercustomization at first: this firmware's dumpsys prints no
+#   permission block for either, so the input-driver check cannot read them. With HDMI confirmed working
+#   after a reboot, TVINPUT_ALLOW=1 disabled them, as the script's message says.
+# - setupwraith passed the Wi-Fi guard without FORCE_SETUPWRAITH: every saved network belonged to
+#   android.uid.system. Usage & diagnostics was switched off in Settings before it was disabled.
+# - Unlike the third unit, with launcherx disabled and no key helper enabled only Netflix, Input and Home
+#   worked when pressed for real; the gear, YouTube, Prime Video and Disney+ buttons did nothing. The owner
+#   kept them unmapped rather than enable InputKeyService and lose the volume ramp (held Volume Up repeats
+#   about every 115 ms with no helper bound). Their codes were not captured on this unit.
+# - The owner also disabled katniss, hisense.alexa, dreamx, AirPlay (com.mediatek.AirplayAPK and
+#   com.mediatek.partner.airplay; AirplayAPK serves a TvInputService, so it too needs TVINPUT_ALLOW=1),
+#   com.vt.miracast and com.hisense.tv.dlna, plus unused streaming apps and preloads; mediashell (Chromecast)
+#   and the firmware updaters stayed on. Nothing broke, and every package stayed disabled across both reboots.
+#
+# Sixth and seventh units: two sets in one home (same device songshan, build RTT2.220118.001, incremental
+# 00.00.00.53, security patch 2025-06-01, Android model string "SmartTV 4K"; retail model not checked). One
+# session on 2026-10-29 with two reboots each: this list plus the three commented entries marked "third unit"
+# and com.hisense.evservice, applied in batches with a screenshot between them, then the launcher. Nothing came
+# disabled from the factory; storemode is not installed, evservice is. Notes from them:
+# - As on the fifth unit, tools/disable.sh held back gtvpai and disclaimercustomization (no permission block in
+#   dumpsys); with every input still registered after a reboot (AV, three HDMI, the tuner, AirPlay), TVINPUT_ALLOW=1
+#   disabled them.
+# - On both, setupwraith owned one saved Wi-Fi network that the TV was not using, and the active one belonged to
+#   android.uid.system, so disable.sh's guard held it back; FORCE_SETUPWRAITH=1 disabled it, that one saved network
+#   was deleted and the TV stayed on Wi-Fi and ADB. Usage & diagnostics was switched off in Settings first.
+# - As on the third unit, with launcherx disabled and no key helper enabled, Home, Back, Input and the gear worked
+#   when pressed for real, and a held Volume Up still ramped.
+# - Power-on goes FallbackHome, then the new launcher; the firmware does not put Live TV in front by itself.
+# - The owner also disabled katniss, hisense.alexa, mediashell, com.vt.miracast, com.hisense.tv.dlna,
+#   com.vt.tv.homekitproxy, dreamx, HiBrowser, Play Games, Google TV Movies, YouTube Music, both VIDAA apps
+#   (net.vidaatv.*) and every unused streaming app (the seventh unit also had YouTube TV and Haystack News);
+#   AirPlay and the firmware updaters stayed on. Every package stayed disabled across both reboots.
+# - After "Revoke USB debugging authorizations", a detached `settings put global adb_enabled 0; reboot` started
+#   from the same ADB shell never ran (port 5555 stayed open); switching USB debugging off with the remote closed it.
 
 # Retail / store demo
 com.hisense.storemode

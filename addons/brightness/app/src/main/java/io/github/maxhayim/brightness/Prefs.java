@@ -49,6 +49,24 @@ final class Prefs {
         savePicture(c, "tv_night_", s.tvNight);
     }
 
+    /** The night mode the one-press toggle replaced, so its next press can put it back; null when there is none. */
+    static Dimming.Night nightBeforeToggle(Context c) {
+        String v = of(c).getString("night_before_toggle", null);
+        if (v == null) return null;
+        try {
+            return Dimming.Night.valueOf(v);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    static void setNightBeforeToggle(Context c, Dimming.Night replaced) {
+        SharedPreferences.Editor e = of(c).edit();
+        if (replaced == null) e.remove("night_before_toggle");
+        else e.putString("night_before_toggle", replaced.name());
+        e.apply();
+    }
+
     /** The day picture remembered when night last began, or null. */
     static Dimming.Picture tvDay(Context c) {
         SharedPreferences p = of(c);

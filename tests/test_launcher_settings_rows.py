@@ -1,4 +1,6 @@
-"""README: the Launcher settings section names every row the settings screen has.
+"""docs/launcher.md: the Launcher settings section names every row the settings screen has.
+
+The section moved out of the README into docs/launcher.md, which the README's launcher section links.
 
 The rows are read from the screen, not from a list kept here. `activity_launcher_settings.xml` carries
 each row, and the three rows whose label the code writes (`wallpaperChoice`, `animationsChoice`,
@@ -16,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LAYOUT = ROOT / "launcher/app/src/main/res/layout/activity_launcher_settings.xml"
 ACTIVITY = ROOT / "launcher/app/src/main/java/com/gathin/tvhome/LauncherSettingsActivity.java"
 STRINGS = ROOT / "launcher/app/src/main/res/values/strings.xml"
-README = ROOT / "README.md"
+GUIDE = ROOT / "docs" / "launcher.md"
 
 ANDROID = "{http://schemas.android.com/apk/res/android}"
 SUMMARY = "Launcher settings and the default home"
@@ -111,14 +113,14 @@ def numbered(label, layout_text):
     return []
 
 
-def detail_section(readme_text, summary):
-    """The text inside one <details> block, or '' - so a row named three sections further down
-    does not count as the settings page being documented."""
-    start = readme_text.find("<summary><b>%s</b></summary>" % summary)
+def detail_section(text, summary):
+    """The text under one `## summary` heading up to the next `## `, or '' - so a row named three
+    sections further down does not count as the settings page being documented."""
+    start = text.find("## %s\n" % summary)
     if start < 0:
         return ""
-    end = readme_text.find("</details>", start)
-    return readme_text[start:end if end > 0 else len(readme_text)]
+    end = text.find("\n## ", start + 3)
+    return text[start:end if end > 0 else len(text)]
 
 
 class ScreenRows(unittest.TestCase):
@@ -129,7 +131,7 @@ class ScreenRows(unittest.TestCase):
         self.activity_text = ACTIVITY.read_text(encoding="utf-8")
         self.strings = english_strings(STRINGS.read_text(encoding="utf-8"))
         self.rows = row_labels(self.layout_text, self.activity_text, self.strings)
-        self.section = detail_section(README.read_text(encoding="utf-8"), SUMMARY)
+        self.section = detail_section(GUIDE.read_text(encoding="utf-8"), SUMMARY)
 
     def test_screen_rows_are_read(self):
         """The screen has its rows, and each one resolved to the label the TV shows."""
@@ -140,7 +142,7 @@ class ScreenRows(unittest.TestCase):
             self.assertTrue(label.strip(), row_id)
 
     def test_readme_names_every_row(self):
-        self.assertTrue(self.section, "README has no '%s' section" % SUMMARY)
+        self.assertTrue(self.section, "docs/launcher.md has no '%s' section" % SUMMARY)
         self.assertEqual(missing_rows(self.section, self.rows), [])
 
     def test_readme_names_the_numbers_under_each_row(self):
@@ -161,9 +163,8 @@ class ScreenRows(unittest.TestCase):
                          [("walls", "Wallpaper")])
 
     def test_a_row_named_in_another_section_does_not_count(self):
-        readme = ("<details>\n<summary><b>%s</b></summary>\n\nNothing here.\n\n</details>\n\n"
-                  "<details>\n<summary><b>Elsewhere</b></summary>\n\n- **Wallpaper** this is not the "
-                  "settings page.\n\n</details>\n" % SUMMARY)
+        readme = ("## %s\n\nNothing here.\n\n"
+                  "## Elsewhere\n\n- **Wallpaper** this is not the settings page.\n" % SUMMARY)
         section = detail_section(readme, SUMMARY)
         self.assertIn("Nothing here", section)
         self.assertNotIn("Elsewhere", section)

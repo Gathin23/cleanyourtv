@@ -1,4 +1,4 @@
-# JVC UK 4K Android TV (built by MTC, product MTCMSD6886UK, codename sadang, MediaTek m7322), Android TV 11 (API 30),
+# JVC LT-58CA810 (JVC UK 4K Android TV, built by MTC, product MTCMSD6886UK, codename sadang, MediaTek m7322), Android TV 11 (API 30),
 # firmware RTO8.250915.001, security patch 2025-07-01, 1.4 GB RAM, 1920x1080. UK unit.
 # Fingerprint: JVC/MTCMSD6886UK/sadang:11/RTO8.250915.001/14107831:user/release-keys
 # Same MTC board and firmware build as examples/hitachi-65qledsm20 (bangbae), with the UK Freeview Play
@@ -23,6 +23,11 @@
 #
 # Status: disabled in five batches on one TV on 2026-10-21, with a reboot the same evening, then three
 # days of daily use and about 30 reboots. Home, the remote's app buttons, HDMI inputs and Live TV all work.
+#
+# Second unit (JVC LT-58CA810, same fingerprint), tested 2026-10-28: this launcher became Home and returned
+# after a reboot; Home resolves to com.gathin.tvhome; setupwraith is not a Home claimant, and saved-Wi-Fi
+# ownership was not visible, so setupwraith stays enabled. Dock YouTube, Netflix, Prime Video, BBC iPlayer
+# works.
 #
 # Notes from this TV:
 # - The Freeview Play apps come back enabled at every boot (Freeview Play certification), so they are not

@@ -1,0 +1,7 @@
+{
+  "live_tv_package": "com.realtek.tv.atv",
+  "hidden_apps": [
+    "com.android.tv",
+    "com.realtek.tv.atv"
+  ]
+}

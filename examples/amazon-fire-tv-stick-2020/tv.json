@@ -1,0 +1,6 @@
+{
+  "tv": "Amazon Fire TV Stick, 3rd gen 2020 (AFTSSS, sheldonp), India",
+  "os": "Fire OS 7.7.1.7 / Android 9",
+  "brand": "Amazon Fire TV",
+  "notes": "Stick Lite list on the same build, every package present: Amazon telemetry, ACR, Wi-Fi password uploader, ad/recommendation feeders, Live tab, Shopping, Kids, Music/Photos/Silk, whole-home audio, Alexa extras; casting (Miracast, DIAL, fling) commented out, off on this stick by choice; three entries need disable.sh's overrides (see header); voice search, Prime Video, miniTV, OTA kept; reboot-checked; debloat only"
+}

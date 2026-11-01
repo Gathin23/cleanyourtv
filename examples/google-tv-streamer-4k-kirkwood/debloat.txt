@@ -1,6 +1,8 @@
 # Google TV Streamer (2024, device kirkwood, model "Google TV Streamer" / GZRNL), 4 GB RAM
 # Google TV 14 (SDK 34), build UTTK.260317.003
 #
+# Cast-preserving five-package alternative, tested on a second unit: see README.md and debloat-keep-cast.txt.
+#
 # Apply:   TV_HOST=<ip> tools/disable.sh examples/google-tv-streamer-4k-kirkwood/debloat.txt
 # Undo:    TV_HOST=<ip> tools/restore.sh examples/google-tv-streamer-4k-kirkwood/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -89,6 +91,13 @@
 #   number) and starts the app itself. It cannot consume the press, so the button's own action still runs
 #   as well - see docs/TROUBLESHOOTING.md, "Remapping the remote's app buttons without a key helper"
 #   (#796).
+#   A second unit (same build, 2026-10-28) kept the YouTube button and the ramp together without a script, the
+#   Sony VU3 way from that same TROUBLESHOOTING section: launcherx re-enabled after the install
+#   (`pm enable com.google.android.apps.tv.launcherx`), the theme's config.json setting
+#   "stock_home_redirect": "com.google.android.apps.tv.launcherx" and "key_filter": false, and HomeKeyService
+#   enabled. YouTube then goes to launcherx's GlobalKeyListener_Receiver as stock, Home flashes launcherx and
+#   lands on this launcher, and held volume ramps. It survived a reboot; the price is launcherx running again.
+#   setupwraith stays disabled, so this does not bring casting back.
 # - com.google.android.tvrecommendations and com.google.android.apps.education.cast2class ship
 #   disabled at the factory; `pm disable-user` on them fails with "Shell cannot change component
 #   state". Don't add them to a restore list either.

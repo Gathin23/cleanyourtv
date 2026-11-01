@@ -2,5 +2,5 @@
   "tv": "Xiaomi MiTV-AXFR1 (rango, Amlogic, 1 GB), India",
   "os": "Android TV 11",
   "brand": "Xiaomi",
-  "notes": "PatchWall, Mi analytics, sponsored rows, partner auto-installs, TV Manager; mirroring, OTA and unused streaming apps off by choice; Chromecast and voice kept; PatchWall's input popup is unused (input picker is Live TV's); custom HOME accepted, setupwraith does not claim HOME"
+  "notes": "PatchWall, Mi analytics, sponsored rows, partner auto-installs, TV Manager; mirroring, OTA and unused streaming apps off by choice; Chromecast and voice kept; PatchWall's input popup is unused (input picker is Live TV's); custom HOME accepted, setupwraith does not claim HOME ([device note](../docs/devices/xiaomi-mitv-axfr1.md))"
 }

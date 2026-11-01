@@ -21,7 +21,7 @@ OUT=$(tv 'pm install -r /data/local/tmp/bluetooth-connect.apk; rm -f /data/local
 echo "$OUT"
 case "$OUT" in *Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; esac
 
-# Nearby devices, so the app lists and switches paired speakers without asking on the TV.
-tv "pm grant $PKG android.permission.BLUETOOTH_CONNECT; echo permission granted"
+# Nearby devices on Android 12+; Android 11 and older grant BLUETOOTH at install.
+tv "pm grant $PKG android.permission.BLUETOOTH_CONNECT 2>/dev/null; echo permission granted"
 tv "am start -n $PKG/.MainActivity >/dev/null; echo opened"
 echo "Installed. Bluetooth Connect is open on the TV; press Home and answer Show card for the card."

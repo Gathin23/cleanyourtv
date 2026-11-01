@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi F2 Fire TV (AFTMA2857F, shine)",
+  "os": "Fire OS 7.7.1.7 / Android 9",
+  "brand": "Xiaomi",
+  "notes": "Same build as `tcl-32sf560-fire-tv/`: Amazon ACR, metrics and log uploads, Xiaomi analytics, ad ID and sponsored rows, Fire TV Channels, Shopping, demo content, tutorials, Kids, Silk and Amazon device-setup helpers; preloaded UK streaming apps as optional comments; Live TV, tuner and input stack, Alexa, casting, OTA and the stock launcher kept; debloat only, reboot-checked, eight days"
+}

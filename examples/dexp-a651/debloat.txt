@@ -1,0 +1,58 @@
+# DEXP A651 (built by Changhong, "AI PONT" family, codename longshan), Android TV 14 (API 34),
+# firmware UKNV.260518.001, Russian market. Vendor layer is Homwee (com.homwee.*), Live TV is MediaTek.
+# Same platform family as the CHiQ, AIWA and AiPro2K "AI PONT" sets.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/dexp-a651/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/dexp-a651/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (the scripts' default). Live TV: com.mediatek.wwtv.tvcenter.
+# The firmware opens Live TV by itself at every power-on.
+#
+# Left enabled: com.cltv.fast, TV middleware the firmware re-enables at every boot anyway (the tested set had
+# it off).
+# tools/disable.sh skips android.autoinstalls.config.homwee on this firmware (no permission block in dumpsys).
+#
+# KEEP, even though the names look like bloat:
+# - com.homwee.upgrade: it is the installer of the preloaded RuStore (installerPackageName=com.homwee.upgrade)
+#   and keeps it updated. The factory image ships RuStore 1.36, whose catalog comes up empty ("Здесь пока нет
+#   приложений"); updating to the current RuStoreTV.apk from rustore.ru fixes that, debloat or not.
+# - com.homwee.dmt.upgrade (firmware updates), com.homwee.synckey (remote keys), com.homwee.chinstallapk
+#   (APK installer), com.homwee.factory, com.google.android.leanbacklauncher.partnercustomizer, com.mediatek.*.
+# - com.google.android.tungsten.setupwraith owns the Wi-Fi network saved during first setup: leave it enabled
+#   (it does not claim Home on this Android TV build).
+
+# Telemetry, ads and recommendation rows
+# com.cltv.fast                         # TV middleware, re-enabled by the firmware at boot; this set has it off
+tv.anoki.acr.anokiacroptin              # Anoki automatic content recognition opt-in
+com.homwee.aipont                       # AI PONT brand portal
+com.google.android.tvrecommendations
+com.google.android.partnersetup         # RLZ partner-attribution pings at boot
+com.google.android.feedback
+com.android.tv.feedbackconsent          # feedback report consent screen
+
+# Vendor apps
+com.homwee.store
+com.homwee.help
+
+# Preloaded apps
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.backdrop             # Ambient screensaver, replaced by the launcher's Clock
+com.google.android.syncadapters.calendar
+
+# Personal choice: the streaming apps and Chromecast stay on; uncomment the ones you never use
+# com.google.android.apps.mediashell    # Chromecast built-in
+com.homwee.alexacontrol                 # Alexa
+# com.google.android.youtube.tv
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom
+# com.google.android.katniss            # Google Assistant (the mic button stops working); kept on the tested set
+# com.homwee.multiscreenshare           # Multi-Screen Share; kept on the tested set
+# com.homwee.mmp.screenshare
+# com.changhong.inface.net.wfd          # Miracast
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
+# after the new home is installed and set as default; restore.sh re-enables it.
+# com.google.android.tvlauncher

@@ -44,6 +44,7 @@
     <string name="good_night">晚安</string>
     <string name="festival_dussehra_greeting">十胜节快乐</string>
     <string name="festival_diwali_greeting">排灯节快乐</string>
+    <string name="festival_halloween_greeting">万圣节快乐</string>
     <string name="ethernet">有线网络</string>
     <string name="offline">未连接网络</string>
     <string name="not_available">此电视不支持该功能</string>
@@ -146,4 +147,8 @@
     <string name="tile_add_to_dock">添加到程序坞</string>
     <string name="tile_move">移动</string>
     <string name="tile_replace_in_dock">替换为其他应用</string>
+    <string name="game_live">直播中</string>
+    <string name="clock_format_system">系统</string>
+    <string name="clock_format_12">12 小时制</string>
+    <string name="clock_format_24">24 小时制</string>
 </resources>

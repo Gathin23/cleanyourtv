@@ -30,11 +30,17 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.mediatek.wwtv.tvcenter.
-# Keep: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, com.tcl.suspension
+# Keep: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, com.tcl.partnercustomizer, com.tcl.suspension
 # (source panel / Input button), com.tcl.keyhelp (virtual keys), com.tcl.useragreement, com.tcl.factory.view,
 # mediatek.factorymenu.ui, com.mediatek.wwtv.setupwizard, com.google.android.tv.remote.service.
 # Live TV/HDMI safety (both models): keep com.mediatek.wwtv.tvcenter; it also plays HDMI, so disabling it
 # breaks both. Keep com.mediatek.tvinput, com.mediatek.tv.service and com.tcl.suspension as well.
+# On G13/AU10, com.tcl.partnercustomizer owns the tvlauncher.widget provider used by the persistent
+# com.mediatek.tv.service. Keep it enabled: a related MediaTek build repeatedly crashed the service after
+# that provider was removed (#2138). The G13 provider owner was verified, but the crash was not reproduced
+# on this TV; the rest of the list was applied and reboot-checked with partnercustomizer still enabled.
+# Earlier 43S5K, AU07 and AU13 reports disabled it without a reported crash; those historical runs do not
+# establish that removing this provider is safe on every G13 build after a reboot.
 #
 # com.tcl.ttvs on this firmware is BOTH TCL's analytics (bi.core.BIService, identifier, trackdata) AND
 # TCL's firmware/app updater (versionUpdateApp.core.SystemUpdateService). Disabling it stops TCL
@@ -66,6 +72,27 @@
 #   com.google.android.apps.tv.dreamx
 # The three entries marked [43S5K ONLY] below were not disabled on the 32V5C. Comment them out before
 # applying this file to a 32V5C; they remain part of the tested 43S5K set.
+#
+# Another G13 unit on AU10 (G13_2K_GB, UKN2.241110.001 AU10, mt5867, 954 MB). Status: applied 2026-10-27
+# with tools/disable.sh in four batches, reboot-checked the same day, in use for two days so far.
+# - Disabled: messagebox, logkit, partnersetup, browser, feedback, feedbackconsent, dreamx, setupwraith,
+#   then launcherx through launcher/build-and-install.sh. gtvpai came last: disable.sh skips it
+#   (no readable permission block), so it was disabled with TVINPUT_ALLOW=1 after HDMI and Live TV were
+#   checked after the reboot. com.tcl.ttvs was also disabled by the owner's choice (it stays commented
+#   out here).
+# - Kept: com.tcl.partnercustomizer (#2138), katniss, Play Games and Cast. After the reboot the TV booted
+#   straight into the new Home, every disabled package stayed disabled, com.mediatek.tv.service kept one
+#   PID and `logcat -b crash` was empty.
+# - com.mediatek.MtkDemo is installed on this AU10 unit as well. disable.sh skips it because it holds
+#   TV_INPUT_HARDWARE, and it was left enabled.
+# - The saved Wi-Fi network belonged to setupwraith (cname= in dumpsys wifi). After forgetting and
+#   re-joining it in Settings, dumpsys wifi still showed the same network id with cname=setupwraith, and
+#   that happened twice. The way through was switching to another saved network that already belonged
+#   to android.uid.system, then FORCE_SETUPWRAITH=1. That deleted only the setupwraith-owned entry, and
+#   the TV stayed online. Check cname= again after re-joining before you disable setupwraith.
+# - The owner reports that the remote's Input key, app buttons, settings (gear) button and mic all
+#   worked after launcherx was off, with no key helper enabled. HDMI and Live TV through Inputs also
+#   worked.
 #
 # Brazilian unit (G13, G13_2K_GB, MediaTek MT9221, 954 MB, build UKN2.241110.001 AU07, security patch
 # 2025-06-01, locale pt-BR; the commercial model was not read): every active entry below was applied in four
@@ -118,7 +145,7 @@
 # com.tcl.ttvs                         # TCL analytics AND the firmware updater: kept on so updates arrive (#322)
 com.tcl.messagebox                     # TCL push messages and promos; carries an org.tcl.ttvs receiver
 com.tcl.logkit                         # log capture and upload
-com.tcl.partnercustomizer              # TCL promo rows on the Google TV home; [43S5K ONLY]
+# com.tcl.partnercustomizer            # keep: tvlauncher.widget provider for com.mediatek.tv.service (#2138)
 android.autoinstalls.config.google.gtvpai   # silently installs partner apps
 com.google.android.partnersetup        # partner attribution (RLZ pings)
 
@@ -128,7 +155,7 @@ com.google.android.play.games          # [43S5K ONLY]
 com.google.android.feedback
 com.android.tv.feedbackconsent
 com.google.android.katniss             # Google Assistant voice (mic button), about 63 MB; off by choice; [43S5K ONLY]
-com.mediatek.MtkDemo                   # MediaTek demo app; not on the AU10 units, seen on the AU13 unit
+com.mediatek.MtkDemo                   # MediaTek demo app; on one AU10 unit and the AU13 unit; disable.sh skips it (TV_INPUT_HARDWARE)
 
 # Batch 3: setup wizard. It claims HOME (RecoveryActivity, priority 1) once launcherx is gone.
 # 43S5K: disabled while launcherx still owned Home, and only after the Wi-Fi network was forgotten and

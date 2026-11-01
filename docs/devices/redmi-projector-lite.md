@@ -69,7 +69,9 @@ same menu SHIPPING INIT and BOARD INIT reset the set. This is a remote key seque
   unless an `examples/` folder for this exact board disables it, and asks for one reboot with Home and ADB
   confirmed before anything else (#741). There is no such folder yet, so treat this as one owner's result.
 - On the Sankey set the Home key and boot send `MAIN` + `HOME` + `COMMON_HOME`
-  (`ro.CVT_EN_COMMON_HOME_INTENT=1`), which the launcher has no filter for (#1201). Check
-  `getprop | grep CVT_EN` here before drawing conclusions about Home.
+  (`ro.CVT_EN_COMMON_HOME_INTENT=1`). MainActivity's HOME filter lists `COMMON_HOME` beside `HOME` since #2219, so
+  the Home key reaches the launcher on such a set; power-on still opens the stock launcher, because `MainActivity`
+  is not direct-boot-aware, which is the half #1448 tracks. Check `getprop | grep CVT_EN` here before drawing
+  conclusions about Home.
 
 ToF ranging, autofocus and keystone correction still worked after the session.

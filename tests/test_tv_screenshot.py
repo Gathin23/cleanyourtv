@@ -9,7 +9,9 @@ some MediaTek sets), leave nothing behind on the TV, and name the 0-byte case fo
 TV and HDMI inputs capture empty.
 
 It can also press remote keys first (#560), so one command shows what a key did: key names are checked
-before anything reaches the TV, since they end up in a shell command there.
+before anything reaches the TV, since they end up in a shell command there. The same goes for --wait: a
+value float() takes but time.sleep() cannot ("nan", "inf", 1e18) was a traceback out of the capture with
+the keys already pressed, and the run answered 1, the code kept for a capture that came back empty.
 
 The TV itself is faked, so these run anywhere adb_shell is installed or not.
 
@@ -29,7 +31,9 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "tools" / "tv.py"
-PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 32
+# A complete PNG: the signature, some chunk bytes, and the IEND chunk `screencap -p` always ends with.
+PNG_END = b"IEND\xaeB`\x82"
+PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 32 + PNG_END
 
 
 class FakeDevice:
@@ -173,6 +177,29 @@ class ScreenshotTest(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("is not a PNG", err)
 
+    def test_a_png_that_stops_before_its_end_chunk_is_not_a_screenshot(self):
+        # A pull that ended early keeps the signature: 40 bytes of PNG header and chunks, then nothing.
+        # The run used to print "screenshot <file> (40 bytes)", return 0 and leave a picture that stops
+        # in the middle, which is the one thing a screenshot in a PR description must not be.
+        cut = PNG[:len(PNG) - len(PNG_END)]
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / "home.png"
+            code, out, err, _ = self.run_tv(["--screenshot", str(local)], capture=cut)
+            self.assertEqual(code, 1)
+            self.assertIn(f"{local} is {len(cut)} bytes of a PNG that stops before its IEND chunk", err)
+            self.assertIn("try again", err)
+            self.assertEqual("", out, "a screenshot that is not one is not announced")
+            self.assertEqual(local.read_bytes(), cut, "the short file stays for the user to look at")
+
+    def test_a_truncated_signature_alone_is_refused_too(self):
+        # Fewer bytes than the end marker itself: the seek cannot land where the IEND would start, and
+        # an empty tail must not read as an empty marker.
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "tiny.png")], capture=PNG[:8])
+            self.assertEqual(code, 1)
+            self.assertIn("stops before its IEND chunk", err)
+            self.assertEqual("", out)
+
     def test_keys_are_pressed_in_order_before_the_capture(self):
         with tempfile.TemporaryDirectory() as tmp:
             local = Path(tmp) / "right.png"
@@ -219,6 +246,36 @@ class ScreenshotTest(unittest.TestCase):
                 self.assertEqual(code, 2)
                 self.assertIn("usage:", err)
                 self.assertEqual(device.calls, [], "nothing may reach the TV")
+
+    def test_a_wait_that_time_sleep_cannot_take_is_refused_before_the_keys(self):
+        # float() takes these, so they went straight to time.sleep() in screenshot(), after the keys had
+        # been pressed on the TV: NaN is a ValueError there and an infinity (or 1e18) an OverflowError, as
+        # a traceback with exit 1 - the code this client keeps for a capture that came back empty. The last
+        # two are the unit typo instead: seconds typed as nanoseconds sleeps for years rather than failing.
+        for value in ("nan", "NaN", "inf", "1e18", "1000000001"):
+            with self.subTest(wait=value):
+                code, out, err, device = self.run_tv(["--screenshot", "a.png", "HOME", "--wait", value])
+                self.assertEqual(code, 2, err)
+                self.assertIn(f"--wait needs a number of seconds between 0 and {TV.WAIT_MAX_S:g}, "
+                              f"not {value!r}", err)
+                self.assertIn("usage:", err)
+                self.assertEqual("", out)
+                self.assertNotIn("Traceback", err)
+                self.assertEqual(device.calls, [], "the pause is judged before the TV is opened")
+                self.assertEqual([], self.sleeps, "no key press is started for a pause that cannot be kept")
+
+    def test_the_ends_of_the_pause_still_capture(self):
+        # 0 is the shape a script writes for "no pause", and the ceiling is a real pause: neither may be
+        # refused by the check the values above meet.
+        for value, sleeps in (("0", []), ("300", [300.0])):
+            with self.subTest(wait=value):
+                with tempfile.TemporaryDirectory() as tmp:
+                    local = Path(tmp) / "home.png"
+                    code, out, err, _ = self.run_tv(["--screenshot", str(local), "HOME", "--wait", value])
+                    self.assertEqual(code, 0, err)
+                    self.assertEqual(local.read_bytes(), PNG)
+                    self.assertEqual(self.sleeps, sleeps)
+                    self.assertIn(f"screenshot {local}", out)
 
     def test_a_flag_without_its_argument_is_a_usage_error_not_a_tv_command(self):
         for args in (["--screenshot"], ["--push", "only-one"], ["--pull"]):

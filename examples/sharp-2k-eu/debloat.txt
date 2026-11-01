@@ -1,0 +1,61 @@
+# SHARP 2K EU Android TV (Expressluck, device martin, product SHARP_2K_ATV2, board mt5867),
+# Android TV 14 (API 34), build UKNV.260324.001, fingerprint SHARP/SHARP_2K_ATV2/martin:14/UKNV.260324.001/15080168,
+# ~935 MB RAM, armeabi-v7a. Vendor fingerprint Smarttech/SMARTTECH_FHD_ATV_UK. CVTE factory packages
+# present (com.cvte.tv.at, com.cvte.tv.fac.aging) but stock HOME is Google's tvlauncher, not a CVTE launcher.
+# Preferences on this unit: voice off, Chromecast kept; no separate Miracast/OEM cast or OEM OTA package found.
+#
+# Applied and reboot-checked the same day (2026-10-28), not a multi-day soak: Home stayed with the
+# replacement launcher, Ethernet ADB came back, and the disabled list matched after reboot.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-2k-eu/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-2k-eu/debloat.txt
+# Stock launcher: com.google.android.tvlauncher
+# Live TV: com.mediatek.wwtv.tvcenter. HDMI/tuner: com.mediatek.tvinput. Secondary CLTV: com.cltv.fast (kept).
+#
+# WARNING: dumpsys wifi showed cname=com.google.android.tungsten.setupwraith for a saved network.
+# Forget and re-join Wi-Fi in Settings BEFORE disabling setupwraith if ADB is on Wi-Fi, or ADB drops.
+# This unit was on Ethernet during apply, so FORCE_SETUPWRAITH=1 was used once.
+#
+# DO NOT DISABLE (load-bearing):
+# com.mediatek.tvinput com.mediatek.tv.service com.mediatek.wwtv.tvcenter com.mediatek.wwtv.setupwizard
+# com.mediatek.autopair com.express.bt.autopair com.mediatek.hotkey.dispatcher
+# com.google.android.tv.remote.service com.google.android.inputmethod.latin
+# com.google.android.apps.mediashell   # Chromecast, kept by choice
+# Factory packages (never launch): com.cvte.tv.at com.cvte.tv.fac.aging com.expressluck.facmenu
+#   com.express.at.factory.factorymanager com.express.fac.test com.at.factory.androidtvaidlservice
+#   mediatek.factorymenu.ui
+# com.cltv.fast                        # Freeview/CLTV kept; hide from grid via theme if unused
+
+# 1. Telemetry, ACR and Android 14 ad / personalisation services
+tv.anoki.acr.anokiacroptin                  # automatic content recognition
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup
+
+# 2. Recommendation rows, partner customizer, retail demo
+com.google.android.tvrecommendations
+com.mediatek.android.leanbacklauncher.partnercustomizer
+fusion.android.tv.demo                      # retail demo mode
+com.mediatek.androidbox                     # WFDSinkTest / Wi-Fi Display test
+
+# 3. Preloads and unused background
+umc.com.emanual                             # on-screen e-manual
+com.google.android.videos                   # Play Movies & TV
+com.google.android.play.games
+com.google.android.youtube.tvmusic          # YouTube Music, unused
+com.google.android.backdrop                 # ambient screensaver
+com.android.settings.intelligence
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.google.android.syncadapters.calendar
+
+# 4. Voice, off by choice
+com.google.android.katniss                  # Google Assistant / voice search and mic button
+
+# 5. Stock launcher and setup wizard — ONLY after the new launcher is Home. If ADB is on Wi-Fi,
+#    re-join the network first so it is no longer owned by setupwraith (see header WARNING).
+com.google.android.tungsten.setupwraith
+com.google.android.tvlauncher

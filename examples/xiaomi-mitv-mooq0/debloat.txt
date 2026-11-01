@@ -35,6 +35,20 @@
 # NetflixObserver is inside the core com.mediatek.tv.service APK; keep that service enabled. Details:
 # ../../docs/devices/xiaomi-mitv-mooq0-android11.md.
 #
+# ---- Android TV 11, second unit: Xiaomi Mi TV Q1 75" QLED (L75M6-ESG, croods) ----
+# The label on the back reads L75M6-ESG; ADB reports MiTV-MOOQ0 / croods, on the same firmware as
+# the P1 43 above (RTM4.220307.164.8835). One session on 2026-10-24 (#1520), not a several-day
+# report: ten packages from this list (the telemetry, PatchWall and TV Manager groups, the retail
+# demo, com.xiaomi.tvqs.overseas below and tvrecommendations) plus the stock launcher, eleven in
+# all, and all eleven were still disabled after a reboot, with the launcher still Home. Four more
+# entries below (mitvplus, dream, michannel, play_games) were already disabled before that session
+# and were left unchanged, so it adds no evidence for them. Kept enabled by choice: the
+# core TV services, the Bluetooth remote, Gboard, the Play Store and its services, the firmware
+# updater, casting, the assistant and the streaming apps; the dock carried Netflix, YouTube,
+# Disney+ and the owner's fourth app. With the stock launcher still enabled, `cmd package
+# set-home-activity` printed Success and a Home press still opened the stock one (its HOME sits at
+# priority 2, a replacement at 0): the order the NOTE below describes is the one that worked.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mooq0/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mooq0/debloat.txt
 # Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
@@ -67,6 +81,7 @@
 # ---- Xiaomi telemetry and analytics ----
 com.miui.tv.analytics
 com.xiaomi.statistic
+com.xiaomi.tvqs.overseas                         # TV quality service (telemetry); from the Q1 75 (#1520)
 com.google.android.tv.bugreportsender           # automatic bug report upload
 com.google.android.feedback                     # crash / feedback reporting
 
