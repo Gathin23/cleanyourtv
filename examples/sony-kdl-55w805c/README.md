@@ -47,3 +47,49 @@ discovery plugins for Kantar, Kuyun and ShopTV. `com.sony.dtv.interactivetvutil`
 application, action, internal events). The platform is in the list's last commented block; `interactivetvutil` stays, as
 other Sony apps read its token provider (see `examples/sony-bravia-4k-vh21-eu`).
 
+## A USB soundbar
+
+A USB speaker (a Dell AC511 here) enumerates as an ALSA card, and Android lists it as
+`AUDIO_DEVICE_OUT_USB_DEVICE` with an open output, yet nothing plays on it. MediaTek's policy engine
+(`Engine::getAudioOutputDevice` in `libaudiopolicyenginedefault.so`) builds the media output from the speaker,
+headphone, line-out, ARC/SPDIF and A2DP only, keyed on `persist.svp.aout` (`tv_speakers` or `audio_system`), so
+no Sound setting reaches USB.
+
+- **Apps:** a small app that keeps one silent media track routed to the bar with `AudioTrack.setPreferredDevice`
+  pulls the whole media strategy to it (Android 7's explicit routing), so YouTube, Prime Video, Spotify, AirPlay
+  and the menu clicks play on the bar. The firmware applies no volume to the USB output, so the app sets the
+  stream volume on that thread through `IAudioFlinger` (`MODIFY_AUDIO_SETTINGS`) and the remote's volume keys
+  work; it also sets the bar's own UAC volume to its maximum (it powers up at −39 dB, Windows uses −13 dB).
+  Source and notes: [tv-usb-speaker](https://github.com/ansar-rezaei/tv-usb-speaker).
+- **Live TV and HDMI** cannot move to the bar without root. Their sound is mixed in the MediaTek chip, and the
+  only copy an app can read (the HAL's `tv_record` input, opened as a TV tuner or HDMI input with
+  `RECORD_AUDIO`) comes after the TV speakers' volume and switch: music index 40 gave −29 dBFS, index 1 gave
+  −78 dBFS, and Speakers → Audio system silenced it. While the bar holds the media route the TV speakers'
+  volume stays where it was, so the app lets go of the route while `com.sony.dtv.tvx` is in front.
+
+## AirPlay
+
+[jqssun/android-airplay-server](https://github.com/jqssun/android-airplay-server) v0.0.36 (minSdk 23) builds
+for `armeabi-v7a` (8.8 MB) and runs here: iPhone screen mirroring works, with its sound on the USB bar. Building
+it in a container takes `python3`, `patch` and `gcc` besides the Android SDK; NDK 27 and SDK 37 download on
+the first build. `AirCast` (`com.smartdevice.tv.aircast`, Play Store), the receiver the owner had before, is a
+Coocaa/Skyworth app with log endpoints at `sc-clog.skysrt.com` and `cloud.coocaa.com`; the owner removed it.
+
+## Play Store on this set
+
+Checked in November 2026 on the TV's own Play Store:
+
+- Offers Install: ARD Mediathek, ZDF, Pluto TV, Plex, VLC, Kodi, TuneIn Radio, Twitch, Send files to TV,
+  Aerial Views.
+- "Your device isn't compatible with this version": Radio Garden, ARTE, X-plore.
+- "Isn't available on Google Play on this device": WELT (its live channel plays in the YouTube app).
+- Not offered in this country: Joyn.
+
+## Screensaver
+
+`screensaver_components` pointed at `com.google.android.backdrop/.Backdrop`, which was already disabled, so
+the set had no screensaver. Aerial Views from the Play Store works as one:
+
+```bash
+TV_HOST=<tv ip> tools/tv.py "settings put secure screensaver_components com.neilturner.aerialviews/.ui.screensaver.DreamActivity"
+```
