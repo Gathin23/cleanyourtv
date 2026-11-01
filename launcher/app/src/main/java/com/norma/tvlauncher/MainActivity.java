@@ -8,6 +8,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.role.RoleManager;
 import android.app.usage.StorageStats;
 import android.app.usage.StorageStatsManager;
 import android.app.usage.UsageStats;
@@ -20,6 +21,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -952,6 +954,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Not after recreate(): the launch intent survives it and would open the settings again.
         if (savedInstanceState == null) openLauncherSettingsIfAsked(getIntent());
         grid.post(() -> focusTile(adapter.appCount() > 1 ? 1 : 0));
+        checkAndPromptDefaultLauncher();
     }
 
     private boolean openLauncherSettingsIfAsked(Intent intent) {
@@ -4325,6 +4328,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return "Screensaver: " + (isSolatScreensaver[0] ? "Countdown Solat" : "Clocks");
         });
 
+        // Default launcher setting
+        if (isDefaultLauncher()) {
+            addSettingsMenuRow(rows, popup, R.string.default_launcher_active, this::requestDefaultLauncher);
+        } else {
+            addSettingsMenuRow(rows, popup, R.string.set_default_launcher, this::requestDefaultLauncher);
+        }
+
         // Add app to dock
         if (dockRow) {
             addSettingsMenuRow(rows, popup, R.string.dock_add, () -> {
@@ -4380,6 +4390,61 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void showLauncherSettingsModal() {
         showSettingsMenu();
+    }
+
+    public boolean isDefaultLauncher() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            if (resolveInfo != null && resolveInfo.activityInfo != null) {
+                return getPackageName().equals(resolveInfo.activityInfo.packageName);
+            }
+        } catch (Throwable ignored) {}
+        return false;
+    }
+
+    public void requestDefaultLauncher() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            RoleManager roleManager = getSystemService(RoleManager.class);
+            if (roleManager != null && roleManager.isRoleAvailable(RoleManager.ROLE_HOME)) {
+                if (!roleManager.isRoleHeld(RoleManager.ROLE_HOME)) {
+                    try {
+                        startActivity(roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME));
+                        return;
+                    } catch (Throwable ignored) {}
+                }
+            }
+        }
+        try {
+            startActivity(new Intent(Settings.ACTION_HOME_SETTINGS));
+            return;
+        } catch (Throwable ignored) {}
+
+        try {
+            Intent chooser = new Intent(Intent.ACTION_MAIN);
+            chooser.addCategory(Intent.CATEGORY_HOME);
+            chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(Intent.createChooser(chooser, getString(R.string.set_default_launcher)));
+        } catch (Throwable ignored) {
+            try {
+                startActivity(new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (Throwable ignored2) {}
+        }
+    }
+
+    private void checkAndPromptDefaultLauncher() {
+        if (isDefaultLauncher()) return;
+        SharedPreferences prefs = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+        boolean promptDismissed = prefs.getBoolean("default_launcher_prompt_dismissed", false);
+        if (promptDismissed) return;
+
+        handler.postDelayed(() -> {
+            if (!isFinishing() && !isDefaultLauncher()) {
+                requestDefaultLauncher();
+                prefs.edit().putBoolean("default_launcher_prompt_dismissed", true).apply();
+            }
+        }, 1200);
     }
 
     private void syncTimezone(String tzId) {

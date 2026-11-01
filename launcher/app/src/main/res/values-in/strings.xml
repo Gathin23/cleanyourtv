@@ -25,7 +25,9 @@
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN mati</string>
     <string name="home_settings">Pilih Beranda utama</string>
-    <string name="home_settings_help">Pilih beranda asli untuk berhenti menggunakan CleanYourTV sebagai Beranda, atau CleanYourTV untuk kembali. Antarmuka asli harus aktif dan TV Anda harus menyediakan pemilih beranda; gunakan skrip pemulihan terlebih dahulu jika sebelumnya dinonaktifkan.</string>
+    <string name="home_settings_help">Pilih beranda asli untuk berhenti menggunakan Norma Launcher sebagai Beranda, atau Norma Launcher untuk kembali. Antarmuka asli harus aktif dan TV Anda harus menyediakan pemilih beranda; gunakan skrip pemulihan terlebih dahulu jika sebelumnya dinonaktifkan.</string>
+    <string name="set_default_launcher">Jadikan Beranda Utama</string>
+    <string name="default_launcher_active">Beranda Utama: Aktif ✓</string>
     <string name="launcher_settings">Setelan antarmuka</string>
     <string name="columns_label">App per baris</string>
     <string name="rows_below_dock_label">Baris di bawah dock</string>
