@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-177 projects so far.
+178 projects so far.
 
 ## Home screens built as their own app
 
@@ -169,6 +169,7 @@ This repo's launcher with new looks or features, often tuned for one TV. Good pl
 | [Red Rain Matrix intro](https://github.com/rotkppchn/cleanyourtv/blob/matrix-intro/MATRIX-INTRO.md) ([screenshot](https://raw.githubusercontent.com/rotkppchn/cleanyourtv/797365597c7823f8d5546a4977a2e2c7e20f4985/docs/matrix-intro/intro.jpg), [issues](https://github.com/rotkppchn/cleanyourtv/issues)) | A red fan-made replica of the Matrix digital rain as a power-on intro: a few seconds of OpenGL rain every time the TV wakes from standby and after a boot, then Home, with the red-rain theme (the rain frozen as wallpaper and behind the clock screensaver). No network, no new permission | Sony KD-43XF7596, Android TV 8.0 and 9 | [rotkppchn](https://github.com/rotkppchn) |
 | [Chromecast Home: Up next and Now playing controls](https://github.com/DKRC/cleanyourtv/blob/chromecast-home/FORK.md) ([screenshot](https://raw.githubusercontent.com/DKRC/cleanyourtv/7326f8b3c25cb2991b5dad7fc59e932712e30311/docs/chromecast-home/home.jpg), [issues](https://github.com/DKRC/cleanyourtv/issues)) | Up next for the next F1 weekend and new episodes from iCalendar feeds, Now playing with play/pause, skip and open-app, METAR-backed weather, and an opt-in Back out of Spotify. Network: weather and your calendar URLs, only while Home is visible | Chromecast with Google TV 4K (sabrina), Google TV 14 | [DKRC](https://github.com/DKRC) |
 | [StreamHome](https://github.com/rohan9405/streamhome-tv) ([screenshot](https://raw.githubusercontent.com/rohan9405/streamhome-tv/main/docs/screens/header.jpg)) | A streaming-first Home with new releases per app and IMDb ratings; the launcher stays offline, and optional Feed and Ambient News add-ons add `INTERNET`, TV listings and overlay permissions and use your own keys. | Sony BRAVIA BF1, Google TV 12 | [rohan9405](https://github.com/rohan9405) |
+| [CleanYourTV Editorial](https://github.com/kevscec/cleanyourtv/blob/durabrand-editorial/FORK.md) ([source](https://github.com/kevscec/cleanyourtv/tree/durabrand-editorial), [screenshot](https://raw.githubusercontent.com/kevscec/cleanyourtv/744957c589effcdc3371a4552784407473f9a48f/docs/switches/home_tabs.jpg)) | A fork with the clock on a glass panel in a serif face, the wallpaper's name set large, weather from Open-Meteo, a Continue watching row from Watch Next and Stremio's channel, Home / Explore / Apps tabs and an All apps tile that ends the dock. Every addition is off by default; weather and Continue watching add `INTERNET` and `READ_TV_LISTINGS` | Durabrand DB Android TV 4K (DURAT32ISDB), Android TV 11, with the real remote | [kevscec](https://github.com/kevscec) |
 
 ## Screensavers and add-ons
 
@@ -260,6 +261,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Bettdow:** [Glass home with this week's trending series](https://github.com/viniciustheodoro/newdesignforyourTV)
 - **Changhong:** [Glance line and crimson glass on a Changhong](https://github.com/bayhaqy/cleanyourtv/blob/main/my-tv/README.md)
 - **Chromecast with Google TV:** [Cast Fix](https://github.com/thayford/castfix), [Chromecast glass fork](https://github.com/NewPlayer0213/cleanyourtv/blob/showcase/FORK.md), [Chromecast Home: Up next and Now playing controls](https://github.com/DKRC/cleanyourtv/blob/chromecast-home/FORK.md), [Weather Clock](https://github.com/matyivagyok/weatherclock-tv)
+- **Durabrand:** [CleanYourTV Editorial](https://github.com/kevscec/cleanyourtv/blob/durabrand-editorial/FORK.md)
 - **Formovie:** [CleanTV by VGS](https://github.com/vgscity/vgs-cleantv), [Homelab companion](https://github.com/epochcoder/cleanyourtv/tree/main/companion)
 - **FPT Play:** [TV Remote](https://github.com/HoangTran0410/tv-remote)
 - **Haier:** [cleanyourtv for Haier](https://github.com/abuhasanrumi/cleanyourtv/tree/showcase-haier-fork/docs/haier-matrixtv-de)
