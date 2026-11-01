@@ -264,6 +264,10 @@
     <!-- The date and the line between the clock and the date in the clock's full white instead of dimmed. Can also be
          set with "header_white" in a theme. -->
     <bool name="header_white">false</bool>
+    <!-- The clock, greeting and date in one capsule of the top bar pills' frosted glass, level with the top buttons.
+         AM/PM is hidden, and date_below_clock wins if both are set. Can also be
+         set with "clock_glass" in a theme. -->
+    <bool name="clock_glass">false</bool>
     <!-- Optional VPN app the network pill opens (hold the pill for Wi-Fi settings), e.g. the package of the
          VPN you use. Empty: the pill opens Wi-Fi settings. The green VPN badge shows for any VPN either way;
          with an app set here, a red "VPN off" badge also shows while no VPN is up. -->

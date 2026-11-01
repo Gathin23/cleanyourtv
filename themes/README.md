@@ -115,6 +115,7 @@ A new key needs one there in the same pull request.
 | `lunar_date` | bool | Show the lunisolar date under the Gregorian one, e.g. `LUNAR 13/9 · YEAR OF THE HORSE`, or `13/9 ÂM LỊCH · BÍNH NGỌ` in Vietnamese; a leap month is marked. Off by default |
 | `lunar_utc_offset` | 0 to 14 | Hours east of UTC the lunar calendar is computed for: `7` is the Vietnamese calendar, `8` the Chinese one, `9` the Korean one; they differ by a day now and then (and by a month in 1985). Unset: 7 when the TV is in Vietnamese, 9 in Korean, 8 otherwise |
 | `date_below_clock` | bool | The date (with the Shamsi and lunar lines) on its own line under the clock instead of beside it, for a top bar whose pills leave the date too little room (`false` by default) |
+| `clock_glass` | bool | The clock, greeting and date in one capsule of the top bar pills' frosted glass, level with the top buttons. AM/PM is hidden, and `date_below_clock` wins if both are set (`false` by default) |
 | `locale` | string | The language the launcher shows itself in, as a language tag (`"vi"`, `"pt-BR"`, `"ar-EG-u-nu-latn"` for Arabic with Western digits), instead of the TV's: for firmware with no menu entry for a language the launcher speaks (a China-market Xiaomi offers Chinese and English only). Empty by default, which follows the TV |
 | `greeting_name` | string | A name after the greeting, e.g. `"Mr. Trịnh"` for GOOD MORNING, MR. TRỊNH; empty for the greeting alone |
 | `show_greeting` | bool | The greeting above the clock (`true` by default); `false` hides it |

@@ -563,6 +563,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
         if (cfg.dateBelowClock) moveDateBelowClock();
+        else if (cfg.clockGlass) applyClockGlass();
         if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
                 && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
             alignDateBelowIconsWithClock();
@@ -2406,6 +2407,75 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         libraryFocusPending = false;
         hideGlass();
         hideHero();
+    }
+
+    /**
+     * clock_glass: the clock, greeting and date in one capsule of the top bar pills' frosted glass, level with the top
+     * buttons. The accent shows only on the greeting and the line beside the clock.
+     */
+    private void applyClockGlass() {
+        LinearLayout block = (LinearLayout) clockBlock;
+        android.widget.TextClock date = findViewById(R.id.date);
+        TextView clock = findViewById(R.id.clock);
+        LinearLayout column = (LinearLayout) date.getParent();
+        LinearLayout clockRow = (LinearLayout) clock.getParent();
+        findViewById(R.id.ampm).setVisibility(View.GONE);
+        clock.setTextSize(44f);
+
+        block.removeView(greeting);
+        greeting.setTextSize(11f);
+        LinearLayout.LayoutParams greetingLp = wrapContent();
+        greetingLp.bottomMargin = (int) (3 * density);
+        column.addView(greeting, 0, greetingLp);
+
+        String dateFormat = "EEEE, d MMMM";
+        date.setFormat12Hour(dateFormat);
+        date.setFormat24Hour(dateFormat);
+        date.setAllCaps(false);
+        date.setTextSize(16f);
+        date.setLetterSpacing(0f);
+        date.setTextColor(Color.WHITE);
+        date.setLayoutParams(wrapContent());
+
+        View clockDivider = findViewById(R.id.clockDivider);
+        LinearLayout.LayoutParams dividerLp = (LinearLayout.LayoutParams) clockDivider.getLayoutParams();
+        dividerLp.height = (int) (36 * density);
+        dividerLp.gravity = Gravity.CENTER_VERTICAL;
+        dividerLp.bottomMargin = 0;
+        clockDivider.setLayoutParams(dividerLp);
+
+        LinearLayout.LayoutParams columnLp = wrapContent();
+        columnLp.gravity = Gravity.CENTER_VERTICAL;
+        column.setLayoutParams(columnLp);
+        clockRow.setBaselineAligned(false);
+        clockRow.setGravity(Gravity.CENTER_VERTICAL);
+        clockRow.setLayoutParams(wrapContent());
+        // Without its rule against the top buttons the block is as wide as its texts, so the capsule hugs them.
+        android.widget.RelativeLayout.LayoutParams blockLp = (android.widget.RelativeLayout.LayoutParams) block.getLayoutParams();
+        blockLp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        blockLp.removeRule(android.widget.RelativeLayout.START_OF);
+        blockLp.removeRule(android.widget.RelativeLayout.LEFT_OF);
+        block.setLayoutParams(blockLp);
+
+        View buttons = findViewById(R.id.topButtons);
+        android.widget.RelativeLayout.LayoutParams buttonsLp = (android.widget.RelativeLayout.LayoutParams) buttons.getLayoutParams();
+        buttonsLp.removeRule(android.widget.RelativeLayout.ALIGN_BOTTOM);
+        buttonsLp.addRule(android.widget.RelativeLayout.CENTER_VERTICAL);
+        buttonsLp.bottomMargin = 0;
+        buttons.setLayoutParams(buttonsLp);
+
+        // pill_bg's resting glass. A radius past half the height draws a full capsule.
+        GradientDrawable capsule = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x2EFFFFFF, 0x14FFFFFF});
+        capsule.setCornerRadius(100 * density);
+        capsule.setStroke(Math.round(density), 0x38FFFFFF);
+        block.setBackground(capsule);
+        int h = (int) (26 * density), v = (int) (9 * density);
+        block.setPadding(h, v, h, v);
+    }
+
+    private static LinearLayout.LayoutParams wrapContent() {
+        return new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     /**
