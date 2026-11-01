@@ -113,6 +113,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean rtlAppGrid;
     private static final long MINUTE_MS = 60_000L;
     private static final long STATS_MS = 10_000L;
+    /** stats_rings reads faster than the line: the CPU and Wi-Fi rings follow the TV as it works. */
+    private static final long STATS_RINGS_MS = 2_000L;
     /**
      * 2025-01-01. TVs without a clock battery boot at the epoch (08:00 in China) and keep it until network
      * time arrives; the clock, date and greeting stay hidden before then.
@@ -196,6 +198,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean lunar;
     private int lunarOffset;
     private TextView stats;
+    /** show_stats + stats_rings: the ring view, null when the rings are off. */
+    private StatsRingsView statsRings;
+    private boolean ringsShown;
     private List<RaceWeekend.Race> raceCalendar;
     private View racePanel;
     private TextView raceKicker, raceHeadline, raceSessions;
@@ -575,6 +580,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
+        if (cfg.showStats && cfg.statsRings) statsRings = findViewById(R.id.statsRings);
         inputsConnectedOnly = cfg.inputsConnectedOnly;
         shamsi = cfg.shamsiDate;
         lunarDate = findViewById(R.id.lunarDate);
@@ -1892,6 +1898,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     // ---- top shelf -------------------------------------------------------------------------------
 
     private void showHero(int position, float dockTopInRoot) {
+        showRings(true);
         String label = adapter.labelAt(position);
         int color = adapter.ambientColorAt(position);
         float y = dockTopInRoot - 14 * density - 26 * density - hero.getHeight();
@@ -2172,6 +2179,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * name above the dock does not show (every grid tile has its name underneath).
      */
     private void showGlowOnly(int position) {
+        showRings(false);
         int color = adapter.ambientColorAt(position);
         stopAmbientAnimation();
         hero.animate().cancel();
@@ -2203,6 +2211,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void hideHero() {
+        showRings(false);
         if (!heroShown) return;
         stopAmbientAnimation();
         hero.animate().cancel();
@@ -2237,7 +2246,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void startStats() {
         if (statsThread != null) return;
-        stats.setVisibility(View.VISIBLE);
+        if (statsRings != null) statsRings.setVisibility(View.VISIBLE);
+        else stats.setVisibility(View.VISIBLE);
         cpuTotalPrev = -1;
         idlePrev = -1;
         procStatDead = false;
@@ -2251,6 +2261,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             public void run() {
                 if (statsBg != bg) return;
+                if (statsRings != null) {
+                    float[] f = new float[4];
+                    String[][] t = readStatsRings(f);
+                    handler.post(() -> {
+                        if (statsRings == null || statsBg != bg) return;
+                        for (int i = 0; i < 4; i++) statsRings.set(i, f[i], t[i][0], t[i][1], t[i][2]);
+                        statsRings.invalidate();
+                    });
+                    if (statsBg == bg) bg.postDelayed(this, STATS_RINGS_MS);
+                    return;
+                }
                 String line = readStatsLine();
                 handler.post(() -> {
                     if (showStats && stats != null && statsBg == bg) stats.setText(line);
@@ -2297,6 +2318,120 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String free = formatGb(getResources(), Environment.getDataDirectory().getFreeSpace());
         if (!free.isEmpty()) appendStat(line, getString(R.string.stats_storage, free));
         return StatsText.forLocale(line.toString(), getResources().getConfiguration().getLocales().get(0));
+    }
+
+    private static final int CLOCK_SAMPLES = 5;
+    private static final long CLOCK_SAMPLE_MS = 120;
+
+    /**
+     * stats_rings: {figure, caption, detail} per ring, CPU, RAM, storage, network, with each ring's fraction in f
+     * (negative: not readable here). Runs off the main thread.
+     */
+    private String[][] readStatsRings(float[] f) {
+        Resources res = getResources();
+        // The captions and units are technical words, the same in every language, so they are not resources.
+        String[][] t = new String[4][];
+        int cpu = cpuPercent();
+        if (cpu == -1) {
+            SystemClock.sleep(200);   // the first reading only sets the baseline
+            cpu = cpuPercent();
+        }
+        int cores = Runtime.getRuntime().availableProcessors();
+        if (cpu >= 0) {
+            f[0] = cpu / 100f;
+            t[0] = new String[]{cpu + "%", "CPU", cores + " cores"};
+        } else {
+            // Android 8 and later hide /proc/stat from apps, and some chips have no cpuidle either. On MiTV-MOOQ0 apps
+            // cannot read /proc/stat, /proc/uptime, /proc/loadavg or the thermal zones: only the clock. Its ondemand
+            // governor sits at the top step at about 20% load, so a percentage from the clock read near 100%. The
+            // ring shows the clock itself, the average over a few samples in GHz, filled from the lowest step the
+            // chip really runs at (scaling_available_frequencies: 1.15 GHz there, not cpuinfo_min_freq's 216 MHz).
+            String cpufreq = "/sys/devices/system/cpu/cpu0/cpufreq/";
+            long min = lowestStep(cpufreq), max = readLong(cpufreq + "cpuinfo_max_freq");
+            long sum = 0;
+            int n = 0;
+            for (int i = 0; i < CLOCK_SAMPLES; i++) {
+                long cur = readLong(cpufreq + "scaling_cur_freq");
+                if (cur > 0) {
+                    sum += cur;
+                    n++;
+                }
+                if (i < CLOCK_SAMPLES - 1) SystemClock.sleep(CLOCK_SAMPLE_MS);
+            }
+            if (n == 0 || max <= 0) {
+                f[0] = -1f;
+                t[0] = new String[]{"", "CPU", ""};
+            } else {
+                double avg = sum / (double) n;
+                float est = max > min && min > 0 ? (float) ((avg - min) / (max - min)) : (float) (avg / max);
+                f[0] = Math.max(0f, Math.min(1f, est));
+                t[0] = new String[]{String.format(Locale.getDefault(), "%.2f", avg / 1_000_000.0), "CPU GHz",
+                        cores + " cores"};
+            }
+        }
+
+        long[] mem = memUsedOfTotalMb();
+        f[1] = mem == null ? -1f : mem[0] / (float) mem[1];
+        t[1] = new String[]{mem == null ? "" : pct(f[1]), "RAM",
+                mem == null ? "" : mem[0] + " / " + mem[1] + " MB"};
+
+        File data = Environment.getDataDirectory();
+        long total = data.getTotalSpace(), free = data.getUsableSpace();
+        f[2] = total <= 0 ? -1f : (total - free) / (float) total;
+        t[2] = new String[]{total <= 0 ? "" : pct(f[2]), "DISK",
+                total <= 0 ? "" : res.getString(R.string.stats_storage, formatGb(res, free))};
+
+        // The network ring is the Wi-Fi signal: -100 dBm empty, -55 dBm full, the range Android draws its bars from.
+        int rssi = wifiRssi();
+        f[3] = rssi == Integer.MIN_VALUE ? -1f : Math.max(0f, Math.min(1f, (rssi + 100) / 45f));
+        t[3] = new String[]{pct(f[3]), "WI-FI", ""};
+        return t;
+    }
+
+    /**
+     * The lowest clock in scaling_available_frequencies (the kernel lists them lowest first), else cpuinfo_min_freq,
+     * in kHz.
+     */
+    private static long lowestStep(String cpufreq) {
+        try {
+            return Long.parseLong(readFirstLine(cpufreq + "scaling_available_frequencies").trim().split("\\s+")[0]);
+        } catch (RuntimeException e) {
+            return readLong(cpufreq + "cpuinfo_min_freq");
+        }
+    }
+
+    private static String pct(float fraction) {
+        return Math.round(fraction * 100) + "%";
+    }
+
+    /** The Wi-Fi signal in dBm, or Integer.MIN_VALUE when the TV is not on Wi-Fi. */
+    private int wifiRssi() {
+        try {
+            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+            WifiInfo info = wm == null ? null : wm.getConnectionInfo();
+            return info == null || info.getNetworkId() == -1 || info.getRssi() <= -127 ? Integer.MIN_VALUE : info.getRssi();
+        } catch (RuntimeException e) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    private static long readLong(String path) {
+        String s = readFirstLine(path);
+        if (s == null) return -1;
+        try {
+            return Long.parseLong(s.trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    /** The rings show with the top shelf (a dock tile focused) and hide with it in the grid. */
+    private void showRings(boolean show) {
+        if (statsRings == null || ringsShown == show) return;
+        ringsShown = show;
+        statsRings.animate().cancel();
+        if (animations && !reducedMotion) statsRings.animate().alpha(show ? 1f : 0f).setDuration(show ? 260 : 160).start();
+        else statsRings.setAlpha(show ? 1f : 0f);
     }
 
     // -1: need another sample. -2: this source cannot be read (Android 9 hides /proc/stat from apps).

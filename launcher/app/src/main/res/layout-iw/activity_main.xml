@@ -419,6 +419,19 @@
         </FrameLayout>
     </LinearLayout>
 
+    <!-- show_stats with stats_rings: mirrored to the left, opposite the top shelf on the right. -->
+    <com.gathin.tvhome.StatsRingsView
+        android:id="@+id/statsRings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
+        android:layout_marginTop="132dp"
+        android:layout_marginLeft="66dp"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:alpha="0"
+        android:visibility="gone" />
+
     <!-- The single floating glass highlight that springs between tiles. -->
     <com.gathin.tvhome.GlassView
         android:id="@+id/glass"

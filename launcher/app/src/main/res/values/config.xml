@@ -451,6 +451,10 @@
     <!-- One line under the clock: CPU, free memory and free storage. Off by default; a theme can set
          "show_stats": true. Nothing is read, and the clock does not move, while this is false. -->
     <bool name="show_stats">false</bool>
+    <!-- With show_stats on: draw the figures as four activity rings (CPU, RAM, storage, Wi-Fi signal) above the
+         dock instead of the line under the clock. Read every 2 s and drawn once per reading, only while Home is on
+         screen; a theme can set "stats_rings": true. -->
+    <bool name="stats_rings">false</bool>
 
     <!-- Each team's next game in the F1 panel's place under the clock, rotating with the theme's F1 weekend: the package
          of an add-on that publishes them (the Game Day add-on: io.github.justinnewman.gameday; contract in docs/modules.md).

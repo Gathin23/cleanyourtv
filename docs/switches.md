@@ -67,3 +67,4 @@ rule sit on its wanted list until a screenshot arrives.
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
 | `clock_format` | <img src="switches/clock_format.jpg" width="320" alt="clock_format on a TV"> |
 | `glow_snap` | <img src="switches/glow_snap.jpg" width="320" alt="glow_snap on a TV: the glow in Netflix red behind the dock"> |
+| `stats_rings` | <img src="switches/stats_rings.jpg" width="320" alt="stats_rings on a TV: CPU, RAM, disk and network rings above the dock"> |
