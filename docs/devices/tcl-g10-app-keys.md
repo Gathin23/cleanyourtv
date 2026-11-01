@@ -1,6 +1,6 @@
-# TCL G10 (Google TV 12): app buttons go through launcherx, and a log reader brings them back with the volume ramp
+# TCL C6KS, G10 (Google TV 12): app buttons go through launcherx, and a log reader brings them back with the volume ramp
 
-One unit, one session on 2026-11-01: TCL "Smart TV Pro", device `G10`, product `G10_4K_GB`, Android 12
+One unit, one session on 2026-11-01: TCL C6KS ("Smart TV Pro"), device `G10`, product `G10_4K_GB`, Android 12
 (SDK 31), build `STT2.230203.001` (AS14), software `V8-R75PT01-LF1V500`, Bluetooth remote `BT_RC813A_B8`,
 debloated with [`examples/tcl-g10-google-tv`](../../examples/tcl-g10-google-tv/debloat.txt).
 
