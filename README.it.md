@@ -121,6 +121,10 @@ usa le frecce per cambiarne la posizione, poi OK o Indietro per posarla; quando 
 Indietro per uscire e salvare. Il pulsante di riordino nella barra in alto è nascosto di serie: si attiva con
 `reorder_button` nella configurazione o in un tema.
 
+Anche tenendo premuto OK su un'app della Home compare il menu dei riquadri (`tile_menu`, attivo di serie): Sposta
+solleva subito quell'app, poi ci sono Rimuovi dalla Home e Info app. Se lo disattivi, tenere premuto OK apre le
+informazioni dell'app.
+
 La libreria app è disattivata di serie. Con `app_library` attivo nella configurazione o in un tema, l'accesso compare
 dopo l'ultima riga di app della Home. La libreria elenca sia le app per TV sia le normali app Android; queste ultime
 possono richiedere comunque un mouse o uno schermo touch.
