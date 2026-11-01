@@ -121,4 +121,18 @@ HDMI 1 was confirmed working with a Nintendo Switch 2. HDMI 2, HDMI 3 and AV 1 w
 
 Seven Xiaomi packages were successfully disabled through ADB without rooting the device. In particular, `com.xiaomi.wakeupservice` was observed consuming approximately 60% of one CPU core before being disabled.
 
+The following seven packages were disabled using `pm disable-user --user 0`:
+
+```text
+com.xiaomi.wakeupservice
+com.miui.analytics
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.mitv.cloudcontrol
+com.xiaomi.mitv.tvpush.tvpushservice
+com.mitv.shoplugin
+```
+
+The stock Xiaomi launcher (`com.mitv.tvhome`) remained enabled. All seven packages were confirmed disabled for user 0, but long-term stability has not yet been verified.
+
 No firmware flashing or root access was required.
