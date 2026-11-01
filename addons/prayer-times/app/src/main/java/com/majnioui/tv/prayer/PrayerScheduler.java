@@ -28,9 +28,10 @@ public class PrayerScheduler {
     public static final String EXTRA_PRAYER_TIME = "prayer_time";
     public static final String EXTRA_PLACE = "place";
 
-    private static final String PREFS_NAME = "prayer_prefs";
-    private static final String KEY_DATE = "cached_date";
-    private static final String KEY_PLACE = "place";
+    static final String PREFS_NAME = "prayer_prefs";
+    static final String KEY_DATE = "cached_date";
+    static final String KEY_PLACE = "place";
+    static final String KEY_HIJRI = "hijri";
 
     public static final String[] NAMES = {"Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"};
     public static final int[] NAME_RES = {
@@ -59,11 +60,12 @@ public class PrayerScheduler {
         return -1;
     }
 
-    public static void saveTimingsAndSchedule(Context ctx, String day, String[] names, String[] times, int[] minutes, String place) {
+    public static void saveTimingsAndSchedule(Context ctx, String day, String[] names, String[] times, int[] minutes, String place, String hijri) {
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_DATE, day);
         editor.putString(KEY_PLACE, place);
+        if (hijri != null && !hijri.isEmpty()) editor.putString(KEY_HIJRI, hijri);
         for (int i = 0; i < names.length; i++) {
             editor.putString("time_" + names[i], times[i]);
             editor.putInt("min_" + names[i], minutes[i]);
@@ -231,7 +233,8 @@ public class PrayerScheduler {
                 String url = "https://api.aladhan.com/v1/timings/" + dayParam
                         + "?latitude=" + appContext.getString(R.string.latitude)
                         + "&longitude=" + appContext.getString(R.string.longitude)
-                        + "&method=" + appContext.getString(R.string.method);
+                        + "&method=" + appContext.getString(R.string.method)
+                        + "&school=" + appContext.getString(R.string.school);
 
                 HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
                 c.setConnectTimeout(10000);
@@ -258,7 +261,11 @@ public class PrayerScheduler {
                     minutes[i] = Integer.parseInt(v.substring(0, 2)) * 60 + Integer.parseInt(v.substring(3, 5));
                 }
 
-                saveTimingsAndSchedule(appContext, day, NAMES, times, minutes, appContext.getString(R.string.place));
+                JSONObject date = data.getJSONObject("date");
+                JSONObject hijri = date.getJSONObject("hijri");
+                String hijriText = hijri.getString("day") + " "
+                        + hijri.getJSONObject("month").getString("en") + " " + hijri.getString("year") + " AH";
+                saveTimingsAndSchedule(appContext, day, NAMES, times, minutes, appContext.getString(R.string.place), hijriText);
                 Log.i(TAG, "Background fetch and schedule successful for " + day);
             } catch (Exception e) {
                 Log.w(TAG, "Background fetch error: " + e);

@@ -52,5 +52,10 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name=".TimingsProvider"
+            android:authorities="com.majnioui.tv.prayer.timings"
+            android:exported="true" />
+
     </application>
 </manifest>

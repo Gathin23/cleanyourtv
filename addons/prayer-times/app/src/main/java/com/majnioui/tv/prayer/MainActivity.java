@@ -58,6 +58,8 @@ public class MainActivity extends Activity {
     private String[] times;
     /** The calculation method's name as Aladhan gives it, for the status line. */
     private String methodName = "";
+    /** Today's Hijri date as Aladhan gives it, shared with the launcher widget. */
+    private String hijriText = "";
     /** The day the times are for (yyyy-MM-dd), to reload after midnight. */
     private String loadedFor;
     private boolean loading;
@@ -135,7 +137,7 @@ public class MainActivity extends Activity {
         String url = "https://api.aladhan.com/v1/timings/"
                 + new SimpleDateFormat("dd-MM-yyyy", Locale.ROOT).format(new Date())
                 + "?latitude=" + getString(R.string.latitude) + "&longitude=" + getString(R.string.longitude)
-                + "&method=" + getString(R.string.method);
+                + "&method=" + getString(R.string.method) + "&school=" + getString(R.string.school);
         new Thread(() -> {
             JSONObject json = null;
             try {
@@ -153,11 +155,7 @@ public class MainActivity extends Activity {
                 try {
                     parse(result.getJSONObject("data"));
                     loadedFor = day;
-                    if (getResources().getBoolean(R.bool.reminders)) {
-                        PrayerScheduler.saveTimingsAndSchedule(MainActivity.this, day, NAMES, times, minutes, getString(R.string.place));
-                    } else {
-                        PrayerScheduler.cancel(MainActivity.this);
-                    }
+                    PrayerScheduler.saveTimingsAndSchedule(MainActivity.this, day, NAMES, times, minutes, getString(R.string.place), hijriText);
                     render();
                 } catch (Exception e) {
                     Log.w(TAG, "parse: " + e);
@@ -185,9 +183,9 @@ public class MainActivity extends Activity {
         methodName = method != null ? method.optString("name", "") : "";
         JSONObject date = data.getJSONObject("date");
         JSONObject hijri = date.getJSONObject("hijri");
-        dates.setText(new SimpleDateFormat("EEEE d MMMM", Locale.ENGLISH).format(new Date()) + "  ·  "
-                + hijri.getString("day") + " " + hijri.getJSONObject("month").getString("en") + " "
-                + hijri.getString("year") + " AH");
+        hijriText = hijri.getString("day") + " " + hijri.getJSONObject("month").getString("en") + " "
+                + hijri.getString("year") + " AH";
+        dates.setText(new SimpleDateFormat("EEEE d MMMM", Locale.ENGLISH).format(new Date()) + "  ·  " + hijriText);
     }
 
     private void render() {
