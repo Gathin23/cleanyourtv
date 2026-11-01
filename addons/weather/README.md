@@ -41,6 +41,15 @@ Saved choices override these defaults. With no saved choices the page is as abov
 
 ![A week, with humidity and wind](https://raw.githubusercontent.com/majnioui/cleanyourtv-contrib/pr-assets/addon-weather-week/weather-options.png)
 
+## Screensaver
+
+The add-on also offers an optional screensaver: one frosted card with the time, the day and date, the weather now
+(temperature, conditions, feels-like, the air-quality pill) and the next three days for the chosen city, on a gradient
+in the weather's colours. The card drifts a little each minute. Pick it under Settings > System > Screensaver (or
+over ADB: `settings put secure screensaver_components io.github.sumyabazar1.weather/.WeatherDream`). It reads
+Open-Meteo only while it is on screen, every 30 minutes, and nothing runs in the background. With no city chosen it
+says so and shows the time alone.
+
 ## Permissions
 
 | Permission | Why |
@@ -71,6 +80,9 @@ with your own key if you hand them out; the launcher pins its Show answer to the
 
 Hisense SmartTV 4K FFM (lushan, MediaTek MT9676), Google TV 12 / Android 12: city search with the TV keyboard,
 the weather page, the card prompt, and the card shown in the launcher's dock.
+
+The screensaver: TCL Smart TV (G10, STT2.230203.001), Google TV 12: picked under Settings, started after the idle time, the
+time on the minute, the Kolkata reading and three days, and Home back on a key press.
 
 The options: Xiaomi TV (MiTV-MOOR2), Google TV 11, with `forecast_days` 7, `show_humidity` and `show_wind` on.
 

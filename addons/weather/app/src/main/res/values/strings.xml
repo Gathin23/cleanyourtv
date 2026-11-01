@@ -32,6 +32,9 @@
     <string name="loading">Loading the weather…</string>
     <string name="offline">Can\'t reach Open-Meteo. Check the TV\'s internet connection; it tries again in 5 minutes.</string>
 
+    <string name="dream_waiting">…</string>
+    <string name="dream_no_city">Choose a city in Weather</string>
+
     <string name="pick_title">Which city?</string>
     <string name="pick_hint">City name, e.g. Ulaanbaatar</string>
     <string name="pick_search">Search</string>
