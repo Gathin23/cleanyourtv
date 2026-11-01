@@ -42,3 +42,25 @@ TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c6k-google-tv/debloat.txt com.go
 
 setupwraith is not on the list; re-enable it with `tools/tv.py 'pm enable com.google.android.tungsten.setupwraith'`
 after launcherx owns Home again.
+
+## Third unit: 55C6K, Europe / UK, Wi-Fi, launcher replaced
+
+TCL 55C6K (QD-Mini LED, 55"), model "Smart TV Pro", device `G08`, product `G08_4K_GB`, MediaTek `mt5893` (SoC MT9653),
+European build `STT2.221228.001 AS35` (`V8-T653T01-LF1V531`, `TCL-EU-MT9653-S1`), Google TV 12, on Wi-Fi.
+Set up on 31 October 2026, then the reference launcher (`com.gathin.tvhome`); rebooted once afterwards:
+every package stayed disabled, nothing re-enabled itself, and the TV came up on the new Home (`com.gathin.tvhome`).
+
+**Different choices from the first unit:** YouTube (`com.google.android.youtube.tv`), Netflix (`com.netflix.ninja`),
+Prime Video (`com.amazon.amazonvideo.livingroom`), and JioHotstar (`in.startv.hotstar`) kept for daily family use.
+Play Store (`com.android.vending`), settings (`com.tcl.settings`, `com.android.tv.settings`), and Live TV
+(`com.mediatek.wwtv.tvcenter`) kept. The stock browser (`com.tcl.browser`), T-Cast (`com.tcl.magiconnectfree`),
+stock media center / gallery (`com.tcl.ui_mediaCenter`, `com.tcl.gallery`), gamebar (`com.tcl.gamebar`),
+cleaner (`com.tcl.guard`), and passive TCL home telemetry (`com.tcl.tv.tclhome_passive`) disabled.
+
+**Launcher handover.** As on the first unit, the saved Wi-Fi belonged to setupwraith
+(`dumpsys wifi | grep -o 'cname=[^ ]*'`). The Wi-Fi network was forgotten and re-joined in Settings > Network & Internet,
+moving ownership to `com.android.tv.settings`. setupwraith was then disabled with `tools/disable.sh`
+(Wi-Fi and ADB stayed up) and `com.gathin.tvhome` took Home cleanly.
+
+What was checked on the TV: Home and the Inputs menu (HDMI 1-4 and Live TV, `com.mediatek.wwtv.tvcenter`); after the reboot,
+the real Input, Settings, D-pad, and Volume buttons all worked with no key helper enabled.

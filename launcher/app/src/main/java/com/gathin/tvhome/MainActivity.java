@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -62,6 +63,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -184,6 +186,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** config show_inputs_pill: false keeps the Inputs pill hidden even when the TV has inputs. */
     private boolean showInputsPill = true;
     private TextView btnWifi;
+    private TextView btnDns;
+    private boolean showDns;
     /** The network pill's icon as last set, so a refresh that changes nothing does not lay the top bar out again. */
     private int wifiIcon;
     /** The pills have been filled in once; later resumes refresh them after the first frame. */
@@ -544,6 +548,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             clockRow.addOnLayoutChangeListener(centerGreeting);
         }
         btnWifi = findViewById(R.id.btnWifi);
+        btnDns = findViewById(R.id.btnDns);
+        showDns = getResources().getBoolean(R.bool.show_dns);
+        if (showDns) {
+            btnDns.setVisibility(View.VISIBLE);
+            btnDns.setOnClickListener(v -> showDnsMenu());
+            updateDnsLabel();
+        }
         shamsiDate = findViewById(R.id.shamsiDate);
         stats = findViewById(R.id.stats);
         raceCalendar = cfg.raceCalendar;
@@ -884,6 +895,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         };
         btnInputs.setOnKeyListener(pillKeys);
         btnWifi.setOnKeyListener(pillKeys);
+        if (showDns) btnDns.setOnKeyListener(pillKeys);
         btnVpn.setOnKeyListener(pillKeys);
         btnSettings.setOnKeyListener(pillKeys);
         btnReorder.setOnKeyListener(pillKeys);
@@ -891,6 +903,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (View button : topAppButtons) button.setOnKeyListener(pillKeys);
         if (advancedEffects) {
             List<View> pills = new ArrayList<>(Arrays.asList(btnInputs, btnWifi, btnVpn, btnReorder, btnLibraryTop, btnSettings));
+            if (showDns) pills.add(btnDns);
             pills.addAll(topAppButtons);
             for (View button : pills) {
                 button.setOnFocusChangeListener((view, focused) -> view.animate()
@@ -1081,6 +1094,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openLiveTvAfterBoot()) return;
         updateGreeting();
         updatePanel();
+        if (showDns) updateDnsLabel();
         // The network and Inputs pills keep their state while Home is in the background, and callbacks update them
         // when the network or the inputs change, so this refresh only catches anything missed. Its binder calls
         // (about 7 ms on a TCL C755, most of it WifiManager.getConnectionInfo) would hold up the first frame back
@@ -4015,5 +4029,128 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             default:
                 return getString(R.string.card_state_new);
         }
+    }
+
+    private void updateDnsLabel() {
+        if (btnDns == null || !showDns) return;
+        String mode = "";
+        String spec = "";
+        try {
+            mode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
+            spec = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
+        } catch (Exception ignored) {}
+        if (mode == null) mode = "opportunistic";
+        if (spec == null) spec = "";
+
+        String label = "DNS";
+        if ("off".equalsIgnoreCase(mode)) {
+            label = "Turn Off";
+        } else if ("hostname".equalsIgnoreCase(mode)) {
+            if (spec.contains("adguard")) label = "AdGuard";
+            else if (spec.contains("cloudflare") || spec.contains("one.one.one")) label = "Cloudflare";
+            else if (spec.contains("quad9")) label = "Quad9";
+            else if (!spec.isEmpty()) label = spec.length() > 12 ? spec.substring(0, 10) + "..." : spec;
+            else label = "Custom";
+        } else {
+            label = "Automatic";
+        }
+        btnDns.setText(label);
+    }
+
+    private void showDnsMenu() {
+        if (btnDns == null) return;
+        View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        LinearLayout rows = panel.findViewById(R.id.rows);
+        PopupWindow popup = glassPopup(panel, (int) (260 * density));
+
+        String mode = "";
+        String spec = "";
+        try {
+            mode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
+            spec = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
+        } catch (Exception ignored) {}
+        if (mode == null) mode = "opportunistic";
+        if (spec == null) spec = "";
+
+        boolean isHost = "hostname".equalsIgnoreCase(mode);
+        boolean isOff = "off".equalsIgnoreCase(mode);
+        boolean isAuto = !isHost && !isOff;
+
+        addDnsRow(rows, popup, "AdGuard (Ad-block)", isHost && spec.contains("adguard"), () -> setDns("hostname", "dns.adguard-dns.com"));
+        addDnsRow(rows, popup, "Cloudflare (Fast)", isHost && (spec.contains("cloudflare") || spec.contains("one.one.one")), () -> setDns("hostname", "one.one.one.one"));
+        addDnsRow(rows, popup, "Quad9 (Malware block)", isHost && spec.contains("quad9"), () -> setDns("hostname", "dns.quad9.net"));
+        addDnsRow(rows, popup, "Set Custom DNS...", isHost && !spec.contains("adguard") && !spec.contains("cloudflare") && !spec.contains("one.one.one") && !spec.contains("quad9"), this::promptCustomDns);
+        addSeparator(rows);
+        addDnsRow(rows, popup, "Automatic (Default)", isAuto, () -> setDns("opportunistic", null));
+        addDnsRow(rows, popup, "Turn Off", isOff, () -> setDns("off", null));
+
+        dropIn(popup, panel, btnDns, Gravity.TOP | Gravity.END);
+        rows.getChildAt(0).requestFocus();
+    }
+
+    private void addDnsRow(LinearLayout rows, PopupWindow popup, String title, boolean active, Runnable action) {
+        View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
+        ((ImageView) row.findViewById(R.id.icon)).setImageResource(R.drawable.ic_shield);
+        ((TextView) row.findViewById(R.id.title)).setText(title);
+        TextView status = row.findViewById(R.id.status);
+        View dot = row.findViewById(R.id.dot);
+        if (active) {
+            status.setText("Connected");
+            status.setVisibility(View.VISIBLE);
+            dot.setVisibility(View.VISIBLE);
+        } else {
+            status.setVisibility(View.GONE);
+            dot.setVisibility(View.GONE);
+        }
+        row.setOnClickListener(v -> {
+            popup.dismiss();
+            action.run();
+        });
+        rows.addView(row);
+    }
+
+    private void setDns(String mode, String specifier) {
+        try {
+            if (specifier != null && !specifier.isEmpty()) {
+                Settings.Global.putString(getContentResolver(), "private_dns_specifier", specifier);
+            }
+            Settings.Global.putString(getContentResolver(), "private_dns_mode", mode);
+            updateDnsLabel();
+            Toast.makeText(this, "DNS updated: " + (specifier != null ? specifier : mode), Toast.LENGTH_SHORT).show();
+        } catch (SecurityException se) {
+            Toast.makeText(this, "Permission required: grant WRITE_SECURE_SETTINGS via ADB", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void promptCustomDns() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+        builder.setTitle("Set Custom Private DNS");
+        final EditText input = new EditText(this);
+        input.setSingleLine(true);
+        input.setHint("e.g. dns.example.com");
+        try {
+            String current = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
+            if (current != null && !current.isEmpty()) input.setText(current);
+        } catch (Exception ignored) {}
+        FrameLayout container = new FrameLayout(this);
+        int pad = (int) (20 * density);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.leftMargin = pad;
+        lp.rightMargin = pad;
+        input.setLayoutParams(lp);
+        container.addView(input);
+        builder.setView(container);
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+            String target = input.getText().toString().trim().toLowerCase(Locale.ROOT);
+            if (target.isEmpty() || target.contains(" ") || !target.contains(".") || target.matches("^\\d+(\\.\\d+)+$")) {
+                Toast.makeText(this, "Enter a valid hostname (e.g. dns.adguard-dns.com)", Toast.LENGTH_LONG).show();
+                return;
+            }
+            setDns("hostname", target);
+        });
+        builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 }

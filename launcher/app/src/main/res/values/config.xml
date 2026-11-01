@@ -278,6 +278,8 @@
          the app says disconnected (it holds the tunnel to block traffic), so the pill stays green then. Can also be
          set with "vpn_pill" in a theme. -->
     <bool name="vpn_pill">false</bool>
+    <!-- Show DNS button between Wi-Fi and Settings in the top bar. -->
+    <bool name="show_dns">false</bool>
     <!-- The dock as its own row: a lighter band, no names under the tiles, parked low on the screen with the top
          shelf above it. false makes the dock apps simply the first tiles of one plain grid (still in dock_apps
          order, no empty slots), with names under every tile and the glow behind every focused tile. -->

@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 55C6K (Smart TV Pro, G08, G08_4K_GB, MediaTek MT9653 / mt5893), European firmware",
-  "os": "Google TV 12",
-  "brand": "TCL",
-  "notes": "European G08 build (STT2.221228.001 AS35, V8-T653T01-LF1V531); TCL telemetry, ads, demo, cleaner and background daemons; setupwraith off with Wi-Fi rejoined; reference launcher com.gathin.tvhome installed and set as default Home, dock configured with YouTube, Netflix, Prime Video and JioHotstar; HDMI and Live TV (com.tcl.tv) working via Inputs dropdown"
-}
