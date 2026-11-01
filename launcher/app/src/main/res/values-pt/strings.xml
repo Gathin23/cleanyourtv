@@ -43,6 +43,7 @@
     <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">Relógio</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN desligada</string>
     <string name="home_settings">Tela inicial padrão</string>
     <string name="home_settings_help">Escolha a tela inicial original para deixar de usar o CleanYourTV, ou o CleanYourTV para voltar a ele. O launcher original precisa estar ativado e a TV precisa ter um seletor de tela inicial; se ele foi desativado, rode antes o script de restauração.</string>

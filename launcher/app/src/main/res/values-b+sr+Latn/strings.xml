@@ -25,6 +25,7 @@
     <string name="stats_storage">Skladište %1$s slobodno</string>
     <string name="dream_name">Sat</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN isključen</string>
     <string name="home_settings">Podrazumevani početni ekran</string>
     <string name="home_settings_help">Izaberite originalni početni ekran da CleanYourTV više ne bude podrazumevan ili izaberite CleanYourTV da se vratite. Originalni pokretač mora biti omogućen, a TV mora podržavati izbor početnog ekrana. Ako je isključen, prvo koristite skriptu za vraćanje.</string>

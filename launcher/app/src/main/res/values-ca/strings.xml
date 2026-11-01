@@ -112,4 +112,5 @@
     <string name="clock_format_system">Sistema</string>
     <string name="clock_format_12">12 hores</string>
     <string name="clock_format_24">24 hores</string>
+    <string name="bluetooth">Bluetooth</string>
 </resources>

@@ -43,6 +43,7 @@
     <string name="storage_gb_decimal">%1$.1f ГБ</string>
     <string name="dream_name">Годинник</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN вимкнено</string>
     <string name="home_settings">Головний екран за замовчуванням</string>
     <string name="home_settings_help">Виберіть оригінальний головний екран, щоб більше не використовувати CleanYourTV як головний екран, або CleanYourTV, щоб повернутися. Оригінальний головний екран має бути увімкнений, а телевізор має показувати вибір головного екрана; якщо його було вимкнено, спершу скористайтеся скриптом відновлення.</string>

@@ -23,6 +23,7 @@
     <string name="date_format">EEEE d. MMMM</string>
     <string name="dream_name">Kello</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN pois päältä</string>
     <string name="home_settings">Valitse oletuskotinäkymä</string>
     <string name="home_settings_help">Valitse alkuperäinen kotinäkymä, jos haluat lopettaa CleanYourTV:n käytön kotinäkymänä, tai CleanYourTV palataksesi siihen. Alkuperäisen käynnistimen on oltava käytössä ja television on tarjottava kotinäkymän valinta. Jos käynnistin on poistettu käytöstä, aja ensin palautusskripti.</string>

@@ -71,4 +71,5 @@
     <string name="clock_format_system">ระบบ</string>
     <string name="clock_format_12">12 ชั่วโมง</string>
     <string name="clock_format_24">24 ชั่วโมง</string>
+    <string name="bluetooth">Bluetooth</string>
 </resources>

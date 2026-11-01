@@ -58,6 +58,7 @@
     <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">时钟</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN 已关闭</string>
     <string name="input_key_service_description">按下遥控器的“输入”键时打开输入源切换器。</string>
     <string name="home_key_name">主页键</string>

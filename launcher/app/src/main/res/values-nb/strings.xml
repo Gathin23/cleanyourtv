@@ -25,6 +25,7 @@
     <string name="stats_storage">Lagring: %1$s ledig</string>
     <string name="dream_name">Klokke</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN er av</string>
     <string name="home_settings">Velg standard startskjerm</string>
     <string name="home_settings_help">Velg den opprinnelige startskjermen for å slutte å bruke CleanYourTV, eller velg CleanYourTV for å bytte tilbake. Den opprinnelige startskjermen må være aktivert, og TV-en må støtte valg av startskjerm. Kjør tilbakeføringsskriptet først hvis den ble deaktivert.</string>

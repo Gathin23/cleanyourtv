@@ -24,6 +24,7 @@
     <string name="stats_storage">Penyimpanan %1$s tersisa</string>
     <string name="dream_name">Jam</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN mati</string>
     <string name="home_settings">Pilih Beranda utama</string>
     <string name="home_settings_help">Pilih beranda asli untuk berhenti menggunakan CleanYourTV sebagai Beranda, atau CleanYourTV untuk kembali. Antarmuka asli harus aktif dan TV Anda harus menyediakan pemilih beranda; gunakan skrip pemulihan terlebih dahulu jika sebelumnya dinonaktifkan.</string>

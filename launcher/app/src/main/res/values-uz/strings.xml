@@ -25,6 +25,7 @@
     <string name="stats_storage">Disk: %1$s boʻsh</string>
     <string name="dream_name">Soat</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN oʻchiq</string>
     <string name="home_settings">Asosiy bosh ekranni tanlash</string>
     <string name="home_settings_help">CleanYourTV oʻrniga eski bosh ekranga qaytish uchun uni tanlang, CleanYourTV ga qaytish uchun esa CleanYourTV ni. Eski launcher yoqilgan boʻlishi va televizorda bosh ekran tanlash oynasi boʻlishi kerak; agar u oʻchirilgan boʻlsa, avval tiklash skriptini ishga tushiring.</string>

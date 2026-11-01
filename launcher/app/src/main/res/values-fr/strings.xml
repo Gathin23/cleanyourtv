@@ -25,6 +25,7 @@
     <string name="stats_storage">Stockage %1$s libre</string>
     <string name="dream_name">Horloge</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN désactivé</string>
     <string name="home_settings">Accueil par défaut</string>
     <string name="home_settings_help">Choisissez un écran d\'accueil dans les paramètres système, puis appuyez sur Accueil.</string>

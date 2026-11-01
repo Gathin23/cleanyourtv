@@ -43,6 +43,7 @@
     <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">Orologio</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN disattivata</string>
     <string name="home_settings">Scegli la home predefinita</string>
     <string name="home_settings_help">Seleziona la home originale per smettere di usare CleanYourTV come Home, oppure CleanYourTV per tornare indietro. Il launcher originale deve essere attivo e la TV deve offrire la scelta della home; se era disattivato, usa prima lo script di ripristino.</string>

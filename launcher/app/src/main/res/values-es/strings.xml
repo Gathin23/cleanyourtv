@@ -86,6 +86,7 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN apagada</string>
     <string name="home_settings">Elegir inicio predeterminado</string>
     <string name="home_settings_help">Elige tu inicio original para dejar de usar CleanYourTV como inicio, o CleanYourTV para volver a él. El lanzador original tiene que estar activado y el televisor debe ofrecer un selector de inicio; si estaba desactivado, usa antes el script de restauración.</string>

@@ -25,6 +25,7 @@
     <string name="stats_storage">Depolama %1$s boş</string>
     <string name="dream_name">Saat</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN Kapalı</string>
     <string name="home_settings">Varsayılan ana ekran</string>
     <string name="home_settings_help">CleanYourTV yerine özgün ana ekranı seçin; geri dönmek için CleanYourTV seçin. Özgün başlatıcı etkin olmalı ve TV ana ekran seçicisini desteklemelidir. Devre dışıysa önce geri yükleme betiğini kullanın.</string>

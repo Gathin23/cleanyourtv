@@ -74,4 +74,5 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12 Stunden</string>
     <string name="clock_format_24">24 Stunden</string>
+    <string name="bluetooth">Bluetooth</string>
 </resources>

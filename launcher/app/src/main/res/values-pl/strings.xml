@@ -25,6 +25,7 @@
     <string name="stats_storage">Miejsce %1$s wolne</string>
     <string name="dream_name">Zegar</string>
     <string name="vpn">VPN</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="vpn_off">VPN wyłączony</string>
     <string name="home_settings">Domyślny ekran główny</string>
     <string name="home_settings_help">Wybierz oryginalny ekran główny, aby przestać używać CleanYourTV jako domyślnego, albo wybierz CleanYourTV, aby wrócić. Oryginalny launcher musi być włączony, a telewizor musi udostępniać wybór ekranu głównego. Jeśli został wyłączony, najpierw użyj skryptu przywracania.</string>
