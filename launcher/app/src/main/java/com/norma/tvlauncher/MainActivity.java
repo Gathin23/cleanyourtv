@@ -297,6 +297,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The grid has been laid out and focused since the last resume; the card prompt waits for this. */
     private boolean tilesReady;
     private Dialog cardPrompt;
+    private Dialog defaultLauncherDialog;
     /** Set when a decision could not be saved: no more prompts until the next resume, instead of asking in a loop. */
     private boolean promptsPaused;
     /** Rebuild the tiles on resume: Home was fully hidden by an app, or Home was pressed. Not after a side panel such as Wi-Fi settings. */
@@ -1145,6 +1146,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (showStats) startStats();
         sky.update();
         wallpaperPlayer.start();
+        if (isDefaultLauncher()) {
+            if (defaultLauncherDialog != null && defaultLauncherDialog.isShowing()) {
+                defaultLauncherDialog.dismiss();
+                defaultLauncherDialog = null;
+                Toast.makeText(this, R.string.default_launcher_success, Toast.LENGTH_SHORT).show();
+            }
+        }
         // Ensure all top pills are clean and unfocused when returning to Home
         for (View b : new View[]{weatherPill, btnInputs, btnWifi, btnReorder, btnLibraryTop, btnSettings}) {
             if (b != null) {
@@ -4332,7 +4340,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (isDefaultLauncher()) {
             addSettingsMenuRow(rows, popup, R.string.default_launcher_active, this::requestDefaultLauncher);
         } else {
-            addSettingsMenuRow(rows, popup, R.string.set_default_launcher, this::requestDefaultLauncher);
+            addSettingsMenuRow(rows, popup, R.string.set_default_launcher, this::showSetDefaultLauncherDialog);
         }
 
         // Add app to dock
@@ -4422,7 +4430,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         }
         try {
-            startActivity(new Intent(Settings.ACTION_HOME_SETTINGS));
+            startActivity(new Intent(Settings.ACTION_HOME_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return;
         } catch (Throwable ignored) {}
 
@@ -4438,18 +4446,101 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    public void trySilentSetDefaultLauncher() {
+        try {
+            java.lang.Process p = Runtime.getRuntime().exec(new String[]{"cmd", "package", "set-home-activity", "--user", "0", getPackageName() + "/.MainActivity"});
+            p.waitFor();
+        } catch (Throwable ignored) {}
+    }
+
     private void checkAndPromptDefaultLauncher() {
+        trySilentSetDefaultLauncher();
         if (isDefaultLauncher()) return;
         SharedPreferences prefs = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         boolean promptDismissed = prefs.getBoolean("default_launcher_prompt_dismissed", false);
         if (promptDismissed) return;
 
-        handler.postDelayed(() -> {
-            if (!isFinishing() && !isDefaultLauncher()) {
-                requestDefaultLauncher();
-                prefs.edit().putBoolean("default_launcher_prompt_dismissed", true).apply();
+        handler.postDelayed(this::showSetDefaultLauncherDialog, 600);
+    }
+
+    public void showSetDefaultLauncherDialog() {
+        if (isFinishing() || isDestroyed()) return;
+        if (isDefaultLauncher()) return;
+        if (defaultLauncherDialog != null && defaultLauncherDialog.isShowing()) return;
+
+        View panel = getLayoutInflater().inflate(R.layout.dialog_force_default_launcher, root, false);
+        TextView btnLater = panel.findViewById(R.id.btnLater);
+        TextView btnSetDefault = panel.findViewById(R.id.btnSetDefault);
+
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(panel);
+        dialog.setCanceledOnTouchOutside(false);
+        Window w = dialog.getWindow();
+        if (w != null) {
+            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            w.setLayout((int) (480 * density), ViewGroup.LayoutParams.WRAP_CONTENT);
+            w.setDimAmount(0.65f);
+        }
+
+        View.OnClickListener onSetDefault = v -> {
+            SoundManager.getInstance(MainActivity.this).playEnter();
+            if (defaultLauncherDialog != null) {
+                defaultLauncherDialog.dismiss();
+                defaultLauncherDialog = null;
             }
-        }, 1200);
+            trySilentSetDefaultLauncher();
+            requestDefaultLauncher();
+        };
+
+        View.OnClickListener onLater = v -> {
+            SoundManager.getInstance(MainActivity.this).playBack();
+            SharedPreferences prefs = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+            prefs.edit().putBoolean("default_launcher_prompt_dismissed", true).apply();
+            if (defaultLauncherDialog != null) {
+                defaultLauncherDialog.dismiss();
+                defaultLauncherDialog = null;
+            }
+        };
+
+        btnSetDefault.setOnClickListener(onSetDefault);
+        btnLater.setOnClickListener(onLater);
+
+        View.OnKeyListener keyListener = (v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    if (v.getId() == R.id.btnSetDefault) onSetDefault.onClick(v);
+                    else onLater.onClick(v);
+                }
+                return true;
+            }
+            if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                btnLater.requestFocus();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                btnSetDefault.requestFocus();
+                return true;
+            }
+            return false;
+        };
+        btnSetDefault.setOnKeyListener(keyListener);
+        btnLater.setOnKeyListener(keyListener);
+
+        dialog.setOnCancelListener(d -> {
+            SharedPreferences prefs = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
+            prefs.edit().putBoolean("default_launcher_prompt_dismissed", true).apply();
+            defaultLauncherDialog = null;
+        });
+
+        dialog.setOnDismissListener(d -> {
+            if (defaultLauncherDialog == dialog) defaultLauncherDialog = null;
+        });
+
+        defaultLauncherDialog = dialog;
+        dialog.show();
+        btnSetDefault.post(btnSetDefault::requestFocus);
     }
 
     private void syncTimezone(String tzId) {

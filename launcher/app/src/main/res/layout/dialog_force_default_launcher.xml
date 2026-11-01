@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/glass_panel"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp"
+    android:paddingTop="26dp"
+    android:paddingBottom="24dp"
+    android:elevation="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@null"
+            android:layout_marginEnd="14dp" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prompt_default_launcher_title"
+            android:textColor="#FFFFFFFF"
+            android:textSize="22sp"
+            android:fontFamily="@font/inter_medium"
+            android:letterSpacing="-0.01" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/prompt_default_launcher_body"
+        android:textColor="#D9FFFFFF"
+        android:textSize="15sp"
+        android:lineSpacingExtra="4sp"
+        android:fontFamily="@font/inter" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/btnLater"
+            style="@style/TopButton"
+            android:text="@string/prompt_default_launcher_later"
+            android:nextFocusRight="@+id/btnSetDefault" />
+
+        <TextView
+            android:id="@+id/btnSetDefault"
+            style="@style/TopButton"
+            android:text="@string/prompt_default_launcher_action"
+            android:nextFocusLeft="@+id/btnLater" />
+    </LinearLayout>
+</LinearLayout>

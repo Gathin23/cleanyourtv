@@ -31,6 +31,11 @@
     <string name="home_settings_help">Select your original home to stop using Norma Launcher as Home, or Norma Launcher to switch back. The original launcher must be enabled and your TV must provide a home picker; use the restore script first if it was disabled.</string>
     <string name="set_default_launcher">Set as default launcher</string>
     <string name="default_launcher_active">Default launcher: Active ✓</string>
+    <string name="prompt_default_launcher_title">Set as Default Launcher</string>
+    <string name="prompt_default_launcher_body">Norma Launcher needs to be set as your default home app so your TV automatically opens this screen whenever it turns on or when you press the Home button on your remote.</string>
+    <string name="prompt_default_launcher_action">Set as Default</string>
+    <string name="prompt_default_launcher_later">Later</string>
+    <string name="default_launcher_success">Norma Launcher is now your default home launcher ✓</string>
     <string name="launcher_settings">Launcher settings</string>
     <string name="columns_label">Apps per row</string>
     <string name="rows_below_dock_label">Rows below dock</string>
