@@ -1,0 +1,75 @@
+# TCL 75T8C (model "Smart TV Pro", device G08, product G08_4K_GB, MediaTek), EU/SE, Android TV 14
+# Firmware UTT2.250416.001 AU02; fingerprint TCL/G08_4K_GB/G08:14/UTT2.250416.001/AU02:user/release-keys.
+#
+# Not the Android 12 G08 board in examples/tcl-g08-eu-android12, and not the Android 12 C755/QM6K lists:
+# this is the Android 14 G08 build, which ships more preloads. This list is a subset of the packages on
+# that build — every line below was disabled on one set (75T8C, Härnösand, Sweden) and left in place for
+# five days and a reboot before it was written down.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-75t8c/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-75t8c/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (disabled here — this set runs a custom home
+# screen). Setup wizard: com.google.android.tungsten.setupwraith (disabled too; disable it only after
+# the stock launcher, and after the saved Wi-Fi network has been forgotten and re-joined in Settings,
+# or Android erases the network with the package that owns it).
+# Live TV: com.tcl.tv. The TCL Channel app itself (com.tcl.channelplus) is disabled below.
+
+# TCL promo, push messages, store demo, help and log capture
+com.tcl.dashboard                      # tcl:// deeplink pushes; no home-screen entry of its own
+com.tcl.messagebox                     # TCL push messages
+com.tcl.exhibit                        # store demo mode
+com.tcl.esticker                       # retail-demo sticker; had to be disabled again after a switch
+com.tcl.ocean.instructions             # onboarding/tips overlay
+com.tcl.repairguide                    # repair guide
+com.tcl.logkit                         # TCL log upload
+com.tcl.smartalexa                     # Alexa bridge
+com.tcl.eva                            # TCL's own voice layer (com.google.android.katniss is separate)
+com.tcl.channelplus                    # TCL Channel, the free ad-supported channels
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+com.tcl.usercenter                     # TCL account sign-in
+com.tcl.magiconnectfree                # MagicConnect phone-remote pairing
+com.tcl.gallery                        # TCL gallery
+
+# Duplicate webviews on this build (com.google.android.webview is the active one)
+com.tcl.android.webview
+com.mediatek.support.webview
+
+# MediaTek telemetry
+com.mediatek.backgrounddetection
+com.mediatek.network
+
+# Google storefront and extras
+com.google.android.videos              # Play Movies storefront
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.apps.tv.dreamx      # Google photo screensaver (a custom screensaver replaces it)
+com.google.android.apps.tv.launcherx   # stock home screen
+com.google.android.katniss             # Google Assistant; remove this line if the mic is wanted
+com.google.android.feedback            # bug-report sender
+com.google.android.syncadapters.calendar
+com.google.android.tungsten.setupwraith
+
+# DO NOT DISABLE on this build — each was checked on this set:
+# com.tcl.interactive  - provides the TIAS service com.tcl.tv binds for the source/HbbTV overlay. Disabled
+#   (it is in Free My TV's DEBLOAT list), com.tcl.tv's embedded tbrowser client logged
+#   "vendor.tcl.tvinput.extend-service: Passing null binder object as non-@nullable AIDL IBinder" plus a
+#   Tbrowser NullPointerException at Tbrowser.java:600 roughly ten times a second, indefinitely. Re-enabled,
+#   the flood stopped. Cost of the flood is small (com.tcl.tv sat at ~1% CPU) but it never ends.
+# com.tcl.suspension   - hosts the source-menu QuickPanel. Disabling it makes the remote's Source key
+#   (KEYCODE_TV_INPUT, 178) silently dead. Source key verified working on this set.
+# com.tcl.ttvs         - same TIAS chain; also the teletext soft-keyboard IME.
+# com.tcl.autopair     - Bluetooth remote pairing. Disabled, a remote that unpairs can never pair again.
+# com.tcl.t_solo       - Bluetooth speaker output ("listen alone"). Kept: the owner plays TV audio over a
+#   Bluetooth speaker.
+# com.tcl.guard        - TCL permission shield in system_ext. Disabled, the system retried
+#   com.tcl.guard/.memorymanager.TGuardService every 5 seconds.
+# com.tcl.UpdatePeripheral - remote firmware updates; kept on purpose.
+# com.tcl.miracast     - screen mirroring. Kept: Chromecast (com.google.android.apps.mediashell) is a
+#   separate package and is untouched, but Miracast is the only "cast screen" route on this set.
+# com.tcl.hearaid      - hearing aids, wireless speakers, sound field.
+# com.tcl.gamebar      - runs under android.uid.system; has a SourceReceiver on the input path.
+# com.tpa.kb           - runs under android.uid.system; purpose unknown.
+# com.tcl.dashboard is disabled above, but note it is in Free My TV's PROTECTED list — that project
+#   guards it for other TCL boards, where it hosts home-screen pushes.

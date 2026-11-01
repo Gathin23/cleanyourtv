@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 75T8C (Smart TV Pro, G08, G08_4K_GB)",
+  "os": "Android TV 14 (UTT2.250416.001 AU02)",
+  "brand": "TCL",
+  "notes": "Android 14 G08 build, not the Android 12 one in tcl-g08-eu-android12: TCL promo, push, demo, log and channel apps, two duplicate webviews, MediaTek telemetry, Play Movies, Assistant; kept: Live TV, Source key (suspension), TIAS (interactive, ttvs), Bluetooth pairing and speaker output, Miracast, hearing aids, remote firmware updates"
+}
