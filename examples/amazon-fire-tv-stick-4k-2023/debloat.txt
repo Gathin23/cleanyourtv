@@ -14,6 +14,11 @@
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 # ADB on Fire OS 8: Settings > My Fire TV > About > press select 7 times on the device name, back > Developer Options >
 # ADB Debugging. Port 5555, accept the prompt on the TV (ro.adb.secure=1).
+# The stick's USB port carries ADB too, over a data cable rather than a charge-only one: on Fire OS 8.1.8.5 an AFTKM
+# listed as "product:karat model:AFTKM" in `adb devices`, and its owner replayed this restore's `pm enable` lines
+# through the stock `adb -d shell` when network ADB was not answering (#2950). tools/tv.py, disable.sh and restore.sh
+# talk AdbDeviceTcp and never USB, so that cable is the stock adb by hand: docs/TROUBLESHOOTING.md's Connecting
+# section has the network routes.
 #
 # Applied 2026-10-20 in four batches with a screenshot after each, then rebooted: all 57 stayed disabled, Home, Prime
 # Video, Netflix, Globoplay and Disney+ open, Wi-Fi validates.
