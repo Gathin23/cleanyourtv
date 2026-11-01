@@ -9,7 +9,6 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Notes from this firmware:
-# - USB debugging alone opens port 5555; no wireless-debugging pairing needed.
 # - Sideloading works (pm install over the shell), and third-party HOME app is accepted.
 # - setupwraith does not own the saved Wi-Fi network (cname is system uid 1000).
 # - Disabling com.google.android.apps.tv.launcherx and setupwraith hands HOME to com.gathin.tvhome.
@@ -53,14 +52,15 @@ com.google.android.videos
 com.google.android.youtube.tvkids
 com.google.android.youtube.tvmusic
 
-# Preloaded streaming apps (disabled per user preference)
-com.netflix.ninja
-com.netflix.tokenmanager
-com.amazon.amazonvideo.livingroom
-in.startv.hotstar
-com.sonyliv
-com.graymatrix.did
-com.esaba.downloader
+# Preloaded streaming apps
+# This set has these off by the owner's choice; uncomment to disable
+# com.netflix.ninja
+# com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom
+# in.startv.hotstar
+# com.sonyliv
+# com.graymatrix.did
+# com.esaba.downloader
 
 # Setup wizard and stock launcher (disabled to make com.gathin.tvhome default Home)
 com.google.android.tungsten.setupwraith
