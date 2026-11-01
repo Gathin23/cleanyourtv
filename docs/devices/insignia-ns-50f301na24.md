@@ -1,8 +1,9 @@
-# Insignia NS-50F301NA24: read-only inventory and debloat proposal
+# Insignia NS-50F301NA24: inventory and debloat notes
 
-This is an **untested proposal, not an `examples/` debloat list**. On 2026-10-22, ADB was used only to read
-device properties and installed package names. No packages were disabled, uninstalled, or otherwise changed.
-The owner explicitly asked to preserve Amazon Home, System UI, HDMI inputs and the Live TV tuner.
+This is a **device note, not a tested `examples/` debloat list**. On 2026-10-22, ADB was used to read device
+properties and installed package names. On 2026-10-31, the owner approved three reversible disable batches. Thirteen
+packages were disabled; one protected package was left enabled. Nothing was uninstalled. This was not multi-day
+testing.
 
 ## Identify the firmware
 
@@ -11,12 +12,13 @@ The owner explicitly asked to preserve Amazon Home, System UI, HDMI inputs and t
 | Retail model | Insignia NS-50F301NA24 (owner-reported) |
 | `ro.product.model` / `ro.product.device` | `AFTDCT31` / `duckie` |
 | Fire OS / Android / SDK | Fire OS 7 / Android 9 / 28 |
-| Build display | `PS7715.5585N` |
+| Initial inventory build display | `PS7715.5585N` |
 | `ro.adb.secure` | `1` |
 
 The internal model and build match the [Insignia NS-55F301NA25 list](../../examples/insignia-ns55f301na25/debloat.txt),
 but this is a different retail SKU and has not been tested over time. The full read-only inventory contained 260
-packages and is kept locally in the ignored `work/installed-packages.txt`; it is not included in this commit.
+packages and is kept locally in the ignored `work/installed-packages.txt`; it is not included here. On 2026-10-31,
+the TV reported build `PS7717.5741N`.
 
 ## Conservative proposal
 
@@ -61,12 +63,40 @@ The proposal excludes these installed packages and functions:
 - Streaming apps, Alexa, casting and firmware updates, including `com.amazon.device.software.ota`,
   `com.amazon.device.software.ota.override` and `com.amazon.tv.forcedotaupdater.v2`.
 
-Fire OS keeps Home for Amazon's launcher; do not attempt to replace or disable it. This note contains no apply
-commands. Before any future package changes, review the exact package functions, record existing disabled states,
-get the owner's approval, and test changes in small reversible batches with HDMI, tuner and Home left intact.
+Keep Amazon Home enabled on this Fire TV. The owner later asked to use the custom launcher as Home.
+`cmd package set-home-activity` returned
+`Success`, but Home continued to resolve to Amazon's `com.amazon.tv.launcher/.ui.HomeActivity_vNext`. Amazon Home
+was left enabled and set back as the explicit default. The custom launcher was installed as a manually launched
+app; no takeover workaround was used.
+
+## Approved disable batches
+
+The original enabled/disabled states were recorded locally before the changes. Each package was handled with
+`pm disable-user --user 0`; none was uninstalled.
+
+Batch 1:
+
+- Disabled: `com.amazon.tv.acr`, `com.amazon.client.metrics.api`, `com.amazon.dp.logger`,
+  `com.amazon.perfcollection`, `com.amazon.perfc`, `com.amazon.tv.fw.metrics`,
+  `com.amazon.wirelessmetrics.service` and `com.amazon.hybridadidservice`.
+- Left enabled: `com.amazon.client.metrics`; Fire OS refused the disable as protected.
+
+Batch 2:
+
+- Disabled: `com.amazon.sneakpeek`, `com.amazon.tv.democontent.provider`, `com.amazon.shoptv.client`
+  and `com.amazon.shoptv.firetv.client`.
+
+Batch 3:
+
+- Disabled: `com.amazon.media.recommendations`.
+
+After the batches and a restart, the owner reported that Home, a streaming app, HDMI, Live TV and restart worked.
+Alexa was not tested. The 13 disabled packages were still reported disabled in a later ADB check. This is a
+single-session report, not multi-day validation.
 
 ## Validation limits
 
-The package inventory and properties were read over ADB. No package was changed, and no launcher, streaming,
-voice, casting, HDMI picture, tuner reception, reboot behavior or multi-day use was tested. Do not promote this
-proposal to `examples/` until the list has been approved, applied, and lived with for several days.
+The inventory and package states were read over ADB. The owner reported basic Home, streaming, HDMI, Live TV and
+restart checks; voice, casting, HDMI picture quality, tuner reception over time and multi-day use were not
+independently verified. Keep this as a device note until the list has been lived with for several days and the
+results are confirmed.
