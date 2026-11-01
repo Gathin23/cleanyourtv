@@ -3939,10 +3939,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     private void open(Intent i) {
+        if (i == null) return;
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             startActivity(i);
-        } catch (ActivityNotFoundException e) {
+        } catch (Throwable e) {
+            try {
+                String pkg = i.getPackage();
+                if (pkg != null) {
+                    Intent fallback = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
+                    if (fallback == null) fallback = getPackageManager().getLaunchIntentForPackage(pkg);
+                    if (fallback != null) {
+                        startActivity(fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        return;
+                    }
+                }
+            } catch (Throwable ignored) {}
             Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
         }
     }
@@ -4103,7 +4115,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (liveTv != null) {
             if (rows.getChildCount() > 0) addSeparator(rows);
             final Intent liveTvIntent = liveTv;
-            addInputRow(rows, popup, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTvIntent));
+            addInputRow(rows, popup, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> {
+                SoundManager.getInstance(MainActivity.this).playEnter();
+                open(liveTvIntent);
+            });
         }
         if (rows.getChildCount() == 0) {
             Toast.makeText(this, R.string.no_inputs, Toast.LENGTH_SHORT).show();
@@ -4196,10 +4211,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             status.setVisibility(View.GONE);
             dot.setVisibility(View.GONE);
         }
+        View root = findViewById(R.id.root);
         row.setOnClickListener(v -> {
             if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
             popup.dismiss();
-            v.post(action::run);
+            if (root != null) root.post(action::run);
+            else action.run();
+        });
+        final boolean[] pressed = {false};
+        row.setOnKeyListener((v, code, event) -> {
+            if (code != KeyEvent.KEYCODE_DPAD_CENTER && code != KeyEvent.KEYCODE_ENTER) return false;
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() == 0) pressed[0] = true;
+                return true;
+            }
+            boolean activate = pressed[0];
+            pressed[0] = false;
+            if (activate) {
+                if (popup.getContentView() != null) popup.getContentView().setTag(Boolean.TRUE);
+                popup.dismiss();
+                if (root != null) root.post(action::run);
+                else action.run();
+            }
+            return true;
         });
         rows.addView(row);
     }
