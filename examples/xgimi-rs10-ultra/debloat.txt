@@ -1,0 +1,71 @@
+# XGIMI RS10 Ultra projector (device pig_chivalrous, MediaTek m7642), China, Android 9, firmware PPR2.180905.006.A1
+# Build PPR2.180905.006.A1 (incremental xgimi10101741), fingerprint MediaTek/m7642_db/m7642:9/PPR2.180905.006.A1/xgimi10101741:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xgimi-rs10-ultra/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xgimi-rs10-ultra/debloat.txt com.xgimi.home
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.xgimi.home (com.xgimi.module.cellview.home.ui.HomeActivity). It is disabled by
+# launcher/build-and-install.sh, not by this list; the Undo above re-enables it. Install with
+# HOME_KEY_SERVICE=1 RESTORE_KEY_SERVICES=1 STOCK_LAUNCHER=com.xgimi.home and set
+# stock_home_redirect=com.xgimi.home: com.xgimi.xrmservice re-enables the stock launcher on its remote
+# keys, and the redirect sends its home screen back to the new launcher.
+#
+# Live TV: none (no tuner). HDMI inputs are com.xgimi.tvinput and com.xgimi.xhplayer; config.json sets
+# input_action=com.xgimi.action.hdmiPlayer.
+#
+# ADB: this GMUI 6 build has no working ADB switch in Developer options or the factory menu. On this unit
+# adbd was started by running `setprop service.adb.tcp.port 5555` and `setprop ctl.start adbd` from a
+# small local helper app (not part of this repository). Do not launch the factory packages
+# (mediatek.factorymenu.ui, com.xgimi.minitvfactory) to look for a switch; the repository's rules forbid
+# starting factory/test packages.
+#
+# XGIMI Settings is a service window, not an Activity: com.android.newsettings/.SettingService, action
+# com.xgimi.settings.SETTINGS, data Settings://com.xgimi.settings/main. The launcher's Settings pill needs
+# a small helper activity in settings_fallback_components (config.xml only; see README.md).
+#
+# HomeKeyService is dropped from the accessibility list on every boot of this firmware; restore_key_services
+# alone did not put it back. A BOOT_COMPLETED helper re-adds it on this unit (not shipped); without it,
+# re-enable it over ADB after a reboot (README.md).
+#
+# OTA: com.xgimi.upgrade is commented out below, so the default list keeps firmware updates. The author's
+# TV disables it by choice; uncomment the line to do the same.
+#
+# Kept on purpose: com.xgimi.xgimiservice, xrmservice, windowsystem, autokst, tof, tvinput, xhplayer,
+# remote, bluetoothservice, mateservice, baidu.oases, duertts, smartaccessories, ota.accessories,
+# wirelessscreen, smartconnect, screensaver, filemanager; the XGIMI store/account/payment packages are
+# disabled by the owner's choice below, not because they are unsafe.
+#
+# Tested on 2026-10-31 in one session with four reboots, not the several days CONTRIBUTING asks for.
+
+# Telemetry, ads, help and the H5 page host
+com.xgimi.adservice                         # XGIMI ad service
+com.xgimi.datareporter                      # usage/telemetry reporter
+com.xgimi.bugreportsender                   # bug report uploader
+com.xgimi.msgcenter                         # push message/notification center
+com.xgimi.instruction30                      # help/instruction content
+com.xgimi.activitypage                      # H5 web page host used by help/account/store pages
+
+# Streaming apps the owner does not use (VidHub only)
+cn.com.wasu.main                            # 华数TV
+com.gitv.dvb.live                           # 宽带电视
+com.hunantv.license                         # 芒果TV
+com.ktcp.tvvideo                            # 云视听极光
+
+# Music, karaoke, XGIMI video content and the dynamic atmosphere screensaver
+com.xgimi.doubanfm                          # 酷狗音乐极米定制版
+com.netease.cloudmusic.tv                   # 网易云音乐
+com.tencent.qqmusicjimisdk                  # QQ Music SDK used by the music apps
+com.xgimi.karaokesdk                        # karaoke SDK (microphone/pay/MV)
+com.xgimi.stream.video                      # XGIMI video/VIP content app
+com.xgimi.atmosphere                        # dynamic/ambient screensaver; the owner uses a third-party aerial screensaver
+
+# XGIMI app store, account/VIP, payment and OTA (owner's aggressive scope)
+com.xgimi.newappmarket                      # XGIMI app store; Dangbei Market stays installed
+com.xgimi.account                           # account stub
+com.xgimi.user                              # account/VIP/backup UI and provider
+com.xgimi.payview                           # VIP/payment UI
+# com.xgimi.upgrade                         # OTA updater; kept enabled by default, disabled on the author's TV by choice
+
+# Misc
+com.android.printspooler                    # printing; nothing prints from a projector

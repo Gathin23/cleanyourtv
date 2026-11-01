@@ -34,6 +34,7 @@
 # com.tcl.autopair                     # Bluetooth remote auto-pairing
 # com.tcl.settings                     # picture & sound settings
 # com.tcl.suspension                   # source panel / Quick Panel
+# com.android.location.fused           # boot loop into recovery when disabled on V325 (#2803)
 # com.tcl.keyhelp                      # virtual keys
 # com.android.vending                  # Google Play Store
 # com.google.android.gms               # Google Play Services

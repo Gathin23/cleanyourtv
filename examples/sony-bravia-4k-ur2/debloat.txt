@@ -1,5 +1,6 @@
 # Sony BRAVIA 4K UR2 (device BRAVIA_UR2_4K, MediaTek)
-# Android 10 (Android TV, API 29), build QTG3.200305.006.S97 662301 (US UC firmware and EU retail KD-55XG9505)
+# Android 10 (Android TV, API 29), build QTG3.200305.006.S97 662301 (US UC firmware, EU retail KD-55XG9505
+# and Asia-Pacific firmware, BRAVIA_UR2_4K_PA)
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur2/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur2/debloat.txt
@@ -24,6 +25,14 @@
 # SportzX, Stremio and a sideloaded app). Lived with 10 days (from 2026-10-20) with the Assistant, Chromecast,
 # Miracast, Apple TV and YouTube Music kept on. It also disabled the four commented-out "third unit" lines below,
 # which stay optional here because only that unit tried them: uncomment any you want off too.
+# Fourth unit: Asia-Pacific firmware (BRAVIA_UR2_4K_PA), same build, on Wi-Fi, with the Apple TV style launcher as
+# Home (dock: YouTube, Play Store, LocalSend). Tried on 2026-10-31 over two reboots, with Chromecast, Miracast and
+# YouTube kept on and the Assistant off; it also disabled the four optional "third unit" lines. HDMI 1-4, the
+# TVX tuner and the remote's buttons (owner, real remote) worked with the stock launcher off. The PA firmware
+# ships neither com.sony.dtv.promos nor any of the preloaded apps below. Its hotel-mode packages are named
+# com.sony.dtv.b2b.adminpassword and com.sony.dtv.b2b.deviceadminsettings and were left enabled: the second
+# answers ADD_DEVICE_ADMIN (DeviceAdminAdd, ProfileOwnerAdd). com.sony.dtv.livingfit and com.sony.dtv.kenhchonloc
+# were already disabled at the factory on it.
 # Nothing re-enabled itself after a reboot.
 
 # tracking / ads / recommendations

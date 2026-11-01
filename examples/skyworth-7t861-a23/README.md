@@ -42,7 +42,7 @@ The cleanest and safest handover sequence:
 
 1. **Switch to Office Mode first**: On the TV, switch desktop mode to **办公模式 (Office Mode)** in the native settings/menu.
 2. **Build and install launcher**: Build under the Coocaa package ID (`com.coocaa.tvhome`) and install companion `coocaa-home-shim`.
-3. **Redirect Home properties**: Point both `persist.service.homepage.*` and `persist.service.model.*` to `com.ccos.tv.homepage`.
+3. **Redirect Home properties**: Point `persist.service.model.*` directly to `com.coocaa.tvhome` (direct cold-boot) and `persist.service.homepage.*` to `com.ccos.tv.homepage` (remote Home key dispatch).
 
 Detailed instructions, boot observations, and property undo commands are documented in:
 👉 [`docs/devices/skyworth-7t861-a23.md`](../../docs/devices/skyworth-7t861-a23.md)

@@ -18,10 +18,20 @@ reader that changes its range, or stops reading a key, fails this test rather th
 theme quietly ignored. Keys read by another class (`race_calendar` in RaceCalendar.java,
 `wallpaper_moods` in WallpaperRotation.java) are not this file's business.
 
+The same bounds are stated a second time, in the Keys table of themes/README.md, and that copy is the
+one a theme author reads: the cell gives `0 to 300` for `wifi_label_width`, `1 to 8` for `columns`,
+and tools/manage.py set refuses a value outside that cell before it writes anything
+(manage.number_in_range). Nothing compared the two, so a reader whose range moved in Config.java left
+the table telling authors a number the launcher would drop - `columns` becoming `1, 7` while the row
+says 1 to 8 is a theme whose sixth and seventh tiles vanish - and set would keep writing the value it
+was told was fine. The tests below hold each range cell to the bounds the reader is handed, and each
+integer() reader to a row that states its range.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import json
 import re
+import sys
 import tempfile
 from pathlib import Path
 import unittest
@@ -29,6 +39,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "Config.java"
+KEYS_TABLE = ROOT / "themes" / "README.md"
 
 # The readers that take no bounds, and what the launcher needs for each. `string(json, ...)` is matched
 # before `stringList(json, ...)` would be by the alternation, so the longer name comes first.
@@ -36,6 +47,14 @@ PLAIN_READER = re.compile(r"\b(stringList|intArray|bool|string|color)\(\s*json\s
 # integer(json, "<key>", <fallback>, <min>, <max>): the fallback is a field or a literal, never a call.
 RANGE_READER = re.compile(r"\binteger\(\s*json\s*,\s*\"([a-z0-9_]+)\"\s*,[^,()]+,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)")
 COLOUR = re.compile(r"#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?")
+
+# Config.java's floor for `lunar_utc_offset` is -1, the "by locale" sentinel its Keys row's Meaning cell
+# calls Unset rather than a number a theme is meant to pass, so the table states 0 to 14 where the reader
+# takes -1 to 14. No other key may widen its floor like that; a test below keeps this one at -1.
+SENTINEL_FLOOR = {"lunar_utc_offset": -1}
+
+sys.path.insert(0, str(ROOT / "tools"))
+import manage  # noqa: E402  the same table reader tools/manage.py set judges a value against
 
 
 def readers(java_text):
@@ -92,6 +111,45 @@ def config_files(root=None):
     """
     root = ROOT if root is None else root
     return sorted((root / "themes").glob("*/config.json")) + sorted((root / "examples").rglob("config.json"))
+
+
+def table_ranges(text=None):
+    """key -> (low, high) for every Keys-table row whose type cell is a range, such as '0 to 300'.
+
+    Read the way tools/manage.py set reads it - manage.table_rows over the section, manage.plain to
+    drop the code marks, manage.declared_range for the cell - so a cell this test understands and set
+    does not (or the other way round) cannot happen either. A row's first cell can name two keys, and
+    one of them may also be named in the Meaning column: only the first cell is a definition.
+    """
+    text = KEYS_TABLE.read_text(encoding="utf-8") if text is None else text
+    if "## Keys" not in text:
+        raise AssertionError("themes/README.md has no ## Keys section")
+    out = {}
+    for row in manage.table_rows(text[text.index("## Keys"):], "| Key |"):
+        low, high = manage.declared_range(manage.plain(row[1]) if len(row) > 1 else "")
+        if low is None:
+            continue
+        for key in re.findall(r"`([a-z_]+)`", row[0]):
+            out[key] = (int(low), int(high))
+    return out
+
+
+def range_problems(table, kinds):
+    """[(key, why)] where the Keys table's range and Config.java's integer() disagree, or one is missing."""
+    out = []
+    for key, (low, high) in sorted(table.items()):
+        kind, bounds = kinds.get(key, ("", None))
+        if kind != "integer":
+            out.append((key, f"themes/README.md gives `{key}` the range {low} to {high} and Config.java "
+                             f"does not read it with integer()"))
+        elif bounds != (SENTINEL_FLOOR.get(key, low), high):
+            out.append((key, f"themes/README.md tells a theme author {low} to {high} and Config.java keeps "
+                             f"{bounds[0]} to {bounds[1]}"))
+    for key, (kind, bounds) in sorted(kinds.items()):
+        if kind == "integer" and key not in table:
+            out.append((key, f"Config.java reads `{key}` with integer() bounds {bounds[0]} to {bounds[1]} "
+                             f"and the Keys table states no range for it"))
+    return out
 
 
 class ShippedConfigValuesTest(unittest.TestCase):
@@ -203,6 +261,105 @@ class ShippedConfigValuesTest(unittest.TestCase):
         self.assertNotIn("wallpaper_moods", self.kinds)
         self.assertEqual(problems({"race_calendar": [{"round": 1}], "wallpaper_moods": {"morning": []}},
                                   self.kinds), [])
+
+
+class KeysTableRangesTest(unittest.TestCase):
+    """The Keys table's range cells are the bounds Config.java's integer() calls keep.
+
+    The table is the copy a theme author reads and the one tools/manage.py set refuses a value against, so
+    a range that moved on either side leaves the page telling authors a number the launcher drops: set writes
+    it, the push says nothing, and the launcher keeps its own default.
+    """
+
+    def setUp(self):
+        self.kinds = readers(CONFIG_JAVA.read_text(encoding="utf-8"))
+        self.table = table_ranges()
+
+    def test_every_range_in_the_table_is_the_one_the_reader_keeps(self):
+        # A table read as empty, or a Java parse that found no integer() call, would agree with anything.
+        self.assertGreaterEqual(len(self.table), 13,
+                                "fewer range cells found in the Keys table than before")
+        self.assertGreaterEqual(sum(1 for kind, _ in self.kinds.values() if kind == "integer"), 13,
+                                "fewer integer() readers found in Config.java than before")
+        # The two the page's own examples lean on: columns decides how many tiles fit, and 0 is the one
+        # wifi_label_width value MainActivity reads as "icon only", which is why the 320 above went wrong.
+        self.assertEqual(self.table.get("columns"), (1, 8))
+        self.assertEqual(self.table.get("wifi_label_width"), (0, 300))
+        # One failure per drifted key, so a range that moved is named on the side that moved it.
+        for key, why in range_problems(self.table, self.kinds):
+            with self.subTest(key=key):
+                self.fail(f"{why}: a theme set from the page is dropped without a word, and tools/manage.py "
+                          f"set keeps writing it")
+
+    def test_the_lunar_offset_keeps_its_unset_sentinel(self):
+        # The one row whose numbers differ on purpose: Config.java's floor is -1, the "by locale" sentinel,
+        # so SENTINEL_FLOOR lets the table state 0 to 14. If the reader ever stops taking -1, the sentinel
+        # is stale and the table would be hiding a real drift behind an exemption.
+        self.assertEqual(self.kinds.get("lunar_utc_offset"), ("integer", (-1, 14)),
+                         "lunar_utc_offset no longer reads its -1 'by locale' sentinel")
+        self.assertEqual(self.table.get("lunar_utc_offset"), (0, 14),
+                         "the Keys row for lunar_utc_offset no longer states 0 to 14")
+        self.assertEqual(SENTINEL_FLOOR, {"lunar_utc_offset": -1},
+                         "another key was given a sentinel floor; the table has to be held to it by name")
+
+    def test_a_range_that_moved_on_either_side_is_reported(self):
+        # A table and a set of readers written here, not read from the tree: this is the readers' own test,
+        # so it has to fail for the same reason whatever Config.java and the page say today.
+        kinds = {"sky_intensity": ("integer", (0, 90)), "columns": ("integer", (1, 8)),
+                 "lunar_utc_offset": ("integer", (-1, 14)), "dock_band": ("bool", None)}
+        table = {"sky_intensity": (0, 100), "columns": (1, 8), "lunar_utc_offset": (0, 14)}
+        reported = dict(range_problems(table, kinds))
+        self.assertEqual(sorted(reported), ["sky_intensity"], "a range that did not move was reported")
+        self.assertIn("0 to 100", reported["sky_intensity"])
+        self.assertIn("0 to 90", reported["sky_intensity"])
+        # A row with a range for a key read some other way is the page promising a number nothing keeps.
+        reported = dict(range_problems(dict(table, dock_band=(0, 1), dock_columns=(1, 8)), kinds))
+        self.assertIn("dock_band", reported)
+        self.assertIn("does not read it with integer()", reported["dock_band"])
+        self.assertIn("dock_columns", reported)
+        self.assertIn("does not read it with integer()", reported["dock_columns"])
+        # And a reader whose key lost its row: an author editing that key is told nothing at all.
+        reported = dict(range_problems(table, dict(kinds, tile_glow=("integer", (0, 50)))))
+        self.assertIn("tile_glow", reported)
+        self.assertIn("states no range for it", reported["tile_glow"])
+        # A wider floor is a drift too, except for the one key the table may not state it for.
+        reported = dict(range_problems(dict(table, columns=(-1, 8)), kinds))
+        self.assertIn("columns", reported)
+        self.assertIn("-1 to 8", reported["columns"])
+        self.assertEqual(range_problems({"columns": (1, 8), "sky_intensity": (0, 90),
+                                         "lunar_utc_offset": (0, 14)}, kinds), [],
+                         "lunar_utc_offset's sentinel floor was reported as a drift")
+
+    def test_the_reader_reads_a_table(self):
+        # The readers are Python over a Markdown page, so they are run over a page written here: the shape
+        # of the real one, a row in the section after it, a row whose type cell is not a range at all, a
+        # cell written with a link, and a key without code marks (the table's own style, which is what
+        # tools/manage.py set reads too - an unbackticked first cell names no key).
+        page = (
+            "## Keys\n"
+            "\n"
+            "| Key | Type | Meaning |\n"
+            "|---|---|---|\n"
+            "| `columns` | 1 to 8 | Tiles per row |\n"
+            "| `dock_apps` | list of package names | The dock row |\n"
+            "| `wifi_label_width` | 0 to 300 | The network name |\n"
+            "| `sky_intensity` | [0 to 90](https://example.test/x) | The backdrop |\n"
+            "| `lunar_date` | bool | The lunisolar date |\n"
+            "| columns | 2 to 4 | Not a key: no code marks |\n"
+            "\n"
+            "## Wallpapers\n"
+            "\n"
+            "| Key | Type | Meaning |\n"
+            "|---|---|---|\n"
+            "| `rows_below_dock` | 0 to 3 | Rows under the dock |\n"
+        )
+        self.assertEqual(table_ranges(page),
+                         {"columns": (1, 8), "wifi_label_width": (0, 300), "sky_intensity": (0, 90)})
+
+    def test_a_page_with_no_keys_section_is_reported(self):
+        # Reading nothing must not read as "no drift": an empty table agrees with every reader.
+        with self.assertRaises(AssertionError):
+            table_ranges("# Themes\n\nNo table here.\n")
 
 
 if __name__ == "__main__":

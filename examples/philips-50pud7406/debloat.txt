@@ -145,6 +145,38 @@
 # Ambilight keys work. The Inputs pill lists HDMI 1-4 and Live TV. org.droidtv.ambisvc (Ambilight) left alone.
 # Remote is IR only (MStar Smart TV IR Receiver), so Assistant voice needs a Bluetooth-paired remote or the phone app.
 # Not checked: HDMI picture and live channels with the list applied (the Source key and Inputs menu open).
+#
+# EIGHTH UNIT (EU): Philips 65PUS7956, wired Ethernet (the TV's own port), nothing in the USB ports. The build of the
+# third and fourth units: persist.odm.tpv.fw.revision=TPM215E_R.101.000.198.158, persist.odm.tpv.region=eu,
+# ro.product.name=PH0M_EA_T32, incremental 200715, board m7332, 1.38 GB, low_ram. Tested the same day only, with two
+# reboots. USB debugging alone opens 5555 (the RSA prompt appears).
+# Applied in six batches with a screenshot between them: the four telemetry lines, nettv.market, fusion.android.tv.demo,
+# disclaimercustomization (tools/disable.sh took it), partnercustomizer, tvrecommendations, backdrop (quirk 1, screensaver
+# moved to ClockDream), mediashell (off by choice), feedback, partnersetup, onetimeinitializer, syncadapters.calendar,
+# autoinstalls.config.tpv.device, talkback, play.games, videos, youtube.tvmusic, Netflix and Prime Video, plus
+# tv.wuaki.apptv (Rakuten TV, enabled on this unit) by the owner's choice, and last the three candidates commented out
+# below: org.droidtv.tv.packageinfo, com.google.android.sss.authbridge and com.mediatek.tv.freeviewplay. Kept by choice:
+# katniss, OTA, Disney+ and YouTube; eum, nettvregistration and the MMP player stayed enabled. ZDFmediathek, ARD and the
+# Freeview apps shipped disabled; fitness and Spotify are not installed. Idle logcat after the last batch: 44 lines in
+# 30 s, no retry loops. After each reboot the disabled list matched what was applied.
+# The stock launcher's Input and network icons were still there after the vendor batch (nettv.market, demo,
+# disclaimercustomization, partnercustomizer) and gone after the next one (tvrecommendations, backdrop, mediashell,
+# feedback, partnersetup, onetimeinitializer), which narrows the sixth unit's observation; not bisected further.
+# Home handed over to launcher/ on the first try (the only other HOME claimant is FallbackHome); setupwraith owns no saved
+# network here (cname=android.uid.system). Quirk 5 shows too: tvcenter resumes about 3 s after boot. The owner kept it,
+# as the TV mostly shows an Apple TV on HDMI 1, and runs no key helper.
+# Real remote with the launcher as Home: Home, Sources, Settings and Ambilight keys work. The Inputs pill lists the Apple
+# TV on HDMI 1 by its CEC name, then HDMI 2-4 and Live TV, and the Apple TV on HDMI 1 plays with the list applied.
+# AV receiver over ARC (HDMI 1, System Audio Mode on): the TV remote's volume reaches the receiver over CEC on Home and in
+# apps (<User Control Pressed> 05:44, and the receiver's <Report Audio Status> rises with it), but no volume bar shows
+# outside the TV app: AOSP clears FLAG_SHOW_UI in TV system-audio mode (AudioService.updateFlagsForTvPlatform), so the
+# receiver's own display is the only level shown. Not caused by the list; tvcenter draws its own bar on the HDMI inputs.
+# Private DNS (dns.adguard-dns.com): YouTube and Disney+ would not sign in with it on, and both signed in once it was
+# back to the default. One test, not repeated with it on, so the cause is not proven.
+# No JointSpace API on this board: the TV listens only on 5555 (ADB), 6466/6467 (remote service) and the DIAL server's
+# 56789/56790, so tools/philips-api.py and Home Assistant's philips_js have nothing to talk to. Ambilight + Hue is not
+# in this firmware either.
+# Not checked: live channels, Bluetooth devices, held volume on the TV's own speakers.
 
 # FIFTH UNIT (Italy): Philips 43PUS7406/12, Android TV 11, RTM2.210929.098.
 # Status: 2026-10-30 -- lived with after the changes. The five candidate Google packages below, `org.droidtv.tv.packageinfo`, `com.google.android.sss.authbridge`,

@@ -1,6 +1,7 @@
-# Sony BRAVIA 4K UR3 / KD-55X8000H (device BRAVIA_UR3, MediaTek mt5893)
+# Sony BRAVIA 4K UR3 / KD-55X8000H / KD-65A8 (device BRAVIA_UR3, MediaTek mt5893)
 # Android 10 (Android TV, API 29), firmware BRAVIA_UR3_EU-user 10 QTG3.200305.006.S97 662301
 # and Taiwan retail KD-55X8000H, firmware BRAVIA_UR3_TW-user 10 QTG3.200305.006.S97 662301
+# Third unit: KD-65A8 (A8 OLED 2020, UK), same EU build, 2.3 GB RAM (#2717, @Nachiketin)
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur3/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur3/debloat.txt
@@ -26,6 +27,13 @@
 # and the tracking/ad/demo subset plus com.google.android.tv.bugreportsender and the reference
 # launcher (com.gathin.tvhome) stayed disabled/default across a reboot on the Taiwan KD-55X8000H
 # (with voice assistant, Chromecast, AirPlay/HomeKit, Miracast and streaming apps kept by choice).
+# KD-65A8 (#2717): all 18 below were present and disabled cleanly, applied in batches on 2026-10-30
+# and reboot-checked twice; used for one evening so far. The reference launcher took Home through
+# launcher/build-and-install.sh and the real remote worked with no key helper (Home, Input, gear,
+# Netflix/YouTube/Prime Video buttons, held volume, power-on). Wake the TV first if the Backdrop
+# screensaver is showing: the first install timed out at `am start -W` until it was woken.
+# Packages disabled seconds before `adb reboot` can come back on; wait about 90 s before rebooting.
+# Its extra packages are in the commented block at the end.
 # Not yet lived with for weeks; if something breaks, re-enable with `pm enable <package>`
 # and please report it.
 
@@ -54,3 +62,14 @@ com.sony.dtv.assistantadapter
 com.google.android.youtube.tvmusic
 com.google.android.play.games
 com.google.android.videos
+
+# KD-65A8 (#2717) only, disabled and reboot-checked there; one evening of use so far.
+# These are present on that unit; uncomment to use them.
+# com.sony.dtv.usercontext                     # user context providers
+# com.sony.dtv.sonybugreportsys                # Sony bug-report/log uploader
+# com.sony.dtv.b2b.hotelmode                   # hotel mode
+# com.sony.dtv.b2b.rs232csupport               # RS-232 control for hotel installs
+# com.sony.dtv.recservice                      # USB recording of broadcast TV (also a DLNA receiver for recordings)
+# com.google.android.backdrop                  # Ambient screensaver: point screensaver_components and
+#                                              # screensaver_default_component elsewhere first (on an OLED,
+#                                              # com.android.dreams.basic/.Colors rather than the static ClockDream)
