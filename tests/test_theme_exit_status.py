@@ -17,6 +17,11 @@ reader (and an assistant following PROMPT.md) reads as "the theme was tried and 
 All three are judged before anything is asked of the TV now, in this script's own words, on exit 2. The usage
 line in the header is unchanged: a theme folder or --reset, one argument.
 
+The rest of the same family answers 2 as well: a folder with no config.json, a config.json that does not
+parse, and one the launcher would drop (an array, a number, a string) each stop before the first byte is
+sent, and each answered 1 - the status of a push that ran and failed - while its own last sentence said
+"Nothing was sent to the TV.". The header's 2 now names them.
+
 These tests run the real tools/theme.sh against a stub tools/tv.py that appends every call to a log and exits 0,
 so "nothing was sent" means the log is missing and "the theme is still pushed" means the log holds the
 config.json push. A theme folder with a config.json is written in the test.
@@ -128,6 +133,28 @@ class ThemeExitStatusTest(unittest.TestCase):
         shutil.rmtree(self.tools / "venv")
         result = self.run_theme(str(self.theme))
         self.assert_stopped(result, "python3 -m venv tools/venv")
+
+    def test_a_folder_that_is_not_a_theme_stops_with_2(self):
+        # `theme.sh themes`, or a list folder: no config.json to push, and nothing reached the TV - the defect
+        # answered 1, which reads as "the theme was tried and the TV refused it".
+        shutil.rmtree(self.theme)
+        self.theme.mkdir()
+        result = self.run_theme(str(self.theme))
+        self.assert_stopped(result, "no config.json in")
+
+    def test_a_config_json_that_does_not_parse_stops_with_2(self):
+        (self.theme / "config.json").write_text('{"columns": 6,\n', encoding="utf-8")
+        result = self.run_theme(str(self.theme))
+        self.assert_stopped(result, "is not valid JSON")
+
+    def test_a_config_json_the_launcher_would_drop_stops_with_2(self):
+        # Config.read() answers "no overlay" for anything that is not a JSON object, so this theme would replace
+        # the one on the TV with a file the launcher ignores: nothing may be sent, and 2 says so.
+        for text in ('[{"columns": 6}]\n', "6\n", '"a theme"\n'):
+            with self.subTest(config=text.strip()):
+                (self.theme / "config.json").write_text(text, encoding="utf-8")
+                result = self.run_theme(str(self.theme))
+                self.assert_stopped(result, "is not a JSON object")
 
     def test_a_theme_folder_still_pushes_with_a_host(self):
         # The other direction: the refusal above must not catch a folder, and the harness has to reach the TV.
