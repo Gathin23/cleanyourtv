@@ -199,6 +199,26 @@
 #   REST server answering a client on the LAN, as on the fifth unit.
 # - The remote's App Gallery button (a butterfly icon) opens org.droidtv.nettv.market (batch 2) and nothing else,
 #   so it does nothing once this list is applied; README.md has its scancode and the remap.
+#
+# Ninth unit: Philips 70PUS7304/12 (LED, 2019 model), Croatia, on Ethernet. Same firmware as the lead unit:
+# STT2.230526.001, security patch 2025-11-01, model TPM191E, device PH9M_EA_5599. One session on 31 Oct 2026 with
+# one restart, not a several-day test. Launcher notes, the volume keys and opening an app at power-on are in
+# README.md.
+# - Developer options showed USB debugging only; with it on, port 5555 answered on the LAN, as on the seventh unit.
+# - The same 15 uk.co.freeview.* packages and org.droidtv.freeviewplayers were disabled from the factory.
+# - From the list below: all of batches 1 and 2; batch 3 except katniss (Assistant) and YouTube Music, kept by
+#   choice; batch 4 after the launcher took Home.
+# - usagelogger and demome: the TV_INPUT_HARDWARE false positive again, disabled with TVINPUT_ALLOW=1 for those two
+#   alone. `pm query-services` listed com.mediatek.tvinput, com.mediatek.tv.agent, org.droidtv.fastip and
+#   com.google.android.videos (its preview inputs; disable.sh did not hold that one back, and batch 3 disables it).
+#   `dumpsys tv_input` listed HDMI 1-4 after batch 3 and after the restart.
+# - Also disabled, as on the sixth to eighth units: org.droidtv.tv.frameworklogger, org.droidtv.nettv_launcherapp,
+#   org.droidtv.sticker, org.droidtv.dropboxprovider; plus Fitness Buddy, the nettvapp1814, 4546, 4771, 5326, 5512
+#   and 20004410 web apps, Netflix, Rakuten TV, TuneIn, TED, Apple TV and org.droidtv.amazonalexa (owner's choice).
+#   Kept: YouTube, YouTube Music, Assistant, Chromecast, both firmware updaters, com.phorus.playfi.tv, the Vewd
+#   browser, and org.droidtv.nettvapps with WhaleLive, which it had installed.
+# - After the restart `pm list packages -d` still listed every package disabled in this session, the stock launcher
+#   and tvrecommendations included.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader
