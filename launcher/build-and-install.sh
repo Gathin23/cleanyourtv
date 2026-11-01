@@ -74,8 +74,24 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
     | tail -n 1 | tr -d '\r' | cut -d/ -f1) || {
     echo "ERROR: could not ask the TV which launcher owns Home. Check TV_HOST and the debugging prompt on the TV," >&2
     echo "or pass STOCK_LAUNCHER=<package> yourself." >&2; exit 1; }
+  # A stock launcher that still owns Home while this launcher is installed and its HomeKeyService is on
+  # is the stock_home_redirect setup (debloat-keep-cast.txt and the other lists that keep casting): the
+  # stock launcher stays Home on purpose and the helper hands over from it. Running this script again to
+  # upgrade the launcher must not disable it, which a rerun without STOCK_LAUNCHER=none used to do.
+  REDIRECT=$("$PY" -I ../tools/tv.py 'pm path com.gathin.tvhome >/dev/null 2>&1 && case "$(settings get secure enabled_accessibility_services)" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; esac' \
+    | tr -d '\r' | tail -n 1) || REDIRECT=""
   case " $KNOWN_STOCK_LAUNCHERS " in
-    *" $HOME_PKG "*) STOCK_LAUNCHER=$HOME_PKG ;;
+    *" $HOME_PKG "*)
+      if [ "$REDIRECT" = redirect ]; then
+        # The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
+        # so it comes back on unless HOME_KEY_SERVICE=0 is passed.
+        STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}
+        echo "$HOME_PKG owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
+        echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
+        echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG."
+      else
+        STOCK_LAUNCHER=$HOME_PKG
+      fi ;;
     *)
       if [ "$HOME_PKG" = com.gathin.tvhome ]; then
         STOCK_LAUNCHER=none; echo "Home already belongs to this launcher; nothing will be disabled."
