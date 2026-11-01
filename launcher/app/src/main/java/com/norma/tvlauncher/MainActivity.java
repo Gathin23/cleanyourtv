@@ -4392,16 +4392,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showSettingsMenu();
     }
 
-    public boolean isDefaultLauncher() {
+    public static boolean isDefaultLauncher(Context context) {
+        if (context == null) return false;
         try {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
-            ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+            ResolveInfo resolveInfo = context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
             if (resolveInfo != null && resolveInfo.activityInfo != null) {
-                return getPackageName().equals(resolveInfo.activityInfo.packageName);
+                return context.getPackageName().equals(resolveInfo.activityInfo.packageName);
             }
         } catch (Throwable ignored) {}
         return false;
+    }
+
+    public boolean isDefaultLauncher() {
+        return isDefaultLauncher(this);
     }
 
     public void requestDefaultLauncher() {
