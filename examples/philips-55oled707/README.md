@@ -1,4 +1,4 @@
-# Philips 65OLED806/12: single-session observations
+# Philips OLED family: 65OLED806/12 observations
 
 Observed on one European retail set on 2026-11-01, on Wi-Fi without external USB devices.
 **Status: one session, checked after a full restart; no several-day debloat list.**
@@ -15,10 +15,11 @@ Observed on one European retail set on 2026-11-01, on Wi-Fi without external USB
 | Live TV | `org.droidtv.playtv` |
 
 Source checkout: `e62aa10a033f715a8ac7116efcf91e01b145adbd`.
-The [philips-55oled707 list](../../examples/philips-55oled707/debloat.txt) already records a
+The [shared list](debloat.txt) already records a
 77OLED806/12 on this product and build. These observations add the 65-inch retail variant;
-they do not validate every choice in that shared list. After several days of normal use,
-any applicable list update should be folded into that existing firmware family.
+they do not validate every choice in that shared list. The whole shared list was not applied to
+this unit, and no package entries are added or changed here. Several days of normal use are
+still needed before proposing any list update for this variant.
 
 ## Package changes and retained functions
 
