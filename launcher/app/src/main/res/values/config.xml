@@ -264,6 +264,10 @@
     <!-- The date and the line between the clock and the date in the clock's full white instead of dimmed. Can also be
          set with "header_white" in a theme. -->
     <bool name="header_white">false</bool>
+    <!-- The focus highlight, the greeting and the line beside the clock take the shown wallpaper's colour from
+         wallpapers/accents.txt, fading on a change. Can also be
+         set with "wallpaper_accents" in a theme. -->
+    <bool name="wallpaper_accents">false</bool>
     <!-- Optional VPN app the network pill opens (hold the pill for Wi-Fi settings), e.g. the package of the
          VPN you use. Empty: the pill opens Wi-Fi settings. The green VPN badge shows for any VPN either way;
          with an app set here, a red "VPN off" badge also shows while no VPN is up. -->

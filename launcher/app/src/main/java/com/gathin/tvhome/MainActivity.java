@@ -259,6 +259,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private BellDrawable bell;
     private MarigoldDrawable marigold;
     private int greetingColor;
+    /** wallpaper_accents: the shown picture's colour or 0, and the colours the theme gave the header for 0. */
+    private int focusColor, themeGreetingColor, themeDividerColor;
+    private View clockDivider;
+    private ValueAnimator accentAnimator;
+    private boolean accentShown;
     /** The day the petal shower last played, so it greets the first Home of each day only. */
     private static LocalDate lastPetalShower;
     /** boot_to_live_tv: open the Live TV app on the first Home of each boot. */
@@ -524,6 +529,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // The clock's own white for the date and the line before it, instead of their dimmed whites.
             ((TextView) findViewById(R.id.date)).setTextColor(Color.WHITE);
             findViewById(R.id.clockDivider).setBackgroundColor(Color.WHITE);
+        }
+        if (cfg.wallpaperAccents && !festive) {
+            clockDivider = findViewById(R.id.clockDivider);
+            themeGreetingColor = greetingColor;
+            themeDividerColor = cfg.headerWhite ? Color.WHITE : 0;
+            wallpaperPlayer.setAccentListener(this::applyWallpaperAccent);
         }
         if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
             // Center Hebrew greetings over the numeric time, independent of a visible AM/PM label. The clock's row
@@ -1598,7 +1609,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         drop();
         reordering = false;
         adapter.setReordering(false);
-        glass.setAccent(festive ? festival.accentColor() : 0);
+        glass.setAccent(festive ? festival.accentColor() : focusColor);
         btnReorder.setActivated(false);
         List<String> keys = adapter.movableKeys();
         List<String> before = orderAtStart;
@@ -3042,6 +3053,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         root.addView(shower, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         shower.play(60, 2200, () -> root.removeView(shower));
+    }
+
+    /** wallpaper_accents: the header and focus highlight take the shown picture's colour, fading on a change. */
+    private void applyWallpaperAccent(int target) {
+        boolean first = !accentShown;
+        accentShown = true;
+        if (target == focusColor && !first) return;
+        int from = focusColor;
+        focusColor = target;
+        if (accentAnimator != null) accentAnimator.cancel();
+        if (first || from == 0 || target == 0 || !animations || reducedMotion) {
+            paintAccent(target);
+            return;
+        }
+        accentAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), from, target);
+        accentAnimator.setDuration(300);
+        accentAnimator.addUpdateListener(a -> paintAccent((int) a.getAnimatedValue()));
+        accentAnimator.start();
+    }
+
+    private void paintAccent(int color) {
+        if (!reordering) glass.setAccent(color);
+        greetingColor = color != 0 ? liftTowardsWhite(color, 0.25f) : themeGreetingColor;
+        greeting.setTextColor(greetingColor);
+        if (color != 0) clockDivider.setBackgroundColor(color);
+        else if (themeDividerColor != 0) clockDivider.setBackgroundColor(themeDividerColor);
     }
 
     private static int liftTowardsWhite(int argb, float amount) {

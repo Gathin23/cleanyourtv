@@ -55,6 +55,9 @@ final class WallpaperPlayer {
     /** wallpaper_captions: the shown picture's name from wallpapers/captions.txt; null when off or there are none. */
     private final TextView caption;
     private final Map<String, String> names;
+    /** wallpaper_accents: each picture's colour from wallpapers/accents.txt, and who hears when it changes. */
+    private final Map<String, Integer> accents;
+    private java.util.function.IntConsumer accentListener;
     /** wallpaper_moods: the collection's groups by time of day; empty rotates through all of it. */
     private final Map<String, Set<String>> moods;
     /** config.xml latitude and longitude for the sun's times, and today's {sunrise, sunset} once worked out. */
@@ -91,6 +94,8 @@ final class WallpaperPlayer {
         names = config.wallpaperCaptions && config.wallpaperEnabled && !files.isEmpty()
                 ? WallpaperCaptions.read(files.get(0).getParentFile()) : Collections.emptyMap();
         caption = names.isEmpty() ? null : makeCaption(context, root);
+        accents = config.wallpaperAccents && config.wallpaperEnabled && !files.isEmpty()
+                ? WallpaperAccents.read(files.get(0).getParentFile()) : Collections.emptyMap();
         if (config.wallpaperEnabled && !files.isEmpty()) {
             root.addView(image, 0, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -126,6 +131,18 @@ final class WallpaperPlayer {
             playable = playable();
             first = WallpaperRotation.pick(playable, previous, order, random);
         }
+    }
+
+    /** Hears the shown picture's accent, 0 when it has none: now for the first picture, then at every change. */
+    void setAccentListener(java.util.function.IntConsumer listener) {
+        accentListener = listener;
+        notifyAccent();
+    }
+
+    private void notifyAccent() {
+        if (accentListener == null || accents.isEmpty()) return;
+        Integer accent = accents.get(displayed);
+        accentListener.accept(accent == null ? 0 : accent);
     }
 
     void start() {
@@ -195,6 +212,7 @@ final class WallpaperPlayer {
                 show(bitmap);
                 displayed = next.getName();
                 showCaption(true);
+                notifyAccent();
                 if (!displayed.equals(previous) || changed == 0) {
                     preferences.edit().putString("image", displayed)
                             .putLong("changed", System.currentTimeMillis()).apply();

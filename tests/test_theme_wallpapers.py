@@ -212,9 +212,10 @@ def problems(root):
     out = []
     want = single_picture_name()
     shown = shown_suffixes()
-    keep = captions_name()
+    # wallpaper_accents' colours sit beside the captions, and are no more a picture than they are.
+    keep = {captions_name(), "accents.txt"}
     for relative, path in pictures(root):
-        if path.name == keep:
+        if path.name in keep:
             continue
         if "/wallpapers/" not in relative:
             # The launcher opens one name at a theme's root; anything else with a picture's prefix sits
