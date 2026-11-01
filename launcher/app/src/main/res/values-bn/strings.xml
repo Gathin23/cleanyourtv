@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">হোম</string>
     <string name="inputs">ইনপুট</string>
+    <string name="bluetooth">ব্লুটুথ</string>
     <string name="wifi">ওয়াই-ফাই</string>
     <string name="settings">সেটিংস</string>
     <string name="choose_input">ইনপুট</string>

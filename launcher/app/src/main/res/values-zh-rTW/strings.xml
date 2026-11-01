@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">主畫面</string>
     <string name="inputs">輸入來源</string>
+    <string name="bluetooth">藍牙</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">設定</string>
     <string name="choose_input">輸入來源</string>

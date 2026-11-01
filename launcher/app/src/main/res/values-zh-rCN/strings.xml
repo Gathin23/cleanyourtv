@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">主屏幕</string>
     <string name="inputs">输入源</string>
+    <string name="bluetooth">蓝牙</string>
     <string name="wifi">无线网络</string>
     <string name="settings">设置</string>
     <string name="home_settings">选择默认桌面</string>

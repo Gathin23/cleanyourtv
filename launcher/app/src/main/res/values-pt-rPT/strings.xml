@@ -2,6 +2,7 @@
 <!-- European Portuguese: only the strings that differ from values-pt, which is Brazilian Portuguese.
      Everything not listed here falls back to values-pt. -->
 <resources>
+    <string name="bluetooth">Bluetooth</string>
     <string name="dock_edit">Editar a dock</string>
     <string name="power_menu">Reiniciar…</string>
     <string name="dock_edit_hint">Escolha o lugar da dock a mudar e prima OK. Voltar para terminar.</string>

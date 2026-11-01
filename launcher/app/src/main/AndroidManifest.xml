@@ -33,6 +33,15 @@
             <action android:name="android.settings.WIFI_SETTINGS" />
         </intent>
         <intent>
+            <action android:name="android.settings.BLUETOOTH_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.SLICE_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.bluetooth.devicepicker.action.LAUNCH" />
+        </intent>
+        <intent>
             <action android:name="android.settings.DISPLAY_SETTINGS" />
         </intent>
         <intent>

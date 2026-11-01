@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">หน้าแรก</string>
     <string name="inputs">แหล่งสัญญาณ</string>
+    <string name="bluetooth">บลูทูธ</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">ตั้งค่า</string>
     <string name="choose_input">แหล่งสัญญาณ</string>

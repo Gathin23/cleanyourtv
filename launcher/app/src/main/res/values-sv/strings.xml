@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Hem</string>
     <string name="inputs">Ingångar</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Inställningar</string>
     <string name="choose_input">Ingångar</string>

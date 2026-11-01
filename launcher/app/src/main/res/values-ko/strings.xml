@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">홈</string>
     <string name="inputs">입력</string>
+    <string name="bluetooth">블루투스</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">설정</string>
     <string name="choose_input">입력</string>

@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Bosh ekran</string>
     <string name="inputs">Manbalar</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Sozlamalar</string>
     <string name="choose_input">Manbalar</string>

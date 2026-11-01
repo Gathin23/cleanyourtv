@@ -349,6 +349,10 @@
     <!-- The Inputs pill in the top bar, shown when the TV has inputs to list. false hides it for good; what the
          remote's Input button does is unchanged. Can also be set with "show_inputs_pill" in a theme. -->
     <bool name="show_inputs_pill">true</bool>
+    <!-- The Bluetooth pill in the top bar, next to Inputs. When clicked, opens the TV's Remotes & Accessories
+         screen to connect or pair Bluetooth headphones and accessories. Off by default; a theme can set
+         "show_bluetooth_pill": true. -->
+    <bool name="show_bluetooth_pill">false</bool>
     <!-- The Inputs list shows only HDMI ports and CEC devices that report connected. Empty ports, devices asleep in
          standby (some TVs, TCL among them, report an empty HDMI port as connected-standby, the same state a
          sleeping device has) and the AV jacks fold behind a "More inputs" row that expands the rest. An HDMI row

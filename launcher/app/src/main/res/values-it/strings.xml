@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Home</string>
     <string name="inputs">Ingressi</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Impostazioni</string>
     <string name="choose_input">Ingressi</string>

@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Hjem</string>
     <string name="inputs">Innganger</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Innstillinger</string>
     <string name="choose_input">Innganger</string>

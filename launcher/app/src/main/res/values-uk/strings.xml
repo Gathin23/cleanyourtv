@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Головний екран</string>
     <string name="inputs">Джерела</string>
+    <string name="bluetooth">Bluetooth</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Налаштування</string>
     <string name="choose_input">Джерела</string>
