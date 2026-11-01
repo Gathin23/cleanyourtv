@@ -1,0 +1,110 @@
+# Sony BRAVIA KDL-55W805C (2015, "BRAVIA 2015", device SVP-DTV15, MediaTek), EU firmware
+# Android TV 7.0 (API 24), build SVPDTV15_EU-user 7.0 NRD91N.S34 5.433, 1.6 GB RAM, Wi-Fi
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kdl-55w805c/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kdl-55w805c/debloat.txt com.google.android.leanbacklauncher
+# Everything is DISABLED (pm disable-user --user 0), never uninstalled. Comment out a line to keep it.
+#
+# Status: applied 2026-10-25 and used daily for a week, then rebooted on 2026-11-01. Home, HDMI 1, YouTube,
+# Prime Video, Spotify, Settings and the Play Store were used and work. Of the two commented blocks at the end,
+# the first was off on this set all week by the owner's choice, and the second was disabled on 2026-11-01 and
+# has one day so far.
+#
+# The same firmware version (5.433) as examples/sony-kd-55x8509c, on the non-4K line (SVPDTV15, not
+# SVP4KDTV15); the sister model on Taiwan firmware is examples/sony-kdl-55w800c.
+# Stock launcher: com.google.android.leanbacklauncher. It is NOT in this list: the published launcher needs
+# Android 8 (minSdk 26). This set runs a local minSdk 24 build as Home (see README.md); the stock home
+# was disabled only after that build was confirmed as Home.
+# Live TV / input app: com.sony.dtv.tvx, which also plays every HDMI input. Kept.
+# Keep: com.sony.dtv.b2b.hotelmode (Settings goes blank without it), tvinput.*, tvplayer*, braviasync*
+# (HDMI-CEC), remotepairing, braviabluetoothservice, ime/keyboard, heatcontrol, enclave.service,
+# interactivetvutil (other Sony apps read its token provider), systemupdate, Play Store/Services.
+# Kept: Netflix, Prime Video, YouTube, voice search (katniss + pumpkin) and the phone remote
+# (google.android.tv.remote.service, used from an iPhone with the Google TV app).
+# Re-enabled: Spotify, disabled on 2026-10-25 and turned back on 2026-11-01 because the owner uses it. This
+# unit also came with ext.services, ext.shared, WebView, katniss and pumpkin disabled by a previous owner;
+# they were re-enabled before the list was applied.
+# Already disabled before this list (factory or a previous owner), not in it, so restore.sh leaves them
+# off: com.google.android.apps.mediashell, .music, .videos, .marvin.talkback, .tts, .partnersetup, .backdrop,
+# .backuptransport, .onetimeinitializer, .inputmethod.japanese, .syncadapters.*, com.amazon.aiv.eu,
+# com.youview.tv.servicehost, com.sony.snei.np.android.account, b2b.hotelmenu, b2b.hotellanguage,
+# tv.samba.ssm, com.android.dreams.basic, the cts shims, com.android.providers.calendar and .contacts.
+# Persistent apps run even when disabled on Android 7: tv.samba.ssm, b2b.vendorprotocol and
+# b2b.rs232csupport keep a process after every boot (their components stay off); that needs root to change.
+# If something breaks, re-enable it with `pm enable <package>` and please report it.
+
+# Hospitality / B2B (hotelmode kept: Settings needs it)
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.rs232csupport                 # persistent: the process still starts, its components are off
+com.sony.dtv.b2b.vendorprotocol                # SDDP model/MAC/IP broadcast for Control4-style home
+                                               # automation; re-enable if you use one
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+
+# Help, tutorials, retail demo
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual
+com.sony.dtv.touchpad.tutorial
+com.sony.dtv.shopsettings
+com.sony.dtv.demomode
+
+# Sony content, ads and promo rows
+com.sony.dtv.discovery                         # Discover bar
+com.sony.dtv.bivlinfo                          # feeds Discover
+com.sony.dtv.sonyselect                        # Sony Select promo tile/app store
+com.sony.dtv.sonyshelf                         # leanbacklauncher's PARTNER_CUSTOMIZATION: the "Featured
+                                               # apps" row; with the stock home it also feeds the inputs
+                                               # row, so HDMI is then reached with the Input button
+android.autoinstalls.config.sony.bravia        # preloads apps at setup
+com.sony.snei.video.hhvu                       # Video Unlimited / PlayStation Video (service discontinued)
+
+# Recommendation services
+com.sony.dtv.irbrecommendation
+com.sony.dtv.woprecommendation
+com.sony.dtv.networkrecommendation
+com.sony.dtv.recommendationservice
+com.sony.dtv.watchtvrecommendation             # Live TV programme recommendations row
+com.sony.dtv.bravialifehack                    # BRAVIA tips cards
+
+# Telemetry, tracking IDs, remote support, bug reports
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.sony.dtv.remoteaccess
+com.sony.dtv.duid.generator                    # device unique ID generator
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.magicpacketnotifyservice
+
+# Unused Google app
+com.google.android.play.games
+
+# Off on this set all week by the owner's choice. Uncomment what your household does not use.
+# com.sony.dtv.netflixmanager                  # the remote's Netflix button; Netflix itself opened from Home
+# com.sony.dtv.youview                         # YouView catch-up TV (UK)
+# com.google.android.sss                       # Chromecast leftovers (mediashell was already off)
+# com.google.android.sss.authbridge
+# screnmirroring.com                           # screen mirroring
+# com.sony.dtv.networkapp.wifidirect
+# com.sony.dtv.hbbtvlauncher                   # HbbTV tile; HbbTV itself is switched off in README.md
+# com.sonyericsson.dlna                        # DLNA
+# com.sonyericsson.dlna.dtcpplayer
+# com.sony.huey.dlna.renderersettings
+# com.sony.huey.dlna.module
+# com.sony.dtv.osat.video                      # USB media players; VLC from the Play Store plays USB sticks
+# com.sony.dtv.osat.music
+# com.goodtoolapps.zeus                        # ZEUS browser (Play Store)
+# com.opera.sdk.example                        # Sony's built-in "Internet Browser"
+
+# Disabled 2026-11-01, one day of use so far: Home, HDMI 1 through the launcher's Inputs, Settings and a
+# reboot were checked. Uncomment once they have lived a few days without trouble.
+# com.sony.dtv.interactivetvplatform           # automatic content recognition: SambaTvRCR, NativeVideoShm,
+#                                              # Kantar/Kuyun/ShopTV discovery plugins
+# com.sony.dtv.nfcservice                      # NFC one-touch mirroring
+# com.sony.dtv.seconddispsetting               # remote access for Sony's old TV SideView phone app
+# com.mediatek.wfd                             # Miracast from Android phones (AirPlay unaffected)
+# com.uei.quicksetsdk.sony                     # UEI QuickSet: IR control of a cable box; HDMI-CEC unaffected
+# com.sony.dtv.osat.album                      # tools/disable.sh skips it (it answers the channel VIEW
+#                                              # intent); only with the repo launcher as Home, which opens
+#                                              # HDMI through tvx, not with the stock home: see README.md
