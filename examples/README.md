@@ -414,6 +414,8 @@ on that firmware, grouped and commented. These are starting points: comment out 
 
 Notes for models that have no tested list yet live in [`docs/devices/`](../docs/devices/):
 
+- [PRISM+ Q55 Ultra 2026](../docs/devices/prismplus-q55-ultra-r10g.md) (`R10G`, Google TV 14, `UKR1.260612.001`): one-session cleanup and stock-Home redirect notes; stock Home and setup wizard retained, repeated Home and held-volume checks, and owner-confirmed Input/antenna playback after restart. No several-day debloat list.
+
 - [Kodak PATH_7XPRO / LEDTV32HD](../docs/devices/kodak-path-7xpro.md), SPPL, Android TV 9 `PI.20210601`: same-day Home handover and reboot observations, protected input handlers, owner-selected cleanup, aerial playback and unresolved Bluetooth voice pairing; no several-day debloat list.
 - [Dangbei DBOX02 (Mars Pro 2)](../docs/devices/dangbei-dbox02.md), Android TV 11 `RTM9.241015.060`: single-session Home handover and ten package changes, the saved Wi-Fi check before disabling setupwraith, physical-remote and reboot checks, and closed debugging; no several-day debloat list.
 - [Xiaomi MiTV-MOSR1](../docs/devices/xiaomi-mitv-mosr1.md), Android TV 11, `RTT8.210119.001.1239`: short-session Home handover and package-persistence observations; PatchWall opens after reboot despite the Home preference, its input popup was retained, and the Home key helper costs held-volume repeat; physical Apps scancode and test limits; no several-day debloat list.
