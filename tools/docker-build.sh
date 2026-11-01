@@ -26,6 +26,34 @@ if [ ! -f "$ROOT/$PROJECT/settings.gradle" ] && [ ! -f "$ROOT/$PROJECT/settings.
 fi
 command -v docker >/dev/null || { echo "ERROR: docker is not installed or not on PATH." >&2; exit 1; }
 
+KEY_ARGS=()
+if [ -n "${HOST_KEY_DIR:-}" ]; then
+  # Docker bind-mounts an absolute path that is there, and nothing else: given a folder that is not there it
+  # creates it (empty, and owned by root on Linux), and given a relative path it reads the name as a volume. So
+  # /key would be an empty folder or volume, the build would sign with a new debug key, and the next install over
+  # the app already on the TV would fail with INSTALL_FAILED_UPDATE_INCOMPATIBLE - the failure "The signing key"
+  # in tools/docker-build.md explains, reached without a word. A quoted '~/.android' lands here too: no shell
+  # expands a tilde inside a variable. A drive-letter path is absolute as well, which is the form a Windows
+  # reader's HOST_KEY_DIR takes under Git Bash - tools/theme.sh reads C:/Users/... the same way (#1796).
+  case "$HOST_KEY_DIR" in
+    /*|[A-Za-z]:[\\/]*) ;;
+    *)
+      echo "ERROR: HOST_KEY_DIR=$HOST_KEY_DIR is not an absolute path." >&2
+      echo "Docker reads a relative one as the name of a volume, so the build would make a new debug key." >&2
+      echo "Pass the folder your native build uses: \"\$HOME/.android\" ('~/.android' in quotes is not expanded)." >&2
+      exit 1
+      ;;
+  esac
+  if [ ! -d "$HOST_KEY_DIR" ]; then
+    echo "ERROR: HOST_KEY_DIR=$HOST_KEY_DIR is not a folder on this computer." >&2
+    echo "Docker would not mount your native key there, the build would make a new debug key, and an install" >&2
+    echo "over the app already on the TV would fail with INSTALL_FAILED_UPDATE_INCOMPATIBLE (tools/docker-build.md)." >&2
+    exit 1
+  fi
+  KEY_ARGS=(-v "$HOST_KEY_DIR:/key")
+  KEY_DIR=/key
+fi
+
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
   echo "Building the $IMAGE image once (JDK 17, Android SDK 34, build-tools 34.0.0; a few minutes)..."
   docker build -t "$IMAGE" "$ROOT/tools/docker"
@@ -44,12 +72,6 @@ case "$(uname -s)" in
     USER_ARGS=(--user "$(id -u):$(id -g)")
     ;;
 esac
-KEY_ARGS=()
-if [ -n "${HOST_KEY_DIR:-}" ]; then
-  KEY_ARGS=(-v "$HOST_KEY_DIR:/key")
-  KEY_DIR=/key
-fi
-
 # The whole repository is mounted: an add-on's gradlew may call ../../launcher/gradlew.
 docker run --rm ${USER_ARGS[@]+"${USER_ARGS[@]}"} ${KEY_ARGS[@]+"${KEY_ARGS[@]}"} \
   -v "$SRC:/repo" -v "$GRADLE_VOLUME:/gradle" -w "/repo/$PROJECT" \
