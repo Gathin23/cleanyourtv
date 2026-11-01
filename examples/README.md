@@ -423,6 +423,7 @@ on that firmware, grouped and commented. These are starting points: comment out 
 
 Notes for models that have no tested list yet live in [`docs/devices/`](../docs/devices/):
 
+- [Philips 65OLED806/12](../docs/devices/philips-65oled806.md), `PH1M_EA_9970A` / `TP1M_EA_9970A`, Android TV 11 `RTT2.211108.001` build `21029`: single-session package persistence and Home handover, analog input filtering, remote voice re-pairing and Philips startup behavior; sibling of the 77OLED806/12 already recorded under `philips-55oled707/`; no several-day debloat list.
 - [Kodak PATH_7XPRO / LEDTV32HD](../docs/devices/kodak-path-7xpro.md), SPPL, Android TV 9 `PI.20210601`: same-day Home handover and reboot observations, protected input handlers, owner-selected cleanup, aerial playback and unresolved Bluetooth voice pairing; no several-day debloat list.
 - [Dangbei DBOX02 (Mars Pro 2)](../docs/devices/dangbei-dbox02.md), Android TV 11 `RTM9.241015.060`: single-session Home handover and ten package changes, the saved Wi-Fi check before disabling setupwraith, physical-remote and reboot checks, and closed debugging; no several-day debloat list.
 - [Xiaomi MiTV-MOSR1](../docs/devices/xiaomi-mitv-mosr1.md), Android TV 11, `RTT8.210119.001.1239`: short-session Home handover and package-persistence observations; PatchWall opens after reboot despite the Home preference, its input popup was retained, and the Home key helper costs held-volume repeat; physical Apps scancode and test limits; no several-day debloat list.
