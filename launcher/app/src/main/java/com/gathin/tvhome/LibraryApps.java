@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.Collator;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -101,6 +102,23 @@ final class LibraryApps {
         return !removedFromHome && (explicitlyAdded || (tvApp && !themeHidden));
     }
 
+    /** The pill after the last Home row: show_library_pill false hides it only while the top-bar button is a way in. */
+    static boolean showPill(boolean library, boolean button, boolean pill) {
+        return library && (pill || !button);
+    }
+
+    /** A package on library_excluded_apps (config.xml): never offered in the catalogue, unlike hidden_apps,
+     *  which only keeps a package off Home while the catalogue still lists it. */
+    static boolean excludedFromCatalog(Set<String> excludedApps, String pkg) {
+        return excludedApps.contains(pkg);
+    }
+
+    /** OK on a library card opens the app (true) or changes its Home shortcut. app_library_selection's OK always
+     *  changes it; otherwise an app on Home opens, and with library_ok_opens every app does. */
+    static boolean okOpens(boolean selection, boolean openAll, boolean onHome) {
+        return !selection && (openAll || onHome);
+    }
+
     static boolean recent(long installedAt, long now) {
         return installedAt > 0 && installedAt <= now && now - installedAt <= RECENT_MS;
     }
@@ -123,6 +141,26 @@ final class LibraryApps {
             if (missing.test(candidate)) return candidate;
         }
         return current + 1 < count ? current + 1 : Math.max(0, current - 1);
+    }
+
+    /** Checked Home apps first, then apps hidden from Home; the caller sorts each group by label. */
+    static int compareHomeGroup(boolean homeA, boolean homeB) {
+        return Boolean.compare(homeB, homeA);
+    }
+
+    /** Keep the next neighbour when a shortcut moves away, or the previous one at the end. */
+    static int nextAfterRemoval(int current, int count) {
+        if (count <= 1) return -1;
+        current = Math.max(0, Math.min(current, count - 1));
+        return current + 1 < count ? current + 1 : current - 1;
+    }
+
+    static int compareCatalog(boolean homeA, String labelA, String packageA,
+                              boolean homeB, String labelB, String packageB, Collator collator) {
+        int group = compareHomeGroup(homeA, homeB);
+        if (group != 0) return group;
+        int label = collator.compare(labelA, labelB);
+        return label != 0 ? label : packageA.compareTo(packageB);
     }
 
     static Set<String> change(Set<String> saved, String pkg, boolean added) {

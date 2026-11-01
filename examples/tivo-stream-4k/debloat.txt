@@ -1,0 +1,63 @@
+# TiVo Stream 4K (SEI Robotics IPA1104HDW, SKU RA2400, device SEI400TV, Amlogic S905Y2, NES middleware), 2 GB RAM
+# Android TV 12 (SDK 31), build SC.1272, 32-bit (armeabi-v7a), security patch 2025-07-05
+#
+# Apply and undo: the commands in README.md here, NOT tools/disable.sh (this firmware refuses it).
+# Everything is SUSPENDED and barred from the background, not disabled or uninstalled.
+# Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV). HOME priority 2, so set-home-activity says
+# "Success" and changes nothing; README.md here explains how Home reaches another launcher. A streaming stick: no
+# HDMI inputs and no tuner. Suspending the stock launcher only works after it stops owning the HOME role.
+#
+# Known quirks on this firmware:
+# - Every pm disable-user, pm disable <component> and pm hide is refused ("This command is illegal!"); pm uninstall
+#   --user 0 is refused for core apps. pm suspend and appops work and survive a reboot.
+# - Port 5555 opens as soon as USB debugging is on, with a per-computer prompt; there is no separate network toggle.
+# - com.nes.coreservice runs EvoBlackListAppsFun at every start (its BootReceiver, kicked by the persistent
+#   com.nes.daemon): it uninstalls every non-system app whose activity declares android.intent.category.HOME, and a
+#   fixed list of 53 packages from array/evo_black_list_to_uninstall_pkgs (alternative launchers, Downloader,
+#   Magisk, IPTV "Magis TV" variants). Suspending it does not stop its boot receiver.
+# - A suspended package still gets its boot broadcasts: coreservice, sageservice, tvlauncher, katniss,
+#   tvrecommendations and tvbugtracker are running again after a boot. Stop them with am force-stop.
+#
+# Kept on purpose (checked with dumpsys package):
+#   com.uei.uas.tivo               UEI QuickSet: the remote switches the TV on and off
+#   com.sei.hdmi.services          HDMI-CEC
+#   com.nes.tivo.remote.pair       Bluetooth remote pairing; remote.ota updates the remote's firmware
+#   com.google.android.apps.mediashell   Chromecast (suspending it saved no memory: another component binds it)
+#   Play Store, Play Services, keyboard, TV Settings
+
+# Telemetry and feedback
+com.google.android.feedback
+com.google.android.partnersetup                 # Google RLZ partner attribution pings
+com.nes.tvbugtracker                            # NES bug tracker
+
+# App blocker and NES background services
+com.nes.coreservice                             # uninstalls launchers and sideload tools at boot; polls the update status once a second
+com.nes.daemon                                  # persistent: the system re-creates it, so suspending changes nothing visible
+com.tivo.sageservice                            # TiVo service, no use outside the US
+
+# Recommendations, partner rows and auto-installs
+com.google.android.tvrecommendations            # also switch its notification listener off: cmd notification disallow_listener
+android.autoinstalls.config.sei                 # Play auto-install of partner apps
+
+# Preloaded apps, off by choice
+com.android.printspooler
+com.google.android.marvin.talkback              # re-enable if you need the screen reader
+
+# Stock launcher and unused services: only once another launcher answers the Home key and the HOME role has
+# moved. The launcher in this repo doesn't take Home on this box yet, so these stay commented out here.
+# com.google.android.tvlauncher
+# com.google.android.backdrop                   # ambient screensaver
+# com.android.camera2                           # no camera on a stick
+# com.android.gallery3d
+# com.google.android.katniss                      # Assistant; also clear settings assistant and voice_interaction_service, or the system keeps it alive
+
+# Already removed by the owner before the list (pm uninstall --user 0), kept as comments so a fresh box can decide:
+# com.tivo.atom
+# com.tivo.tivoplusplayer
+# com.tivo.tvlaunchercustomization
+# com.nes.skywayclient                          # NES device manager: boot ads, silent installs, firmware check
+# com.nes.tvglobalkeyhandler                    # remote shortcut keys
+# com.utsmta.app                                # NES factory test app
+# com.google.android.play.games

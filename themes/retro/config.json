@@ -1,0 +1,33 @@
+{
+  "background_color": "#000000",
+  "dock_glass": false,
+  "dock_band": false,
+  "glass_style": "rim",
+  "dock_title": false,
+  "dock_opacity": 100,
+  "fill_dock": true,
+  "columns": 5,
+  "ambient_glow": false,
+  "app_glow": false,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "wifi_status_color": true,
+  "tile_menu": true,
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 60,
+  "wallpaper_moods": {
+    "morning": [
+      "6am_4pm.jpg"
+    ],
+    "evening": [
+      "4pm_9pm.jpg"
+    ],
+    "night": [
+      "9pm_6am.jpg"
+    ]
+  },
+  "wallpaper_dim": 10,
+  "wallpaper_order": "sequential",
+  "reduced_motion": true,
+  "sky_intensity": 0
+}

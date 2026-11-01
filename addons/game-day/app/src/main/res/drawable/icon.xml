@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app icon: the banner's scoreboard, square. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <path android:fillColor="#FF134A33" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M8,16h12v16h-12z M28,16h12v16h-12z" />
+    <path android:fillColor="#FF3CBE78" android:pathData="M24,20m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0 M24,28m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0" />
+</vector>

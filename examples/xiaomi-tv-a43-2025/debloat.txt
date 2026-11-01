@@ -1,0 +1,48 @@
+# Xiaomi TV A43 2025 (MiTV-MOOQ1, codename tarzan), Google TV 11, firmware RTM4.220307.164/9021
+# This is the Google TV 11 build. Under the same MiTV-MOOQ1 code, examples/xiaomi-mi-tv-4a is the
+# PatchWall / Android TV 10 build, so pick the list that matches your TV's OS.
+# Stock launcher here is com.google.android.tvlauncher (Google TV), not PatchWall.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-tv-a43-2025/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-tv-a43-2025/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# The PatchWall/tvhome packages below ship already disabled on this Google TV build; the
+# list re-states them so restore brings them back to their default state.
+
+# Xiaomi telemetry / analytics
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.xiaomi.tvqs.overseas          # "TV Quality Service" feedback
+
+# PatchWall and Mi content rows (stubs on Google TV builds)
+com.mitv.tvhome.atv
+com.mitv.tvhome.michannel
+com.mitv.tvhome.mitvplus
+com.xm.webcontent
+
+# Xiaomi background services / cleaner
+com.xiaomi.mitv.tvmanager         # "TV Manager" cleaner app
+com.xiaomi.mitv.smartshare
+com.mitv.milinkservice            # Mi cast; Chromecast still works
+com.xiaomi.amazon.alexa           # Alexa bridge
+android.autoinstalls.config.xiaomi.amelie
+fusion.android.tv.demo
+
+# Preloaded apps (comment out any you use)
+com.xiaomi.mimusic2
+com.google.android.feedback
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
+com.google.android.videos         # Google Play Movies
+ru.more.play                      # Okko
+com.vk.tv
+com.yandex.browser.tv
+
+# Stock Google TV launcher, replaced by launcher/. Disable setupwraith too (it can take Home
+# after the stock launcher is gone). Before disabling setupwraith check the saved Wi-Fi network
+# does not belong to it: `dumpsys wifi | grep -o 'cname=[^ ]*'`.
+com.google.android.tvlauncher
+com.google.android.tungsten.setupwraith   # phone casting stops after a reboot with it off

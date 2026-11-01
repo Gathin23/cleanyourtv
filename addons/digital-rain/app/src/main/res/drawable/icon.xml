@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app icon: the banner's streaks, square. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FF000000" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#6600FF41" android:pathData="M30,14h10v56h-10z" />
+    <path android:fillColor="#FFD8FFD8" android:pathData="M30,70h10v10h-10z" />
+    <path android:fillColor="#9900FF41" android:pathData="M49,6h10v76h-10z" />
+    <path android:fillColor="#FFD8FFD8" android:pathData="M49,82h10v10h-10z" />
+    <path android:fillColor="#5500FF41" android:pathData="M68,26h10v34h-10z" />
+    <path android:fillColor="#FFD8FFD8" android:pathData="M68,60h10v10h-10z" />
+</vector>

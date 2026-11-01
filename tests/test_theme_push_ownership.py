@@ -58,6 +58,14 @@ def connect():
     return Device()
 
 
+def connect_error(error):
+    """tv.py's own: what to print when connect() raised, or None for an error it cannot word.
+
+    This stub has no network, so it never has anything to add.
+    """
+    return None
+
+
 args = sys.argv[1:]
 if args and args[0] == "--push":
     src, dst = args[1], local(args[2])
@@ -70,7 +78,10 @@ else:
 
 # Stands in for `content write/delete` against content://com.gathin.tvhome.theme, which on a TV runs inside
 # the launcher's process and so creates files owned by the launcher. FAKE_NO_PROVIDER models firmware or a
-# launcher version without the provider.
+# launcher version without the provider. A real `content` reports an exception from the provider as text ("Error
+# while accessing provider" and a stack trace): FAKE_PROVIDER_ERROR is a provider that is not there, and a write
+# into a folder the shell created fails the same way, because the launcher gets EACCES in a folder that is the
+# shell's. Both stubs exit 0, like the Android 8 one, so the status alone cannot tell them from a write.
 FAKE_CONTENT = r'''#!/usr/bin/env python3
 import json
 import os
@@ -86,9 +97,18 @@ if os.environ.get("FAKE_NO_CONTENT_WRITE") and args[0] == "write":
     print("usage: adb shell content [subcommand] [options]")
     print("[ERROR] Unsupported operation: write")
     sys.exit(0)
+if os.environ.get("FAKE_PROVIDER_ERROR"):
+    print("Error while accessing provider:com.gathin.tvhome.theme")
+    print("java.lang.IllegalStateException: Could not find provider: com.gathin.tvhome.theme")
+    sys.exit(0)
 action, uri = args[0], args[args.index("--uri") + 1]
 path = os.path.join(os.environ["FAKE_DIR"], uri.split("com.gathin.tvhome.theme/", 1)[1])
 if action == "write":
+    shell_dirs = os.environ["FAKE_SHELL_DIRS"]
+    if os.path.exists(shell_dirs) and os.path.dirname(path) in open(shell_dirs).read().splitlines():
+        print("Error while accessing provider:com.gathin.tvhome.theme")
+        print("java.io.FileNotFoundException: open failed: EACCES (Permission denied)")
+        sys.exit(0)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "wb") as f:
         f.write(sys.stdin.buffer.read())
@@ -108,7 +128,7 @@ class ThemePushTest(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.base, ignore_errors=True)
         self.tools = self.base / "tools"
         self.tools.mkdir()
-        for name in ("theme.sh", "b64push.py"):
+        for name in ("theme.sh", "b64push.py", "theme_restart.py"):
             shutil.copy2(TOOLS / name, self.tools / name)
         (self.tools / "tv.py").write_text(FAKE_TV)
         venv = self.tools / "venv" / "bin"
@@ -119,20 +139,43 @@ class ThemePushTest(unittest.TestCase):
         content = self.bin / "content"
         content.write_text(FAKE_CONTENT)
         content.chmod(0o755)
+        # A folder `mkdir` makes in the adb shell belongs to the shell (drwxrws--- shell ext_data_rw): list it, and
+        # the stub provider refuses to write into it, as the launcher does on a TV.
+        mkdir = self.bin / "mkdir"
+        mkdir.write_text('#!/bin/sh\n[ "$1" = -p ] && shift\n'
+                         'for dir in "$@"; do\n'
+                         '  [ -d "$dir" ] || echo "$dir" >> "$FAKE_SHELL_DIRS"\n'
+                         '  /bin/mkdir -p "$dir"\n'
+                         'done\n')
+        mkdir.chmod(0o755)
+        # The recovery helper runs real shell status checks. Model framework reads
+        # and starts too, while keeping this fixture focused on provider ownership.
+        for name, body in {
+            "am": 'if [ "$FAKE_RESTART_FAIL" = 1 ]; then exit 1; fi; if [ "$1" = get-current-user ]; then echo 0; fi',
+            "settings": 'if [ "$3" = get ]; then echo null; fi',
+            "cmd": 'echo com.gathin.tvhome/.MainActivity',
+        }.items():
+            command = self.bin / name
+            command.write_text('#!/bin/sh\n' + body + '\n')
+            command.chmod(0o755)
         self.device = self.base / "device"
         self.device.mkdir()
         self.stage = self.base / "stage"
         self.log = self.base / "log.jsonl"
         self.content_log = self.base / "content.jsonl"
+        self.shell_dirs = self.base / "shell-dirs.txt"
         self.theme = self.base / "aurora"
         self.theme.mkdir()
         self.config = json.dumps({"background": "#101418", "app_keys": []}, indent=2).encode()
         (self.theme / "config.json").write_bytes(self.config)
 
     def run_theme(self, *args, **env):
+        if os.name != "posix" or not shutil.which("bash"):
+            raise unittest.SkipTest("theme.sh is a POSIX script; it needs bash")
         full = {k: v for k, v in os.environ.items() if k != "TV_HOST"}
         full.update({"TV_HOST": "192.0.2.10", "FAKE_LOG": str(self.log), "FAKE_DIR": str(self.device),
                      "FAKE_STAGE": str(self.stage), "FAKE_CONTENT_LOG": str(self.content_log),
+                     "FAKE_SHELL_DIRS": str(self.shell_dirs),
                      "PATH": f"{self.bin}:{full.get('PATH', '')}"}, **env)
         return subprocess.run(["bash", str(self.tools / "theme.sh"), *args], env=full,
                               capture_output=True, text=True, timeout=300)
@@ -146,6 +189,11 @@ class ThemePushTest(unittest.TestCase):
         if not self.content_log.exists():
             return []
         return [json.loads(line)["content"] for line in self.content_log.read_text().splitlines()]
+
+    def shell_created_dirs(self):
+        if not self.shell_dirs.exists():
+            return []
+        return self.shell_dirs.read_text().splitlines()
 
     def command_for(self, name):
         """The one device command that puts `name` on the TV, in every shape theme.sh uses it."""
@@ -185,6 +233,38 @@ class ThemePushTest(unittest.TestCase):
         self.assertEqual((self.device / "wallpaper.jpg").read_bytes(), b"\xff\xd8jpeg bytes")
         self.assertEqual((self.device / "theme_revision").stat().st_size, 32)
 
+    def test_a_fresh_install_gets_its_wallpapers_folder_from_the_provider(self):
+        """A folder the shell makes is the shell's, so the launcher's provider fails with EACCES writing into it."""
+        (self.theme / "wallpapers").mkdir()
+        (self.theme / "wallpapers" / "dusk.jpg").write_bytes(b"\xff\xd8dusk")
+        result = self.run_theme(str(self.theme))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertNotIn(str(self.device / "wallpapers"), self.shell_created_dirs(),
+                         "the provider creates wallpapers/ as the launcher; mkdir leaves it to the shell")
+        self.assertEqual((self.device / "wallpapers" / "dusk.jpg").read_bytes(), b"\xff\xd8dusk",
+                         "the picture has to land on the TV, not only be reported as applied")
+        self.assertIn(["write", "--uri", "content://com.gathin.tvhome.theme/wallpapers/dusk.jpg"],
+                      self.provider_calls())
+
+    def test_a_reset_does_not_leave_a_shell_owned_wallpapers_folder_behind(self):
+        """The next push would hit the same EACCES: --reset on a fresh install ran the same mkdir."""
+        result = self.run_theme("--reset")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertNotIn(str(self.device / "wallpapers"), self.shell_created_dirs())
+
+    def test_a_provider_error_is_a_failed_write_so_cp_runs(self):
+        """"Error while accessing provider" is text from `content`, so like Unsupported operation it needs a check."""
+        (self.theme / "wallpaper.jpg").write_bytes(b"\xff\xd8jpeg bytes")
+        (self.theme / "wallpapers").mkdir()
+        (self.theme / "wallpapers" / "dusk.jpg").write_bytes(b"\xff\xd8dusk")
+        result = self.run_theme(str(self.theme), FAKE_PROVIDER_ERROR="1")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((self.device / "config.json").read_bytes(), self.config,
+                         "put() removes the file first, so without cp the theme would be gone")
+        self.assertEqual((self.device / "wallpaper.jpg").read_bytes(), b"\xff\xd8jpeg bytes")
+        self.assertEqual((self.device / "wallpapers" / "dusk.jpg").read_bytes(), b"\xff\xd8dusk",
+                         "the fallback makes the collection's folder itself, now that the clear no longer does")
+
     def test_reset_clears_the_overlay_through_the_provider(self):
         (self.device / "config.json").write_bytes(self.config)
         (self.device / "wallpaper.jpg").write_bytes(b"old wallpaper")
@@ -210,6 +290,83 @@ class ThemePushTest(unittest.TestCase):
             put = self.command_for(name)
             self.assertLess(put.index("content write"), put.index("cp "), put)
 
+    def test_collection_image_extensions_are_case_insensitive(self):
+        collection = self.theme / "wallpapers"
+        collection.mkdir()
+        extensions = ("jpg", "JPG", "JpG", "jpeg", "JPEG", "JpEg",
+                      "png", "PNG", "PnG", "webp", "WEBP", "WeBp")
+        images = {f"image-{index}.{extension}": b"\x00\xffimage bytes " + extension.encode()
+                  for index, extension in enumerate(extensions)}
+        for name, data in images.items():
+            (collection / name).write_bytes(data)
+        for name in ("notes.txt", "animation.gif", "image.avif", "backup.jpg.txt"):
+            (collection / name).write_bytes(b"not a collection image")
+        previous = self.device / "wallpapers"
+        previous.mkdir()
+        (previous / "old.jpg").write_bytes(b"old collection")
+
+        result = self.run_theme(str(self.theme))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(sorted(path.name for path in previous.iterdir()), sorted(images),
+                         "the collection must contain every supported image and no unsupported files")
+        for name, data in images.items():
+            with self.subTest(name=name):
+                self.assertEqual((previous / name).read_bytes(), data)
+                self.assertIn(["write", "--uri", f"content://com.gathin.tvhome.theme/wallpapers/{name}"],
+                              self.provider_calls())
+
+    def test_mixed_case_image_extension_still_checks_the_filename(self):
+        collection = self.theme / "wallpapers"
+        collection.mkdir()
+        (collection / "bad name.JpG").write_bytes(b"image bytes")
+
+        result = self.run_theme(str(self.theme))
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("unsupported wallpaper filename: bad name.JpG", result.stderr)
+        self.assertFalse((self.device / "wallpapers" / "bad name.JpG").exists())
+
+    def test_mixed_case_collection_is_replaced_and_reset_without_the_provider(self):
+        collection = self.theme / "wallpapers"
+        collection.mkdir()
+        first = collection / "previous.JpG"
+        first.write_bytes(b"\x00\xfffirst picture")
+
+        pushed = self.run_theme(str(self.theme), FAKE_NO_PROVIDER="1")
+        self.assertEqual(pushed.returncode, 0, pushed.stdout + pushed.stderr)
+        device_collection = self.device / "wallpapers"
+        self.assertEqual(sorted(path.name for path in device_collection.iterdir()), [first.name])
+        self.assertEqual((device_collection / first.name).read_bytes(), first.read_bytes())
+
+        first.unlink()
+        second = collection / "next.PnG"
+        second.write_bytes(b"\x00\xffsecond picture")
+        replaced = self.run_theme(str(self.theme), FAKE_NO_PROVIDER="1")
+        self.assertEqual(replaced.returncode, 0, replaced.stdout + replaced.stderr)
+        self.assertEqual(sorted(path.name for path in device_collection.iterdir()), [second.name],
+                         "without the provider, the shell must still remove the previous collection")
+        self.assertEqual((device_collection / second.name).read_bytes(), second.read_bytes())
+
+        reset = self.run_theme("--reset", FAKE_NO_PROVIDER="1")
+        self.assertEqual(reset.returncode, 0, reset.stdout + reset.stderr)
+        self.assertEqual(list(device_collection.iterdir()), [],
+                         "reset must remove mixed-case images even without the provider")
+
+    def test_restart_failure_stops_apply_and_reset_success_messages(self):
+        for arguments in ((str(self.theme),), ("--reset",)):
+            with self.subTest(arguments=arguments):
+                result = self.run_theme(*arguments, FAKE_RESTART_FAIL="1")
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("Theme restart failed", result.stderr)
+                self.assertNotIn("is on the TV", result.stdout)
+                self.assertNotIn("applied", result.stdout)
+                self.assertNotIn("reset", result.stdout)
+
+    def test_both_windows_paths_check_the_shared_helper_exit_code(self):
+        script = (TOOLS / "theme.ps1").read_text(encoding="utf-8")
+        self.assertEqual(script.count("& $py -I theme_restart.py"), 2)
+        self.assertEqual(script.count("if ($LASTEXITCODE) { throw 'Home restart recovery failed' }"), 2)
+        self.assertNotIn("$restart =", script)
+
     def test_the_windows_script_puts_files_the_same_way(self):
         """theme.ps1 cannot run here, so pin the order that the fix depends on."""
         script = (TOOLS / "theme.ps1").read_text(encoding="utf-8")
@@ -218,6 +375,61 @@ class ThemePushTest(unittest.TestCase):
         self.assertLess(put.index("rm -f $dir/$name"), put.index("content write"), put)
         self.assertLess(put.index("content write"), put.index("cp $t $dir/$name"), put)
         self.assertIn("Unsupported operation", put, "Android 8/9 exit 0 without writing; cp has to run then")
+        self.assertIn("Error while accessing provider", put, "so does a provider that throws, as in theme.sh")
+        self.assertLess(put.index("mkdir -p"), put.index("cp $t $dir/$name"), "cp needs the folder: " + put)
+        clear = next(line for line in script.splitlines() if line.startswith("$clearWallpapers = "))
+        self.assertNotIn("mkdir", clear, "a folder the shell makes is one the launcher cannot write into")
+
+    def test_reset_clears_the_wallpaper_collection(self):
+        """--reset promises the built-in config.xml, but the picker reads wallpapers/ from the TV itself."""
+        (self.device / "config.json").write_bytes(self.config)
+        (self.device / "wallpaper.jpg").write_bytes(b"old wallpaper")
+        collection = self.device / "wallpapers"
+        collection.mkdir()
+        for name in ("01-dusk.jpg", "02-dunes.PNG", "03-lake.webp"):
+            (collection / name).write_bytes(b"\x89picture")
+        (collection / "captions.txt").write_text("01-dusk.jpg\tDusk\n", encoding="utf-8")
+        result = self.run_theme("--reset")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(sorted(p.name for p in collection.iterdir()), [],
+                         "the launcher's wallpaper picker lists this folder itself, so a reset that leaves "
+                         "pictures in it still offers the theme it just removed")
+        self.assertFalse((self.device / "config.json").exists())
+        self.assertFalse((self.device / "wallpaper.jpg").exists())
+
+    def test_a_push_and_a_reset_clear_the_collection_with_one_command(self):
+        """One clear, used by both paths: two copies are how --reset came to miss the collection."""
+        (self.theme / "wallpapers").mkdir()
+        (self.theme / "wallpapers" / "dusk.jpg").write_bytes(b"\xff\xd8dusk")
+        pushed = self.run_theme(str(self.theme))
+        self.assertEqual(pushed.returncode, 0, pushed.stdout + pushed.stderr)
+        push_commands = self.shell_commands()
+        self.log.unlink()
+        reset = self.run_theme("--reset")
+        self.assertEqual(reset.returncode, 0, reset.stdout + reset.stderr)
+        reset_commands = self.shell_commands()
+
+        clear = [c for c in push_commands
+                 if "content delete --uri content://com.gathin.tvhome.theme/wallpapers 2>/dev/null" in c]
+        self.assertEqual(len(clear), 1, f"a push empties the collection first: {push_commands}")
+        self.assertIn(f"{DEVICE_DIR}/wallpapers/*.[jJ][pP][gG]", clear[0])
+        self.assertIn(f"{DEVICE_DIR}/wallpapers/*.[wW][eE][bB][pP]", clear[0],
+                      "the shell fallback clears every extension spelling the script pushes")
+        joined = " | ".join(reset_commands)
+        self.assertIn(clear[0], joined,
+                      "the reset has to run the very same clear, or the two paths drift apart again")
+        self.assertIn(f"content delete --uri content://com.gathin.tvhome.theme/wallpapers/captions.txt", joined)
+
+    def test_the_windows_script_clears_the_collection_on_reset(self):
+        """theme.ps1 cannot run here, so the -Reset branch is pinned as text against theme.sh."""
+        script = (TOOLS / "theme.ps1").read_text(encoding="utf-8")
+        reset = next(line for line in script.splitlines() if line.strip().startswith("Invoke-Tv tv.py \"mkdir -p $dir"))
+        self.assertIn("$(Drop 'wallpapers/captions.txt')", reset)
+        self.assertIn("$clearWallpapers", reset, "one shared clear, as in theme.sh")
+        clear = next(line for line in script.splitlines() if line.startswith("$clearWallpapers = "))
+        self.assertIn("rm -f $dir/wallpapers/*.[jJ][pP][gG]", clear)
+        self.assertIn("content delete --uri $uri/wallpapers", clear)
+        self.assertNotIn("captions", clear, "the captions file is dropped on its own line, as in theme.sh")
 
 
 if __name__ == "__main__":

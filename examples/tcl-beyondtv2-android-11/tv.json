@@ -1,0 +1,6 @@
+{
+  "tv": "TCL BeyondTV2, Android 11 build (AR05, Realtek rtd285o); also sold as the Hitachi CDH-LE554KSMART22 (Argentina); also the TCL 65P615 (product BeyondTV, ME firmware)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "Different package set from the Android 9 BeyondTV2 above (adds `overseasappshow`, `usercenter`, MagiConnect, `notereminder`); **`com.tcl.overseasappshow` re-enables MagiConnect, notereminder and tclhome_master on every boot**, so it is the key entry; partnercustomizer kept (it carries the remote's TKey activity on this unit); voice, mirroring, phone remote and backdrop off by choice, OTA kept; 3 HDMI ports, TvInputManager works, setupwraith safe; confirmed on a second, re-badged unit where `smartalexa` and `smartconnect.tv` came enabled and disabling `overseasappshow` first kept the list off across reboots"
+}

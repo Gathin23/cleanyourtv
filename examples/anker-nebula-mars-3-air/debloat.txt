@@ -1,0 +1,96 @@
+# Anker Nebula Mars 3 Air projector, model D2325 (build name Nebula_Mars_2_V2, device taihang,
+# ANKER board, MediaTek m7332), Google TV 14 / Android 14 (SDK 34), build UKNV.260210.001.
+# No tuner: live_tv_package stays "" and the Inputs menu lists HDMI 1 / HDMI 2 only.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/anker-nebula-mars-3-air/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/anker-nebula-mars-3-air/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Google TV 14 Home quirk (the important one): while the setup wizard (setupwraith) is enabled,
+# cmd package set-home-activity prints Success but Home still resolves to setupwraith/.RecoveryActivity,
+# so the new launcher never comes up (the same behaviour as xiaomi-tv-a-pro-2026). Disable it before
+# build-and-install.sh disables the stock home; the wizard is only used for first-time setup, and
+# restore.sh brings it back. Re-enable it before a factory reset. Unlike the D2426 Capsule
+# (anker-nebula-d2426, where setupwraith owns the Wi-Fi but never claims Home), here it owned only
+# one old hidden network that was no longer connected; the network in use belongs to android.uid.system
+# and kept working after the disable, verified live before proceeding. Phone casting kept working too.
+# On other Google TV units the Cast receiver loses its credentials with setupwraith gone and phone
+# casting fails with "Untrusted device" (docs/TROUBLESHOOTING.md) - re-enable setupwraith if your phone
+# refuses to cast.
+#
+# Re-enabled by the firmware at every boot (checked with one reboot on 2026-10-22):
+# com.google.android.katniss (Assistant) comes back enabled, the same behaviour as anker-nebula-d2426.
+# This owner keeps it on, so the mic button works and nobody re-disables it after each boot.
+# To keep it off instead, uncomment com.google.android.katniss and com.google.android.tv.assistant
+# below and run Apply again (disable.sh records them first, so Undo brings them back); after each
+# boot, tools/check.py --fix <this file> re-disables what came back.
+#
+# Already disabled at the factory: com.mediatek.wwtv.tvcenter, com.google.android.marvin.talkback.
+#
+# Remote buttons on this firmware (dumpsys window policy, mKeyMapping): the gear button's
+# KEYCODE_NOTIFICATION (83) is consumed by GlobalKeyManager for the stock launcherx, and the Netflix
+# button's KEYCODE_BUTTON_4 by com.mediatek.tv.service's NetflixKeyReceiver - both mapped by the
+# static overlay com.mediatek.android.tv.globalkeyoverlay, which no shell command can turn off
+# (cmd overlay disable throws a SecurityException, and disabling the package changes nothing: static
+# overlays ignore package state). Neither key ever reaches an app, so com.netflix.ninja stays ENABLED
+# for the Netflix button (it is in the launcher's dock instead), and Settings is the gear pill in
+# the launcher's top bar (top_menu in the config.json here). Keep the launcher's key-filtering
+# services off (key_filter false, no INPUT_KEY_SERVICE / HOME_KEY_SERVICE build flags): on this
+# firmware any bound key service turns ramping volume into one step per press.
+#
+# DO NOT DISABLE on this model (projector hardware, inputs, remote):
+# com.mediatek.tvinput                       # HDMI input service
+# com.mediatek.tv.service                    # TV service, global keys, Netflix key receiver
+# com.google.android.tv.inputplayer          # HDMI passthrough player
+# com.mediatek.tv.inputplayeroverlay         # HDMI overlay
+# com.oceanwing.receiver                     # remote control, Nebula IME, accessibility, screen control
+# com.zhixin.nebulasmart                     # remote events, accessibility service
+# com.zhixin.remoteautopair                  # Bluetooth remote auto-pairing
+# com.oceanwing.nebulalinker                 # device info, custom shutdown, firmware update dispatch
+# com.zhixin.apphelper                       # package install helper, HTML viewer
+# com.zhixin.projector.settings              # picture / focus / keystone / battery / update UI
+# com.zhixin.nebulasetupwizard               # Nebula first-run wizard (not Google's setupwraith)
+# com.mediatek.wwtv.mediaplayer              # USB media player
+# com.mediatek.wwtv.webview                  # webview the settings apps use
+# com.dolby.android.audio.service            # Dolby audio processing
+# com.google.android.inputmethod.latin       # the on-screen keyboard
+# com.google.android.tv.remote.service, Play Store and Play Services
+# Factory tools left alone and never opened: com.zhixin.factorytest, mediatek.factorymenu.ui
+
+# --- Telemetry and feedback ---
+com.google.android.feedback                  # Google feedback / bug reports
+com.android.tv.feedbackconsent               # feedback consent prompt
+com.android.adservices.api                   # Privacy Sandbox ad services
+com.android.federatedcompute.services        # federated learning
+com.android.ondevicepersonalization.services # on-device ad personalisation
+com.google.android.partnersetup              # partner-app attribution
+
+# --- Retail / store demo ---
+fusion.android.tv.demo                       # RetailDisplay store demo
+com.zhixin.nebularetailmode                  # Nebula retail demo mode (boot receiver)
+
+# --- Off by owner's choice (comment out to keep) ---
+com.waxrain.airplaydmr_OW                    # AirPlay / DLNA receiver (Chromecast built-in stays)
+com.spotify.music                            # Spotify
+com.wbd.stream                               # Max (HBO)
+com.google.android.videos                    # Google TV buy/rent movies app
+
+# --- Re-enabled after trying, left as comments (see header) ---
+# com.google.android.katniss               # Assistant: the firmware re-enables it at every boot; the
+#                                          # owner keeps it on so the mic button works
+# com.google.android.tv.assistant           # Assistant LED service, same reason
+# com.netflix.ninja                        # the remote's Netflix button needs it (MediaTek global-key
+#                                          # layer); it is in the launcher's dock instead
+# com.google.android.apps.tv.dreamx        # Google Ambient Mode: disabled with the screensaver
+#                                          # switched to com.android.dreams.basic/.Colors first,
+#                                          # re-enabled on request the same day and made the active
+#                                          # screensaver again. To disable it: switch the screensaver
+#                                          # first (settings put secure screensaver_components
+#                                          # com.android.dreams.basic/.Colors), then uncomment.
+
+# --- Setup wizard: Google TV 14 gives Home to its RecoveryActivity otherwise (see header) ---
+com.google.android.tungsten.setupwraith
+
+# --- Stock home screen (only after the new launcher is installed: launcher/build-and-install.sh) ---
+com.google.android.apps.tv.launcherx        # stock Google TV home
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows for the stock home

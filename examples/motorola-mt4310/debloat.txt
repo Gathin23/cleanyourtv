@@ -1,0 +1,60 @@
+# Motorola MT4310 (Newsan, Argentina; model MotorolaTV, manufacturer Hisense, device hayward, MediaTek), 43",
+# Android TV 11 (API 30), build RTM7.230903.035. About 0.9 GB of RAM, ro.config.low_ram=true, 1280x720 UI.
+# Same platform as examples/polytron-2k-hayward. Classic Android TV home: com.google.android.tvlauncher.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/motorola-mt4310/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/motorola-mt4310/debloat.txt com.google.android.tvlauncher
+# Launcher: TV_HOST=<tv ip> launcher/build-and-install.sh, then tools/theme.sh examples/motorola-mt4310/theme
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: disabled in batches on one TV on 2026-10-21 with a Home screenshot after each, then launcher/ installed
+# as Home, a reboot, Live TV/HDMI switching and the real remote's buttons checked. Still working after a day of use, not days yet.
+#
+# RE-ENABLED AT EVERY BOOT: com.at.factory.factorymanager (CommonManager.enableApp, on BOOT_COMPLETED) turns
+#   com.google.android.katniss and com.google.android.tvrecommendations back on, and Android then rebinds katniss
+#   as the voice interaction service and tvrecommendations as a notification listener (~63 MB PSS together).
+#   Cleared voice settings, a revoked listener, RUN_ANY_IN_BACKGROUND ignore and the restricted bucket are all
+#   reset at boot, and shell may not disable single components on Android 11, so both stay commented out below.
+#   Without them MemAvailable after boot would be ~349 MB instead of ~315 MB.
+#   com.google.android.marvin.talkback also comes back enabled after a reboot but never runs.
+# The screen sleeps after 5 minutes idle (screen_off_timeout=300000, factory value) and Wi-Fi drops with it:
+#   a TV that "vanishes" a few minutes after a reboot is asleep, not broken; press Power.
+#
+# ADB: USB debugging opens network ADB on port 5555 directly; ro.adb.secure=1, so the TV asks
+# "Allow USB debugging?" on first connect. Sideloading works (pm install over the shell).
+#
+# Do NOT disable: com.mediatek.* (wwtv.tvcenter is Live TV, HDMI and the Input key's own input panel;
+# tv.service dispatches the YouTube/Prime keys; tvinput is the HDMI/tuner inputs), com.cvte.hotkey.receiver
+# (Disney+ key), com.cvte.tv.infoprovider (device serial), com.cvte.autobacklight, com.airoha.android.btd
+# (Bluetooth). Never open com.cvte.tv.fac.*, com.cvte.tv.hisensefac, com.cvte.tv.at, com.at.factory.* or
+# mediatek.factorymenu.ui, even to look: on Hisense/CVTE boards that flips a factory-mode flag.
+#
+# Remote: Input, Netflix, YouTube, Prime Video and Disney+ buttons are handled by the TV's own key services,
+# not the stock launcher, so they keep working with launcher/ as Home; no InputKeyService needed. The remote
+# has no Settings button. The mic button (KEY_F13) opens Bluetooth pairing until the remote is paired.
+# setupwraith does not claim HOME here and is left on; on the tested set it owned one saved Wi-Fi network.
+# Inputs: HDMI 1, HDMI 2, two tuner inputs; no composite AV is registered.
+
+# --- Batch 1: silent installs, store demo, setup leftovers, telemetry
+android.autoinstalls.config.hisense.hayward  # silently installs promoted apps
+fusion.android.tv.demo                       # store demo mode, starts at boot
+com.mstar.android.tv.disclaimercustomization # store-mode disclaimer from first setup
+com.google.android.feedback
+com.google.android.partnersetup              # partner referral tracking (RLZ ping)
+
+# --- Batch 2: recommendation and promo rows
+# com.google.android.tvrecommendations       # re-enabled at every boot (header); fed the stock rows
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner promo rows (and the stock top-bar icons)
+
+# --- Batch 3: unused system services
+com.android.printspooler                     # printing
+com.android.providers.calendar
+com.google.android.syncadapters.calendar
+
+# --- Batch 4: off by choice on the tested set (keep what you use)
+# com.google.android.katniss                 # re-enabled at every boot (header); voice search / Assistant
+com.google.android.videos                    # Google TV / Play Movies
+com.google.android.play.games
+com.google.android.marvin.talkback           # screen reader
+com.google.android.tts                       # Google text-to-speech (only needed for screen reading)
+# com.arkiv.player.light                     # user-installed player the owner did not recognise; not bloat for everyone

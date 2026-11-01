@@ -1,0 +1,6 @@
+{
+  "tv": "Anker Nebula Mars 3 Air projector D2325 (Nebula_Mars_2_V2, taihang, MediaTek m7332), Portugal",
+  "os": "Google TV 14",
+  "brand": "Anker Nebula",
+  "notes": "First Mars 3 Air list: Google telemetry/ad services and partner attribution, both retail demos, AirPlay receiver, Spotify, Max, Google TV movies off by choice; setupwraith must go (Google TV 14 resolves Home to its RecoveryActivity while it is enabled) with launcherx + partner rows; Assistant re-enabled by the firmware at every boot and kept (mic button), Ambient re-enabled on request, the gear button is GlobalKeyManager-mapped to launcherx by a static overlay no shell command can disable, so Settings is the launcher's gear menu; key-filtering services break volume hold-repeat; phone casting still worked after setupwraith went off (on other units it fails with \"Untrusted device\", see docs/TROUBLESHOOTING.md); projector picture/focus/remote/BT/HDMI/USB/Dolby services kept"
+}

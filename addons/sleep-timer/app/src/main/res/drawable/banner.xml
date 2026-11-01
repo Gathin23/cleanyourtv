@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A crescent moon over a small clock face, on a night-blue tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#141631" android:pathData="M0,0h320v180h-320z" />
+    <!-- moon -->
+    <path android:fillColor="#E9E4FF"
+        android:pathData="M150,40 A50,50 0,1 0 200,120 A40,40 0,1 1 150,40 Z" />
+    <!-- clock -->
+    <path android:fillColor="#7A6FF0" android:pathData="M210,118m-26,0a26,26 0,1 1 52,0a26,26 0,1 1 -52,0" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M210,118 L210,102 M210,118 L222,124" />
+    <!-- stars -->
+    <path android:fillColor="#FFFFFF" android:pathData="M232,40m-3,0a3,3 0,1 1 6,0a3,3 0,1 1 -6,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M262,64m-2,0a2,2 0,1 1 4,0a2,2 0,1 1 -4,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M96,52m-2,0a2,2 0,1 1 4,0a2,2 0,1 1 -4,0" />
+</vector>

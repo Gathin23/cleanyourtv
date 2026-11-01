@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An old set showing snow: grey bars of different shades inside a rounded screen, on a dark tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#15181F" android:pathData="M0,0h320v180h-320z" />
+    <!-- antennas -->
+    <path android:strokeColor="#9AA4B2" android:strokeWidth="4" android:strokeLineCap="round"
+        android:pathData="M160,38 L130,12 M160,38 L190,12" />
+    <!-- cabinet -->
+    <path android:fillColor="#2A2F3A" android:pathData="M88,38h144a14,14 0,0 1,14 14v96a14,14 0,0 1,-14 14h-144a14,14 0,0 1,-14 -14v-96a14,14 0,0 1,14 -14z" />
+    <!-- screen with snow bars -->
+    <path android:fillColor="#5D6470" android:pathData="M96,50h110v12h-110z" />
+    <path android:fillColor="#C9CED6" android:pathData="M96,62h110v10h-110z" />
+    <path android:fillColor="#7C8390" android:pathData="M96,72h110v14h-110z" />
+    <path android:fillColor="#E8EBEF" android:pathData="M96,86h110v8h-110z" />
+    <path android:fillColor="#3E434D" android:pathData="M96,94h110v12h-110z" />
+    <path android:fillColor="#A9AFB9" android:pathData="M96,106h110v12h-110z" />
+    <path android:fillColor="#6B717D" android:pathData="M96,118h110v14h-110z" />
+    <path android:fillColor="#D7DBE1" android:pathData="M96,132h110v18h-110z" />
+    <!-- knobs -->
+    <path android:fillColor="#9AA4B2" android:pathData="M226,70m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <path android:fillColor="#9AA4B2" android:pathData="M226,100m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+</vector>

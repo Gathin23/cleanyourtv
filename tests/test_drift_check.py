@@ -1,8 +1,8 @@
 """tools/check.py against a simulated TV (#359).
 
 The property worth testing is the one no TV shows on demand: what the drift report says after a
-firmware update, and that --fix puts back only what drifted, without touching the recovery record
-undo depends on. tools/tv.py is replaced by a fake that answers the queries from a JSON file, so the
+firmware update, and that --fix puts back only what drifted, without writing a recovery record of
+its own. tools/tv.py is replaced by a fake that answers the queries from a JSON file, so the
 real check.py logic runs and only the ADB transport is simulated.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
@@ -52,15 +52,21 @@ def answer(command):
         return state.get("wifi", "")
     if command.startswith("dumpsys package "):
         return dumpsys_package(command.split()[-1])
+    if command == "getprop ro.build.version.sdk":
+        return state.get("sdk", "")
     if "resolve-activity" in command:
         return (state["home"] or "") + "\n"
-    if "query-activities" in command:
+    if "query-activities" in command and "category.HOME" in command:
         return "".join(f"  {component}\n" for component in state["home_activities"])
+    if "query-activities" in command and "cursor.item/channel" in command:
+        return "".join(f"  {name}/.MainActivity\n" for name in state.get("input_apps", []))
     return ""
 
 
 def dumpsys_package(name):
     """What `dumpsys package <name>` prints, scoped to the permissions the package asks for."""
+    if name in state.get("dumps", {}):
+        return state["dumps"][name]
     requested = ["android.permission.INTERNET"]
     if name in state.get("input_drivers", []):
         requested.append("android.permission.TV_INPUT_HARDWARE")
@@ -79,7 +85,10 @@ def apply(command):
         if name not in state["disabled"] and name not in state.get("pinned", []):
             state["disabled"].append(name)
     elif command.startswith("cmd package set-home-activity --user 0 "):
-        state["home"] = command.split()[-1]
+        # Some firmware answers the switch and keeps Home where it was (the Chromecast with Google TV
+        # 4K list records it); home_locked plays that firmware.
+        if not state.get("home_locked"):
+            state["home"] = command.split()[-1]
     save()
 
 
@@ -306,6 +315,16 @@ class DriftCheckTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(f"pm disable-user --user 0 {SETUP}", self.sent())
 
+    def test_fix_leaves_the_app_that_opens_the_inputs_on(self):
+        # The update turned the Live TV app back on; it is what the launcher's HDMI tiles open.
+        self.write_list(["com.example.livetv", "com.example.music"])
+        self.tv(installed=BASE + ["com.example.livetv"], input_apps=["com.example.livetv"],
+                disabled=["com.example.store", STOCK])
+        result = self.run_check("--fix", str(self.list_path))
+        self.assertIn("leaving com.example.livetv on", result.stdout)
+        self.assertIn("pm disable-user --user 0 com.example.music", self.sent())
+        self.assertNotIn("pm disable-user --user 0 com.example.livetv", self.sent())
+
     def test_fix_leaves_setupwraith_on_when_the_wifi_cannot_be_read(self):
         self.write_list([SETUP])
         self.tv(installed=BASE + [SETUP], disabled=["com.example.store", STOCK], wifi="")
@@ -345,6 +364,35 @@ class DriftCheckTest(unittest.TestCase):
         result = self.run_check("--fix", str(self.list_path), env={"TVINPUT_ALLOW": "1"})
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(f"pm disable-user --user 0 {MEDIATEK_INPUT}", self.sent())
+
+    def test_fix_reads_a_package_that_asks_for_nothing_as_no_input_driver(self):
+        # #2398: from Android 6.0 a readable dump with no requested block asks for nothing, so --fix
+        # disables it as disable.sh does; Lollipop prints no block for packages that do ask (#1753),
+        # and a TV that reports no SDK is read the same way, so there it stays on.
+        no_perms = "android.autoinstalls.config.nvidia"
+        dump = f"Packages:\n  Package [{no_perms}] (8e7f1b4):\n    userId=10037\n"
+        for sdk, disabled in (("30", True), ("22", False), ("", False)):
+            with self.subTest(sdk=sdk):
+                self.write_list([no_perms, "com.example.music"])
+                self.tv(installed=BASE + [no_perms], disabled=["com.example.store", STOCK],
+                        sdk=sdk, dumps={no_perms: dump})
+                result = self.run_check("--fix", str(self.list_path))
+                self.assertEqual(f"pm disable-user --user 0 {no_perms}" in self.sent(), disabled,
+                                 result.stdout)
+                self.assertIn("pm disable-user --user 0 com.example.music", self.sent())
+                if not disabled:
+                    self.assertIn(f"leaving {no_perms} on", result.stdout)
+
+    def test_fix_says_reboot_when_the_watchdog_switched_dumps_off(self):
+        self.write_list(["com.example.music"])
+        self.tv(disabled=["com.example.store", STOCK], sdk="30",
+                dumps={"com.example.music": "Service dumps disabled due to hung system process.\n"})
+        result = self.run_check("--fix", str(self.list_path))
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn("pm disable-user --user 0 com.example.music", self.sent())
+        self.assertIn("leaving com.example.music on", result.stdout)
+        self.assertIn("reboot the TV first", result.stdout)
+        self.assertNotIn("Android 5.x", result.stdout)
 
     def test_fix_prefers_the_launcher_over_a_vendor_fallback(self):
         # A FallbackHome is the placeholder a TCL set shows when no launcher is enabled; taking it
@@ -392,7 +440,8 @@ class DriftCheckTest(unittest.TestCase):
         self.write_list(["com.example.music", "com.example.store; reboot"])
         self.tv(disabled=[STOCK])
         result = self.run_check("--fix", str(self.list_path))
-        self.assertNotEqual(result.returncode, 0)
+        # 2, the list could not be used: 1 is what a weekly job reads as drift.
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("not a package name", result.stderr)
         self.assertEqual(self.sent(), [])
 

@@ -1,6 +1,7 @@
 # TCL Smart TV Pro, UK firmware (device G09, product G09_4K_GB, Amlogic T5M), used in Brazil
 # Android 12 (Google TV), firmware STT2.230203.001 AS24, 2 GB RAM
 # Same firmware family as examples/tcl-g10-google-tv.
+# Also tested on a TCL 55V6C, Colombia (product G09_4K_GB_NF), firmware STT2.230203.001 AS24.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g09-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat.txt com.google.android.apps.tv.launcherx
@@ -31,6 +32,7 @@ com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
 com.tcl.messagebox                     # TCL pushed messages and promos
 android.autoinstalls.config.google.gtvpai  # partner auto-installs
 com.tcl.smartlink.core                 # bundles a silent app installer
+com.tcl.magiconnectfree                # MagiConnect phone companion app (55V6C unit)
 
 # Background services
 com.tcl.guard                          # TGuard: device-use tracking, memory cleaner

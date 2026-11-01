@@ -51,8 +51,26 @@
 # - InputKeyService also takes the Input key, but com.android.tv.action.VIEW_INPUTS resolves to
 #   com.sony.dtv.smartui/.select.SmartSelectActivity here, the same menu the button opened before.
 # - The Ambient screensaver (dreamx) keeps working with launcherx disabled, for owners who want to keep it.
-# - com.android.camera2 is installed and crashes on open (the set has no camera); disabled here, not listed
-#   because it has not been lived with yet.
+# - com.android.camera2 is installed and crashes on open (the set has no camera); safe to disable.
+#
+# Fourth VU31, same build, 2026-10-25/26: most of the list above (Google TV, Apple TV and dreamx kept; Alexa and
+# camera2 off by choice), four batches with a screenshot and crash-log check after each, then the launcher; several
+# reboots. Lived with for 2 days so far. Remote: SONY TV VRC 001 (Bluetooth, mic). Notes from it:
+# - com.sony.dtv.m2.seeds.iot and com.sony.dtv.m2.seeds.iot.remotestart (Alexa) were enabled again after every
+#   reboot, like Eco Dashboard (applicationdisabler presumably; not confirmed). Left alone: harmless while Alexa is
+#   not linked to an account.
+# - The gear (Settings) button sends keycode 83 to advancesetting, which hands it to launcherx like the app buttons
+#   (same DeviceModeContentProvider error), so it does nothing once launcherx is off. 83:settings in app_keys
+#   (INPUT_KEY_SERVICE=1) brings it back. Checked with the real remote.
+# - Holding volume up or down moves one step per press while InputKeyService is bound: the key-repeat trade in
+#   docs/devices/tcl-55p71b-g09-key-repeat.md. consume_volume_keys did not help; empty-service control not run.
+# - The mic button did nothing because Android's microphone privacy toggle was on (dumpsys sensor_privacy, sensor 1;
+#   AtvRemote logged "katniss doesn't have access to the on-remote mic"), not because of a disabled package.
+#   Settings > Privacy > Microphone on (or cmd sensor_privacy disable 0 microphone) fixed it. Whether it was on
+#   before the debloat is not known.
+# - With launcherx off, Down in the Ambient screensaver no longer opens its Screensaver settings panel
+#   (dreamx/.settingsv2.TwoPanelActivity); the same panel is under Settings > System > Ambient screensaver > Settings.
+# - The stock screensaver delay was 10 minutes (screen_off_timeout 600000); Google TV has no on-screen setting for it.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
@@ -77,6 +95,7 @@ com.google.android.syncadapters.calendar # calendar sync; also carries Google's 
 com.android.printspooler                 # printing
 android.autoinstalls.config.google.gtvpai # Play partner auto-installs (2nd)
 com.android.gallery3d                    # legacy photo viewer (2nd)
+com.android.camera2                      # crashes on open; no camera on this set
 
 # Screensaver: set `settings put secure screensaver_components com.android.dreams.basic/.Colors` first, or
 # with the launcher installed its clock, com.gathin.tvhome/.ClockDream (2nd; runs in the launcher's process)
@@ -92,6 +111,8 @@ com.suntv.sunnxt                         # Sun NXT
 com.yupptv.scope.tvapp                   # YuppTV
 com.analiti.fastest.android              # analiti speed test
 com.google.android.marvin.talkback       # screen reader, off by choice (2nd)
+com.google.android.tts                   # text-to-speech, off by choice
+com.viacom18.tv.voot                     # Voot streaming preload
 
 # Launcher handover (2nd): setupwraith is safe to disable before the launcher (launcherx keeps Home), but
 # only once the Wi-Fi owner check above is clean.

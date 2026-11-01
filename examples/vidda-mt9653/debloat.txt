@@ -6,7 +6,7 @@
 # Same build as examples/hisense-e5q-pro/, a smaller list that keeps the stock home.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/vidda-mt9653/debloat.txt
-# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vidda-mt9653/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/vidda-mt9653/debloat.txt com.jamdeo.tv.vod
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # ADB: turning USB debugging on opens network ADB on 5555 directly; no wireless pairing needed.

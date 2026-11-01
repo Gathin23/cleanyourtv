@@ -1,0 +1,9 @@
+# MECOOL KM2 Plus
+# Brand: MECOOL
+# Model: 4K Android TV Box (YYC)
+# Manufacturer: SkyworthDigital
+# OS: Android TV 14 (SDK 34)
+# Build: UKG3.250826.001.C1.3.3_20260611
+
+# Stock recommendations and ads
+com.google.android.tvrecommendations

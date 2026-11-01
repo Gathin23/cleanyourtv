@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gives the screensaver a settings entry in the TV's screensaver menu. -->
+<dream xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="com.gathin.newsdream/.SettingsActivity" />

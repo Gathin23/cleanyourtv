@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A shield inside the adaptive icon's safe zone. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#E84855" android:pathData="M54,36l16,5v12c0,10 -7,16 -16,20c-9,-4 -16,-10 -16,-20v-12z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M47,53h14v4h-14z" />
+</vector>

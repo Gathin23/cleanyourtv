@@ -1,0 +1,32 @@
+# TCL 32S334 (Android product BeyondTV5, device BeyondTV; North American variant, Realtek RTD2851 / rtd285o),
+# Android TV 9 (API 28), build PPR1.180610.011 AP13, security patch 2020-11-01.
+# Tested on two identical units. The owner reports several days of use without issues; CleanYourTV Home
+# and the receiver add-ons were still running after a reboot. The retail model number was supplied by the owner.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/tcl-32s334/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/tcl-32s334/debloat.txt
+# Stock launcher: com.google.android.tvlauncher; disable only after CleanYourTV is confirmed as Home.
+# Live TV app: com.tcl.tv. Leave the tuner, HDMI passthrough, source menu, remote, Bluetooth,
+# keyboard, Play Store, and Play Services packages enabled.
+# Already disabled before setup on both units: com.tcl.bootadservice and uk.co.freeview.systemdistributor.
+# On TV 2, Play Music, Play Games, and Play Movies & TV were also disabled before setup; they were
+# re-enabled to match TV 1 and are not part of this list.
+# Chromecast and firmware updates were kept. Miracast was already off in Settings on both units.
+# com.tcl.smartalexa was disabled before the first reboot, but TCL re-enabled it at boot on both units;
+# it was left enabled after reboot and is intentionally not listed as an action here.
+
+# TCL analytics and optional promo/utility apps
+com.tcl.bi                              # TCL analytics / telemetry
+com.tcl.esticker                        # retail demo stickers
+com.tcl.tvweishi                        # TCL cleaner/widget service
+
+# Google feedback and stock-launcher recommendation rows
+com.google.android.feedback             # feedback collector
+com.google.android.tvrecommendations    # recommendation rows for stock launcher
+com.google.android.leanbacklauncher.recommendations
+com.tcl.copydatatotv                     # one-time TV transfer utility
+
+# Apps disabled by owner choice
+com.google.android.youtube.tv           # YouTube; YouTube TV is a separate app
+com.google.android.katniss              # Google voice assistant/search
+com.tcl.assistant                       # TCL assistant bridge

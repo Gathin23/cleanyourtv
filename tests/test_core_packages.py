@@ -5,6 +5,15 @@ installer, ext services/shared, module metadata and the mainline overlays, and t
 again. tools/disable.sh, tools/disable.ps1 and tools/check.py --fix refuse such a list before the TV is
 touched, with no switch to override it, and no list in examples/ may name one of these packages.
 The pattern lives in three places (bash, PowerShell, Python); this test keeps them identical.
+
+Ext services and ext shared also ship under AOSP's bare names, android.ext.services and
+android.ext.shared, with no com.android. or com.google.android. in front: the package dumps from an OBE
+R3 Ultra (Android 11), a CVTE SMART_TV (Android 12) and a MIBOX4 list both, installed and enabled (#1711).
+
+The TV middleware is guarded the same way: com.cltv.mal (MediaTek's MAL), com.mediatek.tis, tv.service and
+tv.agent. A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off (#1578).
+
+The PowerShell case needs `pwsh` on PATH and skips without it; CI's Ubuntu runner has it.
 """
 import os
 from pathlib import Path
@@ -27,10 +36,17 @@ CORE = [
     "com.google.android.ext.shared", "com.android.ext.shared",
     "com.google.android.modulemetadata", "com.android.modulemetadata",
     "com.google.android.overlay.modules.ext.services", "com.google.android.overlay.modules.permissioncontroller",
+    "com.android.sdksandbox",
+    # A TCL 43S5400A boot-looped into recovery with this one off (#2803).
+    "com.android.location.fused",
     "com.android.systemui", "com.android.shell", "com.android.phone",
     "com.android.settings", "com.android.tv.settings",
     "com.android.providers.settings", "com.android.providers.tv", "com.android.providers.media",
     "com.android.providers.downloads",
+    # AOSP's bare names for the same two modules (#1711).
+    "android.ext.services", "android.ext.shared",
+    # TV middleware: a Haier H50H5F restarted in a loop with com.cltv.mal off (#1578).
+    "com.cltv.mal", "com.mediatek.tis", "com.mediatek.tv.service", "com.mediatek.tv.agent",
 ]
 # Look alike but are fine: what tested lists disable, and names that only share a prefix.
 NOT_CORE = [
@@ -39,6 +55,15 @@ NOT_CORE = [
     "com.android.settings.intelligence", "com.android.tv.settings.overlay", "com.android.phone.extra",
     "com.google.android.tungsten.setupwraith", "com.google.android.apps.tv.launcherx",
     "com.android.shell2", "com.example.android.ext.services",
+    "android.ext.services.overlay", "android.ext.sharedlib", "android.extservices",
+    # Tested lists turn these off: FAST channels, and the Live TV app the factory disables on some sets.
+    "com.cltv.fast", "com.cltv.hybrid", "com.mediatek.tv.settings", "com.mediatek.tis.overlay",
+    # Only the exact SDK sandbox is protected for #2557; the other reported modules stay allowed.
+    "com.android.adservices.api", "com.android.ondevicepersonalization.services",
+    "com.android.federatedcompute.services", "com.android.sdksandbox.overlay",
+    "com.android.sdksandbox2", "com.example.sdksandbox",
+    # Only the exact fused location package is protected for #2803.
+    "com.android.location.fused.overlay", "com.google.android.location.fused",
 ]
 
 
@@ -74,6 +99,8 @@ class CorePackagesTest(unittest.TestCase):
         self.assertEqual([], found, "core Android packages must stay enabled (#884)")
 
     def test_disable_sh_refuses_before_touching_the_tv(self):
+        if os.name != "posix" or not shutil.which("bash"):
+            raise unittest.SkipTest("disable.sh is a POSIX script; it needs bash")
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp) / "repo"
             tools = repo / "tools"
@@ -88,7 +115,8 @@ class CorePackagesTest(unittest.TestCase):
             python.chmod(0o755)
             listing = Path(tmp) / "debloat.txt"
             listing.write_text("com.example.ads\ncom.google.android.permissioncontroller  # no\n"
-                               "com.google.android.overlay.modules.ext.services\n")
+                               "com.google.android.overlay.modules.ext.services\n"
+                               "android.ext.services\nandroid.ext.shared\n")
             env = dict(os.environ, TV_HOST="192.168.1.50", FORCE_HOME="1", FORCE_SETUPWRAITH="1",
                        TVINPUT_ALLOW="1")
             result = subprocess.run(["bash", str(tools / "disable.sh"), str(listing)], cwd=repo, env=env,
@@ -97,8 +125,54 @@ class CorePackagesTest(unittest.TestCase):
             self.assertIn("#884", result.stderr)
             self.assertIn("com.google.android.permissioncontroller", result.stderr)
             self.assertIn("com.google.android.overlay.modules.ext.services", result.stderr)
+            self.assertIn("  android.ext.services\n", result.stderr)
+            self.assertIn("  android.ext.shared\n", result.stderr)
             self.assertNotIn("com.example.ads", result.stderr)
             self.assertFalse(touched.exists(), "the TV was contacted before the refusal")
+
+    def test_disable_ps1_refuses_the_bare_names_before_touching_the_tv(self):
+        # The same refusal from the PowerShell twin, for the two names #1711 added. pwsh is not on
+        # every contributor's machine, so this runs where it is (CI's Ubuntu runner).
+        pwsh = shutil.which("pwsh")
+        if not pwsh:
+            raise unittest.SkipTest("disable.ps1 needs pwsh on PATH")
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            tools = repo / "tools"
+            tools.mkdir(parents=True)
+            shutil.copy2(ROOT / "tools" / "disable.ps1", tools / "disable.ps1")
+            touched = Path(tmp) / "touched"
+            (tools / "tv.py").write_text(f"open({str(touched)!r}, 'a').write('x')\n")
+            python = tools / "venv" / "Scripts" / "python.exe"
+            python.parent.mkdir(parents=True)
+            python.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+            python.chmod(0o755)
+            listing = Path(tmp) / "debloat.txt"
+            listing.write_text("com.example.ads\nandroid.ext.services  # no\nandroid.ext.shared\n")
+            result = subprocess.run([pwsh, "-NoProfile", "-File", str(tools / "disable.ps1"),
+                                     "-TvHost", "192.168.1.50", str(listing)], cwd=repo,
+                                    capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=120)
+            output = result.stdout + result.stderr
+            self.assertNotEqual(0, result.returncode, output)
+            # PowerShell's error view can wrap a long message at the console width, so the names are
+            # looked for with every whitespace taken out.
+            packed = re.sub(r"\s+", "", output)
+            self.assertIn("#884", packed)
+            self.assertIn("android.ext.services,android.ext.shared", packed)
+            self.assertFalse(touched.exists(), "the TV was contacted before the refusal")
+
+    def test_check_py_refuses_the_bare_names_before_connecting(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            listing = Path(tmp) / "debloat.txt"
+            listing.write_text("com.example.ads\nandroid.ext.services\nandroid.ext.shared\n")
+            env = dict(os.environ, TV_HOST="192.0.2.1")
+            result = subprocess.run([sys.executable, "-I", str(ROOT / "tools" / "check.py"), "--fix",
+                                     str(listing)], env=env, capture_output=True, text=True,
+                                    stdin=subprocess.DEVNULL, timeout=60)
+            self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+            self.assertIn("#884", result.stderr)
+            self.assertIn("android.ext.services, android.ext.shared", result.stderr)
+            self.assertNotIn("could not reach", result.stderr)
 
     def test_check_py_refuses_before_connecting(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -112,6 +186,68 @@ class CorePackagesTest(unittest.TestCase):
             self.assertEqual(2, result.returncode, result.stdout + result.stderr)
             self.assertIn("#884", result.stderr)
             self.assertNotIn("could not reach", result.stderr)
+
+    def assert_sdk_sandbox_preflight(self, script, fix=False):
+        """The exact package in a mixed BOM/CRLF list must stop before any transport, even with overrides."""
+        shell = shutil.which("pwsh" if script == "disable.ps1" else "bash")
+        if script != "check.py" and not shell:
+            self.skipTest(f"{script} needs its shell on PATH")
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "repo"
+            tools = repo / "tools"
+            tools.mkdir(parents=True)
+            for name in (script, "recovery.py"):
+                shutil.copy2(ROOT / "tools" / name, tools / name)
+            touched = Path(tmp) / "transport-called"
+            (tools / "tv.py").write_text(
+                "from pathlib import Path\n"
+                "def connect(*args, **kwargs):\n"
+                f"    Path({str(touched)!r}).touch()\n"
+                "    raise AssertionError('unexpected transport')\n"
+                "if __name__ == '__main__':\n"
+                "    connect()\n", encoding="utf-8")
+            for relative in ("venv/bin/python", "venv/Scripts/python.exe"):
+                client = tools / relative
+                client.parent.mkdir(parents=True, exist_ok=True)
+                client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+                client.chmod(0o755)
+            listing = Path(tmp) / "debloat.txt"
+            listing.write_bytes(b"\xef\xbb\xbfcom.example.ads\r\n"
+                                b"com.android.sdksandbox # issue 2557\r\n")
+            env = dict(os.environ, TV_HOST="192.0.2.1", FORCE_HOME="1", FORCE_SETUPWRAITH="1",
+                       TVINPUT_ALLOW="1", HANDLERS_ALLOW="1")
+            if script == "check.py":
+                command = [sys.executable, "-I", str(tools / script)]
+                if fix:
+                    command.append("--fix")
+                command.append(str(listing))
+            elif script == "disable.ps1":
+                command = [shell, "-NoProfile", "-NonInteractive", "-File", str(tools / script),
+                           "-TvHost", "192.0.2.1", str(listing)]
+            else:
+                command = [shell, str(tools / script), str(listing)]
+            result = subprocess.run(command, cwd=repo, env=env, capture_output=True, text=True,
+                                    stdin=subprocess.DEVNULL, timeout=30)
+            output = result.stdout + result.stderr
+            if script == "check.py":
+                self.assertEqual(result.returncode, 2, output)
+            else:
+                self.assertNotEqual(result.returncode, 0, output)
+            self.assertIn("refusing", output)
+            self.assertIn("com.android.sdksandbox", re.sub(r"\s+", "", output))
+            self.assertFalse(touched.exists(), "the core guard must run before the transport")
+
+    def test_sdk_sandbox_disable_sh_refuses_with_all_overrides(self):
+        self.assert_sdk_sandbox_preflight("disable.sh")
+
+    def test_sdk_sandbox_disable_ps1_refuses_with_all_overrides(self):
+        self.assert_sdk_sandbox_preflight("disable.ps1")
+
+    def test_sdk_sandbox_check_refuses_before_connecting(self):
+        self.assert_sdk_sandbox_preflight("check.py")
+
+    def test_sdk_sandbox_check_fix_refuses_before_connecting(self):
+        self.assert_sdk_sandbox_preflight("check.py", fix=True)
 
 
 if __name__ == "__main__":

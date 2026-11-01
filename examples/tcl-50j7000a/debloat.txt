@@ -1,0 +1,70 @@
+# TCL 50J7000A, Thailand (ro.product.model BeyondTV, board rtd285o / Realtek RT2851), client type
+# TCL-AP-RT2851-S1, software V8-R851T02-LF1V674, Android TV 11 (API 30), build PPR1.180610.011 AR04,
+# security patch 2021-09-05, 32-bit (armeabi-v7a), 2 GB RAM. ro.adb.secure=1; network ADB on 5555 opens
+# as soon as USB debugging is on.
+# Same AR04 build as examples/tcl-55ep640 (Greece), on Asia-Pacific firmware: no TCL dashboard, and
+# AIS PLAY (com.ais.mimo.aisplay.tv) preloaded. Started from examples/tcl-50ep680 and examples/tcl-55c815.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-50j7000a/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-50j7000a/debloat.txt
+# Stock launcher: com.google.android.tvlauncher (HOME priority 2, so it must be disabled; the install script
+# does it). Other HOME claimants are fallbacks: com.tcl.keycustomfunctionservice/.FallbackHome and
+# com.android.tv.settings/.system.FallbackHome. Live TV app: com.tcl.tv.
+# The saved Wi-Fi network belongs to android.uid.system, not setupwraith (the test unit runs on Ethernet);
+# setupwraith is not in this list anyway.
+#
+# Tested from 2026-10-21 on a real unit and lived with for four days with nothing broken (package states
+# last checked after the reboot on day one):
+# all 25 disabled in one run with tools/disable.sh, checked one by one (25/25), then the launcher installed.
+# After a reboot all 25 and the stock launcher stayed disabled, Home came back on the launcher and the
+# network came up; YouTube, Netflix, AIS PLAY, Disney+ and Live TV start from Home, and HDMI switches
+# through the launcher's Inputs menu. MemAvailable went from about 495 MB to about 655 MB.
+#
+# Already disabled at the factory: the 14 uk.co.freeview.* apps, au.com.stan.and, tv.wuaki.apptv,
+# com.tcl.gallery, com.tcl.smartalexa, com.google.android.apps.nbu.smartconnect.tv.
+#
+# Kept by the owner's choice: AIS PLAY, Chromecast (com.google.android.apps.mediashell), Miracast and
+# MagiConnect (com.tcl.miracast, com.tcl.MultiScreenInteraction_TV), the USB media centre, TCL Browser and the
+# TCL firmware updater (com.tcl.versionUpdateApp).
+# Left alone as load-bearing or unclear, as on the reference lists: com.tcl.partnercustomizer (remote T-key),
+# com.tcl.guard (PERSISTENT), com.tcl.micmanager, com.tcl.usercenter, com.tcl.useragreement,
+# com.tcl.tv.tclhome_master.
+#
+# DO NOT DISABLE: com.tcl.tv com.tcl.tvinput com.tcl.autopair com.tcl.keycustomfunctionservice com.tcl.settings
+# com.tcl.inputmethod.international com.tcl.initsetup com.tcl.factory.view com.tcl.providers.config
+# com.tcl.systemserver com.tcl.xian.StartandroidService com.google.android.tv.remote.service
+
+# 1. Telemetry and attribution
+com.tcl.bi                              # TCL analytics
+android.autoinstalls.config.tcl.device  # partner-app auto installer
+com.google.android.feedback             # "send feedback"
+com.google.android.partnersetup         # partner-app attribution
+com.google.android.onetimeinitializer   # one-time setup leftovers
+
+# 2. TCL content/promo feeds and recommendation rows
+com.tcl.tv.tclhome_passive              # pushes TCL content to the home screen at boot
+com.tcl.waterfall.overseas              # "TCL Channel" content feed
+com.tcl.overseasappshow                 # "recommended apps" showcase
+com.tcl.messagebox                      # TCL message/promo box
+com.tcl.esticker                        # shop-mode stickers
+com.tcl.notereminder
+com.tcl.copydatatotv                    # "copy your phone's data to the TV" helper
+com.google.android.tvrecommendations    # home-screen recommendation rows
+
+# 3. Unused Google extras
+com.google.android.videos               # Play Movies & TV
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.syncadapters.calendar
+
+# 4. Preloaded apps and games nobody uses here
+com.amazon.amazonvideo.livingroom       # Prime Video
+com.vectorunit.purple.googleplay
+com.doodle.turboracing3d
+com.xformgames.gokartgoair
+uk.co.powgames.gamecondiag
+
+# 5. Voice, off by choice: the remote's mic button stops working
+com.google.android.katniss              # Google voice search
+com.google.android.tv.assistant         # Assistant for TV
+com.tcl.assistant                       # TCL's Assistant bridge

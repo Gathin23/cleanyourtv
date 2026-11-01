@@ -8,7 +8,6 @@ launcher as Home. Tested on 21 October 2026.
 |---|---|
 | `debloat.txt` | The 9 packages that were disabled, grouped and commented, with what to keep and why (`build-and-install.sh` disables the stock launcher on top) |
 | `config.json` | Dock order and hidden tiles; push it with `tools/theme.sh` |
-| `restore.sh` | Undo everything below in one go |
 
 All commands run from the repo root, with the projector's IP in `TV_HOST`.
 
@@ -54,11 +53,20 @@ Projector Settings → Information → Projector Operation Log Information, not 
 TV_HOST=<projector-ip> tools/tv.py 'pm enable com.instagram.airwave'
 ```
 
-Use the package name from `debloat.txt`. To put everything back, the launcher included:
+Use the package name from `debloat.txt`. To put everything back, the shared tools do each part:
 
 ```bash
-TV_HOST=<projector-ip> examples/epson-ls800/restore.sh            # add --uninstall-launcher to remove it too
+# The list, and the stock launcher with it
+TV_HOST=<projector-ip> tools/restore.sh examples/epson-ls800/debloat.txt com.google.android.tvlauncher
+# The theme this folder pushed
+TV_HOST=<projector-ip> tools/theme.sh --reset
+# The Inputs names set above
+TV_HOST=<projector-ip> tools/tv.py 'settings delete secure tv_input_custom_labels'
 ```
+
+`tools/restore.sh` leaves the new launcher installed, as it does for every list; take it off from the
+projector's Settings → Apps if you want it gone. A list folder ships no script of its own: the folders
+that carried one were trimmed to the shared tools ([#1717](https://github.com/Gathin23/cleanyourtv/pull/1717)).
 
 ## Change the dock or the wallpaper
 

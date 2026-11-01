@@ -3,9 +3,11 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0}"
-TOOLS="$(cd ../tools && pwd)"   # absolute, so the venv's Python doesn't warn about "../" in its prefix
+TOOLS="$(cd ../tools && (pwd -W 2>/dev/null || pwd))"   # absolute (Windows form on Git Bash, for Windows Python), so the venv's Python doesn't warn about "../" in its prefix
 PY=$TOOLS/venv/bin/python
 [ -x "$PY" ] || PY=$TOOLS/venv/Scripts/python.exe
+# No venv yet: say how to make one (as tools/disable.sh does) instead of failing on the Windows path (#1142).
+[ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt" >&2; exit 1; }
 export MSYS_NO_PATHCONV=1
 # Below minSdk, `pm install` refuses the APK with INSTALL_FAILED_OLDER_SDK - and only after gradle has
 # spent a minute building and b64push has pushed the APK to the TV (#576). Ask the TV first. The
@@ -19,6 +21,8 @@ if [ -n "$MIN_SDK" ] && [ -n "$TV_SDK" ] && [ "$TV_SDK" -lt "$MIN_SDK" ]; then
   echo "half would need your own build with a lower minSdk (docs/TROUBLESHOOTING.md)." >&2
   exit 1
 fi
+# SKIP_BUILD=1 installs the APK already built (tools/docker-build.sh builds it in Docker, with no JDK here).
+if [ "${SKIP_BUILD:-}" != 1 ]; then
 # macOS: java_home or Homebrew; Linux: the java on PATH.
 # `/usr/libexec/java_home -v 17` means "17 or newer", so on a Mac whose only JDK is newer it prints
 # that one and exits 0, and the Homebrew fallback below never runs. Gradle 8.9 then stops with
@@ -26,27 +30,44 @@ fi
 # Homebrew's openjdk@17 is keg-only and is never registered where java_home would find it, so check
 # the version it answers with and fall through when it is not a 17. `java -version` goes to a
 # variable rather than through `grep -q`, whose early exit can SIGPIPE the JVM under `set -o pipefail`.
+# A JRE (Temurin ships one) answers as a 17 but has no jlink, which the Android Gradle plugin needs,
+# so skip it too and fall through to Homebrew (#1255).
 if [ -z "${JAVA_HOME:-}" ]; then
   JH="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
   if [ -n "$JH" ]; then
     case "$("$JH/bin/java" -version 2>&1 || true)" in *'version "17.'*) ;; *) JH="" ;; esac
   fi
+  if [ -n "$JH" ] && [ ! -x "$JH/bin/jlink" ]; then JH=""; fi
   if [ -z "$JH" ] && [ -d /opt/homebrew/opt/openjdk@17 ]; then JH=/opt/homebrew/opt/openjdk@17; fi
   if [ -z "$JH" ]; then JH="$(java -XshowSettings:properties -version 2>&1 | awk '/java.home/ {print $3}')"; fi
   JAVA_HOME="$JH"
 fi
 export JAVA_HOME
 # Android Studio's default SDK location on macOS, then on Linux, then Homebrew's command-line tools.
-export ANDROID_HOME="${ANDROID_HOME:-$(for d in ~/Library/Android/sdk ~/Android/Sdk; do [ -d "$d" ] && echo "$d" && break; done)}"
+# Homebrew lives in /opt/homebrew on Apple silicon and in /usr/local on Intel, and a Mac that moved from one to
+# the other can still have its Homebrew in /usr/local. Without the second, such a Mac got the first written
+# into local.properties, and Gradle stopped with "SDK location not found".
+export ANDROID_HOME="${ANDROID_HOME:-$(for d in ~/Library/Android/sdk ~/Android/Sdk /opt/homebrew/share/android-commandlinetools /usr/local/share/android-commandlinetools; do [ -d "$d" ] && echo "$d" && break; done)}"
 export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}"
 export PATH="$JAVA_HOME/bin:$PATH"
-[ -f local.properties ] || echo "sdk.dir=$ANDROID_HOME" > local.properties
+# local.properties is a Java properties file, where a backslash is an escape. Git Bash on Windows hands us
+# C:\Users\...\Sdk, which Gradle then reads as a broken path ("The filename, directory name, or volume label
+# syntax is incorrect"), and since the file is only written when missing, build-and-install.ps1 kept failing
+# on it too. Forward slashes work everywhere.
+[ -f local.properties ] || echo "sdk.dir=$(printf '%s' "$ANDROID_HOME" | tr '\\' '/')" > local.properties
 ./gradlew assembleRelease -q --console=plain
+elif [ ! -f app/build/outputs/apk/release/app-release.apk ]; then
+  echo "ERROR: SKIP_BUILD=1 but there is no app/build/outputs/apk/release/app-release.apk; build it first (tools/docker-build.sh)." >&2
+  exit 1
+fi
 # Which app owns Home differs by build (com.google.android.tvlauncher on Android TV,
 # com.google.android.apps.tv.launcherx on newer Google TV), so ask the TV instead of guessing.
 # Only a launcher we recognise is accepted: the answer can also be Android's chooser ("android"),
 # the setup wizard, or another third-party launcher, none of which should be disabled by accident.
 # Pass STOCK_LAUNCHER=<package> to name it yourself, or STOCK_LAUNCHER=none to disable nothing.
+# ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
+# the stock home, and the default applicationId is refused as Home on that firmware.
+# docs/devices/oppo-k9-55-oppocnm632.md.
 KNOWN_STOCK_LAUNCHERS="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher com.mitv.tvhome"
 if [ -z "${STOCK_LAUNCHER:-}" ]; then
   HOME_PKG=$("$PY" -I ../tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
@@ -103,11 +124,25 @@ case "$OUT" in
     exit 1 ;;
   *) echo "ERROR: pm install failed; the stock launcher was left untouched." >&2; exit 1 ;;
 esac
+# Replacing the launcher while it is Home lets Android restart it mid-update, and on a TCL G03
+# (Android 11) that instance came up with mOccludesParent=false: Home then left the previous app or
+# HDMI picture on screen (#1101). `am start` below would only reuse it, so stop it first; the start
+# then creates a fresh one. A force stop also takes the key helpers off the enabled list, so a helper
+# that was on is written back (cleared first: Android binds again only when the list changes).
+"$PY" -I ../tools/tv.py 's=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop com.gathin.tvhome; case "$s" in *com.gathin.tvhome*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac' >/dev/null
 # Start the launcher on its own, before the stock Home is touched. In the batch below a start that
 # fails only prints an "Error:" line, and the stock launcher would be disabled anyway, leaving the TV
 # with no usable Home (#239). "Status: ok" from `am start -W` means the activity really came up;
 # the HOME resolution further down only names a component, it does not prove the activity starts.
-START_OUT=$("$PY" -I ../tools/tv.py 'am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity')
+# With STOCK_LAUNCHER=none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would
+# make this launcher the home process until a restart, and Android then blocks the stock launcher's
+# remote-button launches (BAL_BLOCK, #1274). The component alone still proves the activity comes up.
+if [ "$STOCK_LAUNCHER" = none ]; then
+  START_CMD='am start -W -n com.gathin.tvhome/.MainActivity'
+else
+  START_CMD='am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity'
+fi
+START_OUT=$("$PY" -I ../tools/tv.py "$START_CMD")
 echo "$START_OUT"
 # Both halves matter: some builds answer "Status: ok" for a task that was merely brought to the
 # front, and an activity that cannot start still prints "Error: Activity not started".
@@ -185,19 +220,50 @@ esac
 #                         It also handles input_key_keycodes and app_keys (config.xml or a theme; a YouTube button)
 #   HOME_KEY_SERVICE=1    remotes whose Home button sends KEYCODE_ALL_APPS instead of HOME, e.g. Xiaomi
 #                         sticks: the key is routed to the launcher (HomeKeyService)
-#   RESTORE_KEY_SERVICES=1  grants WRITE_SECURE_SETTINGS, so that with restore_key_services (config.xml or a
+#   RESTORE_KEY_SERVICES=1  grants WRITE_SECURE_SETTINGS (a run without it revokes it), so that with restore_key_services (config.xml or a
 #                         theme) Home puts these helpers back after a force stop of the launcher
 # TCL firmware (TclAppBoot) refuses to bind an app's accessibility service while the app is not running unless it
-# holds the AUTO_START app-op, so grant it first; other TVs do not know the op and ignore it. A service that is
+# holds the AUTO_START app-op, so grant it first; other TVs do not know the op and ignore it. Builds name it
+# AUTO_START (G08, AU02) or APP_AUTO_START (G10), so set both. App-ops reach the disk lazily: without
+# `appops write-settings` the next reboot drops the grant, TclAppBoot refuses the service again and Home falls back
+# to the stock launcher (TCL 55Q6C, Google TV 14, UTT2.250416.001 AU02). A service that is
 # already listed was refused while the APK was replaced, and binds again only once the list changes, so clear it,
 # switch accessibility off and write it back (as tools/theme.sh does).
 enable_service() {   # appends to enabled_accessibility_services without dropping other services
   svc=com.gathin.tvhome/.$1
-  "$PY" -I ../tools/tv.py "cmd appops set com.gathin.tvhome AUTO_START allow 2>/dev/null; s=\$(settings get secure enabled_accessibility_services); case \"\$s\" in *$1*) settings put secure enabled_accessibility_services ''; settings put secure accessibility_enabled 0; sleep 1; settings put secure enabled_accessibility_services \"\$s\" ;; null|'') settings put secure enabled_accessibility_services $svc ;; *) settings put secure enabled_accessibility_services \"\$s:$svc\" ;; esac; settings put secure accessibility_enabled 1; echo $1 enabled"
+  "$PY" -I ../tools/tv.py "cmd appops set com.gathin.tvhome AUTO_START allow 2>/dev/null; cmd appops set com.gathin.tvhome APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; s=\$(settings get secure enabled_accessibility_services); case \"\$s\" in *$1*) settings put secure enabled_accessibility_services ''; settings put secure accessibility_enabled 0; sleep 1; settings put secure enabled_accessibility_services \"\$s\" ;; null|'') settings put secure enabled_accessibility_services $svc ;; *) settings put secure enabled_accessibility_services \"\$s:$svc\" ;; esac; settings put secure accessibility_enabled 1; echo $1 enabled"
 }
 if [ "${INPUT_KEY_SERVICE:-0}" = 1 ]; then enable_service InputKeyService; fi
 if [ "${HOME_KEY_SERVICE:-0}" = 1 ]; then enable_service HomeKeyService; fi
+# The grant follows the switch on every install: pm install -r keeps a grant, so a run without the switch takes it
+# back. WRITE_SECURE_SETTINGS opens every secure and global setting, not only the accessibility list.
+# tv.py does not hand back the TV shell's exit status, so each side prints its marker only once dumpsys shows the
+# state it wants, and the install stops when the marker is missing. The revoke is judged by the package's
+# permission state rather than pm's exit status, so a permission that was never granted counts as revoked; on
+# Android 8 to 11 a revoked install permission leaves only the requested-permissions entry. A dumpsys that does
+# not list the permission at all, fails, or ran out of time (it says DUMP TIMEOUT and still exits 0, cut off
+# before the granted line) prints nothing.
+SECURE=android.permission.WRITE_SECURE_SETTINGS
+READ="s=\$(dumpsys package com.gathin.tvhome) && case \"\$s\" in *\"DUMP TIMEOUT\"*) ;; *\"$SECURE: granted=true\"*)"
 if [ "${RESTORE_KEY_SERVICES:-0}" = 1 ]; then
-  "$PY" -I ../tools/tv.py "pm grant com.gathin.tvhome android.permission.WRITE_SECURE_SETTINGS && echo restore-granted"
+  STEP="pm grant com.gathin.tvhome $SECURE && $READ echo restore-granted ;; esac"; MARK=restore-granted
+  HINT="the launcher does not hold it, so restore_key_services cannot put the helpers back"
+else
+  STEP="pm revoke com.gathin.tvhome $SECURE; $READ ;; *\"$SECURE\"*) echo secure-settings-revoked ;; esac"
+  MARK=secure-settings-revoked
+  HINT="the launcher may still hold it; run again with RESTORE_KEY_SERVICES=1 to keep it on purpose"
+fi
+# A tv.py that cannot reach the TV fails here too, and gets the same message instead of stopping the script bare.
+OUT=$("$PY" -I ../tools/tv.py "$STEP") || OUT=""
+echo "$OUT"
+# Only a line that is the marker and nothing else counts: the step's own text contains it too.
+ACK_FOUND=0
+while IFS= read -r line; do
+  if [ "${line%$'\r'}" = "$MARK" ]; then ACK_FOUND=1; break; fi
+done <<< "$OUT"
+if [ "$ACK_FOUND" != 1 ]; then
+  echo "ERROR: WRITE_SECURE_SETTINGS is not in the state this install asked for ($MARK missing): $HINT." >&2
+  echo "The launcher is installed and is Home. Check by hand: tools/tv.py 'dumpsys package com.gathin.tvhome' | grep $SECURE" >&2
+  exit 1
 fi
 echo "Installed. Press Home on the remote to see it."

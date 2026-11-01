@@ -1,0 +1,69 @@
+# Hisense U7 55U7SG (device wutaishan, MediaTek MT9690), Google TV / Android 14, build UKN6.251123.001.049.
+# Security patch 2026-05-05. US market, 3.7 GB RAM. The Android model string is "SmartTV 4K FFM", like the
+# other Hisense boards in examples/, but this is its own device. Package names are com.vt.*, as on hengshan
+# and lushan.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u7-wutaishan/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u7-wutaishan/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-10-29 in batches with a screenshot after each, then rebooted twice and power cycled once
+# (unplugged). Normal boot every time and nothing came back on. Working: Home, the remote, Input, held volume,
+# Kodi, YouTube, Netflix, Disney+, Home Assistant's Cast link. Not working: native AirPlay (see below).
+# Not tested yet: casting from a phone (other Google TV lists say it can stop without setupwraith).
+#
+# AirPlay: the TV's own AirPlay stops working with this list, because of setupwraith. AirPlaySystemService reads
+# content://com.google.android.tungsten.setupwraith/setup_provider when it starts, and with setupwraith disabled it
+# sets show_airplay_setting_ui to 0, stops advertising _airplay._tcp, and the AirPlay and HomeKit page comes up
+# empty. setupwraith has to go for the launcher to keep Home, so this list trades native AirPlay for the launcher.
+# If you need AirPlay, keep setupwraith and Google TV's home (comment out the last line, skip the launcher).
+#
+# ADB: USB debugging alone leaves port 5555 closed on this set. Use Wireless debugging with a pairing code
+# (tools/native-adb.md). It turns itself off on every reboot or Wi-Fi drop and comes back on a new port.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. launcher/build-and-install.sh disables it.
+# Live TV app: com.vt.tv.tvcenter (also plays HDMI); config.json sets it as live_tv_package.
+# setupwraith (last line) owned the saved Wi-Fi network here. Forget the network and join it again in Settings
+# first, check `dumpsys wifi | grep -o 'cname=[^ ]*'` shows android.uid.system:1000, then apply with
+# FORCE_SETUPWRAITH=1.
+#
+# Kept on purpose: Google Assistant (katniss) and the hotword packages, Chromecast (mediashell), the AirPlay
+# packages (com.mediatek.airplay*, com.vt.tv.airplaykeycheck; idle without setupwraith), screen mirroring
+# (com.vt.tv.mobiledeviceconnectiontips), the OTA updaters (com.vt.tv.ota, com.vt.remoteupgrade, com.vt.tv.usbota),
+# all streaming apps.
+# Re-enabled: com.vt.udpserver (SyncPlay). I disabled it with the rest, then turned it back on: the hengshan list
+# says casting and the phone remote use it for LAN discovery.
+# Leave enabled: com.vt.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.smartservice, com.vt.tv.aiot*
+# (the Recovery warning in examples/hisense-smarttv-4k-ffm), com.vt.factory, Live TV and inputs
+# (com.vt.tv.tvcenter, com.vt.tv.input, com.vt.source.*), Ginga/TIAS broadcast apps (tv.mopa.*, com.vt.tv.tias).
+# Already disabled at the factory: Play Games, YouTube Music, Google TV (videos), the Hisense browser.
+
+# Tracking
+com.vt.tv.evservice                          # Vtp_ACR, viewing-data content recognition
+com.google.android.partnersetup              # partner referral tracking
+android.autoinstalls.config.google.gtvpai    # Google TV partner auto-installs (PAI)
+com.google.android.feedback                  # crash/feedback uploader
+com.google.android.syncadapters.calendar     # calendar sync, unused on a TV
+
+# Hisense content and preloads
+com.vidaa.oemtabcontentprovider              # the Hisense tab on the Google TV home, starts at boot
+net.vidaatv.hisense.android.tv               # VIDAA Channels+, starts at boot
+com.vt.hishow                                # "Family Moment" photo screensaver and content
+
+# Demo, hotel and first-time setup modes
+com.vt.storemode
+com.vt.tv.b2b                                # hotel/business mode, starts at boot
+com.vt.fte                                   # first-time setup hooks for the setup wizard
+
+# Off by choice
+com.vt.tv.protector                          # DeviceAssistant: cache cleaner and "turbo mode", starts at boot
+com.vt.alexa                                 # HiAlexa (Google Assistant is kept)
+com.vt.tv.dlna                               # DLNA media renderer, starts at boot
+com.vt.tv.ai_sense                           # Vtp_AiCamera, Hisense's USB AI camera. The hengshan list warns
+                                             # against it with the smartsense family as a precaution; the
+                                             # Recovery case on huangshan was smartsense and AIoT, not this.
+                                             # Off here through two reboots and a power cycle, no Recovery.
+
+# Google TV's setup wizard. Its RecoveryActivity claims HOME and beats the new launcher once launcherx is
+# disabled. It owned the saved Wi-Fi here (see the header), and native AirPlay stops without it.
+com.google.android.tungsten.setupwraith      # setup wizard; owns the saved Wi-Fi, AirPlay stops without it

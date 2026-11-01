@@ -1,0 +1,93 @@
+# Philips 77OLED810/12 (77" 4K OLED with Ambilight, 2023 model), Germany
+# Google TV 14 (API 34), firmware UKN2.241117.001 build 3000428, security patch 2025-09-05, board PH1M_WW_9972
+# ro.product.model=Philips Google TV TA5  ro.product.device=PH1M_WW_9972  ro.product.manufacturer=TPV
+# Fingerprint: Philips/PH1M_WW_9972_20/PH1M_WW_9972:14/UKN2.241117.001/3000428:user/release-keys
+# Philips SW TPM231WW_R.201.100.146.220. MediaTek, 2.8 GB RAM. Wired Ethernet (Wi-Fi on, no saved network),
+# nothing on USB, sound over HDMI eARC to a soundbar.
+#
+# Same board and build line as examples/philips-55oled820 (also "Google TV TA5") and the TA5 set in
+# examples/philips-google-tv-ta1; one Android release newer than examples/philips-55oled708. The org.droidtv
+# DO NOT DISABLE block in examples/philips-50pus8517 applies; nothing from it is disabled below.
+# Own folder because this is a different retail model (77OLED810, not 55OLED820) with an older build
+# (3000428) and a list that goes further than the 820 list: it replaces launcherx and setupwraith.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-77oled810/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-77oled810/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (launcher/build-and-install.sh disables it after Home
+#                 has moved; STOCK_LAUNCHER=com.google.android.apps.tv.launcherx)
+# Home claimants: launcherx (priority 2), setupwraith .RecoveryActivity (1), tv.settings FallbackHome (-1000)
+# Live TV app:    org.droidtv.playtv (live_tv_package)
+#
+# Status: applied 2026-10-25 in seven small batches with a screenshot after each (the groups below are the
+# same packages, regrouped), then the launcher from launcher/. Rebooted twice that day: nothing came back,
+# Home came up on the new launcher with no RecoveryActivity, and tools/check.py reported no drift. Checked:
+# Home, the Inputs menu (HDMI 1-4 with two games consoles and the eARC soundbar) and the remote's Sources
+# key. In daily use until 2026-10-29, when tools/check.py again reported no drift.
+# Idle log (30 s, TV on Home): 1 073 lines before; after batch 4 the extra lines were the firmware's own
+# picture-processing heartbeats and tpvPlayFiAudioService (kept, it logged the same before), no retry loop.
+#
+# Notes from this unit:
+# - setupwraith holds the Cast receiver's credentials here too (CastInfoProvider in `dumpsys package`), so with
+#   it disabled, casting from a phone fails (docs/TROUBLESHOOTING.md, "Untrusted device"). This owner uses
+#   AirPlay instead (native on this set: com.mediatek.partner.airplay_sys, com.mediatek.AirplayAPK,
+#   com.mediatek.airplaydaemon, all kept). If you cast from phones, leave setupwraith and launcherx on.
+# - tools/disable.sh skipped setupwraith ("could not check which app owns the saved Wi-Fi networks"): the set
+#   had no saved network at all and is on Ethernet, the case its message names, so it went with
+#   FORCE_SETUPWRAITH=1.
+# - Remote: the Sources key keeps working (org.droidtv.GlobalKey). The gear key sends KEY_SETUP (scancode 141)
+#   and GlobalKey hands it to launcherx, so it does nothing once launcherx is off. HomeKeyService with
+#   settings_key_scancodes 141 in config.xml brings it back, but with it bound, holding volume up or down moves
+#   one step per press (as in docs/devices/tcl-55p71b-g09-key-repeat.md and the TA5 notes in
+#   examples/philips-google-tv-ta1/README.md). This owner kept the gear key.
+# - org.droidtv.demome is refused by tools/disable.sh (TV_INPUT_HARDWARE, #321); hide its tile with hidden_apps.
+# - The Inputs menu also lists Component (HW6) and Composite (HW8); input_sources "HW6=-" "HW8=-" hides them.
+#
+# Kept on purpose: org.droidtv.dlna (the Media app binds it on this board, examples/philips-55oled708),
+# org.droidtv.tv.playFiAudioService, com.mediatek.browservice, firmware updates, the phone remote service,
+# Ambilight, native AirPlay, com.mediatek.dialservice, and the owner's streaming apps (YouTube, Prime Video,
+# Disney+ and others).
+
+# Batch 1: TP Vision and Google telemetry. Disable candeebug and gel together.
+org.droidtv.candeebug                     # "DAC" analytics uploader
+org.droidtv.gel                           # metrics collector in candeebug's process
+org.droidtv.tv.frameworklogger            # hands reboot reasons and firmware-install records to the Philips logger
+com.google.android.feedback               # Market Feedback Agent
+tv.samba.ssm                              # Samba TV ACR (identifies what is on screen)
+
+# Batch 2: promos and first-setup leftovers
+com.tpv.nftgallery                        # "NFT Collection" art gallery app
+com.google.android.partnersetup           # partner referrer / attribution
+com.google.android.onetimeinitializer     # runs once at first setup
+com.google.android.play.games             # Play Games
+
+# Batch 3: Philips features this owner does not use. Check each against your own setup.
+org.droidtv.amazonalexa                   # Alexa bridge
+com.phorus.playfi.tv                      # Play-Fi app; stayed disabled across reboots on this build
+com.phorus.playfi.softap                  # Play-Fi soft access point helper
+org.droidtv.ipcontrol                     # LAN control (volume, Ambilight). NOT the JointSpace API, that is org.droidtv.xtv
+io.mimi.sdk.service                       # Mimi sound personalisation service (io.mimi.tvapp was off from the factory)
+org.droidtv.astrahdplus                   # HD+ German satellite operator app; keep it if you subscribe
+org.droidtv.m7opapp                       # M7 satellite operator promo; keep it if you use one of those operators
+org.droidtv.control4app                   # Control4 smart-home integration (four packages)
+org.droidtv.control4adapterservice
+org.droidtv.control4sddp
+org.droidtv.control4UcService
+org.droidtv.matter                        # Philips Matter bridge
+com.google.android.syncadapters.calendar  # Google Calendar sync; no calendar app is installed
+
+# Owner's choice: off on this set, left as comments so they are not disabled for everyone.
+# com.netflix.ninja                       # Netflix: off on this set
+# com.google.android.youtube.tvmusic      # YouTube Music: off on this set
+# com.google.android.katniss              # Assistant and voice search: off on this set
+# com.google.android.marvin.talkback      # TalkBack screen reader: off on this set; keep it if anyone needs it
+
+# Batch 4: first-run wizard. Its RecoveryActivity claims Home once launcherx is off, and it can own a saved
+# Wi-Fi network, which Android deletes when it is disabled (check dumpsys wifi | grep -o 'cname=[^ ]*' and
+# forget and re-join first). On Google TV, phone casting stops without it (see the notes above).
+# Re-enable it before a factory reset.
+com.google.android.tungsten.setupwraith
+
+# Batch 5: after the new launcher owns Home (a provider under a live stock launcher would kill it)
+org.droidtv.oemtabprovider                # "Philips" tab of the Google TV home screen (promos)

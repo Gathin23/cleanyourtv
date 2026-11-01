@@ -7,7 +7,7 @@ import org.junit.Test;
 public class LiveVideoTest {
     @Test
     public void rtspUrlWithoutCredentials() {
-        assertEquals("rtsp://192.168.1.11:8554/frontdoooor_1", LiveVideo.rtspUrl("192.168.1.11", "", "", "frontdoooor_1"));
+        assertEquals("rtsp://192.168.1.11:8554/porch_1", LiveVideo.rtspUrl("192.168.1.11", "", "", "porch_1"));
     }
 
     @Test

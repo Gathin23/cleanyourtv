@@ -1,0 +1,62 @@
+# Xiaomi Mi TV P1 43" (MiTV-MOOQ2, codename croods, MediaTek), Android TV 11, firmware RTM4.220307.164.8238
+# Latin America retail unit (L43M6), 1.7 GB RAM, Android low-RAM mode on. Same croods chassis as MiTV-MOOQ0.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mooq2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mooq2/debloat.txt
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+# Provisional: applied in one session and reboot-checked; every package stayed disabled after reboot.
+#
+# Stock launcher: com.google.android.tvlauncher. It is NOT in this list: launcher/build-and-install.sh
+# disables it after com.gathin.tvhome is installed and verified as Home (default STOCK_LAUNCHER detection works).
+# Only com.android.tv.settings and the stock launcher claim HOME on this firmware; setupwraith does not, so
+# it stays enabled and the saved Wi-Fi network is untouched.
+#
+# Kept deliberately, checked with `dumpsys package`:
+#   com.mitv.overseaservice                        hosts netflixService (the Netflix key), as on MOSR4
+#   com.xiaomi.android.tvsetup.partnercustomizer   holds BleRcActivity, the Bluetooth remote pairing
+#   com.xiaomi.tvqs.overseas                       TV quick-settings receivers
+#   com.mediatek.tvinput, com.mediatek.wwtv.tvcenter, mitv.service, com.mediatek.tv.service   HDMI 1-3, AV, tuner
+#   com.xiaomi.mitv.updateservice                  firmware updates, kept by owner's choice
+#
+# Before disabling com.mitv.dream and com.google.android.backdrop, point the screensaver elsewhere:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#
+# Tested after the debloat: launcher Inputs menu lists HDMI 1-3, AV and Live TV; Netflix, YouTube, Prime Video
+# and Max launch; Chromecast, Mi Cast/Miracast and the Bluetooth remote still work.
+
+# ---- Xiaomi and Google telemetry ----
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback                     # crash / feedback reporting
+
+# ---- Xiaomi content, ads and recommendation rows ----
+com.mitv.tvhome.atv                             # PatchWall
+com.mitv.tvhome.michannel                       # Mi recommendation channels
+com.mitv.tvhome.mitvplus                        # Xiaomi TV+ FAST channels
+com.xm.webcontent                               # Xiaomi promo web content
+android.autoinstalls.config.xiaomi.amelie       # partner app auto-install config
+com.google.android.tvrecommendations            # stock launcher recommendation rows
+
+# ---- Background services not needed ----
+com.xiaomi.mitv.tvmanager                       # "TV Manager" cleaner
+com.xiaomi.amazon.alexa                         # Alexa bridge
+com.mitv.gallery                                # Mi Gallery
+com.mitv.dream                                  # Xiaomi screensaver, replaced by the Clock dream
+com.google.android.backdrop                     # Google ambient screensaver, replaced by the Clock dream
+
+# ---- Preloaded apps ----
+com.mitv.tvlock                                 # Xiaomi TV lock / parental password
+com.xiaomo.tv.milegal                           # Xiaomi legal / privacy screens
+com.mstar.android.tv.disclaimercustomization    # vendor disclaimer screen
+com.mediatek.wwtv.webview                       # vendor web view shell
+fusion.android.tv.demo                          # retail store demo loop
+com.xiaomi.mimusic2                             # Mi Music
+com.google.android.play.games                   # Play Games
+mediatek.factorymenu.ui                         # factory menu: disabled, never launched
+
+# ---- Optional, by owner's choice ----
+com.google.android.katniss                      # voice assistant (the mic button stops working)
+com.google.android.youtube.tvmusic
+com.google.android.videos                       # Play Movies & TV
+com.xiaomi.mitv.mediaexplorer                   # USB media player
+com.mitv.videoplayer                            # Mi video player

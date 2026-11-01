@@ -1,0 +1,82 @@
+# TCL 65" C7L Google TV, 2025, Australia (device G08, model "Smart TV Pro", MediaTek tcl9618 / mt5896)
+# Android 14 (Google TV), firmware UTT2.250416.001 AU02, product G08_4K_GB. About 2.4 GB RAM.
+# Same board and firmware build as examples/tcl-c755-google-tv; that list was the starting point, and its
+# Keep list holds here unchanged.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65c7l-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c7l-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# ADB: Developer options > Wireless debugging was enough; port 5555 answered too, without pairing.
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Left alone: com.tpa.kb (system uid, no running services, purpose unclear) and com.tvos (framework res).
+# Kept on purpose by this owner: Chromecast, AirPlay, Miracast, Google Assistant (katniss and
+# com.google.android.tv.remote.service, which carries the mic button), the game bar, the USB media
+# player and gallery, Netflix, Prime Video, YouTube and YouTube Music.
+#
+# Tested 2026-10-22 on a real unit, applied in six batches with screenshots between them: Home, the Input
+# button's source panel (com.tcl.suspension), Live TV (com.tcl.tv/com.tcl.player.TVActivity), all four
+# HDMI inputs in tv_input, YouTube with AdGuard Private DNS, Play Store app updates and every remote button
+# (gear, app buttons, Input, mic) kept working with launcherx disabled, so no key helper was enabled. All
+# 27 packages stayed disabled after a reboot; nothing is re-enabled at boot on this firmware.
+#
+# Known quirks on this firmware:
+# - The saved Wi-Fi network belonged to setupwraith (dumpsys wifi: cname=...setupwraith). Forget it and
+#   join it again in Settings before setupwraith is disabled, or the TV drops off Wi-Fi.
+
+# TCL tracking and analytics
+com.tcl.ttvs                           # Samba TV ACR viewing tracking, TCL "BI" analytics, Alexa core, T-Cast
+com.tcl.logkit                         # log capture and upload
+com.tcl.usercenter                     # TCL account sign-in nags
+
+# TCL content, ads and promos
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.interactive                    # TCL TIAS background service
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+
+# Retail demo / hotel mode
+com.tcl.exhibit
+com.tcl.esticker
+com.tcl.hotelmenu
+
+# Preloaded apps and services
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide
+com.tcl.smartalexa                     # Alexa
+com.tcl.guard                          # TCL "cleaner" / app manager
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup        # partner attribution
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.play.games
+
+# Off by choice on this unit
+com.tcl.magiconnectfree                # TCL T-Cast phone app (needs com.tcl.ttvs anyway)
+au.com.stan.and                        # Stan
+com.tcl.UpdatePeripheral               # TCL soundbar/speaker firmware updates (no TCL audio gear here)
+
+# Needed for the custom launcher. Disable only AFTER launcher/ is installed and set as Home:
+# with launcherx gone, setupwraith's RecoveryActivity claims HOME (blank screen).
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx
+com.google.android.apps.tv.dreamx      # ambient screensaver (promos); switch screensaver_components first
+
+# Kept on this unit: uncomment if you don't use them
+# com.google.android.apps.mediashell   # Chromecast
+# com.tcl.airplay2                     # AirPlay, together with the next two lines
+# com.mediatek.AirplayAPK
+# com.mediatek.airplaydaemon
+# com.tcl.miracast                     # Miracast screen mirroring
+# com.tcl.gamebar                      # game mode / VRR overlay for consoles
+# com.tcl.ui_mediaCenter               # USB media player
+# com.tcl.gallery                      # USB photo gallery + TCL screensaver
+# com.google.android.katniss           # Google Assistant voice (mic button)
+# com.google.android.tv.remote.service # phone-app remote AND the BT remote's mic button
+# com.google.android.youtube.tvmusic
+# com.netflix.ninja                    # Netflix, together with the next line
+# com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom    # Prime Video
+# com.google.android.youtube.tv

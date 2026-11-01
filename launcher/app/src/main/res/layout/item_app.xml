@@ -55,6 +55,7 @@
         android:layout_height="22dp"
         android:layout_gravity="center_horizontal|top"
         android:layout_marginTop="108dp"
+        android:includeFontPadding="false"
         android:gravity="center"
         android:singleLine="true"
         android:ellipsize="end"

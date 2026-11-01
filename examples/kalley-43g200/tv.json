@@ -1,0 +1,6 @@
+{
+  "tv": "Kalley 43G200 (device R3_GTV, MOKA, Realtek RTD2841A), Latin America",
+  "os": "Google TV 14",
+  "brand": "Kalley",
+  "notes": "Android ad services, Realtek partner customizer, health and print stubs; many MOKA/Google preloads come back enabled at every boot; keep launcherx and setupwraith: setupwraith returns at boot, and with launcherx off its RecoveryActivity loops (boot loop once, black screen on a retest)"
+}

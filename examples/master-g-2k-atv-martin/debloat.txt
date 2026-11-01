@@ -1,0 +1,39 @@
+# Master-G Android TV 2K (Expressluck "martin", MASTERG_2K_ATV), Chile, Android TV 14
+# Build UKNV.260502.001 (fingerprint MASTER-G/MASTERG_2K_ATV/martin:14/UKNV.260502.001/15333772:user/release-keys).
+# Classic Android TV, not Google TV: the stock launcher is com.google.android.tvlauncher, and
+# com.google.android.apps.tv.launcherx and com.electronic.manual are not installed on this set.
+# The same badge ships on other boards, so match the fingerprint first: examples/master-g-mga3200/
+# is SCBC (Realtek, Android TV 9) and docs/devices/master-g-2k-smart-tv.md is KTC "jagalchi"
+# (Google TV 14).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/master-g-2k-atv-martin/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/master-g-2k-atv-martin/debloat.txt
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\master-g-2k-atv-martin\debloat.txt (restore.ps1 to undo)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: the four packages below applied over Wi-Fi from Windows 11 on 2026-10-26 (#1881): Netflix,
+# YouTube and Prime Video still work and the TV feels faster. One session: the report claims neither
+# a reboot check nor days of use.
+#
+# Kept on purpose:
+# - com.google.android.tungsten.setupwraith: dumpsys wifi showed it owned the one saved Wi-Fi
+#   network (cname=...setupwraith, cname=android.uid.system:1000). Left enabled, and the new
+#   launcher still took Home. On other sets disabling it has dropped the TV off Wi-Fi: re-join the
+#   network in Settings before trying that.
+# - com.google.android.katniss (the remote microphone's voice search), com.google.android.apps.mediashell
+#   (Chromecast built-in), the Play Store and the system updates.
+#
+# NOTE: com.google.android.tvlauncher is deliberately not in this list. launcher/build-and-install.ps1
+# detected and swapped it without -StockLauncher on this set, once the replacement launcher owned Home.
+#
+# Building the launcher on Windows: Android Studio now bundles Java 25, which Gradle 8.9 rejects
+# ("Unsupported class file major version 69"). winget install Microsoft.OpenJDK.17, point
+# $env:JAVA_HOME at it, and finish Android Studio's first-run wizard before the SDK appears.
+
+# ---- Android 14 ad, personalisation and federated-learning services ----
+com.android.adservices.api                       # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services     # on-device ad personalisation
+com.android.federatedcompute.services            # federated learning for the above
+
+# ---- Preloaded apps nobody asked for ----
+com.google.android.play.games                    # Play Games

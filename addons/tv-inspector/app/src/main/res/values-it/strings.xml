@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Inspector</string>
+    <string name="intro">Cosa invia il telecomando di questa TV e cosa sa riprodurre la TV. Utile quando scrivi un tv.json, assegni un pulsante o segnali un bug.</string>
+    <string name="keys">Tasti del telecomando</string>
+    <string name="info">Info sulla TV</string>
+    <string name="back">Indietro</string>
+    <string name="keys_hint">Premi un pulsante qualsiasi del telecomando. Premi Indietro due volte per uscire.</string>
+    <string name="keys_waiting">In attesa di un tasto…</string>
+    <string name="keys_held">tenuto premuto, ripetizione %1$d</string>
+    <string name="keys_back_again">Premi di nuovo Indietro per uscire.</string>
+    <string name="keys_missing">Home e Accensione non arrivano mai alle app. Un pulsante che qui non mostra nulla viene preso prima dal sistema o da un helper di accessibilità. I tasti del volume continuano a cambiare il volume.</string>
+    <string name="keys_recent">Tasti recenti</string>
+    <string name="loading">Lettura della TV…</string>
+    <string name="section_tv">Questa TV</string>
+    <string name="section_screen">Schermo</string>
+    <string name="section_video">Decoder video</string>
+    <string name="section_audio">Audio</string>
+    <string name="section_inputs">Telecomandi e dispositivi di input</string>
+    <string name="logcat">Le stesse righe sono nel logcat: tools/tv.py ’logcat -d -s TvInspector’</string>
+</resources>

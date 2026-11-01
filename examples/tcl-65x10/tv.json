@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65X10 QLED (France, BeyondTV2, Realtek RTD2851, V8-R851T02-LF1V363)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "Same platform as [tcl-55c715](tcl-55c715/) on older AP03 firmware: TCL BI analytics, promo rows/partner customizer, cyberui, user center, Alexa, note reminder and Rakuten (all five re-enabled at every boot, hide the tiles with `hidden_apps`), TV Guard and store, Play Movies/Games/Music, TalkBack, Ambient Mode; voice off by choice, firmware updater kept, USB media, mirroring and Chromecast kept; launcher works (Live TV `com.tcl.tv`, HDMI CEC names in Inputs), reboot-checked"
+}

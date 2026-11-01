@@ -33,6 +33,23 @@
 #   - The saved Wi-Fi belonged to android.uid.system, not setupwraith; setupwraith was not needed.
 #   - The Apps button (scancode 580, ALL_APPS) opens Home with the launcher's HomeKeyService
 #     (build-and-install -HomeKeyService). Home, Back, voice and Netflix work without it.
+#   - On remotes with a Live button (scancode 399), disabling com.google.android.tv triggers
+#     partnercustomizer to open Google Play unless remapped via app_keys ("scan:399:<package>",
+#     build-and-install -InputKeyService).
+#
+# Third unit (same PI.3933 build), Turkey, 2026-09-17 to 2026-10-24 (37 days):
+#   - Xiaomi's update service enables PatchWall again. Its component applife.LifeKeeper installs
+#     com.mitv.tvhome.atv again about 3 minutes after you disable it. The install changes the package
+#     state to enabled. Logcat shows "PatchWallUpdateService: ... LifeKeeper ... package:com.mitv.tvhome.atv
+#     event:INSTALL". On this unit, PatchWall was disabled in one batch and the updater in a later batch.
+#   - For this reason, this list disables the update service before PatchWall. After the updater was disabled,
+#     PatchWall stayed disabled for 37 days and after each reboot.
+#   - Five minutes after you apply the list, do a check: compare `pm list packages -d` with this file.
+#
+# Fifth unit (same PI.3933 build), 2026-10-25. Details: docs/devices/xiaomi-mi-box-s.md
+#   - The Apps button as Home costs the volume ramp: with HomeKeyService bound, a held Volume key moves one
+#     step instead of ramping, the same trade as docs/devices/tcl-55p71b-g09-key-repeat.md. Checked on the
+#     real remote, with the helper bound and with the list empty. The owner kept the ramp.
 
 # Xiaomi + Google telemetry and ad tracking
 com.miui.tv.analytics                  # Mi analytics: reads logs and app usage
@@ -40,16 +57,16 @@ tv.alphonso.alphonso_eula              # Alphonso ad tracking, reads app usage s
 com.google.android.feedback
 com.google.android.tv.bugreportsender
 
+# Xiaomi background services. Before PatchWall: the updater enables PatchWall again (see header)
+com.xiaomi.mitv.updateservice          # firmware and PatchWall updates, installs apps; re-enable to check for an update
+com.mitv.download.service              # its download helper
+
 # PatchWall, content rows, promos, auto-installs
 com.mitv.tvhome.atv                    # PatchWall
 com.mitv.tvhome.michannel              # Mi Channel rows on the home screen
 com.xm.webcontent                      # Xiaomi web promos
 com.google.android.tvrecommendations
 android.autoinstalls.config.xioami.mibox3   # Play auto-install of partner apps (sic, "xioami")
-
-# Xiaomi background services
-com.xiaomi.mitv.updateservice          # firmware and PatchWall updates, installs apps; re-enable to check for an update
-com.mitv.download.service              # its download helper
 
 # Personal choice: voice assistant (the mic button stops working)
 com.google.android.katniss

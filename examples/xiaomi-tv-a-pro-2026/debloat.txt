@@ -1,5 +1,7 @@
 # Xiaomi TV A Pro 75" 2026 (MiTV-MZTU0, codename river, MediaTek), Google TV / Android 14 (SDK 34),
 # firmware UKN1.240806.017.V816.0.25.3.10.URTMIXM. Likely a good start for other 2024+ Xiaomi Google TVs.
+# Second unit: 55" (same MiTV-MZTU0 / river), India region, firmware UKN1.240806.017.V816.0.26.6.2.6.URTMIXM.
+#   Every active line below applied cleanly there; its own extras are in the commented section at the end.
 # Live TV app: com.mitv.livetv (set it as live_tv_package and hide it in launcher config.xml).
 # Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh and build-and-install.sh:
 #   STOCK_LAUNCHER=com.google.android.apps.tv.launcherx launcher/build-and-install.sh).
@@ -15,6 +17,8 @@
 # through it; disabling it leaves the Stremio server "online" but no video ever plays.
 # Already disabled at the factory: com.xiaomi.floatingframe, com.iwedia.tvinput, atsc/isdb tuners.
 # Default IME is Gboard, no keyboard quirk. 1.8 GB RAM.
+# Keep com.mitv.gallery if you play USB drives: Media player (com.xiaomi.mitv.mediaexplorer) opens photos
+# with it (55" unit). Videos play through com.mitv.videoplayer, also kept.
 #
 # Google TV 14 quirk (the important one): HOME is resolved by intent priority here and the saved
 # "default home" is ignored. launcherx has priority 2, the setup wizard's RecoveryActivity priority 1,
@@ -40,12 +44,14 @@ android.autoinstalls.config.google.gtvpai   # Play auto-install of partner apps
 
 # Xiaomi background services
 com.xiaomi.mitv.tvmanager              # "TV Manager" cleaner / booster
-com.xiaomi.mitv.updateservice          # firmware updates: re-enable these three to check for one
+com.xiaomi.mitv.updateservice          # firmware updates: re-enable these three to check for one (kept enabled on the 55" unit)
 com.mitv.upgrader
 com.mediatek.tv.systemupdater
 
 # Google TV setup wizard: only its RecoveryActivity matters after setup, see the quirk above.
 # Disable it before build-and-install.sh, or Home may crash-loop when launcherx goes away.
+# On the 55" unit setupwraith owned the saved Wi-Fi network (dumpsys wifi | grep -o 'cname=[^ ]*'): the
+# network was forgotten and re-joined from Settings first, so disabling it kept the TV on Wi-Fi and ADB.
 com.google.android.tungsten.setupwraith
 
 # Chromecast built-in (AirPlay, Miracast and Mi Cast are left enabled).
@@ -66,5 +72,21 @@ com.amazon.amazonvideo.livingroom
 com.google.android.youtube.tvmusic
 
 # Optional, uncomment if unused
-# com.google.android.videos            # Google TV / Play Movies app
-# com.google.android.apps.tv.dreamx    # Google ambient screensaver (switch to the Clock dream first)
+# com.google.android.videos            # Google TV / Play Movies app (disabled on the 55" unit)
+# com.google.android.apps.tv.dreamx    # Google ambient screensaver (switch to the Clock dream first; disabled on the 55" unit)
+
+# 55" unit extras, disabled for one day so far: Home, the Inputs menu and the remote still worked.
+# Uncomment once they have had longer on your set.
+# com.apple.atve.androidtv.appletv     # Apple TV app (preloaded)
+# com.mxtech.videoplayer.television    # MX Player (preloaded)
+# com.android.printspooler             # print service
+# com.google.android.syncadapters.calendar
+# com.android.tv.feedbackconsent       # feedback consent prompt
+# com.android.healthconnect.controller # Health Connect
+# com.android.dynsystem                # Dynamic System Updates installer
+# com.google.android.partnersetup      # partner setup leftover
+# com.google.android.marvin.talkback   # TalkBack screen reader: keep it if anyone at home uses it
+# com.xiaomo.tv.milegal                # Xiaomi legal pages
+# com.mitv.toolhouse                   # Xiaomi tool box
+# com.xiaomi.mitv.manualhelp           # Xiaomi manual / help
+# com.android.dreams.basic             # basic colour screensaver

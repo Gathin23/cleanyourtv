@@ -1,0 +1,12 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tv",
+    "com.android.vending"
+  ],
+  "live_tv_package": "com.tcl.tv",
+  "columns": 4,
+  "reduced_motion": true,
+  "focus_overshoot": false
+}

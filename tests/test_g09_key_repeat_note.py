@@ -25,6 +25,8 @@ EXAMPLES = ROOT / "examples" / "README.md"
 G09_README = ROOT / "examples" / "tcl-g09-google-tv" / "README.md"
 INPUT_SERVICE = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "InputKeyService.java"
 HOME_SERVICE = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "HomeKeyService.java"
+CONFIG_XML = ROOT / "launcher" / "app" / "src" / "main" / "res" / "values" / "config.xml"
+CONFIG_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "Config.java"
 
 
 def flat(path):
@@ -36,6 +38,19 @@ def links(path):
     text = path.read_text(encoding="utf-8")
     return [str((path.parent / target).resolve()) for target in re.findall(r"\]\(([^)\s]+)\)", text)
             if not target.startswith(("http", "#"))]
+
+
+def sections(text):
+    """(heading, flattened body) for every '## ' section of a page.
+
+    A needle anywhere below a heading is not proof that the section carries it: `section` above runs to
+    the end of the page, which is why a fact that moved into the next section still reads as present.
+    """
+    out = []
+    for block in re.split(r"(?m)^## ", text)[1:]:
+        heading, _, body = block.partition("\n")
+        out.append(("## " + heading.strip(), re.sub(r"\s+", " ", body)))
+    return out
 
 
 class KeyRepeatNoteTest(unittest.TestCase):
@@ -155,6 +170,57 @@ class EntryPointsTest(unittest.TestCase):
         self.assertEqual(len(bullets), 1, "exactly one index bullet for this note")
         self.assertIn("all or nothing", bullets[0])
         self.assertIn("no debloat list of its own", bullets[0])
+
+
+class OneSectionForTheTradeTest(unittest.TestCase):
+    """The switch that buys the repeat back belongs in the same section as the evidence.
+
+    docs/TROUBLESHOOTING.md used to carry this trade twice: a short "Held-down remote keys do not
+    repeat" section that named `key_filter` and nothing else, and, 130 lines further down, the section
+    with the G09/MOSR4 bisect, `capabilities=8` and the link to the note - which never mentioned the
+    switch. A reader who found either one got half of it, and the half that named the switch said
+    "there is no way to keep the buttons and the repeat" without the build, the bisect or the limits.
+    """
+
+    def setUp(self):
+        self.found = sections(TROUBLE.read_text(encoding="utf-8"))
+
+    def test_the_switch_is_documented_in_exactly_one_section(self):
+        naming = [heading for heading, body in self.found if "key_filter" in body]
+        self.assertEqual(len(naming), 1,
+                         f"key_filter is documented in {len(naming)} sections: {naming}")
+
+    def test_that_section_carries_the_evidence_and_the_note(self):
+        for heading, body in self.found:
+            if "key_filter" not in body:
+                continue
+            for needle in ("capabilities=8", "INPUT_KEY_SERVICE=1", "FLAG_REQUEST_FILTER_KEY_EVENTS",
+                           "tcl-55p71b-g09-key-repeat.md"):
+                with self.subTest(needle=needle):
+                    self.assertIn(needle, body, f"{heading} names key_filter but not {needle}")
+
+    def test_the_switch_is_one_the_launcher_reads(self):
+        self.assertIn('<bool name="key_filter">', CONFIG_XML.read_text(encoding="utf-8"),
+                      "the doc names a key_filter switch config.xml does not define")
+        self.assertIn("R.bool.key_filter", CONFIG_JAVA.read_text(encoding="utf-8"),
+                      "the doc names a key_filter switch the launcher never reads")
+
+
+class TheSectionReaderTest(unittest.TestCase):
+    """sections() itself, so the two tests above cannot pass by finding no sections."""
+
+    def test_returns_one_entry_per_heading_with_its_own_body(self):
+        found = dict(sections("intro\n## A\nbody a\n\n## B\nbody b\n"))
+        self.assertEqual(list(found), ["## A", "## B"])
+        self.assertIn("body a", found["## A"])
+        self.assertNotIn("body b", found["## A"])
+
+    def test_a_wrapped_sentence_is_flattened_so_it_still_matches(self):
+        found = dict(sections("## A\ntools/tv.py 'settings get secure\nenabled_accessibility_services'\n"))
+        self.assertIn("settings get secure enabled_accessibility_services", found["## A"])
+
+    def test_a_page_without_headings_has_no_sections(self):
+        self.assertEqual(sections("just prose, no headings\n"), [])
 
 
 if __name__ == "__main__":

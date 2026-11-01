@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Frigate Glance</string>
+    <string name="key_service_description">Permette a due tasti del telecomando di chiudere o rimandare una scheda della telecamera mentre ne è mostrata una. Nessun altro tasto viene letto, e nessuno quando non c’è una scheda.</string>
+</resources>

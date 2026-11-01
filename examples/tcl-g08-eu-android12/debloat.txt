@@ -8,6 +8,17 @@
 # Tested 21 October 2026 on one set. All 24 packages below are disabled on that set and it boots, plays
 # HDMI/Live TV and opens the source menu normally.
 #
+# Second unit: TCL 75Q7C (G08_4K_GB, same model "Smart TV Pro"), firmware STT2.221228.001 AS36, Spain, on
+# Ethernet, 25 October 2026, with the Clean Your TV launcher as Home (README). The list below applied unchanged
+# (com.tcl.browser is not on AS36). AS36 also has five TCL packages the first AS34 set did not: they are at the
+# end, disabled on that set for one day only.
+#
+# Third unit: TCL 50C805X1 (G08_4K_GB, same model "Smart TV Pro"), firmware STT2.221228.001 AS34 like the first,
+# France, on Wi-Fi, 23 to 26 October 2026 with the Clean Your TV launcher as Home (README); all disabled
+# packages still disabled after two reboots. This AS34 set ships AirplayAPK and the five "AS36" packages too, so
+# those preloads are not tied to the build. Four of them are now in the list; com.tcl.guard stays commented.
+# com.tcl.browser is not on this set either. Kept by the owner: tts, airplaydaemon, magiconnectfree.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g08-eu-android12/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g08-eu-android12/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -39,7 +50,7 @@ com.iplayer.android.webview
 com.mediatek.support.webview
 
 # Mediatek casting/telemetry leftovers
-com.mediatek.airplaydaemon             # AirPlay daemon; the AirplayAPK frontend is not on this firmware
+com.mediatek.airplaydaemon             # AirPlay daemon; keep it for AirPlay if com.mediatek.AirplayAPK is there
 com.mediatek.backgrounddetection
 com.mediatek.network
 
@@ -48,6 +59,22 @@ com.google.android.videos              # Play Movies storefront
 com.google.android.tts                 # TTS (left on purpose if you use voice TTS screens)
 com.google.android.apps.tv.dreamx      # photo screensaver
 com.android.printspooler
+
+# On the AS36 set and the French AS34 set, not on the first one. Disabled on both (one day on AS36, three on
+# AS34, reboots included) with nothing missed. The Q7C and US G08 lists disable them too.
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.esticker                       # retail-demo sticker
+com.tcl.usercenter                     # TCL account sign-in nags
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+# com.tcl.guard                        # TCL "cleaner" / app manager. Disabled on the AS34 set, the system tried to
+#   start com.tcl.guard/.memorymanager.TGuardService every 5 s ("Unable to start service ... not found");
+#   re-enabled, the retries stopped. Left enabled there.
+
+# Google extras, disabled on the third unit (three days, reboots included)
+com.google.android.feedback            # bug-report / feedback sender
+com.google.android.syncadapters.calendar
+com.google.android.onetimeinitializer  # runs once at first setup, nothing afterwards
+com.google.android.play.games
 
 # DO NOT DISABLE - verified on this set, 21 Oct 2026:
 # com.tcl.autopair   - Bluetooth remote pairing. Disable it and a remote that unpairs (battery

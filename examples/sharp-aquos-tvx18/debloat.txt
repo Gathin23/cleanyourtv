@@ -1,0 +1,45 @@
+# SHARP AQUOS-TVX18 (reported as AQUOS-TVX18; device tcth2ux, MediaTek MT5891), Asia
+# Android TV 8.0 (SDK 26), firmware 20400 OTT1.180130.001, security patch 2021-01-05, kernel 3.10.79
+# Stock launcher: com.google.android.tvlauncher (disabled last, after the replacement was installed and set as Home)
+# Live TV app: jp.co.sharp.av.android.aquostvappasia; EPG: jp.co.sharp.av.android.epglinker; tuner/HDMI input: com.mediatek.tvinput
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/sharp-aquos-tvx18/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/sharp-aquos-tvx18/debloat.txt
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Applied on 2026-11-01. Home verified with `cmd package resolve-activity` (replacement is default,
+# isDefault=true) before and after a reboot; `pm list packages -d` checked after each batch and after
+# the reboot - nothing re-enabled itself. Package names were each checked against the live TV with
+# `dumpsys package` first. 128 packages installed before the debloat; the stock Sharp launcher
+# (jp.co.sharp.av.android.tvlauncher) ships already disabled from the factory.
+#
+# Kept on purpose: Google Play Store + Play Services (gms/gsf), Gboard, Bluetooth/remote services,
+# com.mediatek.tvinput (HDMI/tuner), jp.co.sharp.av.android.aquostvappasia (Live TV) and the other
+# jp.co.sharp.av.android.* TV-core apps, com.google.android.apps.mediashell (Chromecast built-in),
+# com.google.android.katniss (Assistant/voice), jp.co.sharp.av.android.systemupdate (Sharp OTA),
+# com.google.android.tvrecommendations, all com.android.* core packages and all MediaTek factory
+# packages. Streaming apps (Netflix, Disney+, Spotify, Plex, VLC, YouTube, etc.) were left enabled.
+
+# --- Manufacturer telemetry, retail demo, e-manual and legal/copyright viewers ---
+com.sharplabs.dmt.aas.analyticsservice   # Sharp analytics telemetry
+jp.co.sharp.av.android.storedemoapplication # Sharp retail store demo
+jp.co.sharp.av.android.emanual           # Sharp e-manual
+jp.co.sharp.av.android.emanual_a         # Sharp e-manual (variant a)
+jp.co.sharp.av.android.emanual_b         # Sharp e-manual (variant b)
+jp.co.sharp.av.android.shlegal           # Sharp legal-notices viewer
+jp.co.sharp.av.android.softwarecopyright # Sharp open-source copyright viewer
+
+# --- Google feedback ---
+com.google.android.feedback
+
+# --- Unused Google / Android services (off by choice; all still installed) ---
+com.google.android.play.games # Play Games
+com.google.android.videos     # Play Movies & TV
+com.google.android.music      # Play Music
+
+# --- Stock launcher: disable ONLY after the replacement launcher is installed and set as Home ---
+# On this unit `cmd package set-home-activity` returned Success and Home moved to the replacement
+# with isDefault=true; setupwraith does NOT claim HOME here, and the saved Wi-Fi network is owned by
+# the system (not setupwraith), so setupwraith is kept and Wi-Fi/ADB survive. Verify resolve-activity
+# on your own unit after disabling tvlauncher before you walk away.
+com.google.android.tvlauncher

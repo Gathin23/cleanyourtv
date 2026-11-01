@@ -5,6 +5,16 @@ Usage: b64push.py <local file> <remote path>
 
 The file is assembled under a temporary name next to the target and checked with md5sum; only a
 matching copy is moved over the target, so a failed or corrupted transfer leaves the old file alone.
+Where the TV refuses that move (some firmware refuses rename(2) in /data/local/tmp, #1588), the
+verified file is copied over the target and checked again. That copy is not atomic.
+
+Exit status: 0 the copy is on the TV, 1 a transfer failed (the target is as it was, unless that
+copy failed or was interrupted, which the message says), 2 nothing was sent: the arguments were
+refused, the local file could not be read, the packages in tools/requirements.txt are not installed,
+a TV_HOST or a TV_PORT that tools/tv.py refuses at import time (its own words are printed), or the
+connection failed in one of the ways tv.py explains (a refused port, a Wireless
+debugging port, a handshake that timed out, a TV that cannot be reached). Why it stopped goes to
+stderr, which the scripts that throw the progress on stdout away still show.
 """
 import base64
 import hashlib
@@ -40,21 +50,82 @@ def main():
         sys.stderr.write(f"refusing remote path {remote!r}: use an absolute path of letters, digits, "
                          "'.', '_', '-' and '/', without '..'\n")
         return 2
-    with open(local, "rb") as f:
-        data = f.read()
+    # Read the file here, before the TV is opened: a path typed from the wrong folder, or a build
+    # that left no APK behind, is an argument that is wrong rather than a transfer that failed, and
+    # exit 1 would look to the caller like a push that started. The OSError covers all three ways in
+    # - no such file, a directory, a file in the middle of the path - with the reason the OS gave.
+    try:
+        with open(local, "rb") as f:
+            data = f.read()
+    except OSError as error:
+        sys.stderr.write(f"cannot read {local!r}: {error.strerror or error}. Nothing was sent to the TV.\n")
+        return 2
     want = hashlib.md5(data).hexdigest()
 
     # Imported only now: tv.py exits at import time when TV_HOST is unset, which would hide the
     # usage message above.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    import tv  # noqa: E402
+    # The client needs adb_shell, which the README installs into tools/venv only. This is the fourth
+    # place that client is imported and the only one that answered a plain `python3 tools/b64push.py`
+    # with a ModuleNotFoundError traceback and exit 1 - the code this file keeps for a transfer that
+    # failed - for a run that never reached the TV. privacy.py's and recovery.py's connect() stop with
+    # the line that builds the venv, and bench.py and trace.py start again under it, so a reader who
+    # has just cloned the repository gets the same answer here. The handler is entered only when the
+    # import fails, so a working client - the real one, or the stand-in the tests put beside a copy of
+    # this file - is used as before.
+    try:
+        import tv  # noqa: E402
+    except ImportError as error:
+        sys.stderr.write(f"cannot load tools/tv.py ({error}).\n"
+                         "run: python3 -m venv tools/venv && "
+                         "tools/venv/bin/pip install -r tools/requirements.txt\n"
+                         "Nothing was sent to the TV.\n")
+        return 2
+    except SystemExit as exit_request:
+        # tv.py refuses two shapes at import time, before it has a connection: no TV_HOST ("Set TV_HOST
+        # to your TV's IP address ...", printed with the arp hint) and a TV_PORT it cannot read ("not a
+        # port number: 'abc'", which is also what `TV_HOST=<ip>:70000` gets). Nothing was asked of the
+        # TV either time, and left alone the interpreter answered that text with 1 - the status this
+        # file keeps for a transfer that failed, whose target may be half written - so the fallback an
+        # owner runs when an install went wrong read as a push that broke halfway and left a file
+        # behind. tv.py's own text is printed by the interpreter for that exit and nowhere else, so it
+        # is written here; a module that exits 0 answered the call itself, and that status stands.
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            print(exit_request.code, file=sys.stderr)
+        print("Nothing was sent to the TV.", file=sys.stderr)
+        return 2
 
-    dev = tv.connect()
+    # A refused port or a TV that cannot be reached gets tv.py's own explanation, not a traceback, and
+    # exits 2 as tv.py does: nothing was sent. An error tv.py has nothing to add to keeps its traceback.
+    try:
+        dev = tv.connect()
+    except Exception as error:
+        why = tv.connect_error(error)
+        if why is None:
+            raise
+        print(f"{why}\nNothing was sent to the TV.", file=sys.stderr)
+        return 2
     b64 = remote + ".b64.part"
     part = remote + ".part"
+    # Sized before the try on purpose: a path this transport cannot carry is an argument error, and
+    # a refusal raised inside would run the finally's staging cleanup, so the push would have
+    # touched the TV after all.
+    # base64 of the chunk plus the echo (which names the staging file) must fit one payload
+    chunk = min(CHUNK, (dev.max_chunk_size - 85 - len(b64)) * 3 // 4)
+    chunk -= chunk % 3   # a multiple of 3, or each chunk ends in '=' padding mid-stream and base64 -d corrupts it
+    if chunk < 256:
+        # Under 256 raw bytes per chunk the transfer degenerates into one- and two-byte commands,
+        # and with no room at all it sends no chunk, reports a MISMATCH and leaves the staging
+        # cleanup as the only thing that ran. The path is wrong for this transport, not the
+        # transfer: refused like the argument errors above, before anything is sent.
+        sys.stderr.write(f"refusing remote path {remote!r}: staged as {q(b64)} it leaves under 256 "
+                         f"bytes per chunk at this transport's {dev.max_chunk_size}-byte limit. "
+                         "Nothing was sent to the TV.\n")
+        dev.close()
+        return 2
     try:
-        chunk = min(CHUNK, dev.max_chunk_size * 3 // 4 - 64)   # base64 of the chunk plus the echo must fit one payload
-        chunk -= chunk % 3   # a multiple of 3, or each chunk ends in '=' padding mid-stream and base64 -d corrupts it
         # Only our own temporary names are cleared; the target stays until the copy is verified.
         # `: >` creates the base64 file even for an empty upload, so `base64 -d` has an input.
         dev.shell(f"rm -f {q(b64)} {q(part)} && : > {q(b64)}")
@@ -63,26 +134,50 @@ def main():
             piece = base64.b64encode(data[i * chunk:(i + 1) * chunk]).decode()
             out = dev.shell(f"echo '{piece}' >> {q(b64)} && echo ok{i}", read_timeout_s=60.0)
             if f"ok{i}" not in out:
-                print(f"chunk {i} failed: {out}")
+                if i:
+                    print(flush=True)   # end the progress line, so the reason starts a line of its own
+                print(f"chunk {i} failed: {out.strip() or 'no output'}", file=sys.stderr)
                 dev.shell(f"rm -f {q(b64)} {q(part)}")
+                print(f"{remote} was left as it was.", file=sys.stderr)
                 return 1
             print(f"\rchunk {i + 1}/{n}", end="", flush=True)
         if n:
-            print()
+            print(flush=True)
         out = dev.shell(f"base64 -d < {q(b64)} > {q(part)} && md5sum {q(part)}; rm -f {q(b64)}",
                         read_timeout_s=120.0)
         got = out.split()[0] if out.strip() else ""
         ok = got == want
-        print("md5 remote:", got, "local:", want, "MATCH" if ok else "MISMATCH")
+        # A match stays on stdout, where the photo and news screensaver scripts look for "md5".
+        print("md5 remote:", got, "local:", want, "MATCH" if ok else "MISMATCH",
+              file=sys.stdout if ok else sys.stderr)
         if not ok:
             dev.shell(f"rm -f {q(part)}")
             print(f"{remote} was left as it was.", file=sys.stderr)
             return 1
         out = dev.shell(f"mv -f {q(part)} {q(remote)} && echo moved", read_timeout_s=60.0)
         if "moved" not in out:
-            dev.shell(f"rm -f {q(part)}")
-            print(f"could not move the verified copy over {remote}: {out.strip()}", file=sys.stderr)
-            return 1
+            # SELinux on a TCL ak30a5 (20250610) refuses rename(2) in /data/local/tmp while cp works
+            # there (#1588). Copy the verified file over the target instead and check that copy too.
+            # Unlike the move it is not atomic: a copy that stops part-way can leave the target
+            # incomplete.
+            refused = out.strip()
+            try:
+                out = dev.shell(f"cp -f {q(part)} {q(remote)} && md5sum {q(remote)}", read_timeout_s=120.0)
+            except BaseException:
+                # A connection that drops, a read that times out or Ctrl-C while cp is writing can
+                # leave the target cut short. Say so, then let the transport error through.
+                print(f"could not move the verified copy over {remote}: {refused}", file=sys.stderr)
+                print(f"copying it over instead was interrupted. {remote} may be incomplete.",
+                      file=sys.stderr)
+                raise
+            got = out.split()[0] if out.strip() else ""
+            if got != want:
+                dev.shell(f"rm -f {q(part)}")
+                print(f"could not move the verified copy over {remote}: {refused}", file=sys.stderr)
+                print(f"copying it over instead did not give a copy with md5 {want}: {out.strip()}. "
+                      f"{remote} may be incomplete.", file=sys.stderr)
+                return 1
+            print(f"the move was refused ({refused}), so the file was copied: md5 {got} MATCH")
         return 0
     finally:
         # Exceptions (including interrupted transfers) must also clear staging. A disconnected TV

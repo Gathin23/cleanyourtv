@@ -11,6 +11,28 @@
 # and owning Home, Inputs switches to HDMI (com.mitv.livetv comes up), Prime Video plays. A first-day
 # report, not the few days of living with it that CONTRIBUTING.md asks for.
 #
+# Second unit: sold as Xiaomi TV S Pro Mini LED 75 2026 (Thailand), same MiTV-MOEU0 / ladybird,
+# firmware UKN1.240806.017.V816.0.26.3.19.002.ULBMIXM. The list applied as is: 16 disabled on the first
+# run, setupwraith on the second. com.xiaomi.mitv.manualhelp is not installed on this firmware
+# (pm answers "Unknown package"). gtvpai stays enabled: disable.sh cannot read its permission block
+# here, so the input-driver check keeps it on. Launcher installed with HOME_KEY_SERVICE=1
+# INPUT_KEY_SERVICE=1, settings_key_keycodes 176 and app_keys 190:com.google.android.youtube.tv.
+# Checked on day one: launcher owns Home, also after a reboot; Netflix, Prime Video, YouTube, Apple TV,
+# Disney+, HBO Max, Spotify, NPO Start and Play Store open and Home returns from each; HDMI 1 opens in
+# com.mitv.livetv. The remote's own Input button is not checked yet.
+# On this unit the saved Wi-Fi network belonged to setupwraith (set up through the first-run wizard):
+# forgetting it and joining again in Settings > Network & Internet moved it to android.uid.system,
+# after which setupwraith was disabled and the TV stayed on Wi-Fi through a reboot.
+# Re-enabled on this unit by preference: com.mitv.tvhome.mitvplus (Xiaomi TV+ free channels). With
+# launcherx off it shows no banners, opens from its tile in the new launcher and plays; the remote's
+# TV+ button maps back to it with app_keys 192:com.mitv.tvhome.mitvplus (key_filter true only, see
+# below). It carries its own OneTrack analytics, so leave it disabled if that matters more than the
+# channels.
+# Held volume: with HomeKeyService and InputKeyService bound and key_filter true, holding Volume Up or
+# Down on the real remote stepped once per press (as on the MiTV-MOSR4, #944). key_filter false in
+# config.xml brought the ramp back with both services still bound, at the cost of the Settings (176),
+# YouTube (190) and TV+ (192) buttons, which then do nothing; their tiles and the Settings pill remain.
+#
 # Sideloading works, including apps that claim HOME, so the launcher half is possible.
 # HOME: setupwraith/.RecoveryActivity claims Home next to launcherx, so it is disabled below. On this
 # unit the saved Wi-Fi network belonged to android.uid.system, not setupwraith; check with

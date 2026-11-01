@@ -1,0 +1,6 @@
+{
+  "tv": "MarQ 4K Android TV (bangbae, MTC / MediaTek)",
+  "os": "Android TV 11",
+  "brand": "MarQ",
+  "notes": "First MarQ list: Anoki ACR, Google feedback/partnersetup/recommendations, Play Games, MStar disclaimer and the JVC autoinstall config; Play Movies and the stock Backdrop screensaver off by choice; Netflix/Prime/JioHotstar/YouTube/SonyLIV/ZEE5/JioCinema, Google Assistant and Chromecast kept; MediaTek tvinput/tv.service/wwtv.tvcenter (HDMI/tuner and Live TV) kept; FallbackHome is the only other HOME claimant and setupwraith does not claim HOME; reference launcher installed and verified on the real remote; reboot-checked"
+}

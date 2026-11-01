@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a house with a lit bulb and a thermometer. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:strokeColor="#41BDF5" android:strokeWidth="8" android:fillColor="#00000000" android:pathData="M100,90l60,-50l60,50v54h-120z" />
+    <path android:fillColor="#FFD54F" android:pathData="M160,82a16,16 0 1 1 -0.1,0zM152,112h16v10h-16z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M244,60h10v56h-10zM249,128a10,10 0 1 1 -0.1,0z" />
+</vector>

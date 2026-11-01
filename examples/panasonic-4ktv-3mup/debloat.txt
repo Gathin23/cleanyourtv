@@ -1,0 +1,63 @@
+# Panasonic 4KTV-3MUP (MOKA R4_GTV, Realtek rtd2851m), Taiwan, Google TV 14 (SDK 34), build UKR1.260308
+# Also: Panasonic TH-65MX660DX (reports 4KTV-3MUP, PANASONIC_NFF), India, Google TV 14, build UKR1.250803
+# Same platform as docs/devices/acer-r4g.md: com.android.tv.settings' FallbackHome re-enables a hard-coded
+# list of packages at every boot. Never disable launcherx or setupwraith here (setupwraith also owns Wi-Fi).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-4ktv-3mup/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-4ktv-3mup/debloat.txt
+# Everything is DISABLED, not uninstalled.
+#
+# Re-enabled by the firmware at boot on this set (checked 2026-10-25), so not disabled here; the
+# launcher hides the two apps with hidden_apps instead:
+#   com.amazon.amazonvideo.livingroom, com.google.android.youtube.tvmusic,
+#   com.google.android.partnersetup, com.google.android.syncadapters.calendar
+# Not touched (firmware's boot list per the R4G note): katniss, videos, play.games, feedback, ota, authota,
+#   realsil.ota, dfuservice, meeting.service, audiolink, esticker, esticker3, gdpr, scast, dreamx.
+# Never started: com.apps.factory.ui, com.realtek.factorytools.
+
+# Telemetry, ads and auto-installs
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.apps.mk.wd                                # boot receiver with ad-click activities
+android.autoinstalls.config.scbc.device       # Play auto-installs of partner apps
+
+# Background services a TV does not need
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.apps.wifihotspot
+com.android.dreams.basic
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.providers.calendar
+
+# Not used (owner's choice)
+com.disney.disneyplus
+com.chocolabs.app.chocotv.tv
+tv.twitch.android.app
+jp.or.nhk.nhkworld.tv
+com.apps.usbmediaplayer
+
+# Android and MOKA extras, disabled on the TH-65MX660DX (India) and still off after a cold boot and 6 days;
+# commented out until the HDMI inputs are checked with them off (the Taiwan unit never ran them)
+# com.android.captiveportallogin                # hotel/café Wi-Fi sign-in page: re-enable if you need one
+# com.android.certinstaller                     # installing CA or Wi-Fi certificates by hand
+# com.android.companiondevicemanager            # companion-app pairing dialogs
+# com.android.dynsystem                         # Dynamic System Updates (GSI testing)
+# com.android.localtransport                    # local backup transport
+# com.android.managedprovisioning               # work-profile / device-owner setup
+# com.android.pacprocessor                      # proxy auto-config: re-enable if your network uses a PAC proxy
+# com.android.providers.contacts
+# com.android.se                                # Secure Element service
+# com.android.vpndialogs                        # VPN consent dialogs: re-enable before setting up a VPN app
+# com.android.wallpaper.livepicker
+# com.apps.plugins
+# com.mk.tv.systemserver
+# com.realtek.leanbacklauncher.partnercustomizer
+
+# Kept on purpose: launcherx + setupwraith (see above), com.realtek.tv* / com.realtek.dtv (Live TV, HDMI, AV),
+# key handlers (keyinterceptserver, globalkeyhandler, smartkey, virtualkey, fivekey, bluetoothremote),
+# YouTube, Netflix, Hami Video, KKBOX, Animad, Chromecast, AirPlay, TCL browser, Play Store/Services, Gboard.

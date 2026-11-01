@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55P638 (Smart TV, BeyondTV4)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "TCL promos, voice, unused preloads, TalkBack, MagiConnect, Gallery and BrowseHere off; Chromecast, Miracast, USB MediaPlayer, ambient mode and firmware updater kept; launcher replacement works (CleanYourTV Home); setupwraith before launcherx; reboot-checked; [Live TV config](tcl-55p638/README.md) sets com.tcl.tv for Inputs"
+}

@@ -1,0 +1,72 @@
+# RockTek GX1 (RMQ / HPR312-RockTek, HPR3A1325_4K), Google TV 14,
+# firmware UTT1.250214.001.C1.0.4_20251128.
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/rocktek-gx1/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/rocktek-gx1/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Tested on RockTek GX1 (Skyworth Realtek RTD1325 platform, 4 GB RAM, 32 GB eMMC).
+# Stock Google TV launcher is com.google.android.apps.tv.launcherx; Live TV / inputs
+# are handled through hardware inputs and com.android.tv.settings.
+#
+# Keep these packages: com.google.android.tv.remote.service (Google TV mobile remote bridge),
+# com.sdt.demo.control (RockTek front panel LED control), com.sdt.frontpanelledsservice,
+# com.sdt.globalkey (physical remote keys), com.sdt.mecoolrcupair (Bluetooth pairing),
+# com.dolby.android.audio.service, Play Store, Play Services, and LatinIME keyboard.
+#
+# Home handover:
+# - Stock Google TV Home is com.google.android.apps.tv.launcherx. build-and-install.sh handles
+#   this after it confirms the replacement launcher, so it is commented out below.
+# - com.google.android.tungsten.setupwraith must be disabled for replacement Home to remain active.
+#   Before applying the line, check whether it owns the saved Wi-Fi network: disable.sh will
+#   refuse it while it does. Rejoin the network in Settings first if necessary.
+# - Remote gear / Settings button is Android keycode 83 (KEYCODE_NOTIFICATION) and restored
+#   via HomeKeyService in examples/rocktek-gx1/config.json.
+
+# Android advertising, privacy sandbox, and telemetry
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.cts.ctsshim
+
+# OEM background services, testing, and tracking (Skyworth / Realtek)
+android.autoinstalls.config.RTKSTBAndroid.device
+com.oem.qa
+com.oemservice
+com.realtek.slices
+com.rtk.partnerinterface
+com.sdt.customization
+com.sdt.producttest
+
+# Google background services and setup
+com.android.cameraextensions
+com.android.dreams.basic
+com.android.healthconnect.controller
+com.android.hotspot2.osulogin
+com.android.managedprovisioning
+com.android.nearby.halfsheet
+com.android.providers.calendar
+com.android.wallpaperbackup
+com.google.android.apps.tv.dreamx
+com.google.android.onetimeinitializer
+com.google.android.partnersetup
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.google.android.tts
+
+# Google TV setup wizard: disable only after the Wi-Fi ownership check above and after the new Home works
+com.google.android.tungsten.setupwraith   # costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+
+# Stock Google TV Home: build-and-install.sh handles this after it confirms the replacement launcher
+# com.google.android.apps.tv.launcherx
+
+# Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
+# com.google.android.katniss                   # Google Assistant
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.netflix.ninja                            # Netflix
+# com.amazon.amazonvideo.livingroom            # Prime Video
+# com.google.android.youtube.tv                # YouTube
+# com.google.android.youtube.tvmusic           # YouTube Music
+# com.sdt.ota                                  # RockTek system firmware updates

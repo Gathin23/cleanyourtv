@@ -1,0 +1,55 @@
+# Magcubic HY300 Pro+ projector (rk3566_rgo, Rockchip), Android 14 (SDK 34)
+# Firmware Projector.20260817.160250, 1280x720 panel.
+# Not the firmware of examples/magcubic-hy300-pro/ (Android 11, com.htc.htclauncherhighenglishd08): this one's
+# stock launcher is com.htc.magcubicos, and it also holds the tile Settings (Wi-Fi, Bluetooth, keystone,
+# projection mode) at com.htc.magcubicos/.activity.settings.MainSettingActivity.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/magcubic-hy300-pro-plus/debloat.txt
+# Launcher: TV_HOST=<projector ip> STOCK_LAUNCHER=com.htc.magcubicos launcher/build-and-install.sh
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/magcubic-hy300-pro-plus/debloat.txt com.htc.magcubicos
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Status: applied 2026-10-27 on one projector and used daily through 2026-10-28, reboot-checked several
+# times. Nothing broke. Used and working: Home, Settings (Android's settings, #2101), Inputs (HDMI1),
+# YouTube, the launcher's Open on start.
+#
+# ADB: the firmware's "ADB debug" switch (Other settings > Developer mode) turns on TLS Wireless debugging
+# on 5555, and the firmware has no pairing screen of its own. Pair through com.android.tv.settings (open its
+# Wireless debugging page with Activity Launcher), then `adb tcpip 5555` and Wireless debugging off. 5555
+# closes again at every reboot.
+#
+# Home: with the stock launcher left enabled (STOCK_LAUNCHER=none) the firmware opens com.htc.magcubicos at
+# every boot whatever the default Home, and stock_home_redirect does not help: something with the system uid
+# clears enabled_accessibility_services within seconds, so HomeKeyService never stays bound. Disabling the
+# stock launcher (install line above) makes the projector boot into this launcher. The cost: the tile
+# Settings go with it, so there is no keystone or projection-mode screen and the remote's Settings key does
+# nothing; auto keystone and autofocus (com.hysd.vafocus) stay on. Wi-Fi and Bluetooth are in Android's
+# settings (the Settings pill).
+#
+# Inputs: com.softwinner.vis lists HDMI1-3 and CVBS1-2, but nothing on this firmware handles the
+# passthrough URI as a TV app (ACTION_VIEW on it resolves to OfficeSuite), so config.json sends the Inputs
+# pill to Allwinner's own source picker, com.softwinner.awsource.
+#
+# Kept on purpose:
+# - com.htc.magcubicos: Home, disabled by the install script, not by this list.
+# - com.softwinner.awsource, com.softwinner.vis, com.softwinner.awlivetv: the inputs.
+# - com.hysd.vafocus: auto keystone and autofocus.
+# - com.hy.hyotaupdate, com.softwinner.update: firmware updaters.
+# - com.android.ytb, com.android.nfx: accessibility services behind the remote's YouTube and Netflix keys.
+# - Factory and test packages (com.htc.hyk_test, com.htc.hyk_pcba, com.softwinner.tv.factorymenu).
+# - com.toofifi.lineserver and com.mphotool.usbcastserver ship disabled.
+
+# Apps nobody asked for
+com.android.music
+
+# Printing
+com.android.bips
+
+# Kept on the tested unit, candidates for owners who don't use them:
+# com.mobisystems.office               # OfficeSuite (it also answers the TV passthrough URI)
+# com.hy.storeos                       # vendor app store
+# com.Hydraprimeonline                 # Hydra Prime
+# com.mphotool.airplay                 # AirPlay receiver (ScreenCast)
+# com.mphotool.dlna                    # DLNA receiver (ScreenCast)
+# com.softwinner.miracastReceiver      # Miracast; re-enable if you cast from a phone
+# com.android.toofifi                  # phone-remote service on port 8899 (no auth), mic, camera, location

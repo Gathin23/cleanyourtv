@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 50J7000A (Thailand, BeyondTV, Realtek RT2851 / rtd285o, AR04, V8-R851T02-LF1V674)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "Same AR04 build as `tcl-55ep640/` on Asia-Pacific firmware (TCL-AP-RT2851-S1) with AIS PLAY preloaded; TCL analytics, home-content push, TCL Channel, promos, message box, sticker, Google feedback/partner setup and recommendation rows off; Prime Video, Play Movies/Games, YouTube Music and preloaded games off by choice, voice off by choice; Chromecast, Miracast/MagiConnect, USB media, TCL Browser and the firmware updater kept; Live TV `com.tcl.tv` kept; launcher installed, reboot-checked, lived with for four days"
+}

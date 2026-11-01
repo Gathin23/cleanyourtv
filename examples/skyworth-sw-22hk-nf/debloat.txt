@@ -1,0 +1,60 @@
+# Skyworth SW-22HK NF (device SW6H, MediaTek m7332, ~1.8 GB RAM), Android TV 11 (API 30), firmware RTT2.220103.001
+# Google TV home: com.google.android.apps.tv.launcherx. Live TV / inputs: com.smartdevice.livetv
+# (+ overlay_SANLUX), com.mediatek.tvinput. Same device code (SW6H) as examples/skyworth-sw-22sa, which is Android 14.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-sw-22hk-nf/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-sw-22hk-nf/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Disabled from the factory, so not listed (restore.sh would turn them ON): com.sky.market.
+#
+# Quirks on this firmware, checked on the TV 2026-10-27:
+# - Port 5555 is open when USB debugging is on; stock adb (platform-tools 37.0.1) authenticates after the
+#   "Allow USB debugging?" prompt. `adb exec-out screencap -p` is corrupted by an adbd stdout banner
+#   ("Init wrapper sys mutex successful"), so screencap to a file and `adb pull` it.
+# - disable.sh skips com.Smartdevice.emanual and com.mstar.android.tv.disclaimercustomization here: this
+#   firmware's dumpsys gives no permission block for the input-driver check (#321), so they stay enabled
+#   and are commented out below. Both are harmless.
+# - Launcher handover works (launcher/build-and-install.sh, INPUT_KEY_SERVICE=1). The first run rolled back
+#   because com.google.android.tungsten.setupwraith claimed Home once launcherx was disabled; the saved Wi-Fi
+#   network in use was owned by android.uid.system, so FORCE_SETUPWRAITH=1 was safe, and a second run kept
+#   com.gathin.tvhome as Home through a reboot. Disabling it deleted one stale saved network that setupwraith owned.
+# - The remote's Input key opens Skyworth's source panel (com.smartdevice.dailyshortcut).
+#
+# Kept on purpose: com.smartdevice.livetv + overlay_SANLUX (Live TV), com.mediatek.tvinput (HDMI/tuner/AV),
+# com.smartdevice.dailyshortcut (quick menu), com.smartdevice.duplebluetooth + bleconnectservice (BLE remote),
+# com.dolby.android.audio.service, com.google.android.apps.mediashell (Chromecast), com.google.android.katniss
+# (Assistant), com.google.android.tv.remote.service, com.google.android.youtube.tv, com.netflix.ninja,
+# com.tianci.localmedia, com.smartdevice.factory, Play Store + Play Services, all system/Google core.
+
+# Skyworth content, ads, demos and preloads
+com.smartdevice.recommendation               # Coocaa recommendation rows; bundles Sensors Data analytics
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects rows into the home screen
+com.smartdevice.epopplayer                   # ePop shop demo player
+fusion.android.tv.demo                       # shop demo player
+com.coocaa.demonow.lightining                # "Demo Now" retail mode
+com.smartdevice.myapp                        # "Daily Key" preload (factory-disabled on sister models)
+# com.Smartdevice.emanual                    # on-screen manual; skipped by the input-driver guard here, left on
+# com.mstar.android.tv.disclaimercustomization # retail disclaimer dialogs; skipped by the same guard, left on
+
+# Telemetry and after-sale push
+com.smartdevice.aftersale                    # boot + network receivers, can push APKs
+com.smartdevice.dailymanage                  # "TV Guard" boot service, no documented purpose
+com.google.android.feedback
+
+# Not needed on a TV
+com.security.SwaiotTV                        # Tuya smart-home preload
+# org.liskovsoft.androidtv.rukeyboard       # Russian soft keyboard; left enabled, lists never disable a keyboard
+
+# Unused preloaded streaming / media apps, off by owner's choice
+com.amazon.amazonvideo.livingroom            # Prime Video
+com.google.android.videos                    # Play Movies
+com.google.android.youtube.tvmusic           # YouTube Music
+com.google.android.play.games                # Play Games
+
+# Casting stack not used (Chromecast kept)
+com.smartdevice.dtv.icast                    # Miracast + DLNA
+
+# Handover (applied after the list above; needed only if you install the Clean Your TV launcher)
+com.google.android.tungsten.setupwraith      # RecoveryActivity otherwise steals Home; needs FORCE_SETUPWRAITH=1 when the saved Wi-Fi is not setupwraith's
+com.google.android.apps.tv.launcherx         # stock Google TV home; com.gathin.tvhome is Home now

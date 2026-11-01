@@ -19,9 +19,12 @@ public final class Detection {
     public final List<String> zones;
     /** Frigate stopped tracking it ("end"): it has left the picture, so its box goes. */
     public final boolean ended;
+    /** Frigate counts it as parked: still in the picture, but no longer moving. */
+    public final boolean stationary;
 
     private Detection(JSONObject a, Map<String, int[]> detectSize, boolean ended) {
         this.ended = ended;
+        stationary = a.optBoolean("stationary", false);
         id = a.optString("id", "");
         camera = a.optString("camera", "");
         label = a.optString("label", "");

@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 65PML9506/12 (TP Vision, PH1M_EA_9970A, MediaTek), Spain",
+  "os": "Android TV 11",
+  "brand": "Philips",
+  "notes": "Same board and firmware build as `philips-50pus8517/`, so its quirks apply (`eum` and `aurora` stay on): DAC analytics, usage logging, Top Picks, NetTV store and its silent installer, retail demo; streaming apps, Assistant, Chromecast and DLNA kept; Play-Fi left alone"
+}

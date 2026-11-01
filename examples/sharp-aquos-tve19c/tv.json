@@ -1,0 +1,6 @@
+{
+  "tv": "Sharp AQUOS-TVE19C (sindang, CVTE/MStar)",
+  "os": "Android TV 11",
+  "brand": "SHARP",
+  "notes": "Anoki ACR, store demo; ADB port needs a reboot; Netflix button is KEYCODE_STEM_1; Freeview apps came factory-disabled"
+}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- No permissions: no network, no storage (pictures live in the app's own folder), no overlay, nothing at boot. -->
+
+    <!-- To know whether this TV has a real file picker and a device-name screen, before offering them. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.OPEN_DOCUMENT" />
+            <data android:mimeType="image/*" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+            <data android:mimeType="image/*" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.DEVICE_NAME" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.DEVICE_INFO_SETTINGS" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+
+        <!-- The tile and card: the settings. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+
+        <!-- The welcome screen. Preview opens it directly. A task of its own, so closing it goes back to whatever
+             was on screen, not to this app's last screen. -->
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
+        <!-- The door for others: a remote button (the launcher's app_keys) or a launcher hook opens .Welcome. It
+             shows only while the welcome screen is on, and reads nothing from the intent. -->
+        <activity-alias
+            android:name=".Welcome"
+            android:exported="true"
+            android:targetActivity=".WelcomeActivity" />
+
+        <activity android:name=".ImageActivity" android:exported="false" />
+        <activity android:name=".CompatActivity" android:exported="false" />
+        <activity android:name=".ResetActivity" android:exported="false" />
+
+        <!-- push-image.sh writes pictures through this, so the app owns them. WRITE_SECURE_SETTINGS: the adb shell
+             has it, ordinary apps don't. -->
+        <provider
+            android:name=".PicturesProvider"
+            android:authorities="io.github.maxhayim.startupbranding.pictures"
+            android:exported="true"
+            android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+    </application>
+</manifest>

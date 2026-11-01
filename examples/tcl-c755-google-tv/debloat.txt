@@ -20,6 +20,22 @@
 # Applied and verified on a real unit on 2026-10-20: Wi-Fi, HDMI switching (Inputs menu), Assistant,
 # Disney+/Netflix playback with AdGuard Private DNS, and the launcher's clock screensaver all worked.
 #
+# Second unit, UAE, same firmware (UTT2.250416.001 AU02, G08_4K_GB), applied in one session on 2026-10-27:
+# the same list, except AirPlay, Miracast, T-Cast and the game bar were kept, and Netflix, Prime Video and
+# YouTube were disabled too (owner's choice; Stan was not installed). All 33 packages stayed disabled
+# across two reboots, and power-on lands on the launcher, not Live TV. HDMI switching from the Inputs menu,
+# the Input button's source panel, the mic, and SmartTube playback with AdGuard Private DNS worked.
+# - setupwraith owned a saved Wi-Fi network that was out of range, so TV Settings never listed it to
+#   forget; the TV was on a different network saved from Settings. `cmd wifi forget-network <id>` on the
+#   setupwraith-owned ID (`cmd wifi list-networks`, `dumpsys wifi | grep cname=`) cleared it, and
+#   tools/disable.sh then disabled setupwraith with Wi-Fi unaffected.
+# - This remote's YouTube button is KEYCODE_BUTTON_3 (190, scancode 240, usage 0x000c0057), not 4065;
+#   with launcherx disabled it goes to launcherx's GlobalKeyListener_Receiver and does nothing. The gear
+#   button worked with settings_key_keycodes 83 + 4077 and HOME_KEY_SERVICE=1.
+# - Key helpers cost the volume ramp on this Android 14 firmware too (docs/devices/tcl-55p71b-g09-key-repeat.md):
+#   with HomeKeyService and InputKeyService bound, a held Volume Up moves one step; with the list empty and
+#   accessibility_enabled 0 it ramps. The owner kept the ramp and no helpers.
+#
 # Known quirks on this firmware:
 # - The remote (BT_RC833_A1) sends KEYCODE_TV_INPUT for Input, and TCL's input policy hands it to
 #   com.tcl.suspension before accessibility services see it, so INPUT_KEY_SERVICE=1 can't redirect it.

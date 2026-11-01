@@ -3,6 +3,9 @@
 # Fingerprint Tornado/SW4H_Tornado/SW4H:11/RTM5.220609.106/20231126:user/release-keys.
 # ro.product.model "TORNADO Android TV", manufacturer skyworth. armeabi-v7a, 1.7 GB RAM, 1920x1080 @ 320 dpi.
 # Same Skyworth SW4H platform as examples/panasonic-4ktv-0su and examples/karbonn-swtv-20ae.
+# Unit 2: realme Smart TV (India), product SW4H_FF_realme, device SW4H_FF, board SW4, MediaTek m7332, the same
+#   build RTM5.220609.106 (built 2023-12-08, security patch 2023-10-06), armeabi-v7a only, 1.7 GB RAM,
+#   1920x1080 @ 320 dpi. Its notes are under "Unit 2" below.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tornado-65ua1400e/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tornado-65ua1400e/debloat.txt com.google.android.tvlauncher
@@ -16,7 +19,9 @@
 # Updates:         no separate firmware-update package; updates live in Settings.
 #
 # Disabled at the factory, so not listed (restore.sh would turn them ON): com.sky.market,
-# com.smartdevice.tvworkwithalexa.
+# com.smartdevice.tvworkwithalexa. Unit 2 also ships com.homwee.howtocast, com.smartdevice.dtv.icast (CastPlay)
+# and com.liskovsoft.leankeyboard disabled, and has no com.smartdevice.recommendation or
+# com.Smartdevice.emanual installed at all (disable.sh only reports them as missing).
 #
 # KEEP, even though the names look like bloat (checked on this TV with dumpsys package):
 # - fusion.android.tv.demo: receives com.mstar.android.intent.action.TV_INPUT_BUTTON (the remote's Input
@@ -49,6 +54,28 @@
 #   receivers (~300 MB together). Kept installed here; `cmd appops set <pkg> RUN_ANY_IN_BACKGROUND ignore`
 #   then `cmd appops write-settings` (survives reboot) leaves them cached-empty and stops Yango's
 #   :passport and :AppMetrica processes; used PSS 739 MB -> 679 MB. Undo: `cmd appops reset <pkg>`.
+#
+# Unit 2 (realme Smart TV), applied 2026-10-28 in five batches with a screenshot after each, then the
+# CleanYourTV launcher, two reboots and several days of daily use. Every disable held across both reboots.
+# Seen on that unit:
+# - com.smartdevice.speedchannels is installed there and is not in unit 1's list: Coocaa's recommendation
+#   channels (TvRecommendationMainActivity), with a notification-listener service and Coocaa's dataer and
+#   upgrader components. Disabled with batch 2 (below); Home and Live TV were unaffected.
+# - tools/disable.sh skipped six packages in the first pass because they request no permissions, so its
+#   input-driver check could not read them: android.autoinstalls.config.SW,
+#   com.mstar.android.tv.disclaimercustomization, com.android.htmlviewer, com.android.wallpaperbackup and
+#   both com.android.cts.*ctsshim. They were disabled afterwards with TVINPUT_ALLOW=1, once HDMI 1 and Live TV
+#   had been checked after a reboot. After that Live TV still opened and the TV rebooted onto the launcher;
+#   HDMI was checked before these six went, not again straight after.
+# - The Home handover worked as on unit 1: launcher/build-and-install.sh with the default STOCK_LAUNCHER
+#   disabled tvlauncher, Home resolved to com.gathin.tvhome, and setupwraith (left enabled) did not take it.
+#   dumpsys wifi listed the saved network's owners as android.uid.system and com.google.uid.shared.
+# - After each reboot the TV came up on the launcher, not on Live TV (no boot_to_live_tv or power_on_home).
+# - On the real remote Home, Back, Input, the app buttons and Settings all worked with no key helper (no
+#   HomeKeyService or InputKeyService). This remote has no mic button, so the mic-button check on
+#   com.google.android.tv.remote.service (it runs AtvSearchAssistantService) could not be made; it is kept
+#   anyway, with the Assistant, Chromecast (mediashell) and the other streaming apps.
+# - Private DNS works on this set (see the README's optional DNS extra).
 
 # --- Batch 1: Google attribution/feedback, a print spooler, and Skyworth's partner rows / "Shop" tab
 com.google.android.feedback                   # Google feedback uploader
@@ -62,6 +89,7 @@ com.smartdevice.acr.recommendation          # ACR: recognises what is on screen 
 android.autoinstalls.config.SW              # Play Auto Installs config that pushes preloads
 com.smartdevice.recommendation              # "Daily Play" sponsored app + row (Coocaa data collector inside)
 com.smartdevice.epopplayer                  # e-POP shop-floor promo player
+com.smartdevice.speedchannels               # Unit 2: Coocaa recommendation channels and notification listener
 com.Smartdevice.emanual                     # on-screen manual (E-Manual)
 com.mstar.android.tv.disclaimercustomization  # disclaimer screen used only by first-run setup
 com.qjy.browser                             # preloaded Chinese WebView browser
@@ -81,3 +109,10 @@ com.android.providers.calendar
 com.google.android.tvrecommendations                   # stock launcher recommendation rows
 com.google.android.leanbacklauncher.partnercustomizer  # "Featured by Google Play" partner row config
 # com.google.android.tvlauncher   # launcher/build-and-install.sh disables the stock launcher itself, after Home has moved
+
+# --- Also disabled on Unit 2 by its owner's choice (apps they do not use; comment in only what you do not use)
+# com.google.android.play.games      # Google Play Games
+# com.google.android.marvin.talkback # TalkBack screen reader (off unless switched on)
+# com.google.android.videos          # Google TV movies and rentals
+# com.google.android.backdrop        # Ambient-mode screensaver; the launcher's clock replaces it
+# com.tianci.localmedia              # Skyworth "Media" app that plays files from a USB drive

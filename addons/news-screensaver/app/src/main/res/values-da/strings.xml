@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nyheds-pauseskærm</string>
+    <string name="dream_name">Nyheder</string>
+    <string name="loading_title">Henter nyheder…</string>
+    <string name="offline_title">Ingen nyheder lige nu</string>
+    <string name="offline_body">Kilderne kunne ikke nås. Tjek tv\'ets netværksforbindelse og kildernes adresser; pauseskærmen prøver igen om et par minutter.</string>
+    <string name="no_feeds_title">Ingen kilder</string>
+    <string name="no_feeds_body">Tilføj et RSS- eller Atom-feed i pauseskærmens indstillinger eller med setup.sh.</string>
+    <string name="settings_title">Nyheds-pauseskærm</string>
+    <string name="seconds_per_headline">Sekunder pr. overskrift: %1$d</string>
+    <string name="feeds_heading">Kilder (OK på en kilde fjerner den)</string>
+    <string name="feed_add">Tilføj kilde</string>
+    <string name="feed_hint">Navn | https://example.com/rss.xml (navnet kan udelades)</string>
+    <string name="feed_invalid">Brug en https://-adresse, gerne efter et navn og en streg: Navn | https://…</string>
+    <string name="feed_too_many">Listen over kilder er fuld (%1$d).</string>
+    <string name="feed_remove">Fjern denne kilde?</string>
+    <string name="feed_remove_yes">Fjern</string>
+    <string name="settings_info">Hvornår pauseskærmen starter, indstilles i tv\'ets egne indstillinger (Pauseskærm eller Energibesparelse) eller med setup.sh. Nyhederne opdateres hvert 15. minut, mens den vises.</string>
+    <string name="preview">Vis eksempel</string>
+</resources>

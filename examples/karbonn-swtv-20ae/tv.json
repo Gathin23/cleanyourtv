@@ -1,0 +1,6 @@
+{
+  "tv": "Karbonn / Motorola SWTV-20AE (Skyworth OEM, SW4H, MediaTek), India",
+  "os": "Android TV 10",
+  "brand": "Karbonn",
+  "notes": "Same SW4H platform as Panasonic 4KTV-0SU, also sold as Motorola SWTV-20AE (same build); Skyworth ACR, ad-row injector, ePop demo, e-manual, Airtel Xstream, Facebook and India-specific preloads; Google feedback and recommendation rows; 1.68 GB RAM, 32-bit armeabi-v7a; com.sky.market is a protected package (SecurityException); animation scales halved + background_process_limit 2 for extra performance on low RAM; Live TV is com.smartdevice.livetv; tvrecommendations caused 2 s system freezes (D-pad runaway) on the Motorola unit; firmware resets the screensaver at boot"
+}

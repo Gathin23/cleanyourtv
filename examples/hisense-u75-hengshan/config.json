@@ -1,0 +1,24 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tvunplugged",
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.hulu.livingroomplus",
+    "com.disney.disneyplus",
+    "com.wbd.stream"
+  ],
+  "hidden_apps": [
+    "com.vt.tv.tvcenter"
+  ],
+  "live_tv_package": "com.vt.tv.tvcenter",
+  "columns": 6,
+  "rows_below_dock": 0,
+  "settings_key_keycodes": [83],
+  "settings_key_panel": true,
+  "app_keys": [
+    "190:com.google.android.youtube.tv",
+    "295:com.amazon.amazonvideo.livingroom",
+    "607:com.disney.disneyplus",
+    "606:com.tubitv"
+  ]
+}

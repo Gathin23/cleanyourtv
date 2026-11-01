@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Foto stampate</string>
+    <string name="date_format">EEEE  d MMMM</string>
+    <string name="empty_title">Ancora nessuna foto</string>
+    <string name="empty_body">Copia le foto in questa cartella sulla TV con photos.sh o adb push:</string>
+</resources>

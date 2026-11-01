@@ -23,6 +23,34 @@
 # "second set" below are disabled on that stick on top of the original list.
 # Region note: the ID unit has only the misspelled autoinstalls package below, and
 # none of the preloaded apps in the original list (DAZN, Red Bull TV, Duo, TCL browser).
+#
+# Third verified set (France unit, same firmware PI.2055, patch 2022-08-05, debloated 21 Oct 2026; the group
+# marked "third set" below is on top of the original list, plus voice, Chromecast, Mi Cast, the phone remote and
+# the updater off by the owner's choice). Notes from that unit:
+# - The Home key arrived as KEYCODE_HOME (3), not ALL_APPS: `interceptKeyTq keycode=3` in logcat, then HOME
+#   started the launcher. HOME_KEY_SERVICE=1 was used anyway and does no harm; check your remote's revision.
+# - The Netflix key is Xiaomi keycode 1001, consumed by the system in interceptKeyBeforeQueueing without
+#   POLICY_FLAG_PASS_TO_USER, which launches Netflix itself. Accessibility services never see it, so it cannot
+#   be remapped (app_keys, Button Mapper) without root; with Netflix disabled the key just does nothing.
+# - Closing ADB: switching off "USB debugging" alone, then rebooting, left 5555 open. Switching off the
+#   Developer options master switch and rebooting closed it (tools/adb-closed.py: refused).
+# - Free memory: about 150 MB stock, about 265 MB right after a reboot with the list and the launcher.
+#
+# Fourth verified set (Peru unit, older firmware PI.1241, debloated 29 Oct 2026 with the launcher, HOME_KEY_SERVICE=1
+# and a dock of Netflix / YouTube / Disney+ / Prime Video). Every uncommented line below that this firmware has was
+# disabled, except setupwraith; the commented-out ones (voice, Mi Cast, the updater) stayed enabled, and so did
+# Chromecast. Notes from that unit:
+# - setupwraith owned the saved Wi-Fi network (`dumpsys wifi | grep -o 'cname=[^ ]*'` showed
+#   cname=com.google.android.tungsten.setupwraith), so it stayed enabled: disabling it would have taken the stick off
+#   Wi-Fi and ADB. Check this before applying the list as it is.
+# - Not installed on PI.1241: android.autoinstalls.config.xiaomi.mibox3 (only the "xioami" one is), com.dazn, Red Bull TV,
+#   Duo, the TCL browser, com.mitv.tvhome.atv, com.mitv.download.service, com.mitv.videoplayer, com.xm.webcontent and
+#   Alphonso. tools/disable.sh reports those lines and goes on.
+# - After the last batch, `sync` and a 15 s wait were not enough: after the reboot the last eight packages
+#   were enabled again. Disabling them again and waiting about 40 s before the reboot kept all of them.
+# - The real Home button returned to the launcher with HOME_KEY_SERVICE=1.
+# - Closing ADB: revoking the USB debugging authorisations, switching off the Developer options master switch and
+#   rebooting closed 5555 (tools/adb-closed.py: refused), as on the third set.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
@@ -45,7 +73,15 @@ com.google.android.apps.tachyon             # Google Duo
 com.google.android.play.games
 com.tcl.browser
 
+# Xiaomi extras (third set)
+com.xiaomo.tv.milegal                       # Xiaomi privacy-policy screen (sic, "xiaomo"); nothing else uses it
+
 # Xiaomi services (second set)
+# mitv.service registers the TvService system service that Xiaomi's own settings app reads the hardware
+# configuration from. Disabled on a China-market set whose settings app is com.xiaomi.mitv.settings it
+# freezes Settings for 20-30 s and then crashes it (#1310); the second set has run with the line below
+# disabled in daily use since 21 Oct 2026. Why, and how to put the service back without a reboot:
+# docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
 mitv.service                                # MiTV service framework for the rows removed above
 com.mitv.download.service                   # PatchWall download service
 com.mitv.videoplayer                        # stock Mi video player; comment out if you use it
@@ -60,7 +96,7 @@ com.google.android.tv                       # Live Channels; the stick has no tu
 # (com.android.providers.tv, the TV content provider, stays enabled: the repo never disables it)
 com.google.android.videos                   # Google Play Movies & TV
 com.google.android.youtube.tvmusic         # YouTube Music TV
-com.google.android.tungsten.setupwraith     # setup wizard: gives Home back, costs casting (comment out to keep casting)
+com.google.android.tungsten.setupwraith     # setup wizard: gives Home back, costs casting (comment out to keep casting); keep it if it owns the saved Wi-Fi (fourth set)
 com.google.android.partnersetup
 com.google.android.onetimeinitializer
 com.android.onetimeinitializer

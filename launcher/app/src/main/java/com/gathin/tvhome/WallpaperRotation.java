@@ -83,6 +83,11 @@ final class WallpaperRotation {
     }
 
     static boolean due(long previous, long now, long interval) {
-        return interval > 0 && (previous == 0 || now < previous || now - previous >= interval);
+        // The minute tick is a Handler postDelayed, so it drifts by tens of milliseconds and often lands a few
+        // hundred short of the interval. Compared exactly, that pass is skipped and the picture waits a whole
+        // extra interval - a one-minute collection then changes every two. Two seconds of slack absorbs the
+        // drift without letting a genuinely early call advance the picture.
+        long slack = Math.min(2_000L, interval / 10);
+        return interval > 0 && (previous == 0 || now < previous || now - previous >= interval - slack);
     }
 }

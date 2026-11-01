@@ -1,0 +1,47 @@
+# Xiaomi MiTV-AXFR0 (codename rango, product dune; Amlogic/droidlogic, 1 GB RAM, India), Android TV 11 (SDK 30),
+# firmware RTT0.210630.002.1986 (Xiaomi/dune/rango:11/RTT0.210630.002/1986), security patch 1 November 2025.
+# Same firmware family as xiaomi-mitv-axfr1 (ships android.autoinstalls.config.xioami.dangal).
+# Live TV app: com.android.tv (also owns the input picker, .input.SelectInputActivity).
+# Stock launcher: com.google.android.tvlauncher (the default, disabled by build-and-install.sh).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-axfr0/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-axfr0/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - USB debugging alone opens port 5555; no wireless-debugging pairing needed.
+# - Sideloading works, and third-party HOME app is accepted without a Xiaomi signature.
+# - setupwraith is installed but does not claim HOME here, so it can stay enabled.
+# - PatchWall (com.mitv.tvhome.atv) also contains an InputSourcePopupActivity, but the Settings key opens
+#   stock TV Settings and the Inputs panel is com.android.tv's, so PatchWall is safe to disable.
+# - Default IME is Gboard.
+# - Katniss / Google Assistant and Chromecast built-in remain fully functional.
+
+# Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+
+# PatchWall, content rows, sponsored rows
+com.mitv.tvhome.atv
+com.xm.webcontent
+com.google.android.tvrecommendations
+android.autoinstalls.config.xioami.dangal
+
+# Xiaomi background services
+com.mitv.tvlock
+com.xiaomi.mitv.tvmanager
+com.xiaomo.tv.milegal
+
+# Screen mirroring (Chromecast built-in kept per user preference)
+com.xiaomi.mitv.smartshare
+com.xiaomi.wfdsinkhelperservice
+com.mitv.milinkservice
+
+# Firmware updates: kept, so updates still arrive (uncomment to stop them)
+# com.xiaomi.mitv.updateservice
+
+# Preloaded / unused apps
+com.xiaomi.mimusic2
+com.sonyliv
+in.startv.hotstar

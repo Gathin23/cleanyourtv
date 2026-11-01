@@ -1,0 +1,6 @@
+{
+  "tv": "Kogan Google TV (Changhong CHiQ AI PONT, GTVU65KG, dangni, MediaTek mt5867), Australia",
+  "os": "Google TV 14",
+  "brand": "Kogan",
+  "notes": "Same board as chiq-gtvu65 on UKN3 firmware; Google ad services and auto-installs, feedback, Homwee store/help; Homwee screenshare packages are the AirPlay receiver (keep for iPhones); Chromecast, voice, OTA kept; AdGuard DNS validates; debloat only; reboot-checked"
+}

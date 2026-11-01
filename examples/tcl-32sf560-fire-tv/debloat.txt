@@ -1,0 +1,137 @@
+# TCL 32SF560 (TCL Fire TV, AFTSHN02, codename shine), Fire OS 7.7.1.7 / Android 9 (SDK 28),
+# build PS7717.5741N.0036408028416 - the same build as examples/toshiba-fire-tv-aftha004, whose list plus
+# amazon-fire-tv-afttiff43, amazon-fire-tv-stick-lite-2020, insignia-ns55f301na25 and amazon-fire-tv-afteu014
+# were the starting point, filtered to the packages this set actually ships.
+#
+# FIRE OS: DEBLOAT ONLY. Fire OS will not let a third-party launcher take over Home: com.amazon.tv.launcher
+# claims HOME at priority 950 (com.amazon.firehomestarter at 1), both are protected packages, and
+# `cmd package set-home-activity` prints Success but changes nothing. This list removes Amazon's telemetry,
+# ads, preloads and voice assistant around the stock home screen. Live TV app: com.amazon.tv.livetv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-32sf560-fire-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-32sf560-fire-tv/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Applied on 2026-10-24 in four batches with a screenshot after each, then rebooted: all 83 stayed disabled
+# across that reboot, and HDMI, Live TV, Settings and the sideloaded streaming apps were confirmed on the set
+# afterwards. Lived with since that day; re-check after a firmware update, Fire OS resets some packages.
+#
+# Not listed because pm disable-user refuses it ("Cannot disable a protected package") on this build:
+# com.amazon.device.software.ota, com.amazon.device.software.ota.override (firmware and security updates keep
+# running - Amazon enforces them here), com.amazon.device.sync, com.amazon.device.sync.sdk.internal,
+# com.amazon.sync.service, com.amazon.diode, com.amazon.platform.fdrw, com.amazon.securitysyncclient,
+# com.amazon.tcomm, com.amazon.tcomm.client. Also not listed: com.amazon.vizzini (Alexa voice), which Fire OS
+# re-enables at every boot on 7 and 8, so the microphone button comes and goes; com.amazon.vizzini.ftvcds below
+# does stay off.
+#
+# Kept on purpose: the stock launcher, Live TV and the whole tuner and input stack (channelscan,
+# conditionalaccess, franktvinput, com.vewd.*, com.droidlogic.*, inputpreference.service), Settings and Quick
+# Settings, the on-screen keyboard, remote and Bluetooth pairing, profiles and parental controls, the Appstore,
+# Prime Video, AirPlay, the screensaver, OTA, and every app the owner sideloaded (Netflix, Disney+, Prime,
+# HBO Max, Apple TV, YouTube, Kodi, ZDF, ARD, MagentaTV, 7TV, JustWatch, Downloader). Miracast and DIAL
+# receivers are off by choice - casting *to* this TV is not used; nothing here touches casting *from* it.
+
+# Ads, shopping, content recognition
+com.amazon.tv.acr                        # Automatic Content Recognition; also sees HDMI input
+com.amazon.hybridadidservice             # advertising ID
+com.amazon.kso.blackbird                 # launcher ad sync / bidding
+com.amazon.dpcclient                     # device personalization, ad profiles
+com.amazon.shoptv.client                 # Shop on Fire TV
+com.amazon.tv.democontent.provider       # retail demo content
+
+# Telemetry, metrics, log and diagnostic uploads
+com.amazon.tv.fw.metrics
+com.amazon.neo.minerva                   # metrics pipeline
+com.amazon.neo.minerva.logcat
+com.amazon.wirelessmetrics.service       # Wi-Fi metrics upload
+com.amazon.perfcollection
+com.amazon.perfc
+com.amazon.dp.logger                     # log upload
+com.amazon.client.metrics.api
+com.amazon.tcomm.jackson                   # Amazon's own telemetry transport (tcomm itself is protected)
+com.amazon.ceviche                       # data-collection pipelines
+com.amazon.privacypassservice
+com.amazon.spiderpork
+com.amazon.neodelegate
+com.amazon.neopactservice
+com.amazon.csm.htmlruntime
+com.amazon.communication.discovery
+com.amazon.fireos.cirruscloud
+com.amazon.rtcsessioncontroller
+com.amazon.alta.h2clientservice
+com.amazon.audiolatencymeasurer
+com.amazon.livedeviceservice
+com.amazon.wifilocker                    # uploads Wi-Fi passwords to Amazon
+com.amazon.whisperjoin.middleware.np     # "frustration-free" setup of other Amazon devices
+
+# Tutorials, promos, Amazon content and the recommendation rows
+com.amazon.storm.lightning.tutorial      # remote tutorial
+com.amazon.tmm.tutorial                  # remote tutorial
+com.amazon.gamehub                       # Luna / games hub
+com.amazon.bueller.music                 # Amazon Music
+com.amazon.bueller.photos                # Amazon Photos
+com.amazon.minitv.android.app            # Freevee / miniTV
+com.amazon.naatyam
+com.amazon.tahoe                         # Amazon Kids
+com.amazon.tv.localgallery               # local gallery (not a USB media player)
+com.amazon.sneakpeek                     # auto-playing previews on Home
+com.amazon.tv.easyupgrade                # "Upgrade your Fire TV" promos
+com.amazon.tv.releasenotes               # "What's new" notes
+com.amazon.systemnotices                 # system popups
+com.amazon.uxnotification                # UX popups
+com.amazon.tv.notificationcenter
+com.amazon.tv.developer.dataservice      # content personalization for third parties
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.media.recommendations         # sponsored / recommendation rows
+com.amazon.hedwig                        # Fire TV Channels
+com.amazon.providers.contentsupport
+com.amazon.ods.kindleconnect             # "show on Fire TV" from an Echo or Fire tablet
+
+# Alexa / voice assistant (vizzini itself is not listed: it returns at every boot)
+com.amazon.vizzini.ftvcds
+com.amazon.aria                          # Alexa surfaces
+com.amazon.cardinal
+com.ivona.orchestrator                   # Alexa TTS
+com.ivona.tts.oem
+com.amazon.aca                           # Alexa hints and cues, about 44 MB of always-on service
+com.amazon.aiondec                       # Alexa skill connections
+com.amazon.alexa.datastore.app
+com.amazon.alexadirectivebrokerservice
+com.amazon.alexa.externalmediaplayer.fireos
+com.amazon.alexamediaplayer.runtime.ftv
+com.amazon.tv.alexaalerts                # alarms, timers, reminders
+com.amazon.tv.alexanotifications
+com.amazon.audiohome                     # Alexa Home Theater
+com.amazon.firetv.androidskillconnectioncapability
+
+# Cast receivers: this TV as a target for Miracast, Fling and DIAL (off by choice)
+com.amazon.cast.sink                     # Miracast sink
+com.amazon.awvflingreceiver
+com.amazon.dialservice
+
+# Firmware update promoter (the enforced OTA packages are protected and keep running)
+com.amazon.tv.forcedotaupdater.v2
+
+# Printing (nothing prints from this set)
+com.android.bips
+com.android.printspooler
+
+# Silk browser and its website shortcut
+com.amazon.cloud9                        # Silk
+com.amazon.tv.website_launcher           # opens websites in Silk
+
+# Amazon account and device sync
+com.amazon.sync.provider.ipc
+com.amazon.device_remote_config_sync_service
+
+# Media browser services (Spotify over Alexa, whole-home audio)
+com.amazon.spotify.mediabrowserservice
+com.amazon.wha.mediabrowserservice
+
+# Placeholder apps with no launchable activity (versionName=9, no start activity)
+com.amazon.dummy.alarmclock
+com.amazon.dummy.calendar
+com.amazon.dummy.contacts
+com.amazon.dummy.gallery
+com.amazon.dummy.music
+com.amazon.dummy.settings

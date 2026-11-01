@@ -9,6 +9,13 @@
 # com.google.android.katniss come back as enabled=1. Disabling them again only lasts until the next boot.
 # With the stock launcher gone, the Free TV rows have nowhere to show anyway.
 #
+# Second unit (France, 2026-10-27), same build UKNV.260603.001, same result after three reboots. Two more
+# findings on it: com.zhixin.logservice.nebula keeps a process after pm disable-user (it is persistent and
+# shares the system uid, so dumpsys activity processes still lists it as *PERS*), and it reaches
+# aiot-nebula-api-pr.goroav.com at boot; the README says what com.oceanwing.nebulalinker, kept below, sends
+# to the same host. com.android.devicelockcontroller answers pm disable-user with
+# "Cannot disable a protected package", so it is not listed.
+#
 # Stock launcher: com.google.android.tvlauncher (classic Android TV home, HOME priority 2). The setup wizard
 # (setupwraith) does NOT claim HOME on this build, but it owns the Wi-Fi network saved during first setup,
 # so it is deliberately not in this list. Wireless debugging is on from the factory and port 5555 was open.
@@ -53,6 +60,14 @@ com.google.android.backdrop                  # Ambient Mode screensaver
 com.google.android.katniss                   # Google Assistant / voice search (mic button stops working)
 com.google.android.play.games                # Google Play Games
 com.google.android.marvin.talkback           # TalkBack screen reader
+# The second unit also turned these off and lived with them; uncomment the ones you do not use:
+# com.google.android.videos                  # Google Play Movies & TV
+# com.google.android.youtube.tvmusic         # YouTube Music
+# com.google.android.tts                     # Google text-to-speech, idle once Assistant and TalkBack are off
+# com.google.android.syncadapters.calendar   # Google Calendar sync
+# com.android.healthconnect.controller       # Health Connect
+# com.android.health.connect.backuprestore   # Health Connect backup
+# com.android.nearby.halfsheet               # Nearby device pop-ups
 
 # --- Stock home screen (only after the new launcher is installed: launcher/build-and-install.sh) ---
 com.google.android.tvlauncher                # stock Android TV home: sponsored banner, "Free TV" and recommendation rows

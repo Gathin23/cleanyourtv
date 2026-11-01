@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 50P615 (Greece and Türkiye, BeyondTV, Realtek RTD2851 / rtd285o, AR05)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "Same series as `tcl-43p615/` and the same AR05 firmware as the BeyondTV2 Android 11 list; ships `tclhome_master` (absent on the 43P615); TCL analytics, promos, TCL Channel, TGuard and USB media centre off; voice off by choice, Chromecast, Miracast/MagiConnect, OTA, the phone remote and AirScreen (AirPlay) kept; nothing re-enabled after a reboot, but the kept TCL updater re-enabled TCL Channel on a second unit by updating it; HDMI 1-3, AV and Live TV through TvInputManager, launcher installed and every real remote button checked"
+}

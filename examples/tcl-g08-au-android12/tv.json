@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV Pro (G08, G08_4K_GB, MediaTek), Australian firmware",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "Same fingerprint as the EU G08 list (STT2.221228.001 AS34) plus the Australian preloads: Stan, AirPlay (kept), TCL Channel, TCL Live free channels (channelplus), e-sticker, hotel portal, TCL Guard; no Google Cast or voice assistant. Launcher with HomeKeyService: Settings, TV (HDMI 1), YouTube→SmartTube and Netflix→Plex buttons mapped, at the cost of volume repeat (measured on this G08 too). No aerial, so with channelplus off there is no Live TV: the tuner only holds TCL Live IP channels and falls back to HDMI 1"
+}

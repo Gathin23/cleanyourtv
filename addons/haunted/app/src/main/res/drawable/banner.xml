@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a ghost under an orange moon on night. Drawn for this add-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF07050B" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFFF7A1A" android:pathData="M250,50a22,22 0 1,0 0.1,0z" />
+    <path android:fillColor="#FFEDE7F6" android:pathData="M130,150L130,86a30,30 0 0,1 60,0L190,150L180,140L170,150L160,140L150,150L140,140z" />
+    <path android:fillColor="#FF07050B" android:pathData="M143,84a5,6 0 1,0 10,0a5,6 0 1,0 -10,0zM167,84a5,6 0 1,0 10,0a5,6 0 1,0 -10,0z" />
+</vector>

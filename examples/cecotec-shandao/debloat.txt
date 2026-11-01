@@ -3,6 +3,13 @@
 # ro.product.manufacturer = vestel, ro.product.model = "Android TV".
 # UK-market firmware: every uk.co.freeview.* package already ships disabled.
 #
+# Second unit: Toshiba 65QA7D63DG (Norway), the same Vestel shandao board under the Toshiba badge:
+# ro.product.brand = Toshiba, ro.product.name = EMIR_Toshiba, ro.product.model = "Android TV",
+# Android 14 (API 34), firmware UKNV.260528.001, 1.8 GB RAM. The whole list applied as is; only
+# com.smartdevice.tv.aircast is not installed there. Reboot-checked: Home, every HDMI input, Live TV
+# and the remote's app, Input and Settings buttons work. On this firmware
+# com.google.android.tvrecommendations comes back enabled at every boot (see its line below).
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/cecotec-shandao/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/cecotec-shandao/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -41,6 +48,9 @@
 # _airplay._tcp and _raop._tcp through NsdManager and listens on 7000. It is useless on a managed
 # network that isolates clients, though, because mDNS never reaches the other devices. Check with
 # `arp -n <tv ip>`: a placeholder MAC means proxy ARP and no AirPlay discovery, whatever you install.
+# Toshiba owner's choices: Netflix, Prime Video, Disney+, YouTube, Chromecast and the aerial
+# screensaver (com.google.android.backdrop, kept) stay; Assistant (katniss) off as below, which
+# leaves that remote's microphone button doing nothing; RiksTV off (commented line below).
 
 # Vestel telemetry, logging and "cleaner"
 com.vestel.vestelreporter                        # Vestel reporter: INTERNET + BOOT_COMPLETED, no UI
@@ -80,6 +90,11 @@ com.google.android.backdrop                      # Google aerial screensaver
 com.google.android.tvrecommendations             # launcher recommendation rows. Only safe
                                                  # once com.gathin.tvhome owns Home and
                                                  # com.google.android.tvlauncher is disabled.
+                                                 # Toshiba UKNV.260528.001 re-enables it at every
+                                                 # boot; harmless with tvlauncher off, so leave it.
+# no.rikstv.atv                                  # RiksTV (Norway units). Off by choice on the Toshiba.
+                                                 # It serves its own TvInputService for its channels,
+                                                 # not HDMI or the tuner: inputs survive with it off.
 
 # MediaTek extras
 com.mediatek.wwtv.mediaplayer                    # MediaTek's USB media player. Skipped by the

@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense HG9 (HiSmart 4K A4FFM)",
+  "os": "Android TV 9",
+  "brand": "Hisense",
+  "notes": "ACR collector, Smartsense, log reporter, store mode, B2B; FLauncher used instead of stock; two more units ran launcher/ as Home: USB debugging alone opened ADB, setupwraith kept (owns the saved Wi-Fi), remote app buttons work without app_keys"
+}

@@ -36,6 +36,14 @@ final class CardText {
         return m;
     }
 
+    /** Shown over an empty picture when Frigate sends no frame: what went wrong, and where to fix it. */
+    static String noPicture(boolean newCertificate, String error) {
+        if (newCertificate) return "No picture: Frigate has a new certificate.\nTrust it in Frigate Glance › Overview › Frigate.";
+        if (error == null || error.isEmpty()) return "No picture: Frigate not reached.";
+        // An SSL or socket error arrives as "java.net.Foo: why"; the class name means nothing on a TV.
+        return "No picture: Frigate not reached.\n" + error.replaceFirst("^([a-z]+\\.)+[A-Za-z]+(Exception|Error): ", "");
+    }
+
     static String duration(int minutes) {
         return minutes % 60 == 0 ? (minutes / 60) + "h" : minutes + " min";
     }

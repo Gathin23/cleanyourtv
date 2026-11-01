@@ -1,0 +1,17 @@
+{
+  "dock_apps": [
+    "com.plexapp.android",
+    "com.google.android.youtube.tv",
+    "com.collegehumor.chdropout",
+    "com.spotify.tv.android"
+  ],
+  "hidden_apps": [
+    "com.tcl.tv"
+  ],
+  "live_tv_package": "",
+  "columns": 4,
+  "rows_below_dock": 0,
+  "reduced_motion": true,
+  "key_filter": false,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+}

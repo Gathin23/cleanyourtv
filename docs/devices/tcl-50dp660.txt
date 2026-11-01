@@ -1,5 +1,7 @@
 # TCL 50DP660 (50DP660*, product "Percee TV", MediaTek MT5658, board platform mt5891, armv7).
 # Android TV 8.0 (API 26), firmware V8-T658T01-LF1V602, build OTT1.180130.001, kernel 3.10.79.
+# Also verified on TCL L49C2US (49-inch C2 series, same product "Percee TV", tcl_eu, mt5891,
+# firmware V8-T658T01-LF1V570, build OTT1.180130.001, security patch 2020-07-05, ~2 GB RAM).
 # Checked on a real TV. Companion package list: examples/tcl-50dp660/debloat.txt.
 #
 # ---- ADB -------------------------------------------------------------------------------------
@@ -7,7 +9,8 @@
 #   Settings > Picture > Advanced Settings > Brightness, highlight Contrast, type 1 9 5 0
 #   > Other > ADB > ON
 #   Settings > About > Build (OK x7) > Developer options > USB debugging > ON
-#   adb connect <ip>:5555 , then accept the RSA prompt on the TV
+#   Reboot the TV once if the RSA prompt does not appear on screen (so UsbDebuggingManager
+#   binds to the newly started adbd socket), then adb connect <ip>:5555 and accept the prompt.
 # The two switches do different things: the factory one starts adbd (persist.sys.usb.config=adb),
 # the developer one makes the "Allow USB debugging?" dialog appear. Without the second one every
 # attempt ends as "unauthorized" with nothing on screen, which reads like a network fault.

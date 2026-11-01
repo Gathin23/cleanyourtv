@@ -41,7 +41,8 @@ Android 9), then `adb connect <tailscale ip>:5555`.
 ## 4. Launcher
 
 - A FallbackHome exists on this build, so disabling the stock launcher (`com.cvte.tv.launcher.highend` and
-  `.skin`) after the new Home is set is safe. Undo with `tools/restore.sh ... com.cvte.tv.launcher.highend`.
+  `.skin`) after the new Home is set is safe. Undo with
+  `TV_HOST=<tv ip> tools/restore.sh examples/super-general-cvte-t972/debloat.txt com.cvte.tv.launcher.highend`.
 - System language: Settings → Language (Arabic worked; RTL launchers follow it).
 - **Wi-Fi name**: Android 9 hides the network name from apps without location. A launcher that shows it needs
   `adb shell pm grant <launcher package> android.permission.ACCESS_FINE_LOCATION`.

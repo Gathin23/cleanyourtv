@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55P8LS QD-Mini LED, Vietnam (G10, G10_4K_GB_32BIT, Realtek rtd6748)",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "Same G10 build as `tcl-g10-google-tv/`; Samba TV ACR, logkit, ttvs, TCL Channel/push/partner home rows, hotel/demo, TGuard, Alexa, T-Solo, MagiConnect, Miracast; Prime Video, YouTube Music, Play Movies/Games off by choice; saved Wi-Fi belonged to setupwraith (re-join first); Play Store auto-installs VTV Go, HBO Max, iQIYI at sign-in; launcher key services need APP_AUTO_START; reboot-checked"
+}

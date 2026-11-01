@@ -14,7 +14,7 @@ public class SettingsModelTest {
     private static final String FRIGATE = "{\"cameras\":{"
             + "\"driveway\":{\"review\":{\"alerts\":{\"labels\":[\"person\",\"car\"]}}},"
             + "\"shop\":{\"review\":{\"alerts\":{\"labels\":[\"person\"]}},\"objects\":{\"track\":[\"person\",\"dog\"]}},"
-            + "\"frontdoooor\":{}}}";
+            + "\"porch\":{}}}";
 
     private static GlanceConfig config(String extra) {
         return GlanceConfig.parse("{\"mqtt\":\"mqtt://h\",\"frigateUrl\":\"https://h:8971\"" + extra + "}");
@@ -27,7 +27,7 @@ public class SettingsModelTest {
 
     @Test
     public void camerasComeSortedFromFrigate() throws Exception {
-        assertEquals(List.of("driveway", "frontdoooor", "shop"), SettingsModel.cameraNames(new JSONObject(FRIGATE)));
+        assertEquals(List.of("driveway", "porch", "shop"), SettingsModel.cameraNames(new JSONObject(FRIGATE)));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class SettingsModelTest {
 
     @Test
     public void turningACameraOffListsItAsOff() throws Exception {
-        JSONObject ch = SettingsModel.toggleCamera(config(""), List.of("driveway", "frontdoooor", "shop"), "shop");
+        JSONObject ch = SettingsModel.toggleCamera(config(""), List.of("driveway", "porch", "shop"), "shop");
         assertEquals("[\"shop\"]", ch.getJSONArray("camerasOff").toString());
         assertFalse(SettingsModel.cameraOn(config(",\"camerasOff\":[\"shop\"]"), "shop"));
     }

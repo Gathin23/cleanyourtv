@@ -1,0 +1,131 @@
+# Philips 50PUF7099/T3 — China-market set, TPV EBONY_V560 board, Hisilicon platform
+# Android TV 9 (API 28), build PPR1.180610.011 release-keys, 2 GB RAM, 32 GB storage.
+# ro.product.model=V560V2_CPFC1_0  ro.product.device=EBONY_V560  ro.product.manufacturer=TPV
+# No Google services at all on this unit (no com.google.* package is installed).
+# Stock home is com.bestv.ott (BestV / 百视通). See docs/devices/philips-50puf7099-t3.md
+# before replacing it: the launcher install needs STOCK_LAUNCHER=com.bestv.ott explicitly,
+# because com.bestv.ott is not in the repo's KNOWN_STOCK_LAUNCHERS list.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-50puf7099-t3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-50puf7099-t3/debloat.txt com.bestv.ott
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Live TV / inputs: com.tpv.tvinput, the only TvInputService on this set (tuner, HDMI, VGA,
+# composite, component, SCART). Keep it, or the inputs go black.
+#
+# ADB: ro.adb.secure=0, so port 5555 gives a shell to anything on the network with no prompt.
+# Turn network ADB off again when you are done.
+#
+# Tested on this unit on 2026-10-26: this whole list applied, then the launcher handover,
+# then a reboot. Nothing came back, no crash, and the input menu still lists HDMI 1, HDMI 2,
+# HDMI 3 and composite. It has not been lived with for days yet, and the real remote keys
+# have not been tried (only injected keys, deviceId=-1), so treat the notes in
+# docs/devices/philips-50puf7099-t3.md as the limits of what was checked.
+#
+# QUIRKS ON THIS FIRMWARE:
+#
+# 1. The three upgraders all hold INSTALL_PACKAGES, and tv.fun.tvupgrade is the
+#    installerPackageName of com.bestv.ott itself: while it lives it can put the BestV
+#    launcher back and wipe this list. Disabling it gives up system OTA, and firmware
+#    updates have to be sideloaded by hand from then on.
+# 2. The screensaver shipped pointing at com.google.android.deskclock, which is not
+#    installed, and pm query-services -a android.service.dreams.DreamService answers
+#    "No services found": this set had no screensaver at all. After the launcher install,
+#    point it at the launcher's own clock:
+#      settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#      settings put secure screensaver_default_component com.gathin.tvhome/.ClockDream
+# 3. org.droidtv.usagelogger asks for android.permission.TV_INPUT_HARDWARE, so
+#    tools/disable.sh skips it by default. It is a false positive here:
+#    pm query-services --components -a android.media.tv.TvInputService lists only
+#    com.tpv.tvinput's six services, usagelogger is not among them. Disabling it needs
+#    TVINPUT_ALLOW=1. Same as examples/cecotec-shandao.
+# 4. The screen is 60 Hz 4K on a 2 GB set, so lowmemorykiller is active at idle.
+#    Every background service removed is a net gain.
+# 5. default_input_method is com.android.inputmethod.pinyin/.PinyinIME, which is
+#    installed — not the Xiaomi quirk where it points at a missing com.baidu.input.
+
+# Casting, camera, video call and the smart-home hub
+# These are the four icons the owner picked off the home screen, and they are the
+# widest privacy surface on the set: camera, microphone, LAN discovery and a hub
+# that talks to the network.
+com.tpv.asc.aiot                 # 智能连接 / smart home hub; system/app/smarthome
+com.hpplay.happyplay.aw          # 乐播投屏 / LeboCast screen casting; system/app/LeboCast
+org.droidtv.camera.cn            # 相机 / camera and remote viewing; system/app/AiCamera
+com.tpv.asc.videocall.cn         # 视频通话 / video call; system/app/VideoCall
+
+# Telemetry, crash reports, advertising and background services
+tv.fun.bugreporter               # crash and feedback reporting; BOOT_COMPLETED x2 + INTERNET
+org.droidtv.usagelogger          # boot stats, remote keypress counts, panel telemetry (quirk 3)
+com.tpv.asc.taadserver           # TPV ad and telemetry server; BOOT_COMPLETED + INTERNET + WRITE_SECURE_SETTINGS
+com.tianci.ad                    # 天赐 ad SDK, versionName carries [philips_v2]; BOOT_COMPLETED + INSTALL_PACKAGES
+com.tpv.app.recommendation       # TPV recommendation rows
+com.funshion.publicity           # 欢视 promotional content
+tv.fun.master                    # BestV master service
+tv.fun.ottsecurity               # BestV security module; SYSTEM_ALERT_WINDOW + BOOT_COMPLETED
+tv.newtv.loginservice            # NewTV login service
+
+# The store and the upgraders
+# See quirk 1. The two firmware upgraders were disabled on the tested set (uncomment both to do
+# the same): that gives up system OTA, and with it the automatic re-install of the BestV launcher
+# that would wipe this list. Shared lists keep firmware updates on.
+# tv.fun.tvupgrade               # BestV upgrader — the installer of com.bestv.ott itself
+tv.fun.appstore                  # app store; INSTALL_PACKAGES + DELETE_PACKAGES
+tv.fun.sdkmanager                # SDK manager, which installed most of the preloaded content apps
+# com.tpv.xmic.ota               # TPV board OTA; INSTALL_PACKAGES + WRITE_SECURE_SETTINGS
+
+# Kept on purpose (the owner uses these):
+# com.mgtv.tv                      芒果TV
+# com.qiyivideo.fengxing.tvapi     银河奇异果 / 爱奇艺
+# com.tencent.qqmusictv            QQ音乐
+# com.funshion.live.hrtn           欢视直播
+# com.cibn.tv                      百视通
+# com.coocaa.appShell              酷开
+# com.xiaodianshi.tv.yst           云视听小电视
+# com.karaoketv.yst                欢唱K歌
+# com.newtv.cboxtv                 云视听极光 / NewTV
+# com.newtv.music                  NewTV音乐
+# com.newtv.sport                  NewTV体育
+# com.iptv.liyuanhang_ott          IPTV运营商点播
+# tv.fun.orangechildren            儿童模式
+# com.bestv.mediapay               付费订购
+# com.ktcp.video / com.ktcp.aiagent / com.ktcp.tvvideo   ktcp video and AI assistant
+# com.bestv.voiceAssist            百视通语音助手
+# org.droidtv.wxtransfer.cn        微信传屏
+# com.hisilicon.miracast           Miracast 投屏
+# org.droidtv.euinstallertc        EU安装器
+# com.tpv.xmic.calendar_2k15       日历
+# com.tpv.xmic.help.ebony2k15      帮助
+# com.bestv.ott                    BestV launcher; Home has moved, but it stays installed
+
+# NOT disabled, ever:
+# com.tpv.tvinput             the only TvInputService on this set: tuner, HDMI, VGA,
+#                             composite, component, SCART. Without it the inputs go black.
+# com.tpv.cecframework        HDMI-CEC
+# org.droidtv.playtv          answers the launcher's channel intent
+# org.droidtv.tv.tptvservice  TPV TV service
+# org.droidtv.GlobalKey       remote global keys
+# org.droidtv.eum             electronic manual
+# org.droidtv.menudataapp     menu data
+# org.droidtv.contentexplorer media and content browsing
+# org.droidtv.settings / org.droidtv.settings_widgets
+# org.droidtv.tvsystemui / org.droidtv.ui.tvwidget2k15
+# org.droidtv.ui.strings / org.droidtv.ui.strings2
+# org.droidtv.networkwizard   network setup
+# org.droidtv.devicesetup
+# org.droidtv.playtv / org.droidtv.channels
+# org.droidtv.dlna / org.droidtv.usbbreakin / org.droidtv.intentsdk
+# org.droidtv.vscbinderservice / org.droidtv.common.accesshiddenapi
+# org.droidtv.tv.inactivityservice / org.droidtv.tv.packageinfo
+# org.droidtv.tpvaiotmessenger
+# com.hisilicon.tv.service    Hisilicon system service, not an app: without it the set
+# com.hisilicon.tv.menu       has no menu and no picture
+# com.hisilicon.rmservice     Hisilicon resource manager
+# com.hisilicon.miracast      Miracast
+# com.hisilicon.higallery / com.hisilicon.android.videoplayer
+# com.tpv.xmic.tpv_opensdk / com.tpv.xmic.calendar_2k15 / com.tpv.xmic.dbcservice
+# com.tpv.xmic.help.ebony2k15 / com.tpv.ebony2k15.joystick / com.tpv.othermenufunction
+# tpv.tvsetting.factory.ui
+# com.android.*                every one of them: systemui, settings, packageinstaller,
+#                             the providers, the input methods. A TV that loses one of
+#                             these may never boot again.
+# android.ext.services / android.ext.shared

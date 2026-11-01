@@ -107,11 +107,40 @@ public class FrigateApiTest {
         String[] query = new String[1];
         server = new TinyHttp()
                 .on("/api/login", r -> { logins.incrementAndGet(); return new TinyHttp.Response(200, "{}"); })
-                .on("/api/frontdoooor/latest.jpg", r -> { query[0] = r.query; return new TinyHttp.Response(200, "JPEG"); })
+                .on("/api/porch/latest.jpg", r -> { query[0] = r.query; return new TinyHttp.Response(200, "JPEG"); })
                 .start();
         FrigateApi api = new FrigateApi(server.url(), "", "", "", pin -> {});
-        assertEquals("JPEG", new String(api.latestJpeg("frontdoooor", 360), StandardCharsets.UTF_8));
+        assertEquals("JPEG", new String(api.latestJpeg("porch", 360), StandardCharsets.UTF_8));
         assertEquals("h=360", query[0]);
         assertEquals(0, logins.get());
+    }
+
+    @Test
+    public void newCertificateIsRefusedUntilTrusted() throws Exception {
+        List<String> saved = new java.util.ArrayList<>();
+        FrigateApi api = new FrigateApi("https://frigate:8971", "", "", "old", saved::add);
+        try {
+            api.checkLeaf("new");
+            fail("a different certificate was accepted");
+        } catch (java.security.cert.CertificateException expected) {
+            // refused, and offered for trusting
+        }
+        assertEquals("new", api.offeredPin());
+        assertTrue(api.trustOffered());
+        assertEquals("new", api.pin());
+        assertEquals("", api.offeredPin());
+        assertEquals(List.of("new"), saved);
+        api.checkLeaf("new");
+        assertEquals(false, api.trustOffered());
+    }
+
+    @Test
+    public void firstCertificateIsPinned() throws Exception {
+        List<String> saved = new java.util.ArrayList<>();
+        FrigateApi api = new FrigateApi("https://frigate:8971", "", "", "", saved::add);
+        api.checkLeaf("first");
+        assertEquals("first", api.pin());
+        assertEquals("", api.offeredPin());
+        assertEquals(List.of("first"), saved);
     }
 }

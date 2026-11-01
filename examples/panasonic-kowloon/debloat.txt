@@ -1,0 +1,49 @@
+# Panasonic Google TV LCD (OZUM_Panasonic, device kowloon, product OZUM_Panasonic, MediaTek), Android 14 (API 34),
+# build UKNV.260416.001. About 1.8 GB RAM, /data 8.7 GB with 20% used before debloating.
+# Second unit: the same model in Spain (system language es-ES), build UKNV.260729.001, on Ethernet, 4K panel drawn
+# at 1920x1080. The groups marked "second unit" below were disabled on it and lived with from 26 to 29 Oct 2026.
+# Google TV home: the stock launcher is com.google.android.apps.tv.launcherx, not tvlauncher.
+#
+# Stock launcher:  com.google.android.apps.tv.launcherx (build-and-install.sh disables it when the launcher takes Home)
+# Live TV / inputs: com.mediatek.wwtv.tvcenter and com.mediatek.wwtv.mediaplayer (keep; never disable com.mediatek.*)
+# Setup wizard:    com.google.android.tungsten.setupwraith OWNS the saved Wi-Fi network (dumpsys wifi, cname=).
+#                  Disabling it deletes that network and the TV drops off Wi-Fi and ADB. It is not in this
+#                  list. If you need it off so the launcher can take Home, forget the Wi-Fi network in
+#                  Settings > Network & Internet and join it again first, then add
+#                  com.google.android.tungsten.setupwraith to your copy. On Ethernet it holds no network: the
+#                  second unit, wired with Wi-Fi off, has it disabled (see the commented line in the last group) with no loss.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-kowloon/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-kowloon/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# The first unit tested the streaming and music apps; the second unit adds the ad, telemetry and demo packages
+# below. Partner setup, partner customizer, calendar sync and backup services are still not listed: neither set
+# disabled them. Voice assistant, Chromecast and firmware updates stay on.
+#
+
+# Streaming and music apps, off by choice
+com.netflix.ninja                          # Netflix
+com.amazon.amazonvideo.livingroom         # Prime Video
+com.disney.disneyplus                     # Disney+
+com.viaplay.android                       # Viaplay
+com.google.android.youtube.tvmusic        # YouTube Music
+com.google.android.play.games             # Play Games
+
+# Android ad services and on-device personalisation (second unit; both accepted pm disable-user)
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+
+# Telemetry and feedback (second unit)
+com.google.android.feedback                # Google feedback reports
+com.vestel.vestelreporter                  # Vestel usage reporter
+
+# Retail and setup leftovers (second unit)
+fusion.android.tv.demo                     # retail demo mode
+# com.vestel.easysatelliteinstallation     # satellite setup wizard; the second unit uses the aerial only, untested with a dish
+
+# Accessibility, off by choice (second unit)
+# com.google.android.marvin.talkback       # TalkBack screen reader; the second unit has it off by choice, uncomment if you never use it
+
+# Ethernet only (second unit): the setup wizard owns the saved Wi-Fi, see the header; keep it on Wi-Fi
+# com.google.android.tungsten.setupwraith

@@ -1,0 +1,6 @@
+{
+  "tv": "Toshiba 65UA2363DG (Vestel-built, BODRUM_Toshiba, finch, MediaTek m7332), France",
+  "os": "Android TV 14",
+  "brand": "Toshiba",
+  "notes": "Same Vestel platform as Cecotec shandao: Vestel reporter/logger, the \"speed up\" cleaner and SmartCenter, Google ad services, partner setup and feedback, Health Connect and test shims; **keep `fusion.android.tv.demo`** (it handles the Input key here, as on JVC menlo); backdrop and tvrecommendations off once the new launcher owns Home; streaming apps, Chromecast, Assistant and the USB player kept by choice; 1.4 GB; reboot-checked; ADB closed only with the Developer options switch off"
+}

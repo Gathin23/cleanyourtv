@@ -1,0 +1,62 @@
+# Xiaomi Mi Box 3 (model MIBOX3, codename once, Amlogic), Android TV 9 (SDK 28), firmware PI.3934, 2 GB RAM,
+# 1920x1080. Streaming box, no HDMI-in or tuner.
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/xiaomi-mi-box-3/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/xiaomi-mi-box-3/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Set live_tv_package empty in config.xml (nothing to switch to). Stock launcher: com.google.android.tvlauncher
+# (the scripts' default).
+#
+# Notes from this box:
+# - Kept: com.google.android.apps.mediashell (Chromecast), com.xiaomi.mitv.updateservice and its download helper
+#   com.mitv.download.service (firmware updates), com.google.android.tungsten.setupwraith (it owned one of the
+#   saved Wi-Fi networks), com.xiaomi.android.tvsetup.partnercustomizer, mitv.service, com.droidlogic*.
+# - USB debugging alone opens network ADB on port 5555 (service.adb.tcp.port=5555).
+# - cmd package set-home-activity needs the component on Android 9 (com.gathin.tvhome/.MainActivity), and
+#   dumpsys activity activities shows mResumedActivity, not mFocusedApp.
+# - Re-enabled at every boot: com.google.android.backdrop (Ambient screensaver). Harmless once the screensaver
+#   points at the launcher's clock, so it is commented out below:
+#     tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+#   (stock value here: com.android.dreams.basic/com.android.dreams.basic.Colors)
+# - Remote: Home and Back work with the new launcher without any key service.
+# - Everything else stayed disabled after a reboot, and the launcher stayed Home.
+
+# Xiaomi + Google telemetry and ad tracking
+com.miui.tv.analytics
+tv.alphonso.alphonso_eula
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# PatchWall, content rows, promos, auto-installs
+com.mitv.tvhome.atv
+com.mitv.tvhome.michannel
+com.xm.webcontent
+com.google.android.tvrecommendations
+android.autoinstalls.config.xioami.mibox3
+
+# Personal choice: voice assistant (the mic button stops working)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+
+# Personal choice: Mi cast and the phone remote (Chromecast kept)
+com.mitv.milinkservice
+com.mitv.videoplayer
+com.google.android.tv.remote.service
+
+# Preloaded apps (personal choice)
+com.amazon.amazonvideo.livingroom
+com.netflix.ninja
+com.google.android.youtube.tvmusic
+com.google.android.youtube.tvkids
+com.google.android.videos
+com.google.android.play.games
+com.google.android.tv                  # Live Channels
+com.google.android.marvin.talkback
+com.android.printspooler
+
+# Ambient screensaver: re-enabled by the firmware at boot, see header
+# com.google.android.backdrop
+
+# Stock launcher, replaced by launcher/ (build-and-install.sh disables it)
+com.google.android.tvlauncher

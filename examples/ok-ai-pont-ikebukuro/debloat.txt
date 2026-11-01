@@ -19,6 +19,9 @@
 # Homwee package and Anoki re-enabled, so it is the firmware, not this list.
 # Shipped disabled: com.cltv.fast (FAST channels), com.google.android.marvin.talkback.
 #
+# Second unit: Nikkei DVB91NK (Changhong, same device ikebukuro, same firmware RTO2.250804.001, Italy, Wi-Fi), see
+# README.md. Batch 5 is what that unit disabled on top of this list; its other choices are in the README.
+#
 # KEEP: com.google.android.leanbacklauncher.partnercustomizer (see examples/chiq-ai-pont),
 # com.homwee.dmt.upgrade (firmware updates), com.homwee.synckey (remote keys), com.homwee.factory,
 # com.mediatek.* (Live TV, inputs, remote pairing, picture), com.mstar.android.tv.disclaimercustomization,
@@ -54,6 +57,17 @@ tv.pluto.android
 com.tiktok.tv
 it.radioplayer.android
 tv.arte.plus7
+
+# Batch 5: also disabled on the Nikkei DVB91NK (second unit): Google setup leftovers and Android extras nobody
+# opens on a TV. Reboot-checked there; the list was unchanged afterwards.
+com.google.android.onetimeinitializer
+com.google.android.partnersetup
+com.android.printspooler
+com.android.htmlviewer
+com.android.dynsystem
+com.android.wallpaperbackup
+com.homwee.mmp.fileexplorer             # USB file explorer
+com.homwee.mmp.imageplayer              # USB photo player
 
 # Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
 # after the new home is installed and set as default; restore.sh re-enables it.

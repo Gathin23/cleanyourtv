@@ -96,7 +96,7 @@ class DurabrandNoteTest(unittest.TestCase):
         text = NOTE.read_text(encoding="utf-8")
         block = text.split("```sh", 1)[1].split("```", 1)[0]
         steps = ["am start -n %s/.MainActivity" % FACTORY, "input keyevent 218",
-                 "tools/tv.py reboot", "hdmi_control_enabled 1"]
+                 "tools/tv.py --reboot", "hdmi_control_enabled 1"]
         positions = [block.find(step) for step in steps]
         self.assertNotIn(-1, positions, f"missing recovery step in {steps}")
         self.assertEqual(positions, sorted(positions), "recovery steps out of order")
@@ -124,7 +124,7 @@ class TroubleshootingTrapTest(unittest.TestCase):
 
     def test_trap_has_the_way_out(self):
         for command in (f"com.cvte.tv.hkcfac/.MainActivity", "input keyevent 218",
-                        "tools/tv.py reboot", "hdmi_control_enabled 1"):
+                        "tools/tv.py --reboot", "hdmi_control_enabled 1"):
             with self.subTest(command=command):
                 self.assertIn(command, self.trap)
         self.assertLess(self.trap.find("am start"), self.trap.find("keyevent 218"))

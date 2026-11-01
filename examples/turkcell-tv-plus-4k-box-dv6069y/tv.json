@@ -1,0 +1,6 @@
+{
+  "tv": "Turkcell TV+ 4K Box (SDMC DV6069Y, Amlogic), Turkey, operator streaming box",
+  "os": "Android TV 10",
+  "brand": "Turkcell",
+  "notes": "Operator box but Google-certified with the stock tvlauncher; Google feedback and recommendations, SDMC log reader, factory test, operator launcher rows, autorun and partner auto-installs; voice, Chromecast and YouTube off by choice (SmartTube instead); **disabling YouTube crashes `com.sdmc.GlobalKey` and kills every remote app button** until `app_keys` takes BUTTON_4/5/10 (InputKeyService); phone remote service returns at boot; box defaulted to 2160p YCbCr 4:2:0 on a 1080p monitor; 2 GB; reboot-checked"
+}

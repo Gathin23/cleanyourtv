@@ -1,0 +1,6 @@
+{
+  "tv": "KTC 4K Smart TV (device hongkong, MediaTek), Taiwan",
+  "os": "Google TV 14",
+  "brand": "KTC",
+  "notes": "Sold white-label directly under the KTC name (the same ODM behind `lumio-vision-7/`), with Taiwan telecom VOD apps preinstalled; Anoki ACR and Google feedback telemetry disabled, four KTC/MediaTek factory-menu and production-line test packages disabled (never launched, only `pm disable-user`), e-manual and a demo app; owner chose to keep every preinstalled streaming app (friDay, ChocoTV, LiTV, myVideo, Hami, iQIYI) and the voice assistant; debloat only; reboot-checked"
+}

@@ -43,6 +43,15 @@ channel collection, the row opens the normal Live TV app. It does not silently
 choose another tuner. Leave `live_tv_input_id` empty to retain existing automatic
 selection and OEM routing.
 
+An input being registered does not mean it is configured or usable. A wrong but
+existing ID can be accepted by the Live TV app and open an empty tuner setup
+screen, so the fallback above does not run. Use a tuner verified on your own TV,
+or clear `live_tv_input_id` to restore automatic selection. In a
+[community check on a Philips 65PUS8102/12](https://github.com/Gathin23/cleanyourtv/pull/534#issuecomment-6315693748)
+(Android TV 8.0, TPM171E / MediaTek), HW0 opened the player while the registered
+HW9 opened an empty setup screen. This was an intent and focused-activity check,
+not a picture check, and those IDs must not be copied to other TVs.
+
 This selects an input, not a particular programme, satellite orbital position or
 frequency. The TV's own channel database and player still control tuning. It does
 not scan, renumber channels, replace a tuner driver or change dish settings.

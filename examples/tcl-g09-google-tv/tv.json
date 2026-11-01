@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV Pro (G09, G09_4K_GB, Amlogic T5M, 2 GB), UK firmware, Brazil",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "TCL BI analytics, log upload, TIAS, TGuard, waterfall, TCL Live FAST channels, home-screen pushes, messages, store demo, hotel mode, partner auto-installs; Chromecast and USB media player off by choice; firmware updates come through Play Services, so ttvs can go; launcherx, setupwraith and dreamx off, reboot-checked; Input key works without InputKeyService; config.json has the dock"
+}

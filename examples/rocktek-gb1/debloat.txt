@@ -1,0 +1,42 @@
+# RockTek GB1, Google TV 14,
+# firmware UTT1.241206.001.142008.
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/rocktek-gb1/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/rocktek-gb1/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Home handover and reboot were checked; long-term use (streaming, voice, updates) is not yet confirmed.
+#
+# Keep these packages: com.android.tv.globalkeyhandler (physical remote global keys),
+# com.google.android.tv.remote.service (Bluetooth/phone remote bridge), Play Store, Play Services and
+# com.google.android.inputmethod.latin (keyboard). They were not disabled on this box.
+#
+# Home handover:
+# - The stock Google TV home is com.google.android.apps.tv.launcherx. build-and-install.sh disables it
+#   only after com.gathin.tvhome has become Home, so it is left commented below.
+# - com.google.android.tungsten.setupwraith was disabled on this box so the replacement Home can stay in
+#   charge. Before applying the line, check whether it owns the saved Wi-Fi network: disable.sh will
+#   refuse it while it does. Rejoin the network in Settings first if necessary, and re-enable it before
+#   a factory reset or remote re-pairing. Disabling it gives Home back but may cost casting.
+# - With launcherx disabled, the gear and Macro buttons that Google TV Home handled initially stopped
+#   working. examples/rocktek-gb1/config.json restores them through HomeKeyService: gear is Android
+#   keycode 83 and opens TV Settings; Macro is KEYCODE_GUIDE (172) and opens com.seena.app. Enable
+#   HomeKeyService at installation and test the physical remote, not an injected key. Other branded
+#   buttons are untested; see examples/rocktek-gb1/README.md before adding a mapping.
+
+# Android advertising / personalization and feedback
+com.android.ondevicepersonalization.services
+com.android.adservices.api
+com.android.federatedcompute.services
+com.google.android.feedback
+
+# Preloaded apps unused on this box
+com.google.android.youtube.tvmusic
+com.netflix.ninja
+com.rtk.mediabrowser
+
+# Google TV setup wizard: disable only after the Wi-Fi ownership check above and after the new Home works
+com.google.android.tungsten.setupwraith
+
+# Stock Google TV Home: build-and-install.sh handles this after it confirms the replacement launcher
+# com.google.android.apps.tv.launcherx

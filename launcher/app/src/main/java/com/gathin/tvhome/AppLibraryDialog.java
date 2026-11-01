@@ -12,10 +12,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -81,6 +79,9 @@ final class AppLibraryDialog {
     private final Runnable changed;
     private final LinearLayout panel;
     private final boolean reducedMotion;
+    private final boolean selectionMode;
+    /** library_ok_opens without app_library_selection: OK opens every app, Add to Home is in the hold menu. */
+    private final boolean okOpens;
     private final boolean animations;
     private final boolean rtl;
     private TextView instructions;
@@ -142,14 +143,21 @@ final class AppLibraryDialog {
         if (popup.isShowing()) popup.update(width, height);
     }
 
-    AppLibraryDialog(Activity activity, boolean animations, boolean reducedMotion, Predicate<String> onHome, Runnable changed, Runnable dismissed) {
+    /** library_excluded_apps (config.xml), never offered in the catalogue; empty by default, so existing
+     *  setups are unaffected. See LibraryApps.excludedFromCatalog(). */
+    private final Set<String> excludedApps;
+
+    AppLibraryDialog(Activity activity, boolean animations, boolean reducedMotion, boolean selectionMode, boolean okOpens, Predicate<String> onHome, Runnable changed, Runnable dismissed, Set<String> excludedApps) {
         this.activity = activity;
         this.animations = animations;
         this.rtl = activity.getResources().getBoolean(R.bool.rtl_app_grid);
         this.reducedMotion = reducedMotion;
+        this.selectionMode = selectionMode;
+        this.okOpens = okOpens && !selectionMode;
         this.onHome = onHome;
         this.changed = changed;
         this.dismissed = dismissed;
+        this.excludedApps = excludedApps;
         density = activity.getResources().getDisplayMetrics().density;
         panel = new LinearLayout(activity);
         panel.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
@@ -226,7 +234,7 @@ final class AppLibraryDialog {
                     if (info.activityInfo == null || !info.activityInfo.exported) continue;
                     String pkg = info.activityInfo.packageName;
                     if (Intent.CATEGORY_LEANBACK_LAUNCHER.equals(category)) tv.add(pkg);
-                    if (!pkg.equals(self) && !unique.containsKey(pkg)) unique.put(pkg, info);
+                    if (!pkg.equals(self) && !LibraryApps.excludedFromCatalog(excludedApps, pkg) && !unique.containsKey(pkg)) unique.put(pkg, info);
                 }
             }
             Map<String, String> names = new HashMap<>();
@@ -275,6 +283,8 @@ final class AppLibraryDialog {
         Collator collator = Collator.getInstance();
         apps.sort((a, b) -> {
             String pa = a.activityInfo.packageName, pb = b.activityInfo.packageName;
+            if (selectionMode) return LibraryApps.compareCatalog(home.get(pa), label(a), pa,
+                    home.get(pb), label(b), pb, collator);
             int priority = LibraryApps.comparePriority(home.get(pa), installTimes.get(pa),
                     home.get(pb), installTimes.get(pb), catalogTime);
             if (priority != 0) return priority;
@@ -331,24 +341,38 @@ final class AppLibraryDialog {
         panel.addView(title, new LinearLayout.LayoutParams(-1, -2));
     }
 
+    /** Reuse translated actions instead of shipping another hint in every locale. */
+    private String hint(boolean home) {
+        if (selectionMode) return activity.getString(android.R.string.ok) + ": "
+                + activity.getString(home ? R.string.library_remove_shortcut : R.string.library_add_home);
+        return activity.getString(home || okOpens ? R.string.library_hint_open : R.string.library_hint_add);
+    }
+
     private void showCatalog() {
         stopHighlight();
         resize(catalogWidth, dp(280));
         panel.removeAllViews();
         LinearLayout header = new LinearLayout(activity);
+        header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding(dp(12), dp(4), dp(8), dp(4));
         TextView title = text(activity.getString(R.string.app_library), 22, Color.WHITE);
         header.addView(title, new LinearLayout.LayoutParams(0, dp(36), 1));
-        title.setGravity(Gravity.CENTER_VERTICAL);
+        title.setGravity(Gravity.CENTER_VERTICAL | (rtl ? Gravity.RIGHT : Gravity.LEFT));
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.END);
         TextView count = text(activity.getResources().getQuantityString(
                 R.plurals.library_app_count, totalApps, totalApps), 13, 0xA6FFFFFF);
         count.setSingleLine(true);
         header.addView(count, new LinearLayout.LayoutParams(-2, -2));
+        // The launcher has no global supportsRtl: explicitly mirror this horizontal row.
+        if (rtl) {
+            header.removeView(count);
+            header.addView(count, 0);
+            count.setPadding(0, 0, dp(12), 0);
+        }
         panel.addView(header, new LinearLayout.LayoutParams(-1, dp(44)));
-        instructions = text(activity.getString(R.string.library_hint_add), 13, 0xBBFFFFFF);
+        instructions = text(hint(false), 13, 0xBBFFFFFF);
         instructions.setSingleLine(true);
         instructions.setEllipsize(TextUtils.TruncateAt.END);
         instructions.setPadding(dp(12), 0, dp(12), dp(6));
@@ -430,6 +454,12 @@ final class AppLibraryDialog {
             Toast.makeText(activity, R.string.library_save_failed, Toast.LENGTH_LONG).show();
             return;
         }
+        if (selectionMode) {
+            updateSelectionFocus(app, add);
+            changed.run();
+            fill(new ArrayList<>(apps));
+            return;
+        }
         selectedOffset = 0;
         if (add && catalog != null) {
             RecyclerView.ViewHolder holder = catalog.findViewHolderForAdapterPosition(selectedPosition);
@@ -454,6 +484,25 @@ final class AppLibraryDialog {
         dismissActions();
         changed.run();
         refresh();
+    }
+
+    private void updateSelectionFocus(ResolveInfo app, boolean add) {
+        int position = apps.indexOf(app);
+        int next = add ? -1 : LibraryApps.nextAfterRemoval(position, apps.size());
+        selectedOffset = 0;
+        if (!add && catalog != null) {
+            RecyclerView.ViewHolder holder = catalog.findViewHolderForAdapterPosition(position);
+            if (holder != null) {
+                View card = holder.itemView;
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) card.getLayoutParams();
+                selectedOffset = rtl
+                        ? catalog.getWidth() - catalog.getPaddingRight()
+                            - catalog.getLayoutManager().getDecoratedRight(card) - params.rightMargin
+                        : catalog.getLayoutManager().getDecoratedLeft(card)
+                            - params.leftMargin - catalog.getPaddingLeft();
+            }
+        }
+        selectedPackage = next >= 0 ? apps.get(next).activityInfo.packageName : app.activityInfo.packageName;
     }
 
     private void open(ResolveInfo app) {
@@ -490,10 +539,11 @@ final class AppLibraryDialog {
         boolean home = onHome.test(pkg);
         addAction(rows, home ? R.string.library_remove_shortcut : R.string.library_add_home,
                 () -> changeHome(app, !home));
-        addAction(rows, R.string.library_app_info, () -> {
+        Intent info = SystemSettings.appInfo(activity, pkg);
+        if (info != null) addAction(rows, R.string.library_app_info, () -> {
             close();
             try {
-                activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + pkg)));
+                activity.startActivity(info);
             } catch (ActivityNotFoundException | SecurityException e) {
                 Toast.makeText(activity, activity.getString(R.string.cant_open, label(app)), Toast.LENGTH_SHORT).show();
             }
@@ -545,6 +595,8 @@ final class AppLibraryDialog {
     private TextView text(String value, int size, int color) {
         TextView view = new TextView(activity);
         view.setText(value);
+        view.setTextDirection(rtl ? View.TEXT_DIRECTION_RTL : View.TEXT_DIRECTION_FIRST_STRONG);
+        view.setGravity(rtl ? Gravity.RIGHT : Gravity.LEFT);
         view.setTextSize(size);
         view.setTextColor(color);
         view.setTypeface(UiFont.get(activity, R.string.font_medium));
@@ -600,9 +652,9 @@ final class AppLibraryDialog {
             name.setEllipsize(TextUtils.TruncateAt.END);
             TextView status = holder.itemView.findViewById(R.id.status);
             boolean home = onHome.test(pkg);
-            boolean recent = LibraryApps.recent(installTimes.getOrDefault(pkg, 0L), catalogTime);
+            boolean recent = !selectionMode && LibraryApps.recent(installTimes.getOrDefault(pkg, 0L), catalogTime);
             status.setText(home ? R.string.library_on_home : recent ? R.string.library_recent : R.string.library_add_home);
-            status.setVisibility(View.VISIBLE);
+            status.setVisibility(home || !okOpens ? View.VISIBLE : View.INVISIBLE);
             holder.itemView.setBackground(surface(home ? 0x1475BBA4 : 0x0CFFFFFF, 18));
             View check = holder.itemView.findViewById(R.id.dot);
             check.getLayoutParams().width = dp(home ? 18 : 8);
@@ -611,15 +663,15 @@ final class AppLibraryDialog {
             else check.setBackground(surface(0xFF70D9A0, 8));
             check.setVisibility(home || recent ? View.VISIBLE : View.GONE);
             holder.itemView.setOnClickListener(v -> {
-                if (onHome.test(pkg)) open(app);
-                else changeHome(app, true);
+                boolean onHomeNow = onHome.test(pkg);
+                if (LibraryApps.okOpens(selectionMode, okOpens, onHomeNow)) open(app);
+                else changeHome(app, !onHomeNow);
             });
-            holder.itemView.setOnLongClickListener(v -> { showActions(app, v); return true; });
+            holder.itemView.setOnLongClickListener(selectionMode ? null : v -> { showActions(app, v); return true; });
             holder.itemView.setOnFocusChangeListener((v, focused) -> {
                 if (focused) {
                     selectedPackage = pkg;
-                    instructions.setText(onHome.test(pkg)
-                            ? R.string.library_hint_open : R.string.library_hint_add);
+                    instructions.setText(hint(onHome.test(pkg)));
                     v.post(() -> { if (v.hasFocus() && catalog != null) highlight(v, true); });
                     int index = holder.getBindingAdapterPosition();
                     if (index != RecyclerView.NO_POSITION) selectedPosition = index;

@@ -1,0 +1,6 @@
+{
+  "tv": "RCA AI PONT SA (Changhong, redwood, ISDB92RC; also sold as realme 40-inch, AIWA AW32B4SMG, CHiQ AI PONT DVB92CQ and ERGO DVB92YC)",
+  "os": "Android 14",
+  "brand": "RCA",
+  "notes": "Homwee store/tools (incl. chtvmanager) and installers, Anoki ACR, FAST channels (re-enabled by firmware at boot); keep partnercustomizer (crash-loops tv.service); 1 GB; AIWA variant notes (updaters kept, Live TVx back at every boot, config.json); CHiQ DVB92CQ variant: Wi-Fi owner android.uid.system (setupwraith stays), OTA/USB/mirroring/TTS kept, cold boot Live TV fixed with power_on_home (#1445), cltv.fast returns on boot; ERGO DVB92YC variant: setupwraith owned the Wi-Fi (kept), Bluetooth LE remote, power_on_home, memory before/after"
+}

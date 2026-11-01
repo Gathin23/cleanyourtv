@@ -1,0 +1,9 @@
+{
+  "dock_apps": [
+    "com.hrtvbic.usb.mm",
+    "com.xiaobaifile.tv"
+  ],
+  "columns": 4,
+  "app_library": true,
+  "lunar_date": true
+}

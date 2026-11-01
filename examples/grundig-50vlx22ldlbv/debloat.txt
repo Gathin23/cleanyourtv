@@ -1,0 +1,57 @@
+# Grundig 50VLX22LDLBV 50" Android TV (Arcelik-built, board CO3Plus, device "sinchon", MediaTek m7322), Netherlands
+# Android TV 11 (API 30), build RTO1.240312.001, 1.4 GB RAM, UI 1920x1080, density 320.
+# ro.product.manufacturer = ARCELIK, ro.adb.secure = 1. USB debugging alone opens port 5555 (tested over Wi-Fi).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/grundig-50vlx22ldlbv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/grundig-50vlx22ldlbv/debloat.txt
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\grundig-50vlx22ldlbv\debloat.txt (restore.ps1 to undo)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same Arcelik "sinchon" platform as examples/beko-b43b880b, older build. This firmware has no Anoki ACR,
+# FAST channels or brand channel app, so those Beko entries are absent here.
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home). Only it and
+# com.android.tv.settings/.system.FallbackHome claim HOME.
+# Live TV, HDMI and the source menu: com.mediatek.wwtv.tvcenter (input panel .nav.inputpanel.InputsPanelActivity).
+# com.google.android.tungsten.setupwraith claims no HOME but owns the saved Wi-Fi network: left enabled.
+#
+# KEEP, even though some names look like bloat (same family as examples/beko-b43b880b):
+# - fusion.android.tv.demo, com.arcelik.smartremoteservice: Input key and remote keys, as on the Beko.
+# - com.arcelik.tv.arcelikbacklight, com.arcelik.ChannelEditor, com.google.android.leanbacklauncher.partnercustomizer.
+# - com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.wwtv.tvcenter: Live TV, HDMI, source menu.
+# - Checked with dumpsys package and kept, all system plumbing: com.mediatek.network (persistent network
+#   monitor), com.mediatek.wwtv.setupwizard (setup hooks), com.mediatek.wwtv.webview,
+#   com.google.android.boot.appsplashscreen, com.google.android.sss.authbridge,
+#   com.google.android.tv.frameworkpackagestubs.
+# - Factory packages, never opened: arcelik.factorymenu.hatone, com.mediatek.tv.factory,
+#   mediatek.factorymenu.ui, com.arcelik.tv.rctest.
+# No separate firmware-updater package on this build.
+#
+# Reboot-checked: pm list packages -d identical before and after; nothing is re-enabled at boot.
+# Launcher works: installs over pm install, owns Home (mFocusedApp) also after a reboot; every remote button
+# (Home, Input, Settings, app keys) works without the key services, pressed on the real remote.
+# HOME_KEY_SERVICE costs key repeat here, as in docs/devices/tcl-55p71b-g09-key-repeat.md:
+# with it bound, holding Volume Up gives one step per press; repeat returns once it is off.
+# Screensaver set to com.gathin.tvhome/.ClockDream before backdrop goes.
+#
+# Owner's choices: YouTube, Prime Video, Chromecast, Play Movies and Play Games kept; Netflix, YouTube Music,
+# voice assistant and the phone-remote service off. Self-installed streaming apps untouched.
+
+# --- Telemetry, attribution and leftovers
+com.google.android.feedback                     # Google feedback / bug report uploader
+com.google.android.partnersetup                 # partner-app attribution (RLZ)
+android.autoinstalls.config.arcelik.an          # Arcelik partner auto-installs config
+com.mstar.android.tv.disclaimercustomization    # disclaimer popups
+com.google.android.syncadapters.calendar        # calendar sync, no calendar app on a TV
+com.google.android.onetimeinitializer           # first-setup leftover
+com.android.printspooler                        # printing
+
+# --- Owner's choice: not used
+com.netflix.ninja                               # Netflix
+com.google.android.youtube.tvmusic              # YouTube Music
+com.google.android.katniss                      # Google voice search / Assistant (remote mic button)
+com.google.android.tv.remote.service            # phone-as-remote service (Google TV app)
+
+# --- After launcher/ owns Home (build-and-install.sh disables com.google.android.tvlauncher itself)
+com.google.android.tvlauncher                   # stock Android TV home: sponsored rows
+com.google.android.tvrecommendations            # feeds the stock home's recommendation rows
+com.google.android.backdrop                     # Ambient screensaver; replaced by com.gathin.tvhome/.ClockDream

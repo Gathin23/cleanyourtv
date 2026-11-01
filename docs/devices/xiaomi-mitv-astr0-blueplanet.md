@@ -89,3 +89,33 @@ off. Keep `screen_off_timeout` at 2147483647 (never); any finite value makes the
   needs `appops set <pkg> SYSTEM_ALERT_WINDOW allow` to start activities from
   background. A hand-built manifest without `<uses-sdk>` fails to install with
   `INSTALL_FAILED_DEPRECATED_SDK_VERSION`.
+
+## Firmware `OS3.0.119.0.USTAATV`: the periodic cleaner and boot broadcasts
+
+Same set, after an OTA from `.106` to `OS3.0.119.0.USTAATV`. Everything above still holds.
+Two further behaviours are worth documenting.
+
+### `PeriodicCleaner` re-enables disabled packages and kills background apps
+
+`pm disable-user --user 0` on `com.xiaomi.wakeupservice` and `com.xiaomi.voicecontrol` does
+not survive a reboot on this build, and background services are killed at idle.
+The cause is the firmware's periodic cleaner:
+
+    adb shell cmd periodic enable false      # -> periodic cleaner enabled: false
+
+That setting survives reboots. It also took `com.xiaomi.wakeupservice` from ~50% CPU in
+`top` down to ~12%; the package still starts and cannot be disabled without root.
+
+### Third-party `BOOT_COMPLETED` is not delivered on this build
+
+A receiver registered for `BOOT_COMPLETED` and `LOCKED_BOOT_COMPLETED` is never invoked,
+and `adb shell am broadcast -a android.intent.action.BOOT_COMPLETED` is refused. Because
+the firmware also clears `adb_enabled` on every boot, ADB cannot be restored from a
+broadcast receiver — which is why an approach that works elsewhere does nothing here. ADB staying off
+after a reboot is what this repo wants anyway: switch network debugging on by hand when you need it.
+
+### Debloat list note
+
+Leave `com.xiaomi.mitv.shop` enabled if the set's own app store is wanted: the list in
+`examples/xiaomi-mitv-astr0/debloat.txt` disables it, and without a store the only ways to
+install apps are `adb install` and a USB stick.

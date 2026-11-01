@@ -1,0 +1,77 @@
+# TCL 55Q6CX1 (55" 4K QLED, Q6C series), Europe / Germany unit: device G08, product G08_4K_GB, model "Smart TV Pro".
+# Google TV 12 (SDK 31), build STT2.221228.001, fingerprint TCL/G08_4K_GB/G08:12/STT2.221228.001/AS35:user/release-keys.
+# MediaTek MT9618 (ro.board.platform merak), 3 GB RAM, ro.adb.secure=1.
+#
+# Same G08 board family as examples/tcl-g08-eu-android12. This list is that list, tailored and verified
+# package by package on this live 55Q6CX1 unit: all 20 entries below are disabled, reboot-checked and verified.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q6cx1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q6cx1/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (disabled here, replaced with reference launcher
+# com.gathin.tvhome as native default Home). Live TV / HDMI app: com.tcl.tv. Inputs: com.tcl.tvinput.
+#
+# TESTING, honestly:
+# Tested on a live unit in Germany and lived with. Verified across reboots: CleanYourTV reference launcher is the default
+# Home on boot and Home key press; HDMI inputs 1-3 switch normally; DVB Live TV / tuner works; TV Picture and
+# Sound settings open; screensaver and sleep timers start; casting (AirPlay, Chromecast, Miracast) works.
+# The recovery record tools/disable.sh writes was kept, and the restore path was tested.
+#
+# Unit-specific notes:
+# - The active Wi-Fi network belongs to android.uid.system:1000, NOT setupwraith (verified with dumpsys wifi).
+#   Setupwraith can be safely disabled without dropping Wi-Fi or ADB.
+# - The stock screensaver (com.google.android.apps.tv.dreamx) is disabled in favor of ClockDream:
+#   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+#   Sleep timer set to 20 minutes (settings put system screen_off_timeout 1200000) to protect the panel.
+# - Remote key helpers and volume repeat (TCL G08 Android 12 firmware limitation):
+#   On this firmware, binding ANY key-filtering accessibility service causes the platform input dispatcher
+#   to suppress continuous hardware auto-repeat when holding the volume buttons (steps once instead of ramping;
+#   see docs/devices/tcl-55p71b-g09-key-repeat.md). Leaving accessibility helpers unbound
+#   (enabled_accessibility_services '' and accessibility_enabled 0) preserves full volume ramping.
+#   On Home, the launcher's Settings button (keycode 83) works directly without any helper.
+#
+# DO NOT DISABLE on this TV (kept and working):
+# com.tcl.tv                           # Live TV app, plays HDMI, tuner playback
+# com.tcl.tvinput                      # TV input services for HDMI and tuner
+# com.tcl.autopair                     # Bluetooth remote auto-pairing across battery changes
+# com.tcl.suspension                   # Quick Panel source menu on the Input key
+# com.tcl.interactive                  # TIAS source/HbbTV overlay service bound by com.tcl.tv
+# com.tcl.ttvs                         # TIAS chain and teletext soft-keyboard; disabling breaks source overlays
+# com.tcl.gamebar                      # TCL Game Bar / Game Master overlay for gaming
+# com.tcl.exhibit                      # T-Exhibit ambient picture mode
+# com.mediatek.airplaydaemon           # AirPlay casting service
+# com.tcl.airplay2                     # AirPlay 2 receiver
+# com.google.android.gms               # Play Services
+# com.android.vending                  # Google Play Store
+
+# TCL promo, message box, tips, telemetry and demo
+com.tcl.dashboard                      # home-screen push messages
+com.tcl.messagebox
+com.tcl.ocean.instructions             # onboarding and tips overlay
+com.tcl.repairguide
+com.tcl.logkit                         # telemetry and log collection
+com.tcl.smartalexa                     # Alexa integration
+com.tcl.t_solo                         # TCL solo app
+com.tcl.eva                            # TCL voice assistant layer
+com.tcl.magiconnectfree                # MagiConnect pairing promo
+com.tcl.UpdatePeripheral               # peripheral firmware helper
+com.tcl.hearaid
+
+# Duplicate webviews on this firmware, disabled on the tested unit (uncomment to do the same). First check
+# that `dumpsys webviewupdate` names com.google.android.webview as the current provider: if the active
+# WebView provider is disabled, apps that show web content stop opening.
+# com.tcl.android.webview
+# com.iplayer.android.webview
+# com.mediatek.support.webview
+
+# Google storefront and extras
+com.google.android.videos              # Google Play Movies & TV storefront
+com.google.android.tts                 # text-to-speech
+com.google.android.apps.tv.dreamx      # stock photo screensaver (ClockDream used instead)
+com.android.printspooler
+
+# Google TV Home and Setup Wizard
+# Wi-Fi is owned by android.uid.system:1000 on this set; setupwraith can be safely disabled.
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

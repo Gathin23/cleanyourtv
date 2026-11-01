@@ -1,0 +1,6 @@
+{
+  "tv": "SHARP 2K EU Android TV (Expressluck martin, MediaTek mt5867), EU",
+  "os": "Android TV 14",
+  "brand": "SHARP",
+  "notes": "Anoki ACR, Android 14 ad services, partner rows, retail demo, e-manual; Assistant off by choice, Chromecast kept; setupwraith owned a saved Wi-Fi (Ethernet + `FORCE_SETUPWRAITH=1` on this unit); stock HOME is `tvlauncher`; Live TV `com.mediatek.wwtv.tvcenter`; ~1 GB"
+}

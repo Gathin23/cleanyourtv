@@ -36,7 +36,7 @@ if not ok:   # the value holds a password: never print it
     sys.exit('"mqtt" must look like mqtt://user:password@host:1883, special characters percent-encoded')
 EOF
 
-[ -f local.properties ] || { [ -n "${ANDROID_HOME:-}" ] && echo "sdk.dir=$ANDROID_HOME" > local.properties; } || true
+[ -f local.properties ] || { [ -n "${ANDROID_HOME:-}" ] && echo "sdk.dir=${ANDROID_HOME//\\//}" > local.properties; } || true
 if [ -n "${JAVA_HOME:-}" ]; then export PATH="$JAVA_HOME/bin:$PATH"; fi
 ./gradlew assembleRelease -q --console=plain
 

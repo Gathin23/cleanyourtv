@@ -1,0 +1,18 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.android.vending"
+  ],
+  "hidden_apps": [
+    "com.mediatek.wwtv.tvcenter",
+    "com.android.tv.settings",
+    "com.cltv.fast"
+  ],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "columns": 4,
+  "rows_below_dock": 0,
+  "reduced_motion": false,
+  "background_color": "#000000",
+  "wallpaper": false
+}

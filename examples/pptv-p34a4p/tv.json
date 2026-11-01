@@ -1,0 +1,6 @@
+{
+  "tv": "PPTV p34a4p (Suning PPTV, Amlogic board), China",
+  "os": "Android 5.1.1",
+  "brand": "PPTV",
+  "notes": "First PPTV list; SDK 22, so the repo launcher (minSdk 26) cannot run: debloat only; `pm disable-user` denied (SecurityException, the FFalcon r34a0 / Whaley wall), the list is applied with `pm hide` / `pm unhide` and survives reboots; five ad/push/silent-install packages, the Amlogic bootanimation video ad (five `persist.sys.*` properties, in the header) and the network-layer ads (launcher hifuntv/huan feed, hpplay cast promos) — those layers, the domains that must stay reachable and the stock launcher's HOME lock-in (a custom `HOME.pptv` category; hiding the launcher kills the HOME key after a reboot) are in [the device note](../docs/devices/pptv-p34a4p.md); MyInstallReceiver watchdog reinstall chain dies once its INSTALL_PACKAGES holders are hidden; eight further hides crashed the launcher in a boot loop and were reverted; ADB 5555 open with no auth; reboot-checked"
+}

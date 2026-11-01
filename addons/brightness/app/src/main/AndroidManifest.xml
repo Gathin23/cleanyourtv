@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- The dimming layer is drawn over whatever is on screen. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- One foreground service holds the layer and switches night mode on schedule. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Put the layer back after a reboot. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+
+        <!-- The quick bar, for a remote button: map it in the launcher's app_keys as
+             hold:<keycode>:io.github.maxhayim.brightness/.QuickActivity. The tile and the card open the settings. -->
+        <activity
+            android:name=".QuickActivity"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!-- Night mode in one press, for a remote button or another app (Sleep Timer's bedtime button); see its javadoc. -->
+        <activity
+            android:name=".NightToggleActivity"
+            android:taskAffinity=""
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+
+        <service
+            android:name=".DimService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps a user-chosen screen dimming layer over other apps" />
+        </service>
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Normal screen from ADB: am broadcast -a io.github.maxhayim.brightness.OFF -n io.github.maxhayim.brightness/.OffReceiver
+             Open to any sender on purpose: it can only switch dimming off, never on. -->
+        <receiver
+            android:name=".OffReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.maxhayim.brightness.OFF" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

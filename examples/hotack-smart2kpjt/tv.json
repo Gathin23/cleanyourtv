@@ -1,0 +1,6 @@
+{
+  "tv": "HOTACK SMART2KPJT projector, \"Whale TV 95C8\" (Amlogic am30b8, WhaleOS S8E, Zeasn firmware)",
+  "os": "Android 13",
+  "brand": "HOTACK",
+  "notes": "Zeasn token/tracker, device portal, logger and factory test apps; Zeasn App Gallery is the only store (no Play Store) and is kept; keystone, focus helper, OTA and factory menu kept; Live TV app `com.zeasn.livetv` kept (it hosts HDMI playback); Input needs INPUT_KEY_SERVICE=1 (no system switcher), Netflix is F2 and Disney+ is keycode 312 (`app_keys`); HDMI, USB and Bluetooth checked; 1 GB"
+}

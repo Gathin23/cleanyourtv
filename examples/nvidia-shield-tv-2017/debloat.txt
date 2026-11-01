@@ -1,0 +1,84 @@
+# NVIDIA SHIELD TV 2017 (codename darcy, Tegra X1, 3 GB RAM), Android TV 11 (API 30)
+# Tested on build RQ1A.210105.003.13961458_4387.0822 (SHIELD Experience 9.2.x), 2026-10-21 to 2026-10-25:
+# every active line below stayed disabled across reboots, with the launcher as Home.
+# Based on examples/nvidia-shield-tv-pro-2019/debloat.txt and examples/nvidia-shield-tv-2019/debloat.txt.
+#
+# Apply:   TV_HOST=<shield ip> tools/disable.sh examples/nvidia-shield-tv-2017/debloat.txt
+# Undo:    TV_HOST=<shield ip> tools/restore.sh examples/nvidia-shield-tv-2017/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Connecting: Developer options -> "Network debugging" opens ADB on port 5555 (ro.adb.secure=1).
+# Display: wm size reports physical 3840x2160 with an override of 1920x1080. That is how the Shield
+# renders its UI at 4K, not a leftover experiment; leave it.
+# Launcher: as on the 2019 models, the stock launcher's Home filter has priority 2, so run
+# launcher/build-and-install.sh first; disabling com.google.android.tvlauncher (last line) hands Home
+# over. setupwraith is not a Home candidate, and every saved Wi-Fi network belongs to android.uid.system.
+# A Shield has no HDMI inputs and no tuner, so the launcher's Inputs pill has nothing to list.
+# Location is on (location_mode=3), so the network pill can show the Wi-Fi name.
+#
+# Owner's choices on this unit:
+# - Kept: Google Assistant and hotword, Chromecast built-in, firmware updates (com.nvidia.ota,
+#   NvCPLUpdater, KeyComboOta), Netflix, Prime Video, Photos & Videos (gallery3d), Backdrop.
+# - Kept: com.nvidia.shield.nas, com.nvidia.shield.smbauth, com.nvidia.shield.smbserver. Plex Media
+#   Server here is NVIDIA's build (com.plexapp.mediaserver.smb) and carries com.nvidia.shieldsmb.*
+#   components that talk to them; a library on a NAS share may depend on them.
+# - Kept: com.nvidia.app.messaging (purpose unclear), com.nvidia.shield.appselector (system uid,
+#   listens for OTA status), com.nvidia.shield.ask, com.nvidia.shield.remote.server, com.nvidia.overscancomp.
+# - Already disabled before this list (not by this project), left alone: com.google.android.tv,
+#   com.zattoo.player, air.ITVMobilePlayer, com.nvidia.bbciplayer*, com.nvidia.benchmarkblocker and
+#   several extra keyboards.
+#
+# Leave alone (same as the Pro example): com.nvidia.blakepairing, com.nvidia.bluetooth.*,
+# com.nvidia.shieldtech.accessoryui, com.nvidia.ControllerMapper, com.nvidia.remotelocator,
+# com.nvidia.irtuner, com.nvidia.NvCPLSvc, com.nvidia.nvaudiosvc, com.nvidia.avsync,
+# com.nvidia.shieldservice, com.nvidia.packagemanagerservice, com.android.tv.settings,
+# com.android.providers.tv, com.google.android.tv.remote.service, com.google.android.tungsten.setupwraith,
+# Play Services, Play Store, keychain, com.android.se, the keyboards.
+
+# Batch 1: NVIDIA and Google telemetry and feedback
+com.nvidia.stats                       # anonymous usage statistics
+com.nvidia.feedback                    # crash reports and the "send feedback" form
+com.nvidia.diagtools                   # log collector; re-enable if NVIDIA support asks for logs
+com.google.android.feedback
+
+# Batch 2: sponsored rows, promos, auto-installs, gaming leftovers
+# com.google.android.tvrecommendations - keep it enabled. Disabled, Android stops binding the SHIELD TV
+#   phone app's input service (com.nvidia.shield.remote.server) at boot: the app still connects, but every
+#   key fails (docs/TROUBLESHOOTING.md). It was disabled on this unit for four days, then re-enabled;
+#   with launcher/ as Home its sponsored rows have nowhere to show.
+android.autoinstalls.config.nvidia     # Play auto-installs of partner apps
+com.nvidia.shield.welcome              # first-run promo
+com.nvidia.factorybundling             # accessory bundle offers
+com.nvidia.shield.beta                 # beta programme
+com.nvidia.shieldbeta                  # beta programme
+com.nvidia.shield.registration         # product registration
+com.nvidia.tegrazone3                  # "NVIDIA Games" app and row
+com.nvidia.nvgamecast                  # GameStream receiver (service closed in 2023)
+com.nvidia.osc                         # in-game overlay
+
+# Batch 3: factory and developer test tools (disabled, never launched)
+com.nvidia.factory
+com.nvidia.factorysyschecker
+com.nvidia.inputviewer
+com.nvidia.tegraprofiler.security
+com.nvidia.developerwidget
+
+# Batch 4: idle background services
+com.android.printspooler
+com.google.android.apps.nbu.smartconnect.tv  # Google data-saver VPN
+com.android.dynsystem                  # Dynamic System Updates (GSI loader)
+com.android.hotspot2.osulogin          # Passpoint hotspot sign-in
+com.android.bluetoothmidiservice       # Bluetooth MIDI
+com.android.cts.ctsshim                # CTS test shim
+com.android.cts.priv.ctsshim           # CTS test shim
+com.google.android.onetimeinitializer  # runs once at first boot
+
+# Batch 5: streaming apps the owner doesn't use
+air.com.vudu.air.DownloaderTablet      # Fandango at Home (Vudu)
+com.google.android.youtube.tvunplugged # YouTube TV
+com.imdbtv.livingroom                  # Freevee (shut down)
+com.google.android.videos              # Google TV / Play Movies
+com.google.android.play.games
+
+# Stock Android TV launcher: disabling it is what hands Home to the replacement launcher
+com.google.android.tvlauncher

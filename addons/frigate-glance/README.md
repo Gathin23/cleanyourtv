@@ -64,7 +64,7 @@ and `TestCardReceiver` shows a test card over whatever is playing.
 |---|---|---|
 | `mqtt` | required | `mqtt://user:password@host:1883`; percent-encode `@ : /` in the user or password |
 | `frigateUrl` | required | `https://host:8971` (authenticated port) or `http://host:5000` |
-| `frigateUser`, `frigatePassword` | empty | Frigate login; the certificate is trusted on first contact and pinned |
+| `frigateUser`, `frigatePassword` | empty | Frigate login; the certificate is trusted on first contact and pinned. Frigate makes a new self-signed one whenever its container is recreated (an update) unless `/etc/letsencrypt` is a volume; Overview then shows **New certificate** with both fingerprints, and OK on the Frigate row trusts it |
 | `topicPrefix` | `frigate` | Frigate's MQTT topic prefix |
 | `cameras` | `{}` (all) | camera name to the name shown on the card; listed cameras only |
 | `newCameras` | `false` | with `cameras` listed: cameras Frigate gains later open cards too |
@@ -73,7 +73,8 @@ and `TestCardReceiver` shows a test card over whatever is playing.
 | `severity` | `alerts` | `alerts`, or `alerts_and_detections` |
 | `corner` | `top-right` | `top-left`, `bottom-left`, `bottom-right` |
 | `cardScale` | `100` | card size in percent (50 to 200), picture and text together |
-| `dismissSeconds` | `8` | seconds the card stays after the event ends (1 to 120) |
+| `dismissSeconds` | `8` | seconds the card stays once the alert's objects have left (1 to 120); an object coming back stops the countdown |
+| `dismissOnStationary` | `true` | a parked object counts as left, as in Peek |
 | `snoozeMinutes` | `60` | length of a snooze (5 to 720) |
 | `liveVideo` | `true` | live picture from go2rtc's RTSP port 8554; `false` refreshes a snapshot every second |
 | `streams` | `{}` | camera to the go2rtc stream for live video, when Frigate's own live stream is too big |

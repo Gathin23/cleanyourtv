@@ -1,6 +1,8 @@
 # Hisense HiSmartTV A4 (device xiaoyushan, MStar/MediaTek m7322), Android TV 11, firmware RTT2.221108.001
 # (build 00.00.00.18), security patch 2023-12-05. 1.8 GB RAM, 32-bit userspace (armeabi-v7a only:
 # sideload armeabi-v7a or universal APKs). Same set as hisense-hismarttv-a4 after its Android 11 update.
+# Second unit: 75A53FUA, US market, same build and security patch, incremental 00.00.01.18. Groups 1, 2
+# and 4 applied there with Netflix and Prime Video kept; its differences are noted below where they apply.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-hismarttv-a4-android11/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-hismarttv-a4-android11/debloat.txt
@@ -11,7 +13,9 @@
 # "Allow USB debugging?" on first connect.
 # Applied in three batches (group 1, group 2, then groups 3 and 4 together), ~15 s wait and a reboot
 # after each: normal boot every time, all 7 TV inputs still registered (HDMI 1-4, composite, two
-# tuners), and switching to HDMI 1 from the launcher's Inputs menu works.
+# tuners), and switching to HDMI 1 from the launcher's Inputs menu works. The wait is not optional: on
+# the second unit a reboot sent straight after a batch came before Android wrote the package state, and
+# every package in that batch was enabled again at boot.
 #
 # This firmware mixes the package namespaces of the Android 9 A4 list (com.mstar.*, the xiaoyushan
 # autoinstalls) and of hisense-smarttv-4k-ffm (com.hisense.evservice, service.message, b2b, alexa,
@@ -22,12 +26,15 @@
 # Stock launcher: com.google.android.tvlauncher (the default in restore.sh), with Shop and Discover
 # tabs and a full-width sponsored hero banner that only the launcher swap removes. setupwraith is
 # installed but does not claim HOME on this firmware, and the Wi-Fi saved at setup belongs to
-# android.uid.system, so it is not in this list. launcher/build-and-install.sh worked unchanged and
-# Home survives a reboot.
+# android.uid.system, so it is not in this list. On the second unit `dumpsys wifi` names setupwraith as
+# the network's owner instead; setupwraith still does not claim HOME there, so it stays enabled and the
+# network is never at risk. launcher/build-and-install.sh worked unchanged and Home survives a reboot.
 # Input key: the remote's Input button sends KEYCODE_TV_INPUT (scancode 184). The framework routes it
 # as a global key to com.mediatek.wwtv.tvcenter, which starts com.android.tv.action.VIEW_INPUTS, and
 # the only handler of that action is tvlauncher's InputsPanelActivity. With the stock launcher
 # disabled the key does nothing (ActivityNotFoundException in logcat); use the launcher's Inputs pill.
+# Or set "handle_view_inputs": true (config.xml or a theme): the launcher then answers VIEW_INPUTS and
+# the Input button opens its Inputs menu, with no key helper. Checked on the real remote, second unit.
 #
 # Do NOT disable: com.hisense.tv.smartsense, com.vt.tv.smartsense.ui (the smartsense family sent the
 # Hisense FFM set to Android Recovery), com.mediatek.* (wwtv.tvcenter is Live TV and HDMI; autopair,
@@ -42,6 +49,7 @@
 # (com.jamdeo.tv.mediacenter), Ambient screensaver (com.google.android.backdrop).
 # Already disabled at the factory: com.google.android.videos, com.google.android.play.games,
 # com.google.android.youtube.tvmusic, net.vidaatv.android.tv, air.com.vudu.air.DownloaderTablet.
+# The second unit shipped with all five enabled.
 
 # Group 1: telemetry, ACR and tracking
 com.hisense.evservice                            # codePath /system/app/acr: automatic content recognition

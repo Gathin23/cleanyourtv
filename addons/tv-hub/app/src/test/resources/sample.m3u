@@ -1,0 +1,16 @@
+﻿#EXTM3U x-tvg-url="http://192.168.1.10:8000/guide.xml.gz,http://192.168.1.10:8000/extra.xml" url-tvg="http://192.168.1.10:8000/guide.xml.gz"
+#EXTINF:-1 tvg-id="news.example" tvg-name="Example News HD" tvg-logo="http://192.168.1.10:8000/logos/news.png" tvg-chno="2" group-title="News",Example News
+http://192.168.1.10:8000/live/news.m3u8
+#EXTINF:-1 tvg-id="sport.example" tvg-chno="5.1" group-title="Sport, Live",Example Sport, Weekend
+#EXTVLCOPT:http-user-agent=ExamplePlayer/2.0
+#EXTVLCOPT:http-referrer=http://192.168.1.10/
+http://192.168.1.10:8000/live/sport.ts
+#EXTINF:-1 tvg-name="Movies Channel",Movies Channel
+#EXTGRP:Movies
+https://streams.example.test/movies/index.m3u8?token=abc
+#EXTINF:-1,Multicast only
+udp://@239.0.0.1:1234
+#EXTINF:-1 tvg-id="" tvg-logo="ftp://bad/logo.png",Kids
+http://192.168.1.10:8000/live/kids.m3u8
+
+http://192.168.1.10:8000/bare/stream.ts

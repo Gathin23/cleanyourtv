@@ -18,13 +18,47 @@
 # com.google.android.videos.
 # The only Ethernet is the built-in RJ45 (eth0); USB debugging does not affect it.
 # 1.8 GB RAM. Default IME is Gboard.
+#
+# Second unit: sold as Formovie Theater (first generation). Same ro.product.model
+# "Formovie Laser 4K projector", device hanlla, board m7632 and build UKNV.260619.001
+# (ro.vendor.mtk.system.marketregion=eu). Differences from the first unit:
+# - Tested on Wi-Fi. It has the same built-in Ethernet port (eth0) as the first unit, but that was
+#   not tested.
+# - Nothing came disabled from the factory: Play Games, YouTube Music and Play Movies were enabled.
+# - A second Play auto-installer, android.autoinstalls.config.formovie (correct spelling), sits next
+#   to the "fomovie" one. Both were disabled here.
+# - No tuner: the TV input framework lists HDMI 1 to 3 only (com.mediatek.tvinput HW5 to HW7). An empty
+#   live_tv_package in config.xml drops the Inputs menu's Live TV row, which leads nowhere here.
+# - HDMI from the launcher's Inputs menu opened Android's "Open with" chooser: Google Live Channels
+#   (com.google.android.tv) claims the vnd.android.cursor.item/channel MIME type next to tvcenter
+#   (Tivify claims it too). Choosing "Always" on the wrong row sends HDMI to Live Channels for good.
+#   Disabling Live Channels sends HDMI straight to tvcenter (commented out below, since a unit
+#   that uses Live Channels would lose it).
+# - com.softmedia.receiver.lite (an AirPlay/DLNA receiver that starts at boot) was installed.
+# - With tvlauncher disabled, Home, Back, Input, Settings and volume on the remote all still work, and
+#   a held Volume Up still ramps. No key helper service is needed.
+# - Nothing was re-enabled after a reboot. ADB on port 5555 is back about two minutes after boot.
+# - wm size reports a 1920x1080 override on the 3840x2160 panel out of the box; leave it alone.
 
 # Google telemetry and feedback
 com.google.android.feedback
 com.android.tv.feedbackconsent
 com.google.android.partnersetup        # Google RLZ attribution pings
 android.autoinstalls.config.fomovie    # Play auto-install of partner apps (sic, "fomovie")
+android.autoinstalls.config.formovie   # second auto-installer, on the Theater unit
 
 # Stock home extras, unused once the new launcher is Home
 com.google.android.tvrecommendations   # recommendation/ad rows for tvlauncher
 com.google.android.backdrop            # Ambient Mode screensaver (Immich is the screensaver here)
+
+# Theater unit only, off by choice there (kept enabled for the first unit). Uncomment what you don't use.
+# com.google.android.tv                 # Live Channels: no tuner; takes HDMI from tvcenter (see header)
+# com.softmedia.receiver.lite           # AirPlay/DLNA receiver, starts at boot
+# com.google.android.katniss            # Google Assistant / voice search (the mic button stops working)
+# com.google.android.tv.assistant       # Assistant service
+# com.google.android.apps.mediashell    # Chromecast built-in
+# com.google.android.youtube.tv
+# com.google.android.youtube.tvkids
+# com.google.android.youtube.tvmusic
+# com.google.android.videos             # Play Movies
+# com.google.android.play.games

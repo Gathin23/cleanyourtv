@@ -1,0 +1,80 @@
+# Skyworth 43E6A (board open_fhd, MediaTek MT5886, 1 GB), Android TV 8.0 (API 26), build OPN.MP02.1 (Dec 2018)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-43e6a/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-43e6a/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (the restore.sh default is correct).
+# Live TV / tuner app: skyworth.skyworthlivetv, the TV app behind the HDMI inputs and the tuner. Keep it,
+# and set it as live_tv_package in the launcher's config.xml.
+# Kept: the Gboard on-screen keyboard (com.google.android.inputmethod.latin), Play Store and Play Services.
+# This build has no firmware updater on the TV to keep or disable.
+#
+# The "Allow USB debugging?" prompt did not come up until USB debugging was switched off and on again and
+# "Revoke USB debugging authorisations" was used in Developer options.
+# Backdrop was the screensaver: with it disabled, the screensaver setting points at a disabled app and the
+# set went to standby after the idle timeout instead. Picking the launcher's Clock (README, "Clock
+# screensaver") fixed it.
+#
+# Checked on the TV: the launcher is Home, HDMI inputs switch, and an HDMI-CEC player still powers the set on.
+
+# Home screen recommendation rows and sponsored content
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher.partnercustomizer  # manufacturer row on the stock home
+
+# Google feedback and bug reports
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# Skyworth retail and preload
+com.smartdevice.demonow                 # in-store demo mode
+com.skyworth.emanual                    # electronic manual
+
+# MediaTek remote diagnostics agents
+com.mediatek.dmagent
+com.mediatek.agent
+
+# Google extras the launcher does not need
+com.google.android.tvtutorials          # onboarding tips
+com.google.android.backdrop             # stock screensaver, see the header
+com.google.android.sss                  # set-up-from-phone helper
+
+# Disabled by choice, on a set used only with HDMI players. Skip any group you use.
+
+# Streaming and media apps
+com.google.android.youtube.tv
+com.google.android.videos               # Play Movies
+com.google.android.music                # Play Music
+com.google.android.play.games
+com.mediatek.partner.netflix            # Netflix button helper; Netflix itself is not preinstalled
+com.mediatek.wwtv.mediaplayer           # USB media player
+
+# Chromecast built-in (skip to keep casting)
+com.google.android.apps.mediashell
+
+# Voice assistant (removes the remote's mic search; skip these three to keep it)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.google.android.tts                  # text-to-speech
+
+# Phone remote, backup and sync
+com.google.android.tv.remote.service    # Android TV Remote app on a phone
+com.google.android.backuptransport
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.google.android.partnersetup
+com.android.providers.calendar
+
+# Unused system extras
+com.android.dreams.basic                # "Colors" screensaver
+com.android.printspooler
+com.android.gallery3d
+com.google.android.marvin.talkback      # screen reader
+
+# Extra keyboard languages (Gboard itself stays)
+com.google.android.apps.inputmethod.hindi
+com.google.android.apps.inputmethod.zhuyin
+com.google.android.inputmethod.japanese
+com.google.android.inputmethod.korean
+com.google.android.inputmethod.pinyin

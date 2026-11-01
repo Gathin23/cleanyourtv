@@ -3,11 +3,12 @@
 # ADB: Settings → System → System Info page, press UP DOWN LEFT RIGHT on the remote
 # (repeat 2-3 times until the ADB toggle appears at the bottom). Persists across reboots.
 #
-# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/ffalcon-r34a0-cn/debloat.txt
-#          (tools/disable.sh uses pm disable-user, which this firmware DENIES — see INSTALL
-#          BLOCKER below; swap to `pm hide` as disable.sh does not know the difference yet)
+# Apply:   NOT tools/disable.sh — it uses pm disable-user, which this firmware DENIES (see
+#          INSTALL BLOCKER below). Hide each package instead, one pm command per shell call:
+#   grep -vE '^\s*(#|$)' examples/ffalcon-r34a0-cn/debloat.txt | sed -E 's/\s+#.*$//' \
+#     | awk '{print "pm hide " $1}' | TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py --batch
 # Undo:    NOT tools/restore.sh — its pm enable cannot undo a hide on this firmware.
-#          Run `pm unhide <package>` for each package listed below instead.
+#          Same as Apply, but `pm unhide`.
 #
 # INSTALL BLOCKER, read first: `pm disable-user` is denied on this firmware
 # (SecurityException: Permission Denial ... uid=2000 → uid=1000). Use `pm hide` instead;

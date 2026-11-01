@@ -1,0 +1,35 @@
+# TCL C635 (reports as "Smart TV Pro", device BeyondTV4, product BeyondTV6, board rtd288o),
+# Android TV 11 (API 30), sold in Brazil. Same platform family as the TCL 43P725 / 50C725K.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-c635/debloat.txt
+#          (or on Windows: tools\disable.ps1 -TvHost <tv ip> examples\tcl-c635\debloat.txt)
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-c635/debloat.txt
+#          (or on Windows: tools\restore.ps1 -TvHost <tv ip> examples\tcl-c635\debloat.txt)
+#
+# Everything is DISABLED with `pm disable-user --user 0`, never uninstalled.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV launcher), kept enabled as
+#   fallback. Installing this repo's launcher works; the Google TV default-home switch remains
+#   a manual pick in Settings (set-home-activity does not stick on this Android TV build).
+# Live TV app: com.tcl.tv, with com.tcl.tvinput for the tuner and the HDMI inputs; keep both.
+#
+# Tested and verified on a real TCL C635 unit (Brazil):
+# - Screenshots, HDMI inputs, Live TV, Wi-Fi, audio and the BT remote remain 100% operational.
+# - 15 packages are disabled in total: the 13 below plus com.google.android.partnersetup
+#   (partner attribution). au.com.stan.and and tv.wuaki.apptv arrived pre-disabled at factory.
+# - Reboot-checked: the disabled set persists across restart.
+#
+# --- The critical entry: TCL re-enables promo packages on reboot
+com.tcl.overseasappshow                 # factory promo/app-show service, re-enables partner packages
+com.tcl.bi                              # TCL analytics & telemetry (BI service)
+com.tcl.logkit                          # TCL log collection
+com.tcl.waterfall.overseas              # TCL recommendation waterfall feed
+com.tcl.channelplus                     # TCL FAST streaming channels
+com.tcl.partnercustomizer               # partner customization/attribution
+com.google.android.partnersetup         # partner app attribution
+com.tcl.browser                         # stock TCL web browser
+com.tcl.gallery                         # stock TCL gallery/media
+com.tcl.esticker                        # retail demo energy-label overlay
+com.tcl.ocean.instructions              # first-run instructions overlay
+com.tcl.useragreement                   # user agreement onboarding screen
+com.tcl.factory.view                    # factory test/demo shortcut

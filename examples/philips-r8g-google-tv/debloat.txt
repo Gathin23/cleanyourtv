@@ -5,6 +5,7 @@
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-r8g-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-r8g-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Standby light off (optional): see docs/devices/philips-r8g.md
 #
 # Applied in small batches on 2026-10-19 with a screenshot after each, then a custom launcher
 # installed and Home, Inputs (HDMI and Live TV) and YouTube playback checked the same day. Not yet

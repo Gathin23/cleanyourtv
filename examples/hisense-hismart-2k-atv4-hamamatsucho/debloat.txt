@@ -1,0 +1,63 @@
+# Hisense HiSmart 2K ATV4 (ro.product.model "HiSmart 2K ATV4", device hamamatsucho, CVTE board), India.
+# Android TV 11 (SDK 30), firmware RTO6.250817.001, 924 MB RAM, ro.adb.secure=1. Same device and firmware as
+# docs/devices/hisense-hismart-2k-atv4-hamamatsucho.md; the Android 9 sibling on this board is
+# examples/vu-premium-fhd-43-hamamatsucho/.
+# Live TV app: com.mediatek.wwtv.tvcenter. Stock launcher: com.google.android.tvlauncher (not in this list:
+# launcher/build-and-install.sh disables it after the new launcher is Home). setupwraith does not claim HOME
+# on this firmware and the saved Wi-Fi belongs to android.uid.system, so it is left alone.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-hismart-2k-atv4-hamamatsucho/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-hismart-2k-atv4-hamamatsucho/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-10-30 in five batches with a screenshot after each, then two cold reboots (one before and
+# one after the launcher handover). Normal boot (~35 s) every time, nothing re-enabled at boot. Working: Home, the
+# Input key's own panel (DTV, ATV, HDMI 1, HDMI 2), all seven TvInputService providers, HDMI-CEC with a Sony
+# soundbar on ARC and a set-top box on HDMI 2, YouTube. One session so far, not yet lived with for days; the
+# physical remote's app buttons and held volume were not tested.
+#
+# Note: with com.google.android.leanbacklauncher.partnercustomizer off, the stock launcher loses its Inputs,
+# Wi-Fi and notification icons in its top bar. The Input key and Settings > Inputs still work, and the new
+# launcher has its own Inputs pill, so this only matters if you keep the stock Home.
+# Note: after a reboot the TV can ask the ARC soundbar for System Audio Mode before the soundbar is awake, give
+# up, and play through its own speakers (mSystemAudioActivated: false in dumpsys hdmi_control). Settings > Device
+# Preferences > Sound > ARC off, then on, brings the sound back to the soundbar. Not caused by this list.
+# At boot com.at.factory.factorymanager shows for about a second by itself; that is the firmware. Keep the
+# com.at.factory.*, com.cvte.*fac*, mediatek.factorymenu.ui and com.hisensefac.daemon packages, and never open them.
+#
+# Keep: com.mediatek.* (Live TV, inputs, TV service), com.cvte.autobacklight, com.airoha.android.btd (Bluetooth
+# audio), com.google.android.tv.remote.service, Chromecast (com.google.android.apps.mediashell), Play Store and
+# Play services, Gboard.
+# Already disabled when the set arrived (owner history, not in this list): TalkBack, com.cltv.fast.
+
+# Group 1: telemetry
+tv.anoki.acr.controller                             # ACR viewing-habits tracker (priv-app, boot receiver)
+com.google.android.feedback                         # Google feedback / crash reports
+
+# Group 2: ads, recommendation rows, partner storefronts, retail demo
+com.google.android.tvrecommendations                # recommendation rows of the stock launcher
+com.google.android.leanbacklauncher.partnercustomizer # partner promo rows (see the note above)
+android.autoinstalls.config.hisense.laoshan         # silent partner-app auto-install configuration
+com.cvte.startpartnertv                             # CVTE partner showcase app
+com.cvte.startpartnertvvod                          # CVTE partner VOD storefront
+fusion.android.tv.demo                              # retail / store demo mode
+com.mstar.android.tv.disclaimercustomization        # store disclaimer screen
+
+# Group 3: background services
+com.android.printspooler                            # printing framework
+
+# Group 4: preloaded apps, off by the owner's choice: comment out any you use
+com.google.android.videos                           # Google Play Movies & TV (also a TvInputService for previews)
+com.google.android.youtube.tvmusic                  # YouTube Music
+com.google.android.play.games                       # Google Play Games
+com.google.android.backdrop                         # Ambient screensaver (the launcher has a clock screensaver)
+
+# Optional, off on the tested set by the owner's choice; uncomment what you don't use.
+# com.google.android.katniss                        # Google Assistant: the remote's mic button stops working
+# com.sonyliv                                       # Sony LIV
+# com.viacom18.tv.voot                              # JioCinema
+# com.graymatrix.did                                # ZEE5 (also a TvInputService for its own channels)
+# com.jio.media.stb.ondemand                        # Jio On Demand
+# com.balaji.alt                                    # ALTT
+# com.eros.now                                      # Eros Now
+# com.hungama.movies.tv                             # Hungama

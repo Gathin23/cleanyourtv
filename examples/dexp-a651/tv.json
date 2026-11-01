@@ -1,0 +1,6 @@
+{
+  "tv": "DEXP A651 (Changhong AI PONT, longshan)",
+  "os": "Android TV 14",
+  "brand": "DEXP",
+  "notes": "Anoki ACR, FAST channels, AI PONT, Homwee store/help, partner setup; homwee.upgrade kept as the RuStore installer, and the factory RuStore 1.36 shows an empty catalog until updated from rustore.ru; HomeKeyService (power_on_home) costs volume key repeat: [notes](dexp-a651/README.md)"
+}

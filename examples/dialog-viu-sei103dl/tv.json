@@ -1,0 +1,6 @@
+{
+  "tv": "Dialog ViU (SEI Robotics SEI103DL, Amlogic, NES middleware), Sri Lanka",
+  "os": "Android TV 9",
+  "brand": "Dialog",
+  "notes": "Dialog Axiata operator IPTV box: NES bug tracker, Dialog TR-069 remote management, NES Skyway boot ads and silent installs (likely OTA too), partner auto-installs, Google recommendations, factory test app, preloads; Chromecast, voice, remote updater and Backdrop listed as optional; Dialog's home `com.dialog.tv` last, needs `STOCK_LAUNCHER=none` and removes Dialog's channels (Dialog Play from Play is incompatible, a sideloaded copy fails PairIP); remote's Apps/Prime Video/Catch-up are NES keys 5116/5119/5122 that `app_keys` can remap; 1 GB; reboot-checked"
+}

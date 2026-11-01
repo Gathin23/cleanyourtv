@@ -40,6 +40,9 @@ final class OverlayCard implements CardView {
 
         /** RTSP address for live video, or null when live video is off. */
         String liveUrl(String camera);
+
+        /** True while Frigate presents a certificate other than the trusted one. */
+        boolean newCertificate();
     }
 
     /** Told when a card appears and leaves, so the key service filters keys only meanwhile. */
@@ -63,6 +66,8 @@ final class OverlayCard implements CardView {
     private GlanceConfig config;
     private LinearLayout root;
     private FrameLayout picture;
+    /** Over an empty picture: why there is no frame yet. */
+    private TextView problem;
     private ImageView image;
     private TextureView video;
     private LiveVideo live;
@@ -144,6 +149,7 @@ final class OverlayCard implements CardView {
             @Override
             public void onPlaying() {
                 if (badge != null) badge.setLive(true);
+                showProblem(null);
                 if (video != null) video.animate().alpha(1f).setDuration(300).start();
             }
 
@@ -257,6 +263,13 @@ final class OverlayCard implements CardView {
         picture.addView(image, new FrameLayout.LayoutParams(-1, -1));
         picture.addView(video, new FrameLayout.LayoutParams(-1, -1));
         picture.addView(boxes, new FrameLayout.LayoutParams(-1, -1));
+        problem = text(12, 0xFFFFFFFF, Typeface.DEFAULT);
+        problem.setSingleLine(false);
+        problem.setMaxLines(4);
+        problem.setGravity(Gravity.CENTER);
+        problem.setPadding(px(20), 0, px(20), 0);
+        problem.setVisibility(View.GONE);
+        picture.addView(problem, new FrameLayout.LayoutParams(-1, -2, Gravity.CENTER));
         timerBar = new View(context);
         timerBar.setPivotX(0f);
         picture.addView(timerBar, new FrameLayout.LayoutParams(-1, px(3), Gravity.TOP));
@@ -281,6 +294,7 @@ final class OverlayCard implements CardView {
             // At most 320 dp wide and 180 dp tall (a 16:9 frame fills both), in the camera's own shape so boxes line up.
             sizePicture(source.aspect(m.camera));
             image.setImageDrawable(null);
+            showProblem(null);
             countingDown = false;
         }
         SpannableStringBuilder t = new SpannableStringBuilder(m.title);
@@ -353,14 +367,27 @@ final class OverlayCard implements CardView {
                     // The frame's own shape, in case Frigate's camera sizes were not known when the card opened.
                     sizePicture((float) bmp.getWidth() / bmp.getHeight());
                     image.setImageBitmap(bmp);
+                    showProblem(null);
                 });
             } catch (IOException | RuntimeException e) {
                 if (!snapshotLogged) Log.w(ConfigStore.TAG, "frigate error: snapshot " + camera + ": " + e.getMessage());
                 snapshotLogged = true;
+                String why = CardText.noPicture(source.newCertificate(), e.getMessage());
+                main.post(() -> {
+                    // A frame from a moment ago beats a message; only an empty picture says why it is empty.
+                    if (root != null && id.equals(reviewId) && image.getDrawable() == null) showProblem(why);
+                });
             } finally {
                 if (done != null) main.post(done);
             }
         });
+    }
+
+    /** null hides the message. */
+    private void showProblem(String why) {
+        if (problem == null) return;
+        problem.setText(why);
+        problem.setVisibility(why == null ? View.GONE : View.VISIBLE);
     }
 
     /** Current review id on screen, or null. */
