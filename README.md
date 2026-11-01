@@ -29,7 +29,7 @@
 |---|---|
 | **An Android TV or Google TV** | [Quick start](#quick-start): a coding assistant does the work in about fifteen minutes. |
 | **A Samsung, LG, Roku, Vizio or Hisense VIDAA TV** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV can't run there, but you can turn off the tracking with your remote. |
-| **Only an Android phone** | The community-built [Clean Your TV app](https://cleanyour.tv/app): no laptop, no coding agent. |
+| **A phone or laptop, no coding agent** | One of the [community apps](https://cleanyour.tv/app) for Android phones, Mac and Windows, made by independent developers. |
 | **Want to see it first** | [What you get](#what-you-get): screenshots of the new home screen. |
 
 **Official links:** [cleanyour.tv](https://cleanyour.tv) and this repo. Other domains using the name, such as
@@ -63,7 +63,7 @@ before touching anything you might use.
 |---|---|
 | **A computer** | Use the prompt with a coding assistant: the three steps below. |
 | **A computer, no coding assistant** | Run the three steps yourself: the commands are in [Doing it by hand](#doing-it-by-hand). |
-| **Only an Android phone** | Use the community-built [Clean Your TV app](https://cleanyour.tv/app) by [@udhaykumarbala](https://github.com/udhaykumarbala): connect, analyse, clean, in about five minutes. No laptop, no coding agent. |
+| **A phone or laptop, no coding assistant** | Pick one of the [community apps](https://cleanyour.tv/app): free, open-source apps built on these TV lists by independent developers. |
 
 The three steps below are written for a coding assistant: the computer needs to be on the same Wi-Fi as
 the TV, with a shell on it, plus Python 3, a JDK from 17 through 22, and Android SDK platform 34
@@ -340,9 +340,19 @@ three that matter most:
 <details>
 <summary><b>I don't code and don't have a laptop. Can I still do this?</b></summary>
 
-Yes. [@udhaykumarbala](https://github.com/udhaykumarbala) built a free, open-source [phone app](https://cleanyour.tv/app)
-for Android that does the same cleanup over Wi-Fi: it connects to the TV, shows a plan first, saves a restore
-point, and only switches apps off, so everything can be put back. It's community-built.
+Yes. Independent developers have built free, open-source apps on CleanYourTV's TV lists that do the cleanup
+over Wi-Fi, with no coding agent. Each shows a plan first, only switches apps off, and can put everything back:
+
+| App | For | By |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Android phone | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Android phone | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Android phone, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac and Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+These apps are independent projects, not affiliated with or endorsed by CleanYourTV or its maintainer, and each
+is provided as is under its own license. Report app problems in that app's repo. More at
+[cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 
