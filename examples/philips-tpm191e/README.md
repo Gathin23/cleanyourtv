@@ -159,3 +159,29 @@ unit" note; this section covers the launcher side. One session with three restar
   org.droidtv.ACTION.LAUNCH_APP_GALLERY` answers "No activities found"). `app_keys` `scan:779:<package>` and
   `scan:695:<package>`, installed with `HOME_KEY_SERVICE=1`, opened the chosen apps from the real remote (Apple TV
   and Disney+ here; `ActivityTaskManager` logged both starts).
+
+## Philips 70PUS7304/12: single-session notes
+
+Checked on a Philips 70PUS7304/12 (LED, 2019, Croatia, on Ethernet), same TP Vision TPM191E board and firmware as the
+lead unit (`STT2.230526.001`), with its original Philips remote. Package details are in `debloat.txt`'s "Ninth unit"
+note; this section covers the launcher side. One session with one restart, not a several-day test.
+
+- `launcher/build-and-install.sh` with `HOME_KEY_SERVICE=1` ran through on its own: cold start in 1.7 s, and Home
+  moved to `com.gathin.tvhome/.MainActivity` once the stock launcher was disabled (`mFocusedApp`).
+- config.xml: `live_tv_package` `org.droidtv.playtv`; `hidden_apps` `org.droidtv.playtv`, `org.droidtv.eum`,
+  `org.droidtv.demome` and `com.phorus.playfi.tv` (Play-Fi comes back enabled at every boot, so its tile is hidden
+  instead); `home_long_press_home` true, `power_on_home_always` false (see below), `consume_volume_keys` true and
+  `app_keys` `scan:632:<package>`.
+- Volume keys: with `HomeKeyService` bound, the fifth to eighth units had a held Volume Up move one step per press.
+  With `consume_volume_keys` true the helper repeats a held volume key itself, and on this unit a held Volume Up or
+  Down kept stepping while a single tap still moved one step, checked by the owner on the real remote. So
+  `home_long_press_home` and `app_keys` no longer cost volume repeat here.
+- A held Home press landed on Home, the Netflix button (scancode 632, as on the sixth and seventh units) opened the
+  chosen app, SOURCES and the Settings button kept opening the Philips menus, and the mic button still reached the
+  Assistant, all on the real remote.
+- Opening an app at power-on: a Philips switched off with the remote goes to standby rather than shutting down, so
+  the launcher's Open on start, which runs once per boot, almost never fires. The Open on wake add-on
+  (`addons/wake-app/build-and-install.sh --app <package>`, wait set to 5 s on its card) opened the chosen app after a
+  standby and power-on from the remote. After the restart `wm_set_resumed_activity` showed FallbackHome, then
+  `org.droidtv.playtv`, then Home, then the chosen app. `power_on_home_always` was left off, since it would send the
+  TV to Home at the same moment.
