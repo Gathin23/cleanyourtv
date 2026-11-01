@@ -43,6 +43,10 @@ On Home, approve **Hindi Panchang** when the launcher prompts about its card, or
 
 The optional screensaver requires Android's `BIND_DREAM_SERVICE` binding restriction, which is not an app-granted permission.
 
+## Artwork and licence
+
+The 12 monthly artworks (`bg_month_0.jpg` through `bg_month_11.jpg`) and Suvichar manuscript parchment (`bg_suvichar.jpg`) were generated specifically for this add-on using Google Imagen and are dedicated to the public domain under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/), released under the repository's MIT licence.
+
 ## Tested on
 
 Hisense 65U8G (Android TV 10), verified with full D-pad remote navigation on a physical TV.
