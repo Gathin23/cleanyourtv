@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-177 projects so far.
+178 projects so far.
 
 ## Home screens built as their own app
 
@@ -69,6 +69,7 @@ This repo's launcher with new looks or features, often tuned for one TV. Good pl
 
 | Project | What it is | Built on | By |
 |---|---|---|---|
+| [TV Air Dashboard](https://github.com/srykar/tv-air-dashboard) ([privacy-edited screenshot](https://raw.githubusercontent.com/srykar/tv-air-dashboard/e60c9ae5b17c4387e958801c630ae6bfc869806a/docs/home-privacy-edited.png), [issues](https://github.com/srykar/tv-air-dashboard/issues)) | A source-only fork with optional Open-Meteo weather, NEA regional 24-hour PM2.5/PM10 and calculated US particle AQI, plus authenticated local Dyson HushJet PM2.5/PM10 in compact glass cards. Adds `INTERNET`; inherits opt-in remote helpers; separate app identity, empty geographic defaults and private device provisioning | PRISM+ Q55 Ultra 2026 (R10G), Google TV 14; configured implementation tested; distinct public package build-checked | [srykar](https://github.com/srykar) |
 | [Minimal Glass](https://github.com/dannielgloria/cleanyourtv/tree/main/themes/minimal-glass) ([source](https://github.com/dannielgloria/cleanyourtv), [screenshot](https://github.com/user-attachments/assets/33e56916-cf30-47d4-860f-f419a5e82d05)) | An offline fork with a tvOS-inspired dock, circular translucent controls, app banners, folders with app mosaics, a matching library and appearance panels, glass or solid surfaces, light/dark/scheduled palettes, time-based wallpapers and an idle wallpaper clock. No network permission or new dependencies | TCL Smart TV (G10), Android TV 12 | [dannielgloria](https://github.com/dannielgloria) |
 | [CleanYourTV Cinema & OLED Edition](https://github.com/RuckieOfficial/cleanyourtv) ([screenshot](https://raw.githubusercontent.com/RuckieOfficial/cleanyourtv/5d6a12a06cf45b1eb2c369c762dbcd885d137e79/themes/cinematic/screenshot.jpg)) | An OLED-tuned fork: TMDb movie and TV backdrops with ratings (it adds `INTERNET` and needs a TMDb key), a glass clock screensaver, grid dimming, a "+ Add" dock tile and hold-Pause to black the screen out | Philips 55OLED706/12, Android TV 11 | [RuckieOfficial](https://github.com/RuckieOfficial) |
 | [Header Grid](https://github.com/OrenDdp/cleanyourtv-header-grid/blob/header-grid/FORK.md) ([screenshot](https://raw.githubusercontent.com/OrenDdp/cleanyourtv-header-grid/e7ba15e1fcc07c478e8c18455a1f24ab7db85961/themes/header-grid/screenshot.jpg), [issues](https://github.com/OrenDdp/cleanyourtv-header-grid/issues)) | An Apple TV style home for a Xiaomi Mi Box S: clock and app name in the header, five apps per row, a double focus frame, and LIVE remapped to an app on Android 9 | Xiaomi Mi Box S (MIBOX4), Android TV 12 and Android TV 9 | [OrenDdp](https://github.com/OrenDdp) |
@@ -280,6 +281,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Philips:** [CleanYourTV Cinema & OLED Edition](https://github.com/RuckieOfficial/cleanyourtv), [CleanYourTV UI, themes edition](https://github.com/pokelvo/cleanyourtv-ui), [Cosy Home](https://github.com/oliverjwroberts/cosy-home-tv), [Liquid Glass Home for Philips TA1](https://github.com/Nefritor/cleanyourtv-liquid-glass/tree/liquid-glass), [Moving aurora behind Home](https://github.com/mrk1987/cleanyourtv/tree/aurora), [Forslag](https://github.com/modist/forslag), [XMB Home](https://github.com/amachador/xmb-home), [QuickVol TV](https://github.com/thenewnano/quickvol-google-tv), [Provider banner behind the dock](https://github.com/misterzed83/cleanyourtv), [Apps button to Inputs](https://github.com/roelvveen-alt/cleanyourtv/tree/launcher/apps-key-inputs)
 - **Panasonic:** [Weather and night on Home](https://github.com/javierfn/cleanyourtv/blob/tv-extras/FORK.md)
 - **Polytron:** [Glass and day/night on a Polytron](https://github.com/andikatuluspangestu/cleanyourtv/tree/polytron-glass-launcher)
+- **PRISM+:** [TV Air Dashboard](https://github.com/srykar/tv-air-dashboard)
 - **RCA:** [ZenTV](https://github.com/hernanzini/zentv)
 - **Realme:** [Chill for Realme TV](https://github.com/taarruunnnn/chill-tv-launcher)
 - **Samsung:** [Blocky Cabin (Tizen)](https://github.com/CsPS0/blocky-tv-tizen), [Skylight](https://github.com/SaudSatopay/skylight-tizen)
