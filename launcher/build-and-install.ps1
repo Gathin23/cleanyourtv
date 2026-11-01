@@ -52,7 +52,18 @@ if (-not $StockLauncher) {
     $homePkg = & $py -I ..\tools\tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' | Select-Object -Last 1
     if ($LASTEXITCODE -ne 0 -or -not $homePkg) { throw 'could not ask the TV which launcher owns Home; check -TvHost and the debugging prompt, or pass -StockLauncher <package>' }
     $homePkg = "$homePkg".Trim().Split('/')[0]
-    if ($knownStock -contains $homePkg) { $StockLauncher = $homePkg }
+    # Same check as build-and-install.sh: a stock launcher that owns Home while this launcher is installed and
+    # its HomeKeyService is on is the stock_home_redirect setup, which an upgrade must leave enabled.
+    $redirect = & $py -I ..\tools\tv.py 'pm path com.gathin.tvhome >/dev/null 2>&1 && case "$(settings get secure enabled_accessibility_services)" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; esac' | Select-Object -Last 1
+    if ($knownStock -contains $homePkg -and "$redirect".Trim() -eq 'redirect') {
+        # The reinstall switches HomeKeyService off, and the redirect is that helper, so it comes back on.
+        $StockLauncher = 'none'
+        if (-not $PSBoundParameters.ContainsKey('HomeKeyService')) { $HomeKeyService = $true }
+        Write-Host "$homePkg owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
+        Write-Host "and turning HomeKeyService back on after the install (-HomeKeyService:`$false to skip that)."
+        Write-Host "To hand Home over and disable it instead, run again with -StockLauncher $homePkg."
+    }
+    elseif ($knownStock -contains $homePkg) { $StockLauncher = $homePkg }
     elseif ($homePkg -eq 'com.gathin.tvhome') { $StockLauncher = 'none'; Write-Host 'Home already belongs to this launcher; nothing will be disabled.' }
     elseif ($homePkg -eq 'android') {
         # Android's chooser: launchers tie and no default is set (a restore followed by a re-applied list
