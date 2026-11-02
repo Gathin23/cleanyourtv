@@ -54,9 +54,10 @@ after a mains power cycle and again a week later.
   run on this set.
 - Hiding Developer options did not close ADB. After authorisations were revoked from the TV and the
   Developer options menu was hidden, port 5555 still accepted the computer used for the list as an authorised
-  device after a mains power cycle. Switching Developer options off from the menu afterwards did close it:
-  `tools/adb-closed.py` reported the connection refused while the TV was on. Check that USB debugging itself
-  shows off before you hide the menu, and confirm the port refuses the connection.
+  device after a mains power cycle. What closed it, a week later: turn Developer options on again, choose
+  "Revoke USB debugging authorisations", then turn Developer options off. Straight after that,
+  `tools/adb-closed.py` reported the connection refused while the TV was on. Confirm the port refuses the
+  connection rather than trusting the menu.
 
 ## Undo
 
