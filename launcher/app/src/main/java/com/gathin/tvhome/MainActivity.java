@@ -1602,9 +1602,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 adapter.move(pos, slot);
                 adapter.move(adapter.positionOf(slotKey), pos);
             });
-            dockInSession.add(adapter.keyAt(slot));
             if (pos >= COLUMNS) dockInSession.remove(slotKey);
         }
+        // Outside the check: with no empty slots shown, the chosen app may already sit in the free place.
+        dockInSession.add(adapter.keyAt(slot));
         endReorder();
         refocusAfterLayout(slot);
     }
