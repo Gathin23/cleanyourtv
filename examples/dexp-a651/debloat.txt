@@ -8,6 +8,8 @@
 #
 # Stock launcher: com.google.android.tvlauncher (the scripts' default). Live TV: com.mediatek.wwtv.tvcenter.
 # The firmware opens Live TV by itself at every power-on.
+# Same-firmware second unit: Hyundai AI PONT (longshan). See README.md for what was checked there and its
+# test limits.
 #
 # Left enabled: com.cltv.fast, TV middleware the firmware re-enables at every boot anyway (the tested set had
 # it off).
