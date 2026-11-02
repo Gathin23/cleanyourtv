@@ -4,7 +4,8 @@ One set in Iran, two days of normal use, debloat and the reference launcher. Set
 "Firmware Version 20221215_115723", Android 11, 4 cores and a Mali-G52; `tools/tv.py --probe` gives manufacturer
 `MAADIRAN`, device `m7332`, build `m7332_eu-userdebug`. The factory menu names the board `TP.MT9632.PC752`. The same
 CVTE software family as `examples/sankey-smart-tv-hi3751v350/` and `examples/vision-2024vision43stv/`, on a MediaTek
-chip.
+chip. The same `m7332_eu` board, under Yandex TV instead of CVTE's own launcher and with a different factory-menu key
+sequence, is in `docs/devices/tuvio-tq55ufgsv1.md`.
 
 ## Turn on ADB
 
@@ -47,6 +48,29 @@ through several reboots. Never start the factory packages (`com.cvte.fac.menu`, 
   but nothing on the set handles the standard passthrough channel URI. Inputs only switch through CVTE's TIF player:
   `am start -a com.cvte.intent.ACTION_TIF_PLAYER -n com.cvte.tv.api.impl/com.cvte.tv.api.vendor.common.base.tif.TvSupportActivity --ez tune true --ei sourceId N --es toActivity com.cvte.tv.setting.TvSettingActivity`,
   with N the number after `/HW`: DTV 0, ATV 1, AV 2, HDMI 1-3 6, 7, 8 (all checked against `dumpsys tv_input`).
+
+## HDMI-CEC
+
+CEC ships switched off (`settings get global hdmi_control_enabled` is 0), although the board has it
+(`ro.CVT_EN_CEC=1`). Turned on with `settings put global hdmi_control_enabled 1`, Android's CEC service works on this
+set: a PlayStation 5 answered with its name, and TvInputManager listed it as a child input of its port
+(`com.mediatek.tvinput/.hdmi.HDMIInputService/HDMI100004`), which the launcher's glass Inputs dropdown shows as
+"PlayStation 5 · HDMI 1" with a Connected dot. With this folder's `config.json` the Inputs pill opens CVTE's picker
+instead (see "Inputs pill" below), so the names only show where the dropdown is used. What was seen on the tested set:
+
+- **Ports match the labels.** The PS5 reported `1.0.0.0`, `2.0.0.0` and `3.0.0.0` in the sockets labelled HDMI 1, 2
+  and 3, which are `HW6`, `HW7` and `HW8`.
+- **A moved cable can leave the old port.** In socket 3 the PS5 announced `3.0.0.0` only in `<Active Source>`, which
+  does not update Android's device list, so the dropdown kept "HDMI 1" until a rescan:
+  `settings put global hdmi_control_enabled 0`, then `1` (a cold boot does the same). After that it read "HDMI 3".
+- **Wake and standby are two more switches, both off by default.** `hdmi_control_auto_wakeup_enabled` lets a device
+  wake the TV: with it on, the PS5's `<Text View On>` arrived when it was switched on.
+  `hdmi_control_auto_device_off_enabled` makes the TV broadcast `<Standby>` when it is switched off; the TV sent it,
+  but this PS5 stayed on. On the next wake the TV sends `<Request Active Source>`, a PS5 that is still on answers,
+  and the set comes up on its HDMI input rather than on Home.
+- **The remote goes to the device.** On a CEC device's input the TV forwards the remote's keys as
+  `<User Control Pressed>`; the PS5 ignored them, so the remote looked dead there. Home is not forwarded and returns
+  to Home; the PS5 itself is driven with its controller.
 
 ## The reference launcher
 
