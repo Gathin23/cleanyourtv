@@ -517,6 +517,13 @@
          theme's wallpaper show through. A theme can set "cinematic_scrim" and "cinematic_art". -->
     <integer name="cinematic_scrim">100</integer>
     <integer name="cinematic_art">50</integer>
+    <!-- Continue watching on the top shelf, like Apple TV: when the focused dock app has rows in the system's Continue
+         watching (Watch Next), up to 8 cards (artwork, title, progress) show under its name; Up from the dock tile
+         moves onto them, OK opens the title in the app. Needs android.permission.READ_TV_LISTINGS, which
+         build-and-install does not grant: pm grant com.gathin.tvhome android.permission.READ_TV_LISTINGS (docs/watch-next.md).
+         Without it, or false, the shelf is the plain name. Can also be set with "continue_watching": false in a
+         theme's config.json. -->
+    <bool name="continue_watching">true</bool>
 
     <!-- The glow behind the dock in the focused app's colour (red for YouTube, blue for Prime Video). false keeps
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a

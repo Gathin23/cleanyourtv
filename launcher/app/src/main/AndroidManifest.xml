@@ -9,6 +9,11 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Continue watching cards on the top shelf (continue_watching): the posters are mostly https. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Reads the apps' Watch Next rows (docs/watch-next.md). Runtime, never requested: grant it with pm grant
+         com.gathin.tvhome android.permission.READ_TV_LISTINGS, or the cards stay off. -->
+    <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
     <!-- Needed since Android 10 to read the Wi-Fi network name for the network pill. Never requested at
          runtime: build-and-install grants it with pm grant, so lint's Android 12 "ask for COARSE with
          FINE" rule does not apply here. -->

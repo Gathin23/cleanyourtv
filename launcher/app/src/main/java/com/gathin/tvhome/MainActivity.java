@@ -61,6 +61,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LayoutAnimationController;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -164,6 +165,32 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** config.xml cinematic_white_focus: the cinematic shelf keeps the white highlight. */
     private boolean cinematicWhiteFocus;
     private ImageView heroArt;
+    /** config.xml continue_watching: the Watch Next rows behind the shelf's cards; null when the feature is off. */
+    private WatchNextShelf watchNext;
+    private ShelfImages shelfImages;
+    private ContinueRow shelfRow;
+    private RecyclerView shelfCards;
+    /** The cards sit under the shelf's name for shelfKey (a dock app), which also shrinks the name. */
+    private boolean shelfCardsOn;
+    private String shelfKey;
+    /** Where the shelf's dock tile is in root coordinates, as showHero last saw it. */
+    private float shelfDockTop;
+    /** Browse mode: focus is on a card, the dock and grid are slid away and the card's artwork fills the screen. */
+    private boolean browsing;
+    private View gridHolder;
+    private FrameLayout browseLayer;
+    private ImageView browseFront, browseBack;
+    private LinearLayout browseInfo;
+    private TextView browseMeta, browseTitle, browseDetail;
+    private ShelfImages browseImages;
+    /** The backdrop on screen, and the one the focused card wants (it may still be loading). */
+    private String browseUri, browseWanted;
+    /** The place the shelf is sliding to, and until when: placeHero leaves a slide to that place alone. */
+    private float heroSlideTop;
+    private long heroSlideUntil;
+    private final Runnable browseSwap = () -> loadBackdrop(browseWanted, true);
+    /** The card focused last per dock app, so Up from its tile returns to it. */
+    private final Map<String, Integer> shelfLastCard = new HashMap<>();
     /** config.xml cinematic_dots: false leaves the dock position dots out of the cinematic shelf. */
     private boolean heroDotsShown = true;
     /** The artwork's opacity behind the cinematic shelf (config.xml cinematic_art); 0 leaves it out. */
@@ -545,6 +572,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // dock_title false: the name above the dock (and the cinematic lines under it) never shows; the glow
         // still follows the dock.
         if (!cfg.dockTitle) hero.setVisibility(View.GONE);
+        // continue_watching: cards under the shelf's name, so they need the dock and the name above it.
+        if (cfg.continueWatching && cfg.dockRow && cfg.dockTitle) {
+            shelfCards = findViewById(R.id.shelfCards);
+            shelfImages = new ShelfImages(this, handler);
+            shelfRow = new ContinueRow(this, shelfCards, shelfImages, new ContinueRow.Listener() {
+                @Override public void onOpen(WatchNextShelf.Item item) { openShelfCard(item); }
+                @Override public void onLeave() { focusTile(lastFocused); }
+                @Override public void onFocused(int index) { onShelfCardFocused(index); }
+            }, cfg.glassStyle);
+            watchNext = new WatchNextShelf(this, handler, this::onWatchNextChanged);
+            buildBrowseLayers();
+        }
         greeting = findViewById(R.id.greeting);
         clockBlock = findViewById(R.id.leftBlock);
         clockRefresh = new ClockRefresh(clockBlock);
@@ -1074,6 +1113,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (openInputsIfAsked(intent)) return;
         if (intent == null || !intent.hasCategory(Intent.CATEGORY_HOME)) return;
         if (gameDay != null && !stopped) gameDay.read();
+        exitBrowse(true);
         grid.scrollToPosition(0);
         lastFocused = 0;
         lastFocusedKey = adapter.getItemCount() > 0 ? adapter.keyAt(0) : null;
@@ -1153,6 +1193,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        if (watchNext != null) watchNext.start();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1323,6 +1364,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onPause();
         resumed = false;
         inFront = false;
+        // The screensaver, the quick panel or an app is coming over Home: it returns on the dock, not on a card.
+        if (browsing) {
+            exitBrowse(false);
+            focusTile(lastFocused);
+        }
         // No UP reaches a paused Home, so a vendor-key hold it saw go down would still open its app later.
         // Only Home's own share is dropped: a key service that saw the same DOWN keeps its hold.
         RemoteKeys.release(this);
@@ -1339,6 +1385,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
         if (gameDay != null) gameDay.stop();
+        if (watchNext != null) watchNext.stop();
         handler.removeCallbacks(turnTick);
         if (lamp != null) lamp.stop();
         cancelPendingFocusScroll();
@@ -1377,6 +1424,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.getRecycledViewPool().clear();
         heroArtCache.clear();
         heroArtKey = null;
+        if (shelfImages != null) {
+            shelfImages.clear();
+            browseImages.clear();
+        }
         wallpaperPlayer.releaseForMemoryPressure();
         tileRefresh.invalidate();
     }
@@ -1397,6 +1448,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private final ViewTreeObserver.OnGlobalFocusChangeListener glassFocusListener = (oldF, newF) -> {
         boolean onTile = newF != null && newF.getId() == R.id.card;
         if (!onTile) hideGlass();
+        if (browsing && newF != null && !shelfRow.owns(newF)) exitBrowse(true);
     };
 
     @Override
@@ -1407,6 +1459,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RemoteKeys.release(this);
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();
+        if (watchNext != null) {
+            watchNext.shutdown();
+            shelfImages.shutdown();
+            browseImages.shutdown();
+        }
         unregisterReceiver(packageReceiver);
         if (openOnStartOnWake) unregisterReceiver(wakeReceiver);
         wallpaperPlayer.close();
@@ -1801,6 +1858,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onLibraryRequested() {
+        exitBrowse(true);
         if (appLibrary != null) appLibrary.close();
         if (openPopup != null) openPopup.dismiss();
         libraryFocusPending = false;
@@ -1843,9 +1901,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
+        if (browsing) exitBrowse(true);
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
         root.offsetDescendantRectToMyCoords(card, r);
+        // Layout positions ignore the dock's slide (translation), so while it slides back this is already the tile's final place.
         float pad = 6f * density;        // matches GlassView's glow inset
         float scale = adapter.focusScale();
         float w = card.getWidth() * scale + 2 * pad;
@@ -1943,7 +2003,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showHero(int position, float dockTopInRoot) {
         String label = adapter.labelAt(position);
         int color = adapter.ambientColorAt(position);
-        float y = dockTopInRoot - 14 * density - 26 * density - hero.getHeight();
+        shelfDockTop = dockTopInRoot;
         boolean changed = !label.contentEquals(heroName.getText());
         if (cinematic && heroArtAlpha > 0f) showHeroArt(position);
 
@@ -1953,7 +2013,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.animate().cancel();
             ambient.animate().cancel();
             fillHero(position, label);
-            hero.setY(y);
+            placeHero(dockTopInRoot);
             hero.setTranslationX(0f);
             hero.setAlpha(1f);
             if (ambientGlow) {
@@ -1969,7 +2029,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.animate().cancel();
             ambient.animate().cancel();
             fillHero(position, label);
-            hero.setY(y);
+            placeHero(dockTopInRoot);
             hero.setTranslationX(0f);
             hero.animate().alpha(1f).setDuration(260).start();
             if (ambientGlow) {
@@ -1981,7 +2041,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (advancedEffects) hero.animate().cancel();
             hero.animate().alpha(0f).translationX(-12 * density).setDuration(120).withEndAction(() -> {
                 fillHero(position, label);
-                hero.setY(y);
+                placeHero(dockTopInRoot);
                 hero.setTranslationX(12 * density);
                 hero.animate().alpha(1f).translationX(0f).setDuration(200).start();
             }).start();
@@ -1998,7 +2058,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 }).start();
             }
         } else {
-            hero.setY(y);
+            bindShelfCards(position);
+            placeHero(dockTopInRoot);
             // onPause cancels the fade-ins, and a second Home during one lands on the same tile, which starts none:
             // finish them, or the shelf and the glow stay dim until focus moves to another app.
             if (hero.getAlpha() < 1f) hero.animate().alpha(1f).setDuration(260).start();
@@ -2011,9 +2072,406 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** The shelf's text for this dock app: its name and, on the cinematic shelf, "Last opened" and the dots. */
     private void fillHero(int position, String label) {
         heroName.setText(label);
-        if (!cinematic) return;
+        bindShelfCards(position);
+        if (!cinematic || shelfCardsOn) return;
         updateHeroMeta(position);
         updateHeroDots(position);
+    }
+
+    /** The shelf sits on the line above the dock; its bottom edge stays 40dp over the dock whatever it holds. */
+    private void placeHero(float dockTopInRoot) {
+        int h = hero.getHeight();
+        if (shelfRow != null) h = measureHero();
+        float y = browsing ? rootHeight() - BROWSE_BOTTOM_DP * density - h : dockTopInRoot - 14 * density - 26 * density - h;
+        // setY writes the translation the slide is animating: let a slide to this very place finish.
+        if (SystemClock.uptimeMillis() < heroSlideUntil && Math.abs(y - heroSlideTop) < 1f) return;
+        hero.setY(y);
+    }
+
+    /** The shelf's height now: the cards change it before the next layout pass has run. */
+    private int measureHero() {
+        int width = root.getWidth() > 0 ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
+        hero.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        return hero.getMeasuredHeight();
+    }
+
+    private int rootHeight() {
+        return root.getHeight() > 0 ? root.getHeight() : getResources().getDisplayMetrics().heightPixels;
+    }
+
+    private int rootWidth() {
+        return root.getWidth() > 0 ? root.getWidth() : getResources().getDisplayMetrics().widthPixels;
+    }
+
+    // ---- continue watching cards (config.xml continue_watching) ----------------------------------
+
+    /**
+     * Shows the dock app's Continue watching cards under its name, or takes them away. Cheap to call again: it
+     * rebinds only when the app or its rows differ from what is on screen. With cards the name shrinks and the
+     * cinematic shelf's "Last opened" line and dots make room.
+     */
+    private void bindShelfCards(int position) {
+        if (shelfRow == null) return;
+        String key = adapter.keyAt(position);
+        List<WatchNextShelf.Item> rows = DockSlots.inDockRow(dockRow, singleRow, position, COLUMNS)
+                ? watchNext.itemsFor(adapter.packageAt(position)) : Collections.<WatchNextShelf.Item>emptyList();
+        boolean on = key != null && !rows.isEmpty();
+        if (!on && !shelfCardsOn) return;
+        if (on && shelfCardsOn && key.equals(shelfKey) && rows.equals(shelfRow.items())) return;
+        boolean focused = shelfRow.hasFocus();
+        shelfCardsOn = on;
+        shelfKey = on ? key : null;
+        float sp = cinematic ? 68f : 48f;
+        if (!on) {
+            // The focus goes back onto the dock tile first (which binds nothing, shelfCardsOn is off).
+            if (focused) focusTile(lastFocused);
+            heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+            shelfCards.setVisibility(View.GONE);
+            shelfRow.setItems(Collections.<WatchNextShelf.Item>emptyList(), 0);
+            if (cinematic) {
+                updateHeroMeta(position);
+                updateHeroDots(position);
+            }
+            return;
+        }
+        sp = browsing ? BROWSE_LABEL_SP : 40f;
+        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+        if (cinematic) {
+            heroMeta.setVisibility(View.GONE);
+            heroDots.setVisibility(View.GONE);
+        }
+        // Card width from the room between the header and the shelf's bottom edge: name, a 12dp gap, then the row.
+        float headerBottom = ((View) clockBlock.getParent()).getBottom();
+        float room = shelfDockTop - 14 * density - 26 * density - headerBottom - 8 * density;
+        float nameH = heroName.getLineHeight() + 12 * density;
+        float artRoom = room - nameH - ContinueRow.TEXT_DP * density;
+        int width = Math.round(Math.max(112f * density, Math.min(176f * density, artRoom * 16f / 9f)));
+        int rowW = (root.getWidth() > 0 ? root.getWidth() : getResources().getDisplayMetrics().widthPixels) - Math.round(136 * density);
+        ViewGroup.LayoutParams lp = shelfCards.getLayoutParams();
+        lp.width = rowW;
+        lp.height = ContinueRow.rowHeightPx(width, density);
+        shelfCards.setLayoutParams(lp);
+        shelfCards.setVisibility(View.VISIBLE);
+        shelfRow.setItems(rows, width);
+        if (focused) shelfRow.focus(shelfLastCard.getOrDefault(key, 0));
+    }
+
+    /** Up from a dock tile: onto that app's cards, when it has them on screen. */
+    private boolean focusShelfCards(int position) {
+        if (shelfRow == null || !shelfCardsOn || reordering || openPopup != null || cardPrompt != null) return false;
+        if (shelfKey == null || !shelfKey.equals(adapter.keyAt(position))) return false;
+        shelfRow.focus(shelfLastCard.getOrDefault(shelfKey, 0));
+        grid.playSoundEffect(SoundEffectConstants.NAVIGATION_UP);
+        return true;
+    }
+
+    /** The Watch Next table was read: rebind the shelf only when the focused dock app's rows differ. */
+    private void onWatchNextChanged() {
+        if (shelfRow == null || !heroShown) return;
+        int pos = lastFocused;
+        if (pos < 0 || pos >= adapter.appCount()) return;
+        bindShelfCards(pos);
+        placeHero(shelfDockTop);
+    }
+
+    // ---- browse mode (focus on a card) -----------------------------------------------------------
+
+    private static final float BROWSE_LABEL_SP = 16f;
+    /** The card row's gap to the screen's bottom edge in browse mode. */
+    private static final float BROWSE_BOTTOM_DP = 24f;
+    private static final int BROWSE_SLIDE_MS = 250;
+    private static final int BROWSE_FADE_MS = 300;
+    /** Moving quickly between cards, the backdrop swaps this long after the focus settles. */
+    private static final long BROWSE_SETTLE_MS = 250;
+
+    /**
+     * The layers browse mode adds under the shelf: the focused card's artwork (two views, so one fades over the other),
+     * a graphite scrim on top of them, and the card's text above the row. All hidden until a card has focus. The
+     * scrim is one small bitmap stretched over the screen, like the cinematic shelf's, and the artwork is a plain
+     * image with no blur, so a crossfade costs two textures and no offscreen buffer.
+     */
+    private void buildBrowseLayers() {
+        gridHolder = (View) findViewById(R.id.grid).getParent();
+        browseImages = new ShelfImages(this, handler, 3);
+        boolean rtl = getResources().getBoolean(R.bool.rtl_menu_bar);
+        browseLayer = new FrameLayout(this);
+        browseLayer.forceHasOverlappingRendering(false);
+        browseLayer.setVisibility(View.GONE);
+        browseLayer.setAlpha(0f);
+        browseLayer.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        browseFront = new ImageView(this);
+        browseBack = new ImageView(this);
+        for (ImageView art : new ImageView[]{browseFront, browseBack}) {
+            art.setScaleType(ImageView.ScaleType.MATRIX);
+            art.forceHasOverlappingRendering(false);
+            art.setAlpha(0f);
+            browseLayer.addView(art, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        View scrim = new View(this);
+        scrim.setBackground(browseScrim(rtl));
+        browseLayer.addView(scrim, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        browseInfo = new LinearLayout(this);
+        browseInfo.setOrientation(LinearLayout.VERTICAL);
+        browseInfo.setVisibility(View.GONE);
+        browseInfo.setAlpha(0f);
+        browseInfo.forceHasOverlappingRendering(false);
+        int gravity = rtl ? Gravity.RIGHT : Gravity.LEFT;
+        browseMeta = browseText(R.string.font_light, 13f, 0xB3FFFFFF, gravity);
+        browseTitle = browseText(R.string.font_medium, 48f, 0xFFFFFFFF, gravity);
+        browseTitle.setLetterSpacing(-0.02f);
+        browseDetail = browseText(R.string.font_light, 14f, 0xD9FFFFFF, gravity);
+        browseInfo.addView(browseMeta);
+        LinearLayout.LayoutParams titleLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        titleLp.topMargin = (int) (4 * density);
+        browseInfo.addView(browseTitle, titleLp);
+        LinearLayout.LayoutParams detailLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        detailLp.topMargin = (int) (8 * density);
+        browseInfo.addView(browseDetail, detailLp);
+        // Under the shelf, over the sky, glow and cinematic artwork; the header, drawn after the shelf, stays on top.
+        int at = root.indexOfChild(hero);
+        root.addView(browseLayer, at, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        FrameLayout.LayoutParams infoLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | gravity);
+        infoLp.setMargins((int) (68 * density), 0, (int) (68 * density), 0);
+        root.addView(browseInfo, at + 1, infoLp);
+    }
+
+    private TextView browseText(int font, float sp, int color, int gravity) {
+        TextView t = new TextView(this);
+        t.setTypeface(UiFont.get(this, font));
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+        t.setTextColor(color);
+        t.setGravity(gravity);
+        t.setMaxLines(2);
+        t.setEllipsize(TextUtils.TruncateAt.END);
+        t.setIncludeFontPadding(false);
+        t.setShadowLayer(6 * density, 0, density, 0x66000000);
+        return t;
+    }
+
+    /**
+     * Graphite from the text side, opaque behind the text and clear by 58% of the width, and from the bottom, opaque
+     * under the card row; the artwork shows through the rest. The text side follows rtl_menu_bar like the shelf.
+     */
+    private Drawable browseScrim(boolean rtl) {
+        int w = 480, h = 270;
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+        Paint paint = new Paint();
+        paint.setShader(new LinearGradient(rtl ? w : 0, 0, rtl ? 0 : w, 0,
+                new int[]{0xFF111214, 0xD9111214, 0x00111214}, new float[]{0f, 0.32f, 0.58f}, Shader.TileMode.CLAMP));
+        canvas.drawRect(0, 0, w, h, paint);
+        paint.setShader(new LinearGradient(0, 0, 0, h,
+                new int[]{0x00111214, 0x00111214, 0xE6111214, 0xFF111214}, new float[]{0f, 0.38f, 0.68f, 0.86f},
+                Shader.TileMode.CLAMP));
+        canvas.drawRect(0, 0, w, h, paint);
+        BitmapDrawable scrim = new BitmapDrawable(getResources(), bmp);
+        scrim.setGravity(Gravity.FILL);
+        return scrim;
+    }
+
+    private int browseSlideMs() {
+        return reducedMotion ? Motion.REDUCED_MS : BROWSE_SLIDE_MS;
+    }
+
+    /** A card got focus. The first one starts browse mode; every one shows its own text and, soon, its artwork. */
+    private void onShelfCardFocused(int index) {
+        if (shelfKey != null) shelfLastCard.put(shelfKey, index);
+        if (shelfRow == null || index < 0 || index >= shelfRow.items().size()) return;
+        if (!browsing) enterBrowse();
+        showBrowseInfo(shelfRow.items().get(index));
+        String uri = shelfRow.items().get(index).art();
+        browseWanted = uri;
+        handler.removeCallbacks(browseSwap);
+        if (uri == null || uri.equals(browseUri)) return;
+        if (shelfRow.held() || browseUri == null) loadBackdrop(uri, false);
+        else handler.postDelayed(browseSwap, BROWSE_SETTLE_MS);
+    }
+
+    /** Slides the dock and grid off the bottom, the shelf down to the screen's bottom edge, and fades the backdrop in. */
+    private void enterBrowse() {
+        browsing = true;
+        boolean animate = animations;
+        int slide = browseSlideMs();
+        gridHolder.animate().cancel();
+        float away = rootHeight() - gridHolder.getTop();
+        if (animate) gridHolder.animate().translationY(away).setDuration(slide).setInterpolator(new DecelerateInterpolator()).start();
+        else gridHolder.setTranslationY(away);
+        float from = hero.getY();
+        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, BROWSE_LABEL_SP);
+        slideHero(from, rootHeight() - BROWSE_BOTTOM_DP * density - measureHero(), animate);
+        browseLayer.setVisibility(View.VISIBLE);
+        browseInfo.setVisibility(View.VISIBLE);
+        browseLayer.animate().cancel();
+        browseInfo.animate().cancel();
+        if (animate) {
+            browseLayer.animate().alpha(1f).setDuration(reducedMotion ? Motion.REDUCED_MS : BROWSE_FADE_MS).start();
+            browseInfo.animate().alpha(1f).setDuration(reducedMotion ? Motion.REDUCED_MS : BROWSE_FADE_MS).start();
+        } else {
+            browseLayer.setAlpha(1f);
+            browseInfo.setAlpha(1f);
+        }
+    }
+
+    /**
+     * Moves the shelf from y [from] to y [top]. setY is a translation too, so both ends are written as translationY
+     * relative to the shelf's layout position; animating translation back to 0 would park it at the top of the screen.
+     */
+    private void slideHero(float from, float top, boolean animate) {
+        hero.animate().cancel();
+        float base = hero.getTop();
+        heroSlideTop = top;
+        heroSlideUntil = animate ? SystemClock.uptimeMillis() + browseSlideMs() + 50 : 0;
+        if (!animate) {
+            hero.setTranslationY(top - base);
+            return;
+        }
+        hero.setTranslationY(from - base);
+        hero.animate().translationY(top - base).setDuration(browseSlideMs()).setInterpolator(new DecelerateInterpolator()).start();
+    }
+
+    /**
+     * Back to the dock layout: the backdrop fades out, the dock and grid slide back and the shelf returns to its place
+     * above the dock. Safe to call when not browsing, and again while it is leaving.
+     */
+    private void exitBrowse(boolean animate) {
+        if (!browsing) return;
+        browsing = false;
+        handler.removeCallbacks(browseSwap);
+        browseWanted = null;
+        animate = animate && animations;
+        gridHolder.animate().cancel();
+        browseLayer.animate().cancel();
+        browseInfo.animate().cancel();
+        float from = hero.getY();
+        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, shelfCardsOn ? 40f : cinematic ? 68f : 48f);
+        slideHero(from, shelfDockTop - 14 * density - 26 * density - measureHero(), animate);
+        Runnable done = () -> {
+            if (browsing) return;
+            browseLayer.setVisibility(View.GONE);
+            browseInfo.setVisibility(View.GONE);
+            browseFront.setImageDrawable(null);
+            browseBack.setImageDrawable(null);
+            browseUri = null;
+        };
+        if (animate) {
+            gridHolder.animate().translationY(0f).setDuration(browseSlideMs()).setInterpolator(new DecelerateInterpolator()).start();
+            browseInfo.animate().alpha(0f).setDuration(browseSlideMs()).start();
+            browseLayer.animate().alpha(0f).setDuration(browseSlideMs()).withEndAction(done).start();
+        } else {
+            gridHolder.setTranslationY(0f);
+            browseLayer.setAlpha(0f);
+            browseInfo.setAlpha(0f);
+            done.run();
+        }
+    }
+
+    /** The focused card's text above the row: type and numbers, the title, then the episode title and description. */
+    private void showBrowseInfo(WatchNextShelf.Item item) {
+        String meta = item.meta();
+        browseMeta.setText(meta);
+        browseMeta.setVisibility(meta == null ? View.GONE : View.VISIBLE);
+        browseTitle.setText(item.title != null && !item.title.trim().isEmpty() ? item.title : item.episodeTitle);
+        String detail = item.detail();
+        browseDetail.setText(detail);
+        // The episode's own title takes the first line; the description keeps two under it.
+        browseDetail.setMaxLines(detail != null && detail.indexOf('\n') >= 0 ? 3 : 2);
+        browseDetail.setVisibility(detail == null ? View.GONE : View.VISIBLE);
+        // Bottom edge 14dp over the card row's label; two title lines unless that would reach the header.
+        float rowTop = rootHeight() - BROWSE_BOTTOM_DP * density - measureHero();
+        float room = rowTop - 14 * density - ((View) clockBlock.getParent()).getBottom();
+        int width = (int) ((rootWidth() - 136 * density) * 0.62f);
+        for (int lines = 2; lines >= 1; lines--) {
+            browseTitle.setMaxLines(lines);
+            browseInfo.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            if (browseInfo.getMeasuredHeight() <= room) break;
+        }
+        ViewGroup.LayoutParams lp = browseInfo.getLayoutParams();
+        if (lp.width != width) {
+            lp.width = width;
+            browseInfo.setLayoutParams(lp);
+        }
+        browseInfo.setY(rowTop - 14 * density - browseInfo.getMeasuredHeight());
+    }
+
+    /** Fetches uri at screen size and shows it; a failed load leaves the backdrop that was there. */
+    private void loadBackdrop(String uri, boolean fade) {
+        if (!browsing || uri == null || uri.equals(browseUri)) return;
+        Bitmap hit = browseImages.cached(uri);
+        if (hit != null) {
+            showBackdrop(uri, hit, fade);
+            return;
+        }
+        browseImages.load(uri, rootWidth(), rootHeight(), bmp -> {
+            if (browsing && uri.equals(browseWanted)) showBackdrop(uri, bmp, fade && !shelfRow.held());
+        });
+    }
+
+    /** Crossfades to bmp (about 300 ms), or swaps at once when fade is off or animations are. */
+    private void showBackdrop(String uri, Bitmap bmp, boolean fade) {
+        // Filled to the screen's height, anchored to the right and top; a wider picture loses its left side.
+        float w = rootWidth(), h = rootHeight();
+        float scale = Math.max(w / bmp.getWidth(), h / bmp.getHeight());
+        android.graphics.Matrix m = new android.graphics.Matrix();
+        m.setScale(scale, scale);
+        m.postTranslate(w - bmp.getWidth() * scale, 0f);
+        ImageView next = browseBack;
+        next.animate().cancel();
+        browseFront.animate().cancel();
+        next.setImageBitmap(bmp);
+        next.setImageMatrix(m);
+        browseUri = uri;
+        if (fade && animations && browseFront.getAlpha() > 0f) {
+            // The new picture fades in over the old one, which then goes: no dip to the background in between.
+            next.setAlpha(0f);
+            browseLayer.removeView(next);
+            browseLayer.addView(next, 1);
+            final ImageView old = browseFront;
+            next.animate().alpha(1f).setDuration(reducedMotion ? Motion.REDUCED_MS : BROWSE_FADE_MS)
+                    .withEndAction(() -> {
+                        if (old != browseBack || !browsing) return;
+                        old.setAlpha(0f);
+                        old.setImageDrawable(null);
+                    }).start();
+        } else {
+            next.setAlpha(1f);
+            browseFront.setAlpha(0f);
+            browseFront.setImageDrawable(null);
+        }
+        browseBack = browseFront;
+        browseFront = next;
+    }
+
+    /** OK on a card: the row's deep link, else the app's own launch intent. */
+    private void openShelfCard(WatchNextShelf.Item item) {
+        Intent deep = WatchNextShelf.intentFor(item.intentUri);
+        if (deep != null) {
+            deep.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                startActivity(deep);
+                if (cinematic) LastOpened.record(this, item.pkg);
+                return;
+            } catch (ActivityNotFoundException | SecurityException ignored) {
+                // Fall through to the app's front door.
+            }
+        }
+        PackageManager pm = getPackageManager();
+        Intent launch = pm.getLeanbackLaunchIntentForPackage(item.pkg);
+        if (launch == null) launch = pm.getLaunchIntentForPackage(item.pkg);
+        if (launch == null) {
+            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        open(launch);
+        if (cinematic) LastOpened.record(this, item.pkg);
     }
 
     // ---- cinematic shelf -------------------------------------------------------------------------
@@ -2095,6 +2553,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** "Last opened yesterday, 9:40 PM", the time in white; nothing (but the same height) when it was never seen. */
     private void updateHeroMeta(int position) {
+        if (shelfCardsOn) return;
         long when = LastOpened.get(this, adapter.packageAt(position));
         if (when <= 0) {
             heroMeta.setVisibility(View.INVISIBLE);
@@ -2111,7 +2570,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** One dot per dock app, the focused one drawn long and white. Hebrew docks start on the right, so do the dots. */
     private void updateHeroDots(int position) {
-        if (!heroDotsShown) return;
+        if (!heroDotsShown || shelfCardsOn) return;
         int count = Math.min(adapter.dockFilled(), COLUMNS);
         heroDots.setVisibility(count > 1 ? View.VISIBLE : View.INVISIBLE);
         if (heroDots.getChildCount() != count) {
@@ -2464,7 +2923,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (singleRow) {
             // One row: Up leaves for the top bar, Down has nowhere to go, and Left/Right walk the whole row,
             // stopping at its two ends (the default focus search scrolls the row to the next tile).
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return focusShelfCards(position);
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true;
             boolean forward = rtlAppGrid ? keyCode == KeyEvent.KEYCODE_DPAD_LEFT : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
             int last = adapter.focusablePosition(count - 1);
@@ -2488,7 +2947,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
+            if (position < COLUMNS) return focusShelfCards(position);   // dock row: onto the cards, else to the top bar
             target = position - COLUMNS;
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
