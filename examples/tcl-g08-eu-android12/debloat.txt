@@ -5,8 +5,9 @@
 # ad services. The US list (examples/tcl-g08-us-google-tv) applies only partially here; this list is the
 # subset that exists on this build, applied by hand with `pm disable-user --user 0`.
 #
-# Tested 21 October 2026 on one set. All 24 packages below are disabled on that set and it boots, plays
-# HDMI/Live TV and opens the source menu normally.
+# Tested 21 October 2026 on one set: the 24 packages it took from the four groups at the top of this list are
+# disabled there, and it boots, plays HDMI/Live TV and opens the source menu normally. The two blocks the later
+# units added - the AS36/AS34 preloads and the third unit's Google extras, eight lines - bring this file to 32.
 #
 # Second unit: TCL 75Q7C (G08_4K_GB, same model "Smart TV Pro"), firmware STT2.221228.001 AS36, Spain, on
 # Ethernet, 25 October 2026, with the Clean Your TV launcher as Home (README). The list below applied unchanged
