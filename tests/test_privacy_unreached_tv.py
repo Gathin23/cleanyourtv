@@ -18,6 +18,10 @@ and an empty stdout now, and a `--write` target is still not created.
 The last test is the branch that was already right: a checkout with no tools/tv.py at all still says
 it could not load it, with 2.
 
+The four runs that start the checkout's own tv.py skip when this interpreter cannot import adb_shell,
+which that copy needs: the suite has to stay green under `python3 -m unittest discover -s tests -v`, the
+command each docs/workflows/ page ends with, on a machine that never installed tools/requirements.txt.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
@@ -36,8 +40,25 @@ BAD_PORT = "not a port number: 'abc'"
 CANNOT_LOAD = "cannot load tools/tv.py"
 
 
+def packages_installed():
+    """True when this interpreter can load adb_shell, which the checkout's tv.py needs to be imported."""
+    return subprocess.run([sys.executable, "-c", "import adb_shell"],
+                          capture_output=True, timeout=120).returncode == 0
+
+
 class PrivacyNeedsHostTest(unittest.TestCase):
     """The checkout's own tools/tv.py: the two refusals it makes while it is being imported."""
+
+    @classmethod
+    def setUpClass(cls):
+        # Without adb_shell the copy of tv.py stops at its own import, so these four runs would see
+        # "cannot load tools/tv.py" instead of the refusal they are about - and the suite would report
+        # failures rather than the skip the rest of the unreached-TV files give (the bench.py,
+        # b64push.py and recovery.py ones). `python3 -m unittest discover -s tests -v`, the command each
+        # docs/workflows/ page ends with, runs on a machine that never installed tools/requirements.txt.
+        if not packages_installed():
+            raise unittest.SkipTest("needs the packages tools/venv installs (pip install -r "
+                                    "tools/requirements.txt)")
 
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()

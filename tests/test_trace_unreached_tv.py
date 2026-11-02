@@ -17,7 +17,9 @@ The reader here is the checkout's own tools/tv.py, copied beside a copy of trace
 imports it from), and the stub cases pin the handler around it: a client module that stops with its own
 text (2, that text printed), one that stops with a number (2, since nothing was recorded) and one that
 exits 0 (its status stands - the branch tools/theme_restart.py keeps). A TV that answered keeps 1: it was
-reached, and the docstring's 1 covers what happens next.
+reached, and the docstring's 1 covers what happens next. Both classes need the packages
+tools/requirements.txt installs - the second one because trace.py looks for adb_shell before it imports
+tv at all - so each skips with a reason on an interpreter without them, rather than failing.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -113,6 +115,17 @@ class RealClientTest(Base):
 
 class StubClientTest(Base):
     """The handler around `import tv` itself: a client module that decides to stop while imported."""
+
+    @classmethod
+    def setUpClass(cls):
+        # The stub stands in for tv.py, but trace.py checks for adb_shell before it imports anything
+        # (client_python_or_exit(), the line that builds the venv), so these four runs need the packages
+        # too: without them every one of them read "trace.py needs the packages" instead of the exit its
+        # test is about, and the file came out as four failures on a machine that never installed
+        # tools/requirements.txt rather than the skip RealClientTest above it gives.
+        if not packages_installed():
+            raise unittest.SkipTest("needs the packages tools/venv installs (pip install -r "
+                                    "tools/requirements.txt)")
 
     def test_a_client_that_stops_with_its_own_words_prints_them_and_answers_2(self):
         self.stub('raise SystemExit("the client refuses this TV")\n')
