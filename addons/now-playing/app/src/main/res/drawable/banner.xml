@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a record cover and a progress bar. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#1DB954" android:pathData="M40,40h100v100h-100z" />
+    <path android:fillColor="#101418" android:pathData="M90,90m-30,0a30,30 0 1,1 60,0a30,30 0 1,1 -60,0" />
+    <path android:fillColor="#1DB954" android:pathData="M90,90m-6,0a6,6 0 1,1 12,0a6,6 0 1,1 -12,0" />
+    <path android:fillColor="#FFFFFF" android:pathData="M160,58h120v12h-120z" />
+    <path android:fillColor="#8A939C" android:pathData="M160,82h80v8h-80z" />
+    <path android:fillColor="#33FFFFFF" android:pathData="M160,118h120v4h-120z" />
+    <path android:fillColor="#1DB954" android:pathData="M160,118h70v4h-70z" />
+</vector>

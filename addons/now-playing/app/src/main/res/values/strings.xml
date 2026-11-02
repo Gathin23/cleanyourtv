@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Now Playing</string>
+    <string name="card_service_description">Shows the Now Playing card on Home while music plays, and lets the remote\'s media keys control it while the card is up. Reads which app is in front, never screen content.</string>
+    <string name="no_access">Now Playing needs notification access to see what is playing. Run addons/now-playing/install.sh from the CleanYourTV repo, or turn it on in Settings.</string>
+    <string name="open_access_settings">Open notification access settings</string>
+    <string name="settings_unavailable">This TV has no notification access screen. Use install.sh.</string>
+    <string name="nothing_playing">Nothing is playing. Start music in Spotify or another app.</string>
+    <string name="prev">⏮ Previous</string>
+    <string name="play">▶ Play</string>
+    <string name="pause">❚❚ Pause</string>
+    <string name="next">⏭ Next</string>
+    <string name="stop">■ Stop</string>
+    <string name="open_app">Open app</string>
+    <string name="card_off">Card on Home while playing: Off</string>
+    <string name="card_on">Card on Home while playing: On</string>
+    <string name="helper_off">The remote helper is off, so the card cannot show. Run install.sh again.</string>
+    <string name="paused">Paused</string>
+    <string name="card_keys">The remote\'s media keys control it</string>
+</resources>

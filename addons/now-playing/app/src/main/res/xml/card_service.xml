@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No events and no keys here: CardService asks for window changes only while the card is turned on, and
+     filters keys only while the card shows (some firmware stops key repeat while any service filters keys). -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRequestFilterKeyEvents="true"
+    android:description="@string/card_service_description" />
