@@ -1106,6 +1106,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             default:
                 break;
         }
+        // The refresh above can move every tile under a highlight that was already on screen; one refit here
+        // costs nothing when the geometry is unchanged and saves the "wrong until you press a key" state.
+        grid.post(this::refitGlass);
         if (openLiveTvAfterBoot()) return;
         updateGreeting();
         updatePanel();
@@ -2656,7 +2659,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (vh != null) {
             View card = vh.itemView.findViewById(R.id.card);
             // Already focused (e.g. back from an app): no focus change fires, so restore the glass by hand.
-            if (card.isFocused()) onTileFocused(pos, card);
+            // Posted, because the grid re-lays out as Home resumes (the hero, the clock and a tile refresh all
+            // change the padding): measured inline, the rect is the one from before that pass, and the glass
+            // sits beside its tile until a key press re-measures it.
+            if (card.isFocused()) card.post(() -> {
+                if (card.isFocused() && card.getWidth() > 0) onTileFocused(pos, card);
+            });
             else card.requestFocus();
             return;
         }
