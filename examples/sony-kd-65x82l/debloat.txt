@@ -18,6 +18,20 @@
 # Reboot-checked (tools/check.py: nothing drifted, Home on the launcher; power-on lands on Home); Home, gear,
 # app buttons, Input, the mic button and volume hold-to-repeat checked on the real remote. Not lived with for
 # days yet.
+# Also Sony BRAVIA 4K VH22 (2023, BRAVIA_VH22, MediaTek MT5895; product code not read), Australia, the same
+# BRAVIA_VH22_M_PA build: every package below exists on it. Applied on 2026-11-01 in three batches with a
+# screenshot between, without YouTube Music and the seeds.* phone link (kept by choice), without batch 3, and
+# with the commented-out Australian-unit lines at the end of batch 2. On Wi-Fi the saved network belonged to
+# android.uid.system, not setupwraith, but setupwraith's RecoveryActivity still claims HOME, so launcherx and
+# setupwraith both stayed enabled and the launcher took Home by the redirect route (as on the second and third
+# examples/sony-bravia-4k-vh21 units): cmd package set-home-activity prints Success and changes nothing on this
+# unit, so launcher/build-and-install.sh with STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 (on Windows
+# launcher/build-and-install.ps1 -StockLauncher none -HomeKeyService: parameters, not environment variables)
+# ends on its Home check before it enables the helper; HomeKeyService was then enabled by hand, the same
+# settings the script writes, with stock_home_redirect com.google.android.apps.tv.launcherx in config.xml. The
+# screensaver ships as dreamx's Backdrop, so livingfit went with no screensaver change. Reboot-checked twice:
+# nothing came back on, power-on lands on the new Home with the helper bound, and the real remote's Home button
+# opens it from inside an app. Same-day test, not lived with for days yet.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-65x82l/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-65x82l/debloat.txt com.google.android.apps.tv.launcherx
@@ -75,7 +89,16 @@ com.sony.dtv.ecodashboard
 com.sony.dtv.distancealert        # BRAVIA CAM (optional accessory) features
 com.sony.dtv.gestureapp
 com.sony.dtv.sensingcamera.settings
-com.sony.dtv.sensingcamera.fwupdate
+com.sony.dtv.sensingcamera.fwupdate # BRAVIA CAM firmware checker only; the TV's own updater (systemupdate) stays on
+# The Australian VH22 unit disabled these too, by the owner's choice (Australian preloads, support tiles):
+# com.sony.dtv.sonybugreportsys   # Sony bug report service
+# com.sony.dtv.customersupport    # customer support tile
+# au.com.ninenow.ctv              # 9Now
+# au.net.abc.iview                # ABC iview
+# com.swm.live                    # 7plus
+# com.apple.atve.sony.appletv     # Apple TV app
+# com.sony.dtv.hbbtvplayer        # HbbTV / red button
+# com.google.android.tts          # text-to-speech: TalkBack and read-aloud stop working
 
 # Batch 3: Google TV setup wizard, which also claims HOME (RecoveryActivity, priority 1) and would keep
 # Home away from the new launcher. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first: a network it owns
