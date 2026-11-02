@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 49PUS6561/12 (TP Vision QM163E, QM16XE_U, MediaTek MT5890), Europe",
+  "os": "Android TV 8.0",
+  "brand": "Philips",
+  "notes": "2016 platform, not the TPM171E board: Live TV is `org.droidtv.zapster`; DAC/GEL analytics, usage and framework loggers, demo, Top Picks, stickers, NetTV store and 15 web apps, phone setup; preloads off by choice; voice, Chromecast, updates, Ambilight, DLNA kept; two packages need `TVINPUT_ALLOW=1`; the TV powers on to the last source"
+}
