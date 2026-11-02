@@ -43,18 +43,21 @@ if ($env:HOST_KEY_DIR) {
 # it: on a first run the image does not exist yet, so this probe writes "No such image" to stderr - the case
 # the line below is there to handle - and the build is never reached. Ask docker with 'Continue' and judge
 # the exit code.
+# Always x86-64, as in the shell twin: the Linux AAPT2 the Android Gradle plugin downloads is x86-64 only, so an
+# arm64 image (Windows on ARM) stops at :app:mergeReleaseResources (#2941). On an x86-64 computer it changes nothing.
+$Platform = 'linux/amd64'
 $ErrorActionPreference = 'Continue'
 docker image inspect $Image *> $null
 $Missing = $LASTEXITCODE -ne 0
 $ErrorActionPreference = 'Stop'
 if ($Missing) {
     Write-Host "Building the $Image image once (JDK 17, Android SDK 34, build-tools 34.0.0; a few minutes)..."
-    docker build -t $Image (Join-Path $Root 'tools/docker')
+    docker build --platform $Platform -t $Image (Join-Path $Root 'tools/docker')
     if ($LASTEXITCODE -ne 0) { throw 'docker build failed' }
 }
 
 # The whole repository is mounted: an add-on's gradlew may call ../../launcher/gradlew.
-docker run --rm @keyArgs -v "${Root}:/repo" -v "${Volume}:/gradle" -w "/repo/$Project" `
+docker run --rm --platform $Platform @keyArgs -v "${Root}:/repo" -v "${Volume}:/gradle" -w "/repo/$Project" `
     -e "ANDROID_USER_HOME=$KeyDir" $Image sh ./gradlew --no-daemon --console=plain @Tasks
 if ($LASTEXITCODE -ne 0) { throw 'gradle failed in the container' }
 

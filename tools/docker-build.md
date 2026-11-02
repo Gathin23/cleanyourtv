@@ -30,13 +30,23 @@ your user, so the build output is not owned by root.
 | `KEY_DIR` | `/gradle/.android` | Where the debug signing key is kept inside the container |
 | `HOST_KEY_DIR` | (none) | A folder on this computer to take the key from instead, such as `~/.android` |
 
-## On an Apple Silicon Mac
+## On an Apple Silicon Mac or another ARM computer
 
-The build fails there in an arm64 Docker VM (Colima on an M-series Mac): `:app:mergeReleaseResources` stops with
-`AAPT2 aapt2-8.5.2-11315950-linux Daemon #0: Daemon startup failed`, because the Linux AAPT2 that the Android Gradle
-plugin downloads is built for x86-64 and the container is arm64. Build natively instead: Homebrew's `openjdk@17`
-and an Android SDK with platform 34 and build-tools 34.0.0, which the install script below finds on its own when
-run without `SKIP_BUILD`. Running the container as x86-64 under emulation was not tried.
+The Linux AAPT2 that the Android Gradle plugin downloads is built for x86-64 only, so both scripts build and run
+the image as `linux/amd64` whatever the computer is; Docker Desktop runs it under Rosetta (turn on "Use Rosetta for
+x86_64/amd64 emulation" in its settings) or QEMU, and Colima needs
+`colima start --vm-type vz --vz-rosetta`. On an M-series Mac the first build took about 7 minutes and
+later ones well under a minute ([#2941](https://github.com/Gathin23/cleanyourtv/issues/2941)). Before this, an
+arm64 image stopped at `:app:mergeReleaseResources` with `AAPT2 aapt2-8.5.2-11315950-linux Daemon #0: Daemon
+startup failed` or `rosetta error: failed to open elf at /lib64/ld-linux-x86-64.so.2`. If an older copy of the
+script left that arm64 image behind, remove it once so the next run builds the right one:
+
+```bash
+docker image rm cleanyourtv-android-build
+```
+
+A native build works on these computers too: Homebrew's `openjdk@17` and an Android SDK with platform 34 and
+build-tools 34.0.0, which the install script below finds on its own when run without `SKIP_BUILD`.
 
 ## Install
 

@@ -158,7 +158,7 @@ class PowerShellFirstRunTest(unittest.TestCase):
         done, calls = run_with_stub(["-File", str(PS1)], PWSH)
         self.assertEqual(0, done.returncode, done.stdout + done.stderr)
         self.assertEqual(["image", "inspect", IMAGE], calls[0])
-        self.assertEqual(["build", "-t", IMAGE, str(DOCKERFILE_DIR)], calls[1],
+        self.assertEqual(["build", "--platform", "linux/amd64", "-t", IMAGE, str(DOCKERFILE_DIR)], calls[1],
                          "the build #2890 never reached")
         self.assertEqual("run", calls[2][0], calls)
         self.assertIn("/repo/launcher", calls[2])
@@ -185,7 +185,27 @@ class ShellTwinTest(unittest.TestCase):
         done, calls = run_with_stub([str(SH)], BASH)
         self.assertEqual(0, done.returncode, done.stdout + done.stderr)
         self.assertEqual(["image", "inspect", IMAGE], calls[0])
-        self.assertEqual(["build", "-t", IMAGE, str(DOCKERFILE_DIR)], calls[1])
+        self.assertEqual(["build", "--platform", "linux/amd64", "-t", IMAGE, str(DOCKERFILE_DIR)], calls[1])
+
+    def test_the_shell_twin_runs_the_build_as_x86_64(self):
+        # #2941: the Linux AAPT2 is x86-64 only, so an arm64 container fails at mergeReleaseResources.
+        done, calls = run_with_stub([str(SH)], BASH, state="present")
+        self.assertEqual(0, done.returncode, done.stdout + done.stderr)
+        run = calls[1]
+        self.assertEqual("run", run[0], calls)
+        self.assertIn("--platform", run)
+        self.assertEqual("linux/amd64", run[run.index("--platform") + 1])
+
+
+class PlatformPinTest(unittest.TestCase):
+    """#2941: both twins build and run the image as x86-64, whatever the host is (a source check, so it runs
+    without pwsh too)."""
+
+    def test_the_powershell_twin_builds_and_runs_as_x86_64(self):
+        text = PS1.read_text(encoding="utf-8")
+        self.assertIn("$Platform = 'linux/amd64'", text)
+        self.assertIn("docker build --platform $Platform -t $Image", text)
+        self.assertIn("docker run --rm --platform $Platform", text)
 
 
 if __name__ == "__main__":
