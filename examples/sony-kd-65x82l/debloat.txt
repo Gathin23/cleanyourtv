@@ -124,7 +124,7 @@ com.amazon.minitv.androidtv.app    # Amazon miniTV (India)
 com.jio.media.jiotvplus            # JioTV+
 com.jio.media.stb.ondemand         # Jio set-top on-demand app
 com.sony.dtv.kenhchonloc           # shop promo app, Vietnamese despite Indian retail
-# com.tcl.browser                    # preloaded browser (TCL's APK on this Sony set); re-enabled a day later as the owner's dock browser; off on the India B2B unit; uncomment to disable
+# com.tcl.browser                    # preloaded browser (TCL's APK on this Sony set); re-enabled a day later as the owner's dock browser on that unit; uncomment to disable
 # com.sony.dtv.sensingfusionservice  # kept as unclear above; off here, nothing noticed; off on the India B2B unit; uncomment to disable
 # HbbTV / broadcast interactive, unused without an antenna; hbbtvplayer itself is the commented
 # Australian line in batch 2 above
