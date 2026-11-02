@@ -1356,6 +1356,22 @@ Fix: `inputs_cec_state_only` true in `config.xml` and rebuild, or `"inputs_cec_s
 Connected). The trade: a device without CEC, such as a laptop, shows no state either. The switch and its
 screenshot: [docs/switches.md](switches.md).
 
+## Every clock stops after the power button, until a reboot (TCL UnionTV)
+
+**Seen on:** a TCL UnionTV (`ro.product.model` UnionTV, Android 9, `PPR2.180905.006.A1`).
+
+The clocks freeze at the minute the TV was last put to sleep with the power button, while the system time stays
+right. TCL's AlarmManager skips new alarms while `sys.tcl.powerstatus` reads `suspend` (logcat: `sys.tcl.powerstatus
+is suspend, skip setImplLocked`), and on waking it drops the one that sends `ACTION_TIME_TICK`:
+`dumpsys alarm | grep mLastTick` shows the last tick at the minute of the power press. Before Android 12 a
+`TextClock` only moves on that tick.
+
+The launcher redraws its own clocks every minute, and when the display comes back on, on Android 11 and older, so
+Home and the Clock screensaver keep time. Clocks in other apps stay frozen. Unplugging the TV, or setting the time
+once, arms the tick again until the next power press:
+`tools/tv.py "cmd alarm set-time $(( $(date +%s) * 1000 ))"` (the sum is done on the computer: the TV's shell
+overflows it).
+
 ## A key helper is bound and a held remote button stopped repeating
 
 Hold volume up or down and the volume moves one step per press instead of ramping. The remote may be
