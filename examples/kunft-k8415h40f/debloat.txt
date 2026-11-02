@@ -18,7 +18,7 @@
 # KEEP, even though some names look like bloat:
 # - com.google.android.leanbacklauncher.partnercustomizer: on this board family com.mediatek.tv.service
 #   crash-loops after a reboot without it (see examples/chiq-ai-pont).
-# - com.homwee.dmt.upgrade (firmware updates), com.homwee.synckey, com.homwee.factory (never open it),
+# - com.homwee.dmt.upgrade and com.homwee.upgrade (updaters), com.homwee.synckey, com.homwee.factory (never open it),
 #   com.homwee.dynamicbacklight, com.mediatek.* (Live TV, inputs, remote pairing).
 # - com.homwee.mmp.imageplayer: it takes part in the AirPlay / Multi-Screen Share broadcasts
 #   (com.changhong.mmp.check_need_exit_airplay) and runs a music service, so it stays while mirroring is used.
@@ -49,7 +49,8 @@ com.google.android.partnersetup
 com.homwee.chinstallapk                 # silent APK installer
 com.homwee.chtvmanager                  # "TV Manager" cleaner / memory optimizer
 com.homwee.help                         # e-manual
-com.homwee.upgrade                      # vendor app updater; firmware updates are com.homwee.dmt.upgrade, kept
+# com.homwee.upgrade                    # vendor updater: disabled on the test set, left on here because shared
+#                                       # lists keep updaters (examples/rca-ai-pont ties it to firmware checks)
 com.google.android.backdrop             # ambient screensaver; the launcher's ClockDream replaces it
 
 # --- Owner's choice: not used on the test set. Comment out what you use.
