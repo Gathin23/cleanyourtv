@@ -1,6 +1,6 @@
 {
-  "tv": "CHiQ AI PONT (DVB93CQ)",
+  "tv": "CHiQ AI PONT (DVB93CQ); also OK. ODL 43951UC-TAB (DVB93KO)",
   "os": "Android TV 11",
   "brand": "CHiQ",
-  "notes": "Anoki ACR, FAST channels, AI PONT, Homwee services"
+  "notes": "Anoki ACR, FAST channels, AI PONT, Homwee services; [same-firmware OK. unit notes and test limits](chiq-ai-pont/README.md)"
 }
