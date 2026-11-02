@@ -1,6 +1,7 @@
 # Xiaomi Mi Box S 2nd gen (model MiTV-AFKR0, codename jaws, Amlogic), Google TV / Android 11 (SDK 30),
 # 2 GB RAM. Fingerprints: Xiaomi/jaws/jaws:11/RTT0.211222.001/772:user/release-keys and
-# RTT0.211222.001.737 (validated 2026-10-19 on a Philco 4K TV)
+# RTT0.211222.001.737 (validated 2026-10-19 on a Philco 4K TV) and RTT0.211222.001.683 (EU box, build 683 remote
+# scancodes — see README.md)
 # Second unit on 772 (EU box, validated 2026-10-25): same list, launcher owns Home across reboots. Its notes
 # are marked "772" below.
 #
@@ -83,6 +84,12 @@ com.amazon.amazonvideo.livingroom      # Prime Video
 com.google.android.videos              # Google TV / Play Movies
 com.google.android.play.games
 com.android.printspooler
+# com.google.android.youtube.tv        # optional: disable when using SmartTube (org.smarttube.stable)
+# com.netflix.ninja                    # optional: disable if unused
+
+# Remote shortcut handler on Mi Box S 2nd gen; disable when using CleanYourTV app_keys + InputKeyService
+# (see README.md, build 683). Safe on 737 when you do not rely on app_keys.
+# com.xiaomi.android.tvsetup.partnercustomizer
 
 # ONLY AFTER com.gathin.tvhome IS INSTALLED. Disabling launcherx alone hands Home to the setup wizard's
 # RecoveryActivity, so the wizard has to go too. Re-enable it before a factory reset (restore.sh does).

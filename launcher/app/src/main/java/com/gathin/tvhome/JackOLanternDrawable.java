@@ -192,6 +192,7 @@ public final class JackOLanternDrawable extends Drawable implements FestiveLamp 
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }

@@ -1,0 +1,57 @@
+# Panasonic GS655 (Skyworth-built SW1, codename shibuya, MediaTek m5621), Android TV 9 (API 28), firmware PTO7.211208.001 (7982125)
+# Vendor fingerprint Panasonic/PanasonicTV/shibuya:9/PTO7.211208.001/7982125:user/release-keys.
+# Classic Android TV home, not Google TV: the stock launcher is com.google.android.tvlauncher.
+#
+# Stock launcher:  com.google.android.tvlauncher
+# Live TV app:     com.mediatek.wwtv.tvcenter  (Live TV and the input panel; keep it)
+# Never disable any com.mediatek.* package: they are the tuner, input and HDMI stack.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-gs655/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-gs655/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Disabled before this debloat, so not listed (restore.sh would turn it ON): com.google.android.videos.
+#
+# Status: applied in three batches on one TV on 2026-11-01, verified with screenshots and remote-key
+# navigation across Home, Live TV and streaming apps. Verified with sync and cold reboot; all packages
+# stayed disabled (pm list packages -d checked before and after reboot).
+#
+# Quirks on this firmware:
+# - Classic Android TV 9: stock launcher is com.google.android.tvlauncher. Only stock launcher and FallbackHome
+#   claim HOME; setupwraith does not. cmd package set-home-activity sets the reference launcher cleanly.
+# - UI runs at 1280x720 (density 213).
+# - Screenshots: screencap while Live TV or DRM streaming players (e.g. Airtel Xstream) are active returns 0 bytes
+#   due to the protected video overlay; capture on the home screen instead.
+# - Keep com.mediatek.* (tuner, input arbitrator, HDMI) and factory packages (com.coocaa.factory, com.mediatek.tv.factory).
+
+# Skyworth auto-installs, retail demo and setup leftovers
+android.autoinstalls.config.skyworth          # Play Auto Installs config for preloaded apps
+fusion.android.tv.demo                        # Skyworth retail demo service
+com.smartdevice.common.demonow                # "Demo Now" store demo app
+com.mstar.android.tv.disclaimercustomization  # disclaimer screen used only by first-run setup
+com.Smartdevice.emanual                       # on-screen manual (E-Manual)
+com.mediatek.testpq                           # MediaTek picture-quality test tool
+
+# Telemetry, recommendations and stock-launcher partner config
+com.google.android.feedback
+com.google.android.apps.nbu.smartconnect.tv   # Google background data service (registers a VpnService)
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher.partnercustomizer
+com.google.android.tv.bugreportsender
+
+# Unused services and apps (off by choice; all still installed)
+com.google.android.play.games
+com.google.android.katniss                    # Google Assistant / voice search
+com.google.android.apps.mediashell            # Chromecast built-in
+com.google.android.backdrop                   # ambient screensaver
+
+# Stock launcher: disable ONLY after the replacement launcher is installed and set as Home
+com.google.android.tvlauncher
+
+# Kept on purpose: com.mediatek.wwtv.tvcenter / com.mediatek.tvinput / com.mediatek.tvinputservice.arbitratorservice /
+# com.mediatek.tv.agent (Live TV, tuner, HDMI), com.mediatek.network (network monitor), com.coocaa.factory and
+# com.mediatek.tv.factory (factory services, left alone), com.airoha.ble.ota (Bluetooth remote firmware updater, kept
+# by choice), com.google.android.tv.remote.service, Bluetooth, Gboard, Play Store, Play Services, and streaming / media
+# apps (Netflix, YouTube, YouTube Music, Disney+ Hotstar, Prime Video, SonyLIV, Airtel Xstream, Kodi, VLC,
+# CX File Explorer, Send Files to TV, FM Radio, USB Media Player com.mediatek.wwtv.mediaplayer).

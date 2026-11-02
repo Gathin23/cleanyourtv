@@ -1,0 +1,6 @@
+{
+  "tv": "Acer R3 (SCBC device R3, Realtek rtd2841a), India",
+  "os": "Android TV 14",
+  "brand": "Acer",
+  "notes": "SCBC/Realtek platform family relative of acer-ar55ar2851udpro (rtd2851m there, rtd2841a here); plain Android TV, no setupwraith installed; SCBC consent agent, Android ad services, feedback, auto-install, recommendation rows, demo/signage/cleaner apps, Health Connect, Wi-Fi hotspot, HbbTV off; Netflix, Prime Video, Play Games, YouTube, YouTube Music, SCast, TalkBack off by choice (Google Play Movies not installed on the tested unit); FastCast, Assistant, Chromecast and OTA kept; set-home-activity stuck directly, no redirect needed; key_filter false brings back the volume ramp with HomeKeyService bound (docs/TROUBLESHOOTING.md); tile_menu on for Move/Replace/App info; YouTube's remote button is intercepted below Android's input layer with the target package hardcoded, so it cannot be remapped; reboot-checked"
+}

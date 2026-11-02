@@ -23,7 +23,12 @@ class NativeAdbTest(unittest.TestCase):
         self.dir = Path(self.tmp.name)
         self.log = self.dir / "calls.jsonl"
         self.binary = self.dir / "fake adb"
-        self.binary.write_text(f"#!{sys.executable}\n" + r'''
+        # A shebang is split at its first space, so a Python under "Application Support",
+        # "Program Files" or a user name with a space cannot be named there: exec then fails
+        # with ENOENT ("bad interpreter"), which showed up here as five errors and one
+        # failure. This helper imports the standard library only, so env is enough.
+        interp = sys.executable if not any(c in " \t" for c in sys.executable) else "/usr/bin/env python3"
+        self.binary.write_text(f"#!{interp}\n" + r'''
 import json, os, pathlib, shutil, subprocess, sys
 args = sys.argv[1:]
 with open(os.environ['FAKE_ADB_LOG'], 'a') as f:

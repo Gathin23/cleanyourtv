@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi TV A Pro 32\" (MiTV-AXFU0, arctictale, Amlogic)",
+  "os": "Google TV 14",
+  "brand": "Xiaomi",
+  "notes": "PatchWall/Mi Home tab, Mi analytics, TV Manager; setup wizard off, Google TV 14 crash-loop notes; Live TV via com.mitv.livetv; Bluetooth remote needs com.mitv.overseaservice kept ([device note](../docs/devices/xiaomi-mitv-axfu0.md))"
+}

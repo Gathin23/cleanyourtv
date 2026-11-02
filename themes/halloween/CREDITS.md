@@ -32,5 +32,8 @@ first-Home flight, the ghost on Settings) are from Microsoft's Fluent Emoji 3D, 
 Microsoft Corporation: https://github.com/microsoft/fluentui-emoji. The lit and dark pumpkins are the same picture
 with the carved face recoloured; see `launcher/ICONS-LICENSE-FLUENT-EMOJI.txt`.
 
-`screenshot.jpg` is a mock-up of Home with this theme built from the first wallpaper, the icons and app tiles cut
-from `themes/dussehra/screenshot.jpg`, waiting for a photo of a real TV.
+`screenshot.jpg` is Home on a real TV with this theme pushed, cut to 1280x720 from the same capture the README
+card shows at 1920x1080 (`docs/new-home-halloween.jpg`), on the Xiaomi Mi TV 4A (MiTV-MOOQ1, Android 10) that
+`addons/haunted/README.md` records its test on. It was a mock-up, built from the first wallpaper and app tiles cut
+from `themes/dussehra/screenshot.jpg`, until the theme was run on that set; no part of the file comes from another
+theme now, and `docs/DOS-AND-DONTS.md` keeps that rule for every theme's picture.

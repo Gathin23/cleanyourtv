@@ -1,0 +1,19 @@
+{
+  "live_tv_package": "",
+  "source_panel_service": "com.hisense.tv.inputs/com.hisense.tv.InputsUIService",
+  "source_panel_action": "com.hisense.tv.start_inputs",
+  "app_library": true,
+  "power_on_home_always": true,
+  "hidden_apps": [
+    "com.android.calendar",
+    "com.android.camera2",
+    "com.android.contacts",
+    "com.android.music",
+    "com.android.deskclock",
+    "com.android.settings",
+    "com.hisense.tv.catlog",
+    "com.hisense.systeminfo",
+    "com.hisense.hitv.hicloud.account",
+    "com.hispeech.ai.area"
+  ]
+}

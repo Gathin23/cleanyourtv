@@ -30,6 +30,14 @@ your user, so the build output is not owned by root.
 | `KEY_DIR` | `/gradle/.android` | Where the debug signing key is kept inside the container |
 | `HOST_KEY_DIR` | (none) | A folder on this computer to take the key from instead, such as `~/.android` |
 
+## On an Apple Silicon Mac
+
+The build fails there in an arm64 Docker VM (Colima on an M-series Mac): `:app:mergeReleaseResources` stops with
+`AAPT2 aapt2-8.5.2-11315950-linux Daemon #0: Daemon startup failed`, because the Linux AAPT2 that the Android Gradle
+plugin downloads is built for x86-64 and the container is arm64. Build natively instead: Homebrew's `openjdk@17`
+and an Android SDK with platform 34 and build-tools 34.0.0, which the install script below finds on its own when
+run without `SKIP_BUILD`. Running the container as x86-64 under emulation was not tried.
+
 ## Install
 
 The launcher's install script builds with the JDK on this computer unless told not to. With the APK built in
@@ -56,6 +64,11 @@ with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`.
 - Build one app the same way every time, or
 - sign Docker builds with your native key: `HOST_KEY_DIR=~/.android tools/docker-build.sh`, or
 - uninstall the app on the TV once and install the new build (its settings on the TV are lost).
+
+That folder has to be one Docker can mount, so both twins refuse it before anything is built when it is not
+there or not written in full: Docker makes a missing folder itself (empty, and owned by root on Linux) and reads
+a relative path as the name of a volume, so either mistake would sign the build with a new key - the failure
+above, reached without a word. Write the path in full, `~/.android` inside quotes is not expanded.
 
 To see which key an installed app carries, compare
 `apksigner verify --print-certs` on the APK with `keytool -list -v -keystore <dir>/debug.keystore -storepass android`.

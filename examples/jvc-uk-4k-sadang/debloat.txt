@@ -45,6 +45,24 @@
 # - Location can only be turned on together with Google Location Accuracy. Without Location, apps can't
 #   read the Wi-Fi network's name.
 
+# Second unit: LOGIK 4K Android TV (Currys own brand, also built by MTC), UK, 2026-10-27, on the same firmware build as above.
+# Fingerprint: LOGIK/MTCMSD6886UK_LOGIK/sadang:11/RTO8.250915.001/14107831:user/release-keys (ro.product.model
+# "LOGIK 4K Android TV", manufacturer MTC), 1.3 GB RAM. Status: disabled on 2026-10-27, launcher installed the same
+# evening, then five days of daily use with cold starts. Home, the Input key, the Bluetooth remote, HDMI inputs,
+# Netflix, iPlayer and the Assistant mic all work. What this unit confirmed and added:
+# - Port 5555 was open with only USB debugging on; this firmware has no separate Network debugging switch.
+# - The same Freeview Play behaviour: four uk.co.freeview.* apps were disabled once and back after the next boot,
+#   and Live TV opened by itself at power-on with the new launcher as Home.
+# - fusion.android.tv.demo and partnercustomizer: both were disabled for about half an hour, survived one reboot,
+#   and were re-enabled to match this list. Keep them, as above.
+# - android.autoinstalls.config.JVC is preloaded on the Logik too, and com.google.android.partnersetup is present;
+#   both were disabled with no visible effect (second-unit batch at the end).
+# - mediatek.factorymenu.ui stays resident (about 49 MB on a 1.3 GB set) and was disabled on this unit by the
+#   owner with no problem in five days; it is NOT listed, because factory menus stay enabled in shared lists.
+# - Kept by choice on this unit: YouTube Music (com.google.android.youtube.tvmusic) and the Freeview Play guide
+#   (com.mediatek.tv.freeviewplay). Disabled by choice: the Ambient screensaver (backdrop), after setting the
+#   launcher's ClockDream as screensaver.
+
 # Batch 1: telemetry and background services
 com.google.android.feedback                      # Google feedback and crash reports
 com.google.android.apps.nbu.smartconnect.tv      # data meter and data-saver VPN service
@@ -71,3 +89,7 @@ com.google.android.tvrecommendations             # recommendation rows
 # examples/chiq-ai-pont keep it, because com.mediatek.tv.service can crash-loop after a reboot without its
 # tvlauncher.widget provider, and the Input key stops working. Nothing visible went wrong here, but nobody
 # checked logcat for it, so it stays enabled until someone does.
+
+# Second unit (Logik): partner attribution and auto-installs, disabled there with no visible effect
+android.autoinstalls.config.JVC                  # partner-app auto installer (preloaded on the Logik too)
+com.google.android.partnersetup                  # partner-app attribution

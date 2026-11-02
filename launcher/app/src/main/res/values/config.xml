@@ -46,6 +46,10 @@
          both are set); Home after that stays Home, and an app that is gone or disabled leaves Home on screen.
          Off by default; a theme can set "open_on_start_choice": true. -->
     <bool name="open_on_start_choice">false</bool>
+    <!-- With open_on_start_choice: the picked app also opens each time the screen comes back on, for sets whose
+         remote powers them into a light sleep with no boot. It opens over whatever was in front, an HDMI input
+         included. Off by default; a theme can set "open_on_start_on_wake": true. -->
+    <bool name="open_on_start_on_wake">false</bool>
 
     <!-- Seconds the first Home after the TV starts waits for a working internet connection before it opens the
          boot_to_live_tv or Open on start app. A streaming app opened before the network is back shows an error,
@@ -171,7 +175,7 @@
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
          Settings stays off. Needs WRITE_SECURE_SETTINGS, which build-and-install grants with RESTORE_KEY_SERVICES=1
-         (-RestoreKeyServices on Windows). Can also be set with "restore_key_services": true in a theme's config.json. -->
+         (-RestoreKeyServices on Windows) and takes back on an install without it. Can also be set with "restore_key_services": true in a theme's config.json. -->
     <bool name="restore_key_services">false</bool>
 
     <!-- More remote buttons that open the input switcher, by Android keycode (INPUT_KEY_SERVICE=1
@@ -200,7 +204,9 @@
          for HDMI 3 on a TCL Smart TV Pro; the ids are in `tools/tv.py 'dumpsys tv_input'` (hdmi_port=N under
          TvInputHardwareInfo). An action word in place of a package runs that action instead: back, home, recents,
          mute (toggles the sound, with the TV's volume bar), sleep (standby, Android 9 and later), screensaver (the
-         one chosen in the TV's settings, or the launcher's clock), settings, wifi or ignore (swallows the button: it
+         one chosen in the TV's settings, or the launcher's clock), settings, wifi, library (Home with the App
+         library open; with app_library off it only brings Home forward, so a remote's Apps button, which sends
+         284 KEYCODE_ALL_APPS, can open it: 284:library) or ignore (swallows the button: it
          does nothing, for a shortcut pressed by accident; find its scancode with `tools/tv.py 'getevent -t'`);
          e.g. KEYCODE_PROG_YELLOW:mute, scan:586:ignore and hold:KEYCODE_PROG_YELLOW:sleep. "package/.Activity" opens that activity instead of the app's launcher
          entry, e.g. hold:191:io.github.maxhayim.brightness/.QuickActivity for an add-on's quick bar. Prefix an
@@ -353,6 +359,11 @@
          whose state the TV cannot be trusted with stays. Off by default: every input is listed. Can also be set
          with "inputs_connected_only" in a theme. -->
     <bool name="inputs_connected_only">false</bool>
+    <!-- Only CEC device rows in the Inputs list show a connection state ("Steam Deck · HDMI 1  Connected"); bare HDMI
+         ports show none. For TVs whose port states land on the wrong port: TCL UnionTV (Android 9) reports the empty
+         HDMI 1 as connected and a device on HDMI 2 nowhere, while its CEC device list stays right. A device without
+         CEC then shows no state at all. Off by default. Can also be set with "inputs_cec_state_only" in a theme. -->
+    <bool name="inputs_cec_state_only">false</bool>
     <!-- Names under every tile, not only the focused one: unfocused names stay dimmed, the focused one is full white.
          With dock_row the band grows down to hold the dock's names too. -->
     <bool name="always_show_names">false</bool>
@@ -371,9 +382,9 @@
          "wallpaper_moods" as an object. -->
     <string name="wallpaper_moods" translatable="false"></string>
     <!-- Hold OK on a tile opens a small menu: Move (picks the tile up for reordering), Remove from Home (only with
-         app_library) and App info. false keeps the old behaviour: holding OK opens the app's App info page.
-         Can also be set with "tile_menu": true in a theme's config.json. -->
-    <bool name="tile_menu">false</bool>
+         app_library) and App info. On by default since 3.3; false keeps the old behaviour: holding OK opens the app's
+         App info page. A theme's config.json can set "tile_menu" either way. -->
+    <bool name="tile_menu">true</bool>
 
     <!-- Grid rows left visible under the dock on the home screen. 0 = dock sits at the very bottom. Tiles shrink if
          the dock, its title and this many rows would not otherwise fit the screen height. -->
@@ -486,6 +497,11 @@
          only background_color or the wallpaper behind everything. Can also be set with "ambient_glow": false in a
          theme's config.json. -->
     <bool name="ambient_glow">true</bool>
+    <!-- true: when the focus moves to an app of another colour, the ambient glow takes the new colour in one frame
+         instead of dimming and fading back in. Each frame of that fade repaints the whole screen, about 40 per key
+         press, which a slow GPU such as the Mali-G52 cannot keep up with. Can also be set with "glow_snap" in a
+         theme's config.json. -->
+    <bool name="glow_snap">false</bool>
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
     <bool name="app_glow">false</bool>

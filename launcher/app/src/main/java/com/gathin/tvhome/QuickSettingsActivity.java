@@ -60,6 +60,7 @@ public final class QuickSettingsActivity extends Activity {
 
     /** Anything else taking the screen (Home, an app, a screensaver) closes the panel. */
     @Override
+    @SuppressWarnings("deprecation")
     protected void onPause() {
         super.onPause();
         finish();

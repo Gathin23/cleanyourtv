@@ -1,0 +1,76 @@
+# Hikeen smart TV, model string "Smart" (device 10839, manufacturer "SmartTV"; no brand on the set),
+# Realtek RTD285O (ro.board.platform rtd285o), Android TV 9 (API 28),
+# build Realtek/RealtekATV/RealtekATV:9/PTT1.190222.001/mzh03151811:userdebug/test-keys.
+# The set is sold without a brand; the list is named for the OEM whose packages the firmware carries.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hikeen-smart-rtd285o/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hikeen-smart-rtd285o/debloat.txt com.zeasn.oriontv.open.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher is com.zeasn.oriontv.open.launcher (Zeasn "orion", /system/app/ZeasnLauncher_for_Hardish).
+# It is not in this list: disable it only once a replacement Home is installed
+# (launcher/build-and-install.sh with STOCK_LAUNCHER=com.zeasn.oriontv.open.launcher).
+# com.android.tv.settings and com.realtek.tv.settings both carry a FallbackHome as the last resort.
+#
+# Notes from this TV:
+# - Sideloading works: pm install of an APK declaring category HOME succeeds (no verifier block).
+# - The TV is a userdebug build with ro.adb.secure unset: port 5555 gives a shell to anyone on the
+#   LAN while ADB is on, with no "Allow" prompt. Turn debugging off when done.
+# - The saved Wi-Fi network belongs to android.uid.system, not to a setup wizard, so disabling
+#   setupwraith does not take the TV off Wi-Fi.
+# - Screencap returns a 0-byte file on this firmware in every app (Live TV, Home, dialogs), so
+#   verify steps with `dumpsys window | grep mCurrentFocus` instead of screenshots.
+# - disable.sh skips com.google.android.leanbacklauncher.recommendations on this firmware: its
+#   dumpsys prints no permission block for the input-driver check. After a reboot with the inputs
+#   verified, run the list again with TVINPUT_ALLOW=1 to take that one line.
+# - Settings on this set is com.hikeen.settings (CATEGORY_LAUNCHER, no leanback entry); the Android
+#   TV settings app (com.android.tv.settings) has no launcher entry at all. The folder's config.json
+#   seeds the Hikeen settings app with library_apps and pins it in the dock.
+# - Kept in use: the USB media browser and quick menus (com.hikeen.mediabrowser, Quickmenu,
+#   scrollhelper, menu, settings), MX Player, Live TV and the TV inputs (com.android.tv carries the
+#   AV/HDMI/VGA TV input services), all com.realtek.* (tuner, providers, passthrough), the on-screen
+#   keyboard, Play Store and Play Services.
+# - Leave alone: com.hikeen.factorymenu, com.factory.factoryautomation and com.factory.uartcontrol
+#   (factory packages: never start them on this board), com.adups.fota (the firmware updater),
+#   com.android.tv, com.android.tv.settings and com.realtek.tv.settings (FallbackHome and inputs).
+
+# Content, ads and telemetry (Zeasn "hikeen" build)
+com.zeasn.services.general
+com.zeasn.deviceportal.asdprovider.hikeen
+cn.zeasn.overseas.tv.hikeen.orion
+# The overlays com.zeasn.services.general.overlay and cn.zeasn.overseas.tv.hikeen.orion.overlay are
+# not listed: disabling their base packages leaves them inert, and pm disable-user does not take on
+# the overlays of this firmware.
+
+# OEM junk (Hikeen)
+com.hikeen.cleanmaster
+com.hikeen.hotelmenu
+com.hikeen.setupwizard
+
+# Google services the owner does not use
+com.google.android.tungsten.setupwraith
+com.google.android.leanbacklauncher.recommendations
+
+# Background services not needed
+com.android.printspooler
+com.android.wallpaper.livepicker
+com.android.dreams.basic
+com.android.dreams.phototable
+
+# Preloaded apps: off on this set by the owner's choice; uncomment the ones you want disabled on yours.
+# com.android.chrome
+# com.farsitel.bazaar
+# deezer.android.tv
+# com.aparat.kids
+# tv.telewebion
+# ir.tamashakhonehtv
+# com.euronews.express
+# com.github.shadowsocks.tv
+# com.mm.android.DMSS
+
+# Casting and voice, off on this set by the owner's choice (uncomment to disable; this also closes EShare's ports 1046 and 8000)
+# com.ecloud.eairplay
+# com.ecloud.emedia
+# com.ecloud.eshare.server
+# com.rtk.android.miracast
+# com.google.android.katniss

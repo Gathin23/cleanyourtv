@@ -1,10 +1,18 @@
-"""Two list headers whose commands could not work as written.
+"""A list header whose commands could not work as written, and the lists that hide with `pm hide`.
 
 examples/ffalcon-r34a0-cn: the header says this firmware denies `pm disable-user` to the shell, yet its
 Apply line ran tools/disable.sh, which sends nothing else. It now hides with the `pm hide` batch that
 examples/redmi-mitv-antl0 uses for the same Android 5.1 refusal, and gives `pm unhide` as the undo
 AGENTS.md asks for next to any `pm hide`. The test runs each header's command with tools/venv/bin/python
 replaced by a stand-in that keeps what `tools/tv.py --batch` was given.
+
+Which lists that rule is read for was a pair of folder names in this file, so the third list built the
+same way - examples/pptv-p34a4p, whose header hides the same way for the same refusal - was read by
+nothing, and a fourth could have shipped with no `pm unhide` and no test would have said so. `hiding()`
+now finds them in the tree: a list whose header gives a `grep ... tools/tv.py --batch` pipeline that
+sends `pm hide`. A header that only says `pm hide` is refused by its firmware (tivo-stream-4k,
+google-tv-streamer-4k-kirkwood, xiaomi-mitv-ansp0, philips-65oled907, xiaomi-mitv-mteq0) gives no such
+batch and is not one.
 
 examples/anker-nebula-mars-3-air: the header and README said `tools/check.py --fix` re-disables
 Assistant after a boot, but the list keeps com.google.android.katniss commented out and check.py reads
@@ -33,8 +41,12 @@ import recovery  # noqa: E402
 import test_drift_check as drift  # noqa: E402  (imported as a module so its tests do not run twice)
 import test_recovery_record as record_test  # noqa: E402  (the same)
 
-# Lists whose firmware refuses `pm disable-user` for the shell, so the header hides instead.
-HIDE_LISTS = ("redmi-mitv-antl0", "ffalcon-r34a0-cn")
+# A list whose firmware refuses `pm disable-user` for the shell hides instead, and its header says so with
+# a batch. The folders are found in the tree (`hiding()`), not named here: naming them let a third list
+# built the same way go unread.
+EXAMPLES = ROOT / "examples"
+HIDE = "pm hide"
+UNDO = "Undo:"
 ANKER = ROOT / "examples" / "anker-nebula-mars-3-air"
 ASSISTANT = ("com.google.android.katniss", "com.google.android.tv.assistant")
 LAUNCHERX = "com.google.android.apps.tv.launcherx"
@@ -68,6 +80,45 @@ def hide_command(lines):
     return " ".join(parts)
 
 
+def hiding(root=None):
+    """The list folders whose header hides: a `grep ... tools/tv.py --batch` pipeline that sends `pm hide`.
+
+    The firmware on these sets refuses `pm disable-user` to the shell, so the header's Apply line is a
+    batch of `pm hide` (Android 5.1: FFalcon r34a0, Redmi MiTV-ANTL0, PPTV p34a4p) instead of
+    tools/disable.sh. A header that mentions `pm hide` as something its firmware refuses too
+    (tivo-stream-4k, google-tv-streamer-4k-kirkwood, xiaomi-mitv-ansp0, philips-65oled907,
+    xiaomi-mitv-mteq0) gives no such batch and is not one of these.
+    """
+    found = []
+    for path in sorted((root or EXAMPLES).rglob("debloat.txt")):
+        command = hide_command(header(path))
+        if command and HIDE in command and "--batch" in command:
+            found.append(path.parent.name)
+    return sorted(found)
+
+
+def undo_problem(path):
+    """Why a list that hides gives no way back, or None.
+
+    AGENTS.md's hard rule: `pm hide` only with the matching undo written in the list header. `pm enable`
+    (tools/restore.sh) does not bring a hidden package back, so the undo has to be `pm unhide`, and the
+    header may not hand the reader the disable or restore scripts for this list either.
+    """
+    lines = header(path)
+    text = "\n".join(lines)
+    if UNDO not in text:
+        return ("the header hides with `pm hide` and gives no Undo line: tools/restore.sh's `pm enable` "
+                "cannot undo a hide, so nothing in it brings the package back")
+    undo = text[text.index(UNDO):].split("\n#\n", 1)[0]
+    if "pm unhide" not in undo:
+        return f"the Undo line gives no `pm unhide`, the one command that undoes a hide: {undo.strip()!r}"
+    for line in lines:
+        if re.search(r"tools[/\\](disable|restore)\.(sh|ps1)\s+\S*debloat", line):
+            return (f"the header runs a script that sends `pm disable-user` or `pm enable`, which cannot "
+                    f"undo a hide: {line.strip()!r}")
+    return None
+
+
 class HideHeaderTest(unittest.TestCase):
     def run_command(self, folder, command):
         with tempfile.TemporaryDirectory() as tmp:
@@ -88,8 +139,14 @@ class HideHeaderTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             return args.read_text().split(), capture.read_text().splitlines()
 
+    def test_the_walk_finds_the_lists_that_hide(self):
+        """A read guard: a walk that stopped finding a list would pass both tests below in silence."""
+        found = hiding()
+        self.assertLessEqual({"redmi-mitv-antl0", "ffalcon-r34a0-cn", "pptv-p34a4p"}, set(found),
+                             f"the walk read {found}")
+
     def test_the_apply_command_hides_every_listed_package(self):
-        for folder in HIDE_LISTS:
+        for folder in hiding():
             with self.subTest(folder=folder):
                 command = hide_command(header(ROOT / "examples" / folder / "debloat.txt"))
                 self.assertIsNotNone(command, "the header gives no `pm hide` batch to apply the list")
@@ -101,16 +158,84 @@ class HideHeaderTest(unittest.TestCase):
                 self.assertEqual(sent, [f"pm hide {name}" for name in listed])
 
     def test_the_undo_line_unhides_and_no_line_runs_the_disable_scripts(self):
-        for folder in HIDE_LISTS:
+        for folder in hiding():
             with self.subTest(folder=folder):
-                lines = header(ROOT / "examples" / folder / "debloat.txt")
-                text = "\n".join(lines)
-                undo = text[text.index("Undo:"):]
-                self.assertIn("pm unhide", undo.split("\n#\n", 1)[0])
-                for line in lines:
-                    # tools/disable.sh and restore.sh send pm disable-user and pm enable, which
-                    # these firmwares refuse or which cannot undo a hide.
-                    self.assertNotRegex(line, r"tools[/\\](disable|restore)\.(sh|ps1)\s+\S*debloat")
+                self.assertIsNone(undo_problem(EXAMPLES / folder / "debloat.txt"))
+
+
+class HideDiscoveryTest(unittest.TestCase):
+    """The walk itself, over lists written here: the rules above are only as wide as it is."""
+
+    def tree(self, lists):
+        """A folder of lists as examples/<folder>/debloat.txt, written into a temporary directory."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name) / "examples"
+        for folder, text in lists.items():
+            path = root / folder / "debloat.txt"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+        return root
+
+    # The header shape the three lists on main use.
+    APPLY = ("# Apply:   NOT tools/disable.sh — it uses pm disable-user, which this firmware DENIES.\n"
+             "#   grep -vE '^\\s*(#|$)' examples/{folder}/debloat.txt | sed -E 's/\\s+#.*$//' \\\n"
+             "#     | awk '{{print \"pm hide \" $1}}' | TV_HOST=<tv ip> tools/venv/bin/python -I "
+             "tools/tv.py --batch\n")
+    UNDO = "# Undo:    NOT tools/restore.sh — its pm enable cannot undo a hide.\n" \
+           "#          Same as Apply, but `pm unhide`.\n"
+
+    def test_a_list_that_hides_is_found(self):
+        root = self.tree({"hide-tv": self.APPLY.format(folder="hide-tv") + self.UNDO + "\ncom.a.b\n"})
+        self.assertEqual(hiding(root), ["hide-tv"])
+
+    def test_a_list_that_only_mentions_hide_is_not_one(self):
+        # The tivo-stream-4k shape: the firmware refuses pm hide too, and the list is suspended.
+        text = ("# - Every pm disable-user and pm hide is refused (\"This command is illegal!\")\n"
+                "# Apply:   NOT tools/disable.sh — refused on this firmware.\n"
+                "# Undo:    nothing was disabled.\n\ncom.a.b\n")
+        root = self.tree({"refusing-tv": text})
+        self.assertEqual(hiding(root), [])
+
+    def test_a_list_that_disables_with_disable_user_is_not_one(self):
+        text = ("# Apply:   grep -vE '^\\s*(#|$)' examples/plain-tv/debloat.txt \\\n"
+                "#     | TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py --batch\n"
+                "# Undo:    tools/restore.sh examples/plain-tv/debloat.txt com.a.launcher\n\ncom.a.b\n")
+        root = self.tree({"plain-tv": text})
+        self.assertEqual(hiding(root), [])
+
+    def test_a_hide_list_a_folder_down_is_read_too(self):
+        text = self.APPLY.format(folder="nested") + self.UNDO + "\ncom.a.b\n"
+        root = self.tree({"nested/one-level-down": text})
+        self.assertEqual(hiding(root), ["one-level-down"])
+
+    def test_a_hide_list_with_no_undo_is_reported(self):
+        root = self.tree({"hide-tv": self.APPLY.format(folder="hide-tv") + "\ncom.a.b\n"})
+        problem = undo_problem(root / "hide-tv" / "debloat.txt")
+        self.assertIsNotNone(problem)
+        self.assertIn("no Undo line", problem)
+
+    def test_an_undo_that_does_not_unhide_is_reported(self):
+        text = (self.APPLY.format(folder="hide-tv")
+                + "# Undo:    tools/restore.sh examples/hide-tv/debloat.txt com.a.launcher\n\ncom.a.b\n")
+        root = self.tree({"hide-tv": text})
+        problem = undo_problem(root / "hide-tv" / "debloat.txt")
+        self.assertIsNotNone(problem)
+        self.assertIn("pm unhide", problem)
+
+    def test_an_undo_line_that_hands_over_the_scripts_is_reported(self):
+        text = (self.APPLY.format(folder="hide-tv")
+                + "# Undo:    pm unhide, or run tools/disable.sh examples/hide-tv/debloat.txt again\n"
+                  "\ncom.a.b\n")
+        root = self.tree({"hide-tv": text})
+        problem = undo_problem(root / "hide-tv" / "debloat.txt")
+        self.assertIsNotNone(problem)
+        self.assertIn("cannot undo a hide", problem)
+
+    def test_the_three_lists_on_main_pass_the_same_reader(self):
+        for folder in ("redmi-mitv-antl0", "ffalcon-r34a0-cn", "pptv-p34a4p"):
+            with self.subTest(folder=folder):
+                self.assertIsNone(undo_problem(ROOT / "examples" / folder / "debloat.txt"))
 
 
 class AnkerAssistantTest(unittest.TestCase):

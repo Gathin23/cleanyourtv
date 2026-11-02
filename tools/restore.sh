@@ -6,9 +6,26 @@
 # Usage: TV_HOST=192.168.1.50 tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt [stock.launcher.package]
 #
 # Exit status: 0 the recorded states are back; 1 the restore did not finish; 2 the command line is not a
-# list plus an optional stock launcher package, so nothing was sent to the TV.
+# list plus an optional stock launcher package - no list word at all, an empty one, or a dash-led word
+# that is a flag somewhere else - so nothing was sent to the TV.
 set -euo pipefail
-LIST="${1:?usage: restore.sh <debloat list> [stock launcher package]}"
+LIST="${1:-}"
+if [ -z "$LIST" ]; then
+  echo "restore.sh takes a debloat list: pass the same one you ran disable.sh with. Nothing was sent to the TV." >&2
+  echo "usage: TV_HOST=<tv ip> tools/restore.sh <debloat list> [stock launcher package]" >&2
+  exit 2
+fi
+# A dash-led word is a flag this script does not have - `--help`, `-h`, `--reset` copied over from
+# theme.sh - and it was read as the list: recovery.py named a file called --help, and the run went on to
+# contact the TV anyway, so the reader asking for the usage got "could not read --help (No such file or
+# directory)" and a status that depended on whether the TV answered. The twin refuses these on its own
+# (PowerShell reads a dash-led word as a parameter name), so this is the script that had to say it.
+case "$LIST" in
+  -*)
+    echo "restore.sh takes a debloat list and an optional stock launcher package, and $LIST is a flag it does not have: nothing was sent to the TV." >&2
+    echo "usage: TV_HOST=<tv ip> tools/restore.sh <debloat list> [stock launcher package]" >&2
+    exit 2 ;;
+esac
 # A list and the optional stock launcher, and nothing else. Only the first two words were read, so a
 # line with a word appended - the stock package named twice, a second list path, `--reset` copied over
 # from theme.sh - restored the TV while that word was dropped without a word, on the one script an

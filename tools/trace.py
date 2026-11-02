@@ -21,6 +21,13 @@ asked anything, so a typo cannot read as a recording that failed. Started with a
 packages, it runs again under tools/venv's Python, or says how to make that venv, the way tools/bench.py
 does.
 
+Exit status: 0 every run is recorded and written; 2 an argument this run cannot use (an --out that is a
+file or passes through one, an empty --out, a --package or --app that is not one, --runs outside 1 to 50)
+and a TV that cannot be reached - tools/tv.py's own sentence is printed, whether it refused the target as
+it was imported (no TV_HOST, a TV_PORT that is not a port number) or connect_error() worded the failure -
+both judged before anything is recorded, so nothing was written and --out was not made; 1 a recording that
+started and then failed.
+
 Scenarios (setup runs before the recording starts, so it stays out of the trace):
     cold     another app in front, the launcher force-stopped, then started with `am start -W`
     coldsys  Home in front, the launcher force-stopped: Android starts it again by itself
@@ -272,12 +279,40 @@ def main(argv=None):
     if argv is None:
         client_python_or_exit()
     import bench  # noqa: E402  the accessibility helpers bench.py already tested
-    import tv  # noqa: E402
+    try:
+        import tv  # noqa: E402
+    except SystemExit as exit_request:
+        # tv.py refuses two shapes while it is imported, before it has a connection: no TV_HOST
+        # ("Set TV_HOST to your TV's IP address") and a TV_PORT it cannot read ("not a port number:
+        # 'abc'", which is also what a `:port` in the address with a bad or out-of-range number gets).
+        # The interpreter answers such a text with 1 - the status this file keeps for a recording that
+        # started and then failed - so a run that never reached the TV read as one whose trace was
+        # lost, which is the one thing a perf-ab comparison has to tell apart. 2 is what the docstring
+        # promises for "a TV that cannot be reached" and what the connect() handler below answers.
+        # tv.py's own text is printed here; a client module that exits 0 answered the call itself, and
+        # that status stands (the branch tools/theme_restart.py keeps).
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            print(exit_request.code, file=sys.stderr)
+        print(f"Nothing was recorded: {args.out} is made when the first run starts.", file=sys.stderr)
+        raise SystemExit(2) from exit_request
 
     try:
         dev = tv.connect()
-    except OSError as e:
-        sys.exit(f"cannot reach the TV at {tv.HOST}:{tv.PORT} ({e}). Is it on and awake, with network debugging on?")
+    except Exception as error:
+        # tv.py words the failures that mean the TV was not reached: a port that refuses, a Wireless
+        # debugging port that asks for TLS, an address nothing answers on, and the macOS Local Network
+        # denial that looks like one. This file answered those with a line of its own and exit 1 - the
+        # status a recording that started and then failed leaves - and it caught only OSError, so the TLS
+        # one (adb_shell's InvalidCommandError is not an OSError) ended in a traceback. bench.py, check.py
+        # and b64push.py answer both with tv.py's sentence and exit 2. The errors tv.py has nothing to add
+        # to (a key file it cannot read, a reset in the handshake) keep their traceback.
+        why = tv.connect_error(error)
+        if why is None:
+            raise
+        print(f"{why}\nNothing was recorded: {args.out} is made when the first run starts.", file=sys.stderr)
+        raise SystemExit(2) from error
     shell = lambda cmd: dev.shell(cmd, read_timeout_s=120.0)
     try:
         home = shell("cmd package resolve-activity --brief -a android.intent.action.MAIN "

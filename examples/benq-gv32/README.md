@@ -67,6 +67,43 @@ comes back as soon as the helper is unbound. To choose the ramp instead, leave o
 TV_HOST=<projector-ip> tools/tv.py "settings put secure enabled_accessibility_services ''; settings put secure accessibility_enabled 0"
 ```
 
+### Or keep the ramp and the Settings button, with launcherx redirected
+
+Tried on the same unit on 30 October 2026 with launcher 3.2, checked with the real remote and after a
+reboot, the way the [Google TV Streamer list](../google-tv-streamer-4k-kirkwood/debloat.txt) describes:
+launcherx enabled again, its home screen sent back to this launcher, and the helper on without filtering
+keys. Add these keys to `config.json` and leave out `app_keys` (they need key filtering):
+
+```json
+"stock_home_redirect": "com.google.android.apps.tv.launcherx",
+"key_filter": false
+```
+
+```bash
+TV_HOST=<projector-ip> HOME_KEY_SERVICE=1 launcher/build-and-install.sh
+TV_HOST=<projector-ip> tools/theme.sh examples/benq-gv32
+TV_HOST=<projector-ip> tools/tv.py 'pm enable com.google.android.apps.tv.launcherx'
+```
+
+Held volume ramps, the Settings button opens Settings through launcherx, and voice search for a song or
+video gets results again. Home shows launcherx for a moment, then this launcher. Setupwraith stays disabled.
+
+The price is the profile button. launcherx answers it by opening `.home.HomeActivity` and then
+`.profile.chooser.ProfileChooserActivity`, and the redirect sees the first and brings this launcher back
+about 100 ms later, over the chooser, so the button seems to do nothing.
+
+If the launcher is force-stopped while launcherx is on screen, Home stays on launcherx until another app
+opens: with `key_filter` false the helper never sees the Home key. Put the helper back by writing
+`enabled_accessibility_services` again, as the Remote buttons command above does but with
+`com.gathin.tvhome/.HomeKeyService`.
+
+## Holding Power shows an empty grey circle
+
+That is the firmware, not the debloat or the launcher: its product overlay
+(`framework-res__auto_generated_rro_product.apk`) sets `config_globalActionsList` to an empty array, so the
+power menu opens with no entries. It looks the same with the launcher force-stopped. Restart from Settings →
+System → Restart instead.
+
 ## Re-enable an app
 
 ```bash

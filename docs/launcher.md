@@ -44,7 +44,7 @@ Click **Settings** for the TV's own settings. Hold OK on it for its menu:
 - **Module cards**, with `module_cards`.
 - **Edit dock**, with `dock_row`.
 - **Reorder apps**: OK picks an app up, the arrows move it, Back places it, and Back again finishes.
-  With `tile_menu`, holding OK on a tile offers **Move**, which picks that app up straight away.
+  With `tile_menu` (on by default since 3.3), holding OK on a tile offers **Move**, which picks that app up straight away.
 - **Restart…** while `HomeKeyService` runs, which opens the system power menu (a launcher may not
   restart the TV itself).
 

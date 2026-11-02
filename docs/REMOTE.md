@@ -138,4 +138,7 @@ before you remove the access: once the tunnel is gone, nobody can check from out
 3. Then remove the access: they revoke the share, or you remove the TV or the helper from your tailnet
    (or turn off its routes) in the admin console. Uninstall Tailscale from the TV unless they use it.
 
-Did this on a TV where something worked differently? Add a line here in a pull request.
+Did this on a TV where something worked differently? Add a line here in a pull request, and keep
+`100.x.y.z` as the address in it: the numbers the TV's Tailscale app shows identify that one set, and a
+page naming them points every reader at somebody's home. `tests/test_doc_addresses.py` refuses a real one
+in the pages, lists and guides this repo ships.

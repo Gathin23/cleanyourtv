@@ -1,0 +1,104 @@
+# Philips 49PUS6561/12 (TP Vision 2016 platform, model QM163E, device QM16XE_U, MediaTek MT5890), Europe
+# Android TV 8.0.0 (API 26), build OPR5.170623.014 incremental 026701, security patch 2019-09-01.
+# Fingerprint: PHILIPS/QM16XE_U/QM16XE_U:8.0.0/OPR5.170623.014/026701:user/release-keys
+# 1.3 GB RAM, armeabi-v7a, 1920x1080 UI. Not the TPM171E board of examples/philips-55pus7503 (PH7M_EU_5596):
+# same org.droidtv vendor prefix, different Live TV app and different NetTV preloads. Entries shared with the
+# TPM171E lists were checked against this TV's own `pm list packages`.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-49pus6561/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-49pus6561/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# TVINPUT_ALLOW=1: without it disable.sh skips org.droidtv.usagelogger and org.droidtv.demome (both ask for
+# TV_INPUT_HARDWARE). Neither serves an input: `cmd package query-services -a android.media.tv.TvInputService`
+# lists org.droidtv.tunerservice, hdmiService, scartService, componentService and Play Movies only. They were
+# disabled last, after a reboot and a Live TV check, and Live TV was checked again. Apply the list without the
+# override first, reboot, check your inputs, then run it again with TVINPUT_ALLOW=1.
+#
+# Stock launcher: com.google.android.tvlauncher (not in this list; launcher/build-and-install.sh disables it
+#                 after the new Home is running). com.google.android.leanbacklauncher is also installed but
+#                 claims no HOME intent here; left alone.
+# Live TV app:    org.droidtv.zapster (not org.droidtv.playtv as on the 2017/2018 sets)
+# Launcher config: config.json in this folder (live_tv_package, hidden_apps).
+#
+# ADB: USB debugging alone opens TCP 5555; the RSA prompt appeared at the first connection.
+# The TV powers on to the last used source (Live TV), not to Home, as Philips sets do.
+#
+# Kept on purpose, do NOT disable: org.droidtv.zapster, org.droidtv.tunerservice, org.droidtv.hdmiService,
+# org.droidtv.scartService, org.droidtv.componentService, org.droidtv.xtv, org.droidtv.tvserver,
+# org.droidtv.GlobalKey (remote buttons), org.droidtv.settings, org.droidtv.tvsystemui, org.droidtv.nettvbrowser
+# (HbbTV red button; hidden from the grid instead), org.droidtv.eum (help; hidden instead, the Sources menu on
+# the 50PUS7303 needed it), org.droidtv.contentexplorer (USB media player), org.droidtv.oad (firmware updates),
+# org.droidtv.alhuewizard and org.droidtv.ambihuecommon (Ambilight+Hue), com.google.android.apps.mediashell
+# (Chromecast), com.google.android.katniss (Assistant), org.droidtv.dlna, Play Store and Play Services,
+# com.google.android.tv.remote.service. org.droidtv.homeintentresolver, org.droidtv.virtualassistant,
+# org.droidtv.devicesetup and org.droidtv.tv.packageinfo run as the system UID and were left alone.
+#
+# Status: 2026-11-01, applied in one session with three reboots; every entry stayed disabled across them, none
+# came back by itself. Verified on the real TV: replacement Home, Live TV at power-on and from the Inputs menu,
+# the Inputs menu listing HDMI 1-4, SCART, YPbPr; Home, Sources, Settings and Ambilight buttons on the real
+# remote (Sources opens the Philips source menu, Settings opens the Philips quick settings). Not yet a several-day
+# soak test at the time of writing; the owner reports daily use since without issues.
+# Not checked: HDMI playback with a source attached, HbbTV, USB playback after the list.
+
+# Telemetry and analytics
+org.droidtv.candeebug                   # "DAC" analytics uploader
+org.droidtv.gel                         # "GEL" metrics collector, same process as candeebug; disable both
+org.droidtv.usagelogger                 # boot stats, keypress counts, panel telemetry (needs TVINPUT_ALLOW=1)
+org.droidtv.tv.frameworklogger          # reboot reasons and firmware-install records to the Philips logger
+com.google.android.feedback             # Market Feedback Agent
+
+# Promotion and recommendation rows
+org.droidtv.demome                      # retail demo mode (needs TVINPUT_ALLOW=1)
+org.droidtv.nettvrecommender            # "Top Picks" content row
+org.droidtv.sticker                     # e-sticker and shop banners
+com.google.android.tvrecommendations    # Android TV recommendation rows
+com.google.android.tvtutorials          # first-run tutorials ("How to..." row on the stock Home)
+
+# Philips NetTV app store (pre-Android web-app platform), social and cloud extras, phone setup
+org.droidtv.nettv.market                # NetTV app gallery (the "Shop" tab on the stock Home)
+org.droidtv.nettvapps                   # NetTvApps manager
+org.droidtv.nettv_launcherapp           # NetTV app launcher entry
+org.droidtv.smarttvhome                 # "Philips TV Collection"
+org.droidtv.nettvregistration           # Philips account registration for NetTV
+org.droidtv.twittershare                # Twitter share sheet
+org.droidtv.dropboxprovider             # Dropbox source in Media
+com.google.android.sss                  # Second Screen Setup (set up from phone)
+com.google.android.sss.authbridge       # Second Screen Setup auth bridge
+com.google.android.partnersetup         # Google partner setup
+
+# Preinstalled NetTV web apps (labels read from the APKs with aapt; comment out any you use)
+org.droidtv.nettvapp1984                # Dailymotion
+org.droidtv.nettvapp3134                # iConcerts
+org.droidtv.nettvapp3358                # Euronews
+org.droidtv.nettvapp3783                # MeteoNews.TV
+org.droidtv.nettvapp3814                # TV5Monde
+org.droidtv.nettvapp3903                # VOYO
+org.droidtv.nettvapp4023                # Siol.net
+org.droidtv.nettvapp4024                # RTV SLO (web app)
+org.droidtv.nettvapp4165                # Vreme
+org.droidtv.nettvapp4533                # Kulinarika.net
+org.droidtv.nettvapp4535                # Radio 1
+org.droidtv.nettvapp4768                # France24
+org.droidtv.nettvapp4835                # Cloud Explorer
+org.droidtv.nettvapp4836                # Social TV
+org.droidtv.nettvapp4932                # Free Games by PlayWorks
+
+# Preloaded apps, off by choice on this unit. The streaming services are commented out (most owners use one);
+# uncomment any you never use, and comment out any other line you want to keep.
+# com.netflix.ninja                       # Netflix (the remote's Netflix button then does nothing; see README.md); off on the owner's set, kept on in the shared list
+# com.amazon.amazonvideo.livingroom       # Prime Video; off on the owner's set, kept on in the shared list
+# com.amazon.aiv.eu                       # Prime Video (EU component); off on the owner's set, kept on in the shared list
+# com.google.android.youtube.tv           # YouTube; off on the owner's set, kept on in the shared list
+com.google.android.videos               # Google Play Movies & TV
+com.google.android.music                # Google Play Music (service discontinued)
+com.google.android.play.games           # Google Play Games
+# bbc.iplayer.android                     # BBC iPlayer; off on the owner's set, kept on in the shared list
+# com.plexapp.android                     # Plex; off on the owner's set, kept on in the shared list
+# tv.twitch.android.app                   # Twitch; off on the owner's set, kept on in the shared list
+com.cloudmosa.puffinTV                  # Puffin TV browser
+com.pokemontv                           # Pokémon TV
+eu.bandainamcoent.pacman256             # PAC-MAN 256
+com.expressvpn.vpn                      # ExpressVPN
+com.privateinternetaccess.android       # Private Internet Access
+com.simplexsolutionsinc.vpn_unlimited   # VPN Unlimited

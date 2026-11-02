@@ -12,6 +12,11 @@ season starts. Races that are already over are left out. The theme folder has to
 created if it is not there yet), and its name cannot be empty: `race_calendar.py "$THEME"` with the variable
 unset would otherwise write the calendar into the directory you ran it from.
 
+A session name is a contract with the launcher as well: RaceWeekend.java answers each name `SESSIONS` writes
+in its two switches and falls back to the raw name for one it does not know, so a session Jolpica starts
+publishing needs that case (and its two strings) there too, and tests/test_race_calendar_contract.py fails
+until both sides name the same sessions.
+
 Exit status: 0 the calendar is in the theme, 1 the season has no race left to show, 2 this run could not do
 its job - the folder is not there (or was left empty), its config.json is not the JSON object a theme has (or
 cannot be read or written), --season is not a year, or the fetch failed - and says why on stderr. Nothing is

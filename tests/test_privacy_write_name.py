@@ -102,20 +102,21 @@ class PrivacyWriteNameTest(unittest.TestCase):
         (self.repo / "lists").mkdir()
         self.tv(unreachable=True)
         result = self.write("--write", "lists")
-        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertNotIn("Traceback", result.stderr)
         self.assertIn("lists is a folder", result.stderr)
         self.assertIn("lists/privacy.txt", result.stderr)
         self.assertIn("Nothing was asked of the TV.", result.stderr)
         self.assertNotIn("cannot reach the TV", result.stderr)
         self.assertNotIn("already exists", result.stderr)
+        self.assertEqual(result.stdout, "")
         self.assertEqual(list((self.repo / "lists").iterdir()), [])
 
     def test_a_folder_with_a_trailing_separator_is_the_folder(self):
         (self.repo / "lists").mkdir()
         self.tv(unreachable=True)
         result = self.write("--write", "lists/")
-        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("lists/ is a folder", result.stderr)
         self.assertIn("lists/privacy.txt", result.stderr)
         self.assertNotIn("already exists", result.stderr)
@@ -125,7 +126,7 @@ class PrivacyWriteNameTest(unittest.TestCase):
     def test_a_folder_that_is_not_there_keeps_its_own_message(self):
         self.tv(unreachable=True)
         result = self.write("--write", "no-such-folder/privacy.txt")
-        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("there is no folder no-such-folder", result.stderr)
         self.assertNotIn("is a folder", result.stderr)
 
@@ -133,7 +134,7 @@ class PrivacyWriteNameTest(unittest.TestCase):
         (self.repo / "privacy.txt").write_text("# hand edits\n")
         self.tv(unreachable=True)
         result = self.write("--write", "privacy.txt")
-        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("privacy.txt already exists", result.stderr)
         self.assertEqual((self.repo / "privacy.txt").read_text(), "# hand edits\n")
 

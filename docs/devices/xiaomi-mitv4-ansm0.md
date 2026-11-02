@@ -110,3 +110,25 @@ production builds`. So the refusal belongs to the generation, not one build.
 
 - **adbd takes one client at a time.** `tools/tv.py` timed out (`TcpTimeoutException: Reading from <tv ip>:5555
   timed out`) while the platform `adb` server held a connection to the same port. `adb kill-server` first.
+
+## A third set: Mi TV 4S 32" (MiTV4S, build 757)
+
+From @Cerega23rus's report in #2562: a Xiaomi Mi TV 4S 32", `MiTV4S` / `vforvendetta`, board `mainz` (MStar),
+Android 6.0 (API 23), build `9.1.23.757`, `persist.sys.locale=en-US`. A fourth identity for the generation-wide
+refusals above: `pm disable-user --user 0 com.xiaomi.devicereport` answers
+`SecurityException: Permission Denial: attempt to change component state` for the shell user, `pm list packages -d`
+stays empty, `pm hide` was not tried on this set, and `adb root` answers
+"adbd cannot run as root". So there is no debloat route on this set either. Network ADB closes on every reboot;
+re-enable in Settings -> Account & security -> ADB debugging (设置 -> 账号与安全 -> ADB调试).
+
+What sticks on this build:
+
+- **The boot ad.** The owner had the sponsored boot video disabled before this report, so the set does not
+  isolate the switch. `boot_ad_switch` and `boot_ad_switch_show` were unset before the change;
+  `settings put system boot_ad_switch 0` was applied and no sponsored boot video shows on this set.
+  Same key as the 75" note above.
+- **Marketing push notifications.** `appops set com.xiaomi.mitv.tvpush.tvpushservice POST_NOTIFICATION deny`
+  sticks (`appops get com.xiaomi.mitv.tvpush.tvpushservice` -> `POST_NOTIFICATION: deny`) while the push service
+  and its installer allowlist stay enabled.
+- Xiaomi's own apps show a mixed Chinese/English UI: the CN apps ship only Chinese and partial English, and
+  untranslated strings fall back to Chinese regardless of `persist.sys.locale`.

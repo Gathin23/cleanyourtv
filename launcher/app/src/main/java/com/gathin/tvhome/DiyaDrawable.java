@@ -536,6 +536,7 @@ public final class DiyaDrawable extends Drawable implements FestiveLamp {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }

@@ -5,8 +5,12 @@
 #        tools\theme.ps1 -TvHost 192.168.1.50 -Reset
 #
 # One argument, and -Reset takes none: both together are refused rather than one of them dropped (below).
-# Exit status as in theme.sh: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed; 2 the
-# command line is not one theme folder or -Reset, so nothing was sent.
+# Exit status: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not
+# restart after it (a failure of the shared helper stops this script with that status); 2 the run stopped
+# before the theme was up and nothing was sent - the command line is not one theme folder or -Reset, the
+# folder has no config.json or one the launcher would drop, a wallpaper name b64push.py refuses, no TV host
+# was given, or tools\venv is missing. 1 is a run that reached the push, so a theme this script cannot read
+# answers 2, as theme.sh does, instead of stopping with a PowerShell error record.
 param(
     [Parameter(Position = 0)][string]$Theme,
     [switch]$Reset,
@@ -22,13 +26,26 @@ if ($Theme -and $Reset) {
 }
 $ErrorActionPreference = 'Stop'
 $OutputEncoding = New-Object System.Text.UTF8Encoding $false
-if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }
+if (-not $TvHost) {
+    # The same status theme.sh answers, for the same reason: a missing address is a run that never started, not
+    # a theme that could not be pushed, and 1 is what the header keeps for the push that ran and failed.
+    [Console]::Error.WriteLine('pass -TvHost <tv ip> or set $env:TV_HOST. Nothing was sent to the TV.')
+    exit 2
+}
 $env:TV_HOST = $TvHost
 # Resolve the theme folder against the caller's directory before moving into tools\.
-if ($Theme) { $Theme = (Resolve-Path $Theme).Path }
+# A folder that is not there keeps the path as typed: Resolve-Path answers a missing path with its own error
+# record and a script line number, where theme.sh stops at "no config.json in <typed path>" - a message about
+# the folder the reader named, not about the cmdlet.
+if ($Theme -and (Test-Path -LiteralPath $Theme)) { $Theme = (Resolve-Path -LiteralPath $Theme).Path }
 Set-Location $PSScriptRoot
 $py = 'venv\Scripts\python.exe'
-if (-not (Test-Path $py)) { throw 'run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt' }
+if (-not (Test-Path $py)) {
+    # As in theme.sh: the venv is on this computer, so nothing was sent and this is a run that stopped before the
+    # theme was up, not a push that ran and failed.
+    [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
+    exit 2
+}
 $pkg = 'com.gathin.tvhome'
 # Runs tools\tv.py or b64push.py and stops on a non-zero exit: 'Stop' only covers cmdlets, so a failed
 # native call would otherwise fall through to "Theme ... is on the TV".
@@ -76,13 +93,23 @@ if ($Reset) {
 }
 if (-not $Theme) { [Console]::Error.WriteLine('usage: theme.ps1 <theme folder> | -Reset'); exit 2 }
 $config = Join-Path $Theme 'config.json'
-if (-not (Test-Path $config)) { throw "no config.json in $Theme" }
-try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json } catch { throw "$config is not valid JSON" }
+# The three refusals below send nothing, so they answer 2 like theme.sh's - not 1, the status of a push that
+# ran and failed - and in this script's own words instead of a PowerShell error record with a script line.
+if (-not (Test-Path -LiteralPath $config)) {
+    [Console]::Error.WriteLine("no config.json in $Theme. Nothing was sent to the TV.")
+    exit 2
+}
+try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json }
+catch {
+    [Console]::Error.WriteLine("$config is not valid JSON, so there is no theme to push (themes/README.md says what the file holds). Nothing was sent to the TV.")
+    exit 2
+}
 # Config.read() answers "no overlay" for anything that is not a JSON object, so an array, a number or a
 # string is a theme the launcher drops - and it replaces the theme the set had with the built-in config.
 # Judged here, before anything is pushed, so "is on the TV" cannot mean the opposite.
 if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
-    throw "$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV."
+    [Console]::Error.WriteLine("$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV.")
+    exit 2
 }
 # Every collection name is checked before anything changes on the TV, as in theme.sh: a name refused halfway
 # through the push left the new config.json and part of the collection behind. b64push.py refuses '..' in a path.
@@ -91,7 +118,10 @@ $images = @()
 if (Test-Path $wallpapers -PathType Container) {
     $images = @(Get-ChildItem $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
     foreach ($image in $images) {
-        if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) { throw "unsupported wallpaper filename: $($image.Name)" }
+        if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) {
+            [Console]::Error.WriteLine("unsupported wallpaper filename: $($image.Name) (b64push.py takes letters, digits, '.', '_' and '-', with no '..' in the name). Nothing was sent to the TV.")
+            exit 2
+        }
     }
 }
 

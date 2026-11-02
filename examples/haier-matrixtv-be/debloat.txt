@@ -1,0 +1,45 @@
+# Haier MatrixTV BE, Google TV 14, firmware UKNV.260313.001.
+# Tested on one set from 31 October to 1 November 2026, including one reboot and real remote checks.
+# Short trial, not a multi-day soak. Re-check this list against your own firmware and app choices.
+#
+# Apply:   TV_HOST=YOUR_TV_IP tools/disable.sh examples/haier-matrixtv-be/debloat.txt
+# Undo:    TV_HOST=YOUR_TV_IP tools/restore.sh examples/haier-matrixtv-be/debloat.txt com.google.android.apps.tv.launcherx
+# Every active line disables one package for user 0; nothing is uninstalled.
+#
+# Stock Home: com.google.android.apps.tv.launcherx (.home.HomeActivity).
+# The launcher install script disables stock Home only after the new Home starts; it is not in this list.
+# Live TV: com.mediatek.wwtv.tvcenter.
+#
+# Check saved Wi-Fi ownership before disabling setupwraith. On the tested set, the connected
+# Wi-Fi remained available after this package was disabled. A different network created by
+# setupwraith could be removed with it, cutting off network ADB. Disabling it gives Home back but can cost
+# Google casting.
+#
+# KEEP: com.haier.appmanager.dispatcher, com.haier.hkcfac, com.haier.tv.hmagicboard
+# (remote hot keys/sound settings); com.mediatek.wwtv.tvcenter, com.mediatek.tvinput and
+# com.mediatek.tv.service (Live TV and inputs); com.mediatek.autopair and
+# com.haier.bt_pair_tips (remote pairing); com.telink.lt.ota (remote firmware).
+# The owner also kept TV Housekeeper, voice search, Chromecast, Play Store and firmware updates.
+#
+# Haier content and smart-device service.
+com.haierubic.usmartdevice                       # Haier smart-device / IoT service, unused by owner
+com.haier.apps                                   # Haier content/promo app
+com.haier.emanual                                # on-TV manual
+com.haier.launcher.haiermatrix                   # Haier TV+ / Zeasn launcher, not Google TV Home; re-enabled itself after one reboot
+
+# Casting choice: this is HaiCast/Miracast, not Google's Chromecast package.
+# Comment this out if you use phone screen mirroring.
+# com.mediatek.androidbox                          # HaiCast/Miracast, unused by owner; off on the owner's set; uncomment if you never mirror a screen
+
+# Stock-home partner rows, feedback and retail demo.
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows on stock Home
+com.google.android.feedback                      # usage feedback
+fusion.android.tv.demo                           # retail demo
+
+# Google TV setup recovery claims HOME alongside the stock launcher. Disable only after
+# checking Wi-Fi ownership; tools/disable.sh applies that guard.
+com.google.android.tungsten.setupwraith
+
+# Excluded: com.release.aryzaptv was disabled initially but appeared enabled in a later check;
+# its persistence was not established. A user-installed game was also disabled only by choice.
+# TalkBack was already disabled before cleanup. None belongs in this tested model list.

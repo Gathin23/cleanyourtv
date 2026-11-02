@@ -41,8 +41,16 @@
 #   (get.geojs.io/v1/ip/geo.json "timezone"): service call alarm 3 s16 Asia/Ho_Chi_Minh
 # - Picture: Settings -> Image settings -> Display model is kept per source; "Picture" is the vivid
 #   one (contrast 55, saturation 60, cold), "Standard" is flat.
+#
+# 2026-firmware unit: Redmi A75 2025 energy edition (L75MA-RAE), 26.3.17.OS3.0.101.0.PSTAATV, 32-bit only
+# (abilist armeabi-v7a, so arm64-only apps such as Tubi cannot install). Applied 23 Oct 2026 and lived with
+# for days: streaming, casting and the voice remote fine. Its list is a subset of this one plus
+# com.xiaomi.tvqs (commented below). Startup ad: `settings put system boot_ad_switch 0`, undo with
+# `settings delete system boot_ad_switch`. Keep PatchWall enabled; the com.ts.launcher build does not take
+# Home on this firmware; do not run build-and-install.sh with defaults; see docs/devices/redmi-l75ma-rae.md.
 
 # Xiaomi telemetry / push / cloud control
+# com.xiaomi.tvqs                         # quality/crash uploads; off on the 2026-firmware unit
 com.miui.analytics
 com.miui.tv.analytics
 com.xiaomi.statistic

@@ -94,11 +94,13 @@ com.xiaomi.mimusic2
 - Kept by the owner: Google Assistant (`com.google.android.katniss`), the official YouTube app and the USB media
   players (`com.xiaomi.mitv.mediaexplorer`, `com.mitv.videoplayer`, `com.mitv.gallery`).
 - `android.autoinstalls.config.xiaomi.amelie` and `com.mstar.android.tv.disclaimercustomization` request no
-  permissions, so `tools/disable.sh` skips both ("neither a requested nor a granted permission block",
-  [#2398](https://github.com/Gathin23/cleanyourtv/issues/2398)). Neither
-  serves a TV input: `pm query-services --components -a android.media.tv.TvInputService` names only
-  `com.mediatek.tvinput`, `com.mediatek.tv.service` and the preview inputs of `com.google.android.videos` and
-  `com.vk.tv`. They were disabled with `TVINPUT_ALLOW=1` once HDMI showed a picture after the reboot.
+  permissions. Neither serves a TV input: `pm query-services --components -a android.media.tv.TvInputService`
+  names only `com.mediatek.tvinput`, `com.mediatek.tv.service` and the preview inputs of
+  `com.google.android.videos` and `com.vk.tv`. When this unit was cleaned, `tools/disable.sh` still skipped both
+  ("neither a requested nor a granted permission block"), so they were disabled with `TVINPUT_ALLOW=1` once HDMI
+  showed a picture after the reboot. Since the fix for [#2398](https://github.com/Gathin23/cleanyourtv/issues/2398),
+  the script reads a package like these as one that asks for nothing on Android 6 and newer, and the list applies in
+  full without `TVINPUT_ALLOW`.
 - Only `com.google.android.tvlauncher` and `com.android.tv.settings/.system.FallbackHome` claim HOME, as on
   `.9021`.
 - At power-on before the debloat, the first resumed activity was PatchWall's `com.mitv.tvhome.atv/.app.BannerLogoB`,

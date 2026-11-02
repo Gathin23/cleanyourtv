@@ -1,0 +1,16 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tv",
+    "com.spotify.tv.android"
+  ],
+  "columns": 4,
+  "fill_dock": false,
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "settings_key_panel": true,
+  "app_keys": [
+    "scan:225:com.mediatek.wwtv.tvcenter",
+    "KEYCODE_NOTIFICATION:com.gathin.tvhome/.QuickSettingsActivity"
+  ]
+}

@@ -2,7 +2,8 @@
 
 Android product `BRAVIA_VU1_UC`, build `RTT7.210105.001` / `366.60436`. The list in `debloat.txt` came from a
 KD-43X7500H. A second unit on the same product and build was set up on 26 October 2026 with the reference
-launcher, and the notes below are about that one.
+launcher, and the notes below are about that one. A third unit, a KD-65X750H, is covered in
+[Third unit](#third-unit-kd-65x750h) at the end.
 
 | File | What it is |
 |---|---|
@@ -49,3 +50,24 @@ scanned it opens channel setup. HDMI 1–3 and AV come from the TV input framewo
 The Input and settings buttons send vendor keys (`getevent` EV_KEY `0x225` and `0x254`) that the firmware
 handles itself. Both kept working with the stock launcher disabled and no key helper enabled, so this set
 needs neither `INPUT_KEY_SERVICE` nor `HOME_KEY_SERVICE`. Holding Volume still ramps.
+
+## Third unit (KD-65X750H)
+
+A KD-65X750H (US/Canada) on the same product `BRAVIA_VU1_UC` and build `366.60436`, on Ethernet, set up on
+22 October 2026 and lived with for 8 days, with nothing re-enabled. It applied part of `debloat.txt`. It kept
+Assistant, the Ambient screensaver, TTS, `tvrecommendations`, setupwraith, calendar storage, the gallery, the
+HTML viewer and the live wallpaper picker, and added Play Games and Sony's Play auto-installs config (now in the
+list) plus YouTube Music and Disney+ (commented out, the owner's choice). `launcher/build-and-install.sh`
+disabled the stock launcher after the new one owned Home, and a reboot kept everything as it was.
+
+- **setupwraith** again claimed no HOME with tvlauncher disabled. It owns one saved Wi-Fi network on this unit,
+  so on a set that uses Wi-Fi, run the `cname` check in `debloat.txt` before disabling it.
+- **Remote:** Netflix, YouTube, Prime Video, Input and the mic button were pressed on the real remote with the
+  stock launcher disabled: all work, with no key helper. The Help key opens `com.sony.dtv.smarthelp`, so it does
+  nothing once that line is applied.
+- **HDMI chooser:** `com.android.tv` and `com.realtek.tv.atv` both answer an HDMI passthrough URI, so the
+  launcher's HDMI rows open an "Open with: TV / TV" box, and "Always" is never applied. Either choice plays the
+  input. The remote's Input key goes through `smartui` and has no box.
+- **Live TV in the dock:** `hidden_apps` also keeps an app out of the dock, so to put Live TV in the dock, take
+  `com.realtek.tv.atv` out of `hidden_apps` and add it to `dock_apps`, with `app_labels`
+  `com.realtek.tv.atv=Live TV` and `app_banners` `com.realtek.tv.atv=banner_tv`.

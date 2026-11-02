@@ -2,7 +2,7 @@
 """One place for the project's add-ons, themes and switches: what each is, its screenshot, what is on the TV,
 and installing, updating or removing it the way its creator wrote it down. Nothing is downloaded: everything comes
 from this checkout of the repo, and every install runs the creator's own script (an add-on's install.sh or
-build-and-install.sh, or the steps in addons/README.md; tools/theme.sh for themes).
+build-and-install.sh, or the steps in addons/README.md; tools/theme.sh or theme.ps1 for themes).
 
     tools/venv/bin/python -I tools/manage.py list [addons|themes|switches]
     tools/venv/bin/python -I tools/manage.py show <add-on, theme or switch>
@@ -12,7 +12,7 @@ build-and-install.sh, or the steps in addons/README.md; tools/theme.sh for theme
     TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py set <switch> <json value> --theme <your theme folder>
 
 install on an installed add-on updates it (pm install -r). set writes the key into a theme folder of your own and
-pushes it with tools/theme.sh, as themes/README.md describes; it never edits a folder in this checkout, so pointing
+pushes it with the platform's theme script, as themes/README.md describes; it never edits a folder in this checkout, so pointing
 --theme at the project's themes/ or examples/ is refused before anything is written. set reads the value the way
 the key's own type in the Keys table needs - true or false for a bool, a JSON list, object or number where the
 table says so, the text itself for a string - and refuses one the launcher would ignore or a number outside the
@@ -21,16 +21,27 @@ JSON object is named before the key is written, and a write it cannot make says 
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
 left over are answered with the usage line and exit 2 before a theme folder is read or written. list, status,
 show, install and remove read their own words the same way, before anything is read from this checkout or asked
-of the TV.
+of the TV. A --theme folder that is not there is refused by name, not made: set starts a config.json in a folder
+of your own that exists, and the push it ends with replaces the theme on the TV and empties that theme's
+wallpapers, so a mistyped path would leave a one-key theme behind.
+
+On Windows, theme install and set use PowerShell (pwsh, or powershell when pwsh is not on PATH), without loading
+profiles or changing execution policy. Add-ons with their own shell installer still need Bash. A theme install
+takes only its name; script arguments belong to add-ons. If set saves the local file but the push fails, it
+reports that separately: the TV may have received only part of the theme.
 
 Exit status: 0 the command ran, 1 a command on the TV or a script this checkout runs failed, 2 the command line
 asked for something this script does not do - a command it does not have, or a word the command would drop - which
-is answered before the READMEs are read or the TV is asked anything.
+is answered before the READMEs are read or the TV is asked anything. 2 is also a run that ends with nothing asked of
+the TV: no TV_HOST, a checkout with no tools/venv, and a TV tools/tv.py answered 2 for because it never reached it
+(a refused port, a Wireless debugging port that answers TLS, an address with no route to it). check.py answers the
+first two of those with 2 as well, and b64push.py the second.
 """
 import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -254,7 +265,8 @@ def json_kind(value):
 
 
 def own_folder_problem(folder):
-    """Why set may not write into `folder`, or None: it is one of the folders this checkout ships, or a file."""
+    """Why set may not write into `folder`, or None: it is one of the folders this checkout ships, a file, or
+    not there at all."""
     for name in PROJECT_FOLDERS:
         project = ROOT / name
         if folder == project or project in folder.parents:
@@ -262,6 +274,21 @@ def own_folder_problem(folder):
                     f"so copy one somewhere else first. Nothing was written or pushed.")
     if folder.exists() and not folder.is_dir():
         return f"{folder} is a file, not a folder: --theme takes a theme folder of your own."
+    if not folder.exists():
+        # A path with a file in the middle of it cannot be made at all, which is not a typo to point at the
+        # folder for: name the file that is in the way, as the write used to.
+        for parent in folder.parents:
+            if parent.exists() and not parent.is_dir():
+                return f"cannot write {folder / 'config.json'}: {parent} is a file, not a folder. Nothing was pushed."
+        # mkdir(parents=True) used to make whatever a typo named, write one key into it and push it: the push
+        # replaces the theme on the TV and empties the wallpapers/ collection it pushed last time, so a
+        # mistyped path left a one-key theme on a TV whose theme and pictures were gone. A folder of their own
+        # that exists is still started (no config.json yet is fine); a path that is not there is not.
+        return (f"{folder} is not there: --theme takes a theme folder of your own, and set writes into one that "
+                f"exists - an empty folder is fine, it starts the config.json. A path that is not there is "
+                f"usually a typo, and the push set ends with replaces the theme on the TV and empties its "
+                f"wallpapers, so a mistyped path would leave a one-key theme there. "
+                f"Nothing was written or pushed.")
     return None
 
 
@@ -293,20 +320,55 @@ def theme_config(folder):
 
 # ---------------------------------------------------------------- the TV
 
+def platform_usage(text):
+    if sys.platform == "win32":
+        return text.replace("TV_HOST=<tv ip> ", "$env:TV_HOST = '<tv ip>'; ").replace(
+            "tools/venv/bin/python -I tools/manage.py",
+            r".\tools\venv\Scripts\python.exe -I .\tools\manage.py")
+    return text
+
+
 def tv_python():
     for p in (TOOLS / "venv" / "bin" / "python", TOOLS / "venv" / "Scripts" / "python.exe"):
         if p.is_file():
             return str(p)
-    sys.exit("run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt")
+    # Nothing reached the TV: this checkout has no tools/venv, so tools/tv.py cannot even be imported by a
+    # Python that has adb_shell. sys.exit(str) answers 1, which the docstring keeps for a command on the TV
+    # or a script of this checkout that failed, so a clone with no venv read as an install or a removal that
+    # ran and failed - and status/install/remove would have changed nothing either way. b64push.py answers
+    # this shape, and check.py the same and the one below, with 2.
+    if sys.platform == "win32":
+        run = (r"run: python -m venv tools\venv; "
+               r".\tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt")
+    else:
+        run = "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt"
+    sys.stderr.write(f"cannot load tools/tv.py (tools/venv is not there).\n{run}\nNothing was asked of the TV.\n")
+    raise SystemExit(2)
 
 
 def tv(command):
     if not os.environ.get("TV_HOST"):
-        sys.exit("set TV_HOST to the TV IP address")
+        # The same two lines tools/tv.py prints for this, and the status check.py answers it with: without
+        # TV_HOST there is no TV to ask anything, which is not the same as a command that failed on one.
+        if sys.platform == "win32":
+            sys.stderr.write("set $env:TV_HOST to the TV IP address\n")
+        else:
+            sys.stderr.write("set TV_HOST to the TV IP address, e.g.  TV_HOST=192.168.1.50 tools/tv.py --probe\n"
+                             "(find it under Settings → Network, or look for the TV in `arp -a`)\n")
+        sys.stderr.write("Nothing was asked of the TV.\n")
+        raise SystemExit(2)
     r = subprocess.run([tv_python(), "-I", str(TOOLS / "tv.py"), command], capture_output=True, text=True)
     # A failed read is unknown, not empty: never report "not installed" for a TV that didn't answer.
     if r.returncode:
-        sys.exit(r.stderr.strip() or r.stdout.strip() or f"tv.py exited with status {r.returncode}")
+        sys.stderr.write((r.stderr.strip() or r.stdout.strip()
+                          or f"tv.py exited with status {r.returncode}") + "\n")
+        # tools/tv.py answers 2 for a TV it never reached (a refused port, a Wireless debugging port that answers
+        # TLS, an address with no route to it, a Mac that was never granted Local Network) and 1 for a command the
+        # TV ran and failed; a status it does not document, from a crash of its own, is a command that failed too.
+        # Flattened to 1, a set that was asleep read as a status/install/remove that ran and failed, which is the
+        # one thing the reader of this status has to tell apart: install and remove change the TV, so "nothing was
+        # asked of it" cannot look like "the TV refused it".
+        raise SystemExit(2 if r.returncode == 2 else 1)
     return r.stdout
 
 
@@ -317,6 +379,23 @@ def installed_packages():
 def run(cmd, cwd):
     print("$ " + " ".join(cmd), flush=True)
     return subprocess.run(cmd, cwd=cwd).returncode
+
+
+def theme_command(folder):
+    if sys.platform == "win32":
+        shell = shutil.which("pwsh") or shutil.which("powershell")
+        if not shell:
+            sys.exit("PowerShell was not found: put pwsh or powershell on PATH. Nothing was written or pushed.")
+        return [shell, "-NoProfile", "-NonInteractive", "-File", str(TOOLS / "theme.ps1"), "-Theme", str(folder)]
+    return ["bash", str(TOOLS / "theme.sh"), str(folder)]
+
+
+def push_theme(command):
+    try:
+        return run(command, ROOT)
+    except OSError as e:
+        sys.stderr.write(f"cannot start {command[0]}: {reason(e)}. Nothing was pushed.\n")
+        return 1
 
 
 def install_addon(item, extra):
@@ -371,11 +450,20 @@ def cmd_show(name):
             print(f"{k:>12}: {item[k]}")
     if item["kind"] == "add-on":
         how = item["script"] or "the steps in addons/README.md"
-        print(f"{'install':>12}: TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install {item['id']}  (runs {how})")
+        if sys.platform == "win32" and item["script"]:
+            how += "; requires Bash"
+        label = "install"
+        instruction = f"TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install {item['id']}  (runs {how})"
     elif item["kind"] == "theme":
-        print(f"{'install':>12}: TV_HOST=<tv ip> tools/theme.sh themes/{item['id']}")
+        label = "install"
+        if sys.platform == "win32":
+            instruction = f"TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install {item['id']}"
+        else:
+            instruction = f"TV_HOST=<tv ip> tools/theme.sh themes/{item['id']}"
     else:
-        print(f"{'set':>12}: TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py set {item['id']} <value> --theme <your theme folder>")
+        label = "set"
+        instruction = f"TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py set {item['id']} <value> --theme <your theme folder>"
+    print(f"{label:>12}: {platform_usage(instruction)}")
     return 0
 
 
@@ -406,7 +494,11 @@ def cmd_install(name, extra):
     if not item or item["kind"] == "switch":
         sys.exit(f"no add-on or theme called {name}")
     if item["kind"] == "theme":
-        return run(["bash", str(TOOLS / "theme.sh"), str(ROOT / "themes" / item["id"])] + extra, ROOT)
+        if extra:
+            sys.stderr.write(f"install of a theme takes only its name, not {' '.join(extra)!r}. "
+                             "Nothing was pushed.\n")
+            return 2
+        return push_theme(theme_command(ROOT / "themes" / item["id"]))
     return install_addon(item, extra)
 
 
@@ -431,6 +523,7 @@ def cmd_set(key, value, theme_folder):
     if problem:
         sys.exit(problem)
     parsed = value_as(key, item, value)   # before the file is written or anything is pushed
+    command = theme_command(folder)
     data[key] = parsed
     f = folder / "config.json"
     try:
@@ -441,11 +534,15 @@ def cmd_set(key, value, theme_folder):
         # written and the theme on the TV is untouched, so say which file and why rather than a traceback.
         sys.exit(f"cannot write {f}: {reason(e)}. Nothing was pushed.")
     print(f"{key} = {json.dumps(parsed)} in {f}")
-    return run(["bash", str(TOOLS / "theme.sh"), str(folder)], ROOT)
+    code = push_theme(command)
+    if code:
+        sys.stderr.write(f"Saved {f} locally, but the theme push failed (exit {code}). "
+                         "The TV may be only partly updated; the local edit was kept.\n")
+    return code
 
 
 SET_USAGE = ("set takes a switch, its value and --theme <your theme folder>, e.g. "
-             "set hidden_apps '[\"a\", \"b\"]' --theme ~/my-theme")
+             "set hidden_apps '[\"a\", \"b\"]' --theme my-theme")
 
 
 class Usage(Exception):
@@ -535,7 +632,7 @@ def set_args(args):
 
 def main(argv):
     if not argv or argv[0] in ("-h", "--help", "help"):
-        print(__doc__)
+        print(platform_usage(__doc__))
         return 0
     c, args = argv[0], argv[1:]
     if c == "set":
@@ -546,7 +643,7 @@ def main(argv):
             return 2
         return cmd_set(key, value, theme)
     if c not in WORDS:
-        print(__doc__)
+        print(platform_usage(__doc__))
         return 2
     try:
         args = own_words(c, args)

@@ -11,7 +11,10 @@
 # Undo  (bash):       TV_HOST=<tv ip> tools/restore.sh examples/insignia-ns55f301na25/debloat.txt com.amazon.tv.launcher
 # Apply (PowerShell): powershell -ExecutionPolicy Bypass -File tools\disable.ps1 -TvHost <tv ip> examples\insignia-ns55f301na25\debloat.txt
 # Undo  (PowerShell): powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost <tv ip> examples\insignia-ns55f301na25\debloat.txt -Stock com.amazon.tv.launcher
-# (restore.sh re-enables the stock launcher as a matter of routine; on Fire OS it was never disabled, which is harmless.)
+# (restore.sh re-enables every package the record holds as on, the stock launcher included, since it is what owned
+# Home. On Fire OS it was never off, and Fire OS refuses the attempt with a `Cannot disable a protected package`
+# stack trace once per run (reported on Fire OS 8), which the batch carries on past:
+# docs/TROUBLESHOOTING.md, 'Fire TV (Fire OS)'.)
 # Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
 #
 # Keep enabled: com.amazon.tv.livetv, com.amazon.tv.quicksettings and com.amazon.tv.settings.v2 (HDMI/tuner inputs and
@@ -85,7 +88,6 @@ com.amazon.tv.legalresources
 com.amazon.tv.support
 com.amazon.cardinal
 com.amazon.csm.htmlruntime
-com.amazon.spiderpork
 com.amazon.recess
 com.amazon.diode
 com.amazon.platform.fdrw
@@ -101,6 +103,7 @@ com.amazon.tv.legal.notices.overlay.localisation.common
 com.amazon.bueller.photos              # Amazon Photos
 com.amazon.bueller.music               # Amazon Music
 com.amazon.gamehub                     # Amazon Luna / GameHub
+com.amazon.spiderpork                  # Amazon Luna game player: Luna's "Open app" needs it (keep it with gamehub)
 com.amazon.tv.localgallery
 com.amazon.minitv.android.app          # Amazon MiniTV
 com.amazon.tv.website_launcher

@@ -10,7 +10,10 @@
 #
 # Apply:   TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-4k-2018/debloat.txt
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/amazon-fire-tv-stick-4k-2018/debloat.txt com.amazon.tv.launcher
-# (restore.sh re-enables the stock launcher as a matter of routine; on Fire OS it was never disabled, which is harmless.)
+# (restore.sh re-enables every package the record holds as on, the stock launcher included, since it is what owned
+# Home. On Fire OS it was never off, and Fire OS refuses the attempt with a `Cannot disable a protected package`
+# stack trace once per run (reported on Fire OS 8), which the batch carries on past:
+# docs/TROUBLESHOOTING.md, 'Fire TV (Fire OS)'.)
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 # ADB on Fire OS 6: Settings > My Fire TV > Developer options > ADB debugging. If Developer options is hidden,
 # Settings > My Fire TV > About > highlight the first entry and press select 7 times. Port 5555, no pairing.
@@ -28,6 +31,8 @@
 # disable.sh after each reboot. Disabling the casting group at the end closed ports 8009, 55442 and 60000 on the LAN.
 # With Fire OS parental controls on ("PIN protect app launches"), any start of another app over Amazon's home,
 # including a Home-watcher launcher from SHOWCASE.md, opens the Prime Video PIN prompt every time.
+# After 10 days two disabled third-party apps (Disney+, RaiPlay) were enabled again, both updated meanwhile, most likely
+# by Appstore auto-update; the Amazon packages all stayed off. Check `pm list packages -d` now and then.
 #
 # Kept on purpose: com.amazon.tv.launcher, com.amazon.tv.settings.*, com.amazon.venezia (Appstore),
 # com.amazon.tigris (Appstore UI), OTA updates, remote/Bluetooth services, com.amazon.tv.ime (keyboard),
@@ -129,7 +134,9 @@ com.amazon.tv.releasenotes              # "what's new" release notes
 com.amazon.uxnotification               # UX notification popups
 # com.amazon.tv.oobe                    # out-of-box setup wizard (protected by Fire OS, cannot be disabled). If it ever is disabled it must be re-enabled before a factory reset
 
-# Second unit, disabled 2026-10-22 and survived reboots, not yet lived with for days: commented out until then.
+# Second unit, disabled since 2026-10-22, 10 days on a signage stick running one player app all day (rebooted on day one, then up
+# for all 10 days, little remote use): nothing broke. It also had voice search, Prime Video and casting off, so the groups below stay
+# commented out as options: the combination with those kept on was not tried.
 # Alexa and Prime Video leftovers, for an owner who also drops voice search and Prime Video (see the header)
 # com.amazon.vizzini                    # Alexa voice search; Fire OS re-enables it at every boot
 # com.amazon.vizzini.ftvcds
@@ -141,13 +148,7 @@ com.amazon.uxnotification               # UX notification popups
 # com.amazon.spotify.mediabrowserservice  # Spotify for Alexa (the Spotify app is separate)
 # com.amazon.firebat                    # Prime Video
 # com.amazon.tv.support                 # Prime Video helper
-# Background services that the Fire OS 7 lists here already disable
-# com.amazon.recess
-# com.amazon.naatyam
-# com.amazon.neodelegate
-# com.amazon.csm.htmlruntime            # HTML runtime for Amazon promos
-# com.android.printspooler
-# com.amazon.whisperplay.service.install  # remote app install from the phone app
+# com.amazon.whisperplay.service.install  # remote app install from the phone app (part of the whisperplay casting stack)
 # Firmware update push: Amazon no longer ships updates for this stick, the OTA packages themselves stay protected
 # com.amazon.tv.forcedotaupdater.v2
 # Casting and mirroring (no Miracast, no DIAL/Fling from phones afterwards)
@@ -156,3 +157,11 @@ com.amazon.uxnotification               # UX notification popups
 # com.amazon.dialservice
 # com.amazon.ssdpservice
 # com.amazon.whisperplay.contracts
+
+# Added 2026-11-01 from the second unit, also disabled in other Fire OS lists here. Their role is not documented;
+# nothing visible changed in 10 days, but see the note above on what that stick had off.
+com.amazon.recess
+com.amazon.naatyam
+com.amazon.neodelegate
+com.amazon.csm.htmlruntime              # HTML runtime for Amazon promos
+com.android.printspooler                # no printing on a TV

@@ -19,6 +19,15 @@ package is listening.
 
 Disabling is left to `tools/disable.sh`, so the undo path is the one every list already uses: the
 record written before the first change, replayed by `tools/restore.sh`.
+
+Exit status: 0 the audit ran (the report printed, or the list written), 1 it reached the TV and then
+failed (the list could not be written, nothing was identified to write, a file that appeared while
+the audit ran), 2 the run never got as far as the TV: an argument was refused, the `--write` target
+cannot be written, `tools/tv.py` could not be loaded, `TV_HOST` is not set or `TV_PORT` is not a port
+number (tv.py judges those at import and says so in its own words), or the connection failed in one of
+the ways tv.py explains (a refused port, a Wireless debugging port, a handshake that timed out, a TV
+that cannot be reached). Why it stopped goes to stderr, which a wrapper that throws the report on
+stdout away still shows.
 """
 import os
 import re
@@ -152,14 +161,38 @@ def connect():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     try:
         import tv
+    except SystemExit as exit_request:
+        # tv.py judges its own command line and its address at import time: with no TV_HOST it exits
+        # with "Set TV_HOST to your TV's IP address" and a TV_PORT it cannot read with "not a port
+        # number", each a string, so the interpreter printed it and exited 1 - the status this file
+        # keeps for "it reached the TV and then failed", which is what a wrapper around it reads, and
+        # what the owner reads when the audit was never run. Written here, so catching the exit does
+        # not hide the text; 2 is the status the docstring already gives a run that never got as far
+        # as the TV. theme_restart.py (#2763), recovery.py (#2767) and manage.py (#2692) answer the
+        # same import-time exits the same way. A module that exits 0 answered the call itself, and
+        # that status stands.
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            sys.stderr.write(exit_request.code + "\n")
+        sys.stderr.write("Nothing was asked of the TV.\n")
+        raise SystemExit(2)
     except ImportError as e:
-        raise SystemExit(f"cannot load tools/tv.py ({e}).\nrun: python3 -m venv tools/venv && "
-                         "tools/venv/bin/pip install -r tools/requirements.txt")
+        # Exit 2, where SystemExit(str) exits 1 by itself: no command was sent, and 1 is the status
+        # this file keeps for a run that reached the TV and then failed. b64push.py, check.py and
+        # bench.py split the two the same way, which is what a wrapper around this script reads.
+        sys.stderr.write(f"cannot load tools/tv.py ({e}).\n"
+                         "run: python3 -m venv tools/venv && "
+                         "tools/venv/bin/pip install -r tools/requirements.txt\n"
+                         "Nothing was asked of the TV.\n")
+        raise SystemExit(2)
     try:
         return tv.connect()
     except Exception as e:
-        raise SystemExit(f"cannot reach the TV at {os.environ.get('TV_HOST', 'TV_HOST')}: {e}\n"
-                         "Check TV_HOST and that USB debugging is still on (tools/tv.py --probe).")
+        sys.stderr.write(f"cannot reach the TV at {os.environ.get('TV_HOST', 'TV_HOST')}: {e}\n"
+                         "Check TV_HOST and that USB debugging is still on (tools/tv.py --probe).\n"
+                         "Nothing was asked of the TV.\n")
+        raise SystemExit(2)
 
 
 def query_packages(dev):
@@ -450,7 +483,11 @@ def main():
         # and `dumpsys package` is slow on old firmware, all for a file that could not be written.
         problem = target_problem(args[1])
         if problem:
-            raise SystemExit(f"{problem} Nothing was asked of the TV.")
+            # Exit 2: the argument was wrong, so no package was probed - the status the two usage
+            # refusals above answer, and the one a wrapper reads as "nothing was sent to the TV"
+            # rather than a run that reached it and failed. SystemExit(str) would exit 1.
+            sys.stderr.write(f"{problem} Nothing was asked of the TV.\n")
+            return 2
 
     dev = connect()
     try:

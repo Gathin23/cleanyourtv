@@ -1,0 +1,19 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.plexapp.android",
+    "au.net.abc.iview",
+    "au.com.ninenow.ctv",
+    "com.swm.live"
+  ],
+  "columns": 7,
+  "live_tv_package": "com.tcl.tv",
+  "hidden_apps": [
+    "com.tcl.tv",
+    "com.tcl.suspension",
+    "com.tcl.dashboard",
+    "com.tcl.t_solo"
+  ]
+}

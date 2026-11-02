@@ -1,0 +1,74 @@
+# XGIMI Horizon 20 (model XR13A, device kasol, product athenamin), Google TV 14,
+# build UKN6.260116.134 incremental 15692712. Lived with 2026-10-26 through 2026-10-30.
+#
+# Apply:  TV_HOST=<projector ip> tools/disable.sh examples/xgimi-horizon-20/debloat.txt
+# Undo:   TV_HOST=<projector ip> tools/restore.sh examples/xgimi-horizon-20/debloat.txt com.google.android.apps.tv.launcherx
+# Check:  TV_HOST=<projector ip> tools/check.py examples/xgimi-horizon-20/debloat.txt com.gathin.tvhome
+# Everything is disabled, never uninstalled. Comment out any line you still use.
+#
+# Not the MoGo lists. Those projectors are device altai. Do not copy their package lines here.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (HOME priority 2). Leave it enabled.
+# On 2026-10-28, with it disabled, Netflix and Disney+ opened and would not start an episode.
+# Turning it back on (French settings name: Accueil TV) made playback work. Its notification
+# service is part of this package. com.google.android.tvrecommendations is not installed.
+# Home still resolves to launcherx. The clean launcher stays in front with HomeKeyService
+# (HOME_KEY_SERVICE=1 at install) and, in config.json:
+#   "stock_home_redirect": "com.google.android.apps.tv.launcherx"
+#   "key_filter": false
+# The owner reported a reboot comes back to com.gathin.tvhome, and ADB answered afterwards.
+# A held volume key was not rechecked. On other XGIMI boards key_filter false is what keeps
+# that hold repeating.
+#
+# Disabling com.google.android.tungsten.setupwraith costs casting on Google TV; keep it enabled if you cast.
+# setupwraith owns a Wi-Fi network saved during first setup. Forget that network and join it
+# again before disabling setupwraith, and confirm dumpsys wifi shows cname=android.uid.system
+# on the connected entry. On this unit that check was done, setupwraith stayed off, and Wi-Fi held.
+#
+# Do not start com.xgimi.factoryservice or com.xgimi.minitvfactory.
+# Leave enabled: com.xgimi.autokst (auto keystone), com.xgimi.tof (focus), com.xgimi.xrmservice,
+# com.xgimi.gimiplayer, the other com.xgimi hardware packages, katniss, mediashell,
+# com.mediatek.tv.systemupdater, Play Store, Play Services and com.android.tv.settings.
+# Moving the projector reframes the picture and restores it. The zoom setting resets on that
+# move. The owner reports the same zoom reset already happened before this cleanup.
+#
+# Checked on this unit: remote, HDMI, focus, keystone, and the reboot above.
+
+# Telemetry and store demo
+com.google.android.feedback
+com.xgimi.bugreportsender
+com.mediatek.tv.retaildemo
+com.android.tv.feedbackconsent
+com.google.android.partnersetup
+com.android.adservices.api
+
+# Android leftovers the procedure allows
+com.android.providers.calendar
+com.google.android.syncadapters.calendar
+com.android.providers.contacts
+com.android.providers.userdictionary
+
+# Already disabled at the factory on this unit
+com.mediatek.dtv.tvinput.atsctuner
+com.mediatek.dtv.tvinput.isdbtuner
+com.mediatek.tv.oneworld.tvcenter
+
+# Home handover. launcherx stays enabled: see the header.
+com.google.android.tungsten.setupwraith
+
+# Off on this unit, owner's choice. Uncomment a line to disable that app on yours.
+# com.apple.atve.androidtv.appletv
+# fr.francetv.pluzz
+# tv.arte.plus7
+# com.spotify.tv.android
+# fr.m6.m6replay
+# com.google.android.youtube.tvmusic
+# com.google.android.play.games
+# com.esaba.downloader
+# info.kodono.pop_files
+# info.kodono.popvideoplayer
+# org.videolan.vlc
+# com.mediatek.wwtv.mediaplayer
+# com.tcl.browser                    # BrowseHere
+# com.canal.android.canal
+# fr.tf1.mytf1

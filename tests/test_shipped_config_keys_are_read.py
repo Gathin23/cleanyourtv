@@ -16,10 +16,17 @@ ignored.
 The readers are not copied in here: they come out of Config.java's own calls on the parsed overlay, so
 a reader that is renamed or dropped fails this test rather than leaving the key it read quietly dead.
 
+The walk goes all the way down examples/, because a list folder may ship a whole theme in a `theme/`
+subfolder - `examples/philips-google-tv-ta7/README.md` says to edit `theme/config.json` for the dock,
+the greeting and the hidden apps, and to push it with `tools/theme.sh examples/philips-google-tv-ta7/theme`.
+Six folders ship one, and a one-level glob read none of them: the same silent drop as above, on the file
+a folder's README tells the owner to edit.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import json
 import re
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -41,9 +48,10 @@ def overlay_keys(java_text):
     return set(NAMED_READER.findall(java_text)) | set(LOOKUP.findall(java_text)) | set(FESTIVAL_READER.findall(java_text))
 
 
-def shipped_configs():
-    """(path, values) for every config.json a theme or an example folder ships, in path order."""
-    paths = sorted((ROOT / "themes").glob("*/config.json")) + sorted((ROOT / "examples").glob("*/config.json"))
+def shipped_configs(root=None):
+    """(path, values) for every config.json a theme or a list folder ships, at any depth, in path order."""
+    root = ROOT if root is None else root
+    paths = sorted((root / "themes").glob("*/config.json")) + sorted((root / "examples").rglob("config.json"))
     return [(path, json.loads(path.read_text(encoding="utf-8"))) for path in paths]
 
 
@@ -69,31 +77,55 @@ def key_rows(text):
 
 class ShippedConfigKeysTest(unittest.TestCase):
     def setUp(self):
+        self.root = ROOT
         self.known = overlay_keys(CONFIG_JAVA.read_text(encoding="utf-8"))
-        self.configs = shipped_configs()
+        self.configs = shipped_configs(self.root)
 
     def test_every_shipped_key_is_read_by_the_launcher(self):
         problems = []
         for path, values in self.configs:
             for key in unread(values, self.known):
-                problems.append(f"{path.relative_to(ROOT)}: {key} is not read from a theme's config.json "
+                problems.append(f"{path.relative_to(self.root)}: {key} is not read from a theme's config.json "
                                 f"by Config.java, so a push drops it and the launcher keeps its own value")
         self.assertEqual([], problems)
 
     def test_the_readers_and_the_files_were_really_read(self):
         # A run that read nothing, or half of Config.java, must not pass by finding no problems.
         self.assertGreaterEqual(len(self.known), 100, f"only {len(self.known)} overlay keys read out of Config.java")
-        self.assertGreaterEqual(len(self.configs), 60, f"only {len(self.configs)} shipped config.json files")
+        self.assertGreaterEqual(len(self.configs), 100, f"only {len(self.configs)} shipped config.json files")
         keys = {key for _, values in self.configs for key in values}
         self.assertGreaterEqual(len(keys), 50, f"only {len(keys)} distinct keys in the shipped configs")
         for expected in ("dock_apps", "hidden_apps", "live_tv_package", "wallpaper_moods"):
             self.assertIn(expected, self.known)
+
+    def test_a_list_folders_theme_folder_is_read(self):
+        # Six list folders ship a whole theme under theme/; a glob of examples/*/config.json reads none.
+        self.assertTrue(any(path.parent.name == "theme" for path, _ in self.configs),
+                        "no list folder's theme/config.json was read: is the walk one level deep again?")
 
     def test_a_config_with_an_unread_key_is_named(self):
         # The rule, on a file written here: a key nobody reads is reported with its name.
         self.assertEqual(["settings_fallback_components"],
                          unread({"settings_fallback_components": ["com.example/com.example.Main"],
                                  "dock_apps": []}, self.known))
+
+    def test_a_key_in_a_theme_folder_below_a_list_folder_is_reported(self):
+        # The shape a list folder ships: examples/acme-1/theme/config.json, beside the folder's own
+        # config.json, both of them files the launcher would push and then drop a key out of.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for relative, body in (("examples/acme-1/theme/config.json",
+                                    '{"dock_apps": [], "settings_fallback_components": ["com.example/.Main"]}\n'),
+                                   ("examples/acme-2/config.json", '{"dock_apps": []}\n'),
+                                   ("themes/acme/config.json", '{"dock_apps": []}\n')):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(body, encoding="utf-8")
+            read = [path.relative_to(root).as_posix() for path, _ in shipped_configs(root)]
+            self.assertEqual(read, ["themes/acme/config.json", "examples/acme-1/theme/config.json",
+                                    "examples/acme-2/config.json"])
+            named = [key for _, values in shipped_configs(root) for key in unread(values, self.known)]
+            self.assertEqual(named, ["settings_fallback_components"])
 
     def test_config_xml_only_keys_are_in_no_shipped_config(self):
         # The Keys table says which keys a theme cannot set; those are the ones to keep out, and the

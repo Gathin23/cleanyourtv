@@ -36,6 +36,33 @@ packages, the Sony Select overlay, and every package under "Off by choice" and "
 mode". This unit was not reboot-checked and has not been lived with for days. `com.sony.dtv.scrums.action`
 is installed and was left enabled.
 
+## Third unit (65-inch, EU, 2026-10-31)
+
+Same identity and fingerprint again (`BRAVIA 4K GB ATV3`, `BRAVIA_ATV3_4K_EU`, `PTT1.190515.001.S54 672201`),
+on its built-in Ethernet. Nothing was disabled before the run and `com.google.android.tvlauncher` was Home.
+
+- `tools/disable.sh` in six batches, the sections of the list, with a Home screenshot, Live TV and Netflix
+  after each one. 35 of the list's lines ran: `com.google.android.inputmethod.japanese` and
+  `com.google.android.music` are not installed on this unit, and `com.sony.dtv.smarthomesettings` was enabled
+  from the factory here, so the TV-input guard skipped it and it was left on.
+- By the owner's choice the DLNA packages and `com.google.android.tv.remote.service` went too (they are in the
+  list's "Left enabled" block). No crash, and Home, Live TV, Netflix and the remote were unaffected.
+- Rebooted twice: everything stayed disabled, nothing came back. MemAvailable after boot went from about 230 MB
+  to about 770 MB.
+- A user-installed Projectivy Launcher (`com.spocky.projengmenu`) also answers HOME. It was disabled before
+  `launcher/build-and-install.sh` ran, so only the stock launcher and Sony's FallbackHome were left to hand over from.
+- Launcher built with `tools/docker-build.sh` (no local JDK) and installed with `SKIP_BUILD=1`. `mFocusedApp` was
+  `com.gathin.tvhome` before and after a reboot. At power-on the TV goes from FallbackHome straight to the
+  launcher (on Android 9 the events log tag is `am_set_resumed_activity`, not `wm_set_resumed_activity`), so
+  neither `power_on_home` nor `boot_to_live_tv` is needed.
+- On the real remote, Netflix, YouTube, Input, Home, Action Menu and TV all work without the accessibility
+  services. The Inputs pill names HDMI 1 after the CEC device on it, and selecting it gives picture and sound;
+  `dumpsys tv_input` then shows the CEC device's input (`ExternalTvInputService/HDMI100003`), not `HW2`.
+- The `aurora` theme went on with `tools/theme.sh`. The UI stays at 1920x1080 / 320 dpi.
+- This firmware has no Wireless debugging: network ADB rides on USB debugging. With that off and the TV
+  restarted, `tools/adb-closed.py` reported 5555 closed.
+- Tested over one evening, not lived with for days.
+
 ## Kept on purpose
 
 Chromecast, screen mirroring, DLNA, the phone remote, Sony IP control (`webapi.core`, `remoteaccess`) and

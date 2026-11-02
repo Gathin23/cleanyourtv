@@ -4,6 +4,20 @@
 #
 # Also confirmed on a TCL 55P6K (Spain retail name for the same G10 platform), product
 # G10_4K_GB_NF_32BIT, identical firmware build STT2.230203.001 — this list applies unchanged.
+# On a 55P6K set to the RU region (same G10_4K_GB_NF_32BIT, STT2.230203.001), with launcherx
+# off and no key helper bound, the firmware answers the remote's gear (83), TV (4001) and
+# Input (178) buttons itself through
+# com.android.server.policy.TclShortCutKeyManager: 83 opens TV Settings, 4001 opens Live TV
+# (com.tcl.tv) at its EPG, and 178 opens the input switcher (com.tcl.suspension), so app_keys
+# and settings_key_keycodes are redundant there. The framework's synthetic KEYCODE_GUIDE (172)
+# for the TV button goes to the disabled launcherx and does nothing. TCL Live
+# (com.tcl.channelplus) is kept enabled on this 55P6K: with no antenna channels it is Live TV's
+# only source, and its own Channel Up/Down keys (166/167) change channels only while its
+# PlayActivity is on screen. On Home or an HDMI input they do nothing, because the RU region
+# config has Enable_ChannelUpDownSwitchSource=false and the TV does not switch to TCL Live on a
+# channel key. Some TCL Live channels show "no signal" even with working internet: the streams
+# are region/content limited. Checked by injecting 83, 172, 4001, 178 and 166/167 over ADB with
+# no helper bound.
 #
 # Also tested on a TCL 43P69K, Netherlands (G10_4K_GB_NF_32BIT, Android 12 / SDK 31,
 # build STT2.230203.001, ro.adb.secure=1). Unlike the original US unit, logkit, Samba TV ACR
@@ -21,6 +35,12 @@
 # everything else on the list was disabled and lived with. Its BT_RC833 remote sends
 # YouTube 4065, Netflix 4062, Prime Video 4099 and Web 4159, which only app_keys brings back once
 # launcherx is off, and the gear as keycode 83 on scancode 233 (settings_key_keycodes).
+#
+# Unit: TCL 55C69B, France (@danny-gca), product G10_4K_GB, software V8-R75PT01-LF1V548, build STT2.230203.001,
+# checked across a reboot. Forget and re-join the Wi-Fi in Settings before disabling setupwraith (it owns the setup
+# network). Its BT_RC833 remote sends Netflix 4062, YouTube 4065, Prime Video 4099 and Settings 83. TclAppBoot needs
+# APP_AUTO_START for the launcher's key services. Keep com.tcl.ttvs and com.tcl.tv. That unit also disabled
+# partnercustomizer, gamebar, Assistant and its French streaming apps (commented at the end of this list).
 #
 # Also used on a TCL 55Q651G (US Q6, 2024; product G10_4K_US_NF, software V8-R75PT01-LF1V534, same
 # build STT2.230203.001). As on the 43P69K, Samba TV ACR and logkit shipped enabled; both were
@@ -48,6 +68,23 @@
 # reboot. disable.sh skips android.autoinstalls.config.google.gtvpai there (no permission block to read for its
 # input check); it was disabled by hand there, but HDMI playback was not checked afterwards, so leave it enabled
 # unless you test your inputs.
+#
+# Also used on a TCL 55C6KS, Italy (product G10_4K_GB, software V8-R75PT01-LF1V548, same build STT2.230203.001,
+# incremental AS50). Tested on 2026-10-30 for one day with two reboot checks, not yet lived with for several days.
+# As on the 43P69K, Samba TV ACR, logkit and ttvs shipped enabled; Samba TV ACR and logkit were disabled, ttvs kept
+# (firmware updates). Its TCL Channel package is com.tcl.waterfall.overseas, as on the 43P69K; tv.plus and
+# smartlink.core are not installed. Disabled from the optional lines: guard, messagebox, waterfall.overseas,
+# usercenter, t_solo, smartalexa, browser, play.games, videos and youtube.tvmusic. Kept by the owner's choice:
+# tv.remote.service (the mic works), dreamx, ui_mediaCenter, AirPlay, Miracast, MagiConnect, hearaid and
+# gtvpai (left enabled, as advised above). Everything disabled stayed off after both reboots.
+# The saved setup Wi-Fi belonged to setupwraith here too: forgotten and re-joined in Settings first, after which
+# disabling setupwraith kept Wi-Fi. Its remote sends the C69B and 55Q6CS codes (Netflix 4062, YouTube 4065,
+# Prime Video 4099, gear 83 on scancode 233); its TV button is 4001 (scancode 365), followed by a KEYCODE_GUIDE
+# with no scancode. All are dead once launcherx is off; with INPUT_KEY_SERVICE=1, HOME_KEY_SERVICE=1, app_keys
+# (4001 mapped to com.tcl.tv) and settings_key_keycodes 83, each one worked from the real remote, and both
+# helpers stayed bound after a reboot. The owner accepted the held-volume trade (see the 55Q6CS note) without
+# it being measured here. Power-on lands on the new Home by itself (no power_on_home needed).
+# AdGuard Private DNS worked there.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g10-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g10-google-tv/debloat.txt com.google.android.apps.tv.launcherx
@@ -148,3 +185,10 @@ com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks ab
 # com.google.android.youtube.tvmusic   # YouTube Music
 # com.google.android.videos            # Google TV / Play Movies storefront
 # com.google.android.play.games        # Play Games
+
+# Off on the 55C69B unit (France); this set has them off, uncomment if you don't use them:
+# com.google.android.katniss             # Google Assistant
+# fr.francetv.pluzz                      # France TV
+# fr.tf1.mytf1                           # TF1+
+# fr.m6.m6replay                         # M6+
+# tv.wuaki.apptv                         # Rakuten TV

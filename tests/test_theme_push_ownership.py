@@ -58,6 +58,14 @@ def connect():
     return Device()
 
 
+def connect_error(error):
+    """tv.py's own: what to print when connect() raised, or None for an error it cannot word.
+
+    This stub has no network, so it never has anything to add.
+    """
+    return None
+
+
 args = sys.argv[1:]
 if args and args[0] == "--push":
     src, dst = args[1], local(args[2])

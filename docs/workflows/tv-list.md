@@ -9,6 +9,9 @@
    - The first line is a comment with the exact model, Android version and firmware build
      (`tools/tv.py --probe` prints them).
    - Then the Apply and Undo lines, the stock launcher and Live TV package if they differ, and what was kept and why.
+     `tests/test_list_gives_commands.py` refuses a header that names none of the five scripts and no
+     README: a folder whose firmware needs a batch of its own gives the commands in its `README.md`
+     instead, which counts.
    - One package per line, grouped under a comment that names the group, with a trailing comment on anything
      non-obvious. No duplicates, nothing but package names outside comments.
 3. List only packages you actually disabled and lived with for a few days. Note anything you re-enabled.
@@ -29,19 +32,32 @@
    has room for `Google TV launcher on Android TV 11`, the short one for `Google TV 11`.
    `tests/test_examples.py` checks the file.
 5. Change nothing outside the folder. The tables in `examples/README.md` and `README.nl.md`, the brand grid in
-   `README.md`, `README.nl.md` and `README.de.md`, and the counts (the `TV models` number in the card's alt text)
-   are generated from every `tv.json` by `tools/gen_tables.py`, which a maintainer runs after merging; CI compares
-   them only on `main`.
+   `README.md`, `README.nl.md`, `README.de.md`, `README.uk.md` and `README.tr.md`, and the counts (the
+   `TV models` number in the card's alt text) are generated from every `tv.json` by `tools/gen_tables.py`,
+   which a maintainer runs after merging; CI compares them only on `main`.
+   One copy of those counts is outside the generated blocks: the story sentence that shows the card on the same
+   five front pages ("The lists now cover 387 TV models from 103 brands") is prose, so a regeneration moves the
+   picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
+   story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
+   to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
+   card states (387, 103)`), so they move in the same commit.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
-   free prose; two claims in a README are read back against the list beside it.
+   free prose; three things in a README are read back, two of them against the list beside it.
    A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
    compared with what `tools/disable.sh` would send for the list, so a line added or commented out later moves
    the number in the README with it: `tests/test_example_list_count.py` answers
-   `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. Its undo
+   `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. A
+   sentence the page wraps across two lines is still read as one sentence, so a break cannot hide the
+   number. Its undo
    is the other: the restore command a README shows passes the same stock launcher as the list's own Undo line,
    or none where the list passes none, because those two are where an owner looks for the way back and the copy
    that passes a different package leaves the stock home disabled. `tests/test_folder_undo_agrees.py` names each
-   difference (the Skyworth 7S60_A5 README passed the Coocaa home while its list passed nothing). That
+   difference (the Skyworth 7S60_A5 README passed the Coocaa home while its list passed nothing). The third is
+   a path from the repository root written in backticks, which is what a reader copies into a terminal: the
+   file `launcher/build-and-install.sh` with its suffix, never the bare name, and
+   `tests/test_example_readme_paths.py` reads every folder's README and names each path this tree does not have
+   (a Windows twin written with backslashes, a placeholder such as `examples/<your tv>/debloat.txt` and the
+   folders `.gitignore` lists are not read as paths). That
    `config.json` takes only the keys `themes/README.md`'s Keys table says a theme can set: the rows it marks
    `config.xml` only - the vendor settings screens, the icon tiles - are never read out of a pushed file, so
    `theme.sh` drops them without a word and the launcher keeps its own value. A set that needs one wants that

@@ -88,28 +88,30 @@ class PrivacyWriteTargetTest(unittest.TestCase):
         target.write_text("# hand edits\n")
         self.tv(unreachable=True)
         result = self.write("privacy.txt")
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertIn("privacy.txt already exists; move it aside or choose another name.",
                       result.stderr)
         self.assertIn("Nothing was asked of the TV.", result.stderr)
         self.assertNotIn("cannot reach the TV", result.stderr)
+        self.assertEqual(result.stdout, "")
         self.assertEqual(target.read_text(), "# hand edits\n")
 
     def test_a_missing_folder_is_refused_before_the_tv_is_asked(self):
         self.tv(unreachable=True)
         result = self.write("no-such-folder/privacy.txt")
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertNotIn("Traceback", result.stderr)
         self.assertIn("there is no folder no-such-folder", result.stderr)
         self.assertIn("Nothing was asked of the TV.", result.stderr)
         self.assertNotIn("cannot reach the TV", result.stderr)
+        self.assertEqual(result.stdout, "")
         self.assertFalse((self.repo / "no-such-folder").exists())
 
     def test_a_folder_that_is_a_file_is_refused_too(self):
         (self.repo / "lists").write_text("not a folder\n")
         self.tv(unreachable=True)
         result = self.write("lists/privacy.txt")
-        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.returncode, 2, result.stderr)
         self.assertNotIn("Traceback", result.stderr)
         self.assertIn("there is no folder lists", result.stderr)
         self.assertNotIn("cannot reach the TV", result.stderr)

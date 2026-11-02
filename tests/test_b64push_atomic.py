@@ -132,6 +132,21 @@ class B64PushTest(TempDirTest):
         self.assertEqual(target.read_bytes(), data)
         self.assertLessEqual(max(len(c) for c in self.commands()), 4096)
 
+    def test_a_transport_too_small_for_the_staging_path_is_refused_without_sending(self):
+        # The floor on the chunk from #2614: a staging name that leaves under 256 bytes per chunk,
+        # or none at all, is an argument error (exit 2, nothing sent), not a push spread over one-
+        # and two-byte commands, and not an empty transfer that ends in a MISMATCH either.
+        target = self.remote_dir / "file.jpg"
+        for fake_max in ("300", "100"):
+            with self.subTest(fake_max=fake_max):
+                self.log.unlink(missing_ok=True)
+                result = self.push(str(self.local(b"x" * 4096)), str(target), FAKE_MAX=fake_max)
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn(f"refusing remote path '{target}'", result.stderr)
+                self.assertIn("Nothing was sent to the TV.", result.stderr)
+                self.assertEqual(self.commands(), [], "not even the staging cleanup ran")
+                self.assertFalse(target.exists())
+
     def test_failed_checksum_leaves_the_original_intact(self):
         target = self.remote_dir / "file.apk"
         target.write_bytes(b"old contents")

@@ -6,7 +6,8 @@
 Exits 0 when the TV refuses the connection, 1 when the port is still open, and 2 when the check
 could not tell: nothing answered (the TV off, asleep or rebooting, at another address, or out of reach
 from here), nothing listened on 127.0.0.1, or the check itself could not run (a name that does not
-resolve or is not a hostname, no route to the TV). Only the TV's own refusal shows the port closed.
+resolve or is not a hostname, no route to the TV, an address that is a URL or a path rather than an
+IP). Only the TV's own refusal shows the port closed.
 
 On macOS a "No route to host" (`EHOSTUNREACH`) is also what Local Network privacy looks like: the
 permission belongs to the app that runs this check, not to python or adb, so a terminal that was never
@@ -68,6 +69,27 @@ def split_host_port(endpoint):
     return endpoint, None
 
 
+def address_problem(word):
+    """Why this first word cannot be the TV's address, or None.
+
+    A URL pasted from a browser was read as an address: `http://<tv ip>` split into the host "http" and
+    the port "//<tv ip>", which answered "not a port number: '//<tv ip>'" - a sentence about a port
+    fragment for a word that is an address of another kind - and `http://<tv ip>:5555` became a host
+    literally named "http://<tv ip>:5555", whose lookup failed into the OSError branch's question about
+    whether the TV is on, for a word this check cannot use. A page at the address (`<tv ip>:5555/`,
+    `<tv ip>/6/system`) read the same way. All of them exit 2 already; naming the word is what tells the
+    owner which of the two to fix.
+    """
+    word = word.strip()
+    if "://" in word:
+        return ("that is a URL, not the TV's address: this check asks the TV's own ADB port, so give the "
+                "IP (or IP:port) alone, e.g.  tools/adb-closed.py <tv ip>")
+    if "/" in word:
+        return ("that is a path, not the TV's address: give the IP (or IP:port) alone, without a / or the "
+                "page it opens, e.g.  tools/adb-closed.py <tv ip>")
+    return None
+
+
 def main():
     args = sys.argv[1:]
     if len(args) > 2 or args[:1] in (["-h"], ["--help"]):
@@ -76,6 +98,10 @@ def main():
     raw_host = args[0] if args else os.environ.get("TV_HOST", "")
     if not raw_host:
         sys.stderr.write("usage: adb-closed.py <tv ip> [port]\n")
+        return 2
+    problem = address_problem(raw_host)
+    if problem:
+        sys.stderr.write(problem + "\n")
         return 2
     host, endpoint_port = split_host_port(raw_host)
     port_from_env = False

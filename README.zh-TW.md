@@ -1,9 +1,9 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="docs/banner-halloween.png" alt="CleanYourTV：讓電視主畫面回歸簡潔" width="800"></a>
+  <a href="https://cleanyour.tv"><img src="docs/banner.png" alt="CleanYourTV：讓電視主畫面回歸簡潔" width="800"></a>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · 正體中文 · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · 正體中文 · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -41,7 +41,7 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 |---|---|
 | 電腦與程式開發助理 | 按照下方步驟，將操作提示詞交給助理。 |
 | 電腦，但沒有程式開發助理 | 依照[手動操作](#手動操作)自行執行。 |
-| 只有 Android 手機 | 可使用 [@udhaykumarbala](https://github.com/udhaykumarbala) 開發的社群版 [Clean Your TV 應用程式](https://cleanyour.tv/app)，透過 Wi-Fi 連線、分析並清理電視。 |
+| 只有手機或筆電，沒有程式開發助理 | 可使用由獨立開發者打造的[社群應用程式](https://cleanyour.tv/app)（Android 手機、Mac 與 Windows）。這些應用程式與 CleanYourTV 無隸屬關係，問題請回報至各應用程式的儲存庫。 |
 
 使用助理時，請準備與電視連接同一個 Wi-Fi 網路、可執行終端機指令的電腦，並安裝 Python 3、完整的 JDK 17 至 22、Android SDK Platform 34 與 34.x Build Tools，供助理編譯啟動器。可使用的助理包括 [Claude Code](https://claude.com/product/claude-code)、[Codex](https://github.com/openai/codex)、[Gemini CLI](https://github.com/google-gemini/gemini-cli) 或 [Antigravity CLI](https://antigravity.google/product/antigravity-cli)。
 
@@ -99,7 +99,7 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 
 在「設定」按鈕上長按確定，選擇應用程式排序。按確定拿起應用程式，用方向鍵移動，再按確定或返回放下；沒有拿起應用程式時，按返回會離開並儲存排列。頂端的獨立排序按鈕預設隱藏，可透過 `reorder_button` 開啟。
 
-`tile_menu` 預設關閉；啟用後，在圖塊上長按確定可選擇移動、從主畫面移除或檢視應用程式資訊。未啟用時，長按會開啟應用程式資訊。
+`tile_menu` 預設開啟：在圖塊上長按確定可選擇移動、從主畫面移除或檢視應用程式資訊。關閉時，長按會開啟應用程式資訊。
 
 應用程式庫也預設關閉。啟用 `app_library` 後，入口位於主畫面應用程式的最後一列下方，可瀏覽具備電視或一般 Android 啟動入口的應用程式；一般 Android 應用程式可能仍需要觸控或滑鼠操作。
 

@@ -4,6 +4,10 @@
 # Manufacturer: SkyworthDigital
 # OS: Android TV 14 (SDK 34)
 # Build: UKG3.250826.001.C1.3.3_20260611
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/mecool-km2-plus/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/mecool-km2-plus/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 
 # Stock recommendations and ads
 com.google.android.tvrecommendations
