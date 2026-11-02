@@ -133,6 +133,7 @@ A new key needs one there in the same pull request.
 | `icon_only_vpn` | bool | With `vpn_pill`, the VPN pill as a round icon button too, matching `icon_only_buttons`: an open lock on the plain glass button while no VPN is up, the closed lock in a green outline while one is, solid green only while focused, like the pill; "VPN" / "VPN off" become its TalkBack description (`false` by default) |
 | `animations` | bool | Basic focus, glass, title and tile entrance motion; true by default |
 | `advanced_effects` | bool | Optional lifted tile, icon zoom, smooth ambient colour and app opening effects; false by default |
+| `focus_sound` | bool | Subtle tactile audio feedback when moving focus across tiles; false by default |
 | `show_home_settings_shortcut` | bool | Keep the optional Default-home tile visible when the TV has a home picker; false by default |
 | `show_stats` | bool | One line under the clock with CPU, free memory and free storage. Off unless set |
 | `game_day` | string | Each team's next game in the F1 panel's place under the clock ("Minnesota Wild at Dallas Stars", "Puck drop in 2h 18m", "Live now"), rotating every few seconds with the F1 weekend when `race_calendar` is on: the package of an add-on that publishes them, such as the Game Day add-on (`io.github.justinnewman.gameday`). The launcher only reads it and stays offline. Off (empty) unless set |

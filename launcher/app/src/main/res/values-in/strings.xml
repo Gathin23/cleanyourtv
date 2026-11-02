@@ -32,6 +32,7 @@
     <string name="columns_label">App per baris</string>
     <string name="dock_opacity_label">Opasitas pita dock</string>
     <string name="rows_below_dock_label">Baris di bawah dock</string>
+        <string name="focus_sound_state">Efek suara: %1$s</string>
     <string name="wallpaper_label">Wallpaper</string>
     <string name="wallpaper_state">Wallpaper: %1$s</string>
     <string name="wallpaper_none">Tidak ada</string>

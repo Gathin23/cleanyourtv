@@ -33,6 +33,7 @@
     <string name="columns_label">Apper per rad</string>
     <string name="dock_opacity_label">Dekkevne for dock-feltet</string>
     <string name="rows_below_dock_label">Rader under favorittraden</string>
+        <string name="focus_sound_state">Lydeffekter: %1$s</string>
     <string name="wallpaper_label">Bakgrunnsbilde</string>
     <string name="wallpaper_state">Bakgrunnsbilde: %1$s</string>
     <string name="wallpaper_none">Ingen</string>

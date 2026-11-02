@@ -50,6 +50,7 @@
     <string name="columns_label">한 줄당 앱 수</string>
     <string name="rows_below_dock_label">독 아래 줄 수</string>
     <string name="dock_opacity_label">독 배경 불투명도</string>
+        <string name="focus_sound_state">효과음: %1$s</string>
     <string name="wallpaper_label">배경화면</string>
     <string name="wallpaper_state">배경화면: %1$s</string>
     <string name="wallpaper_none">없음</string>

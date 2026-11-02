@@ -29,6 +29,7 @@
     <string name="native_settings">การตั้งค่าของผู้ผลิต</string>
     <string name="columns_label">แอปต่อแถว</string>
     <string name="dock_opacity_label">ความทึบของแถบด็อก</string>
+        <string name="focus_sound_state">เอฟเฟกต์เสียง: %1$s</string>
     <string name="animations_state">ภาพเคลื่อนไหว: %1$s</string>
     <string name="advanced_effects">เอฟเฟกต์ขั้นสูง</string>
     <string name="advanced_effects_state">เอฟเฟกต์ขั้นสูง: %1$s</string>

@@ -54,6 +54,7 @@
     <string name="native_settings">إعدادات المُصنّع</string>
     <string name="columns_label">تطبيقات في كل صف</string>
     <string name="dock_opacity_label">عتامة شريط التطبيقات</string>
+        <string name="focus_sound_state">المؤثرات الصوتية: %1$s</string>
     <string name="animations_state">الرسوم المتحركة: %1$s</string>
     <string name="advanced_effects">تأثيرات متقدمة</string>
     <string name="advanced_effects_state">تأثيرات متقدمة: %1$s</string>

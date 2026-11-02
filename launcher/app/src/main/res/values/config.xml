@@ -397,6 +397,10 @@
     <bool name="animations">true</bool>
     <bool name="advanced_effects">false</bool>
 
+    <!-- Subtle tactile audio feedback when moving focus across tiles. Off by default;
+         can be set with "focus_sound" in a theme or toggled in Launcher settings. -->
+    <bool name="focus_sound">false</bool>
+
     <!-- Optional Default-home tile; keep this key for existing themes and tile-ordering work.
          Off by default because the chooser is also available from launcher settings. -->
     <bool name="show_home_settings_shortcut">false</bool>

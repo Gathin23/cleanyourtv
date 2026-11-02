@@ -33,6 +33,7 @@
     <string name="columns_label">Qatordagi ilovalar</string>
     <string name="dock_opacity_label">Dock paneli noshaffofligi</string>
     <string name="rows_below_dock_label">Dock ostidagi qatorlar</string>
+        <string name="focus_sound_state">Ovoz effektlari: %1$s</string>
     <string name="wallpaper_label">Fon rasmi</string>
     <string name="wallpaper_state">Fon rasmi: %1$s</string>
     <string name="wallpaper_none">Yoʻq</string>

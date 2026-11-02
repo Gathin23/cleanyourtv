@@ -99,6 +99,7 @@
     <string name="tile_replace_in_dock">Korvaa toisella sovelluksella</string>
     <string name="dock_edit_pick_place">Valitse telakan paikka tälle sovellukselle ja paina OK. Takaisin peruuttaa.</string>
     <string name="rows_below_dock_label">Rivit telakan alla</string>
+        <string name="focus_sound_state">Äänitehosteet: %1$s</string>
     <string name="wallpaper_label">Taustakuva</string>
     <string name="wallpaper_state">Taustakuva: %1$s</string>
     <string name="wallpaper_none">Ei taustakuvaa</string>

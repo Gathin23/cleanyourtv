@@ -50,6 +50,7 @@
     <string name="native_settings">Налаштування виробника</string>
     <string name="columns_label">Застосунків у рядку</string>
     <string name="rows_below_dock_label">Рядків під доком</string>
+        <string name="focus_sound_state">Звукові ефекти: %1$s</string>
     <string name="wallpaper_label">Шпалери</string>
     <string name="wallpaper_state">Шпалери: %1$s</string>
     <string name="wallpaper_none">Немає</string>

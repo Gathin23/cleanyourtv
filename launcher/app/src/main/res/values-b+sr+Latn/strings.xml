@@ -35,6 +35,7 @@
     <string name="native_settings">Podešavanja proizvođača</string>
     <string name="columns_label">Aplikacija po redu</string>
     <string name="dock_opacity_label">Prozirnost trake doka</string>
+        <string name="focus_sound_state">Zvučni efekti: %1$s</string>
     <string name="animations_state">Animacije: %1$s</string>
     <string name="advanced_effects">Napredni efekti</string>
     <string name="advanced_effects_state">Napredni efekti: %1$s</string>

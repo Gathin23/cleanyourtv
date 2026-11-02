@@ -37,6 +37,7 @@
     <string name="columns_label">Appar per rad</string>
     <string name="rows_below_dock_label">Rader under favoritraden</string>
     <string name="dock_opacity_label">Favoritradens opacitet</string>
+        <string name="focus_sound_state">Ljudeffekter: %1$s</string>
     <string name="wallpaper_label">Bakgrundsbild</string>
     <string name="wallpaper_state">Bakgrundsbild: %1$s</string>
     <string name="wallpaper_none">Ingen</string>

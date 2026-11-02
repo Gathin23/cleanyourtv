@@ -73,6 +73,7 @@
     <string name="columns_label">Приложений в ряду</string>
     <string name="dock_opacity_label">Непрозрачность панели дока</string>
     <string name="rows_below_dock_label">Рядов под доком</string>
+        <string name="focus_sound_state">Звуковые эффекты: %1$s</string>
     <string name="wallpaper_label">Обои</string>
     <string name="wallpaper_state">Обои: %1$s</string>
     <string name="wallpaper_none">Нет</string>

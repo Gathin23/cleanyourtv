@@ -117,6 +117,7 @@
     </plurals>
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="rows_below_dock_label">שורות מתחת לשורת המועדפים</string>
+        <string name="focus_sound_state">אפקטים קוליים: %1$s</string>
     <string name="wallpaper_label">טפט</string>
     <string name="wallpaper_state">טפט: %1$s</string>
     <string name="wallpaper_none">ללא</string>

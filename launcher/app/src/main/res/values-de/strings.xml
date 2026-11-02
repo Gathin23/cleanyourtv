@@ -31,6 +31,7 @@
     <string name="native_settings">Herstellereinstellungen</string>
     <string name="columns_label">Apps pro Zeile</string>
     <string name="dock_opacity_label">Deckkraft der Dock-Leiste</string>
+        <string name="focus_sound_state">Toneffekte: %1$s</string>
     <string name="animations_state">Animationen: %1$s</string>
     <string name="advanced_effects">Erweiterte Effekte</string>
     <string name="advanced_effects_state">Erweiterte Effekte: %1$s</string>

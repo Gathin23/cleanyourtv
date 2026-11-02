@@ -33,6 +33,7 @@
     <string name="columns_label">Apps per rij</string>
     <string name="dock_opacity_label">Dekking van de dockbalk</string>
     <string name="rows_below_dock_label">Rijen onder het dock</string>
+        <string name="focus_sound_state">Geluidseffecten: %1$s</string>
     <string name="wallpaper_label">Achtergrond</string>
     <string name="wallpaper_state">Achtergrond: %1$s</string>
     <string name="wallpaper_none">Geen</string>

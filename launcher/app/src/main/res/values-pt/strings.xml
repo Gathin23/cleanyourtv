@@ -103,6 +103,7 @@
     <string name="columns_label">Apps por fileira</string>
     <string name="dock_opacity_label">Opacidade da faixa do dock</string>
     <string name="rows_below_dock_label">Fileiras abaixo do dock</string>
+        <string name="focus_sound_state">Efeitos sonoros: %1$s</string>
     <string name="wallpaper_label">Papel de parede</string>
     <string name="wallpaper_state">Papel de parede: %1$s</string>
     <string name="wallpaper_none">Nenhum</string>

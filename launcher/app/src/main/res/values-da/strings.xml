@@ -38,6 +38,7 @@
     <string name="columns_label">Apps pr. række</string>
     <string name="rows_below_dock_label">Rækker under docken</string>
     <string name="dock_opacity_label">Docken: gennemsigtighed</string>
+        <string name="focus_sound_state">Lydeffekter: %1$s</string>
     <string name="wallpaper_label">Baggrund</string>
     <string name="wallpaper_state">Baggrund: %1$s</string>
     <string name="wallpaper_none">Ingen</string>

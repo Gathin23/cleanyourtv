@@ -30,6 +30,7 @@
     <string name="columns_label">Aplikací v řádku</string>
     <string name="rows_below_dock_label">Řádků pod dokem</string>
     <string name="dock_opacity_label">Krytí pruhu docku</string>
+        <string name="focus_sound_state">Zvukové efekty: %1$s</string>
     <string name="wallpaper_label">Tapeta</string>
     <string name="wallpaper_state">Tapeta: %1$s</string>
     <string name="wallpaper_none">Žádná</string>

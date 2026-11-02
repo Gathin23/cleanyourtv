@@ -54,6 +54,7 @@
     <string name="native_settings">Ustawienia producenta</string>
     <string name="columns_label">Aplikacji w rzędzie</string>
     <string name="dock_opacity_label">Krycie paska docka</string>
+        <string name="focus_sound_state">Efekty dźwiękowe: %1$s</string>
     <string name="animations_state">Animacje: %1$s</string>
     <string name="advanced_effects">Efekty zaawansowane</string>
     <string name="advanced_effects_state">Efekty zaawansowane: %1$s</string>

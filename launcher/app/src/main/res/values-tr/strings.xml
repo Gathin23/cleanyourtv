@@ -54,6 +54,7 @@
     <string name="native_settings">Üretici ayarları</string>
     <string name="columns_label">Satır başına uygulama</string>
     <string name="dock_opacity_label">Dock bandı opaklığı</string>
+        <string name="focus_sound_state">Ses efektleri: %1$s</string>
     <string name="animations_state">Animasyonlar: %1$s</string>
     <string name="advanced_effects">Gelişmiş efektler</string>
     <string name="advanced_effects_state">Gelişmiş efektler: %1$s</string>

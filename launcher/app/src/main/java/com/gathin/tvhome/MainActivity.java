@@ -29,6 +29,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.media.SoundPool;
 import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
@@ -225,6 +226,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean iconOnlyVpn;
     private Drawable.ConstantState vpnPlainBackground;
     private ColorStateList vpnPlainInk;
+    private boolean focusSoundEnabled;
+    private SoundPool soundPool;
+    private int soundFocusId;
+    private long lastSoundTime;
+
+    private void playFocusSound() {
+        if (!focusSoundEnabled) return;
+        long now = SystemClock.uptimeMillis();
+        if (now - lastSoundTime < 40) return;
+        lastSoundTime = now;
+        if (soundPool != null && soundFocusId != 0) {
+            soundPool.play(soundFocusId, 0.9f, 0.9f, 0, 0, 1.0f);
+        }
+    }
     private SpringAnimation springX, springY;
     private float glassTargetX, glassTargetY;
     // How far the grid has scrolled the glass. springY works without it, in grid content space, so a
@@ -453,6 +468,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
+        focusSoundEnabled = cfg.focusSound;
+        if (focusSoundEnabled) {
+            try {
+                soundPool = new SoundPool.Builder().setMaxStreams(1).build();
+                soundFocusId = soundPool.load(this, R.raw.focus_click, 1);
+            } catch (Throwable ignored) { }
+        }
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         clockFormat = cfg.clockFormat;
         ClockFormat.apply(getWindow().getDecorView(), clockFormat);
@@ -922,6 +944,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
             if (!onTile) hideGlass();
+            if (oldF != null && newF != null && oldF != newF) {
+                playFocusSound();
+            }
         });
 
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -1365,6 +1390,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onDestroy();
         RemoteKeys.release(this);
         cancelHoldOk();
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
         if (openOnStartOnWake) unregisterReceiver(wakeReceiver);

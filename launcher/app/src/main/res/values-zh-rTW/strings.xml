@@ -32,6 +32,7 @@
     <string name="native_settings">原生設定</string>
     <string name="columns_label">每列 app 數量</string>
     <string name="dock_opacity_label">Dock 列不透明度</string>
+        <string name="focus_sound_state">音效：%1$s</string>
     <string name="animations_state">動畫效果：%1$s</string>
     <string name="advanced_effects">進階效果</string>
     <string name="advanced_effects_state">進階效果：%1$s</string>

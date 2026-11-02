@@ -52,6 +52,7 @@
     <string name="columns_label">Aplicaciones por fila</string>
     <string name="rows_below_dock_label">Filas debajo de la barra de favoritos</string>
     <string name="dock_opacity_label">Opacidad de la barra de favoritos</string>
+        <string name="focus_sound_state">Efectos de sonido: %1$s</string>
     <string name="wallpaper_label">Fondo</string>
     <string name="wallpaper_state">Fondo: %1$s</string>
     <string name="wallpaper_none">Ninguno</string>

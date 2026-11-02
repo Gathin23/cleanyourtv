@@ -51,6 +51,7 @@
     <string name="columns_label">App per riga</string>
     <string name="dock_opacity_label">Opacità della barra del dock</string>
     <string name="rows_below_dock_label">Righe sotto il dock</string>
+        <string name="focus_sound_state">Effetti sonori: %1$s</string>
     <string name="wallpaper_label">Sfondo</string>
     <string name="wallpaper_state">Sfondo: %1$s</string>
     <string name="wallpaper_none">Nessuno</string>

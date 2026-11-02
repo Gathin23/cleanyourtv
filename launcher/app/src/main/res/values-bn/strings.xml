@@ -33,6 +33,7 @@
     <string name="native_settings">নেটিভ সেটিংস</string>
     <string name="columns_label">প্রতি সারিতে অ্যাপ</string>
     <string name="dock_opacity_label">ডক বারের অস্বচ্ছতা</string>
+        <string name="focus_sound_state">শব্দ প্রভাব: %1$s</string>
     <string name="animations_state">অ্যানিমেশন: %1$s</string>
     <string name="advanced_effects">এডভান্স ইফেক্টস</string>
     <string name="advanced_effects_state">এডভান্স ইফেক্টস: %1$s</string>

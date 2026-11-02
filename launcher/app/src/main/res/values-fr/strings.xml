@@ -54,6 +54,7 @@
     <string name="native_settings">Paramètres du fabricant</string>
     <string name="columns_label">Applications par ligne</string>
     <string name="dock_opacity_label">Opacité de la barre du dock</string>
+        <string name="focus_sound_state">Effets sonores : %1$s</string>
     <string name="animations_state">Animations : %1$s</string>
     <string name="advanced_effects">Effets avancés</string>
     <string name="advanced_effects_state">Effets avancés : %1$s</string>

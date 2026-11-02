@@ -10,6 +10,7 @@
     <string name="native_settings">原生设置</string>
     <string name="columns_label">每行应用数量</string>
     <string name="rows_below_dock_label">程序坞下方行数</string>
+        <string name="focus_sound_state">音效：%1$s</string>
     <string name="wallpaper_label">壁纸</string>
     <string name="wallpaper_state">壁纸：%1$s</string>
     <string name="wallpaper_none">无</string>

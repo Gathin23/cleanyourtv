@@ -34,6 +34,7 @@
     <string name="columns_label">Aplicaciones por filera</string>
     <string name="rows_below_dock_label">Fileres debaxo del dock</string>
     <string name="dock_opacity_label">Opacidá de la barra del dock</string>
+        <string name="focus_sound_state">Efeutos de soníu: %1$s</string>
     <string name="wallpaper_label">Fondu</string>
     <string name="wallpaper_state">Fondu: %1$s</string>
     <string name="wallpaper_none">Nengún</string>
