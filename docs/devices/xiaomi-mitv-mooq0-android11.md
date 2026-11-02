@@ -1,4 +1,4 @@
-# Xiaomi MiTV-MOOQ0 (croods): P1 43-inch EU firmware
+﻿# Xiaomi MiTV-MOOQ0 (croods): P1 43-inch EU firmware
 
 Android TV 11, build `RTM4.220307.164.8835`, board `m7632`, 1.7 GiB RAM. The existing
 [MOOQ0 list](../../examples/xiaomi-mitv-mooq0/debloat.txt) targets Android TV 10. We applied a
@@ -73,8 +73,8 @@ Home went to `launcher/` itself, not Projectivy: `build-and-install.ps1` disable
 after `dumpsys activity activities` showed it as the focused app, and it was still Home after the reboot
 and the hard power-off. The Inputs pill lists HDMI 1-3, AV and Live TV. The screensaver was pointed at
 `com.gathin.tvhome/.ClockDream` before `com.mitv.dream` went off, the order the #81 note in the list
-header describes, and the dream stayed off. The dock holds the owner's five apps at five columns, which
-the folder's `config.json` carries.
+header describes, and the dream stayed off. The dock holds the owner's five apps at five columns, set in the launcher's own
+config.xml for this TV, so no dock becomes a default for every MOOQ0 owner.
 
 Remote, checked by hand with the real buttons: the Okko, ivi and KinoPoisk app buttons work; the Netflix
 button does nothing with Netflix off; the PatchWall button and the mic do nothing with PatchWall and
