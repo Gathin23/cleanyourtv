@@ -1,6 +1,8 @@
 # Philips 49PUS6561/12 (TP Vision 2016 platform, model QM163E, device QM16XE_U, MediaTek MT5890), Europe
 # Android TV 8.0.0 (API 26), build OPR5.170623.014 incremental 026701, security patch 2019-09-01.
 # Fingerprint: PHILIPS/QM16XE_U/QM16XE_U:8.0.0/OPR5.170623.014/026701:user/release-keys
+# Second unit: Philips 55PUS6581/12, Turkey, same model, device and firmware (QM163E.0.26.70.1), on Ethernet;
+# its notes are in README.md.
 # 1.3 GB RAM, armeabi-v7a, 1920x1080 UI. Not the TPM171E board of examples/philips-55pus7503 (PH7M_EU_5596):
 # same org.droidtv vendor prefix, different Live TV app and different NetTV preloads. Entries shared with the
 # TPM171E lists were checked against this TV's own `pm list packages`.
@@ -40,6 +42,9 @@
 # remote (Sources opens the Philips source menu, Settings opens the Philips quick settings). Not yet a several-day
 # soak test at the time of writing; the owner reports daily use since without issues.
 # Not checked: HDMI playback with a source attached, HbbTV, USB playback after the list.
+# Second unit (55PUS6581/12): 2026-10-26, 19 entries of this list plus the three marked "55PUS6581" below, applied
+# in nine small batches with a check on the real remote after each; all stayed disabled after a mains power cycle
+# and again on 2026-11-02, after a week of daily use. The stock launcher was off with the reference launcher as Home.
 
 # Telemetry and analytics
 org.droidtv.candeebug                   # "DAC" analytics uploader
@@ -47,6 +52,7 @@ org.droidtv.gel                         # "GEL" metrics collector, same process 
 org.droidtv.usagelogger                 # boot stats, keypress counts, panel telemetry (needs TVINPUT_ALLOW=1)
 org.droidtv.tv.frameworklogger          # reboot reasons and firmware-install records to the Philips logger
 com.google.android.feedback             # Market Feedback Agent
+com.google.android.tv.bugreportsender   # bug report uploader (55PUS6581)
 
 # Promotion and recommendation rows
 org.droidtv.demome                      # retail demo mode (needs TVINPUT_ALLOW=1)
@@ -66,6 +72,8 @@ org.droidtv.dropboxprovider             # Dropbox source in Media
 com.google.android.sss                  # Second Screen Setup (set up from phone)
 com.google.android.sss.authbridge       # Second Screen Setup auth bridge
 com.google.android.partnersetup         # Google partner setup
+com.google.android.onetimeinitializer   # runs once at first setup, nothing afterwards (55PUS6581)
+org.droidtv.dms                         # UPnP media server, started at boot; the DLNA renderer and the USB player (contentexplorer) stay (55PUS6581)
 
 # Preinstalled NetTV web apps (labels read from the APKs with aapt; comment out any you use)
 org.droidtv.nettvapp1984                # Dailymotion
