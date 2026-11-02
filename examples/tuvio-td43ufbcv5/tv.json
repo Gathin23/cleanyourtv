@@ -1,6 +1,6 @@
 {
-  "tv": "Tuvio TD43UFBCV5 (Changhong AI PONT, DVB96, MediaTek m7632), Russia",
+  "tv": "Tuvio TD43UFBCV5 / TD50UFBCV5 (Changhong AI PONT, DVB96, MediaTek m7632), Russia",
   "os": "Google TV 14",
   "brand": "Tuvio",
-  "notes": "Same platform and firmware as the BenQ E55-735: Anoki ACR, adservices/federated compute, Google feedback, Homwee store/help, Google TV recommendations and dreamx; Netflix, Prime Video, YouTube Music off by choice; voice, Chromecast, AirPlay, Miracast (`com.mediatek.androidbox` is the receiver here) and USB media kept; setupwraith owned the saved Wi-Fi; Home moves only once launcherx is disabled; MediaTek partnercustomizer re-enabled by the firmware at every boot; IR remote Settings key is scancode 498 but any key helper kills volume repeat, so it is left off; AdGuard DNS works; 1.9 GB; reboot-checked"
+  "notes": "Same platform and firmware as the BenQ E55-735: Anoki ACR, adservices/federated compute, Google feedback, Homwee store/help, Google TV recommendations (TD43 only) and dreamx; Netflix, Prime Video, YouTube Music off by choice on both units; casting/mirroring and USB media kept on TD43, off by choice on TD50, all optional entries commented out; partnersetup off on TD50 only (optional); voice, Play Store, Live TV, HDMI and remote pairing kept; setupwraith owned the saved Wi-Fi (forget and re-join first); Home moves only once launcherx is disabled; MediaTek partnercustomizer re-enabled by the TD43 firmware, left enabled on TD50; Settings scancode 498, key helper left off to keep volume repeat; AdGuard DNS tested on TD43 only; 1.9 / 1.8 GB; both reboot-checked; TD50 config.json dock and unit notes in README.md"
 }
