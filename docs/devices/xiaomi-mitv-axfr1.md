@@ -21,7 +21,7 @@ Tested on **Xiaomi MiTV-AXFR1** (codename `rango`, product `dune`, Amlogic/droid
 
 ## 2. Tested Debloat List
 
-The debloat list in [`examples/xiaomi-mitv-axfr1/debloat.txt`](../../examples/xiaomi-mitv-axfr1/debloat.txt) safely disables 16 packages across 4 categories:
+The debloat list in [`examples/xiaomi-mitv-axfr1/debloat.txt`](../../examples/xiaomi-mitv-axfr1/debloat.txt) safely disables 25 packages in seven groups — telemetry, PatchWall and sponsored rows, background services, preloaded apps, then three marked by choice (screen mirroring, firmware updates and the streaming apps not used):
 
 ### Critical Safety Notes:
 - Keep `com.droidlogic.tvinput`, `com.android.tv`, and Bluetooth/remote services enabled.
