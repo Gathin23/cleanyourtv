@@ -48,9 +48,18 @@ state = load()
 
 
 def run(command):
-    # The stock_home_redirect probe: this launcher installed and its HomeKeyService on.
-    if "pm path com.gathin.tvhome" in command and "enabled_accessibility_services" in command:
-        return "redirect\n" if state["redirect"] else ""
+    # The stock_home_redirect probe: this launcher installed and its HomeKeyService on. True and False are the
+    # two answers it can give; "lost" is a client that fails on this one read, "empty" a reply with nothing in
+    # it, and "probe-failed" a read on the TV that failed.
+    if "pm list packages com.gathin.tvhome" in command and "enabled_accessibility_services" in command:
+        answer = state["redirect"]
+        if answer == "lost":
+            raise LinkLost()
+        if answer == "empty":
+            return ""
+        if answer == "probe-failed":
+            return "probe-failed\n"
+        return "redirect\n" if answer else "no-redirect\n"
     if "pm install" in command:
         return "Success\n"
     # A TV that never held WRITE_SECURE_SETTINGS: the revoke step finds it denied. The step itself is run
@@ -254,8 +263,29 @@ class HandoverTest(unittest.TestCase):
         result, state = self.handover(stock_launcher="com.google.android.tvlauncher", redirect=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(state["stock_disabled"])
-        self.assertFalse(any("enabled_accessibility_services" in c and "pm path" in c
+        self.assertFalse(any("enabled_accessibility_services" in c and "pm list packages" in c
                              for c in state["commands"]), "a STOCK_LAUNCHER given is not second-guessed")
+
+    def assert_stopped_before_install(self, result, state):
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Nothing was installed or disabled", result.stderr)
+        self.assertFalse(any("pm install" in c for c in state["commands"]))
+        self.assertFalse(any("pm disable-user" in c for c in state["commands"]))
+        self.assertFalse(state["stock_disabled"])
+
+    def test_redirect_probe_that_fails_stops_before_the_install(self):
+        # A failed read is not evidence of a TV without the redirect: guessing so would disable the stock
+        # launcher on exactly the TVs this check protects.
+        result, state = self.handover(redirect="lost")
+        self.assert_stopped_before_install(result, state)
+
+    def test_empty_redirect_reply_stops_before_the_install(self):
+        result, state = self.handover(redirect="empty")
+        self.assert_stopped_before_install(result, state)
+
+    def test_redirect_read_that_fails_on_the_tv_stops_before_the_install(self):
+        result, state = self.handover(redirect="probe-failed")
+        self.assert_stopped_before_install(result, state)
 
 
 if __name__ == "__main__":

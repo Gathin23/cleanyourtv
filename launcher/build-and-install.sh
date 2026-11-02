@@ -78,20 +78,28 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
   # is the stock_home_redirect setup (debloat-keep-cast.txt and the other lists that keep casting): the
   # stock launcher stays Home on purpose and the helper hands over from it. Running this script again to
   # upgrade the launcher must not disable it, which a rerun without STOCK_LAUNCHER=none used to do.
-  REDIRECT=$("$PY" -I ../tools/tv.py 'pm path com.gathin.tvhome >/dev/null 2>&1 && case "$(settings get secure enabled_accessibility_services)" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; esac' \
-    | tr -d '\r' | tail -n 1) || REDIRECT=""
+  # The TV answers redirect or no-redirect, each read checked; anything else (a failed read, an empty or
+  # cut-off reply) stops the script before the install, since guessing no-redirect would disable it.
+  REDIRECT_PROBE='p=$(pm list packages com.gathin.tvhome) || { echo probe-failed; exit; }; if printf "%s\n" "$p" | grep -qx package:com.gathin.tvhome; then s=$(settings get secure enabled_accessibility_services) || { echo probe-failed; exit; }; case "$s" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; *) echo no-redirect ;; esac; else echo no-redirect; fi'
   case " $KNOWN_STOCK_LAUNCHERS " in
     *" $HOME_PKG "*)
-      if [ "$REDIRECT" = redirect ]; then
-        # The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
-        # so it comes back on unless HOME_KEY_SERVICE=0 is passed.
-        STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}
-        echo "$HOME_PKG owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
-        echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
-        echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG."
-      else
-        STOCK_LAUNCHER=$HOME_PKG
-      fi ;;
+      REDIRECT=$("$PY" -I ../tools/tv.py "$REDIRECT_PROBE" | tr -d '\r' | tail -n 1) || REDIRECT=""
+      case "$REDIRECT" in
+        redirect)
+          # The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
+          # so it comes back on unless HOME_KEY_SERVICE=0 is passed.
+          STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}
+          echo "$HOME_PKG owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
+          echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
+          echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG." ;;
+        no-redirect) STOCK_LAUNCHER=$HOME_PKG ;;
+        *)
+          echo "ERROR: $HOME_PKG owns Home, and the TV did not say whether this launcher's HomeKeyService is on" >&2
+          echo "(stock_home_redirect). Nothing was installed or disabled. Run again, or name it yourself:" >&2
+          echo "  STOCK_LAUNCHER=none           keep $HOME_PKG (stock_home_redirect, or the lists that keep it)" >&2
+          echo "  STOCK_LAUNCHER=$HOME_PKG   hand Home over and disable it" >&2
+          exit 1 ;;
+      esac ;;
     *)
       if [ "$HOME_PKG" = com.gathin.tvhome ]; then
         STOCK_LAUNCHER=none; echo "Home already belongs to this launcher; nothing will be disabled."
