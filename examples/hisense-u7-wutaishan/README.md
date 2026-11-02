@@ -80,6 +80,7 @@ The owner confirmed automatic clean Home with seven dock apps after one reboot o
 physical Home returning from an app, held-volume repeat, Input, gear, app shortcuts and the mic.
 Actual AirPlay playback worked. AirPlay/HomeKit discovery, running receiver services and the existing
 authenticated Android TV Remote status connection were also checked; Spotify listed the TV as a cast
-target. New HomeKit pairing was attempted but failed after an energy-settings prompt; its cause is
-unresolved. Chromecast video playback was not separately tested. Discovery alone does not establish
+target. New HomeKit pairing failed after an energy-settings prompt with both the clean launcher and
+original Google TV (clean launcher disabled); its cause is unresolved and further diagnosis was deferred.
+Chromecast video playback was not separately tested. Discovery alone does not establish
 these features work. This is one unit and one successful reboot, not a cross-model or long-term claim.
