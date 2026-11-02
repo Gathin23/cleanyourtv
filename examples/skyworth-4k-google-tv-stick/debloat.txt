@@ -34,11 +34,11 @@ com.google.android.youtube.tvmusic
 com.google.android.katniss               # voice search; re-enable to keep the Assistant
 com.google.android.apps.tv.dreamx        # ambient mode screensaver
 com.android.dreams.basic                 # stock daydream
-com.google.android.apps.tv.launcherx     # stock home; only after another launcher answers HOME
+# com.google.android.apps.tv.launcherx   # stock home; disable only after another launcher answers HOME
 
 # Vendor (Skyworth Digital) test, log and update apps
 com.sdt.producttest
-com.sdt.ota                              # firmware updater; re-enable to check for updates
+# com.sdt.ota                            # firmware updater; this set had it off, shared lists keep it on
 com.sdt.deviceinfo
 com.sdt.customization
 com.oemservice
@@ -69,10 +69,10 @@ com.google.android.syncadapters.calendar
 com.android.healthconnect.controller
 com.android.health.connect.backuprestore
 
-# Play Store: comment this out if the TV should install apps on its own
-com.android.vending
+# Play Store: never disabled (the TV needs it)
+# com.android.vending
 
 # Aggressive: re-enable if the matching feature breaks
 com.amlogic.voicesubtitle               # Amlogic live subtitle overlay
 com.google.android.tv.axel              # Google TV ambient art
-com.google.android.apps.mediashell      # media shell behind some Play Movies rows
+# com.google.android.apps.mediashell    # Chromecast built-in; disabling it costs casting

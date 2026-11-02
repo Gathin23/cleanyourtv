@@ -124,15 +124,15 @@ com.amazon.minitv.androidtv.app    # Amazon miniTV (India)
 com.jio.media.jiotvplus            # JioTV+
 com.jio.media.stb.ondemand         # Jio set-top on-demand app
 com.sony.dtv.kenhchonloc           # shop promo app, Vietnamese despite Indian retail
-com.tcl.browser                    # preloaded browser (TCL's APK on this Sony set); re-enabled a day later as the owner's dock browser
-com.sony.dtv.sensingfusionservice  # kept as unclear above; off here, nothing noticed
+# com.tcl.browser                    # preloaded browser (TCL's APK on this Sony set); re-enabled a day later as the owner's dock browser; off on the India B2B unit; uncomment to disable
+# com.sony.dtv.sensingfusionservice  # kept as unclear above; off here, nothing noticed; off on the India B2B unit; uncomment to disable
 # HbbTV / broadcast interactive, unused without an antenna; hbbtvplayer itself is the commented
 # Australian line in batch 2 above
-com.sony.dtv.broadcastservicesetup
-com.sony.dtv.interactivetvutil     # no broadcast use on this set; the VH21 EU list keeps it for a TokenProvider other Sony apps may read
-com.sony.dtv.interactivetvutil.output
-com.sony.dtv.broadcastclock.broadcastrequirementcontrol
-com.sony.dtv.broadcastclock.clocksyncservice
+# com.sony.dtv.broadcastservicesetup  # off on the India B2B unit; uncomment to disable
+# com.sony.dtv.interactivetvutil     # no broadcast use on this set; the VH21 EU list keeps it for a TokenProvider other Sony apps may read; off on the India B2B unit; uncomment to disable
+# com.sony.dtv.interactivetvutil.output  # off on the India B2B unit; uncomment to disable
+# com.sony.dtv.broadcastclock.broadcastrequirementcontrol  # off on the India B2B unit; uncomment to disable
+# com.sony.dtv.broadcastclock.clocksyncservice  # off on the India B2B unit; uncomment to disable
 # B2B hotel/commercial suite (a home set does not need it)
 com.sony.dtv.b2b.adminpassword
 com.sony.dtv.b2b.deviceadminsettings

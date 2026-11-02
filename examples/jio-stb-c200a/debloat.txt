@@ -45,7 +45,7 @@
 # - Port 5555 opens as soon as USB/Network debugging is on, no pairing. The box also advertises _adb._tcp
 #   over mDNS, the quickest way to find it when DHCP moves it.
 # - Jio enables ADB through its TR-069 server, not Developer options alone, and a factory reset closes it
-#   again (this box's guide has the direct-Ethernet procedure).
+#   again.
 
 # Jio ads, telemetry and tracking
 com.jio.stbadservice
@@ -57,7 +57,7 @@ com.jio.bioscopecontentservice
 
 # Background daemons and task killers
 com.jio.smartmemorymanager            # aggressive background task killer
-com.jio.appoptimizer                  # aggressive background task killer; PERSISTENT, needs a reboot
+com.jio.appoptimizer                  # aggressive background task killer; PERSISTENT, keeps running (see quirks)
 com.jio.backgroundscheduler           # periodic telemetry wake-up daemon
 com.jio.stb.remotediagnose            # remote diagnostics daemon
 com.jiostb.inactivitytimer            # inactivity timeout timer

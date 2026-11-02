@@ -1,5 +1,7 @@
 # weeb wallpapers
 
+These five pictures are AI-generated (Google Gemini), not drawn or photographed.
+
 - `01-amber-demon.jpg`
 - `02-blue-fighter.jpg`
 - `03-crimson-swordsman.jpg`

@@ -129,21 +129,7 @@ here, because the key works and the resolve call was not run against the set.
 
 ## Network ADB
 
-`service.adb.tcp.port=5555` is a property of this build and `ro.adb.secure=1`, so the first connection
-from a computer needs the on-screen authorization. Port 5555 was open over the LAN through the
-2026-10-30 session and was still listening after that evening's reboot, which is the only reboot
-evidence there is for this set — and it comes from the session's own change record, kept outside this
-repository, not from a check repeated for this note. On 2026-11-01 the set was in standby and
-`adb connect` timed out, so **whether the port survives a cold boot on this unit is not established
-here**.
-
-```text
-$ adb connect <tv ip>:5555
-failed to connect to '<tv ip>:5555': Connection timed out    # 2026-11-01, set in standby
-```
-
-The control path on 6466 (Android TV Remote Service v2) is a separate service and was not exercised for
-this note either.
+This build sets `service.adb.tcp.port=5555` (`ro.adb.secure=1`, so a new computer needs the on-screen OK); turn network debugging off when the session is done.
 
 ## Inputs and the source list
 
