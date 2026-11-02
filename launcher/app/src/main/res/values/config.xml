@@ -171,6 +171,11 @@
          with TV settings, Display, Network, Apps (re-enable an app) and Launcher settings, over whatever is on screen.
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
     <bool name="settings_key_panel">false</bool>
+    <!-- With settings_key_panel, the Settings button pressed over an app (not over Home) opens a sheet down the right
+         edge instead: Display, Sound, Network, Apps, TV settings and Launcher settings (a row shows only where the TV
+         has that page), so the picture on the left stays in view. Over Home the small panel stays. Can also be set
+         with "settings_key_side_sheet": true in a theme's config.json. Off by default. -->
+    <bool name="settings_key_side_sheet">false</bool>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in

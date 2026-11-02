@@ -51,6 +51,7 @@
     <string name="quick_network">Netwerk</string>
     <string name="quick_apps">Apps</string>
     <string name="quick_apps_hint">Weer inschakelen</string>
+    <string name="quick_sound">Geluid</string>
     <string name="on">Aan</string>
     <string name="off">Uit</string>
     <string name="enable">Inschakelen</string>

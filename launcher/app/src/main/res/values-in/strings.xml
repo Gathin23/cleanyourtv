@@ -50,6 +50,7 @@
     <string name="quick_network">Jaringan</string>
     <string name="quick_apps">Aplikasi</string>
     <string name="quick_apps_hint">Aktifkan kembali</string>
+    <string name="quick_sound">Suara</string>
     <string name="on">Aktif</string>
     <string name="off">Mati</string>
     <string name="enable">Aktifkan</string>

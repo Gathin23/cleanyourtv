@@ -121,6 +121,7 @@
     <string name="quick_network">Rede</string>
     <string name="quick_apps">Apps</string>
     <string name="quick_apps_hint">Reativar</string>
+    <string name="quick_sound">Som</string>
     <string name="on">Ativado</string>
     <string name="off">Desativado</string>
     <string name="enable">Ativar</string>

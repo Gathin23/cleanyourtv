@@ -40,6 +40,7 @@
     <string name="follow_theme">Design übernehmen (TV-Auswahl zurücksetzen)</string>
     <string name="follow_theme_hint">Verwendet Layout und Bewegung des aktuellen Designs oder der integrierten Einstellungen. Ein neues oder zurückgesetztes Design löscht die TV-Auswahl ebenfalls.</string>
     <string name="tv_settings">TV-Systemeinstellungen</string>
+    <string name="quick_sound">Ton</string>
     <string name="on">Ein</string>
     <string name="off">Aus</string>
     <string name="enable">Aktivieren</string>

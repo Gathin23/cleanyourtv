@@ -63,6 +63,7 @@
     <string name="follow_theme">Suivre le thème (réinitialiser les choix)</string>
     <string name="follow_theme_hint">Utilise la disposition et les animations du thème actuel ou les valeurs intégrées. Appliquer ou réinitialiser un thème efface aussi ces choix.</string>
     <string name="tv_settings">Paramètres du téléviseur</string>
+    <string name="quick_sound">Son</string>
     <string name="on">Activé</string>
     <string name="off">Désactivé</string>
     <string name="enable">Activer</string>

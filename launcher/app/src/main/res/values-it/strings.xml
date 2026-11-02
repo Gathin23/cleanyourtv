@@ -69,6 +69,7 @@
     <string name="quick_network">Rete</string>
     <string name="quick_apps">App</string>
     <string name="quick_apps_hint">Riattiva</string>
+    <string name="quick_sound">Audio</string>
     <string name="on">Sì</string>
     <string name="off">No</string>
     <string name="enable">Attiva</string>

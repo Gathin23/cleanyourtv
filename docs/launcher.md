@@ -122,6 +122,9 @@ tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.Clock
   **gear** button, even one Android does not map (scancodes or keycodes in config.xml).
 - With `settings_key_panel` the gear opens a [small quick settings panel](quick-settings-panel.jpg)
   over Home or any app: TV settings, Display, Network, Apps and Launcher settings.
+  Add `settings_key_side_sheet` and the gear pressed over an app opens a
+  [sheet down the right edge](switches/settings_key_side_sheet.jpg) with Display, Sound, Network, Apps,
+  TV settings and Launcher settings, leaving the picture on the left in view.
 
 The full `app_keys` format is in the [`themes/README.md` keys table](../themes/README.md#keys).
 

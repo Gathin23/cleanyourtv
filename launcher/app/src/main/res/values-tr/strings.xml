@@ -63,6 +63,7 @@
     <string name="follow_theme">Temayı izle (TV seçimlerini sıfırla)</string>
     <string name="follow_theme_hint">Geçerli temanın veya yerleşik ayarların düzenini ve hareketini kullanır. Tema uygulamak ya da sıfırlamak TV seçimlerini de temizler.</string>
     <string name="tv_settings">TV sistem ayarları</string>
+    <string name="quick_sound">Ses</string>
     <string name="on">Açık</string>
     <string name="off">Kapalı</string>
     <string name="enable">Etkinleştir</string>

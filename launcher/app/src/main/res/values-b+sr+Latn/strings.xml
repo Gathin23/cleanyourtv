@@ -44,6 +44,7 @@
     <string name="follow_theme">Prati temu (resetuj izbore)</string>
     <string name="follow_theme_hint">Koristi raspored i animacije tekuće teme ili ugrađene vrednosti. Primena ili resetovanje teme briše i izbore na TV-u.</string>
     <string name="tv_settings">Sistemska podešavanja TV-a</string>
+    <string name="quick_sound">Zvuk</string>
     <string name="on">Uklj.</string>
     <string name="off">Isklj.</string>
     <string name="enable">Uključi</string>

@@ -99,6 +99,7 @@
     <string name="quick_network">Red</string>
     <string name="quick_apps">Aplicaciones</string>
     <string name="quick_apps_hint">Reactivar</string>
+    <string name="quick_sound">Sonido</string>
     <string name="input_key_service_description">Abre el selector de entradas al pulsar el botón Entrada del mando.</string>
     <string name="home_key_name">Botón Inicio</string>
     <string name="home_key_description">Hace que el botón Inicio del mando abra este lanzador.</string>

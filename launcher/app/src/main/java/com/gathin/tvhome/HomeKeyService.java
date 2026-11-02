@@ -57,6 +57,7 @@ public class HomeKeyService extends AccessibilityService {
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
     private boolean settingsPanel;
+    private boolean settingsSideSheet;
     /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
     private boolean consumeVolumeKeys;
     /** app_keys, the same maps InputKeyService reads, for setups that run only this service. */
@@ -191,6 +192,7 @@ public class HomeKeyService extends AccessibilityService {
         if (repairRecord) ServiceRepair.connected(this, getClass());
         settingsKeycodes = config.settingsKeycodes;
         settingsPanel = config.settingsKeyPanel;
+        settingsSideSheet = config.settingsKeySideSheet;
         consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
@@ -266,7 +268,11 @@ public class HomeKeyService extends AccessibilityService {
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
         if (isSettingsKey(event)) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                // settings_key_side_sheet: over an app the side sheet, which leaves the picture on the left in view;
+                // over Home the small panel under the Settings pill.
                 Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
+                        .putExtra(QuickSettingsActivity.EXTRA_SIDE,
+                                QuickSettingsActivity.opensSideSheet(settingsSideSheet, MainActivity.onScreen))
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
                 try {
                     startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

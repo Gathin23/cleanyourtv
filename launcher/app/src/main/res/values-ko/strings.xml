@@ -68,6 +68,7 @@
     <string name="quick_network">네트워크</string>
     <string name="quick_apps">앱</string>
     <string name="quick_apps_hint">다시 활성화</string>
+    <string name="quick_sound">소리</string>
     <string name="on">켜짐</string>
     <string name="off">꺼짐</string>
     <string name="enable">활성화</string>

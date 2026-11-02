@@ -46,6 +46,7 @@
     <string name="quick_network">নেটওয়ার্ক</string>
     <string name="quick_apps">অ্যাপ</string>
     <string name="quick_apps_hint">আবার চালু করুন</string>
+    <string name="quick_sound">সাউন্ড</string>
     <string name="on">চালু</string>
     <string name="off">বন্ধ</string>
     <string name="enable">চালু করুন</string>

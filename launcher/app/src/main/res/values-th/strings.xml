@@ -38,6 +38,7 @@
     <string name="follow_theme">ใช้ตามธีม (รีเซ็ตการตั้งค่า)</string>
     <string name="follow_theme_hint">ใช้รูปแบบและภาพเคลื่อนไหวจากธีมปัจจุบันหรือค่าในแอป การใช้หรือรีเซ็ตธีมจะล้างตัวเลือกบนทีวีด้วย</string>
     <string name="tv_settings">การตั้งค่าระบบทีวี</string>
+    <string name="quick_sound">เสียง</string>
     <string name="on">เปิด</string>
     <string name="off">ปิด</string>
     <string name="enable">เปิดใช้งาน</string>

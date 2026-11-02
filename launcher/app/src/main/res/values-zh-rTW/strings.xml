@@ -41,6 +41,7 @@
     <string name="follow_theme">跟隨主題（重設電視上的選擇）</string>
     <string name="follow_theme_hint">改用目前主題或內建的版面與動畫設定。推送或重設主題時，也會清除你在電視上做的這些選擇。</string>
     <string name="tv_settings">電視系統設定</string>
+    <string name="quick_sound">音效</string>
     <string name="on">開</string>
     <string name="off">關</string>
     <string name="enable">啟用</string>

@@ -71,6 +71,7 @@
     <string name="quick_network">Network</string>
     <string name="quick_apps">Apps</string>
     <string name="quick_apps_hint">Re-enable</string>
+    <string name="quick_sound">Sound</string>
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="enable">Enable</string>
