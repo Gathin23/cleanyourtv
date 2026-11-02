@@ -50,7 +50,9 @@
 # shows as a duplicate grid tile alongside the Inputs menu's "Live TV" row; the default hidden_apps only
 # excludes the placeholder com.mediatek.wwtv.tvcenter). Keep com.tcl.tvinput, com.tcl.tvpassthrough (the
 # HDMI TvInputServices) and com.tcl.sourcemananger (source key / input panel). Inputs come from the
-# standard TvInputManager, so the launcher's Inputs menu itself works with the default config.
+# standard TvInputManager, so the launcher's Inputs menu lists them with the default config, but the HDMI
+# port states land on the wrong port (the empty HDMI 1 reads Connected): set inputs_cec_state_only true
+# (docs/TROUBLESHOOTING.md, "The Inputs list shows the empty HDMI 1 as connected").
 # Standby: Quick start ("Iniciar rapido", STR, sys.tcl.str.switch) suspends to RAM and takes Ethernet down
 # with it, so ADB, Cast and Wake-on-LAN cannot wake the TV; there is no network-standby option on this
 # firmware. TCL's picture/system panel opens with `am start -a com.tcl.settings.action.NETWORKSETTINGS`.

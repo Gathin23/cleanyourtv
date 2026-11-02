@@ -210,6 +210,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean showStats;
     /** config.xml inputs_connected_only: the Inputs menu lists only connected inputs, the rest behind "More inputs". */
     private boolean inputsConnectedOnly;
+    /** config.xml inputs_cec_state_only: only CEC device rows show a connection state, bare HDMI ports none. */
+    private boolean inputsCecStateOnly;
     private boolean shamsi;
     /** greeting_name: said after the greeting, which is shown in capitals. */
     private String greetingName = "";
@@ -576,6 +578,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
         inputsConnectedOnly = cfg.inputsConnectedOnly;
+        inputsCecStateOnly = cfg.inputsCecStateOnly;
         shamsi = cfg.shamsiDate;
         lunarDate = findViewById(R.id.lunarDate);
         lunar = cfg.lunarDate;
@@ -3431,7 +3434,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 hdmiPorts++;
                 if (tim.getInputState(info.getId()) == TvInputManager.INPUT_STATE_CONNECTED) hdmiConnected++;
             }
-            boolean hdmiStateBogus = hdmiPorts > 1 && hdmiConnected == hdmiPorts;
+            // inputs_cec_state_only: the TV puts port states on the wrong port (TCL UnionTV, Android 9), so
+            // ports show none, and a CEC device row shows its own state, which the CEC bus keeps right.
+            boolean hdmiStateBogus = inputsCecStateOnly || (hdmiPorts > 1 && hdmiConnected == hdmiPorts);
             for (TvInputInfo info : inputs) {
                 if (info.getType() == TvInputInfo.TYPE_TUNER
                         && (info.getServiceInfo().applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0
@@ -3481,7 +3486,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                         if (name == null || name.length() == 0) name = named ? custom : device.loadLabel(this);
                         String deviceLabel = name == null || name.length() == 0 ? label : name + " \u00B7 " + label;
                         final String deviceId = device.getId();
-                        int state = hdmiStateBogus ? -1 : tim.getInputState(deviceId);
+                        int state = hdmiStateBogus && !inputsCecStateOnly ? -1 : tim.getInputState(deviceId);
                         View row = addInputRow(rows, popup, R.drawable.ic_input, deviceLabel, state, () -> openInput(deviceId));
                         if (connectedOnly && InputFold.folds(true, state)) fold(row, folded);
                     }

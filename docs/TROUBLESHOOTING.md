@@ -1323,6 +1323,22 @@ So on this set only the focused window can answer the button, and only while Hom
 keycode first (`tools/tv.py 'logcat -d -v time | grep interceptKeyTq'` right after pressing the button),
 because `getevent -lt` did not show it in the captures taken here.
 
+## The Inputs list shows the empty HDMI 1 as connected, and a device on HDMI 2 nowhere (TCL UnionTV)
+
+**Seen on:** a TCL UnionTV (`ro.product.model` UnionTV, Android 9, `PPR2.180905.006.A1`), with the launcher as
+Home and its default config.
+
+The firmware puts each HDMI port's state on the wrong port: the "HDMI 1" input always reports connected, the
+"HDMI 2" input follows the physical HDMI 1, and a device on the physical HDMI 2 changes nothing. The CEC device
+list stays right (a Steam Deck on HDMI 2 is reported on port 2). The likely cause is that the firmware numbers
+`hdmi_port` from 0 while CEC numbers ports from 1. The shell cannot fix it: the mapping lives in TCL's TV
+input service on a verified, signed partition.
+
+Fix: `inputs_cec_state_only` true in `config.xml` and rebuild, or `"inputs_cec_state_only": true` in a theme's
+`config.json`. Bare HDMI ports then show no state and only CEC device rows show theirs ("Steam Deck · HDMI 2",
+Connected). The trade: a device without CEC, such as a laptop, shows no state either. The switch and its
+screenshot: [docs/switches.md](switches.md).
+
 ## A key helper is bound and a held remote button stopped repeating
 
 Hold volume up or down and the volume moves one step per press instead of ramping. The remote may be
