@@ -1241,6 +1241,17 @@ Android 11 (SDK 30), build RS8185.3885N:
 Debloat: `tools/disable.sh examples/amazon-fire-tv-aftdec012e/debloat.txt` disables telemetry, ACR, shopping and
 tutorial packages. Undo with `tools/restore.sh examples/amazon-fire-tv-aftdec012e/debloat.txt com.amazon.tv.launcher`.
 
+**The undo prints one `Cannot disable a protected package` stack trace.** `tools/restore.sh` enables every
+package the recovery record holds as on, and the record also holds the package that owned Home, because putting
+Home back is what undo is for - on Fire OS that is `com.amazon.tv.launcher`. Fire OS protects that package in
+both directions, so the `pm enable com.amazon.tv.launcher` line in the batch answers
+`java.lang.SecurityException: Cannot disable a protected package: com.amazon.tv.launcher` with a stack trace,
+once per run. Nothing failed: the package was already on, `tv.py --batch` carries on and sends every command
+after it, and the run still exits 0. Leaving `com.amazon.tv.launcher` off the `restore.sh` command line does
+not remove the line - the record puts it back. Reported on an AFTKM (`karat`, Fire OS 8.1.8.5, build
+`RS8185/3898`) replaying five recovery records after an OTA
+([#2950](https://github.com/Gathin23/cleanyourtv/issues/2950)).
+
 **Home and the Alexa button do nothing, every other button works**, seen on a Fire TV Stick 4K 1st gen
 (`AFTMM`, `mantis`, Fire OS 6.7.1.1, build `NS6711`). It was there before any debloat and survived a factory
 reset, so check it before blaming a list. The remote is fine: `getevent -lt` shows `KEY_HOMEPAGE` and
