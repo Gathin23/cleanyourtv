@@ -713,7 +713,7 @@ SmartTube (`org.smarttube.stable`, the `armeabi-v7a` build: this userland is 32-
   mains. The only package that came back was `com.tcl.channelplus`, through the update above; it was disabled again.
 - Checked by the owner: Chromecast from a phone, a PS5 on HDMI through the Inputs menu, standby and wake, and
   every remote button above. Live TV opened; no long playback.
-## Ninth unit: 55T8C (Wi-Fi)
+## Tenth unit: 55T8C (Wi-Fi)
 One owner's session on 2026-10-26 on Windows, following [`PROMPT.md`](../../PROMPT.md) with `tools/tv.py` and the
 PowerShell twins, then a week of use to 2026-11-01. Same build as the Q7C, so the list here is the one to run with
 the deltas below. Packages were disabled by hand, one `pm disable-user --user 0` call each, in six batches with a

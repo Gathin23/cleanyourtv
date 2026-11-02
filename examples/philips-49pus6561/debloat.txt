@@ -84,17 +84,18 @@ org.droidtv.nettvapp4835                # Cloud Explorer
 org.droidtv.nettvapp4836                # Social TV
 org.droidtv.nettvapp4932                # Free Games by PlayWorks
 
-# Preloaded apps, off by choice on this unit (comment out any you use)
-com.netflix.ninja                       # Netflix (the remote's Netflix button then does nothing; see README.md)
-com.amazon.amazonvideo.livingroom       # Prime Video
-com.amazon.aiv.eu                       # Prime Video (EU component)
-com.google.android.youtube.tv           # YouTube
+# Preloaded apps, off by choice on this unit. The streaming services are commented out (most owners use one);
+# uncomment any you never use, and comment out any other line you want to keep.
+# com.netflix.ninja                       # Netflix (the remote's Netflix button then does nothing; see README.md); off on the owner's set, kept on in the shared list
+# com.amazon.amazonvideo.livingroom       # Prime Video; off on the owner's set, kept on in the shared list
+# com.amazon.aiv.eu                       # Prime Video (EU component); off on the owner's set, kept on in the shared list
+# com.google.android.youtube.tv           # YouTube; off on the owner's set, kept on in the shared list
 com.google.android.videos               # Google Play Movies & TV
 com.google.android.music                # Google Play Music (service discontinued)
 com.google.android.play.games           # Google Play Games
-bbc.iplayer.android                     # BBC iPlayer
-com.plexapp.android                     # Plex
-tv.twitch.android.app                   # Twitch
+# bbc.iplayer.android                     # BBC iPlayer; off on the owner's set, kept on in the shared list
+# com.plexapp.android                     # Plex; off on the owner's set, kept on in the shared list
+# tv.twitch.android.app                   # Twitch; off on the owner's set, kept on in the shared list
 com.cloudmosa.puffinTV                  # Puffin TV browser
 com.pokemontv                           # Pokémon TV
 eu.bandainamcoent.pacman256             # PAC-MAN 256

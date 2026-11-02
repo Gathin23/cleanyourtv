@@ -22,7 +22,7 @@
 # the setup wizard's RecoveryActivity priority 1, and any third-party launcher priority 0.
 # Disabling launcherx alone causes Home presses to land on RecoveryActivity, which crash-loops
 # system_server (soft reboots every ~60 s, Wi-Fi drops). Disabling com.google.android.tungsten.setupwraith
-# allows CleanYourTV to take over Home cleanly.
+# allows CleanYourTV to take over Home cleanly, but it can cost casting (re-enable it if Cast stops working).
 # IMPORTANT: com.google.android.tungsten.setupwraith owns the Wi-Fi network credentials if the TV was
 # configured via the Google Home app. Ensure Ethernet is connected or verify credentials before
 # disabling setupwraith, and re-enable it before a factory reset (restore.sh does this).

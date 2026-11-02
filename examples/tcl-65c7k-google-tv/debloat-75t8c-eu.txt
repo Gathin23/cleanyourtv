@@ -35,7 +35,7 @@ com.tcl.smartalexa                     # Alexa bridge
 
 # TCL apps off by choice on this unit
 com.tcl.gallery                        # TCL gallery
-com.tcl.magiconnectfree                # MagicConnect phone-remote pairing
+# com.tcl.magiconnectfree                # MagicConnect phone-remote pairing; off on this set, kept on in the shared list
 com.mediatek.support.webview           # duplicate webview; com.google.android.webview is active
 com.mediatek.backgrounddetection       # MediaTek telemetry
 
@@ -53,7 +53,7 @@ com.google.android.apps.tv.dreamx      # Google photo screensaver, replaced by t
 com.google.android.tungsten.setupwraith
 
 # DO NOT DISABLE on this EU set — each was reproduced here (2026-10-22), none is in the Brazilian list
-# as an active line except the first four, which broke as follows:
+# as an active line except the first four and com.tcl.guard, which broke as follows:
 # com.tcl.ttvs         - TIAS chain. Off, com.tcl.tv's embedded tbrowser client logs
 #                        "vendor.tcl.tvinput.extend-service: Passing null binder object as
 #                        non-@nullable AIDL IBinder" plus a Tbrowser NullPointerException at

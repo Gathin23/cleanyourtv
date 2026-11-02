@@ -39,9 +39,9 @@ com.vewd.core.service                        # Vewd app-store / HbbTV core servi
 com.google.android.apps.nbu.smartconnect.tv  # Smart Connect
 
 # Streaming apps (unselected by user)
-com.sonyliv                                  # Sony LIV
-com.google.android.youtube.tvmusic           # YouTube Music
+# com.sonyliv                                  # Sony LIV; off on the owner's set, kept on in the shared list
+# com.google.android.youtube.tvmusic           # YouTube Music; off on the owner's set, kept on in the shared list
 
-# Firmware updaters (turned off by choice; keep enabled if you want OTA updates)
-com.apps.ota                                 # System OTA updater
-com.apps.authota                             # Auth OTA updater
+# Firmware updaters (turned off by the owner; commented out so updates keep coming)
+# com.apps.ota                                 # System OTA updater; off on the owner's set, kept on in the shared list
+# com.apps.authota                             # Auth OTA updater; off on the owner's set, kept on in the shared list

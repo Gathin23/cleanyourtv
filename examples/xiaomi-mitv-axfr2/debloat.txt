@@ -1,4 +1,4 @@
-# Xiaomi MiTV-AXFR2 (codename watchmen, product watchmen; MediaTek/droidlogic, 1 GB RAM, India), Google TV 14 (SDK 34),
+# Xiaomi MiTV-AXFR2 (codename watchmen, product watchmen; MediaTek, 1 GB RAM, India), Google TV 14 (SDK 34),
 # firmware UKG3.250107.001.
 # Same firmware family as xiaomi-mitv-axfr0 / axfr1.
 # Live TV app: com.mitv.livetv (also inputs via mitv.service).
@@ -11,10 +11,11 @@
 # Notes from this firmware:
 # - Sideloading works (pm install over the shell), and third-party HOME app is accepted.
 # - setupwraith does not own the saved Wi-Fi network (cname is system uid 1000).
-# - Disabling com.google.android.apps.tv.launcherx and setupwraith hands HOME to com.gathin.tvhome.
+# - Disabling com.google.android.apps.tv.launcherx and setupwraith hands HOME to com.gathin.tvhome. Disabling
+#   setupwraith gives Home back but can cost casting.
 # - PatchWall (com.mitv.tvhome.atv) and related OEM tabs are safe to disable.
 # - The remote's YouTube button sends 190 (KEYCODE_BUTTON_3) which routes to launcherx;
-#   mapped in config.xml as 190:com.google.android.youtube.tv.
+#   can be mapped in the launcher's config.xml as 190:com.google.android.youtube.tv.
 # - PatchWall button sends 192 (KEYCODE_BUTTON_5).
 
 # Xiaomi + Google telemetry

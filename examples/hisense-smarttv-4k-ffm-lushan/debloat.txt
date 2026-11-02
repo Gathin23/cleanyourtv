@@ -55,11 +55,11 @@ com.mercadolibre.android.mplay_tv            # Mercado Play
 com.wbd.stream                               # HBO Max
 com.vt.alexa                                 # Hisense Alexa (Google Assistant is kept)
 com.google.android.videos                    # Google TV app (Play Movies) (second unit)
-com.google.android.youtube.tvunplugged       # YouTube TV (second unit)
+# com.google.android.youtube.tvunplugged       # YouTube TV (second unit); a subscription service, kept on in the shared list
 com.tubitv                                   # Tubi (second unit)
 tv.pluto.android                             # Pluto TV (second unit)
 com.roku.web.trc                             # The Roku Channel (second unit)
-com.fubo.firetv.screen                       # Fubo (second unit)
+# com.fubo.firetv.screen                       # Fubo (second unit); a subscription service, kept on in the shared list
 
 # Sharing and screensaver: the second unit disabled these by choice, the first kept them. Uncomment any
 # you do not use. AirPlay and Chromecast stayed on and are not part of these packages.

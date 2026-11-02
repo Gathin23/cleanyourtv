@@ -6,7 +6,7 @@ Tested on an Acer P Series 32" HD Android TV (`ro.product.model=ATV R1`, `ro.pro
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 20 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 16 packages the list disables, grouped and commented; the owner also had the two updaters, Sony LIV and YouTube Music off, commented out here |
 | `config.json` | Dock configuration with 4 streaming apps and frosted glass dock |
 | `tv.json` | Entry for the CleanYourTV supported TV models index |
 

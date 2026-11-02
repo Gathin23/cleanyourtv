@@ -824,7 +824,7 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   and the set still advertises `_googlecast._tcp` under its own name, but the Home app lists it as
   unresponsive, and the receiver logs the same `Failed to find provider info for
   ...CastInfoProvider` on the boot that broke it ([#2991](https://github.com/Gathin23/cleanyourtv/issues/2991)).
-  There, with the wizard enabled and the set just rebooted, `pm enable
+  There, on a set just rebooted with the wizard disabled, `pm enable
   com.google.android.tungsten.setupwraith` and `am force-stop com.google.android.apps.mediashell`
   followed by about 45 s for the restarted receiver to log no provider error gave control back, and
   `pm disable-user --user 0 com.google.android.tungsten.setupwraith` afterwards kept it for that boot:

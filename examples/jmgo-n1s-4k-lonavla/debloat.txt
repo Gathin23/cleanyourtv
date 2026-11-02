@@ -46,7 +46,7 @@ com.google.android.youtube.tvmusic     # YouTube Music; keep it if you use it
 com.mediatek.android.leanbacklauncher.partnercustomizer
 
 # Google TV setup wizard: only its RecoveryActivity matters after setup. Re-join the Wi-Fi first (above),
-# and disable it before build-and-install.sh.
+# and disable it before build-and-install.sh. Disabling it gives Home back but can cost casting.
 com.google.android.tungsten.setupwraith
 
 # Stock Google TV launcher, replaced by launcher/

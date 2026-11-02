@@ -68,13 +68,13 @@ br.com.claro.now.smarttvclient         # Claro TV+
 com.mercadolibre.android.mplay_tv      # Mercado Play
 com.rma.speedtesttv                    # Speedtest
 
-# Off by choice on the Australian unit
-com.tcl.airplay2                       # AirPlay receiver (com.mediatek.AirplayAPK and airplaydaemon below were left alone)
-com.tcl.miracast                       # Miracast screen mirroring
-com.tcl.magiconnectfree                # TCL T-Cast / Magiconnect phone mirroring, shows as a launcher tile
-com.tcl.gamebar                        # game mode / VRR overlay
-au.com.stan.and                        # Stan, owner does not use it
-com.google.android.youtube.tvmusic     # YouTube Music
+# Off by choice on the Australian unit (uncomment any you never use)
+# com.tcl.airplay2                       # AirPlay receiver (com.mediatek.AirplayAPK and airplaydaemon below were left alone); off on the Australian unit
+# com.tcl.miracast                       # Miracast screen mirroring; off on the Australian unit
+# com.tcl.magiconnectfree                # TCL T-Cast / Magiconnect phone mirroring, shows as a launcher tile; off on the Australian unit
+# com.tcl.gamebar                        # game mode / VRR overlay; off on the Australian unit
+# au.com.stan.and                        # Stan, owner does not use it; off on the Australian unit
+# com.google.android.youtube.tvmusic     # YouTube Music; off on the Australian unit
 
 # Needed for the custom launcher. Disable only AFTER launcher/ is installed and set as Home:
 # with launcherx gone, setupwraith's RecoveryActivity claims HOME at priority 1 (blank screen).

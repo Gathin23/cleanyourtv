@@ -28,7 +28,7 @@
 # this list (Netflix, its token manager and Prime Video kept; launcherx and setupwraith stay ENABLED for Chromecast,
 # Home through stock_home_redirect), plus com.tcl.browser and com.google.android.youtube.tvmusic. A ttvs update
 # re-enabled com.tcl.channelplus once; nothing else came back. key_filter false kept the volume ramp. See README.
-# Ninth unit: TCL 55T8C (Smart TV Pro, G08_4K_GB), same build (AU02), on Wi-Fi, from 26 October 2026 to
+# Tenth unit: TCL 55T8C (Smart TV Pro, G08_4K_GB), same build (AU02), on Wi-Fi, from 26 October 2026 to
 # 1 November 2026: this list minus Netflix (ninja, tokenmanager) and Prime Video (kept), plus mediashell and
 # com.google.android.youtube.tvmusic; launcherx and setupwraith off for the launcher. Reboot-checked. See README.
 #

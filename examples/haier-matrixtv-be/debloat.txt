@@ -12,7 +12,8 @@
 #
 # Check saved Wi-Fi ownership before disabling setupwraith. On the tested set, the connected
 # Wi-Fi remained available after this package was disabled. A different network created by
-# setupwraith could be removed with it, cutting off network ADB.
+# setupwraith could be removed with it, cutting off network ADB. Disabling it gives Home back but can cost
+# Google casting.
 #
 # KEEP: com.haier.appmanager.dispatcher, com.haier.hkcfac, com.haier.tv.hmagicboard
 # (remote hot keys/sound settings); com.mediatek.wwtv.tvcenter, com.mediatek.tvinput and
@@ -28,7 +29,7 @@ com.haier.launcher.haiermatrix                   # Haier TV+ / Zeasn launcher, n
 
 # Casting choice: this is HaiCast/Miracast, not Google's Chromecast package.
 # Comment this out if you use phone screen mirroring.
-com.mediatek.androidbox                          # HaiCast/Miracast, unused by owner
+# com.mediatek.androidbox                          # HaiCast/Miracast, unused by owner; off on the owner's set; uncomment if you never mirror a screen
 
 # Stock-home partner rows, feedback and retail demo.
 com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows on stock Home

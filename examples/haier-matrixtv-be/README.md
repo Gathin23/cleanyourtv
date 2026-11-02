@@ -15,8 +15,8 @@ The stock Home is `com.google.android.apps.tv.launcherx`; Live TV is
 `com.mediatek.wwtv.tvcenter`. The install script disables stock Home only after
 the replacement launcher starts. The list does not disable Live TV, HDMI/input
 services, remote pairing, Play Store, voice search, Chromecast or firmware updates.
-The owner kept TV Housekeeper. HaiCast/Miracast was disabled by owner choice;
-comment out that line if you use screen mirroring. Chromecast was left enabled,
+The owner kept TV Housekeeper. HaiCast/Miracast was disabled by owner choice
+and is commented out in the list; uncomment it if you never mirror a screen. Chromecast was left enabled,
 but casting itself was not separately tested.
 
 ## Apply and undo

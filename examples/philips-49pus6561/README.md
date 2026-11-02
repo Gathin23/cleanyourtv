@@ -26,8 +26,8 @@ The TV powers on to the last used source (Live TV), not to Home, as Philips sets
 `power_on_home` was not tried.
 
 On the real remote with the list applied: Home opens the new launcher, Sources opens the Philips source menu,
-Settings opens the Philips quick settings, Ambilight opens the Ambilight menu. The Netflix button does nothing
-with Netflix disabled; the [55POS9002 note](../philips-55pos9002/README.md) describes the scancode 632 remap, which was
+Settings opens the Philips quick settings, Ambilight opens the Ambilight menu. If you disable Netflix (it is
+commented out in the list), the Netflix button does nothing; the [55POS9002 note](../philips-55pos9002/README.md) describes the scancode 632 remap, which was
 not tried here.
 
 ## The two input-permission packages

@@ -172,8 +172,8 @@
 # playback. Found on this unit:
 # - Besides the packages above it also had these off: com.tcl.ttvs (TCL BI/awareness/identifier services and T-Cast),
 #   com.tcl.hearaid, com.tcl.magiconnectfree (TCL phone sharing), com.google.android.apps.nbu.smartconnect.tv,
-#   com.tcl.t_solo (Bluetooth "Listen alone") and TalkBack (the last two are commented out in the list below: not safe on
-#   every unit). The firmware updater was also turned off here by choice
+#   com.tcl.t_solo (Bluetooth "Listen alone") and TalkBack (all six are commented out in the list below: the shared list
+#   leaves them on). The firmware updater was also turned off here by choice
 #   (not listed: keep it enabled unless you want updates frozen).
 # - Remote buttons only launcherx answered die with it. Keycodes (logcat -s TclPhoneWindowManager, checked with the real
 #   remote): Netflix 4062, YouTube 4065, Prime Video 4099, the old TCL Guard button 4140, Settings gear 4077 (a gear mapped to
@@ -194,10 +194,11 @@
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
 # (keyboard), com.google.android.tv.remote.service. Left alone as unclear or small gain: com.tcl.keyhelp (remote
-# virtual keys on the G05), com.tcl.useragreement.
+# virtual keys on the G05), com.tcl.useragreement, com.tcl.hearaid, com.tcl.t_solo,
+# com.google.android.apps.nbu.smartconnect.tv (Google data saver / VPN client).
 
 # ---- 1. TCL and Google telemetry ----
-com.tcl.ttvs                                # TCL BI / awareness / identifier services and T-Cast
+# com.tcl.ttvs                                # TCL BI / awareness / identifier services and T-Cast; off on the 65P735 (AR11), left on in the shared list
 com.tcl.bi                                  # TCL BI analytics
 com.tcl.logkit                              # log capture and upload
 # com.tcl.xian.StartandroidService          # background reporting service; off on the tested units, but TCL's updater needs it (see header), so it stays on
@@ -225,9 +226,9 @@ org.chromium.webview_shell                  # WebView test shell
 com.google.android.syncadapters.calendar    # calendar sync, no calendar on a TV
 com.google.android.play.games               # Play Games
 com.tcl.gallery                             # TCL photo gallery
-com.tcl.hearaid                             # hearing test / volume adaptation
-com.tcl.magiconnectfree                     # TCL phone sharing app
-com.google.android.apps.nbu.smartconnect.tv # Google "smart connect" nearby service
+# com.tcl.hearaid                             # hearing test / volume adaptation; off on the 65P735 (AR11), left on in the shared list
+# com.tcl.magiconnectfree                     # TCL phone sharing app; off on the 65P735 (AR11), left on in the shared list
+# com.google.android.apps.nbu.smartconnect.tv # Google "smart connect" nearby service; off on the 65P735 (AR11), left on in the shared list
 # com.tcl.t_solo                            # Bluetooth "Listen alone"; off on the 65P735 (AR11), but on AR09 it holds TV_INPUT_HARDWARE (50S546), so it stays on
 
 # ---- 4. Off by choice: streaming apps and TCL extras (comment out what you use) ----
