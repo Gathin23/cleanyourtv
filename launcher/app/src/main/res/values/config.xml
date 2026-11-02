@@ -502,6 +502,9 @@
          press, which a slow GPU such as the Mali-G52 cannot keep up with. Can also be set with "glow_snap" in a
          theme's config.json. -->
     <bool name="glow_snap">false</bool>
+    <!-- Package name of an installed icon pack (ADW or Nova format) to draw the app tiles from; an app the pack
+         has no icon for keeps its own art. Empty is off. Can also be set with "icon_pack" in a theme's config.json. -->
+    <string name="icon_pack" translatable="false"></string>
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
     <bool name="app_glow">false</bool>
