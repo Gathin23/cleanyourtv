@@ -1,0 +1,68 @@
+# onn 4K Pro Streaming Device (Gen 2, Walmart; device jarvis2, board s7d, Amlogic S905X5M), US
+# Google TV 14 (SDK 34), build URO3.260203.035.A1.15640252, 32-bit userspace (armeabi-v7a, zygote32)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/onn-4k-pro-gen2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/onn-4k-pro-gen2/debloat.txt com.google.android.apps.tv.launcherx
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV Home).
+# Live TV: none. This is an HDMI streaming box with no tuner or HDMI inputs;
+# leave live_tv_package empty in config.xml.
+#
+# Quirks on this unit:
+# - Even on Google TV 14, switching on Developer options -> USB debugging opens
+#   TCP port 5555 directly over Wi-Fi without Wireless debugging pairing.
+#   Closing network ADB requires turning off both adb_wifi_enabled and
+#   adb_enabled (verified with tools/adb-closed.py <tv ip> 5555).
+# - com.google.android.tungsten.setupwraith is present. Check
+#   `dumpsys wifi | grep -E 'creatorUid|creatorName|cname='` before disabling
+#   it: on this unit the saved Wi-Fi network was created by
+#   `cname=android.uid.system:1000`, so disabling setupwraith kept Wi-Fi up
+#   across a reboot.
+# - Nothing re-enabled across a reboot.
+#
+# Kept on purpose:
+# - com.google.android.katniss (Google Assistant / voice search on the remote)
+# - com.google.android.apps.mediashell (Chromecast built-in)
+# - com.onn.updatenotification (system OTA updater)
+# - com.google.android.tv.dfuservice, com.google.android.tv.remote.service,
+#   com.google.android.tv.axel, com.onn.bluetoothconnect (Bluetooth voice
+#   remote, IR setup and remote firmware DFU)
+# - com.gretzky.GlobalKey, com.gretzky.hwinfo (vendor remote shortcut handler
+#   and hardware info)
+# - com.droidlogic.* (Amlogic SoC services, AudioControlService, HDMI CEC)
+# - com.android.vending, com.google.android.gms, com.google.android.gsf
+#   (Play Store and Play Services)
+# - com.google.android.inputmethod.latin (Gboard on-screen keyboard)
+
+# Telemetry and feedback
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Privacy Sandbox / on-device ad & federated learning services (Android 14 APEX)
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Preloaded Google apps and unused background services
+com.google.android.play.games
+com.android.printspooler
+com.google.android.marvin.talkback
+com.android.providers.calendar
+com.google.android.syncadapters.calendar
+com.android.providers.contacts
+com.android.providers.userdictionary
+
+# Google ambient mode screensaver (replaced by Aerial Views on this unit)
+com.google.android.apps.tv.dreamx
+
+# Preinstalled streaming apps disabled by choice on this unit
+# (comment out the ones you use)
+# com.google.android.youtube.tv # Off on this unit by owner's choice; uncomment if you don't use them
+# com.netflix.ninja # Off on this unit by owner's choice; uncomment if you don't use them
+# com.netflix.tokenmanager # Off on this unit by owner's choice; uncomment if you don't use them
+
+# Stock Google TV launcher and setup wizard
+# (launcherx is disabled by launcher/build-and-install.sh once a replacement
+# launcher is installed and verified)
+# com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith
