@@ -43,8 +43,13 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   USB debugging there. When no app can open it either, see the carrier-box bullet above.
 - **USB debugging never opens port 5555** on some Google TV sets (a Skyworth-built Philips among
   them). Pair once through Wireless debugging with the stock `adb` (`adb pair <ip>:<port> <code>`,
-  then `adb connect`), run `adb tcpip 5555`, and `tools/tv.py` works from then on. `dns-sd -B
-  _adb-tls-pairing._tcp` (or `adb mdns services`) shows the pairing port while the code is on screen.
+  then `adb connect`), run `adb tcpip 5555`, and `tools/tv.py` works from then on. Keep 5555 closed
+  if you would rather not open it, since the pairing is enough on its own: with `TV_ADB_BINARY` naming
+  that same platform-tools `adb` and `TV_HOST` naming the Wireless debugging connection port, the tools
+  reach the TV through the paired transport, nothing listens on 5555 and there is no `adb tcpip` to run
+  again ([tools/native-adb.md](../tools/native-adb.md)); read that port again when Wireless debugging is
+  toggled, since it changes. `dns-sd -B _adb-tls-pairing._tcp` (or `adb mdns services`) shows the
+  pairing port while the code is on screen.
   Android switches Wireless debugging off whenever Wi-Fi drops; turn it back on and `adb` reconnects
   without a new code. Port 5555 from `adb tcpip` usually lasts only until the next reboot. When you
   close up, switch Wireless debugging off on its own: on a Chromecast with Google TV 4K (`sabrina`)
