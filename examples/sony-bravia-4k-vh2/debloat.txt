@@ -221,6 +221,8 @@ com.google.android.videos                      # Google TV Movies & TV
 # com.sony.dtv.ecodashboard                    # Eco dashboard; seventh unit only, lived with six days
 
 # Google TV setup wizard: claims HOME and takes over once the stock launcher is disabled
+# On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
+# repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith
 
 # Stock Google TV launcher. Left ENABLED on the original EU unit, where Home resolved to the new launcher

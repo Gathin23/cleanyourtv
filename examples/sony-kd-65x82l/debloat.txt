@@ -104,4 +104,6 @@ com.sony.dtv.sensingcamera.fwupdate # BRAVIA CAM firmware checker only; the TV's
 # Home away from the new launcher. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first: a network it owns
 # is deleted when it is disabled. Here it owned only an unused 2.4 GHz entry, the TV is on 5 GHz
 # (re-joined in Settings), so it ran with FORCE_SETUPWRAITH=1.
+# On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
+# repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith
