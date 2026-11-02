@@ -90,14 +90,28 @@ scan your own network for it.
 **TVs that only offer Wireless debugging** (some Google TV sets): mDNS discovery doesn't cross the
 tunnel, so they read you three things from Developer options > Wireless debugging: the IP address
 and port on that screen, and, under Pair device with pairing code, the pairing port and the code.
-With the stock `adb`:
+Pair and connect once with the stock `adb`:
 
 ```bash
 adb pair 100.x.y.z:<pairing port> <code>
 adb connect 100.x.y.z:<connect port>
-adb -s 100.x.y.z:<connect port> tcpip 5555
-TV_HOST=100.x.y.z tools/tv.py --probe
 ```
+
+Two routes reach the TV from there, and only one of them opens the plaintext port. Through the
+pairing itself, with nothing else listening: point `TV_ADB_BINARY` at that same `adb`, keep `TV_HOST`
+as the connection port on the screen, and the tools run over the paired transport
+([tools/native-adb.md](../tools/native-adb.md)):
+
+```bash
+export TV_ADB_BINARY=/absolute/path/to/adb
+TV_HOST=100.x.y.z:<connect port> tools/venv/bin/python -I tools/tv.py --probe
+```
+
+Or open port 5555 and use the client's usual path: `adb -s 100.x.y.z:<connect port> tcpip 5555`, then
+`TV_HOST=100.x.y.z tools/tv.py --probe`. Port 5555 usually closes at the next reboot and whenever
+Wireless debugging is toggled, and the session does both (Afterwards below reboots the TV), so that
+`tcpip` line comes back each time; the paired route has nothing to reopen, and nothing listening on
+5555 to close before you leave.
 
 With option B, use the TV's local address instead of `100.x.y.z`.
 
