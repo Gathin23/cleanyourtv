@@ -54,24 +54,27 @@ com.google.android.speech.pumpkin
 com.google.android.tvrecommendations
 com.google.android.leanbacklauncher.recommendations
 
-# Preloaded and operator-pushed apps (off by choice; comment out any you use)
-# com.netflix.ninja                          # kept on the tested unit
-# com.google.android.youtube.tv              # kept on the tested unit (YouTube casting needs it)
-com.amazon.amazonvideo.livingroom
-com.disney.disneyplus
-com.apple.atve.androidtv.appletv
-com.dazn
-com.wbd.stream
-it.mediaset.infinitytv
-tv.pluto.android
-com.cbs.ca
-com.upst.hayu
-com.fifa.plus.android
-com.figc.vivoazzurrotv
-it.rds.androidtv.rdssocialtv
-it.telecomitalia.thefilmclub
-it.telecomitalia.games
-it.telecomitalia.timmusic_tv
+# Preloaded and operator-pushed apps: the tested unit has all of these disabled by its owner's choice.
+# They are commented out so other owners keep theirs; uncomment the ones you don't use.
+# com.netflix.ninja                          # kept enabled on the tested unit
+# com.google.android.youtube.tv              # kept enabled on the tested unit (YouTube casting needs it)
+# com.amazon.amazonvideo.livingroom
+# com.disney.disneyplus
+# com.apple.atve.androidtv.appletv
+# com.dazn
+# com.wbd.stream
+# it.mediaset.infinitytv
+# tv.pluto.android
+# com.cbs.ca
+# com.upst.hayu
+# com.fifa.plus.android
+# com.figc.vivoazzurrotv
+# it.rds.androidtv.rdssocialtv
+# it.telecomitalia.thefilmclub
+# it.telecomitalia.games
+# it.telecomitalia.timmusic_tv
+
+# Android TV tutorials and screensaver
 com.google.android.tvtutorials
 com.google.android.backdrop                  # screensaver; the basic daydream remains
 
