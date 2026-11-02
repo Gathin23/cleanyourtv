@@ -713,3 +713,33 @@ SmartTube (`org.smarttube.stable`, the `armeabi-v7a` build: this userland is 32-
   mains. The only package that came back was `com.tcl.channelplus`, through the update above; it was disabled again.
 - Checked by the owner: Chromecast from a phone, a PS5 on HDMI through the Inputs menu, standby and wake, and
   every remote button above. Live TV opened; no long playback.
+## Ninth unit: 55T8C (Wi-Fi)
+One owner's session on 2026-10-26 on Windows, following [`PROMPT.md`](../../PROMPT.md) with `tools/tv.py` and the
+PowerShell twins, then a week of use to 2026-11-01. Same build as the Q7C, so the list here is the one to run with
+the deltas below. Packages were disabled by hand, one `pm disable-user --user 0` call each, in six batches with a
+screenshot after each. Nothing was added to the list beyond a header line naming this unit.
+| Retail model | `55T8C`, supplied by the owner; not exposed by `ro.product.model` (`Smart TV Pro`) |
+| `ro.product.device` / `ro.product.name` | `G08` / `G08_4K_GB` |
+| `ro.hardware` / `ro.board.platform` | `mt5896` / `merak` |
+| Firmware | `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`, `ro.software.version_id` `V8-T653T01-LF1V643`, security patch `2025-12-05` |
+| RAM / display | About 2.4 GB; 3840x2160 panel with a 1920x1080 UI at density 320 |
+### What differed from the Q7C list
+- **Kept by choice:** Netflix (`com.netflix.ninja`, `com.netflix.tokenmanager`) and Prime Video
+  (`com.amazon.amazonvideo.livingroom`). Comment those three lines out to match this set.
+- **Also disabled, beyond the Q7C list:** Chromecast (`com.google.android.apps.mediashell`) and YouTube Music
+  (`com.google.android.youtube.tvmusic`), by the owner's choice. Both are in the commented groups further down.
+- **Kept, as in the Q7C list:** `com.tcl.tv`, `com.tcl.tvinput`, `com.tcl.suspension` (the Inputs panel),
+  `com.tcl.autopair`, `com.google.android.tv.remote.service` and the TCL keyboard.
+### setupwraith and the saved Wi-Fi
+The network the TV was connected through belonged to `android.uid.system`, but a second saved network (the 5 GHz
+band) belonged to setupwraith. The owner agreed to lose that saved profile, and setupwraith was disabled once the new
+launcher was Home. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` for every saved network, not only the one in use.
+### Launcher and checks
+- Launcher with a four-column dock row (Stremio, a third-party YouTube client, Netflix, Prime Video),
+  `live_tv_package` `com.tcl.tv`, and `com.tcl.dashboard`, `com.tcl.partnercustomizer`, `com.tcl.suspension` and
+  `com.tcl.gallery` hidden from the tiles. The `scenes` theme was pushed later with `tools/theme.ps1`.
+- The Inputs pill lists HDMI 1 to 4 and Live TV.
+- **Reboot:** `FallbackHome` showed for about nine seconds, then `com.gathin.tvhome/.MainActivity` took Home. Every
+  disabled package stayed disabled; the OS re-enabled none.
+- One set, one week of use. Casting, AirPlay, Miracast and voice were turned off by choice, so they were not tested
+  after the list.
