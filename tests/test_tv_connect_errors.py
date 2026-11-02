@@ -5,10 +5,12 @@ restart, while tv.py connects to 5555 unless TV_HOST or TV_PORT names another po
 5555 refuses and tv.py ended with a ConnectionRefusedError traceback. Pointed at the Wireless debugging port,
 it ended with adb_shell's `InvalidCommandError: Unknown command: ... 'STLS'`: that port asks for TLS, and
 adb_shell 0.4.4 (tools/requirements.txt) has none. Neither says which port to use instead. tv.py now prints
-what happened and the way to port 5555 (pair once with the stock adb, then `adb tcpip 5555`), and exits 2.
-A key file it cannot read and a connection reset in the handshake keep their traceback: neither means the TV
-could not be reached. tv.connect() itself still raises, because check.py (through recovery.connect()) and
-privacy.py catch its errors themselves; recovery.py --save still lets them through.
+what happened, the TV_ADB_BINARY backend that can speak that TLS port without opening 5555
+(tools/native-adb.md), and the way to port 5555 (pair once with the stock adb, then `adb tcpip 5555`), and
+exits 2. A key file it cannot read and a connection reset in the handshake keep their traceback:
+neither means the TV could not be reached. tv.connect() itself still raises, because check.py
+(through recovery.connect()) and privacy.py catch its errors themselves; recovery.py --save still
+lets them through.
 
 These runs use the real adb_shell and real sockets on 127.0.0.1: a port nothing listens on, a server that
 answers the handshake with the STLS packet a Chromecast with Google TV 4K (Google TV 14) sent back on its
@@ -213,6 +215,12 @@ class TvConnectErrorTest(unittest.TestCase):
         self.assertEqual(b"CNXN", server.first[:4], "tv.py opened the ADB handshake that STLS answers")
         self.assertIn(f"127.0.0.1:{server.port} is a Wireless debugging port: it asks for TLS, which tv.py "
                       "cannot use.", result.stderr)
+        self.assertIn("TV_ADB_BINARY", result.stderr,
+                      "the port tv.py cannot speak to itself is the one TV_ADB_BINARY can, and the message "
+                      "has to name it or the reader opens the plaintext port instead (tools/native-adb.md)")
+        self.assertIn("keep TV_HOST as it is", result.stderr,
+                      "the backend takes the Wireless debugging port in TV_HOST, not port 5555")
+        self.assertIn("tools/native-adb.md", result.stderr, "the backend's guide has to be named")
         self.assertIn("`adb pair`", result.stderr)
         self.assertIn("`adb tcpip 5555`", result.stderr)
         self.assertIn("set TV_HOST to the TV's IP alone and leave TV_PORT unset", result.stderr)

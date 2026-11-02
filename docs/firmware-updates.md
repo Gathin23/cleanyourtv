@@ -23,6 +23,13 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 
 On Windows the same command is `tools\venv\Scripts\python.exe -I tools\check.py <list>`.
 
+A TV that only offers Wireless debugging does not need the plaintext port at all: leave `adb tcpip 5555`
+out, point `TV_ADB_BINARY` at the same platform-tools `adb` and `TV_HOST` at the Wireless debugging
+connection port, and the check goes through the already paired transport, with nothing listening on 5555
+and no "Allow USB debugging?" prompt to accept
+([tools/native-adb.md](../tools/native-adb.md)). Read that port again before each run, since it changes
+when Wireless debugging is toggled.
+
 ## Exit codes, and a weekly job
 
 It exits with `0` when the TV still matches the list, `1` when something drifted, and `2` when it

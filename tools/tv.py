@@ -335,8 +335,15 @@ def connect_error(e):
     see = "See docs/TROUBLESHOOTING.md#connecting."
     if isinstance(e, InvalidCommandError) and "STLS" in str(e):
         # Android 11+ answers the handshake on its Wireless debugging port with STLS, a request for TLS.
-        # adb_shell 0.4.4 (tools/requirements.txt) has no TLS, so no TV_HOST or TV_PORT gets past it.
+        # adb_shell 0.4.4 (tools/requirements.txt) has no TLS, so no TV_HOST or TV_PORT gets past it - but
+        # Google's own adb does, which is what TV_ADB_BINARY and tools/native-adb.md are for. Sending the
+        # reader to `adb tcpip 5555` alone answered a question the repo already has a better answer to:
+        # that opens the plaintext port the security section asks them to close.
         return (f"{target} is a Wireless debugging port: it asks for TLS, which tv.py cannot use.\n"
+                f"Google's adb can use it: pair and connect with it once, then set TV_ADB_BINARY to that "
+                f"adb and keep TV_HOST as it is (the Wireless debugging port) - this same tool then goes "
+                f"through that paired connection, with nothing opened on 5555 "
+                f"(tools/native-adb.md).\n"
                 f"To use port 5555 instead, {pair}, then set TV_HOST to the TV's IP alone and leave TV_PORT "
                 f"unset. {reboot} {see}")
     if isinstance(e, ConnectionRefusedError):
