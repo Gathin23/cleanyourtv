@@ -7,10 +7,16 @@
 # Theme:   TV_HOST=<tv ip> tools/theme.sh examples/tcl-c89b-google-tv   (config.json: Live TV, remote keys)
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Tested 2026-10-21 on one set on Ethernet, applied in batches with screenshots between them: Home, the
+# Tested 2026-10-21 on one C89B set on Ethernet, applied in batches with screenshots between them: Home, the
 # Inputs menu (HDMI 1-4 and Live TV), the Chromecast, AirPlay and Miracast processes, and the remote's
 # gear, Netflix, Prime Video and YouTube buttons worked; the disabled set was identical after a reboot,
 # and HomeKeyService bound on its own after another once AUTO_START was saved. One day of use, not weeks.
+#
+# Second unit: TCL 65C89K, France (Smart TV Pro, G08, G08_4K_GB, Google TV 14, UTT2.250416.001 AU02).
+# Status 2026-11-02: the owner used the launcher for several days. Home stayed the default launcher;
+# the theme, Sources, Live TV, Ethernet and Wi-Fi debugging were used. This unit keeps Game Bar and the
+# hearing test, so their lines below are comments. Its personal theme and optional add-ons are not part of
+# this shared list.
 #
 # Connection: USB debugging alone opens port 5555 on Ethernet. Wireless debugging switches itself back off
 # there: Android only enables it on Wi-Fi.
@@ -62,9 +68,9 @@ com.google.android.feedback
 com.android.tv.feedbackconsent
 com.google.android.play.games
 
-# Off by the owner's choice
-com.tcl.gamebar                        # game mode / VRR overlay
-com.tcl.hearaid                        # hearing test
+# Optional: the first C89B owner turned these off; the 65C89K second unit keeps them.
+# com.tcl.gamebar                      # game mode / VRR overlay
+# com.tcl.hearaid                      # hearing test
 com.tcl.t_solo                         # Bluetooth "listen alone"
 com.google.android.videos              # Google TV / Play Movies storefront
 
