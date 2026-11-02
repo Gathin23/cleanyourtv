@@ -136,8 +136,14 @@ def main():
     relay = (f"{host} is this computer: a relay answers for itself, not for the TV. Check the TV's own IP\n"
              "from an ordinary terminal:  tools/adb-closed.py <tv ip>\n" if local else "")
 
+    connect_host = host
     try:
-        with socket.create_connection((host, port), timeout=TIMEOUT_S):
+        connect_host = socket.inet_ntoa(socket.inet_aton(host))
+    except (OSError, ValueError):
+        pass
+
+    try:
+        with socket.create_connection((connect_host, port), timeout=TIMEOUT_S):
             pass
     except ConnectionRefusedError:
         if local:
