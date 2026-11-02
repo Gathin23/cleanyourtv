@@ -24,6 +24,21 @@ final class ClockFormat {
         }
     }
 
+    /**
+     * Redraws every TextClock under root with the current time. setFormat12Hour chooses the format again and
+     * calls the clock's onTimeChanged (checked in AOSP 8, 9 and 11), so setting the pattern it already has
+     * changes nothing but the text. For ClockRefresh, on Android before 12 where ACTION_TIME_TICK may stop.
+     */
+    static void refresh(View root) {
+        if (root instanceof TextClock) {
+            TextClock c = (TextClock) root;
+            c.setFormat12Hour(c.getFormat12Hour());
+        } else if (root instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) root;
+            for (int i = 0; i < g.getChildCount(); i++) refresh(g.getChildAt(i));
+        }
+    }
+
     static boolean is24(Context ctx, String mode) {
         return "24".equals(mode) || !"12".equals(mode) && DateFormat.is24HourFormat(ctx);
     }
