@@ -508,5 +508,7 @@ Notes for models that have no tested list yet live in [`docs/devices/`](../docs/
 - [TCL 40S65A](../docs/devices/tcl-40s65a.md) (Android TV 9 `PPR2.180905.006.A1`): the launcher installs, takes Home and keeps it (Netflix and YouTube play); after a while in an app, BACK sometimes lands on HDMI 2 - an onn. stick in standby there, "No signal" - instead of the launcher, and HOME returns immediately; the report names no packages, so no list yet.
 - [XGIMI H1](../docs/devices/xgimi-h1.md) (MStar `guava`, GMUI V1.5.3, Android 5.1.1 `LMY47V` userdebug): `pm disable-user` is refused and `pm hide` works from the shell; what each XGIMI/MStar preload declares (an ad/statistics receiver, phone-remote and file-push servers with APK installers, two casting receivers, a 2017 Google stack) and which ports they open; init runs Samba as root with guest access, which hiding FileManager does not stop; owner report, no list the repo tools can apply.
 
+- [SkyworthDigital HP4416-TVplus / TVPLUS BOX](../docs/devices/skyworth-hp4416-tvplus.md) (`HP44H`, Android TV 14, `UKG3.260404.001.C02.00.085_20260723`): factory Home behavior and owner-requested TR369 package isolation, reboot and playback checks, and independent TR069/logging services that remain active; short report, no tested debloat list.
+
 To add your TV, see [CONTRIBUTING.md](../CONTRIBUTING.md). The quickest way to get a list is to
 run the prompt in [PROMPT.md](../PROMPT.md) and copy the packages your assistant disabled.
