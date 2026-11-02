@@ -32,6 +32,17 @@
 # screensaver ships as dreamx's Backdrop, so livingfit went with no screensaver change. Reboot-checked twice:
 # nothing came back on, power-on lands on the new Home with the helper bound, and the real remote's Home button
 # opens it from inside an app. Same-day test, not lived with for days yet.
+# Also a second Sony BRAVIA KD-65X82L (2023, BRAVIA_VH22, MediaTek), India retail, the same
+# BRAVIA_VH22_M_PA build, bought with the B2B hotel suite and the Indian preloads on it
+# (ro.boot.product.hardware.sku KD-65X82L, Settings' device name "SONY KD-65X82L"): every package below
+# exists on it, and the marked block after batch 3 lists its extra preloads. Kept by the owner's choice on
+# it: Netflix, the YouTube app, Google Play Games, the YouTube Music line in batch 2 (skip that line and
+# Play Games there), the Assistant stack, Chromecast and firmware updates. com.tcl.browser was disabled
+# and re-enabled a day later (the owner's dock browser), and sensingfusionservice, kept as unclear above,
+# is off on it with nothing noticed. The Settings key goes dead with launcherx off here too: the
+# keyboard-layout overlay in docs/devices/sony-bravia-4k-vh22-settings-key.md, not HomeKeyService (#1680).
+# Applied on 2026-10-30 with tools/disable.sh, reboot-checked twice, lived with since; the remote's app
+# buttons stayed alive through sonyvendorservice, and Home was checked from Netflix and after a reboot.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-65x82l/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-65x82l/debloat.txt com.google.android.apps.tv.launcherx
@@ -107,3 +118,33 @@ com.sony.dtv.sensingcamera.fwupdate # BRAVIA CAM firmware checker only; the TV's
 # On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
 # repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith
+
+# The second KD-65X82L unit (India retail, B2B preloads) also disabled these, all on it from the factory:
+com.amazon.minitv.androidtv.app    # Amazon miniTV (India)
+com.jio.media.jiotvplus            # JioTV+
+com.jio.media.stb.ondemand         # Jio set-top on-demand app
+com.sony.dtv.kenhchonloc           # shop promo app, Vietnamese despite Indian retail
+com.tcl.browser                    # preloaded browser (TCL's APK on this Sony set); re-enabled a day later as the owner's dock browser
+com.sony.dtv.sensingfusionservice  # kept as unclear above; off here, nothing noticed
+# HbbTV / broadcast interactive, unused without an antenna; hbbtvplayer itself is the commented
+# Australian line in batch 2 above
+com.sony.dtv.broadcastservicesetup
+com.sony.dtv.interactivetvutil     # no broadcast use on this set; the VH21 EU list keeps it for a TokenProvider other Sony apps may read
+com.sony.dtv.interactivetvutil.output
+com.sony.dtv.broadcastclock.broadcastrequirementcontrol
+com.sony.dtv.broadcastclock.clocksyncservice
+# B2B hotel/commercial suite (a home set does not need it)
+com.sony.dtv.b2b.adminpassword
+com.sony.dtv.b2b.deviceadminsettings
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.ipcontrolsettings
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.noderuntimeextension.bpk
+com.sony.dtv.b2b.noderuntimeextension.node_20_11_1
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.webappruntimedrm
+# com.amazon.amazonvideo.livingroom  # Prime Video, off by choice on that unit
