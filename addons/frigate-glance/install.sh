@@ -53,9 +53,11 @@ tv "appops set $PKG SYSTEM_ALERT_WINDOW allow; cmd appops set $PKG APP_AUTO_STAR
 tv "logcat -c" >/dev/null
 STAGE=/data/local/tmp/fg-config.json
 tv --push "$CONFIG" "$STAGE" >/dev/null
-OUT=$(tv "d=/sdcard/Android/data/$PKG/files; if { mkdir -p \$d 2>/dev/null && cp $STAGE \$d/config.json 2>/dev/null; } || content write --uri content://$PKG.config/config.json < $STAGE; then echo config pushed; else echo config not written; fi; rm -f $STAGE")
-echo "$OUT"
-case "$OUT" in *"config pushed"*) ;; *) echo "ERROR: the config could not be written on the TV" >&2; exit 1 ;; esac
+OUT=$(tv "d=/sdcard/Android/data/$PKG/files; ok=0; write_out=''; if mkdir -p \$d 2>/dev/null && cp $STAGE \$d/config.json 2>/dev/null; then ok=1; else write_out=\$(content write --user 0 --uri content://$PKG.config/config.json < $STAGE 2>&1); write_rc=\$?; if [ \"\$write_rc\" -eq 0 ] && [ -z \"\$write_out\" ]; then ok=1; fi; fi; if rm -f $STAGE && [ \"\$ok\" -eq 1 ]; then echo __FRIGATE_CONFIG_OK__; else printf '%s\n' \"\$write_out\"; fi")
+case "$OUT" in
+  __FRIGATE_CONFIG_OK__) echo "config pushed" ;;
+  *) echo "$OUT" >&2; echo "ERROR: the config could not be written on the TV" >&2; exit 1 ;;
+esac
 
 # The key service, added to whatever accessibility services are already on (the launcher's, for one). A service
 # that was already listed is unbound by the reinstall and binds again only once the list changes.
