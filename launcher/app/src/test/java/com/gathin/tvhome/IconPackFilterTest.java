@@ -57,4 +57,13 @@ public class IconPackFilterTest {
         f.add("ComponentInfo{com.a/com.a.Main}", "second");
         assertEquals("first", f.lookup("com.a", "com.a.Main"));
     }
+
+    @Test
+    public void cacheKeyChangesWithPackOrUpdateAndIsEmptyWithoutPack() {
+        assertEquals("", IconPack.cacheKey(null, 5));
+        assertEquals("", IconPack.cacheKey("", 5));
+        assertEquals(IconPack.cacheKey("com.p", 5), IconPack.cacheKey("com.p", 5));
+        assertTrue(!IconPack.cacheKey("com.p", 5).equals(IconPack.cacheKey("com.p", 6)));
+        assertTrue(!IconPack.cacheKey("com.p", 5).equals(IconPack.cacheKey("com.q", 5)));
+    }
 }

@@ -22,24 +22,43 @@ final class IconPack {
         this.filter = filter;
     }
 
-    /** The pack, or null when the name is empty, the pack is not installed or it maps nothing. */
-    static IconPack load(Context ctx, String pkg) {
-        if (pkg == null || pkg.isEmpty()) return null;
+    private static String cachedKey = "";
+    private static IconPackFilter cachedFilter;
+
+    /** Cache key for a parsed pack: changes when the pack is replaced or updated; empty when no pack is chosen. */
+    static String cacheKey(String pkg, long lastUpdateTime) {
+        return pkg == null || pkg.isEmpty() ? "" : pkg + "@" + lastUpdateTime;
+    }
+
+    /** The pack, or null when the name is empty, the pack is not installed or it maps nothing. The appfilter is parsed once per pack version. */
+    static synchronized IconPack load(Context ctx, String pkg) {
+        if (pkg == null || pkg.isEmpty()) {
+            cachedKey = "";
+            cachedFilter = null;
+            return null;
+        }
         try {
+            String key = cacheKey(pkg, ctx.getPackageManager().getPackageInfo(pkg, 0).lastUpdateTime);
             Resources res = ctx.createPackageContext(pkg, 0).getResources();
-            IconPackFilter filter = new IconPackFilter();
-            int id = res.getIdentifier("appfilter", "xml", pkg);
-            if (id != 0) {
-                read(res.getXml(id), filter);
-            } else {
-                try (InputStream in = res.getAssets().open("appfilter.xml")) {
-                    XmlPullParser p = XmlPullParserFactory.newInstance().newPullParser();
-                    p.setInput(in, null);
-                    read(p, filter);
+            if (!key.equals(cachedKey) || cachedFilter == null) {
+                IconPackFilter filter = new IconPackFilter();
+                int id = res.getIdentifier("appfilter", "xml", pkg);
+                if (id != 0) {
+                    read(res.getXml(id), filter);
+                } else {
+                    try (InputStream in = res.getAssets().open("appfilter.xml")) {
+                        XmlPullParser p = XmlPullParserFactory.newInstance().newPullParser();
+                        p.setInput(in, null);
+                        read(p, filter);
+                    }
                 }
+                cachedFilter = filter;
+                cachedKey = key;
             }
-            return filter.isEmpty() ? null : new IconPack(res, pkg, filter);
+            return cachedFilter.isEmpty() ? null : new IconPack(res, pkg, cachedFilter);
         } catch (Exception | LinkageError e) {
+            cachedKey = "";
+            cachedFilter = null;
             return null;
         }
     }
