@@ -814,6 +814,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   APK; the Xiaomi Mi Box S 2nd gen list says casting from a Pixel still works there with
   setupwraith off. A TCL 65Q7CX1 (G08, Google TV 14, `UTT2.250416.001 AU02`) casts with it off as well: its
   receiver signs with `jni_client_auth_creds_mediadrm` (`examples/tcl-q7c-google-tv`, eighth unit).
+  On a Google TV Streamer the missing provider also takes the **Google Home app's** control of the set
+  with it, and that goes at every reboot rather than only when someone casts: the receiver stays up
+  and the set still advertises `_googlecast._tcp` under its own name, but the Home app lists it as
+  unresponsive, and the receiver logs the same `Failed to find provider info for
+  ...CastInfoProvider` on the boot that broke it ([#2991](https://github.com/Gathin23/cleanyourtv/issues/2991)).
+  There, with the wizard enabled and the set just rebooted, `pm enable
+  com.google.android.tungsten.setupwraith` and `am force-stop com.google.android.apps.mediashell`
+  followed by about 45 s for the restarted receiver to log no provider error gave control back, and
+  `pm disable-user --user 0 com.google.android.tungsten.setupwraith` afterwards kept it for that boot:
+  the credentials live in the receiver's process, so the break is the reboot that follows. Plain
+  `pm disable` is refused for this package; `pm disable-user --user 0` is the form that works, and the
+  one the lists use.
 - **Casting disappears although the Cast receiver is still running**, seen on a TCL 75QM751G (QM7,
   Google TV 14) after its list, and the same "alive is not discoverable" conclusion on a TCL
   BeyondTV2 (Android TV 9, R851T02 V660) in the same thread. Phones and a PC stop seeing the TV,
