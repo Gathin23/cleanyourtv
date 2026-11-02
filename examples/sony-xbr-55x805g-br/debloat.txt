@@ -1,0 +1,100 @@
+# Sony BRAVIA XBR-55X805G (2019, model string "BRAVIA 4K GB ATV3", device BRAVIA_ATV3_4K), Brazil firmware
+# Product BRAVIA_ATV3_4K_BR, board mt5891 (ro.build.product still says BRAVIA_ATV2). Android TV 9 (API 28).
+# Firmware BRAVIA_ATV3_4K_BR-user 9 PTT1.190515.001.S54 672201 release-keys, security patch 2022-01-05
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-xbr-55x805g-br/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xbr-55x805g-br/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same firmware build (S54 672201) as examples/sony-kd-43x8000g, sony-kd-55xf7596 and sony-xbr-65x900f,
+# so this follows those lists with this owner's choices.
+# Stock launcher: com.google.android.tvlauncher; the only other HOME answer is
+# com.android.tv.settings (FallbackHome). Wi-Fi owned by android.uid.system, not setupwraith.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it plays every HDMI input and the ISDB-T tuner.
+# Keep: com.sony.dtv.tvinput.*, braviasync* (HDMI-CEC), remotepairing, rcpowerkey, uinputservice,
+# imeproxy, sonysystemservice, settingsprovider, all com.mediatek.* and mtktvapi.agent, timers,
+# webapi.core and remoteaccess, Play Store, Play Services, Gboard.
+# Kept by the owner's choice: Google Assistant (katniss, speech.pumpkin), Chromecast (mediashell),
+# Alexa setup (smarthomesettings), firmware updates (systemupdate).
+# Display: 1920x1080, density 320, no overrides, display_density_forced null.
+# Already off before the list: com.google.android.youtube.tvmusic (listed below anyway).
+#
+# Applied 2026-11-02 with tools/disable.sh in five batches (the groups below), checking Home, Live TV
+# (ISDB-T, com.sony.dtv.tvinput.tuner/.BrzTunerInputService) and Netflix after each one. Then the
+# reference launcher went in with launcher/build-and-install.sh, which disabled tvlauncher and made
+# com.gathin.tvhome Home (`dumpsys window | grep mFocusedApp`). Rebooted twice: all 41 still disabled,
+# nothing re-enabled by the firmware, launcher still Home at power-on, display values unchanged.
+# Same day only, not lived with for days yet.
+# On the real remote, without any key service: Home, Netflix, YouTube, Input, the Action Menu
+# (com.sony.dtv.scrums.action), Google Assistant (mic) and HDMI all work; held Volume+ ramps.
+# - The remote's Apps button sends ALL_APPS (logcat: `START u0 {act=android.intent.action.ALL_APPS
+#   pkg=com.android.tv.settings}`), which nothing answers once tvlauncher is off, so it does nothing.
+#   HOME_KEY_SERVICE=1 with app_keys 284:library brings it back, but on this set the bound helper made a
+#   held Volume+ move one step instead of ramping (#1680), so the owner went without the Apps button.
+# - Inputs menu lists HDMI 1, 2, 3/ARC, 4, Video and Live TV. config.xml: hidden_apps com.sony.dtv.tvx and
+#   com.sony.dtv.tvxlauncher.programguide, live_tv_package com.sony.dtv.tvx.
+# - Private DNS (AdGuard) works on this firmware; YouTube still plays.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+
+# Sony and Google content, ads and promos
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.sony.dtv.tvlaunchercustomizer              # Sony tweaks to the stock home rows
+com.sony.dtv.tvlaunchercustomizer.overlay.apporder
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Retail demo
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+
+# Telemetry, remote support and feedback
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.sonybugreportsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+
+# Preloaded help and Google apps
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+com.google.android.youtube.tvmusic             # YouTube Music (already off)
+com.google.android.videos                      # Play Movies
+com.google.android.play.games
+com.google.android.inputmethod.japanese        # Japanese keyboard (Gboard stays the default)
+
+# Off by choice on this TV: features the owner doesn't use
+screnmirroring.com                             # Screen mirroring (Miracast)
+com.sony.dtv.networkapp.wifidirect
+com.sony.huey.dlna.module                      # DLNA renderer
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna
+com.google.android.tv.remote.service           # Android TV phone-app remote
+com.sony.dtv.smartmediaapp                     # Media Player, plays files from USB
+com.sony.dtv.osat.music                        # Music, plays music from USB
+com.vewd.core.integration.dia                  # Internet Browser (Vewd UI); engine com.vewd.core.service kept
+com.nero.swiftlink.mirror.tv                   # TV Cast / Mirror (Nero), installed by the owner from Play; skipped where absent
+
+# Hotel / professional mode and leftovers
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.rs232csupport                 # RS-232C control
+com.sony.dtv.b2b.vendorprotocol                # Node.js SDDP broadcaster for Control4-style automation
+com.google.android.leanbacklauncher            # old Android TV launcher, no HOME activity on this build
+com.android.printspooler                       # printing, nothing to print to
+
+# Left enabled on purpose. Uncomment any line to disable it too.
+# com.google.android.katniss                   # Google Assistant / voice search (owner uses it)
+# com.google.android.speech.pumpkin            # offline voice-command parser for the Assistant
+# com.google.android.apps.mediashell           # Chromecast built-in (owner uses it)
+# com.sony.dtv.smarthomesettings               # "Works with Alexa" setup (owner uses it)
+# com.sony.dtv.systemupdate                    # Sony firmware updates
+# com.google.android.backdrop                  # ambient screensaver
+# com.amazon.amazonvideo.livingroom            # Prime Video
