@@ -170,8 +170,12 @@ Everything the assistant does, you can run yourself. Two things have to be on th
 
 `tools/tv.py` talks to network ADB on port 5555. If that port stays closed and the TV offers
 Wireless debugging with a pairing code (the Chromecast with Google TV and the Google TV Streamer
-do), pair it once with the stock `adb` and run `adb tcpip 5555` first, as
-[Troubleshooting](docs/TROUBLESHOOTING.md#connecting) describes.
+do), pair it once with the stock `adb`. Then either run `adb tcpip 5555` to open the port, which
+usually lasts only until the TV reboots, or keep it closed: point `TV_ADB_BINARY` at that same
+`adb` and `TV_HOST` at the port the Wireless debugging screen shows, and the tools reach the TV
+through the paired connection with nothing listening on 5555
+([tools/native-adb.md](tools/native-adb.md)). [Troubleshooting](docs/TROUBLESHOOTING.md#connecting)
+has both, with the pairing steps.
 
 ```bash
 python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt
