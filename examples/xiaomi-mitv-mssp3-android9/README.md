@@ -8,8 +8,8 @@ from one unit. This page is a second PI.4663 unit: the EU retail **Mi TV 4S 55" 
 **Status:** applied 2026-10-28 in four batches (telemetry; PatchWall and content rows; TV Manager, the voice
 assistant and preloads; the old leanback home once `launcher/` owned Home), with a screenshot of Home after
 each batch, two reboots with `pm list packages -d` unchanged, HDMI 1, Live TV and every button on the real
-remote checked the same day. In daily use only since then: treat it as provisional until the owner reports
-back here after a few days.
+remote checked the same day. Updated 2026-11-02 after five days of daily use: no problems, nothing re-enabled;
+Home, HDMI, Live TV, Chromecast and the remote work as on the first day.
 
 ## What this unit runs
 
