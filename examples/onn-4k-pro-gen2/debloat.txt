@@ -57,9 +57,9 @@ com.google.android.apps.tv.dreamx
 
 # Preinstalled streaming apps disabled by choice on this unit
 # (comment out the ones you use)
-com.google.android.youtube.tv
-com.netflix.ninja
-com.netflix.tokenmanager
+# com.google.android.youtube.tv
+# com.netflix.ninja
+# com.netflix.tokenmanager
 
 # Stock Google TV launcher and setup wizard
 # (launcherx is disabled by launcher/build-and-install.sh once a replacement
