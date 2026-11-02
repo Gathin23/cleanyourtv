@@ -573,8 +573,9 @@ def out_dir(value):
     The folder may not exist yet: bench.py creates it. What it cannot do is write into a file, run
     through a file, or nowhere - os.makedirs() answered those with a traceback after the TV had
     already been asked which component answers HOME and what version it runs, at the start of a run
-    that then measured nothing. The same rule as tools/trace.py's --out (tools/perf-ab.md's three
-    tools), and the same reason for judging it in argparse: it costs nothing and it happens first.
+    that then measured nothing. The same rule as tools/trace.py's --out (docs/workflows/perf-ab.md's
+    three tools), and the same reason for judging it in argparse: it costs nothing and it happens
+    first.
     """
     if not value:
         raise argparse.ArgumentTypeError("needs a folder to write the results into")
