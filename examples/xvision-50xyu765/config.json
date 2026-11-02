@@ -1,0 +1,10 @@
+{
+  "hidden_apps": ["com.android.traceur"],
+  "live_tv_package": "",
+  "source_panel_service": "com.cvte.tv.globalui/.InputSourceActivity",
+  "stock_home_redirect": "com.cvte.tv.launcher.space",
+  "key_filter": false,
+  "library_apps": ["com.cvte.tv.setting", "com.android.documentsui"],
+  "app_labels": ["com.cvte.tv.setting=TV", "com.android.documentsui=Files"],
+  "app_banners": ["com.cvte.tv.setting=banner_tv"]
+}
