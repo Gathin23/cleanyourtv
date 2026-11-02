@@ -41,15 +41,20 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "app-deblouting-ps5.apk"
+            outputFileName = "norma-tv-launcher.apk"
         }
         if (variant.buildType.name == 'release') {
             variant.assembleProvider.configure {
                 doLast {
                     copy {
-                        from "${layout.buildDirectory.get()}/outputs/apk/release/app-deblouting-ps5.apk"
+                        from "${layout.buildDirectory.get()}/outputs/apk/release/norma-tv-launcher.apk"
                         into "${layout.buildDirectory.get()}/outputs/apk/release"
                         rename { "app-release.apk" }
+                    }
+                    copy {
+                        from "${layout.buildDirectory.get()}/outputs/apk/release/norma-tv-launcher.apk"
+                        into "${rootDir}/.."
+                        rename { "norma-tv-launcher.apk" }
                     }
                 }
             }

@@ -1,86 +1,99 @@
-# Replicate This Apple TV 4K Style Launcher
+# Replicate Norma Launcher (Android TV — PS5 & Apple TV 4K Style)
 
-This guide allows anyone who clones this repository to replicate and install this Apple TV 4K style TV launcher with custom dock apps, cinematic wallpapers, Ken Burns animation, and stats.
+This guide allows anyone who clones this repository to replicate and install **Norma Launcher**, a sleek, ultra-fast, ad-free Android TV / Google TV launcher featuring PlayStation 5 and Apple TV 4K inspired aesthetics, custom bottom dock apps, dynamic 1080p backdrops, Islamic Prayer countdown screensaver, native TV input switcher, and screen time statistics.
 
-You can install it in multiple ways:
-1. **Interactive Terminal Prompt (`./install.sh`)** – Zero AI required, guided CLI wizard in your terminal.
-2. **Single Command Prompt / APK Sideload** – 1-line ADB command or USB flash drive install.
-3. **Single AI Prompt** – Using an AI assistant (Claude Code, Antigravity, Cursor, ChatGPT) to customize apps and wallpapers automatically.
+**Original Upstream Project**: CleanYourTV by Gathin  
+**Norma Launcher Author & Enhancements**: **Ilham Asyari**  
+**Package Name**: `com.norma.tvlauncher`  
+**License**: MIT License (Attribution required for forks and modifications)
 
 ---
 
-## ⚡ Option 1: Interactive Terminal Prompt (Zero AI Required)
+## ⚡ Option 1: Interactive Terminal Setup (`./install.sh`) — *Zero AI Required*
 
-You don't need any AI to install and run this launcher. Just open your Terminal (macOS/Linux) or Command Prompt / Git Bash (Windows) in the repository folder and run:
+You don't need any AI assistant to install and run this launcher. Just open your Terminal (macOS/Linux) or Command Prompt / Git Bash (Windows) in the repository folder and run:
 
 ```bash
 ./install.sh
 ```
 
 The script will interactively guide you:
-1. Finds ADB automatically.
-2. Detects or asks for your TV's IP address (e.g. `192.168.1.150`).
-3. Installs the pre-built APK (or gives you the option to recompile from source).
-4. Automatically grants `GET_USAGE_STATS` permission for screen time.
-5. Launches CleanYourTV immediately on your screen!
+1. Automatically discovers ADB in your PATH or Android SDK.
+2. Detects connected TVs or prompts for your TV's Wi-Fi IP address (e.g., `192.168.1.150`).
+3. **Interactive Multi-Selection Dock Wizard**: Choose which apps to pin to your bottom dock. The layout and column count adjust automatically.
+4. Installs the pre-built `norma-tv-launcher.apk` (or compiles release build from source via Gradle).
+5. Automatically locks Norma Launcher as your default home activity (`set-home-activity`).
+6. Configures the default screensaver to Norma Screensaver (`ClockDream`) and enables remote Home key intercept (`HomeKeyService`).
+7. Grants `GET_USAGE_STATS` permission for weekly screen time and storage usage stats.
+8. Launches Norma Launcher immediately on your TV!
 
 ---
 
-## 📦 Option 2: Pre-built APK (Single Command Prompt or USB)
+## 📦 Option 2: Pre-built APK (`norma-tv-launcher.apk`) — Single Command or USB
 
-If you already have the APK or want to install with a single command prompt:
+If you already have the APK or want to sideload without compiling:
 
 ### Via ADB:
 ```bash
+# 1. Connect to your TV over Wi-Fi
 adb connect <YOUR_TV_IP>:5555
-adb install -r launcher/app/build/outputs/apk/debug/app-deblouting-ps5.apk
-adb shell am start -n com.gathin.tvhome/.MainActivity
+
+# 2. Install Norma Launcher APK
+adb install -r norma-tv-launcher.apk
+
+# 3. Grant usage stats & system home defaults
+adb shell appops set com.norma.tvlauncher GET_USAGE_STATS allow
+adb shell cmd package set-home-activity --user 0 com.norma.tvlauncher/.MainActivity
+adb shell settings put secure screensaver_components com.norma.tvlauncher/.ClockDream
+adb shell settings put secure screensaver_enabled 1
+
+# 4. Launch Norma Launcher
+adb shell am start -n com.norma.tvlauncher/.MainActivity
 ```
 
 ### Via USB / TV File Manager (Zero PC Required):
-1. Copy `launcher/app/build/outputs/apk/debug/app-deblouting-ps5.apk` to a USB flash drive.
-2. Plug the USB drive into your TV.
-3. Open any TV file manager (like **X-plore** or **FX File Explorer**) or use the **Downloader** app to open and install the APK.
+1. Copy `norma-tv-launcher.apk` to a USB flash drive.
+2. Plug the USB drive into your Android TV / Google TV.
+3. Open any TV file manager (**X-plore File Manager**, **FX File Explorer**) or the **Downloader** app to install the APK.
+4. Press the **HOME** button on your remote. A dialog will prompt you to set Norma Launcher as your default home screen.
 
 ---
 
 ## 🤖 Option 3: Replicate with a Single AI Prompt (For Custom Dock Apps)
 
-Copy and paste the prompt below into your AI coding assistant (on a computer connected to the same Wi-Fi as your TV):
+Copy and paste the prompt below into your AI coding assistant (Claude Code, Antigravity, Cursor, ChatGPT) while connected to the same Wi-Fi network as your TV:
 
 ```markdown
-I want to replicate and customize the CleanYourTV Apple TV 4K style launcher on my Android TV / Google TV.
+I want to replicate and customize Norma Launcher (com.norma.tvlauncher) on my Android TV.
 
 Before making changes, please ask me:
-1. "Which apps would you like pinned to your bottom dock, in order? (e.g., YouTube, Netflix, Disney+, Prime Video, Vidio, Apple TV, HBO Max, Plex, Spotify, etc.)"
+1. "Which apps would you like pinned to your bottom dock, in order? (e.g., YouTube, Netflix, Disney+, Prime Video, Vidio, Apple TV, HBO Max, Spotify, etc.)"
 2. "Do you have custom full-screen wallpapers for these apps (saved in wallpapers/), or would you like matching cinematic key art wallpapers mapped?"
-3. "Would you like pure single-page mode (dock + top action buttons only) or keep the top tabs (Home & App list)?"
+3. "Would you like pure single-page mode (dock + top action buttons only) or keep the top tabs?"
 
 Once I provide my list of apps:
 1. Connect to the TV over ADB (port 5555) and verify installed packages (`pm list packages`).
 2. Update `launcher/app/src/main/res/values/config.xml`:
-   - Set `<string-array name="dock_apps">` with the exact package names of my chosen apps in order.
+   - Set `<string-array name="dock_apps">` with the exact package names in order.
    - Set `<integer name="columns">` to match the number of dock apps.
 3. Configure the visual assets for each dock app:
-   - **Unfocused icon**: A clean, borderless square logo in `launcher/app/src/main/assets/icons/<name>-small-icons.png` (50×50dp, 14dp rounded corners).
-   - **Focused banner**: The Leanback banner (92×52dp) or high-res show card.
-   - **Cinematic wallpaper**: A full 1080p backdrop in `launcher/app/src/main/res/drawable-nodpi/wallpaper_<pkg_or_name>.jpg` and `wallpapers/` that smoothly cross-fades when the dock item is focused.
+   - Unfocused icon: Clean borderless logo in `launcher/app/src/main/assets/icons/<name>-small-icons.png` (50×50dp).
+   - Focused banner: Leanback banner (92×52dp).
+   - Cinematic wallpaper: Full 1080p backdrop in `launcher/app/src/main/res/drawable-nodpi/wallpaper_<pkg_or_name>.jpg` that smoothly cross-fades when focused.
 4. Maintain performance optimizations:
-   - Instant, crisp dock switching (no bouncy spring physics or laggy alpha cross-fade delays).
-   - Subtle bottom-right stats card displaying "Weekly Screen Time" and "Storage Usage".
-   - Deterministic D-pad navigation: Pressing UP from the dock jumps directly to top action icons (Inputs, Wi-Fi, Settings), and pressing DOWN returns to the dock.
-5. Build the debug APK (`./gradlew assembleDebug`), install over ADB, grant `GET_USAGE_STATS` permission, and launch `com.gathin.tvhome/.MainActivity`.
-6. Take a screenshot from the TV (`screencap -p`) and pull it to verify that everything looks pixel-perfect.
+   - Instant dock switching (0ms input lag, native SoundPool audio feedback).
+   - Bottom-right stats card displaying "Weekly Screen Time" and "Storage Usage".
+   - Deterministic D-pad navigation: UP jumps to top action pills (Live TV / Inputs, Wi-Fi, Settings), and DOWN returns to dock.
+5. Build the release APK (`./gradlew assembleRelease`), install over ADB, grant `GET_USAGE_STATS`, configure default launcher, and launch `com.norma.tvlauncher/.MainActivity`.
+6. Take a screenshot from the TV (`screencap -p`) and pull it to verify pixel-perfection.
 ```
 
 ---
 
-## 🛠 Option 4: Step-by-Step Manual Replication
-
-If you prefer customizing the launcher manually, follow these steps:
+## 🛠 Option 4: Step-by-Step Manual Customization
 
 ### 1. Configure Your Dock Apps
-Open [`launcher/app/src/main/res/values/config.xml`](file:///launcher/app/src/main/res/values/config.xml) and edit `dock_apps` and `columns`:
+Open [`launcher/app/src/main/res/values/config.xml`](launcher/app/src/main/res/values/config.xml) and edit `dock_apps` and `columns`:
 
 ```xml
 <string-array name="dock_apps">
@@ -99,109 +112,65 @@ Open [`launcher/app/src/main/res/values/config.xml`](file:///launcher/app/src/ma
 
 ### 2. Add App Assets & Wallpapers
 For each app on your dock:
-1. **Unfocused Small Icon** (Optional but recommended):
-   Place a transparent or dark square logo (50×50dp) in `launcher/app/src/main/assets/icons/<app>-small-icons.png`. The launcher automatically rounds corners by 14dp.
+1. **Unfocused Small Icon** (Optional):
+   Place a transparent or dark square logo (50×50dp) in `launcher/app/src/main/assets/icons/<app>-small-icons.png`. The launcher automatically applies 14dp rounded corners.
 2. **Focused Show Wallpaper**:
    Place a high-resolution 1920×1080 JPEG in:
    - `launcher/app/src/main/res/drawable-nodpi/wallpaper_<name>.jpg`
    - and `wallpapers/<name>.jpg`
-   *(⚠️ Filename must be strictly lowercase letters, numbers, and underscores only. No dashes, no spaces, e.g. `wallpaper_prime.jpg`).*
+   *(⚠️ Filename must be strictly lowercase letters, numbers, and underscores only. No dashes, no spaces, e.g. `wallpaper_netflix.jpg`).*
 
 3. **Map in `MainActivity.java`**:
-   Link the package to the drawable ID (notice: **NO `.jpg` extension**, uppercase `R`):
+   Link the package to the drawable ID:
    ```java
-   DOCK_WALLPAPERS.put("com.amazon.amazonvideo.livingroom", R.drawable.wallpaper_prime);
+   DOCK_WALLPAPERS.put("com.netflix.ninja", R.drawable.wallpaper_netflix);
    ```
-   *(Or rely on the launcher's automatic dynamic fallback for files matching `wallpaper_<name>.jpg`).* When you build the APK, these wallpapers are **baked directly inside the APK**.
+   *(Or rely on the launcher's automatic dynamic fallback for files matching `wallpaper_<name>.jpg`).*
 
-### 3. Add Screensaver Photos (Optional)
-Place your personal photos (HEIC, JPG, PNG) inside the `screensaver/` folder:
-- **Privacy & Size**: This folder is gitignored. Because personal photos are private and large (50-100MB+), they are **not** baked into the APK. Instead, they are synced directly to `/sdcard/Screensaver/` on your TV.
-- **Syncing**: `./install.sh` will automatically prompt you to sync and optimize your screensaver photos when installing, or you can run `./tools/sync-screensaver.sh` anytime.
-- **USB Alternative**: You can also copy photos to a USB drive and paste them into `/sdcard/Screensaver/` on your TV using any file manager.
-
-### 4. Build & Install
-Run the deploy script or execute via terminal:
-
+### 3. Build & Install
 ```bash
-# 1. Connect to your TV over ADB
+# 1. Connect to TV
 adb connect 192.168.1.xxx:5555
 
-# 2. Build and install the APK
+# 2. Build release APK
 cd launcher
-./gradlew assembleDebug
-adb install -r app/build/outputs/apk/debug/app-deblouting-ps5.apk
+JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home" ./gradlew assembleRelease
 
-# 3. Grant Usage Stats permission for screen time
-adb shell appops set com.gathin.tvhome GET_USAGE_STATS allow
-
-# 4. Start the launcher
-adb shell am start -n com.gathin.tvhome/.MainActivity
-```
-
-### 5. Verify on Screen
-Capture a screenshot to confirm layout and wallpaper alignment:
-
-```bash
-adb shell screencap -p /sdcard/home_screen.png
-adb pull /sdcard/home_screen.png .
+# 3. Install & Lock as default
+adb install -r app/build/outputs/apk/release/norma-tv-launcher.apk
+adb shell cmd package set-home-activity --user 0 com.norma.tvlauncher/.MainActivity
+adb shell settings put secure screensaver_components com.norma.tvlauncher/.ClockDream
+adb shell settings put secure screensaver_enabled 1
+adb shell appops set com.norma.tvlauncher GET_USAGE_STATS allow
+adb shell am start -n com.norma.tvlauncher/.MainActivity
 ```
 
 ---
 
-## 🔄 How to Rollback / Restore Your Stock Launcher
+## 🌟 Key Features in Norma Launcher
 
-Rolling back is completely safe and takes less than 30 seconds.
-
-### If you installed via .APK or `./install.sh`:
-- **Directly from your TV (No PC required)**:
-  1. Open your TV **Settings ⚙️** -> **Apps** -> **See all apps**.
-  2. Select **CleanYourTV** (or `com.gathin.tvhome`).
-  3. Click **Uninstall**.
-  4. Press the **HOME** button on your TV remote. Your TV will automatically return to its original stock launcher (Google TV / Android TV).
-- **Via 1-Click Script**:
-  Run `./uninstall.sh` in your terminal. It will re-enable any disabled stock launcher and uninstall CleanYourTV automatically.
-- **Via ADB Command**:
-  ```bash
-  adb uninstall com.gathin.tvhome
-  ```
-
-### If you installed using the AI Prompt Method:
-- **On the TV**:
-  Simply prompt your AI assistant:
-  > *"Please uninstall CleanYourTV from my TV, re-enable the stock launcher, and restore the TV home screen."*
-  The AI will run the rollback commands automatically over ADB.
-- **On the Local Codebase**:
-  To reset the code back to default and discard custom app configurations:
-  ```bash
-  git restore .
-  # or switch back to the original branch:
-  git checkout main
-  ```
+- **PS5 & Apple TV 4K Style Glass Dock**: Sleek translucent glass highlight that snaps instantly between apps with zero frame drops.
+- **Cinematic Show Art**: Full-bleed 1080p show backdrops with hardware-accelerated Ken Burns animation when focusing on streaming services.
+- **Dual Screensaver System**:
+  - **Countdown Solat (Default)**: OLED pitch-black screen with large circular timer, real-time countdown to next prayer, 5 daily prayer times schedule, location tag, and anti-burn-in drift.
+  - **Clocks / Slideshow**: Floating minimalist clock with animated ambient glow or personal photo slideshow from `/sdcard/Screensaver/`.
+  - Seamless toggle directly from the Settings popup menu with 100% Android TV daydream state synchronization.
+- **Live TV & Input Switcher**: Quick-access popup to switch directly to **Live TV**, **HDMI 1**, **HDMI 2**, and **AV**.
+- **Interactive In-App Dock Management**: Add apps, remove apps, reorder dock tiles, or change dock wallpapers directly using the built-in internal storage file browser.
+- **Default Launcher Safety**: Automatic boot-up receiver (`BootReceiver`), remote home button intercept (`HomeKeyService`), and first-install setup dialog modal.
+- **Console Audio Engine**: Native low-latency `SoundPool` playing authentic PlayStation 5 navigation clicks, enter, and back sounds (toggleable in Settings).
+- **Clean Bottom-Right Stats**: Displays Weekly Screen Time and Storage Usage for the focused app.
 
 ---
 
-## 📱 Handling "Outside" Apps & Missing Default Apps
+## 📜 License & Fork Terms
 
-### What if a default dock app is NOT installed on the TV?
-*(e.g. HBO Max is listed in the dock, but the TV doesn't have it installed)*
-- **100% Safe & Zero Crashes**: The launcher queries Android's `PackageManager` first. Any uninstalled app is simply skipped.
-- **Auto-Fill Option**: If `<bool name="fill_dock">true</bool>` is enabled in `config.xml`, any empty slot is automatically filled by other installed apps so there is never an awkward gap.
-- **Play Store Detection**: If the user installs the missing app later from Google Play Store, the launcher detects it and places it on the dock automatically.
+This project is licensed under the **MIT License**.
 
-### How to access apps outside the dock?
-*(e.g. Spotify, Kodi, VLC, Plex, or games not pinned to the dock)*
-- **Option A (Add to Dock)**: Edit `dock_apps` and `columns` in `config.xml`. The dock supports any number of apps.
-- **Option B (App Grid Below Dock)**: Set `<integer name="rows_below_dock">1</integer>` (or 2) in `config.xml`. Pressing **DOWN** on the remote scrolls into a grid of all your other apps.
-- **Option C (Top "App" Tab)**: Set `topTabs` visibility to `visible` in `activity_main.xml` to get an Apple TV-style top tab bar with a dedicated full-screen App Library.
-- **Option D (Top Settings Icon)**: Click the **Settings ⚙️** icon on the top bar -> **Apps** -> **See all apps** to launch any installed app.
+- **Base upstream project**: [CleanYourTV](https://github.com/Gathin23/cleanyourtv) by **Gathin**.
+- **Norma Launcher modifications & features**: Copyright (c) 2026 **Ilham Asyari**.
 
----
-
-## 🌟 Key Features in this Replicated Launcher
-
-- **Apple TV 4K Style Glass Dock**: Sleek translucent glass highlight that snaps instantly between apps without lag or frame drops.
-- **Cinematic Show Art**: Full-bleed 1080p show backdrops that cross-fade when focusing on each streaming service.
-- **Clean Bottom-Right Stats**: Displays Weekly Screen Time and Storage Usage for the focused application.
-- **Pure Single-Page Experience**: Home-first design with direct navigation between dock apps and top quick controls (Inputs / HDMI, Wi-Fi, Settings).
-- **Lightweight & Battery/CPU Friendly**: Zero heavy physics simulations or background battery drains on Android TV hardware.
+If you fork this repository or modify these changes:
+1. Maintain attribution to **Gathin** for the base CleanYourTV engine.
+2. Maintain attribution to **Ilham Asyari** for Norma Launcher, the PS5 theme adaptations, Islamic Prayer screensaver, custom dock wallpapers, file browser, default launcher integration, and sound effects.
+3. Keep the copyright notices in [LICENSE](LICENSE) intact.

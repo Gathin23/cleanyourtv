@@ -6,18 +6,18 @@
 CONNECTED_DEVICE=$(adb devices | grep -E "device$" | head -n 1 | awk '{print $1}')
 
 if [ -z "$CONNECTED_DEVICE" ]; then
-    TV_IP="${1:-192.168.1.28:5555}"
+    TV_IP="${1:-192.168.1.68:5555}"
     echo "Connecting to TV at $TV_IP..."
     adb connect "$TV_IP"
     CONNECTED_DEVICE=$(adb devices | grep -E "device$" | head -n 1 | awk '{print $1}')
 fi
 
-APK="launcher/app/build/outputs/apk/release/app-deblouting-ps5.apk"
+APK="launcher/app/build/outputs/apk/release/norma-tv-launcher.apk"
 if [ ! -f "$APK" ]; then
-    APK="launcher/app/build/outputs/apk/debug/app-deblouting-ps5.apk"
+    APK="launcher/app/build/outputs/apk/debug/norma-tv-launcher.apk"
 fi
 if [ ! -f "$APK" ]; then
-    APK="app-deblouting-ps5.apk"
+    APK="norma-tv-launcher.apk"
 fi
 
 if [ -n "$CONNECTED_DEVICE" ]; then

@@ -1,320 +1,176 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
+  <img src="launcher/app/src/main/res/drawable-nodpi/banner.png" alt="Norma Launcher Banner" width="800">
 </p>
 
-# CleanYourTV — Apple TV 4K / PS5 Edition
-*Customized by Ilham Asyari with cinematic Ken Burns wallpapers, ambient photo screensaver, interactive installer, and stats.*
-
----
-
-## 📺 Prerequisites: Enable Debugging on Your TV
-
-Before installing, make sure your computer and your TV are on the **same Wi-Fi network**:
-
-1. On your TV remote, open **Settings ⚙️** → **Device Preferences** (or **System**) → **About**.
-2. Scroll to **Android TV OS build** (or **Build**) and click the **OK** button **7 times** until it says *"You are now a developer!"*.
-3. Go back one screen → open **Developer options**.
-4. Turn **ON** both **USB debugging** and **Network debugging** (or **Wireless debugging**). Keep the TV screen turned ON.
-5. Find your TV's IP address: Go to **Settings ⚙️** → **Network & Internet** → click your connected Wi-Fi (e.g. `192.168.1.150`).
-
----
-
-## 🚀 3 Ways to Install & Customize (Step-by-Step)
-
-Choose whichever method fits your setup:
-
-```mermaid
-flowchart TD
-    Start["Clone Repository & cd cleanyourtv-ps5-theme"] --> Choose{"Choose Install Method"}
-    Choose -->|"Option 1"| M1["Method 1: ./install.sh\n(Interactive Terminal Wizard - Zero AI)"]
-    Choose -->|"Option 2"| M2["Method 2: Pre-built APK\n(1-Line ADB or USB Drive)"]
-    Choose -->|"Option 3"| M3["Method 3: AI Prompt\n(Claude Code / Cursor / ChatGPT)"]
-    M1 --> TV["TV Running CleanYourTV Launcher"]
-    M2 --> TV
-    M3 --> TV
-```
-
----
-
-### ⚡ Method 1: Interactive Terminal Wizard (`./install.sh`) — *Zero AI Required*
-*Recommended for most users. A guided wizard in your terminal that asks you questions and handles the rest.*
-
-#### Step 1: Clone the repository
-Open your Terminal (macOS/Linux) or Git Bash / Command Prompt (Windows):
-```bash
-git clone https://github.com/ilhamasy/cleanyourtv-ps5-theme.git
-```
-
-#### Step 2: Navigate to the project directory
-```bash
-cd cleanyourtv-ps5-theme
-```
-
-#### Step 3 (Optional): Add your custom wallpapers
-If you want custom show wallpapers for your dock apps:
-- Put your 1920×1080 `.jpg` files into `launcher/app/src/main/res/drawable-nodpi/` (named `wallpaper_netflix.jpg`, `wallpaper_youtube.jpg`, etc.).
-- When the APK compiles, these wallpapers are **baked directly inside the APK**.
-
-#### Step 4 (Optional): Add screensaver photos
-- Drop personal photos (Apple `.HEIC`, `.JPG`, `.PNG`) into the `screensaver/` folder.
-- *(Note: `screensaver/` is gitignored so your personal photos will never be tracked or uploaded to GitHub).*
-
-#### Step 5: Run the installer
-```bash
-./install.sh
-```
-The wizard will interactively guide you:
-1. Detects your Android TV or prompts: `Enter your TV IP address (e.g. 192.168.1.150): `
-2. **Interactive Dock Apps Setup**: Choose which apps you want on the dock from the curated list of 7 (e.g. type `1 3 4 5 7` to select 5 apps, or press Enter for all 7). The launcher automatically adjusts the columns and layout to match your selection!
-3. Asks whether to use the pre-compiled `app-deblouting-ps5.apk` or recompile from source.
-4. Automatically prompts: `Sync screensaver photos to TV (/sdcard/Screensaver/)? (Y/n)` if photos are detected in `screensaver/`. If you leave it empty or don't add photos, CleanYourTV seamlessly falls back to its default screensaver (drifting clock & ambient color-shifting glow).
-5. Grants usage stats permissions and starts CleanYourTV immediately on your screen!
-
-#### Step 6: Rollback (if ever needed)
-To return to your factory stock launcher at any time:
-```bash
-./uninstall.sh
-```
-
----
-
-### 📦 Method 2: Sideload / Pre-built APK (`app-deblouting-ps5.apk`) — *Zero Setup Required*
-*Fastest method if you already have ADB or want to install via USB flash drive without compiling anything.*
-
-#### Option A: Via ADB Command Prompt (1-Liner)
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/ilhamasy/cleanyourtv-ps5-theme.git
-   cd cleanyourtv-ps5-theme
-   ```
-2. **Connect to your TV**:
-   ```bash
-   adb connect <YOUR_TV_IP>:5555
-   ```
-   *(Accept the "Always allow from this computer" prompt on your TV screen if it appears).*
-3. **Install the APK**:
-   ```bash
-   adb install -r launcher/app/build/outputs/apk/debug/app-deblouting-ps5.apk
-   ```
-   *(or use the root shortcut `adb install -r app-deblouting-ps5.apk`)*
-4. **Grant permissions & start**:
-   ```bash
-   adb shell appops set com.gathin.tvhome GET_USAGE_STATS allow
-   adb shell am start -n com.gathin.tvhome/.MainActivity
-   ```
-5. **(Optional) Sync Screensaver**:
-   ```bash
-   ./tools/sync-screensaver.sh
-   ```
-
-#### Option B: Via USB Flash Drive (Zero PC Required)
-1. Download or copy `app-deblouting-ps5.apk` onto a USB flash drive.
-2. Plug the USB flash drive into your TV's USB port.
-3. On your TV, open any file manager (e.g., **X-plore File Manager**, **FX File Explorer**) or the **Downloader** app.
-4. Select `app-deblouting-ps5.apk` and click **Install**.
-5. Press the **HOME** button on your remote and choose CleanYourTV!
-
----
-
-### 🤖 Method 3: Single AI Prompt Customization — *For AI Coding Assistants*
-*Best if you want an AI assistant (Claude Code, Antigravity, Cursor, Codex, or ChatGPT) to automatically discover your installed TV apps and customize everything for you in one prompt.*
-
-#### Step 1: Clone the repository & enter directory
-```bash
-git clone https://github.com/ilhamasy/cleanyourtv-ps5-theme.git
-cd cleanyourtv-ps5-theme
-```
-
-#### Step 2: (Optional) Add your assets
-- Drop any custom 1080p backdrops into `wallpapers/`.
-- Drop any personal family photos into `screensaver/`.
-
-#### Step 3: Launch your AI assistant in this directory
-Open Claude Code, Antigravity, or Cursor terminal in the `cleanyourtv-ps5-theme` directory.
-
-#### Step 4: Copy and paste this single prompt:
-```markdown
-I want to replicate and customize the CleanYourTV Apple TV 4K / PS5 style launcher on my Android TV.
-
-Before making changes, please ask me:
-1. "Which apps would you like pinned to your bottom dock, in order? (e.g., YouTube, Netflix, Disney+, Prime Video, Vidio, Apple TV, HBO Max, Plex, Spotify, etc.)"
-2. "Do you have custom full-screen wallpapers for these apps (saved in wallpapers/), or would you like matching cinematic key art wallpapers mapped?"
-3. "Would you like pure single-page mode (dock + top action buttons only) or keep the top tabs (Home & App list)?"
-
-Once I provide my list of apps:
-1. Connect to the TV over ADB (port 5555) and verify installed packages (`pm list packages`).
-2. Update `launcher/app/src/main/res/values/config.xml`:
-   - Set `<string-array name="dock_apps">` with my chosen apps in order.
-   - Set `<integer name="columns">` to match the number of dock apps.
-3. Configure the visual assets:
-   - Map 1080p backdrops in `launcher/app/src/main/res/drawable-nodpi/wallpaper_<app>.jpg` with hardware-accelerated Ken Burns zoom & drift.
-   - Keep top and left gradient scrim shadows for contrast.
-4. If photos exist in `screensaver/`, run `tools/sync-screensaver.py` to optimize and sync them to `/sdcard/Screensaver/`.
-5. Build `app-deblouting-ps5.apk`, install over ADB, grant `GET_USAGE_STATS` permission, and launch `com.gathin.tvhome/.MainActivity`.
-6. Take a screenshot from the TV (`screencap -p`) and pull it to verify that everything looks pixel-perfect.
-```
-
-#### Step 5: Rollback (if ever needed)
-Simply prompt the AI:
-> *"Please uninstall CleanYourTV from my TV, re-enable my stock launcher, and reset local code changes."*
-
----
-
-## 🛠️ In-Depth Tutorials & Customization Guide
-
-### 1. 🖼️ How to Add & Change Custom Wallpapers
-Each dock app displays a full-bleed 1080p cinematic backdrop that cross-fades and slowly zooms/drifts (Ken Burns effect) when focused:
-
-#### Step 1: Prepare 1080p Backdrops
-- Choose 1920×1080 JPEG images for your streaming apps (e.g. key art from Netflix, YouTube, Prime Video, etc.).
-
-#### Step 2: Naming Rules on Disk (Android Resource Rules)
-Place the image in `launcher/app/src/main/res/drawable-nodpi/wallpaper_<name>.jpg`:
-- ⚠️ **Must be strictly lowercase**: Use only `a-z`, `0-9`, and underscore `_`.
-- ❌ **NO dashes (`-`)**: e.g., `wallpaper-prime.jpg` is **invalid** in Android.
-- ❌ **NO capital letters**: e.g., `PrimeVideo.jpg` is **invalid** in Android.
-- ✅ **Valid Examples**:
-  - `wallpaper_prime.jpg`
-  - `wallpaper_netflix.jpg`
-  - `wallpaper_spotify.jpg`
-
-*(Also keep a copy in `wallpapers/<name>.jpg` for quick reference).*
-
-> [!NOTE]
-> **What is the root `/wallpapers` folder for?**
-> - **`res/drawable-nodpi/`**: This is where the Android build system compiles images directly into the APK (`app-deblouting-ps5.apk`).
-> - **`/wallpapers/` (repo root)**: This is your developer asset gallery & staging archive. It keeps your high-resolution original artwork safe outside Gradle's build tree, allowing you to preview, organize, and back up backdrops without touching internal Android directory structures.
-
-#### Step 3: Java Mapping Syntax in `MainActivity.java`
-In [`launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java`](launcher/app/src/main/java/com/gathin/tvhome/MainActivity.java), find the `DOCK_WALLPAPERS` block around line 270:
-
-```java
-DOCK_WALLPAPERS.put("<package_name>", R.drawable.<filename_without_extension>);
-```
-
-##### ⚠️ Important Syntax Rules:
-1. **NO file extension**: Never write `.jpg` or `.png` in Java code! Android compiles files into integer IDs.
-   - ✅ Correct: `R.drawable.wallpaper_prime`
-   - ❌ Incorrect: `R.drawable.wallpaper_prime.jpg` *(Causes build error)*
-2. **Capital `R`**: Must be uppercase `R.drawable`, never lowercase `r.drawable`.
-3. **Exact Package Name**: Must match the TV app package name.
-
-##### 📋 Real Code Examples:
-```java
-// Prime Video:
-DOCK_WALLPAPERS.put("com.amazon.amazonvideo.livingroom", R.drawable.wallpaper_prime);
-
-// Netflix:
-DOCK_WALLPAPERS.put("com.netflix.ninja", R.drawable.wallpaper_netflix);
-
-// Spotify:
-DOCK_WALLPAPERS.put("com.spotify.tv.android", R.drawable.wallpaper_spotify);
-```
-
-> [!TIP]
-> **Automatic Dynamic Detection**: The launcher also has an automated dynamic fallback: If you name your file `wallpaper_<appname>.jpg` (e.g., `wallpaper_spotify.jpg` for `com.spotify.tv.android`), the launcher will automatically detect and link it even if you didn't manually edit `MainActivity.java`!
-
-#### Step 4: Compile into APK
-When you build with `./install.sh` or `./gradlew assembleDebug`, all wallpapers are **baked directly inside `app-deblouting-ps5.apk`**. No internet connection or external storage is required on the TV to display wallpapers!
-
----
-
-### 2. 🌙 Dual Screensaver: Countdown Solat & Clocks / Slideshow
-CleanYourTV includes a dual-mode OLED screensaver that can be toggled on-the-fly directly from the Settings menu:
-
-<p align="center">
-  <img src="docs/screensaver-solat.png" alt="Countdown Solat Screensaver" width="48%">
-  <img src="docs/screensaver-clock.png" alt="Clocks Screensaver" width="48%">
-</p>
-
-<p align="center">
-  <img src="docs/screensaver-settings-menu.png" alt="Settings Menu Screensaver Toggle" width="60%">
-</p>
-
-#### Available Screensaver Modes:
-1. **Countdown Solat (Islamic Prayer Reminder — Default)**:
-   - **OLED Pitch Black**: Pure `#000000` background to conserve energy and eliminate backlight bleed.
-   - **Circular Countdown Timer**: Large animated progress ring indicating elapsed time in the current prayer window and live countdown (`HH:mm:ss`) to the next prayer.
-   - **Schedule Bar**: Clean bottom pills showing daily prayer times (**Subuh**, **Dzuhur**, **Ashar**, **Maghrib**, **Isya**) with the upcoming prayer highlighted in glowing emerald.
-   - **Location & Time**: Live top-left clock/date and top-right city badge (Bekasi • Jawa Barat).
-   - **Anti-Burn-In Protection**: Automatically drifts the countdown container every 60 seconds by randomized pixel offsets to prevent OLED/microLED image retention.
-
-2. **Clocks / Photo Slideshow**:
-   - **With Personal Photos**: Smooth crossfade photo slideshow preserving aspect ratios with subtle blurred ambient backdrops.
-   - **Without Photos**: Minimalist floating typography clock with animated color-shifting radial ambient glow drifting smoothly across the display.
-
-#### How to Toggle Screensavers on TV:
-1. Press the **Settings / Menu** button on your remote (or click the gear icon in the top bar).
-2. Highlight **Screensaver: Countdown Solat** (or **Screensaver: Clocks**).
-3. Press **OK / Enter** on your remote to instantly switch modes in-place.
-
----
-
-### 3. 📸 How to Add Personal Photos (For Clocks / Slideshow Mode)
-
----
-
-### 4. 🔊 Authentic PS5 UI Sound Effects (Beeps & Clicks)
-The launcher includes an ultra-low-latency `SoundPool` engine playing official PlayStation 5 console UI sound effects:
-
-| Action | Audio File | Trigger |
-|---|---|---|
-| **D-Pad Navigation** | [`sounds/navigation.wav`](sounds/navigation.wav) | Pressing **UP**, **DOWN**, **LEFT**, **RIGHT** on TV remote |
-| **Enter / OK** | [`sounds/enter.wav`](sounds/enter.wav) | Pressing **OK / ENTER** to launch an app, click a tab, or open a menu |
-| **Back / Cancel** | [`sounds/back.wav`](sounds/back.wav) | Pressing **BACK / ESC** on remote, dismissing menus, or returning to Home |
-
-#### 📂 Where are sound files stored?
-- **Root archive**: [`sounds/`](sounds/) holds the master copies of `navigation.wav`, `enter.wav`, and `back.wav`.
-- **Compiled APK resources**: [`launcher/app/src/main/res/raw/`](launcher/app/src/main/res/raw/) (`navigation.wav`, `enter.wav`, `back.wav`) are compiled directly into `app-deblouting-ps5.apk` as 16-bit PCM WAV for 0ms latency audio playback on any TV.
-- **Audio engine**: Managed via [`SoundManager.java`](launcher/app/src/main/java/com/gathin/tvhome/SoundManager.java) with stream pooling, rapid-repeat throttling, and debounce protection.
-
----
-
-### 5. 📱 Handling "Outside" Apps & Missing Default Apps
-
-#### What if a default dock app is NOT installed on the TV?
-*(e.g. HBO Max is listed in the dock, but the TV doesn't have it installed)*
-- **100% Safe & Zero Crashes**: The launcher checks Android's `PackageManager` first. Any uninstalled app is simply skipped.
-- **Auto-Fill Option**: If `<bool name="fill_dock">true</bool>` is enabled in [config.xml](launcher/app/src/main/res/values/config.xml), any empty slot is automatically filled by other installed apps so there is never an awkward gap.
-- **Play Store Detection**: If the user installs the missing app later from Google Play Store, the launcher detects it and places it on the dock automatically.
-
-#### How to access apps outside the dock?
-*(e.g. Spotify, Kodi, VLC, Plex, or games not pinned to the dock)*
-- **Option A (Add to Dock)**: Edit `dock_apps` and `columns` in [config.xml](launcher/app/src/main/res/values/config.xml). The dock supports any number of apps.
-- **Option B (App Grid Below Dock)**: Set `<integer name="rows_below_dock">1</integer>` (or 2) in [config.xml](launcher/app/src/main/res/values/config.xml). Pressing **DOWN** on the remote scrolls into a grid of all your other apps.
-- **Option C (Top "App" Tab)**: Set `topTabs` visibility to `visible` in [activity_main.xml](launcher/app/src/main/res/layout/activity_main.xml) to get an Apple TV-style top tab bar with a dedicated full-screen App Library.
-- **Option D (Top Settings Icon)**: Click the **Settings ⚙️** icon on the top bar -> **Apps** -> **See all apps** to launch any installed app.
-
----
-
-### 6. 🔄 How to Rollback / Restore Stock Launcher
-Rolling back is completely safe and takes less than 15 seconds:
-
-- **From TV (Zero PC Required)**:
-  1. Go to TV **Settings ⚙️** → **Apps** → **See all apps**.
-  2. Click **CleanYourTV** (or `com.gathin.tvhome`) → **Uninstall**.
-  3. Press the **HOME** button on your remote. Your TV instantly reverts to its factory default stock launcher.
-- **Via 1-Click Script**: Run `./uninstall.sh` in terminal.
-- **Via ADB Command**: `adb uninstall com.gathin.tvhome`
+# Norma Launcher — Android TV / PS5 & Apple TV 4K Edition
+**Clean, ad-free, ultra-responsive TV launcher customized and maintained by [Ilham Asyari](https://github.com/ilhamasy).**  
+*Forked from [CleanYourTV](https://github.com/Gathin23/cleanyourtv) by Gathin with extensive custom features, Islamic prayer screensaver, PS5 UI sounds, dynamic dock wallpapers, in-app file browser, and system launcher locking.*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Android%20TV%20%7C%20Google%20TV-green.svg)](https://android.com/tv)
+[![Package](https://img.shields.io/badge/Package-com.norma.tvlauncher-orange.svg)](launcher/app/build.gradle)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-brightgreen.svg)](release-1.1.0)
 
 ---
 
 ## 📸 Live Screen Captures from TV
 
+Here are actual full 1080p screenshots captured directly from an Android TV running **Norma Launcher**:
+
 | | |
 |---|---|
-| ![hbomax](docs/capture_hbomax.png) | ![netflix](docs/capture_netflix.png) |
-| *HBO Max (The Last of Us)* | *Netflix (Stranger Things)* |
-| ![disney](docs/capture_disney.png) | ![prime](docs/capture_prime.png) |
-| *Disney+ (Avengers)* | *Prime Video (The Boys)* |
+| ![Home YouTube](sample%20capture/screenshot_01_home_youtube.png) | ![Netflix](sample%20capture/screenshot_02_dock_netflix.png) |
+| **Home Screen (YouTube Focused)**<br>Glass dock with weekly screen time and storage stats | **Netflix (Stranger Things 1080p Backdrop)**<br>Hardware-accelerated Ken Burns zoom & drift |
+| ![Prime Video](sample%20capture/screenshot_03_dock_prime_video.png) | ![Disney+](sample%20capture/screenshot_04_dock_disney.png) |
+| **Prime Video (The Boys Backdrop)**<br>Crisp cross-fading cinematic show art | **Disney+ (Avengers Backdrop)**<br>Full-bleed backdrop with top and left gradient scrims |
+| ![Countdown Solat](sample%20capture/screenshot_08_screensaver_solat.png) | ![Clocks Screensaver](sample%20capture/screenshot_09_screensaver_clock.png) |
+| **Countdown Solat Screensaver (Default)**<br>Circular progress timer, live countdown, and prayer schedule | **Clocks Screensaver (OLED Black)**<br>Floating minimal typography clock with ambient glow |
+| ![Settings Menu](sample%20capture/screenshot_11_settings_popup.png) | ![Default Launcher Setup](sample%20capture/screenshot_12_default_launcher_prompt.png) |
+| **Settings Popup Menu**<br>Toggle screensavers, sound effects, dock apps, and TV settings | **First-Time Default Launcher Setup**<br>Prompts user to lock Norma Launcher as default home app |
+| ![Add Apps Modal](sample%20capture/screenshot_07_add_apps_modal.png) | ![All Apps Modal](sample%20capture/screenshot_05_all_apps_modal.png) |
+| **Add Apps on Docks Modal**<br>Visual indicators for apps already pinned to the dock | **All Apps Library**<br>Full-screen grid with D-pad wrap-around navigation |
+| ![Edit Mode](sample%20capture/screenshot_10_edit_mode.png) | ![Quick Settings](sample%20capture/screenshot_06_quick_settings.png) |
+| **Dock Reorder / Edit Mode**<br>Move and rearrange apps directly with remote D-pad | **Quick Settings Panel**<br>System status, inputs, and device information |
 
-## Supported TVs
+---
 
-Anything running **Android TV** or **Google TV**. Samsung (Tizen) and LG (webOS) run different
-systems; see [SHOWCASE.md](SHOWCASE.md) for a webOS port, and
-[docs/devices/samsung-tizen.md](docs/devices/samsung-tizen.md) for what a 2021 Samsung set answers
-over Wi-Fi (no ADB, so no `pm disable-user`) if you are weighing a Tizen port. **Fire TV** takes the
-debloat half only, since Fire OS will not hand Home to a third-party launcher - and on the 2015 Fire
-TV Box (Fire OS 5) even that half fails: every `pm` route is refused, so nothing can be disabled
-there at all. A few China-market TCL
-sets refuse to install any launcher at all; their lists say so in the header.
+## 🌟 Key Features
+
+* 🚀 **0ms Input Lag Glass Dock**: High-performance bottom dock inspired by Apple TV 4K and PlayStation 5 with zero animation stutter on 1GB RAM Android TVs.
+* 🌙 **Dual Screensaver with 100% State Sync**:
+  * **Countdown Solat (Default)**: Pitch-black OLED background, animated circular timer ring, live countdown (`HH:mm:ss`) to next prayer, 5 daily prayer times bar (Subuh, Dzuhur, Ashar, Maghrib, Isya), city tag, and anti-burn-in drift every 60s.
+  * **Clocks / Photo Slideshow**: Minimal typography clock with drifting ambient glow, or family photo slideshow from `/sdcard/Screensaver/`.
+  * Instant switching via Settings popup, fully synced with Android TV's system daydream component (`com.norma.tvlauncher/.ClockDream`).
+* 📺 **Native Live TV & Input Switcher**: Quick-access popup to jump directly to **Live TV**, **HDMI 1**, **HDMI 2**, or **AV**.
+* 🔊 **Authentic PS5 Sound Effects**: Built-in native `SoundPool` engine playing official PlayStation 5 UI sounds (navigation clicks, enter, back) with toggle in Settings.
+* 🛡️ **Default Launcher Protection**:
+  * Auto-lock via `cmd package set-home-activity`.
+  * `BootReceiver` for auto-launch on TV restart/power-on.
+  * `HomeKeyService` accessibility service to catch remote Home button presses.
+  * Guided setup dialog prompt on first install.
+* 🖼️ **In-App Dock Customization**: Add apps, remove apps, reorder dock tiles, or change dock wallpapers using a built-in internal storage file browser.
+* 📊 **Clean App Stats**: Displays weekly screen time and storage usage for the currently focused app.
+
+---
+
+## 📺 Prerequisites: Enable Debugging on Your TV
+
+Make sure your computer and TV are connected to the **same Wi-Fi network**:
+
+1. On your TV remote, open **Settings ⚙️** → **Device Preferences** (or **System**) → **About**.
+2. Scroll to **Android TV OS build** (or **Build**) and press **OK 7 times** until you see *"You are now a developer!"*.
+3. Go back → open **Developer options**.
+4. Turn **ON** both **USB debugging** and **Network debugging** (or **Wireless debugging**).
+5. Note your TV's IP address: **Settings ⚙️** → **Network & Internet** → your Wi-Fi name (e.g. `192.168.1.68`).
+
+---
+
+## 🚀 3 Ways to Install
+
+### ⚡ Method 1: Interactive Terminal Wizard (`./install.sh`) — *Recommended*
+*No AI or manual configuration required. A guided CLI wizard that sets up everything automatically.*
+
+```bash
+# 1. Clone repository
+git clone https://github.com/ilhamasy/cleanyourtv-ps5-theme.git
+cd cleanyourtv-ps5-theme
+
+# 2. Run the installer
+./install.sh
+```
+
+The script will:
+1. Detect ADB and connect to your TV automatically.
+2. Let you choose which apps to pin to your dock with interactive multi-selection.
+3. Install `norma-tv-launcher.apk` (or recompile from source with Gradle).
+4. Lock Norma Launcher as your default home activity.
+5. Set Norma screensaver as default daydream component.
+6. Grant usage stats permissions and launch Norma Launcher immediately on your TV screen!
+
+---
+
+### 📦 Method 2: Sideload Pre-built APK (`norma-tv-launcher.apk`)
+
+#### Via 1-Line ADB:
+```bash
+adb connect <YOUR_TV_IP>:5555
+adb install -r norma-tv-launcher.apk
+adb shell cmd package set-home-activity --user 0 com.norma.tvlauncher/.MainActivity
+adb shell settings put secure screensaver_components com.norma.tvlauncher/.ClockDream
+adb shell settings put secure screensaver_enabled 1
+adb shell appops set com.norma.tvlauncher GET_USAGE_STATS allow
+adb shell am start -n com.norma.tvlauncher/.MainActivity
+```
+
+#### Via USB Flash Drive (Zero PC Required):
+1. Copy `norma-tv-launcher.apk` onto a USB flash drive.
+2. Plug the USB flash drive into your TV.
+3. Open any file manager on your TV (**X-plore**, **FX File Explorer**) or the **Downloader** app.
+4. Select `norma-tv-launcher.apk` and click **Install**.
+5. Press the **HOME** button on your remote and follow the on-screen prompt to set Norma Launcher as default!
+
+---
+
+### 🤖 Method 3: Single AI Prompt Customization
+If you use an AI coding assistant (Claude Code, Antigravity, Cursor, ChatGPT):
+
+```markdown
+I want to replicate and customize Norma Launcher (com.norma.tvlauncher) on my Android TV.
+
+Before making changes, please ask me:
+1. "Which apps would you like pinned to your bottom dock, in order? (e.g., YouTube, Netflix, Disney+, Prime Video, Vidio, Apple TV, HBO Max, Spotify, etc.)"
+2. "Do you have custom full-screen wallpapers for these apps (saved in wallpapers/), or would you like matching cinematic key art wallpapers mapped?"
+3. "Would you like pure single-page mode (dock + top action buttons only) or keep the top tabs?"
+
+Once I provide my list of apps:
+1. Connect to the TV over ADB (port 5555) and verify installed packages (pm list packages).
+2. Update launcher/app/src/main/res/values/config.xml with my chosen apps and column count.
+3. Configure 1080p show backdrops in launcher/app/src/main/res/drawable-nodpi/wallpaper_<app>.jpg.
+4. Build release APK (./gradlew assembleRelease), install over ADB, lock default launcher, configure screensaver, and launch com.norma.tvlauncher/.MainActivity.
+```
+
+---
+
+## 🛠️ Customization Guide
+
+### 🖼️ Adding Custom 1080p Wallpapers
+1. Drop 1920×1080 JPEG images into `launcher/app/src/main/res/drawable-nodpi/`:
+   * ⚠️ Use strictly lowercase letters and underscores: `wallpaper_netflix.jpg`, `wallpaper_youtube.jpg`.
+2. Link them in [`MainActivity.java`](launcher/app/src/main/java/com/norma/tvlauncher/MainActivity.java):
+   ```java
+   DOCK_WALLPAPERS.put("com.netflix.ninja", R.drawable.wallpaper_netflix);
+   ```
+   *(Or rely on automatic name matching: `wallpaper_<appname>.jpg` matches package names automatically).*
+
+### 🌙 Dual Screensaver Toggle
+* Press **Settings ⚙️** on the top bar.
+* Click **Screensaver: Countdown Solat** to switch to **Screensaver: Clocks** (and vice versa).
+* The setting is persisted across reboots and synchronized with the system screensaver daydream.
+
+### 🔊 PS5 UI Sound Effects
+* Toggle sounds ON or OFF directly from the **Settings ⚙️** popup.
+* Audio assets are stored in `sounds/` and compiled into `launcher/app/src/main/res/raw/`.
+
+---
+
+## 🔄 Rollback to Stock Launcher
+
+Rolling back is 100% safe and takes under 15 seconds:
+* **From TV**: Go to TV **Settings ⚙️** → **Apps** → **See all apps** → **Norma Launcher** → **Uninstall**. Press **HOME** on your remote to return to your stock launcher.
+* **Via Terminal**: Run `./uninstall.sh`.
+* **Via ADB**: `adb uninstall com.norma.tvlauncher`.
+
+---
+
+## 📜 License & Author Attribution
+
+This software is released under the **MIT License**.
+
+* **Base Upstream Engine**: [CleanYourTV](https://github.com/Gathin23/cleanyourtv) — Copyright (c) 2026 **Gathin**.
+* **Norma Launcher / PS5 Theme & Enhancements**: Copyright (c) 2026 **[Ilham Asyari](https://github.com/ilhamasy)**.
+
+### Notice for Forks and Modifications:
+If you fork this repository or modify these changes:
+1. **Maintain Author Attribution**: Keep the attribution to **Ilham Asyari** for Norma Launcher and the custom enhancements (PS5 theme, Islamic Prayer screensaver, custom dock wallpapers, file browser, default launcher system integration, and sound effects).
+2. **Upstream Attribution**: Maintain copyright attribution to **Gathin** for the original CleanYourTV project.
+3. Include the full copyright notices from [LICENSE](LICENSE) in all copies or substantial portions of the software.

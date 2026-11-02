@@ -21,7 +21,7 @@ NC='\033[0m' # No Color
 
 echo -e "${CYAN}${BOLD}"
 echo "=========================================================="
-echo "   📺 CleanYourTV - PS5 Launcher custom by Ilham Asyari"
+echo "   📺 Norma Launcher - Android TV Edition by Ilham Asyari"
 echo "=========================================================="
 echo -e "${NC}"
 
@@ -165,8 +165,12 @@ EOF
 echo ""
 
 # 4. Choose APK: Pre-built or Build from source
-PREBUILT_APK="$SCRIPT_DIR/launcher/app/build/outputs/apk/debug/app-deblouting-ps5.apk"
-if [ ! -f "$PREBUILT_APK" ] && [ -f "$SCRIPT_DIR/launcher/app/build/outputs/apk/release/app-deblouting-ps5.apk" ]; then
+PREBUILT_APK="$SCRIPT_DIR/launcher/app/build/outputs/apk/release/norma-tv-launcher.apk"
+if [ ! -f "$PREBUILT_APK" ] && [ -f "$SCRIPT_DIR/norma-tv-launcher.apk" ]; then
+    PREBUILT_APK="$SCRIPT_DIR/norma-tv-launcher.apk"
+elif [ ! -f "$PREBUILT_APK" ] && [ -f "$SCRIPT_DIR/launcher/app/build/outputs/apk/debug/norma-tv-launcher.apk" ]; then
+    PREBUILT_APK="$SCRIPT_DIR/launcher/app/build/outputs/apk/debug/norma-tv-launcher.apk"
+elif [ ! -f "$PREBUILT_APK" ] && [ -f "$SCRIPT_DIR/launcher/app/build/outputs/apk/release/app-deblouting-ps5.apk" ]; then
     PREBUILT_APK="$SCRIPT_DIR/launcher/app/build/outputs/apk/release/app-deblouting-ps5.apk"
 fi
 
@@ -181,18 +185,18 @@ if [ -f "$PREBUILT_APK" ]; then
     if [ "$BUILD_CHOICE" == "2" ]; then
         echo -e "\n${BLUE}Building APK with Gradle...${NC}"
         cd "$SCRIPT_DIR/launcher"
-        ./gradlew assembleDebug
+        JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home}" ./gradlew assembleRelease
         cd "$SCRIPT_DIR"
-        APK_PATH="$PREBUILT_APK"
+        APK_PATH="$SCRIPT_DIR/launcher/app/build/outputs/apk/release/norma-tv-launcher.apk"
     else
         APK_PATH="$PREBUILT_APK"
     fi
 else
     echo -e "${BLUE}No pre-built APK found. Building from source with Gradle...${NC}"
     cd "$SCRIPT_DIR/launcher"
-    ./gradlew assembleDebug
+    JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home}" ./gradlew assembleRelease
     cd "$SCRIPT_DIR"
-    APK_PATH="$PREBUILT_APK"
+    APK_PATH="$SCRIPT_DIR/launcher/app/build/outputs/apk/release/norma-tv-launcher.apk"
 fi
 
 # 5. Install onto TV
@@ -201,22 +205,36 @@ if [ ! -f "$APK_PATH" ]; then
     exit 1
 fi
 
-echo -e "\n${BLUE}Installing CleanYourTV onto $TARGET_DEVICE...${NC}"
+echo -e "\n${BLUE}Installing Norma Launcher onto $TARGET_DEVICE...${NC}"
 adb -s "$TARGET_DEVICE" install -r "$APK_PATH"
 
 # Apply dock configuration to TV
 CONFIG_JSON_PATH="$SCRIPT_DIR/launcher/app/build/cyt_dock_config.json"
 if [ -f "$CONFIG_JSON_PATH" ]; then
     adb -s "$TARGET_DEVICE" push "$CONFIG_JSON_PATH" /data/local/tmp/config.json >/dev/null 2>&1 || true
-    adb -s "$TARGET_DEVICE" shell "mkdir -p /sdcard/Android/data/com.gathin.tvhome/files 2>/dev/null; cp /data/local/tmp/config.json /sdcard/Android/data/com.gathin.tvhome/files/config.json 2>/dev/null || content write --uri content://com.gathin.tvhome.theme/config.json < /data/local/tmp/config.json; rm -f /data/local/tmp/config.json" >/dev/null 2>&1 || true
+    adb -s "$TARGET_DEVICE" shell "mkdir -p /sdcard/Android/data/com.norma.tvlauncher/files 2>/dev/null; cp /data/local/tmp/config.json /sdcard/Android/data/com.norma.tvlauncher/files/config.json 2>/dev/null || content write --uri content://com.norma.tvlauncher.theme/config.json < /data/local/tmp/config.json; rm -f /data/local/tmp/config.json" >/dev/null 2>&1 || true
 fi
 
-# 5. Grant Permissions & Launch
-echo -e "${BLUE}Granting Usage Stats permission for screen time...${NC}"
-adb -s "$TARGET_DEVICE" shell appops set com.gathin.tvhome GET_USAGE_STATS allow || true
+# 5. Grant Permissions, System Lock & Launch
+echo -e "${BLUE}Configuring Norma Launcher permissions and defaults...${NC}"
+adb -s "$TARGET_DEVICE" shell appops set com.norma.tvlauncher GET_USAGE_STATS allow || true
 adb -s "$TARGET_DEVICE" shell settings put system sound_effects_enabled 0 2>/dev/null || true
 
-# 6. Screensaver Setup
+# Lock as default home launcher
+echo -e "${BLUE}Locking Norma Launcher as default home launcher...${NC}"
+adb -s "$TARGET_DEVICE" shell cmd package set-home-activity --user 0 com.norma.tvlauncher/.MainActivity 2>/dev/null || true
+
+# Configure default screensaver
+echo -e "${BLUE}Configuring Norma screensaver...${NC}"
+adb -s "$TARGET_DEVICE" shell settings put secure screensaver_components com.norma.tvlauncher/.ClockDream 2>/dev/null || true
+adb -s "$TARGET_DEVICE" shell settings put secure screensaver_enabled 1 2>/dev/null || true
+
+# Enable accessibility service for remote Home Key intercept
+echo -e "${BLUE}Configuring remote Home key handler...${NC}"
+adb -s "$TARGET_DEVICE" shell settings put secure enabled_accessibility_services com.norma.tvlauncher/.HomeKeyService 2>/dev/null || true
+adb -s "$TARGET_DEVICE" shell settings put secure accessibility_enabled 1 2>/dev/null || true
+
+# 6. Screensaver Photos Setup (Optional)
 HAS_PHOTOS=$(find "$SCRIPT_DIR/screensaver" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.heic" -o -iname "*.webp" \) 2>/dev/null | head -n 1 || true)
 
 if [ -n "$HAS_PHOTOS" ]; then
@@ -230,15 +248,14 @@ if [ -n "$HAS_PHOTOS" ]; then
         TV_HOST="$TV_H" TV_PORT="${TV_P:-5555}" python3 "$SCRIPT_DIR/tools/sync-screensaver.py" || true
     fi
 else
-    echo -e "\n${BLUE}ℹ No personal photos found in screensaver/ folder.${NC}"
-    echo -e "CleanYourTV will use its default screensaver (drifting clock over ambient glow)."
+    echo -e "\n${BLUE}ℹ Using default screensaver: Islamic Prayer Countdown (toggleable to Clocks in Settings).${NC}"
 fi
 
-echo -e "\n${BLUE}Starting CleanYourTV Launcher on your TV...${NC}"
-adb -s "$TARGET_DEVICE" shell am start -n com.gathin.tvhome/.MainActivity
+echo -e "\n${BLUE}Starting Norma Launcher on your TV...${NC}"
+adb -s "$TARGET_DEVICE" shell am force-stop com.norma.tvlauncher 2>/dev/null || true
+adb -s "$TARGET_DEVICE" shell am start -n com.norma.tvlauncher/.MainActivity
 
 echo -e "\n${GREEN}${BOLD}=========================================================="
 echo "   🎉 Installation Complete!"
-echo "   CleanYourTV is now running on your television."
+echo "   Norma Launcher is now running as your default TV launcher."
 echo "==========================================================${NC}"
-echo -e "Press HOME on your TV remote to select CleanYourTV as your default launcher."

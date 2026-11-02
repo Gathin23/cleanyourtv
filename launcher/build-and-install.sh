@@ -90,9 +90,10 @@ echo "Stock launcher: $STOCK_LAUNCHER"
 HOME_QUERY='cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 if [ "$STOCK_LAUNCHER" = none ]; then DISABLE_STOCK="echo stock launcher left alone"
 else DISABLE_STOCK="pm disable-user --user 0 $STOCK_LAUNCHER"; fi
-APK=app/build/outputs/apk/release/app-deblouting-ps5.apk
+APK=app/build/outputs/apk/release/norma-tv-launcher.apk
 if [ ! -f "$APK" ]; then APK=app/build/outputs/apk/release/app-release.apk; fi
-if [ ! -f "$APK" ]; then APK=app/build/outputs/apk/debug/app-deblouting-ps5.apk; fi
+if [ ! -f "$APK" ]; then APK=app/build/outputs/apk/debug/norma-tv-launcher.apk; fi
+if [ ! -f "$APK" ]; then APK=../norma-tv-launcher.apk; fi
 "$PY" -I ../tools/b64push.py "$APK" /data/local/tmp/tvhome.apk
 # Install on its own: in the batch below a failed install (e.g. "not enough space" on a full /data)
 # would not stop the stock launcher from being disabled.

@@ -60,7 +60,7 @@ if (-not $StockLauncher) {
 Write-Host "Stock launcher: $StockLauncher"
 $disableStock = if ($StockLauncher -eq 'none') { 'echo stock launcher left alone' } else { "pm disable-user --user 0 $StockLauncher" }
 
-$apk = if (Test-Path 'app\build\outputs\apk\release\app-deblouting-ps5.apk') { 'app\build\outputs\apk\release\app-deblouting-ps5.apk' } elseif (Test-Path 'app\build\outputs\apk\debug\app-deblouting-ps5.apk') { 'app\build\outputs\apk\debug\app-deblouting-ps5.apk' } else { 'app\build\outputs\apk\release\app-release.apk' }
+$apk = if (Test-Path 'app\build\outputs\apk\release\norma-tv-launcher.apk') { 'app\build\outputs\apk\release\norma-tv-launcher.apk' } elseif (Test-Path 'app\build\outputs\apk\debug\norma-tv-launcher.apk') { 'app\build\outputs\apk\debug\norma-tv-launcher.apk' } elseif (Test-Path '..\norma-tv-launcher.apk') { '..\norma-tv-launcher.apk' } else { 'app\build\outputs\apk\release\app-release.apk' }
 & $py -I ..\tools\b64push.py $apk /data/local/tmp/tvhome.apk
 if ($LASTEXITCODE -ne 0) { throw 'APK upload failed' }
 $out = & $py -I ..\tools\tv.py 'pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk'
