@@ -9,6 +9,11 @@ a sentence on stderr naming the path or the URL and saying that nothing was writ
 code the other tools use for a run that could not do its job, next to 1 for a real answer (this season
 has no race left to show) and 0 for a calendar in the theme.
 
+The two failures urllib does not wrap are here too: a connection closed before its status line
+(`http.client.RemoteDisconnected`) and a body that stops early (`IncompleteRead`, out of `json.load()`)
+are raised by `http.client` itself, so they went past every handler the script had and ended the run in
+a traceback with exit 1, which is this script's "no race left this season".
+
 The exit codes and the folder rule are in the script's docstring as well, so the page a reader opens
 first is not the only place they are written down.
 
@@ -17,6 +22,7 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 import argparse
 import contextlib
 import datetime
+import http.client
 import io
 import json
 import os
@@ -53,6 +59,24 @@ def clock():
     """`datetime` as the script uses it: now() at a fixed moment, plus the two names it needs."""
     return SimpleNamespace(datetime=FixedDatetime, timedelta=datetime.timedelta,
                            timezone=datetime.timezone)
+
+
+class CutShort:
+    """A response whose status line arrived and whose body stops early.
+
+    `json.load(response)` calls `read()`, and http.client answers a body shorter than its own
+    Content-Length with IncompleteRead - not a ValueError, so the "answered something that is not JSON"
+    refusal never saw it either.
+    """
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        return False
+
+    def read(self, *args):
+        raise http.client.IncompleteRead(b'{"MRData": ', 3989)
 
 
 class SeasonArgumentTest(unittest.TestCase):
@@ -358,6 +382,42 @@ class RefusalTest(unittest.TestCase):
         self.stub(raises=TimeoutError("timed out"))
         status, stderr = self.run_main(str(self.theme), "--season", "2026")
         self.assert_refused(status, stderr, "could not reach Jolpica at", "timed out")
+
+    def test_a_connection_closed_without_an_answer_is_named(self):
+        # A captive portal, a proxy that filters the host and a link that drops all accept the
+        # connection and close it without a byte. urllib wraps a refused connect in URLError, but
+        # http.client raises this one itself out of getresponse(), so it passed every handler and ended
+        # the run in a traceback whose exit status, 1, is this script's "no race left this season".
+        self.stub(raises=http.client.RemoteDisconnected("Remote end closed connection without response"))
+        status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        self.assert_refused(status, stderr, "closed the connection before the answer was complete",
+                            "api.jolpi.ca/ergast/f1/2026.json", "Remote end closed connection")
+        self.assertFalse(self.config.exists(), "a failed fetch wrote a config.json")
+
+    def test_an_answer_cut_short_is_named(self):
+        # The status line arrived and the body stopped halfway: IncompleteRead comes out of json.load(),
+        # not a ValueError, so the "answered something that is not JSON" refusal never saw it either.
+        with mock.patch.object(race_calendar.urllib.request, "urlopen", return_value=CutShort()) as urlopen:
+            status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        self.assert_refused(status, stderr, "closed the connection before the answer was complete",
+                            "api.jolpi.ca/ergast/f1/2026.json", "IncompleteRead")
+        urlopen.assert_called_once()
+        self.assertFalse(self.config.exists(), "a failed fetch wrote a config.json")
+
+    def test_the_two_unwrapped_fetch_failures_leave_an_existing_theme_byte_identical(self):
+        original = json.dumps({"greeting_name": "Olohuone", "columns": 5}, ensure_ascii=False) + "\n"
+        for payload in (
+            mock.patch.object(race_calendar.urllib.request, "urlopen",
+                              side_effect=http.client.RemoteDisconnected("Remote end closed the connection")),
+            mock.patch.object(race_calendar.urllib.request, "urlopen", return_value=CutShort()),
+        ):
+            with self.subTest(payload=payload):
+                self.config.write_text(original, encoding="utf-8")
+                with payload as urlopen:
+                    status, stderr = self.run_main(str(self.theme), "--season", "2026")
+                self.assert_refused(status, stderr, "closed the connection before the answer was complete")
+                urlopen.assert_called_once()
+                self.assertEqual(self.config.read_text(encoding="utf-8"), original)
 
     def test_an_http_error_names_the_status_the_api_gave(self):
         self.stub(raises=urllib.error.HTTPError(race_calendar.API.format(season="2026"), 503,
