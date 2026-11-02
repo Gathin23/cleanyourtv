@@ -75,7 +75,8 @@
 # Net effect for this generation: debloat only. A replacement launcher is impossible without a
 # TCL-signed build, root, or a firmware downgrade.
 #
-# Tested on a real unit: 28 packages disabled, one full `reboot` afterwards, Home, source panel,
+# Tested on a real unit: 28 packages disabled - the 27 below plus com.tcl.t_solo, which became
+# opt-in after that test - one full `reboot` afterwards, Home, source panel,
 # Settings, app store, 电视卫士, Media Center and Multi-screen all still worked, crash buffer empty,
 # free RAM went from 1.97 GB to 1.15 GB (of 3.7 GB). Wait at least 10 seconds after applying before
 # rebooting.
@@ -87,7 +88,7 @@
 # com.tcl.ui_mediaCenter (USB playback), com.sohu.inputmethod.sogou.tv (only keyboard),
 # com.tcl.autopair (remote pairing), com.tcl.miracast, com.tcl.MultiScreenInteraction_TV,
 # com.tcl.systemui.plugin.* (source panel and quick settings), com.tcl.usercenter,
-# com.tcl.walleve (voice, left on by owner choice).
+# com.tcl.walleve (voice, left on by owner choice), com.tcl.t_solo (Bluetooth music, opt-in below).
 
 # Ad and telemetry reporting
 com.tcl.bootadservice                    # full-screen ad before Home
