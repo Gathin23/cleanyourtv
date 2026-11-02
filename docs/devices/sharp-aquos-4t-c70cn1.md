@@ -181,7 +181,7 @@ and `logcat -s TvHomeCards` prints one line per rejection. The contract is
 - **Any debloat list, and the disabled packages.** The disabled set was not read on 2026-11-01, so it
   is not reproduced here; publishing a set that was never re-checked across reboots is what this
   repository's workflow exists to prevent.
-- **Whether ADB survives a cold boot** (see above), voice/Assistant, casting, HDMI-CEC, the 4K tuner,
+- **Whether ADB survives a cold boot**, voice/Assistant, casting, HDMI-CEC, the 4K tuner,
   recording and HDR. Casting is already absent on this unit at the source, so nothing here should be
   read as a statement about Cast on this model.
 
