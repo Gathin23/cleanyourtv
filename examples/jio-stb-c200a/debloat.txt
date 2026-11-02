@@ -9,10 +9,10 @@
 # launcher/build-and-install.sh disables it once the new launcher has taken Home, and restore.sh brings it
 # back, so the handover stays in one place.
 # Live TV app: com.jio.stb.catv, the streaming engine behind the tuner input, with
-# com.jio.media.stb.ondemand.patchwall (JioTV+); both are kept.
+# com.jio.media.jiotvplus (JioTV+); both are kept.
 #
 # Kept on purpose (load-bearing, checked with dumpsys package):
-#   com.jio.media.stb.ondemand.patchwall   JioTV+ app and live guide
+#   com.jio.media.jiotvplus                JioTV+ app and live guide
 #   com.jio.stb.catv                       live/streaming engine behind the tuner input
 #   com.media.jio.sso.stb                  Jio single sign-on; keeps JioTV+ and JioCinema logins valid
 #   com.jio.dialserver                     DIAL, so a phone can cast to the box
@@ -26,16 +26,18 @@
 #
 # The firmware updater (com.jio.httpupdate), the USB updater and the TR-069 remote-management client
 # (com.jio.tr069client) are the only ways Jio can push firmware or turn the packages below back on. They
-# stay commented out by default; this box's own guide uncomments them to freeze automatic updates.
+# stay commented out by default, so updates keep working; uncomment them to turn firmware updates off.
 #
-# Applied on a real unit on 2026-11-01, on build JioSTB-JMSC200A-23.1.11, as `pm uninstall --user 0`; the
-# lines below are the same set written as disable.sh's reversible `pm disable-user`, and the states were read
-# back with `dumpsys package`. Live TV, casting and the remote kept working. Not yet lived with for days.
+# Status: applied with tools/disable.sh on 2026-11-02 and the box rebooted; all 14 read back `enabled=3`
+# (`disabled-user`) with `dumpsys package` after the reboot. JioTV+ (com.jio.media.jiotvplus) opens with
+# content, the tuner's EPG sync (com.jio.stb.tifextn) still runs, and the Bluetooth remote and voice assist
+# are present. Casting from a phone not yet tried; not yet lived with for days.
 #
 # Known quirks on this firmware:
 # - com.jio.appoptimizer is a PERSISTENT privileged system app (/system/priv-app/JioAppOptimizer).
-#   `pm disable-user` marks it disabled, but its running process is exempt from `am force-stop` and keeps
-#   killing background apps until the box restarts; reboot once after the list for it to take effect.
+#   `pm disable-user` records it as disabled, but the process is exempt from `am force-stop` and starts again
+#   with the system: on this build it is running again after a reboot, so the line disables the package
+#   state rather than the running process.
 # - Port 5555 opens as soon as USB/Network debugging is on, no pairing. The box also advertises _adb._tcp
 #   over mDNS, the quickest way to find it when DHCP moves it.
 # - Jio enables ADB through its TR-069 server, not Developer options alone, and a factory reset closes it
