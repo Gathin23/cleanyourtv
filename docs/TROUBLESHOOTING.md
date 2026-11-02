@@ -1704,6 +1704,15 @@ Keep the package. Every settings page that reads a hardware value then stalls ab
 page that parses the answer crashes. The China-market lists here already say not to touch it; this is
 why.
 
+The price is not the same on every set, and it is not a China-firmware problem only. On a MiTV-MOOQ1
+(`tarzan`, Android TV 10, `QTG3.200305.006.5283`, the model in `examples/xiaomi-mi-tv-4a`, whose own
+list keeps the package) with `mitv.service` disabled, the brightness and contrast menu took about 30 s
+to open, and about 40 s after a power cycle at the wall; re-enabling the package and power-cycling
+again brought the menu back to normal, and the owner repeated both directions
+([issue #3085](https://github.com/Gathin23/cleanyourtv/issues/3085), from a set that had applied the
+second set of `examples/xiaomi-mitv-aesp0`). So on that firmware the picture menu alone costs 30-40 s
+to open, against the ~5 s this section measured on a CN set.
+
 **Re-enabling the package on its own does not bring Settings back.** The service is registered at boot
 and the disabled package's PERSISTENT process starts anyway, so nothing looks different after
 `pm enable` and it is easy to conclude the debloat was innocent - the reporter lost a day to exactly
