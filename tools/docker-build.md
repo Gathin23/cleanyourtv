@@ -65,5 +65,10 @@ with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`.
 - sign Docker builds with your native key: `HOST_KEY_DIR=~/.android tools/docker-build.sh`, or
 - uninstall the app on the TV once and install the new build (its settings on the TV are lost).
 
+That folder has to be one Docker can mount, so both twins refuse it before anything is built when it is not
+there or not written in full: Docker makes a missing folder itself (empty, and owned by root on Linux) and reads
+a relative path as the name of a volume, so either mistake would sign the build with a new key - the failure
+above, reached without a word. Write the path in full, `~/.android` inside quotes is not expanded.
+
 To see which key an installed app carries, compare
 `apksigner verify --print-certs` on the APK with `keytool -list -v -keystore <dir>/debug.keystore -storepass android`.
