@@ -60,6 +60,19 @@ and preview channels. They live in the TV provider, behind `TvContract.WatchNext
   once it named the 13 columns it reads. It then saw one Watch Next row, from RTP Play (`pt.rtp.play`). Plex
   (`com.plexapp.android`) had none visible, not even after a title was played part-way and stopped, so on this set
   a sideloaded launcher's Continue watching row cannot show Plex. Preview programs were not read.
+- **Seen on a Skyworth SWTV-24AE-FHD** sold as Telefunken (`beomil`, Google TV 14, `UKN4.250714.138`), with the
+  stock launcher (`launcherx`) and setupwraith disabled, a test build holding `READ_TV_LISTINGS` and querying
+  without a selection saw 17 channels and 3 apps' Watch Next rows. Netflix was visible here too: 2 Watch Next
+  rows, both `watch_next_type` 0 (continue), with `https://` posters and `https://www.netflix.com/...` deep links that
+  opened the title in Netflix. VLC had 1 and the preinstalled TCL browser 30 (type 2, promotions). Preview programs:
+  TCL browser 30, ARTE 25 (3 channels), Prime Video 21, Spotify 20, YouTube 17 (channels "Recommandations
+  personnalisées", "Tendances", "YouTube Music"), VLC 1; Plex had 6 channels and no programs, and France.tv's
+  channel held 18 programs one evening and none the next. Every channel read `browsable` 0: with the stock
+  launcher off nothing marks a channel for Home, so a reader that only takes browsable channels shows nothing,
+  and one that takes an app's first channel can land on an empty one (ARTE's live channel). The owner judged
+  YouTube's "personalised" row and Spotify's single row (podcast episodes, unchanged over a day) to be generic
+  rather than their accounts' picks; the TV has two YouTube and two Spotify accounts. Posters were `https://`
+  apart from two `content://` and two `android.resource://`.
 
 Source: `createSqlParams()` in `packages/providers/TvProvider/src/com/android/providers/tv/TvProvider.java`
 (AOSP) holds the `READ_TV_LISTINGS` and `searchable` logic; both permissions are defined in that
