@@ -15,7 +15,7 @@
 #   com.jio.media.jiotvplus                JioTV+ app and live guide
 #   com.jio.stb.catv                       live/streaming engine behind the tuner input
 #   com.media.jio.sso.stb                  Jio single sign-on; keeps JioTV+ and JioCinema logins valid
-#   com.jio.dialserver                     DIAL, so a phone can cast to the box
+#   com.jio.dialserver                     DIAL server; kept, but this box has no casting from a phone
 #   com.jio.remote.btserver                Bluetooth remote driver
 #   com.jio.universalsetup                 IR setup; the remote's volume and power keys drive the TV
 #   com.rjil.jio.stb.commandreceiver       remote input events
@@ -24,14 +24,18 @@
 #   com.jio.stbwidget                      launcher icon popups
 #   com.jio.sdk, com.jio.overlay.common, com.jio.stb.*.overlay   shared vendor framework
 #
+# JioTV+ ships as com.jio.media.jiotvplus on this build; some other Jio STBs have
+# com.jio.media.stb.ondemand.patchwall instead. Check which one your box has.
+#
 # The firmware updater (com.jio.httpupdate), the USB updater and the TR-069 remote-management client
 # (com.jio.tr069client) are the only ways Jio can push firmware or turn the packages below back on. They
 # stay commented out by default, so updates keep working; uncomment them to turn firmware updates off.
 #
 # Status: applied with tools/disable.sh on 2026-11-02 and the box rebooted; all 14 read back `enabled=3`
 # (`disabled-user`) with `dumpsys package` after the reboot. JioTV+ (com.jio.media.jiotvplus) opens with
-# content, the tuner's EPG sync (com.jio.stb.tifextn) still runs, and the Bluetooth remote and voice assist
-# are present. Casting from a phone not yet tried; not yet lived with for days.
+# content, the tuner's EPG sync (com.jio.stb.tifextn) still runs, and the Bluetooth remote works. This box
+# has no casting from a phone (no Play services), so there is nothing to test there. Not lived with for
+# days yet.
 #
 # Known quirks on this firmware:
 # - com.jio.appoptimizer is a PERSISTENT privileged system app (/system/priv-app/JioAppOptimizer).
