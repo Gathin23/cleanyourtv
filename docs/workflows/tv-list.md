@@ -9,6 +9,9 @@
    - The first line is a comment with the exact model, Android version and firmware build
      (`tools/tv.py --probe` prints them).
    - Then the Apply and Undo lines, the stock launcher and Live TV package if they differ, and what was kept and why.
+     `tests/test_list_gives_commands.py` refuses a header that names none of the five scripts and no
+     README: a folder whose firmware needs a batch of its own gives the commands in its `README.md`
+     instead, which counts.
    - One package per line, grouped under a comment that names the group, with a trailing comment on anything
      non-obvious. No duplicates, nothing but package names outside comments.
 3. List only packages you actually disabled and lived with for a few days. Note anything you re-enabled.
