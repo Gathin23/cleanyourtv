@@ -44,9 +44,12 @@ Three packages on the set hold `INSTALL_PACKAGES`: `tv.fun.tvupgrade`, `tv.fun.a
 `com.tpv.xmic.ota`. `tv.fun.tvupgrade` is the `installerPackageName` of `com.bestv.ott` itself, so
 while it lives it can put the BestV launcher back and wipe the whole debloat list.
 
-The list disables all three. **The price is system OTA**: firmware updates have to be sideloaded by
-hand from then on. If you want OTA, drop `tv.fun.tvupgrade` from the list, but know that the set may
-then restore its own launcher over the CleanYourTV home.
+The shared list disables one of the three, `tv.fun.appstore`, and leaves both firmware upgraders
+commented out, because a list here keeps firmware updates on: as it ships, `tv.fun.tvupgrade` is
+still enabled, and while it lives the set can restore its own launcher over the CleanYourTV home.
+The tested set had both of them off — uncomment `tv.fun.tvupgrade` and `com.tpv.xmic.ota` in the
+list to do the same. **The price is system OTA**: firmware updates then have to be sideloaded by
+hand from then on, which is also what closes the automatic re-install of the BestV launcher.
 
 ## The screensaver had to be pointed somewhere
 
