@@ -40,6 +40,9 @@ com.mitv.tvhome.atv
 com.mitv.tvhome.mitvplus
 com.mitv.tvhome.michannel
 com.mitv.tvhome.oemtab
+# partnercustomizer answers the remote's shortcut buttons (Netflix, Prime Video, Input) and, on many Xiaomi
+# sets, Bluetooth remote pairing: a MiTV-MSSP3 owner got those buttons back by enabling it again (Discussion
+# #1411). Comment the next line out if you use them.
 com.xiaomi.android.tvsetup.partnercustomizer
 com.mitv.toolhouse
 
