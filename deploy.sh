@@ -6,7 +6,7 @@
 CONNECTED_DEVICE=$(adb devices | grep -E "device$" | head -n 1 | awk '{print $1}')
 
 if [ -z "$CONNECTED_DEVICE" ]; then
-    TV_IP="${1:-192.168.1.68:5555}"
+    TV_IP="${1:-192.168.1.80:5555}"
     echo "Connecting to TV at $TV_IP..."
     adb connect "$TV_IP"
     CONNECTED_DEVICE=$(adb devices | grep -E "device$" | head -n 1 | awk '{print $1}')
