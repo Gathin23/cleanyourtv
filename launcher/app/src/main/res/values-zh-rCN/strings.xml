@@ -93,7 +93,7 @@
     <string name="library_empty">未找到可启动的应用</string>
     <string name="library_on_home">已在主屏幕</string>
     <string name="library_add_home">添加到主屏幕</string>
-    <string name="library_remove_shortcut">从主屏幕移除</string>
+    <string name="library_remove_shortcut">从主屏幕隐藏</string>
     <string name="library_open">打开</string>
     <string name="library_app_info">应用信息</string>
     <string name="library_save_failed">无法保存快捷方式</string>
