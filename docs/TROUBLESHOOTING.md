@@ -1419,6 +1419,59 @@ TV TA5, with one more step on the Philips: see the next entry.
 - **A button that sends `android.intent.action.ALL_APPS` now shows a chooser**, because launcherx answers the
   action too. Pick the one you want with "Always" once.
 
+## App buttons crash the TV's own key service on a set with a second user (Skyworth/Coocaa)
+
+**Seen on:** a Coocaa Y74 Pro 65" that reports Skyworth `SWTV-24AE-4K`, product `SW10_TG`, device `eleonas`
+(MediaTek MT5896), Google TV 14, build `UKN4.250714.140` - the board and product of
+[the Motorola SWTV-24AE-4K list](../examples/motorola-swtv-24ae-4k/debloat.txt).
+
+With launcherx disabled, the remote's gear and Input hotkeys killed Skyworth's persistent key service
+`com.smartdevice.global.service` (`/system_ext/app/TvGlobalService/TvGlobalService.apk`,
+`flags=[ SYSTEM HAS_CODE PERSISTENT ALLOW_CLEAR_USER_DATA ]`) with a `NullPointerException` on every press.
+A few presses later `RescueParty` reached `RESET_SETTINGS_UNTRUSTED_DEFAULTS`, which switched the launcher's
+accessibility helpers off; the levels after that are a reboot and then a factory-reset prompt. Re-enabling
+launcherx stopped it at once.
+
+The cause is `SkwGlobalKeyReceiver`'s KidMode check, `x1.a.c()`: when more than one Android user exists
+(`UserManager.getUsers().size() > 1`), setup is complete and the TV is not in offline mode, it takes a
+content provider client for launcherx's `LiveTvContentProvider` and queries it. With launcherx disabled that
+client is null, and only `RemoteException` is caught, so the receiver throws. `logcat` has all of it:
+
+```text
+E ActivityThread: Failed to find provider info for com.google.android.apps.tv.launcherx.live.data.contentprovider.LiveTvContentProvider
+E AndroidRuntime: java.lang.NullPointerException: Attempt to invoke virtual method 'android.database.Cursor android.content.ContentProviderClient.query(...)' on a null object reference
+E AndroidRuntime:   at x1.a.c(Unknown Source:150)
+E AndroidRuntime:   at com.smartdevice.global.service.receiver.SkwGlobalKeyReceiver$a.c(Unknown Source:231)
+W RescueParty: Attempting rescue level RESET_SETTINGS_UNTRUSTED_DEFAULTS
+```
+
+That second user is what decides it: the unit that hit this had a leftover Google TV profile
+(`UserInfo{10:new_user}`, no accounts) from changing Google accounts during setup, which the report suggests
+is why the same board in `examples/motorola-swtv-24ae-4k` was fine. A dormant profile is common enough -
+several lists in `examples/` record the same `new_user` - so before launcherx goes on one of these boards,
+read the users:
+
+```sh
+TV_HOST=<tv ip> tools/venv/bin/python -I tools/tv.py 'pm list users'
+```
+
+- **Only user 0:** the list applies as it is.
+- **A leftover profile nobody uses:** `pm remove-user <id>` leaves user 0 alone, and with it gone launcherx
+  and setupwraith could both be disabled and the hotkeys stopped crashing. That profile's own data goes with
+  it, so check who added it first.
+- **A profile someone uses:** keep launcherx and put `stock_home_redirect` on
+  `com.google.android.apps.tv.launcherx`, the route in
+  [A key helper is bound and a held remote button stopped repeating](#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating);
+  once launcherx is back on it answers the app buttons itself, and
+  [App buttons stopped working after launcherx was re-enabled for the redirect](#app-buttons-stopped-working-after-launcherx-was-re-enabled-for-the-redirect)
+  is the entry for those.
+
+If it has already happened, `pm enable --user 0 com.google.android.apps.tv.launcherx` brings the hotkeys
+back, and the helpers `RescueParty` turned off are the case in
+[Accessibility helper enabled but the remote button does nothing](#accessibility-helper-enabled-but-the-remote-button-does-nothing).
+
+One unit's logcat on one build: no other board is reported yet.
+
 ## A toast at every power-on, and the system will not let you block it
 
 - **"Switching to audio system. We recommend using an Ultra High Speed HDMI cable."** for two seconds at every
