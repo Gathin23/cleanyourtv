@@ -66,8 +66,9 @@ instead (see "Inputs pill" below), so the names only show where the dropdown is 
 - **Wake and standby are two more switches, both off by default.** `hdmi_control_auto_wakeup_enabled` lets a device
   wake the TV: with it on, the PS5's `<Text View On>` arrived when it was switched on.
   `hdmi_control_auto_device_off_enabled` makes the TV broadcast `<Standby>` when it is switched off; the TV sent it,
-  but this PS5 stayed on. On the next wake the TV sends `<Request Active Source>`, a PS5 that is still on answers,
-  and the set comes up on its HDMI input rather than on Home.
+  but this PS5 stayed on. On the next wake the TV sends `<Request Active Source>` and a PS5 that is still on answers
+  with `<Active Source>`, but the set stays on Home: CVTE's own handler did not switch input, so pick the PS5 from
+  Inputs. Waking the TV from the PS5 also came up on Home.
 - **The remote goes to the device.** On a CEC device's input the TV forwards the remote's keys as
   `<User Control Pressed>`; the PS5 ignored them, so the remote looked dead there. Home is not forwarded and returns
   to Home; the PS5 itself is driven with its controller.
