@@ -1452,6 +1452,23 @@ TV TA5, with one more step on the Philips: see the next entry.
 - **A button that sends `android.intent.action.ALL_APPS` now shows a chooser**, because launcherx answers the
   action too. Pick the one you want with "Always" once.
 
+## The Bluetooth Pair screen ignores OK while a key helper is bound
+
+Pairing a headset or remote: Settings > Remotes & Accessories > Pair accessory opens the Pair/Cancel screen
+(`com.android.tv.settings/.accessories.BluetoothPairingDialog`), "Pair" looks selected, and OK, Up and Down do
+nothing. Press **Right**, then OK, and it pairs; with no key at all the bond times out after about 30 s
+(`bondStateChangeCallback: Status: 9 ... newState: 0`). Seen on a Polaroid AI PONT (Changhong `redwood`, MediaTek
+mt5867, Android TV 11, `RTMA.250416.071`, #3155) with `HomeKeyService` bound for `power_on_home`: `getevent -lt`
+shows the presses reaching the TV, and with `settings put secure enabled_accessibility_services ''` plus
+`accessibility_enabled 0` OK pairs at once. Neither OK nor the D-pad is mapped in `config.xml`, so it looks like
+the same family as [a held button that stopped repeating](#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating)
+(#763, #944): a bound key-filtering service (`capabilities=8`) changes key or focus
+delivery on this firmware even for keys the helper returns `false` for.
+
+Workaround: press **Right** on the Pair screen first, then OK. Or switch the helper off while pairing and back on
+afterwards (note what `tools/tv.py 'settings get secure enabled_accessibility_services'` prints first, and put
+that value back with `settings put`).
+
 ## App buttons crash the TV's own key service on a set with a second user (Skyworth/Coocaa)
 
 **Seen on:** a Coocaa Y74 Pro 65" that reports Skyworth `SWTV-24AE-4K`, product `SW10_TG`, device `eleonas`
