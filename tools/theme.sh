@@ -8,9 +8,12 @@
 #
 # One argument, and --reset takes none: a second word is refused rather than dropped (see below). Exit status:
 # 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not restart after
-# it; 2 the run stopped before the theme was up - the command line is not one theme folder or --reset (a word
-# that starts with a dash is not a folder name, -h and --help included), TV_HOST is unset or empty, the checkout
-# has no tools/venv, or the TV was not reached (tv.py's and theme_restart.py's own message says which).
+# it; 2 the run stopped before the theme was up and nothing was sent - the command line is not one theme folder
+# or --reset (a word that starts with a dash is not a folder name, -h and --help included), the folder has no
+# config.json or one the launcher would drop, a wallpaper name b64push.py refuses, TV_HOST is unset or empty,
+# the checkout has no tools/venv, or the TV was not reached (tv.py's and theme_restart.py's own message says
+# which). 1 is a run that reached the push, so a theme this script cannot read before it sends anything is not
+# one: it answers 2 with the sentence every one of those refusals ends with.
 set -euo pipefail
 THEME_ARG="${1:-}"
 # A theme folder or --reset, and nothing else. The first word alone decided everything the script did, so
@@ -116,7 +119,11 @@ if [ "${1:-}" = --reset ]; then
   exit 0
 fi
 THEME="${THEME_ARG:?usage: theme.sh <theme folder> | --reset}"
-[ -f "$THEME/config.json" ] || { echo "no config.json in $THEME" >&2; exit 1; }
+# A folder that is not a theme, a file the launcher would drop, a wallpaper name the push refuses: each is a
+# run that stops before anything is sent, which the header gives 2, not 1 - the status of a push that ran and
+# failed. The three answered 1 while their own last sentence said "Nothing was sent to the TV.", so an owner
+# (or an assistant following PROMPT.md) read a command line it could fix as the TV refusing the theme.
+[ -f "$THEME/config.json" ] || { echo "no config.json in $THEME. Nothing was sent to the TV." >&2; exit 2; }
 # What the launcher makes of the file: Config.read() answers "no overlay" for anything that is not a JSON
 # object, so an array, a number or a string is a theme the TV drops - and it replaces the theme the set had,
 # which puts the built-in config.xml back. Reading the shape here, before anything is pushed, keeps a run
@@ -137,8 +144,9 @@ case "$(theme_json_kind "$THEME/config.json")" in
   object) ;;
   "not an object") echo "$THEME/config.json is not a JSON object of theme keys, so the launcher would ignore" \
     "it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV." >&2
-    exit 1 ;;
-  *) echo "$THEME/config.json is not valid JSON" >&2; exit 1 ;;
+    exit 2 ;;
+  *) echo "$THEME/config.json is not valid JSON, so there is no theme to push (themes/README.md says what the" \
+    "file holds). Nothing was sent to the TV." >&2; exit 2 ;;
 esac
 # Every collection name is checked before anything changes on the TV: a name refused halfway through the push
 # left the new config.json and part of the collection behind. b64push.py refuses a path with '..' in it, so
@@ -150,7 +158,11 @@ if [ -d "$THEME/wallpapers" ]; then
     case "$IMAGE" in
       *.[jJ][pP][gG]|*.[jJ][pP][eE][gG]|*.[pP][nN][gG]|*.[wW][eE][bB][pP])
         NAME=$(basename "$IMAGE")
-        [[ "$NAME" =~ ^[A-Za-z0-9_.-]+$ && "$NAME" != *..* ]] || { echo "unsupported wallpaper filename: $NAME" >&2; exit 1; }
+        if [[ ! "$NAME" =~ ^[A-Za-z0-9_.-]+$ || "$NAME" == *..* ]]; then
+          echo "unsupported wallpaper filename: $NAME (b64push.py takes letters, digits, '.', '_' and '-', with no" \
+            "'..' in the name). Nothing was sent to the TV." >&2
+          exit 2
+        fi
         NAMES="$NAMES $NAME" ;;
     esac
   done

@@ -1,0 +1,78 @@
+# Skyworth 4K Google TV Stick (HP4609-Skyworth, device YYT, board HP46B, Amlogic),
+# Google TV 14 (API 34), firmware UKG3.260128.001.C3.3.5_20260723 (2026-07-23),
+# armeabi-v7a, about 1.9 GB RAM. Sold in South-East Asia as "4K Google TV Stick".
+# Stock home: com.google.android.apps.tv.launcherx. No Live TV app on this firmware.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-4k-google-tv-stick/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-4k-google-tv-stick/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested 2026-11-02 on one unit: home, HDMI input switching, Wi-Fi, Bluetooth remote,
+# Playback from YouTube and a third-party player all still work. No re-enables so far.
+# The vendor packages here are com.sdt.* / com.mft.* (Skyworth Digital), not the
+# com.smartdevice.* family the other Skyworth folders list.
+#
+# Known quirk: com.google.android.tungsten.setupwraith was already disabled when this
+# list was written, so the Wi-Fi network had been saved before that. Check
+# docs/TROUBLESHOOTING.md before disabling it on a set still running the setup wizard.
+
+# Google setup, ads and telemetry
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.tungsten.setupwraith   # see the Wi-Fi note in the header
+android.autoinstalls.config.AMLSTBAndroid.device
+
+# Preloaded Google apps and content rows
+com.google.android.play.games
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tvmusic
+com.google.android.katniss               # voice search; re-enable to keep the Assistant
+com.google.android.apps.tv.dreamx        # ambient mode screensaver
+com.android.dreams.basic                 # stock daydream
+# com.google.android.apps.tv.launcherx   # stock home; disable only after another launcher answers HOME
+
+# Vendor (Skyworth Digital) test, log and update apps
+com.sdt.producttest
+# com.sdt.ota                            # firmware updater; this set had it off, shared lists keep it on
+com.sdt.deviceinfo
+com.sdt.customization
+com.oemservice
+com.oem.qa
+
+# Features a TV stick does not use
+com.android.virtualmachine.res
+com.android.nearby.halfsheet
+com.android.uwb.resources
+com.android.managedprovisioning         # work-profile provisioning only
+com.android.companiondevicemanager
+com.android.dynsystem
+com.android.hotspot2.osulogin
+com.android.cameraextensions
+com.android.printspooler
+com.google.android.marvin.talkback      # accessibility; re-enable if TalkBack is needed
+
+# Backups, sync and small utilities
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.backupconfirm
+com.android.providers.userdictionary
+com.android.mtp                         # USB file transfer; built-in storage still mounts over ADB
+com.android.settings.intelligence
+com.android.providers.calendar
+com.android.providers.contacts
+com.google.android.syncadapters.calendar
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+
+# Play Store: never disabled (the TV needs it)
+# com.android.vending
+
+# Aggressive: re-enable if the matching feature breaks
+com.amlogic.voicesubtitle               # Amlogic live subtitle overlay
+com.google.android.tv.axel              # Google TV ambient art
+# com.google.android.apps.mediashell    # Chromecast built-in; disabling it costs casting

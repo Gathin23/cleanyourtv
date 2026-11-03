@@ -15,7 +15,8 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
 Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
 empty or failed, or a command's answer was lost when the TV dropped the connection,
 2 it was refused before anything ran on the TV - a flag it does not have, one of its own with the wrong
-number of words, a local path that cannot be used, a port it could not open. A flag and its count are
+number of words, a local path that cannot be used, a port it could not open, or a TV_HOST that is a URL
+or a path instead of the TV's address. A flag and its count are
 judged before TV_HOST is read, so a typo names the usage instead of the TV's address.
 
 Set TV_ADB_BINARY to the Google adb executable to use an already connected, paired transport
@@ -138,10 +139,35 @@ def split_host_port(endpoint):
     return endpoint, None
 
 
+def address_problem(raw):
+    """What makes TV_HOST something other than the TV's address, as the sentence to print, or None.
+
+    An address is read out of a browser or copied off a page often enough that the two shapes it is
+    never in are worth naming: a reader pastes `http://192.168.1.50`, or `192.168.1.50/` from the tail
+    of a URL. split_host_port() then keeps `//192.168.1.50` as the port ("not a port number:
+    '//192.168.1.50'") or hands `192.168.1.50/` to the socket, which answers "could not reach
+    192.168.1.50/:5555 ([Errno -2] Name or service not known). Is the TV on and on this network?" - a
+    mistake in the argument, reported against the TV, the Wi-Fi and the router. Neither a scheme nor a
+    path is ever part of an address, in brackets for IPv6 or not.
+    """
+    if "://" in raw:
+        return "that is a URL, not the TV's address"
+    if "/" in raw:
+        return "that is a path, not the TV's address"
+    return None
+
+
 _raw_host = os.environ.get("TV_HOST")
 if not _raw_host:
     sys.exit("Set TV_HOST to your TV's IP address, e.g.  TV_HOST=192.168.1.50 tools/tv.py --probe\n"
              "(find it under Settings → Network, or look for the TV in `arp -a`)")
+_problem = address_problem(_raw_host)
+if _problem:
+    # 2, like the flag refusals below: nothing reached the TV, and manage.py answers 2 for a run that asked
+    # it nothing - a URL read as TV_HOST there would otherwise look like a command the TV refused (1).
+    sys.stderr.write(f"TV_HOST={_raw_host!r}: {_problem}. Pass the address alone, e.g.  "
+                     f"TV_HOST=192.168.1.50 tools/tv.py --probe\n")
+    sys.exit(2)
 HOST, _endpoint_port = split_host_port(_raw_host)
 _port_str = _endpoint_port or os.environ.get("TV_PORT") or "5555"
 try:
@@ -309,8 +335,15 @@ def connect_error(e):
     see = "See docs/TROUBLESHOOTING.md#connecting."
     if isinstance(e, InvalidCommandError) and "STLS" in str(e):
         # Android 11+ answers the handshake on its Wireless debugging port with STLS, a request for TLS.
-        # adb_shell 0.4.4 (tools/requirements.txt) has no TLS, so no TV_HOST or TV_PORT gets past it.
+        # adb_shell 0.4.4 (tools/requirements.txt) has no TLS, so no TV_HOST or TV_PORT gets past it - but
+        # Google's own adb does, which is what TV_ADB_BINARY and tools/native-adb.md are for. Sending the
+        # reader to `adb tcpip 5555` alone answered a question the repo already has a better answer to:
+        # that opens the plaintext port the security section asks them to close.
         return (f"{target} is a Wireless debugging port: it asks for TLS, which tv.py cannot use.\n"
+                f"Google's adb can use it: pair and connect with it once, then set TV_ADB_BINARY to that "
+                f"adb and keep TV_HOST as it is (the Wireless debugging port) - this same tool then goes "
+                f"through that paired connection, with nothing opened on 5555 "
+                f"(tools/native-adb.md).\n"
                 f"To use port 5555 instead, {pair}, then set TV_HOST to the TV's IP alone and leave TV_PORT "
                 f"unset. {reboot} {see}")
     if isinstance(e, ConnectionRefusedError):

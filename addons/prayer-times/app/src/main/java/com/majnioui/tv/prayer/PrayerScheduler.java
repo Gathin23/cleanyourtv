@@ -231,7 +231,8 @@ public class PrayerScheduler {
                 String url = "https://api.aladhan.com/v1/timings/" + dayParam
                         + "?latitude=" + appContext.getString(R.string.latitude)
                         + "&longitude=" + appContext.getString(R.string.longitude)
-                        + "&method=" + appContext.getString(R.string.method);
+                        + "&method=" + appContext.getString(R.string.method)
+                        + "&school=" + appContext.getString(R.string.school);
 
                 HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
                 c.setConnectTimeout(10000);

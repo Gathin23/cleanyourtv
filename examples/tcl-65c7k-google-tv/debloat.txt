@@ -16,6 +16,19 @@
 # setupwraith owned the saved Wi-Fi network: forget and re-join it in Settings first (it then belongs
 # to com.android.tv.settings), or disable.sh skips it and Home falls back to its RecoveryActivity.
 # dreamx kept on purpose (the owner likes the ambient screensaver).
+# Second unit: Australia, same G08 board and firmware (UTT2.250416.001 AU02, locale en-US), applied and verified
+# on 2026-11-02, a few hours so far and not yet lived with for days. It carries AU streaming apps (9Now, 10 play,
+# iview, SBS On Demand, 7plus, Stan, Plex, Netflix, Prime Video, YouTube) and none of the Brazil-only ones: the
+# three Brazil entries below (Claro TV+, Mercado Play, Speedtest) are not installed there. Everything on this
+# list stayed disabled across a reboot, HDMI switching from the launcher's Inputs menu worked, and boot lands
+# on the launcher, not Live TV. Chromecast was kept but not tested; the AU unit also kept firmware updates.
+# On the AU unit the launcher (columns 7) hides com.tcl.tv, com.tcl.suspension, com.tcl.dashboard and
+# com.tcl.t_solo from the grid (hidden_apps) rather than disabling them. See config.json.
+# Remote on the AU unit: Netflix 4062, Prime Video 4099, YouTube 190 (KEYCODE_BUTTON_3), gear 83, all scancode 240
+# and sent to launcherx, so they do nothing once it is disabled. The launcher's HomeKeyService
+# (HOME_KEY_SERVICE=1, app_keys and settings_key_keycodes) brings them back, but any bound accessibility helper
+# costs the held-volume ramp on this firmware (one step per press, ramps again with the helper off), so the
+# owner kept the ramp and no helpers.
 # Wireless debugging only switches on over Wi-Fi: on Ethernet the toggle flips straight back off.
 # Pair once over Wi-Fi, run `adb tcpip 5555`, and port 5555 then answers on either network until reboot.
 
@@ -55,6 +68,14 @@ br.com.claro.now.smarttvclient         # Claro TV+
 com.mercadolibre.android.mplay_tv      # Mercado Play
 com.rma.speedtesttv                    # Speedtest
 
+# Off by choice on the Australian unit (uncomment any you never use)
+# com.tcl.airplay2                       # AirPlay receiver (com.mediatek.AirplayAPK and airplaydaemon below were left alone); off on the Australian unit
+# com.tcl.miracast                       # Miracast screen mirroring; off on the Australian unit
+# com.tcl.magiconnectfree                # TCL T-Cast / Magiconnect phone mirroring, shows as a launcher tile; off on the Australian unit
+# com.tcl.gamebar                        # game mode / VRR overlay; off on the Australian unit
+# au.com.stan.and                        # Stan, owner does not use it; off on the Australian unit
+# com.google.android.youtube.tvmusic     # YouTube Music; off on the Australian unit
+
 # Needed for the custom launcher. Disable only AFTER launcher/ is installed and set as Home:
 # with launcherx gone, setupwraith's RecoveryActivity claims HOME at priority 1 (blank screen).
 com.google.android.tungsten.setupwraith
@@ -62,12 +83,7 @@ com.google.android.tungsten.setupwraith
 # Kept on this unit: uncomment if you don't use them
 # com.google.android.apps.tv.dreamx    # ambient screensaver, kept by choice; to disable, set screensaver_components to com.gathin.tvhome/.ClockDream first
 # com.google.android.apps.mediashell   # Chromecast
-# com.tcl.airplay2                     # AirPlay, together with the next two lines
-# com.mediatek.AirplayAPK
+# com.mediatek.AirplayAPK              # still enabled on the AU unit
 # com.mediatek.airplaydaemon
-# com.tcl.miracast                     # Miracast screen mirroring
-# com.tcl.magiconnectfree              # TCL T-Cast / Magiconnect phone mirroring
-# com.tcl.gamebar                      # game mode / VRR overlay for consoles
 # com.tcl.UpdatePeripheral             # TCL soundbar firmware updates
 # com.google.android.play.games
-# com.google.android.youtube.tvmusic

@@ -1,5 +1,7 @@
 # Philips Google TV TA1 (65PUS8729/60, TPV, PH1M_WW_9972, MediaTek), Google TV 14, build UKN2.241117.001
 # About 2.8 GB RAM, UI 1920x1080 on a 4K panel.
+# Third set: Philips 55OLED718/12 (OLED, Bulgaria), same model id, board and build (3000281), Philips SW
+# TPM231WW_R.201.100.146.207, wired Ethernet. See the section at the end of this file.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-google-tv-ta1/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-google-tv-ta1/debloat.txt com.google.android.apps.tv.launcherx
@@ -79,6 +81,7 @@ org.droidtv.multiview                 # Multi View (~80 MB)
 org.droidtv.hidwizard                 # keyboard/mouse setup wizard (~75 MB)
 org.droidtv.sunrise                   # wake-up light alarm
 org.droidtv.calmancalibrator          # Calman calibration service
+# On the 55OLED718 set HBO Max stuttered with io.mimi.sdk.service off (README.md); keep both if an app stutters.
 org.droidtv.personalisedsound         # Mimi personalised sound (~73 MB)
 io.mimi.sdk.service
 # Broadcast TV, only on a set that never uses the tuner. The last three need TVINPUT_ALLOW=1 (see the header).
@@ -98,3 +101,29 @@ io.mimi.sdk.service
 # so setupwraith no longer owns it (disabling it while it did would have taken the TV off Wi-Fi and ADB).
 com.google.android.tungsten.setupwraith   # phone casting may stop after a reboot (the Cast receiver reads its credentials from setupwraith)
 com.google.android.apps.tv.launcherx
+#
+# ---------------------------------------------------------------------------------------------------------------
+# Third set, Philips 55OLED718/12 (same "Philips Google TV TA1", PH1M_WW_9972, UKN2.241117.001), applied
+# 2026-10-27 in four small batches with a screenshot after each and a reboot; nothing re-enabled itself.
+# Lived with for six days. Differences from the list above, on that set (README.md has the details):
+# - org.droidtv.demome: tools/disable.sh skipped it there (it requests TV_INPUT_HARDWARE, #321); left enabled.
+# - Kept by choice: Chromecast and DIAL, AirPlay (all three packages), Google TTS, Prime Video, the Google TV
+#   films app, the browser. Not disabled there either: Multi View, the HID wizard, Sunrise, Calman,
+#   personalisedsound, the print spooler and screenshot share.
+# - Kept: Mimi (io.mimi.sdk.service, io.mimi.tvapp). Disabled at first, re-enabled after HBO Max dropped frames.
+# - setupwraith and launcherx stayed enabled (Chromecast; setupwraith took Home with launcherx off). The
+#   launcher took Home with STOCK_LAUNCHER=none and HOME_KEY_SERVICE=1, and the theme's key_filter and
+#   home_long_press_home true; a held volume key then moves one step.
+# - dreamx off: select another screensaver, or the TV sleeps at the screensaver timeout.
+# - A second Google TV profile is Android user 10 and has only about 70 packages; the ones from this list
+#   that it had were disabled with pm disable-user --user 10 (tools/disable.sh covers user 0 only).
+# Also disabled on that set, beyond this list. Uncomment what you want too:
+# com.google.android.feedback                 # Market Feedback Agent
+# org.droidtv.tv.frameworklogger              # hands reboot reasons and firmware records to the Philips logger
+# com.google.android.katniss                  # Google Assistant: the remote's mic button stops working
+# org.droidtv.astrahdplus                     # HD+ German satellite pay-TV app
+# com.disney.disneyplus                       # Disney+ (preinstalled there)
+# com.apple.atve.androidtv.appletv            # Apple TV (preinstalled there)
+# com.netflix.tokenmanager                    # goes with Netflix
+# com.boosteroidtv.streaming                  # Boosteroid cloud gaming
+# tv.wuaki.apptv                              # Rakuten TV

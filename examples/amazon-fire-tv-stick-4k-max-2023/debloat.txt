@@ -18,6 +18,13 @@
 # Alexa entries, even though the voice engine com.amazon.vizzini is left enabled — the Fire OS 7
 # come-back-at-boot behavior did not reproduce on this build). Home renders after the reboot, and
 # Jellyfin, Plex and Netflix all open. Multi-day lived-with testing is still pending at contribution time.
+# Second unit (AFTKRT, applied 2026-10-19 on RS8185.3891N): 30 packages of this list, lived with for 13 days -
+# the telemetry, ads/recommendations, Shopping, Channels, Game Hub, notices, tutorials and setup-helper lines;
+# the Alexa, casting, Matter, support and Android-cruft sections were left enabled on that unit. The stick then
+# took the OTA to RS8185/3898 (build 0033018559108, built 2026-10-28) and all 30 were still disabled after it.
+# The voice remote, Alexa and a third-party AirPlay receiver kept working throughout. Two apps disabled the same
+# way outside this list (Prime Video and Disney+) were found enabled again, each with a lastUpdateTime matching
+# an Appstore update, so check `pm list packages -d` after the Appstore updates an app you disabled.
 # Protected on this build (pm disable-user: "Cannot disable a protected package"), so commented out below:
 # com.amazon.device.metrics, com.amazon.device.logmanager, com.amazon.device.crashmanager,
 # com.fireos.usagestats.proxy, com.amazon.ftvads.deeplinking, com.amazon.tv.oobe,

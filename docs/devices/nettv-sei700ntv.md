@@ -83,8 +83,10 @@ Fixed by:
    ```sh
    settings put secure long_press_timeout 600
    ```
-2. Enabling `tile_menu: true` in `config.xml`, so intentional long-presses open the glass reorder menu
-   rather than system settings.
+2. `tile_menu`, so a long press opens the glass reorder menu rather than system settings. Launcher 3.3
+   and later ship it on (`<bool name="tile_menu">true</bool>` in `config.xml`, and this note was written
+   two days before that release); on an older build set it in `config.xml`, and either way a theme can
+   turn it off with `"tile_menu": false` (`themes/README.md`, the Keys table).
 
 ## Top bar and inputs
 

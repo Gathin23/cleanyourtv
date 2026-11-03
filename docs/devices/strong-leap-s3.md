@@ -7,9 +7,11 @@ as [`wanbo-x5-pro`](../../examples/wanbo-x5-pro/debloat.txt) and
 (`C3.0.12`, where those two are `C3.3.5`).
 
 The owner followed [`PROMPT.md`](../../PROMPT.md) on Windows 11 and applied the list by hand with
-`pm disable-user`, not through `tools/disable.sh`. **So this is not an `examples/` list.** It was applied on one day and
-checked after a reboot; [`CONTRIBUTING.md`](../../CONTRIBUTING.md) asks for a few days first. What carries to
-another unit is the ordering, the quirks and the remote buttons below.
+`pm disable-user`, not through `tools/disable.sh`, and the first day of that is what this note records. The list
+itself has since moved to [`examples/strong-leap-s3/debloat.txt`](../../examples/strong-leap-s3/debloat.txt), lived
+with for over a week with several reboots on the same firmware - the few days
+[`CONTRIBUTING.md`](../../CONTRIBUTING.md) asks for - so apply it from there and read this page for what the list
+cannot say. What carries to another unit is the ordering, the quirks and the remote buttons below.
 
 ## Identify the firmware
 
@@ -33,7 +35,9 @@ no HDMI inputs (`dumpsys tv_input` shows an empty `mHardwareList`), so the Input
 
 ## The list as applied
 
-One day of use and one reboot. Read it as a starting point and comment out what you need.
+The list after that first day of use and one reboot; it is the same one that ships in
+[`examples/strong-leap-s3/debloat.txt`](../../examples/strong-leap-s3/debloat.txt) after a week. Read it as a
+starting point and comment out what you need.
 
 ```text
 # Privacy Sandbox / ads framework
@@ -142,10 +146,10 @@ it was left enabled.
 
 ## Limits
 
-- One unit, about a day and a half, two reboots. No multi-day test, no second unit.
+- This note covers one unit, about a day and a half and two reboots. A second unit is still untested.
 - The list was applied by hand, not through `tools/disable.sh`. That script and `tools/recovery.py` were
   run on two of the packages (`com.oem.qa`, `com.sdt.producttest`) and worked; `restore.sh` and the full
   list were not run through them.
 - Nothing here says another `YDA` box has the same firmware: check `ro.build.display.id` first.
-- Promote this to `examples/strong-leap-s3/` once someone has lived with the list for a few days and can
-  say what came back after the next firmware update.
+- What is still open: what comes back after the next firmware update - the list has been lived with, but no
+  update has landed under it yet.

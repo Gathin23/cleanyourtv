@@ -24,6 +24,14 @@ class Prefs(context: Context) {
         get() = p.getInt("refresh_hours", 12)
         set(v) = p.edit().putInt("refresh_hours", v).apply()
 
+    /**
+     * Play a channel as soon as the app opens, the way a set-top box does: the last channel watched,
+     * or the lowest-numbered one the first time. Off by default, so the app still opens on Home.
+     */
+    var autoPlay: Boolean
+        get() = p.getBoolean("auto_play", false)
+        set(v) = p.edit().putBoolean("auto_play", v).apply()
+
     var animations: Boolean
         get() = p.getBoolean("animations", true)
         set(v) = p.edit().putBoolean("animations", v).apply()

@@ -85,6 +85,9 @@ com.xiaomo.tv.milegal                       # Xiaomi privacy-policy screen (sic,
 mitv.service                                # MiTV service framework for the rows removed above
 com.mitv.download.service                   # PatchWall download service
 com.mitv.videoplayer                        # stock Mi video player; comment out if you use it
+# partnercustomizer answers the remote's shortcut buttons (Netflix, Prime Video, Input) and, on many Xiaomi
+# sets, Bluetooth remote pairing: a MiTV-MSSP3 owner got those buttons back by enabling it again (Discussion
+# #1411). Comment the next line out if you use them.
 com.xiaomi.android.tvsetup.partnercustomizer  # partner customisation that seeds partner apps at setup
 
 # Xiaomi services (second set, optional — the original set keeps these)

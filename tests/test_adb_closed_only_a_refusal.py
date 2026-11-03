@@ -165,13 +165,15 @@ class ThisComputerIsNotTheTvTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
                 self.assertEqual(result.stdout, "")
                 self.assertIn(f"could not check {host}:{port}: nothing listens there", result.stderr)
-        with socket.socket() as server:
-            server.bind(("127.0.0.1", 0))
-            server.listen(1)
-            port = server.getsockname()[1]
-            result = check("127.1", str(port))
-        self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertIn("127.1 " + NOTE, result.stderr)
+        for host in ("127.1", "2130706433", "0x7f000001"):
+            with socket.socket() as server:
+                server.bind(("127.0.0.1", 0))
+                server.listen(1)
+                port = server.getsockname()[1]
+                with self.subTest(host=host):
+                    result = check(host, str(port))
+                    self.assertEqual(result.returncode, 1, result.stderr)
+                    self.assertIn(host + " " + NOTE, result.stderr)
 
     def test_names_that_only_look_local_are_still_the_tvs(self):
         for host in ("localhost.example.com", "mytv.local", "127.example", "10.0.0.1", "::ffff:192.0.2.1"):

@@ -6,8 +6,11 @@
 #
 # One argument, and -Reset takes none: both together are refused rather than one of them dropped (below).
 # Exit status: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not
-# restart after it (a failure of the shared helper stops this script with that status); 2 the command line is
-# not one theme folder or -Reset, no TV host was given, or tools\venv is missing, so nothing was sent.
+# restart after it (a failure of the shared helper stops this script with that status); 2 the run stopped
+# before the theme was up and nothing was sent - the command line is not one theme folder or -Reset, the
+# folder has no config.json or one the launcher would drop, a wallpaper name b64push.py refuses, no TV host
+# was given, or tools\venv is missing. 1 is a run that reached the push, so a theme this script cannot read
+# answers 2, as theme.sh does, instead of stopping with a PowerShell error record.
 param(
     [Parameter(Position = 0)][string]$Theme,
     [switch]$Reset,
@@ -31,7 +34,10 @@ if (-not $TvHost) {
 }
 $env:TV_HOST = $TvHost
 # Resolve the theme folder against the caller's directory before moving into tools\.
-if ($Theme) { $Theme = (Resolve-Path $Theme).Path }
+# A folder that is not there keeps the path as typed: Resolve-Path answers a missing path with its own error
+# record and a script line number, where theme.sh stops at "no config.json in <typed path>" - a message about
+# the folder the reader named, not about the cmdlet.
+if ($Theme -and (Test-Path -LiteralPath $Theme)) { $Theme = (Resolve-Path -LiteralPath $Theme).Path }
 Set-Location $PSScriptRoot
 $py = 'venv\Scripts\python.exe'
 if (-not (Test-Path $py)) {
@@ -87,13 +93,23 @@ if ($Reset) {
 }
 if (-not $Theme) { [Console]::Error.WriteLine('usage: theme.ps1 <theme folder> | -Reset'); exit 2 }
 $config = Join-Path $Theme 'config.json'
-if (-not (Test-Path $config)) { throw "no config.json in $Theme" }
-try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json } catch { throw "$config is not valid JSON" }
+# The three refusals below send nothing, so they answer 2 like theme.sh's - not 1, the status of a push that
+# ran and failed - and in this script's own words instead of a PowerShell error record with a script line.
+if (-not (Test-Path -LiteralPath $config)) {
+    [Console]::Error.WriteLine("no config.json in $Theme. Nothing was sent to the TV.")
+    exit 2
+}
+try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json }
+catch {
+    [Console]::Error.WriteLine("$config is not valid JSON, so there is no theme to push (themes/README.md says what the file holds). Nothing was sent to the TV.")
+    exit 2
+}
 # Config.read() answers "no overlay" for anything that is not a JSON object, so an array, a number or a
 # string is a theme the launcher drops - and it replaces the theme the set had with the built-in config.
 # Judged here, before anything is pushed, so "is on the TV" cannot mean the opposite.
 if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
-    throw "$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV."
+    [Console]::Error.WriteLine("$config is not a JSON object of theme keys, so the launcher would ignore it and the TV would go back to its built-in config (themes/README.md). Nothing was sent to the TV.")
+    exit 2
 }
 # Every collection name is checked before anything changes on the TV, as in theme.sh: a name refused halfway
 # through the push left the new config.json and part of the collection behind. b64push.py refuses '..' in a path.
@@ -102,7 +118,10 @@ $images = @()
 if (Test-Path $wallpapers -PathType Container) {
     $images = @(Get-ChildItem $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
     foreach ($image in $images) {
-        if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) { throw "unsupported wallpaper filename: $($image.Name)" }
+        if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) {
+            [Console]::Error.WriteLine("unsupported wallpaper filename: $($image.Name) (b64push.py takes letters, digits, '.', '_' and '-', with no '..' in the name). Nothing was sent to the TV.")
+            exit 2
+        }
     }
 }
 

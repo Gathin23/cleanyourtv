@@ -234,3 +234,31 @@ MagiConnect, Disney+.
   (disabled) apps. `app_keys` with `INPUT_KEY_SERVICE=1` brings back the first three.
 - **`InputKeyService` alone costs the volume ramp**: held volume ramped with no helper, one step per press with
   it, on the real remote.
+
+## Compatibility report: TCL 55Q6C, India, Wi-Fi
+
+TCL 55Q6C QD-Mini LED, product `G08_4K_GB`, MediaTek `tcl9618`, Google TV 14 (SDK 34), `UTT2.250416.001 AU02`, on
+Wi-Fi. Set up on 2 November 2026 from this list in batches, then setupwraith, the launcher and dreamx; all of them
+were still disabled after a reboot (Play Movies was disabled later, after the last reboot). Kept by choice:
+Assistant (`katniss`), Netflix, YouTube Music, the game bar, the USB media player and gallery, Chromecast and
+AirPlay. Also off: the Indian preinstall MX Player (`com.mxtech.videoplayer.television`) and Play Movies
+(`com.google.android.videos`). JioHotstar, SonyLIV, ZEE5 and Apple TV also come preinstalled here and were kept.
+
+- **setupwraith owned the saved Wi-Fi** (`cname=...setupwraith`). Re-joining it in Settings moved it to
+  `com.android.tv.settings`, and the TV stayed on Wi-Fi after setupwraith was disabled.
+- **TCL Channel** (`com.tcl.channelplus`) was disabled, then turned back on at the owner's request. It has no
+  launcher entry, only a TV input (`com.tcl.channelplus/com.tcl.iptv.service.InputService`), so the launcher's
+  `com.tcl.tv` tile was pointed at it with `launch_actions` (`input:` that id) and renamed with `app_labels`.
+  The first press after re-enabling fell back to the tuner and opened `com.tcl.tv`'s channel scan screen (left
+  without scanning): the input had no channels yet. After TCL Channel's own player had run once
+  (`am start -a android.intent.action.VIEW -d app://com.tcl.iptv/tune`), the same tile switched to it and played.
+- **The `com.tcl.tv` tile reopens the last source**, which was AirPlay here
+  (`com.mediatek.AirplayAPK/.AirPlayTvInputService`), so with no change it opens the AirPlay screen.
+- **Remote** (all on scancode 240): the Custom button is 4166, TCL Channel 4020, Web 4159 (no browser on this
+  set), Settings 83. With `HOME_KEY_SERVICE=1`, `settings_key_keycodes` 83 with `settings_key_panel` and
+  `app_keys` for 4062, 190, 4099, 4166, 4159 and `4020:input:` the TCL Channel id above all worked on the
+  real remote. The helper was bound again after a reboot (`AUTO_START: allow` held). The Subtitle button is 175
+  (`KEYCODE_CAPTIONS`) and reaches the playing app (Netflix opens its subtitle menu), so it needs no mapping.
+  The owner accepted the held-volume trade-off described above; it was not measured on this unit.
+
+This is a single-session compatibility report, not several days with the list.

@@ -8,6 +8,8 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.tvlauncher (the scripts' default). Live TV: com.mediatek.wwtv.tvcenter.
+# Same-firmware second unit: OK. ODL 43951UC-TAB / DVB93KO. See README.md for the
+# subset actually applied there, power-on behavior and the explicit test limits.
 #
 # KEEP, even though the names look like bloat:
 # - com.google.android.leanbacklauncher.partnercustomizer: provides the tvlauncher.widget content provider.

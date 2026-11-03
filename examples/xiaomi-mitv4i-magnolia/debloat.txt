@@ -42,6 +42,9 @@ com.xiaomi.mitv.tvmanager
 # com.mitv.milinkservice  # phone-remote service; shared lists keep it on, this set had it off
 com.mitv.tvlock
 com.xiaomo.tv.milegal
+# partnercustomizer answers the remote's shortcut buttons (Netflix, Prime Video, Input) and, on many Xiaomi
+# sets, Bluetooth remote pairing: a MiTV-MSSP3 owner got those buttons back by enabling it again (Discussion
+# #1411). Comment the next line out if you use them.
 com.xiaomi.android.tvsetup.partnercustomizer
 com.google.android.tv.bugreportsender
 

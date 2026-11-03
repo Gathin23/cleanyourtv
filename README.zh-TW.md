@@ -23,11 +23,11 @@
 
 ![原廠 Google TV 主畫面與 CleanYourTV 主畫面對照](docs/stock-vs-new-side.jpg)
 
-**官方連結：**專案網站為 [cleanyour.tv](https://cleanyour.tv)，程式碼、啟動器與工具僅在本儲存庫提供。其他使用相同名稱的網域（例如 cleanyourtv.com）並非本專案經營。主題、功能開關與附加元件可在 [cleanyour.tv/addons](https://cleanyour.tv/addons) 瀏覽。
+**官方連結：**專案網站為 [cleanyour.tv](https://cleanyour.tv)，程式碼、啟動器與工具僅在本儲存庫提供。CleanYourTV 沒有在任何應用程式商店發布官方 App；其他使用相同名稱的網域（例如 cleanyourtv.com 和 clean-your-tv.net）也並非本專案經營。下方介紹的社群應用程式由獨立開發者製作。主題、功能開關與附加元件可在 [cleanyour.tv/addons](https://cleanyour.tv/addons) 瀏覽。
 
 ## 運作原理
 
-Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的開發人員選項中開啟 USB 偵錯，建立網路 ADB 連線並授權電腦後，即可完成以下步驟：
+Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的開發人員選項中開啟適用的偵錯方式，建立並授權網路 ADB 連線後，即可完成以下步驟。可使用傳統 TCP ADB；支援的電視也可使用[配對後的加密無線偵錯](tools/native-adb.md)，不必開啟明文的 5555 連接埠。
 
 1. **備份**已安裝套件清單、已停用套件清單、`getprop` 輸出與所有設定，保存到 `backup/`。操作提示詞要求先完成這份備份；`tools/disable.sh` 另存的還原紀錄僅涵蓋套用清單所需的狀態，不能取代完整備份。
 2. **依需求停用**廠商遙測、廣告服務、推薦內容和不需要的預載應用程式，使用的指令是 `pm disable-user --user 0`。
@@ -89,6 +89,7 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 | 每列應用程式數量 | 選擇 4、5、6 或 7 個；數量增加時圖塊會縮小。 |
 | 快捷列下方列數 | 選擇 0 到 3 列，決定快捷列下方直接顯示多少列圖塊。 |
 | 桌布 | 選擇主題中的圖片、不使用桌布或跟隨主題預設；選定單張圖片後會停止輪播。 |
+| 時鐘格式 | 選擇 12 小時制、24 小時制或跟隨系統；套用到主畫面與時鐘螢幕保護程式。預設跟隨系統。 |
 | 動畫與進階效果 | 開啟或關閉動畫；進階效果包含圖塊浮起、圖示縮放與環境光色彩平滑過渡，可能增加記憶體用量。 |
 | 跟隨主題 | 重設電視端的選擇，恢復目前主題或內建設定。推送或重設主題也會清除這些選擇。 |
 | 選擇預設主畫面 | 開啟 Android 的主畫面選擇器，切換原廠啟動器或 CleanYourTV。 |
@@ -99,9 +100,9 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 
 在「設定」按鈕上長按確定，選擇應用程式排序。按確定拿起應用程式，用方向鍵移動，再按確定或返回放下；沒有拿起應用程式時，按返回會離開並儲存排列。頂端的獨立排序按鈕預設隱藏，可透過 `reorder_button` 開啟。
 
-`tile_menu` 預設開啟：在圖塊上長按確定可選擇移動、從主畫面移除或檢視應用程式資訊。關閉時，長按會開啟應用程式資訊。
+`tile_menu` 預設開啟：在圖塊上長按確定可選擇移動或檢視應用程式資訊；啟用應用程式庫後，也可選擇從主畫面移除。關閉 `tile_menu` 時，長按會開啟應用程式資訊。
 
-應用程式庫也預設關閉。啟用 `app_library` 後，入口位於主畫面應用程式的最後一列下方，可瀏覽具備電視或一般 Android 啟動入口的應用程式；一般 Android 應用程式可能仍需要觸控或滑鼠操作。
+應用程式庫也預設關閉。啟用 `app_library` 後，入口位於主畫面應用程式的最後一列下方，可瀏覽具備電視或一般 Android 啟動入口的應用程式；一般 Android 應用程式可能仍需要觸控或滑鼠操作。可另以 `library_button` 在頂端加入入口；開啟頂端按鈕後，將 `show_library_pill` 設為 `false` 可隱藏原本的下方入口。
 
 - 對尚未加入主畫面的應用程式按確定，可加入捷徑。
 - 對已在主畫面的應用程式按確定，會開啟應用程式；長按可管理主畫面捷徑或檢視應用程式資訊。
@@ -112,10 +113,12 @@ Android 電視和 Android 手機使用相同的偵錯橋接工具。在電視的
 
 ### 其他可選功能
 
-下列設定預設關閉，除 `icon_tiles` 外可在 `config.xml` 或主題中啟用；完整設定與截圖見[功能開關](docs/switches.md)和[主題設定](themes/README.md#keys)。
+下列選項除另有說明外預設關閉；`clock_format` 預設跟隨系統。除 `icon_tiles` 外，可在 `config.xml` 或主題中設定；完整設定與截圖見[功能開關](docs/switches.md)和[主題設定](themes/README.md#keys)。
 
-- **輸入來源與圖塊：**`inputs_connected_only` 將未連接的輸入來源收進「更多輸入」；`icon_tiles` 以圖示顯示橫幅裁切不佳的應用程式，套件清單只能在 `config.xml` 設定，主題不會讀取此鍵。
+- **輸入來源與圖塊：**`inputs_connected_only` 將未連接的輸入來源收進「更多輸入」；`icon_tiles` 以圖示顯示橫幅裁切不佳的應用程式，套件清單只能在 `config.xml` 設定，主題不會讀取此鍵。電視回報錯誤的 HDMI 埠狀態時，可使用 `inputs_cec_state_only`，讓狀態只顯示在 CEC 裝置列；不支援 CEC 的裝置因此不會顯示狀態。
 - **啟動應用程式：**`open_on_start_network_wait` 可讓開機後要開啟的應用程式等待網路連線，設定 0 至 600 秒；預設 0 秒，不等待。離開 Home 會取消這次開啟。
+- **喚醒後開啟：**啟用 `open_on_start_choice` 後，可另開啟 `open_on_start_on_wake`，在螢幕喚醒時也開啟所選 App；它會蓋過原本畫面，包括 HDMI，並遵守上述網路等待設定。預設關閉。獨立的 [Open on wake 附加元件](addons/wake-app/README.md)也提供喚醒時開啟 App 的功能；它使用前景服務、開機啟動和顯示在其他應用程式上層的權限。
+- **時鐘與返回鍵：**`clock_format` 可指定 `12`、`24` 或 `system`，預設 `system` 跟隨電視，也可在啟動器設定中調整。啟用 `back_opens_clock` 後，在主畫面按返回會開啟主畫面的閒置時鐘畫面；在應用程式及其他畫面按返回的行為不變，按任一鍵可離開時鐘。此選項預設關閉。
 - **VPN 按鈕：**搭配 `vpn_pill` 使用 `icon_only_vpn`，以圓形鎖頭顯示 VPN 連線狀態。
 - **賽事倒數：**`game_day` 可讀取 [Game Day 附加元件](addons/game-day/README.md)提供的賽事日曆快照，在時鐘下方輪流顯示下一場賽事與倒數。附加元件使用你提供的日曆連結，啟動器只讀取資料，沒有網路權限；不顯示即時比分。
 
@@ -182,7 +185,7 @@ tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
 
 最後一批停用後，重新開機前先等待約 15 秒讓套件狀態寫入；重啟後以 `pm list packages -d` 比對實際停用的套件。若韌體重新啟用了某些套件，依操作提示詞檢查，不要反覆嘗試停用。
 
-不要停用電視與輸入服務、遙控器和藍牙配對、螢幕鍵盤、Play 商店、Play 服務或 Android 核心套件。不要啟動工廠或測試應用程式；完整保護規則以 [`PROMPT.md`](PROMPT.md) 和 [`AGENTS.md`](AGENTS.md) 為準。
+不要停用電視與輸入服務、遙控器和藍牙配對、螢幕鍵盤、Play 商店、Play 服務或 Android 核心套件。核心套件包含 `com.android.sdksandbox` 與 `com.android.location.fused`；停用工具會拒絕包含這些受保護套件的清單。不要啟動工廠或測試應用程式；完整保護規則以 [`PROMPT.md`](PROMPT.md) 和 [`AGENTS.md`](AGENTS.md) 為準。
 
 ### 3. 編譯並安裝啟動器
 
@@ -312,7 +315,7 @@ TV_HOST=192.168.1.50 tools/theme.sh --reset
   ```
 
 - **輸入來源鍵：**macOS／Linux 安裝時可使用 `INPUT_KEY_SERVICE=1` 啟用無障礙服務，支援 Google TV 遙控器的輸入來源按鈕；Windows 使用 `-InputKeyService`。
-- **Home／設定鍵與應用程式按鍵：**macOS／Linux 安裝時可使用 `HOME_KEY_SERVICE=1`，搭配 `config.xml` 或主題中的 `app_keys` 等設定；Windows 使用 `-HomeKeyService`。`settings_key_panel` 可讓設定鍵開啟快捷設定面板。詳細按鍵設定見[英文啟動器說明](docs/launcher.md#remote-keys)。
+- **Home／設定鍵與應用程式按鍵：**macOS／Linux 安裝時可使用 `HOME_KEY_SERVICE=1`，搭配 `config.xml` 或主題中的 `app_keys` 等設定；Windows 使用 `-HomeKeyService`。`settings_key_panel` 可讓設定鍵開啟快捷設定面板。`app_keys` 也可將按鈕指定為 `library`，開啟啟動器的應用程式庫；需啟用 `app_library` 和對應的按鍵服務。詳細按鍵設定見[英文啟動器說明](docs/launcher.md#remote-keys)及[設定鍵格式](themes/README.md#keys)。
 
 無障礙按鍵服務必須用**實體遙控器**驗證，注入按鍵不算驗證。`am force-stop com.gathin.tvhome` 預設會關閉這些輔助服務；若啟用 `restore_key_services` 並在安裝時使用 `RESTORE_KEY_SERVICES=1` 授權，回到 Home 後會嘗試恢復。詳見[疑難排解](docs/TROUBLESHOOTING.md)與[功能設定](themes/README.md#keys)。
 

@@ -1,11 +1,28 @@
 # Tuvio TD43UFBCV5 (43", 4K, Yandex Market brand), built by Changhong:
 # ro.product.model "AI PONT", product DVB96, device/board central, MediaTek m7632, armv7l,
 # Google TV 14 (API 34), firmware UKNV.260506.001, about 1.9 GB RAM, UI 1920x1080 at 320 dpi.
-# Same platform and firmware as examples/benq-e55-735 (DVB96BQ). No Yandex apps preinstalled.
+# Also tested: Tuvio TD50UFBCV5 (50", Russia), same DVB96 board and UKNV.260506.001 firmware,
+# about 1.8 GB RAM. Same platform and firmware as examples/benq-e55-735 (DVB96BQ).
+# No Yandex apps preinstalled on either Tuvio.
 #
 # Tested on the TV, batch by batch, with a reboot after batches 1+2, after the Home handover, after
 # the partnercustomizer line and at the end. Home, the Inputs menu (TV_INPUT), switching to HDMI,
 # YouTube playback and the remote checked after each; no FATAL or ANR in logcat, no crash buffer entries.
+#
+# Tested on: TD50UFBCV5 (Russia), Google TV 14 (API 34), UKNV.260506.001, 1 November 2026.
+# Same-day test, not a multi-day soak: six batches and two reboots, the last after the Home handover.
+# Home, Inputs, HDMI, YouTube playback and the real remote checked; no FATAL or ANR in logcat.
+# Differences from the TD43 unit:
+# - com.google.android.videos is not installed; skip that line on the TD50.
+# - com.google.android.partnersetup was disabled on the TD50; optional below, not tested on the TD43.
+# - Netflix, Prime Video and YouTube Music were off on both units by the owners' choice; Chromecast,
+#   AirPlay, screen sharing, Miracast and USB file/photo viewers were also off on the TD50. These
+#   choices are commented out below so another household can keep the apps it uses.
+# - Voice search and MediaTek partnercustomizer were left enabled on the TD50.
+# - Forgetting and re-joining Wi-Fi moved its owner from setupwraith to android.uid.system:1000
+#   before disabling setupwraith. Home and Wi-Fi still worked after the last reboot.
+# - The firmware forces Location off, so the launcher's network pill says "Wi-Fi", not the SSID.
+# - config.json and home.png show the TD50's dock/layout; see README.md for this unit's notes.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tuvio-td43ufbcv5/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tuvio-td43ufbcv5/debloat.txt com.google.android.apps.tv.launcherx
@@ -61,18 +78,22 @@ com.android.ondevicepersonalization.services
 com.android.federatedcompute.services
 com.google.android.feedback
 com.android.tv.feedbackconsent
+# TD50 unit disabled this too; not tested on the TD43, so uncomment only if wanted:
+# com.google.android.partnersetup           # partner setup / partner app auto-installs
 
 # Batch 2: vendor and Google extras
 com.homwee.store                            # Changhong app store
 com.homwee.help
 com.google.android.play.games
 com.google.android.syncadapters.calendar
-com.google.android.videos                   # Google TV app, source of the home screen's recommendations
+com.google.android.videos                   # Google TV recommendations; TD43 only, not installed on TD50
 
-# Batch 3: optional, uncomment what you do not use (this home kept the commented ones)
-com.netflix.ninja                           # Netflix
-com.amazon.amazonvideo.livingroom           # Prime Video
-com.google.android.youtube.tvmusic          # YouTube Music
+# Batch 3: optional, uncomment what you do not use.
+# Both owners had Netflix, Prime Video and YouTube Music off; the TD50 owner also had casting,
+# mirroring and USB media off. The TD43 kept those. Voice search stayed enabled on both.
+# com.netflix.ninja                         # Netflix
+# com.amazon.amazonvideo.livingroom         # Prime Video
+# com.google.android.youtube.tvmusic        # YouTube Music
 # com.homwee.mmp.screenshare                # AirPlay receiver (iPhone casting)
 # com.homwee.multiscreenshare               # screen sharing
 # com.mediatek.androidbox                   # WFDSinkTest_CH: the Miracast receiver on this set

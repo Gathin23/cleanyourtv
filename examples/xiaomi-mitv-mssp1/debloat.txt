@@ -14,6 +14,11 @@
 # playback. All eight packages below remain disabled.
 # No package from this list had to be re-enabled during those checks.
 # This is nino / PI.5925, not the MSSP0 (amelie), MSSP2 (volver) or MSSP3 (machuca) firmware.
+#
+# Second unit: sold as Mi TV 4S, About shows MiTV-MSSP1, same nino / PI.5925, Russian/CIS region
+# firmware (tuner country Belarus). Whole list applied plus the two packages in the last section.
+# Status: second unit, disabled since 2026-10-31, reboot-checked 2026-11-01 with the replacement
+# Home and an empty logcat -b crash; nothing re-enabled. MI button setup: README.md in this folder.
 
 # Xiaomi telemetry
 com.miui.tv.analytics
@@ -61,3 +66,9 @@ com.android.printspooler
 com.xiaomi.mimusic2
 com.mitv.gallery
 com.google.android.marvin.talkback
+
+# --- Second unit extras (Mi TV 4S, 2026-10-31) ---
+# Mi TV+ content add-on (also on the Mi TV 4A list)
+com.mitv.tvhome.mitvplus
+# AOSP colour screensaver; reassign the screensaver first, as with the two above
+com.android.dreams.basic

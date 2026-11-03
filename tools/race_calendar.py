@@ -24,6 +24,7 @@ written on 1 or 2: the theme stays as it was.
 """
 import argparse
 import datetime
+import http.client
 import json
 from pathlib import Path
 import sys
@@ -183,6 +184,17 @@ def main():
         return refuse(f"could not reach Jolpica at {endpoint} ({getattr(e, 'reason', e)}). Nothing was "
                       f"written: this is the one step that goes online, so check the connection - a "
                       f"proxy or a captive portal is the usual cause - and run it again.")
+    except (ConnectionError, http.client.HTTPException) as e:
+        # The two shapes urllib does not wrap: a connection closed before a status line
+        # (http.client.RemoteDisconnected) and a body that stops early (IncompleteRead, raised out of
+        # json.load()) come from http.client itself, so they passed every handler above and ended the
+        # run in a traceback with exit 1 - the code this script keeps for "no race left this season".
+        # A captive portal, a proxy that filters the host and a link that drops all do this; the fetch
+        # is the one step here that depends on someone else's network.
+        return refuse(f"Jolpica closed the connection before the answer was complete ({e}) for "
+                      f"{endpoint}. Nothing was written: this is the one step that goes online, so "
+                      f"check the connection - a proxy, a captive portal or a filtered network is the "
+                      f"usual cause - and run it again.")
     except ValueError as e:
         return refuse(f"Jolpica answered something that is not JSON ({e}) for {endpoint}. Nothing was "
                       f"written: this is usually a proxy or a login page answering instead of the API, "

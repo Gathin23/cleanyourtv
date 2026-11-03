@@ -1,0 +1,85 @@
+# TIM TIMVISION Box (Technicolor DWT765TI, codename dwt765ti, board skipper_tim, Marvell Berlin), Android TV 8.0, firmware OTT1.201231.001 (6.0.5.0421), Italy
+# Operator streaming box with no HDMI inputs, on Wi-Fi. Same board and firmware line as
+# examples/tim-timvision-box-uzw4010tim, but another model; see README.md in this folder.
+# Tested on one unit in one session with one checked reboot, not yet over several days.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tim-timvision-box-dwt765ti/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tim-timvision-box-dwt765ti/debloat.txt timvision.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: timvision.launcher (com.canal.box.ui.boot.BoxMainActivity) is the TIMVISION app itself,
+# with HOME priority 2. The new launcher takes Home with it disabled:
+#   STOCK_LAUNCHER=timvision.launcher TV_HOST=<tv ip> launcher/build-and-install.sh
+# which disables it after the launcher has started. No other app claims HOME (only
+# com.android.tv.settings/.system.FallbackHome, priority -1000). Disabling timvision.launcher removes TIMVISION:
+# a subscriber keeps the stock launcher and comments out the TIMVISION service group below.
+#
+# Kept: remote and pairing (com.technicolor.android.remotecontrolservice, com.technicolor.tv.remotepairing,
+# com.technicolor.globalkey, com.google.android.tv.remote.service), the com.marvell.* HDMI-CEC/power/overscan
+# services, the Technicolor hardware services (LED, HDMI resolution, CAS, hardware properties),
+# Play Store and Play Services, Gboard, Chromecast (com.google.android.apps.mediashell) and
+# com.technicolor.ota, which despite its name is WakeoncastEnabler (Chromecast wake), not an updater.
+# The DVB-T tuner input (com.technicolor.android.dtvinput, dtvscan.project) was left enabled although unused.
+# it.telecomitalia.digitalsupport stays enabled: tools/disable.sh skips it because it requests
+# TV_INPUT_HARDWARE. com.technicolor.factorycert was not touched and not opened.
+#
+# The updaters are commented out below, as this repo recommends. The tested unit has them disabled by its
+# owner's choice (no TIMVISION, and com.technicolor.app.ota is also what pushes TIM's preloaded apps,
+# FIGC VivoAzzurro arrived the day this was tested); with them off the box gets no firmware fixes.
+#
+# After a reboot this box starts in standby (mWakefulness=Asleep, black screenshots); the remote's power
+# button or `input keyevent WAKEUP` brings up Home. Nothing in this list was re-enabled by the firmware at boot.
+# Private DNS does not exist on Android 8.0.
+
+# TIM / Technicolor telemetry and remote device management
+timvision.telemetry                          # TIMVISION "traps" telemetry
+com.smarts.smartagentpassivestb              # passive monitoring agent, installed by com.movenda.omadm.tv
+com.movenda.omadm.tv                         # OMA-DM operator device management
+com.movenda.p4mcore                          # Movenda core service for the above
+com.technicolor.android.BootupTraceQR
+com.technicolor.cputemperature
+com.google.android.feedback
+
+# TIMVISION service parts: off on the tested unit (owner dropped TIMVISION; iptuner is a TV input).
+# Uncomment the group only if you don't use TIMVISION.
+# tv.broadpeak.nanocdnwrapper                  # Broadpeak multicast CDN for TIMVISION live
+# it.telecomitalia.iptuner                     # TIMVISION live channels (a TV input)
+# it.telecomitalia.linemanager
+# it.telecomitalia.accountmanager              # TIM account
+# it.telecomitalia.timppapp
+# timvision.tvappsettings
+
+# Google voice and recommendation rows (voice off by choice)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+
+# Preloaded and operator-pushed apps: the tested unit has all of these disabled by its owner's choice.
+# They are commented out so other owners keep theirs; uncomment the ones you don't use.
+# com.netflix.ninja                          # kept enabled on the tested unit
+# com.google.android.youtube.tv              # kept enabled on the tested unit (YouTube casting needs it)
+# com.amazon.amazonvideo.livingroom
+# com.disney.disneyplus
+# com.apple.atve.androidtv.appletv
+# com.dazn
+# com.wbd.stream
+# it.mediaset.infinitytv
+# tv.pluto.android
+# com.cbs.ca
+# com.upst.hayu
+# com.fifa.plus.android
+# com.figc.vivoazzurrotv
+# it.rds.androidtv.rdssocialtv
+# it.telecomitalia.thefilmclub
+# it.telecomitalia.games
+# it.telecomitalia.timmusic_tv
+
+# Android TV tutorials and screensaver
+com.google.android.tvtutorials
+com.google.android.backdrop                  # screensaver; the basic daydream remains
+
+# Updaters: disabled on the tested unit by choice, kept here (see the header)
+# com.technicolor.checkota
+# com.technicolor.app.ota
+# timvision.upgrade

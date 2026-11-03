@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-AXFR2 (watchmen, MediaTek, 1 GB), India",
+  "os": "Google TV 14",
+  "brand": "Xiaomi",
+  "notes": "PatchWall, Mi analytics, sponsored rows, partner auto-installs, TV Manager; screen mirroring kept; preloaded streaming apps listed but commented out; stock launcher launcherx disabled in favor of com.gathin.tvhome; inputs via mitv.service; setupwraith does not own saved Wi-Fi"
+}

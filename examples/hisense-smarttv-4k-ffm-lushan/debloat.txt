@@ -3,6 +3,12 @@
 # string is "SmartTV 4K FFM", the same as examples/hisense-smarttv-4k-ffm/ (huangshan, Android TV 10) and
 # examples/hisense-smarttv-4k-ffm-android11/ (songshan); this is a third board with its own package set.
 # Mongolia, en-US locale.
+# Second unit: Hisense 65QD5N (US market), model string "SmartTV 4K", device lushan (product lushan-NF),
+# the same board his9603 / platform merak / mt5896, Google TV 12, firmware STT2.230929.001.102, security
+# patch 2026-02-05, en-US. Its US firmware adds Haystack News, VIDAA Channels and more FAST apps, listed
+# below with a "second unit" comment. Applied there on 2026-11-01 in six batches with a screenshot after
+# each, then two reboots: nothing came back, Home, HDMI, Wi-Fi and the remote kept working, with the Clean
+# Your TV launcher as Home. Kept there: Prime Video, HBO Max and the Hisense browser.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-smarttv-4k-ffm-lushan/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-smarttv-4k-ffm-lushan/debloat.txt com.google.android.apps.tv.launcherx
@@ -32,6 +38,11 @@ com.hisense.odinbrowser                      # Hisense browser
 com.google.android.youtube.tvmusic           # YouTube Music
 com.google.android.play.games                # Play Games
 com.vt.hishow                                # "Family Moment" screensaver and photo content
+com.haystack.android                         # Haystack News (second unit): recommendation cards, a live channel input
+
+# Hisense content feeds (second unit, US firmware)
+net.vidaatv.hisense.android.tv               # VIDAA Channels, free ad-supported channels
+com.vidaa.oemtabcontentprovider              # VIDAA content provider for the stock home's rows
 
 # Store/hotel demo mode and the first-time setup flow (setup already complete)
 com.vt.storemode
@@ -43,6 +54,18 @@ com.iqiyi.i18n.tv                            # iQIYI
 com.mercadolibre.android.mplay_tv            # Mercado Play
 com.wbd.stream                               # HBO Max
 com.vt.alexa                                 # Hisense Alexa (Google Assistant is kept)
+com.google.android.videos                    # Google TV app (Play Movies) (second unit)
+# com.google.android.youtube.tvunplugged       # YouTube TV (second unit); a subscription service, kept on in the shared list
+com.tubitv                                   # Tubi (second unit)
+tv.pluto.android                             # Pluto TV (second unit)
+com.roku.web.trc                             # The Roku Channel (second unit)
+# com.fubo.firetv.screen                       # Fubo (second unit); a subscription service, kept on in the shared list
+
+# Sharing and screensaver: the second unit disabled these by choice, the first kept them. Uncomment any
+# you do not use. AirPlay and Chromecast stayed on and are not part of these packages.
+# com.vt.tv.dlna                             # DLNA media sharing (only a boot receiver)
+# com.vt.tv.mobiledeviceconnectiontips       # Miracast / screen-sharing receiver (WifiDisplayService) and its tips
+# com.google.android.apps.tv.dreamx          # Google ambient screensaver; point screensaver_components elsewhere after
 
 # Hisense device assistant: a cleaner with a boot receiver (cache clean, "turbo mode")
 com.vt.tv.protector
@@ -53,6 +76,8 @@ com.vt.tv.protector
 # `dumpsys wifi | grep -o 'cname=[^ ]*'`. If the network the TV is actually connected to belongs to
 # setupwraith, forget and re-join it in Settings before running this, or the disable deletes that
 # network and takes the TV off Wi-Fi and ADB. Needs FORCE_SETUPWRAITH=1 to pass disable.sh's Wi-Fi guard.
+# On the second unit the connected network was owned by android.uid.system and only an older saved network
+# by setupwraith; that one was deleted, the TV stayed on Wi-Fi and ADB.
 com.google.android.tungsten.setupwraith
 
 # Not a disable, but worth recording for this remote, for the launcher's config.xml app_keys (find
@@ -63,3 +88,8 @@ com.google.android.tungsten.setupwraith
 # The gear does nothing once launcherx is disabled. Reinstall with HOME_KEY_SERVICE=1,
 # settings_key_panel on, and 83 in settings_key_keycodes. That opens the launcher's quick settings
 # panel, and the helper stayed bound after a reboot. Holding volume may step only once while it is bound.
+# Second unit's remote ("SmartRC Consumer Control"): gear is KEY_NOTIFICATION (keycode 83), YouTube
+# scancode 469, Prime Video 468, Disney+ 418, Tubi 419. With HOME_KEY_SERVICE=1, settings_key_keycodes 83 and
+# app_keys scan:469/468/418 all four worked on the real remote; Netflix, Input and the mic work without a
+# helper. Measured there: held volume up ramps with no helper and steps once per press with HomeKeyService
+# alone bound. The owner kept the buttons.

@@ -162,6 +162,34 @@
 # - "tile_menu": true makes holding OK on a tile open Move, instead of the app's App info page.
 # - Private DNS (AdGuard) was set and Netflix still resolved; playback was not checked.
 #
+# TCL 65P735, Kuwait, 2026-10-20, status 2026-10-28 (eight days, nothing re-enabled): sold as "Smart TV Pro",
+# G03_4K_GB / BeyondTV4, Realtek rtd288o / R51MT05, software V8-R51MT05-LF1V652, client TCL-ME-RTD51M-S1 (Middle East),
+# Google TV 11, build RP1A.200622.001 AR11, security patch 2024-12-05, 32-bit userspace (zygote32, armeabi-v7a only), 2 GB
+# RAM, wired Ethernet, ro.adb.secure=1. Applied in five batches with a screenshot, a network check and a Home check after
+# each, then rebooted: launcherx and setupwraith stayed disabled. Wi-Fi was not at risk: the saved network belonged to
+# android.uid.system (`dumpsys wifi | grep -o 'cname=[^ ]*'`) and the TV was on Ethernet. launcher/build-and-install.sh with
+# INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1 STOCK_LAUNCHER=none installed the launcher; AdGuard Private DNS changed nothing for
+# playback. Found on this unit:
+# - Besides the packages above it also had these off: com.tcl.ttvs (TCL BI/awareness/identifier services and T-Cast),
+#   com.tcl.hearaid, com.tcl.magiconnectfree (TCL phone sharing), com.google.android.apps.nbu.smartconnect.tv,
+#   com.tcl.t_solo (Bluetooth "Listen alone") and TalkBack (all six are commented out in the list below: the shared list
+#   leaves them on). The firmware updater was also turned off here by choice
+#   (not listed: keep it enabled unless you want updates frozen).
+# - Remote buttons only launcherx answered die with it. Keycodes (logcat -s TclPhoneWindowManager, checked with the real
+#   remote): Netflix 4062, YouTube 4065, Prime Video 4099, the old TCL Guard button 4140, Settings gear 4077 (a gear mapped to
+#   83 did nothing here). app_keys and settings_key_keycodes in config.xml or a theme bring them back. After a reinstall the
+#   two helpers are enabled but not bound until they are switched off and on again.
+# - Game Master (TCL's game mode: ALLM, low lag) survives Home, input changes and power cycles, and the TV shows a "Game
+#   Master : On/Off" banner at every input start. It is turned off only when the Options bar (or the Picture or Sound page)
+#   opens while the current source is not the console: the log says "game console isn't plugged in, turn off game master".
+#   It is not a setting (`settings put` does nothing; com.tcl.tvmanager's setSpecialModeEnable is ignored for an ordinary app).
+# - No VRR and no 120 Hz: the P735 board configs under /vendor/hardware use 60 Hz panel files, the SoC is HDMI 2.0, and the
+#   TV logs "not support free sync". A PS5 negotiates 3840x2160@60Hz HDR10.
+# - A VPN app (WireGuard) was killed in the background on the stock firmware. Two suspects, not isolated: com.tcl.guard (TCL's
+#   memory cleaner, disabled here) and TCL's APP_AUTO_START app-op, "ignore" for it (cmd appops set <package> APP_AUTO_START
+#   allow). Both were changed, then it kept running.
+# - Disabling dreamx leaves screensaver_components pointing at it; set another one before (see group 7).
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
@@ -170,6 +198,7 @@
 # com.google.android.apps.nbu.smartconnect.tv (Google data saver / VPN client).
 
 # ---- 1. TCL and Google telemetry ----
+# com.tcl.ttvs                                # TCL BI / awareness / identifier services and T-Cast; off on the 65P735 (AR11), left on in the shared list
 com.tcl.bi                                  # TCL BI analytics
 com.tcl.logkit                              # log capture and upload
 # com.tcl.xian.StartandroidService          # background reporting service; off on the tested units, but TCL's updater needs it (see header), so it stays on
@@ -197,6 +226,10 @@ org.chromium.webview_shell                  # WebView test shell
 com.google.android.syncadapters.calendar    # calendar sync, no calendar on a TV
 com.google.android.play.games               # Play Games
 com.tcl.gallery                             # TCL photo gallery
+# com.tcl.hearaid                             # hearing test / volume adaptation; off on the 65P735 (AR11), left on in the shared list
+# com.tcl.magiconnectfree                     # TCL phone sharing app; off on the 65P735 (AR11), left on in the shared list
+# com.google.android.apps.nbu.smartconnect.tv # Google "smart connect" nearby service; off on the 65P735 (AR11), left on in the shared list
+# com.tcl.t_solo                            # Bluetooth "Listen alone"; off on the 65P735 (AR11), but on AR09 it holds TV_INPUT_HARDWARE (50S546), so it stays on
 
 # ---- 4. Off by choice: streaming apps and TCL extras (comment out what you use) ----
 com.netflix.ninja                           # Netflix (the remote's Netflix button then opens nothing)
@@ -207,6 +240,7 @@ com.tcl.ui_mediaCenter                      # USB media player; re-enable to pla
 com.tcl.gamebar                             # game mode / VRR overlay for consoles
 com.tcl.channelplus                         # TCL Live FAST channels
 com.tcl.browser                             # TCL web browser; removes the "BrowseHere" row from the stock home
+# com.google.android.marvin.talkback        # TalkBack screen reader; off on the 65P735, but it is an accessibility service, so it stays on unless nobody needs it
 
 # ---- 5. Off by choice: voice, casting, mirroring (comment out what you use) ----
 com.google.android.katniss                  # Google search / voice (the remote's mic button)

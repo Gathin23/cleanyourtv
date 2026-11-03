@@ -21,7 +21,7 @@ Tested on **Xiaomi MiTV-AXFR1** (codename `rango`, product `dune`, Amlogic/droid
 
 ## 2. Tested Debloat List
 
-The debloat list in [`examples/xiaomi-mitv-axfr1/debloat.txt`](../../examples/xiaomi-mitv-axfr1/debloat.txt) safely disables 16 packages across 4 categories:
+The debloat list in [`examples/xiaomi-mitv-axfr1/debloat.txt`](../../examples/xiaomi-mitv-axfr1/debloat.txt) safely disables 25 packages in seven groups — telemetry, PatchWall and sponsored rows, background services, preloaded apps, then three marked by choice (screen mirroring, firmware updates and the streaming apps not used):
 
 ### Critical Safety Notes:
 - Keep `com.droidlogic.tvinput`, `com.android.tv`, and Bluetooth/remote services enabled.
@@ -36,7 +36,10 @@ The debloat list in [`examples/xiaomi-mitv-axfr1/debloat.txt`](../../examples/xi
 - **Icon-Only Top Bar**:
   Setting `icon_only_buttons` and `icon_only_inputs` to `true` renders Inputs, Wi-Fi, Reorder, and Settings as clean 42dp circular buttons with text labels omitted.
 - **Interactive App Reordering**:
-  Enabled with `<bool name="reorder_button">true</bool>` and `<bool name="tile_menu">true</bool>`. Users can move app tiles using the top-bar reorder icon or by holding the OK button on any tile.
+  Enabled with `<bool name="reorder_button">true</bool>`, and on a build before launcher 3.3 also
+  `<bool name="tile_menu">true</bool>`: 3.3 ships the tile menu on, so a hold on a tile opens Move,
+  Remove from Home and App info there without it (`themes/README.md`, the Keys table). Users can move app
+  tiles using the top-bar reorder icon or by holding the OK button on any tile.
 
 ---
 
