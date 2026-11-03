@@ -64,6 +64,11 @@ com.google.android.backdrop                  # ambient screensaver; launcher/ ha
 # Stock home recommendation rows: disable after the new launcher owns Home
 com.google.android.tvrecommendations
 
+# Partner hooks the new launcher does not use; none asks for TV_INPUT_HARDWARE or serves a TV input
+android.autoinstalls.config.SW               # Play auto-install config for partner apps
+com.google.android.leanbacklauncher.partnercustomizer  # partner rows for the Leanback launcher
+com.google.android.leanbacklauncher          # installed, never Home here; restore.sh turns it back on as a stock launcher
+
 # Off by the owner's choice on this unit. Ask before disabling; uncomment only what is not used.
 # com.google.android.videos                  # Google Play Movies & TV
 # com.google.android.play.games              # Google Play Games
