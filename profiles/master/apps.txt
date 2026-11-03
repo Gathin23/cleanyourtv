@@ -1,0 +1,24 @@
+# third-party apps captured from Chromecast on 2026-11-01; tools/profile.py reads this file
+app.morphe.manager
+# app.revanced.android.gms   patched Play Services: installing it over the system one can break
+#                             Play Services and the account, so it is not part of the sync
+com.amazon.amazonvideo.livingroom
+com.apkupdater
+com.brave.browser
+com.cybercat.adbappcontrol.tv
+com.gathin.tvhome
+com.looker.droidify
+com.phlox.tvwebbrowser
+com.tpn.adbautoenable
+de.twokit.castbrowser
+# dev.vodik7.tvquickactions   paid app: an APK copied from here carries no licence, so
+#                             install it from the Play Store on each unit with the buying account
+dnsfilter.android
+it.mediaset.infinitytv
+it.rainet.androidtv
+me.timschneeberger.shizustore
+moe.shizuku.privileged.api
+org.fossify.filemanager
+org.jellyfin.androidtv
+org.localsend.localsend_app
+org.smarttube.beta
