@@ -1823,6 +1823,37 @@ tools/tv.py 'settings put global private_dns_mode opportunistic'
 or keep Private DNS and accept that the router's domain rules no longer cover the TV. Write down which one
 you chose, so the next "this one service is slow on the TV" does not start from scratch.
 
+## A VPN app on the TV makes strict Private DNS fail every lookup
+
+Hostname mode applies the specifier to the VPN network as well as to Wi-Fi, and with a VPN app connected on
+the TV itself it can fail validation there while Wi-Fi still reports it valid. Seen on a Xiaomi Mi Box S
+(`MIBOX4`, oneday, Android TV 9, `PI.3933`) with the Tailscale app connected for all apps: setting
+`dns.adguard-dns.com` in hostname mode broke every name lookup within seconds. `ping youtube.com` and
+`ping dns.adguard-dns.com` both answered `unknown host`, `ping 1.1.1.1` still worked, and
+`dumpsys connectivity` showed the Wi-Fi network `VALIDATED` with `UsePrivateDns: true`, the VPN network with
+`DnsAddresses: [100.100.100.100, ...]`, `UsePrivateDns: true` and `lastValidated{false}` (#3130). The
+lookups go to the VPN's own resolver, and DNS-over-TLS to that specifier through it did not validate. ADB
+kept working throughout, since it is an IP connection and needs no lookup, so the undo below can be sent
+over the same session.
+
+Check for a running VPN before switching Private DNS on:
+
+```sh
+tools/tv.py 'dumpsys connectivity' | grep 'type: VPN'
+```
+
+A `NetworkAgentInfo` line there means one is up: leave Private DNS off on that set, and filter ads on the
+router or in the VPN's own DNS settings instead. If it is already on, this puts lookups back within a few
+seconds:
+
+```sh
+tools/tv.py 'settings put global private_dns_mode opportunistic'
+tools/tv.py 'settings delete global private_dns_specifier'
+```
+
+Not checked in that report: other VPN clients and Android versions, and whether a specifier the VPN's
+resolver can reach validates.
+
 ## An app that runs a local VPN is on until the next boot, then gone
 
 A DNS filter, an ad blocker or a VPN client you keep, set to start with the TV, works once switched on, and
@@ -1835,8 +1866,10 @@ receiver had returned and handed the loading to a thread, no foreground service 
 the process was an empty cached one, and this firmware keeps very few of those:
 `tools/tv.py 'dumpsys activity settings' | grep CUR_MAX` prints `CUR_MAX_CACHED_PROCESSES=8` and
 `CUR_MAX_EMPTY_PROCESSES=4`. The first boot services push it out before it reaches the VPN. Any such app that
-loads slowly on a small TV can hit this; Private DNS (the README's option) is not affected, since the system
-resolver does the work.
+loads slowly on a small TV can hit this; Private DNS (the README's option) is not affected by that
+eviction, since the system resolver does the work - but while the app is up, the specifier applies to its
+VPN network as well, which is
+[the failure above](#a-vpn-app-on-the-tv-makes-strict-private-dns-fail-every-lookup).
 
 What does not help: the background exemptions (`cmd appops set <package> RUN_ANY_IN_BACKGROUND allow`,
 `dumpsys deviceidle whitelist +<package>`, `am set-standby-bucket <package> active`), because the app
