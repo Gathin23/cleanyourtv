@@ -53,7 +53,7 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <!-- Weekly wake/sleep events and holiday exceptions, edited with the remote. -->
+        <!-- Weekly wake/sleep events and date exclusions, edited with the remote. -->
         <activity
             android:name=".ScheduleActivity"
             android:taskAffinity=""

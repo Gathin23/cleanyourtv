@@ -1,14 +1,14 @@
 <resources>
     <string name="sched_0">"Horários da TV"</string>
-    <string name="sched_1">"Os horários pertencem ao dia selecionado. As férias bloqueiam apenas o despertar automático. Voltar descarta alterações."</string>
+    <string name="sched_1">"Os horários pertencem ao dia selecionado. Os períodos de exclusão bloqueiam apenas o despertar automático. Voltar descarta alterações."</string>
     <string name="sched_2">"Horários: ligados"</string>
     <string name="sched_3">"Horários: desligados"</string>
     <string name="sched_4">"+ Adicionar despertar / repouso"</string>
     <string name="sched_5">"Não ligar: "</string>
-    <string name="sched_6">"Período de férias"</string>
+    <string name="sched_6">"Período sem despertar automático"</string>
     <string name="sched_7">"Editar datas"</string>
     <string name="sched_8">"Excluir"</string>
-    <string name="sched_9">"+ Adicionar férias"</string>
+    <string name="sched_9">"+ Adicionar período de exclusão"</string>
     <string name="sched_10">"Salvar"</string>
     <string name="sched_11">"Despertar  "</string>
     <string name="sched_12">"Repouso  "</string>

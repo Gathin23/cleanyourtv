@@ -1,14 +1,14 @@
 <resources>
     <string name="sched_0">"電視排程"</string>
-    <string name="sched_1">"時間屬於所選日期。假期只阻止自動喚醒。返回會放棄未儲存的變更。"</string>
+    <string name="sched_1">"時間屬於所選日期。排除期間只阻止自動喚醒。返回會放棄未儲存的變更。"</string>
     <string name="sched_2">"排程：開啟"</string>
     <string name="sched_3">"排程：關閉"</string>
     <string name="sched_4">"+ 新增喚醒／待機時間"</string>
     <string name="sched_5">"不自動開機："</string>
-    <string name="sched_6">"假期期間"</string>
+    <string name="sched_6">"不自動喚醒的期間"</string>
     <string name="sched_7">"編輯日期"</string>
     <string name="sched_8">"刪除"</string>
-    <string name="sched_9">"+ 新增假期"</string>
+    <string name="sched_9">"+ 新增排除期間"</string>
     <string name="sched_10">"儲存"</string>
     <string name="sched_11">"喚醒  "</string>
     <string name="sched_12">"待機  "</string>

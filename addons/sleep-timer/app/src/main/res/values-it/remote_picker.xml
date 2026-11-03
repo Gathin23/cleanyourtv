@@ -7,7 +7,7 @@
     <string name="remote_hint">"Sinistra / Destra: campo · Su / Giù: valore · OK: avanti · Indietro: annulla"</string>
     <string name="remote_page_hint">"Scegli una riga con le frecce e premi OK. Salva per applicare le modifiche."</string>
     <string name="remote_events">"EVENTI SETTIMANALI"</string>
-    <string name="remote_holidays">"FERIE · NESSUN RISVEGLIO AUTOMATICO"</string>
+    <string name="remote_exclusions">"PERIODI SENZA RISVEGLIO AUTOMATICO"</string>
     <string name="remote_wake_time">"Ora di risveglio"</string>
     <string name="remote_sleep_time">"Ora di standby"</string>
 </resources>

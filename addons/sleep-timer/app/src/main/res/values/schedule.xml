@@ -1,14 +1,14 @@
 <resources>
     <string name="sched_0">"TV schedule"</string>
-    <string name="sched_1">"Times belong to the selected calendar day. Holidays block automatic wake only. Back cancels unsaved changes."</string>
+    <string name="sched_1">"Times belong to the selected calendar day. Exclusion periods block automatic wake only. Back cancels unsaved changes."</string>
     <string name="sched_2">"Schedule: ON"</string>
     <string name="sched_3">"Schedule: OFF"</string>
     <string name="sched_4">"+ Add wake / sleep time"</string>
     <string name="sched_5">"No wake: "</string>
-    <string name="sched_6">"Holiday period"</string>
+    <string name="sched_6">"Wake exclusion period"</string>
     <string name="sched_7">"Edit dates"</string>
     <string name="sched_8">"Delete"</string>
-    <string name="sched_9">"+ Add holiday period"</string>
+    <string name="sched_9">"+ Add exclusion period"</string>
     <string name="sched_10">"Save"</string>
     <string name="sched_11">"Wake  "</string>
     <string name="sched_12">"Sleep  "</string>

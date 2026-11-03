@@ -30,7 +30,7 @@ final class ScheduleRules {
         for (Rule r : rules) {
             if (r.days == 0) continue;
             LocalDate date = today;
-            // Jump over holidays rather than imposing a horizon on future events.
+            // Jump over exclusion periods rather than imposing a horizon on future events.
             while (true) {
                 if (r.wake) {
                     boolean jumped = false;

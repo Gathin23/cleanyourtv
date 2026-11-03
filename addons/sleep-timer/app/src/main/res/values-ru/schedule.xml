@@ -1,14 +1,14 @@
 <resources>
     <string name="sched_0">Расписание телевизора</string>
-    <string name="sched_1">Время относится к выбранному дню. Каникулы запрещают только автоматическое включение. Назад — выйти без сохранения.</string>
+    <string name="sched_1">Время относится к выбранному дню. Исключения запрещают только автоматическое включение. Назад — выйти без сохранения.</string>
     <string name="sched_2">Расписание: включено</string>
     <string name="sched_3">Расписание: выключено</string>
     <string name="sched_4">+ Добавить включение / сон</string>
     <string name="sched_5">"Не включать: "</string>
-    <string name="sched_6">Период каникул</string>
+    <string name="sched_6">Период без автовключения</string>
     <string name="sched_7">Изменить даты</string>
     <string name="sched_8">Удалить</string>
-    <string name="sched_9">+ Добавить период каникул</string>
+    <string name="sched_9">+ Добавить период</string>
     <string name="sched_10">Сохранить</string>
     <string name="sched_11">"Включение  "</string>
     <string name="sched_12">"Сон  "</string>

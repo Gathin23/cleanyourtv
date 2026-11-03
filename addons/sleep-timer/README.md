@@ -19,13 +19,14 @@ Open **Schedule** in the timer picker. Add multiple wake or sleep events, choose
 **Save** applies the list and its On/Off switch; Back discards edits. The schedule screen keeps
 Save visible below the scrolling event list. Wake and sleep entries use separate accent colours.
 
-Time and holiday dates use D-pad numeric fields, without a keyboard or number buttons. Left/Right
+Time and exclusion dates use D-pad numeric fields, without a keyboard or number buttons. Left/Right
 select a field, Up/Down change its value (holding accelerates), OK moves to the next field and then
 Save. Back cancels the picker. Hours and minutes wrap independently; date fields clamp invalid days
 when changing month or year. Select Save in the main schedule screen to apply the completed edits. Existing weekday/weekend sleep
 settings are migrated to Monday-Friday and Saturday-Sunday events.
 
-Add any number of holiday date ranges. Both end dates are included; overlapping ranges work. These
+Add any number of date ranges without automatic wake, for example during closures, maintenance
+or any planned break in use. Both end dates are included; overlapping ranges work. These
 ranges suppress scheduled wake events only, leaving sleep events and manual remote power available.
 Sleep events enter standby immediately at the selected time, without the timer countdown.
 
@@ -123,7 +124,7 @@ This test leaves the saved weekly schedule unchanged.
 ## Schedule calculation checks
 
 [tests/ScheduleCheck.java](tests/ScheduleCheck.java) checks weekdays, exact boundaries, overlapping
-holidays, the year boundary, daylight saving time, empty lists and simultaneous sleep/wake events.
+exclusion periods, the year boundary, daylight saving time, empty lists and simultaneous sleep/wake events.
 Run with JDK 17 from the repository root (output stays in the ignored work folder):
 
 ```sh

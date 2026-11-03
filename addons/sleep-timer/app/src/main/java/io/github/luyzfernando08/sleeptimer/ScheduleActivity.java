@@ -54,7 +54,7 @@ public class ScheduleActivity extends Activity {
             TextView row=button(label(r),()->edit(r));row.setTextColor(r.wake?0xff8cf0d3:0xffbcb5ff);
         }
         button(getString(R.string.sched_4),()->edit(null));
-        section(R.string.remote_holidays);
+        section(R.string.remote_exclusions);
         for(ScheduleRules.Pause p:pauses) button(getString(R.string.sched_5)+p.start+"  -  "+p.end,()->{
             new AlertDialog.Builder(this).setTitle(getString(R.string.sched_6)).setItems(new String[]{getString(R.string.sched_7),getString(R.string.sched_8)},(d,n)->{
                 if(n==1){pauses.remove(p);render();}else dateRange(p);

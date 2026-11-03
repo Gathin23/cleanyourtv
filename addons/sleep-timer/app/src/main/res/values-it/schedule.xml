@@ -1,14 +1,14 @@
 <resources>
     <string name="sched_0">"Programmazione TV"</string>
-    <string name="sched_1">"Gli orari si riferiscono al giorno selezionato. Le ferie bloccano solo il risveglio automatico. Indietro annulla le modifiche."</string>
+    <string name="sched_1">"Gli orari si riferiscono al giorno selezionato. I periodi di esclusione bloccano solo il risveglio automatico. Indietro annulla le modifiche."</string>
     <string name="sched_2">"Programmazione: attiva"</string>
     <string name="sched_3">"Programmazione: disattiva"</string>
     <string name="sched_4">"+ Aggiungi risveglio / standby"</string>
     <string name="sched_5">"Non accendere: "</string>
-    <string name="sched_6">"Periodo di ferie"</string>
+    <string name="sched_6">"Periodo senza risveglio automatico"</string>
     <string name="sched_7">"Modifica date"</string>
     <string name="sched_8">"Elimina"</string>
-    <string name="sched_9">"+ Aggiungi ferie"</string>
+    <string name="sched_9">"+ Aggiungi periodo di esclusione"</string>
     <string name="sched_10">"Salva"</string>
     <string name="sched_11">"Risveglio  "</string>
     <string name="sched_12">"Standby  "</string>
