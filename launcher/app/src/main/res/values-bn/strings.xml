@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ক্লিন হোম</string>
+    <string name="app_name">হোম</string>
     <string name="inputs">ইনপুট</string>
     <string name="wifi">ওয়াই-ফাই</string>
     <string name="settings">সেটিংস</string>

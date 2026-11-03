@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Temiz Ana Ekran</string>
+    <string name="app_name">Ana Ekran</string>
     <string name="inputs">Girişler</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Ayarlar</string>

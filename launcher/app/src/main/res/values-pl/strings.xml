@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Czysty ekran główny</string>
+    <string name="app_name">Ekran główny</string>
     <string name="inputs">Wejścia</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Ustawienia</string>
