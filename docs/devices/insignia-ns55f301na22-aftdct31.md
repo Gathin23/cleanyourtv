@@ -61,7 +61,7 @@ Settings button in the replacement launcher flashed and returned. Pages that are
 
 | Opens | Does not open |
 |---|---|
-| `.tv.network.NetworkActivity`, `.tv.device.DeviceActivity` (Device & Software, with Developer options), `.tv.controllers_bluetooth_devices.ControllersAndBluetoothActivity`, `.tv.applications.ApplicationsActivity`, `android.settings.ACCESSIBILITY_SETTINGS`, `android.settings.WIFI_SETTINGS` | `.tv.display_sounds.DisplayAndSoundsActivity`, `.tv.preferences.PreferencesActivity`, `.tv.my_account.MyAccountActivity` (`Permission Denial ... requires com.amazon.tv.permission.LAUNCHER_SETTINGS`, a signature|privileged permission); `android.settings.DISPLAY_SETTINGS` and `SOUND_SETTINGS` open a chooser |
+| `.tv.network.NetworkActivity`, `.tv.device.DeviceActivity` (Device & Software, with Developer options), `.tv.controllers_bluetooth_devices.ControllersAndBluetoothActivity`, `.tv.applications.ApplicationsActivity`, `android.settings.ACCESSIBILITY_SETTINGS`, `android.settings.WIFI_SETTINGS` | `.tv.display_sounds.DisplayAndSoundsActivity`, `.tv.preferences.PreferencesActivity`, `.tv.my_account.MyAccountActivity` (`Permission Denial ... requires com.amazon.tv.permission.LAUNCHER_SETTINGS`, a signature\|privileged permission); `android.settings.DISPLAY_SETTINGS` and `SOUND_SETTINGS` open a chooser |
 
 Getting to the full stock Settings needs a pause in the redirect. **Keep ADB on until a way into Settings has been checked with
 the real remote**, because turning ADB debugging back on needs Settings (Device & Software, Developer options).
