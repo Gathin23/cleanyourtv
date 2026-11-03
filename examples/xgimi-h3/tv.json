@@ -1,0 +1,6 @@
+{
+  "tv": "XGIMI H3 projector (XK03E, ironman, MStar, GMUI)",
+  "os": "Android 8.0 (GMUI, not Android TV)",
+  "brand": "XGIMI",
+  "notes": "GMUI (not Android TV): telemetry/ad/push, content apps and the built-in cast (wirelessscreen, miracast) disabled; cast via LeanCast (io.leancast, DLNA); GMUI settings is a service so a launcher config wires it; phone remote needs com.xgimi.vcontrol + com.xgimi.mobilebridgeservice kept; boot wizard, SmartConnect, atmosphere, app market and updater off; hardware/voice/power services kept. Details: [notes](xgimi-h3/README.md)"
+}
