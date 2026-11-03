@@ -29,7 +29,7 @@
 |---|---|
 | **Android TV или Google TV** | [Быстрый старт](#Быстрый-старт): кодинг-ассистент сделает всю работу примерно за пятнадцать минут. |
 | **Samsung, LG, Roku, Vizio или Hisense VIDAA TV** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV cам не запустится, но вы можете отключить отслеживание с помощью пульта. |
-| **Телефон или ноутбук, без кодинг-ассистента** | One of the [community apps](https://cleanyour.tv/app) для телефонов на Android, Mac и Windows - от независимых разработчиков. |
+| **Телефон или ноутбук, без кодинг-ассистента** | Созданное сообществом [community apps](https://cleanyour.tv/app) для телефонов на Android, Mac и Windows - от независимых разработчиков. |
 | **Хотите сначала взглянуть что получите** | [Что вы получаете](#Что-вы-получаете): скриншоты нового главного экрана. |
 
 **Официальные ссылки:** [cleanyour.tv](https://cleanyour.tv) и этот репозиторий. ругие домены, использующие это имя, такие как
@@ -78,39 +78,37 @@ cleanyourtv.com, не имеют отношения к данному проек
 | **2. На вашем компьютере** | лонируйте репозиторий и откройте эту папку в вашем ассистенте (`git clone https://github.com/Gathin23/cleanyourtv`), затем вставьте [`PROMPT.md`](PROMPT.md) и укажите модель вашего телевизора. |
 | **3. Следуйте инструкциям** | Подтвердите «Разрешить отладку по USB?» на телевизоре, затем ответьте на вопросы из чек-листа: какие приложения вы используете, размер панели быстрого доступа и порядок приложений, оставлять ли голосового помощника, Chromecast и обновления. |
 
-Cloning matters: the assistant reuses this repo's `tools/disable.sh` and `launcher/build-and-install.sh`
-instead of writing its own, and that is where the backup, the Home guard and the restore record live.
+Клонирование важно: помощник использует готовые `tools/disable.sh` и `launcher/build-and-install.sh`
+из этого репозитория вместо того, чтобы писать свои собственные. Именно там хранятся резервная копия, защита главного экрана и журнал восстановления.
 
-The assistant backs up, debloats, builds and installs the launcher, and checks each step with
-screenshots pulled from the TV. With this repo as context it takes about fifteen minutes.
+Ассистент делает резервную копию, очищает систему от мусора, собирает и устанавливает лаунчер, проверяя каждый шаг с помощью скриншотов, сделанных с телевизора. При использовании этого репозитория в качестве контекста процесс занимает около пятнадцати минут.
 
-## What you get
+## Что вы получаете
 
-A home screen that looks like an Apple TV and gets out of the way:
+Главный экран, который напоминает Apple TV и не мешает работе:
 
-| Part | What it looks like |
+| Элемент | Как это выглядит |
 |---|---|
-| **A pitch-black home** | A dock of your four favourite apps in a rounded band, where Apple TV puts it. |
-| **A top shelf** | Names the focused app in large type, with an ambient glow in a colour taken from its artwork. |
-| **The rest of your apps in a grid** | Slides up when you press Down. |
-| **One floating glass highlight** | Springs from tile to tile. The focused tile lifts and shows its name. |
-| **Three frosted buttons** | Inputs (HDMI ports under the names you gave them in the TV's settings, AV, Live TV), Wi-Fi or Ethernet with the network name, Settings. |
-| **A greeting, a thin clock and the date** | In [Outfit](https://fonts.google.com/specimen/Outfit), and a matching Clock screensaver. Set `show_stats` in config or a theme for one line under the clock: CPU, free memory and free storage. It stays off unless you turn it on, and it refreshes only while Home is on screen. |
-| **Themes and module cards** | Themes change colours, wallpaper, dock and columns without a rebuild, and module cards let other apps plug a tile in, only with your say-so. |
+| **Абсолютно темный домашний экран** | Док-панель с четырьмя вашими любимыми приложениями в скругленной полосе, расположенная там же, где её размещает Apple TV. |
+| **Верхняя панель** | Показывает название активного приложения крупным шрифтом с фоновой подсветкой цвета, взятого из его иконки. |
+| **Остальные приложения в сетке** | Выезжают снизу при нажатии кнопки «Вниз». |
+| **Эффект парящего стекла** | Перемещается от плитки к плитке. Активная плитка приподнимается и показывает свое название. |
+| **Три матовые кнопки** | Источники (порты HDMI под именами, которые вы задали в настройках ТV, AV, Эфирное TV), Wi-Fi или Ethernet с именем сети, Настройки. |
+| **Приветствие, тонкие часы и дата** | Шрифт [Outfit](https://fonts.google.com/specimen/Outfit), и соответствующая заставка с часами. Установите `show_stats`  конфиге или теме, чтобы под часами появилась одна строка: ЦП, свободная память и свободное хранилище. По умолчанию она выключена, и обновляется только когда активен главный экран. |
+| **Темы и карточки модулей** | Темы меняют цвета, обои, док-панели aоличество столбцов без пересборки, а карточки модулей позволяют другим приложениям добавлять свои плитки, но только с вашего разрешения. |
 
-And a TV that stops working against you: no sponsored rows, no "Discover" nags, no analytics
-phoning home, no apps you never asked for.
+Ваш телевизор перестает работать против вас: никаких спонсорских рядов и панелей, навязчивого «Рекомендуемого», отправки аналитики и приложений, которые вы не просили.
 
 | | |
 |---|---|
-| ![The top shelf names the focused app over an ambient glow in its colour](docs/focus-2-up-netflix.png) | ![The Inputs popup: HDMI ports with what is connected, AV and Live TV](docs/inputs-menu.jpg) |
-| *Top shelf and ambient glow* | *Inputs: HDMI with connection state, AV, Live TV* |
-| ![The grid with the glass highlight on a tile and its name beneath](docs/focus-1-fancode.png) | ![The Clock screensaver: a thin clock drifting over the glow](docs/clock-screensaver.png) |
-| *The grid, one glass highlight, the tile's name* | *Clock screensaver, drifts so nothing burns in* |
-| ![The aurora theme: a wallpaper and tinted pills, pushed without a rebuild](themes/aurora/screenshot.jpg) | ![Six columns and a six-app dock from a theme's config.json](themes/six-columns/screenshot.jpg) |
-| *Aurora theme, pushed with `tools/theme.sh`* | *Six columns and a six-app dock, same launcher* |
-| ![Moving a tile: held OK, chose Move, the tile is picked up and the others dim](docs/tile-move.jpg) | ![The App library: installed apps, one press adds an app back to Home](docs/app-library.jpg) |
-| *Hold OK on a tile, Move: arrows carry it, Back puts it down* | *App library: one press puts a removed app back on Home* |
+| ![Верхняя панель и фоновая подсветка](docs/focus-2-up-netflix.png) | ![HDMI со статусом подключения, AV, Эфирное ТВ](docs/inputs-menu.jpg) |
+| *Верхняя панель и фоновая подсветк* | *HDMI со статусом подключения, AV, Эфирное ТВ* |
+| ![Сетка, эффект парящего стекла, название плитки](docs/focus-1-fancode.png) | ![Заставка-часы, дрейфующие на фоне сияния](docs/clock-screensaver.png) |
+| *Сетка, эффект парящего стекла, название плитки* | *Заставка-часы, дрейфующие на фоне сияния* |
+| ![Тема Aurora: обои и цветные элементы интерфейса обновлены без перезапуска](themes/aurora/screenshot.jpg) | ![Шесть колонок на шесть док-панелей, этот же лаунчер config.json](themes/six-columns/screenshot.jpg) |
+| *Тема Aurora, применена через `tools/theme.sh`* | *Шесть колонок на шесть док-панелей, этот же лаунчер* |
+| ![Перемещение: зажмите OK, выберите «Переместить». Иконка выбрана, остальные элементы затемнены.](docs/tile-move.jpg) | ![Библиотека приложений: установленные приложения. Добавление на главный экран в одно нажатие](docs/app-library.jpg) |
+| *При включенном `tile_menu`, удерживайте OK на плитке, выберите Переместить: стрелки перемещают ее, «Назад» возвращает на место* | *Библиотека приложений: установленные приложения. Добавление на главный экран в одно нажатие* |
 
 ## Supported TVs
 
