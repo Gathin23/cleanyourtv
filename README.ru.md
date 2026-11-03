@@ -163,40 +163,33 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | **Python 3** (любая версия 3.x) | нструменты. Команда venv ниже установит необходимые зависимости. |
 | **JDK 17 through 22** (полная JDK, включая `jlink`) и **Android SDK platform 34** с **build-tools 34.0.0 or any newer 34.x** | Сборка лаунчера. JDK 23 и новее ломают работу Gradle 8.9. Сборка использует именно Platform 34; более новая платформа ее не заменяет. В macOS, если ничего не установлено: `brew install openjdk@17 android-commandlinetools`, затем `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. В Linux скрипт установки ищет в `~/Android/Sdk` и проверяет наличие `java` в вашем PATH. |
 
-`tools/tv.py` talks to network ADB on port 5555. If that port stays closed and the TV offers
-Wireless debugging with a pairing code (the Chromecast with Google TV and the Google TV Streamer
-do), pair it once with the stock `adb`. Then either run `adb tcpip 5555` to open the port, which
-usually lasts only until the TV reboots, or keep it closed: point `TV_ADB_BINARY` at that same
-`adb` and `TV_HOST` at the port the Wireless debugging screen shows, and the tools reach the TV
-through the paired connection with nothing listening on 5555
-([tools/native-adb.md](tools/native-adb.md)). [Troubleshooting](docs/TROUBLESHOOTING.md#connecting)
-has both, with the pairing steps.
+`tools/tv.py` общается с сетевым ADB на порту 5555. Если этот порт остаётся закрытым, а телевизор поддерживает беспроводную отладку (Wireless debugging) с кодом сопряжения - как, например, Chromecast with Google TV и Google TV Streamer, - один раз сопряжитесь с ним штатным `adb`. Дальше либо откройте порт командой `adb tcpip 5555` - обычно это действует лишь до перезагрузки телевизора, - либо оставьте порт закрытым: укажите в `TV_ADB_BINARY` тот же `adb`, а в `TV_HOST` порт, который отображается на экране беспроводной отладки, и инструменты будут обращаться к телевизору через сопряжённое соединение, при этом на порту 5555 не слушает ничего ([tools/native-adb.md](tools/native-adb.md)). Оба варианта, включая шаги сопряжения, описаны в [Устранение неполадок](docs/TROUBLESHOOTING.md#connecting).
 
 ```bash
 python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt
 export TV_HOST=192.168.1.50                                   # IP-адрес вашего телевизора
 
-tools/venv/bin/python -I tools/tv.py --probe                 # model, Android version, firmware
-tools/venv/bin/python -I tools/tv.py 'pm list packages'      # one shell command on the TV
-tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt        # apply a debloat list
-tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt        # undo it, stock launcher back
-tools/venv/bin/python -I tools/check.py examples/xiaomi-mi-tv-4a/debloat.txt   # what a firmware update undid
-TV_HOST=192.168.1.50 launcher/build-and-install.sh           # build the launcher and make it Home
-tools/theme.sh themes/aurora                                 # push a theme; --reset removes it
+tools/venv/bin/python -I tools/tv.py --probe                 # модель, версия Android, прошивка
+tools/venv/bin/python -I tools/tv.py 'pm list packages'      # консольная команда на телевизоре
+tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt        # применить список для очистки
+tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt        # отменить его, вернуть стандартный лаунчер
+tools/venv/bin/python -I tools/check.py examples/xiaomi-mi-tv-4a/debloat.txt   # что откатило обновление прошивки
+TV_HOST=192.168.1.50 launcher/build-and-install.sh           # собрать лаунчер и сделать его главным экраном
+tools/theme.sh themes/aurora                                 # применить тему; --reset удаляет ее
 ```
 
-| Tool | What it does |
+| Инструмент | Что делает |
 |---|---|
-| [`tools/tv.py`](tools/tv.py) | Pure-Python ADB client: shell, batch, push, pull, reboot, and screenshots, optionally pressing remote keys first. Works where the stock `adb` binary is blocked. Optional [paired Google ADB backend](tools/native-adb.md) for encrypted Wireless debugging. |
-| [`tools/docker-build.sh`](tools/docker-build.sh) | Builds the launcher or an add-on in Docker (JDK 17, Android SDK 34), so this computer needs nothing but Docker. Install the result with `SKIP_BUILD=1`. [Guide](tools/docker-build.md). |
-| [`tools/b64push.py`](tools/b64push.py) | Uploads large files such as APKs in base64 chunks and verifies the checksum. |
-| [`tools/relay.py`](tools/relay.py) | Forwards a local port to the TV's ADB port, for assistants whose sandbox can't reach your network. Listens on this computer only. [Guide](tools/relay.md). |
-| [`tools/disable.sh`](tools/disable.sh), [`restore.sh`](tools/restore.sh) | Apply or undo a debloat list, the undo from the state recorded before the change. |
-| [`tools/recovery.py`](tools/recovery.py) | Writes the record `disable.sh` needs to undo itself, and prints the restore batch. |
-| [`tools/check.py`](tools/check.py) | Compares the TV with the list that was applied, for what a firmware update undid; `--fix` puts it back. |
-| [`tools/adb-closed.py`](tools/adb-closed.py) | Checks that the TV's network ADB port is closed once debugging is off: exits 0 when the TV refuses the connection, 1 while it is still open, 2 when nothing answered or the check itself could not run. No `nc` needed. |
-| [`tools/philips-api.py`](tools/philips-api.py) | Philips only: checks that the JointSpace control API Home Assistant uses still answers, before and after a debloat (`tools/venv/bin/python -I tools/philips-api.py <tv ip>`). Port 1926 over HTTPS first, then 1925; reads only what answers without pairing. |
-| [`tools/privacy.py`](tools/privacy.py) | Audits the TV for voice, ACR and telemetry candidates and prints the evidence for each; `--write` turns the findings into a list `disable.sh` and `restore.sh` already understand. |
+| [`tools/tv.py`](tools/tv.py) | Чистый Python ADB-клиент: shell, batch, push, pull, reboot и скриншоты, с опциональным предварительным нажатием кнопок пульта. Работает там, где заблокирован стандартный бинарник `adb`. Опциональный [сопряженный Google ADB бэкенд](tools/native-adb.md) для зашифрованной беспроводной отладки. |
+| [`tools/docker-build.sh`](tools/docker-build.sh) | Собирает лаунчер или аддон в Docker (JDK 17, Android SDK 34), поэтому на этом компьютере не нужно ничего, кроме Docker. Установите результат с `SKIP_BUILD=1`. [Руководство](tools/docker-build.md). |
+| [`tools/b64push.py`](tools/b64push.py) | Загружает большие файлы, такие как APK, чанками в base64 и проверяет контрольную сумму. |
+| [`tools/relay.py`](tools/relay.py) | Эта команда перенаправляет локальный порт вашего компьютера на порт ADB вашего телевизора. [Руководство](tools/relay.md). |
+| [`tools/disable.sh`](tools/disable.sh), [`restore.sh`](tools/restore.sh) | Применяют или отменяют список очистки, откатывая систему к состоянию, записанному до изменений. |
+| [`tools/recovery.py`](tools/recovery.py) | Записывает журнал, который нужен disable.sh для отмены своих действий, и выводит batch-скрипт восстановления. |
+| [`tools/check.py`](tools/check.py) | Сравнивает состояние телевизора с примененным списком, чтобы узнать, что откатило обновление прошивки; --fix возвращает все как было. |
+| [`tools/adb-closed.py`](tools/adb-closed.py) | Проверяет, что сетевой ADB-порт телевизора закрыт после выключения отладки: возвращает 0, если телевизор отказывает в подключении, 1, если порт все еще открыт, 2, если ничего не ответило или сама проверка не смогла запуститься. nc не требуется. |
+| [`tools/philips-api.py`](tools/philips-api.py) | Только для Philips: проверяет, что API управления JointSpace, используемый Home Assistant, по-прежнему отвечает - до и после очистки от лишнего ПО (`tools/venv/bin/python -I tools/philips-api.py <tv ip>`). Сначала порт 1926 по HTTPS, затем 1925; считываются только те данные, которые доступны без сопряжения. |
+| [`tools/privacy.py`](tools/privacy.py) | Проверяет телевизор на наличие голосовых, ACR и телеметрических служб и выводит доказательства для каждой; --write превращает находки в список, который уже понимают disable.sh и restore.sh. |
 | [`tools/theme.sh`](tools/theme.sh), [`theme_restart.py`](tools/theme_restart.py) | Push a folder from [`themes/`](themes/) to the launcher and restart Home. |
 | [`tools/manage.py`](tools/manage.py) | List every add-on, theme and switch with its screenshot, see what is on the TV, and install, update or remove one by running its creator's own script. |
 | [`tools/bench.py`](tools/bench.py) | Measures the launcher that answers HOME: key latency, how far the focus moved, janky frames, cold start, return to Home, and the idle CPU and PSS it costs. Changes nothing on the TV and writes the raw per-key numbers to JSON; no extra install. |
