@@ -1,0 +1,34 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.deepakola.familyrenewals'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.deepakola.familyrenewals'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '0.1.0'
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}
