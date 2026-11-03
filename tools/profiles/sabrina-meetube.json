@@ -1,0 +1,40 @@
+{
+  "device": "sabrina",
+  "ram_gb": 2,
+  "abi": "armeabi-v7a",
+  "source": "measured on <tv ip> SmartTube 32.68, 2026-11-03",
+  "settings": {
+    "preset": {
+      "field": 9,
+      "value": "1080p 60fps vp9",
+      "why": "Measured baseline for clear 1080p60 playback using the VP9 decoder."
+    },
+    "buffer": {
+      "field": 12,
+      "value": 1,
+      "label": "medium",
+      "why": "Medium buffer balances startup time and recovery from short network dips."
+    },
+    "afr": {
+      "field": 16,
+      "value": true,
+      "why": "Automatic frame-rate switching is enabled for smoother matching playback."
+    },
+    "network_engine": {
+      "field": 26,
+      "value": 2,
+      "name": "Cronet",
+      "why": "Measured stable network engine on this Chromecast baseline."
+    },
+    "hardware_decoder": {
+      "field": 4,
+      "value": false,
+      "why": "Software decoder was measured as the reliable baseline on armeabi-v7a."
+    },
+    "prefer_avc": {
+      "field": 18,
+      "value": false,
+      "why": "AVC preference is off so the measured VP9 preset remains eligible."
+    }
+  }
+}
