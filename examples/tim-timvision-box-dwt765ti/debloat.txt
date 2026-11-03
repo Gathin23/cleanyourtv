@@ -40,13 +40,14 @@ com.technicolor.android.BootupTraceQR
 com.technicolor.cputemperature
 com.google.android.feedback
 
-# TIMVISION service parts: off on this unit (owner dropped TIMVISION); comment this group out to keep TIMVISION
-tv.broadpeak.nanocdnwrapper                  # Broadpeak multicast CDN for TIMVISION live
-it.telecomitalia.iptuner                     # TIMVISION live channels (a TV input)
-it.telecomitalia.linemanager
-it.telecomitalia.accountmanager              # TIM account
-it.telecomitalia.timppapp
-timvision.tvappsettings
+# TIMVISION service parts: off on the tested unit (owner dropped TIMVISION; iptuner is a TV input).
+# Uncomment the group only if you don't use TIMVISION.
+# tv.broadpeak.nanocdnwrapper                  # Broadpeak multicast CDN for TIMVISION live
+# it.telecomitalia.iptuner                     # TIMVISION live channels (a TV input)
+# it.telecomitalia.linemanager
+# it.telecomitalia.accountmanager              # TIM account
+# it.telecomitalia.timppapp
+# timvision.tvappsettings
 
 # Google voice and recommendation rows (voice off by choice)
 com.google.android.katniss

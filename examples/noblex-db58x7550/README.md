@@ -8,8 +8,9 @@ about 1.3 GB of RAM. The vendor layer is Homwee, as on the CHiQ and OK. sets in
 
 ## The list
 
-The debloat list disables 19 packages, applied in four batches with a screenshot between them and a
-reboot after the last one. The TV Manager cleaner (`com.homwee.chtvmanager`) runs as system and went
+The debloat list disables 14 packages. The tested set had five more off (casting and two streaming apps,
+now comments in the list), all applied in four batches with a screenshot between them and a reboot
+after the last one. The TV Manager cleaner (`com.homwee.chtvmanager`) runs as system and went
 alone, in the last batch. Compared with the CHiQ list, this firmware has no Anoki ACR, no FAST channel
 app and no Alexa control, so those lines are gone. Nothing was re-enabled afterwards.
 

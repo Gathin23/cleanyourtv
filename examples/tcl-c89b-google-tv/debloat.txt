@@ -14,7 +14,7 @@
 #
 # Second unit: TCL 65C89K, France (Smart TV Pro, G08, G08_4K_GB, Google TV 14, UTT2.250416.001 AU02).
 # Status 2026-11-02: the owner used the launcher for several days. Home stayed the default launcher;
-# the theme, Sources, Live TV, Ethernet and Wi-Fi debugging were used. This unit keeps Game Bar and the
+# the theme, Sources, Live TV and Ethernet were used. This unit keeps Game Bar and the
 # hearing test, so their lines below are comments. Its personal theme and optional add-ons are not part of
 # this shared list.
 #

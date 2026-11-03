@@ -1,4 +1,4 @@
-﻿# Xiaomi MiTV-MOOQ0 (croods): P1 43-inch EU firmware
+# Xiaomi MiTV-MOOQ0 (croods): P1 43-inch EU firmware
 
 Android TV 11, build `RTM4.220307.164.8835`, board `m7632`, 1.7 GiB RAM. The existing
 [MOOQ0 list](../../examples/xiaomi-mitv-mooq0/debloat.txt) targets Android TV 10. We applied a
@@ -62,14 +62,14 @@ have the app buttons mapped than the held volume key.
 Same build `RTM4.220307.164.8313`, Russian retail, one session. 32 packages disabled in all: 28 entries of
 the [MOOQ0 list](../../examples/xiaomi-mitv-mooq0/debloat.txt) in five batches with a screenshot after
 each, `com.xiaomi.amazon.alexa`, Netflix and Prime Video (those three were already off when the session
-began), and the stock launcher through `launcher/build-and-install.sh` after the reference launcher was
+began), and the stock launcher through the `launcher/build-and-install` script after the reference launcher was
 Home. Every one of them was still disabled after a reboot and a hard power-off. By the owner's choice the
 assistant (`com.google.android.katniss`) and Chromecast (`com.google.android.apps.mediashell`) went off on
 top of the mirroring/media set the 5135 unit took (header of the list); the firmware updater, the USB
 media players and the owner's streaming apps stayed on. Netflix stayed off across the reboot and the hard
 power-off on this build, like the first 8313 unit and unlike the `8835` one.
 
-Home went to `launcher/` itself, not Projectivy: `build-and-install.ps1` disabled the stock launcher only
+Home went to `launcher/` itself, not Projectivy: the install script disabled the stock launcher only
 after `dumpsys activity activities` showed it as the focused app, and it was still Home after the reboot
 and the hard power-off. The Inputs pill lists HDMI 1-3, AV and Live TV. The screensaver was pointed at
 `com.gathin.tvhome/.ClockDream` before `com.mitv.dream` went off, the order the #81 note in the list
@@ -81,4 +81,3 @@ button does nothing with Netflix off; the PatchWall button and the mic do nothin
 katniss off; held volume still repeats with no key helper enabled - the other side of the trade above.
 After power-on the TV lands on the last source rather than Home (#81); pressing Home brings the launcher
 back.
-

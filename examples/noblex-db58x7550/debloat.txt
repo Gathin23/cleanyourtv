@@ -41,13 +41,14 @@ com.google.android.videos
 com.google.android.backdrop             # Ambient screensaver, replaced by the launcher's Clock
 com.google.android.syncadapters.calendar
 
-# Personal choice: comment out what you use
+# Personal choice: comment out what you use. Casting and streaming apps were off on the tested set;
+# their lines are comments, uncomment them if you don't use them.
 com.google.android.katniss              # Google Assistant (the mic button stops working)
-com.google.android.apps.mediashell      # Chromecast built-in
-com.homwee.multiscreenshare             # Miracast
-com.homwee.mmp.screenshare              # AirPlay receiver
-com.netflix.ninja
-com.amazon.amazonvideo.livingroom
+# com.google.android.apps.mediashell      # Chromecast built-in
+# com.homwee.multiscreenshare             # Miracast
+# com.homwee.mmp.screenshare              # AirPlay receiver
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom
 
 # Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
 # after the new home is installed and set as default; restore.sh re-enables it.

@@ -39,7 +39,7 @@
 # One session (2026-11), details in ../../docs/devices/xiaomi-mitv-mooq0-android11.md. 29 entries of this
 # list were disabled (28 in five batches with a screenshot after each, plus com.xiaomi.amazon.alexa that
 # was already off), together with Netflix and Prime Video the owner had disabled before and the stock
-# launcher through launcher/build-and-install.sh: 32 in all, and every one of them was still disabled
+# launcher through the launcher/build-and-install script: 32 in all, and every one of them was still disabled
 # after a reboot and a hard power-off. By the owner's choice the voice assistant
 # (com.google.android.katniss) and Chromecast (com.google.android.apps.mediashell) went off on top of the
 # mirroring/media set the 5135 unit above took; the firmware updater, the USB media players and the

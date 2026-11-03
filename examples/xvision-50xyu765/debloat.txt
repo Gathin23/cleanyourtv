@@ -36,11 +36,11 @@ com.cvte.tv.remotedebug           # ifpdos customer service with a screen-record
 # Google extras
 com.google.android.feedback
 
-# Off by choice on the tested set (keep what you use)
-com.ecloud.eshare.server          # EShare ("Kindlink" tile) phone casting, starts at boot; with the next two ~150 MB
-com.ecloud.eairplay               # EShare AirPlay receiver
-com.ecloud.emedia                 # EShare DLNA renderer
-com.mediatek.androidbox           # WFDSinkTest: the Miracast receiver
+# Casting: off on the tested set by the owner's choice; uncomment to disable
+# com.ecloud.eshare.server          # EShare ("Kindlink" tile) phone casting, starts at boot; with the next two ~150 MB
+# com.ecloud.eairplay               # EShare AirPlay receiver
+# com.ecloud.emedia                 # EShare DLNA renderer
+# com.mediatek.androidbox           # WFDSinkTest: the Miracast receiver
 
 # CVTE app store. The stock launcher's Apps grid and "AppStore" tile are its AppSelectActivity, and the firmware has
 # no other app list or uninstall screen, so keep it if you keep the stock launcher. The tested set turned it off.

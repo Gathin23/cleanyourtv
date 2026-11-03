@@ -75,11 +75,11 @@ com.sony.dtv.networkapp.wifidirect
 com.sony.huey.dlna.module                      # DLNA renderer
 com.sony.huey.dlna.renderersettings
 com.sonyericsson.dlna
-com.google.android.tv.remote.service           # Android TV phone-app remote
+# com.google.android.tv.remote.service           # Android TV phone-app remote; off on the tested set by the owner's choice
 com.sony.dtv.smartmediaapp                     # Media Player, plays files from USB
 com.sony.dtv.osat.music                        # Music, plays music from USB
 com.vewd.core.integration.dia                  # Internet Browser (Vewd UI); engine com.vewd.core.service kept
-com.nero.swiftlink.mirror.tv                   # TV Cast / Mirror (Nero), installed by the owner from Play; skipped where absent
+# com.nero.swiftlink.mirror.tv                   # TV Cast / Mirror (Nero), installed by the owner from Play; skipped where absent; off on the tested set by the owner's choice
 
 # Hotel / professional mode and leftovers
 com.sony.dtv.b2b.hotelmode
