@@ -94,4 +94,7 @@
     </plurals>
     <string name="greeting_with_name">%1$s，%2$s</string>
     <string name="game_live">直播中</string>
+    <string name="clock_format_system">系統</string>
+    <string name="clock_format_12">12 小時制</string>
+    <string name="clock_format_24">24 小時制</string>
 </resources>

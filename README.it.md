@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@ tracciamento, passo per passo con il telecomando: [cleanyour.tv/not-android](htt
 |---|---|
 | **Una Android TV o una Google TV** | [Avvio rapido](#avvio-rapido): un assistente di programmazione fa il lavoro in una quindicina di minuti. |
 | **Una TV Samsung, LG, Roku, Vizio o Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV lì non funziona, ma puoi disattivare il tracciamento con il telecomando. |
-| **Solo un telefono Android** | L'[app Clean Your TV](https://cleanyour.tv/app) creata dalla community: niente portatile, niente assistente di programmazione. |
+| **Telefono o portatile, senza assistente** | Una delle [app della community](https://cleanyour.tv/app) per telefoni Android, Mac e Windows, create da sviluppatori indipendenti. |
 | **Vuoi prima vedere com'è** | [Cosa offre il launcher](#cosa-offre-il-launcher): schermate della nuova Home. |
 
 **Link ufficiali:** [cleanyour.tv](https://cleanyour.tv) e questo repository. Altri domini che usano il nome, come
@@ -59,9 +59,9 @@ di programmazione a controllare prima la TV reale, poi a chiederti quali app e f
 
 ## Avvio rapido
 
-Senza computer c'è l'[app Clean Your TV](https://cleanyour.tv/app) per Android, creata dalla community: collega la
-TV, mostra prima un piano, salva un punto di ripristino e si limita a disattivare le app. Senza assistente di
-programmazione, ma con un computer, puoi fare gli stessi passi a mano: vedi [Fai da te](#fai-da-te).
+Senza computer o senza assistente di programmazione ci sono le [app della community](https://cleanyour.tv/app) per
+telefoni Android, Mac e Windows, create da sviluppatori indipendenti: mostrano prima un piano e si limitano a disattivare
+le app. Con un computer puoi anche fare gli stessi passi a mano: vedi [Fai da te](#fai-da-te).
 
 Con l'assistente ti servono un computer sulla stessa rete della TV e un assistente di programmazione che sappia eseguire comandi da
 terminale, per esempio [Claude Code](https://claude.com/product/claude-code), [Codex](https://github.com/openai/codex)
@@ -92,6 +92,8 @@ Perché clonare: l'assistente usa `tools/disable.sh` e `launcher/build-and-insta
 - **Orologio e salvaschermo**: saluto, ora, data e un salvaschermo con l'orologio incluso.
 - **Temi**: cambiano colori, sfondo, dock e numero di colonne con un file di configurazione, senza ricompilare.
 - **Schede modulo**: altre app possono aggiungere schede alla Home, che compaiono solo se sei d'accordo.
+- **Add-on**: app facoltative che si agganciano come schede modulo; stanno in [`addons/`](addons/) e non fanno mai
+  parte del launcher. Temi, opzioni e add-on, con le schermate: [cleanyour.tv/addons](https://cleanyour.tv/addons).
 
 ![App selezionata e alone di colore sullo sfondo](docs/focus-2-up-netflix.png)
 
@@ -118,6 +120,10 @@ Tieni premuto OK sul pulsante Impostazioni e scegli il riordino nel menu. Premi 
 usa le frecce per cambiarne la posizione, poi OK o Indietro per posarla; quando non hai nessuna app in mano, premi
 Indietro per uscire e salvare. Il pulsante di riordino nella barra in alto è nascosto di serie: si attiva con
 `reorder_button` nella configurazione o in un tema.
+
+Anche tenendo premuto OK su un'app della Home compare il menu dei riquadri (`tile_menu`, attivo di serie): Sposta
+solleva subito quell'app, poi c'è Info app e, con la libreria app attiva, anche Rimuovi dalla Home. Se lo disattivi, tenere premuto OK apre le
+informazioni dell'app.
 
 La libreria app è disattivata di serie. Con `app_library` attivo nella configurazione o in un tema, l'accesso compare
 dopo l'ultima riga di app della Home. La libreria elenca sia le app per TV sia le normali app Android; queste ultime
@@ -195,8 +201,11 @@ app e impostazioni, fallo tu prima di disattivare: `tools/disable.sh` non lo cre
 
 ### 3. Compilare e installare il launcher
 
-Il launcher è scritto in Java con AndroidX RecyclerView, nome del pacchetto `com.gathin.tvhome`. Servono JDK 17,
-Android SDK Platform 34 e Build Tools 34.0.0. Su macOS:
+Il launcher è scritto in Java con AndroidX RecyclerView, nome del pacchetto `com.gathin.tvhome`. Servono un JDK
+da 17 a 22 (completo, con `jlink`; dal JDK 23 in poi Gradle 8.9 si ferma), Android SDK Platform 34 e Build Tools 34.0.0 o una
+34.x più recente. Se preferisci non installare nulla a parte Docker, [`tools/docker-build.sh`](tools/docker-build.sh)
+compila il launcher in un contenitore: poi lo installi con `SKIP_BUILD=1` (guida in inglese:
+[tools/docker-build.md](tools/docker-build.md)). Su macOS:
 
 ```bash
 brew install openjdk@17 android-commandlinetools
@@ -255,6 +264,12 @@ per il ripristino prima di lanciarlo. Per pulizia e ripristino usa [`tools/disab
 | [`tools/relay.py`](tools/relay.py) | Inoltra una porta locale alla porta ADB della TV, per gli assistenti il cui ambiente isolato non raggiunge la rete. |
 | [`tools/theme.sh`](tools/theme.sh) | Invia o reimposta un tema e riavvia la Home. |
 | [`tools/manage.py`](tools/manage.py) | Elenca add-on, temi e opzioni con la schermata, mostra cosa c'è sulla TV e permette di installare, aggiornare o rimuovere. |
+| [`tools/docker-build.sh`](tools/docker-build.sh) | Compila il launcher o un add-on in Docker (JDK 17, Android SDK 34), così sul computer serve solo Docker. |
+| [`tools/bench.py`](tools/bench.py) | Misura il launcher che risponde a HOME: latenza dei tasti, fotogrammi a scatti, avvio a freddo, ritorno alla Home, CPU e memoria a riposo. Non cambia nulla sulla TV. |
+| [`tools/trace.py`](tools/trace.py), [`tools/trace_report.py`](tools/trace_report.py) | Registrano tracce Perfetto del launcher e mostrano dove va il tempo. Facoltativi: richiedono [`requirements-perf.txt`](tools/requirements-perf.txt). |
+| [`tools/flamechart.py`](tools/flamechart.py) | Disegna un flame chart prima e dopo da quelle tracce, per una pull request. Facoltativo. |
+| [`tools/screendiff.py`](tools/screendiff.py) | Confronta pixel per pixel una schermata prima e una dopo e salva la coppia con il nome del Wi-Fi sfocato. Facoltativo. |
+| [`tools/race_calendar.py`](tools/race_calendar.py) | Scrive il calendario F1 della stagione in un tema, per la modalità fine settimana di gara, dall'API gratuita Jolpica. |
 | [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Compila e installa il launcher e cambia la Home. |
 
 ## Configurazione aggiuntiva
@@ -387,9 +402,20 @@ La guida completa (in inglese) è in [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHO
 
 **Non programmo e non ho un portatile: posso farlo lo stesso?**
 
-Sì. L'[app per telefono Android](https://cleanyour.tv/app), gratuita, open source e creata dalla community, fa la stessa
-pulizia via Wi-Fi: si collega alla TV, mostra prima un piano, salva un punto di ripristino e si limita a disattivare
-le app, quindi tutto si può rimettere a posto.
+Sì. Sviluppatori indipendenti hanno creato app gratuite e open source basate sulle liste di CleanYourTV, che fanno la
+stessa pulizia via Wi-Fi senza assistente di programmazione. Ognuna mostra prima un piano, si limita a disattivare le app
+e può rimettere tutto a posto:
+
+| App | Per | Di |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Telefono Android | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Telefono Android | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Telefono Android, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac e Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+Queste app sono progetti indipendenti, non affiliati a CleanYourTV o al suo maintainer né approvati da loro, e ognuna è
+fornita così com'è con la propria licenza. Segnala i problemi di un'app nel suo repository. Altro su
+[cleanyour.tv/app](https://cleanyour.tv/app).
 
 **Reinstalla il firmware o rimuove le app di sistema?**
 

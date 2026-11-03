@@ -1,0 +1,29 @@
+# Smarttech Apollo Premium 4K (Expressluck "Apollo Premium4K TV", codename marina, MediaTek m7332, 2 GB),
+# Google TV 14, firmware UKNV.260528.001
+# Fingerprint: Smarttech/SMARTTECH_4K_ATV3/marina:14/UKNV.260528.001/15515267:user/release-keys
+# Stock launcher: com.google.android.apps.tv.launcherx (kept; disabling it opens a recovery screen).
+# Probably close to other Expressluck boards sold under other brands.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/smarttech-apollo-premium-4k/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/smarttech-apollo-premium-4k/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Disabled on 2026-10-31 and used every day since: HDMI inputs with HDMI-CEC names, YouTube,
+# Netflix and Spotify work as before; nothing has been re-enabled.
+# Not in this list, kept on purpose: Chromecast built-in, Google Assistant, Play Store, system updates.
+
+# ACR: reports what is on screen, HDMI inputs included, for ad targeting
+tv.anoki.acr.anokiacroptin
+
+# Android ad services (Privacy Sandbox) and on-device ad personalisation
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Feedback reporters
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Store demo mode and factory test app
+fusion.android.tv.demo
+com.express.fac.test                   # Expressluck factory test; the factory menu itself is kept

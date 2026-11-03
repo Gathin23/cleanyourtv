@@ -2,5 +2,5 @@
   "tv": "PANAVOX Google TV (dongnae)",
   "os": "Google TV 14",
   "brand": "Panavox",
-  "notes": "Google TV home replaced (launcherx and setupwraith off), Google telemetry and Privacy Sandbox services, Prime Video, Wi-Fi display sink, calendar and contacts sync, voice (katniss, tv.remote.service), Chromecast, TTS, TalkBack and Google extras off"
+  "notes": "Sold only in Uruguay; same board as the AiPro2K, different firmware (UKN6.260116.001, Expressluck). Disables the stock Google TV launcher, the Anoki ACR client, ad services, Google's screensaver, the voice assistant and Cast. After the cleanup every remote button works except the mic and the gear; the launcher has two ways into Settings. Phone casting stops (mediashell and setupwraith are disabled). The tuner is missing from the Inputs popup but still works from the remote. Set the Clock screensaver afterwards, see README.md."
 }

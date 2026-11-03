@@ -2,5 +2,5 @@
   "tv": "Tornado 65UA1400E (El Araby, Skyworth-built SW4H, MediaTek m7332), Egypt",
   "os": "Android TV 11",
   "brand": "Tornado",
-  "notes": "Same platform as the Panasonic SW4H list: Skyworth \"Daily Play\", ACR, Shop tab customizer, e-POP player, e-manual, QJY browser, partner auto-installs; Google feedback/partner setup, recommendation rows, calendar/print/backup leftovers; every streaming app, Assistant, Chromecast, CastPlay, USB media and the \"firewall\" service kept; `fusion.android.tv.demo` receives the Input key here, keep it; Home moves only once tvlauncher is disabled; vendor forces animator scale 0.6; Live TV is `com.smartdevice.livetv`; 1.7 GB"
+  "notes": "Same platform as the Panasonic SW4H list: Skyworth \"Daily Play\", ACR, Shop tab customizer, e-POP player, e-manual, QJY browser, partner auto-installs; Google feedback/partner setup, recommendation rows, calendar/print/backup leftovers; every streaming app, Assistant, Chromecast, CastPlay, USB media and the \"firewall\" service kept; `fusion.android.tv.demo` receives the Input key here, keep it; Home moves only once tvlauncher is disabled; vendor forces animator scale 0.6; Live TV is `com.smartdevice.livetv`; 1.7 GB; also sold as the realme Smart TV (SW4H_FF_realme, same build): adds Coocaa `speedchannels`, and six no-permission packages need TVINPUT_ALLOW=1 (see the header)"
 }

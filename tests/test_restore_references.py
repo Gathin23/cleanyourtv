@@ -11,10 +11,13 @@ for tools/disable.sh and disable.ps1, so a list's own Apply and Undo lines both 
 list: debloat.txt, or a second list beside it such as
 examples/google-chromecast-gtv-4k/debloat-keep-cast.txt.
 
-The same goes for the install and restore scripts three list folders still ship from before the rule
-that a list folder holds none (AGENTS.md, "Hard rules"): a page that sends an owner to
-`examples/<folder>/restore.sh` names a file the folder has to have, and the TCL 55S470G header
-named one that was not there.
+The same goes for a folder's own install and restore script: a page that sends an owner to
+`examples/<folder>/restore.sh` names a file the folder has to have, and the TCL 55S470G header named
+one that was not there. No folder ships one any more - `examples/epson-ls800` was the last, and it went
+the way `examples/benq-gv32` and `examples/tcl-43c645` went before it (#1717): the undo is
+`tools/restore.sh` with the list, `tools/theme.sh --reset` for the theme, and
+`tests/test_list_folders_ship_lists_only.py` keeps a new folder from arriving with a script of its own.
+A page or a list header that still names one is a typo now, so the sweep reads none.
 
 And a command that passes the stock launcher but no list names nothing at all: restore.sh takes the
 list as its first argument and the stock launcher as its second, so the CVTE T972 page's
@@ -50,13 +53,13 @@ APPLY = re.compile(r"disable\.(?:sh|ps1)" + LIST_ARGUMENT)
 # placeholder. Three translations (it, ja, vi) write it as a made-up folder name, in quotes.
 PLACEHOLDERS = {"examples/il-tuo-modello/debloat.txt", "examples/your-model/debloat.txt",
                 "examples/model-cua-ban/debloat.txt"}
-# A helper script inside a list folder, e.g. `examples/epson-ls800/restore.sh`. Three folders still
-# ship the install and restore scripts their submission came with (#265); a page or a list header
-# that sends an owner to one names a file the folder has to have.
+# A helper script inside a list folder, e.g. `examples/epson-ls800/restore.sh`. The folders that shipped
+# the install and restore scripts their submission came with (#265) have all been trimmed to the shared
+# tools, so a page or a list header that still names one names a file the folder no longer has.
 FOLDER_SCRIPT = re.compile(r"(examples/[A-Za-z0-9._-]+/(?:restore|disable|install|build-and-install)\."
                            r"(?:sh|ps1))")
 # `tools/restore.sh <list> <stock launcher>`: the list is restore.sh's first argument, the stock
-# launcher its second (see its usage line and LIST=${1:?} / STOCK=${2:-...}). Both arguments are
+# launcher its second (see its usage line and LIST="${1:-}" / STOCK="${2:-...}"). Both arguments are
 # matched with no `.txt` required in the pattern, so a command that leaves the list out is read too.
 PAIR = re.compile(r"tools[/\\]restore\.sh\s+(\S+)\s+(\S+)")
 PACKAGE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")
@@ -201,18 +204,21 @@ class RestoreReferencesTest(unittest.TestCase):
                          "a list's Apply line runs another file, so the TV gets another set of packages "
                          "than the list shows")
 
-    def test_a_folder_script_a_page_names_is_there(self):
-        # examples/epson-ls800 ships the restore script it came with, and its page names it (tcl-43c645
-        # dropped its own scripts for the shared tools, #1717); the TCL 55S470G header named one its
-        # folder does not have, so an owner's first undo command was "No such file".
+    def test_no_page_sends_an_owner_to_a_script_inside_a_list_folder(self):
+        # examples/epson-ls800 shipped the restore script it came with and its page named it; that was the
+        # last one, and it goes the way tcl-43c645 (#1717) and benq-gv32 went - the undo is
+        # tools/restore.sh, tools/theme.sh --reset and the one settings command the folder's README gives.
+        # The TCL 55S470G header named a folder script its folder did not have, so an owner's first undo
+        # command was "No such file"; with no folder shipping one, every such name is a typo.
         missing = [(str(path), name) for path, name in read_script_references(ROOT)
                    if not (ROOT / name).is_file()]
         self.assertEqual([], missing,
                          "these lines hand the owner a script inside a list folder that is not in the "
                          "repo, so the command fails before anything reaches the TV")
-        self.assertGreaterEqual(len(read_script_references(ROOT)), 2,
-                                "the folders that do ship such a script should be read; the scanner "
-                                "found fewer")
+        self.assertEqual([], [name for _, name in read_script_references(ROOT)],
+                         "a list folder ships no script of its own (docs/workflows/tv-list.md step 6, "
+                         "AGENTS.md's hard rules, MAINTAINER.md's 'dropped on merge', and "
+                         "tests/test_list_folders_ship_lists_only.py), so no page or list header names one")
 
     def test_a_restore_that_names_the_launcher_names_the_list(self):
         # The CVTE T972 page sent an owner to `tools/restore.sh ... com.cvte.tv.launcher.highend`: the

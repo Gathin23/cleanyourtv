@@ -112,4 +112,7 @@
     <string name="race_finished">Geblokte vlag</string>
     <string name="last_opened">Laatst geopend %1$s</string>
     <string name="game_live">Nu live</string>
+    <string name="clock_format_system">Systeem</string>
+    <string name="clock_format_12">12-uurs</string>
+    <string name="clock_format_24">24-uurs</string>
 </resources>

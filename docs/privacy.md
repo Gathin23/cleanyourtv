@@ -13,7 +13,8 @@ it worse:
 
 `tools/privacy.py` reports what the TV actually says instead of guessing:
 `TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py` prints voice, ACR and telemetry
-candidates in three groups, each with:
+candidates in up to four groups — the three kinds it can name a job for, and a fourth headed
+"Matched by name only, nothing else known" — each with:
 
 - its evidence — named by the firmware's own `voice_interaction_service`, a known component from
   [`examples/`](../examples/), or nothing but a matching name;
@@ -21,10 +22,14 @@ candidates in three groups, each with:
 - whether the returned AppOps history contains microphone access. A configured mode or a rejected
   attempt alone is not evidence of access.
 
-`--write privacy.txt` turns the identified candidates into a normal debloat list, so applying it and
-undoing it are the commands you already use (`tools/disable.sh`, `tools/restore.sh`). Packages that
-only matched by name stay out unless you pass `--include-low`; they are the ones to check with
-`dumpsys package <name>` first.
+`--write privacy.txt` turns the identified candidates into a normal debloat list, so applying it
+and undoing it are the commands you already use (`tools/disable.sh`, `tools/restore.sh`). Packages
+in that fourth group, the ones that only matched by name, stay out unless you pass `--include-low`;
+they are the ones to check with `dumpsys package <name>` first.
+
+The audit reads `dumpsys package` for at most 25 packages, so on a TV with a longer list of name
+matches the report shows the first 25 and says how many it left out, and `--write` writes only
+those: check the rest by hand.
 
 What the audit cannot do is prove intent. `appops` shows an op was touched, not what happened to the
 stream afterwards, and no scan of package names proves a TV is or is not recording. Disabling an

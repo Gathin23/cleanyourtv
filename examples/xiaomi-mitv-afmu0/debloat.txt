@@ -23,6 +23,18 @@
 #   launcherx and dreamx. Check before disabling: tools/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*'
 # - Leave alone: com.xiaomi.android.tvsetup.partnercustomizer, mitv.service, com.droidlogic*.
 # - With the stock launcher gone, apps without a dock slot just appear in the grid.
+#
+# A second unit, same firmware (V816.0.11.0.UZFAABX), one evening and one reboot, applied this list with
+# YouTube Music, Assistant, Chromecast, Miracast/Mi share and the updater kept, plus the Privacy Sandbox group below:
+# - setupwraith owned no saved network here (every cname= was android.uid.system), so Wi-Fi and ADB stayed up.
+# - After the reboot, `pm list packages -d` matched what was disabled: the firmware re-enabled nothing.
+# - Wireless debugging leaves port 5555 open across reboots: switch off USB/Wireless debugging when done.
+# - Remote (Vendor_2717_Product_32b9.kl): once launcherx is off, Netflix (BUTTON_6) still opens Netflix, but
+#   YouTube (BUTTON_3, scan 425), Prime Video (BUTTON_7, scan 207), Xiaomi TV+ (BUTTON_5, scan 150) and Apps
+#   (ALL_APPS, scan 216) do nothing. config.json in this folder maps them back with app_keys, which needs
+#   INPUT_KEY_SERVICE=1 when running build-and-install.sh. The real Home button worked without HOME_KEY_SERVICE.
+# - The volume buttons send IR to the TV: `getevent -lt` shows no event on the box while they are held, so a held
+#   button not repeating is the TV's doing, with or without a key helper.
 # - Remote shortcut keys (Vendor_2717_Product_32b9.kl): YouTube sends BUTTON_3 (scancode 425), Prime Video sends
 #   BUTTON_7 (scancode 207), and Apps button sends ALL_APPS (scancode 216). Enable HomeKeyService
 #   (settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService) and push
@@ -61,7 +73,7 @@ com.xiaomi.mi_connect_service
 # Preloaded apps
 com.disney.disneyplus
 com.wbd.hbomax
-com.google.android.youtube.tvmusic
+com.google.android.youtube.tvmusic     # YouTube Music; the second unit kept it (in use)
 com.google.android.play.games
 com.google.android.marvin.talkback
 com.xiaomi.mimusic2
@@ -69,6 +81,11 @@ com.xiaomi.mitv.mediaexplorer
 com.mitv.videoplayer
 com.android.printspooler
 com.mitv.gallery
+
+# Ad personalisation (Privacy Sandbox and on-device ad services): second unit only, as on xiaomi-mitv-afmu1 (provisional: one evening, one reboot)
+# com.android.adservices.api
+# com.android.ondevicepersonalization.services
+# com.android.federatedcompute.services
 
 # Personal choice: preloaded streaming apps, kept enabled here. Uncomment the ones you don't use
 # com.netflix.ninja                    # Netflix

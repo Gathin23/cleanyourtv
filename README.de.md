@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · Deutsch
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · Deutsch · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="355 TV-Modelle · 97 Marken · 29 Sprachen · Launcher mit 532 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 298 weitere: 314 Artikel aus 44 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="427 TV-Modelle · 111 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 396 weitere: 412 Artikel aus 54 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
 </p>
 
 ## Einstieg
@@ -29,11 +29,12 @@
 |---|---|
 | **Einen Android TV oder Google TV** | [Schnellstart](#schnellstart): ein Coding-Assistent erledigt die Arbeit in etwa fünfzehn Minuten. |
 | **Einen Samsung, LG, Roku, Vizio oder Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV läuft dort nicht, das Tracking lässt sich mit der Fernbedienung abschalten. |
-| **Nur ein Android-Telefon** | Die von der Community gebaute [Clean-Your-TV-App](https://cleanyour.tv/app): kein Laptop, kein Coding-Agent. |
+| **Telefon oder Laptop, kein Coding-Agent** | Eine der [Community-Apps](https://cleanyour.tv/app) für Android-Telefone, Mac und Windows, gebaut von unabhängigen Entwicklern. |
 | **Willst es erst sehen** | [Was du bekommst](#was-du-bekommst): Bilder des neuen Startbildschirms. |
 
 **Offizielle Links:** [cleanyour.tv](https://cleanyour.tv) und dieses Repo. Andere Domains mit dem Namen, etwa
 cleanyourtv.com, gehören nicht zu diesem Projekt ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)).
+CleanYourTV veröffentlicht keine App in einem App Store, und auch clean-your-tv.net gehört nicht zu uns.
 
 [So funktioniert es](#so-funktioniert-es) · [Schnellstart](#schnellstart) · [Was du bekommst](#was-du-bekommst) ·
 [Unterstützte Fernseher](#unterstützte-fernseher) · [Von Hand](#von-hand) · [Der Launcher](#der-launcher) ·
@@ -62,7 +63,7 @@ bevor etwas angefasst wird, das du vielleicht nutzt.
 |---|---|
 | **Einen Computer** | Den Prompt mit einem Coding-Assistenten nutzen: die drei Schritte unten. |
 | **Einen Computer, keinen Coding-Assistenten** | Die drei Schritte selbst ausführen: die Befehle stehen unter [Von Hand](#von-hand). |
-| **Nur ein Android-Telefon** | Die von der Community gebaute [Clean-Your-TV-App](https://cleanyour.tv/app) von [@udhaykumarbala](https://github.com/udhaykumarbala): verbinden, analysieren, aufräumen, in etwa fünf Minuten. Kein Laptop, kein Coding-Agent. |
+| **Telefon oder Laptop, kein Coding-Assistent** | Nimm eine der [Community-Apps](https://cleanyour.tv/app): freie, quelloffene Apps auf Basis dieser TV-Listen, gebaut von unabhängigen Entwicklern. |
 
 Die drei Schritte unten sind für einen Coding-Assistenten geschrieben: der Computer muss im selben WLAN sein wie
 der Fernseher, mit einer Shell darauf. Ohne Assistenten ist [Von Hand](#von-hand) dieselbe Arbeit,
@@ -108,7 +109,7 @@ die nach Hause telefoniert, keine Apps, um die du nie gebeten hast.
 | ![Das Aurora-Theme: ein Hintergrund und getönte Pillen, ohne neuen Build aufgespielt](themes/aurora/screenshot.jpg) | ![Sechs Spalten und ein Dock mit sechs Apps aus der config.json eines Themes](themes/six-columns/screenshot.jpg) |
 | *Aurora-Theme, aufgespielt mit `tools/theme.sh`* | *Sechs Spalten und ein Dock mit sechs Apps, derselbe Launcher* |
 | ![Eine Kachel verschieben: OK gehalten, Verschieben gewählt, die Kachel ist angehoben und die anderen abgedunkelt](docs/tile-move.jpg) | ![Die App-Bibliothek: installierte Apps, ein Druck legt eine App wieder auf Home](docs/app-library.jpg) |
-| *Mit `tile_menu`: OK auf einer Kachel halten, Verschieben: Pfeile tragen sie, Zurück legt sie ab* | *App-Bibliothek: ein Druck legt eine entfernte App wieder auf Home* |
+| *OK auf einer Kachel halten, Verschieben: Pfeile tragen sie, Zurück legt sie ab* | *App-Bibliothek: ein Druck legt eine entfernte App wieder auf Home* |
 
 ## Unterstützte Fernseher
 
@@ -128,20 +129,22 @@ meisten Listen, jede mit ihren Modellen auf der Website verlinkt:
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 76 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 40 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 32 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 18 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 14 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 11 |
-| [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 7 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 6 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 5 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 5 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 |
-| [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 |
-| [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 |
-| [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 2 | [Hitachi](https://cleanyour.tv/tvs?q=Hitachi) · 2 | [Insignia Fire TV](https://cleanyour.tv/tvs?q=Insignia%20Fire%20TV) · 2 | [Kalley](https://cleanyour.tv/tvs?q=Kalley) · 2 | [Kogan](https://cleanyour.tv/tvs?q=Kogan) · 2 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 2 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 81 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 47 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 42 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 22 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 16 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 15 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 4 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
+| [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
+| [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 2 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 2 | [Hitachi](https://cleanyour.tv/tvs?q=Hitachi) · 2 |
 
 <details>
-<summary>+49 more brands and 14 projector brands</summary>
+<summary>+67 more brands and 14 projector brands</summary>
 
-**onn** 2 · **RockTek** 2 · **Sankey** 2 · **Sber** 2 · **Vidda** 2 ·
-Acer · AiPro2K · AIWA · AQUA · Artel · ASUS · Beko · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor · Dialog ·
-DYON · Freebox · Home+ · INCLO · Karbonn · KTC · Liberton · Lumio · Master-G · MTC · Next · Noblex · OK. · OPPO ·
-Panavox · PEAQ · Polytron · PPTV · PRISM+ · SANYO · Seleco · Super General · Síragon · Tele System · TiVo · Tornado ·
-Turkcell · Tuvio · Verizon · Vision ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Master-G** 2 · **Noblex** 2 · **PRISM+** 2 · **RockTek** 2 ·
+**Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
+AiPro2K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor · DEXP ·
+Dialog · DYON · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Koryo · KTC · KUNFT · Liberton ·
+Lumio · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ · Polytron · PPTV ·
+Prosonic · Salora · SANYO · Seleco · Smarttech · Super General · TD Systems · Tele System · TiVo · Tornado · Turkcell ·
+Tuvio · Verizon · Vision · X.Vision ·
 Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -192,7 +195,7 @@ tools/theme.sh themes/aurora                                 # ein Theme aufspie
 | [`tools/flamechart.py`](tools/flamechart.py) | Zeichnet aus diesen Traces ein Vorher/Nachher-Flammendiagramm für einen Pull Request: eine Spur je Thread auf gemeinsamer Zeitachse, die Arbeit, die eine Änderung trifft, in Magenta mit ihrer Summe. Optional, wie die Trace-Werkzeuge. [Anleitung](tools/flamechart.md). |
 | [`tools/screendiff.py`](tools/screendiff.py) | Vergleicht ein Vorher- und ein Nachher-Bild Pixel für Pixel, lässt die Uhr oder das aus, was du maskierst, und schreibt das Paar mit unkenntlich gemachtem WLAN-Namen. Optional, wie die Trace-Werkzeuge. [Anleitung](tools/screendiff.md). |
 | [`tools/race_calendar.py`](tools/race_calendar.py) | Schreibt den F1-Kalender dieser Saison in ein Theme für den Rennwochenend-Modus, aus der freien Jolpica-API. |
-| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Baut ein geschrumpftes Release (etwa 532 KB), installiert es, schaltet Home um und rollt zurück, wenn Home nicht darauf landet. |
+| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Baut ein geschrumpftes Release (etwa 572 KB), installiert es, schaltet Home um und rollt zurück, wenn Home nicht darauf landet. |
 
 Die Skripte lassen den Fernseher nie ohne Home-App: sie deaktivieren nur einen Hersteller-Launcher, den sie erkennen,
 und überspringen die Home-App in einer Liste, bis ein anderer Launcher auf HOME antwortet. Eigene Listen können außerhalb
@@ -247,7 +250,7 @@ Debloat-Liste. Was die Prüfung nicht kann, ist Absicht beweisen: [docs/privacy.
 
 ## Der Launcher
 
-Ein kleiner nativer Startbildschirm für Android TV: **etwa 532 KB**, einfaches Java, gebaut für Fernseher mit 1 GB RAM.
+Ein kleiner nativer Startbildschirm für Android TV: **etwa 572 KB**, einfaches Java, gebaut für Fernseher mit 1 GB RAM.
 Kein Weichzeichnen, kein Video, keine Netzwerkberechtigung, keine Hintergrunddienste. Der **Fernseher** braucht Android 8.0 (API 26)
 oder neuer, das `minSdk` in [`launcher/app/build.gradle`](launcher/app/build.gradle); was auf einem älteren
 Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).
@@ -256,10 +259,10 @@ Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).
 |---|---|
 | **Einrichten** | Dock-Reihenfolge, versteckte Apps, Live-TV-App, 4 bis 7 Kacheln je Zeile, reduzierte Bewegung. Alles in [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Einstellungen am Fernseher** | OK auf Einstellungen halten für die Launcher-Einstellungen. Ein optionales `launcher_settings_button` lässt einen normalen Klick sie direkt öffnen; die TV-Einstellungen bleiben auf der Einstellungsseite und ihrer App-Kachel. |
-| **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Zehn liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
-| **29 Sprachen** | Folgt der Sprache des Fernsehers, mit vollständig gespiegeltem Layout von rechts nach links für Hebräisch |
+| **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Einundzwanzig liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
+| **31 Sprachen** | Folgt der Sprache des Fernsehers, mit vollständig gespiegeltem Layout von rechts nach links für Hebräisch |
 | **App-Bibliothek** | Optional: jede installierte App durchsehen und Home-Verknüpfungen hinzufügen oder entfernen. Siehe [die Anleitung zur App-Bibliothek](docs/app-library.md) |
-| **Kachelmenü** | Optional (`tile_menu`): OK auf einer Kachel halten für Verschieben, Von Home entfernen und App-Info. Aus: OK halten öffnet App-Info |
+| **Kachelmenü** | Standardmäßig an (`tile_menu`): OK auf einer Kachel halten für Verschieben und App-Info, mit eingeschalteter App-Bibliothek auch Von Home entfernen. Aus: OK halten öffnet App-Info |
 | **Modul-Karten** | Jede TV-App kann eine eigene Kachel anbieten; du stimmst jeder einmal zu. Siehe [`docs/modules.md`](docs/modules.md) |
 | **Add-ons** | Optionale Apps, die sich als Modul-Karten einhängen, liegen in [`addons/`](addons/) und werden nie in den Launcher gebaut |
 | **Uhr-Bildschirmschoner** | Eine wandernde Uhr über dem Leuchten, damit nichts einbrennt |
@@ -319,9 +322,19 @@ drei, auf die es am meisten ankommt:
 <details>
 <summary><b>Ich programmiere nicht und habe keinen Laptop. Geht das trotzdem?</b></summary>
 
-Ja. [@udhaykumarbala](https://github.com/udhaykumarbala) hat eine freie, quelloffene [Telefon-App](https://cleanyour.tv/app)
-für Android gebaut, die dasselbe Aufräumen über WLAN macht: sie verbindet sich mit dem Fernseher, zeigt zuerst einen Plan, speichert einen Wiederherstellungs-
-punkt und schaltet Apps nur aus, sodass alles zurückgesetzt werden kann. Sie ist von der Community gebaut.
+Ja. Unabhängige Entwickler haben freie, quelloffene Apps auf Basis der CleanYourTV-Listen gebaut, die das Aufräumen
+über WLAN erledigen, ganz ohne Coding-Agent. Jede zeigt zuerst einen Plan, schaltet Apps nur aus und kann alles zurücksetzen:
+
+| App | Für | Von |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Android-Telefon | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Android-Telefon | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Android-Telefon, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac und Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+Diese Apps sind unabhängige Projekte, weder mit CleanYourTV oder seinem Maintainer verbunden noch von ihnen empfohlen,
+und jede wird so, wie sie ist, unter ihrer eigenen Lizenz bereitgestellt. Probleme mit einer App bitte im Repo dieser App
+melden. Mehr unter [cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 
@@ -427,10 +440,13 @@ bestimmst, was auf deinen Fernseher kommt. Keine vorgebauten Binärdateien.
 ## Die Geschichte
 
 Am 17. Oktober 2026 habe ich [ein Vorher und Nachher](https://x.com/gathint/status/2111379569030939102) des
-Fernsehers meiner Eltern gepostet, aufgeräumt von Claude Code über WLAN. Es erreichte 7,4 Millionen Aufrufe, Leute haben dasselbe mit
-ihren eigenen Fernsehern gemacht, und ihre Antworten wurden zu den Listen hier: über 170 TV-Modelle von über 200 Mitwirkenden in vier
-Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionieren. Die Berichterstattung seither steht in
-[docs/PRESS.md](docs/PRESS.md).
+Fernsehers meiner Eltern gepostet, aufgeräumt von Claude Code über WLAN. Es erreichte 8,6 Millionen Aufrufe, Leute haben dasselbe mit
+ihren eigenen Fernsehern gemacht, und ihre Antworten wurden zu den Listen hier: über 170 TV-Modelle von über 200 Mitwirkenden in den
+ersten vier Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionieren.
+
+Zwei Wochen später war es das Repository auf Platz 1 der GitHub-Trends in der Woche vom 19. bis 25. Oktober, mit über 46.000 Sternen
+und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Die Listen umfassen jetzt 427 TV-Modelle von 111 Marken.
+Die Berichterstattung: 412 Artikel aus 54 Ländern und 229 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 30. Oktober 2026).
 
 ## Mitmachen
 

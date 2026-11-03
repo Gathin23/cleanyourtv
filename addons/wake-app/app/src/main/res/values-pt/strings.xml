@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Abrir ao ligar</string>
+    <string name="watching">Abrindo um app quando a TV liga</string>
+    <string name="hint">Abre o app que você escolher sempre que a tela acende.</string>
+    <string name="enabled_state">Abrir ao ligar: %1$s</string>
+    <string name="link_state">Link: %1$s (OK apaga)</string>
+    <string name="delay_state">Esperar após ligar: %1$d segundos</string>
+    <string name="test">Testar agora</string>
+    <string name="on">ligado</string>
+    <string name="off">desligado</string>
+    <string name="none">nenhum escolhido</string>
+    <string name="choose">OK para escolher um app</string>
+    <string name="change">OK para trocar o app</string>
+    <string name="missing">%1$s (não instalado)</string>
+    <string name="pick_title">Escolha o app</string>
+    <string name="pick_hint">OK escolhe o app. Voltar deixa como estava.</string>
+</resources>

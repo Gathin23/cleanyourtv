@@ -15,6 +15,8 @@
 #   "Currently Connected" check (the cname list alone does not say which network is in use): if setupwraith
 #   owns the network in use, forget and re-join it in Settings. Disabling setupwraith may break Chromecast
 #   (mediashell reads device info from it); re-enable setupwraith to get casting back.
+# With launcherx disabled, Assistant/Gemini results no longer open (Google shows them inside launcherx, #2812):
+#   see docs/TROUBLESHOOTING.md, "Voice search for a song or video", and `stock_home_redirect` in themes/README.md.
 # Live TV / tuner app: com.realtek.tv (set as live_tv_package in config.xml, and hidden from the grid).
 # Netflix (com.netflix.ninja) shipped already disabled on this unit.
 # Remote app buttons (for config.xml app_keys): YouTube 190, Netflix 191, Prime Video 195, TL;DR 200.

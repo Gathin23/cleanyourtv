@@ -5,6 +5,9 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xbr-55x850c/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
+# Second unit in this folder: a 75-inch XBR-75X850C on the same build, used as a display for an Apple TV, has
+# its own, further-reaching list in debloat-display-only.txt (no streaming apps, casting, DLNA or voice, plus
+# Sony's audience-measurement plugins and push listener found there). Start from this file if you keep apps.
 # Same build as examples/sony-kd-65x9300d. Stock launcher: com.google.android.tvlauncher (restore.sh's
 # default). The only other HOME handler is com.android.tv.settings. setupwraith has no HOME activity,
 # and the saved Wi-Fi belongs to android.uid.system, so it is left alone.

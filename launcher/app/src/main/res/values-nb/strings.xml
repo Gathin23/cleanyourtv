@@ -111,4 +111,7 @@
     <string name="race_finished">Målgang</string>
     <string name="last_opened">Sist åpnet %1$s</string>
     <string name="game_live">Direkte nå</string>
+    <string name="clock_format_system">System</string>
+    <string name="clock_format_12">12 timer</string>
+    <string name="clock_format_24">24 timer</string>
 </resources>

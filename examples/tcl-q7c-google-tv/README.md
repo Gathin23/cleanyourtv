@@ -49,6 +49,20 @@ join it again in Settings before you disable the wizard.
 TV_HOST=<tv-ip> tools/restore.sh examples/tcl-q7c-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 ```
 
+## Why the Home key takes `pm disable-user` and nothing else
+
+Confirmed again on the zh-TW unit of this board. Four other routes were tried on a live set and do not work on
+this firmware:
+
+| Route | Result |
+|---|---|
+| `cmd package set-home-activity --user 0 <component>` | Prints `Success`, but nothing changes: `resolve-activity` still returns the old launcher and no preferred activity is recorded. A no-op on this build. |
+| `android:priority` on the HOME `<intent-filter>` | Ignored for third-party apps. The installed APK was pulled back and verified to carry `priority="2"`, then `"1000"`; the package manager still reported `priority=0` and kept resolving to `setupwraith`. |
+| `cmd role add-role-holder android.app.role.HOME <pkg>` | Succeeds — `dumpsys role` shows `holders=<pkg>` — but HOME resolution ignores it. |
+| `pm disable-user <setupwraith>/<...>.RecoveryActivity` | Refused: `SecurityException: Shell cannot change component state for ...` |
+
+The last one is why the whole `setupwraith` package has to go, and why the Wi-Fi-owner check above matters.
+
 ## Remote buttons
 
 Every button on this remote arrives as scancode 240 (`KEY_UNKNOWN`). TCL's `TclKeyLayoutMap` tells them apart by HID
@@ -583,3 +597,149 @@ com.tcl.ttvs/.tcast.core.stringinput.SoftKeyboard
   - disney plus (only opened, no account)
 
 > prime video & disney plus apps opened fine, i do not claim that playback works
+
+## Eighth unit: 65Q7CX1 (Italy, Wi-Fi)
+
+Same build: `G08_4K_GB`, Android 14, `UTT2.250416.001 AU02`. Set up on 28-29 October 2026. The launcher first ran
+with `stock_home_redirect`, then launcherx and setupwraith were disabled so Google TV no longer flashes at power-on.
+
+- **Chromecast works with setupwraith and launcherx disabled**, after a reboot too: logcat has `Cast.Auth.OK=1` and
+  6/6 `CastV2.Authenticate.Challenge.In`/`Response.Out`, no `No private key`. The Cast receiver signs with
+  `jni_client_auth_creds_mediadrm`, so on this build its key does not come from setupwraith (unlike Google's own
+  Chromecast hardware). The Wi-Fi network belonged to setupwraith: it was forgotten and rejoined first.
+- **Home held** opened Google TV's notification panel, which is launcherx's
+  (`.dashboard.DashboardHandler` answers `TOGGLE_NOTIFICATION_HANDLER_PANEL`). With launcherx disabled nothing opens it,
+  and Settings has no notification screen. `app_keys` `3:home` and `hold:3:com.gathin.tvhome/.QuickSettingsActivity`
+  put the launcher's quick panel there instead.
+- **TCL Channel** (4020) → `4020:com.tcl.tv` opens Live TV. Settings (gear) needs `settings_key_keycodes` `[83]`.
+- **Not looked into:** there is no recents screen (`KEYCODE_APP_SWITCH` does nothing), and the mic answers "Google
+  Assistant is having trouble processing your request", already with launcherx enabled.
+
+## Ninth unit: 98Q6C (Poland, Ethernet, AU04)
+
+One owner's session on 2026-10-24, following [`PROMPT.md`](../../PROMPT.md) on Linux with the repo's tools and
+launcher. The first unit in this folder set up on build **AU04**, one step newer than the AU02 above. Nothing was
+added to `debloat.txt` beyond header lines naming this unit; the deltas are below.
+
+| Field | Observed value |
+|---|---|
+| Retail model | `98Q6C`, supplied by the owner; not exposed by `ro.product.model` (`Smart TV Pro`) |
+| `ro.product.name` / `ro.product.device` | `G08_4K_GB` / `G08` |
+| Android / SDK | `14` / `34`, Google TV |
+| `ro.build.display.id` | `tcl9618-user 14 UTT2.250416.001 AU04 release-keys` |
+| `ro.software.version_id` | `V8-T653T01-LF1V655` |
+| Security patch | `2026-06-05` |
+| `ro.adb.secure` | `1` |
+| RAM | about 2.4 GB; UI at a 1920×1080 override on the 3840×2160 panel, as on the Q7C |
+
+### Connecting
+
+On built-in Ethernet, with USB debugging on, port 5555 answered `Connection refused` at first, then opened a few
+minutes later without anything else changing on the TV. Wireless debugging was not needed (it is Wi-Fi only).
+`dumpsys wifi` listed no saved network, so no Wi-Fi owner was at stake.
+
+### The list as applied
+
+31 packages from this list in four batches with `tools/disable.sh`, a screenshot after each, plus two more:
+
+| Change from this list | Why |
+|---|---|
+| `com.netflix.ninja`, `com.netflix.tokenmanager`, `com.amazon.amazonvideo.livingroom` kept | The owner uses them |
+| `com.google.android.apps.tv.launcherx`, `com.google.android.tungsten.setupwraith` kept | Chromecast is used, and its credentials come from setupwraith (`docs/TROUBLESHOOTING.md`) |
+| `com.google.android.onetimeinitializer` | Not installed on this preload |
+| `com.tcl.browser` also disabled | TCL's web and video portal (`portal.home.activity.HomePageActivity`), not used |
+| `com.google.android.youtube.tvmusic` also disabled | Not used |
+
+`com.tcl.smartlink.core` (version `2.0.4f88555`) is installed here and was left alone: its components are a
+`com.tcl.custominstall.CustomInstallService` and a `BootCompletedReceiver`, which read as a boot-time installer
+for TCL's partner apps, but no list has disabled it yet. Live TV (`com.tcl.tv/com.tcl.player.TVActivity`) was
+checked after the batches. After two reboots `pm list packages -d` still listed all 33, and none came back.
+
+### Home with launcherx and setupwraith enabled
+
+As on the 55Q6C: `stock_home_redirect` `com.google.android.apps.tv.launcherx`, then
+`STOCK_LAUNCHER=none launcher/build-and-install.sh`. Its Home check reports launcherx and stops before the
+helpers, which is expected here, so `HomeKeyService` was enabled afterwards the way the script's `enable_service`
+does (`AUTO_START` allowed first). Home from inside YouTube and the first screen after a reboot were
+`com.gathin.tvhome/.MainActivity` (`mFocusedApp`). Unlike the 55Q6C, `HomeKeyService` was bound after the first
+reboot with `AUTO_START: allow` already on disk, and no `TclAppBoot` refusal was logged.
+
+### Remote buttons and the volume ramp
+
+With `HomeKeyService` bound and `key_filter` on, the owner pressed the real buttons: Home, Input, the gear,
+YouTube, Netflix and Prime Video all worked, but **holding Volume + moved one step per press**, the G09 trade
+(`docs/devices/tcl-55p71b-g09-key-repeat.md`). The 55Q6C on AU02 kept its ramp in the same state, so this differs
+by unit or by build.
+
+Because launcherx is still enabled here, it answers the app buttons and the gear itself; Prime Video worked with no
+`app_keys` entry at all. `"key_filter": false` (pushed with `tools/theme.sh`) brought the volume ramp back,
+and the owner pressed every button again from inside an app: all still worked, and Home still went to the new
+launcher. On a set that keeps launcherx, `key_filter` false costs nothing.
+
+### Screensaver
+
+Ambient mode (`com.google.android.apps.tv.dreamx`, `.service.Backdrop`, with Google Photos) still starts when the
+TV is idle: with `screen_off_timeout` at 60000 it comes up over the new launcher after a minute. Google TV's home
+started it with Back on the home screen; the new launcher cannot. `com.android.systemui/.Somnambulator` starts and
+finishes at once without a dream here (`mCurrentDream=null`), and `cmd dreams start-dreaming` answers `Must be root`.
+
+The 60000 held through a reboot and through a cold start from the mains, both checked with `mWakefulness=Dreaming`
+about three minutes later. Within the first week it was found back at `600000` once, on the same firmware (AU04,
+no system update). Not confirmed: `com.google.android.apps.tv.dreamx` itself updated on 2026-10-27, in that window,
+and may have put its default back. Picking a time in the screensaver or energy settings writes the same value, and
+those menus offer nothing below a few minutes. Set it again with `tools/tv.py 'settings put system screen_off_timeout 60000'`.
+
+### An app update re-enabled `com.tcl.channelplus`
+
+Eight days in, `com.tcl.channelplus` was enabled again. `dumpsys package` showed an update on 2026-10-28
+(`versionName=3.10.00_9178bda_260922` over the `/product/app/TCL_Live` one) with `installerPackageName=com.tcl.ttvs`,
+and the user state back at `enabled=0` (the default). `com.tcl.ttvs` stays enabled in this list, so TCL's app
+updates still arrive; check `pm list packages -d` after a few days and disable again what came back. Nothing else
+from the list returned.
+
+### Closing ADB
+
+`tools/tv.py 'settings put global adb_enabled 0'` closed 5555 at once. The owner then revoked the authorisations
+and restarted the TV, and `tools/adb-closed.py` reported `Connection refused` with no ADB service advertised over mDNS.
+
+### Other checks
+
+SmartTube (`org.smarttube.stable`, the `armeabi-v7a` build: this userland is 32-bit only) was sideloaded with
+`tools/b64push.py` and works; `tools/tv.py --push` stalled on the APK here.
+
+### Test limits
+
+- One set, lived with for eight days (24 October to 1 November 2026), four reboots and one cold start from the
+  mains. The only package that came back was `com.tcl.channelplus`, through the update above; it was disabled again.
+- Checked by the owner: Chromecast from a phone, a PS5 on HDMI through the Inputs menu, standby and wake, and
+  every remote button above. Live TV opened; no long playback.
+## Tenth unit: 55T8C (Wi-Fi)
+One owner's session on 2026-10-26 on Windows, following [`PROMPT.md`](../../PROMPT.md) with `tools/tv.py` and the
+PowerShell twins, then a week of use to 2026-11-01. Same build as the Q7C, so the list here is the one to run with
+the deltas below. Packages were disabled by hand, one `pm disable-user --user 0` call each, in six batches with a
+screenshot after each. Nothing was added to the list beyond a header line naming this unit.
+| Retail model | `55T8C`, supplied by the owner; not exposed by `ro.product.model` (`Smart TV Pro`) |
+| `ro.product.device` / `ro.product.name` | `G08` / `G08_4K_GB` |
+| `ro.hardware` / `ro.board.platform` | `mt5896` / `merak` |
+| Firmware | `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`, `ro.software.version_id` `V8-T653T01-LF1V643`, security patch `2025-12-05` |
+| RAM / display | About 2.4 GB; 3840x2160 panel with a 1920x1080 UI at density 320 |
+### What differed from the Q7C list
+- **Kept by choice:** Netflix (`com.netflix.ninja`, `com.netflix.tokenmanager`) and Prime Video
+  (`com.amazon.amazonvideo.livingroom`). Comment those three lines out to match this set.
+- **Also disabled, beyond the Q7C list:** Chromecast (`com.google.android.apps.mediashell`) and YouTube Music
+  (`com.google.android.youtube.tvmusic`), by the owner's choice. Both are in the commented groups further down.
+- **Kept, as in the Q7C list:** `com.tcl.tv`, `com.tcl.tvinput`, `com.tcl.suspension` (the Inputs panel),
+  `com.tcl.autopair`, `com.google.android.tv.remote.service` and the TCL keyboard.
+### setupwraith and the saved Wi-Fi
+The network the TV was connected through belonged to `android.uid.system`, but a second saved network (the 5 GHz
+band) belonged to setupwraith. The owner agreed to lose that saved profile, and setupwraith was disabled once the new
+launcher was Home. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` for every saved network, not only the one in use.
+### Launcher and checks
+- Launcher with a four-column dock row (Stremio, a third-party YouTube client, Netflix, Prime Video),
+  `live_tv_package` `com.tcl.tv`, and `com.tcl.dashboard`, `com.tcl.partnercustomizer`, `com.tcl.suspension` and
+  `com.tcl.gallery` hidden from the tiles. The `scenes` theme was pushed later with `tools/theme.ps1`.
+- The Inputs pill lists HDMI 1 to 4 and Live TV.
+- **Reboot:** `FallbackHome` showed for about nine seconds, then `com.gathin.tvhome/.MainActivity` took Home. Every
+  disabled package stayed disabled; the OS re-enabled none.
+- One set, one week of use. Casting, AirPlay, Miracast and voice were turned off by choice, so they were not tested
+  after the list.

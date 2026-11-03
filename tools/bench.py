@@ -27,8 +27,11 @@ The output is a summary plus the raw per-key numbers, so a run can be compared w
 re-analysed later.
 
 Exit status: 0 the run is measured and written; 2 an --out-dir that cannot be written into, judged
-before the TV is opened, or a folder that cannot be created (nothing was measured); 1 anything else,
-including a result.json that could not be written after the run, whose numbers are then printed.
+before the TV is opened, a folder that cannot be created, a TV that cannot be reached (tools/tv.py's
+sentence says which failure it was), and a run that never got as far as the TV - no --host and no
+TV_HOST, a --port (or TV_PORT) tools/tv.py cannot read, a checkout tools/tv.py cannot be loaded from -
+nothing was measured, and nothing was written; 1 anything else, including a result.json that could not
+be written after the run, whose numbers are then printed.
 
 Why the frame is matched by its completion time and not by its intended vsync: on a launcher
 that moves the focus in a single frame (no animation), the frame that reacts to a key is born
@@ -89,14 +92,55 @@ class TV:
             try:
                 import tv as tv_client  # noqa: E402
             except ModuleNotFoundError as e:
-                raise SystemExit(f"bench.py needs {e.name}: python3 -m venv tools/venv && "
-                                 "tools/venv/bin/pip install -r tools/requirements.txt") from e
+                # A checkout a reader has not built yet: no adb_shell, and no tools/venv beside this
+                # file for main() to start again under. Nothing has been measured, so this is the 2 the
+                # docstring gives a run that never reached the TV - it used to be a SystemExit carrying
+                # this text, which the interpreter answers with 1, the status of a run whose numbers
+                # exist and whose result.json could not be written.
+                print(f"bench.py needs {e.name}: python3 -m venv tools/venv && "
+                      "tools/venv/bin/pip install -r tools/requirements.txt. Nothing was measured, "
+                      "and nothing was written.", file=sys.stderr)
+                raise SystemExit(2) from e
+            except SystemExit as exit_request:
+                # tv.py refuses two shapes while it is imported, before it has a connection: a TV_PORT
+                # it cannot read ("not a port number: 'abc'", which is also what `--host <ip>:70000`
+                # and a TV_PORT of abc get) and, had main() not already stopped there, no TV_HOST.
+                # bench.py hands the client its own --host/--port just above, so the second is main()'s
+                # line and the first is a port typed wrong. Nothing was asked of the TV either time,
+                # and the interpreter answers such a text with 1 - the status a run that measured and
+                # could not write its result.json keeps - so a run that never started read as one that
+                # did. tv.py's own text is printed here; a module that exits 0 answered the call
+                # itself, and that status stands (the branch tools/theme_restart.py keeps).
+                if not exit_request.code:
+                    raise
+                if isinstance(exit_request.code, str):
+                    print(exit_request.code, file=sys.stderr)
+                print("Nothing was measured, and nothing was written.", file=sys.stderr)
+                raise SystemExit(2) from exit_request
             # Read back the target tv.py made of that environment: it splits `host:port` and refuses a
             # port outside 1..65535 there. Overriding these from the arguments (as this did) put the
             # `:port` back into the host, so `--host 192.0.2.20:5877` asked for a machine of that name.
             self.host, self.port = tv_client.HOST, tv_client.PORT
             self.serial = f"{self.host}:{self.port}"
-            self.client = tv_client.connect()
+            try:
+                self.client = tv_client.connect()
+            except Exception as error:
+                # tools/tv.py words the failures that mean the TV was not reached: a port that refuses,
+                # a Wireless debugging port that asks for TLS, an address nothing answers on, and the
+                # macOS Local Network denial that looks like one. The errors it has nothing to add to (a
+                # key file it cannot read, a connection reset in the handshake) keep their traceback.
+                # Left alone, a refused port here ended the run in a ConnectionRefusedError traceback
+                # with exit 1, naming neither the address nor what the run lost, and exit 1 is also what
+                # a finished run whose result.json could not be written returns - so a TV that was
+                # asleep read as a benchmark that ran. This is the one function both the first connect
+                # and the reopen after a dropped connection go through; a run that stops here has
+                # written nothing, because result.json comes at the end.
+                why = tv_client.connect_error(error)
+                if why is None:
+                    raise
+                print(f"{why}\nNothing was written: result.json is written at the end of a run.",
+                      file=sys.stderr)
+                raise SystemExit(2) from error
         return self.client
 
     def shell(self, command):
@@ -529,8 +573,9 @@ def out_dir(value):
     The folder may not exist yet: bench.py creates it. What it cannot do is write into a file, run
     through a file, or nowhere - os.makedirs() answered those with a traceback after the TV had
     already been asked which component answers HOME and what version it runs, at the start of a run
-    that then measured nothing. The same rule as tools/trace.py's --out (tools/perf-ab.md's three
-    tools), and the same reason for judging it in argparse: it costs nothing and it happens first.
+    that then measured nothing. The same rule as tools/trace.py's --out (docs/workflows/perf-ab.md's
+    three tools), and the same reason for judging it in argparse: it costs nothing and it happens
+    first.
     """
     if not value:
         raise argparse.ArgumentTypeError("needs a folder to write the results into")
@@ -588,7 +633,12 @@ def main():
     if args.idle < 1:
         parser.error(f"--idle is the number of idle seconds: pass at least 1, not {args.idle}")
     if not args.host:
-        raise SystemExit("pass --host or set TV_HOST")
+        # Nothing has been measured: a run with no address is the 2 the docstring gives a run that never
+        # got as far as the TV, not the 1 a run keeps when its numbers exist and result.json could not be
+        # written. The line names both ways to pass the address, the two this run was given.
+        print("bench.py needs the TV's address: pass --host <ip> (or set TV_HOST). Nothing was "
+              "measured, and nothing was written.", file=sys.stderr)
+        raise SystemExit(2)
     venv = venv_python()
     if importlib.util.find_spec("adb_shell") is None and venv \
             and os.path.realpath(venv) != os.path.realpath(sys.executable):

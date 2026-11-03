@@ -17,6 +17,7 @@
     <string name="good_night">Доброї ночі</string>
     <string name="festival_dussehra_greeting">Зі святом Дашахра!</string>
     <string name="festival_diwali_greeting">Зі святом Дівалі!</string>
+    <string name="festival_halloween_greeting">Щасливого Гелловіну!</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Не в мережі</string>
     <string name="not_available">Недоступно на цьому телевізорі</string>
@@ -150,4 +151,7 @@
          last opened, e.g. "5 minutes ago" or "yesterday, 9:40 pm". -->
     <string name="last_opened">Востаннє відкрито %1$s</string>
     <string name="game_live">Наживо зараз</string>
+    <string name="clock_format_system">Системний</string>
+    <string name="clock_format_12">12-годинний</string>
+    <string name="clock_format_24">24-годинний</string>
 </resources>

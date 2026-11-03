@@ -28,6 +28,13 @@
 # Same Android platform (BRAVIA_VH1) as the PA-firmware notes in
 # docs/devices/sony-kd-55x9000h.md (retail KD-55X9000H); this list is the EU build.
 #
+# UK unit: Sony KD-65XH9296 (BRAVIA_VH1_EU, same build S137), Android 12. Applied 2026-10-28 in three batches, then
+# tvlauncher by launcher/build-and-install.sh; Netflix and Assistant kept by choice. Everything stayed disabled and Home
+# stayed on the launcher across a reboot. com.youview.poa was in this list at first and took BBC iPlayer, ITVX, Channel 4
+# and 5 off the TV; enabling it brought them back, so it is now commented out. Those four are web apps run by YouView in
+# Sony's HbbTV player, not packages, so they have no tile of their own: docs/devices/sony-youview-uk-catchup.md says
+# how to launch them and how to give each a Home tile.
+#
 # Lived with for weeks on a KD-55XH9096 (Spain/EU) with CleanYourTV; Live TV, HDMI Inputs, Ethernet
 # and Chromecast still work. If something breaks, re-enable it with `pm enable <package>` and please report it.
 
@@ -75,7 +82,8 @@ com.google.android.youtube.tvmusic
 com.google.android.videos
 com.google.android.play.games
 com.android.printspooler
-com.youview.poa                                # YouView (UK); unused on this EU unit
+# com.youview.poa                            # KEPT on UK sets: Freeview Play, which hosts BBC iPlayer, ITVX, Channel 4 and 5.
+#                                              Disabled, those four vanish from the TV. Uncomment on a non-UK unit.
 
 # Stock leanback Home (CleanYourTV owns HOME)
 com.google.android.tvlauncher

@@ -131,8 +131,9 @@ being disabled does not stop the launcher's own feed.
 
 ## What the debloat does change
 
-28 packages disabled with `pm disable-user`, one full reboot afterwards: Home, the source panel,
-Settings, the app store, 电视卫士, Media Center and Multi-screen still worked, the crash buffer was
-empty, and free RAM went from 1.97 GB to 1.15 GB of 3.7 GB. The boot ad, telemetry upload, push
-connection, home recommendation service, shop, OTA and the bundled content entries stay off across
-the reboot.
+27 packages disabled with `pm disable-user` - the tested set had `com.tcl.t_solo` off as well, 28 in
+all, and it is opt-in here because it is the Bluetooth music app - one full reboot afterwards: Home,
+the source panel, Settings, the app store, 电视卫士, Media Center and Multi-screen still worked, the
+crash buffer was empty, and free RAM went from 1.97 GB to 1.15 GB of 3.7 GB. The boot ad, telemetry
+upload, push connection, home recommendation service, shop, OTA and the bundled content entries stay
+off across the reboot.

@@ -17,6 +17,7 @@
     <string name="good_night">Boa noite</string>
     <string name="festival_dussehra_greeting">Feliz Dussehra</string>
     <string name="festival_diwali_greeting">Feliz Diwali</string>
+    <string name="festival_halloween_greeting">Feliz Halloween</string>
     <string name="shamsi_month_farvardin">Farvardin</string>
     <string name="shamsi_month_ordibehesht">Ordibehesht</string>
     <string name="shamsi_month_khordad">Khordad</string>
@@ -148,4 +149,7 @@
     <string name="race_countdown_days">%1$dd %2$dh</string>
     <string name="last_opened">Aberto %1$s</string>
     <string name="game_live">Ao vivo agora</string>
+    <string name="clock_format_system">Sistema</string>
+    <string name="clock_format_12">12 horas</string>
+    <string name="clock_format_24">24 horas</string>
 </resources>

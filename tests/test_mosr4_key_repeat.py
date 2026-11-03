@@ -68,7 +68,7 @@ class SecondUnitTest(unittest.TestCase):
 
     def test_names_the_missing_control_instead_of_borrowing_it(self):
         self.assertIn("empty-list control was not run", self.section)
-        self.assertIn("still measured on the G09 alone", self.section,
+        self.assertIn("was measured on the G09 alone until", self.section,
                       "the control was not repeated on this set, so it must not be reported as if it was")
 
     def test_names_the_capability_and_how_it_was_read(self):

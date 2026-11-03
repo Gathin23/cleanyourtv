@@ -59,7 +59,9 @@ if (-not $pkgs -or $pkgs.Count -eq 0) {
 # ship under AOSP's bare names, android.ext.services and android.ext.shared (#1711). Keep both
 # patterns in step with disable.sh and recovery.py (tests/test_core_packages.py). The TV middleware
 # (com.cltv.mal, com.mediatek.tis / tv.service / tv.agent) is guarded too (#1578, a Haier boot loop).
-$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
+# Protect the exact SDK sandbox package (#2557); the reported boot-failure cause is unconfirmed.
+# And com.android.location.fused: a TCL 43S5400A (V325) boot-looped into recovery with only it off (#2803).
+$coreRe = '^(android|android\.ext\.(services|shared)|com\.android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 $coreOk = '^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 $core = @($pkgs | Where-Object { $_ -cmatch $coreRe -and $_ -cnotmatch $coreOk })
 if ($core.Count -gt 0) {
@@ -194,9 +196,12 @@ if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
     # Per package: the "requested permissions" block (Android 6.0+); on a dump with no such block —
     # Lollipop prints only "grantedPermissions:" — the package's own granted block; then its Service
     # Resolver Table, which Lollipop's per-package dump prints and which names what serves
-    # android.media.tv.TvInputService. "Unable to find" is a package not on this TV. A dump with
+    # android.media.tv.TvInputService. "Unable to find" is a package not on this TV. From Android 6.0
+    # (SDK 23) a readable dump (its own "Package [name]" section) with no block is a package that asks
+    # for nothing, so it passes (#2398); below SDK 23, or with no SDK reported, it stays NOCHK. "Service
+    # dumps disabled due to hung system process" is the watchdog switching dumps off (HUNG). A dump with
     # neither block nor error (NOCHK) is one the guard cannot read: the package is kept on (#1753).
-    $loop = 'for p in ' + ($pkgs -join ' ') + '; do d=$(dumpsys package $p 2>/dev/null); case $d in *"requested permissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"grantedPermissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"Service Resolver Table:"*) printf ''%s\n'' "$d" | grep -q ''android.media.tv.TvInputService'' && echo $p;; *"Unable to find"*) :;; *) echo "NOCHK $p";; esac; done; true'
+    $loop = 's=$(getprop ro.build.version.sdk); for p in ' + ($pkgs -join ' ') + '; do d=$(dumpsys package $p 2>/dev/null); case $d in *"requested permissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"grantedPermissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"Service Resolver Table:"*) printf ''%s\n'' "$d" | grep -q ''android.media.tv.TvInputService'' && echo $p;; *"Unable to find"*) :;; *"hung system process"*) echo "HUNG $p";; *"Package [$p]"*) [ "${s:-0}" -ge 23 ] 2>/dev/null || echo "NOCHK $p";; *) echo "NOCHK $p";; esac; done; true'
     # Windows PowerShell turns redirected stderr into an error that 'Stop' would throw (see getprop).
     $ErrorActionPreference = 'Continue'
     $tvhw = @(& $py -I (Join-Path $repo 'tools\tv.py') $loop 2>$null)
@@ -205,6 +210,18 @@ if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
     if (-not $checked) {
         Write-Warning 'Could not check which listed packages drive the HDMI/AV inputs (tv.py failed). Check every input after this run: a port that notices the cable and stays black means one of them was disabled, and only a full restore and a cold boot bring it back (#321).'
     } else {
+        # Dumps switched off by the watchdog: the cure is a reboot, not TVINPUT_ALLOW (disable.sh).
+        $hung = @()
+        foreach ($p in ($tvhw | Where-Object { $_ -match '^HUNG ' })) {
+            $p = ($p -replace '^HUNG ', '').Trim()
+            if ($pkgs -contains $p) {
+                $hung += $p
+                $pkgs = @($pkgs | Where-Object { $_ -ne $p })
+            }
+        }
+        if ($hung.Count -gt 0) {
+            Write-Warning "Skipping $($hung -join ' '): the TV answers dumpsys with `"Service dumps disabled due to hung system process`", so the input-driver check cannot read them. Android's watchdog turns every dump off after system_server hangs, and only a restart turns them back on. Reboot the TV first (tools\tv.py --reboot), then run the list again. `$env:TVINPUT_ALLOW=1 is not the way past this: the check did not run, which is not the same as passing (docs/TROUBLESHOOTING.md)."
+        }
         foreach ($p in ($tvhw | Where-Object { $_ -match '^NOCHK ' })) {
             $p = ($p -replace '^NOCHK ', '').Trim()
             if ($pkgs -contains $p) {
@@ -212,7 +229,7 @@ if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
                 $pkgs = @($pkgs | Where-Object { $_ -ne $p })
             }
         }
-        foreach ($p in ($tvhw | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -notmatch '^NOCHK ' })) {
+        foreach ($p in ($tvhw | ForEach-Object { $_.Trim() } | Where-Object { $_ -and $_ -notmatch '^(NOCHK|HUNG) ' })) {
             if ($pkgs -contains $p) {
                 Write-Warning "Skipping ${p}: it asks for android.permission.TV_INPUT_HARDWARE, so it is the software layer under the HDMI/AV/tuner inputs. With it disabled those inputs still notice the cable but stay black (No Signal), and re-enabling the pieces in batches does not restore the picture: a full restore plus a cold boot does (#321). Set `$env:TVINPUT_ALLOW=1 to disable it."
                 $pkgs = @($pkgs | Where-Object { $_ -ne $p })
@@ -266,6 +283,11 @@ if ($LASTEXITCODE -ne 0) { throw 'no recovery record was written, so nothing was
 $cmds = @($pkgs | ForEach-Object { "pm disable-user --user 0 $_" }) + 'pm list packages -d'
 $cmds | & $py -I (Join-Path $repo 'tools\tv.py') --batch
 $batchExit = $LASTEXITCODE
+# A batch that dies halfway (the TV reset the connection, #2663) still gets the read-back and the
+# ro.adb.secure note below; the throw at the end gives the run its failed status.
+if ($batchExit -ne 0) {
+    Write-Warning "tv.py --batch stopped before the end of the list (exit code $batchExit): the TV dropped the connection or stopped answering. The command it was on may or may not have reached the TV, and the ones after it were not sent. What is still enabled is read back below."
+}
 
 # Same as disable.sh (#1376): read the TV back instead of trusting the batch's silence. `-e` lists enabled
 # packages only, so one that is not on this TV, or that the factory had already disabled, is never named.
@@ -289,7 +311,9 @@ if ($pkgs.Count -gt 0) {
         Write-Warning "Could not check which listed packages are still enabled: tv.py failed, or the TV listed no package for 'pm list packages -e --user 0'. Compare 'pm list packages -d --user 0' with the list by hand."
     } else {
         $stillOn = @($pkgs | Where-Object { $enabled -contains $_ } | Select-Object -Unique)
-        if ($stillOn.Count -gt 0) {
+        if ($stillOn.Count -gt 0 -and $batchExit -ne 0) {
+            Write-Warning "Still enabled after this run, although the list disables them: $($stillOn -join ', '). The batch stopped early (above), so these were not sent, or their answer was lost. Once the TV answers again (tools\tv.py --probe), run the list once more. Do not run it again in a loop."
+        } elseif ($stillOn.Count -gt 0) {
             Write-Warning "Still enabled after this run, although the list disables them: $($stillOn -join ', '). The TV did not take pm disable-user for these: it refused (its answer is in the output above), or the change did not hold. Do not run the list again in a loop. Run tools\tv.py 'pm disable-user --user 0 <package>' once by hand for each, or the list once more after a reboot. If every listed package stays enabled, this firmware refuses pm disable-user: stop there and say so (docs\TROUBLESHOOTING.md, `"Every way of disabling a package is refused`")."
         }
     }
@@ -299,7 +323,7 @@ if ($null -ne $adbSecure -and ($adbSecure -eq '0' -or $adbSecure -eq '')) {
     $why = if ($adbSecure -eq '') { 'This TV does not set ro.adb.secure. On a debug (userdebug) build or Android 4.4 that is the same as ro.adb.secure=0: network ADB on port 5555 accepts any device on your network without the "Allow" prompt.' } else { 'This TV reports ro.adb.secure=0, so network ADB on port 5555 accepts any device on your network without the "Allow" prompt.' }
     Write-Warning "$why When you are done, turn USB debugging, Network/ADB debugging and Wireless debugging off on the TV and reboot it (README: `"Isn't ADB access a security hole?`")."
 }
-if ($batchExit -ne 0) { throw "tv.py --batch failed (exit code $batchExit): the list may be only partly applied; run it again once the TV answers" }
+if ($batchExit -ne 0) { throw "tv.py --batch failed (exit code $batchExit): the list may be only partly applied; run it once more when the TV answers" }
 # Last, so the warnings above are printed either way: a listed package the TV left enabled fails the
 # run, as in disable.sh.
 if ($stillOn.Count -gt 0) { exit 1 }

@@ -14,7 +14,9 @@ tools/requirements-perf.txt. Read tools/flamechart.md first.
 
 --out is the PNG to write, and it is checked before the traces are opened: a folder, a name with no
 extension, and a folder that is not there are argument errors (exit 2) rather than a traceback after the
-traces have been read.
+traces have been read. A TRACE argument is checked as well, before the trace engine starts: a path that is
+not a file stops the run with `not a file: <path>` (the words tools/trace_report.py uses), and a folder with
+no .pftrace in it names the folder.
 """
 import argparse
 import colorsys
@@ -254,6 +256,18 @@ def parse(argv):
 
 def main(argv=None):
     args = parse(sys.argv[1:] if argv is None else argv)
+    # A TRACE argument is a path on this computer, and it is read before Perfetto's engine is started:
+    # trace_report.py, which the same workflow page puts beside this tool, answers `not a file: <path>`
+    # there. Here the path went straight into TraceProcessor, so a typo cost the trace_processor_shell
+    # download and then came back as an uncaught `FileNotFoundError: [Errno 2] ...`, and on a computer
+    # without the perfetto package it was answered with that package's install line instead.
+    sets = [trace_report.expand([item]) for item in args.traces]
+    for item, paths in zip(args.traces, sets):
+        if not paths:
+            sys.exit(f"no .pftrace files in {item}")
+        missing = [path for path in paths if not os.path.isfile(path)]
+        if missing:
+            sys.exit("not a file: " + ", ".join(missing))
     try:
         import PIL  # noqa: F401
     except ImportError:
@@ -261,10 +275,7 @@ def main(argv=None):
     open_trace = trace_report.opener(args.engine)
     labels = [l.strip() for l in args.labels.split(",")]
     panels = []
-    for i, item in enumerate(args.traces):
-        paths = trace_report.expand([item])
-        if not paths:
-            sys.exit(f"no .pftrace files in {item}")
+    for i, (item, paths) in enumerate(zip(args.traces, sets)):
         try:
             path, basis = median_run(paths, args.package, open_trace)
         except ValueError as e:

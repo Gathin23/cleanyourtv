@@ -53,7 +53,7 @@ final class VpnBadge extends ReplacementSpan {
     }
 
     /**
-     * vpn_pill: the pill's background. At rest it is an outline in the state colour and only the focused state is
+     * vpn_pill: the pill's background. At rest it is dark glass outlined in the state colour and only the focused state is
      * filled solid with a white ring — a solid pill at rest read as already selected, so OK pressed on a tile was
      * taken for a press on the pill.
      */
@@ -62,8 +62,9 @@ final class VpnBadge extends ReplacementSpan {
         GradientDrawable focused = pillShape(up, density);
         focused.setStroke(Math.round(3 * density), 0xFFFFFFFF);
         bg.addState(new int[]{android.R.attr.state_focused}, focused);
-        GradientDrawable rest = new GradientDrawable();
-        rest.setColor(0x00000000);
+        // Dark glass, so the state colour reads over a bright wallpaper as well as a dark one.
+        GradientDrawable rest = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0xA6000000, 0x8C000000});
         rest.setCornerRadius(21 * density);
         rest.setStroke(Math.round(2 * density), up ? GREEN : RED);
         bg.addState(new int[0], rest);

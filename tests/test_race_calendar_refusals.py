@@ -9,6 +9,11 @@ a sentence on stderr naming the path or the URL and saying that nothing was writ
 code the other tools use for a run that could not do its job, next to 1 for a real answer (this season
 has no race left to show) and 0 for a calendar in the theme.
 
+The two failures urllib does not wrap are here too: a connection closed before its status line
+(`http.client.RemoteDisconnected`) and a body that stops early (`IncompleteRead`, out of `json.load()`)
+are raised by `http.client` itself, so they went past every handler the script had and ended the run in
+a traceback with exit 1, which is this script's "no race left this season".
+
 The exit codes and the folder rule are in the script's docstring as well, so the page a reader opens
 first is not the only place they are written down.
 
@@ -17,6 +22,7 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 import argparse
 import contextlib
 import datetime
+import http.client
 import io
 import json
 import os
@@ -35,6 +41,12 @@ RACES = {"MRData": {"RaceTable": {"season": "2026", "Races": [{
     "round": "1", "raceName": "Example Grand Prix", "date": "2026-01-04", "time": "14:00:00Z",
 }]}}}
 RESPONSE = json.dumps(RACES).encode("utf-8")
+THEME = {
+    "greeting_name": "客廳",
+    "custom": {"label": "夜晚", "values": [True, None, {"amount": 7}]},
+    "race_calendar": [{"name": "old calendar"}],
+}
+THEME_BYTES = (json.dumps(THEME, ensure_ascii=False, indent=2) + "\n").replace("\n", "\r\n").encode("utf-8-sig")
 
 
 class FixedDatetime(datetime.datetime):
@@ -47,6 +59,24 @@ def clock():
     """`datetime` as the script uses it: now() at a fixed moment, plus the two names it needs."""
     return SimpleNamespace(datetime=FixedDatetime, timedelta=datetime.timedelta,
                            timezone=datetime.timezone)
+
+
+class CutShort:
+    """A response whose status line arrived and whose body stops early.
+
+    `json.load(response)` calls `read()`, and http.client answers a body shorter than its own
+    Content-Length with IncompleteRead - not a ValueError, so the "answered something that is not JSON"
+    refusal never saw it either.
+    """
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        return False
+
+    def read(self, *args):
+        raise http.client.IncompleteRead(b'{"MRData": ', 3989)
 
 
 class SeasonArgumentTest(unittest.TestCase):
@@ -109,6 +139,136 @@ class RefusalTest(unittest.TestCase):
         for needle in needles:
             self.assertIn(needle, stderr)
         self.assertTrue(any("Nothing was written" in line for line in stderr.splitlines()), stderr)
+
+    def assert_api_leaves_config(self, payload, expected_status, *needles):
+        for existing in (False, True):
+            with self.subTest(existing=existing):
+                self.config.unlink(missing_ok=True)
+                if existing:
+                    self.config.write_bytes(THEME_BYTES)
+                for stream in (self.err, self.out):
+                    stream.seek(0)
+                    stream.truncate(0)
+                self.stub(body=json.dumps(payload).encode("utf-8"))
+                try:
+                    status, stderr = self.run_main(str(self.theme))
+                    if expected_status == 2:
+                        self.assert_refused(status, stderr, "Jolpica", *needles)
+                    else:
+                        self.assertEqual(status, expected_status, stderr)
+                        for needle in needles:
+                            self.assertIn(needle, stderr)
+                    self.assertEqual(self.out.getvalue(), "")
+                    self.urlopen.assert_called_once()
+                finally:
+                    # Check even when the old code raises: a missing season used to fail AFTER writing.
+                    if existing:
+                        self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+                    else:
+                        self.assertFalse(self.config.exists(), "the refused response created config.json")
+
+    def test_api_missing_season_never_writes(self):
+        for upcoming in (True, False):
+            with self.subTest(upcoming=upcoming):
+                payload = json.loads(RESPONSE)
+                table = payload["MRData"]["RaceTable"]
+                del table["season"]
+                if not upcoming:
+                    table["Races"] = []
+                self.assert_api_leaves_config(payload, 2, "season")
+
+    def test_api_invalid_season_never_writes(self):
+        for value in (None, [], "2026x"):
+            with self.subTest(season=value):
+                payload = json.loads(RESPONSE)
+                payload["MRData"]["RaceTable"]["season"] = value
+                self.assert_api_leaves_config(payload, 2, "season")
+
+    def test_api_invalid_containers_never_write(self):
+        for field in ("RaceTable", "Races"):
+            for value in (None, [], {}) if field == "RaceTable" else (None, {}, "races"):
+                with self.subTest(field=field, value=value):
+                    payload = json.loads(RESPONSE)
+                    if field == "RaceTable":
+                        payload["MRData"][field] = value
+                    else:
+                        payload["MRData"]["RaceTable"][field] = value
+                    self.assert_api_leaves_config(payload, 2, field)
+
+    def test_api_invalid_circuit_or_location_never_writes(self):
+        for circuit, field in ((None, "Circuit"), ([], "Circuit"), ({"Location": None}, "Location")):
+            with self.subTest(circuit=circuit):
+                payload = json.loads(RESPONSE)
+                payload["MRData"]["RaceTable"]["Races"][0]["Circuit"] = circuit
+                self.assert_api_leaves_config(payload, 2, field)
+
+    def test_api_nonobject_race_after_valid_race_never_partially_writes(self):
+        for value in (None, [], "race", 42):
+            with self.subTest(race=value):
+                payload = json.loads(RESPONSE)
+                payload["MRData"]["RaceTable"]["Races"].append(value)
+                self.assert_api_leaves_config(payload, 2, "Races")
+
+    def test_api_missing_name_or_nonnumeric_round_never_writes(self):
+        for field in ("raceName", "round"):
+            with self.subTest(field=field):
+                payload = json.loads(RESPONSE)
+                race = payload["MRData"]["RaceTable"]["Races"][0]
+                if field == "raceName":
+                    del race[field]
+                else:
+                    race[field] = "one"
+                self.assert_api_leaves_config(payload, 2, field)
+                if field == "round":
+                    self.assertNotIn("timestamp", self.err.getvalue())
+
+    def test_api_valid_years_optional_fields_and_unpublished_sessions(self):
+        for year in ("2026", 2026):
+            for optional in ("present", "no Location", "no Circuit"):
+                with self.subTest(year=year, optional=optional):
+                    payload = json.loads(RESPONSE)
+                    table = payload["MRData"]["RaceTable"]
+                    table["season"] = year
+                    race = table["Races"][0]
+                    race["FirstPractice"] = {"date": "2026-01-02"}
+                    race["Qualifying"] = {"date": "2026-01-03", "time": None}
+                    if optional == "present":
+                        race["Circuit"] = {"Location": {"locality": "Example"}}
+                    elif optional == "no Location":
+                        race["Circuit"] = {}
+                    self.config.write_bytes(THEME_BYTES)
+                    for stream in (self.err, self.out):
+                        stream.seek(0)
+                        stream.truncate(0)
+                    self.stub(body=json.dumps(payload).encode("utf-8"))
+                    status, stderr = self.run_main(str(self.theme))
+                    self.assertEqual(status, 0, stderr)
+                    self.assertEqual(stderr, "")
+                    self.assertIn("1 races from the 2026 season", self.out.getvalue())
+                    self.urlopen.assert_called_once()
+                    updated = json.loads(self.config.read_bytes().decode("utf-8"))
+                    self.assertEqual({k: v for k, v in updated.items() if k != "race_calendar"},
+                                     {k: v for k, v in THEME.items() if k != "race_calendar"})
+                    self.assertEqual(updated["race_calendar"], [{
+                        "round": 1, "name": "Example Grand Prix",
+                        "place": "Example" if optional == "present" else "",
+                        "sessions": [{"name": "RACE", "start": "2026-01-04T14:00:00Z"}],
+                    }])
+
+    def test_api_empty_past_or_unpublished_calendar_leaves_config_unchanged(self):
+        for kind in ("empty", "past", "missing time", "unpublished time"):
+            with self.subTest(kind=kind):
+                payload = json.loads(RESPONSE)
+                races = payload["MRData"]["RaceTable"]["Races"]
+                if kind == "empty":
+                    races.clear()
+                elif kind == "past":
+                    races[0]["date"] = "2025-01-04"
+                elif kind == "missing time":
+                    del races[0]["time"]
+                else:
+                    races[0]["time"] = None
+                self.assert_api_leaves_config(payload, 1, "no upcoming races in the 2026 calendar")
 
     def test_a_season_that_is_not_a_year_never_reaches_the_api(self):
         self.stub()
@@ -222,6 +382,42 @@ class RefusalTest(unittest.TestCase):
         self.stub(raises=TimeoutError("timed out"))
         status, stderr = self.run_main(str(self.theme), "--season", "2026")
         self.assert_refused(status, stderr, "could not reach Jolpica at", "timed out")
+
+    def test_a_connection_closed_without_an_answer_is_named(self):
+        # A captive portal, a proxy that filters the host and a link that drops all accept the
+        # connection and close it without a byte. urllib wraps a refused connect in URLError, but
+        # http.client raises this one itself out of getresponse(), so it passed every handler and ended
+        # the run in a traceback whose exit status, 1, is this script's "no race left this season".
+        self.stub(raises=http.client.RemoteDisconnected("Remote end closed connection without response"))
+        status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        self.assert_refused(status, stderr, "closed the connection before the answer was complete",
+                            "api.jolpi.ca/ergast/f1/2026.json", "Remote end closed connection")
+        self.assertFalse(self.config.exists(), "a failed fetch wrote a config.json")
+
+    def test_an_answer_cut_short_is_named(self):
+        # The status line arrived and the body stopped halfway: IncompleteRead comes out of json.load(),
+        # not a ValueError, so the "answered something that is not JSON" refusal never saw it either.
+        with mock.patch.object(race_calendar.urllib.request, "urlopen", return_value=CutShort()) as urlopen:
+            status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        self.assert_refused(status, stderr, "closed the connection before the answer was complete",
+                            "api.jolpi.ca/ergast/f1/2026.json", "IncompleteRead")
+        urlopen.assert_called_once()
+        self.assertFalse(self.config.exists(), "a failed fetch wrote a config.json")
+
+    def test_the_two_unwrapped_fetch_failures_leave_an_existing_theme_byte_identical(self):
+        original = json.dumps({"greeting_name": "Olohuone", "columns": 5}, ensure_ascii=False) + "\n"
+        for payload in (
+            mock.patch.object(race_calendar.urllib.request, "urlopen",
+                              side_effect=http.client.RemoteDisconnected("Remote end closed the connection")),
+            mock.patch.object(race_calendar.urllib.request, "urlopen", return_value=CutShort()),
+        ):
+            with self.subTest(payload=payload):
+                self.config.write_text(original, encoding="utf-8")
+                with payload as urlopen:
+                    status, stderr = self.run_main(str(self.theme), "--season", "2026")
+                self.assert_refused(status, stderr, "closed the connection before the answer was complete")
+                urlopen.assert_called_once()
+                self.assertEqual(self.config.read_text(encoding="utf-8"), original)
 
     def test_an_http_error_names_the_status_the_api_gave(self):
         self.stub(raises=urllib.error.HTTPError(race_calendar.API.format(season="2026"), 503,

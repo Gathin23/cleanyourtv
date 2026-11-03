@@ -58,7 +58,8 @@ def why_not(path):
     A truncated file is reported too: the formats all begin with their magic, so an image that does
     not is either empty, damaged, or not an image at all.
     """
-    head = Path(path).open("rb").read(HEAD)
+    with open(path, "rb") as f:
+        head = f.read(HEAD)
     suffix = Path(path).suffix.lower()
     if suffix == ".webp":
         if head[:4] == b"RIFF" and head[8:12] == b"WEBP":

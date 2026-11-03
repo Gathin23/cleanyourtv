@@ -59,6 +59,21 @@ def answer(command):
         names += [name for name in state.get("other_user_enabled", []) if name not in names]
         return "".join(f"package:{name}\n" for name in names)
     return home_guard_answer(command)
+
+
+# A batch the TV cuts off (#2663): the first state["batch_dies_after"] lines reach the TV, then the
+# connection resets and tv.py fails, the way adb_shell's ConnectionResetError ended the SHIELD's run.
+home_guard_main = main
+
+
+def main():
+    if "--batch" in sys.argv[1:] and "batch_dies_after" in state:
+        lines = [line.strip() for line in sys.stdin if line.strip() and not line.startswith("#")]
+        state["commands"].extend(lines[:state["batch_dies_after"]])
+        save()
+        print("ConnectionResetError: [Errno 54] Connection reset by peer", file=sys.stderr)
+        return 1
+    return home_guard_main()
 '''
 MAIN = '\nif __name__ == "__main__":'
 
@@ -207,6 +222,25 @@ class DisableVerifyTest(unittest.TestCase):
                 self.assertEqual(sent, ["pm list packages -d"])
                 self.assertNotIn(COULD_NOT, self.said(entry, result))
 
+    def test_a_batch_the_tv_cut_off_still_reads_back_and_fails_the_run(self):
+        # #2663: the connection reset after the first package. The run still says what is left on
+        # and prints the ro.adb.secure note, then ends with a failed status.
+        for entry in self.entries():
+            with self.subTest(entry=entry):
+                self.tv(batch_dies_after=1)
+                result, sent = self.disable(entry)
+                self.assertNotEqual(result.returncode, 0, self.output(result))
+                self.assertEqual(sent, [f"pm disable-user --user 0 {BEFORE}"])
+                said = self.said(entry, result)
+                self.assertIn("stopped before the end of the list", said)
+                report = self.report(entry, result)
+                self.assertIn(AFTER, report)
+                self.assertNotIn(BEFORE, report, "the package the TV did take is not named")
+                self.assertIn("The batch stopped early", report)
+                self.assertNotIn("Every way of disabling a package is refused", report,
+                                 "a dropped connection is not a firmware that refuses pm")
+                self.assertIn("ro.adb.secure", said)
+
     def test_disable_ps1_reads_and_says_what_disable_sh_does(self):
         # Without pwsh the cases above run disable.sh only, so pin the PowerShell twin's text here.
         sh = (ROOT / "tools" / "disable.sh").read_text(encoding="utf-8")
@@ -229,8 +263,15 @@ class DisableVerifyTest(unittest.TestCase):
                 self.assertGreater(text.index(fail), text.index(adb),
                                    "the ADB warning is printed before a failed run ends")
                 for words in (HEADER, COULD_NOT, "Do not run the list again in a loop",
-                              "Every way of disabling a package is refused"):
+                              "Every way of disabling a package is refused", "The batch stopped early",
+                              "stopped before the end of the list"):
                     self.assertIn(words, text)
+        # A batch that died fails the run after the read-back and the ADB warning, not before (#2663).
+        for text, batch_fail, adb in (
+                (sh, '\n[ "$BATCH_RC" -eq 0 ] || exit "$BATCH_RC"\n', lines["disable.sh"][2]),
+                (ps1, "\nif ($batchExit -ne 0) { throw ", lines["disable.ps1"][2])):
+            self.assertGreater(text.index(batch_fail), text.index(adb))
+            self.assertGreater(text.index(batch_fail), text.index("'pm list packages -e --user 0'"))
 
 
 if __name__ == "__main__":

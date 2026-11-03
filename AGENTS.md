@@ -71,7 +71,7 @@ share their TV's list afterwards, follow [`docs/workflows/tv-list.md`](docs/work
 | Path | What it is |
 |---|---|
 | `PROMPT.md` | The prompt people paste into their agent. Brand-neutral; safety rules live here. |
-| `README.md` | Front page, with the brand grid (generated from `examples/*/tv.json` by `tools/gen_tables.py`) and the Tools table. Longer guides it links live in `docs/`: `launcher.md`, `restore.md`, `firmware-updates.md`, `privacy.md` and `faq.md`. `README.zh-CN.md` and `README.vi.md` are translations. |
+| `README.md` | Front page, with the brand grid (generated from `examples/*/tv.json` by `tools/gen_tables.py`) and the Tools table. Longer guides it links live in `docs/`: `launcher.md`, `restore.md`, `firmware-updates.md`, `privacy.md` and `faq.md`. `README.<lang>.md` are its translations (`zh-CN`, `zh-TW`, `vi`, `ja`, `it`, `nl`, `de`, `uk`, `tr`). |
 | `CONTRIBUTING.md` | The contributor guide for people. "Where does my idea go?" is the routing table. |
 | `SECURITY.md` | Private vulnerability reporting. |
 | `SHOWCASE.md` | Projects built on this repo that live in their own repositories. |

@@ -123,6 +123,14 @@ answers `java -version` as a 17 but has no `jlink`, which the Android Gradle plu
 Homebrew's `openjdk@17` is keg-only, so point `JAVA_HOME` at it
 (`export JAVA_HOME=$(brew --prefix openjdk@17)`).
 
+With neither a JDK nor an SDK on this computer, build it in a container that has both:
+`tools/docker-build.sh launcher` (Docker only; `addons/<name>` builds an add-on, and the Gradle task
+defaults to `assembleRelease`). It writes the APK to the same place, so
+`SKIP_BUILD=1 TV_HOST=<ip> launcher/build-and-install.sh` installs it. Its debug key lives in the
+`cleanyourtv-gradle` volume rather than `~/.android`, so installing over an APK built here fails with
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE` unless both use the same key (`HOST_KEY_DIR=~/.android`), and
+[`tools/docker-build.md`](tools/docker-build.md) has the rest.
+
 Ideas that fit the direction: an idle screensaver with clock and ambient colour, per-TV icon packs
 for apps without banners, a settings screen to edit the dock from the TV, localisation.
 Ideas that don't: recommendation rows, content feeds, ads, telemetry.

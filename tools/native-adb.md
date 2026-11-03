@@ -27,9 +27,14 @@ that exact endpoint with `adb -s`; it never falls back to another TV or runs `ad
 to change the TV's debugging mode. Its `close()` leaves the shared Google ADB connection
 and server running, so other tools using them keep working.
 
-The setting is inherited by `tools/disable.sh`, `tools/restore.sh`, `tools/privacy.py`,
-`tools/theme.sh` and `launcher/build-and-install.sh`; their existing safety checks still
-run. Back up first and follow `PROMPT.md` before changing a TV. For example:
+The setting is read by `tools/tv.py`, so every tool that reaches the TV through it uses the
+backend: the scripts `tools/disable.sh`, `tools/restore.sh`, `tools/theme.sh` and
+`launcher/build-and-install.sh`, and the Python tools, `tools/check.py` (the check after a
+firmware update), `tools/privacy.py`, `tools/bench.py`, `tools/trace.py`,
+`tools/theme_restart.py`, `tools/b64push.py`, `tools/recovery.py` and `tools/manage.py`.
+Their existing safety checks still run, and on a set whose only network ADB is Wireless
+debugging this is how the check after an update runs without opening the plaintext port with
+`adb tcpip 5555`. Back up first and follow `PROMPT.md` before changing a TV. For example:
 
 ```bash
 tools/venv/bin/python -I tools/tv.py --screenshot shots/before.png

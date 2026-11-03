@@ -9,14 +9,34 @@ by test_gen_tables.py, the Dutch one by nothing.
 
 TRANSLATIONS is now {page: the three words that page states its counts in}, so a translated README gets
 its own numbers moved with its grid, and this file reads the mapping: each page it names must state those
-three words in its card's alt text, one triple, and must be what render() gives back for it.
+three words in its card's alt text, one triple.
+
+This file judges that mapping on stand-in checkouts, and the words on this one. Whether the numbers on
+disk match examples/*/tv.json is tools/gen_tables.py --check's, run by CI's "README tables" job on main
+only - the rule test_examples.py states for the TV tables, for the same reason: a list PR adds its folder
+and its tv.json and changes nothing outside it (docs/workflows/tv-list.md, step 5), so the counts lag on
+purpose until a maintainer runs the script on main. Holding the page on disk to the checkout's numbers
+here turned that lag red on every list PR: one folder added the way the recipe says - debloat.txt and a
+tv.json with a new brand - failed test_the_translated_card_and_row_carry_the_numbers_the_examples_give
+("'356 tv-modellen · 98 merken · 29 talen · ' != '355 tv-modellen · 97 merken · 29 talen · '") and
+test_the_page_on_disk_is_what_the_script_writes, two failures a contributor is told not to fix. The check
+itself is not lost: test_a_stale_translated_page_is_what_the_check_reports runs --check against a page
+whose numbers did not move, so a translated page that lags is still caught, where it is actionable.
+
+The mapping is also the whole list of pages the script writes, so a translation cannot copy the brand block
+by hand and be left out of it: README.de.md did exactly that when the German page landed, and its grid said
+"Xiaomi · 32" and "+49 more brands" over 97 brands while README.md said 34 and +53 - the block's own header
+says it is generated, and no run touched it. One test here walks the checkout for the markers and holds
+every page that carries them to being written.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import io
 import re
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,26 +78,46 @@ oude merkregel
 
 LISTS = [("acme-a", tv("Acme A", "Acme")), ("acme-b", tv("Acme B", "Acme")), ("bolt-c", tv("Bolt C", "Bolt"))]
 
+# The German page's card, as README.de.md has it: the same three counts in German, then the launcher's size,
+# which is not one of them and does not move. No short TV table - that page has the brand block only.
+DE = f"""# Titel
 
-def checkout(tmp, dutch=NL):
-    """The fake checkout test_gen_tables.py builds, with a README.nl.md beside its README.md."""
+<a href="docs/PRESS.md"><img src="docs/card.jpg" alt="316 TV-Modelle · 89 Marken · 28 Sprachen · Launcher
+mit 523 KB. Erwähnt in TechCrunch." width="800"></a>
+
+Eine gewöhnliche deutsche Zeile, die nicht von diesem Generator stammt.
+
+| **28 Sprachen** | Folgt der Sprache des Fernsehers. |
+| **Themes** | Hintergrund und Aufteilung aus einer `config.json`. |
+
+{START.format("tv-brands")}
+
+alte Markenzeile
+
+{END.format("tv-brands")}
+"""
+
+
+def checkout(tmp, dutch: str | None = NL, german: str | None = DE):
+    """The fake checkout test_gen_tables.py builds, with the translated READMEs beside its README.md."""
     root = tree(tmp, LISTS)
-    if dutch is not None:
-        (root / "README.nl.md").write_text(dutch, encoding="utf-8")
+    for page, text in (("README.nl.md", dutch), ("README.de.md", german)):
+        if text is not None:
+            (root / page).write_text(text, encoding="utf-8")
     return root
 
 
 def numbers(text, words):
     """(models, brands, languages) as `text` states them in `words`, or None."""
-    found = re.search(rf"(\d+) {re.escape(words[0])} · (\d+) {re.escape(words[1])} · "
-                      rf"(\d+) {re.escape(words[2])} · ", text)
+    w = [gen_tables.word_pattern(word) for word in words]
+    found = re.search(rf"(\d+) {w[0]} · (\d+) {w[1]} · (\d+) {w[2]} · ", text)
     return tuple(int(n) for n in found.groups()) if found else None
 
 
 def alt_triple(text, words):
     """The card's alt text up to and including the three counts, so a stray second triple cannot match."""
-    found = re.search(rf'alt="(\d+ {re.escape(words[0])} · \d+ {re.escape(words[1])} · '
-                      rf'\d+ {re.escape(words[2])} · )', text)
+    w = [gen_tables.word_pattern(word) for word in words]
+    found = re.search(rf'alt="(\d+ {w[0]} · \d+ {w[1]} · \d+ {w[2]} · )', text)
     return found.group(1) if found else None
 
 
@@ -146,6 +186,44 @@ class TranslatedCountsTest(unittest.TestCase):
             root = checkout(tmp, dutch=None)
             self.assertNotIn("README.nl.md", self.render(root))
 
+    def test_each_translated_page_states_the_numbers_in_its_own_words(self):
+        # Two pages in the mapping, two sets of words: the Dutch one must not take the German words or the
+        # other way round, which is what one shared triple would do.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            rendered = self.render(root)
+        self.assertIn("3 tv-modellen · 2 merken · 3 talen · ", rendered["README.nl.md"])
+        self.assertIn("| **3 talen** |", rendered["README.nl.md"])
+        self.assertIn("3 TV-Modelle · 2 Marken · 3 Sprachen · ", rendered["README.de.md"])
+        self.assertIn("| **3 Sprachen** |", rendered["README.de.md"])
+        self.assertNotIn("Marken", rendered["README.nl.md"])
+        self.assertNotIn("merken", rendered["README.de.md"])
+
+    def test_the_german_page_keeps_what_the_generator_does_not_own(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            german = self.render(root)["README.de.md"]
+        self.assertIn("Launcher\nmit 523 KB", german)
+        self.assertIn("Eine gewöhnliche deutsche Zeile, die nicht von diesem Generator stammt.", german)
+        self.assertIn("| **Themes** | Hintergrund und Aufteilung aus einer `config.json`. |", german)
+
+    def test_a_README_de_that_is_not_there_is_not_written(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp, german=None)
+            rendered = self.render(root)
+        self.assertNotIn("README.de.md", rendered)
+        self.assertIn("README.nl.md", rendered)
+
+    def test_both_translated_pages_get_the_brand_block_beside_their_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            rendered = self.render(root)
+        for page in ("README.nl.md", "README.de.md"):
+            with self.subTest(page=page):
+                block = section(rendered[page], "tv-brands")
+                self.assertIn("[Acme](https://cleanyour.tv/tvs?q=Acme) · 2", " ".join(block))
+                self.assertNotIn("alte Markenzeile", block)
+
     def test_the_brand_block_is_written_beside_the_counts(self):
         # The point of moving the numbers: the grid under them is generated from every tv.json.
         with tempfile.TemporaryDirectory() as tmp:
@@ -156,37 +234,91 @@ class TranslatedCountsTest(unittest.TestCase):
         self.assertIn("| Acme A | Android TV 11 |", dutch)
 
 
+class PluralFormsTest(unittest.TestCase):
+    """README.uk.md said "387 модель телевізорів · 103 брендів": Ukrainian changes the noun with the number,
+    so its words are (one, few, many) and the form follows the count."""
+
+    UK = gen_tables.TRANSLATIONS["README.uk.md"]
+
+    def test_the_form_follows_the_number(self):
+        models, brand, language = self.UK
+        for n, word, want in ((387, models, "моделей телевізорів"), (1, models, "модель телевізорів"),
+                              (21, models, "модель телевізорів"), (11, models, "моделей телевізорів"),
+                              (103, brand, "бренди"), (112, brand, "брендів"), (104, brand, "бренди"),
+                              (100, brand, "брендів"), (31, language, "мова"), (32, language, "мови"),
+                              (35, language, "мов"), (14, language, "мов")):
+            with self.subTest(n=n, want=want):
+                self.assertEqual(want, gen_tables.word_for(word, n))
+
+    def test_a_plain_word_does_not_change(self):
+        self.assertEqual("merken", gen_tables.word_for("merken", 1))
+        self.assertEqual("merken", gen_tables.word_for("merken", 103))
+
+    def test_a_page_in_the_wrong_form_is_rewritten_in_the_right_one(self):
+        page = 'alt="387 модель телевізорів · 103 брендів · 31 мова · лончер"\n\n| **31 мова** | x |\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = tree(Path(tmp), [("acme-a", tv("Acme A", "Acme")), ("acme-b", tv("Acme B", "Acme")),
+                                    ("bolt-c", tv("Bolt C", "Bolt"))])
+            entries = gen_tables.load(root)
+            out = gen_tables.counts(page, entries, root, self.UK)
+            l = gen_tables.languages(root)
+        self.assertIn(f"3 моделі телевізорів · 2 бренди · {l} {gen_tables.word_for(self.UK[2], l)} · ", out)
+        self.assertIn(f"| **{l} {gen_tables.word_for(self.UK[2], l)}** |", out)
+
+
 class ThisRepositoryTest(unittest.TestCase):
-    """README.nl.md on this checkout: the mapping names its words, and the page is what render() gives."""
+    """README.nl.md on this checkout: the mapping names its words, and a lagging page is what --check reports."""
 
     def test_every_translated_page_the_generator_writes_names_its_three_words(self):
         self.assertTrue(gen_tables.TRANSLATIONS, "no translated page is written at all")
         for page, words in gen_tables.TRANSLATIONS.items():
             with self.subTest(page=page):
                 self.assertEqual(3, len(words), f"{page}'s counts are stated in three words, not {words}")
-                self.assertTrue(all(word.strip() for word in words), words)
-                self.assertEqual(3, len(set(words)), f"{page} uses one word twice: {words}")
+                forms = [f for word in words for f in ([word] if isinstance(word, str) else word)]
+                self.assertTrue(all(f.strip() for f in forms), words)
+                self.assertEqual(len(forms), len(set(forms)), f"{page} uses one word twice: {words}")
                 text = (ROOT / page).read_text(encoding="utf-8")
                 self.assertIsNotNone(alt_triple(text, words),
                                      f"{page}'s card alt text does not state {words[0]} · {words[1]} · "
                                      f"{words[2]} in the words TRANSLATIONS gives")
 
-    def test_the_translated_card_and_row_carry_the_numbers_the_examples_give(self):
-        entries = gen_tables.load(ROOT)
-        counts = (len(entries), len(gen_tables.brands(entries)), gen_tables.languages(ROOT))
-        for page, words in gen_tables.TRANSLATIONS.items():
-            with self.subTest(page=page):
-                text = (ROOT / page).read_text(encoding="utf-8")
-                self.assertEqual(f"{counts[0]} {words[0]} · {counts[1]} {words[1]} · "
-                                 f"{counts[2]} {words[2]} · ", alt_triple(text, words))
-                self.assertIn(f"| **{counts[2]} {words[2]}** |", text)
+    def test_a_stale_translated_page_is_what_the_check_reports(self):
+        """A translated page whose numbers did not move is --check's to report, on a checkout of its own.
 
-    def test_the_page_on_disk_is_what_the_script_writes(self):
-        # What --check reads: if the counts moved without the page, this is the failure a maintainer sees.
-        rendered = gen_tables.render(ROOT)
-        for page in gen_tables.TRANSLATIONS:
+        Not this one: the counts over a generated grid lag on purpose between a list PR and the
+        maintainer's run of the script on main (see test_examples.py's docstring), so reading them here
+        turned every list PR red over a file the contributor was told to leave alone.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            self.assertIn("README.nl.md", gen_tables.stale(root))
+            out = io.StringIO()
+            with redirect_stdout(out):
+                status = gen_tables.main(["--check", "--root", str(root)])
+            self.assertEqual(1, status, "a lagging translated page is not an error for --check")
+            self.assertIn("README.nl.md", out.getvalue(), "the report does not name the translated page")
+            for path, text in gen_tables.render(root).items():
+                (root / path).write_text(text, encoding="utf-8")
+            self.assertNotIn("README.nl.md", gen_tables.stale(root))
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(0, gen_tables.main(["--check", "--root", str(root)]))
+
+    def test_every_page_that_carries_the_brand_block_is_written(self):
+        # The block's header says it is generated, so a page that carries it has to be in the list this
+        # script writes: README.de.md copied it by hand and was left out, and its grid said "Xiaomi · 32"
+        # and "+49 more brands" over 97 brands. A translation that copies the block next is held here.
+        pages, marker = [], "<!-- tv-brands:start"
+        for path in sorted(ROOT.glob("README*.md")):
+            if marker in path.read_text(encoding="utf-8"):
+                pages.append(path.name)
+        self.assertLessEqual({"README.md", "README.nl.md", "README.de.md"}, set(pages),
+                             f"the brand block's marker was not found where this test expects it: {pages}")
+        written = set(gen_tables.OWNED) | set(gen_tables.TRANSLATIONS)
+        for page in pages:
             with self.subTest(page=page):
-                self.assertEqual((ROOT / page).read_text(encoding="utf-8"), rendered[page])
+                self.assertIn(page, written,
+                              f"{page} carries the brand block but tools/gen_tables.py never rewrites it: "
+                              f"add it to TRANSLATIONS with the three words its counts are stated in")
 
     def test_the_walk_reads_this_checkout(self):
         entries = gen_tables.load(ROOT)

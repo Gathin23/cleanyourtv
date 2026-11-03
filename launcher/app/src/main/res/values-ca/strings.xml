@@ -109,4 +109,7 @@
     <string name="race_finished">Bandera de quadres</string>
     <string name="last_opened">Obert per últim cop: %1$s</string>
     <string name="game_live">En directe</string>
+    <string name="clock_format_system">Sistema</string>
+    <string name="clock_format_12">12 hores</string>
+    <string name="clock_format_24">24 hores</string>
 </resources>

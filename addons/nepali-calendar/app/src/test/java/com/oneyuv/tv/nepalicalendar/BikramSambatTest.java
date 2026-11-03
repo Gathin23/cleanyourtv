@@ -84,6 +84,39 @@ public class BikramSambatTest {
         assertEquals("2082-07-01", new BikramSambat(2082, 7, 9).plusMonths(0).toString());
     }
 
+    @Test public void clampedMonthsStayInTheTable() {
+        BikramSambat now = new BikramSambat(2083, 7, 1);
+        assertEquals(0, now.clampMonths(0));
+        assertEquals(-5, now.clampMonths(-5));
+        for (int months = -2000; months <= 2000; months += 7) {
+            assertNotNull(Integer.toString(months), now.plusMonths(now.clampMonths(months)));
+        }
+        assertEquals("2090-12-01", now.plusMonths(now.clampMonths(Integer.MAX_VALUE / 2)).toString());
+        assertEquals("1970-01-01", now.plusMonths(now.clampMonths(Integer.MIN_VALUE / 2)).toString());
+    }
+
+    /** An offset kept from browsing to an edge month, after today jumps a year further (#2204). */
+    @Test public void offsetKeptAcrossADateJumpStaysOnTheEdgeMonth() {
+        BikramSambat before = monthOf(LocalDate.of(2026, 10, 28));
+        int offset = 0;
+        while (before.plusMonths(offset + 1) != null) offset++;
+        assertEquals("2090-12-01", before.plusMonths(offset).toString());
+        BikramSambat after = monthOf(LocalDate.of(2027, 10, 28));
+        assertNull(after.plusMonths(offset - 1));
+        assertEquals("2090-12-01", after.plusMonths(after.clampMonths(offset)).toString());
+
+        offset = 0;
+        while (after.plusMonths(offset - 1) != null) offset--;
+        assertEquals("1970-01-01", after.plusMonths(offset).toString());
+        assertNull(before.plusMonths(offset + 1));
+        assertEquals("1970-01-01", before.plusMonths(before.clampMonths(offset)).toString());
+    }
+
+    private static BikramSambat monthOf(LocalDate date) {
+        BikramSambat today = BikramSambat.of(date);
+        return new BikramSambat(today.year, today.month, 1);
+    }
+
     @Test(expected = IllegalArgumentException.class) public void rejectsDaysPastTheMonth() {
         new BikramSambat(2081, 9, 30).toGregorian();
     }

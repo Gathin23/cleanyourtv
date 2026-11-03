@@ -52,6 +52,8 @@ def answer(command):
         return state.get("wifi", "")
     if command.startswith("dumpsys package "):
         return dumpsys_package(command.split()[-1])
+    if command == "getprop ro.build.version.sdk":
+        return state.get("sdk", "")
     if "resolve-activity" in command:
         return (state["home"] or "") + "\n"
     if "query-activities" in command and "category.HOME" in command:
@@ -63,6 +65,8 @@ def answer(command):
 
 def dumpsys_package(name):
     """What `dumpsys package <name>` prints, scoped to the permissions the package asks for."""
+    if name in state.get("dumps", {}):
+        return state["dumps"][name]
     requested = ["android.permission.INTERNET"]
     if name in state.get("input_drivers", []):
         requested.append("android.permission.TV_INPUT_HARDWARE")
@@ -360,6 +364,35 @@ class DriftCheckTest(unittest.TestCase):
         result = self.run_check("--fix", str(self.list_path), env={"TVINPUT_ALLOW": "1"})
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(f"pm disable-user --user 0 {MEDIATEK_INPUT}", self.sent())
+
+    def test_fix_reads_a_package_that_asks_for_nothing_as_no_input_driver(self):
+        # #2398: from Android 6.0 a readable dump with no requested block asks for nothing, so --fix
+        # disables it as disable.sh does; Lollipop prints no block for packages that do ask (#1753),
+        # and a TV that reports no SDK is read the same way, so there it stays on.
+        no_perms = "android.autoinstalls.config.nvidia"
+        dump = f"Packages:\n  Package [{no_perms}] (8e7f1b4):\n    userId=10037\n"
+        for sdk, disabled in (("30", True), ("22", False), ("", False)):
+            with self.subTest(sdk=sdk):
+                self.write_list([no_perms, "com.example.music"])
+                self.tv(installed=BASE + [no_perms], disabled=["com.example.store", STOCK],
+                        sdk=sdk, dumps={no_perms: dump})
+                result = self.run_check("--fix", str(self.list_path))
+                self.assertEqual(f"pm disable-user --user 0 {no_perms}" in self.sent(), disabled,
+                                 result.stdout)
+                self.assertIn("pm disable-user --user 0 com.example.music", self.sent())
+                if not disabled:
+                    self.assertIn(f"leaving {no_perms} on", result.stdout)
+
+    def test_fix_says_reboot_when_the_watchdog_switched_dumps_off(self):
+        self.write_list(["com.example.music"])
+        self.tv(disabled=["com.example.store", STOCK], sdk="30",
+                dumps={"com.example.music": "Service dumps disabled due to hung system process.\n"})
+        result = self.run_check("--fix", str(self.list_path))
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn("pm disable-user --user 0 com.example.music", self.sent())
+        self.assertIn("leaving com.example.music on", result.stdout)
+        self.assertIn("reboot the TV first", result.stdout)
+        self.assertNotIn("Android 5.x", result.stdout)
 
     def test_fix_prefers_the_launcher_over_a_vendor_fallback(self):
         # A FallbackHome is the placeholder a TCL set shows when no launcher is enabled; taking it

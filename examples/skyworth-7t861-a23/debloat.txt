@@ -8,31 +8,41 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # CRITICAL SAFETY NOTE:
-# Do NOT disable com.skyworth.officehomepage directly. On this firmware, disabling the stock home
-# causes the system to hang at the SKYWORTH boot logo (network stack does not start, ADB drops).
-# Recovery requires a factory reset via Recovery Mode.
+# Do NOT disable com.skyworth.officehomepage or com.tianci.movieplatform directly.
+# Coocaa OS boot chain hardcodes dependencies on these stock home launchers. Disabling
+# either package causes the system to hang indefinitely at the boot logo (network stack
+# does not initialize, ADB drops). Recovery requires a hardware factory reset.
+#
+# RECOMMENDED BEST PRACTICE (ZERO DEBLOAT):
+# On this model, switching the television to "Office Mode" (办公模式) in the native settings
+# natively shuts off all video streaming feeds, banner advertisements, and background cloud
+# preloading from the source.
+# Leaving all packages enabled (zero debloat) is the safest approach, ensuring 100% firmware
+# stability, OTA upgrade safety, and eliminating any risk of boot hangs.
+# Only com.skyworth.device is active by default; the rest are commented out. Uncomment only what you want to disable.
 # For replacing the home screen safely, see docs/devices/skyworth-7t861-a23.md.
 
-# Telemetry and diagnostics
-com.skyworth.performance.monitors   # Performance monitors and telemetry
-com.skyworth.testtime               # Factory testing timer
-com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
+# Telemetry (optional)
+# Switching to Office Mode shuts off all ad feeds and streaming preloading, making
+# package disabling optional. The package below is verified safe to disable for privacy:
 com.skyworth.device                 # Device information and location reporting
 
-# Ads and manufacturer content
-com.coocaa.tvmanager                # CooCaa content recommendation manager
-com.coocaa.guide                    # EPG program guide and content pushes
-com.tianci.de                       # Tianci DE advertising engine
-com.tianci.user                     # Tianci user account and notification service
-com.coocaa.theme_package_ccos_nine  # Default theme package
+# Other optional telemetry and apps (commented out by default):
+# com.skyworth.performance.monitors   # Performance monitors and telemetry
+# com.skyworth.testtime               # Factory testing timer
+# com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
 
-# Preloaded content and stores
-com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming
-com.tianci.movieplatform            # Tianci video platform
-com.tianci.appstore                 # Tianci app store
-com.skyworth.skymarket              # Skyworth market
-com.coocaa.app_browser              # CooCaa built-in browser
+# Ads and manufacturer content (optional to disable)
+# com.coocaa.tvmanager                # CooCaa content recommendation manager
+# com.coocaa.guide                    # EPG program guide and content pushes
+# com.tianci.de                       # Tianci DE advertising engine
+# com.coocaa.theme_package_ccos_nine  # Default theme package
+
+# Preloaded content and stores (optional to disable)
+# com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming
+# com.tianci.appstore                 # Tianci app store
+# com.skyworth.skymarket              # Skyworth market
+# com.coocaa.app_browser              # CooCaa built-in browser
 
 # Factory and tuning tools
-com.loostone.tuning                 # Factory picture calibration utility
-com.coocaa.factory                  # Factory menu test package (do not launch)
+# com.coocaa.factory                  # Factory menu test package (do not launch)

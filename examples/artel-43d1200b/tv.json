@@ -1,0 +1,6 @@
+{
+  "tv": "Artel 43D1200B (Yandex TV / YaOS, CVTE, MediaTek m5621), Uzbekistan",
+  "os": "Android 9",
+  "brand": "Artel",
+  "notes": "First Yandex TV list: ad ID, bug reports, the Yandex screensaver and web player, then the Yandex Home after a reboot (CVTE rule); Alice, Browser, Music, video player, Efir channels, USB player and Miracast commented out (off on the tested set by the owner's choice); keep `com.yandex.tv.services*` and `io.sdk` (Kinopoisk sign-in) and `updaterapp` (YouTube and Kinopoisk updates, no Play Store); Home, Input and Settings keys work with no key service; inputs need `input_uri_scheme` `live-tv`"
+}

@@ -72,6 +72,12 @@ final class BikramSambat {
         return supported(index / 12) ? new BikramSambat(index / 12, index % 12 + 1, 1) : null;
     }
 
+    /** The month count nearest to months that plusMonths still finds in the table. */
+    int clampMonths(int months) {
+        int index = year * 12 + month - 1;
+        return Math.max(FIRST_YEAR * 12 - index, Math.min((LAST_YEAR + 1) * 12 - 1 - index, months));
+    }
+
     @Override public boolean equals(Object other) {
         if (!(other instanceof BikramSambat)) return false;
         BikramSambat that = (BikramSambat) other;

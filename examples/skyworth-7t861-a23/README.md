@@ -2,15 +2,29 @@
 
 Tested on Skyworth 7T861_A23 (MediaTek MT9638 / mt5872, Android 10, build `eng.nobody.20241225.120706`).
 
-## Safety Warning
+## Safety Warning: Critical Packages to Keep
 
 > [!CAUTION]
-> **Do not disable `com.skyworth.officehomepage`.**
-> Disabling the stock home app on this firmware causes the TV to hang indefinitely on the SKYWORTH boot logo upon restart. The system will fail to start the network stack, disabling port 5555. Recovery requires entering Recovery Mode and performing a factory reset ("Wipe data / factory reset").
+> **Do not disable any of these critical system packages:**
+> - **`com.skyworth.officehomepage`** & **`com.tianci.movieplatform`**: Stock launchers for Office Mode and Standard Mode. The Coocaa OS boot flow hard-depends on them; disabling either causes the TV to hang indefinitely at the boot logo (network stack fails to start, ADB drops).
+> - **`com.loostone.tuning`**: Microphone tuning & audio HAL driver bridge. Disabling it triggers `AudioService`/HAL self-test timeouts and boot hangs.
+> - **`com.tianci.user`**: User authentication & token provider with strong IPC Binder dependencies across system framework daemons.
+>
+> Recovery requires entering hardware Recovery Mode and performing a factory reset ("Wipe data / factory reset"). Keep all four enabled at all times.
 
-## Applying the debloat list
+## Recommended: Zero Debloat via Office Mode (100% Safe)
 
-Everything in [`debloat.txt`](debloat.txt) is disabled via `pm disable-user`, never uninstalled.
+> [!TIP]
+> **No packages need to be disabled on this model.**
+> Switching the TV to **办公模式 (Office Mode)** in the native system settings shuts off all video streaming feeds, banner advertisements, and background cloud preloading directly from the source.
+>
+> In `debloat.txt`, only `com.skyworth.device` is active by default; the rest are commented out:
+> - **Zero native loading screens**: Cold boot seamlessly transitions into CleanYourTV without intermediate "正在准备..." loading screens or network preloading delay.
+> - **Zero brick risk**: All system packages remain untouched (`pm list packages -d` is empty), ensuring 100% firmware stability and OTA update safety.
+
+## Applying the debloat list (Optional)
+
+If you explicitly wish to disable background telemetry and non-essential stores, uncomment the respective lines in [`debloat.txt`](debloat.txt):
 
 - **Apply debloat list**:
   ```bash
@@ -21,11 +35,14 @@ Everything in [`debloat.txt`](debloat.txt) is disabled via `pm disable-user`, ne
   TV_HOST=<tv-ip> tools/restore.sh examples/skyworth-7t861-a23/debloat.txt
   ```
 
-All 16 packages in `debloat.txt` have been verified across a cold reboot. Specifically, `com.skyworth.device` and `com.coocaa.theme_package_ccos_nine` remain disabled with Bluetooth remote control, Wi-Fi, audio, and settings working normally.
-
 ## Replacing the Home Launcher
 
-On Coocaa OS, the stock launcher cannot be replaced via standard Android Home chooser without bootlooping. Replacing the launcher safely requires building under the Coocaa package ID, using `coocaa-home-shim`, and pointing both the `persist.service.homepage` and `persist.service.model` properties (dual-track dispatch for standard/video modes and Home Office mode).
+On Coocaa OS, the stock launcher cannot be replaced via standard Android Home chooser without bootlooping.
+The cleanest and safest handover sequence:
+
+1. **Switch to Office Mode first**: On the TV, switch desktop mode to **办公模式 (Office Mode)** in the native settings/menu.
+2. **Build and install launcher**: Build under the Coocaa package ID (`com.coocaa.tvhome`) and install companion `coocaa-home-shim`.
+3. **Redirect Home properties**: Point `persist.service.model.*` directly to `com.coocaa.tvhome` (direct cold-boot) and `persist.service.homepage.*` to `com.ccos.tv.homepage` (remote Home key dispatch).
 
 Detailed instructions, boot observations, and property undo commands are documented in:
 👉 [`docs/devices/skyworth-7t861-a23.md`](../../docs/devices/skyworth-7t861-a23.md)

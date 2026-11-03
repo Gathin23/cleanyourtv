@@ -1,4 +1,4 @@
-# TCL G03 / BeyondTV4 (Google TV 11): 43C645, 50C635, 60C635
+# TCL G03 / BeyondTV4 (Google TV 11): 43C645, 55C645, 50C635, 60C635
 
 One list for TCL's G03 / BeyondTV4 firmware `V8-R51MT05-LF1V652` (`AR11`), the same build as
 `docs/devices/tcl-75c63b.md`. All units report `ro.product.model` `Smart TV Pro`.
@@ -8,10 +8,12 @@ One list for TCL's G03 / BeyondTV4 firmware `V8-R51MT05-LF1V652` (`AR11`), the s
 | Model | Tested | SoC / RAM | Network | Groups applied |
 |---|---|---|---|---|
 | TCL 43C645 | 2026-10-19 | Realtek RTD2851 / R51MT05 | Ethernet | 1, 1b, 2, 3 |
+| TCL 55C645 (`G03_4K_GB`) | 2026-10-29 | Realtek `rtd288o` / RTD2851M | Ethernet | 1, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, 5, 1b after the first handover, plus launcherx via `build-and-install.sh` |
 | TCL 50C635 (`G03_4K_GB`, Spain) | 2026-10-24 | Realtek `rtd288o`, 2 GB | Ethernet | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, plus launcherx via `build-and-install.sh` |
 | TCL 60C635 (`G03_4K_GB`, Spain) | 2026-10-20 | Realtek `rtd288o`, 2 GB | Wi-Fi | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, 5, plus launcherx via `build-and-install.sh` |
 
-Groups 4 and 5 have not been run on a 43C645 yet, nor group 3, webview or keyhelp on a 60C635.
+Groups 4 and 5 have not been run on a 43C645 yet (they have on a 55C645), nor group 3, webview or keyhelp
+on a 60C635 or 55C645.
 If you try them, say how it went in an issue.
 
 60C635 details: Android 11 / SDK 30, security patch 2024-12-05, remote `TCL_RC902V_U1` (Bluetooth,
@@ -77,6 +79,12 @@ maps them to the names above. Do not guess from the button's label: the TCL butt
 not `TCL_DASHBOARD` (4137). All of the above were checked with the real
 remote. Injected keys never reach the accessibility services, so `input keyevent` is not a test.
 
+55C645: with launcherx off and **neither** key helper enabled (`build-and-install.sh` run without
+`INPUT_KEY_SERVICE` or `HOME_KEY_SERVICE`), the owner pressed each button on the real remote: Home, Input,
+YouTube, Prime Video, TCL and gear all did their job, and a held Volume Up still ramped. So try that set
+without the helpers first and enable them only for a button that does nothing. Netflix was not checked
+(disabled on that TV).
+
 ## Quirks on this firmware (60C635)
 
 - **Accessibility services after a reinstall**: Android unbinds them on reinstall and binds them again only
@@ -103,6 +111,16 @@ Private DNS (AdGuard) kept working. `tools/b64push.py` failed its md5 check ther
 60C635: after every batch: Home, the Input key (Quick panel, `com.tcl.suspension`), Live TV (`com.tcl.tv`) and
 YouTube playback. After the handover: D-pad (one row per press, Up from the dock to the top bar, top bar
 ends stay put), Inputs dropdown (HDMI 1, HDMI 2, AV, Live TV), Home on the real remote, a cold reboot.
+
+55C645 (Ethernet, Android 11, `V8-R51MT05-LF1V652`, security patch 2024-12-05): four batches with a
+screenshot after each; Ethernet stayed up, Home, the D-pad and the Input key (Quick panel) kept working. The
+first `build-and-install.sh` run found Home on setupwraith's `.RecoveryActivity` and put launcherx back, as the
+header says it will; with group 1b applied the second run handed Home over. After the handover: D-pad (one row
+per press, Up from the dock to the top bar, top bar ends stay put), Inputs dropdown (HDMI 1-3, AV, Live TV),
+the remote buttons above. After a reboot all 35 packages were still disabled and the TV booted to the new Home,
+not Live TV. Saved Wi-Fi belonged to `android.uid.system` here as well. Port 5555 refused connections once USB
+debugging was off and the TV restarted.
+
 Not tested: casting, Miracast, firmware update, several-day stability.
 
 ## When you are done

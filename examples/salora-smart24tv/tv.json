@@ -1,0 +1,6 @@
+{
+  "tv": "Salora SMART24TV (Vestel-built, Ata/Aslan, tokyo, MediaTek m5621), Italy",
+  "os": "Android TV 11",
+  "brand": "Salora",
+  "notes": "Same Vestel family as the Toshiba Cosmos list: Vestel reporter and \"speed up\" cleaner, MStar disclaimer, E-User Manual, Google feedback/calendar/storefront, UK Freeview Play; **keep `fusion.android.tv.demo`** (it handles the Input key here, as on JVC menlo); Netflix, Prime, YouTube Music, Assistant, Chromecast and the USB player left commented out (off on the tested set by the owner's choice); 1 GB low-RAM; reboot-checked; USB debugging alone opens 5555"
+}

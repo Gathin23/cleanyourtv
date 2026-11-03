@@ -18,6 +18,7 @@
     <string name="good_night">Buonanotte</string>
     <string name="festival_dussehra_greeting">Buon Dussehra</string>
     <string name="festival_diwali_greeting">Buon Diwali</string>
+    <string name="festival_halloween_greeting">Buon Halloween</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="not_available">Non disponibile su questa TV</string>
@@ -145,4 +146,7 @@
     <string name="race_countdown_days">%1$dg %2$dh</string>
     <string name="last_opened">Ultima apertura: %1$s</string>
     <string name="game_live">In diretta</string>
+    <string name="clock_format_system">Sistema</string>
+    <string name="clock_format_12">12 ore</string>
+    <string name="clock_format_24">24 ore</string>
 </resources>

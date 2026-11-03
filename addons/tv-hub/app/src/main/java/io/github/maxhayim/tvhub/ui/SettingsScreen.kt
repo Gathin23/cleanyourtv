@@ -35,6 +35,11 @@ class SettingsScreen(host: MainActivity) : Screen(host) {
         row("Refresh when the app opens", if (p.refreshHours == 0) "Never on its own; use Refresh" else "If the last refresh is older than ${p.refreshHours} hours. Nothing runs in the background") {
             p.refreshHours = when (p.refreshHours) { 6 -> 12; 12 -> 24; 24 -> 0; else -> 6 }; build()
         }
+        row("Play a channel when the app opens",
+            if (p.autoPlay) "On: the last channel watched, or the lowest number"
+            else "Off: the app opens on Home") {
+            p.autoPlay = !p.autoPlay; build()
+        }
         row("Animations", if (p.animations) "On" else "Off: no zoom on focus and no scrolling motion, for slow TVs") {
             p.animations = !p.animations; build()
         }

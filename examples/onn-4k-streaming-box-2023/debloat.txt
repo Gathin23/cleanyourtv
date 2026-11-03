@@ -30,6 +30,10 @@
 #   ["KEYCODE_BUTTON_3:com.google.android.youtube.tv", "KEYCODE_PROFILE_SWITCH:<app>"] brings them back, but
 #   the bound helper costs held-key repeat on this box (Volume Up moves one step per press), as on the TCL G09.
 #   The mic itself keeps working.
+# - The gear does nothing once launcherx is disabled, on the first unit's remote as well. The same
+#   recipe as the second unit brings it back: HOME_KEY_SERVICE=1, settings_key_panel on, and 83 in
+#   settings_key_keycodes. That opens the launcher's quick settings panel, and the helper was still
+#   bound after a reboot. Holding volume may step only once while it is bound.
 # - Second unit: voice search for songs and videos needs launcherx. With it disabled, saying a title gives
 #   "Google Assistant is having trouble processing your request" (logcat: provider.OPEN UNKNOWN_ERROR); app
 #   commands ("open YouTube") still work. See docs/TROUBLESHOOTING.md. Apps only mode (Settings > Accounts)

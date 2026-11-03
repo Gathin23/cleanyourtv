@@ -63,7 +63,9 @@ fi
 # service (com.mediatek.tis). A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off
 # (#1578), and the Haier-built AQUA MatrixTV list keeps all four.
 # Keep CORE_RE and CORE_OK the same in disable.ps1 and recovery.py (tests/test_core_packages.py).
-CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
+# Protect the exact SDK sandbox package (#2557); the reported boot-failure cause is unconfirmed.
+# And com.android.location.fused: a TCL 43S5400A (V325) boot-looped into recovery with only it off (#2803).
+CORE_RE='^(android|android\.ext\.(services|shared)|com\.android\.sdksandbox|com\.android\.location\.fused|com\.android\.systemui|com\.android\.shell|com\.android\.phone|com\.android\.settings|com\.android\.tv\.settings|com\.(google\.)?android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata)|com\.google\.android\.overlay\.modules.*|com\.android\.providers\..*|com\.cltv\.mal|com\.mediatek\.(tis|tv\.service|tv\.agent))$'
 CORE_OK='^com\.android\.providers\.(calendar|contacts|userdictionary|blockednumber)$'
 CORE=$(printf '%s\n' "$PKGS" | grep -E "$CORE_RE" | grep -vE "$CORE_OK" || true)
 if [ -n "$CORE" ]; then
@@ -265,13 +267,36 @@ if [ -n "$PKGS" ] && [ -z "${TVINPUT_ALLOW:-}" ]; then
   # then on a dump with no such block at all — Lollipop prints only "grantedPermissions:" — the
   # package's own granted block, then its Service Resolver Table, which Lollipop's per-package dump
   # prints and which names what serves android.media.tv.TvInputService. "Unable to find" is a package
-  # that is not on this TV, not a check that failed. A dump with neither block nor error (NOCHK) is
-  # one the guard cannot read: the package is kept off the batch below instead of passing silently.
+  # that is not on this TV, not a check that failed. From Android 6.0 (SDK 23) the dump prints the
+  # requested block whenever the package asks for anything, so there a readable dump (its own
+  # "Package [name]" section) with no block at all is a package that asks for nothing, which cannot
+  # include TV_INPUT_HARDWARE: it passes (#2398, a Mi TV 4A and a SHIELD on Android 11). Below SDK 23,
+  # or with an SDK the TV does not report, the same dump stays NOCHK, since Lollipop prints neither
+  # block for packages that do ask (#1753). "Service dumps disabled due to hung system process" is
+  # Android's watchdog switching every dump off (HUNG). A dump with neither block nor error (NOCHK) is
+  # one the guard cannot read: either way the package is kept off the batch below instead of passing
+  # silently.
   if TV_HW="$("$PY" -I tools/tv.py \
-      "for p in $NAMES; do d=\$(dumpsys package \$p 2>/dev/null); case \$d in *'requested permissions:'*) printf '%s\n' \"\$d\" | sed -n -E '/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p;; *'grantedPermissions:'*) printf '%s\n' \"\$d\" | sed -n -E '/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p;; *'Service Resolver Table:'*) printf '%s\n' \"\$d\" | grep -q 'android.media.tv.TvInputService' && echo \$p;; *'Unable to find'*) :;; *) echo \"NOCHK \$p\";; esac; done; true" \
+      "s=\$(getprop ro.build.version.sdk); for p in $NAMES; do d=\$(dumpsys package \$p 2>/dev/null); case \$d in *'requested permissions:'*) printf '%s\n' \"\$d\" | sed -n -E '/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p;; *'grantedPermissions:'*) printf '%s\n' \"\$d\" | sed -n -E '/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | grep -q TV_INPUT_HARDWARE && echo \$p;; *'Service Resolver Table:'*) printf '%s\n' \"\$d\" | grep -q 'android.media.tv.TvInputService' && echo \$p;; *'Unable to find'*) :;; *'hung system process'*) echo \"HUNG \$p\";; *\"Package [\$p]\"*) [ \"\${s:-0}\" -ge 23 ] 2>/dev/null || echo \"NOCHK \$p\";; *) echo \"NOCHK \$p\";; esac; done; true" \
       </dev/null 2>/dev/null | tr -d '\r')"; then
     # Packages whose dump shows neither block: keep them enabled (a black input is easy to blame on
     # the cable, and the ports are the one thing the owner cannot test from here) and say why.
+    # Dumps switched off by the watchdog: every package answers the same, and the cure is a reboot,
+    # not TVINPUT_ALLOW=1 (the check did not run, which is not the same as passing).
+    HUNG="$(printf '%s\n' "$TV_HW" | sed -n -E 's/^HUNG ([^[:space:]]+)$/\1/p')"
+    HUNG_SKIPPED=""
+    for p in $HUNG; do
+      printf '%s\n' "$PKGS" | grep -xF "$p" >/dev/null || continue
+      HUNG_SKIPPED="$HUNG_SKIPPED $p"
+      PKGS="$(printf '%s\n' "$PKGS" | grep -vxF "$p" || true)"
+    done
+    if [ -n "$HUNG_SKIPPED" ]; then
+      echo "Skipping$HUNG_SKIPPED: the TV answers dumpsys with \"Service dumps disabled due to hung" >&2
+      echo "system process\", so the input-driver check cannot read them. Android's watchdog turns every" >&2
+      echo "dump off after system_server hangs, and only a restart turns them back on. Reboot the TV" >&2
+      echo "first (tools/tv.py --reboot), then run the list again. TVINPUT_ALLOW=1 is not the way past" >&2
+      echo "this: the check did not run, which is not the same as passing (docs/TROUBLESHOOTING.md)." >&2
+    fi
     UNCHECKED="$(printf '%s\n' "$TV_HW" | sed -n -E 's/^NOCHK ([^[:space:]]+)$/\1/p')"
     for p in $UNCHECKED; do
       printf '%s\n' "$PKGS" | grep -xF "$p" >/dev/null || continue
@@ -281,7 +306,7 @@ if [ -n "$PKGS" ] && [ -z "${TVINPUT_ALLOW:-}" ]; then
       echo "TVINPUT_ALLOW=1 to disable it (#321)." >&2
       PKGS="$(printf '%s\n' "$PKGS" | grep -vxF "$p" || true)"
     done
-    TV_HW="$(printf '%s\n' "$TV_HW" | grep -v '^NOCHK ' || true)"
+    TV_HW="$(printf '%s\n' "$TV_HW" | grep -vE '^(NOCHK|HUNG) ' || true)"
     for p in $TV_HW; do
       # grep without -q: with pipefail an early exit could SIGPIPE printf and fail the run (see above).
       printf '%s\n' "$PKGS" | grep -xF "$p" >/dev/null || continue
@@ -352,10 +377,19 @@ fi
 # and a retry must not overwrite the one taken before the first change (#239).
 "$PY" -I tools/recovery.py --save "$LIST"
 
+# A batch that dies halfway (the TV reset the connection between two commands, #2663) still gets the
+# read-back and the ro.adb.secure note below, so the run ends by saying where it stopped; its status
+# is the batch's.
+BATCH_RC=0
 {
   [ -n "$PKGS" ] && printf '%s\n' "$PKGS" | sed 's/^/pm disable-user --user 0 /'
   echo "pm list packages -d"
-} | "$PY" -I tools/tv.py --batch
+} | "$PY" -I tools/tv.py --batch || BATCH_RC=$?
+if [ "$BATCH_RC" -ne 0 ]; then
+  echo "tv.py --batch stopped before the end of the list (exit code $BATCH_RC): the TV dropped the" \
+    "connection or stopped answering. The command it was on may or may not have reached the TV, and" \
+    "the ones after it were not sent. What is still enabled is read back below." >&2
+fi
 
 # Read the TV back instead of trusting the batch's silence (#1376). A `pm disable-user` the firmware
 # refuses is a stack trace scrolling past in the output above, one that does not take says nothing at
@@ -382,12 +416,18 @@ if [ -n "$PKGS" ]; then
     if [ -n "$STILL_ON" ]; then
       { echo "Still enabled after this run, although the list disables them:"
         printf '%s\n' "$STILL_ON" | sed 's/^/  /'
-        echo "The TV did not take pm disable-user for these: it refused (its answer is in the output"
-        echo "above), or the change did not hold. Do not run the list again in a loop. Run"
-        echo "tools/tv.py 'pm disable-user --user 0 <package>' once by hand for each, or the list once"
-        echo "more after a reboot. If every listed package stays enabled, this firmware refuses"
-        echo "pm disable-user: stop there and say so (docs/TROUBLESHOOTING.md,"
-        echo "\"Every way of disabling a package is refused\")."; } >&2
+        if [ "$BATCH_RC" -ne 0 ]; then
+          echo "The batch stopped early (above), so these were not sent, or their answer was lost. Once"
+          echo "the TV answers again (tools/tv.py --probe), run the list once more. Do not run it again"
+          echo "in a loop."
+        else
+          echo "The TV did not take pm disable-user for these: it refused (its answer is in the output"
+          echo "above), or the change did not hold. Do not run the list again in a loop. Run"
+          echo "tools/tv.py 'pm disable-user --user 0 <package>' once by hand for each, or the list once"
+          echo "more after a reboot. If every listed package stays enabled, this firmware refuses"
+          echo "pm disable-user: stop there and say so (docs/TROUBLESHOOTING.md,"
+          echo "\"Every way of disabling a package is refused\")."
+        fi; } >&2
     fi
   fi
 fi
@@ -405,6 +445,8 @@ if [ "$ADB_SECURE" = "0" ] || [ -z "$ADB_SECURE" ]; then
   echo "TV and reboot it (README: \"Isn't ADB access a security hole?\")." >&2
 fi
 
-# Last, so the warning above is printed either way: a listed package the TV left enabled fails the
-# run, as it does in check.py --fix, and a script or agent that goes on after this one stops here.
+# Last, so the warning above is printed either way: a batch that died, or a listed package the TV
+# left enabled, fails the run, as it does in check.py --fix, and a script or agent that goes on after
+# this one stops here.
+[ "$BATCH_RC" -eq 0 ] || exit "$BATCH_RC"
 [ -z "$STILL_ON" ] || exit 1

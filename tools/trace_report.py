@@ -7,7 +7,11 @@
 
 TRACES are .pftrace files or folders of them. Needs the optional `perfetto` package
 (tools/venv/bin/pip install -r tools/requirements-perf.txt). Its first run downloads Perfetto's query
-engine; --engine PATH uses a trace_processor_shell you downloaded yourself. Read tools/trace.md first.
+engine; --engine PATH uses a trace_processor_shell you downloaded yourself, which has to be a file this
+script can run. Read tools/trace.md first.
+
+Exit status: 0 the tables printed, 1 a trace could not be read or the engine failed, 2 --engine names
+something that is not a file this script can run.
 
 For a start (cold, coldsys, home and custom traces) it reports the time from the launcher starting
 (bindApplication in a new process, else performStart) to its first frame drawn, the lifecycle steps
@@ -176,8 +180,40 @@ def _run_order(path):
     return (re.sub(r"-\d+\.pftrace$", "", path), int(m.group(1)) if m else 0)
 
 
+def engine_path(engine):
+    """The --engine path, judged before Perfetto is imported and before any trace is read.
+
+    tools/trace.md hands out "--engine PATH" to a reader who downloaded trace_processor_shell instead of
+    letting Perfetto fetch one, and nothing here read the path: an empty value, a typo, a folder or a file
+    without its execute bit went straight into TraceProcessor(trace=..., config=...), which is the first
+    thing that starts the engine. Perfetto answers the first three with a bare
+    Exception("Path to binary is not valid (<path>)") - not its own error class, so no caller can catch it -
+    and the fourth with PermissionError out of subprocess, each a traceback with exit 1, the status a run
+    that read a trace and failed returns, naming neither --engine nor tools/trace.md. flamechart.py opens
+    its traces with this same opener(), so it is answered here too.
+    """
+    if engine is None:
+        return None
+    if not engine.strip():
+        raise ValueError("--engine is empty: name the trace_processor_shell you downloaded, or leave "
+                         "--engine out to have Perfetto download one (tools/trace.md)")
+    if not os.path.isfile(engine):
+        raise ValueError(f"--engine {engine} is not a file: it is the trace_processor_shell you downloaded "
+                         "yourself (tools/trace.md), or leave --engine out to have Perfetto download one")
+    # Windows has no execute bit to read; the engine there is an .exe, and a wrong one fails to start.
+    if os.name == "posix" and not os.access(engine, os.X_OK):
+        raise ValueError(f"--engine {engine} is not executable: run chmod +x on the trace_processor_shell "
+                         "you downloaded (tools/trace.md)")
+    return engine
+
+
 def opener(engine=None):
     """open(path) -> q(sql) returning rows as dicts, plus close(), using Perfetto's query engine."""
+    try:
+        engine = engine_path(engine)
+    except ValueError as e:
+        print(f"{e}. No trace was read.", file=sys.stderr)
+        sys.exit(2)
     try:
         from perfetto.trace_processor import TraceProcessor, TraceProcessorConfig
     except ImportError:

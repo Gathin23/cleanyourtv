@@ -57,6 +57,13 @@
 # Kept by request: Chromecast (mediashell), Google Assistant (katniss), AirPlay and Miracast
 # (com.mediatek.AirplayAPK, com.xiaomi.mitv.smartshare, com.xiaomi.wfdsinkhelperservice), firmware
 # updates (com.mitv.upgrader, com.xiaomi.mitv.updateservice, com.mediatek.tv.systemupdater).
+#
+# Third unit: Xiaomi TV S Pro Mini LED 75 2026, EU (ELA6336EU), same MiTV-MOEU0 / ladybird and the same
+# V816.0.26.3.19.002 firmware, launcher only (this list not applied), installed from Windows with PowerShell.
+# The first Home handover failed because Home resolved to
+# com.google.android.tungsten.setupwraith/.RecoveryActivity, and the installer put launcherx back. After the
+# saved Wi-Fi network's owner was checked (see the second unit above), setupwraith was disabled with
+# tools/disable.ps1 and the installer run again: the launcher owns Home, also after a reboot (#3088).
 
 # Telemetry
 com.miui.tv.analytics

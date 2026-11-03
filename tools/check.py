@@ -61,6 +61,9 @@ FACTORY_HOME_RE = re.compile(r"factorytest|factory_test|factorymode", re.I)
 # The first-run wizard's app. Android deletes a Wi-Fi network saved by it the moment it is disabled.
 SETUPWRAITH = "com.google.android.tungsten.setupwraith"
 INPUT_PERMISSION = "android.permission.TV_INPUT_HARDWARE"
+# What asks_for_input_hardware answers when Android's watchdog has switched dumps off: "Service dumps
+# disabled due to hung system process" until a reboot (docs/TROUBLESHOOTING.md).
+HUNG = "hung"
 # Only the package's own "requested permissions" block counts: a vendor app in a shared UID would
 # otherwise match through its shared user's permissions, the same reason disable.sh scopes its grep.
 REQUESTED_RE = re.compile(r"requested permissions:(.*?)"
@@ -172,11 +175,12 @@ def setupwraith_owns_wifi(dev):
     return any("setupwraith" in owner for owner in owners)
 
 
-def asks_for_input_hardware(dev, name):
+def asks_for_input_hardware(dev, name, sdk):
     """Whether the package itself asks for TV_INPUT_HARDWARE, i.e. it drives the HDMI/AV inputs.
 
     True or False from a dump that can be read; None when the dump shows neither a requested nor a
-    granted permission block, so the check could not run — Android 5.x prints neither (#1753)."""
+    granted permission block, so the check could not run — Android 5.x prints neither (#1753); HUNG
+    when the watchdog has switched every dump off. `sdk` is ro.build.version.sdk, None if unread."""
     dump = recovery.shell(dev, f"dumpsys package {name}")
     block = REQUESTED_RE.search(dump)
     if block:
@@ -188,6 +192,12 @@ def asks_for_input_hardware(dev, name):
         # Lollipop's per-package dump has no permission block but lists what serves the input
         # service: the decisive check the requested-permission grep stands in for.
         return "android.media.tv.TvInputService" in dump
+    if "hung system process" in dump:
+        return HUNG
+    if sdk is not None and sdk >= 23 and f"Package [{name}]" in dump:
+        # From Android 6.0 a package that asks for anything has a requested block, so a readable dump
+        # without one asks for nothing (#2398), the same as disable.sh.
+        return False
     return None
 
 
@@ -222,11 +232,19 @@ def safety_checks(dev, names):
                    "showed none); set FORCE_SETUPWRAITH=1 if the TV uses Ethernet")
             skipped.append((SETUPWRAITH, why))
     if not os.environ.get("TVINPUT_ALLOW"):
+        sdk = recovery.shell(dev, "getprop ro.build.version.sdk")
+        sdk = int(sdk) if sdk.isdigit() else None
         for name in names:
             if any(name == skipped_name for skipped_name, _ in skipped):
                 continue
-            hw = asks_for_input_hardware(dev, name)
-            if hw is None:
+            hw = asks_for_input_hardware(dev, name, sdk)
+            if hw is HUNG:
+                skipped.append((name, "the TV answers dumpsys with \"Service dumps disabled due to hung "
+                                      "system process\", so the input-driver check cannot read it: "
+                                      "reboot the TV first (tools/tv.py --reboot), then run --fix "
+                                      "again; TVINPUT_ALLOW=1 is not the way past this, the check "
+                                      "did not run"))
+            elif hw is None:
                 # Fail closed, the same as disable.sh: a dump this firmware cannot be read from
                 # keeps the package on (#1753), and the owner is told what it costs.
                 skipped.append((name, "could not check whether it drives the HDMI/AV inputs (the "

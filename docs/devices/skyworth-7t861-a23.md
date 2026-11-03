@@ -23,41 +23,49 @@ Port 5555 opens over Wi-Fi without pairing prompts (`ro.adb.secure=0`). `persist
 
 ---
 
-## Safety Warning: Never disable `com.skyworth.officehomepage`
+## Safety Warning: Critical Packages to Keep
 
 > [!CAUTION]
-> **Do not disable `com.skyworth.officehomepage` directly.**
-> On this firmware, disabling the stock home application (`pm disable-user --user 0 com.skyworth.officehomepage`) breaks the system boot chain and causes the TV to hang indefinitely at the SKYWORTH boot logo. The network stack does not initialize, leaving ADB and port 5555 unreachable.
+> **Do not disable any of these critical system packages:**
+> - **`com.skyworth.officehomepage`** & **`com.tianci.movieplatform`**: Stock launchers for Office Mode and Standard Mode. The Coocaa OS boot flow hard-depends on them; disabling either causes the system to hang indefinitely at the boot logo (network stack fails to start, ADB drops).
+> - **`com.loostone.tuning`**: Microphone tuning & audio HAL driver bridge. Disabling it triggers `AudioService`/HAL self-test timeouts and boot hangs.
+> - **`com.tianci.user`**: User authentication & token provider with strong IPC Binder dependencies across system framework daemons.
 >
-> Recovery requires entering Recovery Mode and performing a hardware factory reset ("Wipe data / factory reset"). **Keep `com.skyworth.officehomepage` enabled at all times.**
+> Recovery requires entering hardware Recovery Mode and performing a factory reset ("Wipe data / factory reset"). **Keep all four enabled at all times.**
 
 ---
 
 ## Debloat verification: persistence across cold reboot
 
-The 16 packages in [`examples/skyworth-7t861-a23/debloat.txt`](../../examples/skyworth-7t861-a23/debloat.txt) remove telemetry, ad daemons, app store push services, and factory calibration background tools.
+The packages in [`examples/skyworth-7t861-a23/debloat.txt`](../../examples/skyworth-7t861-a23/debloat.txt) remove telemetry, ad daemons, app store push services, and factory background tools.
 
-### Verified safe to disable (16 packages)
+### Recommended: Zero Debloat via Native Office Mode
+
+> [!TIP]
+> **Debloating is optional on this firmware.**
+> If the TV is switched to **办公模式 (Office Mode)** in the native system settings, Coocaa OS internally suppresses all video streaming recommendations, banner advertisements, and background cloud preloading.
+>
+> Setting up CleanYourTV under native Office Mode produces an instant cold boot with **zero native loading screens** ("正在准备..."), while leaving all system packages fully intact (`pm list packages -d` remains empty), eliminating any risk of boot hangs.
+
+### Verified safe to disable (12 packages)
 
 - **Telemetry & Diagnostics (4)**:
   `com.skyworth.performance.monitors`, `com.skyworth.testtime`, `com.skyworthdigital.stb.dataprovider`, `com.skyworth.device`
-- **Ads & Manufacturer Push (5)**:
-  `com.coocaa.tvmanager`, `com.coocaa.guide`, `com.tianci.de`, `com.tianci.user`, `com.coocaa.theme_package_ccos_nine`
-- **Preloaded Stores & Streaming (5)**:
-  `com.coocaa.tvpitv`, `com.tianci.movieplatform`, `com.tianci.appstore`, `com.skyworth.skymarket`, `com.coocaa.app_browser`
-- **Factory & Tuning Background Daemons (2)**:
-  `com.loostone.tuning`, `com.coocaa.factory`
+- **Ads & Manufacturer Push (3)**:
+  `com.coocaa.tvmanager`, `com.coocaa.guide`, `com.tianci.de`
+- **Preloaded Stores & Streaming (4)**:
+  `com.coocaa.tvpitv`, `com.tianci.appstore`, `com.skyworth.skymarket`, `com.coocaa.app_browser`
+- **Factory & System (1)**:
+  `com.coocaa.factory`
 
-In particular, `com.skyworth.device` (SmartDevice IoT and location reporting) and `com.coocaa.theme_package_ccos_nine` (default GoldenFaithTheme package) were tested for persistence:
-1. Disabled via `tools/tv.py 'pm disable-user --user 0 com.skyworth.device'` and `tools/tv.py 'pm disable-user --user 0 com.coocaa.theme_package_ccos_nine'`.
-2. Verified after a cold reboot (power cycled): both packages remained in state `disabled-user` (`enabled=3`). The system did not re-enable them.
-3. Bluetooth remote pairing, Wi-Fi connectivity, picture adjustments, and audio remain fully functional with nothing missing.
-
-### Must stay enabled
+### Must stay enabled (Critical system lifelines)
 
 | Package | Purpose / Why it must stay enabled |
 |---|---|
-| `com.skyworth.officehomepage` | Stock home application; disabling causes fatal hang on SKYWORTH boot logo |
+| `com.skyworth.officehomepage` | Office Mode stock home; disabling breaks system boot chain and hangs indefinitely on boot logo |
+| `com.tianci.movieplatform` | Standard Mode stock home base; boot chain hardcoded dependency, disabling causes fatal boot hang on COOCAA/SKYWORTH logo |
+| `com.loostone.tuning` | Loostone microphone tuning and audio HAL driver bridge; disabling causes AudioService / HAL timeout during boot |
+| `com.tianci.user` | Coocaa user account & auth service; framework Binder IPC dependency |
 | `com.skyworth.tv` | HDMI, AV, and TV tuner input switching; picture and sound settings |
 | `com.tianci.localmedia` | Built-in USB media player and local storage access |
 
@@ -65,9 +73,12 @@ In particular, `com.skyworth.device` (SmartDevice IoT and location reporting) an
 
 ## Replacing Home: Coocaa OS boot and Home key mechanism
 
-Coocaa OS does not use Android's standard `Intent.CATEGORY_HOME` activity chooser. Instead:
-- Home navigation and boot dispatch are controlled by system properties: `persist.service.homepage.pkg`, `persist.service.homepage.cls`, `persist.service.model.pkg`, and `persist.service.model.cls`.
-- In addition, Coocaa OS aggressive process management terminates third-party background applications whose package name does not begin with manufacturer prefixes (`coocaa`, `skyworth`, `tianci`, `android`).
+Coocaa OS does not use Android's standard `Intent.CATEGORY_HOME` activity chooser.
+For seamless cold boot without native transition overlays, follow this setup sequence:
+
+### Step 0: Switch to Office Mode in TV Settings
+
+Before installing CleanYourTV or redirecting properties, switch the television's desktop to **办公模式 (Office Mode)** using the remote in native system settings/menu. This ensures the firmware records `OfficeMode` as the active scene in its persistent database, silencing the video recommendation engine.
 
 ### Step 1: Build the launcher under Coocaa package ID
 
@@ -87,30 +98,48 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/b64push.py launcher/app/build/out
 TV_HOST=<tv ip> tools/tv.py 'pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk'
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/b64push.py coocaa-home-shim.apk /data/local/tmp/shim.apk
 TV_HOST=<tv ip> tools/tv.py 'pm install -r /data/local/tmp/shim.apk; rm -f /data/local/tmp/shim.apk'
+TV_HOST=<tv ip> tools/tv.py 'cmd appops set com.ccos.tv.homepage SYSTEM_ALERT_WINDOW allow'
 ```
 
-### Step 3: Redirect Coocaa Home properties
+> [!NOTE]
+> On Android 10, the background activity start restriction requires granting `SYSTEM_ALERT_WINDOW` permission to `com.ccos.tv.homepage` (`cmd appops set com.ccos.tv.homepage SYSTEM_ALERT_WINDOW allow`) so the shim can reliably bring CleanYourTV to the foreground when the physical remote Home button is pressed from within background apps.
 
-Point both pairs of system homepage properties to the shim using `tools/tv.py`. Coocaa OS uses a dual-track
-dispatch mechanism for physical remote Home button presses:
-- `persist.service.homepage.*` controls dispatch in standard video, elder, and children's modes.
-- `persist.service.model.*` controls dispatch when the TV is set to or was previously in "Home Office" mode (`com.skyworth.officehomepage`).
+### Step 3: Redirect Coocaa Home properties (Direct Cold-Boot + Remote Key Dispatch)
 
-Both pairs must point to the shim. If `persist.service.model.*` is omitted or left on its default, pressing the remote's Home button while the TV is in Home Office mode bypasses Android's default home and bounces back to `com.skyworth.officehomepage`.
+Coocaa OS uses a dual-track home dispatch mechanism governed by `/system/etc/bootintent.xml` in `system_server`:
+- **Cold-boot priority (`modelhome`)**: On system boot, `sky_launcher` evaluates `modelhome` first:
+  ```xml
+  <home name="modelhome" relation="and" propcomp="persist.service.model.pkg/persist.service.model.cls">
+      <prop name="persist.service.model.pkg" type="exists"></prop>
+      <prop name="persist.service.model.cls" type="exists"></prop>
+  </home>
+  ```
+  Pointing `persist.service.model.*` directly to CleanYourTV (`com.coocaa.tvhome/com.gathin.tvhome.MainActivity`) allows `system_server` to launch CleanYourTV directly upon boot without flashing OEM desktop layouts or triggering intermediate "正在准备..." loading screens.
+- **Physical Remote Home key dispatch (`persist.service.homepage.*`)**: When third-party apps are running, remote Home button presses are routed to `persist.service.homepage.*`. Pointing these to `com.ccos.tv.homepage` allows `coocaa-home-shim` to instantly return focus to CleanYourTV.
+
+Apply the properties using `tools/tv.py`:
 
 ```bash
+# 1. Cold boot: launch CleanYourTV directly via modelhome
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.coocaa.tvhome'
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.gathin.tvhome.MainActivity'
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.name CleanYourTV'
+
+# 2. Remote Home key: dispatch through shim
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.pkg com.ccos.tv.homepage'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.cls com.ccos.tv.homepage.LaunchActivity'
-TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.ccos.tv.homepage'
-TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.ccos.tv.homepage.LaunchActivity'
 ```
+
+> [!TIP]
+> Setting `persist.service.model.name` to `CleanYourTV` replaces the native desktop mode identifier. In system Settings, "系统模式 (System Mode)" will appear unselected, preventing the system from automatically triggering OEM mode initialization delays.
 
 ---
 
 ## Cold boot behavior
 
 After a cold boot (power unplugged and restored):
-- Coocaa OS reads the `persist.service.homepage` properties, initiates `com.ccos.tv.homepage.LaunchActivity`, and immediately transitions focus to `com.coocaa.tvhome.MainActivity`.
+- Coocaa OS `system_server` matches `modelhome` from `/system/etc/bootintent.xml` and launches `com.coocaa.tvhome.MainActivity` directly.
+- Boots into CleanYourTV seamlessly with zero intermediate loading screens ("正在准备...") and zero desktop flash.
 - `dumpsys window | grep mCurrentFocus` settles directly on:
   ```text
   mCurrentFocus=Window{... u0 com.coocaa.tvhome/com.gathin.tvhome.MainActivity}
@@ -130,6 +159,8 @@ TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.pkg com.tianci.mov
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.homepage.cls com.coocaa.homepage.vast.HomePageActivity'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.pkg com.skyworth.officehomepage'
 TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.cls com.skyworth.officehomepage.view.HomepageActivity'
+TV_HOST=<tv ip> tools/tv.py 'setprop persist.service.model.name OfficeMode'
+TV_HOST=<tv ip> tools/tv.py 'cmd appops set com.ccos.tv.homepage SYSTEM_ALERT_WINDOW default'
 
 # 2. Launch stock desktop
 TV_HOST=<tv ip> tools/tv.py 'am start -n com.skyworth.officehomepage/.view.HomepageActivity'

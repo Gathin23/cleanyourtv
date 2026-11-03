@@ -1,0 +1,6 @@
+{
+  "tv": "X.Vision 50XYU765 (XYU Series, MAADIRAN; CVTE TP.MT9632.PC752, MediaTek m7332, 1.5 GB), Iran",
+  "os": "Android 11",
+  "brand": "X.Vision",
+  "notes": "First X.Vision list: CVTE ad service, ad screensaver, cleaner, weather, store demo, remote customer-service tool and Google feedback; EShare/AirPlay/DLNA casting and Miracast left as comments (off on the tested set by choice); CVTE store kept by default (it hosts the stock Apps grid); no Developer options, ADB from the CVTE factory menu (MENU 1147 on a source), on from the factory with no authorisation; Play Store and Play Services were found disabled and came back on by themselves; stock launcher kept (no FallbackHome), new Home picked with Always for `COMMON_HOME`, power-on through `stock_home_redirect` with `key_filter` off so held volume still ramps"
+}

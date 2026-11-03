@@ -1,0 +1,76 @@
+# Xiaomi MiTV-AXSO1 (codename dangalFHD, Amlogic/droidlogic), Android TV 9 (SDK 28), firmware PI.6157. India unit.
+# Same "dangal" board family as examples/xiaomi-mitv-axso0 and examples/xiaomi-mitv-axso2.
+# Live TV app: com.android.tv (set it as live_tv_package and hide it, as config.json here does).
+# Stock launcher: com.google.android.tvlauncher (the default, disabled by build-and-install.sh).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-axso1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-axso1/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - USB debugging alone opens network ADB on port 5555; the stock adb binary worked from macOS here.
+# - Everything below stays disabled after `adb reboot`, and Home comes back as the new launcher.
+# - The remote's Mi TV (PatchWall) button does nothing once com.mitv.tvhome.atv is disabled: it sends 192
+#   (KEYCODE_BUTTON_5, KEY_YELLOW on event4), which partnercustomizer's GlobalKeyReceiver answers by starting
+#   PatchWall. app_keys "192:home" with HOME_KEY_SERVICE=1 brought it back to Home, but with the helper bound
+#   a held volume key moved one step only, and consume_volume_keys true did not fix it (volume stopped
+#   responding to the remote). Left without the helper here; volume holds work again with it off.
+# - The TV's Settings opens as a side panel with a black left half over the new launcher; with the stock
+#   launcher the dimmed home screen showed there. Cosmetic only.
+# - Google sign-in goes through com.google.android.tvrecommendations: see the note in
+#   examples/xiaomi-mitv-axso2/debloat.txt if Play Store asks to authenticate.
+#
+# Kept on purpose on this TV: Google Assistant and Chromecast (commented out below), firmware updates
+# (com.xiaomi.mitv.updateservice), Netflix, Prime Video, JioHotstar, YouTube, Play Store, and the camera,
+# gallery, print, TalkBack and screensaver extras.
+
+# Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# PatchWall, content rows, sponsored rows, partner auto-installs
+com.mitv.tvhome.atv
+com.xm.webcontent
+com.xiaomi.floatingframe
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+android.autoinstalls.config.xioami.dangal   # Play auto-install of partner apps (sic, "xioami")
+com.mitv.tvhome.mitvplus            # Mi TV+ sponsored live channels
+
+# Personal choice: preloaded apps. Disabled on this set by the owner's choice; uncomment to disable.
+# com.sonyliv
+# com.graymatrix.did                  # ZEE5
+# com.lionsgateplay.videoapp
+# com.tv9news
+# com.google.android.youtube.tvmusic
+# com.google.android.videos           # Play Movies & TV
+# com.google.android.play.games
+# com.xiaomi.mimusic2
+# com.mitv.gallery                    # Mi Gallery
+# com.xiaomi.smarthome.tv.global4     # Mi Home
+
+# Xiaomi background services
+com.xiaomi.mitv.tvmanager           # "TV Manager" cleaner
+com.xiaomi.mitv.handbook
+com.xiaomo.tv.milegal               # static legal / privacy text screens
+com.mitv.dream                      # Mi screensaver ("WallPaper" tile); Google Ambient mode (backdrop) is the screensaver
+com.mitv.videoplayer                # Mi video player, with Firebase analytics
+
+# Google background extras a TV doesn't need
+com.google.android.partnersetup              # Google partner setup / RLZ pings
+com.google.android.syncadapters.calendar     # calendar sync, no calendar app on a TV
+com.android.providers.calendar               # calendar provider
+com.google.android.leanbacklauncher          # old Android TV launcher; stays disabled after a reboot here, unlike AXSO0
+
+# Kept on this TV: Google Assistant and Chromecast. Uncomment to disable.
+# com.google.android.katniss
+# com.google.android.speech.pumpkin
+# com.google.android.apps.mediashell
+
+# Personal choice: screen mirroring. Disabled on this set by the owner's choice; uncomment to disable.
+# com.mitv.milinkservice              # Mi Cast
+# com.xiaomi.mitv.smartshare
+# com.xiaomi.wfdsinkhelperservice     # Miracast sink
+

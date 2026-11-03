@@ -40,10 +40,14 @@ Then create `res/xml/module_card.xml`:
   names and input names such as HDMI are refused, and so is a new card whose label (or whose app
   label) is the name of another app installed on the TV (the full list is in the spec). Changing
   the label in an update makes the owner decide again, so pick it once.
-- `caption`: optional, up to 32 characters, shown after the label while the card is focused. The
+- `caption`: optional, up to 32 characters from the same set as `label` — letters, digits, space and
+  `. & + ' -`, so a `/`, a comma or a colon is not read. A character outside the set drops the whole
+  card rather than showing it without the caption (`logcat -s TvHomeCards` says `caption has
+  characters outside A-Z a-z 0-9 space . & + ' -`). The
   endorsement words refused in labels are refused here too. The
   name line under the tile is one line; label and caption together show about 26 characters on a
-  4 column grid, so keep the caption to a few words.
+  4 column grid, so keep the caption to a few words. `tests/test_addon_module_cards.py` holds every
+  card under `addons/` to these rules.
 - `accent`: optional `#RRGGBB`, the glow colour behind the card while it is focused in the dock.
 - Write the values as literal text. `@string` references are not resolved in spec 1.
 

@@ -1,5 +1,8 @@
-# OnePlus TV (Y Series 43", Skyworth-built SW1, codename shibuya), Android TV 11 (API 30), firmware RTO9.231122.002
+# OnePlus TV Y1 43" and Model Y 32" (Y Series, Skyworth-built SW1, codename shibuya),
+# Android TV 11 (API 30), firmware RTO9.231122.002
 # Vendor fingerprint OnePlus/OnePlus_Y_Series/shibuya:11/RTO9.231122.002/11136549. armeabi-v7a, UI at 1280x720, ~0.9 GB RAM.
+# The 32" Model Y unit has 213 dpi. Use debloat-32-inch.txt for its narrower tested package list;
+# the list below is for the Y1 43" variant only.
 # Classic Android TV home, not Google TV: the stock launcher is com.google.android.tvlauncher.
 #
 # Stock launcher:  com.google.android.tvlauncher
@@ -9,13 +12,19 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oneplus-tv-y1/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Disabled before this debloat, so not listed (restore.sh would turn it ON): com.google.android.marvin.talkback.
-#
-# Status: disabled on one TV on 2026-10-18 and lived with through 2026-10-20 without trouble; checked with
+# Y1 43": disabled on one TV on 2026-10-18 and lived with through 2026-10-20 without trouble; checked with
 # remote-key injection and screenshots (stock home, Live TV tuner via com.mediatek.wwtv.tvcenter, HDMI input
 # switching, Bluetooth voice remote, audio, and launcher/ installed as Home). Unlike the Panasonic list on the
 # same Skyworth platform, com.coocaa.factory and com.mediatek.tv.factory were disabled and lived with for several
 # days without side effects.
+#
+# Model Y 32": I have lived with the packages in debloat-32-inch.txt disabled for several days without
+# trouble. I checked Home, Live TV/tuner, HDMI, Bluetooth remote/pairing, audio and streaming apps on 2026-10-31.
+# This is one 32" unit; other Y Series sizes should be checked separately.
+#
+# TalkBack was already disabled before the Y1 43" debloat; it is not in debloat.txt.
+# On the Model Y 32" it was also disabled before I prepared debloat-32-inch.txt; it is not in that list.
+# Keep com.google.android.marvin.talkback enabled if you use its screen reader.
 #
 # Kept on purpose: Google Assistant (com.google.android.katniss), Chromecast
 # (com.google.android.apps.mediashell), Google Play Services, Bluetooth Remote &

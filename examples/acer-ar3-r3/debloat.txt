@@ -1,0 +1,113 @@
+# Acer R3 (SCBC device R3, Realtek RTD2841A), India, Android TV 14 (SDK 34), build UKR1.251116
+# Fingerprint ACER/ACER/R3:14/UKR1.251116/1236:user/release-keys. Plain Android TV, not Google TV:
+# com.google.android.tungsten.setupwraith is not installed on this unit, so there is no Wi-Fi/Home
+# handover trap from that app. Same SCBC/Realtek platform family as examples/acer-ar55ar2851udpro
+# and docs/devices/acer-ar55ar2851udfl.md (Realtek rtd2851m there, rtd2841a here).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.ps1 examples/acer-ar3-r3/debloat.txt   (or tools/disable.sh)
+# Undo:    TV_HOST=<tv ip> tools/restore.ps1 examples/acer-ar3-r3/debloat.txt   (or tools/restore.sh)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (priority 2, isDefault=true). The only other HOME
+# claimants are com.apps.tvsettings (priority -999) and com.android.tv.settings (priority -1000),
+# both FallbackHome-style, not real launchers. set-home-activity stuck directly here: no
+# stock_home_redirect / HomeKeyService fallback was needed to take Home.
+# HDMI/AV: com.apps.passthrough. Live TV: com.apps.livetv with com.apps.atv / com.apps.dtv / com.apps.atsc / com.apps.isdb.
+#
+# Applied and checked on one unit on 2026-10-29, in one batch with a screenshot before and after, then
+# one cold boot (power cable out): Home, Live TV's HDMI1/HDMI2/AV listing, HomeKeyService's Home button
+# and the launcher's dock all verified before and after the reboot. Every package below stayed disabled
+# across that reboot (pm list packages -d), confirming this Android TV variant does not re-enable
+# packages at boot the way the Google TV R4G note (docs/devices/acer-r4g.md) describes for a related
+# platform. com.google.android.videos (Google Play Movies) is not installed on this unit; its line is
+# commented out below so the list can still be applied as a whole.
+#
+# Kept on purpose, do not disable:
+# - com.apps.passthrough, com.apps.atv, com.apps.dtv, com.apps.atsc, com.apps.isdb, com.android.providers.tv,
+#   com.apps.livetv: HDMI, AV and the tuners.
+# - com.realtek.android.globalkeyhandler, com.realtek.keyinterceptserver, com.apps.smartkey, com.apps.virtualkey,
+#   com.mk.tv.fivekey, com.apps.bluetoothremote: the remote's keys (Input, Settings, YouTube hotkey).
+# - com.apps.sys, com.mk.service.tvmidware: TV middleware (as the Haier com.cltv.mal note warns, #1578).
+# - com.apps.tvsettings, com.android.tv.settings, com.apps.smartmenu: settings UI and the picture menu.
+# - com.realtek.leanbacklauncher.partnercustomizer: supplies the Inputs button on tvlauncher.
+# - com.realtek.power, com.realtek.energymode, com.realtek.display.monitor, com.realtek.hw.configprovider,
+#   com.realtek.media.notification, com.realtek.mdnsoffload, com.android.tv.mdnsoffloadmanager.
+# - com.realtek.factorytools, com.apps.factory.ui: factory menus, never launched (do not open them either;
+#   see PROMPT.md and docs/TROUBLESHOOTING.md on CVTE/Haier factory menus flipping a factory-mode flag).
+# - com.apps.ota, com.apps.authota: the firmware updater, left enabled; keep unless you have a reason not to.
+# - com.google.android.tv.remote.service, com.google.android.tv.dfuservice, com.google.android.presetup.bluetoothpair,
+#   com.android.bluetooth, com.android.localtransport: remote pairing, firmware updates and Bluetooth.
+# - com.google.android.katniss: Assistant / voice search (mic button).
+# - com.google.android.apps.mediashell: Chromecast built-in.
+# - com.creative.fastscreen.tv: FastCast Miracast receiver (screen mirroring).
+# - com.google.android.inputmethod.latin, com.google.android.gsf, com.google.android.gms, com.android.vending,
+#   com.google.android.webview: the on-screen keyboard, Play Services and Play Store.
+# - com.apps.logapp, com.apps.plugins: unclear/unknown-benefit system packages (logapp shares the system
+#   UID; plugins reports the remote's battery level), left alone as this repo does for ambiguous packages.
+#
+# Quirk on this firmware:
+# - The remote's YouTube button (keycode 2030) is intercepted below Android's input layer by the
+#   persistent system service com.realtek.keyinterceptserver, which starts com.google.android.youtube.tv
+#   by a package name hardcoded in its own compiled code. With that package disabled, every press throws
+#   ActivityNotFoundException inside that persistent process, which Android then restarts in place
+#   (harmless, but the button does nothing and logcat shows a crash/restart on every press). The
+#   launcher's app_keys/InputKeyService remapping cannot reach this key at all: RtkInput's own log line
+#   ("ap decide result is 1") shows the vendor driver already claimed and handled it before Android's
+#   normal key dispatch, let alone an accessibility service, ever sees it. Comment out the YouTube line
+#   below if you want the button to open the real YouTube app without crashing anything; it cannot be
+#   remapped to a different app on this firmware. Same limitation as the sibling
+#   examples/acer-ar55ar2851udpro list.
+#
+# New launcher: HOME_KEY_SERVICE=1 launcher/build-and-install.sh (tvlauncher is disabled below; Home then
+# resolves straight to the new launcher with no redirect needed). Keep HomeKeyService bound even though no
+# stock_home_redirect is set: it is still what gives Home its long-press fallback and the Settings/Input
+# key mapping hooks, should you ever need them. If you enable it with the default key_filter=true and find
+# a held Volume Up/Down only steps once instead of ramping, this is the documented trade-off in
+# docs/TROUBLESHOOTING.md ("A key helper is bound and a held remote button stopped repeating"): set
+# key_filter to false in config.xml (or a theme) to get the ramp back, at no cost on this unit, since no
+# settings_key_keycodes/scancodes, input_key_keycodes or app_keys are used here. Confirmed on the remote:
+# both the volume ramp and config.xml's tile_menu (hold OK on a tile for Move / Replace / App info) work
+# correctly with key_filter=false.
+
+# SCBC / Google telemetry, consent and background sync
+com.apps.function.gdpr                       # SCBC data-consent agent
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.partnersetup              # Google partner setup / RLZ pings
+com.google.android.syncadapters.calendar
+
+# Ads, content rows, auto-installs and demo/signage
+com.apps.mk.wd                               # boot receiver with ClickAd/ClickApp/ClickChannel activities
+android.autoinstalls.config.scbc.device      # Play auto-installs of partner apps
+com.google.android.tvrecommendations         # sponsored and recommendation rows on the stock Home
+com.apps.esticker                            # ShowService overlay, demo stickers
+com.mk.tv.meeting.service                    # digital-signage service with an accessibility service
+com.apps.tvmanager                           # TV manager / cleaner
+
+# Not needed on a TV
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.apps.wifihotspot                         # TV as a Wi-Fi hotspot
+com.mk.tv.timeclock                          # WorldClock
+com.apps.function.audiolink                  # Audio Link
+com.android.dreams.basic                     # basic "Colors" screensaver
+com.android.printspooler                     # no printer attached to a TV
+com.apps.usbmediaplayer                      # USB media player demo app (ships Firebase auth leftovers)
+com.seraphic.webview                         # HbbTV engine core
+com.seraphic.hbbtv.app                       # HbbTV app; India has no HbbTV
+
+# Preloaded apps and casting (personal choice: comment out any you use)
+com.google.android.marvin.talkback           # TalkBack screen reader: keep it if anyone uses it
+com.apps.scast                               # a second casting receiver alongside FastCast (kept above)
+# com.google.android.videos                  # Google Play Movies; not installed on the tested unit
+
+# this set has these off; uncomment if you don't use them
+# com.google.android.youtube.tv              # see the firmware quirk note above re: the remote's YouTube button
+# com.google.android.youtube.tvmusic
+# com.netflix.ninja                          # Netflix
+# com.netflix.tokenmanager                   # Netflix helper; disable alongside com.netflix.ninja
+# com.google.android.play.games              # Google Play Games
+# com.amazon.amazonvideo.livingroom          # Prime Video

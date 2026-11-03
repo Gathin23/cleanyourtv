@@ -18,6 +18,31 @@
 # Reboot-checked (tools/check.py: nothing drifted, Home on the launcher; power-on lands on Home); Home, gear,
 # app buttons, Input, the mic button and volume hold-to-repeat checked on the real remote. Not lived with for
 # days yet.
+# Also Sony BRAVIA 4K VH22 (2023, BRAVIA_VH22, MediaTek MT5895; product code not read), Australia, the same
+# BRAVIA_VH22_M_PA build: every package below exists on it. Applied on 2026-11-01 in three batches with a
+# screenshot between, without YouTube Music and the seeds.* phone link (kept by choice), without batch 3, and
+# with the commented-out Australian-unit lines at the end of batch 2. On Wi-Fi the saved network belonged to
+# android.uid.system, not setupwraith, but setupwraith's RecoveryActivity still claims HOME, so launcherx and
+# setupwraith both stayed enabled and the launcher took Home by the redirect route (as on the second and third
+# examples/sony-bravia-4k-vh21 units): cmd package set-home-activity prints Success and changes nothing on this
+# unit, so launcher/build-and-install.sh with STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 (on Windows
+# launcher/build-and-install.ps1 -StockLauncher none -HomeKeyService: parameters, not environment variables)
+# ends on its Home check before it enables the helper; HomeKeyService was then enabled by hand, the same
+# settings the script writes, with stock_home_redirect com.google.android.apps.tv.launcherx in config.xml. The
+# screensaver ships as dreamx's Backdrop, so livingfit went with no screensaver change. Reboot-checked twice:
+# nothing came back on, power-on lands on the new Home with the helper bound, and the real remote's Home button
+# opens it from inside an app. Same-day test, not lived with for days yet.
+# Also a second Sony BRAVIA KD-65X82L (2023, BRAVIA_VH22, MediaTek), India retail, the same
+# BRAVIA_VH22_M_PA build, bought with the B2B hotel suite and the Indian preloads on it
+# (ro.boot.product.hardware.sku KD-65X82L, Settings' device name "SONY KD-65X82L"): every package below
+# exists on it, and the marked block after batch 3 lists its extra preloads. Kept by the owner's choice on
+# it: Netflix, the YouTube app, Google Play Games, the YouTube Music line in batch 2 (skip that line and
+# Play Games there), the Assistant stack, Chromecast and firmware updates. com.tcl.browser was disabled
+# and re-enabled a day later (the owner's dock browser), and sensingfusionservice, kept as unclear above,
+# is off on it with nothing noticed. The Settings key goes dead with launcherx off here too: the
+# keyboard-layout overlay in docs/devices/sony-bravia-4k-vh22-settings-key.md, not HomeKeyService (#1680).
+# Applied on 2026-10-30 with tools/disable.sh, reboot-checked twice, lived with since; the remote's app
+# buttons stayed alive through sonyvendorservice, and Home was checked from Netflix and after a reboot.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-65x82l/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-65x82l/debloat.txt com.google.android.apps.tv.launcherx
@@ -75,10 +100,51 @@ com.sony.dtv.ecodashboard
 com.sony.dtv.distancealert        # BRAVIA CAM (optional accessory) features
 com.sony.dtv.gestureapp
 com.sony.dtv.sensingcamera.settings
-com.sony.dtv.sensingcamera.fwupdate
+com.sony.dtv.sensingcamera.fwupdate # BRAVIA CAM firmware checker only; the TV's own updater (systemupdate) stays on
+# The Australian VH22 unit disabled these too, by the owner's choice (Australian preloads, support tiles):
+# com.sony.dtv.sonybugreportsys   # Sony bug report service
+# com.sony.dtv.customersupport    # customer support tile
+# au.com.ninenow.ctv              # 9Now
+# au.net.abc.iview                # ABC iview
+# com.swm.live                    # 7plus
+# com.apple.atve.sony.appletv     # Apple TV app
+# com.sony.dtv.hbbtvplayer        # HbbTV / red button
+# com.google.android.tts          # text-to-speech: TalkBack and read-aloud stop working
 
 # Batch 3: Google TV setup wizard, which also claims HOME (RecoveryActivity, priority 1) and would keep
 # Home away from the new launcher. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first: a network it owns
 # is deleted when it is disabled. Here it owned only an unused 2.4 GHz entry, the TV is on 5 GHz
 # (re-joined in Settings), so it ran with FORCE_SETUPWRAITH=1.
+# On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
+# repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith
+
+# The second KD-65X82L unit (India retail, B2B preloads) also disabled these, all on it from the factory:
+com.amazon.minitv.androidtv.app    # Amazon miniTV (India)
+com.jio.media.jiotvplus            # JioTV+
+com.jio.media.stb.ondemand         # Jio set-top on-demand app
+com.sony.dtv.kenhchonloc           # shop promo app, Vietnamese despite Indian retail
+# com.tcl.browser                    # preloaded browser (TCL's APK on this Sony set); re-enabled a day later as the owner's dock browser on that unit; uncomment to disable
+# com.sony.dtv.sensingfusionservice  # kept as unclear above; off here, nothing noticed; off on the India B2B unit; uncomment to disable
+# HbbTV / broadcast interactive, unused without an antenna; hbbtvplayer itself is the commented
+# Australian line in batch 2 above
+# com.sony.dtv.broadcastservicesetup  # off on the India B2B unit; uncomment to disable
+# com.sony.dtv.interactivetvutil     # no broadcast use on this set; the VH21 EU list keeps it for a TokenProvider other Sony apps may read; off on the India B2B unit; uncomment to disable
+# com.sony.dtv.interactivetvutil.output  # off on the India B2B unit; uncomment to disable
+# com.sony.dtv.broadcastclock.broadcastrequirementcontrol  # off on the India B2B unit; uncomment to disable
+# com.sony.dtv.broadcastclock.clocksyncservice  # off on the India B2B unit; uncomment to disable
+# B2B hotel/commercial suite (a home set does not need it)
+com.sony.dtv.b2b.adminpassword
+com.sony.dtv.b2b.deviceadminsettings
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.ipcontrolsettings
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.noderuntimeextension.bpk
+com.sony.dtv.b2b.noderuntimeextension.node_20_11_1
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.webappruntimedrm
+# com.amazon.amazonvideo.livingroom  # Prime Video, off by choice on that unit

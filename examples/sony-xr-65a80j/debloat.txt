@@ -86,4 +86,6 @@ fi.mtv.svod                                    # old MTV app (v1.0.56, last upda
 # Claims HOME once launcherx is disabled. Re-enable before a factory reset.
 # Ethernet was used; the saved Wi-Fi owner was android.uid.system:1000.
 # Wi-Fi reconnection after disabling setupwraith was not tested.
+# On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
+# repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith

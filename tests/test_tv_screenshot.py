@@ -31,7 +31,9 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "tools" / "tv.py"
-PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 32
+# A complete PNG: the signature, some chunk bytes, and the IEND chunk `screencap -p` always ends with.
+PNG_END = b"IEND\xaeB`\x82"
+PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 32 + PNG_END
 
 
 class FakeDevice:
@@ -174,6 +176,29 @@ class ScreenshotTest(unittest.TestCase):
             code, _, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "home.png")], capture=b"garbage")
             self.assertEqual(code, 1)
             self.assertIn("is not a PNG", err)
+
+    def test_a_png_that_stops_before_its_end_chunk_is_not_a_screenshot(self):
+        # A pull that ended early keeps the signature: 40 bytes of PNG header and chunks, then nothing.
+        # The run used to print "screenshot <file> (40 bytes)", return 0 and leave a picture that stops
+        # in the middle, which is the one thing a screenshot in a PR description must not be.
+        cut = PNG[:len(PNG) - len(PNG_END)]
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / "home.png"
+            code, out, err, _ = self.run_tv(["--screenshot", str(local)], capture=cut)
+            self.assertEqual(code, 1)
+            self.assertIn(f"{local} is {len(cut)} bytes of a PNG that stops before its IEND chunk", err)
+            self.assertIn("try again", err)
+            self.assertEqual("", out, "a screenshot that is not one is not announced")
+            self.assertEqual(local.read_bytes(), cut, "the short file stays for the user to look at")
+
+    def test_a_truncated_signature_alone_is_refused_too(self):
+        # Fewer bytes than the end marker itself: the seek cannot land where the IEND would start, and
+        # an empty tail must not read as an empty marker.
+        with tempfile.TemporaryDirectory() as tmp:
+            code, out, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "tiny.png")], capture=PNG[:8])
+            self.assertEqual(code, 1)
+            self.assertIn("stops before its IEND chunk", err)
+            self.assertEqual("", out)
 
     def test_keys_are_pressed_in_order_before_the_capture(self):
         with tempfile.TemporaryDirectory() as tmp:

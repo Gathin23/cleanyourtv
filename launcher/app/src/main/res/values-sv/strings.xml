@@ -18,6 +18,7 @@
     <string name="good_night">God natt</string>
     <string name="festival_dussehra_greeting">Glad Dussehra</string>
     <string name="festival_diwali_greeting">Glad Diwali</string>
+    <string name="festival_halloween_greeting">Glad halloween</string>
     <string name="ethernet">Ethernet</string>
     <string name="offline">Frånkopplad</string>
     <string name="not_available">Inte tillgängligt på den här TV:n</string>
@@ -121,4 +122,7 @@
     <string name="race_race">Lopp</string>
     <string name="last_opened">Senast öppnad %1$s</string>
     <string name="game_live">Direkt nu</string>
+    <string name="clock_format_system">System</string>
+    <string name="clock_format_12">12 timmar</string>
+    <string name="clock_format_24">24 timmar</string>
 </resources>

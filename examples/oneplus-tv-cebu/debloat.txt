@@ -13,6 +13,12 @@
 # (com.google.android.katniss), firmware updates (com.oneplus.tv.systemupgrade, com.heytap.oprcupgradeservice),
 # Play Store and Play Services. Left alone and never launched: the factory apps (com.heytap.optvfactory,
 # com.oneplus.tv.factory). setupwraith does not claim HOME here.
+# Specifically, keep com.heytap.tv.support enabled: com.heytap.tv.livetv (IPCManager.java#177) binds to
+# com.heytap.tv.support/.server.TvSupportService before opening a TvInputSession. With it disabled,
+# dumpsys hdmi_control still detects the connected device (e.g. a PlayStation 5 on HDMI 3), but
+# com.heytap.tv.livetv leaves mainSessionToken null and times out after 3 seconds with "No Signal, please
+# check the connection of input source." (#321). Re-enabling com.heytap.tv.support alone restores HDMI
+# immediately with no reboot.
 # With launcher/ as Home (live_tv_package com.heytap.tv.livetv), Home, Input, Netflix, YouTube, Prime Video
 # and the Assistant mic on the remote work without InputKeyService or HomeKeyService.
 # USB debugging alone opens port 5555, and it stays open across reboots until switched off.

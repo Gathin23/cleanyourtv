@@ -11,6 +11,12 @@ So -h/--help prints this script's own note, before the adb_shell imports and bef
 and a leading dash that is not a flag of tv.py is refused with the usage (exit 2), before connecting.
 A shell command's first word is never a dash, so the shell branch is unchanged.
 
+That refusal sat below the TV_HOST check, so without TV_HOST it was never reached: `tv.py --proob` and
+`tv.py --push only-two.apk` printed "Set TV_HOST to your TV's IP address" and exited 1 - the status
+this client keeps for a command the TV ran and failed - and the reader who set the address they were
+told to set then got the usage. The flag, and how many words it takes, is now judged where --help is,
+before the client is imported and before TV_HOST, and a checkout with no tools/venv answers it too.
+
 The runs use a stub adb_shell (as tests/test_tv_target.py does) that records whether a device was
 opened and every command sent, so "refused before connecting" and "the command still reaches the TV"
 are both observed rather than assumed. HOME points at a temporary folder so the run does not write an
@@ -211,6 +217,78 @@ class TvHelpTest(unittest.TestCase):
                 self.assertIn("usage:", err)
                 self.assertIsNone(opened)
                 self.assertEqual([], sent)
+
+    def test_a_flag_it_does_not_have_is_refused_before_the_tv_is_asked_for(self):
+        # The reader who has not set TV_HOST yet: this used to be the TV_HOST error and exit 1, so the
+        # typo read as a command the TV ran and failed.
+        status, out, err, opened, sent = self.run_tv(["--proob"], tv_host=None)
+        self.assertEqual(2, status, out)
+        self.assertIn("not a flag of tv.py: '--proob'", err)
+        self.assertIn("tv.py --probe", err, "the refusal carries the usage")
+        self.assertNotIn("Set TV_HOST", err, "a typo is answered from the usage, not with the TV's address")
+        self.assertEqual("", out)
+        self.assertIsNone(opened)
+        self.assertEqual([], sent)
+
+    def test_a_flag_with_the_wrong_number_of_words_is_refused_before_the_tv_is_asked_for(self):
+        for args in (["--probe", "extra"], ["--push", "only-two.apk"], ["--pull", "only-two.png"],
+                     ["--batch", "a", "b"], ["--reboot", "now"]):
+            with self.subTest(args=args):
+                status, out, err, opened, sent = self.run_tv(args, tv_host=None)
+                self.assertEqual(2, status, out)
+                self.assertIn("usage:", err)
+                self.assertNotIn("Set TV_HOST", err)
+                self.assertIsNone(opened)
+                self.assertEqual([], sent)
+
+    def test_a_screenshot_with_no_file_is_refused_before_the_tv_is_asked_for(self):
+        status, out, err, opened, sent = self.run_tv(["--screenshot"], tv_host=None)
+        self.assertEqual(2, status, out)
+        self.assertIn("--screenshot needs the file to save to", err)
+        self.assertNotIn("Set TV_HOST", err)
+        self.assertIsNone(opened)
+        self.assertEqual([], sent)
+
+    def test_a_well_formed_command_still_says_which_address_is_missing(self):
+        # The other half: a command that is right about itself is still the TV_HOST message, and 1.
+        for args in (["--probe"], ["--push", "a.apk", "/data/local/tmp/a.apk"],
+                     ["pm", "list", "packages"]):
+            with self.subTest(args=args):
+                status, out, err, opened, sent = self.run_tv(args, tv_host=None)
+                self.assertEqual(1, status, out)
+                self.assertIn("Set TV_HOST to your TV's IP address", err)
+                self.assertEqual("", out)
+                self.assertIsNone(opened)
+                self.assertEqual([], sent)
+
+    def test_another_script_that_imports_the_client_keeps_its_own_arguments(self):
+        # recovery.py, privacy.py and bench.py import this file: their command line is not tv.py's, so
+        # the flag check above is tv.py's own run only.
+        work = Path(tempfile.mkdtemp(dir=Path(self._tmp.name)))
+        importer = work / "importer.py"
+        importer.write_text("import tv\nprint('imported', tv.USAGE.splitlines()[0])\n", encoding="utf-8")
+        env = {k: v for k, v in os.environ.items() if k not in ("TV_HOST", "TV_PORT", "PYTHONPATH")}
+        env["HOME"] = str(self.home)
+        if os.name == "nt":
+            env["USERPROFILE"] = str(self.home)
+        env["PYTHONPATH"] = os.pathsep.join([str(ROOT / "tools"), str(self.base)])
+        env["TV_HOST"] = "192.0.2.1"
+        r = subprocess.run([sys.executable, str(importer), "--proob", "only-one"], cwd=str(ROOT), env=env,
+                           capture_output=True, text=True)
+        self.assertEqual(0, r.returncode, r.stderr)
+        self.assertIn("imported usage:", r.stdout)
+        self.assertNotIn("not a flag of tv.py", r.stderr)
+
+    def test_the_flag_check_is_read_before_the_client_and_before_tv_host(self):
+        lines = SCRIPT.read_text(encoding="utf-8").splitlines()
+        call = next(n for n, l in enumerate(lines) if l.startswith("    check_flags(sys.argv"))
+        client = next(n for n, l in enumerate(lines) if l.lstrip().startswith("from adb_shell"))
+        host = next(n for n, l in enumerate(lines) if 'os.environ.get("TV_HOST")' in l)
+        self.assertLess(call, client, "the flag check must run before adb_shell is imported")
+        self.assertLess(call, host, "the flag check must run before TV_HOST is required")
+        source = "\n".join(lines)
+        self.assertEqual(1, source.count("def check_flags"), "one flag check, called from both places")
+        self.assertIn("\n    check_flags(args)\n", source, "check_arity() runs it too, for an importer")
 
     def test_the_help_branch_is_read_before_the_client_is_imported(self):
         # The claim in the docstring is that no venv is needed, which only holds while the branch sits

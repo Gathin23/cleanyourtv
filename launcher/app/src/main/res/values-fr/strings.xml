@@ -95,4 +95,7 @@
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="last_opened">Dernière ouverture : %1$s</string>
     <string name="game_live">En direct</string>
+    <string name="clock_format_system">Système</string>
+    <string name="clock_format_12">12 heures</string>
+    <string name="clock_format_24">24 heures</string>
 </resources>

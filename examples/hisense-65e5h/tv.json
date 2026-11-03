@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 65E5H (VIDAA_TV, MediaTek MT9652, hisense_m7642_cn), China",
+  "os": "Android 9",
+  "brand": "Hisense",
+  "notes": "China JuUI 9 on Android 9 (PPR2.180905.006.A1 / 02.02.60.01): ad SDK/service, telemetry, vendor push channel, store/hotel/demo and tutorial apps, preloaded content, the vendor screensaver, AI photo recognition, family album/cloud/message board, single listen and the voice chat room; debloat only, stock Home `com.jamdeo.tv.vod` and Live TV `com.jamdeo.tv.livetv` kept, OTA kept; 29 packages; `ro.adb.secure=1`, so the TV asks for the ADB key once, and states can be lost if you reboot right after disabling - wait a minute; [device notes](hisense-65e5h/README.md)"
+}

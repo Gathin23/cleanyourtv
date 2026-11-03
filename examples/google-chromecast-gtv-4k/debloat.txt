@@ -41,10 +41,16 @@
 #   holds the credentials in memory, so casting works until the next reboot
 #   (docs/TROUBLESHOOTING.md, "Casting fails with Untrusted device").
 #   Seen again after a reboot: re-enabling setupwraith brought no ClientAuthSigner line within 3 minutes
-#   and phones did not list the device at all. With setupwraith enabled, restart the receiver instead:
-#   am force-stop com.google.android.apps.mediashell
-#   am start-foreground-service -n com.google.android.apps.mediashell/.CastReceiverService
-#   (nothing starts it again after a force-stop); the signer line follows within seconds.
+#   and phones did not list the device at all. Restart the receiver while setupwraith is enabled:
+#     pm enable com.google.android.tungsten.setupwraith
+#     logcat -c
+#     am crash com.google.android.apps.mediashell
+#   The system starts it again with a new pid, and "Created singleton instance of ClientAuthSigner"
+#   follows within seconds. Check that pid (pidof com.google.android.apps.mediashell) is still the same
+#   30 s later, then: pm disable-user --user 0 com.google.android.tungsten.setupwraith
+#   Not am force-stop plus am start-foreground-service: started that way the receiver never calls
+#   startForeground(), Android kills it after 30 s, and the copy that comes back with setupwraith
+#   already off has no credentials (the signer line came from the killed process) (#2615).
 # - Turning USB debugging off leaves Wireless debugging listening on its own port. Switch both off when
 #   you are done. tools/adb-closed.py checks 5555 unless it is given that port: note the port from
 #   `adb mdns services` first, and check it with tools/adb-closed.py <ip> <port> before the reboot.
@@ -63,6 +69,15 @@
 # - Disabling dreamx leaves screensaver_components pointing at it. Point it at the launcher's clock:
 #   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
 # - Animation scales already ship at 0.5x on this build.
+# - Disable in small batches, and wait before walking away. A run that disabled 21 packages in one
+#   batch had every one report "new state", then the device rebooted: 19 of the 21 were back
+#   afterwards. PackageManager writes package-restrictions.xml asynchronously, so a package disabled
+#   seconds before a reboot is lost while ones disabled minutes earlier (launcherx, setupwraith)
+#   survive. Four batches of 4/4/4/7 with a 20-second pause after each, checking the device is still
+#   up between them, went through with no reboot.
+# - If the device does reboot, check the uptime before assuming a crash loop:
+#   GET http://<ip>:8008/setup/eureka_info reports it, and one reboot with a steadily climbing
+#   uptime afterwards is not a loop.
 #
 # Second unit. The list's telemetry and preloaded-app groups were applied (the screensaver pair and
 # setupwraith were kept), plus a few apps by choice;

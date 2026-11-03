@@ -8,8 +8,20 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DockSlotsTest {
+    @Test public void dockRowIsTheFirstColumnsTilesOrEveryTileOfASingleRow() {
+        // #2428: the glass stays level with a dock tile, which advanced_effects no longer lifts.
+        assertTrue(DockSlots.inDockRow(true, false, 0, 6));
+        assertTrue(DockSlots.inDockRow(true, false, 5, 6));
+        assertFalse(DockSlots.inDockRow(true, false, 6, 6));
+        assertTrue(DockSlots.inDockRow(true, true, 40, 6));
+        assertFalse(DockSlots.inDockRow(false, false, 0, 6));
+        assertFalse(DockSlots.inDockRow(false, true, 0, 6));
+    }
+
     private static Set<String> set(String... keys) {
         return new HashSet<>(Arrays.asList(keys));
     }
@@ -45,6 +57,13 @@ public class DockSlotsTest {
         Set<String> dock = set("appletv", "tivimate", "jellyfin", "iplayer", "youtube");
         assertEquals(keys, DockSlots.dockFirst(keys, 4, dock));
         assertEquals(4, DockSlots.dockCount(keys, 4, dock));
+    }
+
+    @Test public void anAppChosenForTheFreePlaceItAlreadySitsInJoinsTheDock() {
+        // Reorder mode shows no empty slot, so "my5" sits in the free 4th place; Add to dock chose it for that place.
+        List<String> keys = Arrays.asList("tivimate", "jellyfin", "iplayer", "my5", "vlc");
+        assertEquals(4, DockSlots.dockCount(keys, 4, set("tivimate", "jellyfin", "iplayer", "my5")));
+        assertEquals(0, DockSlots.empty(4, 4, 5, false));
     }
 
     @Test public void fewerTilesThanDockSlotsStillPutTheDockFirst() {

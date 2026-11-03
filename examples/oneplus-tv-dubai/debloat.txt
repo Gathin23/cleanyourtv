@@ -12,9 +12,32 @@
 # For the launcher's Inputs menu set live_tv_package to com.heytap.tv.livetv in config.xml.
 # Seen on this unit: Developer options -> "Don't keep activities" was switched on, which makes every
 # app restart when you leave it. Check it is off.
+#
+# Second unit: OnePlus TV D00 (Dubai, MediaTek mt5867), India, Android TV 11 with the classic Android TV
+# home, build RTM1.210315.027 (incremental 2303030058, security patch 2023-01-05), system version
+# BOVC601RIN04S01110V1.14.0T2303030058 on the About screen. Stock launcher: com.google.android.tvlauncher.
+# - Every active line below was applied on it except com.tcl.browser (not installed) and com.heytap.olink:
+#   that one and com.oneplus.tv.remote were already disabled at the factory (state 2), and the shell may not
+#   change com.heytap.olink ("Shell cannot change component state"). The lines marked "second unit" were
+#   added for it.
+# - Network ADB: no Network/ADB or Wireless debugging toggle; USB debugging alone opens port 5555, and
+#   switching it off closes it again (tools/adb-closed.py, before and after a reboot).
+# - Also kept there: Miracast (com.heytap.optvmiracastservice, com.oplus.onet), Play Store and Play Services
+#   (also the system updater: com.google.android.gms/.update.SystemUpdatePanoActivity),
+#   com.oneplus.tv.android.account, com.heytap.tvapiservice and mediatek.factorymenu.ui.
+#   android.autoinstalls.config.OnePlus is skipped by tools/disable.sh (no permission block in its dumpsys).
+# - Remote with launcher/ as Home and no key helper: Input, YouTube, Netflix, the Settings gear and Home work.
+#   The OnePlus button (KEYCODE_F2) opens Oxygen Play's page (com.oneplus.tv.intent.category.HOME), so it
+#   does nothing once com.oneplus.tv.launcher is disabled. The three-bars button sends KEYCODE_ASSIST (219)
+#   and nothing answers it once the stock launcher is off; settings_key_keycodes 219 with HOME_KEY_SERVICE=1
+#   opened Settings only on a long press and a held Volume Up stopped ramping, so it was left unmapped.
+# - Status: applied 2026-10-30 in five batches with a screenshot after each (the stock launcher lines after
+#   launcher/ took Home), rebooted twice with every entry still disabled; Home, the remote buttons and
+#   streaming apps checked the same day. Not yet lived with for several days.
 
 # Google telemetry
 com.google.android.feedback
+com.heytap.tv.remotediagnosing         # OnePlus remote diagnostics (second unit)
 
 # OnePlus / HeyTap extras
 com.heytap.olink                       # OnePlus Connect (phone link)
@@ -26,6 +49,15 @@ com.oneplus.tv.launcher                # OnePlus content launcher page
 
 # Preloaded apps
 com.tcl.browser                        # "BrowseHere" web browser (not a system app: can also be uninstalled)
+com.jio.web.androidtv                  # JioPages browser (second unit)
+com.oneplus.tv.userguide               # E-manual (second unit)
+com.google.android.play.games          # Play Games (second unit)
+
+# Off on the second unit by the owner's choice; uncomment to disable.
+# com.google.android.youtube.tvmusic   # YouTube Music
+# com.google.android.videos            # Play Movies & TV
+# com.vectorunit.red                   # Riptide GP game
+# pl.idreams.skyforcehdtv              # Sky Force game
 
 # Stock Google TV launcher and its recommendation service, replaced by launcher/
 com.google.android.tvlauncher

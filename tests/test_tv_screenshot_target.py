@@ -30,7 +30,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "tools" / "tv.py"
 SOURCE = SCRIPT.read_text(encoding="utf-8")
-PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 32
+PNG = b"\x89PNG\r\n\x1a\n" + b"0" * 32 + b"IEND\xaeB`\x82"   # a complete PNG: signature, chunks, IEND
 
 STUB_DEVICE = '''\
 import os
@@ -62,7 +62,7 @@ class AdbDeviceTcp:
             raise DevicePathInvalidError("Cannot pull from an empty device path")
         self._note(f"pull {remote} -> {local}")
         with open(local, "wb") as f:
-            f.write(b"\\x89PNG\\r\\n\\x1a\\n" + b"0" * 32)
+            f.write(b"\\x89PNG\\r\\n\\x1a\\n" + b"0" * 32 + b"IEND\\xaeB`\\x82")
 
     def shell(self, command, read_timeout_s=None, **kwargs):
         self._note(f"shell {command}")

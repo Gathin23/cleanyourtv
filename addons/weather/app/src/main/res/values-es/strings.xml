@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">El tiempo</string>
+
+    <string name="feels_like">Sensación %1$d°</string>
+    <string name="humidity">Humedad %1$d%%</string>
+    <string name="wind">Viento %1$d km/h</string>
+    <string name="wind_mph">Viento %1$d mph</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Calidad del aire %1$d · %2$s</string>
+    <string name="updated">Actualizado %1$s · Open-Meteo</string>
+    <string name="change_city">Cambiar ciudad</string>
+    <string name="loading">Cargando el tiempo…</string>
+    <string name="offline">No se puede conectar con Open-Meteo. Revisa la conexión a internet de la TV; se reintenta en 5 minutos.</string>
+
+    <string name="pick_title">¿Qué ciudad?</string>
+    <string name="pick_hint">Nombre de la ciudad, p. ej. Madrid</string>
+    <string name="pick_search">Buscar</string>
+    <string name="pick_none">No hay ningún lugar llamado \"%1$s\"</string>
+    <string name="pick_first">Elige una ciudad para ver su tiempo.</string>
+
+    <string name="aqi_good">Buena</string>
+    <string name="aqi_moderate">Moderada</string>
+    <string name="aqi_sensitive">Mala para grupos sensibles</string>
+    <string name="aqi_unhealthy">Mala</string>
+    <string name="aqi_very_unhealthy">Muy mala</string>
+    <string name="aqi_hazardous">Peligrosa</string>
+
+    <string name="sky_clear">Despejado</string>
+    <string name="sky_sunny">Soleado</string>
+    <string name="sky_mostly_clear">Casi despejado</string>
+    <string name="sky_mostly_sunny">Casi soleado</string>
+    <string name="sky_partly_cloudy">Parcialmente nublado</string>
+    <string name="sky_cloudy">Nublado</string>
+    <string name="sky_fog">Niebla</string>
+    <string name="sky_drizzle">Llovizna</string>
+    <string name="sky_freezing_drizzle">Llovizna helada</string>
+    <string name="sky_light_rain">Lluvia débil</string>
+    <string name="sky_rain">Lluvia</string>
+    <string name="sky_heavy_rain">Lluvia fuerte</string>
+    <string name="sky_freezing_rain">Lluvia helada</string>
+    <string name="sky_light_snow">Nieve débil</string>
+    <string name="sky_snow">Nieve</string>
+    <string name="sky_heavy_snow">Nevada fuerte</string>
+    <string name="sky_snow_grains">Cinarra</string>
+    <string name="sky_showers">Chubascos</string>
+    <string name="sky_snow_showers">Chubascos de nieve</string>
+    <string name="sky_thunderstorm">Tormenta</string>
+</resources>

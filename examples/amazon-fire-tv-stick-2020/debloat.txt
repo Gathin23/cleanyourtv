@@ -1,0 +1,103 @@
+# Amazon Fire TV Stick, 3rd gen 2020 (AFTSSS, codename sheldonp), Fire OS 7.7.1.7 (PS7717/5741, build PS7717.5741N), Android 9 (SDK 28), India
+# Same Fire OS build and platform as amazon-fire-tv-stick-lite-2020/ (AFTSS, sheldon): every package on that list is
+# present here and disabled the same way. Added: Spotify-for-Alexa; casting is commented out below (off on this stick by choice).
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher is a protected package and keeps Home; launcher/ does not apply.
+#
+# Apply:   TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-2020/debloat.txt
+# Undo:    TV_HOST=<stick ip> tools/restore.sh examples/amazon-fire-tv-stick-2020/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+# ADB on Fire OS 7: Settings > My Fire TV > Developer Options > ADB Debugging. Port 5555, accept the prompt on the TV.
+# Switch it off again afterwards (`settings put global adb_enabled 0` from the shell does it; 5555 then refuses).
+#
+# tools/disable.sh holds back three entries on this build, and says why:
+#   com.amazon.tv.livetv (opens inputs and channels: a stick has no HDMI inputs, so HANDLERS_ALLOW=1 is safe here),
+#   com.amazon.systemnotices and com.amazon.wha.mediabrowserservice (dumpsys shows no permission block, so the
+#   input-driver check cannot read them: TVINPUT_ALLOW=1 once the stick has rebooted with the rest disabled).
+# They were applied in a second run with those two overrides, as the Stick Lite list disables them on the same build.
+#
+# Rebooted twice after applying: all 55 (52 listed + the 3 casting lines) stayed disabled, Home, Prime Video, YouTube and Hotstar open, Wi-Fi works,
+# Alexa voice search from the remote mic works in YouTube and Hotstar. com.android.nfc is disabled from the factory.
+#
+# Kept on purpose: com.amazon.tv.launcher, com.amazon.tv.settings.*, com.amazon.venezia (Appstore), com.amazon.tv.ime,
+# remote/Bluetooth services, OTA updates, Alexa voice search (com.amazon.vizzini, aria, cardinal, ivona TTS, tcomm),
+# Prime Video (com.amazon.firebat, com.amazon.tv.support), miniTV (com.amazon.minitv.android.app), YouTube
+# (com.amazon.firetv.youtube), whisperplay/whisperlink (phone remote app; whisperlink is protected), profiles
+# (com.amazon.prism.android.service), com.amazon.tv.oobe, screensaver, accessibility (com.amazon.logan).
+# Protected on Fire OS 7 per the Stick Lite and other Fire TV lists (not retried here), so left out: com.amazon.minerva.client.api, com.amazon.device.logmanager,
+# com.amazon.device.crashmanager, com.amazon.diode, com.fireos.usagestats.proxy, com.amazon.ftvads.deeplinking,
+# com.amazon.device.metrics, com.amazon.tv.csapp.
+#
+# What the list cannot remove: the hero rotator ads and the Prime Video promo rows come from the launcher's own feed,
+# and the Live icon stays in the top menu (its channel rows go). Privacy Settings and Featured Content autoplay
+# toggles are by hand on the remote, as the Stick Lite list describes.
+
+# Amazon telemetry, metrics, logs, usage reporting
+com.amazon.client.metrics.api
+# com.amazon.minerva.client.api            # protected by Fire OS
+com.amazon.neo.minerva
+com.amazon.neo.minerva.logcat
+com.amazon.tv.fw.metrics
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.perfc
+# com.amazon.device.logmanager             # protected by Fire OS
+# com.amazon.device.crashmanager           # protected by Fire OS
+com.amazon.dp.logger
+# com.amazon.diode                         # protected by Fire OS
+com.amazon.ceviche                         # data collection pipelines
+com.amazon.tv.developer.dataservice        # content personalization data for third-party apps
+# com.fireos.usagestats.proxy              # protected by Fire OS
+com.amazon.livedeviceservice
+com.amazon.privacypassservice              # privacy pass token service
+com.amazon.wifilocker                      # uploads Wi-Fi passwords to Amazon
+com.amazon.tv.acr                          # Automatic Content Recognition
+
+# Ads, sponsored rows, recommendations, promos, shopping
+com.amazon.kso.blackbird                   # launcher ad sync / bidding
+com.amazon.sneakpeek                       # sponsored "Sneak Peek" previews
+com.amazon.hybridadidservice               # advertising ID service
+com.amazon.media.recommendations
+com.amazon.providers.contentsupport
+com.amazon.tv.easyupgrade                  # "upgrade your Fire TV" promos
+com.amazon.shoptv.client                   # Amazon Shopping on TV
+com.amazon.shoptv.firetv.client
+com.amazon.hedwig                          # Fire TV Channels
+com.amazon.tv.livetv                       # Live tab and guide (no tuner on a stick)
+com.amazon.franktvinput                    # live TV input feeding the Live tab
+com.amazon.gamehub                         # games hub / Luna cards
+com.amazon.systemnotices
+com.amazon.tv.releasenotes                 # "what's new" release notes
+com.amazon.uxnotification                  # UX notification popups
+
+# Preloaded Amazon apps and setup helpers (personal choice)
+com.amazon.tahoe                           # Amazon Kids (FreeTime)
+com.amazon.bueller.music                   # Amazon Music
+com.amazon.bueller.photos                  # Amazon Photos
+com.amazon.cloud9                          # Silk browser
+com.amazon.tv.website_launcher             # opens websites in Silk
+com.amazon.tmm.tutorial                    # remote tutorial
+com.amazon.storm.lightning.tutorial        # remote app tutorial
+com.amazon.naatyam
+com.amazon.whisperjoin.middleware.np       # frustration-free setup of other Amazon devices
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.ods.kindleconnect               # "show on Fire TV" from Echo / Fire tablet
+com.amazon.tv.mattercohost                 # Matter smart-home controller
+
+# Alexa extras (voice search on the remote mic keeps working with all of these off)
+com.amazon.tv.alexaalerts                  # alarms, timers, reminders
+com.amazon.tv.alexanotifications
+com.amazon.alexa.externalmediaplayer.fireos   # Alexa music playback
+com.amazon.alexamediaplayer.runtime.ftv
+com.amazon.aiondec                         # Alexa skill connections
+com.amazon.audiohome                       # Alexa Home Theater
+com.amazon.whad                            # whole-home audio (multi-room music)
+com.amazon.whasettings
+com.amazon.wha.mediabrowserservice
+com.amazon.aca                             # Alexa hints/cues providers (HintsProvider, InstaHintsProvider), ~44 MB resident
+com.amazon.spotify.mediabrowserservice     # Spotify for Alexa (the Spotify app is separate)
+
+# Casting: off on this stick by the owner's choice, commented out so other owners keep it. Uncomment to disable.
+# com.amazon.cast.sink                       # Miracast screen mirroring
+# com.amazon.awvflingreceiver                # Amazon fling receiver
+# com.amazon.dialservice                     # DIAL cast-from-phone (YouTube, Netflix)

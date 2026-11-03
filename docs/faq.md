@@ -61,8 +61,11 @@ tools/tv.py 'settings put global private_dns_mode hostname'
 
 It does not remove YouTube ads, which come from the same servers as the videos.
 
-When the TV reports "No internet", the resolver is down or unreachable and switching back restores
-everything: `tools/tv.py 'settings put global private_dns_mode opportunistic'`.
+When the TV reports "No internet", the resolver is down or unreachable — or, on a box with no battery-backed
+clock after a mains power loss (or with `auto_time` off), its clock reset to the firmware build date so
+DNS-over-TLS rejects the resolver's certificate as not yet valid while NTP cannot resolve its server to set
+the time — and switching back restores everything:
+`tools/tv.py 'settings put global private_dns_mode opportunistic; settings put global auto_time 1'`.
 
 - That line needs debugging back on, because Android TV's Settings app has no Private DNS page (not in
   AOSP, and not in Google TV 14 on a Chromecast with Google TV 4K).

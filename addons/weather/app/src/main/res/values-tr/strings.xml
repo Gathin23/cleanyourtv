@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="weather_settings">Hava durumu ayarları</string>
+    <string name="settings_done">Bitti</string>
+    <string name="setting_units">Sıcaklık birimi</string>
+    <string name="unit_c">Santigrat (°C)</string>
+    <string name="unit_f">Fahrenhayt (°F)</string>
+    <string name="setting_both_units">Her iki birimi göster</string>
+    <string name="setting_days">Tahmin süresi</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d gün</item>
+        <item quantity="other">%1$d gün</item>
+    </plurals>
+    <string name="setting_humidity">Nemi göster</string>
+    <string name="setting_wind">Rüzgârı göster</string>
+    <string name="setting_reset">Hava durumu ayarlarını sıfırla</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">Açık</string>
+    <string name="option_off">Kapalı</string>
     <string name="app_name">Weather</string>
 
     <string name="feels_like">Hissedilen %1$d°</string>
