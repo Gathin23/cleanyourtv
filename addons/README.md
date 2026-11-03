@@ -105,6 +105,8 @@ the TV, and installs, updates or removes one by running the add-on's own `instal
 tools/venv/bin/python -I tools/manage.py list addons
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py status
 TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py install weather
+```
+
 ## Rules
 
 - **Its own app.** One folder per add-on, `addons/<name>/`, with its own Gradle project
