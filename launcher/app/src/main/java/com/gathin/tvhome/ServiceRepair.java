@@ -6,10 +6,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.SystemClock;
 import android.provider.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -31,7 +33,13 @@ final class ServiceRepair {
     }
 
     static void disconnected(Context context, Class<?> service) {
-        prefs(context).edit().remove(service.getName()).apply();
+        // Android unbound the helper: either the user switched it off, or the device is going down - a clean
+        // reboot or shutdown unbinds every helper, and a helper lost that way took the remote's Home, Input and
+        // app buttons with it on the next boot (XGIMI H3, Android 8: after `adb reboot` the enabled list came
+        // back with only the vendor's voice helper on it). Remember the uptime instead of dropping the record,
+        // so the next start can tell the two apart: SystemClock restarts at zero on boot, so a mark older than
+        // the current uptime means the device rebooted since, and the helper is still wanted.
+        prefs(context).edit().putLong(service.getName(), SystemClock.elapsedRealtime()).apply();
     }
 
     static void restore(Context context) {
@@ -48,8 +56,15 @@ final class ServiceRepair {
                 }
             }
             List<ComponentName> recorded = new ArrayList<>();
-            for (String service : prefs(context).getAll().keySet()) {
-                recorded.add(new ComponentName(context.getPackageName(), service));
+            long uptime = SystemClock.elapsedRealtime();
+            SharedPreferences prefs = prefs(context);
+            for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+                Object value = entry.getValue();
+                // true: the helper ran and was never unbound (a force stop kills the process first). A long:
+                // Android unbound it at that uptime; only a reboot since then makes it wanted again.
+                boolean wanted = value instanceof Boolean ? (Boolean) value
+                        : value instanceof Long && (Long) value > uptime;
+                if (wanted) recorded.add(new ComponentName(context.getPackageName(), entry.getKey()));
             }
             if (recorded.isEmpty()) return;
             // The list without our recorded helpers, then with all of them.
@@ -85,6 +100,10 @@ final class ServiceRepair {
                     Thread.sleep(1000);
                     if (!replaceList(cr, without, with)) return;
                     Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);
+                    // Back on the list: drop the "unbound at" mark, so a later start reads the helper as running.
+                    SharedPreferences.Editor editor = prefs.edit();
+                    for (ComponentName name : recorded) editor.putBoolean(name.getClassName(), true);
+                    editor.apply();
                 } catch (RuntimeException | InterruptedException ignored) {
                     // The setting is the system's; a refusal leaves the helper off, as before.
                 }
