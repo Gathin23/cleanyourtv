@@ -1,5 +1,8 @@
 # NVIDIA SHIELD TV 2019 tube (model P3430, codename sif, Tegra X1+, 2 GB RAM), Android TV 11 (API 30)
 # Tested on build RQ1A.210105.003.7825199_4387.0822 (SHIELD Experience 9.2.4), security patch 2026-01-05.
+# Second unit: another P3430 on the same build and patch level ran this list for three days
+# (2026-10-30 to 2026-11-02) with this repo's launcher, firmware updates and Ambient mode kept on, and
+# com.google.android.videos added. Nothing broke.
 # Based on examples/nvidia-shield-tv-pro-2019/debloat.txt. Every active line below is disabled on the
 # reporter's unit, with the items they already had disabled left commented out.
 #
@@ -23,8 +26,14 @@
 # Differences from the Pro example, by the owner's choice:
 # - Firmware updates are OFF (com.nvidia.ota, NvCPLUpdater and KeyComboOta disabled). The Pro example
 #   keeps KeyComboOta; re-enable all three before contacting NVIDIA support or to get security patches.
+#   The second unit kept all three enabled with no problems, and keeping them on is the safer choice:
+#   comment the three lines out.
 # - Live Channels and Backdrop are off. The screensaver on that unit was already "Colors"
 #   (com.android.dreams.basic), so disabling Backdrop left a screensaver set.
+#   tools/disable.sh keeps com.google.android.tv enabled even though it is listed: it answers the
+#   channel VIEW intent, so the handler guard skips it ("the TV opens its HDMI/AV inputs and channels
+#   with it"). A SHIELD has no inputs for it to open, so once the rest of the list is in, disable it with
+#   HANDLERS_ALLOW=1 or one `pm disable-user --user 0 com.google.android.tv`.
 # - Kept: Prime Video, Chromecast built-in, Google Assistant and hotword, Alexa / Google Home control
 #   (com.nvidia.shield.ask), the SHIELD TV phone-remote app (com.nvidia.shield.remote.server).
 # - Not present on this unit: com.nvidia.nvgamecast, com.android.printspooler, com.nvidia.osc,
@@ -75,6 +84,7 @@ com.nvidia.shield.nas                  # SHIELD as network storage
 com.nvidia.shield.smbserver            # "Transfer files over local network" SMB share
 com.nvidia.shield.smbauth              # SMB share authentication
 com.google.android.apps.nbu.smartconnect.tv  # Google data-saver VPN
+com.google.android.videos              # Google TV / Play Movies store app (second unit, three days, nothing broke)
 
 # Personal choice (the owner's picks)
 com.nvidia.ota                         # firmware updates OFF by choice; NVIDIA still ships security patches
