@@ -102,7 +102,7 @@ cleanyourtv.com, не имеют отношения к данному проек
 | | |
 |---|---|
 | ![Верхняя панель и фоновая подсветка](docs/focus-2-up-netflix.png) | ![HDMI со статусом подключения, AV, Эфирное ТВ](docs/inputs-menu.jpg) |
-| *Верхняя панель и фоновая подсветк* | *HDMI со статусом подключения, AV, Эфирное ТВ* |
+| *Верхняя панель и фоновая подсветка* | *HDMI со статусом подключения, AV, Эфирное ТВ* |
 | ![Сетка, эффект парящего стекла, название плитки](docs/focus-1-fancode.png) | ![Заставка-часы, дрейфующие на фоне сияния](docs/clock-screensaver.png) |
 | *Сетка, эффект парящего стекла, название плитки* | *Заставка-часы, дрейфующие на фоне сияния* |
 | ![Тема Aurora: обои и цветные элементы интерфейса обновлены без перезапуска](themes/aurora/screenshot.jpg) | ![Шесть колонок на шесть док-панелей, этот же лаунчер config.json](themes/six-columns/screenshot.jpg) |
@@ -161,7 +161,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Что нужно | Для чего |
 |---|---|
 | **Python 3** (любая версия 3.x) | Инструменты. Команда venv ниже установит необходимые зависимости. |
-| **JDK 17 through 22** (полная JDK, включая `jlink`) и **Android SDK platform 34** с **build-tools 34.0.0 or any newer 34.x** | Сборка лаунчера. JDK 23 и новее ломают работу Gradle 8.9. Сборка использует именно Platform 34; более новая платформа ее не заменяет. В macOS, если ничего не установлено: `brew install openjdk@17 android-commandlinetools`, затем `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. В Linux скрипт установки ищет в `~/Android/Sdk` и проверяет наличие `java` в вашем PATH. |
+| **JDK от 17 по 22** (полная JDK, включая `jlink`) и **Android SDK platform 34** с **build-tools 34.0.0 or any newer 34.x** | Сборка лаунчера. JDK 23 и новее ломают работу Gradle 8.9. Сборка использует именно Platform 34; более новая платформа ее не заменяет. В macOS, если ничего не установлено: `brew install openjdk@17 android-commandlinetools`, затем `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. В Linux скрипт установки ищет в `~/Android/Sdk` и проверяет наличие `java` в вашем PATH. |
 
 `tools/tv.py` общается с сетевым ADB на порту 5555. Если этот порт остаётся закрытым, а телевизор поддерживает беспроводную отладку (Wireless debugging) с кодом сопряжения - как, например, Chromecast with Google TV и Google TV Streamer, - один раз сопряжитесь с ним штатным `adb`. Дальше либо откройте порт командой `adb tcpip 5555` - обычно это действует лишь до перезагрузки телевизора, - либо оставьте порт закрытым: укажите в `TV_ADB_BINARY` тот же `adb`, а в `TV_HOST` порт, который отображается на экране беспроводной отладки, и инструменты будут обращаться к телевизору через сопряжённое соединение, при этом на порту 5555 не слушает ничего ([tools/native-adb.md](tools/native-adb.md)). Оба варианта, включая шаги сопряжения, описаны в [Устранение неполадок](docs/TROUBLESHOOTING.md#connecting).
 
