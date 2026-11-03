@@ -74,16 +74,16 @@ final class Config {
     final Map<String, String> appLabels;
     /** Package to a bundled banner_* drawable its tile shows instead of the app's art (config.xml, app_banners). */
     final Map<String, String> appBanners;
-    /** Vendor settings shown by starting a service, "package/.Service"; empty for an activity (config.xml
+    /** Vendor settings shown by starting a service, "package/.Service"; empty for an activity (config.json
      *  settings_service). Some firmware answers no settings action at all and is driven only this way. */
     final String settingsService;
-    /** Action that service answers (config.xml settings_service_action). */
+    /** Action that service answers (config.json settings_service_action). */
     final String settingsServiceAction;
-    /** String extra naming the page the service should open (config.xml settings_service_extra). */
+    /** String extra naming the page the service should open (config.json settings_service_extra). */
     final String settingsServiceExtra;
-    /** Page for the Settings button when settings_service is set (config.xml settings_page). */
+    /** Page for the Settings button when settings_service is set (config.json settings_page). */
     final String settingsPage;
-    /** Page for the Wi-Fi pill; empty falls back to settings_page (config.xml settings_page_wifi). */
+    /** Page for the Wi-Fi pill; empty falls back to settings_page (config.json settings_page_wifi). */
     final String settingsPageWifi;
     final String sourcePanelService;
     final String sourcePanelAction;
@@ -460,11 +460,11 @@ final class Config {
         List<String> launchActions = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.launch_actions)));
         List<String> appLabels = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.app_labels)));
         List<String> appBanners = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.app_banners)));
-        String settingsService = res.getString(R.string.settings_service).trim();
-        String settingsServiceAction = res.getString(R.string.settings_service_action).trim();
-        String settingsServiceExtra = res.getString(R.string.settings_service_extra).trim();
-        String settingsPage = res.getString(R.string.settings_page).trim();
-        String settingsPageWifi = res.getString(R.string.settings_page_wifi).trim();
+        String settingsService = "";
+        String settingsServiceAction = "";
+        String settingsServiceExtra = "";
+        String settingsPage = "";
+        String settingsPageWifi = "";
         String panelService = res.getString(R.string.source_panel_service).trim();
         String panelAction = res.getString(R.string.source_panel_action).trim();
         String panelExtra = res.getString(R.string.source_panel_extra).trim();

@@ -98,15 +98,10 @@
          com.android.newsettings/com.xgimi.newsettings.SettingService, action XGimiSettingAction, extra
          "data" = "main" for the front page or "Settings://com.xgimi.settings.net/ap" for Wi-Fi). Setting
          the service makes the header's Settings button and the Wi-Fi pill start it directly, instead of
-         opening a debug entry point the user then has to click through. Leave empty to keep starting an
+         opening a debug entry point the user then has to click through. There is no config.xml default:
+         the five keys (settings_service, settings_service_action, settings_service_extra, settings_page,
+         settings_page_wifi) are read from a theme's config.json, and empty ones keep starting an
          activity from settings_fallback_components. -->
-    <string name="settings_service" translatable="false"></string>
-    <string name="settings_service_action" translatable="false"></string>
-    <!-- Extra carrying the page, and the page for each button. An empty page falls back to the Settings
-         button's page, so only one needs setting where the firmware has a single front page. -->
-    <string name="settings_service_extra" translatable="false"></string>
-    <string name="settings_page" translatable="false"></string>
-    <string name="settings_page_wifi" translatable="false"></string>
 
     <!-- TVs with no TvInputManager have no HDMI list to read, but their own source-selection panel
          still switches inputs (TCL Android TV 9 again). When nothing could be listed, the Inputs menu
