@@ -284,7 +284,7 @@ bir cihazda neyin kaldığı [Sorun giderme](docs/TROUBLESHOOTING.md) belgesinde
 | **Temalar** | Wi-Fi üzerinden gönderilen bir `config.json` ile arka plan, duvar kâğıdı ve düzen, yeniden derleme yok. Yerleşik `default/` dahil 21 tema [`themes/`](themes/) içinde gelir |
 | **31 dil** | TV'nin diline uyar; İbranice için tamamen aynalanmış, sağdan sola bir düzen sunar |
 | **Uygulama kitaplığı** | İsteğe bağlı: yüklü tüm uygulamalara göz atın ve Ana ekran kısayolları ekleyin veya kaldırın. Bkz. [uygulama kitaplığı kılavuzu](docs/app-library.md) |
-| **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı, Ana ekrandan kaldır ve Uygulama bilgisi için bir kutucukta OK'u basılı tutun. Kapalıyken OK'u basılı tutmak Uygulama bilgisini açar |
+| **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgisi için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgisini açar |
 | **Modül kartları** | Herhangi bir TV uygulaması kendi kutucuğunu sunabilir; her birini bir kez onaylarsınız. Bkz. [`docs/modules.md`](docs/modules.md) |
 | **Eklentiler** | Modül kartı olarak bağlanan isteğe bağlı uygulamalar; [`addons/`](addons/) içinde tutulur ve asla başlatıcıya derlenmez |
 | **Saat ekran koruyucusu** | Ekran izi kalmasın diye ışıltının üzerinde kayan bir saat |

@@ -683,7 +683,7 @@ De **tv** moet Android 8.0 (API 26) of nieuwer gebruiken. `minSdk` stelt de mini
 | **Thema's** | Achtergrond, wallpaper en indeling komen uit een via wifi verzonden `config.json`; opnieuw bouwen is niet nodig. In [`themes/`](themes/) staan eenentwintig thema's, inclusief het ingebouwde `default/`. |
 | **31 talen** | Volgt de taal van de tv, met een volledig gespiegeld rechts-naar-links ontwerp voor Hebreeuws. |
 | **Appbibliotheek** | Optioneel: bekijk alle geïnstalleerde apps en voeg snelkoppelingen op het startscherm toe of verwijder ze. Zie [de handleiding voor de appbibliotheek](docs/app-library.md). |
-| **Tegelmenu** | Standaard aan (`tile_menu`): houd OK ingedrukt op een tegel voor Verplaatsen, Verwijderen van startscherm en App-info. Staat dit uit, dan opent lang indrukken de app-info. |
+| **Tegelmenu** | Standaard aan (`tile_menu`): houd OK ingedrukt op een tegel voor Verplaatsen en App-info, en met de appbibliotheek aan ook Verwijderen van startscherm. Staat dit uit, dan opent lang indrukken de app-info. |
 | **Modulekaarten** | Elke tv-app kan een eigen tegel aanbieden; je keurt elke app één keer goed. Zie [`docs/modules.md`](docs/modules.md). |
 | **Uitbreidingen** | Optionele apps die als modulekaart worden toegevoegd. Ze staan in [`addons/`](addons/) en worden nooit in de launcher ingebouwd. |
 | **Klokschermbeveiliging** | Een langzaam bewegende klok over de gloed, zodat het beeld niet inbrandt. |
