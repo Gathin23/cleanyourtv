@@ -247,34 +247,33 @@ powershell -ExecutionPolicy Bypass -File tools\theme.ps1 -TvHost 192.168.1.50 th
 Небольшой нативный главный экран для Android TV: **весит около 572 KB**, чистая Java, создан для телевизоров с 1 ГБ ОЗУ.
 Без размытия, без видео, без разрешений на доступ к сети, без фоновых сервисов. **Телевизор** должен быть на Android 8.0 (API 26) или новее, `minSdk` указан в [`launcher/app/build.gradle`](launcher/app/build.gradle); ; что остается на более старых моделях, описано в [Устранение неполадок](docs/TROUBLESHOOTING.md).
 
-| What | How it works |
+| Что | Как это работает |
 |---|---|
-| **Configure** | Dock order, hidden apps, Live TV app, 4 to 7 tiles per row, reduced motion. All in [`config.xml`](launcher/app/src/main/res/values/config.xml) |
-| **Settings on the TV** | Hold OK on Settings for launcher settings. Optional `launcher_settings_button` makes a normal click open them directly; TV settings remain on the settings page and their app tile. |
-| **Themes** | Background, wallpaper and layout from a `config.json` pushed over Wi-Fi, no rebuild. Twenty-one ship in [`themes/`](themes/), the built-in `default/` included |
-| **31 languages** | Follows the TV's language, with a fully mirrored right-to-left layout for Hebrew |
-| **App library** | Optional: browse every installed app and add or remove Home shortcuts. See [the app library guide](docs/app-library.md) |
-| **Tile menu** | On by default (`tile_menu`): hold OK on a tile for Move, Remove from Home and App info. Off, holding OK opens App info |
-| **Module cards** | Any TV app can offer its own tile; you approve each one once. See [`docs/modules.md`](docs/modules.md) |
-| **Add-ons** | Optional apps that plug in as module cards, kept in [`addons/`](addons/) and never built into the launcher |
-| **Clock screensaver** | A drifting clock over the glow, so nothing burns in |
-| **Remote keys** | Keeps the Input, YouTube and gear buttons working after the stock launcher is gone |
+| **Настройка** | Порядок в доке, скрытые приложения, приложение эфирного TV, от 4 до 7 плиток в ряду, уменьшение движения. Все в [`config.xml`](launcher/app/src/main/res/values/config.xml) |
+| **Настройки на телевизоре** | Удерживайте OK на Настройках для перехода в настройки лаунчера. Опциональный `launcher_settings_button` открывает их обычным нажатием; настройки телевизора остаются на странице настроек и на их плитке приложения. |
+| **Темы** | Фон, обои и макет из `config.json` pushed over Wi-Fi, no rebuild. Двадцать одна тема в [`themes/`](themes/), включая встроенную `default/`. |
+| **31 язык** | Следует языку телевизора, с полностью зеркальным макетом справа налево для иврита |
+| **Библиотека приложений** | Опционально: просмотр всех установленных приложений и добавление или удаление ярлыков на главном экране. Смотрите [Руководство по библиотеке приложений](docs/app-library.md) |
+| **Меню плиток** | По умолчанию (`tile_menu`): : удерживайте OK на плитке для Перемещения, Удаления с главного экрана и Информации о приложении. Если выключено, удержание OK открывает Информацию о приложении |
+| **Карточки модулей** | Любое ТВ-приложение может предложить свою плитку; вы одобряете каждую один раз. Смотрите [`docs/modules.md`](docs/modules.md) |
+| **Аддоны** | Опциональные приложения, подключаемые как карточки модулей, хранятся в [`addons/`](addons/) и никогда не встраиваются в лаунчер. |
+| **Заставка с часами** | Плавающие часы над подсветкой, чтобы ничего не выгорало |
+| **Кнопки пульта** | Сохраняет работу кнопок Источника, YouTube и шестеренки после удаления стандартного лаунчера |
 
-Themes, switches and add-ons together, with screenshots: [cleanyour.tv/addons](https://cleanyour.tv/addons).
+Темы, переключатели и аддоны вместе, со скриншотами: [cleanyour.tv/addons](https://cleanyour.tv/addons).
 
-**More:** [docs/launcher.md](docs/launcher.md) has the launcher settings page row by row, changing the
-default home, the languages, remote keys, the Clock screensaver, navigation and building it yourself.
+**Подробнее:** [docs/launcher.md](docs/launcher.md) содержит страницу настроек лаунчера построчно, смену главного экрана по умолчанию, языки, кнопки пульта, заставку с часами, навигацию и самостоятельную сборку.
 
-## Restoring your TV
+## Восстановление
 
-Keep the list you applied. One line puts the TV back the way it was:
+Сохраните список, который вы применили. Одна команда вернет телевизор в исходное состояние:
 
 ```bash
 TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt                                    # Android TV
 TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt com.google.android.apps.tv.launcherx  # Google TV
 ```
 
-| What | How |
+| Что | Как |
 |---|---|
 | **A record comes first** | Before `tools/disable.sh` changes anything it writes down what the TV looked like, in `~/.cleanyourtv/`. |
 | **Restore replays it** | A package you had disabled yourself stays disabled, and Home goes back to the component that owned it. |
