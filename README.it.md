@@ -333,7 +333,7 @@ pacchetti di sistema con `RECORD_AUDIO` che non registrano nulla, e i client ACR
 permesso audio. [`tools/privacy.py`](tools/privacy.py) riporta ciò che la TV dichiara davvero, con le prove per ogni
 candidato di voce, ACR e telemetria: `TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py`; con `--write`
 li trasforma in un normale elenco di app da disattivare. Non può però provare le intenzioni:
-[docs/privacy.md](docs/privacy.md) (in inglese) spiega perché.
+[docs/it/privacy.md](docs/it/privacy.md) ([versione inglese](docs/privacy.md)) spiega perché.
 
 ## Ripristinare il launcher e le app originali
 
@@ -438,7 +438,7 @@ Sì. La connessione ADB via TCP (di serie porta 5555) usata dagli strumenti non 
 chiedono nemmeno l'autorizzazione. Finito il lavoro, spegni il debug USB, il debug di rete / ADB e il debug wireless
 (quelli che ha la tua TV), revoca le autorizzazioni date, riavvia la TV e verifica dal computer che la porta sia
 chiusa: `python3 tools/adb-closed.py <ip della TV>` deve dire che la porta è chiusa. Il launcher funziona anche senza
-debug. Altri dettagli nelle [domande frequenti in inglese](docs/faq.md#isnt-adb-access-a-security-hole).
+debug. Altri dettagli nelle [domande frequenti](docs/it/faq.md#laccesso-adb-non-è-un-buco-di-sicurezza) ([versione inglese](docs/faq.md#isnt-adb-access-a-security-hole)).
 
 **Supporta DNS privato o AirPlay?**
 
