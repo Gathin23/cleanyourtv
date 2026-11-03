@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65Q750G, Q7 2023 (G05, G05_4K_US, MediaTek MT5889)",
+  "os": "Google TV 11",
+  "brand": "TCL",
+  "notes": "TCL Channel, waterfall, TV+, TGuard, Alexa, AirPlay; ttvs kept, as it is also the firmware updater on AR62; usercenter and smartalexa come back at every boot; setupwraith stayed off across reboots on AR62 (unlike AR68 in [tcl-g05-google-tv](tcl-g05-google-tv/debloat.txt)), and Home held with the remote buttons working without the key services"
+}
