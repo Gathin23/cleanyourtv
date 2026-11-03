@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Ваш телевизор - без рекламы. Удалите мусорный софт с любого Android TV или Google TV по Wi-Fi и замените заполненный рекламой домашний экран на чистый лаунчер, выглядящий как Apple TV. Без рут-прав, без кабелей, ничего не удаляется полностью, а возврат к исходному состоянию делается одной строкой" width="800"></a>
+  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Ваш телевизор - без рекламы. Удалите мусорный софт с любого Android TV или Google TV по Wi-Fi и замените заполненный рекламой домашний экран на чистый лаунчер, выглядящий как Apple TV. Без root-прав, без кабелей, ничего не удаляется полностью, а возврат к исходному состоянию делается одной строкой" width="800"></a>
 </p>
 
 <p align="center">
@@ -251,7 +251,7 @@ powershell -ExecutionPolicy Bypass -File tools\theme.ps1 -TvHost 192.168.1.50 th
 |---|---|
 | **Настройка** | Порядок в доке, скрытые приложения, приложение эфирного TV, от 4 до 7 плиток в ряду, уменьшение движения. Все в [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Настройки на телевизоре** | Удерживайте OK на Настройках для перехода в настройки лаунчера. Опциональный `launcher_settings_button` открывает их обычным нажатием; настройки телевизора остаются на странице настроек и на их плитке приложения. |
-| **Темы** | Фон, обои и макет из `config.json` pushed over Wi-Fi, no rebuild. Двадцать одна тема в [`themes/`](themes/), включая встроенную `default/`. |
+| **Темы** | Фон, обои и макет из `config.json`, загруженного по Wi-Fi, без пересборки. Двадцать одна тема в [`themes/`](themes/), включая встроенную `default/`. |
 | **31 язык** | Следует языку телевизора, с полностью зеркальным макетом справа налево для иврита |
 | **Библиотека приложений** | Опционально: просмотр всех установленных приложений и добавление или удаление ярлыков на главном экране. Смотрите [Руководство по библиотеке приложений](docs/app-library.md) |
 | **Меню плиток** | По умолчанию (`tile_menu`): : удерживайте OK на плитке для Перемещения, Удаления с главного экрана и Информации о приложении. Если выключено, удержание OK открывает Информацию о приложении |
@@ -276,7 +276,7 @@ TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt com.google.
 | Что | Как |
 |---|---|
 | **Сначала создается журнал** | Перед тем как `tools/disable.sh` что-то изменит, он записывает, как выглядел телевизор, в `~/.cleanyourtv/`. |
-| **Восстановление воспроизводит его** | Пакет, который вы отключили сами, останется отключенным, а HOME вернется к тому компоненту, который владел им. |
+| **Восстановление воспроизводит его** | Пакет, который вы отключили сами, останется отключенным, а главный экран вернется к тому компоненту, который владел им. |
 | **Лаунчер остается установленным** | Удалите его через Настройки телевизора → Приложения, если хотите избавиться от него. |
 | **Нет компьютера?** | Если телевизор недоступен, его собственная страница Настройки → Приложения тоже может снова включить пакеты. |
 
@@ -284,7 +284,7 @@ TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt com.google.
 
 ## После обновления прошивки
 
-Обновление устанавливается поверх очищенной системы: перечисленные пакеты возвращаются, HOME переходит на стандартный лаунчер, и появляются новые предустановленные приложения, которых нет ни в одном списке. Снова откройте ADB, как в шаге 1
+Обновление устанавливается поверх очищенной системы: перечисленные пакеты возвращаются, главный экран возвращается до заводского лаунчера, и появляются новые предустановленные приложения, которых нет ни в одном списке. Снова откройте ADB, как в шаге 1
 [Quick start](#quick-start), затем сравните телевизор с примененным списком; `--fix` вернет все на место:
 
 ```bash
@@ -294,126 +294,109 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 **Подробнее:** [docs/firmware-updates.md](docs/firmware-updates.md) содержит коды завершения, еженедельную проверку, что меняет
 `--fix`, телевизоры, которые оставляют стандартный лаунчер в качестве HOME, и списки, отключающие службу обновлений.
 
-## When something goes wrong
+## Когда что-то идет не так
 
-The full list of things that bit us is in [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md). The
-three that matter most:
+Полный список проблем, с которыми мы столкнулись, находится в [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md). Три самые важные:
 
-- 🍎 **macOS blocks `adb connect`** ("No route to host") under Local Network privacy. `tools/tv.py` avoids the binary.
-- ⚠️ **Disable the stock launcher only after the new one is installed and running**, or Home lands on a factory test app. The install script orders this for you.
-- 🔁 **On Google TV the setup wizard** (`com.google.android.tungsten.setupwraith`) can take Home and crash-loop the system after the stock launcher is disabled. Disable it too, and list it in your `debloat.txt` so restore brings it back.
-  - But check `dumpsys wifi | grep -o 'cname=[^ ]*'` first: if the Wi-Fi network was saved during setup it belongs to setupwraith, and disabling it deletes the network (re-join it in Settings first; `tools/disable.sh` skips setupwraith until you do).
-  - On Google's own Chromecast and on the Google TV Streamer it also costs phone casting, see [Troubleshooting](docs/TROUBLESHOOTING.md).
-  - Stuck already? `tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'`.
+- 🍎 **macOS блокирует `adb connect`** ("No route to host") из-за настроек конфиденциальности локальной сети. `tools/tv.py` обходит это, не используя бинарник.
+- ⚠️ **Отключайте стандартный лаунчер только после того, как новый установлен и запущен**, иначе главный экран переключится на приложение заводского теста. Скрипт установки делает это в правильном порядке за вас.
+- 🔁 **В Google TV мастер первоначальной настройки** (`com.google.android.tungsten.setupwraith`) может перехватить ваш главный экран и вызвать циклические сбои системы после отключения стандартного лаунчера. Отключите и его, и добавьте в свой `debloat.txt`, чтобы восстановление вернуло его.
+  - Но сначала проверьте `dumpsys wifi | grep -o 'cname=[^ ]*'` если Wi-Fi сеть была сохранена во время настройки, она принадлежит setupwraith, и его отключение удалит сеть (сначала переподключитесь к ней в Настройках; `tools/disable.sh` пропускает setupwraith, пока вы этого не сделаете).
+  - На собственном Chromecast от Google и на Google TV Streamer это также ломает трансляцию с телефона, смотрите [Устранение неполадок](docs/TROUBLESHOOTING.md).
+  - Уже застряли? `tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'`.
 
-## Questions people ask
+## Частые вопросы
 
 <details>
-<summary><b>I don't code and don't have a laptop. Can I still do this?</b></summary>
+<summary><b>Я не умею программировать и у меня нет ноутбука. Я все равно могу это сделать</b></summary>
 
-Yes. Independent developers have built free, open-source apps on CleanYourTV's TV lists that do the cleanup
-over Wi-Fi, with no coding agent. Each shows a plan first, only switches apps off, and can put everything back:
+Да. Независимые разработчики создали бесплатные открытые приложения на основе списков CleanYourTV, которые делают ту же очистку через Wi-Fi без кодинг-ассистента. Каждый сначала показывает план, только выключает приложения и может все вернуть:
 
-| App | For | By |
+| Приложение | Для | Автор |
 |---|---|---|
-| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Android phone | [@udhaykumarbala](https://github.com/udhaykumarbala) |
-| [Tellyscope](https://github.com/man15h/tellyscope) | Android phone | [@man15h](https://github.com/man15h) |
-| [TidyTV](https://github.com/jolan94/tidytv) | Android phone, Google Play | [@jolan94](https://github.com/jolan94) |
-| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac and Windows | [@wingedpanther](https://github.com/wingedpanther) |
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Телефон на Android | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Телефон на Android | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Телефон на Android, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac и Windows | [@wingedpanther](https://github.com/wingedpanther) |
 
-These apps are independent projects, not affiliated with or endorsed by CleanYourTV or its maintainer, and each
-is provided as is under its own license. Report app problems in that app's repo. More at
+Эти приложения - независимые проекты, не связанные с CleanYourTV или его мейнтейнером и не одобренные ими; каждый предоставляется "как есть" по собственной лицензии. О проблемах с приложением сообщайте в его репозитории. Больше на
 [cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 
 <details>
-<summary><b>Is this safe? Can it brick the TV?</b></summary>
+<summary><b>Это безопасно? Можно ли этим сломать телевизор?</b></summary>
 
-Nothing is flashed, rooted or deleted; packages are disabled
-in the user profile. The risk is disabling something the TV leans on, which is why lists are
-applied in small batches with a restore script ready. The TV's own Settings → Apps page can
-re-enable packages even without the tools. If the TV no longer starts far enough for that, a factory
-reset from its recovery menu is usually the way back.
+Ничего не прошивается, не рутируется и не удаляется; пакеты отключаются в пользовательском профиле. Риск - выключить что-то, на что телевизор опирается, поэтому списки применяются небольшими партиями, имея наготове скрипт отката. Собственная страница телевизора «Настройки устройства → Приложения» может снова включить пакеты даже без инструментов. Если телевизор больше не запускается настолько, чтобы это сделать, обычно возвращает заводской сброс из меню восстановления.
 
-More: [docs/faq.md](docs/faq.md#is-this-safe-can-it-brick-the-tv)
+Подробнее: [docs/faq.md](docs/faq.md#is-this-safe-can-it-brick-the-tv)
 
 </details>
 
 <details>
-<summary><b>What about firmware updates?</b></summary>
+<summary><b>А как же обновления прошивки?</b></summary>
 
-The updater is left on in most lists, so firmware updates arrive as usual. Some lists disable the
-TV's own updater, and on those a firmware update arrives only when you re-enable it. When one does
-land it installs over the cleaned-up system, so a package comes back and you re-run the script: see
-[After a firmware update](#after-a-firmware-update).
+Служба обновлений остается включенной в большинстве списков, поэтому обновления прошивки приходят как обычно. Некоторые списки отключают собственную службу обновлений телевизора, и в них обновление приходит только после того, как вы снова ее включите. Когда обновление все же устанавливается, оно ставится поверх очищенной системы, поэтому пакеты возвращаются, и вам нужно запустить скрипт заново: смотрите
+[После обновления прошивки](#После-обновления-прошивки).
 
 </details>
 
 <details>
-<summary><b>Won't the apps break?</b></summary>
+<summary><b>А приложения не сломаются?</b></summary>
 
-Streaming apps still update through the Play Store, which is left alone.
-The launcher just lists what is installed and launches it with intents that have been stable for a decade.
-
-</details>
-
-<details>
-<summary><b>How do I rearrange my apps?</b></summary>
-
-Hold OK on **Settings** (top right) and choose **Reorder apps**. OK picks an app up, the arrows move it,
-Back places it, and Back again finishes. Holding OK on a tile also offers **Move** (`tile_menu`, on by default), which
-picks that app up straight away. More: [docs/launcher.md](docs/launcher.md#launcher-settings-and-the-default-home)
+Стриминговые приложения по-прежнему обновляются через Play Store, который мы не трогаем.
+Лаунчер просто показывает список установленного и запускает его с помощью интентов, которые остаются стабильными уже десяток лет.
 
 </details>
 
 <details>
-<summary><b>Can I do this for someone in another home?</b></summary>
+<summary><b>Как изменить расположение приложений?</b></summary>
 
-Yes, over a private [Tailscale](https://tailscale.com)
-link instead of the same Wi-Fi: either Tailscale on their TV, shared with you, or a computer or Apple
-TV at their home routing to it. Never by opening the ADB port on their router. Step by step in
+Удерживайте кнопку OK в разделе **Настройки** (в правом верхнем углу) и выберите **Изменить порядок приложений**. Кнопка OK позволяет «подхватить» приложение, стрелки — переместить его,
+кнопка «Назад» — зафиксировать его на новом месте, а повторное нажатие «Назад» — завершить операцию. Если удерживать кнопку OK на плитке, также появится опция **Переместить** (`tile_menu`, включена по умолчанию),
+которая сразу позволяет «подхватить» соответствующее приложение. Подробнее: [docs/launcher.md](docs/launcher.md#launcher-settings-and-the-default-home)
+
+</details>
+
+<details>
+<summary><b>Могу ли я сделать это для кого-то в другом доме?</b></summary>
+
+Да, через приватную ссылку [Tailscale](https://tailscale.com)
+lвместо общей Wi-Fi сети: либо Tailscale на их телевизоре, расшаренный с вами, либо компьютер или Apple TV в их доме, маршрутизирующие трафик к нему. Никогда не делайте это, открывая ADB-порт на их роутере. Пошагово в
 [docs/REMOTE.md](docs/REMOTE.md).
 
 </details>
 
 <details>
-<summary><b>Isn't ADB access a security hole?</b></summary>
+<summary><b>Разве доступ ADB – не дыра в безопасности?</b></summary>
 
-It is one explicit "allow this computer" tap on the TV, the
-same as developing an Android app. Network ADB is plaintext on port 5555, and on some firmware any
-device on the LAN gets a shell, so close it when you are done:
+Это всего лишь одно явное нажатие «разрешить этому компьютеру» на телевизоре, точно такое же, как при разработке Android-приложения. Сетевой ADB передает данные в открытом виде на порту 5555, и в некоторых прошивках любое устройство в локальной сети получает доступ к shell, поэтому закройте его, когда закончите:
 
-1. On the TV: Developer options → turn **USB debugging**, **Network/ADB debugging** and
-   **Wireless debugging** off, whichever the TV has, and revoke the USB debugging authorisations.
-2. Reboot the TV, then confirm the port is gone from your computer:
-   `python3 tools/adb-closed.py <tv ip>` must say the port is closed.
-
-The launcher keeps working without debugging. More, including checking Wireless debugging's own port:
+1. На телевизоре: Для разработчиков → выключите **Отладка по USB**, **Отладка по сети/ADB** и
+   **Беспроводная отладка**, в зависимости от того, что есть на телевизоре, и отзовите разрешения на отладку по USB.
+2. Перезагрузите телевизор, затем убедитесь с компьютера, что порт закрыт:
+   `python3 tools/adb-closed.py <tv ip>` должен сообщить, что порт закрыт.
+   
+Лаунчер продолжает работать без отладки. Подробнее, включая проверку собственного порта беспроводной отладки:
 [docs/faq.md](docs/faq.md#isnt-adb-access-a-security-hole)
 
 </details>
 
 <details>
-<summary><b>Can it block ads inside apps too?</b></summary>
+<summary><b>Реклама внутри приложений тоже блокируется?</b></summary>
 
-Partly, with Android's Private DNS (Android 9 and newer). Point
-it at an ad-blocking resolver such as [AdGuard DNS](https://adguard-dns.io) and every app's ad and
-tracker domains stop resolving, system-wide, surviving reboots. The trade-off: that resolver then
-sees every DNS query the TV makes, and it does not remove YouTube ads.
+Частично, с помощью Приватного DNS в Android (Android 9 и выше). Укажите в нем блокирующий рекламу резолвер, такой как [AdGuard DNS](https://adguard-dns.io), и домены рекламы и трекеров всех приложений перестанут резолвиться на уровне всей системы, сохраняясь после перезагрузок. Обратная сторона: этот резолвер будет видеть каждый DNS-запрос, который делает телевизор, и это не убирает рекламу в YouTube.
 
-More, with the two commands and how to switch back: [docs/faq.md](docs/faq.md#can-it-block-ads-inside-apps-too)
+Подробнее, с двумя командами и тем, как вернуть все обратно: [docs/faq.md](docs/faq.md#can-it-block-ads-inside-apps-too)
 
 </details>
 
 <details>
-<summary><b>Are there switches in the TV's own Settings worth flipping too?</b></summary>
+<summary><b>Есть ли в настройках самого телевизора какие-то переключатели, которые тоже стоит активировать?</b></summary>
 
-A few, and they need no ADB: the advertising ID, Location, Usage & diagnostics and Scanning always
-available, plus Apps only mode where the stock launcher stays. Flip Usage & diagnostics before the
-debloat; on some TVs its page goes with it.
+Кое-что – и для этого ADB не требуется: рекламный идентификатор, «Местоположение», «Использование и диагностика» и «Сканирование всегда доступно», а еще режим «Только приложения», где штатный лончер остается. Переключите «Использование и диагностика» до уборки: на некоторых телевизорах страница исчезает вместе с ним.
 
-More, with the paths for Google TV, Android TV and Fire OS:
+Более того, с путями для Google TV, Android TV и Fire OS:
 [docs/faq.md](docs/faq.md#are-there-switches-in-the-tvs-own-settings-worth-flipping-too)
 
 </details>
@@ -421,33 +404,25 @@ More, with the paths for Google TV, Android TV and Fire OS:
 <details>
 <summary><b>AirPlay?</b></summary>
 
-Not from this repo. Chromecast built-in stays for Android phones. For iPhones,
-[jqssun/android-airplay-server](https://github.com/jqssun/android-airplay-server) works; an install
-script for it is in [PR #84](https://github.com/Gathin23/cleanyourtv/pull/84).
+Не из этого репозитория. Встроенный Chromecast остается для Android-смартфонов. Для iPhone работает
+[jqssun/android-airplay-server](https://github.com/jqssun/android-airplay-server); скрипт для его установки есть в [PR #84](https://github.com/Gathin23/cleanyourtv/pull/84).
 
 </details>
 
 <details>
-<summary><b>Can I just download the APK?</b></summary>
+<summary><b>Могу ли я просто скачать APK?</b></summary>
 
-Build it with the one-line script in [Doing it by hand](#doing-it-by-hand); it takes a minute and you
-control what goes on your TV. That needs the JDK and Android SDK named there. No prebuilt binaries.
+Соберите его с помощью однострочного скрипта в разделе [Ручная настройка](#Ручная-настройка); это займет минуту, и вы будете контролировать, что попадает на ваш телевизор. Для этого нужны JDK и Android SDK, указанные там. Готовых бинарников нет.
 
 </details>
 
 ## The story
 
-On 17 October 2026 I posted [a before and after](https://x.com/gathint/status/2111379569030939102) of my
-parents' TV, cleaned up by Claude Code over Wi-Fi. It reached 8.6M views, people started doing the same to
-their own TVs, and their replies turned into the lists here: 170+ TV models from 200+ contributors in the
-first four days. The repo was called tv-vibehack until the 19th; old links work.
+17 октября 2026 года я опубликовал [До и После](https://x.com/gathint/status/2111379569030939102) телевизора своих родителей, очищенного Claude Code через Wi-Fi. Это собрало 8,6 млн просмотров, люди начали делать то же самое со своими телевизорами, и их ответы превратились в списки здесь: 170+ моделей телевизоров от 200+ участников за первые четыре дня. До 19-го репозиторий назывался tv-vibehack; старые ссылки работают.
 
-Two weeks on, it was the #1 trending repository on GitHub for the week of 19–25 October, with over 46K stars
-and 5.7K forks, and 1.4M views and 260K clones in 14 days. The lists now cover 427 TV models from 111 brands.
-The coverage: 412 articles from 54 countries and 229 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
-(numbers as of 30 October 2026).
+Через две недели репозиторий стал №1 в трендах GitHub за неделю 19–25 октября: более 46 тыс. звезд и 5,7 тыс. форков, 1,4 млн. просмотров и 260 тыс. клонов за 14 дней. Теперь списки включают 427 моделей телевизоров от 111 брендов. Публикации: 412 статей из 54 стран и 229 видео на YouTube и Bilibili, все в [docs/PRESS.md](docs/PRESS.md) (на 30 октября 2026 года).
 
-## Contributing
+## Участие в проекте
 
 The most useful contribution is your TV's debloat list, so the next person with that model does
 not have to rediscover it. [CONTRIBUTING.md](CONTRIBUTING.md) has the format and the testing we ask for.
