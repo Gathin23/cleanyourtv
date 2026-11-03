@@ -49,7 +49,7 @@ cleanyourtv.com, не имеют отношения к данному проек
 | Шаг | Что происходит |
 |---|---|
 | **Резервное копирование** | Список установленных пакетов и настроек. |
-| **Отключение*** | Отключаются телеметрия производителя, рекламные сервисы, ряды контента и предустановленный мусор с помощью `pm disable-user`. Ничего не удаляется, поэтому скрипт восстановления может отменить любое действие. |
+| **Отключение** | Отключаются телеметрия производителя, рекламные сервисы, ряды контента и предустановленный мусор с помощью `pm disable-user`. Ничего не удаляется, поэтому скрипт восстановления может отменить любое действие. |
 | **Установка** | Небольшой специальный лаунчер, установленный в качестве главного экрана по умолчанию. |
 
 **Без root-прав и кабеля, ничего не удаляется, и восстановление одной командой, если вы передумаете.**
@@ -275,26 +275,24 @@ TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt com.google.
 
 | Что | Как |
 |---|---|
-| **A record comes first** | Before `tools/disable.sh` changes anything it writes down what the TV looked like, in `~/.cleanyourtv/`. |
-| **Restore replays it** | A package you had disabled yourself stays disabled, and Home goes back to the component that owned it. |
-| **The launcher stays installed** | Remove it from the TV's Settings → Apps if you want it gone. |
-| **No computer?** | If the TV is unreachable, its own Settings → Apps page can re-enable packages too. |
+| **Сначала создается журнал** | Перед тем как `tools/disable.sh` что-то изменит, он записывает, как выглядел телевизор, в `~/.cleanyourtv/`. |
+| **Восстановление воспроизводит его** | Пакет, который вы отключили сами, останется отключенным, а HOME вернется к тому компоненту, который владел им. |
+| **Лаунчер остается установленным** | Удалите его через Настройки телевизора → Приложения, если хотите избавиться от него. |
+| **Нет компьютера?** | Если телевизор недоступен, его собственная страница Настройки → Приложения тоже может снова включить пакеты. |
 
-**More:** [docs/restore.md](docs/restore.md) has what the record holds, when the stock launcher argument
-counts, and what happens without a record.
+**Подробнее:** [docs/restore.md](docs/restore.md) описывает, что хранится в журнале, когда важен аргумент стандартного лаунчера и что происходит без журнала.
 
-## After a firmware update
+## После обновления прошивки
 
-An update installs over the cleaned-up system: the listed packages come back, Home goes to the
-stock launcher, and new preloads appear that no list mentions. Open ADB again as in
-[Quick start](#quick-start) step 1, then compare the TV with the list you applied; `--fix` puts it back:
+Обновление устанавливается поверх очищенной системы: перечисленные пакеты возвращаются, HOME переходит на стандартный лаунчер, и появляются новые предустановленные приложения, которых нет ни в одном списке. Снова откройте ADB, как в шаге 1
+[Quick start](#quick-start), затем сравните телевизор с примененным списком; `--fix` вернет все на место:
 
 ```bash
 TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/debloat.txt
 ```
 
-**More:** [docs/firmware-updates.md](docs/firmware-updates.md) has the exit codes, a weekly check, what
-`--fix` changes, TVs that keep the stock launcher as Home, and lists that disable the updater.
+**Подробнее:** [docs/firmware-updates.md](docs/firmware-updates.md) содержит коды завершения, еженедельную проверку, что меняет
+`--fix`, телевизоры, которые оставляют стандартный лаунчер в качестве HOME, и списки, отключающие службу обновлений.
 
 ## When something goes wrong
 
