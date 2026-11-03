@@ -14,6 +14,14 @@ final class Prefs {
         return ctx.getSharedPreferences("settings", Context.MODE_PRIVATE);
     }
 
+    static String standbySetting(Context ctx) {
+        return prefs(ctx).getString("standby_setting", "");
+    }
+
+    static void setStandbySetting(Context ctx, String key) {
+        prefs(ctx).edit().putString("standby_setting", key == null ? "" : key).apply();
+    }
+
     static boolean enabled(Context ctx) {
         return prefs(ctx).getBoolean("enabled", true);
     }

@@ -1,0 +1,5 @@
+<resources>
+    <string name="shizuku_ready">Shizuku connesso · controllo alimentazione via ADB</string>
+    <string name="shizuku_allow">Consenti il controllo tramite Shizuku</string>
+    <string name="shizuku_start">Avvia Shizuku · riavvialo dopo il riavvio della TV</string>
+</resources>

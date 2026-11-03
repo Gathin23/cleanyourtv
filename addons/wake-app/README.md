@@ -92,3 +92,29 @@ Then press Home and answer **Show card** if you want the card; Keep hidden leave
   channel.
 - Philco Smart TV by Skyworth (sunnyvale, MediaTek, Android TV 14), launcher 3.1: opening tinyCam by itself on
   waking from standby, and not opening it with the overlay grant revoked (see Permissions). Not tried on a TCL set.
+
+## Screen-only standby
+
+Some TVs turn off the backlight without sending Android SCREEN_ON. The existing shell-protected
+WatchService accepts `--es standby_setting <global setting name>` to observe a vendor flag: 1 is
+standby, 0 is awake. Empty removes the observer. The setting is saved across service restarts.
+The normal app picker, On/Off switch and delay apply to both wake sources. No new permission,
+network access or polling is used.
+
+On DEXP 43UCY1 with CVTE/Yandex firmware, use `--es standby_setting IS_FAKE_STANDBY_STATUS`
+with native `fake_standby_switch=true`. Launch waits at least 800 ms for the native black-screen
+activity to finish its delayed Back key.
+
+Configure an installed Wake App through an authorized ADB session, replacing the target package:
+
+```sh
+python tools/tv.py 'am start-foreground-service -n io.github.luyzfernando08.wakeapp/.WatchService --es app de.ozerov.fully --es standby_setting IS_FAKE_STANDBY_STATUS'
+```
+
+The observer is off by default. To remove it, pass an empty `standby_setting` extra to the same
+service; ordinary `SCREEN_ON` handling remains available. It observes the flag but never enables
+native standby or writes its state. The app picker still controls which app opens.
+
+Verified on DEXP 43UCY1, Android 11, firmware RP1A.200720.011 dev-keys: the real remote turned the
+screen off and on and Fully Kiosk reopened. Two one-off [Sleep Timer](../sleep-timer/#optional-shizuku-connection)
+Shizuku sleep/wake cycles also reopened it. No new permission, dependency or launcher change is required.
