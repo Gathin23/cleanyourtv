@@ -44,6 +44,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `clock_wallpaper` | <img src="switches/clock_wallpaper.jpg" width="320" alt="clock_wallpaper on a TV"> |
 | `clock_wallpaper_dim` | <img src="switches/clock_wallpaper.jpg" width="320" alt="clock_wallpaper_dim on a TV"> |
 | `clock_glow` | <img src="switches/clock_glow.jpg" width="320" alt="clock_glow on a TV"> |
+| `clock_brightness` | <img src="switches/clock_brightness.jpg" width="320" alt="clock_brightness on a TV"> |
 | `open_on_start_choice` | <img src="switches/open_on_start_choice.jpg" width="320" alt="open_on_start_choice on a TV"> |
 | `open_on_start_network_wait` | <img src="switches/open_on_start_network_wait.jpg" width="320" alt="open_on_start_network_wait on a TV"> |
 | `open_on_start_on_wake` | <img src="switches/open_on_start_on_wake.jpg" width="320" alt="open_on_start_on_wake on a TV"> |

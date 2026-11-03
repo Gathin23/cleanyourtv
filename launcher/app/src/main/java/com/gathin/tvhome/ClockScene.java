@@ -33,6 +33,10 @@ import java.util.Set;
  */
 final class ClockScene {
 
+    static float parseAlpha(int brightness) {
+        return Math.max(0.1f, Math.min(1.0f, brightness / 100.0f));
+    }
+
     private static final long MOVE_MS = 60_000L;
     /** The glow's colour change: 16 steps over 8 s. Animated per frame it redrew the full-screen gradient ~480 times. */
     private static final int GLOW_STEPS = 16;
@@ -43,6 +47,7 @@ final class ClockScene {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
     private final View content;
+    private float clockAlpha = 1f;
     private final ClockRefresh clockRefresh;
     private final ImageView ambient;
     private final GradientDrawable glow;
@@ -92,7 +97,7 @@ final class ClockScene {
         content.setAlpha(0f);
         content.post(() -> {
             placeClock();
-            content.animate().alpha(1f).setDuration(1200).start();
+            content.animate().alpha(clockAlpha).setDuration(1200).start();
         });
         handler.removeCallbacks(tick);
         handler.postDelayed(tick, MOVE_MS);
@@ -121,6 +126,8 @@ final class ClockScene {
         } catch (RuntimeException e) {
             return;
         }
+        clockAlpha = parseAlpha(cfg.clockBrightness);
+        setGlow(PALETTE[colorIndex]);
         if (!cfg.clockWallpaper) {
             // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
             if (!cfg.clockGlow) {
@@ -230,7 +237,7 @@ final class ClockScene {
     private void moveClock() {
         content.animate().alpha(0f).setDuration(900).withLayer().withEndAction(() -> {
             placeClock();
-            content.animate().alpha(1f).setDuration(1200).withLayer().start();
+            content.animate().alpha(clockAlpha).setDuration(1200).withLayer().start();
         }).start();
     }
 
@@ -264,6 +271,8 @@ final class ClockScene {
     private void setGlow(int color) {
         glowColor = color;
         int c = color & 0x00FFFFFF;
-        glow.setColors(new int[]{0x40000000 | c, 0x14000000 | c, 0x00000000 | c});
+        int a1 = Math.round(0x40 * clockAlpha);
+        int a2 = Math.round(0x14 * clockAlpha);
+        glow.setColors(new int[]{(a1 << 24) | c, (a2 << 24) | c, 0x00000000 | c});
     }
 }
