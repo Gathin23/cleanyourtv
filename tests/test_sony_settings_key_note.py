@@ -6,13 +6,15 @@ the press arrives and nothing opens - `WindowManager` logs
 `mShortPressOnSettingsBehavior=SHORT_PRESS_SETTINGS_NOTHING` - while Sony's own ribbon still opens when
 its activity is started by hand. An owner who reads the keycode bullet above this one goes looking for
 a scancode to add, so the page carries both halves of the answer: everything the launcher's own settings
-keys do ends in `Settings.ACTION_SETTINGS`, with `settings_fallback_components` consulted only when that
-action resolves to nothing - while an `app_keys` `scan:` entry is answered before that branch and opens
-the activity it names.
+keys do ends in `Settings.ACTION_SETTINGS` - or, where the firmware's settings are a service
+(`settings_service` in a theme's `config.json`), that service - with `settings_fallback_components`
+consulted only when the action resolves to nothing - while an `app_keys` `scan:` entry is answered before
+that branch and opens the activity it names.
 
 Documentation only. These tests pin the words a reader acts on, and the four things in the launcher
 that make the answer true, so the page cannot claim it after the code changes:
-`HomeKeyService` taking `KEYCODE_SETTINGS`, the two targets its settings branch opens,
+`HomeKeyService` taking `KEYCODE_SETTINGS`, the three targets its settings branch opens (the launcher's
+own panel, the configured vendor settings service, the standard action),
 `SystemSettings` preferring the standard action over the vendor list, and the order in which
 `onKeyEvent()` asks the app-scancode map, the settings branch and the app-keycode map.
 """
@@ -146,9 +148,12 @@ class SonySettingsKeyNoteTest(unittest.TestCase):
         self.assertLess(is_settings, self.home_keys.index("if (isSettingsKey(event)) {", on_key))
 
     def test_the_settings_branch_opens_the_settings_action_or_the_panel(self):
-        # What the press can become: Settings.ACTION_SETTINGS through SystemSettings, or the launcher's
-        # own panel. An arbitrary vendor activity is not one of the choices here.
-        self.assertIn("settingsPanel ? new Intent(this, QuickSettingsActivity.class)", self.home_keys)
+        # What the press can become: the launcher's own panel, or Settings.ACTION_SETTINGS through
+        # SystemSettings - or, where the firmware's settings are a service (settings_service in a theme's
+        # config.json), that service. An arbitrary vendor activity is not one of the choices here.
+        self.assertIn("new Intent(this, QuickSettingsActivity.class)", self.home_keys)
+        self.assertIn("SystemSettings.startSettingsService(this, settingsService, settingsServiceAction",
+                      self.home_keys)
         self.assertIn("SystemSettings.intent(this, Settings.ACTION_SETTINGS)", self.home_keys)
 
     def test_the_vendor_list_is_only_read_when_the_action_resolves_to_nothing(self):
