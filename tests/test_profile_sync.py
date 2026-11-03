@@ -70,6 +70,26 @@ class SyncTest(unittest.TestCase):
         self.assertIn("pm disable-user --user 0 com.google.android.feedback",
                       self.h.commands(TARGET))
 
+    def test_a_core_package_in_the_profile_is_refused_and_the_rest_still_applies(self) -> None:
+        """A profile is hand-editable data, and a core package in it must never reach the TV (#884)."""
+        (self.h.profile / "debloat.txt").write_text(
+            "# disabled\ncom.android.systemui\ncom.google.android.feedback\n")
+        master = self.h.state(MASTER)
+        master["disabled"] = ["com.android.systemui", "com.google.android.feedback"]
+        self.h.put(MASTER, master)
+        target = self.h.state(TARGET)
+        target["disabled"] = []
+        target["installed"].append("com.android.systemui")
+        self.h.put(TARGET, target)
+
+        result = self.h.run("sync", str(self.h.profile), "--source", MASTER, "--apply", host=TARGET)
+
+        self.assertIn("refusing to disable", result.stderr)
+        self.assertIn("com.android.systemui", result.stderr)
+        commands = self.h.commands(TARGET)
+        self.assertNotIn("pm disable-user --user 0 com.android.systemui", commands)
+        self.assertIn("pm disable-user --user 0 com.google.android.feedback", commands)
+
     def test_a_package_only_on_the_target_is_reported_and_left_alone(self):
         result = self.h.run("sync", str(self.h.profile), "--source", MASTER, host=TARGET)
         self.assertEqual(result.returncode, 1)

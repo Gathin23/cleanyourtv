@@ -209,6 +209,7 @@ class Harness:
 
     def run(self, *args, host=MASTER):
         shutil.copy2(ROOT / "tools" / "profile.py", self.tools / "profile.py")
+        shutil.copy2(ROOT / "tools" / "recovery.py", self.tools / "recovery.py")
         env = dict(os.environ, TV_HOST=host, FAKE_TV_STATES=str(self.states), HOME=str(self.home))
         return subprocess.run([sys.executable, str(self.tools / "profile.py"), *args],
                               cwd=self.repo, env=env, capture_output=True, text=True, timeout=120)

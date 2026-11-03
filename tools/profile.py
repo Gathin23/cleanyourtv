@@ -27,6 +27,8 @@ if sys.argv[1:2] and sys.argv[1] in ("-h", "--help"):
     sys.exit(0)
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, TOOLS)
+import recovery  # noqa: E402  (tools/ is not a package; recovery owns the core-package guard)
 APPS = "apps.txt"
 DEBLOAT = "debloat.txt"
 HEADER = "profile.json"
@@ -218,6 +220,12 @@ def sync(directory, source_host, apply):
     profile = read_profile(directory)
     source, target = read_tv(source_host), read_tv()
     installable, disable, enable = plan(profile, source, target)
+    refused = recovery.core_packages(disable)
+    if refused:
+        # A profile is hand-editable data: never let one carry a package Android needs to boot (#884).
+        print(f"refusing to disable the packages Android needs to boot ({len(refused)}): "
+              f"{', '.join(refused)}", file=sys.stderr)
+        disable = [p for p in disable if p not in refused]
     only_here = [p for p in target["third_party"] if p not in profile[0]]
     if only_here:
         print(f"only on this unit ({len(only_here)}): {', '.join(only_here)} (left alone)")
