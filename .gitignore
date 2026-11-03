@@ -21,3 +21,9 @@ backup/
 *.aab
 launcher/hs_err_pid*.log
 launcher/replay_pid*.log
+
+# Screen recording & inspection helper scripts
+do_recording.py
+inspect_all_seconds.swift
+run_navigation.sh
+
