@@ -81,19 +81,20 @@ pm query-services --components -a android.media.tv.TvInputService
 which lists only `com.tpv.tvinput`'s six services (tuner, HDMI, VGA, composite, component, SCART)
 and not usagelogger. Disabling it needs `TVINPUT_ALLOW=1`. Same as `examples/cecotec-shandao`.
 
-On the 17 packages in the list, usagelogger is the only one the guard catches: the other packages
-that mention the permission hold it as an *installed* permission, not as a requested one.
+On the 15 packages the list applies, usagelogger is the only one the guard catches: the other
+packages that mention the permission hold it as an *installed* permission, not as a requested one.
 
 ## What was disabled
 
-17 packages, in three groups — the four the owner picked off the home screen, the background
-services, and the upgraders:
+17 packages on the tested set, in three groups — the four the owner picked off the home screen, the
+background services, and the upgraders. The shipped list applies 15 of them: its header keeps the two
+firmware upgraders commented, so the group table below marks the two that a run leaves alone.
 
 | Group | Packages |
 | :--- | :--- |
 | Casting, camera, video call, smart home | `com.tpv.asc.aiot` (智能连接), `com.hpplay.happyplay.aw` (乐播投屏), `org.droidtv.camera.cn` (相机), `com.tpv.asc.videocall.cn` (视频通话) |
 | Telemetry, ads, background services | `tv.fun.bugreporter`, `org.droidtv.usagelogger`, `com.tpv.asc.taadserver`, `com.tianci.ad`, `com.tpv.app.recommendation`, `com.funshion.publicity`, `tv.fun.master`, `tv.fun.ottsecurity`, `tv.newtv.loginservice` |
-| Store and upgraders | `tv.fun.tvupgrade`, `tv.fun.appstore`, `tv.fun.sdkmanager`, `com.tpv.xmic.ota` |
+| Store and upgraders | `tv.fun.tvupgrade` (a comment in the list), `tv.fun.appstore`, `tv.fun.sdkmanager`, `com.tpv.xmic.ota` (a comment in the list) |
 
 The preinstalled content apps (芒果TV, 银河奇异果, QQ音乐, 欢视直播, 百视通, 酷开, 云视听小电视,
 欢唱K歌, 云视听极光, NewTV音乐, NewTV体育, IPTV运营商点播), the voice assistant, WeChat casting and
@@ -137,7 +138,9 @@ Applied with `tools/disable.sh`, then the launcher handover, then a reboot:
 TV_HOST=<tv ip> tools/restore.sh examples/philips-50puf7099-t3/debloat.txt com.bestv.ott
 ```
 
-Re-enables the 17 packages. Home then needs pointing back at the stock launcher:
+Re-enables the 15 packages the list applies. The two firmware upgraders are comments, so the shipped
+list never disabled them and this undo leaves them alone (as it does for any line you commented out
+before applying it). Home then needs pointing back at the stock launcher:
 
 ```sh
 cmd package set-home-activity --user 0 com.bestv.ott/.home.HomeActivity
