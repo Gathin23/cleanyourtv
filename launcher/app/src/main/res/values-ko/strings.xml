@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">홈</string>
+    <string name="app_name">클린 홈</string>
     <string name="inputs">입력</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">설정</string>

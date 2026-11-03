@@ -13,6 +13,15 @@
         android:scaleType="centerCrop"
         android:importantForAccessibility="no" />
 
+    <!-- Cinematic vignette: darkens the edges so the glow reads as a light source rather than a wash. A
+         static drawable, drawn once, so it costs nothing per frame. -->
+    <View
+        android:id="@+id/dreamVignette"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/dream_vignette"
+        android:importantForAccessibility="no" />
+
     <LinearLayout
         android:id="@+id/dreamContent"
         android:layout_width="wrap_content"
@@ -31,15 +40,15 @@
                 android:format12Hour="h:mm"
                 android:format24Hour="HH:mm"
                 android:textColor="#E6FFFFFF"
-                android:textSize="120sp"
+                android:textSize="132sp"
                 android:fontFamily="@string/font_extralight"
-                android:letterSpacing="-0.04"
+                android:letterSpacing="0.04"
                 android:includeFontPadding="false" />
 
             <TextClock
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="12dp"
                 android:format12Hour="a"
                 android:format24Hour=""
                 android:textColor="#99FFFFFF"
@@ -52,14 +61,28 @@
         <TextClock
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="6dp"
             android:format12Hour="@string/date_format"
             android:format24Hour="@string/date_format"
             android:textColor="#8CFFFFFF"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:fontFamily="@string/font_regular"
-            android:letterSpacing="0.14"
+            android:letterSpacing="0.22"
             android:textAllCaps="true" />
+
+        <!-- The weather reading under the date (config.xml weather_provider); hidden until one arrives. -->
+        <TextView
+            android:id="@+id/dreamWeather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="3dp"
+            android:fontFamily="@string/font_regular"
+            android:letterSpacing="0.06"
+            android:singleLine="true"
+            android:textColor="#99FFFFFF"
+            android:textSize="15sp"
+            android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

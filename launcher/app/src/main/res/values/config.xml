@@ -15,12 +15,19 @@
         <item>com.amazon.tv.launcher/com.amazon.tv.launcher.ui.MainSettingsActivity</item>
     </string-array>
 
+    <!-- Package of a helper app that publishes the weather line under the date. Its content provider
+         content://<package>/today must answer one row with a "line" column ("Brisbane 21° Partly cloudy").
+         The launcher has no INTERNET permission and never fetches: the provider answers from its own cache,
+         so the last reading shows at once after a reboot, and a dash until the first one arrives.
+         Empty: no weather line. -->
+    <string name="weather_provider" translatable="false">io.github.sumyabazar1.weatherline</string>
+
     <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->
     <string-array name="dock_apps">
-        <item>com.netflix.ninja</item>
-        <item>com.amazon.amazonvideo.livingroom</item>
+        <item>org.smarttube.stable</item>
+        <item>com.tcl.browser</item>
         <item>com.google.android.youtube.tv</item>
-        <item>in.startv.hotstar</item>
+        <item>com.netflix.ninja</item>
     </string-array>
     <!-- With fewer dock_apps than columns (or a dock app that is not installed), the free dock slots take
          the first grid apps, so the dock never shows a gap. false leaves them empty (#162); a theme can
@@ -31,10 +38,11 @@
     <string-array name="hidden_apps">
         <item>com.mediatek.wwtv.tvcenter</item>
         <item>com.mitv.gallery</item>
+        <item>com.tcl.tv</item>
     </string-array>
 
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. Leave empty to omit. -->
-    <string name="live_tv_package" translatable="false">com.mediatek.wwtv.tvcenter</string>
+    <string name="live_tv_package" translatable="false">com.tcl.tv</string>
 
     <!-- Open the Live TV app above the first time Home comes up after the TV is switched on, for sets that are
          mostly used for broadcast TV. Once per boot: Home after that stays Home. Can also be set with
@@ -166,11 +174,12 @@
          a temporary `Log.d` in the helper's `onKeyEvent`: `getKeyCode()`, `getScanCode()`, `getDeviceId()`, read
          after a HOME_KEY_SERVICE=1 rebuild. Leave empty to omit. -->
     <integer-array name="settings_key_keycodes">
+        <item>83</item>
     </integer-array>
     <!-- What those Settings buttons open: false, the TV's Settings; true, a small glass panel at the top right
          with TV settings, Display, Network, Apps (re-enable an app) and Launcher settings, over whatever is on screen.
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
-    <bool name="settings_key_panel">false</bool>
+    <bool name="settings_key_panel">true</bool>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
@@ -184,6 +193,7 @@
          app each such "global key" was routed to. Check with the real remote: keys injected over ADB never
          reach InputKeyService. Leave empty to omit. -->
     <integer-array name="input_key_keycodes">
+        <item>4514</item>
     </integer-array>
     <!-- Answer the system input switcher (com.android.tv.action.VIEW_INPUTS) with the Inputs menu. For TVs whose
          stock launcher was the only handler of that action, so the remote's Input button does nothing once the
@@ -220,6 +230,12 @@
          where the firmware hands KEYCODE_GUIDE (172) to the stock launcher and no app ever receives it. Leave empty
          to omit. -->
     <string-array name="app_keys" translatable="false">
+        <item>4062:com.netflix.ninja</item>
+        <item>190:com.google.android.youtube.tv</item>
+        <item>4001:guide:com.tcl.tv</item>
+        <item>4020:com.tcl.channelplus/com.tcl.live.ui_play.PlayActivity</item>
+        <item>4099:com.amazon.amazonvideo.livingroom</item>
+        <item>288:com.android.tv.settings/.accounts.AccountSyncActivity</item>
     </string-array>
 
     <!-- Package of the stock launcher, for TVs whose firmware turns it back on after it was disabled. XGIMI's
@@ -478,7 +494,7 @@
          colour; the shelf gets a larger name, a "Last opened" line (from the apps Home opened) and dock position
          dots, the focus glow takes the app's colour and the dock band turns translucent. false keeps the plain
          shelf. Can also be set with "cinematic_home": true in a theme's config.json. -->
-    <bool name="cinematic_home">false</bool>
+    <bool name="cinematic_home">true</bool>
     <!-- With cinematic_home, false leaves out the dock position dots under the app's name, for a quieter shelf. Can
          also be set with "cinematic_dots": false in a theme's config.json. -->
     <bool name="cinematic_dots">true</bool>
@@ -501,10 +517,10 @@
          instead of dimming and fading back in. Each frame of that fade repaints the whole screen, about 40 per key
          press, which a slow GPU such as the Mali-G52 cannot keep up with. Can also be set with "glow_snap" in a
          theme's config.json. -->
-    <bool name="glow_snap">false</bool>
+    <bool name="glow_snap">true</bool>
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
-    <bool name="app_glow">false</bool>
+    <bool name="app_glow">true</bool>
     <!-- The rows fade out as they scroll up under the clock, instead of being cut off at a hard line (TopFade).
          The grid then draws into a hardware layer, about 6 MB of graphics memory at 1080p, so it is off by default.
          Can also be set with "fade_rows": true in a theme's config.json. -->

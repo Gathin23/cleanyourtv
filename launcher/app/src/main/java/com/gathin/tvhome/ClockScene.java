@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -41,11 +42,19 @@ final class ClockScene {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
+    private final View root;
     private final View content;
     private final ImageView ambient;
     private final GradientDrawable glow;
     private int colorIndex;
     private int glowColor;
+    /** The weather reading's phrase ("rain"), and the poller behind it; "" and null without a provider. */
+    private String condition = "";
+    private WeatherLine weather;
+    /** Whether the composed lower-left placement has been made; the rest of the night drifts around it. */
+    private boolean placed;
+    /** Whether a reading has set the glow already, so the first one does not fade in from the palette. */
+    private boolean weatherSeen;
     /** clock_wallpaper or clock_glow false: something else (a picture, or plain black) replaced the coloured glow. */
     private boolean wallpaperShown;
     /** clock_wallpaper: the picture start() decodes, its darkening, and the resources to draw it with. */
@@ -60,7 +69,8 @@ final class ClockScene {
     private long shownMs;
     private String order;
     private Map<String, Set<String>> moods;
-    private String latitude, longitude;
+    /** The place for the glow's sunrise and sunset, and the weather helper, both from useHomeWallpaper's config load. */
+    private String latitude = "", longitude = "", weatherProvider = "";
 
     private final Runnable tick = new Runnable() {
         @Override
@@ -74,15 +84,18 @@ final class ClockScene {
 
     /** root is the inflated dream_clock layout. */
     ClockScene(View root) {
+        this.root = root;
         content = root.findViewById(R.id.dreamContent);
         ambient = root.findViewById(R.id.dreamAmbient);
         glow = new GradientDrawable();
         glow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
         ambient.setBackground(glow);
         ambient.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) ->
-                glow.setGradientRadius((r - l) * 0.55f));
+                glow.setGradientRadius((r - l) * 0.85f));   // a wide, soft light rather than a spotlight
         colorIndex = random.nextInt(PALETTE.length);
-        setGlow(PALETTE[colorIndex]);
+        // No colour yet: with a weather provider the first reading sets one (a reading is async, so painting the
+        // palette here made the glow start bright and then jump to the weather colour). Without one, start() paints
+        // the palette below.
     }
 
     void start() {
@@ -94,12 +107,51 @@ final class ClockScene {
         handler.removeCallbacks(tick);
         handler.postDelayed(tick, MOVE_MS);
         if (wallpaperFile != null && !wallpaperShown) loadWallpaper();
+        startWeather();
+        // No provider (or no view to fill): the scene keeps its own palette, as before.
+        if (weather == null) setGlow(PALETTE[colorIndex]);
     }
 
     void stop() {
+        stopWeather();
         handler.removeCallbacksAndMessages(null);   // the tick and any glow steps still queued
         content.animate().cancel();
         wallpaperGeneration++;   // a decode still running must not attach its picture to a stopped scene
+    }
+
+    /**
+     * The weather line under the date, and the glow's colour, both from the helper that publishes the reading
+     * (config.xml weather_provider). Nothing is fetched here: the launcher has no INTERNET permission, so this
+     * reads the provider's cached line exactly as Home's weather line does.
+     */
+    private void startWeather() {
+        TextView view = root.findViewById(R.id.dreamWeather);
+        if (view == null || weatherProvider.isEmpty()) return;
+        weather = new WeatherLine(view, weatherProvider, handler);
+        weather.format(line -> {
+            String emoji = ClockGlow.emoji(ClockGlow.condition(line));
+            return emoji.isEmpty() ? line : emoji + " " + line;
+        });
+        weather.onReading(line -> {
+            String found = ClockGlow.condition(line);
+            if (found.equals(condition)) return;      // the reading has not changed the sky
+            condition = found;
+            if (!weatherSeen) {
+                // The first reading: take the colour at once, rather than starting on the palette and fading.
+                weatherSeen = true;
+                int colour = targetGlow();
+                if (colour != 0) setGlow(colour);
+                return;
+            }
+            shiftGlow();
+        });
+        weather.start();
+    }
+
+    private void stopWeather() {
+        if (weather == null) return;
+        weather.shutdown();
+        weather = null;
     }
 
     /**
@@ -116,6 +168,11 @@ final class ClockScene {
         } catch (RuntimeException e) {
             return;
         }
+        // The place decides the glow's time of day (and wallpaper_moods, when there is a collection), so it is
+        // read whatever the clock is drawing behind it; the config load is shared with the weather line below.
+        latitude = ctx.getString(R.string.latitude);
+        longitude = ctx.getString(R.string.longitude);
+        weatherProvider = cfg.weatherProvider == null ? "" : cfg.weatherProvider.trim();
         if (!cfg.clockWallpaper) {
             // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
             if (!cfg.clockGlow) {
@@ -141,8 +198,6 @@ final class ClockScene {
             rotationMs = cfg.wallpaperRotationMinutes * 60_000L;
             order = cfg.wallpaperOrder;
             moods = cfg.wallpaperMoods;
-            latitude = moods.isEmpty() ? "" : ctx.getString(R.string.latitude);
-            longitude = moods.isEmpty() ? "" : ctx.getString(R.string.longitude);
         }
         wallpaperShade = (cfg.clockWallpaperDim * 255 / 100) << 24;
         wallpaperRes = ctx.getResources();
@@ -229,13 +284,25 @@ final class ClockScene {
         }).start();
     }
 
-    /** A random spot that keeps the whole clock on screen, with the glow centred behind it. */
+    /**
+     * A spot that keeps the whole clock on screen, with the glow centred behind it. The first placement is the
+     * composed lower-left stamp; after that it drifts within the lower half, so the look holds and the clock still
+     * moves every minute for the panel's sake.
+     */
     private void placeClock() {
         View parent = (View) content.getParent();
         int maxX = Math.max(0, parent.getWidth() - content.getWidth());
         int maxY = Math.max(0, parent.getHeight() - content.getHeight());
-        float x = maxX * (0.1f + 0.8f * random.nextFloat());
-        float y = maxY * (0.1f + 0.8f * random.nextFloat());
+        float x;
+        float y;
+        if (!placed) {
+            placed = true;
+            x = maxX * 0.07f;
+            y = maxY * 0.72f;
+        } else {
+            x = maxX * (0.05f + 0.5f * random.nextFloat());
+            y = maxY * (0.5f + 0.33f * random.nextFloat());
+        }
         content.setX(x);
         content.setY(y);
         if (parent.getWidth() > 0 && parent.getHeight() > 0) {
@@ -248,7 +315,8 @@ final class ClockScene {
         if (wallpaperShown) return;
         int from = glowColor;
         colorIndex = (colorIndex + 1) % PALETTE.length;
-        int to = PALETTE[colorIndex];
+        int weather = targetGlow();
+        final int to = weather != 0 ? weather : PALETTE[colorIndex];
         ArgbEvaluator mix = new ArgbEvaluator();
         for (int i = 1; i <= GLOW_STEPS; i++) {
             float f = (float) i / GLOW_STEPS;
@@ -256,9 +324,26 @@ final class ClockScene {
         }
     }
 
+    /**
+     * The glow's colour: the weather's, deepened by the time of day, with a slow wobble so a long night on one
+     * colour neither burns in nor looks frozen. 0 when no weather is known, leaving the scene's own palette.
+     */
+    private int targetGlow() {
+        if (condition.isEmpty() || wallpaperShown) return 0;
+        // The sun here, so "morning" is the TV's own sunrise rather than a fixed hour.
+        LocalDateTime now = LocalDateTime.now();
+        int minute = now.getHour() * 60 + now.getMinute();
+        int[] sun = WallpaperMood.sun(now.toLocalDate(), latitude, longitude, ZoneId.systemDefault());
+        float wobble = 0.92f + 0.16f * random.nextFloat();
+        // "Full": the curated day/night colour at strength, over the wider radius and the vignette.
+        return ClockGlow.colour(condition, WallpaperMood.timeOfDay(minute, sun[0], sun[1]), wobble, 0.95f);
+    }
+
     private void setGlow(int color) {
         glowColor = color;
         int c = color & 0x00FFFFFF;
-        glow.setColors(new int[]{0x40000000 | c, 0x14000000 | c, 0x00000000 | c});
+        // Partial alpha on black, as the palette has always been. The centre is strong enough for the wide radius
+        // to read as real light ("full" of the three previews); the mid stop keeps the falloff soft, not banded.
+        glow.setColors(new int[]{0xC7000000 | c, 0x3D000000 | c, 0x00000000 | c});
     }
 }

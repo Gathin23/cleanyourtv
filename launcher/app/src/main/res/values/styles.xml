@@ -6,6 +6,20 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <!-- How the Settings button's panel window comes and goes: from the right edge, where it sits. -->
+    <style name="Animation.TvHome.Panel" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/panel_in</item>
+        <item name="android:windowExitAnimation">@anim/panel_out</item>
+    </style>
+
+    <!-- The Settings button's panel: translucent over whatever is on screen, sliding in from the right edge. -->
+    <style name="Theme.TvHome.Panel" parent="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+        <item name="android:windowAnimationStyle">@style/Animation.TvHome.Panel</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <!-- Frosted pill, tvOS style. -->
     <style name="TopButtonBase">
         <item name="android:layout_width">wrap_content</item>

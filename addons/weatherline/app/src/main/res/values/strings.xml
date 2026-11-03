@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather line</string>
+
+    <!-- The place the line shows. Edit these three and rebuild to move it. -->
+    <string name="place" translatable="false">Brisbane</string>
+    <string name="latitude" translatable="false">-27.4698</string>
+    <string name="longitude" translatable="false">153.0251</string>
+    <string name="timezone" translatable="false">Australia/Brisbane</string>
+</resources>

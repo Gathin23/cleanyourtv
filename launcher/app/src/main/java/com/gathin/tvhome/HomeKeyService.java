@@ -266,7 +266,10 @@ public class HomeKeyService extends AccessibilityService {
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
         if (isSettingsKey(event)) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
+                // A hold opens the TV's own Settings; a tap opens the panel, as the stock launcher did.
+                boolean tap = isShortPress(event.getDownTime(), event.getEventTime(),
+                        ViewConfiguration.getLongPressTimeout());
+                Intent open = settingsPanel && tap ? new Intent(this, QuickSettingsActivity.class)
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
                 try {
                     startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

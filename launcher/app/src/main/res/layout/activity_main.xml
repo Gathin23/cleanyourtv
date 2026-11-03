@@ -282,6 +282,21 @@
                             android:letterSpacing="0.14"
                             android:textAllCaps="true" />
 
+                        <!-- Weather line published by a helper app (config.xml weather_provider). -->
+                        <TextView
+                            android:id="@+id/weatherLine"
+                            android:gravity="left"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:textColor="#E6FFFFFF"
+                            android:textSize="14sp"
+                            android:fontFamily="@string/font_regular"
+                            android:letterSpacing="0.06"
+                            android:visibility="gone" />
+
                         <!-- Lunar date ("Lunar 13/9 · Year of the Horse"), shown when lunar_date is on. -->
                         <TextView
                             android:id="@+id/lunarDate"

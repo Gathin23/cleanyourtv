@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Accueil</string>
+    <string name="app_name">Accueil épuré</string>
     <string name="inputs">Sources</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Paramètres</string>

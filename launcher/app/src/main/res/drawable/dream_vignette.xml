@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The screensaver's cinematic vignette: clear in the middle, black at the corners, so the glow reads as a
+     light source. Drawn once as a drawable, never animated, so it costs no frame time. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:type="radial"
+        android:centerX="0.42"
+        android:centerY="0.58"
+        android:gradientRadius="72%p"
+        android:startColor="#00000000"
+        android:centerColor="#40000000"
+        android:endColor="#E6000000" />
+</shape>

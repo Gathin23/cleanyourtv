@@ -193,6 +193,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView shamsiDate;
     /** lunar_date: the lunisolar date under the date line, and the time zone it is computed for. */
     private TextView lunarDate;
+    /** weather_provider: the weather line under the date; null when the key is empty. */
+    private WeatherLine weatherLine;
     private boolean lunar;
     private int lunarOffset;
     private TextView stats;
@@ -585,6 +587,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         lunarOffset = Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault());
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
+        if (!cfg.weatherProvider.isEmpty()) {
+            weatherLine = new WeatherLine(findViewById(R.id.weatherLine), cfg.weatherProvider, handler);
+            // The condition's emoji in front of the reading, as the screensaver shows it. Text only otherwise.
+            weatherLine.format(line -> {
+                String emoji = ClockGlow.emoji(ClockGlow.condition(line));
+                return emoji.isEmpty() ? line : emoji + " " + line;
+            });
+        }
         if (cfg.dateBelowClock) moveDateBelowClock();
         if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
                 && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
@@ -1124,6 +1134,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pillsShown = true;
         }
         if (showStats) startStats();
+        if (weatherLine != null) weatherLine.start();
         if (gameDay != null) gameDay.start();
         sky.update();
         wallpaperPlayer.start();
@@ -1309,6 +1320,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(openWhenOnline);
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
+        if (weatherLine != null) weatherLine.stop();
         if (gameDay != null) gameDay.stop();
         handler.removeCallbacks(turnTick);
         if (lamp != null) lamp.stop();
@@ -1368,6 +1380,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onDestroy();
         RemoteKeys.release(this);
         cancelHoldOk();
+        if (weatherLine != null) weatherLine.shutdown();
         if (gameDay != null) gameDay.shutdown();
         unregisterReceiver(packageReceiver);
         if (openOnStartOnWake) unregisterReceiver(wakeReceiver);

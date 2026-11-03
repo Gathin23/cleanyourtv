@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Inici</string>
+    <string name="app_name">Inici net</string>
     <string name="inputs">Entrades</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Configuració</string>

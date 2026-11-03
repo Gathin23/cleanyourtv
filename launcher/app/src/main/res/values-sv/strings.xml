@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hem</string>
+    <string name="app_name">Rent hem</string>
     <string name="inputs">Ingångar</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Inställningar</string>

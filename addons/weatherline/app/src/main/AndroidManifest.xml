@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Open-Meteo only: the forecast the line shows. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoDisplay">
+
+        <!-- The launcher reads content://io.github.sumyabazar1.weatherline/today and shows the "line" column.
+             The provider answers from the last cached reading, so the line is there at once after a reboot
+             even before the network is back; a refresh runs in the background. -->
+        <provider
+            android:name=".WeatherProvider"
+            android:authorities="io.github.sumyabazar1.weatherline"
+            android:exported="true" />
+
+        <service
+            android:name=".WeatherRefreshJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

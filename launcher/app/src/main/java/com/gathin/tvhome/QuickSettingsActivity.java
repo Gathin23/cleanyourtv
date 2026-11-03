@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,6 +29,7 @@ public final class QuickSettingsActivity extends Activity {
     protected void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_quick_settings);
+        openedAt = SystemClock.elapsedRealtime();
         if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
             View panel = findViewById(R.id.panel);
             android.widget.FrameLayout.LayoutParams position =
@@ -43,6 +45,8 @@ public final class QuickSettingsActivity extends Activity {
         addRow(rows, R.drawable.ic_settings, R.string.tv_settings, 0, SystemSettings.intent(this, Settings.ACTION_SETTINGS));
         addRow(rows, R.drawable.ic_picture, R.string.quick_picture, 0, SystemSettings.intent(this, Settings.ACTION_DISPLAY_SETTINGS));
         addRow(rows, R.drawable.ic_wifi, R.string.quick_network, 0, SystemSettings.intent(this, Settings.ACTION_WIFI_SETTINGS));
+        addRow(rows, R.drawable.ic_bluetooth, R.string.quick_bluetooth, 0, SystemSettings.intent(this, Settings.ACTION_BLUETOOTH_SETTINGS));
+        addRow(rows, R.drawable.ic_sound, R.string.quick_sound, 0, SystemSettings.intent(this, Settings.ACTION_SOUND_SETTINGS));
         addRow(rows, R.drawable.ic_apps, R.string.quick_apps, R.string.quick_apps_hint,
                 SystemSettings.intent(this, Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
         // Through Home, so it rebuilds with the new choices when Launcher settings closes.
@@ -51,11 +55,16 @@ public final class QuickSettingsActivity extends Activity {
         rows.getChildAt(0).requestFocus();
     }
 
+    /** When this panel was created, to ignore the pause that lands while it is still coming up. */
+    private long openedAt;
+
     /** Settings pressed again while the panel is up. */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        finish();
+        // Both key services can answer one press, and the second start arrives as a new intent. Closing
+        // on it made the panel flash and vanish, so a start this soon after opening is the same press.
+        if (SystemClock.elapsedRealtime() - openedAt > SAME_PRESS_MS) finish();
     }
 
     /** Anything else taking the screen (Home, an app, a screensaver) closes the panel. */
@@ -63,9 +72,14 @@ public final class QuickSettingsActivity extends Activity {
     @SuppressWarnings("deprecation")
     protected void onPause() {
         super.onPause();
-        finish();
-        overridePendingTransition(0, 0);
+        // The window can be paused once while it is still being shown, which finished it at once.
+        if (SystemClock.elapsedRealtime() - openedAt > SAME_PRESS_MS) {
+            finish();
+            overridePendingTransition(0, 0);
+        }
     }
+
+    private static final long SAME_PRESS_MS = 700;
 
     private void addRow(LinearLayout rows, int icon, int title, int status, Intent target) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
