@@ -98,6 +98,13 @@ def inputs_problem():
                         f"from the repository root, so run that first")
             return (f"cannot read {path}: there is no such file. The card stacks this checkout's own "
                     f"pictures, so run this from the repository root")
+        try:
+            if os.path.samefile(OUT, path):
+                return f"cannot write {OUT}: it is the same file as input picture {path}"
+        except FileNotFoundError:
+            pass  # A distinct output that does not exist yet is fine.
+        except OSError as error:
+            return f"cannot compare output {OUT} with input picture {path}: {error}"
     return None
 
 
