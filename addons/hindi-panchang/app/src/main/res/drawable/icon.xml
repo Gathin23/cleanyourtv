@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <!-- Deep warm maroon-black backdrop -->
+    <path android:fillColor="#1A0D0A" android:pathData="M0,0h320v180h-320z" />
+    <!-- Outer golden mandala ring -->
+    <path android:fillColor="#33FF8C3B" android:pathData="M160,26a64,64 0 1,0 0,128a64,64 0 1,0 0,-128z" />
+    <path android:fillColor="#1A0D0A" android:pathData="M160,32a58,58 0 1,0 0,116a58,58 0 1,0 0,-116z" />
+    <!-- Sun rays & crescent moon (Surya-Chandra Panchang emblem) -->
+    <path android:fillColor="#FFB84D" android:pathData="M160,38l5,12l12,-5l-5,12l12,5l-12,5l5,12l-12,-5l-5,12l-5,-12l-12,5l5,-12l-12,-5l12,-5l-5,-12l12,5z" />
+    <path android:fillColor="#FF8C3B" android:pathData="M160,50a12,12 0 1,0 0,24a12,12 0 1,0 0,-24z" />
+    <!-- Panchang scroll / calendar tablet below -->
+    <path android:fillColor="#FF8C3B" android:pathData="M116,86h88v50h-88z" />
+    <path android:fillColor="#26120D" android:pathData="M122,94h76v36h-76z" />
+    <!-- Auspicious saffron/white Tithi grid cells -->
+    <path android:fillColor="#FFD27D" android:pathData="M130,101h12v9h-12zM148,101h12v9h-12zM166,101h12v9h-12z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M130,115h12v9h-12zM148,115h12v9h-12z" />
+    <path android:fillColor="#FF5E4D" android:pathData="M166,115h12v9h-12zM180,101h10v9h-10z" />
+</vector>
+
