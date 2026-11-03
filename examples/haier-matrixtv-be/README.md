@@ -92,3 +92,42 @@ the upstream launcher and the example config.
   in a later check, so its persistence is unknown and it is excluded here.
   A user-installed game was also disabled by personal choice and excluded.
 - TalkBack was already disabled before cleanup and is not in this list.
+
+## Second tested unit: HRT31EUF / jordan
+
+A second Haier MatrixTV BE, product HRT31EUF, device jordan, running Android 14 / API 34
+and firmware UKNV.260313.001 was cleaned on 27 October 2026. After several days of use,
+the owner confirmed on 2 November that Home, Live TV/HDMI, remote buttons and retained
+apps were working. These observations apply to this unit; they do not replace the
+first unit's remote-key measurements or preferred feature choices above.
+
+- The replacement Home remained selected across a reboot and opened at power-on.
+  Home, Input/source, Settings, the YouTube shortcut and held Volume Up worked with
+  no accessibility key helper enabled or bound. This differs from the first unit's
+  helper-based configuration; do not enable its mappings automatically on every set.
+- An unused saved network owned by setupwraith was forgotten through Settings before
+  disabling it. The active system-owned Wi-Fi connection was retained. Check every
+  saved network's ownership first; disabling setupwraith deletes networks it owns.
+- `com.haier.oemtabprovider` returned enabled after reboot and was left enabled.
+  `com.google.android.katniss` was also found enabled later; the cause was not established
+  and it was left enabled. Neither should be described as persistently disabled here.
+- `com.haier.launcher.haiermatrix` and `com.google.android.marvin.talkback` were already
+  disabled before this cleanup. Their initial state was preserved rather than counted
+  as newly disabled packages. This differs from the first unit's Haier TV+ observation.
+- Firmware updates, remote updates, Play Store/Services, keyboard, Bluetooth pairing,
+  TV/input services and HaiCast were kept. Other app/feature choices differed from
+  the first unit and are not added to its shared disable list by this report.
+- Live TV, `com.mediatek.wwtv.tvcenter/.nav.TurnkeyUiMainActivity`, was never disabled.
+  Its tile was initially concealed by the replacement launcher's `hidden_apps` setting;
+  removing it there restored the tile. Live TV opened from both its tile and Inputs;
+  HDMI opened the system passthrough player. Protected TV/HDMI content could produce
+  empty screenshots, so the focused/resumed activity was checked instead.
+- Reezn (`com.rmedia.rplayer`) stopped working while AdGuard Private DNS was enabled.
+  After the DNS filter was removed on 28 October, its catalogue loaded and the owner
+  confirmed the app worked again. Reezn remained installed and enabled throughout.
+  No blocked-domain analysis or controlled re-enable test was performed, so the exact
+  cause is unconfirmed. This is a compatibility observation, not a DNS setup procedure.
+
+Debugging was disabled and the TV rebooted after the work. Explicit connection refusals
+were verified on the ADB port and the previous Wireless debugging port. This second-unit
+report includes no personal identifiers, network names, addresses, raw logs or screenshots.
