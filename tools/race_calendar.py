@@ -12,6 +12,11 @@ season starts. Races that are already over are left out. The theme folder has to
 created if it is not there yet), and its name cannot be empty: `race_calendar.py "$THEME"` with the variable
 unset would otherwise write the calendar into the directory you ran it from.
 
+A session name is a contract with the launcher as well: RaceWeekend.java answers each name `SESSIONS` writes
+in its two switches and falls back to the raw name for one it does not know, so a session Jolpica starts
+publishing needs that case (and its two strings) there too, and tests/test_race_calendar_contract.py fails
+until both sides name the same sessions.
+
 Exit status: 0 the calendar is in the theme, 1 the season has no race left to show, 2 this run could not do
 its job - the folder is not there (or was left empty), its config.json is not the JSON object a theme has (or
 cannot be read or written), --season is not a year, or the fetch failed - and says why on stderr. Nothing is
@@ -19,6 +24,7 @@ written on 1 or 2: the theme stays as it was.
 """
 import argparse
 import datetime
+import http.client
 import json
 from pathlib import Path
 import sys
@@ -178,6 +184,17 @@ def main():
         return refuse(f"could not reach Jolpica at {endpoint} ({getattr(e, 'reason', e)}). Nothing was "
                       f"written: this is the one step that goes online, so check the connection - a "
                       f"proxy or a captive portal is the usual cause - and run it again.")
+    except (ConnectionError, http.client.HTTPException) as e:
+        # The two shapes urllib does not wrap: a connection closed before a status line
+        # (http.client.RemoteDisconnected) and a body that stops early (IncompleteRead, raised out of
+        # json.load()) come from http.client itself, so they passed every handler above and ended the
+        # run in a traceback with exit 1 - the code this script keeps for "no race left this season".
+        # A captive portal, a proxy that filters the host and a link that drops all do this; the fetch
+        # is the one step here that depends on someone else's network.
+        return refuse(f"Jolpica closed the connection before the answer was complete ({e}) for "
+                      f"{endpoint}. Nothing was written: this is the one step that goes online, so "
+                      f"check the connection - a proxy, a captive portal or a filtered network is the "
+                      f"usual cause - and run it again.")
     except ValueError as e:
         return refuse(f"Jolpica answered something that is not JSON ({e}) for {endpoint}. Nothing was "
                       f"written: this is usually a proxy or a login page answering instead of the API, "

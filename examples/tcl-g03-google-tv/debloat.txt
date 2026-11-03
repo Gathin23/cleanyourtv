@@ -116,6 +116,80 @@
 # - Voice stayed on with launcherx disabled. The first mic press afterwards answered that the Assistant had trouble
 #   processing; later presses, and presses after a reboot, worked.
 #
+# TCL 50S546, 2026-10-29: same G03_4K_GB / AR09 / V8-R51MT05-LF1V620 build, client TCL-CA-RTD51M-S1, security
+# patch 2024-03-05. Applied groups 1-3, group 4 minus Netflix, Prime Video, YouTube Music and the USB player, group 5
+# minus voice (katniss, tv.assistant, tcl.assistant, micmanager) and Chromecast, then groups 6 and 7 and launcherx, in
+# batches with a screenshot after each; rebooted twice. Every package stayed disabled, the TV booted to the new Home
+# (FallbackHome, then the launcher; no RecoveryActivity), Wi-Fi stayed up, and HDMI 1-4, AV and the tuner stayed in
+# `dumpsys tv_input`. Tested the same day, not yet lived with for days. Differences on this unit:
+# - com.tcl.gallery, com.tcl.ui_mediaCenter and com.tcl.t_solo all show TV_INPUT_HARDWARE granted in dumpsys on this
+#   AR09 unit (unlike the AR11 50C641 above), so gallery and the USB player were left enabled; tools/disable.sh
+#   would skip them anyway.
+# - setupwraith did not own the Wi-Fi (android.uid.system and com.android.tv.settings did), so it was disabled
+#   without a re-join.
+# - gtvpai was skipped by tools/disable.sh (no permission block), then disabled with TVINPUT_ALLOW=1 after a reboot
+#   showed every input still listed; it holds only a DummyReceiver.
+# - Remote: Bluetooth "TCL_RC902N_M1" (Generic.kl), same HID usages as the M1/M2 above: Netflix 0x0c0051, YouTube
+#   0x0c0057, Prime Video 0x0c005f, gear 0x0c0055. All four did nothing with launcherx off; HOME_KEY_SERVICE=1 with
+#   this folder's app_keys and settings_key_keycodes brought them back (real remote). 0x0c0050 (KEY_MENU) opens
+#   TCL's quick-settings panel (com.tcl.settings) with no helper. The star button is 0x0c0053 (KEY_SWITCHVIDEOMODE,
+#   scancode 227, TCL_QUICK_MENU in Generic.kl) and does nothing by default; "scan:227:<package>" in app_keys maps it.
+# - With "consume_volume_keys": true, a held volume button kept ramping with the key helper bound (real remote).
+# - Voice stayed on with launcherx disabled; the first mic press afterwards did nothing, later presses worked.
+#
+# TCL 43P739, Italy, 2026-10-31: Smart TV Pro G03_4K_GB (BeyondTV4, Realtek rtd288o / RTD2851M, software
+# V8-R51MT05-LF1V652, client TCL-EU-RTD51M-S1), Google TV 11, build RP1A.200622.001 AR11, security patch 2024-12-05:
+# the same build as the 50C641 above. A subset of this list was applied in three batches with a screenshot after
+# each: TCL analytics, tracking and promo (overseasappshow, bi, guard, tclhome_passive, waterfall.overseas,
+# messagebox, esticker, channelplus, smartalexa, t_solo, keyhelp), Google telemetry and unused media apps
+# (feedback, partnersetup, SmartConnect, YouTube Music, Google TV, Play Games), then setupwraith and launcherx.
+# Voice, Chromecast, the phone remote, Miracast and firmware updates were kept by choice. Rebooted once: every
+# package stayed disabled, Home came up on the new launcher with no RecoveryActivity, Wi-Fi stayed up. Tested the
+# same day, not yet lived with for days. Differences on this unit:
+# - setupwraith owned a hidden saved network that was not in use, while the network in use belonged to
+#   com.android.tv.settings after a forget and re-join. disable.sh still skipped it; FORCE_SETUPWRAITH=1 let it
+#   through, and only that unused network was deleted.
+# - com.tcl.partnercustomizer stays enabled (remote shortcut keys), but its TKeyActivity has a launcher entry that
+#   shows as the "TCL CHANNEL" tile and opens a "coming soon" page. "hidden_apps" in config.json or config.xml
+#   keeps the tile off Home without disabling the package.
+# - Remote: Bluetooth "TCL_RC902V_U1" (/dev/input/event3, Generic.kl). HID usages: Netflix 0x0c0051 (scancode 242),
+#   YouTube 0x0c0057 (245), Prime Video 0x0c005f (752), gear 0x0c0055 (233), Live TV 0x0c005b (KEY_EPG, 365). All
+#   five did nothing with launcherx off. HOME_KEY_SERVICE=1 with "scan:242:com.netflix.ninja",
+#   "scan:245:com.google.android.youtube.tv", "scan:752:com.amazon.amazonvideo.livingroom" and "scan:365:com.tcl.tv"
+#   in app_keys, plus 233 in settings_key_scancodes (config.xml only), brought them back (real remote).
+# - With HomeKeyService bound, one tap of volume moved two steps; "consume_volume_keys": true made it one step and a
+#   held button kept ramping (real remote).
+# - "tile_menu": true makes holding OK on a tile open Move, instead of the app's App info page.
+# - Private DNS (AdGuard) was set and Netflix still resolved; playback was not checked.
+#
+# TCL 65P735, Kuwait, 2026-10-20, status 2026-10-28 (eight days, nothing re-enabled): sold as "Smart TV Pro",
+# G03_4K_GB / BeyondTV4, Realtek rtd288o / R51MT05, software V8-R51MT05-LF1V652, client TCL-ME-RTD51M-S1 (Middle East),
+# Google TV 11, build RP1A.200622.001 AR11, security patch 2024-12-05, 32-bit userspace (zygote32, armeabi-v7a only), 2 GB
+# RAM, wired Ethernet, ro.adb.secure=1. Applied in five batches with a screenshot, a network check and a Home check after
+# each, then rebooted: launcherx and setupwraith stayed disabled. Wi-Fi was not at risk: the saved network belonged to
+# android.uid.system (`dumpsys wifi | grep -o 'cname=[^ ]*'`) and the TV was on Ethernet. launcher/build-and-install.sh with
+# INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1 STOCK_LAUNCHER=none installed the launcher; AdGuard Private DNS changed nothing for
+# playback. Found on this unit:
+# - Besides the packages above it also had these off: com.tcl.ttvs (TCL BI/awareness/identifier services and T-Cast),
+#   com.tcl.hearaid, com.tcl.magiconnectfree (TCL phone sharing), com.google.android.apps.nbu.smartconnect.tv,
+#   com.tcl.t_solo (Bluetooth "Listen alone") and TalkBack (all six are commented out in the list below: the shared list
+#   leaves them on). The firmware updater was also turned off here by choice
+#   (not listed: keep it enabled unless you want updates frozen).
+# - Remote buttons only launcherx answered die with it. Keycodes (logcat -s TclPhoneWindowManager, checked with the real
+#   remote): Netflix 4062, YouTube 4065, Prime Video 4099, the old TCL Guard button 4140, Settings gear 4077 (a gear mapped to
+#   83 did nothing here). app_keys and settings_key_keycodes in config.xml or a theme bring them back. After a reinstall the
+#   two helpers are enabled but not bound until they are switched off and on again.
+# - Game Master (TCL's game mode: ALLM, low lag) survives Home, input changes and power cycles, and the TV shows a "Game
+#   Master : On/Off" banner at every input start. It is turned off only when the Options bar (or the Picture or Sound page)
+#   opens while the current source is not the console: the log says "game console isn't plugged in, turn off game master".
+#   It is not a setting (`settings put` does nothing; com.tcl.tvmanager's setSpecialModeEnable is ignored for an ordinary app).
+# - No VRR and no 120 Hz: the P735 board configs under /vendor/hardware use 60 Hz panel files, the SoC is HDMI 2.0, and the
+#   TV logs "not support free sync". A PS5 negotiates 3840x2160@60Hz HDR10.
+# - A VPN app (WireGuard) was killed in the background on the stock firmware. Two suspects, not isolated: com.tcl.guard (TCL's
+#   memory cleaner, disabled here) and TCL's APP_AUTO_START app-op, "ignore" for it (cmd appops set <package> APP_AUTO_START
+#   allow). Both were changed, then it kept running.
+# - Disabling dreamx leaves screensaver_components pointing at it; set another one before (see group 7).
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
@@ -124,6 +198,7 @@
 # com.google.android.apps.nbu.smartconnect.tv (Google data saver / VPN client).
 
 # ---- 1. TCL and Google telemetry ----
+# com.tcl.ttvs                                # TCL BI / awareness / identifier services and T-Cast; off on the 65P735 (AR11), left on in the shared list
 com.tcl.bi                                  # TCL BI analytics
 com.tcl.logkit                              # log capture and upload
 # com.tcl.xian.StartandroidService          # background reporting service; off on the tested units, but TCL's updater needs it (see header), so it stays on
@@ -151,6 +226,10 @@ org.chromium.webview_shell                  # WebView test shell
 com.google.android.syncadapters.calendar    # calendar sync, no calendar on a TV
 com.google.android.play.games               # Play Games
 com.tcl.gallery                             # TCL photo gallery
+# com.tcl.hearaid                             # hearing test / volume adaptation; off on the 65P735 (AR11), left on in the shared list
+# com.tcl.magiconnectfree                     # TCL phone sharing app; off on the 65P735 (AR11), left on in the shared list
+# com.google.android.apps.nbu.smartconnect.tv # Google "smart connect" nearby service; off on the 65P735 (AR11), left on in the shared list
+# com.tcl.t_solo                            # Bluetooth "Listen alone"; off on the 65P735 (AR11), but on AR09 it holds TV_INPUT_HARDWARE (50S546), so it stays on
 
 # ---- 4. Off by choice: streaming apps and TCL extras (comment out what you use) ----
 com.netflix.ninja                           # Netflix (the remote's Netflix button then opens nothing)
@@ -161,6 +240,7 @@ com.tcl.ui_mediaCenter                      # USB media player; re-enable to pla
 com.tcl.gamebar                             # game mode / VRR overlay for consoles
 com.tcl.channelplus                         # TCL Live FAST channels
 com.tcl.browser                             # TCL web browser; removes the "BrowseHere" row from the stock home
+# com.google.android.marvin.talkback        # TalkBack screen reader; off on the 65P735, but it is an accessibility service, so it stays on unless nobody needs it
 
 # ---- 5. Off by choice: voice, casting, mirroring (comment out what you use) ----
 com.google.android.katniss                  # Google search / voice (the remote's mic button)

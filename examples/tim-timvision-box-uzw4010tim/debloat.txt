@@ -1,0 +1,88 @@
+# TIM TIMVISION Box (Vantiva/Technicolor UZW4010TIM, codename uzw4010tim, board skipper_tim, Marvell Berlin BG4CT), Android TV 8.0, firmware OTT1.201231.001 (6.0.5.0412), Italy
+# Operator streaming box with no HDMI inputs, on Wi-Fi. Tested on one unit in one session with two reboots,
+# not yet over several days.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tim-timvision-box-uzw4010tim/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tim-timvision-box-uzw4010tim/debloat.txt timvision.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: timvision.launcher (com.canal.box.ui.boot.BoxMainActivity) is the TIMVISION app itself.
+# Its HOME filter has priority 2, so on Android 8 `cmd package set-home-activity` prints Success and Home
+# still opens TIMVISION. The new launcher only takes Home with the stock one disabled:
+#   STOCK_LAUNCHER=timvision.launcher TV_HOST=<tv ip> launcher/build-and-install.sh
+# which disables it after the launcher has started and rolls back if Home does not follow. Only then is
+# TIMVISION gone; a TIMVISION subscriber keeps the stock launcher and the TIMVISION service group below.
+# No other app claims HOME (only com.android.tv.settings/.system.FallbackHome, priority -1000).
+#
+# Kept: remote and pairing (com.technicolor.android.remotecontrolservice, com.technicolor.tv.remotepairing,
+# com.technicolor.globalkey, com.technicolor.tim.customization), the com.marvell.* HDMI-CEC/power/overscan
+# services, Play Store and Play Services, Gboard, Chromecast (com.google.android.apps.mediashell) and every
+# updater (com.technicolor.ota, com.technicolor.app.ota, com.technicolor.checkota, timvision.upgrade).
+# The DVB-T tuner input (com.technicolor.android.dtvinput, dtvscan.project) was left enabled although unused.
+# it.telecomitalia.digitalsupport stays enabled: tools/disable.sh skips it because it requests
+# TV_INPUT_HARDWARE.
+#
+# After a reboot this box starts in standby (mWakefulness=Asleep, black screenshots); the remote's power
+# button or `input keyevent WAKEUP` brings up Home. Nothing in this list was re-enabled by the firmware at boot.
+# Private DNS does not exist on Android 8.0.
+
+# TIM / Technicolor telemetry and remote device management
+timvision.telemetry                          # TIMVISION "traps" telemetry
+com.smarts.smartagentpassivestb              # passive monitoring agent, starts at boot
+com.movenda.omadm.tv                         # OMA-DM operator device management
+com.movenda.p4mcore                          # Movenda core service for the above
+com.technicolor.android.BootupTraceQR
+com.technicolor.cputemperature
+com.google.android.feedback
+
+# TIMVISION service parts: this set has them off (no subscription); uncomment them only if you don't use TIMVISION
+# tv.broadpeak.nanocdnwrapper                  # Broadpeak multicast CDN for TIMVISION live; kept on for TIMVISION subscribers
+# it.telecomitalia.iptuner                     # TIMVISION live channels; kept on for TIMVISION subscribers
+# it.telecomitalia.linemanager  # kept on for TIMVISION subscribers
+# it.telecomitalia.accountmanager              # TIM account, Firebase messaging; kept on for TIMVISION subscribers
+# it.telecomitalia.timppapp  # kept on for TIMVISION subscribers
+# timvision.tvappsettings  # kept on for TIMVISION subscribers
+
+# TIM smart home
+it.telecomitalia.iotcontroller
+it.telecomitalia.iotim
+com.technicolor.zwavereceiver                # Z-Wave daemon
+
+# Google voice and recommendation rows (voice off by choice)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+
+# Screen mirroring receivers (off by choice; Chromecast kept)
+com.ionitech.airscreen
+com.apowersoft.mirror.tv
+com.instantbits.cast.receiver
+
+# Preloaded apps (off by choice; comment out any you use)
+com.google.android.youtube.tvkids
+com.google.android.youtube.tvmusic
+com.sky.ott.client.androidtv.SkyIT
+tv.pluto.android
+com.wbd.stream
+com.cbs.ca
+com.upst.hayu
+com.google.android.videos
+com.google.android.music
+com.google.android.play.games
+com.gameloft.android.GAND.GloftMTHP
+com.gameloft.android.GAND.GloftPOHP
+it.telecomitalia.timmusic_tv
+it.telecomitalia.games
+it.telecomitalia.thefilmclub
+it.telecomitalia.calcio
+com.figc.vivoazzurrotv
+it.sensiunici_atv
+com.vativision.vativisionapp
+it.rds.androidtv.rdssocialtv
+ro.antenaplay.app
+ru.iptvremote.android.iptv
+com.mxtech.videoplayer.ad
+jp.co.rarity.tvweb
+com.google.android.tvtutorials
+com.google.android.backdrop                  # screensaver; the basic daydream remains

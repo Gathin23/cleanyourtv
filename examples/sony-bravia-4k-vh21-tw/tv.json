@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA 4K VH21 (XRM-65X95K, 2022, BRAVIA_VH21, MediaTek MT5895), Taiwan",
+  "os": "Google TV 12",
+  "brand": "Sony",
+  "notes": "Taiwan firmware, no tuner, same build as `sony-bravia-4k-vh21/` (same-day test): Samba TV ACR, Sony/Qterics agents, IDD, Sony promos/Select/tab, demo mode; Prime Video, Chromecast, myVideo, Sony Pictures Core, YouTube Music, Google TV Movies, Vewd, Play Games, TTS and gestures off by choice; UEI QuickSet kept, the remote drives a set-top box over IR through it; setupwraith off after `cmd wifi forget-network` removed the hidden network it owned; the gear button still works without launcherx; Assistant, AirPlay and firmware updates kept; reboot-checked"
+}

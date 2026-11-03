@@ -59,6 +59,13 @@ public class DockSlotsTest {
         assertEquals(4, DockSlots.dockCount(keys, 4, dock));
     }
 
+    @Test public void anAppChosenForTheFreePlaceItAlreadySitsInJoinsTheDock() {
+        // Reorder mode shows no empty slot, so "my5" sits in the free 4th place; Add to dock chose it for that place.
+        List<String> keys = Arrays.asList("tivimate", "jellyfin", "iplayer", "my5", "vlc");
+        assertEquals(4, DockSlots.dockCount(keys, 4, set("tivimate", "jellyfin", "iplayer", "my5")));
+        assertEquals(0, DockSlots.empty(4, 4, 5, false));
+    }
+
     @Test public void fewerTilesThanDockSlotsStillPutTheDockFirst() {
         List<String> keys = Arrays.asList("a", "b");
         assertEquals(Arrays.asList("b", "a"), DockSlots.dockFirst(keys, 4, set("b")));

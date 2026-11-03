@@ -131,4 +131,6 @@ com.sony.dtv.livingfit            # BRAVIA CAM Living Fit feature (second unit)
 # so setupwraith had to go. For the redirect route (Unit 2, config.json) and on Wi-Fi, KEEP IT ENABLED:
 # setupwraith owns the saved Wi-Fi network (dumpsys wifi), so disabling it breaks Wi-Fi and ADB.
 # With launcherx kept enabled, RecoveryActivity never triggers.
+# On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
+# repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 # com.google.android.tungsten.setupwraith

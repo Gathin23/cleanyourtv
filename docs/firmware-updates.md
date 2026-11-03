@@ -11,17 +11,28 @@ compare the TV with the list you applied.
 The check and `--fix` reach the TV over network ADB. If you closed ADB as
 [Isn't ADB access a security hole?](faq.md#isnt-adb-access-a-security-hole) describes, open it again first: USB
 debugging, and Network/ADB debugging if the TV has it, back on as in [Quick start](../README.md#quick-start)
-step 1. On a TV whose port 5555 only opens through Wireless debugging, switch that on as well, pair
-it again with the stock `adb` and run `adb tcpip 5555`, as in [Doing it by hand](../README.md#doing-it-by-hand).
-Closing revoked this computer's authorisation, so accept "Allow USB debugging?" on the TV when the
-check connects. While ADB is closed the check can only report "could not reach the TV", even with
-the TV on and `TV_HOST` right. Close ADB the same way once you are done. With it open:
+step 1. On a TV whose port 5555 only opens through Wireless debugging, switch that on as well and pair
+it again with the stock `adb`. From there either route works: `adb tcpip 5555`, as in
+[Doing it by hand](../README.md#doing-it-by-hand), which usually lasts only until the TV reboots, or
+keeping 5555 closed and checking over the paired transport, which the paragraph after the command below
+describes.
+Closing revoked this computer's authorisation, so the 5555 route asks "Allow USB debugging?" on the TV
+when the check connects, where the paired route asks for nothing: its code was entered when you paired.
+While ADB is closed the check can only report "could not reach the TV", even with the TV on and `TV_HOST`
+right. Close ADB the same way once you are done. With it open:
 
 ```bash
 TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/debloat.txt
 ```
 
 On Windows the same command is `tools\venv\Scripts\python.exe -I tools\check.py <list>`.
+
+A TV that only offers Wireless debugging does not need the plaintext port at all: leave `adb tcpip 5555`
+out, point `TV_ADB_BINARY` at the same platform-tools `adb` and `TV_HOST` at the Wireless debugging
+connection port, and the check goes through the already paired transport, with nothing listening on 5555
+and no "Allow USB debugging?" prompt to accept
+([tools/native-adb.md](../tools/native-adb.md)). Read that port again before each run, since it changes
+when Wireless debugging is toggled.
 
 ## Exit codes, and a weekly job
 

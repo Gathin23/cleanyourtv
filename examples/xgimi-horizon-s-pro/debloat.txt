@@ -9,6 +9,19 @@
 # update; com.xgimi.upgrade, the firmware updater the update added, is kept. After the update, also
 # disabled and reboot-checked: com.google.android.partnersetup, com.android.printspooler,
 # com.google.android.syncadapters.calendar and com.google.android.onetimeinitializer (not in this list).
+# Also XGIMI Horizon Pro (device name "XGIMI HORIZON PRO", same model XK03H and device xgimigalileo), build
+# RT.3.24.327 release-keys, Android TV 11, security patch 2026-05-01. Every package below exists on it.
+# Status: applied 2026-10-30 with this repo's tools/disable.ps1, then two reboots; one day of use so far.
+# Disabled there: the whole list except com.google.android.apps.mediashell (Chromecast kept by choice), plus
+# the five post-update extras above and Smart Connect. Also disabled there by the owner's choice (not in this
+# list): com.google.android.youtube.tv, and com.xgimi.upgrade with com.xgimi.ota.accessories (no XGIMI OTA
+# until re-enabled). From a review of every package on that unit, also disabled and reboot-checked (not in this
+# list): com.google.android.tts (ran at ~117 MB RSS with no client once TalkBack and Assistant were off),
+# com.android.camera2 (the user-facing camera app; com.xgimi.autokst and com.xgimi.tof hold their own CAMERA
+# grant) and com.xgimi.simpservice (a system-uid service for com.xgimi.intent.action.INSTALL_APP; with the file
+# manager and the updater off nothing else asked for it). Home and Plex checked after each reboot; HDMI input
+# and the remote's projector keys not yet. Usage & diagnostics: `settings put global multi_cb 0` is put back to 1 by Play services at the next
+# boot; switch it off under Settings > Device Preferences > Usage & diagnostics instead, which stays off.
 #
 # Apply:   TV_HOST=<projector ip> tools/disable.sh examples/xgimi-horizon-s-pro/debloat.txt
 # Undo:    TV_HOST=<projector ip> tools/restore.sh examples/xgimi-horizon-s-pro/debloat.txt

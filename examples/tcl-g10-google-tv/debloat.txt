@@ -36,6 +36,12 @@
 # YouTube 4065, Netflix 4062, Prime Video 4099 and Web 4159, which only app_keys brings back once
 # launcherx is off, and the gear as keycode 83 on scancode 233 (settings_key_keycodes).
 #
+# Unit: TCL 55C69B, France (@danny-gca), product G10_4K_GB, software V8-R75PT01-LF1V548, build STT2.230203.001,
+# checked across a reboot. Forget and re-join the Wi-Fi in Settings before disabling setupwraith (it owns the setup
+# network). Its BT_RC833 remote sends Netflix 4062, YouTube 4065, Prime Video 4099 and Settings 83. TclAppBoot needs
+# APP_AUTO_START for the launcher's key services. Keep com.tcl.ttvs and com.tcl.tv. That unit also disabled
+# partnercustomizer, gamebar, Assistant and its French streaming apps (commented at the end of this list).
+#
 # Also used on a TCL 55Q651G (US Q6, 2024; product G10_4K_US_NF, software V8-R75PT01-LF1V534, same
 # build STT2.230203.001). As on the 43P69K, Samba TV ACR and logkit shipped enabled; both were
 # disabled, along with the optional 55Q651G lines below. Kept by choice: ttvs (firmware updates),
@@ -179,3 +185,10 @@ com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks ab
 # com.google.android.youtube.tvmusic   # YouTube Music
 # com.google.android.videos            # Google TV / Play Movies storefront
 # com.google.android.play.games        # Play Games
+
+# Off on the 55C69B unit (France); this set has them off, uncomment if you don't use them:
+# com.google.android.katniss             # Google Assistant
+# fr.francetv.pluzz                      # France TV
+# fr.tf1.mytf1                           # TF1+
+# fr.m6.m6replay                         # M6+
+# tv.wuaki.apptv                         # Rakuten TV

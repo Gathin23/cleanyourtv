@@ -14,12 +14,15 @@
     <!-- Reconnect after a reboot. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!-- usesCleartextTraffic: the README offers http://host:5000, Frigate's unauthenticated port on the local
+         network, and with targetSdk 34 Android refuses plain http unless the app allows it (#3016). -->
     <application
         android:allowBackup="false"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".SettingsActivity"

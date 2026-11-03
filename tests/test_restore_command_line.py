@@ -1,8 +1,17 @@
-"""restore.sh reads its own command line before it moves: a list that is not there, and a third word.
+"""restore.sh reads its own command line before it moves: no list, a flag, a list that is not there, a third word.
 
 The undo is the script an owner reaches for when the TV already looks wrong, and it read its first two
 words only:
 
+- `restore.sh` with no word at all - the list forgotten, or a variable that was empty - was answered by
+  bash's own `${1:?}`: `tools/restore.sh: line 11: 1: usage: restore.sh <debloat list> [stock launcher
+  package]`, a script line number and a stray `1:` where the reader expected the script to speak, and exit
+  1, which this script keeps for a restore that started and did not finish. The header gives that shape 2.
+- `restore.sh --help` (`-h`, `--reset` copied over from theme.sh) was handed to recovery.py as the list:
+  "could not read --help (No such file or directory). Nothing was sent to the TV", and the run went on to
+  contact the TV, so the status was recovery.py's 1 when it answered and tv.py's connection failure when it
+  did not - for a reader asking the script for its usage. restore.ps1 refuses these on its own - PowerShell
+  reads a dash-led word as a parameter name.
 - `restore.sh examples/xiaomi-mi-tv-4/debloat.txt` - one character short of a folder that exists -
   ended inside the script's folder resolution: bash printed `cd: examples/xiaomi-mi-tv-4: No such
   file or directory` with restore.sh's own line number, named a folder where the reader had typed a
@@ -14,11 +23,12 @@ words only:
   recovery.py refuses three words with its usage line and exit 2 when a caller hands them over.
   restore.ps1 refuses them on its own: PowerShell binds two positional arguments.
 
-Both now answer before anything is sent: the folder that is not there keeps the path as typed, so
-recovery.py's refusal is what the reader reads, and a word left over exits 2 saying it would not have
-been used. What the script does with the two words it takes is unchanged - the list is still resolved
-against the caller's directory in the `pwd -W` form Git Bash needs for the record's key, and the batch
-still goes through recovery.py and tv.py --batch.
+All four now answer before anything is sent, in the script's own words with its usage line: no list and a
+dash-led word exit 2 (the command line is not one it can read, and the header says so), the folder that is
+not there keeps the path as typed so recovery.py's refusal is what the reader reads, and a word left over
+exits 2 saying it would not have been used. What the script does with the two words it takes is unchanged -
+the list is still resolved against the caller's directory in the `pwd -W` form Git Bash needs for the
+record's key, and the batch still goes through recovery.py and tv.py --batch.
 
 tools/tv.py is a fake that records the batch, so "nothing was sent" is asserted and the documented
 command lines are still shown to restore. The restore.ps1 cases need `pwsh` on PATH and skip without
@@ -131,6 +141,32 @@ class RestoreCommandLineTest(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, output)
                 self.assertNotIn("would not have been used", output)
                 self.assertIn("pm enable com.example.ads", self.sent())
+
+    def test_no_list_at_all_is_the_scripts_own_refusal(self):
+        for args, why in ([(), "no word at all"], (("",), "an empty word, e.g. a variable that was not set"),
+                          (("", "com.google.android.tvlauncher"), "an empty list and the stock launcher")):
+            with self.subTest(why):
+                self.state_path.write_text(json.dumps({"commands": []}))
+                result, output = self.run_script("restore.sh", *args)
+                self.assertEqual(result.returncode, 2, output)
+                self.assertIn("restore.sh takes a debloat list", result.stderr, "the script says what it needs")
+                self.assertIn("usage: TV_HOST=<tv ip> tools/restore.sh", result.stderr)
+                self.assertIn("Nothing was sent to the TV", result.stderr)
+                self.assertNotIn("restore.sh: line", output, "bash's own ${1:?} named a script line, not the mistake")
+                self.assertEqual(result.stdout, "")
+                self.assertEqual(self.sent(), [])
+
+    def test_a_dash_led_word_is_a_flag_it_does_not_have(self):
+        for word in ("--help", "-h", "--reset"):
+            with self.subTest(word):
+                result, output = self.run_script("restore.sh", word)
+                self.assertEqual(result.returncode, 2, output)
+                self.assertIn(word + " is a flag it does not have", result.stderr)
+                self.assertIn("usage: TV_HOST=<tv ip> tools/restore.sh", result.stderr)
+                self.assertNotIn("could not read " + word, output,
+                                 "recovery.py read the flag as a list called " + word)
+                self.assertEqual(result.stdout, "")
+                self.assertEqual(self.sent(), [])
 
     def test_restore_ps1_already_answers_both_shapes(self):
         extra = "com.google.android.tvlauncher"

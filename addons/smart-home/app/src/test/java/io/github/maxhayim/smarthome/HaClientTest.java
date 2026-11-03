@@ -75,7 +75,7 @@ public class HaClientTest {
         HaClient.Reply r = new HaClient(base(), "good").get("/api/states");
         assertEquals(200, r.code);
         assertEquals("Bearer good", auth.get());
-        assertEquals(10, Ha.parse(r.body).size());
+        assertEquals(13, Ha.parse(r.body).size());
     }
 
     @Test

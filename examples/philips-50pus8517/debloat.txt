@@ -154,6 +154,28 @@
 # - The stock launcher's HOME filter has priority 2 on this firmware: the Home key kept opening tvlauncher until
 #   it was disabled, then resolved to the new launcher at once.
 # - aurora was off from the factory here too; no xtv retry loop in the 30 s idle log, nothing visible broke.
+#
+# FIFTH UNIT: Philips 43PUS8507/12 (France), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029), so this list applies. Applied on 24 October 2026 in
+# five batches with tools/disable.sh, a screenshot after each, then in daily use for a week.
+# - Disabled from this list: candeebug, gel, partnersetup, nettvrecommender, recommendation, nettv.market,
+#   onetimeinitializer, sss.authbridge, syncadapters.calendar, dlna and stock YouTube, then tvlauncher once
+#   the new launcher was Home. All still disabled after a reboot, checked with `pm list packages -d`.
+# - Disabled there beyond this list, nothing missed in a week: android.autoinstalls.config.tpv.device (Play
+#   auto-install of TP Vision partner apps), org.droidtv.nettvapps (the gallery's preload installer),
+#   org.droidtv.dropboxprovider and io.mimi.sdk.service (Mimi sound personalisation).
+# - Kept there (owner's choice): katniss, mediashell, Netflix, ipcontrol and the firmware updaters.
+# - Already missing for user 0 before this session (`pm list packages -u` lists them, `pm list packages`
+#   does not), so on a second-hand or refurbished set check for this first: usagelogger, demome, m7opapp,
+#   amazonalexa, astrahdplus, freeviewplayers, feedback, play.games, videos, youtube.tvmusic, talkback,
+#   tvrecommendations, Prime Video, Apple TV, Play-Fi (softap and tv), io.mimi.tvapp, printspooler and 15
+#   uk.co.freeview.* apps. `cmd package install-existing <package>` brings one back.
+# - Idle log (quirk 5's method): no handleConnectAurora or connectCotextService loop.
+# - Launcher: Live TV package org.droidtv.playtv; the Inputs menu lists HDMI 1-4, the analogue inputs and Live
+#   TV. The firmware starts on the last input it was on, so Home is one press away. The remote's Rakuten
+#   TV key sends Philips keycode 779 (KEYCODE_RAKUTEN_TV) and does nothing with no Rakuten app on the set;
+#   `app_keys` 779:org.smarttube.stable with HOME_KEY_SERVICE=1 opens SmartTube instead. Checked on the
+#   real remote: Home, SOURCES, Settings, TV guide, Rakuten -> SmartTube, and holding Volume + still ramps.
 
 # TP Vision telemetry. org.droidtv.gel runs inside the candeebug process
 # (android:process="org.droidtv.candeebug"), so disabling candeebug alone leaves a process with

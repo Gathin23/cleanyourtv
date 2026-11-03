@@ -32,7 +32,8 @@ TV_HOST=<tv ip> tools/venv/bin/python -I tools/trace.py home --runs 5 --out trac
 folder goes, a path through a file and an empty `--out` are refused before the TV is asked anything.
 
 A TV that cannot be reached stops the run with `tools/tv.py`'s sentence - a port that refuses, a Wireless
-debugging port that asks for TLS, an address nothing answers on - and exit 2, before the folder is made.
+debugging port that asks for TLS, an address nothing answers on, or, before the TV is asked anything at
+all, no `TV_HOST` and a `TV_PORT` that is not a port number - and exit 2, before the folder is made.
 Nothing was recorded, so nothing is half-written: `tools/bench.py`, `tools/check.py` and
 `tools/b64push.py` answer a TV like that the same way.
 

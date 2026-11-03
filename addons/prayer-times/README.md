@@ -12,6 +12,8 @@ countdown to it, plus today's Gregorian and Hijri dates. Each prayer has its Ara
   `latitude`, `longitude`, `place` (the name shown) and `method`, Aladhan's
   [method number](https://aladhan.com/calculation-methods) (2 ISNA, 3 Muslim World League, 4 Umm al-Qura,
   5 Egyptian, 13 Turkey, 21 Morocco...). The default is Casablanca with the Morocco method.
+- **The Asr school** is `school`, Aladhan's juristic school for Asr: `0` Shafi (the default) or `1` Hanafi.
+  Hanafi users see the later Asr time; leave it at `0` and nothing changes.
 - **Reminders switch**: In `app/src/main/res/values/config.xml`, `reminders` controls whether to schedule
   on-screen alert cards and notifications when a prayer time arrives. It is `false` (off) by default. When
   enabled (`true`), an unobtrusive, frameless compact card appears at the top-right corner of the screen
@@ -31,8 +33,8 @@ countdown to it, plus today's Gregorian and Hijri dates. Each prayer has its Ara
 | `WAKE_LOCK` | Briefly wakes the screen to deliver the on-screen alert card. |
 | `SYSTEM_ALERT_WINDOW` | Displays the unobtrusive top-right alert card over other apps and video playback on Android 10+. |
 
-That is all. What is sent: today's date, the latitude and longitude from `config.xml`, and the method number. No
-account, no telemetry, no ads, no background service, no location permission. Backups are off.
+That is all. What is sent: today's date, the latitude and longitude from `config.xml`, the method number and the
+Asr school number. No account, no telemetry, no ads, no background service, no location permission. Backups are off.
 
 ## Build and install
 

@@ -11,7 +11,8 @@ verified file is copied over the target and checked again. That copy is not atom
 Exit status: 0 the copy is on the TV, 1 a transfer failed (the target is as it was, unless that
 copy failed or was interrupted, which the message says), 2 nothing was sent: the arguments were
 refused, the local file could not be read, the packages in tools/requirements.txt are not installed,
-or the connection failed in one of the ways tv.py explains (a refused port, a Wireless
+a TV_HOST or a TV_PORT that tools/tv.py refuses at import time (its own words are printed), or the
+connection failed in one of the ways tv.py explains (a refused port, a Wireless
 debugging port, a handshake that timed out, a TV that cannot be reached). Why it stopped goes to
 stderr, which the scripts that throw the progress on stdout away still show.
 """
@@ -79,6 +80,21 @@ def main():
                          "run: python3 -m venv tools/venv && "
                          "tools/venv/bin/pip install -r tools/requirements.txt\n"
                          "Nothing was sent to the TV.\n")
+        return 2
+    except SystemExit as exit_request:
+        # tv.py refuses two shapes at import time, before it has a connection: no TV_HOST ("Set TV_HOST
+        # to your TV's IP address ...", printed with the arp hint) and a TV_PORT it cannot read ("not a
+        # port number: 'abc'", which is also what `TV_HOST=<ip>:70000` gets). Nothing was asked of the
+        # TV either time, and left alone the interpreter answered that text with 1 - the status this
+        # file keeps for a transfer that failed, whose target may be half written - so the fallback an
+        # owner runs when an install went wrong read as a push that broke halfway and left a file
+        # behind. tv.py's own text is printed by the interpreter for that exit and nowhere else, so it
+        # is written here; a module that exits 0 answered the call itself, and that status stands.
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            print(exit_request.code, file=sys.stderr)
+        print("Nothing was sent to the TV.", file=sys.stderr)
         return 2
 
     # A refused port or a TV that cannot be reached gets tv.py's own explanation, not a traceback, and

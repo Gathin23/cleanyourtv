@@ -199,6 +199,25 @@
 #   REST server answering a client on the LAN, as on the fifth unit.
 # - The remote's App Gallery button (a butterfly icon) opens org.droidtv.nettv.market (batch 2) and nothing else,
 #   so it does nothing once this list is applied; README.md has its scancode and the remap.
+#
+# Ninth unit: Philips 65PUS7354/12 (LED), Portugal, on Ethernet. Same firmware as the lead unit: STT2.230526.001,
+# fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. Applied on 1 Nov 2026.
+# Launcher notes are in README.md.
+# - Starting state: the same 15 Freeview packages and org.droidtv.freeviewplayers were disabled, and so was
+#   com.amazon.amazonvideo.livingroom (Prime Video), whose history is not known; it was left as it was.
+# - From the list below: all of batches 1 and 2; batch 3 except dlna (kept by choice); com.google.android.music is
+#   not installed on this unit; batch 4 after the launcher took Home.
+# - usagelogger and demome: the TV_INPUT_HARDWARE false positive again (`pm query-services` lists com.mediatek.tvinput,
+#   com.mediatek.tv.agent, org.droidtv.fastip and two Play Store apps' preview inputs), disabled with TVINPUT_ALLOW=1
+#   for those two alone. `dumpsys tv_input` listed the same inputs after each batch, less com.google.android.videos'
+#   two preview inputs once that app was disabled.
+# - Also disabled, none used here: org.droidtv.tv.frameworklogger, com.mediatek.backgrounddetection,
+#   org.droidtv.nettvapps, org.droidtv.nettv_launcherapp, org.droidtv.sticker, org.droidtv.dropboxprovider,
+#   com.vewd.core.browserui, com.netflix.ninja, com.apple.atve.androidtv.appletv and org.droidtv.amazonalexa.
+#   Kept: YouTube, Chromecast, both firmware updaters, dlna, com.phorus.playfi.tv.
+# - All 46 disabled packages (the 17 found disabled, the 28 disabled on this unit, tvrecommendations included,
+#   and the stock launcher) stayed disabled through restarts (`pm list packages -d` compared before and after).
+# - Private DNS in hostname mode validated on this firmware, as on the sixth unit.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader

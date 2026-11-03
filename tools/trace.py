@@ -23,9 +23,10 @@ does.
 
 Exit status: 0 every run is recorded and written; 2 an argument this run cannot use (an --out that is a
 file or passes through one, an empty --out, a --package or --app that is not one, --runs outside 1 to 50)
-and a TV that cannot be reached (tools/tv.py's sentence says which failure it was) - both judged before
-anything is recorded, so nothing was written and --out was not made; 1 a recording that started and then
-failed.
+and a TV that cannot be reached - tools/tv.py's own sentence is printed, whether it refused the target as
+it was imported (no TV_HOST, a TV_PORT that is not a port number) or connect_error() worded the failure -
+both judged before anything is recorded, so nothing was written and --out was not made; 1 a recording that
+started and then failed.
 
 Scenarios (setup runs before the recording starts, so it stays out of the trace):
     cold     another app in front, the launcher force-stopped, then started with `am start -W`
@@ -278,7 +279,24 @@ def main(argv=None):
     if argv is None:
         client_python_or_exit()
     import bench  # noqa: E402  the accessibility helpers bench.py already tested
-    import tv  # noqa: E402
+    try:
+        import tv  # noqa: E402
+    except SystemExit as exit_request:
+        # tv.py refuses two shapes while it is imported, before it has a connection: no TV_HOST
+        # ("Set TV_HOST to your TV's IP address") and a TV_PORT it cannot read ("not a port number:
+        # 'abc'", which is also what a `:port` in the address with a bad or out-of-range number gets).
+        # The interpreter answers such a text with 1 - the status this file keeps for a recording that
+        # started and then failed - so a run that never reached the TV read as one whose trace was
+        # lost, which is the one thing a perf-ab comparison has to tell apart. 2 is what the docstring
+        # promises for "a TV that cannot be reached" and what the connect() handler below answers.
+        # tv.py's own text is printed here; a client module that exits 0 answered the call itself, and
+        # that status stands (the branch tools/theme_restart.py keeps).
+        if not exit_request.code:
+            raise
+        if isinstance(exit_request.code, str):
+            print(exit_request.code, file=sys.stderr)
+        print(f"Nothing was recorded: {args.out} is made when the first run starts.", file=sys.stderr)
+        raise SystemExit(2) from exit_request
 
     try:
         dev = tv.connect()

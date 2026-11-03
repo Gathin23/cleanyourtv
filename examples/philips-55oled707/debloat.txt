@@ -118,6 +118,35 @@
 #   `tools/b64push.py` sent the same file in about a second. theme.sh and build-and-install.sh push with
 #   b64push, so themes and the launcher went through; use b64push for anything else.
 #
+# Fifth unit: Philips 65OLED707/12 (65" OLED with Ambilight), Croatia, on Wi-Fi at first, then Ethernet. Same
+# board and the same RTT2.211108.001 build 21029 as the first unit, security patch 2025-10-01,
+# ro.product.first_api_level 29. Applied 2026-10-29 in seven batches with tools/disable.sh, the launcher from
+# launcher/ before the last batch, two reboots that day; lived with for three days since. Nothing below changes
+# the list.
+# - Developer options had USB debugging only, no Network debugging entry; with it on, port 5555 answered on the
+#   LAN, as on the 43PUS7304 in examples/philips-tpm191e.
+# - Disabled there from this file: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   nettvapps, nettvapp4546, 5326, 5512 and 20004410, amazonalexa, demome, playfi.softap, feedback, setupwraith,
+#   katniss, videos, TED, Rakuten TV, and tvrecommendations after the replacement launcher was Home. On top of it
+#   (owner's choice): partnersetup, onetimeinitializer, sss.authbridge, syncadapters.calendar, marvin.talkback,
+#   m7opapp, dlna, ipcontrol, Netflix and Prime Video. Kept: YouTube Music, play.games, Chromecast, the firmware
+#   updaters, everything Ambilight and Hue. Not installed on this unit: CHILI, Singa, WhaleLive, Pluto TV,
+#   Boosteroid, Fitness Buddy and the nettvapp1814, 4932 and 5527 web apps.
+# - disable.sh's TV-input guard held back usagelogger and demome; neither serves a TvInputService, so both were
+#   disabled with TVINPUT_ALLOW=1, as on the third unit. The Inputs menu still listed HDMI 1-4 afterwards.
+# - Wi-Fi: the saved network belongs to android.uid.system, not setupwraith, as on the third unit.
+# - After both reboots, and again after 2.5 days of uptime, `pm list packages -d` still held every package
+#   disabled here and the stock launcher; nothing re-enabled itself.
+# - Launcher: HOME_KEY_SERVICE=1 with power_on_home_always and input_sources HW1=- to HW4=-, as on the third
+#   unit. At power-on the TV shows the last HDMI input or Live TV for a moment, then Home.
+# - Screensaver: screensaver_enabled read 0 out of the box and screen_off_timeout 604800000, so nothing started
+#   on Home while YouTube still showed its own screensaver. "home_idle_clock_minutes": 3 in a theme brought the
+#   launcher's clock up after 3 minutes on Home, as on the second unit.
+# - AirPlay: this firmware's userland is 32-bit (ro.product.cpu.abilist armeabi-v7a,armeabi). The Play Store
+#   called jqssun/android-airplay-server (the receiver the README's AirPlay answer names) not compatible; the
+#   GitHub release APK carries armeabi-v7a code, installed with `pm install`, and played from an iPhone. It
+#   holds a PARTIAL_WAKE_LOCK 'airplay:server' for as long as it runs (`dumpsys power`).
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-55oled707/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55oled707/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

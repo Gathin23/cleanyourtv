@@ -1,9 +1,9 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="docs/banner-halloween.png" alt="CleanYourTV, видання на Хелловін. Ваш телевізор без реклами. Приберіть зайве з будь-якого Android TV чи Google TV через Wi-Fi і замініть заповнений рекламою головний екран на чистий лончер у стилі Apple TV. Без root, без кабелю, нічого не видаляється, а відкат — один рядок. Тепер із гарбузом." width="800"></a>
+  <a href="https://cleanyour.tv"><img src="docs/banner.png" alt="CleanYourTV. Ваш телевізор без реклами. Приберіть зайве з будь-якого Android TV чи Google TV через Wi-Fi і замініть заповнений рекламою головний екран на чистий лончер у стилі Apple TV. Без root, без кабелю, нічого не видаляється, а відкат — один рядок." width="800"></a>
 </p>
 
 <p align="center">
-  Читати: <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · Українська
+  Читати: <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · Українська · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card-halloween.jpg" alt="380 модель телевізорів · 101 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 335 видань: 351 стаття із 46 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="427 моделей телевізорів · 111 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 396 видань: 412 статей з 54 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
 </p>
 
 ## З чого почати
@@ -29,11 +29,12 @@
 |---|---|
 | **Android TV або Google TV** | [Швидкий старт](#швидкий-старт): асистент із програмування зробить усе за приблизно п'ятнадцять хвилин. |
 | **Samsung, LG, Roku, Vizio або Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV там не працює, але стеження можна вимкнути пультом. |
-| **Лише телефон на Android** | Створений спільнотою [застосунок Clean Your TV](https://cleanyour.tv/app): без ноутбука й без агента. |
+| **Телефон або ноутбук, без агента** | Один із [застосунків спільноти](https://cleanyour.tv/app) для телефонів на Android, Mac і Windows від незалежних розробників. |
 | **Хочете спершу подивитися** | [Що ви отримаєте](#що-ви-отримаєте): знімки нового головного екрана. |
 
 **Офіційні посилання:** [cleanyour.tv](https://cleanyour.tv) і цей репозиторій. Інші домени з цією назвою,
 як-от cleanyourtv.com, до цього проєкту не належать ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)).
+CleanYourTV не публікує застосунків у жодному магазині застосунків, і clean-your-tv.net теж не наш.
 
 [Як це працює](#як-це-працює) · [Швидкий старт](#швидкий-старт) · [Що ви отримаєте](#що-ви-отримаєте) ·
 [Підтримувані телевізори](#підтримувані-телевізори) · [Зробити вручну](#зробити-вручну) · [Лончер](#лончер) ·
@@ -63,7 +64,7 @@
 |---|---|
 | **Комп'ютер** | Скористайтеся промптом з асистентом із програмування: три кроки нижче. |
 | **Комп'ютер без асистента** | Виконайте три кроки самі: команди є в розділі [Зробити вручну](#зробити-вручну). |
-| **Лише телефон на Android** | Скористайтеся створеним спільнотою [застосунком Clean Your TV](https://cleanyour.tv/app) від [@udhaykumarbala](https://github.com/udhaykumarbala): під'єднатися, проаналізувати, очистити — приблизно за п'ять хвилин. Без ноутбука й без агента. |
+| **Телефон або ноутбук, без асистента** | Оберіть один із [застосунків спільноти](https://cleanyour.tv/app): безкоштовні відкриті застосунки на основі цих списків телевізорів від незалежних розробників. |
 
 Три кроки нижче розраховані на асистента із програмування: комп'ютер має бути в тій самій мережі Wi-Fi, що
 й телевізор, із доступом до оболонки, а також мати Python 3, JDK версії від 17 до 22 та Android SDK
@@ -112,7 +113,7 @@ platform 34 із build-tools 34 (там асистент збирає лонче
 | ![Тема aurora: шпалери й тоновані пігулки, надіслані без перезбирання](themes/aurora/screenshot.jpg) | ![Шість стовпців і док на шість застосунків із config.json теми](themes/six-columns/screenshot.jpg) |
 | *Тема Aurora, надіслана через `tools/theme.sh`* | *Шість стовпців і док на шість застосунків, той самий лончер* |
 | ![Переміщення плитки: утримано OK, обрано «Перемістити», плитку підхоплено, решта притьмяніла](docs/tile-move.jpg) | ![Бібліотека застосунків: встановлені застосунки, одне натискання повертає застосунок на головний екран](docs/app-library.jpg) |
-| *З `tile_menu` утримайте OK на плитці, «Перемістити»: стрілки переносять її, «Назад» ставить на місце* | *Бібліотека застосунків: одне натискання повертає прибраний застосунок на головний екран* |
+| *Утримайте OK на плитці, «Перемістити»: стрілки переносять її, «Назад» ставить на місце* | *Бібліотека застосунків: одне натискання повертає прибраний застосунок на головний екран* |
 
 ## Підтримувані телевізори
 
@@ -132,20 +133,22 @@ platform 34 із build-tools 34 (там асистент збирає лонче
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 78 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 42 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 35 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 21 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 15 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 14 |
-| [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 8 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 8 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 6 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 |
-| [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 |
-| [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 2 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 |
-| [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 2 | [Hitachi](https://cleanyour.tv/tvs?q=Hitachi) · 2 | [Insignia Fire TV](https://cleanyour.tv/tvs?q=Insignia%20Fire%20TV) · 2 | [Kalley](https://cleanyour.tv/tvs?q=Kalley) · 2 | [Kogan](https://cleanyour.tv/tvs?q=Kogan) · 2 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 81 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 47 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 42 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 22 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 16 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 15 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 4 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
+| [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
+| [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 2 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 2 | [Hitachi](https://cleanyour.tv/tvs?q=Hitachi) · 2 |
 
 <details>
-<summary>+57 more brands and 14 projector brands</summary>
+<summary>+67 more brands and 14 projector brands</summary>
 
-**Master-G** 2 · **Nokia** 2 · **onn** 2 · **PRISM+** 2 · **RockTek** 2 · **Sankey** 2 · **Sber** 2 · **Vidda** 2 ·
-AiPro2K · AIWA · AQUA · Artel · ASUS · Beko · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor · DEXP · Dialog ·
-DYON · Freebox · Hikeen · Home+ · Impex · INCLO · Karbonn · Koryo · KTC · Liberton · Lumio · Magyar Telekom · MECOOL ·
-MTC · Next · Noblex · OK. · OPPO · Panavox · PEAQ · Polytron · PPTV · Prosonic · Salora · SANYO · Seleco ·
-Super General · Síragon · Tele System · TiVo · Tornado · Turkcell · Tuvio · Verizon · Vision ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Master-G** 2 · **Noblex** 2 · **PRISM+** 2 · **RockTek** 2 ·
+**Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
+AiPro2K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor · DEXP ·
+Dialog · DYON · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Koryo · KTC · KUNFT · Liberton ·
+Lumio · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ · Polytron · PPTV ·
+Prosonic · Salora · SANYO · Seleco · Smarttech · Super General · TD Systems · Tele System · TiVo · Tornado · Turkcell ·
+Tuvio · Verizon · Vision · X.Vision ·
 Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -279,10 +282,10 @@ Xiaomi (PatchWall). Передайте `STOCK_LAUNCHER=<package>` (`-StockLaunch
 |---|---|
 | **Налаштування** | Порядок дока, приховані застосунки, застосунок ефірного ТБ, від 4 до 7 плиток у рядку, зменшений рух. Усе в [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Налаштування на телевізорі** | Утримайте OK на «Налаштуваннях», щоб відкрити налаштування лончера. Необов'язковий `launcher_settings_button` робить так, що звичайне натискання відкриває їх одразу; налаштування телевізора лишаються на сторінці налаштувань і на своїй плитці |
-| **Теми** | Тло, шпалери й розкладка з `config.json`, надісланого через Wi-Fi, без перезбирання. У [`themes/`](themes/) постачається чотирнадцять, включно з вбудованою `default/` |
+| **Теми** | Тло, шпалери й розкладка з `config.json`, надісланого через Wi-Fi, без перезбирання. У [`themes/`](themes/) постачається двадцять одна, включно з вбудованою `default/` |
 | **31 мова** | Дотримується мови телевізора, з повністю дзеркальним розкладом справа наліво для івриту |
 | **Бібліотека застосунків** | Необов'язково: перегляд усіх встановлених застосунків і додавання чи прибирання ярликів із головного екрана. Дивіться [посібник із бібліотеки застосунків](docs/app-library.md) |
-| **Меню плитки** | Необов'язково (`tile_menu`): утримайте OK на плитці для «Перемістити», «Прибрати з головного» та «Про застосунок». Вимкнено — утримання OK відкриває «Про застосунок» |
+| **Меню плитки** | Увімкнено за замовчуванням (`tile_menu`): утримайте OK на плитці для «Перемістити» та «Про застосунок», а з увімкненою бібліотекою застосунків — ще й «Прибрати з головного». Вимкнено — утримання OK відкриває «Про застосунок» |
 | **Картки-модулі** | Будь-який застосунок на телевізорі може запропонувати власну плитку; ви схвалюєте кожну один раз. Дивіться [`docs/modules.md`](docs/modules.md) |
 | **Додатки** | Необов'язкові застосунки, що під'єднуються як картки-модулі; лежать у [`addons/`](addons/) і ніколи не вбудовуються в лончер |
 | **Екран-заставка з годинником** | Годинник, що пливе над свіченням, щоб нічого не вигоріло |
@@ -345,10 +348,19 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 <details>
 <summary><b>Я не програмую і не маю ноутбука. Усе одно зможу?</b></summary>
 
-Так. [@udhaykumarbala](https://github.com/udhaykumarbala) створив безкоштовний відкритий [застосунок для
-телефона](https://cleanyour.tv/app) на Android, який робить те саме очищення через Wi-Fi: під'єднується до
-телевізора, спершу показує план, зберігає точку відкату і лише вимикає застосунки, тож усе можна повернути.
-Це розробка спільноти.
+Так. Незалежні розробники створили безкоштовні відкриті застосунки на основі списків CleanYourTV, які роблять те саме
+очищення через Wi-Fi без агента. Кожен спершу показує план, лише вимикає застосунки й може все повернути:
+
+| Застосунок | Для | Автор |
+|---|---|---|
+| [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | Телефон на Android | [@udhaykumarbala](https://github.com/udhaykumarbala) |
+| [Tellyscope](https://github.com/man15h/tellyscope) | Телефон на Android | [@man15h](https://github.com/man15h) |
+| [TidyTV](https://github.com/jolan94/tidytv) | Телефон на Android, Google Play | [@jolan94](https://github.com/jolan94) |
+| [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac і Windows | [@wingedpanther](https://github.com/wingedpanther) |
+
+Ці застосунки — незалежні проєкти, не пов'язані з CleanYourTV чи його мейнтейнером і не схвалені ними; кожен
+надається «як є» за власною ліцензією. Про проблеми із застосунком повідомляйте в його репозиторії. Більше на
+[cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 
@@ -458,10 +470,14 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/
 ## Історія
 
 17 жовтня 2026 року я опублікував [«до» і «після»](https://x.com/gathint/status/2111379569030939102) телевізора
-своїх батьків, очищеного Claude Code через Wi-Fi. Це зібрало 7,4 млн переглядів, люди почали робити те саме
+своїх батьків, очищеного Claude Code через Wi-Fi. Це зібрало 8,6 млн переглядів, люди почали робити те саме
 зі своїми телевізорами, і їхні відповіді перетворилися на списки тут: 170+ моделей телевізорів від 200+
-учасників за чотири дні. До 19-го репозиторій називався tv-vibehack; старі посилання працюють. Публікації
-відтоді — у [docs/PRESS.md](docs/PRESS.md).
+учасників за перші чотири дні. До 19-го репозиторій називався tv-vibehack; старі посилання працюють.
+
+Через два тижні репозиторій став №1 у трендах GitHub за тиждень 19–25 жовтня: понад 46 тис. зірок і 5,7 тис.
+форків, 1,4 млн переглядів і 260 тис. клонів за 14 днів. Тепер списки охоплюють 427 моделей телевізорів від
+111 брендів. Публікації: 412 статей з 54 країн і 229 відео на YouTube та Bilibili, усе в [docs/PRESS.md](docs/PRESS.md)
+(станом на 30 жовтня 2026 року).
 
 ## Долучитися
 

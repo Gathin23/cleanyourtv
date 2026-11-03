@@ -39,6 +39,26 @@
 # launcher/ took Home), rebooted twice with every entry still disabled and com.sony.dtv.applicationdisabler
 # re-enabling nothing; Home and every remote button checked the same day. Not yet lived with for
 # several days.
+#
+# Second unit: Sony BRAVIA VU2 (same product and device), used in India, on Android TV 14 (API 34),
+# build UKR1.240726.001. Still classic Android TV (stock home com.google.android.tvlauncher, Live TV
+# com.android.tv), with the same package set apart from Android 14's own modules, which stay enabled.
+# - The same list applied unchanged, plus com.google.android.videos (Play Movies & TV), which was still
+#   enabled on this unit. Play Games, YouTube Music, com.sony.dtv.ecodashboard and
+#   com.sony.dtv.b2b.vendorprotocol were already disabled before cleanup, so they are not listed.
+# - Home: tvlauncher answers HOME at priority 2. With it enabled, set-home-activity printed Success and
+#   Home stayed on tvlauncher; launcher/build-and-install.sh, which disables it first, made the handover
+#   stick. No setupwraith HOME activity; the saved Wi-Fi belongs to android.uid.system.
+# - Kept as well: com.google.android.tv.axel (remote and Bluetooth audio setup),
+#   com.google.android.tv.dfuservice (remote firmware updates) and com.sony.qrmt (purpose unclear).
+# - launcher/ needs live_tv_package set to com.android.tv in config.xml for Live TV to show in the
+#   Inputs menu. Inputs hidden in the TV's own settings (tv_input_hidden_inputs) stay out of it.
+# - Network ADB: Android 14 adds a Wireless debugging toggle (it was off). With USB debugging off and
+#   the authorisations revoked, tools/adb-closed.py reported 5555 refused after a reboot.
+# - Remote: Home, Input, Netflix, YouTube, Prime Video, the Settings gear and the mic work with no key
+#   helper, and a held Volume + still ramps. The TV boots straight into launcher/, not Live TV.
+# - Status: applied 2026-10-31 on one TV in four batches with a screenshot after each, and rebooted
+#   once with every entry still disabled. Not yet lived with for several days.
 
 # Telemetry, attribution and retail demo
 com.google.android.feedback              # Google feedback reporter
@@ -56,6 +76,7 @@ com.android.wallpaper.livepicker         # live wallpaper picker
 
 # Off by choice
 com.google.android.tts                   # Google text-to-speech (large; the TalkBack screen reader has no voice without it)
+com.google.android.videos                # Play Movies & TV (second unit; the first had it off already)
 # Off on this set by the owner's choice; uncomment to disable.
 # com.graymatrix.did                     # ZEE5
 com.google.android.backdrop              # Ambient screensaver; set the launcher's clock first:

@@ -109,15 +109,15 @@ def checkout(tmp, dutch: str | None = NL, german: str | None = DE):
 
 def numbers(text, words):
     """(models, brands, languages) as `text` states them in `words`, or None."""
-    found = re.search(rf"(\d+) {re.escape(words[0])} · (\d+) {re.escape(words[1])} · "
-                      rf"(\d+) {re.escape(words[2])} · ", text)
+    w = [gen_tables.word_pattern(word) for word in words]
+    found = re.search(rf"(\d+) {w[0]} · (\d+) {w[1]} · (\d+) {w[2]} · ", text)
     return tuple(int(n) for n in found.groups()) if found else None
 
 
 def alt_triple(text, words):
     """The card's alt text up to and including the three counts, so a stray second triple cannot match."""
-    found = re.search(rf'alt="(\d+ {re.escape(words[0])} · \d+ {re.escape(words[1])} · '
-                      rf'\d+ {re.escape(words[2])} · )', text)
+    w = [gen_tables.word_pattern(word) for word in words]
+    found = re.search(rf'alt="(\d+ {w[0]} · \d+ {w[1]} · \d+ {w[2]} · )', text)
     return found.group(1) if found else None
 
 
@@ -234,6 +234,38 @@ class TranslatedCountsTest(unittest.TestCase):
         self.assertIn("| Acme A | Android TV 11 |", dutch)
 
 
+class PluralFormsTest(unittest.TestCase):
+    """README.uk.md said "387 модель телевізорів · 103 брендів": Ukrainian changes the noun with the number,
+    so its words are (one, few, many) and the form follows the count."""
+
+    UK = gen_tables.TRANSLATIONS["README.uk.md"]
+
+    def test_the_form_follows_the_number(self):
+        models, brand, language = self.UK
+        for n, word, want in ((387, models, "моделей телевізорів"), (1, models, "модель телевізорів"),
+                              (21, models, "модель телевізорів"), (11, models, "моделей телевізорів"),
+                              (103, brand, "бренди"), (112, brand, "брендів"), (104, brand, "бренди"),
+                              (100, brand, "брендів"), (31, language, "мова"), (32, language, "мови"),
+                              (35, language, "мов"), (14, language, "мов")):
+            with self.subTest(n=n, want=want):
+                self.assertEqual(want, gen_tables.word_for(word, n))
+
+    def test_a_plain_word_does_not_change(self):
+        self.assertEqual("merken", gen_tables.word_for("merken", 1))
+        self.assertEqual("merken", gen_tables.word_for("merken", 103))
+
+    def test_a_page_in_the_wrong_form_is_rewritten_in_the_right_one(self):
+        page = 'alt="387 модель телевізорів · 103 брендів · 31 мова · лончер"\n\n| **31 мова** | x |\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = tree(Path(tmp), [("acme-a", tv("Acme A", "Acme")), ("acme-b", tv("Acme B", "Acme")),
+                                    ("bolt-c", tv("Bolt C", "Bolt"))])
+            entries = gen_tables.load(root)
+            out = gen_tables.counts(page, entries, root, self.UK)
+            l = gen_tables.languages(root)
+        self.assertIn(f"3 моделі телевізорів · 2 бренди · {l} {gen_tables.word_for(self.UK[2], l)} · ", out)
+        self.assertIn(f"| **{l} {gen_tables.word_for(self.UK[2], l)}** |", out)
+
+
 class ThisRepositoryTest(unittest.TestCase):
     """README.nl.md on this checkout: the mapping names its words, and a lagging page is what --check reports."""
 
@@ -242,8 +274,9 @@ class ThisRepositoryTest(unittest.TestCase):
         for page, words in gen_tables.TRANSLATIONS.items():
             with self.subTest(page=page):
                 self.assertEqual(3, len(words), f"{page}'s counts are stated in three words, not {words}")
-                self.assertTrue(all(word.strip() for word in words), words)
-                self.assertEqual(3, len(set(words)), f"{page} uses one word twice: {words}")
+                forms = [f for word in words for f in ([word] if isinstance(word, str) else word)]
+                self.assertTrue(all(f.strip() for f in forms), words)
+                self.assertEqual(len(forms), len(set(forms)), f"{page} uses one word twice: {words}")
                 text = (ROOT / page).read_text(encoding="utf-8")
                 self.assertIsNotNone(alt_triple(text, words),
                                      f"{page}'s card alt text does not state {words[0]} · {words[1]} · "

@@ -121,6 +121,22 @@
 # - TGuard (com.tcl.guard) and a store demo (fusion.android.tv.demo) ship enabled here and were disabled;
 #   they are listed, commented, at the end.
 #
+# Colombian unit: TCL 50S5K, 50" (G13, G13_2K_GB, MediaTek mt5867, 954 MB, build UKN2.241110.001 AU11,
+# security patch 2026-03-01, locale es-US). Applied in four batches on 2026-10-30 with a screenshot after each,
+# reboot-checked the same day (every disabled package stayed disabled, Home came back on launcher/, Wi-Fi
+# reconnected) and in daily use for three days with no problem reported.
+# - Disabled from this list: messagebox, logkit, gtvpai, partnersetup, browser, play.games, feedback,
+#   feedbackconsent, setupwraith and dreamx (after the screensaver was switched to ClockDream), then launcherx
+#   through launcher/build-and-install.sh. Kept: ttvs, partnercustomizer, katniss and Cast. MtkDemo was left
+#   alone. Disney+, YouTube and Live TV opened afterwards, and the Inputs menu listed HDMI 1, HDMI 2, Composite
+#   and Live TV.
+# - Unlike the Indonesian unit, tools/disable.sh disabled gtvpai here without TVINPUT_ALLOW=1.
+# - The only saved network belonged to setupwraith. Forgetting it and re-joining it once in Settings moved it to
+#   android.uid.system, so disabling setupwraith needed no FORCE_SETUPWRAITH and the TV stayed on Wi-Fi.
+# - No key helper was enabled. The owner reports Home, Input, the mic and the YouTube button all work, the gear
+#   does nothing, and holding volume still ramps; they kept it that way. The 123 button opens an on-screen
+#   media control panel.
+#
 # Known quirks on this firmware:
 # - The remote's gear button sends keycode 83 (KEYCODE_NOTIFICATION, scancode 561), which only launcherx
 #   handled: set settings_key_keycodes to [83] (config.xml or a theme) so it opens Settings again.

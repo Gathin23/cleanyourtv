@@ -39,6 +39,17 @@
 # BeyondTV instead of BeyondTV2, same AR05 build and the same preloaded set. Same four batches, then the
 # launcher, then one full reboot: every package still disabled, Home on the replacement launcher, Inputs
 # menu with HDMI 1-3 + AV + Live TV, YouTube and Chromecast (mediashell) running. One session only.
+#
+# Fourth unit (TCL 43A8, Indonesian market, ro.product.model BeyondTV, software V8-R851T02-LF1V674,
+# 2 GB), 2026-11-03: fingerprint TCL/BeyondTV/BeyondTV:11/PPR1.180610.011/AR04 - one build older than
+# the units above, with every package this list names present. Factory state differed: Netflix
+# (com.netflix.ninja), Prime Video, smartalexa and smartconnect.tv came disabled. The list went on in
+# three batches with overseasappshow first (com.tcl.esticker read enabled after the first run and took on
+# a rerun), then the launcher, then two full reboots: every package still disabled, Home on the
+# replacement launcher (boots through com.tcl.keycustomfunctionservice/.FallbackHome, no Live TV at
+# power-on), Inputs menu with HDMI 1-3 + AV + Live TV, Home, Input, Settings and app buttons working on
+# the real remote with no key helper. com.google.android.tv.remote.service was kept by choice there.
+# One session only.
 
 # --- The one non-obvious entry: TCL re-enables promo packages on every boot.
 # Without this line, com.tcl.MultiScreenInteraction_TV, com.tcl.notereminder and

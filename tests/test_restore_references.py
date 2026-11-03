@@ -59,7 +59,7 @@ PLACEHOLDERS = {"examples/il-tuo-modello/debloat.txt", "examples/your-model/debl
 FOLDER_SCRIPT = re.compile(r"(examples/[A-Za-z0-9._-]+/(?:restore|disable|install|build-and-install)\."
                            r"(?:sh|ps1))")
 # `tools/restore.sh <list> <stock launcher>`: the list is restore.sh's first argument, the stock
-# launcher its second (see its usage line and LIST=${1:?} / STOCK=${2:-...}). Both arguments are
+# launcher its second (see its usage line and LIST="${1:-}" / STOCK="${2:-...}"). Both arguments are
 # matched with no `.txt` required in the pattern, so a command that leaves the list out is read too.
 PAIR = re.compile(r"tools[/\\]restore\.sh\s+(\S+)\s+(\S+)")
 PACKAGE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+")

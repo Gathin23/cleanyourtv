@@ -21,6 +21,7 @@ public class ClockActivity extends Activity {
     private ClockScene scene;
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dream_clock);
@@ -58,6 +59,7 @@ public class ClockActivity extends Activity {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void finish() {
         super.finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

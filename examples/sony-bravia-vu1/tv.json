@@ -1,6 +1,6 @@
 {
-  "tv": "Sony BRAVIA VU1 (KD-43X7500H, BRAVIA_VU1_UC, Realtek)",
+  "tv": "Sony BRAVIA VU1 (KD-43X7500H, KD-65X750H, BRAVIA_VU1_UC, Realtek)",
   "os": "Android TV 11",
   "brand": "Sony",
-  "notes": "Realtek classic Android TV 11, 2 GB: Sony demo/help; Google feedback/partner setup/calendar/print/camera/gallery leftovers; Play Movies, TTS, Ambient and Assistant off by choice; Chromecast kept (about 31 MB PSS); the stock launcher outranks set-home-activity, so it is disabled after the new launcher (second unit: disable-user, reboot-checked); setupwraith answers HOME on the first unit, the second kept it; Live TV is `com.realtek.tv.atv`; wait 15 s before rebooting; [notes](sony-bravia-vu1/README.md)"
+  "notes": "Realtek classic Android TV 11, 2 GB: Sony demo/help; Google feedback/partner setup/calendar/print/camera/gallery leftovers; Play Movies, TTS, Ambient and Assistant off by choice; Chromecast kept (about 31 MB PSS); the stock launcher outranks set-home-activity, so it is disabled after the new launcher (second unit: disable-user, reboot-checked); setupwraith answers HOME on the first unit, the second and third kept it; third unit (KD-65X750H) kept Assistant and Ambient, 8 days; HDMI rows in the launcher's Inputs menu open a two-app chooser; Live TV is `com.realtek.tv.atv`; wait 15 s before rebooting; [notes](sony-bravia-vu1/README.md)"
 }

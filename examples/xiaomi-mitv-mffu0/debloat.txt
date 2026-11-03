@@ -48,6 +48,11 @@
 #   (com.xiaomi.miplay, com.xiaomi.mitv.smartshare, com.xiaomi.mi_connect_service,
 #   com.xiaomi.hyper_connect.tv), Mi Home (com.xiaomi.smarthome.tv), firmware updates
 #   (com.xiaomi.mitv.upgrade), the Hyper screensaver (com.xiaomi.mitv.hyper.screensaver, com.xiaomi.tweather).
+# - com.mitv.tvhome takes the short-press power key on this build, and the two screensaver packages
+#   (com.xiaomi.mitv.aod.screensaver, com.xiaomi.mitv.hyper.screensaver) draw the off screen: with the stock
+#   launcher disabled as the Home section below does, the power button stops turning the TV off. The chain,
+#   and the 2 s force-stop of every installed app that follows a screen-off with the settings key that
+#   stops it: docs/TROUBLESHOOTING.md#xiaomi-hyperos-3-the-power-key-does-nothing-and-music-stops-when-the-screen-goes-off
 # - A black screen right after a reboot with an HDMI-CEC set-top box plugged in is the box's CEC
 #   "active source" switching the TV to its port (HdmiCecLocalDeviceTv), not this list. Home brings
 #   the TV back; turning HDMI device control (CEC) off in the input settings stops it.

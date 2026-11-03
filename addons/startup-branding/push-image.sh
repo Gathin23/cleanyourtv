@@ -38,7 +38,13 @@ for F in "$@"; do
   SIZE=$(wc -c < "$F" | tr -d ' ')
   [ "$SIZE" -le 15728640 ] || { echo "$NAME is over 15 MB" >&2; exit 1; }
   "$PY" -I b64push.py "$F" "$TMP" >/dev/null || { echo "sending $NAME failed" >&2; exit 1; }
-  tv "content write --uri $URI/$SAFE < $TMP; rm -f $TMP" >/dev/null
+  # tv.py does not pass through the TV shell's exit status. Android's content command can also
+  # print a provider error and exit 0, so require a silent write and successful staging cleanup.
+  OUT=$(tv "write_out=\$(content write --uri $URI/$SAFE < $TMP 2>&1); write_rc=\$?; if rm -f $TMP && [ \"\$write_rc\" -eq 0 ] && [ -z \"\$write_out\" ]; then echo __STARTUP_PICTURE_OK__; else printf '%s\n' \"\$write_out\"; fi")
+  case "$OUT" in
+    *__STARTUP_PICTURE_OK__*) ;;
+    *) echo "$OUT" >&2; echo "sending $SAFE failed" >&2; exit 1 ;;
+  esac
   echo "sent $SAFE"
 done
 echo "Pick it on the TV: Startup & Branding, Custom Image, Picture."

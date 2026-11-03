@@ -110,9 +110,14 @@ What worked: Quiet TV's accessibility guard (`HomeGuardService`) plus `WRITE_SEC
 - the Home key flashes the stock home for 1–2 s before being redirected;
 - on this adbd, the guard's own ADB usage must be disabled or the PC is locked out (see Trap 3).
 
+## Verified
+
+Cold boot (power removed for 10 s, then reconnected) three times on 2026-10-31: all three landed on the replacement home with `boot_completed=1` and no stock home in the foreground. adbd answers about 90-100 s after power returns, so this checks the landing, not the intermediate frames. The boot ad still appeared once in three cold boots - a few seconds at the logo, before the relay runs - so the relay hides the stock home but does not remove the firmware ad.
+
+The power key on this set does not suspend it: the screen restarts from the logo and `/proc/uptime` resets, so a standby-wake test is not applicable here. Three power-key cycles were observed on screen and all landed on the replacement home; ADB confirmed the reboot and the landing for the first of them. The first Home press after each restart flashed the stock home for 1-2 s before the relay returned; later presses were direct.
+
 ## Untested
 
 - Other 9R5x chassis (package set is likely the same; `coocaa_guard` behaviour may differ)
-- Cold boot / standby wake (only ordinary reboot was verified)
 - Android 4.4 variants of the same generation
 - `persist.sys.bootvideo.time` on 9R52

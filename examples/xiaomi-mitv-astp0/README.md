@@ -67,3 +67,72 @@ keys, or remove them if they were absent. Keep the rest of the existing theme.
 
 The stock Xiaomi launcher and all system packages remained enabled on this
 unit. No Home/boot changes or debloat changes are part of this input fix.
+
+## Additional verification: MiTV-ASTP0, firmware 23.2.15.1886
+
+Tested on Xiaomi MiTV-ASTP0 (`mulan`), Android 9, firmware `23.2.15.1886`.
+
+### Default Home launcher
+
+On this firmware, setting `com.gathin.tvhome` as the default Home activity returned success, but Android continued resolving Home to `com.mitv.tvhome/.MainActivityUserMode`.
+
+Building CleanYourTV with an alternative application ID resolved the issue:
+
+```bash
+./gradlew assembleDebug -PlauncherApplicationId=com.ts.launcher --no-daemon
+```
+
+After installing the APK, the following command successfully assigned CleanYourTV as the default Home application:
+
+```bash
+adb shell cmd package set-home-activity --user 0 com.ts.launcher/com.gathin.tvhome.MainActivity
+```
+
+The new Home selection survived a reboot. Xiaomi's original launcher remained installed and enabled.
+
+### Remote-control behavior
+
+Enabling `HomeKeyService` with accessibility key filtering allowed direct Home-key interception, but holding Volume Up/Down stopped repeating. Individual volume presses continued working.
+
+Disabling accessibility key filtering restored held-volume adjustment. With `com.ts.launcher` registered as the default Home application, direct Home navigation and normal volume control both worked without an accessibility-based redirect or a server-side watcher.
+
+### HDMI switching
+
+The standard Android input-launching method produced the message "Not available on this TV."
+
+The Xiaomi-specific action worked when tested directly:
+
+```bash
+adb shell am start -a com.xiaomi.mitv.tvplayer.EXTSRC_PLAY -n com.xiaomi.mitv.tvplayer/.ExternalSourceActivity --ei input 23
+```
+
+The following values were configured in the launcher:
+
+```json
+{
+  "input_action": "com.xiaomi.mitv.tvplayer.EXTSRC_PLAY",
+  "input_sources": ["HW5=23", "HW6=24", "HW7=25", "HW1=2"]
+}
+```
+
+HDMI 1 was confirmed working with a Nintendo Switch 2. HDMI 2, HDMI 3 and AV 1 were configured but not individually verified.
+
+### Debloating
+
+Seven Xiaomi packages were successfully disabled through ADB without rooting the device. In particular, `com.xiaomi.wakeupservice` was observed consuming approximately 60% of one CPU core before being disabled.
+
+The following seven packages were disabled using `pm disable-user --user 0`:
+
+```text
+com.xiaomi.wakeupservice
+com.miui.analytics
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.mitv.cloudcontrol
+com.xiaomi.mitv.tvpush.tvpushservice
+com.mitv.shoplugin
+```
+
+The stock Xiaomi launcher (`com.mitv.tvhome`) remained enabled. All seven packages were confirmed disabled for user 0, but long-term stability has not yet been verified.
+
+No firmware flashing or root access was required.

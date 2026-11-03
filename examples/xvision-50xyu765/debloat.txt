@@ -1,0 +1,47 @@
+# X.Vision 50XYU765 ("XYU Series", MAADIRAN), CVTE board TP.MT9632.PC752 (MediaTek m7332), Android 11, firmware 20221215_115723
+# Build m7332_eu-userdebug 11 RP1A.200720.011, security patch 2021-03-05. 1.5 GB RAM (low_ram), 1920x1080, Mali-G52. Iran.
+# Not Google TV: CVTE's own launcher (com.cvte.tv.launcher.space, "LauncherSpace4") and settings (com.cvte.settings);
+# no Developer options. ADB is in CVTE's factory menu; README.md in this folder has the steps.
+# Tested on one set for two days (31 Oct to 2 Nov 2026) with the reference launcher; nothing came back. Notes in README.md.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xvision-50xyu765/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xvision-50xyu765/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.cvte.tv.launcher.space (+ .skin). Keep it ENABLED: it is the only HOME, there is no FallbackHome.
+# Live TV: com.cvte.tv.setting/.TvSettingActivity. Source picker: com.cvte.tv.globalui/.InputSourceActivity.
+# Play Store (com.android.vending) and Play Services (com.google.android.gms) were disabled when the tested set was
+# first read, then enabled again on their own the same evening; this list does not touch them.
+# Kept on purpose: com.cvte.tvservice, com.cvte.tv.api.impl (the TIF player: inputs, tuner), com.cvte.tv.setting
+# (live TV, channel keys), com.cvte.tv.globalui (source menu), com.mediatek.tvinput, com.mediatek.tv.service,
+# com.cvte.settings, com.cvte.tv.media (USB media browser, opens when a drive is plugged in), com.iqqijni.tv1.keyboard
+# (the on-screen keyboard), com.cvte.tv.bluetoothguide (remote pairing), com.cvte.tv.systemupgrade (firmware updates),
+# com.cvte.tv.ucservice and com.cvte.tv.taskmanager (unknown, run from boot), and the factory packages
+# com.cvte.fac.menu, com.cvte.factory.*, com.skyworth.factory.at, com.cvte.tv.tools, com.cvte.tv.burn and
+# com.cvte.license.at (never launched, never disabled).
+
+# CVTE ads
+com.cvte.wonder.cloud.service     # "UniAdService", starts at boot
+
+# Manufacturer content
+com.cvte.tv.pictorial             # screensaver with ads ("Invisible Art" tile on the stock home)
+com.cvte.tv.steward               # "TV Assistant" cleaner / optimiser
+com.cvte.tv.weather               # the stock launcher's weather (~54 MB resident); keep it if you keep the stock launcher
+fusion.android.tv.demo            # RetailDisplay store demo loop
+
+# Remote customer service
+com.cvte.tv.remotedebug           # ifpdos customer service with a screen-recorder service, runs in the background;
+                                  # the Super General CVTE list keeps it, nothing missed it here
+
+# Google extras
+com.google.android.feedback
+
+# Casting: off on the tested set by the owner's choice; uncomment to disable
+# com.ecloud.eshare.server          # EShare ("Kindlink" tile) phone casting, starts at boot; with the next two ~150 MB
+# com.ecloud.eairplay               # EShare AirPlay receiver
+# com.ecloud.emedia                 # EShare DLNA renderer
+# com.mediatek.androidbox           # WFDSinkTest: the Miracast receiver
+
+# CVTE app store. The stock launcher's Apps grid and "AppStore" tile are its AppSelectActivity, and the firmware has
+# no other app list or uninstall screen, so keep it if you keep the stock launcher. The tested set turned it off.
+# com.stark.store

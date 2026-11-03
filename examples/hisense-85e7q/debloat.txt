@@ -1,0 +1,85 @@
+# Hisense 85E7Q (ro.product.model "VIDAA_TV", device MT9655, board mt5877), China. Android 14 (SDK 34),
+# build UQ1A.240105.004.A1 / 07.02.70.202605250010, security patch 2024-08-05, 3.7 GB RAM, arm64-v8a.
+# Android reports the retail name only in ro.build.description ("E7Q-user ..."), so identify this unit by
+# ro.build.fingerprint or by the build id above: ro.product.model, ro.product.name and ro.product.device
+# are "VIDAA_TV", "VIDAA_TV" and "MT9655", which every Hisense China set on this board answers.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-85e7q/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-85e7q/debloat.txt com.jamdeo.tv.vod
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-11-02 in batches with a screenshot after each, then one cold boot and one power
+# cycle (unplugged). Nothing came back on at boot and no app crashed. Working after it: Home (a
+# replacement launcher, see the end of this file), the remote, the Inputs panel with the HDMI rows
+# switching, Wi-Fi, ADB, and APK installs from a side-loaded store. With that launcher in front,
+# MemAvailable read 860 MB of the 3.7 GB. Not tested: Live TV and the tuner (no antenna on this unit),
+# HDMI-CEC, and casting from a phone.
+#
+# ADB: ro.adb.secure=0 and service.adb.tcp.port=5555, so the USB debugging switch alone opens 5555 to
+# every device on the LAN with no "Allow USB debugging?" prompt. Turn that switch off when the work is
+# done and confirm the port refuses connections (tools/adb-closed.py <tv ip>).
+#
+# What this list leaves alone, and why, is at the bottom: two of those packages cost an input row or a
+# keyboard the moment they go, and one of them was tried.
+
+# Advertising
+com.hisense.business.ad                # ad SDK
+com.hisense.service.ad                 # ad service
+
+# Telemetry and reporting
+com.hisense.platformreport             # platform data reporter
+com.hisense.logupload                  # log uploader
+com.hisense.hitv.das                   # DasApp reporter (JuUI)
+
+# Vendor push channel
+com.hisense.service.message
+
+# Retail, hotel, meeting-room and first-run modes
+com.hisense.demonstrate                # shop demo loop
+com.hisense.hotelmenu                  # hotel mode menu
+com.meetingroom                        # meeting-room mode, answers HOME at -100
+com.jamdeo.tv.fte                      # first-run wizard (already past)
+
+# Preloaded content and gimmicks
+com.hisense.electronictutorial          # electronic manual
+com.vision.aibook                       # AI picture book
+com.hisense.tv.fitmirror                # fitness mirror
+com.hisense.tv.videochat.social         # preloaded video chat
+com.hisense.tv.videoconference          # video conferencing
+com.hisense.tv.weather                  # stock weather tile
+com.jamdeo.calendar                     # calendar
+com.ju.miguvideoTV.cmcc                 # Migu Video, carrier preload
+
+# Stock launcher (JuUI 聚好看). This unit ran the launcher swap, so it is off here. Disabling it does not
+# leave the TV without a Home: com.keylab.speech.view.vidaa and com.hisense.widget.pro answer HOME at
+# -150 and stay enabled, so tools/disable.sh's Home guard lets this line through. Keeping the stock Home
+# instead? Comment this line out and drop the second argument to restore.sh.
+com.jamdeo.tv.vod
+
+# ============================================================================
+# Kept on purpose
+# ============================================================================
+# - com.hisense.tv.tiletransition, signal-source switching. Tried and re-enabled: with it off the Inputs
+#   panel still draws and the HDMI rows still highlight, but choosing one switches nothing. This is the
+#   one package on this firmware that looks optional and is not.
+# - com.hisense.tv.inputs, com.jamdeo.tv.livetv: the panel and the tuner app the panel starts.
+# - com.keylab.speech.view.vidaa, com.hisense.widget.pro: the two other Home candidates (see above).
+#   keylab is the JuUI "second screen" home with a hot-list chart row on top; it is also what a cold boot
+#   falls back to when a launcher is not direct-boot aware, which is why it stays enabled.
+# - com.hispeech.ai.area, com.keylab.speech.core.vidaa, com.iflytek.xiri, com.intelligent.speech,
+#   com.hisense.msvoicetome, com.hisense.vidaaassistant: the voice chain, and the last one also handles
+#   app installs and permissions. A replacement launcher that reads its own app list needs it.
+# - com.sohu.inputmethod.sogou.tv: the only keyboard on this build. Without it no text field accepts
+#   input, including a Wi-Fi password.
+# - com.jamdeo.updateservice, com.hisense.usbupgrade, com.hisense.playerupdate: OTA, left on so firmware
+#   updates still arrive. Comment them out only if you have decided against them.
+# - com.vt.permission.manager, com.hisense.tv.globalui, com.hisense.tv.baseservice, com.hisense.hiservice:
+#   the JuUI layer under the settings and permission screens.
+# - com.hisense.aiot, com.hisense.aiod, com.hisense.bluetoothpair, com.hisense.raycodereceiver: smart-home
+#   link, remote pairing and the IR/code receiver.
+# - com.hisense.childlock, com.jamdeo.screensaver, com.ms.ucast.ucastapp, com.ms.weshare,
+#   com.hisense.multiscreen.screenhelper, com.hisense.pcm.share, com.hisense.nas.pt,
+#   com.hisense.nasservice, com.kookong.tvplus: all live on the "maybe you use it" line - child lock, the
+#   screensaver, phone and PC casting, the NAS browser and the remote-control helper. Off only by choice.
+# - com.hisense.service.hproxy, com.vt.atlas, com.vision.palette, com.ju.tv.audio: purpose not established
+#   on this build, so nothing here claims they are safe.

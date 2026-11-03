@@ -1,4 +1,4 @@
-# Sony BRAVIA VU1 (KD-43X7500H, product BRAVIA_VU1_UC, Realtek SoC), 2 GB RAM, armeabi-v7a
+# Sony BRAVIA VU1 (KD-43X7500H, KD-65X750H, product BRAVIA_VU1_UC, Realtek SoC), 2 GB RAM, armeabi-v7a
 # Android TV 11 (API 30, classic Android TV, not Google TV), build RTT7.210105.001/366.60436
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-vu1/debloat.txt
@@ -47,6 +47,21 @@
 #   live_tv_package com.realtek.tv.atv (the stock "TV" tile); config.json in this folder sets it.
 # - Remote: Input and the settings button are vendor keys (EV_KEY 0x225, 0x254) handled by the firmware. They
 #   kept working with the stock launcher disabled and no key helper enabled, and holding Volume still ramps.
+#
+# Third unit (KD-65X750H, US/Canada, same product BRAVIA_VU1_UC and build 366.60436, on Ethernet, 2026-10-22):
+# a subset of this list plus four more, applied with tools/disable.sh in three batches with a screenshot and
+# crash-log check after each, then launcher/build-and-install.sh, then a reboot. Lived with for 8 days, nothing
+# re-enabled. It kept Assistant (katniss), the Ambient screensaver (backdrop), TTS, tvrecommendations,
+# setupwraith, providers.calendar, gallery3d, htmlviewer and livepicker, and added play.games and the Sony
+# auto-installs config (below) plus YouTube Music and Disney+ (commented out, owner's choice).
+# - setupwraith again claimed no HOME with tvlauncher disabled; it owns one saved Wi-Fi network on this unit, so
+#   check the cname before disabling it on a set that uses Wi-Fi.
+# - Remote: Netflix, YouTube, Prime Video, Input and the mic button were pressed on the real remote with the
+#   stock launcher disabled and katniss kept: all work, no key helper. `dumpsys window policy` routes no key to
+#   tvlauncher. The Help key goes to com.sony.dtv.smarthelp, so it does nothing once that line is applied.
+# - HDMI rows in the launcher's Inputs menu open an "Open with: TV / TV" chooser: com.android.tv and
+#   com.realtek.tv.atv both answer the passthrough URI, and "Always" is never applied. Either choice plays the
+#   input; the Input key goes through smartui and has no chooser.
 
 # Sony demo and help
 com.sony.dtv.demo                        # retail demo mode
@@ -64,12 +79,16 @@ com.android.camera2                      # the set has no camera
 com.android.gallery3d                    # legacy photo viewer
 com.android.htmlviewer                   # local HTML viewer
 com.android.wallpaper.livepicker         # live wallpaper picker
+com.google.android.play.games            # Play Games (third unit, 8 days)
+android.autoinstalls.config.Sony.BRAVIA_VU1 # Play partner auto-installs (third unit, 8 days)
 
 # Off by choice (owner does not use them)
 com.google.android.videos                # Play Movies & TV
 com.google.android.tts                   # Google text-to-speech; ~227 MB RSS at baseline; the TalkBack screen reader has no voice without it
 com.google.android.backdrop              # Ambient screensaver, ~108 MB RSS at baseline
 com.google.android.katniss               # Assistant / voice search, ~110-125 MB RSS at baseline; the remote's mic stops
+# com.google.android.youtube.tvmusic     # YouTube Music: the third unit's owner disabled it (8 days)
+# com.disney.disneyplus                  # Disney+: the third unit's owner disabled it (8 days)
 
 # Launcher handover: install the replacement launcher first and confirm Home, then disable these
 com.google.android.tvrecommendations     # launcher recommendations rows; the SHIELD phone remote also stops without it

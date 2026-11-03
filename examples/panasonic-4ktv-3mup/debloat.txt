@@ -1,4 +1,5 @@
 # Panasonic 4KTV-3MUP (MOKA R4_GTV, Realtek rtd2851m), Taiwan, Google TV 14 (SDK 34), build UKR1.260308
+# Also: Panasonic TH-65MX660DX (reports 4KTV-3MUP, PANASONIC_NFF), India, Google TV 14, build UKR1.250803
 # Same platform as docs/devices/acer-r4g.md: com.android.tv.settings' FallbackHome re-enables a hard-coded
 # list of packages at every boot. Never disable launcherx or setupwraith here (setupwraith also owns Wi-Fi).
 #
@@ -39,6 +40,23 @@ com.chocolabs.app.chocotv.tv
 tv.twitch.android.app
 jp.or.nhk.nhkworld.tv
 com.apps.usbmediaplayer
+
+# Android and MOKA extras, disabled on the TH-65MX660DX (India) and still off after a cold boot and 6 days;
+# commented out until the HDMI inputs are checked with them off (the Taiwan unit never ran them)
+# com.android.captiveportallogin                # hotel/café Wi-Fi sign-in page: re-enable if you need one
+# com.android.certinstaller                     # installing CA or Wi-Fi certificates by hand
+# com.android.companiondevicemanager            # companion-app pairing dialogs
+# com.android.dynsystem                         # Dynamic System Updates (GSI testing)
+# com.android.localtransport                    # local backup transport
+# com.android.managedprovisioning               # work-profile / device-owner setup
+# com.android.pacprocessor                      # proxy auto-config: re-enable if your network uses a PAC proxy
+# com.android.providers.contacts
+# com.android.se                                # Secure Element service
+# com.android.vpndialogs                        # VPN consent dialogs: re-enable before setting up a VPN app
+# com.android.wallpaper.livepicker
+# com.apps.plugins
+# com.mk.tv.systemserver
+# com.realtek.leanbacklauncher.partnercustomizer
 
 # Kept on purpose: launcherx + setupwraith (see above), com.realtek.tv* / com.realtek.dtv (Live TV, HDMI, AV),
 # key handlers (keyinterceptserver, globalkeyhandler, smartkey, virtualkey, fivekey, bluetoothremote),

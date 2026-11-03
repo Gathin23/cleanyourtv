@@ -1,0 +1,6 @@
+{
+  "tv": "Panasonic GS655 (Skyworth-built SW1, shibuya, MediaTek m5621)",
+  "os": "Android TV 9",
+  "brand": "Panasonic",
+  "notes": "Skyworth auto-installs, retail demo and Demo Now, e-manual, MediaTek PQ test tool, Google feedback, recommendations, partner customizer and bug report sender; Assistant, Chromecast, screensaver and Play Games off by choice; remote OTA updater com.airoha.ble.ota and streaming apps kept; stock tvlauncher replaced by reference launcher; reboot-checked. Keep com.mediatek.* and factory packages."
+}

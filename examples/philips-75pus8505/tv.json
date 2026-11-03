@@ -1,6 +1,6 @@
 {
-  "tv": "Philips 75PUS8505/12 (TP Vision TPM191E, PH9M_EA_5599, MediaTek MT5887), Europe",
+  "tv": "Philips 75PUS8505/12 / 58PUS8555/12 (TP Vision TPM191E, PH9M_EA_5599, MediaTek MT5887), Europe",
   "os": "Android TV 12",
   "brand": "Philips",
-  "notes": "Same board and firmware as `philips-tpm191e/`, the 2020 \"The One\": DAC/GEL analytics, usage logger, Top Picks, app gallery, retail demo, Alexa, Play-Fi soft AP; Assistant off by choice, Chromecast and DLNA (for Média) kept; keep `fastip`, the SOURCES drawer dies without it; Play-Fi itself re-enables at boot, so it is left out"
+  "notes": "Same board and firmware as `philips-tpm191e/`, the 2020 \"The One\": DAC/GEL analytics, usage logger, Top Picks, app gallery, retail demo, Alexa, Play-Fi soft AP; Assistant off by choice, Chromecast and DLNA (for Média) kept; keep `fastip`, the SOURCES drawer dies without it; Play-Fi itself re-enables at boot, so it is left out; a 58PUS8555/12 in Italy took the same list unchanged, with Apple TV and YouTube Music off too, and booted to Live TV with the new Home on the Home key"
 }

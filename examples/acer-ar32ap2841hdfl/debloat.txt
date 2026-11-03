@@ -1,0 +1,47 @@
+# Acer P Series AR32AP2841HDFL 32" HD (SCBC R1, Realtek RTD2841), India, Android TV 11, firmware RTT7.220308.001
+# Build RTT7.220308.001, incremental 1014, software version V8-T841TNF-LF2V029
+# Fingerprint: ACER/ACER/R1:11/RTT7.220308.001/1014:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/acer-ar32ap2841hdfl/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/acer-ar32ap2841hdfl/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (disabled only after replacement launcher is installed)
+# Live TV and inputs: com.realtek.tv.passthrough, com.realtek.dtv, com.android.tv
+#
+# Notes from this TV:
+# - Kept in use: Live TV & HDMI inputs (com.realtek.tv.*), remote key handlers (com.realtek.keyinterceptserver,
+#   com.apps.smartkey, com.apps.virtualkey, com.apps.bluetoothremote), Bluetooth (com.android.bluetooth),
+#   Google Cast / Miracast (com.google.android.apps.mediashell, com.creative.fastscreen.tv), Gboard,
+#   Google Play Store & Play Services, setupwraith (kept for boot safety).
+# - Streaming apps kept: YouTube, Netflix, Disney+ Hotstar, Prime Video, Zee5 (com.ziggapp.tv).
+# - Saved Wi-Fi network belongs to android.uid.system, not setupwraith.
+# - Private DNS (dns.adguard-dns.com) works in hostname mode.
+
+# SCBC / Google telemetry and feedback
+com.apps.function.gdpr                       # SCBC data-consent agent
+com.google.android.feedback                  # Google feedback bug reporter
+android.autoinstalls.config.scbc.device      # Play auto-installs of partner apps
+com.google.android.partnersetup              # Google partner setup / RLZ pings
+com.realtek.leanbacklauncher.partnercustomizer # partner config injecting rows into stock launcher
+com.google.android.tvrecommendations         # sponsored and recommendation rows on stock Home
+
+# OEM background bloat, demo, cleaner and unneeded services
+com.apps.esticker                            # ShowService overlay, demo stickers
+com.apps.eshow                               # E-SHOW in-store demo / promo
+com.apps.clear                               # "TV Booster" cleaner
+com.apps.networkspeed                        # speed test app
+com.apps.timeclock                           # WorldClock
+com.apps.wifihotspot                         # TV as a Wi-Fi hotspot
+com.apps.function.audiolink                  # Audio Link
+com.apps.channels                            # "S-Channel" content rows on stock Home
+com.vewd.core.service                        # Vewd app-store / HbbTV core service
+com.google.android.apps.nbu.smartconnect.tv  # Smart Connect
+
+# Streaming apps (unselected by user)
+# com.sonyliv                                  # Sony LIV; off on the owner's set, kept on in the shared list
+# com.google.android.youtube.tvmusic           # YouTube Music; off on the owner's set, kept on in the shared list
+
+# Firmware updaters (turned off by the owner; commented out so updates keep coming)
+# com.apps.ota                                 # System OTA updater; off on the owner's set, kept on in the shared list
+# com.apps.authota                             # Auth OTA updater; off on the owner's set, kept on in the shared list
