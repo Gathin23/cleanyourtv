@@ -28,7 +28,8 @@ of your own that exists, and the push it ends with replaces the theme on the TV 
 wallpapers, so a mistyped path would leave a one-key theme behind.
 
 On Windows, theme install and set use PowerShell (pwsh, or powershell when pwsh is not on PATH), without loading
-profiles or changing execution policy. Add-ons with their own shell installer still need Bash. A theme install
+profiles or changing execution policy. Add-ons with their own shell installer still need Bash; an install whose bash
+or Gradle wrapper cannot start says which and what to install, and exits 1 before anything is built or pushed. A theme install
 takes only its name; script arguments belong to add-ons. If set saves the local file but the push fails, it
 reports that separately: the TV may have received only part of the theme.
 
@@ -400,11 +401,23 @@ def push_theme(command):
         return 1
 
 
+def cannot_start(program, error, fix):
+    """A build or installer that never started: nothing ran, so name the program, why, and what to do."""
+    sys.stderr.write(f"cannot start {program}: {reason(error)}. {fix} Nothing was built, pushed or installed.\n")
+    return 1
+
+
 def install_addon(item, extra):
     folder = ROOT / "addons" / item["id"]
     if item["script"]:
         # The creator's own script, as their README says to run it.
-        return run(["bash", str(folder / item["script"])] + extra, ROOT)
+        try:
+            return run(["bash", str(folder / item["script"])] + extra, ROOT)
+        except OSError as e:
+            where = ("on Windows, install Git for Windows (it brings Git Bash) or WSL"
+                     if sys.platform == "win32" else "install it with your package manager")
+            return cannot_start("bash", e, f"{item['id']}'s installer is {item['script']}, a Bash script: "
+                                           f"{where}, and put bash on PATH.")
     if extra:
         sys.stderr.write(f"{item['id']} has no custom installer, so install takes only its name, "
                          f"not {' '.join(extra)!r}: {USAGE_LINES['install']}. "
@@ -413,7 +426,12 @@ def install_addon(item, extra):
     # No script: the steps addons/README.md gives for every add-on.
     # Windows resolves a relative program against this process's directory, not cwd, so give the full path.
     gradlew = str(folder / "gradlew.bat") if os.name == "nt" else "./gradlew"
-    code = run([gradlew, "assembleRelease"], folder)
+    try:
+        code = run([gradlew, "assembleRelease"], folder)
+    except OSError as e:
+        return cannot_start(gradlew, e, f"{item['id']} builds with the Gradle wrapper in addons/{item['id']}/, "
+                                        f"so restore it from this checkout (git checkout -- addons/{item['id']}) "
+                                        f"and make sure it is executable.")
     if code:
         return code
     apk = folder / "app" / "build" / "outputs" / "apk" / "release" / "app-release.apk"
