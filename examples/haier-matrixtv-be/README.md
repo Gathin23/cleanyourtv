@@ -8,7 +8,7 @@ the CleanYourTV launcher both worked on this set.
 
 | File | Purpose |
 |---|---|
-| `debloat.txt` | The 9 TV packages confirmed disabled, with choices and restore notes |
+| `debloat.txt` | The eight TV packages it disables, and the HaiCast line left commented out for mirroring; choices and restore notes |
 | `config.json` | Four dock apps and the two physical remote-button mappings |
 
 The stock Home is `com.google.android.apps.tv.launcherx`; Live TV is
