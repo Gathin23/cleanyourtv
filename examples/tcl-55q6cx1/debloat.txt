@@ -3,7 +3,9 @@
 # MediaTek MT9618 (ro.board.platform merak), 3 GB RAM, ro.adb.secure=1.
 #
 # Same G08 board family as examples/tcl-g08-eu-android12. This list is that list, tailored and verified
-# package by package on this live 55Q6CX1 unit: all 20 entries below are disabled, reboot-checked and verified.
+# package by package on this live 55Q6CX1 unit: 20 packages were disabled there - the 17 this list applies,
+# plus the three duplicate WebViews it leaves commented out, which check the active provider first - and the
+# run was reboot-checked.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q6cx1/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q6cx1/debloat.txt com.google.android.apps.tv.launcherx
