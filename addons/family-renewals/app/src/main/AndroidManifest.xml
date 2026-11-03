@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="false"
+        android:banner="@drawable/tv_banner"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
