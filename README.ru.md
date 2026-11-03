@@ -149,20 +149,19 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 
 <!-- tv-brands:end -->
 
-**Find your TV:** search [cleanyour.tv/tvs](https://cleanyour.tv/tvs) or the full table in
+**Найдите свой телевизор:** используйте поиск на [cleanyour.tv/tvs](https://cleanyour.tv/tvs) или полную таблицу в
 [examples/README.md](examples/README.md).
 
-Your TV not here? The prompt discovers the bloat itself. Add your list afterwards and the next
-person with your model skips that step: [CONTRIBUTING.md](CONTRIBUTING.md).
+Вашего телевизора здесь нет? Промпт сам найдет мусорное ПО. Добавьте свой список после очистки, и следующему человеку с такой же моделью не придется делать это заново: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Doing it by hand
+## Ручная настройка
 
-Everything the assistant does, you can run yourself. Two things have to be on the computer first:
+Все, что делает кодинг-ассистент, вы можете выполнить сами. Сначала на компьютере должны быть установлены две вещи:
 
-| You need | For |
+| Что нужно | Для чего |
 |---|---|
-| **Python 3** (any 3.x) | The tools. The venv command below installs what they import. |
-| **JDK 17 through 22** (a full JDK, including `jlink`) and **Android SDK platform 34** with **build-tools 34.0.0 or any newer 34.x** | Building the launcher. JDK 23 and newer stops Gradle 8.9. Platform 34 is the one the build reads; a newer platform does not replace it. On macOS, when none of these is installed: `brew install openjdk@17 android-commandlinetools`, then `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. On Linux the install script looks in `~/Android/Sdk` and for `java` on your PATH. |
+| **Python 3** (любая версия 3.x) | нструменты. Команда venv ниже установит необходимые зависимости. |
+| **JDK 17 through 22** (полная JDK, включая `jlink`) и **Android SDK platform 34** с **build-tools 34.0.0 or any newer 34.x** | Сборка лаунчера. JDK 23 и новее ломают работу Gradle 8.9. Сборка использует именно Platform 34; более новая платформа ее не заменяет. В macOS, если ничего не установлено: `brew install openjdk@17 android-commandlinetools`, затем `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. В Linux скрипт установки ищет в `~/Android/Sdk` и проверяет наличие `java` в вашем PATH. |
 
 `tools/tv.py` talks to network ADB on port 5555. If that port stays closed and the TV offers
 Wireless debugging with a pairing code (the Chromecast with Google TV and the Google TV Streamer
@@ -175,7 +174,7 @@ has both, with the pairing steps.
 
 ```bash
 python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt
-export TV_HOST=192.168.1.50                                   # your TV's IP address
+export TV_HOST=192.168.1.50                                   # IP-адрес вашего телевизора
 
 tools/venv/bin/python -I tools/tv.py --probe                 # model, Android version, firmware
 tools/venv/bin/python -I tools/tv.py 'pm list packages'      # one shell command on the TV
