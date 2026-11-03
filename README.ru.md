@@ -199,17 +199,13 @@ tools/theme.sh themes/aurora                                 # применит�
 | [`tools/race_calendar.py`](tools/race_calendar.py) | Записывает календарь Формулы-1 текущего сезона в тему для режима гоночного уик-энда, используя бесплатный API Jolpica. |
 | [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | Собирает ужатый релиз (около 561 КБ), устанавливает его, переключает HOME и откатывает изменения, если главный экран не переключился на него. |
 
-The scripts never leave the TV without a Home app: they only disable a stock launcher they recognise,
-and skip the Home app in a list until another launcher answers HOME. Your own lists can live outside
-the repository: list paths are relative to the directory you run from, and absolute paths work too.
+Скрипты никогда не оставляют телевизор без приложения HOME: они отключают только распознаваемый ими стандартный лаунчер и пропускают приложение HOME в списке, пока другой лаунчер не начнет отвечать за HOME. Ваши собственные списки могут находиться вне репозитория: пути к спискам задаются относительно директории, из которой вы запускаете скрипт, также работают абсолютные пути.
 
 <details>
 <summary><b>Windows (PowerShell)</b></summary>
 
-Every script has a PowerShell twin next to it. Install Python 3 and a JDK from 17 through 22, and
-in the SDK Manager add platform 34 and build-tools 34 (34.0.0 or any newer 34.x). The script uses
-`JAVA_HOME` when it points at a JDK in that range, and otherwise Android Studio's bundled JDK when
-that JDK is in the same range:
+У каждого скрипта есть PowerShell-аналог рядом. Установите Python 3 и JDK версий от 17 до 22, а в SDK Manager добавьте platform 34 и build-tools 34 (34.0.0 или любую новее из ветки 34.x). Скрипт использует
+`JAVA_HOME`, если он указывает на JDK из этого диапазона, а в противном случае — встроенную JDK Android Studio, если она тоже попадает в этот диапазон:
 
 ```powershell
 python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt
@@ -219,51 +215,37 @@ powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost 192.168.1.50 
 powershell -ExecutionPolicy Bypass -File tools\theme.ps1 -TvHost 192.168.1.50 themes\aurora
 ```
 
-The last two are the undo and a theme push, the `tools/restore.sh` and `tools/theme.sh` lines the
-sections above give in bash. On Google TV the undo takes the stock launcher as well:
+Последние две команды - это отмена изменений и применение темы, аналоги строк `tools/restore.sh` и `tools/theme.sh` из разделов выше для bash. В Google TV отмена также затрагивает стандартный лаунчер:
 `-Stock com.google.android.apps.tv.launcherx`.
 
 </details>
 
 <details>
-<summary><b>How the scripts protect Home</b></summary>
+<summary><b>Как скрипты защищают главный экран</b></summary>
 
-The install scripts ask the TV which launcher owns Home and only disable one they recognise, the four
-in `KNOWN_STOCK_LAUNCHERS`: `com.google.android.tvlauncher`, `com.google.android.apps.tv.launcherx`,
-`com.google.android.leanbacklauncher` and Xiaomi's `com.mitv.tvhome` (PatchWall). Pass
-`STOCK_LAUNCHER=<package>` (`-StockLauncher`) to override, or `none` to leave it alone.
+Скрипты установки спрашивают телевизор, какой лаунчер владеет главным экраном, и отключают только распознаваемый, один из четырех в `KNOWN_STOCK_LAUNCHERS`: `com.google.android.tvlauncher`, `com.google.android.apps.tv.launcherx`,
+`com.google.android.leanbacklauncher` и Xiaomi' `com.mitv.tvhome` (PatchWall). Передайте
+`STOCK_LAUNCHER=<package>` (`-StockLauncher`) чтобы переопределить его, или `none`, чтобы оставить без изменений.
 
-`tools/disable.sh` (`disable.ps1`) applies the same rule before it disables anything:
+`tools/disable.sh` (`disable.ps1`) применяет то же правило перед отключением чего-либо:
 
-- If the list contains the app that owns Home and no other app on the TV answers HOME, it skips that
-  entry, says why, and disables the rest of the list. So a list applied before the launcher handover
-  cannot leave the TV with nothing to start.
-- The setup wizard, the settings apps, a vendor `FallbackHome` and factory-test apps (Xiaomi's
-  `com.duokan.factorytest`) answer HOME too and don't count.
-- On Google TV it also keeps the owner while setupwraith answers HOME and stays enabled (not listed, or
-  kept for the Wi-Fi network): setupwraith answers ahead of an installed launcher that is not Home yet,
-  so it would take Home.
+- Если в списке есть приложение, владеющее HOME, и никакое другое приложение на телевизоре не отвечает за HOME, оно пропускает эту запись, объясняет почему и отключает остальные пункты списка. Таким образом, список, примененный до передачи управления лаунчеру, не может оставить телевизор без главного экрана.
+- Мастер первоначальной настройки, приложения настроек, вендорский `FallbackHome` и приложения заводских тестов (Xiaomi
+  `com.duokan.factorytest`) тоже отвечают за HOME и не учитываются.
+- В Google TV он также сохраняет владельца, пока setupwraith отвечает за HOME и остается включенным (не указан в списке или сохранен для Wi-Fi сети): setupwraith отвечает раньше установленного лаунчера, который еще не стал главным экраном, поэтому он перехватил бы HOME.
 
-Run the same list again once `launcher/build-and-install.sh` has made the new launcher Home and the
-entry is applied; `FORCE_HOME=1` (`$env:FORCE_HOME`) disables it anyway.
+Запустите тот же список еще раз, когда `launcher/build-and-install.sh` сделает новый лаунчер главным экраном, и запись будет применена; `FORCE_HOME=1` (`$env:FORCE_HOME`) отключит его в любом случае.
 
 </details>
 
-## The microphone, and what can be said about it
+## Микрофон и что о нем можно сказать
 
-"Which of these packages is listening?" has no honest one-line answer: a permission scan shows fifty
-system packages with `RECORD_AUDIO` that record nothing, and ACR clients see the screen with no audio
-permission at all. [`tools/privacy.py`](tools/privacy.py) reports what the TV actually says, with the
-evidence for each voice, ACR and telemetry candidate:
-`TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py`, and `--write` turns them into a normal
-debloat list. What the audit cannot do is prove intent: [docs/privacy.md](docs/privacy.md) explains why.
+На вопрос «Какой из этих пакетов прослушивает?» нет честного ответа в одну строку: сканирование разрешений показывает пятьдесят системных пакетов с `RECORD_AUDIO` , которые ничего не записывают, а клиенты ACR видят экран вообще без разрешения на доступ к аудио. [`tools/privacy.py`](tools/privacy.py) rсообщает то, что телевизор реально говорит, с доказательствами для каждого кандидата на голосовой сбор, ACR и телеметрию:
+`TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py`, а `--write`превращает их в обычный список для очистки. Чего аудит сделать не может, так это доказать умысел: [docs/privacy.md](docs/privacy.md) объясняет почему.
 
-## The launcher
-
-A small native home screen for Android TV: **about 572 KB**, plain Java, built for TVs with 1 GB of RAM.
-No blur, no video, no network permission, no background services. The **TV** needs Android 8.0 (API 26)
-or newer, the `minSdk` in [`launcher/app/build.gradle`](launcher/app/build.gradle); what is left on an older
-set is in [Troubleshooting](docs/TROUBLESHOOTING.md).
+## Лаунчер
+Небольшой нативный главный экран для Android TV: **весит около 572 KB**, чистая Java, создан для телевизоров с 1 ГБ ОЗУ.
+Без размытия, без видео, без разрешений на доступ к сети, без фоновых сервисов. **Телевизор** должен быть на Android 8.0 (API 26) или новее, `minSdk` указан в [`launcher/app/build.gradle`](launcher/app/build.gradle); ; что остается на более старых моделях, описано в [Устранение неполадок](docs/TROUBLESHOOTING.md).
 
 | What | How it works |
 |---|---|
