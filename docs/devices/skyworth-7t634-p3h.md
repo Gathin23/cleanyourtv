@@ -15,8 +15,8 @@ and firmware below. K3 Pro and other K3 boards or firmware are not covered.
 | Firmware | `TP1A.220624.021.A1 / eng.www-da.20260902.162554 / user / release-keys` |
 | Physical display / Android UI | 3840 x 2160 / 1920 x 1080, 240 dpi |
 | Launcher source tested | `v3.1.0`; Android version name `3.1`, version code `10` |
-| Locally built application ID | `com.coocaa.cleanhome` |
-| Main activity | `com.coocaa.cleanhome/com.gathin.tvhome.MainActivity` |
+| Owner's tested application ID | `com.coocaa.cleanhome` (historical local build, not a recommended ID) |
+| Owner's tested main activity | `com.coocaa.cleanhome/com.gathin.tvhome.MainActivity` |
 | Main test date | 2026-10-29 |
 
 No root, flashing or changes to `/system`. The stock Coocaa launcher remained enabled and the
@@ -42,34 +42,27 @@ setting the Android Home preference alone. Standby/wake, mains-off cold boot and
 not tested. The Inputs check covered the entry and list, not actual HDMI switching, port mapping,
 CEC or ARC. The theme check did not establish long-running photo rotation.
 
-## Local launcher build
+## Owner's local build observations
 
 The tested launcher was built from this repository's `v3.1.0` source with the existing
 `launcherApplicationId` Gradle property set to `com.coocaa.cleanhome`. Its Java activity name stayed
-`com.gathin.tvhome.MainActivity`.
+`com.gathin.tvhome.MainActivity`. These identify the owner's tested build. For a new custom build,
+keep the upstream application ID or choose your own neutral application ID rather than a vendor
+prefix such as `com.coocaa.*`.
 
-The existing `MAIN + LEANBACK_LAUNCHER` filter in
-`launcher/app/src/main/AndroidManifest.xml` also had `HOME` added:
-
-```xml
-<intent-filter>
-    <action android:name="android.intent.action.MAIN" />
-    <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-    <category android:name="android.intent.category.HOME" />
-</intent-filter>
-```
-
-The separate `HOME + DEFAULT` filter was retained. Home on Fire sends the target an intent containing
-both `HOME` and `LEANBACK_LAUNCHER`; this combined filter matched that launch path on Android 13.
-The same filter arrangement had previously allowed the helper to open the owner's FreeTV build.
+The owner also added `HOME` to the existing `MAIN + LEANBACK_LAUNCHER` intent filter in the local
+manifest, retaining the separate `HOME + DEFAULT` filter. Home on Fire sent the target an intent
+containing both categories, and this combined filter matched that launch path on Android 13.
+The same arrangement had previously allowed the helper to open the owner's FreeTV build. This is
+an observation about those local builds, not a manifest-editing recipe for other installations.
 
 A local Simplified Chinese morning-greeting string and Chinese weather-add-on resources were also
 used. These were text changes, not a demonstrated fix for display or Home takeover.
 
 Package renaming and the combined filter were not independently removed and retested with this
-CleanYourTV build, so neither is established as a requirement for every K3. The `com.coocaa` prefix
-does not confer a vendor signature or system-app privileges: this was still a locally signed user
-app. Keep the application ID and signing key consistent for later updates.
+CleanYourTV build, so neither is established as a requirement for every K3. No benefit from using
+a vendor prefix was established. The tested APK was still a locally signed user app, without a
+vendor signature or system-app privileges.
 
 ## Installation confirmation
 
@@ -77,17 +70,8 @@ An ADB installation opens Coocaa's on-TV confirmation dialog. Select **继续安
 before its countdown expires. Letting the dialog time out or leaving its default refusal selected
 can produce `INSTALL_FAILED_USER_RESTRICTED`; that result is not a successful installation.
 
-After installation, the tested component could be opened explicitly:
-
-```sh
-adb shell am start -W -n com.coocaa.cleanhome/com.gathin.tvhome.MainActivity
-```
-
-Confirm the physical TV shows an operable desktop. The Android Home preference was then set with:
-
-```sh
-adb shell cmd package set-home-activity --user 0 com.coocaa.cleanhome/com.gathin.tvhome.MainActivity
-```
+After installation, the owner explicitly opened the local launcher and confirmed an operable
+desktop on the physical TV, then selected that installed build as Android's default Home over ADB.
 
 This firmware's physical Home key and boot path also use vendor logic. The successful setup kept
 the stock launcher enabled and used the external helpers below; a successful command or a focused
@@ -97,9 +81,9 @@ activity name alone does not verify those paths.
 
 | Helper | Tested configuration |
 | :--- | :--- |
-| [Home on Fire](https://github.com/toolicious/home-on-fire), 1.5.2 | Accessibility service enabled; target `com.coocaa.cleanhome`; **Map custom buttons** on; Launcher mapping matches stock `com.tianci.movieplatform` |
+| [Home on Fire](https://github.com/toolicious/home-on-fire), 1.5.2 | Accessibility service enabled; target was the owner's local launcher listed above; **Map custom buttons** on; Launcher mapping matches stock `com.tianci.movieplatform` |
 | Home on Fire other switches | **Replace Amazon Home** off; its own **Launch on boot** off |
-| [Launch on Boot](https://github.com/ITVlab/Launch-On-Boot), 1.4.0 | **Enabled** on; target `com.coocaa.cleanhome`; **Live channels** and **Wakeup** off |
+| [Launch on Boot](https://github.com/ITVlab/Launch-On-Boot), 1.4.0 | **Enabled** on; target was the same local launcher; **Live channels** and **Wakeup** off |
 | Coocaa process policy | The two helpers retained the per-app autostart permission and background-retention settings already used with FreeTV |
 
 Home on Fire watches for stock Home and opens the replacement launcher. Launch on Boot starts the
@@ -113,18 +97,13 @@ retains that app's behavior; the helper acts when the matched stock page appears
 ### Volume continues changing after a single press
 
 In a later follow-up, one press of Volume Up or Volume Down could leave the volume increasing or
-decreasing continuously. The owner traced this to the auxiliary app watching the launcher and had
-Codex repair it locally. This is a helper-side follow-up, not a CleanYourTV launcher patch.
-
-On a similar setup, an AI assistant can help inspect the active Home/accessibility helper, its
-volume-key handling and the relevant logs. Verify single Volume Up and Volume Down presses and
-key release with the physical remote after changing the helper. The symptom alone does not
-establish one shared code fix for every helper or firmware.
+decreasing continuously. The owner traced this to the auxiliary Home/accessibility app watching
+and redirecting the launcher.
 
 ## Chinese date and Coocaa Inputs
 
-For this application ID, the local config is
-`/sdcard/Android/data/com.coocaa.cleanhome/files/config.json`. The relevant settings were:
+The local config is `/sdcard/Android/data/<application-id>/files/config.json`, using the ID of the
+installed launcher. The relevant settings on this unit were:
 
 ```json
 {
@@ -152,7 +131,7 @@ existing vendor-source support: the Inputs button listed HDMI1, HDMI2, 视频 (A
   background's opacity: 100% was opaque; 30% was about 30% opaque. It did not fade app icons or the
   entire desktop.
 - With a custom application ID, theme pushes, the config directory and ThemeProvider must all use
-  that ID (`content://com.coocaa.cleanhome.theme/` here). Preserve locale, lunar date and
+  the installed ID (`content://<application-id>.theme/`). Preserve locale, lunar date and
   `coocaa_sources` when applying a theme's config. The tested photo theme was later removed from
   use; photo themes do not establish video-screensaver support.
 
