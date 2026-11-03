@@ -66,22 +66,36 @@ having if you run `HomeKeyService` here.
 
 ## Config (GMUI settings service)
 
-```bash
-TV_HOST=<projector ip> tools/theme.sh examples/xgimi-h3
-```
-
 GMUI's settings is a **service, not an activity**: the standard `android.settings.SETTINGS` /
 `WIFI_SETTINGS` actions resolve to nothing, and the vendor entry only answers its own action
 `XGimiSettingAction` on `com.android.newsettings/com.xgimi.newsettings.SettingService`, with the page
 to open carried as a string extra named `data` (`main` for the front page,
-`Settings://com.xgimi.settings.net/wifi` for Wi-Fi). [`config.json`](config.json) sets that on the
-launcher so the header's Settings button, the quick panel's TV-settings row and the Wi-Fi pill start
-the service directly instead of landing on a debug entry point the user would have to click through.
-Leave those keys empty on any other firmware and the launcher falls back to the usual settings intent.
+`Settings://com.xgimi.settings.net/wifi` for Wi-Fi). The launcher's **settings-service** feature (a
+separate change, which also adds this folder's `config.json`) reads these keys from the theme overlay
+so the header's Settings button, the quick panel's TV-settings row and the Wi-Fi pill start the
+service directly instead of landing on a debug entry point the user would have to click through:
 
-`config.json` also sets `open_on_start_choice`, which turns on the launcher's "Open on start" row:
-pick the cast receiver (LeanCast) there once and it opens after each boot. The receiver's own
-boot-autostart foreground service brings it back even if the launcher is not the one to open it.
+```json
+{
+  "open_on_start_choice": true,
+  "settings_service": "com.android.newsettings/com.xgimi.newsettings.SettingService",
+  "settings_service_action": "XGimiSettingAction",
+  "settings_service_extra": "data",
+  "settings_page": "main",
+  "settings_page_wifi": "Settings://com.xgimi.settings.net/wifi"
+}
+```
+
+Push it once the launcher settings-service feature is in:
+
+```bash
+TV_HOST=<projector ip> tools/theme.sh examples/xgimi-h3
+```
+
+Leave the `settings_*` keys empty on any other firmware and the launcher falls back to the usual
+settings intent. `open_on_start_choice` turns on the launcher's "Open on start" row: pick the cast
+receiver (LeanCast) there once and it opens after each boot. The receiver's own boot-autostart
+foreground service brings it back even if the launcher is not the one to open it.
 
 ## Cast
 

@@ -1,8 +1,0 @@
-{
-  "open_on_start_choice": true,
-  "settings_service": "com.android.newsettings/com.xgimi.newsettings.SettingService",
-  "settings_service_action": "XGimiSettingAction",
-  "settings_service_extra": "data",
-  "settings_page": "main",
-  "settings_page_wifi": "Settings://com.xgimi.settings.net/wifi"
-}
