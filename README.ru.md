@@ -1,83 +1,82 @@
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
+  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Ваш телевизор - без рекламы. Удалите мусорный софт с любого Android TV или Google TV по Wi-Fi и замените заполненный рекламой домашний экран на чистый лаунчер, выглядящий как Apple TV. Без рут-прав, без кабелей, ничего не удаляется полностью, а возврат к исходному состоянию делается одной строкой" width="800"></a>
 </p>
 
 <p align="center">
-  Read in: <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
+  Read in: <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.ru.md">Русский</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Stars"></a>
-  <a href="https://github.com/Gathin23/cleanyourtv/pulls?q=is%3Amerged"><img src="https://img.shields.io/github/issues-search?query=repo%3AGathin23%2Fcleanyourtv%20is%3Apr%20is%3Amerged&style=flat&cacheSeconds=1800&label=merged%20PRs&color=cfffcf&labelColor=15181e" alt="Merged PRs"></a>
-  <a href="https://github.com/Gathin23/cleanyourtv/network/members"><img src="https://img.shields.io/github/forks/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Forks"></a>
-  <a href="https://github.com/Gathin23/cleanyourtv/graphs/contributors"><img src="https://img.shields.io/github/contributors/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Contributors"></a>
-  <a href="https://buymeacoffee.com/gathint"><img src="https://img.shields.io/badge/support-%E2%9D%A4-ff5e8a?style=flat&labelColor=15181e" alt="Support, buy me a coffee"></a>
-  <a href="https://www.producthunt.com/products/cleanyourtv"><img src="https://img.shields.io/badge/Product%20Hunt-upvote%20%E2%96%B2-da552f?style=flat&logo=producthunt&logoColor=white&labelColor=15181e" alt="CleanYourTV on Product Hunt"></a>
+  <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Звезды"></a>
+  <a href="https://github.com/Gathin23/cleanyourtv/pulls?q=is%3Amerged"><img src="https://img.shields.io/github/issues-search?query=repo%3AGathin23%2Fcleanyourtv%20is%3Apr%20is%3Amerged&style=flat&cacheSeconds=1800&label=merged%20PRs&color=cfffcf&labelColor=15181e" alt="Объединенные запросы на слияние"></a>
+  <a href="https://github.com/Gathin23/cleanyourtv/network/members"><img src="https://img.shields.io/github/forks/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Форки"></a>
+  <a href="https://github.com/Gathin23/cleanyourtv/graphs/contributors"><img src="https://img.shields.io/github/contributors/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Авторы"></a>
+  <a href="https://buymeacoffee.com/gathint"><img src="https://img.shields.io/badge/support-%E2%9D%A4-ff5e8a?style=flat&labelColor=15181e" alt="оддержите меня, угостите кофе"></a>
+  <a href="https://www.producthunt.com/products/cleanyourtv"><img src="https://img.shields.io/badge/Product%20Hunt-upvote%20%E2%96%B2-da552f?style=flat&logo=producthunt&logoColor=white&labelColor=15181e" alt="CleanYourTV на Product Hunt"></a>
 </p>
 
 <p align="center">
-  <a href="https://trendshift.io/repositories/310225"><img src="docs/trending-badge.png" alt="#1 trending repo of the week, Oct 19–25 2026, via trendshift.io" width="360"></a>
+  <a href="https://trendshift.io/repositories/310225"><img src="docs/trending-badge.png" alt="Репозиторий №1 в трендах за неделю (19–25 октября 2026 г.) - по данным trendshift.io" width="360"></a>
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="427 TV models · 111 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 396 more: 412 articles from 54 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="427 моделей телевизоров · 111 брендов · 31 язык · лаунчер объемом 572 КБ. О нас писали: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP и еще 396 изданий — всего 412 статей из 54 стран. До: стандартный домашний экран Google TV со спонсорской рекламой. После: лаунчер Clean Your TV." width="800"></a>
 </p>
 
-## Start here
+## С чего начать
 
-| You have | Go to |
+| Что у вас есть | Куда перейти |
 |---|---|
-| **An Android TV or Google TV** | [Quick start](#quick-start): a coding assistant does the work in about fifteen minutes. |
-| **A Samsung, LG, Roku, Vizio or Hisense VIDAA TV** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV can't run there, but you can turn off the tracking with your remote. |
-| **A phone or laptop, no coding agent** | One of the [community apps](https://cleanyour.tv/app) for Android phones, Mac and Windows, made by independent developers. |
-| **Want to see it first** | [What you get](#what-you-get): screenshots of the new home screen. |
+| **Android TV или Google TV** | [Быстрый старт](#Быстрый-старт): кодинг-ассистент сделает всю работу примерно за пятнадцать минут. |
+| **Samsung, LG, Roku, Vizio или Hisense VIDAA TV** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV cам не запустится, но вы можете отключить отслеживание с помощью пульта. |
+| **Телефон или ноутбук, без кодинг-ассистента** | One of the [community apps](https://cleanyour.tv/app) для телефонов на Android, Mac и Windows - от независимых разработчиков. |
+| **Хотите сначала взглянуть что получите** | [Что вы получаете](#Что-вы-получаете): скриншоты нового главного экрана. |
 
-**Official links:** [cleanyour.tv](https://cleanyour.tv) and this repo. Other domains using the name, such as
-cleanyourtv.com, are not run by this project ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)).
-CleanYourTV publishes no app in any app store, and clean-your-tv.net is not ours either.
+**Официальные ссылки:** [cleanyour.tv](https://cleanyour.tv) и этот репозиторий. ругие домены, использующие это имя, такие как
+cleanyourtv.com, не имеют отношения к данному проекту ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)).
+Мы не выпускаем никаких приложений ни в одном магазине приложений, а сайт clean-your-tv.net нам также не принадлежит.
 
-[How it works](#how-it-works) · [Quick start](#quick-start) · [What you get](#what-you-get) ·
-[Supported TVs](#supported-tvs) · [Doing it by hand](#doing-it-by-hand) · [The launcher](#the-launcher) ·
-[Restoring](#restoring-your-tv) · [Firmware updates](#after-a-firmware-update) ·
-[Questions](#questions-people-ask) · [Contributing](#contributing)
+[Как это работает](#Как-это-работает) · [Быстрый старт](#Быстрый-старт) · [Что вы получаете](#Что-вы-получаете) ·
+[Поддерживаемые TV](#Поддерживамые-TV) · [Ручная настройка](#Ручная-настройка) · [Лаунчер](#Лаунчер) ·
+[Восстановление](#Восстановление) · [После обновления прошивки](#После-обновления-прошивки) ·
+[Вопросы](#Вопросы) · [Участие в проекте](#Участие-в-проекте)
 
-## How it works
+## Как это работает
 
-Android TVs have the same debug bridge as Android phones. Switch on USB debugging in the TV's
-developer options, allow your computer once, and the rest is standard Android tooling:
+В Android TV используется тот же способ отладки что и на Android-смартфонах. Включите отладку по USB в настройках разработчика телевизора,
+один раз разрешите доступ своему компьютеру, а дальше в дело вступают стандартные инструменты Android:
 
-| Step | What happens |
+| Шаг | Что происходит |
 |---|---|
-| **Back&nbsp;up** | The list of installed packages and settings. |
-| **Disable** | The manufacturer's telemetry, ad services, content rows and preloaded junk, with `pm disable-user`. Nothing is uninstalled, so a restore script can undo every step. |
-| **Install** | A small native launcher, made the default home screen. |
+| **Резервное копирование** | Список установленных пакетов и настроек. |
+| **Отключение*** | Отключаются телеметрия производителя, рекламные сервисы, ряды контента и предустановленный мусор с помощью `pm disable-user`. Ничего не удаляется, поэтому скрипт восстановления может отменить любое действие. |
+| **Установка** | Небольшой специальный лаунчер, установленный в качестве главного экрана по умолчанию. |
 
-**No root, no cable, nothing uninstalled, and a one-line restore if you change your mind.**
+**Без root-прав и кабеля, ничего не удаляется, и восстановление одной командой, если вы передумаете.**
 
-The bloat differs by brand, so the prompt has your coding assistant discover it on your TV and ask
-before touching anything you might use.
+Объём предустановленного «лишнего» ПО зависит от бренда, поэтому кодинг-ассистент сначала обнаружит его на телевизоре и спросит разрешения, прежде чем вносить какие-либо изменения в то, чем вы, возможно, пользуетесь.
 
-## Quick start
+## Быстрый старт
 
-| You have | Do this |
+| Если у вас есть | Делайте это |
 |---|---|
-| **A computer** | Use the prompt with a coding assistant: the three steps below. |
-| **A computer, no coding assistant** | Run the three steps yourself: the commands are in [Doing it by hand](#doing-it-by-hand). |
-| **A phone or laptop, no coding assistant** | Pick one of the [community apps](https://cleanyour.tv/app): free, open-source apps built on these TV lists by independent developers. |
+| **Компьютер** | Используйте промпт с кодинг-асисстентом: три шага ниже. |
+| **Компьютер, но нет кодинг-ассистента** | Выполните три шага самостоятельно: команды описаны в разделе [Ручная настройка](#Ручная-настройка). |
+| **Только смартфон на Android** | Используйте созданное сообществом приложение [community apps](https://cleanyour.tv/app): Бесплатные приложения с открытым исходным кодом, созданные независимыми разработчиками на основе списка Поддерживаемых TV. |
 
-The three steps below are written for a coding assistant: the computer needs to be on the same Wi-Fi as
-the TV, with a shell on it, plus Python 3, a JDK from 17 through 22, and Android SDK platform 34
-with build-tools 34 (the assistant builds the launcher there).
-Without an assistant, [Doing it by hand](#doing-it-by-hand)
-is the same job, run by you, and it has the install commands.
+Три шага ниже написаны для ИИ-ассистента: компьютер должен быть подключен к той же Wi-Fi сети,
+что и телевизор, иметь командную оболочку, а также установленные Python 3, JDK версий от 17 до 22 и Android SDK platform 34
+с build-tools 34 (помощник собирает лаунчер именно там).
+Без ИИ-ассистента перейти в раздел [Ручная настройка](#Ручная-настройка)
+В разделе есть все те же действия, которые вы выполняете сами, а также необходимые команды для установки.
 
-Any of these work: Claude Code (on [0G Private Computer](https://pc.0g.ai/?utm_source=cleanyourtv&utm_medium=github&utm_campaign=readme) or an [Anthropic plan](https://claude.com/pricing)), [Codex](https://github.com/openai/codex), [Gemini CLI](https://github.com/google-gemini/gemini-cli) or [Antigravity CLI](https://antigravity.google/product/antigravity-cli).
+Подойдет любой из них: Claude Code ([0G Private Computer](https://pc.0g.ai/?utm_source=cleanyourtv&utm_medium=github&utm_campaign=readme) или по тарифу [Anthropic plan](https://claude.com/pricing)), [Codex](https://github.com/openai/codex), [Gemini CLI](https://github.com/google-gemini/gemini-cli) или [Antigravity CLI](https://antigravity.google/product/antigravity-cli).
 
-| Where | What to do |
+| Где | Что делаем |
 |---|---|
-| **1. On the TV** | Settings → Device Preferences → About → press OK on **Build** seven times → back → Developer options → **USB debugging** on. If you see a Network or ADB debugging toggle, turn that on too. Keep the TV on. |
-| **2. On your computer** | Clone the repo and open that folder in your assistant (`git clone https://github.com/Gathin23/cleanyourtv`), then paste [`PROMPT.md`](PROMPT.md) and fill in your TV model. |
-| **3. Follow along** | Accept "Allow USB debugging?" on the TV, then answer the checklist: which apps you use, the dock size and app order, whether to keep the voice assistant, Chromecast and updates. |
+| **1. На вашем TV** | SНастройки → Настройки устройства → Об устройстве → нажать "ОК" на пункте **Номер сборки** семь раз → назад → Для разработчиков → Включить **Отладка по USB**. Если видите переключатель отладки по сети или ADB, включите и его. Оставьте телевизор включенным. |
+| **2. На вашем компьютере** | лонируйте репозиторий и откройте эту папку в вашем ассистенте (`git clone https://github.com/Gathin23/cleanyourtv`), затем вставьте [`PROMPT.md`](PROMPT.md) и укажите модель вашего телевизора. |
+| **3. Следуйте инструкциям** | Подтвердите «Разрешить отладку по USB?» на телевизоре, затем ответьте на вопросы из чек-листа: какие приложения вы используете, размер панели быстрого доступа и порядок приложений, оставлять ли голосового помощника, Chromecast и обновления. |
 
 Cloning matters: the assistant reuses this repo's `tools/disable.sh` and `launcher/build-and-install.sh`
 instead of writing its own, and that is where the backup, the Home guard and the restore record live.
