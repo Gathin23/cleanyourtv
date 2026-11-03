@@ -39,7 +39,7 @@ cleanyourtv.com, не имеют отношения к данному проек
 [Как это работает](#Как-это-работает) · [Быстрый старт](#Быстрый-старт) · [Что вы получаете](#Что-вы-получаете) ·
 [Поддерживаемые TV](#Поддерживамые-TV) · [Ручная настройка](#Ручная-настройка) · [Лаунчер](#Лаунчер) ·
 [Восстановление](#Восстановление) · [После обновления прошивки](#После-обновления-прошивки) ·
-[Вопросы](#Вопросы) · [Участие в проекте](#Участие-в-проекте)
+[Вопросы](#Частые-вопросы) · [Участие в проекте](#Участие-в-проекте)
 
 ## Как это работает
 
@@ -416,7 +416,7 @@ lвместо общей Wi-Fi сети: либо Tailscale на их телев
 
 </details>
 
-## The story
+## История
 
 17 октября 2026 года я опубликовал [До и После](https://x.com/gathint/status/2111379569030939102) телевизора своих родителей, очищенного Claude Code через Wi-Fi. Это собрало 8,6 млн просмотров, люди начали делать то же самое со своими телевизорами, и их ответы превратились в списки здесь: 170+ моделей телевизоров от 200+ участников за первые четыре дня. До 19-го репозиторий назывался tv-vibehack; старые ссылки работают.
 
@@ -424,49 +424,50 @@ lвместо общей Wi-Fi сети: либо Tailscale на их телев
 
 ## Участие в проекте
 
-The most useful contribution is your TV's debloat list, so the next person with that model does
-not have to rediscover it. [CONTRIBUTING.md](CONTRIBUTING.md) has the format and the testing we ask for.
-Contributing through a coding agent? [AGENTS.md](AGENTS.md) gives it the same rules.
+Самый полезный вклад – список очищенного для вашего телевизора, чтобы следующему человеку с такой же моделью телевизора как у вас не
+пришлось делать все шаги повторно. [CONTRIBUTING.md](CONTRIBUTING.md) содержит формат и тестирование, которые мы
+просим. Присоединяетесь через агента? [AGENTS.md](AGENTS.md) дает ему те же правила.
 
-| How to help | What it means |
+| Как помочь | Что это означает |
 |---|---|
-| **Your TV's debloat list** | The most useful one: the next person with that model skips the discovery. |
-| **Launcher and prompt** | Launcher improvements and sharper prompt wording are welcome too. |
-| **Built something on top?** | A launcher, a port, a theme: add it to [SHOWCASE.md](SHOWCASE.md), where a hundred and ninety-six projects already live, sorted into home screens, forks, add-ons, tools and other platforms, with an index by TV brand. |
+| **Список очищенного ** | Самый полезный вариант: следующий человек, работающий с этой моделью, пропускает этап подбора настроек. |
+| **Лаунчер и промпт** | Улучшения лаунчера, а также более точные формулировки в промпте тоже будут кстати. |
+| **Сделали что-то свое поверх этого репозитория?** | Лаунчер, порт или тема - добавьте их в [SHOWCASE.md](SHOWCASE.md). Там уже представлено 196 проектов, распределённых по категориям: домашние экраны, форки, дополнения, инструменты и другие платформы, а также имеется указатель по брендам телевизоров. |
 
-The people whose work is in this repo:
+Люди, чья работа есть в этом репозитории:
 
-<a href="https://github.com/Gathin23/cleanyourtv/graphs/contributors"><img src="https://contrib.rocks/image?repo=Gathin23/cleanyourtv&columns=16&max=400" alt="Contributors"></a>
+<a href="https://github.com/Gathin23/cleanyourtv/graphs/contributors"><img src="https://contrib.rocks/image?repo=Gathin23/cleanyourtv&columns=16&max=400" alt="Участники"></a>
 
 <details>
 <summary><strong>Star history</strong></summary>
 
-<a href="https://star-history.com/#Gathin23/cleanyourtv&Date"><img src="https://api.star-history.com/svg?repos=Gathin23/cleanyourtv&type=Date" alt="Star history chart" width="640"></a>
+<a href="https://star-history.com/#Gathin23/cleanyourtv&Date"><img src="https://api.star-history.com/svg?repos=Gathin23/cleanyourtv&type=Date" alt="График истории звезд" width="640"></a>
 
 </details>
 
-## Contact
+## Контакты
 
-| For | Where |
+| Для чего | Где |
 |---|---|
-| **Questions about your TV** | [GitHub Discussions](https://github.com/Gathin23/cleanyourtv/discussions) |
-| **Press and queries** | [hello@itsgathin.com](mailto:hello@itsgathin.com) |
-| **Security issues** | Report them privately through the [Security tab](https://github.com/Gathin23/cleanyourtv/security), see [`SECURITY.md`](SECURITY.md) |
+| **Вопросы о вашем телевизоре** | [GitHub Discussions](https://github.com/Gathin23/cleanyourtv/discussions) |
+| **Пресса и запросы** | [hello@itsgathin.com](mailto:hello@itsgathin.com) |
+| **Вопросы безопасности** | Сообщайте о них в частном порядке через [вкладку «Безопасность» (Security)](https://github.com/Gathin23/cleanyourtv/security); смотрите [`SECURITY.md`](SECURITY.md) |
 
-## Legal
+## Правовая информация
 
-- CleanYourTV is an independent open-source project. It is not affiliated with, endorsed by or sponsored
-  by any TV maker or platform. Brand and model names are used only to say which TV a list was tested on,
-  and remain the trademarks of their owners.
-- It works only through settings the TV itself offers to its owner: Developer options, ADB debugging and
-  Android's own `pm disable-user`, the same switch as Settings > Apps > Disable. It does not root the TV,
-  flash firmware, or bypass any lock, DRM or copy protection, and the repo contains no manufacturer
-  software, firmware or APKs.
-- Nothing is uninstalled, and `tools/restore.sh` puts everything back. You run it on a TV you own, at your
-  own risk, and changing a TV's software may affect its warranty or support.
-- Everything here is provided as is, without warranty of any kind, under the MIT licence below.
+- CleanYourTV – независимый открытый проект. Он не связан ни с одним из производителей телевизоров или
+  платформой, не одобрен и не спонсирован ими. Названия брендов и моделей используются только чтобы
+  сказать, на каком телевизоре тестировали список и остаются торговыми марками их владельцев.
+- Он работает только через настройки, которые телевизор сам предлагает своему владельцу: «Опции для разработчиков»,
+  отладка ADB и собственный `pm disable-user` Android – тот самый переключатель, что и «Настройки →
+  Приложения → Выключить». Он не рутит телевизор, не прошивает его, не обходит ни один замок, DRM или защиту
+  от копирования и репозиторий не содержит программного обеспечения, прошивок или APK производителей.
+- Ничего не удаляется, и `tools/restore.sh` возвращает все вспять. Вы запускаете это на собственном телевизоре,
+  под собственную ответственность и изменение программного обеспечения телевизора может повлиять на его гарантию
+  или поддержку.
+- Все здесь предоставляется как есть, без гарантий, по лицензии MIT ниже.
 
-## Licence
+## Лицензия
 
-MIT, see [`LICENSE`](LICENSE). The Outfit typeface is under the SIL Open Font License, see
+MIT, смотрите [`LICENSE`](LICENSE). Шрифт Outfit – по SIL Open Font License, смотрите
 `launcher/FONT-LICENSE-OFL.txt`.
