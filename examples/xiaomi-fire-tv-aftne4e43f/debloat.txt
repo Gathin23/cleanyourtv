@@ -1,0 +1,64 @@
+# Xiaomi Fire TV (AFTNE4E43F, codename ginzaeu), Fire OS 8.1.8.5 / Android 11 (SDK 30), build RS8185.3885N,
+# Indian set with HDMI 1-3 and Composite inputs. Built from the Fire TV lists in examples/ (Fire OS 7 and 8),
+# keeping only packages present on this TV (264 system packages) and agreed on by most of those lists.
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher keeps HOME (protected); launcher/ does not apply.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-fire-tv-aftne4e43f/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-fire-tv-aftne4e43f/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled.
+#
+# Status: applied 2026-11-02, then applied again the same day after a factory reset; 38 of 38 disabled both
+# times, still disabled after two reboots. Checked after each run: Home, YouTube, HDMI input switching,
+# Display Mirroring from an Android phone (hold Home > Display Mirroring), Settings > Device & Software >
+# Developer options. Nothing broke.
+#
+# Kept on purpose: Alexa voice, casting (DIAL, Miracast via com.amazon.cast.sink, AirPlay), Prime Video,
+# Amazon Photos, Amazon Kids, firmware updates, Live TV and the input stack, Settings, the Appstore.
+# Protected on Fire OS, not listed: com.amazon.device.metrics, com.amazon.device.logmanager,
+# com.amazon.device.crashmanager, com.amazon.diode, com.fireos.usagestats.proxy, com.amazon.ftvads.deeplinking.
+# The hero banner and Amazon's own promo strips on Home stay: they come from the protected launcher's feed.
+
+# Telemetry and analytics
+com.amazon.tv.acr                        # Automatic Content Recognition; also reads HDMI input
+com.miui.tv.analytics                    # Xiaomi analytics (Firebase)
+com.amazon.client.metrics.api
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.perfc
+com.amazon.dp.logger
+com.amazon.ceviche
+com.amazon.tv.developer.dataservice
+com.amazon.wifilocker                    # uploads Wi-Fi passwords to Amazon
+com.amazon.neo.minerva.logcat
+com.amazon.device.telemetry.emitter
+
+# Ads, promotions and content rows
+com.amazon.kso.blackbird                 # sponsored banner and row sync
+com.amazon.sneakpeek
+com.amazon.hybridadidservice             # advertising ID
+com.amazon.hedwig                        # Fire TV Channels
+com.amazon.media.recommendations         # sponsored and recommendation rows
+com.amazon.tv.easyupgrade
+com.amazon.shoptv.client                 # Shop on Fire TV
+com.amazon.livedeviceservice
+com.amazon.gamehub
+com.amazon.spiderpork                    # Amazon Luna
+com.amazon.minitv.android.app            # Amazon miniTV
+com.amazon.privacypassservice
+com.amazon.providers.contentsupport
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.releasenotes
+com.amazon.tv.democontent.provider
+
+# Preloaded extras
+com.amazon.tmm.tutorial
+com.amazon.storm.lightning.tutorial
+com.amazon.bueller.music                 # Amazon Music
+com.amazon.cloud9                        # Silk browser
+com.amazon.tv.website_launcher           # Silk shortcuts on the home screen
+com.amazon.ods.kindleconnect
+com.amazon.whisperjoin.middleware.np
+com.amazon.whisperjoin.middleware.v2.np
+com.amazon.tv.ffsprovisioneeclient
