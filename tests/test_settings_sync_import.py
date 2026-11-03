@@ -47,6 +47,23 @@ class ImportTest(unittest.TestCase):
                             for command in adb.commands))
         self.assertNotIn("private account payload", stdout.getvalue())
 
+    def test_import_never_writes_into_the_targets_own_backup_dir(self) -> None:
+        """The app rewrites its own backup dir on the next backup, so a restore from it reads stale values."""
+        adb = FakeAdb(forbid_push=False, forbid_pull=True)
+        with tempfile.TemporaryDirectory() as directory:
+            archive = self.make_zip(directory)
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                status = settings_sync.import_backup(
+                    "tv", "io.yash.meetube.tv", "org.smarttube.beta", archive, False, adb)
+
+        self.assertEqual(status, 0)
+        own_dir = "/sdcard/Android/media/io.yash.meetube.tv/data/io.yash.meetube.tv/Backup"
+        self.assertFalse([remote for _payload, remote in adb.pushed if own_dir in remote])
+        self.assertFalse([command for command in adb.commands if own_dir in command])
+        self.assertTrue(any("/data/org.smarttube.beta/Backup/" in remote
+                            for _payload, remote in adb.pushed))
+
     def test_import_refuses_an_unknown_target_before_connecting(self) -> None:
         called: List[str] = []
 

@@ -8,6 +8,12 @@ The [`tools/settings_sync.py`](../../tools/settings_sync.py) tool exports the ap
 
 It does not install either app, pair ADB, create a backup before exporting, or change settings by itself. Make the backup in the app first, and install the same or a compatible app build on both TVs. The import copies files; the app applies them only after you choose the restore action.
 
+## Do not import into the app's own backup folder
+
+The import writes the backup under a folder named after the package the backup came from: `/sdcard/Android/media/<target>/data/<source package>/Backup`. Keep it that way.
+
+Writing the same files into the target app's own folder, the one named after the target package, looks equivalent and is not. The app rewrites that folder the next time it backs up, before any restore reads it, so the restore copies the old values back and the import silently does nothing. Measured on a Chromecast with Google TV 4K: a patched tree pushed over the target's own folder restored the previous settings, and only a tree under the source package's folder applied.
+
 ## Prerequisites
 
 - Turn on **Wireless debugging** on both TVs.
