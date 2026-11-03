@@ -38,7 +38,9 @@ Every brand ships different bloat. If you ran the prompt (or did it by hand) on 
 4. Add `examples/<brand>-<model>/tv.json`, the row the TV tables show for your list. Copy
    `examples/xiaomi-mi-tv-4a/tv.json`: `tv` (the model as the tables name it), `os`, `brand` (spelled as
    in the README's brand grid; a new brand is fine) and `notes` (one line: what the list disables and
-   keeps). One optional key, `readme_os`, is the OS cell of the short table in `README.nl.md` when it should
+   keeps). A package that line names in backticks with `kept`, `disabled` or `refused` straight after it is a
+   claim, and [`docs/workflows/tv-list.md`](docs/workflows/tv-list.md) step 4 has what the tests read it
+   against. One optional key, `readme_os`, is the OS cell of the short table in `README.nl.md` when it should
    read shorter than `os` does in `examples/README.md`. Change nothing outside your folder: the TV table in
    `examples/README.md`, the brand grid in the READMEs and the counts are generated from every folder's
    `tv.json` after merging, so a PR that edits them only collides with the other open lists.
