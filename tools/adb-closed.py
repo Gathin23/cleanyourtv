@@ -7,7 +7,8 @@ Exits 0 when the TV refuses the connection, 1 when the port is still open, and 2
 could not tell: nothing answered (the TV off, asleep or rebooting, at another address, or out of reach
 from here), nothing listened on 127.0.0.1, or the check itself could not run (a name that does not
 resolve or is not a hostname, no route to the TV, an address that is a URL or a path rather than an
-IP). Only the TV's own refusal shows the port closed.
+IP, or a word starting with a dash, which is a flag this check does not have). Only the TV's own
+refusal shows the port closed.
 
 On macOS a "No route to host" (`EHOSTUNREACH`) is also what Local Network privacy looks like: the
 permission belongs to the app that runs this check, not to python or adb, so a terminal that was never
@@ -77,10 +78,20 @@ def address_problem(word):
     fragment for a word that is an address of another kind - and `http://<tv ip>:5555` became a host
     literally named "http://<tv ip>:5555", whose lookup failed into the OSError branch's question about
     whether the TV is on, for a word this check cannot use. A page at the address (`<tv ip>:5555/`,
-    `<tv ip>/6/system`) read the same way. All of them exit 2 already; naming the word is what tells the
-    owner which of the two to fix.
+    `<tv ip>/6/system`) read the same way, and so did a flag from another tool (`--port 5555`, `-p 5555`),
+    which named no host at all. All of them exit 2 already; naming the word is what tells the owner which
+    of them to fix.
     """
     word = word.strip()
+    # A flag copied over from another tool (tools/restore.sh and tools/theme.sh refuse a dash-led word for
+    # the same reason): `--port 5555` and `-p 5555` went into getaddrinfo as a host named "--port", whose
+    # lookup failed into the OSError branch's question about whether the TV is on and on this network - a
+    # question about the TV's power for a word that names no host at all, at the step whose only answer
+    # counts. No hostname starts with a dash, so the word is the mistake, and naming it costs one sentence.
+    if word.startswith("-"):
+        return ("that is a flag, not the TV's address: this check takes the IP (or IP:port) as its first "
+                "word and the port as a second one, e.g.  tools/adb-closed.py <tv ip> 5555  (-h or --help "
+                "on its own prints this text)")
     if "://" in word:
         return ("that is a URL, not the TV's address: this check asks the TV's own ADB port, so give the "
                 "IP (or IP:port) alone, e.g.  tools/adb-closed.py <tv ip>")
