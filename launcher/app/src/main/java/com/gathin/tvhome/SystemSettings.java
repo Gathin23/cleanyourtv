@@ -58,6 +58,26 @@ final class SystemSettings {
         return null;
     }
 
+    /** Firmware whose settings are a service rather than an activity: starts it with the page to show as a
+     *  string extra (XGIMI projectors send "main" or "Settings://com.xgimi.settings.net/wifi" on action
+     *  XGimiSettingAction). Anything that opens the TV's settings from outside an activity - the remote's
+     *  Settings button, the launcher settings screen - goes through here, so it does not land on the debug
+     *  entry point that is the only thing answering the standard actions. Returns false when no service is
+     *  configured, so the caller keeps opening an activity as it did before. */
+    static boolean startSettingsService(Context context, String service, String action, String extra, String page) {
+        if (service.isEmpty()) return false;
+        Intent i = new Intent(action);
+        ComponentName c = ComponentName.unflattenFromString(service);
+        if (c != null) i.setComponent(c);
+        if (!page.isEmpty() && !extra.isEmpty()) i.putExtra(extra, page);
+        try {
+            context.startService(i);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /** The TV's App info page for pkg, or null where the firmware has none (CVTE's settings app, #1202). */
     static Intent appInfo(Context context, String pkg) {
         Intent info = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + pkg));

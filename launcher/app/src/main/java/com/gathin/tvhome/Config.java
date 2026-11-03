@@ -74,6 +74,17 @@ final class Config {
     final Map<String, String> appLabels;
     /** Package to a bundled banner_* drawable its tile shows instead of the app's art (config.xml, app_banners). */
     final Map<String, String> appBanners;
+    /** Vendor settings shown by starting a service, "package/.Service"; empty for an activity (config.xml
+     *  settings_service). Some firmware answers no settings action at all and is driven only this way. */
+    final String settingsService;
+    /** Action that service answers (config.xml settings_service_action). */
+    final String settingsServiceAction;
+    /** String extra naming the page the service should open (config.xml settings_service_extra). */
+    final String settingsServiceExtra;
+    /** Page for the Settings button when settings_service is set (config.xml settings_page). */
+    final String settingsPage;
+    /** Page for the Wi-Fi pill; empty falls back to settings_page (config.xml settings_page_wifi). */
+    final String settingsPageWifi;
     final String sourcePanelService;
     final String sourcePanelAction;
     /** One int extra for the source panel, "name=value" (config.xml source_panel_extra); empty for none. */
@@ -274,7 +285,9 @@ final class Config {
 
     private Config(List<String> dockApps, boolean fillDock, List<String> hiddenApps, List<String> libraryApps, List<String> libraryExcludedApps, String liveTvPackage,
                    String liveTvAction, String liveTvInputId, Map<String, String> launchActions, Map<String, String> appLabels,
-                   Map<String, String> appBanners, String sourcePanelService, String sourcePanelAction,
+                   Map<String, String> appBanners, String settingsService, String settingsServiceAction,
+                   String settingsServiceExtra, String settingsPage, String settingsPageWifi,
+                   String sourcePanelService, String sourcePanelAction,
                    String sourcePanelExtra, boolean coocaaSources, String inputAction, List<String> inputSources,
                    String inputUriScheme, int columns, int rowsBelowDock, boolean animations, boolean advancedEffects,
                    boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
@@ -304,6 +317,11 @@ final class Config {
         this.launchActions = Collections.unmodifiableMap(launchActions);
         this.appLabels = Collections.unmodifiableMap(appLabels);
         this.appBanners = Collections.unmodifiableMap(appBanners);
+        this.settingsService = settingsService;
+        this.settingsServiceAction = settingsServiceAction;
+        this.settingsServiceExtra = settingsServiceExtra;
+        this.settingsPage = settingsPage;
+        this.settingsPageWifi = settingsPageWifi;
         this.sourcePanelService = sourcePanelService;
         this.sourcePanelAction = sourcePanelAction;
         this.sourcePanelExtra = sourcePanelExtra;
@@ -433,6 +451,11 @@ final class Config {
         List<String> launchActions = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.launch_actions)));
         List<String> appLabels = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.app_labels)));
         List<String> appBanners = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.app_banners)));
+        String settingsService = res.getString(R.string.settings_service).trim();
+        String settingsServiceAction = res.getString(R.string.settings_service_action).trim();
+        String settingsServiceExtra = res.getString(R.string.settings_service_extra).trim();
+        String settingsPage = res.getString(R.string.settings_page).trim();
+        String settingsPageWifi = res.getString(R.string.settings_page_wifi).trim();
         String panelService = res.getString(R.string.source_panel_service).trim();
         String panelAction = res.getString(R.string.source_panel_action).trim();
         String panelExtra = res.getString(R.string.source_panel_extra).trim();
@@ -544,6 +567,11 @@ final class Config {
             launchActions = stringList(json, "launch_actions", launchActions);
             appLabels = stringList(json, "app_labels", appLabels);
             appBanners = stringList(json, "app_banners", appBanners);
+            settingsService = string(json, "settings_service", settingsService).trim();
+            settingsServiceAction = string(json, "settings_service_action", settingsServiceAction).trim();
+            settingsServiceExtra = string(json, "settings_service_extra", settingsServiceExtra).trim();
+            settingsPage = string(json, "settings_page", settingsPage).trim();
+            settingsPageWifi = string(json, "settings_page_wifi", settingsPageWifi).trim();
             panelService = string(json, "source_panel_service", panelService);
             panelAction = string(json, "source_panel_action", panelAction);
             panelExtra = string(json, "source_panel_extra", panelExtra).trim();
@@ -687,7 +715,8 @@ final class Config {
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
 
         return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
-                packageMap(appBanners), panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
+                packageMap(appBanners), settingsService, settingsServiceAction, settingsServiceExtra, settingsPage,
+                settingsPageWifi, panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
                 Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv,
                 openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill,
                 iconOnlyButtons, iconOnlyInputs, libraryButton, showLibraryPill, wifiLabelWidth, alwaysShowNames, wallpaperTrueColor, focusOvershoot,

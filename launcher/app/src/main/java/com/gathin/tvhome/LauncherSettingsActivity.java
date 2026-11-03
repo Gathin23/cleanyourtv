@@ -172,8 +172,12 @@ public final class LauncherSettingsActivity extends Activity {
             Toast.makeText(this, R.string.home_settings_help, Toast.LENGTH_LONG).show();
             open(new Intent(Settings.ACTION_HOME_SETTINGS));
         });
-        findViewById(R.id.tvSettingsChoice).setOnClickListener(v ->
-                open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
+        findViewById(R.id.tvSettingsChoice).setOnClickListener(v -> {
+            if (!SystemSettings.startSettingsService(this, config.settingsService, config.settingsServiceAction,
+                    config.settingsServiceExtra, config.settingsPage)) {
+                open(SystemSettings.intent(this, Settings.ACTION_SETTINGS));
+            }
+        });
         refresh();
         if (config.launcherSettingsButton) reorderChoice.requestFocus();
         else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();

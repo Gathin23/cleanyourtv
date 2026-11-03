@@ -51,12 +51,41 @@ import java.util.Set;
  */
 public class HomeKeyService extends AccessibilityService {
 
+    /** A Settings button held at least this long opens the launcher's own settings instead of the TV's. */
+    private static final long HOLD_SETTINGS_MS = 700;
+    private boolean holdSettingsFired;
+    private final Runnable holdSettingsTimer = () -> {
+        holdSettingsFired = true;
+        Intent launcher = new Intent(this, LauncherSettingsActivity.class);
+        try {
+            startActivity(launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (ActivityNotFoundException | SecurityException unavailable) {
+            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    /** settings_key_panel: the small glass panel instead of the TV's settings screen. */
+    private void openSettingsPanel() {
+        Intent open = new Intent(this, QuickSettingsActivity.class);
+        try {
+            startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (ActivityNotFoundException | SecurityException unavailable) {
+            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /** restore_key_services was on when the config was read: this helper is noted for ServiceRepair. */
     private boolean repairRecord;
     /** Remote buttons that should open Settings (config.xml, settings_key_scancodes and settings_key_keycodes). */
     private int[] settingsScancodes = new int[0];
     private int[] settingsKeycodes = new int[0];
     private boolean settingsPanel;
+    /** Firmware whose settings are a service, not an activity (config.xml settings_service and friends): the
+     *  remote's Settings button starts it with a page, as MainActivity's header button does. */
+    private String settingsService = "";
+    private String settingsServiceAction = "";
+    private String settingsServiceExtra = "";
+    private String settingsPage = "";
     /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
     private boolean consumeVolumeKeys;
     /** app_keys, the same maps InputKeyService reads, for setups that run only this service. */
@@ -191,6 +220,10 @@ public class HomeKeyService extends AccessibilityService {
         if (repairRecord) ServiceRepair.connected(this, getClass());
         settingsKeycodes = config.settingsKeycodes;
         settingsPanel = config.settingsKeyPanel;
+        settingsService = config.settingsService;
+        settingsServiceAction = config.settingsServiceAction;
+        settingsServiceExtra = config.settingsServiceExtra;
+        settingsPage = config.settingsPage;
         consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
@@ -265,14 +298,38 @@ public class HomeKeyService extends AccessibilityService {
                 holdAppScancodes.get(event.getScanCode()))) return true;
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
         if (isSettingsKey(event)) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
-                try {
-                    startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException | SecurityException unavailable) {
-                    Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+            if (settingsPanel) {
+                if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openSettingsPanel();
+                return true;
+            }
+            // Held for HOLD_SETTINGS_MS: the launcher's own settings, which the remote can otherwise reach only
+            // through the header gear's long-OK menu. Timed from the DOWN, as in MainActivity.handleSettingsKey.
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() == 0 && (event.getFlags() & KeyEvent.FLAG_LONG_PRESS) == 0) {
+                    holdSettingsFired = false;
+                    handler.removeCallbacks(holdSettingsTimer);
+                    handler.postDelayed(holdSettingsTimer, HOLD_SETTINGS_MS);
+                } else {
+                    // Already repeating: a firm hold, so open now instead of waiting out the timer.
+                    handler.removeCallbacks(holdSettingsTimer);
+                    if (!holdSettingsFired) holdSettingsTimer.run();
                 }
+                return true;
+            }
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                handler.removeCallbacks(holdSettingsTimer);
+                if (!holdSettingsFired) {
+                    if (!SystemSettings.startSettingsService(this, settingsService, settingsServiceAction,
+                            settingsServiceExtra, settingsPage)) {
+                        Intent open = SystemSettings.intent(this, Settings.ACTION_SETTINGS);
+                        try {
+                            startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        } catch (ActivityNotFoundException | SecurityException unavailable) {
+                            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                holdSettingsFired = false;
             }
             return true;
         }
