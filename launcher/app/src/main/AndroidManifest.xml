@@ -21,6 +21,8 @@
     <!-- YaOS (Yandex TV OS): HDMI, AV and the tuner all play in com.yandex.tv.live, whose activities require
          this permission (protection level normal, so it is granted at install). Ignored on other TVs. -->
     <uses-permission android:name="yandex.tv.permission.ACCESS_TV_SOURCE" />
+    <!-- Needed since Android 9 (API 28) for ACTION_DELETE to show the system uninstaller confirmation dialog. -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <!-- Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
          apps that declare a module card (docs/specs/card.md). -->
@@ -41,6 +43,10 @@
         <!-- The tile menu and the app library offer App info only where this resolves (SystemSettings.appInfo). -->
         <intent>
             <action android:name="android.settings.APPLICATION_DETAILS_SETTINGS" />
+            <data android:scheme="package" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DELETE" />
             <data android:scheme="package" />
         </intent>
         <intent>

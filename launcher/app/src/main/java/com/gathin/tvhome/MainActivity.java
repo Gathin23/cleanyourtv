@@ -3837,6 +3837,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Some firmware has no App info page at all; a row that only toasts "can't open" helps nobody.
         Intent info = SystemSettings.appInfo(this, pkg);
         if (info != null) addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(info));
+        if (canUninstall(pkg)) {
+            addSettingsMenuRow(rows, popup, R.string.tile_uninstall, () -> {
+                open(new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + pkg)));
+            }, true);
+        }
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
         // Dock tiles sit near the bottom of the screen: open the menu above the tile when it would not fit below.
@@ -3857,12 +3862,36 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rows.getChildAt(0).requestFocus();
     }
 
+    private static final ColorStateList DESTRUCTIVE_TEXT = new ColorStateList(
+            new int[][]{new int[]{android.R.attr.state_focused}, new int[]{}},
+            new int[]{0xFFD70015, 0xFFFF453A});
+
+    static boolean canUninstall(ApplicationInfo ai) {
+        if (ai == null) return false;
+        return (ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0
+                || (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
+    }
+
+    private boolean canUninstall(String pkg) {
+        try {
+            return canUninstall(getPackageManager().getApplicationInfo(pkg, 0));
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
     private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, int title, Runnable action) {
+        addSettingsMenuRow(rows, popup, title, action, false);
+    }
+
+    private void addSettingsMenuRow(LinearLayout rows, PopupWindow popup, int title, Runnable action, boolean destructive) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         row.findViewById(R.id.icon).setVisibility(View.GONE);
         row.findViewById(R.id.dot).setVisibility(View.GONE);
         row.findViewById(R.id.status).setVisibility(View.GONE);
-        ((TextView) row.findViewById(R.id.title)).setText(title);
+        TextView titleView = (TextView) row.findViewById(R.id.title);
+        titleView.setText(title);
+        if (destructive) titleView.setTextColor(DESTRUCTIVE_TEXT);
         row.setOnClickListener(v -> {
             popup.dismiss();
             action.run();

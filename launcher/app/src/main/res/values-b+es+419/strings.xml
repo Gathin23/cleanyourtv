@@ -112,6 +112,7 @@
     <string name="library_remove_shortcut">Quitar de Inicio</string>
     <string name="library_open">Abrir</string>
     <string name="library_app_info">Información de la aplicación</string>
+    <string name="tile_uninstall">Desinstalar</string>
     <string name="library_save_failed">No se pudo guardar el acceso directo</string>
     <string name="library_recent">Nueva · Agregar a Inicio</string>
     <string name="library_hint_add">Presiona para agregar a Inicio · Mantén presionado para ver opciones</string>

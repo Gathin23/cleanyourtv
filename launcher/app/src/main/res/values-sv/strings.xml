@@ -98,6 +98,7 @@
     <string name="library_remove_shortcut">Ta bort från startskärmen</string>
     <string name="library_open">Öppna</string>
     <string name="library_app_info">Appinfo</string>
+    <string name="tile_uninstall">Avinstallera</string>
     <string name="library_save_failed">Kunde inte spara genvägen</string>
     <string name="library_recent">Ny · Lägg till på startskärmen</string>
     <string name="library_hint_add">Tryck för att lägga till på startskärmen · Håll in för fler val</string>

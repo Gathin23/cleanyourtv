@@ -61,6 +61,7 @@
     <string name="library_remove_shortcut">Vom Startbildschirm entfernen</string>
     <string name="library_open">Öffnen</string>
     <string name="library_app_info">App-Info</string>
+    <string name="tile_uninstall">Deinstallieren</string>
     <string name="library_save_failed">Verknüpfung konnte nicht gespeichert werden</string>
     <string name="library_recent">Neu · Zum Startbildschirm</string>
     <string name="library_hint_add">Drücken: zu Start hinzufügen · Halten: Optionen</string>

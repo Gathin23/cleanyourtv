@@ -115,6 +115,7 @@
     <string name="library_remove_shortcut">Remove from Home</string>
     <string name="library_open">Open</string>
     <string name="library_app_info">App info</string>
+    <string name="tile_uninstall">Uninstall</string>
     <string name="library_save_failed">Could not save the shortcut</string>
     <string name="library_recent">New · Add to Home</string>
     <string name="library_hint_add">Press to add to Home · Hold for options</string>

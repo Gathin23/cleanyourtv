@@ -96,6 +96,7 @@
     <string name="library_remove_shortcut">Odebrat z domovské obrazovky</string>
     <string name="library_open">Otevřít</string>
     <string name="library_app_info">Informace o aplikaci</string>
+    <string name="tile_uninstall">Odinstalovat</string>
     <string name="library_save_failed">Zástupce se nepodařilo uložit</string>
     <string name="library_recent">Nová · Přidat na domovskou obrazovku</string>
     <string name="library_hint_add">Stiskem přidáte na domovskou obrazovku · Podržením volby</string>

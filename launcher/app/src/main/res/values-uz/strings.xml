@@ -94,6 +94,7 @@
     <string name="library_remove_shortcut">Bosh ekrandan olib tashlash</string>
     <string name="library_open">Ochish</string>
     <string name="library_app_info">Ilova haqida</string>
+    <string name="tile_uninstall">Oʻchirish</string>
     <string name="library_save_failed">Yorliq saqlanmadi</string>
     <string name="library_recent">Yangi · Bosh ekranga qoʻshish</string>
     <string name="library_hint_add">Qoʻshish uchun bosing · Variantlar uchun bosib turing</string>

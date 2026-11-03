@@ -111,6 +111,7 @@
     <string name="library_remove_shortcut">홈에서 삭제</string>
     <string name="library_open">열기</string>
     <string name="library_app_info">앱 정보</string>
+    <string name="tile_uninstall">제거</string>
     <string name="library_save_failed">바로가기를 저장할 수 없음</string>
     <string name="library_recent">새 앱 · 홈에 추가</string>
     <string name="library_hint_add">짧게 눌러 홈에 추가 · 길게 눌러 옵션 열기</string>

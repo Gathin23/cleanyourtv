@@ -84,6 +84,7 @@
     <string name="library_remove_shortcut">إزالة من الرئيسية</string>
     <string name="library_open">فتح</string>
     <string name="library_app_info">معلومات التطبيق</string>
+    <string name="tile_uninstall">إلغاء التثبيت</string>
     <string name="library_save_failed">تعذر حفظ الاختصار</string>
     <string name="library_recent">جديد · إضافة إلى الرئيسية</string>
     <string name="library_hint_add">اضغط للإضافة للرئيسية · اضغط مطولاً للخيارات</string>

@@ -84,6 +84,7 @@
     <string name="library_remove_shortcut">Ana ekrandan kaldır</string>
     <string name="library_open">Aç</string>
     <string name="library_app_info">Uygulama bilgileri</string>
+    <string name="tile_uninstall">Kaldır</string>
     <string name="library_save_failed">Kısayol kaydedilemedi</string>
     <string name="library_recent">Yeni · Ana ekrana ekle</string>
     <string name="library_hint_add">Ana ekrana eklemek için bas · Seçenekler için basılı tut</string>

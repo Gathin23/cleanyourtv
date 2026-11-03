@@ -84,6 +84,7 @@
     <string name="library_remove_shortcut">Usuń z ekranu głównego</string>
     <string name="library_open">Otwórz</string>
     <string name="library_app_info">Informacje o aplikacji</string>
+    <string name="tile_uninstall">Odinstaluj</string>
     <string name="library_save_failed">Nie udało się zapisać skrótu</string>
     <string name="library_recent">Nowa · Dodaj do ekranu głównego</string>
     <string name="library_hint_add">Naciśnij, aby dodać do ekranu · Przytrzymaj: opcje</string>

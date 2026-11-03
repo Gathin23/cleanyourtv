@@ -93,6 +93,7 @@
     <string name="library_remove_shortcut">Hapus dari Beranda</string>
     <string name="library_open">Buka</string>
     <string name="library_app_info">Info aplikasi</string>
+    <string name="tile_uninstall">Copot pemasangan</string>
     <string name="library_save_failed">Tidak dapat menyimpan pintasan</string>
     <string name="library_recent">Baru · Tambah ke Beranda</string>
     <string name="library_hint_add">Tekan untuk tambah ke Beranda · Tahan untuk opsi</string>

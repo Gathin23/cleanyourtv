@@ -95,6 +95,7 @@
     <string name="library_remove_shortcut">Quitar d\'Aniciu</string>
     <string name="library_open">Abrir</string>
     <string name="library_app_info">Información de l\'aplicación</string>
+    <string name="tile_uninstall">Desinstalar</string>
     <string name="library_save_failed">Nun se pudo guardar l\'accesu direutu</string>
     <string name="library_recent">Nueva · Amestar a Aniciu</string>
     <string name="library_hint_add">Calca p\'amestar a Aniciu · Caltén calcáu pa opciones</string>
