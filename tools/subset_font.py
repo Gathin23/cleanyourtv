@@ -3,14 +3,23 @@
 
     subset_font.py             rewrite launcher/app/src/main/res/font/outfit.ttf and report the bytes
     subset_font.py --check     write nothing; exit 1 when the committed font cannot draw what the app draws
+    subset_font.py --from X    trim a different original, e.g. a newer Outfit release
+
+Always trimmed from `launcher/fonts/outfit-original.ttf`, never from the trimmed file itself: a re-run that
+started from the current face could only ever remove more, and a character dropped once could never be
+brought back. That original is committed for exactly this reason (tests/test_no_prebuilt_binaries.py allows
+a font: "a resource the tree means to ship"), and it sits outside any Gradle resource folder, so it is
+never packaged into the APK.
 
 Why the launcher does not ship Outfit as downloaded: it is one variable font carrying every weight from
-100 to 900 and 416 glyphs, while the launcher asks for four of those weights (in res/font/outfit*.xml) and
-cannot produce 117 of the glyphs - the system font already backs those, so nothing on screen changes.
+100 to 900 and 360 codepoints, while the launcher asks for four of those weights (in res/font/outfit*.xml)
+and cannot produce 61 of the codepoints - the system font already backs those, so nothing on screen changes.
 
-Clipping the variation axis to the declared weights is where the saving is: charset alone is worth about
-6.8 KB, because gvar and GPOS dominate a variable font. Together they take the release APK down by about
-18.7 KB, which is the difference between 525 bytes over the 576 KB gate and 18 KB of headroom.
+Clipping the variation axis is where the saving is: charset alone is worth about 6.8 KB, because gvar and
+GPOS dominate a variable font. The axis therefore keeps wght 100 as well as the declared 200-500, because
+`font_body` in res/values/fonts.xml points at "@font/outfit" - the bare font, which draws the DEFAULT
+instance - and Outfit's default is 100. Dropping 100 renumbers the default to 200 and quietly thickens
+every tile subtitle, card row and dialog that uses font_body. Keeping it costs 316 bytes.
 
 What is kept on purpose, because a smaller font that renders differently is not a saving: kerning (GPOS),
 every OpenType feature, hinting and the gasp table, and the licence notices inside the file
@@ -25,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import hashlib
 import io
 import os
 import re
@@ -35,6 +45,7 @@ import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT = os.path.join(ROOT, "launcher/app/src/main/res/font/outfit.ttf")
+SOURCE = os.path.join(ROOT, "launcher/fonts/outfit-original.ttf")
 FONT_DIR = os.path.join(ROOT, "launcher/app/src/main/res/font")
 RES_DIR = os.path.join(ROOT, "launcher/app/src/main/res")
 
@@ -46,7 +57,6 @@ ALWAYS += [chr(c) for c in range(0xA0, 0x180)]                    # Latin-1 Supp
 ALWAYS += list("\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u00B7\u00B0\u20AC\u00A3\u00A5\uFE0E\uFF05")
 # U+00AD, the soft hyphen, draws nothing at all: an invisible character is not a glyph the font has to carry.
 BLANK = {"\u00AD"}
-
 
 # res/values/fonts.xml points `font_body` at "@font/outfit" - the bare font, no family - which draws the
 # *default instance*. Outfit's default is wght 100 (Thin), not 400. Clipping the axis to the declared weights
@@ -90,9 +100,17 @@ def in_apk(path: str) -> int:
     return zipfile.ZipFile(buffer).infolist()[0].compress_size
 
 
+def digest(path: str) -> str:
+    with open(path, "rb") as handle:
+        return hashlib.sha256(handle.read()).hexdigest()[:16]
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Rewrite the launcher font as the smallest face that still draws the launcher")
+    parser = argparse.ArgumentParser(
+        description="Rewrite the launcher font as the smallest face that still draws the launcher")
     parser.add_argument("--check", action="store_true", help="verify the committed font; write nothing")
+    parser.add_argument("--from", dest="source", default=SOURCE,
+                        help="the untrimmed face to trim (default: launcher/fonts/outfit-original.ttf)")
     args = parser.parse_args()
 
     try:
@@ -101,26 +119,40 @@ def main() -> int:
     except ImportError:
         raise SystemExit("fontTools is not installed here: python3 -m pip install fonttools")
 
+    if not os.path.exists(args.source):
+        raise SystemExit(f"no untrimmed face at {os.path.relpath(args.source, ROOT)} - pass --from with an "
+                         f"unmodified Outfit (github.com/Outfitio/Outfit-Fonts); the committed font is "
+                         f"already trimmed, and trimming it again can only lose characters")
+
     low, high = declared_weights()
     low = min(low, DEFAULT_WEIGHT)      # keep the default instance inside the axis, or every font_body view changes weight
     wanted = wanted_characters()
+    original = TTFont(args.source)
+    original_cmap = set(original.getBestCmap())
     before_raw, before_apk = os.path.getsize(FONT), in_apk(FONT)
     face = TTFont(FONT)
 
     if args.check:
         have = set(face.getBestCmap())          # keyed by codepoint, not by character
-        missing = [c for c in wanted if ord(c) not in have]
-        # Characters from a locale the typeface never carried (Cyrillic in values-uk) are the system font's
-        # job, before this script and after it, so they are reported but never fail the check.
-        latin_missing = [c for c in missing if ord(c) < 0x100]
-        fvar = face["fvar"].axes[0] if "fvar" in face else None
-        axis = (fvar.minValue, fvar.maxValue, fvar.defaultValue) if fvar else None
+        # The invariant is coverage the shipped face actually had. A character the untrimmed Outfit never
+        # carried (Cyrillic in values-uk) belongs to the system font before and after, so it cannot fail.
+        # A character it DID carry, and the app can draw, must still be there - at any codepoint, not only
+        # below U+0100, which is how an earlier revision of this check let a missing letter through.
+        expected = [c for c in wanted if ord(c) in original_cmap]
+        missing = [c for c in expected if ord(c) not in have]
+        never = [c for c in wanted if ord(c) not in original_cmap]
+        if "fvar" not in face:
+            print("FAIL: the committed face has no variation axis, so the families cannot pick a weight")
+            return 1
+        fvar = face["fvar"].axes[0]
         print(f"{os.path.relpath(FONT, ROOT)}: {len(have)} codepoints, "
-              f"axis {axis[0]:.0f}..{axis[1]:.0f} default {axis[2]:.0f}, {before_raw} B ({before_apk} in-APK)")
+              f"axis {fvar.minValue:.0f}..{fvar.maxValue:.0f} default {fvar.defaultValue:.0f}, "
+              f"{before_raw} B ({before_apk} in-APK)")
         print(f"declared weights in res/font: {min(declared_weights())}-{max(declared_weights())}, "
               f"default instance must stay {DEFAULT_WEIGHT}")
-        if latin_missing:
-            print("FAIL: missing characters the app can draw: " + ", ".join(f"U+{ord(c):04X}" for c in latin_missing))
+        if missing:
+            print(f"FAIL: {len(missing)} characters the app can draw and the untrimmed face carried are gone: "
+                  + ", ".join(f"U+{ord(c):04X}" for c in missing[:24]))
             return 1
         if fvar.defaultValue != DEFAULT_WEIGHT:
             print(f"FAIL: the default instance is {fvar.defaultValue:.0f}, and font_body draws it - "
@@ -130,24 +162,25 @@ def main() -> int:
             print(f"FAIL: the axis {fvar.minValue:.0f}-{fvar.maxValue:.0f} does not cover the weights the "
                   f"families ask for ({min(declared_weights())}-{max(declared_weights())})")
             return 1
-        if missing:
-            print(f"backed by the system font, as before ({len(missing)}): "
-                  + "".join(missing[:40]).encode("unicode_escape").decode())
-        print("OK: covers every character the app can draw, at the weights it asks for")
+        if never:
+            print(f"backed by the system font, as before ({len(never)}): "
+                  + "".join(never[:40]).encode("unicode_escape").decode())
+        print(f"OK: {len(expected)} characters kept of the {len(expected) + len(never)} the app can draw, "
+              f"at the weights it asks for, with the default still at {DEFAULT_WEIGHT}")
         return 0
 
-    face = TTFont(FONT)
-    instancer.instantiateVariableFont(face, {"wght": (low, high)}, inplace=True)
+    instancer.instantiateVariableFont(original, {"wght": (low, high)}, inplace=True)
     clipped = io.BytesIO()
-    face.save(clipped)
+    original.save(clipped)
 
     with tempfile.TemporaryDirectory() as scratch:
         clipped_path = os.path.join(scratch, "clipped.ttf")
         with open(clipped_path, "wb") as handle:
             handle.write(clipped.getvalue())
+        keep = [c for c in wanted if ord(c) in original_cmap]
         run = subprocess.run(
             [sys.executable, "-m", "fontTools.subset", clipped_path,
-             "--unicodes=" + ",".join(f"U+{ord(c):04X}" for c in wanted if ord(c) in set(face.getBestCmap())),
+             "--unicodes=" + ",".join(f"U+{ord(c):04X}" for c in keep),
              "--layout-features=*", "--glyph-names", "--notdef-outline",
              "--name-IDs=*", "--name-languages=*",
              "--output-file=" + FONT],
@@ -157,6 +190,7 @@ def main() -> int:
             return run.returncode
 
     after_raw, after_apk = os.path.getsize(FONT), in_apk(FONT)
+    print(f"from {os.path.relpath(args.source, ROOT)} (sha256 {digest(args.source)}), axis {low}-{high}")
     print(f"{os.path.relpath(FONT, ROOT)}: {before_raw} -> {after_raw} B "
           f"({before_apk} -> {after_apk} in-APK, {before_apk - after_apk} saved)")
     print("Now build the launcher and look at the clock, the date line and the tile labels on a real set.")
