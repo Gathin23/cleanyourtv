@@ -1135,7 +1135,9 @@ turned off in Settings stays off.
   it is asked directly: `tools/tv.py 'am start -n com.sony.dtv.smartui/.settings.SmartSettingsActivity'`.
   `settings_key_keycodes` and `settings_key_scancodes` do not bring the ribbon back on their own: both end in
   `Settings.ACTION_SETTINGS`, and `settings_fallback_components` is read only when that action resolves to
-  nothing, which it does not on this set. If the remote reports a scancode for that button, an `app_keys`
+  nothing, which it does not on this set. Where the firmware's settings are a service rather than an activity
+  (`settings_service` in a theme's `config.json`, XGIMI / GMUI projectors), the key starts that service instead
+  of the action. If the remote reports a scancode for that button, an `app_keys`
   entry should put it back (read from the launcher's code, not yet tried on a set), because a `scan:` entry is
   answered before the settings branch in
   `HomeKeyService.onKeyEvent`: `"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"` in

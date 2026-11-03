@@ -170,8 +170,12 @@ public final class LauncherSettingsActivity extends Activity {
         });
         findViewById(R.id.defaultHomeChoice).setOnClickListener(v ->
                 open(new Intent(this, HomeSettingsActivity.class)));
-        findViewById(R.id.tvSettingsChoice).setOnClickListener(v ->
-                open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
+        findViewById(R.id.tvSettingsChoice).setOnClickListener(v -> {
+            if (!SystemSettings.startSettingsService(this, config.settingsService, config.settingsServiceAction,
+                    config.settingsServiceExtra, config.settingsPage)) {
+                open(SystemSettings.intent(this, Settings.ACTION_SETTINGS));
+            }
+        });
         refresh();
         if (config.launcherSettingsButton) reorderChoice.requestFocus();
         else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();

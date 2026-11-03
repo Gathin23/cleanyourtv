@@ -92,6 +92,17 @@
     <string-array name="app_banners">
     </string-array>
 
+    <!-- Firmware whose settings are a service rather than an activity: the standard
+         android.settings.SETTINGS / WIFI_SETTINGS actions resolve to nothing, and the vendor entry only
+         answers its own action with the page to show as a string extra (XGIMI / GMUI projectors:
+         com.android.newsettings/com.xgimi.newsettings.SettingService, action XGimiSettingAction, extra
+         "data" = "main" for the front page or "Settings://com.xgimi.settings.net/ap" for Wi-Fi). Setting
+         the service makes the header's Settings button and the Wi-Fi pill start it directly, instead of
+         opening a debug entry point the user then has to click through. There is no config.xml default:
+         the five keys (settings_service, settings_service_action, settings_service_extra, settings_page,
+         settings_page_wifi) are read from a theme's config.json, and empty ones keep starting an
+         activity from settings_fallback_components. -->
+
     <!-- TVs with no TvInputManager have no HDMI list to read, but their own source-selection panel
          still switches inputs (TCL Android TV 9 again). When nothing could be listed, the Inputs menu
          offers one row that starts this service: component first, then action. The component can also be an

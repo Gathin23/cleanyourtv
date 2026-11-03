@@ -40,7 +40,18 @@ public final class QuickSettingsActivity extends Activity {
         }
         findViewById(R.id.scrim).setOnClickListener(v -> finish());
         LinearLayout rows = findViewById(R.id.rows);
-        addRow(rows, R.drawable.ic_settings, R.string.tv_settings, 0, SystemSettings.intent(this, Settings.ACTION_SETTINGS));
+        View tvRow = addRow(rows, R.drawable.ic_settings, R.string.tv_settings, 0,
+                SystemSettings.intent(this, Settings.ACTION_SETTINGS));
+        // Where the firmware drives its settings through a service (XGIMI), the row starts it instead of
+        // resolving an action nothing answers.
+        Config config = Config.load(this);
+        if (!config.settingsService.isEmpty()) {
+            tvRow.setOnClickListener(v -> {
+                SystemSettings.startSettingsService(this, config.settingsService, config.settingsServiceAction,
+                        config.settingsServiceExtra, config.settingsPage);
+                finish();
+            });
+        }
         addRow(rows, R.drawable.ic_picture, R.string.quick_picture, 0, SystemSettings.intent(this, Settings.ACTION_DISPLAY_SETTINGS));
         addRow(rows, R.drawable.ic_wifi, R.string.quick_network, 0, SystemSettings.intent(this, Settings.ACTION_WIFI_SETTINGS));
         addRow(rows, R.drawable.ic_apps, R.string.quick_apps, R.string.quick_apps_hint,
@@ -67,7 +78,7 @@ public final class QuickSettingsActivity extends Activity {
         overridePendingTransition(0, 0);
     }
 
-    private void addRow(LinearLayout rows, int icon, int title, int status, Intent target) {
+    private View addRow(LinearLayout rows, int icon, int title, int status, Intent target) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(icon);
         ((TextView) row.findViewById(R.id.title)).setText(title);
@@ -84,5 +95,6 @@ public final class QuickSettingsActivity extends Activity {
             finish();
         });
         rows.addView(row);
+        return row;
     }
 }

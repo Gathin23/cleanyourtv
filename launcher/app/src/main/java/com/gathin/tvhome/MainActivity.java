@@ -139,6 +139,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private String sourcePanelAction;
     private String sourcePanelExtra;
     private boolean coocaaSources;
+    /** Firmware whose settings are driven by a service (config.xml settings_service and friends). */
+    private String settingsService;
+    private String settingsServiceAction;
+    private String settingsServiceExtra;
+    private String settingsPage;
+    private String settingsPageWifi;
 
     private AppAdapter adapter;
     private RecyclerView grid;
@@ -498,6 +504,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         sourcePanelAction = cfg.sourcePanelAction;
         sourcePanelExtra = cfg.sourcePanelExtra;
         coocaaSources = cfg.coocaaSources;
+        settingsService = cfg.settingsService;
+        settingsServiceAction = cfg.settingsServiceAction;
+        settingsServiceExtra = cfg.settingsServiceExtra;
+        settingsPage = cfg.settingsPage;
+        settingsPageWifi = cfg.settingsPageWifi;
 
         root = findViewById(R.id.root);
         root.setBackgroundColor(cfg.backgroundColor);
@@ -818,7 +829,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnWifi.setOnClickListener(v -> openNetworkPill());
         btnVpn.setOnClickListener(v -> openVpnPill());
         btnWifi.setOnLongClickListener(v -> {
-            open(systemIntent(Settings.ACTION_WIFI_SETTINGS));
+            openNetworkSettings();
             return true;
         });
         launcherSettingsButton = cfg.launcherSettingsButton;
@@ -829,7 +840,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnSettings.setOnClickListener(v -> {
             if (launcherSettingsButton) startActivityForResult(
                     new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
-            else open(systemIntent(Settings.ACTION_SETTINGS));
+            else openSettingsPage(settingsPage);
         });
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
@@ -1396,14 +1407,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean handleSettingsKey(KeyEvent event) {
         for (int code : settingsKeycodes) {
             if (event.getKeyCode() != code) continue;
+            if (settingsKeyPanel) {
+                if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled())
+                    open(new Intent(this, QuickSettingsActivity.class));
+                return true;
+            }
+            // A Settings button held for HOLD_SETTINGS_MS opens the launcher's own settings: the remote has no
+            // other way in, since the header's gear opens its menu only on a long OK while focus is on it.
+            // Timed from the DOWN, not from the UP's timestamps - some remotes (and `input --longpress`)
+            // report the same time for both, which would make every press look short.
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() == 0 && (event.getFlags() & KeyEvent.FLAG_LONG_PRESS) == 0) {
+                    holdSettingsFired = false;
+                    handler.removeCallbacks(holdSettingsTimer);
+                    handler.postDelayed(holdSettingsTimer, HOLD_SETTINGS_MS);
+                } else {
+                    // Already repeating: a firm hold. Open now rather than waiting out the timer, which is
+                    // what a real remote's key repeat and `input --longpress` both look like.
+                    handler.removeCallbacks(holdSettingsTimer);
+                    if (!holdSettingsFired) openLauncherSettings();
+                }
+                return true;
+            }
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : systemIntent(Settings.ACTION_SETTINGS));
+                handler.removeCallbacks(holdSettingsTimer);
+                if (!holdSettingsFired) openSettingsPage(settingsPage);
+                holdSettingsFired = false;
             }
             return true;
         }
         return false;
     }
+
+    private void openLauncherSettings() {
+        holdSettingsFired = true;
+        startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
+    }
+
+    private final Runnable holdSettingsTimer = this::openLauncherSettings;
 
     // ---- reorder ---------------------------------------------------------------------------------
 
@@ -3122,7 +3163,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      */
     private void openNetworkPill() {
         Intent i = vpnPill ? null : vpnAppIntent();
-        open(i != null ? i : systemIntent(Settings.ACTION_WIFI_SETTINGS));
+        if (i != null) open(i);
+        else openNetworkSettings();
     }
 
     /** vpn_app's launch intent, or null when none is set or it is not installed. */
@@ -3283,6 +3325,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (Exception e) {
             Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** Opens a page of the TV's own settings. Firmware that drives its settings through a service
+     *  (config.xml settings_service) takes the page as a string extra on a startService - there is no
+     *  activity to start and the standard actions resolve to nothing, so the button would otherwise land
+     *  on a debug entry point the user has to click through (XGIMI projectors). Without such a service
+     *  configured this is the usual settings intent. */
+    private void openSettingsPage(String page) {
+        String value = page.isEmpty() ? settingsPage : page;
+        if (SystemSettings.startSettingsService(this, settingsService, settingsServiceAction,
+                settingsServiceExtra, value)) return;
+        open(systemIntent(Settings.ACTION_SETTINGS));
+    }
+
+    /** The Wi-Fi pill's page, or the settings front page where the firmware has no separate one. */
+    private void openNetworkSettings() {
+        openSettingsPage(settingsPageWifi);
     }
 
     private void open(Intent i) {
@@ -3675,7 +3734,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     () -> startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
         } else {
             addInputRow(rows, popup, R.drawable.ic_settings, getString(R.string.settings), -1,
-                    () -> open(systemIntent(Settings.ACTION_SETTINGS)));
+                    () -> openSettingsPage(settingsPage));
         }
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (220 * density), Math.min(panel.getMeasuredWidth(), (int) (360 * density))));
@@ -3732,10 +3791,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     // HOLD_OK_MS opens the tile menu, and the UP that follows is eaten so it doesn't also open the app.
 
     private static final long HOLD_OK_MS = 550;
+    /** A Settings button held at least this long opens the launcher's own settings instead of the TV's. */
+    private static final long HOLD_SETTINGS_MS = 700;
     private long holdOkDown = -1;
     private int holdOkPosition = -1;
     private String holdOkKey;    // the app under OK when it went down; a tile rebuild can move another app to that slot
     private boolean holdOkFired;
+    /** A Settings button held past HOLD_SETTINGS_MS already opened Launcher settings; its UP must not also
+     *  open the TV's settings. */
+    private boolean holdSettingsFired;
     private final Runnable holdOkTimer = this::fireHoldOk;
 
     private static boolean isOkKey(int code) {
@@ -3837,6 +3901,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Some firmware has no App info page at all; a row that only toasts "can't open" helps nobody.
         Intent info = SystemSettings.appInfo(this, pkg);
         if (info != null) addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(info));
+        // The launcher's own settings, last: on remotes with no reachable Settings button this menu is the
+        // only way in, and holding the header's gear is easy to miss.
+        addSettingsMenuRow(rows, popup, R.string.launcher_settings, () ->
+                startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
         // Dock tiles sit near the bottom of the screen: open the menu above the tile when it would not fit below.
