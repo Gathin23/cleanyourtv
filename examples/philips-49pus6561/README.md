@@ -36,6 +36,29 @@ not tried here.
 without `TVINPUT_ALLOW=1`. Neither is a TV input service. They were disabled last, after a reboot and a Live TV
 check; Live TV started and the TV came back on Live TV after the next reboot.
 
+## Second unit: 55PUS6581/12
+
+A 55-inch set from the same range, in Turkey, on Ethernet: same model `QM163E`, device `QM16XE_U` and firmware
+`QM163E.0.26.70.1`. Its owner applied part of this list in nine small batches, with a check on the real remote after
+each, and added three packages that are now in the list: `com.google.android.tv.bugreportsender`,
+`com.google.android.onetimeinitializer` and `org.droidtv.dms` (the Philips UPnP media server, started by a boot
+receiver; `org.droidtv.dlna` and `org.droidtv.contentexplorer` were kept). Every disabled package was still off
+after a mains power cycle and again a week later.
+
+- `org.droidtv.usagelogger` and `org.droidtv.demome` are the same `TV_INPUT_HARDWARE` false positives here and
+  went in a batch of their own with `TVINPUT_ALLOW=1`.
+- The remote's Top Picks button does nothing once `org.droidtv.nettvrecommender` is disabled. The owner kept it
+  that way.
+- The TV powers on to Live TV here too, and the owner kept that.
+- The other lines (the rest of the NetTV store, the web apps, phone setup and the third-party preloads) were not
+  run on this set.
+- Hiding Developer options did not close ADB. After authorisations were revoked from the TV and the
+  Developer options menu was hidden, port 5555 still accepted the computer used for the list as an authorised
+  device after a mains power cycle. What closed it, a week later: turn Developer options on again, choose
+  "Revoke USB debugging authorisations", then turn Developer options off. Straight after that,
+  `tools/adb-closed.py` reported the connection refused while the TV was on. Confirm the port refuses the
+  connection rather than trusting the menu.
+
 ## Undo
 
     TV_HOST=<tv ip> tools/restore.sh examples/philips-49pus6561/debloat.txt com.google.android.tvlauncher
