@@ -88,6 +88,10 @@ Hebrew mirrors the layout:
 - the input selector's icons and labels on the right;
 - dates with the month prefix ב (for example, 19 באוקטובר).
 
+| ![Hebrew Home: the buttons on the left, the greeting, clock and date on the right](hebrew-home.png) | ![Dock and grid: both rows start on the right](hebrew-apps.png) |
+|---|---|
+| ![The Inputs menu: source names and icons on the right, what is not connected on the left](hebrew-inputs.png) | ![The Clock screensaver, the date under the time, right of centre](hebrew-screensaver.png) |
+
 The Clock screensaver right-aligns its date and time. Russian covers every screen, including race
 weekends, festival greetings and the Shamsi date. Other languages keep their original layouts.
 
