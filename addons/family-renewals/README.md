@@ -55,7 +55,9 @@ Requirements: JDK 17 and Android SDK platform 34 with Build Tools 34.0.0. Do not
 
 ## Compatibility and testing status
 
-- Minimum SDK 26 (Android 8.0); the Xiaomi Mi Box S MIBOX4 on Android TV 9 is within the declared API range.
-- The source has not yet been built, installed or tested on a physical TV.
-- The required real-TV screenshot, D-pad/remote validation and reboot persistence test are still outstanding. No fabricated screenshot is included.
-- The module should be considered a review candidate, not a released or verified add-on, until those checks are completed.
+- Minimum SDK 26 (Android 8.0); the target device is Xiaomi Mi Box S MIBOX4 / MDZ-22-AB, Android TV 9 (API 28). It meets the declared API floor. The app uses Java/Android framework code and has no native ABI-specific libraries.
+- Compile SDK and target SDK are 34; the Android TV 9 device can install an APK whose minimum SDK is 26.
+- The CI workflow runs `testReleaseUnitTest`, `lintRelease` and `assembleRelease` for this add-on. It also uploads a temporary `family-renewals-qa-apk` artifact with SHA-256 and signer-certificate information for device testing.
+- The QA APK is signed using the CI runner's generated debug key. It is for a first install and testing only: a later CI build may have a different debug key and cannot update that installation in place. Uninstalling before replacing it erases locally stored test records. Do not enter real household/payment information in this temporary build.
+- A successful build and compatible minimum API do not prove the app works correctly with the Mi Box remote or CleanYourTV card. The physical-TV D-pad, module-card discovery/approval, app relaunch, and data persistence checks plus the required real-TV screenshot remain outstanding. No fabricated screenshot is included.
+- Until those checks and a stable signing-key release are completed, this remains a review candidate, not a released or verified add-on.
