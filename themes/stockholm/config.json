@@ -1,0 +1,34 @@
+{
+  "background_color": "#04060E",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 20,
+  "wallpaper_order": "sequential",
+  "wallpaper_captions": true,
+  "wallpaper_moods": {
+    "morning": [
+      "01-gryning.jpg",
+      "02-morgondis.jpg"
+    ],
+    "evening": [
+      "03-gyllene-timmen.jpg",
+      "04-bla-timmen.jpg",
+      "08-midsommarnatt.jpg"
+    ],
+    "night": [
+      "05-natt.jpg",
+      "06-norrsken.jpg",
+      "07-vinternatt.jpg"
+    ]
+  },
+  "rows_below_dock": 0,
+  "dock_title": false,
+  "dock_glass": true,
+  "dock_opacity": 50,
+  "dock_even_padding": true,
+  "ambient_glow": false,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "home_idle_clock_minutes": 5,
+  "clock_wallpaper": true,
+  "clock_wallpaper_dim": 20
+}
