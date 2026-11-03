@@ -2,7 +2,7 @@
 
 [Back to the README](../README.md#the-launcher)
 
-A small native home screen for Android TV: **about 572 KB**, plain Java, built for TVs with 1 GB of RAM.
+A small native home screen for Android TV: **about 581 KB**, plain Java, built for TVs with 1 GB of RAM.
 No blur, no video, no network permission, no background services. This page has the details the
 README leaves out: settings, languages, remote keys and building it yourself. Every key a theme can
 set is in [`themes/README.md`](../themes/README.md#keys), and the opt-in switches with their
@@ -78,7 +78,7 @@ home picker.
 
 English, German, Danish, Spanish, Latin American Spanish, Catalan, French, Russian, Serbian (Latin), Polish, Czech, Italian, Portuguese,
 Turkish, Arabic, Hebrew, Simplified Chinese, Traditional Chinese (Taiwan), Thai, Finnish, Vietnamese,
-Bangla, Indonesian, Norwegian Bokmål, Swedish, Dutch, Uzbek (Latin), Ukrainian, Korean and Asturian. The launcher follows the TV's language. Android 13+ can set it for the launcher
+Bangla, Indonesian, Norwegian Bokmål, Swedish, Dutch, Uzbek (Latin), Ukrainian, Japanese, Korean and Asturian. The launcher follows the TV's language. Android 13+ can set it for the launcher
 alone: `tools/tv.py 'cmd locale set-app-locales com.gathin.tvhome --locales ca'`.
 
 Hebrew mirrors the layout:

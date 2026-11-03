@@ -52,6 +52,7 @@ NAMES = {
     "in": "Indonesian",
     "it": "Italian",
     "iw": "Hebrew",
+    "ja": "Japanese",
     "ko": "Korean",
     "nb": "Norwegian Bokm\u00e5l",
     "nl": "Dutch",
