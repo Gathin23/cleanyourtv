@@ -316,8 +316,23 @@ you do.
   buttons without any service bound, so the ramp stays; see "Both at once" below. It does not come back
   after a reboot, so it is started again each time.
 
-It is a toggle, not a fix: two one-line `settings` writes switch between the two behaviours whenever
-you want, but never both at once.
+- **Keep both with `consume_volume_keys`.** On one AS24 unit the launcher's own volume repeat gave both:
+  TCL Smart TV Pro, device `G09`, product `G09_4K_GB`, Google TV 12, firmware `STT2.230203.001.AS24`, India,
+  measured on 3 November 2026. launcherx and setupwraith were disabled with this launcher as Home, and
+  `InputKeyService` was the only service bound, with key filtering on and `app_keys` mapping 4062 to Netflix,
+  4099 to Prime Video, 4065 to YouTube and 4166 to Sony LIV, plus `83:settings` for the gear. Before the
+  switch that setup stepped once per press, as the bisect above does. With `"consume_volume_keys": true` in
+  the theme, the owner held Volume Up and Down on the real remote and both ramped, a single tap moved exactly
+  one step, and the mapped buttons kept working (Netflix was the one pressed to confirm). The switch makes the
+  helpers swallow Volume Up/Down and repeat a held one themselves (after 500 ms, every 60 ms; see
+  [`themes/README.md`](../../themes/README.md)), so the ramp here is the launcher's, not the dispatcher's, and
+  it needs `key_filter` on: with filtering off the helper never sees the key. The G08 above is the opposite
+  result, where the helpers did not seem to receive the volume key and the switch had nothing to repeat, so
+  hold volume after setting it rather than assume. Not checked: a reboot after the switch, or a soundbar or
+  HDMI eARC setup. Not tried on the AS23 unit the bisect comes from.
+
+The first two are a toggle, not a fix: two one-line `settings` writes switch between the two behaviours
+whenever you want, but never both at once.
 
 ## Both at once: a listener you start by hand
 
