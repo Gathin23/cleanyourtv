@@ -1,13 +1,15 @@
-# Philips 49PUS7150/12 / 49PUK7150/12 (2015, QV151E, Marvell, Android TV 5.1.1): `pm disable-user`, `pm hide` and device owner refused
+# Philips 55PUK7100/12 (2015, QV151E, Marvell, Android TV 5.1.1): `pm disable-user`, `pm hide` and device owner refused
 
 This is an owner report from one TV, **not a debloat list for the repo tools**. The adb shell cannot disable,
 hide or manage packages on this firmware (next section), so there is deliberately no `examples/` entry. What
 follows is what plain ADB showed on this unit, so the next owner of a 2015 Philips Android TV can skip the dead
-ends. The TV is a Turkish unit (`49PUK7150/12`); the European `49PUS7150/12` is the same platform.
+ends. The TV is a Turkish unit; the rear label reads `55PUK7100/12`, but the firmware names itself
+`49PUK7150/12` (JointSpace `/5/system` name, mDNS and Cast name), so the 49/55-inch 7100 and 7150 sets of 2015
+appear to share this `QV151E` software. The label is the model to trust.
 
 | Field | Observed value |
 |---|---|
-| Retail model | 49PUK7150/12 (mDNS / Cast name), sold as the 49PUS7150/12 elsewhere |
+| Retail model | 55PUK7100/12 (rear label); the firmware reports `49PUK7150/12` |
 | Android model / device | `QV151E` / `QV151E` |
 | Fingerprint | `PHILIPS/QV151E/QV151E:5.1.1/LMY48N/0538219:user/release-keys` |
 | Android / API | 5.1.1 / 22 (`LMY48N`) |
