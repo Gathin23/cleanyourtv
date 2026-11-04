@@ -262,3 +262,33 @@ AirPlay. Also off: the Indian preinstall MX Player (`com.mxtech.videoplayer.tele
   The owner accepted the held-volume trade-off described above; it was not measured on this unit.
 
 This is a single-session compatibility report, not several days with the list.
+
+## Compatibility report: TCL 75C81K, Netherlands, Ethernet
+
+TCL 75C81K QD-Mini LED (2025), model "Smart TV Pro", device `G08`, product `G08_4K_GB`, MediaTek `tcl9618`,
+Google TV 14 (SDK 34), firmware `UTT2.250416.001 AU02`, on its built-in Ethernet port with no saved Wi-Fi. Set up
+on 2 and 3 November 2026 from this list, 25 of its 32 entries in three batches with screenshots between them,
+then setupwraith, the launcher (built locally with JDK 17 and SDK 34, `HOME_KEY_SERVICE=1`) and dreamx after the
+screensaver was switched to `com.gathin.tvhome/.ClockDream`. Kept by choice: Assistant (`katniss`), Netflix (both
+packages), Miracast, MagiConnect/T-Cast, the game bar and T-Solo. `ttvs` was disabled for the Samba TV ACR it
+carries; the owner accepts that firmware updates need it re-enabled first. Three reboots over the two days: every
+package stayed disabled (26 in user 0, the 25 from the list plus launcherx), Home came back as
+`com.gathin.tvhome/.MainActivity` after `FallbackHome`, and Ethernet and port 5555 were back within about 20 s.
+
+- **setupwraith and Ethernet**: as on the 50C71K, `disable.sh` skipped setupwraith because `dumpsys wifi`
+  printed no `cname=`. `cmd wifi list-networks` said "No networks" and the TV was on `eth0`, so
+  `FORCE_SETUPWRAITH=1` disabled it and ADB stayed up.
+- **Network ADB**: switching on USB debugging alone opened port 5555, with Wireless debugging off.
+- **Hidden users**: this firmware carries two extra Android users, 10 (`configured_user`) and 11 (`new_user`), in
+  which the factory left system packages such as `com.android.tv.settings` disabled. `pm list packages -d`
+  without `--user 0` lists those too and looks like damage; `pm list packages -d --user 0` shows only what the
+  list disabled.
+- **Remote buttons with `HomeKeyService`**: `settings_key_keycodes` 83 and `app_keys` 4062 (Netflix), 190
+  (YouTube) and 4099 (Prime Video) in `config.json`, installed with `HOME_KEY_SERVICE=1` and the
+  `AUTO_START` plus `appops write-settings` line from the Install section. The helper was bound again after a
+  reboot with no `TclAppBoot` refusal, and the owner confirmed all four buttons on the real remote. Held volume
+  moves one step per press with the helper bound, as described above; the owner kept the buttons.
+- **Grid tiles**: MagiConnect and TCL HOME (`com.tcl.dashboard`) were hidden with `hidden_apps` rather than
+  disabled, so T-Cast keeps working.
+
+This is a two-session compatibility report, not several days with the list.
