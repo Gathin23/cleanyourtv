@@ -31,8 +31,10 @@
 #
 # The nine-dot button is KEYCODE_APPS (390), routed to com.mediatek.partner.netflix, which
 # opens com.google.android.tvlauncher apps view. With that launcher disabled the button
-# does nothing. examples/skyworth-swtv-20sa-pro/config.json maps 390 to home; install with
-# HOME_KEY_SERVICE=1. A bound key helper makes a held volume key step once on this firmware.
+# does nothing. config.json maps 390 to home. On this unit the Netflix button
+# (KEYCODE_BUTTON_1, 188) opens Live TV and Prime Video (KEYCODE_PRIMEVIDEO, 409) opens
+# com.qjy.browser. Install with HOME_KEY_SERVICE=1. A bound key helper makes a held
+# volume key step once on this firmware.
 #
 # Tested on the day of the debloat (2026-11-04), one reboot, not yet lived with for days.
 # After the reboot Home was com.gathin.tvhome and every package named below was still disabled.
