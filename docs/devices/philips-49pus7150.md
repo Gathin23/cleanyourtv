@@ -1,4 +1,4 @@
-# Philips 49PUS7150/12 (2015, QV151E, Marvell, Android TV 5.1.1): `pm disable-user`, `pm hide` and device owner refused
+# Philips 49PUS7150/12 / 49PUK7150/12 (2015, QV151E, Marvell, Android TV 5.1.1): `pm disable-user`, `pm hide` and device owner refused
 
 This is an owner report from one TV, **not a debloat list for the repo tools**. The adb shell cannot disable,
 hide or manage packages on this firmware (next section), so there is deliberately no `examples/` entry. What
@@ -10,7 +10,7 @@ ends. The TV is a Turkish unit (`49PUK7150/12`); the European `49PUS7150/12` is 
 | Retail model | 49PUK7150/12 (mDNS / Cast name), sold as the 49PUS7150/12 elsewhere |
 | Android model / device | `QV151E` / `QV151E` |
 | Fingerprint | `PHILIPS/QV151E/QV151E:5.1.1/LMY48N/0538219:user/release-keys` |
-| Android / API | 5.1.1 / 22, never offered Android 6 on this unit |
+| Android / API | 5.1.1 / 22 (`LMY48N`) |
 | RAM | 940 MB (`MemTotal` 964304 kB); 58 MB free (`MemFree`) on the stock install |
 | Stock home | `com.google.android.leanbacklauncher` |
 | Live TV app | `org.droidtv.playtv` (tuner `org.droidtv.tunerservice`, HDMI `org.droidtv.hdmiService`) |
@@ -60,20 +60,20 @@ com.google.android.youtube.tv       com.google.android.syncadapters.calendar com
 com.netflix.ninja                   com.teamviewer.quicksupport.market org.droidtv.nettv_launcherapp
 com.android.camera                  com.android.inputmethod.pinyin     com.android.printspooler
 com.android.musicfx                 com.android.dreams.basic           com.android.htmlviewer
-com.android.providers.downloads.ui
 ```
 
 Disabling Play services and the Play Store was a choice for a TV that only shows broadcast channels: the
-leanback home and Live TV kept working, a reboot came up straight into Live TV, and free RAM went from 58 MB to
-about 330 MB. Leave them enabled if you want any Google app on the TV itself. The Philips Live TV stack was left
+leanback home and Live TV kept working and a reboot came up straight into Live TV. `MemFree` was 58 MB on the
+stock install; after the changes `dumpsys meminfo` reported about 330 to 390 MB Free RAM, cached memory included
+(that figure was not taken before the changes). Leave them enabled if you want any Google app on the TV itself. The Philips Live TV stack was left
 alone: `org.droidtv.playtv`, `tunerservice`, `channels`, `epg`, `teletext`, `mheg`, `ci`, `xtv`, `tvserver`,
 `settings`, `GlobalKey`, the HDMI/SCART/component services and `tvcontentprovider`.
 
 ## Why the preloaded apps no longer play
 
 With no Play Store updates since the factory image (a fresh reset leaves 2017 builds), the preloads fail:
-Netflix 3.3.2 shows error `-121`, YouTube 1.2.7 shows "action not allowed". Of current apps, the last Netflix
-build with minSdk 22 (8.3.11) installs over the system app, but Disney+'s last API 22 build is refused by its
+Netflix 3.3.2 shows error `-121`, YouTube 1.2.7 shows "action not allowed". Of current apps, the newest
+minSdk 22 Netflix build found (8.3.11) installs over the system app, but Disney+'s last API 22 build is refused by its
 server with "update required" (current builds need API 23) and Prime Video stops at "temporary problem". A new
 Google account could not sign in on Play services 8.3 either: the web step asks for 2-Step Verification and a
 seven-day wait. A streaming stick on HDMI is the practical way to keep this panel.
