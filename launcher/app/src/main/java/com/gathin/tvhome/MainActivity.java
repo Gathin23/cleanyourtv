@@ -2304,8 +2304,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (cpu >= 0) line.append(getString(R.string.stats_cpu, cpu));
         long[] mem = memUsedOfTotalMb();
         if (mem != null) appendStat(line, getString(R.string.stats_memory, mem[0], mem[1]));
-        String free = formatGb(getResources(), Environment.getDataDirectory().getFreeSpace());
-        if (!free.isEmpty()) appendStat(line, getString(R.string.stats_storage, free));
+        String storage = formatStorage(getResources(),
+                Environment.getDataDirectory().getFreeSpace(),
+                Environment.getDataDirectory().getTotalSpace());
+        if (!storage.isEmpty()) appendStat(line, getString(R.string.stats_storage, storage));
         return StatsText.forLocale(line.toString(), getResources().getConfiguration().getLocales().get(0));
     }
 
@@ -2407,6 +2409,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    private static String formatStorage(Resources res, long freeBytes, long totalBytes) {
+        if (freeBytes <= 0) return "";
+        double freeGb = freeBytes / (1024.0 * 1024 * 1024);
+        if (totalBytes <= 0) {
+            return freeGb >= 10 ? res.getString(R.string.storage_gb_whole, freeGb)
+                    : res.getString(R.string.storage_gb_decimal, freeGb);
+        }
+        double totalGb = totalBytes / (1024.0 * 1024 * 1024);
+        String freeStr = String.format(Locale.getDefault(), freeGb >= 10 ? "%.0f" : "%.1f", freeGb);
+        String totalPattern = totalGb >= 10 ? res.getString(R.string.storage_gb_whole, totalGb)
+                : res.getString(R.string.storage_gb_decimal, totalGb);
+        return freeStr + " / " + totalPattern;
     }
 
     private static String formatGb(Resources res, long bytes) {
