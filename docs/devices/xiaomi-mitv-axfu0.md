@@ -76,7 +76,7 @@ On this Amlogic platform, native terrestrial/cable television (DVB-T/T2/C) and e
 In `config.xml`, configure the live TV app and channel inputs as:
 ```xml
 <string name="live_tv_package">com.mitv.livetv</string>
-<bool name="show_inputs">true</bool>
+<bool name="show_inputs_pill">true</bool>
 ```
 
 Keeping `com.droidlogic.tvinput` enabled ensures instant HDMI switching and hardware signal decoding without overhead.
