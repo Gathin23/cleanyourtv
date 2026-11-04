@@ -87,8 +87,9 @@ class SecureAckTest(unittest.TestCase):
                 self.assertEqual(ps_step(restore), step)
 
     def test_bash_accepts_only_a_whole_returned_line(self):
-        if not shutil.which("bash"):
-            raise unittest.SkipTest("needs bash")
+        # On Windows shutil.which finds System32ash.exe, the WSL launcher, which fails when no distro is installed.
+        if os.name == "nt" or not shutil.which("bash"):
+            raise unittest.SkipTest("needs bash, which Windows does not ship")
         check = bash_check()
         for out, mark, accepted in CASES:
             with self.subTest(out=out, mark=mark):
