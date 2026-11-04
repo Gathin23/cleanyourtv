@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-202 projects so far.
+203 projects so far.
 
 ## Home screens built as their own app
 
@@ -72,6 +72,7 @@ This repo's launcher with new looks or features, often tuned for one TV. Good pl
 
 | Project | What it is | Built on | By |
 |---|---|---|---|
+| [Android TV makeover](https://github.com/rayedriasat/android-tv-makeover) ([screenshot](https://raw.githubusercontent.com/rayedriasat/android-tv-makeover/f14197df1cce50d6f880801dab0d7db7c6dec991/docs/screenshots/home.png), [issues](https://github.com/rayedriasat/android-tv-makeover/issues)) | This launcher with two fixed, symmetric glass cards between a compact clock and the dock: three local headlines with source icons (Up/Down picks one, OK opens it in TV Bro) and the weather now, for six hours and seven days on a background tinted by the sky. The launcher keeps no network permission; the data comes from a separate companion app, TV Remote, which also serves a LAN-only, PIN-paired phone remote on port 8080 (D-pad, mouse cursor, typing, live view, voice commands). TV Remote asks for INTERNET and RECEIVE_BOOT_COMPLETED, and is signed with AOSP's public test key, which this box's firmware trusts, so it holds INJECT_EVENTS and CAPTURE_VIDEO_OUTPUT: it does nothing on a normally signed TV. Also a debloat list and a malware write-up for the box | TX9 Pro (Allwinner H313), Android 10 | [rayedriasat](https://github.com/rayedriasat) |
 | [TV Air Dashboard](https://github.com/srykar/tv-air-dashboard) ([privacy-edited screenshot](https://raw.githubusercontent.com/srykar/tv-air-dashboard/e60c9ae5b17c4387e958801c630ae6bfc869806a/docs/home-privacy-edited.png), [issues](https://github.com/srykar/tv-air-dashboard/issues)) | A source-only fork with optional weather, regional PM2.5/PM10 air quality and local Dyson HushJet readings in glass cards. Adds `INTERNET` | PRISM+ Q55 Ultra 2026 (R10G), Google TV 14; the public package is build-checked only | [srykar](https://github.com/srykar) |
 | [Minimal Glass](https://github.com/dannielgloria/cleanyourtv/tree/main/themes/minimal-glass) ([source](https://github.com/dannielgloria/cleanyourtv), [screenshot](https://github.com/user-attachments/assets/33e56916-cf30-47d4-860f-f419a5e82d05)) | An offline fork with a tvOS-inspired dock, circular translucent controls, app banners, folders with app mosaics, a matching library and appearance panels, glass or solid surfaces, light/dark/scheduled palettes, time-based wallpapers and an idle wallpaper clock. No network permission or new dependencies | TCL Smart TV (G10), Android TV 12 | [dannielgloria](https://github.com/dannielgloria) |
 | [CleanYourTV Cinema & OLED Edition](https://github.com/RuckieOfficial/cleanyourtv) ([screenshot](https://raw.githubusercontent.com/RuckieOfficial/cleanyourtv/5d6a12a06cf45b1eb2c369c762dbcd885d137e79/themes/cinematic/screenshot.jpg)) | An OLED-tuned fork: TMDb movie and TV backdrops with ratings (it adds `INTERNET` and needs a TMDb key), a glass clock screensaver, grid dimming, a "+ Add" dock tile and hold-Pause to black the screen out | Philips 55OLED706/12, Android TV 11 | [RuckieOfficial](https://github.com/RuckieOfficial) |
@@ -323,6 +324,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Telefunken:** [Previews on the dock and weather under the clock](https://github.com/Mehdi-Ks/cleanyourtv/blob/my-tv/FORK.md)
 - **Thomson:** [Taskbar & System Manager](https://github.com/arsha123449/cleanyourtv-free-ram)
 - **Toshiba (VIDAA):** [VIDAA Clean TV](https://github.com/HALCONDEORO/vidaa-clean-tv)
+- **TX9 (generic Allwinner box):** [Android TV makeover](https://github.com/rayedriasat/android-tv-makeover)
 - **Vestel:** [CleanYourTV · Nothing edition](https://github.com/TheWallHouse/cleanyourtv/blob/nothing/NOTHING.md)
 - **Wanbo:** [Webmote](https://github.com/maxhayim/webmote)
 - **waipu:** [Kids World](https://github.com/Dariusquack1989/kidsworld)
