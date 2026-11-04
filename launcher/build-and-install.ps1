@@ -144,13 +144,17 @@ function Undo-Handover {
 # Order matters, see build-and-install.sh: start the new launcher, disable the stock one, set the
 # preference last, then check where Home ended up and put the stock launcher back if it is not ours.
 $homeNow = Get-HomeNow
-if ($homeNow -notlike 'com.gathin.tvhome/*') {
+# -StockLauncher none with -HomeKeyService keeps the stock launcher as Home on purpose (stock_home_redirect sends
+# its home screen here): Fire OS, where Amazon's launcher can't be disabled and outranks set-home-activity.
+$keptHome = $homeNow -and $homeNow -notlike 'com.gathin.tvhome/*' -and $StockLauncher -eq 'none' -and $HomeKeyService
+if ($keptHome) { Write-Host "Home stays $homeNow; HomeKeyService sends it here (stock_home_redirect)." }
+elseif ($homeNow -notlike 'com.gathin.tvhome/*') {
     $reason = if ($homeNow) { "Home resolves to '$homeNow', not to the new launcher" } else { 'the TV stopped answering while Home was being switched, so the outcome is unknown' }
     $restored = Undo-Handover
     $hint = if ($homeNow) { ' On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to your debloat list (see README, Troubleshooting), apply it, then run this script again.' } else { '' }
     throw "$reason; $(if ($restored) { "$StockLauncher was re-enabled." } else { 'recovery is incomplete (see above).' })$hint"
 }
-Write-Host "Home now resolves to $homeNow"
+else { Write-Host "Home now resolves to $homeNow" }
 # Optional accessibility services, appended to enabled_accessibility_services without dropping others.
 function Enable-Service([string]$Name) {
     $svc = "com.gathin.tvhome/.$Name"

@@ -120,7 +120,7 @@ Anything running **Android TV** or **Google TV**.
 | Platform | What works |
 |---|---|
 | **Android TV, Google TV** | The debloat and the launcher. |
-| **Fire TV** | The debloat half only, since Fire OS will not hand Home to a third-party launcher. And on the 2015 Fire TV Box (Fire OS 5) even that half fails: every `pm` route is refused. |
+| **Fire TV** | The debloat half, since Fire OS will not hand Home to a third-party launcher. On a Fire TV Stick 4K (AFTKM, Fire OS 8) the launcher still runs on top of Amazon's Home with `stock_home_redirect`: see [its list](examples/amazon-fire-tv-stick-4k-2023/debloat.txt). And on the 2015 Fire TV Box (Fire OS 5) even that half fails: every `pm` route is refused. |
 | **A few China-market TCL sets** | They refuse to install any launcher at all; their lists say so in the header. |
 | **Samsung (Tizen), LG (webOS), Roku, Vizio, Hisense VIDAA** | Not supported (no ADB). Turn off the tracking instead: [cleanyour.tv/not-android](https://cleanyour.tv/not-android). See [SHOWCASE.md](SHOWCASE.md#other-platforms-fire-tv-and-lg-webos) for four webOS ports, and [docs/devices/samsung-tizen.md](docs/devices/samsung-tizen.md) for what a 2021 Samsung set answers over Wi-Fi (no ADB, so no `pm disable-user`) if you are weighing a Tizen port. |
 

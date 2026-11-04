@@ -141,7 +141,7 @@ class HandoverTest(unittest.TestCase):
         self.home = self.base / "home"
         self.home.mkdir()
 
-    def handover(self, **overrides):
+    def handover(self, env_extra=None, **overrides):
         state = {
             "stock_home": STOCK_HOME,
             "home": STOCK_HOME,
@@ -161,6 +161,7 @@ class HandoverTest(unittest.TestCase):
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))
+        env.update(env_extra or {})
         if os.name != "posix" or not shutil.which("bash"):
             raise unittest.SkipTest("build-and-install.sh is a POSIX script; it needs bash")
         result = subprocess.run(
@@ -222,6 +223,26 @@ class HandoverTest(unittest.TestCase):
         self.assertIn("recovery is incomplete", result.stderr)
         self.assertTrue(any("pm enable --user 0" in c for c in state["commands"]))
         self.assertIsNotNone(self.record())
+
+    def test_kept_stock_home_with_redirect_installs(self):
+        # Fire OS: Amazon's launcher stays Home (priority 950, set-home-activity changes nothing) and can't be
+        # disabled, so STOCK_LAUNCHER=none and HomeKeyService's stock_home_redirect bring Home here instead.
+        result, state = self.handover(set_home_fails=True,
+                                      env_extra={"STOCK_LAUNCHER": "none", "HOME_KEY_SERVICE": "1"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Installed.", result.stdout)
+        self.assertIn("stock_home_redirect", result.stdout)
+        self.assertTrue(any("enabled_accessibility_services" in c and "HomeKeyService" in c
+                            for c in state["commands"]), "HomeKeyService is enabled")
+        self.assertFalse(any("pm disable-user" in c for c in state["commands"]))
+        self.assertFalse(state["stock_disabled"])
+        self.assertIsNone(self.record())
+
+    def test_kept_stock_home_without_redirect_still_stops(self):
+        result, state = self.handover(set_home_fails=True, env_extra={"STOCK_LAUNCHER": "none"})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("not to the new launcher", result.stderr)
+        self.assertFalse(any("HomeKeyService" in c for c in state["commands"]))
 
 
 if __name__ == "__main__":
