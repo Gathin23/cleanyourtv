@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KJ-55X9300D (2016, SVP-DTV15, MediaTek mt5890), Japan",
+  "os": "Android TV 7.0",
+  "brand": "Sony",
+  "notes": "Japan firmware, no 8.0 update; Sony Select/Discover/BIVL, My BRAVIA promo row, Sony/Qterics device agents, SDDP vendorprotocol, tutorials, dead Play Music/Movies; USB media and Japanese keyboard off by choice; DLNA, Chromecast, voice kept; debloat only: the reference launcher needs Android 8.0 and does not run on 7.0, so leanbacklauncher keeps Home and there is no config.json; Google Play button is keycode 195; wait ~30 s before rebooting; reboot-checked"
+}
