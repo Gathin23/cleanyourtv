@@ -15,9 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import android.util.Log;
+import org.json.JSONObject;
 
 /** Remote-friendly settings owned by the launcher; system settings stay one row away. */
 public final class LauncherSettingsActivity extends Activity {
@@ -147,6 +155,7 @@ public final class LauncherSettingsActivity extends Activity {
                         .show();
             }
         });
+        findViewById(R.id.featuresChoice).setOnClickListener(v -> showFeaturesDialog());
         openOnStartChoice = findViewById(R.id.openOnStartChoice);
         if (config.openOnStartChoice) {
             openOnStartChoice.setVisibility(View.VISIBLE);
@@ -325,6 +334,87 @@ public final class LauncherSettingsActivity extends Activity {
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
                 || choices.contains(Config.CLOCK_FORMAT_KEY) || choices.contains(OpenOnStart.KEY);
+    }
+
+    private static final String[][] FEATURES = {
+            {"ambient_glow", "Ambient dock glow"},
+            {"app_glow", "Tile brand color glow"},
+            {"cinematic_home", "Cinematic top shelf"},
+            {"cinematic_dots", "Cinematic position dots"},
+            {"dock_glass", "Dock frosted glass"},
+            {"fade_rows", "Top row gradient fade"},
+            {"uniform_tiles", "Uniform icon cards"},
+            {"always_show_names", "Always show app names"},
+            {"focus_overshoot", "Focus bounce overshoot"},
+            {"reduced_motion", "Reduced motion"},
+            {"top_menu", "Single gear top menu"},
+            {"icon_only_buttons", "Icon-only top pills"},
+            {"reorder_button", "Tile reorder button"},
+            {"wifi_status_color", "Wi-Fi online status color"},
+            {"wifi_status_warnings", "Wi-Fi captive/offline warnings"},
+            {"app_library", "App library drawer"},
+            {"library_button", "App library top button"},
+            {"show_library_pill", "App library pill at end"},
+            {"date_below_clock", "Date below clock"},
+            {"header_white", "Bright white header date"},
+            {"clock_wallpaper", "Clock screensaver wallpaper"},
+            {"power_on_home", "Power-on to Home"},
+            {"power_on_home_always", "Strict power-on to Home"}
+    };
+
+    private void showFeaturesDialog() {
+        File dir = Config.dir(this);
+        File file = dir != null ? new File(dir, Config.FILE_NAME) : null;
+        JSONObject json = (file != null && file.isFile()) ? readJson(file) : null;
+
+        String[] labels = new String[FEATURES.length];
+        boolean[] checked = new boolean[FEATURES.length];
+        for (int i = 0; i < FEATURES.length; i++) {
+            labels[i] = FEATURES[i][1];
+            checked[i] = json != null && json.optBoolean(FEATURES[i][0], false);
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.features_settings)
+                .setMultiChoiceItems(labels, checked, (dialog, which, isChecked) -> {
+                    updateConfigKey(FEATURES[which][0], isChecked);
+                })
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
+    private void updateConfigKey(String key, boolean value) {
+        File dir = Config.dir(this);
+        if (dir == null) return;
+        File file = new File(dir, Config.FILE_NAME);
+        try {
+            JSONObject json = file.isFile() ? readJson(file) : new JSONObject();
+            if (json == null) json = new JSONObject();
+            json.put(key, value);
+            writeString(file, json.toString(2));
+            changed();
+        } catch (Exception e) {
+            Log.e("TvHome", "Failed to update " + key, e);
+        }
+    }
+
+    private static JSONObject readJson(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            byte[] buf = new byte[(int) file.length()];
+            int n = 0, r;
+            while (n < buf.length && (r = in.read(buf, n, buf.length - n)) > 0) n += r;
+            String text = new String(buf, 0, n, StandardCharsets.UTF_8);
+            if (text.startsWith("\uFEFF")) text = text.substring(1);
+            return new JSONObject(text);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static void writeString(File file, String content) throws IOException {
+        try (OutputStream out = new FileOutputStream(file)) {
+            out.write(content.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     private void open(Intent intent) {
