@@ -23,8 +23,9 @@ final class ShizukuPower {
     static void setAwake(Context context,boolean awake,Runnable finished) {
         if(!ready()){android.util.Log.w("SleepPower","Shizuku is not ready");finished.run();return;}
         Handler handler=new Handler(Looper.getMainLooper());
+        long deadlineElapsedMs=SystemClock.elapsedRealtime()+PowerDeadline.TIMEOUT_MS;
         Shizuku.UserServiceArgs args=new Shizuku.UserServiceArgs(new ComponentName(context,PowerUserService.class))
-                .tag("sleep-timer-power").processNameSuffix("power").daemon(true).version(1);
+                .tag("sleep-timer-power").processNameSuffix("power").daemon(true).version(2);
         AtomicBoolean completed=new AtomicBoolean();
         final ServiceConnection[] holder=new ServiceConnection[1];
         Runnable complete=()->{
@@ -40,7 +41,7 @@ final class ShizukuPower {
                     try {
                         if(completed.get())return;
                         IPowerControl power=IPowerControl.Stub.asInterface(binder);
-                        boolean ok=power.uid()==2000&&!completed.get()&&power.setAwake(awake);
+                        boolean ok=power.uid()==2000&&!completed.get()&&power.setAwake(awake,deadlineElapsedMs);
                         android.util.Log.i("SleepPower","awake="+awake+" success="+ok);
                     }catch(RemoteException|RuntimeException e){android.util.Log.e("SleepPower","Shizuku power failed",e);}
                     handler.post(()->{handler.removeCallbacks(timeout);complete.run();});
@@ -48,7 +49,7 @@ final class ShizukuPower {
             }
             @Override public void onServiceDisconnected(ComponentName name){handler.removeCallbacks(timeout);complete.run();}
         };
-        handler.postDelayed(timeout,9000);
+        handler.postDelayed(timeout,PowerDeadline.TIMEOUT_MS);
         try{Shizuku.bindUserService(args,holder[0]);}catch(RuntimeException e){handler.removeCallbacks(timeout);complete.run();}
     }
 }
