@@ -21,3 +21,5 @@ bench-results/
 *.aab
 launcher/hs_err_pid*.log
 launcher/replay_pid*.log
+config.bat
+node_modules
