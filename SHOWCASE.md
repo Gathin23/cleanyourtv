@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-202 projects so far.
+203 projects so far.
 
 ## Home screens built as their own app
 
@@ -281,7 +281,8 @@ Walkthroughs other people wrote or recorded. Press coverage is listed in [docs/P
 
 By the TV each project was built and tested on. Most of them run on other Android TV sets too; check the project's README.
 
-- **Amazon Fire TV:** [CleanYourTV AFTSS minimal fork](https://github.com/bearylabs/cleanyourtv/tree/firetv), [CleanYourTV on Fire OS](https://github.com/GaneshVarma1/cleanyourtv/tree/fire-tv-launcher-settings-fix), [Fire OS 6 fast Home](https://github.com/Mohamedkrs/cleanyourtv), [Fire OS 6 Home watcher](https://github.com/ljis120301/tv-vibehack/tree/fire-tv-support), [Fire OS 7 fast Home](https://github.com/andrewsaad/fire-tv-cleanup), [Fire TV Glass](https://github.com/ivantrj/firetv-glass-launcher), [Fire TV Stick Lite cleanup (AFTSS)](https://github.com/eteen12/firetv-stick-aftss-cleanup), [Fire TV → Apple TV front end](https://github.com/NikhilSiddhu/firetv-tvos), [fire-tv-cleanup](https://github.com/itsmeterrylin/fire-tv-cleanup), [Home Return and weather moods on a Fire TV](https://github.com/bansiman/cleanyourtv/tree/my-tv), [Today: dashboard, screensaver and alerts](https://github.com/meowbanky/cleanyourtv/tree/today-app/today), [TV Optimizer](https://github.com/Soham-Saha-AI/tv-optimizer), [Violet Horizon](https://github.com/Kiwicoop247/firetv-glass-launcher/tree/violet-horizon), [Fire OS 8 Home redirect with Settings pass-through](https://github.com/Achar0/tv-vibehack/tree/fire-tv)
+<<<<<<< HEAD
+- **Amazon Fire TV:** [CleanYourTV AFTSS minimal fork](https://github.com/bearylabs/cleanyourtv/tree/firetv), [CleanYourTV on Fire OS](https://github.com/GaneshVarma1/cleanyourtv/tree/fire-tv-launcher-settings-fix), [Fire OS 6 fast Home](https://github.com/Mohamedkrs/cleanyourtv), [Fire OS 6 Home watcher](https://github.com/ljis120301/tv-vibehack/tree/fire-tv-support), [Fire OS 7 fast Home](https://github.com/andrewsaad/fire-tv-cleanup), [Fire TV Glass](https://github.com/ivantrj/firetv-glass-launcher), [Fire TV Stick Lite cleanup (AFTSS)](https://github.com/eteen12/firetv-stick-aftss-cleanup), [Fire TV → Apple TV front end](https://github.com/NikhilSiddhu/firetv-tvos), [fire-tv-cleanup](https://github.com/itsmeterrylin/fire-tv-cleanup), [Home Return and weather moods on a Fire TV](https://github.com/bansiman/cleanyourtv/tree/my-tv), [Today: dashboard, screensaver and alerts](https://github.com/meowbanky/cleanyourtv/tree/today-app/today), [TV Optimizer](https://github.com/Soham-Saha-AI/tv-optimizer), [Violet Horizon](https://github.com/Kiwicoop247/firetv-glass-launcher/tree/violet-horizon), [Fire OS 8 Home redirect with Settings pass-through](https://github.com/Achar0/tv-vibehack/tree/fire-tv), [AuroraTv-LiveFlow](https://github.com/rubenrojov/AuroraTv-LiveFlow)
 - **ASUS:** [Webmote](https://github.com/maxhayim/webmote)
 - **Baron (CloudWalker OS):** [Baron Home](https://github.com/sethihq/baron-tv)
 - **BenQ:** [Navigation sounds](https://github.com/rocavence/tv-vibehack/tree/nav-sounds)
