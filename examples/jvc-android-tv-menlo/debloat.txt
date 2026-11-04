@@ -4,6 +4,25 @@
 # Same Vestel platform as examples/cecotec-shandao (com.vestel.* services); Google part follows
 # examples/panasonic-4ktv-0su.
 #
+# Second unit: Finlux (Norway), the same Vestel menlo board under the Finlux badge: product BARTU_Finlux,
+# ro.product.brand = Finlux, ro.product.manufacturer = vestel, ro.product.model = "Android TV", 1 GB RAM.
+# Cleaned on Android TV 11, firmware RTMA.250416.176, then took the official update V1.18.11 from Settings
+# to Android 14 (API 34), firmware UKNV.260914.002, fingerprint Finlux/BARTU_Finlux/menlo:14/UKNV.260914.002/16342942.
+# - The update turned every disabled package back on: run the Apply line again after a firmware update.
+# - The list applies as is on Android 14. Not installed there: com.google.android.onetimeinitializer and
+#   com.android.printspooler (gone in Android 14), com.google.android.videos, com.android.mgstv and
+#   com.tcl.browser (not preloaded on this unit); disable.sh passes over them.
+# - Every uk.co.freeview.* package (16 on Android 14) already ships disabled.
+# - screencap works on this unit (Android 14), so tools/tv.py --screenshot does too, unlike the JVC.
+# - setupwraith owns the saved Wi-Fi network here: keep it, as below.
+# - com.vestel.smartcenter and com.vestel.smartlogger are persistent apps: pm disable-user takes, but both
+#   kept running while disabled, so disabling them frees no memory (smartlogger is a comment below for that).
+# - com.cltv.fast (Live TVx) is on this unit: see its commented line below.
+# Finlux owner's choices: Prime Video off (commented line below); Disney+, Netflix, YouTube and Chromecast kept.
+# Status on the Finlux: the list (Prime Video included) on since 2026-10-23, on Android 14 since the same day.
+# Checked by the owner on the real remote on Android 14: new launcher as Home, Input key, HDMI switching,
+# composite input and Live TV all work; stable in daily use for twelve days, with a cold boot every night.
+#
 # Stock launcher:  com.google.android.tvlauncher (classic Android TV, not Google TV)
 # Live TV app:     com.mediatek.wwtv.tvcenter
 # Updates:         no separate firmware-update package on this firmware; updates live in Settings.
@@ -37,6 +56,14 @@
 com.vestel.vestelreporter                        # Vestel reporter: INTERNET + BOOT_COMPLETED, no UI
 com.vestel.tv.speedup                            # "speed up" cleaner
 com.vestel.smartcenter                           # no UI, holds GET_TASKS (sees which apps you run) + INTERNET
+# com.vestel.smartlogger                         # Finlux: Vestel logger, no UI, BOOT_COMPLETED. Persistent:
+                                                 # it kept running while disabled, so disabling gains nothing.
+
+# Ad-funded FAST channels (left on, as in other shared lists: TV middleware)
+# com.cltv.fast                                  # Finlux: "Live TVx" by iWedia, its own TvInputService, not
+                                                 # the tuner. On Android 14 it came back enabled once after a
+                                                 # reboot while disabled (cause not found), as firmware does on
+                                                 # examples/anker-nebula-d2426.
 
 # Google/partner attribution, feedback, auto-installs, setup leftovers
 com.google.android.partnersetup                  # partner/OEM attribution
@@ -52,6 +79,7 @@ com.google.android.play.games                    # Play Games
 com.google.android.katniss                       # Google Assistant / voice search
 com.android.mgstv                                # Mango TV, preinstalled as a user app (Taobao ACCS push + Firebase)
 com.tcl.browser                                  # TCL Browser, preinstalled as a user app
+# com.amazon.amazonvideo.livingroom              # Prime Video: kept on the JVC, off by choice on the Finlux
 
 # Background services nobody needs on a TV
 com.android.printspooler
