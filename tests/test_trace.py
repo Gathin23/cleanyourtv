@@ -12,11 +12,15 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import base64
 import contextlib
+import hashlib
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import re
+import shutil
+import stat
 import sys
 import tempfile
 import types
@@ -312,6 +316,237 @@ class RecordTest(unittest.TestCase):
         with self.assertRaises(RuntimeError) as caught:
             self.record(FakeDevice("/system/bin/sh: perfetto: not found\n"), [], ["sleep 1"])
         self.assertIn("Android 9 and later", str(caught.exception))
+
+
+class RecordPreservationTest(unittest.TestCase):
+    OLD = b"existing complete recording\n"
+    SIDECAR = b'{"scenario":"home","run":1,"fixture":"old"}\n'
+
+    @contextlib.contextmanager
+    def files(self, existing=True):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            path = folder / "home-1.pftrace"
+            if existing:
+                path.write_bytes(self.OLD)
+                path.with_suffix(".json").write_bytes(self.SIDECAR)
+            (folder / "unrelated.txt").write_bytes(b"keep this too")
+            yield path, self.snapshot(folder)
+
+    def snapshot(self, folder):
+        return {str(p.relative_to(folder)): "directory" if p.is_dir() else
+                hashlib.sha256(p.read_bytes()).hexdigest() for p in folder.rglob("*")}
+
+    def device(self, how="ok"):
+        class DownloadDevice(FakeDevice):
+            closed = False
+
+            def shell(self, command, read_timeout_s=None):
+                answer = super().shell(command, read_timeout_s)
+                if how == "cleanup" and command == f"rm -f {trace.REMOTE}":
+                    raise ConnectionResetError("remote cleanup failed")
+                return answer
+
+            def pull(self, remote, local, **kwargs):
+                self.calls.append(("pull", remote, local))
+                with open(local, "wb") as stream:
+                    if how == "partial":
+                        stream.write(b"partial")
+                    if how in ("before", "partial"):
+                        raise ConnectionResetError("download interrupted")
+                    if how != "empty":
+                        stream.write(b"trace")
+
+            def close(self):
+                self.closed = True
+
+        return DownloadDevice("perfetto: not found\n" if how == "startup" else "1234\n")
+
+    def record(self, device, path):
+        with mock.patch.object(trace.time, "sleep"):
+            return trace.record_one(device, [], ["sleep 1"], "com.gathin.tvhome", str(path))
+
+    def test_success_creates_or_replaces_the_final_recording(self):
+        for existing in (False, True):
+            with self.subTest(existing=existing), self.files(existing) as (path, before):
+                device = self.device()
+                self.assertEqual(self.record(device, path), len(b"trace"))
+                self.assertEqual(path.read_bytes(), b"trace")
+                before[path.name] = hashlib.sha256(b"trace").hexdigest()
+                self.assertEqual(self.snapshot(path.parent), before, "only the recording changes")
+                self.assertEqual([c[0] for c in device.calls[-2:]], ["pull", "shell"])
+                self.assertEqual(device.calls[-1][1], f"rm -f {trace.REMOTE}")
+
+    def test_failed_downloads_preserve_existing_files_or_leave_no_new_file(self):
+        for how in ("before", "partial", "empty", "startup", "cleanup"):
+            for existing in (False, True):
+                with self.subTest(how=how, existing=existing), self.files(existing) as (path, before):
+                    device = self.device(how)
+                    error = RuntimeError if how in ("empty", "startup") else ConnectionResetError
+                    with contextlib.redirect_stdout(io.StringIO()) as output, self.assertRaises(error) as caught:
+                        self.record(device, path)
+                    self.assertEqual(output.getvalue(), "", "failed recordings never report success")
+                    if how == "empty":
+                        self.assertEqual(str(caught.exception), "perfetto wrote an empty trace; "
+                                         "run with --runs 1 and see tools/trace.md")
+                    pulls = [c for c in device.calls if c[0] == "pull"]
+                    self.assertEqual(len(pulls), 0 if how == "startup" else 1)
+                    cleanup = ("shell", f"rm -f {trace.REMOTE}") in device.calls
+                    self.assertEqual(cleanup, how in ("empty", "cleanup"))
+                    self.assertEqual(self.snapshot(path.parent), before,
+                                     "trace and sidecar hashes must match, with no staged files left")
+
+    def test_publication_failure_preserves_existing_files_or_leaves_no_new_file(self):
+        for existing in (False, True):
+            with self.subTest(existing=existing), self.files(existing) as (path, before):
+                with mock.patch.object(os, "replace", side_effect=PermissionError("cannot replace")) as replace:
+                    with self.assertRaisesRegex(PermissionError, "cannot replace"):
+                        self.record(self.device(), path)
+                replace.assert_called_once()
+                self.assertEqual(self.snapshot(path.parent), before)
+
+    def test_permission_copy_failure_preserves_the_recording(self):
+        with self.files() as (path, before):
+            with mock.patch.object(shutil, "copymode", side_effect=PermissionError("cannot copy mode")):
+                with self.assertRaisesRegex(PermissionError, "cannot copy mode"):
+                    self.record(self.device(), path)
+            self.assertEqual(self.snapshot(path.parent), before)
+
+    @unittest.skipIf(os.name == "nt", "Windows chmod does not support POSIX permission bits")
+    def test_replacement_preserves_existing_permission_bits(self):
+        with self.files() as (path, before):
+            path.chmod(0o640)
+            self.record(self.device(), path)
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o640)
+            before[path.name] = hashlib.sha256(b"trace").hexdigest()
+            self.assertEqual(self.snapshot(path.parent), before)
+
+    @unittest.skipUnless(os.name == "nt", "Windows refuses replacement of an open or read-only target")
+    def test_windows_locked_or_readonly_target_is_preserved(self):
+        for how in ("locked", "readonly"):
+            with self.subTest(how=how), self.files() as (path, before):
+                try:
+                    if how == "readonly":
+                        path.chmod(stat.S_IREAD)
+                    opened = path.open("rb") if how == "locked" else contextlib.nullcontext()
+                    with opened, self.assertRaises(PermissionError):
+                        self.record(self.device(), path)
+                    self.assertEqual(self.snapshot(path.parent), before)
+                finally:
+                    path.chmod(stat.S_IREAD | stat.S_IWRITE)
+
+    def test_missing_parent_is_not_created(self):
+        with self.files() as (path, before):
+            with self.assertRaises(FileNotFoundError):
+                self.record(self.device(), path.parent / "missing" / path.name)
+            self.assertEqual(self.snapshot(path.parent), before)
+
+    def test_pull_uses_a_unique_sibling_staging_directory_and_original_basename(self):
+        with self.files() as (path, before):
+            destinations = []
+            device = self.device()
+
+            def pull(remote, local, **kwargs):
+                staged = Path(local)
+                self.assertEqual(remote, trace.REMOTE)
+                self.assertEqual(kwargs, {"transport_timeout_s": 300.0, "read_timeout_s": 300.0})
+                self.assertEqual(staged.name, path.name)
+                self.assertEqual(staged.parent.parent, path.parent)
+                self.assertNotEqual(staged.parent, path.parent)
+                self.assertEqual(path.read_bytes(), self.OLD, "final file stays untouched during the pull")
+                destinations.append(staged)
+                staged.write_bytes(b"trace")
+
+            device.pull = pull
+            for _ in range(2):
+                path.write_bytes(self.OLD)
+                self.assertEqual(self.record(device, path), 5)
+            self.assertNotEqual(destinations[0].parent, destinations[1].parent)
+            self.assertTrue(all(not p.parent.exists() for p in destinations))
+            before[path.name] = hashlib.sha256(b"trace").hexdigest()
+            self.assertEqual(self.snapshot(path.parent), before)
+
+    def test_success_replaces_a_hardlink_entry_without_changing_its_alias(self):
+        with self.files() as (path, before):
+            alias = path.with_name("alias.pftrace")
+            try:
+                os.link(path, alias)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"hardlinks unavailable: {error}")
+            self.record(self.device(), path)
+            self.assertEqual(alias.read_bytes(), self.OLD)
+            self.assertEqual(path.read_bytes(), b"trace")
+            self.assertFalse(os.path.samefile(path, alias))
+            before[alias.name] = before[path.name]
+            before[path.name] = hashlib.sha256(b"trace").hexdigest()
+            self.assertEqual(self.snapshot(path.parent), before)
+
+    def test_success_replaces_a_symlink_entry_without_writing_through_it(self):
+        with self.files() as (path, before):
+            source = path.with_name("source.pftrace")
+            path.rename(source)
+            try:
+                path.symlink_to(source.name)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"symlinks unavailable: {error}")
+            self.record(self.device(), path)
+            self.assertFalse(path.is_symlink())
+            self.assertEqual(source.read_bytes(), self.OLD)
+            self.assertEqual(path.read_bytes(), b"trace")
+            before[source.name] = before[path.name]
+            before[path.name] = hashlib.sha256(b"trace").hexdigest()
+            self.assertEqual(self.snapshot(path.parent), before)
+
+    def main_modules(self, device):
+        fake_tv = types.ModuleType("tv")
+        fake_tv.connect = lambda: device
+        fake_bench = types.ModuleType("bench")
+        return mock.patch.dict(sys.modules, {"tv": fake_tv, "bench": fake_bench})
+
+    def main(self, path):
+        return trace.main(["home", "--app", OTHER, "--runs", "1", "--out", str(path.parent)])
+
+    def test_main_preserves_trace_and_sidecar_and_closes_device_after_failures(self):
+        for how in ("before", "partial", "empty", "startup", "cleanup", "replace", "copymode"):
+            with self.subTest(how=how), self.files() as (path, before), contextlib.ExitStack() as stack:
+                device = self.device(how)
+                stack.enter_context(self.main_modules(device))
+                stack.enter_context(mock.patch.object(trace.time, "sleep"))
+                if how == "replace":
+                    stack.enter_context(mock.patch.object(os, "replace", side_effect=PermissionError("replace")))
+                if how == "copymode":
+                    stack.enter_context(mock.patch.object(shutil, "copymode", side_effect=PermissionError("mode")))
+                error = (RuntimeError if how in ("empty", "startup") else
+                         PermissionError if how in ("replace", "copymode") else ConnectionResetError)
+                with contextlib.redirect_stdout(io.StringIO()) as output, self.assertRaises(error):
+                    self.main(path)
+                self.assertTrue(device.closed)
+                self.assertEqual(output.getvalue(), "")
+                self.assertEqual(self.snapshot(path.parent), before)
+
+    def test_main_writes_metadata_after_successful_replacement_and_reports_size(self):
+        with self.files() as (path, before):
+            device = self.device()
+            dump = json.dump
+
+            def metadata(value, stream, **kwargs):
+                self.assertEqual(path.read_bytes(), b"trace", "publish trace before writing metadata")
+                return dump(value, stream, **kwargs)
+
+            with self.main_modules(device), mock.patch.object(trace.time, "sleep"), \
+                 mock.patch.object(trace.json, "dump", side_effect=metadata), \
+                 contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertIsNone(self.main(path))
+            self.assertTrue(device.closed)
+            sidecar = path.with_suffix(".json")
+            info = json.loads(sidecar.read_text())
+            self.assertEqual((info["scenario"], info["run"], info["package"]), ("home", 1, "com.gathin.tvhome"))
+            self.assertEqual(info["steps"], ["input keyevent KEYCODE_HOME", "sleep 4"])
+            self.assertEqual(output.getvalue(), f"{path}: 5 bytes\nnext: tools/venv/bin/python -I "
+                             f"tools/trace_report.py {path.parent}   (see tools/trace.md)\n")
+            before[path.name] = hashlib.sha256(b"trace").hexdigest()
+            before[sidecar.name] = hashlib.sha256(sidecar.read_bytes()).hexdigest()
+            self.assertEqual(self.snapshot(path.parent), before)
 
 
 class OtherAppTest(unittest.TestCase):
