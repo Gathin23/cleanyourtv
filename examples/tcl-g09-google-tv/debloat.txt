@@ -2,6 +2,7 @@
 # Android 12 (Google TV), firmware STT2.230203.001 AS24, 2 GB RAM
 # Same firmware family as examples/tcl-g10-google-tv.
 # Also tested on a TCL 55V6C, Colombia (product G09_4K_GB_NF), firmware STT2.230203.001 AS24.
+# Also used on a TCL Smart TV Pro, India (G09), firmware STT2.230203.001.AS24, with ZEE5 kept.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g09-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat.txt com.google.android.apps.tv.launcherx
@@ -18,7 +19,6 @@ com.tcl.ttvs                           # TCL BI/awareness/identifier services; s
 com.tcl.logkit                         # log capture and upload
 com.tcl.interactive                    # TCL TIAS background service
 com.google.android.feedback
-com.graymatrix.did                     # device analytics (data app; on the AS23 unit)
 # com.mirakulo.astrotv.service is Ginga, the ISDB-Tb broadcast interactive-TV engine (AstroTVService,
 # com.tcl.tv.ginga.PERMISSION), not analytics. TvSettings reads Enable_ginga=false on this set, so it
 # frees nothing here; where Ginga is on, disabling it turns broadcasters' interactive apps off.
@@ -59,6 +59,9 @@ com.google.android.play.games
 com.google.android.videos              # Google TV / Play Movies storefront
 com.google.android.youtube.tvmusic
 com.google.android.apps.tv.dreamx      # ambient screensaver; use the launcher's Clock screensaver
+# com.graymatrix.did is ZEE5, a Play Store streaming app (AppStartActivity, installer com.android.vending),
+# not analytics: an earlier version of this list disabled it. Uncomment it only if the owner doesn't want ZEE5.
+# com.graymatrix.did                   # ZEE5 streaming app
 
 # Off by choice
 com.google.android.apps.mediashell     # Chromecast built-in
