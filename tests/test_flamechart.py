@@ -31,7 +31,7 @@ PKG = "com.gathin.tvhome"
 MS = 1_000_000
 
 
-def fake_trace():
+def fake_trace(extra_threads=()):
     """The launcher brought to the front at 1000 ms: performStart, onResume with nested work, a traversal, a frame."""
     db = sqlite3.connect(":memory:")
     db.row_factory = sqlite3.Row
@@ -51,6 +51,13 @@ def fake_trace():
             (5, 1050, 4, 1, "RV OnBindView", 10, 4), (6, 1055, 10, 0, "DrawFrames 1", 20, None)]
     db.executemany("insert into slice values (?, ?, ?, ?, ?, ?, ?)",
                    [(i, ts * MS, dur * MS, depth, name, track, parent) for i, ts, dur, depth, name, track, parent in rows])
+    if extra_threads:
+        db.execute("insert into process values (1, 200, 'com.example.other')")
+    for utid, upid, name in extra_threads:
+        db.execute("insert into thread values (?, ?, ?, ?)", (utid, upid, 100 + utid, name))
+        db.execute("insert into thread_track values (?, ?)", (utid * 10, utid))
+        db.execute("insert into slice values (?, ?, ?, ?, ?, ?, ?)",
+                   (100 + utid, 1010 * MS, MS, 0, "worker task", utid * 10, None))
     return lambda sql: [dict(r) for r in db.execute(sql)]
 
 
@@ -206,6 +213,102 @@ class OutputArgumentTest(unittest.TestCase):
                         args = flamechart.parse(argv)
                         self.assertEqual(args.out, out)
                         self.assertEqual(args.width, 1600 if width is None else width)
+
+
+class ThreadNamesTest(unittest.TestCase):
+    NAMES = ("main", "RenderThread", "Binder:100_1", "Jit thread pool", "worker/io", "Thread (pooled)",
+             "O'Brien", "quote''only", "worker+io", "GL worker [0]", "worker@io", r"worker\io")
+
+    def test_thread_names_accept_printable_punctuation(self):
+        for name in self.NAMES:
+            with self.subTest(name=name), contextlib.redirect_stderr(io.StringIO()):
+                args = flamechart.parse(["nav-1.pftrace", "--out", "chart.png", "--threads", name])
+                self.assertEqual(args.thread_names, [name])
+
+    def test_thread_names_keep_comma_splitting_and_whitespace_trimming(self):
+        with contextlib.redirect_stderr(io.StringIO()):
+            args = flamechart.parse(["nav-1.pftrace", "--out", "chart.png", "--threads",
+                                     " main, , RenderThread, worker/io, "])
+        self.assertEqual(args.thread_names, ["main", "RenderThread", "worker/io"])
+
+    def test_thread_names_refuse_invalid_values_before_trace_work(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp, "chart.png")
+            for value in ("", " , , ", "main;rm", "worker;io", "worker\tio", "worker\nio", "worker\rio",
+                          "worker\x00io", "worker\x1fio", "worker\x7fio", "worker\u200bio"):
+                with (self.subTest(value=value),
+                      mock.patch.dict(sys.modules, {"PIL": None, "perfetto": None}),
+                      mock.patch.object(flamechart.trace_report, "expand") as expand,
+                      mock.patch.object(flamechart.trace_report, "opener") as opener,
+                      mock.patch("builtins.__import__", wraps=__import__) as imports,
+                      contextlib.redirect_stderr(io.StringIO()) as err,
+                      self.assertRaises(SystemExit) as caught):
+                    flamechart.main(["nav-1.pftrace", "--out", str(out), "--threads", value])
+                self.assertEqual(caught.exception.code, 2)
+                self.assertIn("--threads", err.getvalue())
+                self.assertIn("main,RenderThread", err.getvalue())
+                expand.assert_not_called()
+                opener.assert_not_called()
+                self.assertFalse(out.exists())
+                self.assertFalse(any(call.args[0].split(".")[0] in ("PIL", "perfetto")
+                                     for call in imports.call_args_list))
+
+    def test_thread_names_select_exact_slices_and_keep_original_labels(self):
+        threads = [(utid, 2, name) for utid, name in enumerate(self.NAMES[2:], 3)]
+        q = fake_trace(threads)
+        for utid, _, name in threads:
+            with self.subTest(name=name):
+                label, rows = flamechart.lanes(q, PKG, [name], 0, 2000 * MS)[0]
+                self.assertEqual(label, name)
+                self.assertEqual([r["id"] for r in rows], [100 + utid])
+
+    def test_thread_names_treat_sql_expressions_as_literals(self):
+        name = "worker' OR 1=1 --"
+        q = fake_trace([(3, 1, name), (4, 2, "unrelated"), (5, 2, name)])
+        label, rows = flamechart.lanes(q, PKG, [name], 0, 2000 * MS)[0]
+        self.assertEqual(label, name)
+        self.assertEqual([r["id"] for r in rows], [105])
+        self.assertEqual(flamechart.lanes(q, PKG, ["missing' OR 1=1 --"], 0, 2000 * MS),
+                         [("missing' OR 1=1 --", [])])
+
+    def test_thread_names_keep_default_missing_and_duplicate_selection(self):
+        q = fake_trace([(3, 1, "worker-io"), (6, 2, "worker-io"), (4, 2, "worker-io")])
+        args = flamechart.parse(["nav-1.pftrace", "--out", "chart.png"])
+        self.assertEqual(args.thread_names, ["main", "RenderThread"])
+        lanes = flamechart.lanes(q, PKG, [*args.thread_names, "worker-io", "missing-thread"], 0, 2000 * MS)
+        self.assertEqual([(label, [r["id"] for r in rows]) for label, rows in lanes],
+                         [("main thread", [1, 2, 3, 4, 5]), ("RenderThread", [6]),
+                          ("worker-io", [104]), ("missing-thread", [])])
+
+    def test_thread_names_flow_through_main_to_draw(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp, "chart.png")
+            for name in ("worker/io", "Thread (pooled)", "O'Brien", "quote''only", "worker' OR 1=1 --"):
+                q = fake_trace([(3, 2, name)])
+                close = mock.Mock()
+                with (self.subTest(name=name),
+                      mock.patch.dict(sys.modules, {"PIL": mock.MagicMock(), "perfetto": None}),
+                      mock.patch.object(flamechart.trace_report, "expand", return_value=["nav-1.pftrace"]) as expand,
+                      mock.patch.object(flamechart.os.path, "isfile", return_value=True),
+                      mock.patch.object(flamechart.trace_report, "opener", return_value=lambda path: (q, close)) as opener,
+                      mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw,
+                      contextlib.redirect_stdout(io.StringIO()) as output,
+                      contextlib.redirect_stderr(io.StringIO())):
+                    flamechart.main(["nav-1.pftrace", "--out", str(out), "--threads", name])
+                    expand.assert_called_once_with(["nav-1.pftrace"])
+                    opener.assert_called_once_with(None)
+                    close.assert_called_once_with()
+                    draw.assert_called_once()
+                    panels, _, title, subtitle, path, width = draw.call_args.args
+                    self.assertEqual(panels, [{"label": "Before", "note": "nav-1.pftrace",
+                                              "t0": 1000 * MS, "t1": 1065 * MS,
+                                              "lanes": [(name, [{"id": 103, "ts": 1010 * MS, "dur": MS,
+                                                                "depth": 0, "name": "worker task",
+                                                                "parent_id": None}])]}])
+                    self.assertEqual((title, subtitle), ("Launcher: start to first frame", ""))
+                    self.assertEqual((path, width), (str(out), 1600))
+                    self.assertEqual(output.getvalue(), f"{out}: 1600x100\n")
+                    self.assertFalse(out.exists())
 
 
 @unittest.skipUnless(importlib.util.find_spec("PIL"), "drawing needs Pillow (tools/requirements-perf.txt)")
