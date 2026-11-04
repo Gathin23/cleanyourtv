@@ -105,7 +105,7 @@ class PrivacyWriteNameTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2, result.stderr)
         self.assertNotIn("Traceback", result.stderr)
         self.assertIn("lists is a folder", result.stderr)
-        self.assertIn("lists/privacy.txt", result.stderr)
+        self.assertIn(os.path.join("lists", "privacy.txt"), result.stderr)  # lists\privacy.txt on Windows
         self.assertIn("Nothing was asked of the TV.", result.stderr)
         self.assertNotIn("cannot reach the TV", result.stderr)
         self.assertNotIn("already exists", result.stderr)
