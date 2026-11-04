@@ -42,7 +42,14 @@ when more than ten minutes late. Without exact-alarm access Android may delay an
 
 When Shizuku is connected, the timer uses a small Shizuku user service running as the ADB shell
 (UID 2000) for scheduled wake, sleep and the countdown. It accepts only a wake/sleep choice, not
-arbitrary commands, and refuses root mode. On CVTE firmware with native fake standby already enabled,
+arbitrary commands, and refuses root mode. Each power RPC carries a nine-second deadline based on
+Android's elapsed-realtime clock. The Shizuku user service rejects expired calls (including calls
+queued behind another power request) and rechecks the deadline before each shell command. This
+prevents a delayed or expired request from starting a new power command; a system command already
+started before the deadline cannot be canceled or rolled back. The user service protocol version
+is bumped to 2 so Shizuku replaces the old daemon after updating the APK.
+
+On CVTE firmware with native fake standby already enabled,
 it reads the current standby state before sending the power key, so repeated sleep or wake requests
 do not toggle the TV back. This preserves the firmware's network-connected screen-off mode. Other
 devices use Android's explicit wake/sleep keys; validate their effect on the actual device.
@@ -135,6 +142,18 @@ mkdir -p work/schedule-check
 javac -d work/schedule-check addons/sleep-timer/app/src/main/java/io/github/luyzfernando08/sleeptimer/ScheduleRules.java addons/sleep-timer/tests/ScheduleCheck.java
 java -cp work/schedule-check io.github.luyzfernando08.sleeptimer.ScheduleCheck
 ```
+
+## Power deadline regression checks
+
+The power-request deadline logic can be checked on a JVM without Android dependencies:
+
+```sh
+mkdir -p work/power-deadline-check
+javac -d work/power-deadline-check addons/sleep-timer/app/src/main/java/io/github/luyzfernando08/sleeptimer/PowerDeadline.java addons/sleep-timer/tests/PowerDeadlineCheck.java
+java -cp work/power-deadline-check io.github.luyzfernando08.sleeptimer.PowerDeadlineCheck
+```
+
+These checks validate expiration and boundary handling, not real Binder timing or physical TV behavior.
 
 ## Tested on
 
