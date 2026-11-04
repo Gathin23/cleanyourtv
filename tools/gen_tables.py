@@ -389,7 +389,7 @@ def adopt(root, patch_text):
             else ["No tv.json was written."]
         raise Problem("\n".join(head + ["These rows were not applied:"] + stale_rows + [
             "The tables were not regenerated, so README.md and examples/README.md still hold the rows they "
-            "had and this checkout now answers --check with 1. Move that row's change into its tv.json by "
+            "had" + (" and this checkout now answers --check with 1" if written else "") + ". Move that row's change into its tv.json by "
             "hand, then run python3 tools/gen_tables.py again."]))
     return out
 

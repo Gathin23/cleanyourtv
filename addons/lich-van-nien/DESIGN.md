@@ -52,7 +52,7 @@ screen is readable from the bed and driven only by the D-pad.
 - The launcher listens for `PACKAGE_CHANGED` and rebuilds tiles; enabling/disabling an alias with
   `PackageManager.setComponentEnabledSetting(..., DONT_KILL_APP)` sends it. To be verified on the TV.
 - Gradle project of its own like `addons/jewish-calendar`: minSdk 26, target/compile 34, Java 17,
-  AGP 8.5.2, `local.properties` `sdk.dir=/Users/tungpv/Library/Android/sdk`, JAVA_HOME openjdk@17.
+  AGP 8.5.2, JAVA_HOME openjdk@17.
   Copy `gradlew`, `gradlew.bat`, `gradle/`, `.gitignore` from `addons/jewish-calendar`.
 
 ## How the tile changes daily

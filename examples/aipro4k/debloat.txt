@@ -59,8 +59,8 @@ com.google.android.syncadapters.calendar
 com.google.android.play.games
 com.mediatek.tv.retaildemo                  # retail demo mode
 com.google.android.apps.tv.dreamx           # Google screensaver; the new launcher has a Clock screensaver
-com.iqiyi.i18n.tv                           # iQIYI
-com.wbd.stream                              # HBO Max
+# com.iqiyi.i18n.tv                           # iQIYI; off on the tested set by the owner's choice; uncomment if you don't use it
+# com.wbd.stream                              # HBO Max; off on the tested set by the owner's choice; uncomment if you don't use it
 com.internet.tvbrowser                      # web browser
 com.tcl.browser                             # second web browser
 de.stefanpledl.localcast                    # LocalCast

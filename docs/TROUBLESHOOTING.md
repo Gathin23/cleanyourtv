@@ -1051,7 +1051,7 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   which is what makes it look like an app bug. Allow both and save them:
 
   ```sh
-  tools/tv.py 'appops set <package> ASSOC_START allow; appops write-settings'
+  tools/tv.py 'appops set <package> AUTO_START allow; appops set <package> ASSOC_START allow; appops write-settings'
   ```
 
   `appops write-settings` matters here as it does for `AUTO_START`: app-ops reach the disk lazily and a

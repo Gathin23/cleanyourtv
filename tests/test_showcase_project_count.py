@@ -62,11 +62,12 @@ def spelled_number(word):
     text = word.lower().replace("-", " ").strip()
     parts = [p for p in text.split() if p != "and"]
     # The page passed a hundred rows in Round W: "a hundred", "one hundred and four", "a hundred and twenty".
-    if len(parts) >= 2 and parts[0] in ("a", "one") and parts[1] == "hundred":
+    if len(parts) >= 2 and parts[0] in ("a", "one", "two") and parts[1] == "hundred":
+        base = 200 if parts[0] == "two" else 100
         if len(parts) == 2:
-            return 100
+            return base
         rest = spelled_number(" ".join(parts[2:]))
-        return None if rest is None else 100 + rest
+        return None if rest is None else base + rest
     if not parts or len(parts) > 2:
         return None
     if len(parts) == 1:

@@ -55,7 +55,7 @@ com.google.android.play.games
 com.google.android.music                       # Google Play Music, shut down in 2020
 
 # Optional features, off by owner's choice
-com.google.android.inputmethod.japanese        # Japanese keyboard (not the active one)
+# com.google.android.inputmethod.japanese        # Japanese keyboard (not the active one); kept: needed to type Japanese; the tested set has it off
 com.sony.dtv.osat.music                        # re-enable to play music from USB
 com.sony.dtv.osat.album                        # re-enable to view photos from USB
 com.sony.dtv.osat.video                        # re-enable to play videos from USB
