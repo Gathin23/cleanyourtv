@@ -31,11 +31,13 @@ package off, and the physical Input key was not pressed.
 TV_HOST=<tv ip> tools/disable.sh examples/skyworth-swtv-20sa-pro/debloat.txt
 TV_HOST=<tv ip> launcher/build-and-install.sh
 TV_HOST=<tv ip> tools/theme.sh examples/skyworth-swtv-20sa-pro
+HOME_KEY_SERVICE=1 SKIP_BUILD=1 TV_HOST=<tv ip> launcher/build-and-install.sh
 ```
 
-`launcher/build-and-install.sh` disables `com.google.android.tvlauncher` only after the new
-launcher is Home. No key helper was enabled. On this SW4H firmware a bound key helper makes a
-held volume key step once per press.
+The nine-dot button is `KEYCODE_APPS` (390), a global key that used to open
+`com.google.android.tvlauncher` apps view. With that launcher disabled it does nothing.
+`app_keys` `390:home` plus `HomeKeyService` opens this launcher from any app. On this
+firmware a bound key helper makes a held volume key step once per press.
 
 ## Undo
 
