@@ -43,10 +43,11 @@ WALLPAPERS = "wallpapers"
 def mood_names():
     """WallpaperMood.ALL, read out of the constants the launcher walks: the groups it reads, in its order."""
     text = MOOD_JAVA.read_text(encoding="utf-8")
-    found = re.search(r'static final String MORNING = "([a-z]+)", EVENING = "([a-z]+)", NIGHT = "([a-z]+)"', text)
-    assert found, "WallpaperMood.java no longer states MORNING, EVENING and NIGHT on one line"
+    found = re.search(r'static final String MORNING = "([a-z]+)", AFTERNOON = "([a-z]+)", EVENING = "([a-z]+)", '
+                      r'NIGHT = "([a-z]+)"', text)
+    assert found, "WallpaperMood.java no longer states MORNING, AFTERNOON, EVENING and NIGHT on one line"
     names = list(found.groups())
-    assert len(names) == 3 and all(names), names
+    assert len(names) == 4 and all(names), names
     return names
 
 
@@ -148,7 +149,7 @@ class ShippedThemesTest(unittest.TestCase):
 
     def test_the_rules_are_read_out_of_the_launcher(self):
         with self.subTest(part="mood names"):
-            self.assertEqual(["morning", "evening", "night"], mood_names())
+            self.assertEqual(["morning", "afternoon", "evening", "night"], mood_names())
         with self.subTest(part="the key"):
             self.assertEqual("wallpaper_moods", moods_key())
         accepted = collection_image()
@@ -228,7 +229,7 @@ class TheReaderTest(unittest.TestCase):
                              collection_image(), "themes/dusk")
             self.assertEqual(1, len(found), found)
             self.assertIn("'dusk'", found[0])
-            self.assertIn("morning/evening/night", found[0])
+            self.assertIn("morning/afternoon/evening/night", found[0])
 
     def test_a_group_named_in_another_case_is_named(self):
         """`Morning` is not `morning`: Config walks the constants, so the capital is a different group."""

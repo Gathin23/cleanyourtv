@@ -31,7 +31,7 @@ complete example.
 ## 2. Get the pictures
 
 - Resize each to 1920x1080 and keep it under about 300 KB (JPEG, quality 80-85).
-- Time-of-day: name them `morning.jpg`, `evening.jpg`, `night.jpg` and put them in
+- Time-of-day: name them `morning.jpg`, `evening.jpg`, `night.jpg` (and optionally `afternoon.jpg`) and put them in
   `themes/<name>/wallpapers/`.
 - Static: save one as `themes/<name>/wallpaper.jpg`.
 - Never commit a picture you do not have the right to share.

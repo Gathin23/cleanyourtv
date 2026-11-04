@@ -31,7 +31,9 @@ public class WallpaperMoodTest {
         assertEquals(WallpaperMood.NIGHT, at(7, 19));
         assertEquals(WallpaperMood.MORNING, at(7, 20));
         assertEquals(WallpaperMood.MORNING, at(11, 59));
-        assertEquals(WallpaperMood.EVENING, at(12, 0));
+        assertEquals(WallpaperMood.AFTERNOON, at(12, 0));
+        assertEquals(WallpaperMood.AFTERNOON, at(16, 49));
+        assertEquals(WallpaperMood.EVENING, at(16, 50));   // an hour and a half before sunset
         assertEquals(WallpaperMood.EVENING, at(18, 49));   // half an hour after sunset is still evening
         assertEquals(WallpaperMood.NIGHT, at(18, 50));
         assertEquals(WallpaperMood.NIGHT, at(23, 59));
@@ -72,5 +74,16 @@ public class WallpaperMoodTest {
         assertEquals(all, WallpaperMood.select(all, groups, WallpaperMood.MORNING));   // none of its pictures here
         assertEquals(all, WallpaperMood.select(all, groups, WallpaperMood.EVENING));   // no group at all
         assertEquals(all, WallpaperMood.select(all, Collections.emptyMap(), WallpaperMood.NIGHT));
+    }
+
+    @Test
+    public void afternoonFallsBackToEveningForThemesWithoutIt() {
+        List<File> all = files("a.jpg", "b.jpg", "c.jpg");
+        Map<String, Set<String>> groups = new HashMap<>();
+        groups.put(WallpaperMood.EVENING, new HashSet<>(Collections.singletonList("b.jpg")));
+        assertEquals(Collections.singletonList("b.jpg"), names(WallpaperMood.select(all, groups, WallpaperMood.AFTERNOON)));
+        groups.put(WallpaperMood.AFTERNOON, new HashSet<>(Collections.singletonList("c.jpg")));
+        assertEquals(Collections.singletonList("c.jpg"), names(WallpaperMood.select(all, groups, WallpaperMood.AFTERNOON)));
+        assertEquals(Collections.singletonList("b.jpg"), names(WallpaperMood.select(all, groups, WallpaperMood.EVENING)));
     }
 }
