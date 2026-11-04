@@ -300,8 +300,9 @@ This is a two-session compatibility report, not several days with the list.
 
 Checked on 4 November 2026: retail model TCL 50C805, reported model `Smart TV Pro`, device `G08`,
 product `G08_4K_GB`, Google TV 14 (SDK 34), build `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`.
-This is a single-session compatibility report with a reboot check, not several days of use or
-confirmation that the complete list above was applied. The older 50C805X1 report in
+The initial compatibility checks covered one session and a reboot. The owner subsequently reported
+a couple of days of normal use with the later personal setup and no further issues; this does not
+confirm that the complete list above was applied. The older 50C805X1 report in
 [the EU Android 12 folder](../tcl-g08-eu-android12/) describes different firmware (`AS34`).
 
 The reference launcher installed through the guarded installer, took Home from Google TV and
@@ -342,6 +343,7 @@ Stopping and reopening only YouTube restored its existing profile chooser and si
 without clearing app data, changing packages or changing DNS. The owner subsequently confirmed normal
 operation. The cause was not established; this is not evidence of long-term YouTube stability.
 
-Later personal launcher/screensaver extensions are outside this reference-launcher report. Several
-days of use and a final debugging-off reboot check of the latest setup are still pending; no such
-verification is claimed here.
+Later personal launcher/screensaver extensions are outside this reference-launcher report; the
+owner's follow-up covers that customized setup, not several days running an unmodified reference
+launcher. Debugging was retained at the owner's request, so a final debugging-off reboot check of
+the latest setup is not claimed here.
