@@ -76,6 +76,8 @@ public class HomeKeyService extends AccessibilityService {
     private long powerOnUntil;
     /** home_long_press_home: this service takes every Home press, held ones included. */
     private boolean homeLongPressHome;
+    /** home_hold_panel: a held Home opens the quick panel, on firmware where no dashboard answers it. */
+    private boolean homeHoldPanel;
     /** app_keys "front:" entries, and the package of the activity in front, from window changes while there are any. */
     private Map<Integer, String> frontAppKeys = Collections.emptyMap();
     private Map<Integer, String> frontAppScancodes = Collections.emptyMap();
@@ -138,6 +140,7 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         if (running == this) running = null;
+        handler.removeCallbacks(homeHeld);
         RemoteKeys.release(this);
         stopWaitingForUnlock();
         if (screenOnReceiver != null) unregisterReceiver(screenOnReceiver);
@@ -196,6 +199,8 @@ public class HomeKeyService extends AccessibilityService {
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
         RemoteKeys.applyKeyFilter(this, config.keyFilter);
         homeLongPressHome = config.homeLongPressHome;
+        homeHoldPanel = holdOpensPanel(config.homeHoldPanel, !getPackageManager().queryIntentActivities(
+                new Intent(DASHBOARD_ACTION), 0).isEmpty());
         frontAppKeys = RemoteKeys.parseFrontAppKeys(config.appKeys);
         frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
         boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
@@ -282,6 +287,14 @@ public class HomeKeyService extends AccessibilityService {
         if (homeLongPressHome && event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome();
             return true;
+        }
+        // home_hold_panel: timed here, because Android makes the repeats of a held key after this filter. The press
+        // still goes on to Android, which opens Home on a short one and consumes a long one.
+        if (homeHoldPanel && event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
+            handler.removeCallbacks(homeHeld);
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                handler.postDelayed(homeHeld, ViewConfiguration.getLongPressTimeout() + 50L);
+            }
         }
         if (event.getKeyCode() == KeyEvent.KEYCODE_HOME && !stockHome.isEmpty()) {
             redirectHomeKey(event);
@@ -397,6 +410,22 @@ public class HomeKeyService extends AccessibilityService {
     /** Lets the system see the key, so a long press still does what the firmware gives it. */
     private static final long HOME_KEY_DELAY_MS = 250;
     private final Handler handler = new Handler(Looper.getMainLooper());
+
+    /** What Android sends a held Home to on Android TV: the stock launcher's dashboard. */
+    static final String DASHBOARD_ACTION = "android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL";
+
+    /** The switch takes over only where nothing answers a held Home, so a TV that still has its dashboard keeps it. */
+    static boolean holdOpensPanel(boolean switchOn, boolean dashboardThere) {
+        return switchOn && !dashboardThere;
+    }
+
+    private final Runnable homeHeld = () -> {
+        try {
+            startActivity(new Intent(this, QuickSettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+            // nothing to open: the press already went to Android
+        }
+    };
 
     /** stock_home_redirect on the Home key: when the stock home is already on screen (it came up at boot, before
      *  Android bound this service), Home brings it up again with no window change, so the redirect above never

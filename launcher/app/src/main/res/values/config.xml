@@ -249,6 +249,14 @@
          still step). A theme's config.json can set it too. Off by default. -->
     <bool name="home_long_press_home">false</bool>
 
+    <!-- Holding Home opens the launcher's quick panel (QuickSettingsActivity) where nothing else answers a held
+         Home. Android sends that press to android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL, which on Google TV
+         only the stock launcher's dashboard handles (launcherx on a Chromecast with Google TV 4K, Google TV 14), so
+         with that launcher disabled a held Home did nothing. HomeKeyService (HOME_KEY_SERVICE=1) times the hold
+         itself, since the accessibility filter never sees Android's key repeats, and leaves the press to Android.
+         Does nothing while the dashboard is still there. A theme's config.json can set it too. Off by default. -->
+    <bool name="home_hold_panel">false</bool>
+
     <!-- Show the Solar Hijri (Shamsi) date used in Iran and Afghanistan, e.g. "27 Mehr 1405", above the
          Gregorian date. -->
     <bool name="shamsi_date">false</bool>

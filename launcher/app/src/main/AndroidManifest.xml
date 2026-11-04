@@ -25,6 +25,10 @@
     <!-- Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
          apps that declare a module card (docs/specs/card.md). -->
     <queries>
+        <!-- home_hold_panel looks for a dashboard that answers a held Home before it takes over. -->
+        <intent>
+            <action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />
+        </intent>
         <!-- The standard settings handlers, so package visibility doesn't hide them and send the pills to a vendor fallback by mistake. -->
         <intent>
             <action android:name="android.settings.SETTINGS" />

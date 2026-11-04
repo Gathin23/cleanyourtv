@@ -59,6 +59,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `locale` | <img src="switches/locale.jpg" width="320" alt="locale set to en on a TV whose system language is Vietnamese"> |
 | `power_on_home` | <img src="switches/power_on_home.jpg" width="320" alt="power_on_home on a TV"> |
 | `home_long_press_home` | <img src="switches/home_long_press_home.jpg" width="320" alt="home_long_press_home on a TV"> |
+| `home_hold_panel` | <img src="switches/home_hold_panel.jpg" width="320" alt="home_hold_panel on a Chromecast with Google TV 4K: Home held on the remote opened the quick panel under the Settings pill"> |
 | `vpn_pill` | <img src="switches/vpn_pill.jpg" width="320" alt="vpn_pill on a TV"> <img src="switches/vpn_pill_rest.jpg" width="320" alt="vpn_pill at rest: the pill outlined in red, focus on a tile"> |
 | `icon_only_vpn` | <img src="switches/icon_only_vpn.jpg" width="320" alt="icon_only_vpn with no VPN up: an open lock on the plain round button, between Wi-Fi and Settings"> <img src="switches/icon_only_vpn_on.jpg" width="320" alt="icon_only_vpn with a VPN up: the closed lock in a green outline, focus on a tile"> |
 | `power_on_home_always` | <img src="switches/power_on_home_always.jpg" width="320" alt="power_on_home_always on a TV"> |

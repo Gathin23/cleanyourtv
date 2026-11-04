@@ -185,6 +185,8 @@ final class Config {
     final boolean powerOnHome;
     /** Every Home press opens this launcher, a held one too, instead of Android's long-press action (home_long_press_home). */
     final boolean homeLongPressHome;
+    /** home_hold_panel: a held Home opens the quick panel where no dashboard answers it. Set after construction. */
+    boolean homeHoldPanel;
     /** Home at every power-on, whatever the firmware put in front: an input, Live TV or an app (power_on_home_always). */
     final boolean powerOnHomeAlways;
     /** The Inputs menu lists only inputs reporting connected; the rest fold behind a More inputs row (config.xml / theme inputs_connected_only). */
@@ -510,6 +512,7 @@ final class Config {
         boolean consumeVolumeKeys = res.getBoolean(R.bool.consume_volume_keys);
         boolean powerOnHome = res.getBoolean(R.bool.power_on_home);
         boolean homeLongPressHome = res.getBoolean(R.bool.home_long_press_home);
+        boolean homeHoldPanel = res.getBoolean(R.bool.home_hold_panel);
         boolean powerOnHomeAlways = res.getBoolean(R.bool.power_on_home_always);
         boolean inputsConnectedOnly = res.getBoolean(R.bool.inputs_connected_only);
         boolean inputsCecStateOnly = res.getBoolean(R.bool.inputs_cec_state_only);
@@ -624,6 +627,7 @@ final class Config {
             consumeVolumeKeys = bool(json, "consume_volume_keys", consumeVolumeKeys);
             powerOnHome = bool(json, "power_on_home", powerOnHome);
             homeLongPressHome = bool(json, "home_long_press_home", homeLongPressHome);
+            homeHoldPanel = bool(json, "home_hold_panel", homeHoldPanel);
             powerOnHomeAlways = bool(json, "power_on_home_always", powerOnHomeAlways);
             inputsConnectedOnly = bool(json, "inputs_connected_only", inputsConnectedOnly);
             inputsCecStateOnly = bool(json, "inputs_cec_state_only", inputsCecStateOnly);
@@ -701,7 +705,7 @@ final class Config {
         Festival festival = json == null ? Festival.NONE : Festival.parse(festivalName(json),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
 
-        return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
+        Config config = new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
                 packageMap(appBanners), panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
                 Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv,
                 openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill,
@@ -716,6 +720,8 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap);
+        config.homeHoldPanel = homeHoldPanel;
+        return config;
     }
 
     /**
