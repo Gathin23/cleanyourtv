@@ -512,7 +512,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // black under it is a second full-screen fill on every frame for nothing. The starting window still uses
         // the theme's background, so launch looks the same.
         getWindow().setBackgroundDrawable(null);
-        wallpaperPlayer = new WallpaperPlayer(this, root, cfg);
+        DockBackdrop dockBackdrop = cfg.dockBlur ? new DockBackdrop() : null;
+        wallpaperPlayer = new WallpaperPlayer(this, root, cfg, dockBackdrop);
         sky = findViewById(R.id.sky);
         sky.setIntensity(cfg.skyIntensity);
         glass = findViewById(R.id.glass);
@@ -688,8 +689,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             public void onChildViewDetachedFromWindow(@NonNull View v) {
             }
         });
-        if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
-                singleRow, cfg.dockBandAll));
+        if (dockRow) {
+            DockDecoration dockDecoration = new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity,
+                    cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand, singleRow, cfg.dockBandAll);
+            dockDecoration.setBackdrop(dockBackdrop);
+            grid.addItemDecoration(dockDecoration);
+        }
         if (cfg.fadeRows) TopFade.attach(grid, 48 * density);
         // Reduced motion: the tiles are simply there, with no entrance (reloadApps skips it there too).
         if (animations && !reducedMotion) {

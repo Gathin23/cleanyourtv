@@ -309,6 +309,9 @@
          through it. false (the default) keeps the solid near-black band, or the cinematic shelf's dark glass. Can
          also be set with "dock_glass": true in a theme's config.json. -->
     <bool name="dock_glass">false</bool>
+    <!-- The wallpaper behind the dock band blurred, from a small copy made once per picture. Off by default; a theme
+         can set "dock_blur": true. -->
+    <bool name="dock_blur">false</bool>
     <!-- Draw the dock band and its edge. false leaves the tiles floating on the wallpaper (config.xml dock_band). -->
     <bool name="dock_band">true</bool>
     <!-- Every app in one row: the dock apps first, the rest after them, and the row scrolls sideways when focus
