@@ -172,6 +172,11 @@
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
     <bool name="settings_key_panel">false</bool>
 
+    <!-- The quick panel as a full-height sheet at the screen's edge, like Android TV's dashboard: the time and
+         the date on top, then its rows as tiles in two columns, Network with its state. Same rows and keys as the
+         small panel. A theme's config.json can set it too. Off by default. -->
+    <bool name="quick_panel_sheet">false</bool>
+
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
          Settings stays off. Needs WRITE_SECURE_SETTINGS, which build-and-install grants with RESTORE_KEY_SERVICES=1

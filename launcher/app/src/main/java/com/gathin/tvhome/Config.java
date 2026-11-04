@@ -195,6 +195,8 @@ final class Config {
     final String clockFormat;
     /** The Settings button opens the quick settings panel instead of the TV's Settings (settings_key_panel). */
     final boolean settingsKeyPanel;
+    /** quick_panel_sheet: the quick panel as a full-height sheet of tiles. Set after construction. */
+    boolean quickPanelSheet;
     /** Home puts the remote's accessibility helpers back after a force stop (restore_key_services; ServiceRepair). */
     final boolean restoreKeyServices;
     /** Whether themes may show a wallpaper (config.json, wallpaper). */
@@ -495,6 +497,7 @@ final class Config {
         int skyIntensity = res.getInteger(R.integer.sky_intensity);
         int[] settingsKeycodes = res.getIntArray(R.array.settings_key_keycodes);
         boolean settingsKeyPanel = res.getBoolean(R.bool.settings_key_panel);
+        boolean quickPanelSheet = res.getBoolean(R.bool.quick_panel_sheet);
         boolean restoreKeyServices = res.getBoolean(R.bool.restore_key_services);
         int[] inputKeycodes = res.getIntArray(R.array.input_key_keycodes);
         boolean handleViewInputs = res.getBoolean(R.bool.handle_view_inputs);
@@ -609,6 +612,7 @@ final class Config {
             skyIntensity = integer(json, "sky_intensity", skyIntensity, 0, 100);
             settingsKeycodes = intArray(json, "settings_key_keycodes", settingsKeycodes);
             settingsKeyPanel = bool(json, "settings_key_panel", settingsKeyPanel);
+            quickPanelSheet = bool(json, "quick_panel_sheet", quickPanelSheet);
             restoreKeyServices = bool(json, "restore_key_services", restoreKeyServices);
             inputKeycodes = intArray(json, "input_key_keycodes", inputKeycodes);
             handleViewInputs = bool(json, "handle_view_inputs", handleViewInputs);
@@ -701,7 +705,7 @@ final class Config {
         Festival festival = json == null ? Festival.NONE : Festival.parse(festivalName(json),
                 string(json, "festival_until", ""), string(json, "greeting", ""), string(json, "accent_color", ""));
 
-        return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
+        Config config = new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
                 packageMap(appBanners), panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
                 Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv,
                 openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill,
@@ -716,6 +720,8 @@ final class Config {
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
                 dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, inputsCecStateOnly,
                 Math.max(0, Math.min(600, openOnStartNetworkWait)), openOnStartOnWake, iconOnlyVpn, clockFormat, backOpensClock, glowSnap);
+        config.quickPanelSheet = quickPanelSheet;
+        return config;
     }
 
     /**
