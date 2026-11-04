@@ -368,7 +368,7 @@ TV_HOST=192.168.1.50 tools/restore.sh "examples/il-tuo-modello/debloat.txt" com.
 - Se l'ADB non si collega, puoi comunque riattivare le app dalle impostazioni della TV.
 
 Per i dettagli (cosa contiene il record, quando conta l'argomento del launcher originale, cosa succede senza record)
-vedi [docs/restore.md](docs/restore.md), in inglese.
+vedi [docs/it/restore.md](docs/it/restore.md) ([versione inglese](docs/restore.md)).
 
 ## Dopo un aggiornamento del firmware
 
@@ -381,7 +381,7 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/il-tuo-mod
 ```
 
 I codici di uscita, un controllo settimanale e i casi particolari sono in
-[docs/firmware-updates.md](docs/firmware-updates.md) (in inglese).
+[docs/it/firmware-updates.md](docs/it/firmware-updates.md) ([versione inglese](docs/firmware-updates.md)).
 
 ## Risoluzione dei problemi
 
