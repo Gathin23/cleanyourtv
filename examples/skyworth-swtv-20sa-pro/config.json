@@ -1,0 +1,4 @@
+{
+  "live_tv_package": "com.smartdevice.livetv",
+  "hidden_apps": ["com.smartdevice.livetv"]
+}

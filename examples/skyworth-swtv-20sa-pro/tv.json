@@ -1,0 +1,6 @@
+{
+  "tv": "Skyworth SWTV-20SA-PRO (SW4H_FF, MediaTek m7332)",
+  "os": "Android TV 10",
+  "brand": "Skyworth",
+  "notes": "Same build QTG3.200617.002 as the Karbonn SWTV-20AE, device SW4H_FF, ~1.6 GB, armeabi-v7a; Skyworth ACR, ad-row injector, ePop, e-manual, partner customizer; Google feedback, backdrop and recommendation rows; Live TV is `com.smartdevice.livetv`; USB debugging alone opens port 5555; setupwraith owns a saved Wi-Fi, so it stays; tested the day of the debloat, one reboot"
+}
