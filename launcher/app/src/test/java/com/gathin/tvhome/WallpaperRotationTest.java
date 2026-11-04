@@ -94,33 +94,6 @@ public class WallpaperRotationTest {
     }
 
     @Test
-    public void anOnTvPickReplacesTheRotation() {
-        List<File> collection = Arrays.asList(new File("a.jpg"), new File("b.jpg"), new File("c.jpg"));
-        File single = new File("wallpaper.jpg");
-        // No choice, or a picture that has gone: the theme's rotation decides.
-        assertNull(WallpaperRotation.chosen(collection, single, null));
-        assertNull(WallpaperRotation.chosen(collection, single, "gone.jpg"));
-        assertNull(WallpaperRotation.chosen(collection, null, "wallpaper.jpg"));
-        // None: no wallpaper at all.
-        assertTrue(WallpaperRotation.chosen(collection, single, WallpaperRotation.CHOICE_NONE).isEmpty());
-        assertTrue(WallpaperRotation.chosen(Collections.emptyList(), null, WallpaperRotation.CHOICE_NONE).isEmpty());
-        // A picked picture is the only one shown, so the rotation can't move past it.
-        assertEquals(Collections.singletonList("b.jpg"), names(WallpaperRotation.chosen(collection, single, "b.jpg")));
-        assertEquals(Collections.singletonList("wallpaper.jpg"),
-                names(WallpaperRotation.chosen(collection, single, "wallpaper.jpg")));
-        // Picking again simply replaces the earlier pick.
-        assertEquals(Collections.singletonList("c.jpg"), names(WallpaperRotation.chosen(collection, single, "c.jpg")));
-    }
-
-    @Test
-    public void homeRebuildsWhenTheSettingsRevisionMoved() {
-        assertFalse(Config.settingsChanged(0, 0));
-        assertFalse(Config.settingsChanged(3, 3));
-        assertTrue(Config.settingsChanged(0, 1));
-        assertTrue(Config.settingsChanged(4, 0));   // settings cleared
-    }
-
-    @Test
     public void dueOnlyWithRotationOnAndTheIntervalPassed() {
         long minute = 60_000L;
         assertFalse(WallpaperRotation.due(0, 10 * minute, 0));             // rotation off

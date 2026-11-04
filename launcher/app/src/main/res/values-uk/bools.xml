@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- The Home date is two lines (weekday, then the date), so the clock row keeps room for both. -->
-<resources>
-    <bool name="date_single_line">false</bool>
-</resources>

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- One top_bar_apps button: the round icon pill, its logo set from the app in MainActivity. -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/TopButtonIcon"
-    android:nextFocusDown="@+id/grid" />

@@ -59,7 +59,7 @@
                 android:singleLine="true"
                 android:textColor="#B3FFFFFF"
                 android:textSize="12sp"
-                android:fontFamily="@string/font_medium"
+                android:fontFamily="@font/outfit_medium"
                 android:letterSpacing="0.22"
                 android:textAllCaps="true" />
 
@@ -67,7 +67,6 @@
                 android:layout_width="3dp"
                 android:layout_height="13dp"
                 android:layout_marginStart="10dp"
-                android:id="@+id/raceBar"
                 android:background="@drawable/race_bar" />
         </LinearLayout>
 
@@ -79,7 +78,7 @@
             android:singleLine="true"
             android:textColor="#FFFFFFFF"
             android:textSize="34sp"
-            android:fontFamily="@string/font_light"
+            android:fontFamily="@font/outfit_light"
             android:letterSpacing="-0.01"
             android:includeFontPadding="false" />
 
@@ -91,17 +90,8 @@
             android:singleLine="true"
             android:textColor="#99FFFFFF"
             android:textSize="12sp"
-            android:fontFamily="@string/font_medium"
+            android:fontFamily="@font/outfit_medium"
             android:letterSpacing="0.12" />
-
-        <!-- game_day: one dot per turn when the panel rotates between games (and the F1 weekend). -->
-        <LinearLayout
-            android:id="@+id/racePager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:visibility="gone" />
     </LinearLayout>
 
     <!-- Cinematic top shelf: darkens the edge behind the shelf and the lower half, so the text and the
@@ -132,7 +122,7 @@
             android:gravity="right"
             android:textColor="#FFFFFFFF"
             android:textSize="48sp"
-            android:fontFamily="@string/font_light"
+            android:fontFamily="@font/outfit_light"
             android:letterSpacing="-0.02"
             android:includeFontPadding="false"
             android:singleLine="true" />
@@ -148,7 +138,7 @@
             android:singleLine="true"
             android:textColor="#B3FFFFFF"
             android:textSize="15sp"
-            android:fontFamily="@string/font_light"
+            android:fontFamily="@font/outfit_light"
             android:visibility="gone" />
 
         <LinearLayout
@@ -206,7 +196,7 @@
                         android:ellipsize="end"
                         android:textColor="#E6FFFFFF"
                         android:textSize="17sp"
-                        android:fontFamily="@string/font_regular"
+                        android:fontFamily="@font/outfit_regular"
                         android:letterSpacing="0.02"
                         android:includeFontPadding="false"
                         android:visibility="gone" />
@@ -222,29 +212,12 @@
                         android:format24Hour="@string/date_format"
                         android:textColor="#A6FFFFFF"
                         android:textSize="14sp"
-                        android:fontFamily="@string/font_regular"
+                        android:fontFamily="@font/outfit_regular"
                         android:letterSpacing="0.14"
                         android:textAllCaps="true" />
-
-                        <!-- Lunar date ("Lunar 13/9 · Year of the Horse"), shown when lunar_date is on. -->
-                        <TextView
-                            android:id="@+id/lunarDate"
-                            android:gravity="right"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:singleLine="true"
-                            android:ellipsize="end"
-                            android:textColor="#80FFFFFF"
-                            android:textSize="14sp"
-                            android:fontFamily="@string/font_regular"
-                            android:letterSpacing="0.14"
-                            android:textAllCaps="true"
-                            android:visibility="gone" />
                 </LinearLayout>
 
                 <View
-                    android:id="@+id/clockDivider"
                     android:layout_width="1dp"
                     android:layout_height="26dp"
                     android:layout_gravity="bottom"
@@ -262,16 +235,12 @@
                         android:gravity="center_horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="9sp"
-                        android:autoSizeMaxTextSize="12sp"
-                        android:autoSizeStepGranularity="1sp"
+                        android:singleLine="true"
                         android:ellipsize="end"
                         android:textColor="#8CFFFFFF"
                         android:textSize="12sp"
-                        android:fontFamily="@string/font_medium"
-                        android:letterSpacing="0"
+                        android:fontFamily="@font/outfit_medium"
+                        android:letterSpacing="0.22"
                         android:textAllCaps="true" />
 
                     <LinearLayout
@@ -280,35 +249,31 @@
                         android:orientation="horizontal"
                         android:baselineAligned="true">
                         <TextClock
+                            android:id="@+id/clock"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:format12Hour="h:mm"
+                            android:format24Hour="HH:mm"
+                            android:textColor="#FFFFFFFF"
+                            android:textSize="52sp"
+                            android:fontFamily="@font/outfit_light"
+                            android:letterSpacing="-0.04"
+                            android:includeFontPadding="false" />
+
+                        <TextClock
                             android:id="@+id/ampm"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="6dp"
-                            android:singleLine="true"
-                            android:textDirection="rtl"
+                            android:layout_marginStart="6dp"
                             android:layout_gravity="bottom"
                             android:layout_marginBottom="8dp"
                             android:format12Hour="a"
                             android:format24Hour=""
                             android:textColor="#B3FFFFFF"
                             android:textSize="15sp"
-                            android:fontFamily="@string/font_medium"
-                            android:letterSpacing="0"
-                            android:ellipsize="none"
+                            android:fontFamily="@font/outfit_medium"
+                            android:letterSpacing="0.08"
                             android:textAllCaps="true" />
-
-                        <TextClock
-                            android:id="@+id/clock"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="6dp"
-                            android:format12Hour="h:mm"
-                            android:format24Hour="HH:mm"
-                            android:textColor="#FFFFFFFF"
-                            android:textSize="52sp"
-                            android:fontFamily="@string/font_light"
-                            android:letterSpacing="-0.04"
-                            android:includeFontPadding="false" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -321,17 +286,14 @@
                 android:layout_width="wrap_content"
                 android:layout_below="@id/leftBlock"
                 android:layout_alignStart="@id/leftBlock"
-                android:layout_alignEnd="@id/leftBlock"
                 android:gravity="right"
-                android:textDirection="rtl"
-                android:layout_marginEnd="6dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textColor="#D9FFFFFF"
                 android:textSize="14sp"
-                android:fontFamily="@string/font_medium"
+                android:fontFamily="@font/outfit_medium"
                 android:letterSpacing="0.04"
                 android:focusable="false"
                 android:visibility="gone" />
@@ -370,14 +332,6 @@
                     android:nextFocusDown="@+id/grid" />
 
                 <TextView
-                    android:id="@+id/btnVpn"
-                    style="@style/TopButton"
-                    android:visibility="gone"
-                    android:singleLine="true"
-                    android:text="@string/vpn"
-                    android:nextFocusDown="@+id/grid" />
-
-                <TextView
                     android:id="@+id/btnWifi"
                     style="@style/TopButton"
                     android:maxWidth="180dp"
@@ -409,8 +363,6 @@
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"
                 android:paddingBottom="40dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
                 android:clipToPadding="false"
                 android:clipChildren="false"
                 android:overScrollMode="never"

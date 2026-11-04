@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- The grid icon for the library pill; drawable-zh nudges it down to sit level with CJK text. -->
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_apps" />

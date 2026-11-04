@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- wifi_status_color: the Wi-Fi pill's icon while online, green like status_dot; dark on the focused pill, as pill_text. -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true" android:color="#FF111111" />
-    <item android:color="#FF34C759" />
-</selector>
