@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="effects_title">Effects</string>
+    <string name="setting_row">%1$s: %2$s</string>
+    <string name="look_label">Look</string>
+    <string name="look_yojohan">Yojōhan</string>
+    <string name="look_nagaya">Nagaya</string>
+    <string name="look_both">Both</string>
+    <string name="swap_label">Swap every</string>
+    <string name="swap_minutes">%d min</string>
+    <string name="effect_grain">Film grain</string>
+    <string name="effect_vignette">Vignette</string>
+    <string name="effect_tilt_shift">Tilt-shift edges</string>
+    <string name="effect_doors">Doors</string>
+    <string name="effect_fixtures">Fixtures</string>
+    <string name="effect_camera">Camera drift and zoom</string>
+</resources>
