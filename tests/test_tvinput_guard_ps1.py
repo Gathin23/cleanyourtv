@@ -5,7 +5,9 @@ asks the TV which listed packages drive the HDMI/AV inputs is full of them, so p
 argument left the TV's shell with a command it could not parse, tv.py still exited 0, and the guard
 passed in silence: an input driver on the list was disabled with no warning (#321). The loop now goes
 to `tv.py --batch` on stdin, as launcher/build-and-install.ps1 does (#263), and ends with a marker the
-script only accepts as a line of its own, so a check that did not run fails closed.
+script only accepts as a line of its own, so a check that did not run is reported with the existing
+"Could not check" warning instead of passing in silence. As in disable.sh, that warning does not stop the
+run: the listed packages are still disabled, and the person is told to check every input afterwards.
 
 The fake tv.py echoes each command as `$ <command>` before its answer, as tv.py --batch does. The
 PowerShell cases need `pwsh` on PATH and skip without it; CI has it.
@@ -233,9 +235,10 @@ class TvInputGuardPs1Test(unittest.TestCase):
         self.assertIn(f"Skipping {MEDIATEK}", self.output(result))
         self.assertIn("TV_INPUT_HARDWARE", self.output(result))
 
-    def test_a_missing_marker_fails_closed(self):
+    def test_a_missing_marker_warns_and_continues(self):
         # tv.py exits 0 but the TV never echoed the marker, as when its shell did not run the loop:
-        # the run must say it could not check instead of claiming a pass, and keep the package on.
+        # the run must say it could not check instead of claiming a pass. Like disable.sh, it then
+        # carries on and disables the unchecked packages (TVINPUT_ALLOW is the explicit bypass).
         self.write_list([BEFORE, MEDIATEK, AFTER])
         self.tv(guard_runs=False, guard_packages=[MEDIATEK])
         result = self.disable()
