@@ -297,6 +297,8 @@ class Recovery(unittest.TestCase):
 
 class RemoteCycle(unittest.TestCase):
     def test_restore_runs_on_normal_exit_settings_failure_and_remote_termination(self):
+        if os.name != "posix":
+            raise unittest.SkipTest("the cycle runs in the TV's shell; this test needs /bin/sh")
         # Run the actual device-side command in a POSIX shell. The settings stub
         # writes files; TERM simulates a remote shell being torn down mid-cycle.
         setup = r'''
@@ -326,6 +328,8 @@ sleep() { :; }
 
 class ExitStatus(unittest.TestCase):
     def test_real_posix_shell_marker_checks_nonzero_exit(self):
+        if os.name != "posix":
+            raise unittest.SkipTest("the marker is checked in the TV's shell; this test needs /bin/sh")
         class Local:
             def shell(self, command, **kwargs):
                 return subprocess.run(['/bin/sh', '-c', command], text=True,
