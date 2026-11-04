@@ -1,6 +1,6 @@
 {
-  "tv": "CHiQ AI PONT (Changhong GTVU65, dangni, MediaTek mt5867)",
+  "tv": "CHiQ AI PONT (Changhong GTVU65, dangni, MediaTek mt5867); also CHiQ L32FM10V",
   "os": "Google TV 14",
   "brand": "CHiQ",
-  "notes": "Google ad services and auto-installs, Homwee store/help; 1 GB; setupwraith must go (RecoveryActivity component cannot be disabled alone); MediaTek partnercustomizer safe to disable (reboot-checked)"
+  "notes": "Google ad services and auto-installs, Anoki ACR opt-in, Homwee store/help; 1 GB; setupwraith must go (RecoveryActivity component cannot be disabled alone); MediaTek partnercustomizer safe to disable (reboot-checked); [L32FM10V second unit: Wireless debugging only, Canali TV as Live TV, gear-key trade](chiq-gtvu65/README.md)"
 }
