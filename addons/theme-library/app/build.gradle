@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.rahulk847.themelibrary'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.rahulk847.themelibrary'
+        minSdk 26
+        // 28: the newest target under which WRITE_EXTERNAL_STORAGE still reaches another app's Android/data
+        // folder on Android 8 to 10 (Android 10 applies scoped storage to apps targeting 29+). That folder is
+        // where the launcher reads its theme. Sideloaded over ADB only, so Play's target rule does not apply.
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 28
+        versionCode 2
+        versionName '0.2'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Sideloaded over ADB, never published: signed with the debug key, like the launcher.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        disable 'ExpiredTargetSdkVersion', 'OldTargetApi'
+    }
+}
+
+dependencies {
+    // No libraries in the APK. Test only: plain JVM tests in src/test.
+    testImplementation 'junit:junit:4.13.2'
+}

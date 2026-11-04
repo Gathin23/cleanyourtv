@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stacked picture cards inside the adaptive icon's safe zone. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#5B3F99" android:pathData="M44,36h32v22h-32z" />
+    <path android:fillColor="#B58CFF" android:pathData="M34,46h32v22h-32z" />
+    <path android:fillColor="#101418" android:pathData="M37,65l9,-10l6,6l4,-3l9,7z" />
+</vector>

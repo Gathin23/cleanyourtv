@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Theme Library</string>
+    <string name="on_screen">On screen now: %1$s</string>
+    <string name="on_screen_builtin">the built-in look (no theme)</string>
+    <string name="on_screen_unknown">a theme that could not be read</string>
+    <string name="auto_saved">Saved the theme on screen as \"%1$s\"</string>
+
+    <string name="save_title">Save the theme on screen</string>
+    <string name="save_detail">Keeps a copy so you can switch back to it later.</string>
+    <string name="save_already">Already saved as \"%1$s\"</string>
+    <string name="save_nothing">The built-in look is always in the list; there is nothing to save.</string>
+    <string name="save_name_title">Name this theme</string>
+    <string name="saved_as">Saved as \"%1$s\"</string>
+
+    <string name="store_title">Get more themes</string>
+    <string name="store_detail">Download themes from the CleanYourTV project on GitHub into this library.</string>
+    <string name="store_loading">Loading the theme list from GitHub…</string>
+    <string name="store_status">From github.com/%1$s. OK downloads a theme; Back returns to your library.</string>
+    <string name="store_failed_status">The theme list could not be loaded.</string>
+    <string name="store_failed">Could not reach GitHub. OK tries again.</string>
+    <string name="store_empty">No themes were listed</string>
+    <string name="store_no_description">A theme from the CleanYourTV project.</string>
+    <string name="store_in_library">In library</string>
+    <string name="store_get">Download</string>
+    <string name="store_downloading">Downloading \"%1$s\"…</string>
+    <string name="store_download_failed">Could not download \"%1$s\": %2$s</string>
+    <string name="store_added">\"%1$s\" is in your library</string>
+    <string name="store_switch_now">Switch to it now? You can also switch later from the library.</string>
+    <string name="store_switch">Switch now</string>
+    <string name="store_later">Later</string>
+
+    <string name="heading_saved">Saved themes. OK switches to one; hold OK to rename or delete it.</string>
+    <string name="none_saved">No themes saved yet</string>
+    <string name="none_saved_detail">Push a theme to the TV, then open this app: it saves it by itself.</string>
+    <string name="theme_detail">%1$s · saved %2$s</string>
+    <string name="no_wallpaper">No wallpaper</string>
+    <string name="one_wallpaper">1 wallpaper</string>
+    <string name="n_wallpapers">%1$d wallpapers</string>
+    <string name="current">On screen</string>
+    <string name="unnamed">Saved theme</string>
+    <string name="auto_name">Theme saved %1$s</string>
+
+    <string name="builtin_title">Built-in look</string>
+    <string name="builtin_detail">No theme: the launcher\'s own colours and layout.</string>
+
+    <string name="applying">Switching to \"%1$s\"…</string>
+    <string name="apply_failed">Could not switch: %1$s</string>
+    <string name="save_failed">Could not save: %1$s</string>
+
+    <string name="manage_rename">Rename</string>
+    <string name="manage_delete">Delete</string>
+    <string name="delete_confirm">Delete \"%1$s\" from the library? The theme on screen does not change.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="allow_title">Allow access to storage</string>
+    <string name="allow_detail">The launcher keeps its theme in shared storage; this app needs access to save and switch it.</string>
+    <string name="unsupported_title">Not available on this Android version</string>
+    <string name="unsupported_detail">Android 11 and newer keep other apps\' folders closed, so this app cannot reach the launcher\'s theme. Use tools/theme.sh from a computer instead.</string>
+    <string name="no_launcher_title">The Clean Your TV launcher is not installed</string>
+    <string name="no_launcher_detail">This app switches that launcher\'s themes; install it first.</string>
+</resources>

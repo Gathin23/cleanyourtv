@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: three stacked picture cards over a dark screen. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#3A2D5C" android:pathData="M120,40h120v76h-120z" />
+    <path android:fillColor="#5B3F99" android:pathData="M104,52h120v76h-120z" />
+    <path android:fillColor="#B58CFF" android:pathData="M88,64h120v76h-120z" />
+    <path android:fillColor="#101418" android:pathData="M100,124l26,-30l20,22l14,-12l36,20z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M176,84a8,8 0 1 0 0.1,0z" />
+</vector>
