@@ -202,6 +202,7 @@ tools/theme.sh themes/aurora                                 # push a theme; --r
 | [`tools/adb-closed.py`](tools/adb-closed.py) | Checks that the TV's network ADB port is closed once debugging is off: exits 0 when the TV refuses the connection, 1 while it is still open, 2 when nothing answered or the check itself could not run. No `nc` needed. |
 | [`tools/philips-api.py`](tools/philips-api.py) | Philips only: checks that the JointSpace control API Home Assistant uses still answers, before and after a debloat (`tools/venv/bin/python -I tools/philips-api.py <tv ip>`). Port 1926 over HTTPS first, then 1925; reads only what answers without pairing. |
 | [`tools/privacy.py`](tools/privacy.py) | Audits the TV for voice, ACR and telemetry candidates and prints the evidence for each; `--write` turns the findings into a list `disable.sh` and `restore.sh` already understand. |
+| [`tools/nextdns.py`](tools/nextdns.py) | Points the TV's Private DNS at a NextDNS profile with no fallback resolver, after recording the TV's own values; `--status` shows where lookups go and `--off` puts them back. [FAQ](docs/faq.md#with-a-nextdns-profile). |
 | [`tools/theme.sh`](tools/theme.sh), [`theme_restart.py`](tools/theme_restart.py) | Push a folder from [`themes/`](themes/) to the launcher and restart Home. |
 | [`tools/manage.py`](tools/manage.py) | List every add-on, theme and switch with its screenshot, see what is on the TV, and install, update or remove one by running its creator's own script. |
 | [`tools/bench.py`](tools/bench.py) | Measures the launcher that answers HOME: key latency, how far the focus moved, janky frames, cold start, return to Home, and the idle CPU and PSS it costs. Changes nothing on the TV and writes the raw per-key numbers to JSON; no extra install. |
@@ -435,7 +436,9 @@ it at an ad-blocking resolver such as [AdGuard DNS](https://adguard-dns.io) and 
 tracker domains stop resolving, system-wide, surviving reboots. The trade-off: that resolver then
 sees every DNS query the TV makes, and it does not remove YouTube ads.
 
-More, with the two commands and how to switch back: [docs/faq.md](docs/faq.md#can-it-block-ads-inside-apps-too)
+More, with the two commands and how to switch back: [docs/faq.md](docs/faq.md#can-it-block-ads-inside-apps-too).
+For a NextDNS profile, [`tools/nextdns.py`](tools/nextdns.py) sets it up and undoes it:
+[docs/faq.md](docs/faq.md#with-a-nextdns-profile)
 
 </details>
 

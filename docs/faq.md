@@ -75,6 +75,28 @@ A resolver that answers can still break one app on its own, so if a single app f
 [one app refuses to play](TROUBLESHOOTING.md#one-app-refuses-to-play-while-the-rest-of-the-tv-is-online)
 before you debug the app.
 
+### With a NextDNS profile
+
+[NextDNS](https://nextdns.io) works the same way, with your own blocklists, allowlist and logs. Its
+blocklists are chosen on my.nextdns.io, so whatever the profile blocks, including the YouTube ad option
+NextDNS began rolling out as a beta in November 2026, applies to the TV as soon as its lookups reach
+the profile. [`tools/nextdns.py`](../tools/nextdns.py) points the TV there, records the TV's own values
+first, and checks that the network still validates:
+
+```bash
+TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/nextdns.py abc123 --name "Living room"
+TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/nextdns.py --status
+TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/nextdns.py --off
+```
+
+`abc123` is the profile id from the Setup page; `--name` labels the TV in the profile's logs. `--off`
+puts back the values the TV had before the first run.
+
+Use Private DNS rather than the DNS fields in the Wi-Fi settings. On Fire OS, a static IP with only DNS 1
+filled in gets 8.8.8.8 as DNS 2, and plain DNS to NextDNS's addresses only carries the profile while your
+IP is linked. In `hostname` mode the TV never falls back to another resolver. Fire OS 6 (Android 7) has no
+Private DNS: there, fill both DNS fields with the profile's addresses and turn on Linked IP.
+
 ## Are there switches in the TV's own Settings worth flipping too?
 
 A few. They need no ADB, the remote switches them back, and the debloat leaves them in place
