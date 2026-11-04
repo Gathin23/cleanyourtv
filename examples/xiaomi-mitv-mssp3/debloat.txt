@@ -19,6 +19,8 @@
 #   and is undone with
 #     cmd package install-existing com.mstar.netflixobserver   (the remote's Netflix button needs it)
 # - Device admin is not supported on this firmware (no android.software.device_admin).
+# - Remote's Input button: once the stock launcher is disabled it does nothing until handle_view_inputs is
+#   true in the launcher's config.xml; no INPUT_KEY_SERVICE needed. README.md in this folder has why (second unit).
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
