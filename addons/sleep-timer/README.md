@@ -31,7 +31,10 @@ ranges suppress scheduled wake events only, leaving sleep events and manual remo
 Sleep events enter standby immediately at the selected time, without the timer countdown.
 
 Wake requires power and Android standby; it cannot start an unplugged or fully powered-off TV.
-Firmware may prevent alarms or screen wake in deep standby, so validate both actions on your TV.
+**Scheduled wake is firmware-dependent:** it needs a working Shizuku power path or firmware that
+allows Android alarms to wake the screen. Some devices defer alarms entirely during standby;
+Shizuku alone cannot run a wake event whose alarm has not been delivered. Sleep may still work
+when scheduled wake does not, so test both actions on the actual TV in its intended standby mode.
 Schedules are restored after boot, app updates and clock/time-zone changes. A late event is ignored
 when more than ten minutes late. Without exact-alarm access Android may delay an event.
 
@@ -137,6 +140,12 @@ java -cp work/schedule-check io.github.luyzfernando08.sleeptimer.ScheduleCheck
 
 Xiaomi Mi Box S (MIBOX4, Android TV 9) with the reference launcher 2.6: the card, the picker, the warning at
 one minute, standby on the second, and the TV turned off with it over HDMI-CEC.
+
+The add-on author also tested this PR on Xiaomi Mi Box S (MIBOX4, Android 9, launcher 3.3): the
+Schedule screen, event dialog, weekday list and Portuguese strings worked with a D-pad; the one-off
+countdown still put the box to sleep through accessibility, and Open on wake installed and started.
+Without Shizuku, a scheduled one-off wake alarm was deferred in standby and fired 272 ms after the
+remote woke the box. The Shizuku path, exclusion periods and reboot were not tested on this box.
 
 DEXP 43UCY1 (Android 11, firmware RP1A.200720.011 dev-keys): Shizuku 13.6.0 started as ADB shell,
 native CVTE fake standby already enabled. Two one-off sleep/wake cycles changed the native standby
