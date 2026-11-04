@@ -27,7 +27,14 @@
    ```
    `tv` and `os` fill the folder's row in the TV tables, `brand` the README's brand grid (spelled as it is there),
    `notes` the Notes cell in `examples/README.md`: one line of Markdown, links relative to `examples/`, `\|`
-   for a pipe. `readme_os` is the one optional key: it is the OS cell of the two-column table in `README.nl.md`,
+   for a pipe. One thing in it is read back: a package named in backticks with `kept`, `disabled` or
+   `refused` straight after it is a claim about what the list does, and
+   `tests/test_example_readme_package_fates.py` holds it to the list - `kept` and `refused` have to be off
+   an active line, `disabled` on one (the stock launcher `launcher/build-and-install.sh` takes Home from is
+   the exception) - so a package left commented out is not `disabled` however the comment reads, and a
+   package the list still sends is not `kept`. Any other wording after the name claims nothing, which is
+   how `notes` stays free prose. `readme_os` is the one optional key: it is the OS cell of the two-column
+   table in `README.nl.md`,
    for a set whose row there should read shorter than the same set's row in `examples/README.md` - that table
    has room for `Google TV launcher on Android TV 11`, the short one for `Google TV 11`.
    `tests/test_examples.py` checks the file.
