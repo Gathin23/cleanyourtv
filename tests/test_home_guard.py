@@ -98,6 +98,14 @@ def main():
             line = line.strip()
             if line and not line.startswith("#"):
                 state["commands"].append(line)
+                # As tools/tv.py --batch does: echo the command, then its answer. The input-driver
+                # check runs through --batch too (PowerShell 5.1 drops quotes from an argument), and
+                # its completion marker is part of that answer.
+                sys.stdout.write(f"$ {line}\n")
+                try:
+                    sys.stdout.write(answer(line))
+                except Fail:
+                    pass
         save()
         return 0
     try:
@@ -170,7 +178,11 @@ class HomeGuardTest(unittest.TestCase):
         result = subprocess.run(argv, cwd=self.repo, env=env, capture_output=True, text=True,
                                 timeout=180)
         with open(self.state_path) as f:
-            return result, json.load(f)["commands"]
+            # The input-driver check travels in a --batch of its own now, so the fake records it with
+            # the list's commands. These cases are about what the list disables: leave the check out.
+            sent = [c for c in json.load(f)["commands"]
+                    if not ("for p in " in c and "dumpsys package" in c)]
+            return result, sent
 
     def entries(self):
         return ("sh", "ps1") if PWSH else ("sh",)

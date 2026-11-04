@@ -201,12 +201,22 @@ if (-not $tvinputAllow -and $pkgs.Count -gt 0) {
     # for nothing, so it passes (#2398); below SDK 23, or with no SDK reported, it stays NOCHK. "Service
     # dumps disabled due to hung system process" is the watchdog switching dumps off (HUNG). A dump with
     # neither block nor error (NOCHK) is one the guard cannot read: the package is kept on (#1753).
-    $loop = 's=$(getprop ro.build.version.sdk); for p in ' + ($pkgs -join ' ') + '; do d=$(dumpsys package $p 2>/dev/null); case $d in *"requested permissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"grantedPermissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"Service Resolver Table:"*) printf ''%s\n'' "$d" | grep -q ''android.media.tv.TvInputService'' && echo $p;; *"Unable to find"*) :;; *"hung system process"*) echo "HUNG $p";; *"Package [$p]"*) [ "${s:-0}" -ge 23 ] 2>/dev/null || echo "NOCHK $p";; *) echo "NOCHK $p";; esac; done; true'
+    # The marker echoed after `; true` is what proves the loop ran: tv.py --batch exits 0 even when the
+    # TV's shell rejected the loop, so a missing marker has to mean the check did not happen (#3186).
+    $marker = 'cleanyourtv-tvinput-' + [guid]::NewGuid().ToString('N')
+    $loop = 's=$(getprop ro.build.version.sdk); for p in ' + ($pkgs -join ' ') + '; do d=$(dumpsys package $p 2>/dev/null); case $d in *"requested permissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"grantedPermissions:"*) printf ''%s\n'' "$d" | sed -n -E ''/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p'' | grep -q TV_INPUT_HARDWARE && echo $p;; *"Service Resolver Table:"*) printf ''%s\n'' "$d" | grep -q ''android.media.tv.TvInputService'' && echo $p;; *"Unable to find"*) :;; *"hung system process"*) echo "HUNG $p";; *"Package [$p]"*) [ "${s:-0}" -ge 23 ] 2>/dev/null || echo "NOCHK $p";; *) echo "NOCHK $p";; esac; done; true; echo ' + $marker
+    # Through stdin: Windows PowerShell 5.1 drops every double quote from a native argument, so the TV's
+    # shell got the loop without its quotes, printed nothing, and the guard passed in silence (#263, #3186).
     # Windows PowerShell turns redirected stderr into an error that 'Stop' would throw (see getprop).
     $ErrorActionPreference = 'Continue'
-    $tvhw = @(& $py -I (Join-Path $repo 'tools\tv.py') $loop 2>$null)
-    $checked = $LASTEXITCODE -eq 0
+    $tvhw = @($loop | & $py -I (Join-Path $repo 'tools\tv.py') --batch 2>$null)
+    $tvExit = $LASTEXITCODE
     $ErrorActionPreference = 'Stop'
+    # --batch echoes each command as `$ <command>`, and that echo carries the marker too: only a line
+    # that is the marker and nothing else counts.
+    $tvhw = @($tvhw | Where-Object { $_ -notmatch '^\$ ' } | ForEach-Object { $_.Trim() })
+    $checked = $tvExit -eq 0 -and $tvhw -ccontains $marker
+    $tvhw = @($tvhw | Where-Object { $_ -and $_ -cne $marker })
     if (-not $checked) {
         Write-Warning 'Could not check which listed packages drive the HDMI/AV inputs (tv.py failed). Check every input after this run: a port that notices the cable and stays black means one of them was disabled, and only a full restore and a cold boot bring it back (#321).'
     } else {
