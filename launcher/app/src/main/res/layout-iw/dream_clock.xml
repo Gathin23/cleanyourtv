@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     android:background="#FF000000">
 
-    <View
+    <!-- The glow is its background; clock_wallpaper puts the picture in it, cropped like Home's. -->
+    <ImageView
         android:id="@+id/dreamAmbient"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no" />
 
     <LinearLayout
         android:id="@+id/dreamContent"
@@ -34,7 +37,7 @@
                 android:format24Hour=""
                 android:textColor="#99FFFFFF"
                 android:textSize="22sp"
-                android:fontFamily="@font/outfit_medium"
+                android:fontFamily="@string/font_medium"
                 android:letterSpacing="0.08"
                 android:textAllCaps="true" />
 
@@ -46,7 +49,7 @@
                 android:format24Hour="HH:mm"
                 android:textColor="#E6FFFFFF"
                 android:textSize="120sp"
-                android:fontFamily="@font/outfit_extralight"
+                android:fontFamily="@string/font_extralight"
                 android:letterSpacing="-0.04"
                 android:includeFontPadding="false" />
         </LinearLayout>
@@ -62,7 +65,7 @@
             android:format24Hour="@string/date_format"
             android:textColor="#8CFFFFFF"
             android:textSize="18sp"
-            android:fontFamily="@font/outfit_regular"
+            android:fontFamily="@string/font_regular"
             android:letterSpacing="0.14"
             android:textAllCaps="true" />
     </LinearLayout>

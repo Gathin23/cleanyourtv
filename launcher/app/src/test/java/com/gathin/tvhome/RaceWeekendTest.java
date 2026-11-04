@@ -65,19 +65,4 @@ public class RaceWeekendTest {
         assertNull(RaceWeekend.at(CALENDAR, Instant.parse("2026-10-26T00:00:00Z")));
     }
 
-    @Test
-    public void countdownRoundsUpAndChangesUnits() {
-        assertEquals("1 min", RaceWeekend.countdown(Duration.ofSeconds(20)));
-        assertEquals("42 min", RaceWeekend.countdown(Duration.ofMinutes(42)));
-        assertEquals("2h 14m", RaceWeekend.countdown(Duration.ofMinutes(134)));
-        assertEquals("1d 3h", RaceWeekend.countdown(Duration.ofHours(27).plusMinutes(10)));
-    }
-
-    @Test
-    public void namesForThePanel() {
-        assertEquals("United States GP", AUSTIN.shortName());
-        assertEquals("QUALI", AUSTIN.sessions.get(3).shortName());
-        assertEquals("Qualifying", AUSTIN.sessions.get(3).title());
-        assertEquals("SQ", new RaceWeekend.Session("sprint quali", Instant.EPOCH).shortName());
-    }
 }

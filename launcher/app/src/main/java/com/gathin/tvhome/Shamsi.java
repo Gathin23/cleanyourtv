@@ -1,22 +1,26 @@
 package com.gathin.tvhome;
 
+import android.content.res.Resources;
+
 import java.util.Calendar;
 
-/** Solar Hijri (Shamsi) date in Latin letters, without ICU: the arithmetic is small and stable. */
+/** Solar Hijri (Shamsi) date with localized month names, without ICU: the arithmetic is small and stable. */
 final class Shamsi {
 
-    private static final String[] MONTHS = {
-            "Farvardin", "Ordibehesht", "Khordad", "Tir", "Mordad", "Shahrivar",
-            "Mehr", "Aban", "Azar", "Dey", "Bahman", "Esfand"};
+    private static final int[] MONTHS = {
+            R.string.shamsi_month_farvardin, R.string.shamsi_month_ordibehesht, R.string.shamsi_month_khordad,
+            R.string.shamsi_month_tir, R.string.shamsi_month_mordad, R.string.shamsi_month_shahrivar,
+            R.string.shamsi_month_mehr, R.string.shamsi_month_aban, R.string.shamsi_month_azar,
+            R.string.shamsi_month_dey, R.string.shamsi_month_bahman, R.string.shamsi_month_esfand};
 
     private Shamsi() {
     }
 
     /** e.g. "27 Mehr 1405" */
-    static String today() {
+    static String today(Resources res) {
         Calendar c = Calendar.getInstance();
         int[] j = toJalali(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH));
-        return j[2] + " " + MONTHS[j[1] - 1] + " " + j[0];
+        return j[2] + " " + res.getString(MONTHS[j[1] - 1]) + " " + j[0];
     }
 
     /** Gregorian to Jalali, the 33-year-cycle algorithm used by jalaali-js. Returns {year, month, day}. */

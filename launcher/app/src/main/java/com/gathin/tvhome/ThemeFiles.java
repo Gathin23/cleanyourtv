@@ -20,7 +20,8 @@ final class ThemeFiles {
             return Config.FILE_NAME.equals(name) || "wallpaper.jpg".equals(name) || "theme_revision".equals(name)
                     ? name : null;
         }
-        if (segments.size() == 2 && WALLPAPERS.equals(segments.get(0)) && collectionImage(segments.get(1))) {
+        if (segments.size() == 2 && WALLPAPERS.equals(segments.get(0))
+                && (collectionImage(segments.get(1)) || WallpaperCaptions.FILE_NAME.equals(segments.get(1)))) {
             return WALLPAPERS + "/" + segments.get(1);
         }
         return null;

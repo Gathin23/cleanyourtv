@@ -34,11 +34,14 @@ public class FestivalTest {
     }
 
     @Test
-    public void greetingDefaultsByFestivalAndCanBeOverridden() {
-        assertEquals("Happy Dussehra", Festival.parse("dussehra", "", "", "").greetingText());
-        assertEquals("Happy Diwali", Festival.parse("DIWALI", "", "", "").greetingText());
-        assertEquals("", Festival.parse("onam", "", "", "").greetingText());
-        assertEquals("Shubho Bijoya", Festival.parse("dussehra", "", "  Shubho‮ Bijoya ", "").greetingText());
+    public void customGreetingIsSanitizedAndOverridesTheFestivalDefault() {
+        assertEquals("Shubho Bijoya",
+                Festival.parse("dussehra", "", "  Shubho\u202E Bijoya ", "").greetingText(null));
+    }
+
+    @Test
+    public void unknownFestivalKeepsTheTimeOfDayGreeting() {
+        assertEquals("", Festival.parse("onam", "", "", "").greetingText(null));
     }
 
     @Test
@@ -46,5 +49,23 @@ public class FestivalTest {
         assertEquals(Festival.DEFAULT_ACCENT, Festival.parse("dussehra", "", "", "").accentColor());
         assertEquals(0xFF102030, Festival.parse("dussehra", "", "", "#102030").accentColor());
         assertEquals(Festival.DEFAULT_ACCENT, Festival.parse("dussehra", "", "", "gold").accentColor());
+    }
+
+    @Test
+    public void halloweenHasItsOwnSkinAndPumpkinAccent() {
+        Festival f = Festival.parse("Halloween", "2026-11-01", "", "");
+        assertTrue(f.isHalloween());
+        assertTrue(f.active(LocalDate.of(2026, 10, 31)));
+        assertTrue(f.active(LocalDate.of(2026, 11, 1)));
+        assertFalse(f.active(LocalDate.of(2026, 11, 2)));
+        assertEquals(Festival.PUMPKIN, f.accentColor());
+        assertEquals(0xFFAA5500, Festival.parse("halloween", "", "", "#AA5500").accentColor());
+    }
+
+    @Test
+    public void otherFestivalsKeepTheDiyaSkin() {
+        assertFalse(Festival.parse("dussehra", "", "", "").isHalloween());
+        assertFalse(Festival.parse("onam", "", "", "").isHalloween());
+        assertFalse(Festival.NONE.isHalloween());
     }
 }

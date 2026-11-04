@@ -10,6 +10,7 @@
     <string name="not_connected">Qurilma yoʻq</string>
     <string name="live_tv">TV kanallar</string>
     <string name="no_inputs">Manbalar topilmadi</string>
+    <string name="more_inputs">Boshqa manbalar</string>
     <string name="good_morning">Xayrli tong</string>
     <string name="good_afternoon">Xayrli kun</string>
     <string name="good_evening">Xayrli kech</string>
@@ -20,7 +21,7 @@
     <string name="cant_open">%1$s ochilmadi</string>
     <string name="date_format">EEEE  d-MMMM</string>
     <string name="stats_cpu">Protsessor %1$d%%</string>
-    <string name="stats_memory">Xotira: %1$d MB boʻsh</string>
+    <string name="stats_memory">Xotira: %1$d / %2$d MB</string>
     <string name="stats_storage">Disk: %1$s boʻsh</string>
     <string name="dream_name">Soat</string>
     <string name="vpn">VPN</string>
@@ -28,7 +29,9 @@
     <string name="home_settings">Asosiy bosh ekranni tanlash</string>
     <string name="home_settings_help">CleanYourTV oʻrniga eski bosh ekranga qaytish uchun uni tanlang, CleanYourTV ga qaytish uchun esa CleanYourTV ni. Eski launcher yoqilgan boʻlishi va televizorda bosh ekran tanlash oynasi boʻlishi kerak; agar u oʻchirilgan boʻlsa, avval tiklash skriptini ishga tushiring.</string>
     <string name="launcher_settings">Launcher sozlamalari</string>
+    <string name="native_settings">Ishlab chiqaruvchi sozlamalari</string>
     <string name="columns_label">Qatordagi ilovalar</string>
+    <string name="dock_opacity_label">Dock paneli noshaffofligi</string>
     <string name="rows_below_dock_label">Dock ostidagi qatorlar</string>
     <string name="wallpaper_label">Fon rasmi</string>
     <string name="wallpaper_state">Fon rasmi: %1$s</string>
@@ -38,6 +41,8 @@
     <string name="animations_state">Animatsiyalar: %1$s</string>
     <string name="advanced_effects">Qoʻshimcha effektlar</string>
     <string name="advanced_effects_state">Qoʻshimcha effektlar: %1$s</string>
+    <string name="open_on_start_label">Ishga tushganda ochish</string>
+    <string name="open_on_start_state">Ishga tushganda ochish: %1$s</string>
     <string name="advanced_effects_warning">Plitkani koʻtarish, belgini kattalashtirish va ranglarning silliq oʻtishini qoʻshadi. Xotira sarfi oshishi mumkin; farq televizoringizga bogʻliq.</string>
     <string name="follow_theme">Mavzuga qaytish (TVdagi tanlovlarni bekor qilish)</string>
     <string name="follow_theme_hint">Joriy mavzu yoki standart joylashuv va harakat sozlamalaridan foydalanadi. Mavzuni yuborish yoki qayta tiklash ham TVdagi tanlovlaringizni tozalaydi.</string>
@@ -72,9 +77,14 @@
     <string name="card_state_new_key">Yangi kalit</string>
     <string name="card_state_new_label">Yangi nom</string>
     <string name="dock_edit">Dockni tahrirlash</string>
+    <string name="power_menu">Qayta ishga tushirish…</string>
     <string name="dock_edit_hint">Oʻzgartiriladigan joyni tanlab, OK ni bosing. Tugatish uchun Back.</string>
     <string name="dock_edit_pick_app">Endi u yerga qoʻyiladigan ilovani tanlab, OK ni bosing. Boshqa joy tanlash uchun Back.</string>
+    <string name="tile_add_to_dock">Dockga qoʻshish</string>
+    <string name="tile_replace_in_dock">Boshqa ilova bilan almashtirish</string>
+    <string name="dock_edit_pick_place">Bu ilova uchun dockdagi joyni tanlab, OK ni bosing. Bekor qilish uchun Back.</string>
     <string name="reorder">Ilovalar tartibini oʻzgartirish</string>
+    <string name="tile_move">Koʻchirish</string>
     <string name="reorder_hint">OK ilovani ushlaydi, strelkalar suradi, Back joyiga qoʻyadi. Tugatish uchun yana Back.</string>
     <string name="reorder_not_saved">Yangi tartib saqlanmadi</string>
     <string name="app_library">Ilovalar kutubxonasi</string>
@@ -100,4 +110,8 @@
     <string name="race_live">%1$s · jonli</string>
     <string name="race_finished">Marra</string>
     <string name="last_opened">Oxirgi marta ochilgan: %1$s</string>
+    <string name="game_live">Hozir jonli</string>
+    <string name="clock_format_system">Tizim</string>
+    <string name="clock_format_12">12 soatlik</string>
+    <string name="clock_format_24">24 soatlik</string>
 </resources>

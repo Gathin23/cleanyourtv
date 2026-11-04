@@ -1,5 +1,7 @@
 package com.gathin.tvhome;
 
+import android.content.res.Resources;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -10,8 +12,8 @@ import java.util.Locale;
 /**
  * Race-weekend mode. A theme's config.json can carry an F1 calendar ({@code race_calendar}, written by
  * tools/race_calendar.py); from shortly before a weekend's first session until the race is over, Home shows
- * a small panel with the next session and a countdown. Everything here is the clock against data the owner
- * pushed: no network, no Android types, so it is tested on the JVM.
+ * a small panel with the next session and a countdown. Scheduling uses the clock against owner-pushed
+ * data and is tested on the JVM; display labels use Android resources.
  */
 final class RaceWeekend {
 
@@ -44,24 +46,29 @@ final class RaceWeekend {
         }
 
         /** The name in the countdown line: "Qualifying in 2h 14m". */
-        String title() {
+        String title(Resources res) {
             switch (name) {
-                case "FP1": return "Practice 1";
-                case "FP2": return "Practice 2";
-                case "FP3": return "Practice 3";
-                case "SPRINT QUALI": return "Sprint qualifying";
-                case "SPRINT": return "Sprint";
-                case "QUALIFYING": return "Qualifying";
-                case "RACE": return "Race";
+                case "FP1": return res.getString(R.string.race_practice_1);
+                case "FP2": return res.getString(R.string.race_practice_2);
+                case "FP3": return res.getString(R.string.race_practice_3);
+                case "SPRINT QUALI": return res.getString(R.string.race_sprint_qualifying);
+                case "SPRINT": return res.getString(R.string.race_sprint);
+                case "QUALIFYING": return res.getString(R.string.race_qualifying);
+                case "RACE": return res.getString(R.string.race_race);
                 default: return name.charAt(0) + name.substring(1).toLowerCase(Locale.ROOT);
             }
         }
 
         /** The name in the session row, kept short so a whole weekend fits on one line. */
-        String shortName() {
+        String shortName(Resources res) {
             switch (name) {
-                case "SPRINT QUALI": return "SQ";
-                case "QUALIFYING": return "QUALI";
+                case "FP1": return res.getString(R.string.race_practice_1_short);
+                case "FP2": return res.getString(R.string.race_practice_2_short);
+                case "FP3": return res.getString(R.string.race_practice_3_short);
+                case "SPRINT QUALI": return res.getString(R.string.race_sprint_qualifying_short);
+                case "SPRINT": return res.getString(R.string.race_sprint_short);
+                case "QUALIFYING": return res.getString(R.string.race_qualifying_short);
+                case "RACE": return res.getString(R.string.race_race_short);
                 default: return name;
             }
         }
@@ -148,11 +155,11 @@ final class RaceWeekend {
      * "42 min", "2h 14m", "1d 3h". Rounded up to the minute, so a session 20 seconds away still reads
      * "1 min" and the countdown never says 0 before the session is live.
      */
-    static String countdown(Duration d) {
+    static String countdown(Resources res, Duration d) {
         long minutes = Math.max(1, (d.getSeconds() + 59) / 60);
-        if (minutes < 60) return minutes + " min";
+        if (minutes < 60) return res.getString(R.string.race_countdown_minutes, minutes);
         long hours = minutes / 60;
-        if (hours < 24) return hours + "h " + (minutes % 60) + "m";
-        return (hours / 24) + "d " + (hours % 24) + "h";
+        if (hours < 24) return res.getString(R.string.race_countdown_hours, hours, minutes % 60);
+        return res.getString(R.string.race_countdown_days, hours / 24, hours % 24);
     }
 }

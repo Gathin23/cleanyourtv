@@ -22,6 +22,13 @@ public class ThemeFilesTest {
         assertEquals("wallpapers/Night_2.WEBP", ThemeFiles.path(Arrays.asList("wallpapers", "Night_2.WEBP")));
     }
 
+    @Test public void theCollectionsCaptionsAreAllowed() {
+        assertEquals("wallpapers/captions.txt", ThemeFiles.path(Arrays.asList("wallpapers", "captions.txt")));
+        assertNull(ThemeFiles.path(Collections.singletonList("captions.txt")));
+        assertNull(ThemeFiles.path(Arrays.asList("wallpapers", "notes.txt")));
+        assertFalse(ThemeFiles.collectionImage("captions.txt"));
+    }
+
     @Test public void anythingElseIsRefused() {
         assertNull(ThemeFiles.path(null));
         assertNull(ThemeFiles.path(Collections.emptyList()));

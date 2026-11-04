@@ -26,6 +26,40 @@ public class OrderTest {
     }
 
     @Test
+    public void dockedRoundTrips() {
+        Order o = new Order(Order.dockKey(DOCK), Arrays.asList("b/.B", "a/.A", "c/.C"), 2);
+        String text = Order.encode(o);
+        assertEquals("tvhome-order 1\ndock com.plexapp.android,com.netflix.ninja\ndocked 2\nb/.B\na/.A\nc/.C\n", text);
+        Order back = Order.decode(text);
+        assertEquals(2, back.docked);
+        assertEquals(o.keys, back.keys);
+    }
+
+    @Test
+    public void anOrderWithoutDockedLeavesTheDockToDockApps() {
+        Order back = Order.decode("tvhome-order 1\ndock x\na/.A\nb/.B\n");
+        assertEquals(-1, back.docked);
+        assertEquals(Arrays.asList("a/.A", "b/.B"), back.keys);
+        assertEquals(-1, Order.docked(back, Collections.singletonList("x")));
+        assertTrue(Order.encode(new Order("x", Arrays.asList("a/.A"))).indexOf("docked") < 0);
+    }
+
+    @Test
+    public void dockedFollowsTheDockAppsCheck() {
+        Order o = new Order(Order.dockKey(DOCK), Arrays.asList("b/.B", "a/.A"), 1);
+        assertEquals(1, Order.docked(o, DOCK));
+        assertEquals(-1, Order.docked(o, Collections.singletonList("com.plexapp.android")));
+        assertEquals(-1, Order.docked(null, DOCK));
+    }
+
+    @Test
+    public void rejectsABadDockedLine() {
+        assertNull(Order.decode("tvhome-order 1\ndock x\ndocked two\na/.A\n"));
+        assertNull(Order.decode("tvhome-order 1\ndock x\ndocked -1\na/.A\n"));
+        assertNull(Order.decode("tvhome-order 1\ndock x\ndocked 3\na/.A\n"));   // more docked than keys
+    }
+
+    @Test
     public void emptyOrderRoundTrips() {
         Order back = Order.decode(Order.encode(new Order("", Collections.emptyList())));
         assertEquals("", back.dock);

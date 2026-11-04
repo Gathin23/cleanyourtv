@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +40,22 @@ final class WallpaperRotation {
         return null;
     }
 
+    /** The on-TV choice (Launcher settings, Wallpaper) that turns the wallpaper off. */
+    static final String CHOICE_NONE = "none";
+
+    /**
+     * What an on-TV wallpaper choice puts on Home in place of the theme's rotation: null when the theme decides
+     * (no choice, or a picture that is no longer there), an empty list for {@link #CHOICE_NONE}, or the one picture
+     * chosen from the theme's collection or its single {@code single} wallpaper.
+     */
+    static List<File> chosen(List<File> collection, File single, String choice) {
+        if (choice == null) return null;
+        if (CHOICE_NONE.equals(choice)) return Collections.emptyList();
+        File picked = find(collection, choice);
+        if (picked == null && single != null && choice.equals(single.getName())) picked = single;
+        return picked == null ? null : Collections.singletonList(picked);
+    }
+
     static File pick(List<File> images, String previous, Random random) {
         List<File> candidates = new ArrayList<>(images);
         if (candidates.size() > 1) candidates.removeIf(image -> image.getName().equals(previous));
@@ -66,6 +83,11 @@ final class WallpaperRotation {
     }
 
     static boolean due(long previous, long now, long interval) {
-        return interval > 0 && (previous == 0 || now < previous || now - previous >= interval);
+        // The minute tick is a Handler postDelayed, so it drifts by tens of milliseconds and often lands a few
+        // hundred short of the interval. Compared exactly, that pass is skipped and the picture waits a whole
+        // extra interval - a one-minute collection then changes every two. Two seconds of slack absorbs the
+        // drift without letting a genuinely early call advance the picture.
+        long slack = Math.min(2_000L, interval / 10);
+        return interval > 0 && (previous == 0 || now < previous || now - previous >= interval - slack);
     }
 }

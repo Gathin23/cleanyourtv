@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chinese text renders low in the line: the icon moves 2dp down to sit level with it. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_apps"
+    android:insetTop="2dp" />

@@ -23,15 +23,35 @@ public class InputKeyService extends AccessibilityService {
     private int[] inputKeycodes = new int[0];
     private Map<Integer, String> appKeys = Collections.emptyMap();
     private Map<Integer, String> appScancodes = Collections.emptyMap();
+    private Map<Integer, String> holdAppKeys = Collections.emptyMap();
+    private Map<Integer, String> holdAppScancodes = Collections.emptyMap();
+    /** restore_key_services was on when the config was read: this helper is noted for ServiceRepair. */
+    private boolean repairRecord;
+    /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
+    private boolean consumeVolumeKeys;
+    /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter. */
+    private GamepadPassthrough gamepads;
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         // From config.xml or a theme's config.json; theme.sh rebinds this service after a push.
         Config config = Config.load(this);
+        // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
+        repairRecord = config.restoreKeyServices;
+        if (repairRecord) ServiceRepair.connected(this, getClass());
         inputKeycodes = config.inputKeycodes;
+        consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
+        RemoteKeys.applyKeyFilter(this, config.keyFilter);
+        holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
+        holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
+        // gamepad_passthrough, off by default. Only with key_filter on: off, the service never filters keys.
+        if (config.gamepadPassthrough && config.keyFilter && gamepads == null) {
+            gamepads = new GamepadPassthrough(this);
+            gamepads.start();
+        }
     }
 
     private boolean isInputKey(int keyCode) {
@@ -42,25 +62,36 @@ public class InputKeyService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
+        if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
-        String scanApp = appScancodes.get(event.getScanCode());
-        if (scanApp != null) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) RemoteKeys.launch(this, scanApp);
-            return true;
-        }
-        String app = appKeys.get(event.getKeyCode());
-        if (app == null && !isInputKey(event.getKeyCode())) return false;
+        if (RemoteKeys.handle(this, event, appScancodes.get(event.getScanCode()),
+                holdAppScancodes.get(event.getScanCode()))) return true;
+        if (RemoteKeys.handle(this, event, appKeys.get(event.getKeyCode()),
+                holdAppKeys.get(event.getKeyCode()))) return true;
+        if (!isInputKey(event.getKeyCode())) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            if (app != null) {
-                RemoteKeys.launch(this, app);
-            } else {
-                try {
-                    startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException ignored) {
-                }
+            try {
+                startActivity(new Intent(ACTION_VIEW_INPUTS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException ignored) {
             }
         }
         return true;
+    }
+
+    /** Unbound by Android: the user turned the helper off, so Home doesn't put it back (ServiceRepair). */
+    @Override
+    public boolean onUnbind(Intent intent) {
+        RemoteKeys.release(this);
+        if (repairRecord) ServiceRepair.disconnected(this, getClass());
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        RemoteKeys.release(this);
+        if (gamepads != null) gamepads.stop();
+        if (consumeVolumeKeys) VolumeKeys.stop();
+        super.onDestroy();
     }
 
     @Override

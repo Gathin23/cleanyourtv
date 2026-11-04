@@ -45,7 +45,7 @@
             android:ellipsize="end"
             android:textColor="#FFFFFFFF"
             android:textSize="13sp"
-            android:fontFamily="@font/outfit"
+            android:fontFamily="@string/font_body"
             android:visibility="gone" />
     </FrameLayout>
 
@@ -55,6 +55,7 @@
         android:layout_height="22dp"
         android:layout_gravity="center_horizontal|top"
         android:layout_marginTop="108dp"
+        android:includeFontPadding="false"
         android:gravity="center"
         android:singleLine="true"
         android:ellipsize="end"
@@ -62,6 +63,6 @@
         android:translationY="-6dp"
         android:textColor="#F2FFFFFF"
         android:textSize="14sp"
-        android:fontFamily="@font/outfit_medium"
+        android:fontFamily="@string/font_medium"
         android:letterSpacing="0.02" />
 </FrameLayout>

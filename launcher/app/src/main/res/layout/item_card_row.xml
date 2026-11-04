@@ -28,7 +28,7 @@
             android:textColor="@drawable/pill_text"
             android:duplicateParentState="true"
             android:textSize="15sp"
-            android:fontFamily="@font/outfit_medium"
+            android:fontFamily="@string/font_medium"
             android:singleLine="true"
             android:ellipsize="end" />
 
@@ -39,7 +39,7 @@
             android:textColor="@drawable/pill_text"
             android:duplicateParentState="true"
             android:textSize="11sp"
-            android:fontFamily="@font/outfit"
+            android:fontFamily="@string/font_body"
             android:letterSpacing="0.04" />
     </LinearLayout>
 
@@ -50,7 +50,7 @@
         android:textColor="@drawable/pill_text_mid"
         android:duplicateParentState="true"
         android:textSize="11sp"
-        android:fontFamily="@font/outfit"
+        android:fontFamily="@string/font_body"
         android:singleLine="true"
         android:ellipsize="end" />
 
@@ -61,7 +61,7 @@
         android:textColor="@drawable/pill_text_mid"
         android:duplicateParentState="true"
         android:textSize="11sp"
-        android:fontFamily="@font/outfit"
+        android:fontFamily="@string/font_body"
         android:singleLine="true"
         android:ellipsize="middle" />
 
@@ -74,6 +74,6 @@
         android:duplicateParentState="true"
         android:textSize="10sp"
         android:letterSpacing="0.03"
-        android:fontFamily="@font/outfit"
+        android:fontFamily="@string/font_body"
         android:maxLines="2" />
 </LinearLayout>
