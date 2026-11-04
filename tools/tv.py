@@ -269,8 +269,9 @@ class NativeAdbDevice:
     def _run(self, args, timeout=None):
         limit = self.timeout if timeout is None else float(timeout)
         try:
+            # Android shell text is UTF-8, including when the host uses a Windows code page.
             result = subprocess.run([self.binary, "-s", self.serial, *args],
-                                    capture_output=True, text=True, errors="replace", timeout=limit)
+                                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=limit)
         except subprocess.TimeoutExpired as e:
             raise NativeAdbError(f"Google ADB {args[0]} on {self.serial} timed out after {limit:g}s.") from e
         except OSError as e:
