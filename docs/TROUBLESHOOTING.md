@@ -2053,3 +2053,74 @@ reboot, so it is something to re-apply, not to ship. Confirm with
 Three changes that did **nothing** here, so they are not worth an evening: decoding the backdrop at 720p,
 a hardware layer on a view that invalidates every frame (the layer is re-recorded each frame and costs
 more), and shortening a 1.5 s backdrop crossfade to 0.6 s.
+
+## The Back button stops responding in overlays, or the remote lags, while a third-party launcher's accessibility service is bound
+
+**Seen on:** a Philips 55PUS9435/12 (`TPM191E` / `PH9M_EA_5599`, MediaTek MT5887, Android TV 12,
+`STT2.230526.001`), with Projectivy Launcher (`com.spocky.projengmenu`) installed and its accessibility
+service enabled.
+
+Enabling a third-party launcher's accessibility service (which declares `CAPABILITY_CAN_FILTER_KEY_EVENTS`,
+`capabilities=8`, in `dumpsys accessibility`) routes every remote key through Android's input filter before
+the window manager delivers it. Beyond dropping held-volume repeats
+([above](#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating)), `KEYCODE_BACK` intermittently
+stops responding inside system overlays and dialogs (`org.droidtv.settings`, `org.droidtv.channels`),
+leaving the screen stuck in menus, and every D-pad press suffers 100–300 ms of input delay.
+
+Check whether an accessibility service is bound, then clear the list and register the launcher as the native
+default Home activity instead (which needs no key filter once the stock launcher is disabled):
+
+```sh
+tools/tv.py 'settings get secure enabled_accessibility_services'
+tools/tv.py 'settings put secure enabled_accessibility_services null'
+tools/tv.py 'settings put secure accessibility_enabled 0'
+tools/tv.py 'cmd package set-home-activity com.spocky.projengmenu/.ui.home.MainActivity'
+tools/tv.py 'pm disable-user --user 0 com.google.android.tvlauncher'
+```
+
+On streaming-only Philips sets with no aerial connected, also uncomment the broadcast tuner batch
+(`org.droidtv.playtv`, `org.droidtv.euinstallertc`, `org.droidtv.euinstallersat`, `org.droidtv.teletext`) in
+[`examples/philips-65pus9435/debloat.txt`](../examples/philips-65pus9435/debloat.txt) or
+[`examples/philips-tpm191e/debloat.txt`](../examples/philips-tpm191e/debloat.txt) so pressing the remote's
+TV button (`KEY_ISO`, scancode 170) or booting does not open the modal "No Signal" tuner screen that swallows
+`KEYCODE_BACK` and `KEYCODE_HOME`.
+
+## Streaming apps take 10–20 seconds to open from a cold start (`cmd package compile -m speed`)
+
+**Seen on:** a Philips 55PUS9435/12 (`TPM191E`, MediaTek MT5887, Android TV 12, `STT2.230526.001`, 2.5 GB RAM).
+
+Heavy streaming apps (Netflix, YouTube, SVT Play, TV4 Play) can take 10–20 seconds to open from a cold start
+and log `Choreographer: Skipped ... frames!` in `logcat`, even after bloatware is disabled.
+`dumpsys package <package>` shows `[status=verify]` or `[status=quicken]`: on quad-core Cortex-A53/A55 TV
+SoCs, JIT-compiling DEX bytecode while the app starts stalls the UI thread.
+
+Pre-compile the streaming apps you keep to native AArch64 machine code with Android's `dex2oat` AOT compiler:
+
+```sh
+tools/tv.py 'cmd package compile -m speed -f com.netflix.ninja'
+tools/tv.py 'cmd package compile -m speed -f com.google.android.youtube.tv'
+tools/tv.py 'dumpsys package com.netflix.ninja' | grep 'status=speed'
+```
+
+On the 55PUS9435/12, measured `am start -W -S` cold-start `TotalTime` dropped by 30–50% across tested
+streaming apps. Play Store updates reset a package's compilation state back to the default profile, so re-run
+the command after an app updates. Undo (reset to default profile):
+
+```sh
+tools/tv.py 'cmd package compile --reset com.netflix.ninja'
+```
+
+## `svc power stayon true` wakes the physical TV screen from standby
+
+**Seen on:** a Philips 55PUS9435/12 (`TPM191E`, MediaTek MT5887, Android TV 12, `STT2.230526.001`).
+
+Running `svc power stayon true` (or `settings put global stay_on_while_plugged_in 1`) to keep the TV from
+sleeping during a long ADB session (such as `cmd package compile -m speed`) turns the physical panel and
+Ambilight on if the TV was in standby, and prevents the screen from turning off. Because a mains-powered TV
+always reports `mPlugType=1` (`BatteryManager.BATTERY_PLUGGED_AC` in `dumpsys power`), AOSP's
+`PowerManagerService` treats `stay_on_while_plugged_in != 0` as a wake condition
+(`wakeUpNoUpdateLocked(WAKE_REASON_PLUGGED_IN)`). Keep the setting at `0` (`svc power stayon false`):
+
+```sh
+tools/tv.py 'settings put global stay_on_while_plugged_in 0'
+```
