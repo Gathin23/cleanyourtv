@@ -119,7 +119,7 @@ private Intent liveTvIntent() {
 With a package that is not installed, both branches return null, so the Inputs menu simply has no Live
 TV row. The Inputs pill stays visible when `liveTvIntent() != null`, when `sourcePanelService` is set,
 when the Coocaa source list is non-empty, or when any non-hidden passthrough input comes back from
-`TvInputManager` (`MainActivity.java:3193`-`:3211`, `updateInputsButton()`); `live_tv_action` is not a
+`TvInputManager` (`MainActivity.java:3198`-`:3216`, `updateInputsButton()`); `live_tv_action` is not a
 visibility condition, and this set has HDMI ports, so the failure is quiet: an Inputs menu that opens
 onto the HDMI ports it finds and the aerial set, with the tuner missing from it. That degraded state was
 **not** seen on this unit; the key was already corrected when the launcher was built for it.
@@ -147,7 +147,7 @@ $ adb shell dumpsys tv_input
 One consequence worth knowing before testing it: the Inputs pill is hidden outright when the list would
 be empty (`updateInputsButton()`), so "no Inputs button" on a Sharp set is most often a wrong
 `live_tv_package` with no HDMI source to fall back on; `show_inputs_pill=false` hides the pill at the
-same place and looks identical (`MainActivity.java:3194`-`:3197`, default `true` at `config.xml:355`,
+same place and looks identical (`MainActivity.java:3199`-`:3202`, default `true` at `config.xml:355`,
 themable through `Config.java:586`), so check that key before blaming the tuner.
 
 ## Module cards and the card prompt
