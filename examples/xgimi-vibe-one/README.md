@@ -19,8 +19,19 @@ export TV_HOST=<projector-ip>:5555
 tools/venv/bin/python -I tools/tv.py --probe
 ```
 
-On this unit port 5555 **stayed open across reboots**, unlike the MoGo 4 note. The USB device did not
-re-enumerate after a reboot, but the network connection kept working.
+`TV_HOST` needs the network address: given the bare USB serial, the tools ask adb for `<serial>:5555`
+and stop with `device not found`.
+
+**Close the port when you finish.** Port 5555 is plaintext, and on this unit it **stayed open across
+reboots**, unlike the MoGo 4 note, so it does not go away by itself. Turning USB debugging off and
+rebooting closed it here. Check with `tools/adb-closed.py`:
+
+```bash
+python3 -I tools/adb-closed.py <projector-ip>
+```
+
+Only its "closed" answer counts. The USB device did not re-enumerate after a reboot, but the network
+connection kept working until USB debugging was turned off.
 
 ## Debloat
 
