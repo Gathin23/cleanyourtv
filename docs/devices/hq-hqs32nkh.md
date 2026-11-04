@@ -1,8 +1,9 @@
-# HQ Screen Smart TV: Android 14, Toptech board, HiSilicon Hi3751V553
+# HQ HQS32NKH 32": Android 14, Toptech board, HiSilicon Hi3751V553
 
 One unit, sold in Brazil under the HQ brand ("HQ screen" on the stock home), tested during one session on
-2026-11-04 with one owner-initiated restart. This records observations, not a several-day debloat list.
-The retail model code was not read off the set: Android reports `ro.product.model=SmartTV`, Android 14 / SDK 34,
+2026-11-04 with two owner-initiated restarts. This records observations, not a several-day debloat list.
+The rear label reads `Modelo: HQS32NKH`, "TELA smart 32"", made by Bel Micro Tecnologia S/A. Android does not
+carry the model code: it reports `ro.product.model=SmartTV`, Android 14 / SDK 34,
 firmware `HISI352U`, fingerprint `HiDPT/Hi3751V553_32_DMO_2layer_1024M/Hi3751V553:14/HISI352U/:user/`,
 platform `bigfish`, about 1 GB RAM. Connected over Wi-Fi, with USB storage attached.
 
@@ -19,7 +20,7 @@ The session used source revision `04aec4b7`, with no launcher source changes: th
 
 With debugging on in Developer options, network ADB answered on port 5555. `ro.adb.secure` is empty, so the TV accepted
 the connection with no "Allow USB debugging?" prompt: while debugging is on, any device on the network gets a
-shell. `tools/disable.sh` prints its warning for this. After the owner restarted the TV, network debugging
+shell. `tools/disable.sh` prints its warning for this. After the first restart, network debugging
 was off again and had to be switched back on in Developer options.
 
 At the end, `settings put global adb_wifi_enabled 0` dropped the ADB connection, and
@@ -31,7 +32,7 @@ reconnecting.
 
 ## Packages disabled during this session
 
-Four packages, all still disabled after the restart. Nothing was uninstalled. This is a record of the owner's
+Four packages, all still disabled after the first restart. Nothing was uninstalled. This is a record of the owner's
 choices, not a ready-to-apply list.
 
 | Package | Purpose / owner choice |
@@ -52,7 +53,7 @@ not launched) and every other `com.hisilicon.*` package.
 The HOME claimants were the Zeasn launcher and Settings' `FallbackHome`; there is no `setupwraith`. The saved
 Wi-Fi network belongs to `android.uid.system`, so nothing in the handover touched it. `launcher/build-and-install.sh`
 started the reference launcher, disabled the Zeasn home and set Home; HOME resolved to
-`com.gathin.tvhome/.MainActivity` before and after the restart, and the owner confirmed the physical Home key.
+`com.gathin.tvhome/.MainActivity` before and after the first restart, and the owner confirmed the physical Home key.
 The `minSdk` 26 launcher installed with `pm install` without a verification failure.
 
 ## Inputs
