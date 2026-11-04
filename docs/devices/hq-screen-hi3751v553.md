@@ -23,10 +23,11 @@ shell. `tools/disable.sh` prints its warning for this. After the owner restarted
 was off again and had to be switched back on in Developer options.
 
 At the end, `settings put global adb_wifi_enabled 0` dropped the ADB connection, and
-`tools/adb-closed.py <tv ip>` answered that 5555 refused the connection. A post-reboot check of the port was
-not done in this session.
+`tools/adb-closed.py <tv ip>` answered that 5555 refused the connection. After a further restart it still
+refused.
 
-The TV changed its IPv4 address across the restart, so find it again before reconnecting.
+The TV took a new IPv4 address after each restart, and its Wi-Fi MAC changed too, so find it again before
+reconnecting.
 
 ## Packages disabled during this session
 
