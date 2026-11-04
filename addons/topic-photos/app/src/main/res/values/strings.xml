@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Topic Photos</string>
+    <string name="settings_title">Topic Photos settings</string>
+    <string name="settings_short">Settings</string>
+    <string name="finding">Finding photos… (the TV needs to be online)</string>
+    <string name="credit">Photo: %1$s</string>
+    <string name="details">Details</string>
+    <string name="place">Place</string>
+    <string name="by">Photo</string>
+    <string name="taken">Taken</string>
+    <string name="size">Size</string>
+    <string name="original">original %1$s</string>
+    <string name="not_given">Not given</string>
+    <string name="topics">Topics</string>
+    <string name="topics_hint">Comma-separated, in English for the most photos, e.g. mountains, ocean, city at night. Up to eight.</string>
+    <string name="topics_default">Varied</string>
+    <string name="interval">Change photo every</string>
+    <string name="day_night">Day and night photos</string>
+    <string name="day_night_hint">From 7:00 to 19:00, daylight photos of your topics; the rest of the day, night photos.</string>
+    <string name="set_screensaver">Use as the screensaver</string>
+    <string name="set_screensaver_hint">Opens the TV\'s screensaver settings: pick Topic Photos there.</string>
+    <string name="seconds">%1$d s</string>
+    <string name="minutes">%1$d min</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+</resources>
