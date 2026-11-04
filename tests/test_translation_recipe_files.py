@@ -12,6 +12,14 @@ The second half holds those files to the default: a resource name `values/<file>
 never read by the launcher, and `Lunar.java` reaches into the two lunar lists by position
 (`stems[Math.floorMod(year + 6, 10)]`, `branches[Math.floorMod(year + 8, 12)]`), so one item short is
 an ArrayIndexOutOfBoundsException on a TV running that language and nothing anywhere else.
+
+Step 2 also names, per file, the folders that carry it - "(`values-zh-rCN`, `values-vi`, `values-ko`)" for
+`lunar.xml` - and those lists had fallen behind the tree: `values-zh-rTW` ships a `lunar.xml` of its own
+and was not named, and `values-ast` and `values-b+es+419` already set `date_single_line` false beside the
+five languages the `bools.xml` bullet listed, so a translator reading the page for Asturian was told the
+tree keeps one line there. The list is read here as the `values-*` names inside that file's bullet and
+compared with the folders on disk, so a locale that adds one of these files, or a bullet that gains a
+folder the tree does not have, fails instead of leaving the sentence to drift.
 """
 from pathlib import Path
 import re
@@ -23,6 +31,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / "launcher/app/src/main/res"
 PAGE = ROOT / "docs/workflows/translation.md"
 LISTS = ("lunar_stems", "lunar_branches")
+# A step-2 bullet and the `values-*` folder names it writes in backticks.
+BULLET = re.compile(r"^- `([\w.]+\.xml)`:")
+FOLDER = re.compile(r"`(values-[^`]+)`")
 
 
 def locale_files(res=RES):
@@ -54,6 +65,25 @@ def missing_from_page(text, files):
     return [name for name in sorted(files) if not re.search(r"(?<![\w.-])" + re.escape(name) + r"(?![\w-])", text)]
 
 
+def named_folders(text):
+    """{file name: {locale folder, ...}} the step-2 bullets name for each per-language file.
+
+    A bullet runs from its `- ` line until the next bullet, a blank line or a line that starts at the
+    margin, so the step's own prose ("`values-sr-Latn` is not a folder it reads") stays out of a list.
+    """
+    out, current = {}, None
+    for line in text.split("\n"):
+        head = BULLET.match(line.strip())
+        if head:
+            current = head.group(1)
+            out.setdefault(current, set())
+        elif current is not None and (not line.strip() or not line.startswith("  ")):
+            current = None
+        if current is not None:
+            out[current].update(FOLDER.findall(line))
+    return out
+
+
 def unknown_names(default, mine):
     """Names a locale file defines that the default does not: the launcher never asks for those."""
     return sorted(set(mine) - set(default))
@@ -78,6 +108,19 @@ class TranslationRecipeTest(unittest.TestCase):
                 self.fail(f"docs/workflows/translation.md never names {name}, which "
                           f"{', '.join(files[name])} override: a translator whose language needs it "
                           f"has nothing to read")
+
+    def test_the_recipe_names_every_folder_that_carries_each_file(self):
+        # The bullet's parenthesis is the list a translator reads for their own language, so it is
+        # held to the folders on disk rather than being prose that can fall behind.
+        named = named_folders(PAGE.read_text(encoding="utf-8"))
+        self.assertGreaterEqual(len(named), 3, "read too few step-2 bullets to prove anything")
+        files = locale_files()
+        for name, folders in sorted(named.items()):
+            with self.subTest(file=name):
+                self.assertIn(name, files, f"the step-2 bullet for {name} names no folder that carries it")
+                self.assertEqual(sorted(files[name]), sorted(folders),
+                                 f"docs/workflows/translation.md names {sorted(folders)} for {name}, "
+                                 f"and the tree carries it in {sorted(files[name])}")
 
     def test_a_per_language_file_is_one_the_default_carries(self):
         # A values-xx file that values/ does not have overrides nothing: it is a typo or a leftover.
@@ -132,7 +175,21 @@ class TranslationRecipeReaderTest(unittest.TestCase):
         files = {"bools.xml": ["values-de"], "lunar.xml": ["values-vi"]}
         self.assertEqual(["bools.xml"], missing_from_page("copy `lunar.xml.bak` over `mybools.xml`", files))
 
-    def test_a_locale_name_the_default_lacks_is_reported(self):
+    def test_a_folder_a_bullet_omits_is_reported(self):
+        text = ("2. A language may also need one of the other files `values/` carries.\n"
+                "   - `lunar.xml`: the lunar date format (`values-zh-rCN`, `values-vi`).\n"
+                "   - `fonts.xml`: the system families (`values-vi`).\n"
+                "3. Add the locale to `values-sr-Latn`.\n")
+        self.assertEqual({"lunar.xml": {"values-zh-rCN", "values-vi"}, "fonts.xml": {"values-vi"}},
+                         named_folders(text))
+
+    def test_a_folder_outside_a_bullet_is_not_part_of_a_list(self):
+        text = ("   - `bools.xml`: two lines (`values-de`).\n"
+                "\n"
+                "`values-pl` is not named here.\n")
+        self.assertEqual({"bools.xml": {"values-de"}}, named_folders(text))
+
+    def test_a_resource_name_the_default_lacks_is_reported(self):
         self.assertEqual(["date_single_line2"], unknown_names({"date_single_line": 1},
                                                             {"date_single_line": 1, "date_single_line2": 1}))
         self.assertEqual([], unknown_names({"date_single_line": 1}, {"date_single_line": 1}))
