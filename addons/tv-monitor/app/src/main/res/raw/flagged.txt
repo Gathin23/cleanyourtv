@@ -1,0 +1,19 @@
+org.droidtv.candeebug|1|"DAC" analytics uploader, INTERNET, ~40 MB resident
+org.droidtv.gel|1|metrics collector sharing candeebug's process
+org.droidtv.usagelogger|1|"UsageLogger": remote keypress logging (LogKeySvc), INTERNET, ~40 MB
+org.droidtv.nettvrecommender|1|"Nejlepší tipy" (Top Picks) content promotion row, INTERNET, ~35 MB
+org.droidtv.recommendation|1|its headless backend, ~38 MB; disable the row above first
+org.droidtv.nettv.market|1|"Kolekce Philips TV" (Philips TV Collection) app storefront, ~34 MB
+org.droidtv.android.fitness|1|Fitness Buddy, a /data app; not running, removes the tile
+org.droidtv.sticker|1|e-sticker and shop banners, reacts to USB and inactivity events, ~32 M
+org.droidtv.demome|1|"Nabídka Ukázky" (Demo me) shop loop, ~33 MB
+com.google.android.feedback|1|Market Feedback Agent: crash and feedback reports to Google
+com.google.android.partnersetup|1|partner referrer / attribution
+com.google.android.onetimeinitializer|1|runs once at first setup, nothing afterwards
+com.google.android.syncadapters.calendar|1|Google Calendar sync; no calendar app on this TV
+com.google.android.katniss|1|Google Assistant and voice search, ~110 MB in two processes; kills the
+org.droidtv.amazonalexa|1|Alexa bridge, ~33 MB; nothing bound it on this unit
+com.phorus.playfi.softap|1|soft access point for setting up Play-Fi speakers, ~25 MB
+com.apple.atve.androidtv.appletv|1|Apple TV
+com.google.android.youtube.tvmusic|1|YouTube Music
+com.google.android.tvrecommendations|1|"Android TV Core Services": recommendation rows, notification panel, ~

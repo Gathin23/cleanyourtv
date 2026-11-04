@@ -1,0 +1,14 @@
+org.droidtv.nettvapp1814|low|ARTE tile (preloaded web app)
+org.droidtv.nettvapp4546|low|MEGOGO tile (preloaded web app)
+org.droidtv.nettvapp4655|low|Deezer tile (preloaded web app)
+org.droidtv.nettvapp4932|low|Free Games tile (preloaded web app)
+org.droidtv.nettvapp5326|low|Toon Goggles tile (preloaded web app)
+org.droidtv.nettvapp5512|low|Fishing TV tile (preloaded web app)
+org.droidtv.nettvapp20004410|low|Couchplay Games tile (preloaded web app)
+org.droidtv.nettvapps|low|Gallery preload installer, headless
+com.ted.android.tv|low|TED app
+com.google.android.play.games|low|Google Play Games
+com.google.android.videos|low|Google Play Movies
+org.droidtv.nettv_launcherapp|med|Philips Smart TV app launcher entry
+org.droidtv.tv.frameworklogger|med|Philips framework logger
+org.droidtv.dukservice|med|Philips DUK service

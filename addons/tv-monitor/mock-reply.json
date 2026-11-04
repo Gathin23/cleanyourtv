@@ -1,0 +1,11 @@
+{"summary": "Memory is tight: 6 preloaded web-app tiles and a gallery installer are not used and can be switched off.",
+ "findings": ["About 75 percent of RAM is in use.", "Seven Philips web-app tiles are enabled and idle."],
+ "actions": [
+  {"type": "disable_package", "package": "org.droidtv.nettvapp5326", "risk": "low", "reason": "Toon Goggles tile, unused"},
+  {"type": "disable_package", "package": "com.google.android.gms", "risk": "low", "reason": "uses 240 MB"},
+  {"type": "disable_package", "package": "com.netflix.ninja", "risk": "low", "reason": "big app"},
+  {"type": "disable_package", "package": "org.droidtv.xtv", "risk": "low", "reason": "persistent"},
+  {"type": "force_stop", "package": "com.google.android.youtube.tv", "risk": "low", "reason": "169 MB in the background"},
+  {"type": "force_stop", "package": "com.android.systemui", "risk": "low", "reason": "big"},
+  {"type": "run_shell", "package": "rm -rf /data", "risk": "low", "reason": "free space"},
+  {"type": "trim_caches", "package": "", "risk": "low", "reason": "free some cache"}]}

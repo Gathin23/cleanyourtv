@@ -1,0 +1,32 @@
+1) python tv_ai_agent.py --setup
+   saves, encrypted, in %APPDATA%\tv-monitor\config.json:
+   {"url": "https://api.anthropic.com/v1/messages",
+    "model": "claude-sonnet-5-5",
+    "key": "dpapi:...",
+    "host": "192.168.1.50",
+    "revert_seconds": 60}
+
+2) python tv_ai_agent.py 192.168.1.50 --apply --watch
+
+3) What the PC sends when you press Ask:
+   POST https://api.anthropic.com/v1/messages
+   x-api-key: <your key>
+   anthropic-version: 2023-06-01
+   content-type: application/json
+
+   {"model": "claude-sonnet-5-5",
+    "max_tokens": 1500,
+    "system": "You help keep an Android TV healthy...",
+    "messages": [{"role": "user",
+                  "content": "<snapshot of the TV, as JSON>"}]}
+
+4) What it expects back (in content[0].text):
+   {"summary": "one or two sentences",
+    "findings": ["short observation"],
+    "actions": [{"type": "force_stop",
+                 "package": "com.example.app",
+                 "risk": "low",
+                 "reason": "why"}]}
+
+To see exactly what is sent, without sending it:
+   python tv_ai_agent.py 192.168.1.50 --show-payload

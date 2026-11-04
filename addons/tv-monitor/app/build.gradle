@@ -1,0 +1,15 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'com.mauro.tv.monitor'
+    compileSdk 34
+    buildFeatures { aidl false }
+    defaultConfig { applicationId 'com.mauro.tv.monitor'; minSdk 26; targetSdk 34; versionCode 1; versionName '1.0' }
+    buildTypes { release {
+        minifyEnabled true
+        shrinkResources true
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        signingConfig signingConfigs.debug
+    } }
+    lint { checkReleaseBuilds false; abortOnError false }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}

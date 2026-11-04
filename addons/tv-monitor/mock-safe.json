@@ -1,0 +1,5 @@
+{"summary": "Memoria quasi piena: YouTube occupa 165 MB in background.",
+ "findings": ["La RAM disponibile e circa 26 percento.", "Nessun servizio critico coinvolto."],
+ "actions": [
+  {"type": "force_stop", "package": "com.google.android.youtube.tv", "risk": "low", "reason": "165 MB in background, non serve ora"},
+  {"type": "trim_caches", "package": "", "risk": "low", "reason": "liberare un poco di cache"}]}
