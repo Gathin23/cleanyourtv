@@ -8,7 +8,8 @@ final class PowerDeadline {
 
     /** Refuse expired or implausibly distant deadlines, including arithmetic overflow. */
     static boolean active(long deadlineElapsedMs, long nowElapsedMs) {
-        long remaining = deadlineElapsedMs - nowElapsedMs;
-        return remaining > 0 && remaining <= TIMEOUT_MS;
+        // elapsedRealtime is nonnegative. Compare before subtraction to reject wraparound.
+        if (nowElapsedMs < 0 || deadlineElapsedMs <= nowElapsedMs) return false;
+        return deadlineElapsedMs - nowElapsedMs <= TIMEOUT_MS;
     }
 }
