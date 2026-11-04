@@ -38,8 +38,9 @@ final class ShizukuPower {
                 if(completed.get())return;
                 new Thread(()->{
                     try {
+                        if(completed.get())return;
                         IPowerControl power=IPowerControl.Stub.asInterface(binder);
-                        boolean ok=power.uid()==2000&&power.setAwake(awake);
+                        boolean ok=power.uid()==2000&&!completed.get()&&power.setAwake(awake);
                         android.util.Log.i("SleepPower","awake="+awake+" success="+ok);
                     }catch(RemoteException|RuntimeException e){android.util.Log.e("SleepPower","Shizuku power failed",e);}
                     handler.post(()->{handler.removeCallbacks(timeout);complete.run();});
