@@ -1,0 +1,16 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "uz.telecom.telecomtv",
+    "uz.yangi.yangitvsmart",
+    "uz.i_tv.player.tv",
+    "ru.kinopoisk.tv"
+  ],
+  "hidden_apps": [
+    "com.softwinner.tv.factorymenu",
+    "com.hx.projectortest",
+    "com.hxdevicetest"
+  ],
+  "reduced_motion": true,
+  "focus_overshoot": false
+}
