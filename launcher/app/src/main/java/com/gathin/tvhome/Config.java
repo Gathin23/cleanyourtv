@@ -676,8 +676,10 @@ final class Config {
         File internalWallpaper = new File(ctx.getFilesDir(), WALLPAPER_NAME);
         if (wallpaper != null) {
             syncFile(wallpaper, internalWallpaper);
-        } else if (internalWallpaper.isFile() && internalWallpaper.length() > 0) {
+        } else if (!mounted && internalWallpaper.isFile() && internalWallpaper.length() > 0) {
             wallpaper = internalWallpaper;
+        } else if (mounted) {
+            internalWallpaper.delete();
         }
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
@@ -760,7 +762,6 @@ final class Config {
     }
 
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
-        if (config == null || !config.isFile()) return;
         File revision = dir == null ? null : new File(dir, THEME_REVISION_NAME);
         String token = revisionToken(revision);
         String signature = fileStamp(config) + ":" + token;
@@ -811,8 +812,6 @@ final class Config {
         if (!mounted) return read(copy);
         JSONObject json = read(file);
         if (json == null) {
-            JSONObject fallback = read(copy);
-            if (fallback != null) return fallback;
             copy.delete();
         } else {
             try (FileOutputStream out = new FileOutputStream(copy)) {
@@ -824,16 +823,33 @@ final class Config {
         return json;
     }
 
-    private static void syncFile(File src, File dst) {
+    private static final Object SYNC_LOCK = new Object();
+
+    static void syncFile(File src, File dst) {
         if (src == null || !src.isFile()) return;
         if (dst.isFile() && dst.length() == src.length() && dst.lastModified() == src.lastModified()) return;
-        try (InputStream in = new FileInputStream(src);
-             FileOutputStream out = new FileOutputStream(dst)) {
-            byte[] buf = new byte[8192];
-            int n;
-            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-            dst.setLastModified(src.lastModified());
-        } catch (IOException ignored) {
+        synchronized (SYNC_LOCK) {
+            File parent = dst.getParentFile();
+            if (parent == null) return;
+            File tmp = new File(parent, dst.getName() + ".tmp");
+            boolean ok = false;
+            try (InputStream in = new FileInputStream(src);
+                 FileOutputStream out = new FileOutputStream(tmp)) {
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                out.flush();
+                ok = true;
+            } catch (IOException ignored) {
+            }
+            if (ok) {
+                tmp.setLastModified(src.lastModified());
+                if (!tmp.renameTo(dst)) {
+                    tmp.delete();
+                }
+            } else {
+                tmp.delete();
+            }
         }
     }
 
