@@ -1,0 +1,58 @@
+# Nokia ATV R2 (manufacturer SCBC, device R2, Realtek RTD285O), Android TV 11 (API 30),
+# firmware RTT7.220308.001 (software V8-T851TNF-LF2V287), security patch 2022-06-05, kernel 4.14.94+, 2 GB RAM.
+# Fingerprint: NOKIA/NOKIA/R2:11/RTT7.220308.001/1050:user/release-keys
+# Same SCBC R2 platform as examples/compac-atv-r2 and examples/sanyo-atv-r2 (both Android TV 9, firmware
+# PTT1.201001.001). This is the Android 11 build, so a few choices differ from theirs.
+#
+# Status: applied 2026-10-20 in one batch and lived with for 15 days on one TV: several restarts and power-offs,
+# Netflix, YouTube, voice search and the Bluetooth remote all fine. Written up 2026-11-04.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/nokia-atv-r2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/nokia-atv-r2/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher is com.google.android.tvlauncher and Live TV is com.android.tv (Realtek RtkLiveTv), so the
+# defaults in tools/restore.sh and launcher/build-and-install.sh work unchanged. This list leaves the stock
+# launcher on; a replacement Home was not tried on this TV.
+#
+# Notes from this TV:
+# - Kept in use: Assistant (katniss), the phone remote service (com.google.android.tv.remote.service), Netflix,
+#   YouTube, Prime Video, Chromecast built-in (com.google.android.apps.mediashell), TV Booster (com.apps.clear)
+#   and the firmware updaters (com.apps.ota, com.apps.authota). The TV's own update check reported this firmware
+#   as the latest on 2026-10-20.
+# - Leave alone, as on the Compac and SANYO: com.realtek.* (inputs, tuner, key handler, engineering and factory
+#   menus), com.realtek.leanbacklauncher.partnercustomizer (the Compac notes say it supplies the Inputs button
+#   on the stock Home), com.apps.smartkey / virtualkey / bluetoothremote / fivekey (remote), com.apps.puresound,
+#   com.apps.usbmediaplayer and com.google.android.tungsten.setupwraith.
+# - com.google.android.backdrop is the Ambient-mode screensaver. On this TV the screensaver was switched to the
+#   built-in one in the same step (adb shell settings put secure screensaver_components
+#   com.android.dreams.basic/.Colors, and the same for screensaver_default_component). The list was not tried
+#   without that.
+# - com.google.android.marvin.talkback is the TalkBack screen reader: comment it out if anyone using the TV needs it.
+# - com.apps.esticker: purpose unclear (the Compac list leaves it alone). Off for the whole trial, nothing noticed.
+
+# Google apps nobody asked for on a TV
+com.google.android.videos              # Google TV / Play Movies & TV app
+com.google.android.play.games
+com.google.android.youtube.tvmusic     # YouTube Music
+com.google.android.feedback
+com.google.android.syncadapters.calendar  # Google Calendar sync adapter
+com.google.android.marvin.talkback     # TalkBack screen reader (see the note above)
+
+# Content rows, screensaver and promos
+com.google.android.tvrecommendations   # recommendation rows on the stock Home
+com.google.android.backdrop            # Ambient-mode screensaver (see the note above)
+com.apps.eshow                         # vendor "E-SHOW" app (the name suggests a shop-display mode)
+com.apps.esticker                      # vendor "E-Sticker" app, purpose unclear
+
+# Background services
+com.android.printspooler
+com.apps.wifihotspot                   # TV as a Wi-Fi hotspot
+
+# Switched off on 2026-11-04 and fine after a restart, but not yet lived with for several days, so left
+# commented. They are the other entries of the Compac list that exist on this TV.
+# com.apps.function.gdpr                 # SCBC data-consent agent
+# com.apps.channels                      # "S-Channel" content rows on Home
+# android.autoinstalls.config.scbc.device  # Play auto-installs of partner apps
+# com.apps.networkspeed                  # speed-test app
+# com.apps.timeclock                     # WorldClock
