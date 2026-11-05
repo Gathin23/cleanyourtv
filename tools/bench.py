@@ -41,14 +41,17 @@ most of those keys and leaves a sample too small to say anything.
 """
 import argparse
 import atexit
+import errno
 import importlib.util
 import json
 import os
 from pathlib import Path
 import re
+import stat
 import statistics
 import sys
 import time
+import uuid
 
 # The sequence the key probe uses: moves inside a row and between rows, including the edges.
 DEFAULT_SEQUENCE = (22, 22, 22, 21, 21, 21, 20, 22, 22, 21, 21, 19)
@@ -568,6 +571,25 @@ def stats(values):
             "p99": pick(0.99), "max": ordered[-1], "n": len(ordered)}
 
 
+def staging_file(folder, name):
+    """A new file beside the result, named so no run can collide with another, opened for writing.
+
+    The name is random and created with O_EXCL, not a fixed `result.json.part`: `open()` on a name
+    that is already there follows an alias, so a hardlink to the earlier result truncated it before
+    the write and a symlink wrote through to whatever it pointed at. O_EXCL refuses a path that
+    exists, symlink or not, and the mode is the one `open()` on the result used to leave (0666,
+    masked by the umask), so a fresh result keeps the permissions it had.
+    """
+    for _ in range(8):
+        stage = os.path.join(folder, f".{name}.{uuid.uuid4().hex[:8]}.part")
+        try:
+            fd = os.open(stage, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
+        except FileExistsError:
+            continue
+        return stage, os.fdopen(fd, "w", encoding="utf-8")
+    raise OSError(errno.EEXIST, "no free staging name beside the result")
+
+
 def write_result(path, result):
     """Write result.json, or return the OSError that stopped it and leave the earlier one alone.
 
@@ -575,20 +597,34 @@ def write_result(path, result):
     filled up during the minutes the run takes, which is the failure the caller's message is about -
     took the result.json of the run before with it and left a half file under the name a reader
     opens. The numbers of that earlier run cannot be measured again the same way, so the write goes
-    to a part file and is renamed into place, the way tools/trace.py's --out and tools/recovery.py's
-    record already write theirs: either the new result.json is complete, or the one that was there
-    is untouched. A part file a killed run left behind is overwritten by the next one.
+    to a staging file this run owns and is renamed into place, the way tools/trace.py's --out and
+    tools/recovery.py's record already write theirs: either the new result.json is complete, or the
+    one that was there is untouched, with its mode as well as its bytes - a successful write used to
+    leave the earlier file's permissions where `open()` found them, and a fresh staging file does not.
+
+    A staging file a killed run left behind is not touched by the next run, which writes its own
+    name; it is the only thing an interrupted write can leave in the folder.
     """
-    part = path + ".part"
+    folder, name = os.path.split(path)
     try:
-        with open(part, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2)
-        os.replace(part, path)
+        mode = stat.S_IMODE(os.stat(path).st_mode)
+    except OSError:
+        mode = None   # no earlier result to match, so the new file takes the usual mode
+    stage = None
+    try:
+        stage, handle = staging_file(folder, name)
+        with handle:
+            json.dump(result, handle, indent=2)
+        if mode is not None:
+            os.chmod(stage, mode)
+        os.replace(stage, path)
+        stage = None
     except OSError as e:
-        try:
-            os.unlink(part)
-        except OSError:
-            pass   # a part file that is a folder, or in a folder that went away: nothing to clean
+        if stage is not None:
+            try:
+                os.unlink(stage)
+            except OSError:
+                pass   # the folder went away with it: nothing to clean
         return e
     return None
 
