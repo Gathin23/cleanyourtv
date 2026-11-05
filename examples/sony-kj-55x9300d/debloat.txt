@@ -19,7 +19,8 @@
 #   uinputservice, imeproxy, settingsprovider, netflixmanager (Netflix button), duid.generator,
 #   enclave.service, systemupdate, systemapp (remote global keys), timers, all com.mediatek.*, mtktvapi.agent
 #   and the aribapp.* / tvx.search.* packages (Japanese broadcast and EPG).
-# Active keyboard is com.google.android.leanback.ime, so the Japanese one can go.
+# Keyboard: com.google.android.leanback.ime is the active one. The Japanese IME line is commented out (kept)
+#   for an owner who types Japanese; the tested set had it off, so uncomment it to do the same.
 # Already disabled at the factory: com.sony.dtv.b2b.hotellanguage, com.sony.dtv.b2b.hotelmenu,
 #   com.amazon.aiv.fe. Not in this list so restore.sh leaves them off.
 #
@@ -54,7 +55,7 @@ com.google.android.videos                      # Google Play Movies
 com.google.android.play.games
 com.google.android.music                       # Google Play Music, shut down in 2020
 
-# Optional features, off by owner's choice
+# Optional features, off by owner's choice; the Japanese keyboard line below is the one kept
 # com.google.android.inputmethod.japanese        # Japanese keyboard (not the active one); kept: needed to type Japanese; the tested set has it off
 com.sony.dtv.osat.music                        # re-enable to play music from USB
 com.sony.dtv.osat.album                        # re-enable to view photos from USB
