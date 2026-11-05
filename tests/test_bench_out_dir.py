@@ -133,8 +133,10 @@ class BenchOutDirTest(unittest.TestCase):
         self.assertLess(start, source.index("    samples = []"),
                         "a folder that cannot be created has to be answered before measuring")
         # The write at the end is guarded, and the numbers are printed when it fails.
-        write = source.index('    try:\n        with open(path, "w", encoding="utf-8") as f:')
-        self.assertIn("except OSError as e:", source[write:write + 900])
+        self.assertIn('part = path + ".part"', source)
+        self.assertIn("os.replace(part, path)", source)
+        write = source.index("    failed = write_result(path, result)\n")
+        self.assertIn("if failed is not None:", source[write:write + 400])
         self.assertIn("this run's only copy", source)
         self.assertIn("    return 1\n", source[write:])
         self.assertIn("sys.exit(main())", source)
@@ -145,6 +147,56 @@ class BenchOutDirTest(unittest.TestCase):
         self.assertIn("Exit status: 0", docstring)
         self.assertIn("2 an --out-dir that cannot be written into", docstring)
         self.assertIn("1 anything else", docstring)
+
+
+class BenchResultWriteTest(unittest.TestCase):
+    """result.json is written through a part file, so a write that cannot finish keeps the last run's.
+
+    `open(path, "w")` truncates first: a run whose write failed - the disk that filled up during the
+    minutes it measures, which is the failure bench.py's own message is about - left a half file
+    under the name a reader opens, and took the result.json of the run before with it. Those numbers
+    cannot be measured again the same way (the tool says so itself), so the write ends in
+    os.replace() and either lands whole or not at all.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.folder = Path(self._tmp.name)
+        sys.path.insert(0, str(ROOT / "tools"))
+        import bench  # noqa: E402  the write_result() under test
+        self.bench = bench
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def write(self, result):
+        return self.bench.write_result(str(self.folder / "result.json"), result)
+
+    def test_a_write_that_cannot_finish_leaves_the_earlier_result(self):
+        earlier = {"keys": {"series": 3, "per_series": 36}, "response_ms": {"p50": 41}}
+        (self.folder / "result.json").write_text(json.dumps(earlier, indent=2), encoding="utf-8")
+        # A part file that cannot be opened stands for a write that stops before a byte of this run's
+        # numbers reaches result.json: a disk that filled up mid-write answers the same way.
+        (self.folder / "result.json.part").mkdir()
+        failed = self.write({"keys": {}, "response_ms": {"p50": 99}})
+        self.assertIsInstance(failed, OSError)
+        self.assertEqual(earlier, json.loads((self.folder / "result.json").read_text(encoding="utf-8")),
+                         "a write that failed replaced the numbers of the run before it")
+
+    def test_a_finished_write_replaces_the_result_and_leaves_no_part_file(self):
+        (self.folder / "result.json").write_text('{"response_ms": {"p50": 41}}', encoding="utf-8")
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual({"response_ms": {"p50": 99}},
+                         json.loads((self.folder / "result.json").read_text(encoding="utf-8")))
+        self.assertEqual(["result.json"], sorted(p.name for p in self.folder.iterdir()),
+                         "a part file was left in the results folder")
+
+    def test_a_part_file_a_killed_run_left_behind_is_overwritten(self):
+        # A run that was interrupted after its part file was opened leaves one behind; the next run
+        # has to write its own, not trip over it.
+        (self.folder / "result.json.part").write_text('{"response_ms": {"p50": 1', encoding="utf-8")
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual(["result.json"], sorted(p.name for p in self.folder.iterdir()))
 
 
 if __name__ == "__main__":

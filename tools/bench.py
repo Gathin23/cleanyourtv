@@ -31,7 +31,8 @@ before the TV is opened, a folder that cannot be created, a TV that cannot be re
 sentence says which failure it was), and a run that never got as far as the TV - no --host and no
 TV_HOST, a --port (or TV_PORT) tools/tv.py cannot read, a checkout tools/tv.py cannot be loaded from -
 nothing was measured, and nothing was written; 1 anything else, including a result.json that could not
-be written after the run, whose numbers are then printed.
+be written after the run, whose numbers are then printed and whose folder keeps the result.json that was
+already in it.
 
 Why the frame is matched by its completion time and not by its intended vsync: on a launcher
 that moves the focus in a single frame (no animation), the frame that reacts to a key is born
@@ -567,6 +568,31 @@ def stats(values):
             "p99": pick(0.99), "max": ordered[-1], "n": len(ordered)}
 
 
+def write_result(path, result):
+    """Write result.json, or return the OSError that stopped it and leave the earlier one alone.
+
+    `open(path, "w")` truncates before it writes, so a write that cannot be finished - a disk that
+    filled up during the minutes the run takes, which is the failure the caller's message is about -
+    took the result.json of the run before with it and left a half file under the name a reader
+    opens. The numbers of that earlier run cannot be measured again the same way, so the write goes
+    to a part file and is renamed into place, the way tools/trace.py's --out and tools/recovery.py's
+    record already write theirs: either the new result.json is complete, or the one that was there
+    is untouched. A part file a killed run left behind is overwritten by the next one.
+    """
+    part = path + ".part"
+    try:
+        with open(part, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2)
+        os.replace(part, path)
+    except OSError as e:
+        try:
+            os.unlink(part)
+        except OSError:
+            pass   # a part file that is a folder, or in a folder that went away: nothing to clean
+        return e
+    return None
+
+
 def out_dir(value):
     """`--out-dir` as typed, or an argparse error before the TV is opened.
 
@@ -731,16 +757,16 @@ def main():
     }
     path = os.path.join(args.out_dir, "result.json")
     summary = {k: v for k, v in result.items() if k != "samples"}
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(result, f, indent=2)
-    except OSError as e:
+    failed = write_result(path, result)
+    if failed is not None:
         # The folder was writable when the run started - it can be removed, or fill up, during the
         # minutes it measures. The numbers were measured on the TV and cannot be measured again the
         # same way, so they are printed: this is the only copy, and exit 1 says the file is not it.
+        # The write goes through a part file, so the result.json of an earlier run is still there.
         print(json.dumps(summary, indent=2))
-        print(f"cannot write {path}: {e.strerror or e}. Nothing was written: the numbers above are "
-              "this run's only copy.", file=sys.stderr)
+        print(f"cannot write {path}: {failed.strerror or failed}. The result.json that was already "
+              "in that folder is left as it was: the numbers above are this run's only copy.",
+              file=sys.stderr)
         return 1
     print(json.dumps(summary, indent=2))
     print(f"Written: {path}")
