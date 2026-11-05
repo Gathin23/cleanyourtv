@@ -1,0 +1,26 @@
+# Formovie Theater (model L206FGN-X2, codename koroli, board koroli, MediaTek m7632), Android TV 11 (SDK 30),
+# firmware RTMA.250416.128 (incremental 13815653). Google TV home (com.google.android.apps.tv.launcherx).
+# Not the same set as examples/formovie-laser-4k-hanlla: different codename (koroli vs hanlla), Android 11 vs 14,
+# and most packages that list disables are not installed here (tvrecommendations, backdrop, Live Channels,
+# feedbackconsent, the "formovie" auto-installer, softmedia receiver).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/formovie-theater-koroli/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/formovie-theater-koroli/debloat.txt
+# Everything is DISABLED, not uninstalled.
+#
+# Tested on 2026-11-05: disabled over network ADB, then rebooted. After the reboot all three stayed disabled,
+# ADB on port 5555 was back about a minute after boot, Home, the Android TV Remote service and Chromecast
+# all came back by themselves. 129 packages installed, 3 disabled.
+#
+# Kept: Chromecast built-in (com.google.android.apps.mediashell), YouTube, the Google TV home, the HDMI/input
+# app and the projector's own apps. Note on Chromecast: any cast sender on the network (Spotify Connect, a phone
+# with Google Home) can send it Receiver.Stop, and it answers with a HOME intent that drops whatever is playing,
+# native apps included, back to Home. Disabling mediashell is the only no-root fix and costs casting. It is left
+# enabled here; disable it if mid-video drops to Home bother you more than casting matters.
+
+# Google telemetry and feedback
+com.google.android.feedback
+com.google.android.partnersetup        # Google RLZ attribution pings
+
+# Play auto-install of partner apps (sic, "fomovie", the same spelling as on the hanlla list)
+android.autoinstalls.config.fomovie

@@ -1,0 +1,6 @@
+{
+  "tv": "Formovie Theater (L206FGN-X2, koroli, MediaTek m7632)",
+  "os": "Android TV 11 (Google TV home)",
+  "brand": "Formovie",
+  "notes": "Light list: Google feedback, partnersetup RLZ pings and Formovie's Play auto-installer off; `com.google.android.apps.mediashell` kept (Chromecast; a cast sender's Receiver.Stop sends the set to Home, header explains); Google TV home, YouTube and projector apps kept; reboot-checked"
+}
