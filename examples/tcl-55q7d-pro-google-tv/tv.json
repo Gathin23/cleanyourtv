@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55Q7D Pro (Smart TV Pro, G08, G08_4K_GB, MediaTek tcl9618), EU Google TV build",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "EU build of the G08 (UTT2.250416.001 AU02): TCL pushes, account and retail demo, telemetry, the Android 14 ad and privacy services, duplicate webviews and Play Games; `com.tcl.interactive` disabled and the Source key still opens the input list, unlike the Android 12 EU list; `com.tcl.ttvs` kept as the firmware updater; one evening of use, reboot-checked"
+}
