@@ -26,11 +26,14 @@ every key with scancode 240 and `KEY_UNKNOWN` at the input-device level; the key
 | TCL Channels | 4020 | `app_keys` |
 | YouTube | 190 (`BUTTON_3`, a global key) | `app_keys` via `InputKeyService` |
 | TV icon | 4001 | `app_keys` via `InputKeyService`, see below |
-| Settings (gear) | 83 (`NOTIFICATION`) | `settings_key_keycodes` |
+| Settings (gear) | 83 (`NOTIFICATION`) | `settings_key_keycodes` and `83:settings` in `app_keys` |
 | Input / Source | — | the firmware; `com.tcl.interactive` disabled does not break it on this build |
 
 4062, 4099, 4141 and 4020 reach the focused window, so the launcher can map them without any helper. 190 and
-4001 are consumed before that, which is what `InputKeyService` (`INPUT_KEY_SERVICE=1`) is for.
+4001 are consumed before that, which is what `InputKeyService` (`INPUT_KEY_SERVICE=1`) is for. 83 does reach the
+window, but only the launcher answers it there, so `settings_key_keycodes` opens Settings on Home alone;
+`83:settings` in `app_keys` adds the helper's path for every app, and the `settings_key_keycodes` entry is kept
+as the Home-only fallback for when the helper is switched off.
 
 ### The TV icon button does nothing
 
