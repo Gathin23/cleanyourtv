@@ -5,6 +5,10 @@ index as a coloured pill, and the next three days. For the [Clean Your TV](../..
 [module card](../../docs/modules.md), so once you answer **Show card** its tile reads "Weather" with a
 sky-blue glow; on any other Android TV home it is an ordinary app.
 
+[WeatherMint](WEATHERMINT.md) is a reusable setup prompt for this add-on, including locality, language, time zone,
+units, refresh frequency and an optional time-of-day greeting. It documents the add-on's boundaries: Weather runs
+as its own app and does not alter the launcher Home screen or the TV's system screensaver.
+
 ![The weather page](https://raw.githubusercontent.com/Sumyabazar1/cleanyourtv/pr-assets/addon-weather/addon-3-weather.png)
 
 - **The city** is chosen once: type its name with the remote's keyboard (or voice), pick it from the matches,
