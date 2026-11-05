@@ -28,3 +28,12 @@ Enabling `HomeKeyService` (`settings put secure enabled_accessibility_services c
 
 ## Private DNS (AdGuard DoT)
 Private DNS (such as AdGuard DoT) works on this set.
+
+## YouTube kept playing with the TV off
+
+On another unit, same firmware, tried in November 2026: after the TV was turned off, YouTube played on for
+hours and the box was slow at the next start. `attentive_timeout` was `-1` after a factory reset, so nothing
+stopped playback. `settings put secure attentive_timeout 21600000` is the "when inactive" setting at 6 hours,
+as a safety net: Android warns before it sleeps and any key cancels. With HDMI-CEC on, the power key on the
+remote put both the TV and the box to sleep (`mLastSleepReason=hdmi`). The 6-hour timer itself was set but
+not watched to the end. To undo it: `settings put secure attentive_timeout -1`.
