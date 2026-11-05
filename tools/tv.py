@@ -13,8 +13,9 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
     tv.py --help                       this text; needs neither the venv nor a TV
 
 Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
-empty or failed, a pull the TV did not send (the local file is left as it was), or a command's answer
-was lost when the TV dropped the connection,
+empty or failed, a pull the TV did not send (the local file is left as it was), a push the TV refused
+(what it said, and that the file there may be incomplete), or a command's answer was lost when the TV
+dropped the connection,
 2 it was refused before anything ran on the TV - a flag it does not have, one of its own with the wrong
 number of words, a local path that cannot be used, a port it could not open, or a TV_HOST that is a URL
 or a path instead of the TV's address. A flag and its count are
@@ -672,6 +673,40 @@ def pull(dev, remote, local):
     return 0
 
 
+def push(dev, local, remote):
+    """Push `local` to `remote`, answering a transfer the TV refused. Returns 0, or 1 when it failed.
+
+    adb_shell's push() opens the local file, writes it to the TV and closes the sync session in one
+    call, so a push the TV would not take ended in a traceback out of main(): PushFailedError carrying
+    the TV's own words as bytes ("b'No such file or directory'") for a folder it cannot write - a
+    read-only mount, a path that is a folder, a name the shell user does not own - plus
+    AdbConnectionError, AdbTimeoutError and TcpTimeoutException for a transport that went, and
+    NativeAdbError from the Google ADB backend. Exit 1 was right (this client's code for a transfer
+    that failed) but nothing said which file, which path, or what the TV answered, and the reader had
+    to parse a stack trace to find out. --pull has answered its failures in words since #3191; --push
+    had no such sentence.
+    """
+    try:
+        dev.push(local, remote, transport_timeout_s=300.0, read_timeout_s=300.0)
+    except Exception as e:
+        # Imported here, as pull() does, so a stub adb_shell without exceptions still loads.
+        from adb_shell.exceptions import (AdbCommandFailureException, AdbConnectionError, AdbTimeoutError,
+                                          PushFailedError, TcpTimeoutException)
+        if not isinstance(e, (OSError, NativeAdbError, AdbCommandFailureException, AdbConnectionError,
+                              AdbTimeoutError, PushFailedError, TcpTimeoutException)):
+            raise
+        # PushFailedError's argument is the TV's answer as bytes; every other one reads as it is.
+        said = e.args[0].decode("utf-8", "replace") if e.args and isinstance(e.args[0], bytes) else str(e)
+        # Not "was not written": a push that stopped part-way can leave a cut-short file behind, so the
+        # sentence says what to look at rather than promising the TV still holds the old one.
+        print(f"could not push {local} to {remote}: {type(e).__name__}: {said}\n"
+              f"{remote} may be incomplete or missing: look at it on the TV before relying on it.",
+              file=sys.stderr)
+        return 1
+    print(f"pushed {local} -> {remote}")
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     check_arity(args)
@@ -701,8 +736,7 @@ def main():
         local, keys, wait = screenshot_args(args[1:])
         status = screenshot(dev, local, keys, wait)
     elif args[0] == "--push" and len(args) == 3:
-        dev.push(args[1], args[2], transport_timeout_s=300.0, read_timeout_s=300.0)
-        print(f"pushed {args[1]} -> {args[2]}")
+        status = push(dev, args[1], args[2])
     elif args[0] == "--pull" and len(args) == 3:
         status = pull(dev, args[1], args[2])
     elif args[0] == "--batch":
