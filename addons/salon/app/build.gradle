@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.anhost77.salon'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.anhost77.salon'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        // Local addition: a personal TMDB token for trailers and the platforms' releases, read from
+        // work/tmdb.properties (git-ignored), never written in the sources. Empty = those features stay hidden.
+        def tmdb = new Properties()
+        def tmdbFile = rootProject.file('../../work/tmdb.properties')
+        if (tmdbFile.exists()) tmdbFile.withInputStream { tmdb.load(it) }
+        buildConfigField 'String', 'TMDB_TOKEN', "\"${tmdb.getProperty('tmdb.token', '')}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            // Sideloaded over ADB like the launcher: signed with the debug key. Sign your own releases with your key.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Radio: ExoPlayer plays endless Icecast streams that this TV's MediaPlayer waits on forever.
+    implementation 'androidx.media3:media3-exoplayer:1.4.1'
+    // Réglages > Depuis le téléphone: the QR code (encoder only, Apache 2.0).
+    implementation 'com.google.zxing:core:3.5.3'
+    // Test only (never in the APK): plain JVM tests for the code and AQI tables, src/test.
+    testImplementation 'junit:junit:4.13.2'
+}

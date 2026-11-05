@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Banner for Nouveautés: a stack of posters with a star on a deep red. Drawn here, no third-party art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF3A1020" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FF5C1830" android:pathData="M0,120h320v60h-320z" />
+    <path android:fillColor="#66FFFFFF" android:pathData="M96,46h50v74h-50z" />
+    <path android:fillColor="#99FFFFFF" android:pathData="M135,38h50v84h-50z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M174,46h50v74h-50z" />
+    <path android:fillColor="#FFFFC94A" android:pathData="M199,60l5,11l12,1l-9,8l3,12l-11,-6l-11,6l3,-12l-9,-8l12,-1z" />
+</vector>

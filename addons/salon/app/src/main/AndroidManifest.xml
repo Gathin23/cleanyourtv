@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <!-- Open-Meteo, xmltvfr.fr, TMDB, JustWatch, Wikidata, the radio streams, and the phone page on the home network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- The radio plays on in the background (RadioService), as a media playback service on Android 14. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+    <!-- Android 11 package visibility: the TV apps (Nouveautés' platforms, "Regarder sur myCANAL") must be seen to be
+         opened by their launch intent. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".App"
+        android:usesCleartextTraffic="true"
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/icon"
+        android:label="@string/salon_name"
+        android:supportsRtl="false"
+        android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
+
+        <activity
+            android:name=".WeatherActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Réglages: opened from the launcher's settings (and its own tile), and the phone page's QR code. -->
+        <activity
+            android:name=".SettingsActivity"
+            android:banner="@drawable/banner"
+            android:exported="true"
+            android:label="@string/settings_title"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="io.github.anhost77.salon.SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PhoneActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+
+        <!-- Tonight's TV guide: its own tile, and the target of a click on the launcher's TV panel. -->
+        <activity
+            android:name=".TonightActivity"
+            android:launchMode="singleTask"
+            android:taskAffinity="io.github.anhost77.salon.tonight"
+            android:banner="@drawable/banner_tv"
+            android:exported="true"
+            android:label="@string/tonight_label"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <!-- Clean Your TV module card (docs/modules.md): Salon opens on tonight's TV guide. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+            <intent-filter>
+                <action android:name="io.github.anhost77.salon.TONIGHT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Nouveautés: what the streaming platforms added lately (TMDB). Its own tile. -->
+        <activity
+            android:name=".ReleasesActivity"
+            android:banner="@drawable/banner_new"
+            android:exported="true"
+            android:label="@string/releases_label"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- A channel's week by kind, and a film's or series' sheet. -->
+        <activity
+            android:name=".ChannelActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".TitleActivity"
+            android:exported="true"
+            android:screenOrientation="landscape" />
+
+        <!-- Search every platform at once. -->
+        <activity
+            android:name=".SearchActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing"
+            android:screenOrientation="landscape" />
+
+        <!-- A trailer played inside the app (TMDB + YouTube's embedded player). -->
+        <activity
+            android:name=".TrailerActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape" />
+
+        <!-- The radio of the launcher's Radios tab: started by the launcher (PLAY / STOP). -->
+        <service
+            android:name=".RadioService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.anhost77.salon.RADIO_PLAY" />
+                <action android:name="io.github.anhost77.salon.RADIO_STOP" />
+            </intent-filter>
+        </service>
+
+        <!-- The weather for the launcher's Home panel (weather_panel): read-only, city and weather only. -->
+        <provider
+            android:name=".NowProvider"
+            android:authorities="io.github.anhost77.salon.now"
+            android:exported="true" />
+    </application>
+</manifest>
