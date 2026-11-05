@@ -832,22 +832,18 @@ final class Config {
             File parent = dst.getParentFile();
             if (parent == null) return;
             File tmp = new File(parent, dst.getName() + ".tmp");
-            boolean ok = false;
             try (InputStream in = new FileInputStream(src);
                  FileOutputStream out = new FileOutputStream(tmp)) {
                 byte[] buf = new byte[8192];
                 int n;
                 while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
                 out.flush();
-                ok = true;
             } catch (IOException ignored) {
+                tmp.delete();
+                return;
             }
-            if (ok) {
-                tmp.setLastModified(src.lastModified());
-                if (!tmp.renameTo(dst)) {
-                    tmp.delete();
-                }
-            } else {
+            tmp.setLastModified(src.lastModified());
+            if (!tmp.renameTo(dst)) {
                 tmp.delete();
             }
         }
