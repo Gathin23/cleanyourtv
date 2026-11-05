@@ -418,6 +418,10 @@
          keeps off Home with hidden_apps. Hold OK still offers Add to Home. app_library_selection wins when both are
          on. Off by default; a theme can set "library_ok_opens": true (also needs app_library). -->
     <bool name="library_ok_opens">false</bool>
+    <!-- No status line under the app names in the library ("On Home", "Add to Home", "New"), and the tiles are
+         shorter, near square, icon and name centred; the check badge alone marks apps on Home. Off by default; a theme can set
+         "library_hide_status": true (also needs app_library). -->
+    <bool name="library_hide_status">false</bool>
 
     <!-- Apps pre-seeded into the App library's "added" set at startup (config.xml library_apps, or a theme's
          config.json). They show on Home as if the owner had added them in the App library UI, and stay

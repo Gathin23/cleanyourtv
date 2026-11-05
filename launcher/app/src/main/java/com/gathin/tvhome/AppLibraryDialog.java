@@ -82,6 +82,8 @@ final class AppLibraryDialog {
     private final boolean selectionMode;
     /** library_ok_opens without app_library_selection: OK opens every app, Add to Home is in the hold menu. */
     private final boolean okOpens;
+    /** library_hide_status: no status line under the names, so the tiles stay one height. */
+    private final boolean hideStatus;
     private final boolean animations;
     private final boolean rtl;
     private TextView instructions;
@@ -147,13 +149,14 @@ final class AppLibraryDialog {
      *  setups are unaffected. See LibraryApps.excludedFromCatalog(). */
     private final Set<String> excludedApps;
 
-    AppLibraryDialog(Activity activity, boolean animations, boolean reducedMotion, boolean selectionMode, boolean okOpens, Predicate<String> onHome, Runnable changed, Runnable dismissed, Set<String> excludedApps) {
+    AppLibraryDialog(Activity activity, boolean animations, boolean reducedMotion, boolean selectionMode, boolean okOpens, boolean hideStatus, Predicate<String> onHome, Runnable changed, Runnable dismissed, Set<String> excludedApps) {
         this.activity = activity;
         this.animations = animations;
         this.rtl = activity.getResources().getBoolean(R.bool.rtl_app_grid);
         this.reducedMotion = reducedMotion;
         this.selectionMode = selectionMode;
         this.okOpens = okOpens && !selectionMode;
+        this.hideStatus = hideStatus;
         this.onHome = onHome;
         this.changed = changed;
         this.dismissed = dismissed;
@@ -350,7 +353,7 @@ final class AppLibraryDialog {
 
     private void showCatalog() {
         stopHighlight();
-        resize(catalogWidth, dp(280));
+        resize(catalogWidth, dp(hideStatus ? 250 : 280));
         panel.removeAllViews();
         LinearLayout header = new LinearLayout(activity);
         header.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
@@ -610,15 +613,16 @@ final class AppLibraryDialog {
     private final class Catalog extends RecyclerView.Adapter<Row> {
         @NonNull @Override public Row onCreateViewHolder(@NonNull ViewGroup parent, int type) {
             FrameLayout row = new FrameLayout(activity);
-            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(dp(132), dp(170));
+            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(dp(132), dp(hideStatus ? 140 : 170));
             params.setMargins(dp(6), dp(2), dp(6), dp(2));
             row.setLayoutParams(params);
-            row.setPadding(dp(10), dp(12), dp(10), dp(10));
+            row.setPadding(dp(10), dp(hideStatus ? 10 : 12), dp(10), dp(10));
             row.setFocusableInTouchMode(true);
             row.setClickable(true);
             LinearLayout content = new LinearLayout(activity);
             content.setOrientation(LinearLayout.VERTICAL);
-            content.setGravity(Gravity.CENTER_HORIZONTAL);
+            // Without the status line the icon and name sit centred, the same space above and below.
+            content.setGravity(hideStatus ? Gravity.CENTER : Gravity.CENTER_HORIZONTAL);
             row.addView(content, new FrameLayout.LayoutParams(-1, -1));
             ImageView icon = new ImageView(activity);
             icon.setId(R.id.icon);
@@ -628,7 +632,7 @@ final class AppLibraryDialog {
             name.setId(R.id.title);
             name.setGravity(Gravity.CENTER);
             name.setMaxLines(2);
-            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(-1, dp(44));
+            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(-1, hideStatus ? -2 : dp(44));
             nameParams.topMargin = dp(10);
             content.addView(name, nameParams);
             TextView status = text("", 11, 0xBBFFFFFF);
@@ -654,7 +658,7 @@ final class AppLibraryDialog {
             boolean home = onHome.test(pkg);
             boolean recent = !selectionMode && LibraryApps.recent(installTimes.getOrDefault(pkg, 0L), catalogTime);
             status.setText(home ? R.string.library_on_home : recent ? R.string.library_recent : R.string.library_add_home);
-            status.setVisibility(home || !okOpens ? View.VISIBLE : View.INVISIBLE);
+            status.setVisibility(hideStatus ? View.GONE : home || !okOpens ? View.VISIBLE : View.INVISIBLE);
             holder.itemView.setBackground(surface(home ? 0x1475BBA4 : 0x0CFFFFFF, 18));
             View check = holder.itemView.findViewById(R.id.dot);
             check.getLayoutParams().width = dp(home ? 18 : 8);
