@@ -54,3 +54,28 @@ was checked with the real remote.
 - After a full reboot the firmware brings `com.tcl.tv` to the front about seven seconds after Home starts
   (`logcat -b events | grep wm_set_resumed_activity`). This unit kept that; `power_on_home` would send it back to
   Home.
+
+## Third unit: TCL 55T7B (Turkey)
+
+A **TCL 55T7B** (2024) on the same `G10_4K_GB` build, `STT2.230203.001` incremental AS50, on Wi-Fi. It ran
+`debloat.txt` with `com.tcl.ttvs`, Spotify, Google TV / Play Movies and Play Games kept, plus the 55T7B extras at
+the end, for four days and four reboots, the last day with the Clean Your TV launcher as Home and both key helpers
+(`InputKeyService` and `HomeKeyService`) on.
+
+- **`com.tcl.ttvs` kept.** Its `dumpsys package` lists `SystemUpdateActivity` and `SystemUpdateReceiver`, so on this
+  build it is the firmware updater as well as TCL's analytics.
+- **setupwraith owned the saved Wi-Fi network** here (`cname=com.google.android.tungsten.setupwraith`), unlike the
+  55C655. The first `launcher/build-and-install.sh` run stopped at its Home check (Home went to
+  `setupwraith/.RecoveryActivity`) and put launcherx back. Forgetting the network and joining it again in Settings
+  moved it to `com.android.tv.settings`; then setupwraith was disabled, the TV stayed online, and the second run
+  handed Home to the launcher.
+- **Casting from a phone still works** with setupwraith disabled (YouTube from a phone).
+- **With launcherx enabled it always wins Home** (intent-filter priority 2): `cmd package set-home-activity` and the
+  launcher's Choose default home both answer Success and Home stays on launcherx. Switching back to the stock home
+  for a while means `pm enable` and later `pm disable-user` from ADB.
+- **Remote:** the same keycodes as the table above. The Guide button (4001) mapped to `4001:com.tcl.tv` opens Live
+  TV; without an entry, `com.tcl.tv`'s `GlobalKeyService` turns it into `KEYCODE_GUIDE`, which nothing answers on
+  Home. The gear (83) with `settings_key_keycodes` and `settings_key_panel` opens the launcher's panel. Held volume
+  moves one step per press with the helpers on, as on the 55C655.
+- `com.tcl.channelplus` (TCL Live): right after it was disabled its channels stayed in Live TV's list without playing;
+  after the next reboot they were gone.
