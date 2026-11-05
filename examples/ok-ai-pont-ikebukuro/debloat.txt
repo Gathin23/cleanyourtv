@@ -22,6 +22,10 @@
 # Second unit: Nikkei DVB91NK (Changhong, same device ikebukuro, same firmware RTO2.250804.001, Italy, Wi-Fi), see
 # README.md. Batch 5 is what that unit disabled on top of this list; its other choices are in the README.
 #
+# Saba re-badge: SA40S67A9 (DVB91 / ikebukuro), same firmware, incremental 13882904.
+# Tested on Android TV 11; owner confirms several days of use and all remote buttons working.
+# Only a subset was applied: Disney+ and Multi Screen Share kept; see README.md for exact choices.
+#
 # KEEP: com.google.android.leanbacklauncher.partnercustomizer (see examples/chiq-ai-pont),
 # com.homwee.dmt.upgrade (firmware updates), com.homwee.synckey (remote keys), com.homwee.factory,
 # com.mediatek.* (Live TV, inputs, remote pairing, picture), com.mstar.android.tv.disclaimercustomization,
