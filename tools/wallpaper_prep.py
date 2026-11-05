@@ -41,6 +41,26 @@ def source_files(folder):
     return [os.path.join(folder, n) for n in names if os.path.isfile(os.path.join(folder, n))]
 
 
+def overlapping_outputs(files, target):
+    """Names of the numbered outputs in target that already are, or link to, one of the source files.
+
+    A symlink or hardlink called 01.jpg in the target would make the save overwrite an original, and
+    one pointing at a later photo would do it before that photo's turn, so every planned name is
+    checked against every source file up front, by (device, inode), before anything is written.
+    """
+    identities = {(info.st_dev, info.st_ino) for info in map(os.stat, files)}
+    clashes = []
+    for number in range(1, len(files) + 1):
+        name = "%02d.jpg" % number
+        try:
+            info = os.stat(os.path.join(target, name))
+        except OSError:
+            continue
+        if (info.st_dev, info.st_ino) in identities:
+            clashes.append(name)
+    return clashes
+
+
 def darken(image, brightness, gradient):
     """Scale brightness, then blend toward black from top (0) to bottom (gradient)."""
     from PIL import Image, ImageEnhance
@@ -90,6 +110,8 @@ def main(argv=None):
     target_real = os.path.realpath(args.target)
     if target_real == source_real or target_real.startswith(source_real.rstrip(os.sep) + os.sep):
         parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
+    if os.path.exists(args.target) and os.path.samefile(args.source, args.target):
+        parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
 
     try:
         import PIL  # noqa: F401
@@ -104,6 +126,10 @@ def main(argv=None):
     files = source_files(args.source)
     if not files:
         sys.exit(f"no JPEG, PNG, WebP or HEIC pictures in {args.source}")
+    clashes = overlapping_outputs(files, args.target)
+    if clashes:
+        sys.exit(f"{', '.join(clashes)} in {args.target} would overwrite your original photos "
+                 "(a link or the same file); remove or rename them, or pick another target. Nothing was written.")
     os.makedirs(args.target, exist_ok=True)
 
     written = 0

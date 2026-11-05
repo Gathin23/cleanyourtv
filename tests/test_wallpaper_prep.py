@@ -42,6 +42,50 @@ class SourceFilesTest(unittest.TestCase):
             self.assertEqual(names, ["a.png", "b.JPG", "c.webp", "d.heic"])
 
 
+class OverlapTest(unittest.TestCase):
+    """The preflight that refuses a numbered output which is, or links to, an original."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.src = Path(self.tmp.name, "photos")
+        self.out = Path(self.tmp.name, "out")
+        self.src.mkdir()
+        self.out.mkdir()
+        for name in ("a.jpg", "b.jpg"):
+            (self.src / name).write_bytes(name.encode())
+        self.files = prep.source_files(str(self.src))
+
+    def link(self, make, target, link):
+        try:
+            make(target, link)
+        except (OSError, NotImplementedError):
+            self.skipTest("this kind of link is not available here")
+
+    def test_separate_and_missing_outputs_are_fine(self):
+        self.assertEqual([], prep.overlapping_outputs(self.files, str(self.out)))
+        (self.out / "01.jpg").write_bytes(b"an old result")
+        self.assertEqual([], prep.overlapping_outputs(self.files, str(self.out)))
+
+    def test_file_symlink_to_an_original_is_found(self):
+        self.link(os.symlink, self.src / "a.jpg", self.out / "01.jpg")
+        self.assertEqual(["01.jpg"], prep.overlapping_outputs(self.files, str(self.out)))
+
+    def test_hardlink_to_an_original_is_found(self):
+        self.link(os.link, self.src / "a.jpg", self.out / "01.jpg")
+        self.assertEqual(["01.jpg"], prep.overlapping_outputs(self.files, str(self.out)))
+
+    def test_link_to_a_later_photo_is_found(self):
+        self.link(os.symlink, self.src / "b.jpg", self.out / "01.jpg")
+        self.assertEqual(["01.jpg"], prep.overlapping_outputs(self.files, str(self.out)))
+
+    def test_symlink_to_a_file_outside_the_source_is_fine(self):
+        other = Path(self.tmp.name, "elsewhere.jpg")
+        other.write_bytes(b"not an original")
+        self.link(os.symlink, other, self.out / "01.jpg")
+        self.assertEqual([], prep.overlapping_outputs(self.files, str(self.out)))
+
+
 @unittest.skipIf(Image is None, "Pillow not installed")
 class PrepareTest(unittest.TestCase):
     def test_output_is_1280x720_jpeg_and_darker(self):
@@ -99,6 +143,36 @@ class PrepareTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 prep.main([str(link), str(src)])
             self.assertEqual((src / "01.jpg").read_bytes(), before)
+
+    def test_main_writes_nothing_when_an_output_links_to_an_original(self):
+        with tempfile.TemporaryDirectory() as d:
+            src, out = Path(d, "photos"), Path(d, "out")
+            src.mkdir()
+            out.mkdir()
+            make_photo(src / "01.jpg", size=(320, 240))
+            make_photo(src / "02.jpg", size=(320, 240))
+            before = {n: (src / n).read_bytes() for n in ("01.jpg", "02.jpg")}
+            try:
+                os.symlink(src / "02.jpg", out / "01.jpg")
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks are not available here")
+            with self.assertRaises(SystemExit):
+                prep.main([str(src), str(out)])
+            self.assertEqual(before, {n: (src / n).read_bytes() for n in before})
+            self.assertFalse((out / "02.jpg").exists(), "nothing is written once a clash is found")
+
+    def test_same_folder_spelled_in_another_case_is_refused(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d, "photos")
+            src.mkdir()
+            make_photo(src / "01.jpg", size=(320, 240))
+            alias = Path(d, "PHOTOS")
+            if not alias.is_dir():
+                self.skipTest("this filesystem is case-sensitive")
+            before = (src / "01.jpg").read_bytes()
+            with self.assertRaises(SystemExit):
+                prep.main([str(src), str(alias)])
+            self.assertEqual(before, (src / "01.jpg").read_bytes())
 
     def test_target_inside_the_source_is_refused(self):
         with tempfile.TemporaryDirectory() as d:
