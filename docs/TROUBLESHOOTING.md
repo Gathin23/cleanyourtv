@@ -1399,6 +1399,49 @@ So on this set only the focused window can answer the button, and only while Hom
 keycode first (`tools/tv.py 'logcat -d -v time | grep interceptKeyTq'` right after pressing the button),
 because `getevent -lt` did not show it in the captures taken here.
 
+## The TV button does nothing and no app ever sees the key (TCL Google TV)
+
+**Seen on:** a TCL 55Q7D Pro (model "Smart TV Pro", `G08_4K_GB`, Google TV 14, firmware
+`UTT2.250416.001 AU02`, remote `BT_RC833A_B5`) with `com.google.android.apps.tv.launcherx` disabled and the
+launcher here as Home, `InputKeyService` bound.
+
+Pressing the TV icon did nothing at all: `topResumedActivity` stayed on Home, no input list opened, and no
+`VIEW_INPUTS` intent was sent. `getevent` shows the press as `KEY_UNKNOWN` (the remote reports scancode 240 for
+every key) with `usageCode 0x000c005b`; `TclKeyLayoutMap` maps that to keycode **4001**. The key never reaches
+a window, because TCL's own shortcut manager inside `system_server` takes it before dispatch:
+
+```
+I/TclShortCutKeyManager: handle custom key in press down:4001
+I/TclShortCutKeyManager: start PackageName:null
+W/ContextImpl: Calling a method in the system process without a qualified user:
+    android.app.ContextImpl.startForegroundService:1917
+    com.android.server.policy.TclShortCutKeyManager.handleKeyBehavior:693
+    com.android.server.policy.TclShortCutKeyManager.handleShortCutKeyProto:572
+I/TclShortCutKeyManager: not continue dispatch
+D/WindowManager: handleKeyBeforeDispatching keyCode=4001 disable
+```
+
+`start PackageName:null` is the whole problem: the package the shortcut should start is empty on this build, so
+nothing happens and no other component is told. The TV app is not the culprit —
+`am start -n com.tcl.tv/com.tcl.player.TVActivity` shows Live TV, and its input is
+`com.tcl.channelplus/com.tcl.iptv.service.InputService` (label "Live TV"), which `dumpsys tv_input` lists with a
+session owned by `com.tcl.tv`. Do that first: it separates a broken Live TV app from a key that never arrives.
+
+**Fix:** with the helper's key filtering left at its default — the switch itself, and what it costs, are in
+[A key helper is bound and a held remote button stopped repeating](#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating)
+— the accessibility helper still receives the key before the policy consumes it, so map it in `app_keys`. The
+target has to be a `package/.Activity` entry, because `com.tcl.tv`'s leanback entry is not `TVActivity`:
+
+```json
+"app_keys": ["4001:com.tcl.tv/com.tcl.player.TVActivity"]
+```
+
+That needs `InputKeyService` (`INPUT_KEY_SERVICE=1`), and the button then opens Live TV from any app. Verified
+with the real remote. An `input:com.tcl.channelplus/com.tcl.iptv.service.InputService` target also works when
+`live_tv_package` is set, but the direct activity is what was tested here. Find the keycode of a button like
+this one with `tools/tv.py 'logcat -d -v time | grep TclKeyLayoutMap'` while pressing it — `getevent` alone shows
+every TCL remote key as `KEY_UNKNOWN`.
+
 ## The Inputs list shows the empty HDMI 1 as connected, and a device on HDMI 2 nowhere (TCL UnionTV)
 
 **Seen on:** a TCL UnionTV (`ro.product.model` UnionTV, Android 9, `PPR2.180905.006.A1`), with the launcher as
