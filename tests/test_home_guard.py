@@ -168,6 +168,9 @@ class HomeGuardTest(unittest.TestCase):
     def disable(self, entry, extra_env=None, list_path=None):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path), **(extra_env or {}))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         if entry == "sh":
             if os.name != "posix" or not shutil.which("bash"):
                 raise unittest.SkipTest("disable.sh is a POSIX script; it needs bash")

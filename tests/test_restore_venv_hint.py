@@ -75,6 +75,9 @@ class RestoreVenvHintTest(unittest.TestCase):
     def run_script(self, script):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         if script.endswith(".sh"):
             if os.name != "posix" or not shutil.which("bash"):
                 raise unittest.SkipTest(f"{script} is a POSIX script; it needs bash")

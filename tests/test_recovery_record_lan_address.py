@@ -45,6 +45,9 @@ class RecordPerLanAddressTest(unittest.TestCase):
 
     def run_script(self, script, host, port=None):
         env = dict(os.environ, TV_HOST=host, HOME=str(self.home), FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         env.pop("TV_PORT", None)
         if port:
             env["TV_PORT"] = port
