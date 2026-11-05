@@ -30,6 +30,12 @@ picture and 380 in the story below it, and nothing noticed. The pair is read her
 beside it, which is where a regeneration lands - a contributor adding a list folder touches neither, so
 their PR stays green.
 
+One front page writes that paragraph without the picture: README.pt-BR.md has no docs/card.jpg, so the pages
+above - which come from the card - never reach it, and it sat at the 420 models and 108 brands README.md
+stated when the translation landed while the card had moved on. Its coverage clause also opened with
+"inclui" rather than a colon, the one shape every other page uses, so the reader found nothing to cut the
+three numbers out of. Both are read here now, against README.md's alt text and docs/PRESS.md.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
@@ -63,6 +69,12 @@ VIDEO_LINK = re.compile(r"\((https?://[^)\s]*(?:youtube\.com|bilibili\.com)/[^)\
 CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
 # The front pages that show the card and repeat its numbers in the story section today.
 STORY_PAGES = ("README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md")
+# One front page carries the story paragraph without the card: README.pt-BR.md has no
+# docs/card.jpg, so card_alt_texts() never reaches it and none of the checks above read the
+# numbers it writes. It said the totals README.md had when the translation landed (420 models,
+# 108 brands) and its coverage clause opened with "inclui" rather than a colon, so coverage_numbers()
+# cut nothing out of it either.
+STORY_WITHOUT_CARD = "README.pt-BR.md"
 # The story paragraph's closing sentence, which repeats the three numbers in prose: "The coverage: 351
 # articles from 46 countries and 229 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)".
 # Every translation writes its own words around the numbers but keeps them in that order, so they are read
@@ -451,6 +463,19 @@ class FrontPageCoverageTest(unittest.TestCase):
                     f"{name} states (articles, countries, videos) {read} in its coverage sentence and "
                     f"docs/PRESS.md holds {self.expected}")
 
+    def test_the_page_with_the_story_but_no_card_repeats_the_counts(self):
+        # README.pt-BR.md is the one page whose story paragraph the loop above cannot reach, since the
+        # pages come from the card. Its three numbers are held to docs/PRESS.md like the others.
+        read = coverage_numbers((ROOT / STORY_WITHOUT_CARD).read_text(encoding="utf-8"))
+        self.assertIsNotNone(
+            read, f"{STORY_WITHOUT_CARD} has no story paragraph that names docs/PRESS.md and YouTube, "
+                  f"so the coverage numbers it used to repeat are gone")
+        self.assertEqual(3, len(read or ()), f"{STORY_WITHOUT_CARD}'s coverage sentence reads as {read}")
+        self.assertEqual(
+            self.expected, read,
+            f"{STORY_WITHOUT_CARD} states (articles, countries, videos) {read} in its coverage "
+            f"sentence and docs/PRESS.md holds {self.expected}")
+
     def test_the_walk_reads_the_sentence_this_file_was_written_for(self):
         # A reader answering () or None for every page would pass nothing above; each page carries three
         # numbers today, and the English one is the page this file's own example is quoted from.
@@ -488,6 +513,18 @@ class FrontPageTotalsTest(unittest.TestCase):
                     card, read,
                     f"{name} states (TV models, brands) {read} in its story sentence and its card states "
                     f"{card}; tools/gen_tables.py does not rewrite that sentence, so it moves with the card")
+
+    def test_the_page_with_the_story_but_no_card_states_the_totals_README_states(self):
+        # README.pt-BR.md has the story sentence but no card, so the loop above never reads it: it was
+        # left at 420 models and 108 brands while README.md's alt text had moved to 433 and 114. The
+        # card's alt text is the generated copy, so that is what this page is held to.
+        card = card_totals(self.pages["README.md"])
+        read = catalogue_numbers((ROOT / STORY_WITHOUT_CARD).read_text(encoding="utf-8"))
+        self.assertEqual(2, len(read or ()), f"{STORY_WITHOUT_CARD}'s story sentence reads as {read}")
+        self.assertEqual(
+            card, read,
+            f"{STORY_WITHOUT_CARD} states (TV models, brands) {read} in its story sentence and "
+            f"README.md's card states {card}; tools/gen_tables.py does not rewrite that sentence")
 
     def test_the_walk_reads_the_totals_this_file_was_written_for(self):
         # A reader answering () or None for every page would pass the rule above; each page carries two
