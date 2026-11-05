@@ -337,7 +337,7 @@ three that matter most:
 - 🔁 **On Google TV the setup wizard** (`com.google.android.tungsten.setupwraith`) can take Home and crash-loop the system after the stock launcher is disabled. Disable it too, and list it in your `debloat.txt` so restore brings it back.
   - But check `dumpsys wifi | grep -o 'cname=[^ ]*'` first: if the Wi-Fi network was saved during setup it belongs to setupwraith, and disabling it deletes the network (re-join it in Settings first; `tools/disable.sh` skips setupwraith until you do).
   - On Google's own Chromecast and on the Google TV Streamer it also costs phone casting, see [Troubleshooting](docs/TROUBLESHOOTING.md).
-  - Stuck already? `tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'`.
+  - Stuck already? `tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'`. On some sets that is a one-way step: once launcherx is enabled again its apps page offers no Disable, and neither `cmd role add-role-holder android.app.role.HOME com.gathin.tvhome` nor `cmd package set-home-activity` moves Home back, so returning to this launcher needs ADB (`pm disable-user --user 0 com.google.android.apps.tv.launcherx`, then `cmd package clear-package-preferred-activities`). Seen on a TCL Smart TV Pro (`G10_4K_GB`, Android 14); where ADB cannot be re-opened, keep launcherx enabled and hand Home over with `stock_home_redirect` instead ([Troubleshooting](docs/TROUBLESHOOTING.md#working-on-the-tv)).
 
 ## Questions people ask
 
