@@ -21,7 +21,7 @@ Android TV home it is an ordinary app.
 
 | Key | In the app | In the screensaver |
 |---|---|---|
-| Left / Right | The previous or the next photo | The same |
+| Left / Right | Back through the photos already shown, in order; forward again, then a new photo at random | The same |
 | Up | The photo's details: its description, place, author and licence, the date it was taken, and its size on the TV beside the original's | The same |
 | Down | Hides the details | The same |
 | OK | Settings | Wakes the TV |

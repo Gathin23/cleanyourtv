@@ -43,7 +43,8 @@ final class Carousel extends FrameLayout {
     private boolean running;
     /** Released by its owner: nothing more is decoded, looked up or painted. */
     private boolean released;
-    private final Runnable tick = () -> show(next(1), true);
+    private final Runnable tick = () -> step(1);
+    private final PhotoHistory history = new PhotoHistory();
 
     Carousel(Context c, String hint) {
         super(c);
@@ -120,7 +121,9 @@ final class Carousel extends FrameLayout {
                 return;
             }
         }
-        show(random.nextInt(photos.size()), false);
+        int first = random.nextInt(photos.size());
+        history.push(photos.get(first).id);
+        show(first, false);
     }
 
     void start() {
@@ -147,15 +150,31 @@ final class Carousel extends FrameLayout {
         if (running && photos.size() > 1) handler.postDelayed(tick, Settings.interval(getContext()) * 1000L);
     }
 
-    /** Forward picks any other photo at random; back steps to the previous one in the list. */
-    private int next(int step) {
-        int n = photos.size();
-        if (n < 2) return Math.max(0, index);
-        if (step > 0) {
-            int pick = random.nextInt(n - 1);
-            return pick >= index ? pick + 1 : pick;   // never the same photo twice in a row
+    /**
+     * Left goes back through the photos already shown, in the order they were shown. Right, and the timer, go
+     * forward through them again, then on to any other photo at random. Nothing earlier than the first: Left stays.
+     */
+    private void step(int dir) {
+        if (released || photos.size() < 2) return;
+        String id = dir < 0 ? history.back(this::listed) : history.forward(this::listed);
+        if (id != null) {
+            show(indexOf(id), true);
+            return;
         }
-        return ((index + step) % n + n) % n;
+        if (dir < 0) return;
+        int pick = random.nextInt(photos.size() - 1);
+        if (pick >= Math.max(0, index)) pick++;   // never the same photo twice in a row
+        history.push(photos.get(pick).id);
+        show(pick, true);
+    }
+
+    private boolean listed(String id) {
+        return indexOf(id) >= 0;
+    }
+
+    private int indexOf(String id) {
+        for (int i = 0; i < photos.size(); i++) if (photos.get(i).id.equals(id)) return i;
+        return -1;
     }
 
     /** Left/Right change the photo, Up shows its details, Down hides them. Other keys are left to the caller. */
@@ -164,7 +183,7 @@ final class Carousel extends FrameLayout {
         switch (e.getKeyCode()) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (down && photos.size() > 1) show(next(e.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1), true);
+                if (down) step(e.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : -1);
                 return true;
             case KeyEvent.KEYCODE_DPAD_UP:
                 if (down && e.getRepeatCount() == 0 && !photos.isEmpty()) setInfo(true);
