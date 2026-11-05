@@ -83,6 +83,29 @@ class PrepareTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 prep.main([d, d])
 
+    def test_target_reached_through_a_symlink_is_refused(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d, "photos")
+            src.mkdir()
+            make_photo(src / "01.jpg", size=(320, 240))
+            before = (src / "01.jpg").read_bytes()
+            link = Path(d, "output-link")
+            try:
+                os.symlink(src, link, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("symlinks are not available here")
+            with self.assertRaises(SystemExit):
+                prep.main([str(src), str(link)])
+            with self.assertRaises(SystemExit):
+                prep.main([str(link), str(src)])
+            self.assertEqual((src / "01.jpg").read_bytes(), before)
+
+    def test_target_inside_the_source_is_refused(self):
+        with tempfile.TemporaryDirectory() as d:
+            make_photo(Path(d, "a.png"))
+            with self.assertRaises(SystemExit):
+                prep.main([d, str(Path(d, "out"))])
+
     def test_main_numbers_the_outputs_and_skips_a_corrupt_file(self):
         with tempfile.TemporaryDirectory() as d:
             src, out = Path(d, "src"), Path(d, "out")

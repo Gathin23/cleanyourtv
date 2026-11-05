@@ -86,8 +86,10 @@ def main(argv=None):
         parser.error("--quality must be between 30 and 95")
     if not os.path.isdir(args.source):
         parser.error(f"{args.source} is not a folder")
-    if os.path.abspath(args.source) == os.path.abspath(args.target):
-        parser.error("the target must be a different folder: the originals are never overwritten")
+    source_real = os.path.realpath(args.source)
+    target_real = os.path.realpath(args.target)
+    if target_real == source_real or target_real.startswith(source_real.rstrip(os.sep) + os.sep):
+        parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
 
     try:
         import PIL  # noqa: F401
