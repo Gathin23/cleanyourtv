@@ -314,7 +314,6 @@ Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, JMGO, Portronics, Stellamore, Wa
 | Verizon Stream TV, 1st gen (WNC JS8V, Amlogic), US | Android 12 |
 | Vidda VIDAA_TV (Hisense sub-brand; device MT9653, board mt5879), China JuUI | Android TV 11 |
 | Vision 2024VISION43STV (CVTE TP.T950D4T.PB751, Amlogic T950D4, 1 GB), Europe | Android 13 |
-| VISIO 32" (VISIO TV / Iris 2K TV, shinagawa, MediaTek m5621) | Android TV 11 |
 | Vu 4K (HVCL, lushan, MediaTek), India | Google TV 12 |
 | Vu Premium FHD 43-inch (Smart 2K ATV4, hamamatsucho), India | Android TV 9 |
 | Wanbo X5 Pro projector (built-in Google TV stick: SkyworthDigital YYT, Amlogic), Australia | Google TV 14 |
