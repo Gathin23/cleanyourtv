@@ -37,6 +37,19 @@ class ManageTest(unittest.TestCase):
         self.assertIn("dock_apps", keys)
         self.assertGreater(len(keys), 40)
 
+    def test_an_application_id_that_is_not_a_package_name_is_not_used(self):
+        # `manage.py remove` sends `pm uninstall <id>` to the TV's shell, so an id carrying shell words
+        # must read as no package at all rather than run on the TV.
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            app = Path(tmp) / "app"
+            app.mkdir()
+            gradle = app / "build.gradle"
+            gradle.write_text("android { defaultConfig { applicationId 'x.y; settings put global adb_enabled 0 #' } }\n")
+            self.assertIsNone(manage.package(Path(tmp)))
+            gradle.write_text("android { defaultConfig { applicationId 'com.example.addon' } }\n")
+            self.assertEqual("com.example.addon", manage.package(Path(tmp)))
+
     def test_find_by_folder_or_name(self):
         self.assertEqual("weather", manage.find("Weather")["id"])
         self.assertEqual("theme", manage.find("aurora/")["kind"])

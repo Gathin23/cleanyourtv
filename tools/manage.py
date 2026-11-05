@@ -109,7 +109,9 @@ def package(folder):
         f = folder / "app" / name
         if f.is_file():
             m = re.search(r"applicationId\s*=?\s*['\"]([^'\"]+)['\"]", f.read_text(encoding="utf-8"))
-            if m:
+            # The id goes into `pm uninstall` on the TV's shell, so only a package-shaped name
+            # (the shape disable.sh's PKG_RE accepts) counts; anything else reads as no package.
+            if m and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+", m.group(1)):
                 return m.group(1)
     return None
 
