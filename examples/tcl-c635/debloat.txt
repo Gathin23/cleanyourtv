@@ -15,8 +15,8 @@
 #
 # Tested and verified on a real TCL C635 unit (Brazil):
 # - Screenshots, HDMI inputs, Live TV, Wi-Fi, audio and the BT remote remain 100% operational.
-# - 15 packages are disabled in total: the 13 below plus com.google.android.partnersetup
-#   (partner attribution). au.com.stan.and and tv.wuaki.apptv arrived pre-disabled at factory.
+# - 15 packages are disabled in total: the 13 below, and au.com.stan.and and tv.wuaki.apptv, which
+#   arrived pre-disabled at factory.
 # - Reboot-checked: the disabled set persists across restart.
 #
 # --- The critical entry: TCL re-enables promo packages on reboot
