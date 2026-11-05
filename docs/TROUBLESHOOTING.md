@@ -1714,6 +1714,21 @@ MGA3200 that cleared the errors:
 tools/tv.py 'settings put global private_dns_mode opportunistic'
 ```
 
+A block can also leave playback alone and take out one feature. On a Chromecast with Google TV 4K
+(`sabrina`, Google TV 14, `UTTC.250917.004`) with `dns.adguard-dns.com` in hostname mode, Pluto TV
+(`tv.pluto.android`) kept playing but stopped remembering where an on-demand episode was left, from the day
+the resolver was set. AdGuard DNS answers `0.0.0.0` for `sp.pluto.tv` while the app's other hosts (`boot`,
+`api`, the catalogue and the stitcher) resolve. To check a host an app uses, ask the resolver and an
+unfiltered one from a computer:
+
+```sh
+nslookup sp.pluto.tv 94.140.14.14   # AdGuard DNS: 0.0.0.0
+nslookup sp.pluto.tv 1.1.1.1        # a real address
+```
+
+An unfiltered resolver in Private DNS (`dns.google`), or an allow rule for that host in a personal AdGuard
+DNS profile, lets the app reach it again.
+
 The other failure mode reads differently: when the TV itself says "No internet", either the resolver is
 down or unreachable, or — on a streaming box with no battery-backed clock after a mains power loss (or
 with `auto_time` off) — the clock booted at the firmware build date (`Sat Aug 17 2024` on a Xiaomi TV
