@@ -125,10 +125,10 @@ algorithm (Hồ Ngọc Đức), copied into the add-on, not linked (`launcher/..
 
 ## Detail screen (approved look: "Bản phác 3")
 
-Mockups: `/private/tmp/claude-501/-Users-tungpv-Work-tv-apps/e5191293-6918-433a-9011-62fef4bb0fa9/scratchpad/lvn/.superpowers/brainstorm/90134-1793642941/content/screen-v8.html`
-(scratch, may vanish; summary here is authoritative).
+The mockup was a scratch page drawn outside the repository and is not kept here; [`screenshot.jpg`](screenshot.jpg)
+in this folder is that screen on the tested TV, and the bullets below are what the build follows.
 
-- Background: dark, soft (blurred photo darkened to ~35 % with a vignette in the mockup). The add-on
+- Background: dark, soft (blurred photo darkened to ~35 % with a vignette in the approved look). The add-on
   cannot read the launcher's wallpaper; it ships **one** bundled background of its own (a dark gradient,
   or one small blurred JPEG < 150 KB of a nature photo the owner has rights to, e.g. from
   `work/theme-nature-calm/wallpapers` if its CREDITS allow; otherwise gradient).
