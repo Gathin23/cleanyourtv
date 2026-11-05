@@ -88,14 +88,25 @@ def main():
     print(f"relaying 127.0.0.1:{local_port} -> {tv_host}:{tv_port}", flush=True)
     while True:
         client, _ = server.accept()
-        upstream = socket.create_connection((tv_host, tv_port), timeout=10)
-        upstream.settimeout(None)  # the connect timeout must not cut an idle session off later
+        try:
+            upstream = socket.create_connection((tv_host, tv_port), timeout=10)
+            upstream.settimeout(None)  # the connect timeout must not cut an idle session off later
+        except OSError as e:
+            print(f"cannot reach {tv_host}:{tv_port}: {e} (is the TV on, and network debugging still on?)",
+                  flush=True)
+            client.close()
+            continue
         threading.Thread(target=pipe, args=(client, upstream), daemon=True).start()
         threading.Thread(target=pipe, args=(upstream, client), daemon=True).start()
 
 
 main()
 ```
+
+An attempt that cannot reach the TV, refused or timed out, is printed and the relay goes back to
+waiting for the next client, the same boundary `tools/relay.py` keeps around its connect. Without it
+the error ends the program, so a TV that was in standby for one `adb` command leaves every later
+command refused on the loopback port until the relay is started again.
 
 Start it for the port `adb` has to reach, and give both `adb` and the tools the loopback address:
 
