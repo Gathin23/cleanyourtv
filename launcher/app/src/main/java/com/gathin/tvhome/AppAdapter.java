@@ -221,6 +221,21 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     private final List<Entry> items = new ArrayList<>();
+    private int currentTileW = -1;
+    private int currentTileH = -1;
+    private int currentItemW = -1;
+
+    void setTileSize(int w, int itemW) {
+        if (w <= 0 || (w == currentTileW && itemW == currentItemW)) return;
+        currentTileW = w;
+        currentTileH = tileHeightPx(w);
+        currentItemW = itemW;
+        notifyItemRangeChanged(0, getItemCount());
+    }
+
+    void setTileSize(int w) {
+        setTileSize(w, -1);
+    }
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
         this.ctx = ctx;
@@ -415,7 +430,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        int w = currentTileW > 0 ? currentTileW : tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density);
+        int h = currentTileH > 0 ? currentTileH : tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -433,26 +449,32 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         name.setLayoutParams(nameLp);
         // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
-        if (singleRow) v.getLayoutParams().width = inner / dockSize;
+        if (singleRow) v.getLayoutParams().width = currentItemW > 0 ? currentItemW : (inner > 0 ? inner / dockSize : 0);
+        updateChildSizes(v.findViewById(R.id.icon), v.findViewById(R.id.label), h, density);
+        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+    }
+
+    private void updateChildSizes(View icon, View label, int h, float density) {
+        FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
         if (uniformTiles) {
             // tvOS-style tile: a large centred mark, no caption inside the card.
-            View icon = v.findViewById(R.id.icon);
-            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
             iconLp.width = iconLp.height = Math.round(h * ICON_SHARE);
             iconLp.bottomMargin = 0;
             icon.setLayoutParams(iconLp);
         } else if (h < Math.round(DESIGN_H_DP * density)) {
             // Shrunk tiles (e.g. 5 or 6 columns): scale icon and bottom margin proportionally with tile height so the label does not overlap the icon.
-            View icon = v.findViewById(R.id.icon);
-            FrameLayout.LayoutParams iconLp = (FrameLayout.LayoutParams) icon.getLayoutParams();
             float scale = (float) h / (DESIGN_H_DP * density);
             iconLp.width = iconLp.height = Math.round(48f * density * scale);
             iconLp.bottomMargin = Math.round(14f * density * scale);
             icon.setLayoutParams(iconLp);
-            View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
+        } else {
+            // Restore XML defaults when at or above design size.
+            iconLp.width = iconLp.height = Math.round(48f * density);
+            iconLp.bottomMargin = Math.round(14f * density);
+            icon.setLayoutParams(iconLp);
+            label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(8f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
     }
 
     @Override
@@ -460,6 +482,21 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLibraryAt(position)) return;
         Holder h = (Holder) holder;
+        if (currentTileW > 0 && h.card.getLayoutParams().width != currentTileW) {
+            float density = ctx.getResources().getDisplayMetrics().density;
+            h.card.getLayoutParams().width = currentTileW;
+            h.card.getLayoutParams().height = currentTileH;
+            h.card.setLayoutParams(h.card.getLayoutParams());
+            ViewGroup.MarginLayoutParams nameLp = (ViewGroup.MarginLayoutParams) h.name.getLayoutParams();
+            nameLp.width = currentTileW;
+            nameLp.topMargin = currentTileH + Math.round((dockRow ? 7 : 4) * density);
+            h.name.setLayoutParams(nameLp);
+            updateChildSizes(h.icon, h.label, currentTileH, density);
+        }
+        if (singleRow && currentItemW > 0 && h.itemView.getLayoutParams().width != currentItemW) {
+            h.itemView.getLayoutParams().width = currentItemW;
+            h.itemView.setLayoutParams(h.itemView.getLayoutParams());
+        }
         Entry e = items.get(position);
         if (e.kind == Entry.EMPTY) {
             // A free dock slot keeps its place in the row and the band, but shows nothing and takes no focus.
