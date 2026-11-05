@@ -321,4 +321,11 @@ public class RemoteKeysTest {
         assertFalse(RemoteKeys.menuReleased(1, 0x20 | 0x100 | 0x8));
         assertFalse(RemoteKeys.menuReleased(1, RemoteKeys.XIAOMI_SHORT_MENU_FLAGS & ~0x4000));
     }
+
+    @Test public void channelKeysAreChannelUpAndDownOnly() {
+        assertTrue(RemoteKeys.isChannelKey(166));   // KEYCODE_CHANNEL_UP
+        assertTrue(RemoteKeys.isChannelKey(167));   // KEYCODE_CHANNEL_DOWN
+        assertFalse(RemoteKeys.isChannelKey(170));  // KEYCODE_TV
+        assertFalse(RemoteKeys.isChannelKey(24));   // KEYCODE_VOLUME_UP
+    }
 }
