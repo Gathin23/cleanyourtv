@@ -304,7 +304,7 @@ default home, the languages, remote keys, the Clock screensaver, navigation and 
 A theme can rotate a folder of pictures behind Home, with no rebuild. No pictures ship with the repo: you bring
 your own, and you decide you have the right to show them.
 
-1. **Start a theme folder.** Copy a theme you like from [`themes/`](themes/), for example
+1. **Start a theme folder.** Copy a theme you like from the [themes folder](themes/), for example
    `themes/aurora`, into a new folder such as `mytheme/`, or start with an empty `config.json`.
 2. **Prepare the photos.** A bright 12 MP photo is heavy for a 1 to 2 GB TV and drowns the clock and tiles.
    `tools/wallpaper_prep.py` centre-crops to 16:9, saves 1280×720 JPEGs under 300 KB, and darkens the picture
