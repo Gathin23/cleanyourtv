@@ -125,7 +125,8 @@ class AdoptTest(unittest.TestCase):
             root = valid(tmp)
             code, out, err = run("--root", str(root), "--adopt", tmp)
             self.assertEqual(code, 2, err)
-            self.assertIn("Is a directory", err)
+            # Windows refuses to open a folder with "Permission denied" where POSIX says "Is a directory".
+            self.assertIn("Permission denied" if sys.platform == "win32" else "Is a directory", err)
             self.assertIn("Nothing was written", err)
             self.assertEqual(out, "")
 
