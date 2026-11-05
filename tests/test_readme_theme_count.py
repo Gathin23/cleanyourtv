@@ -26,7 +26,10 @@ out of the table on purpose, since "een" and "ein" are also the articles these l
 noun, and a single-theme repo is not a thing. Another language that writes the count as a word means
 another line in that table: the last page added did not fail here, it simply became a page this file
 could not see. README.tr.md, the fifth page, writes it in digits ("15 tema"), which NUMBER reads
-without a table line.
+without a table line. README.pt-BR.md, the sixth, writes it in digits too ("21 temas") and was the
+page this file could not see while it said "Dezoito temas": Portuguese words were not in the table,
+so the claim was read as no claim at all, and the pin below named five pages while the tree held
+twenty-one themes and that page said eighteen.
 
 That one table is what README.md's row is read through too. The row had a twelve-word table of its own
 while the sentences were read through one that carries twenty, and the two agreed only while themes/
@@ -178,13 +181,17 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these five pages state the count today, so one that stops
+        # stale in the first place: these six pages state the count today, so one that stops
         # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
         # the Ukrainian words above; before that it stated its count and this list still read three.
-        # README.tr.md states its count in digits, so it needs no words in the table.
+        # README.tr.md states its count in digits, so it needs no words in the table, and
+        # README.pt-BR.md is the sixth: it stated "Dezoito temas" (eighteen, against twenty-one in
+        # themes/) where this list did not look, so a page that leaves the list now fails here in
+        # the same sentence that names the pages which still state the count.
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.md", "README.nl.md", "README.tr.md", "README.uk.md"],
-                         "the front pages that state the theme count are not the five that did: "
+                         ["README.de.md", "README.md", "README.nl.md", "README.pt-BR.md",
+                          "README.tr.md", "README.uk.md"],
+                         "the front pages that state the theme count are not the six that did: "
                          f"{sorted(set(stating))}")
 
 
@@ -243,6 +250,13 @@ class CountTest(unittest.TestCase):
     def test_a_digits_count_is_read_in_any_sentence(self):
         self.assertEqual([({12}, "| **Themes** | 12 liegen in [`themes/`](themes/) |")],
                          claims("| **Themes** | 12 liegen in [`themes/`](themes/) |"))
+
+    def test_a_portuguese_row_in_digits_is_read(self):
+        """README.pt-BR.md's row as the page writes it: the count in digits, before the link."""
+        portuguese = ("| **Temas** | Plano de fundo, papel de parede e layout definidos em um "
+                      "`config.json` enviado pelo Wi-Fi, sem recompilação. 21 temas estão incluídos em "
+                      "[`themes/`](themes/), incluindo o `default/` integrado. |")
+        self.assertEqual([({21}, portuguese)], claims(portuguese))
 
     def test_a_row_that_does_not_state_a_count_is_not_a_claim(self):
         tools = "| [`theme.sh`](tools/theme.sh) | Push a folder from [`themes/`](themes/) |"
