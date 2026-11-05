@@ -1,0 +1,6 @@
+{
+  "tv": "Artel A55LU8500 (device R3GS, MOKA, Realtek RTD2841A), Uzbekistan",
+  "os": "Google TV 14",
+  "brand": "Artel",
+  "notes": "Android ad services, feedback consent, Realtek partner customizer, Google TV auto-installs, health and print stubs, hotspot, HbbTV; Netflix, YouTube Music, Play Games, the casting apps, ambient mode, M Sign and Audio Connect come back enabled at every boot, so config.json hides their tiles; keep launcherx and setupwraith (boot loop on the same platform); Home through HomeKeyService and stock_home_redirect, key_filter false for the volume ramp"
+}
