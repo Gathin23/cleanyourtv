@@ -6,8 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -31,7 +29,7 @@ public final class SettingsActivity extends Activity {
         rows.addView(title);
 
         topics = row(rows, d);
-        topics.setOnClickListener(v -> editTopics());
+        topics.setOnClickListener(v -> startActivity(new Intent(this, TopicsActivity.class)));
         hint(rows, d, R.string.topics_hint);
         interval = row(rows, d);
         interval.setOnClickListener(v -> pickInterval());
@@ -56,8 +54,14 @@ public final class SettingsActivity extends Activity {
         scroll.setBackgroundColor(0xFF101418);
         scroll.addView(rows);
         setContentView(scroll);
-        refresh();
         topics.requestFocus();
+    }
+
+    /** Also on the way back from the topics screen. */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refresh();
     }
 
     private TextView row(LinearLayout rows, float d) {
@@ -97,27 +101,6 @@ public final class SettingsActivity extends Activity {
     /** "30 s", "5 min". */
     String label(int seconds) {
         return seconds < 60 ? getString(R.string.seconds, seconds) : getString(R.string.minutes, seconds / 60);
-    }
-
-    private void editTopics() {
-        EditText field = new EditText(this);
-        field.setSingleLine(true);
-        field.setText(Settings.typedTopics(this));
-        field.setHint(String.join(", ", Settings.DEFAULT_TOPICS.subList(0, 3)));
-        int pad = (int) (20 * getResources().getDisplayMetrics().density);
-        FrameLayout box = new FrameLayout(this);
-        box.setPadding(pad, pad / 2, pad, 0);
-        box.addView(field);
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.topics)
-                .setMessage(R.string.topics_hint)
-                .setView(box)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    Settings.setTopics(this, field.getText().toString());
-                    refresh();
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
     }
 
     private void pickInterval() {

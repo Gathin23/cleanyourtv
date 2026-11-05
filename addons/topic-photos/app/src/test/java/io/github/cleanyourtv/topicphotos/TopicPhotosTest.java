@@ -18,6 +18,23 @@ public class TopicPhotosTest {
     }
 
     @Test
+    public void tickingStopsAtEightAndUntickingAlwaysWorks() {
+        List<String> chosen = new java.util.ArrayList<>(Arrays.asList("a", "b", "c", "d", "e", "f", "g"));
+        assertTrue(Settings.toggle(chosen, "h"));
+        assertFalse(Settings.toggle(chosen, "i"));
+        assertEquals(8, chosen.size());
+        assertTrue(Settings.toggle(chosen, "a"));
+        assertFalse(chosen.contains("a"));
+    }
+
+    @Test
+    public void aTypedTopicTakesTheKnownSpelling() {
+        List<String> known = Arrays.asList("ocean waves", "winter snow");
+        assertEquals("ocean waves", Settings.spelling("  Ocean   WAVES ", known));
+        assertEquals("red rocks", Settings.spelling("red, rocks", known));
+    }
+
+    @Test
     public void daylightIsSevenToNineteen() {
         assertEquals("night", Settings.daypart(6 * 60 + 59));
         assertEquals("day", Settings.daypart(7 * 60));

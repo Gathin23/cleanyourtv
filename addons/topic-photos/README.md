@@ -35,7 +35,7 @@ Press OK in the app (or the settings button of the screensaver in the TV's setti
 
 | Setting | Default | What it does |
 |---|---|---|
-| Topics | A varied mix: mountain landscape, ocean waves, misty forest, city skyline at night, starry night sky, waterfall, desert dunes, northern lights | Up to eight, comma-separated. English topics find the most photos. |
+| Topics | A varied mix: mountain landscape, ocean waves, misty forest, city skyline at night, starry night sky, waterfall, desert dunes, northern lights | Up to eight, on a screen of their own: tick them from suggestions grouped as holidays, seasons, and nature and more, or type your own, which the suggestions complete. English topics find the most photos. |
 | Change photo every | 30 s | 10 s to 30 min. |
 | Day and night photos | Off | From 7:00 to 19:00 by the TV's clock, daylight photos of your topics; the rest of the day, night photos. No location is asked for. |
 | Use as the screensaver | | Opens the TV's screensaver settings, where you pick Topic Photos. |

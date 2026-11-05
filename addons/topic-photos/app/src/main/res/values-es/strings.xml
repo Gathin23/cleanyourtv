@@ -12,7 +12,7 @@
     <string name="original">original %1$s</string>
     <string name="not_given">Sin datos</string>
     <string name="topics">Temas</string>
-    <string name="topics_hint">Separados por comas, en inglés para encontrar más fotos, p. ej. mountains, ocean, city at night. Hasta ocho.</string>
+    <string name="topics_hint">Hasta ocho, marcados de las listas o escritos. En inglés para encontrar más fotos.</string>
     <string name="topics_default">Variados</string>
     <string name="interval">Cambiar foto cada</string>
     <string name="day_night">Fotos de día y de noche</string>
@@ -23,4 +23,12 @@
     <string name="minutes">%1$d min</string>
     <string name="on">Activado</string>
     <string name="off">Desactivado</string>
+    <string name="topics_screen_hint">Marca hasta ocho o escribe los tuyos: las sugerencias lo completan. En inglés para encontrar más fotos.</string>
+    <string name="topics_write">Escribir un tema…</string>
+    <string name="topics_add">Agregar</string>
+    <string name="topics_yours">Tus temas</string>
+    <string name="topics_holidays">Festividades</string>
+    <string name="topics_seasons">Estaciones</string>
+    <string name="topics_more">Naturaleza y más</string>
+    <string name="topics_full">Hasta ocho temas: desmarca uno primero</string>
 </resources>

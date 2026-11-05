@@ -13,7 +13,7 @@
     <string name="original">original %1$s</string>
     <string name="not_given">Not given</string>
     <string name="topics">Topics</string>
-    <string name="topics_hint">Comma-separated, in English for the most photos, e.g. mountains, ocean, city at night. Up to eight.</string>
+    <string name="topics_hint">Up to eight, ticked from the lists or typed. In English for the most photos.</string>
     <string name="topics_default">Varied</string>
     <string name="interval">Change photo every</string>
     <string name="day_night">Day and night photos</string>
@@ -24,4 +24,12 @@
     <string name="minutes">%1$d min</string>
     <string name="on">On</string>
     <string name="off">Off</string>
+    <string name="topics_screen_hint">Tick up to eight, or type your own: the suggestions complete it. In English for the most photos.</string>
+    <string name="topics_write">Type a topic…</string>
+    <string name="topics_add">Add</string>
+    <string name="topics_yours">Your topics</string>
+    <string name="topics_holidays">Holidays</string>
+    <string name="topics_seasons">Seasons</string>
+    <string name="topics_more">Nature and more</string>
+    <string name="topics_full">Up to eight topics: untick one first</string>
 </resources>
