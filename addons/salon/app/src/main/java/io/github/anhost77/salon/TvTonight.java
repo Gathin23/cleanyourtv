@@ -92,8 +92,9 @@ final class TvTonight {
         long now = System.currentTimeMillis();
         boolean fresh = today.equals(cache.getString("day", "")) && now - cache.getLong("at", 0) < REFRESH_MS
                 && cache.getInt("version", 0) == 6;
-        boolean oldFormat = cache.getInt("version", 0) != 6;
-        if (!fresh && (oldFormat || now - cache.getLong("tried", 0) > RETRY_MS)) fetch(ctx, cache, today);
+        // An old cache (another "version") is never fresh, so it is fetched again too, but after RETRY_MS like any
+        // other try: skipping the wait there made every query fetch again while the guide could not be reached.
+        if (!fresh && now - cache.getLong("tried", 0) > RETRY_MS) fetch(ctx, cache, today);
         MatrixCursor out = new MatrixCursor(COLUMNS);
         if (today.equals(cache.getString("day", ""))) {
             try {

@@ -77,15 +77,18 @@ public final class NowProvider extends ContentProvider {
     }
 
     private void fetch(SharedPreferences place, SharedPreferences cache, String key) {
-        if (System.currentTimeMillis() - cache.getLong("tried", 0) < RETRY_MS && key.equals(cache.getString("key", ""))
-                && cache.getLong("at", 0) < cache.getLong("tried", 0)) return;
+        // RETRY_MS between tries for the same city, counted from the last try, failed or not: "key" is written only on
+        // a success, so it cannot tell a first fetch, or one for a city just chosen, from a retry. Another city goes
+        // at once. (A recent success never gets here: its reading is not stale yet.)
+        if (System.currentTimeMillis() - cache.getLong("tried", 0) < RETRY_MS
+                && key.equals(cache.getString("tried_key", ""))) return;
         if (!fetching.compareAndSet(false, true)) return;
+        cache.edit().putLong("tried", System.currentTimeMillis()).putString("tried_key", key).apply();
         double lat = Double.longBitsToDouble(place.getLong("lat", 0));
         double lon = Double.longBitsToDouble(place.getLong("lon", 0));
         String city = place.getString("name", "");
         new Thread(() -> {
             try {
-                cache.edit().putLong("tried", System.currentTimeMillis()).apply();
                 Forecast.Report r = Forecast.fetch(lat, lon, Forecast.MIN_DAYS);
                 JSONArray rows = new JSONArray();
                 rows.put(row(city, r.code, r.day, r.tempC, r.tempC, r.feelsC));
