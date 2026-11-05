@@ -121,3 +121,34 @@ The physical YouTube button required the launcher's `InputKeyService` after laun
 The owner confirmed that YouTube opened, but holding a volume button became one step per press while
 the helper was active; the owner chose to keep the YouTube mapping. After the latest reboot the helper
 was bound, and the owner confirmed the physical YouTube button worked.
+
+## Another unit on the same firmware (November 2026)
+
+A third unit, same `MiTV-MZTU0` / `river` model and the same `V816.0.26.6.2.6.URTMIXM` build, with
+1.8 GB of RAM. It was cleaned on 2 November 2026 with `PROMPT.md`. Everything below was checked across
+reboots. This is not a claim of several-day validation of every function, and no new list is added here.
+
+Seven batches disabled 31 packages, plus launcherx after the new launcher was Home: telemetry and feedback,
+PatchWall and Mi channels, unused Xiaomi and Google apps, Privacy Sandbox, setupwraith, `com.google.android.apps.tv.dreamx`
+and `com.mediatek.calman`. Calman Ready is the service for picture calibration from a PC; nothing else
+missed it here. All three firmware updaters, Live TV and the tuners, AirPlay, the Assistant, the remote
+microphone, Chromecast and the Play Store stayed enabled.
+
+- **Setup wizard:** on this unit `dumpsys wifi | grep -o 'cname=[^ ]*'` named `android.uid.system`, so setupwraith
+  was disabled while on Wi-Fi and Wi-Fi stayed up. The check still matters: the first report above found
+  setupwraith as the owner. With setupwraith off, "Usage and diagnostics" in Settings no longer opens.
+- **Netflix:** after a reboot, 31 of the 32 listed packages were still off. The firmware had turned
+  `com.netflix.ninja` back on and reset its appops to allow. It was left on, kept off Home and out of the
+  library (`hidden_apps`, `library_excluded_apps`) and stopped from running in the background, as
+  [TROUBLESHOOTING](../TROUBLESHOOTING.md) describes: `cmd appops set com.netflix.ninja RUN_ANY_IN_BACKGROUND ignore`,
+  the same for `RUN_IN_BACKGROUND`, then `cmd appops write-settings`. A reboot confirmed that it stayed.
+  `tools/restore.sh` does not undo this: set both back to `default` and write the settings again.
+- **A USB stick as internal memory:** this unit had one set up as adoptable storage and felt slow before
+  the cleaning. That is the likely cause, not a proven one. The load average of 19 is not a busy CPU: about
+  20 MediaTek driver threads wait in the kernel and the CPU was 94 % idle at that reading.
+- **Storage:** system apps live on the read-only part, so disabling them frees nothing. Clearing speech data
+  and trimming caches took `/data` free from 2.3 GB to 2.6 GB.
+- **Wallpaper after a reboot:** Home showed no wallpaper until the theme was pushed again. Home starts before
+  shared storage is mounted, so the launcher finds no wallpaper files at that moment.
+- **Factory reset:** not tried. As a precaution, run `tools/restore.sh` first, with launcherx named too, so
+  that the setup wizard and the stock launcher are on when the reset starts.
