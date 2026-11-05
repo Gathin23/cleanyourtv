@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-212 projects so far.
+213 projects so far.
 
 ## Home screens built as their own app
 
@@ -204,6 +204,7 @@ Small apps and scripts that run next to the launcher (or any launcher) and do on
 
 | Project | What it is | Built on | By |
 |---|---|---|---|
+| [Agenda TV](https://github.com/ADOCR/tv-agenda) ([screenshot](https://raw.githubusercontent.com/ADOCR/tv-agenda/main/docs/agenda-demo.jpg)) | Read-only Google Calendar appointments in the existing Home panel and a Spanish agenda screen. Uses HTTPS and a persisted periodic job; encrypts the private iCal address and shares only titles/times with the launcher, with no ads or telemetry | Kenwood K32M15G6 (KTC 2K SMART TV), Google TV 14, UKN6.260116.001 | [ADOCR](https://github.com/ADOCR) |
 | [DVD Video screensaver for Android TV](https://github.com/TheWombRaider/dvd-tv) ([screenshot](https://github.com/TheWombRaider/dvd-tv/blob/main/docs/preview.jpg)) | The bouncing DVD VIDEO logo as an offline native screensaver and launcher preview, measured against reference video; no internet, audio or analytics | TCL Smart TV Pro (G08), Google TV 14; preview tested | [TheWombRaider](https://github.com/TheWombRaider) |
 | [AirPlay receiver installer](https://github.com/nguyenduchoai/tv-vibehack/tree/feat/airplay-receiver) | A script that builds and installs an open-source AirPlay receiver next to the launcher, for iPhone mirroring | Xiaomi MiTV-AESP0, Android TV 9 | [nguyenduchoai](https://github.com/nguyenduchoai) |
 | [Cast Fix](https://github.com/thayford/castfix) | Keeps casting from phones working on a Chromecast with Google TV after setupwraith is disabled for the launcher ([#361](https://github.com/Gathin23/cleanyourtv/issues/361)): at every boot it pairs with the TV's own Wireless debugging, lets the Cast receiver load its credentials from the setup wizard, then switches the wizard off again. No internet access | Chromecast with Google TV HD, Google TV 14 | [thayford](https://github.com/thayford) |
@@ -307,6 +308,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Homatics:** [PeachOS TV](https://github.com/BrainDeLook/peachos-tv)
 - **Insignia:** [Insignia Clean Home](https://github.com/yjack-coder/insignia-clean-home)
 - **JVC:** [Spotlight](https://github.com/IyiolaJay/spotlight-tv)
+- **Kenwood:** [Agenda TV](https://github.com/ADOCR/tv-agenda)
 - **Kogan:** [Quay](https://github.com/checkmate-automate/Quay-DebloatedAndroidLauncher)
 - **LG:** [Clean Your TV — LG webOS](https://github.com/Razdva122/clean-your-tv-lg-webos), [CleanYourTV for LG webOS](https://github.com/lasharor/cleanyourtv-WebOS), [CleanYourTV webOS edition](https://github.com/SamuelSHernandez/cleanyourtv-webOS/tree/main/webos), [webOS launcher](https://github.com/OmkarK97/webos-vibehack)
 - **Magyar Telekom (SDMC box):** [CleanYourTV Blocky Cabin](https://github.com/CsPS0/cleanyourtv-blocky)
