@@ -224,6 +224,7 @@ final class Tmdb {
      * myCANAL (mycanal.fr / canalplus.com …/h/{id}) and M6+ (m6.fr/…-p_{id}) open the title page on the TV.
      */
     static String justWatchUrl(int tmdbId, boolean tv, String name, String... packages) {
+        if (!Settings.justWatch()) return null; // Réglages: off unless the household turns it on
         HttpURLConnection c = null;
         try {
             JSONObject vars = new JSONObject().put("c", "FR")

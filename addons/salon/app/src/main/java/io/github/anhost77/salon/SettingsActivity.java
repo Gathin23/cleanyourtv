@@ -77,6 +77,16 @@ public final class SettingsActivity extends Activity {
                 v -> startActivity(new Intent(this, WeatherActivity.class)));
 
         header(R.string.settings_platforms);
+        boolean[] jw = {Settings.justWatch()};
+        TextView[] jwState = new TextView[1];
+        jwState[0] = row(getString(R.string.settings_justwatch), getString(R.string.settings_justwatch_hint),
+                getString(jw[0] ? R.string.settings_on : R.string.settings_off), v -> {
+                    jw[0] = !jw[0];
+                    Settings.setJustWatch(jw[0]);
+                    jwState[0].setText(jw[0] ? R.string.settings_on : R.string.settings_off);
+                    jwState[0].setTextColor(jw[0] ? 0xFF7CE38B : 0x80FFFFFF);
+                });
+        jwState[0].setTextColor(jw[0] ? 0xFF7CE38B : 0x80FFFFFF);
         for (String[] p : Tmdb.PLATFORMS) toggle(Settings.PLATFORMS, p[1], p[0], null);
 
         header(R.string.settings_channels);

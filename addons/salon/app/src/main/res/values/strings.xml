@@ -130,6 +130,8 @@
     <string name="settings_city" translatable="false">Ville</string>
     <string name="settings_city_none" translatable="false">À choisir</string>
     <string name="settings_platforms" translatable="false">Plateformes (« À voir », recherche, boutons Regarder)</string>
+    <string name="settings_justwatch" translatable="false">Liens directs vers les fiches (via JustWatch)</string>
+    <string name="settings_justwatch_hint" translatable="false">API non officielle de justwatch.com : myCANAL, M6+, Apple TV et Paramount+ ouvrent la fiche du titre au lieu de leur accueil</string>
     <string name="settings_channels" translatable="false">Chaînes du programme TV</string>
     <string name="settings_radios" translatable="false">Radios</string>
     <string name="settings_on" translatable="false">Oui</string>

@@ -55,4 +55,16 @@ final class Settings {
     static void setPhotoVersion(long v) {
         prefs().edit().putLong("photo_version", v).apply();
     }
+
+    /**
+     * Direct links to the platforms' title pages through JustWatch's own (unofficial) API. Off by default: without it
+     * only Wikidata (open data) is asked, Netflix still opens its title pages, the others open on their home.
+     */
+    static boolean justWatch() {
+        return app != null && prefs().getBoolean("justwatch", false);
+    }
+
+    static void setJustWatch(boolean on) {
+        prefs().edit().putBoolean("justwatch", on).apply();
+    }
 }

@@ -23,9 +23,11 @@ A 3½-minute tour filmed on the TV with the remote, in real time: [salon-demo.mp
   channel live in Free TV (OQEE) or myCANAL when one of them is installed.
 - **À voir cette semaine** and **Recherche**: films and series from [TMDB](https://www.themoviedb.org/), filtered
   to the platforms installed on the TV. **Regarder sur…** opens the title's own page in the platform's app where
-  the app allows it: Netflix (ids from Wikidata, then JustWatch), myCANAL and M6+ (their title pages, from
-  JustWatch), Apple TV and Paramount+ (their own links), TF1+ (its programme page), Prime Video and Disney+
-  (their search, filled in). Trailers play in the app.
+  the app allows it: Netflix (ids from Wikidata, open data), TF1+ (its programme page), Prime Video and Disney+
+  (their search, filled in); the others open on their home. Trailers play in the app.
+  - **Liens directs vers les fiches (via JustWatch)**, off by default in Réglages: JustWatch has no public API, so
+    asking it uses the one its own website uses. A household that turns it on gets the title pages of myCANAL,
+    M6+, Apple TV and Paramount+ too, and the Netflix titles Wikidata misses.
 - **Radios**: 18 French stations (France Inter, franceinfo, RTL, FIP, Radio Classique…), played by ExoPlayer in a
   foreground service, so they keep playing on the home screen.
 - **Météo**: the weather page of [the Weather add-on](../weather/) by @Sumyabazar1, which Salon starts from
@@ -48,7 +50,7 @@ this repo does not read them: that would need a launcher change, which is not pa
 
 | Permission | Why |
 |---|---|
-| `INTERNET` | Open-Meteo (weather), xmltvfr.fr (guide), TMDB (films and series), JustWatch and Wikidata (the platforms' title links), the channel and radio logos, the radio streams, and the phone page while it is open. |
+| `INTERNET` | Open-Meteo (weather), xmltvfr.fr (guide), TMDB (films and series), Wikidata (the platforms' title links; JustWatch too when its option is on), the channel and radio logos, the radio streams, and the phone page while it is open. |
 | `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK` | The radio keeps playing after you leave the app, with its notification, until you stop it. |
 
 No account, no telemetry, no ads, no location permission. Nothing runs in the background except the radio while it
@@ -60,7 +62,7 @@ plays.
   TV's home-network address. Every request must carry the one-time code from the QR code; anything else is
   refused. It accepts two things: a picture (kept in the app's private files) and the TMDB token.
 - **What leaves the TV**: the city name typed in the weather search and its coordinates (Open-Meteo); titles'
-  names and TMDB ids (TMDB, JustWatch, Wikidata); nothing about the household.
+  names and TMDB ids (TMDB, Wikidata, and JustWatch only with its option on); nothing about the household.
 - The TMDB token and the photo stay in the app's own storage (backups are off). Neither is ever in the sources.
 
 ## Build and install
@@ -80,7 +82,7 @@ installs over ADB like the launcher; sign your own builds with your own key if y
 
 The weather page and its tests come from [Weather](../weather/) by [@Sumyabazar1](https://github.com/Sumyabazar1).
 TV guide: xmltvfr.fr. Films and series: TMDB (this product uses the TMDB API but is not endorsed or certified by
-TMDB). Title links: JustWatch and Wikidata. QR codes: [ZXing](https://github.com/zxing/zxing) (Apache 2.0).
+TMDB). Title links: Wikidata, and JustWatch when the household turns it on. QR codes: [ZXing](https://github.com/zxing/zxing) (Apache 2.0).
 
 ## Tested on
 
