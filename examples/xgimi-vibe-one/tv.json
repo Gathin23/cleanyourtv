@@ -1,0 +1,6 @@
+{
+  "tv": "XGIMI Vibe One projector (WM03H, altai, MediaTek m7332)",
+  "os": "Google TV 11",
+  "brand": "XGIMI",
+  "notes": "Same altai board as the MoGo 4 but on Android 11, Canadian unit: store demo, factory tools, bug-report uploader, Google feedback, Play auto-install config and the Bell, Crave, CTV, Haystack, Tubi and Apple TV preloads; keystone/autofocus/HDMI kept. setupwraith owned the network in use and claims Home after launcherx, so both stay enabled and `stock_home_redirect` with `HOME_KEY_SERVICE` holds Home, at the cost of volume-key auto-repeat. Port 5555 stayed open across reboots. config.json has the dock; one session of a few hours, reboot-checked"
+}
