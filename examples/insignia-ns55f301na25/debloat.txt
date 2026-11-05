@@ -10,7 +10,7 @@
 # Apply (bash):       TV_HOST=<tv ip> tools/disable.sh examples/insignia-ns55f301na25/debloat.txt
 # Undo  (bash):       TV_HOST=<tv ip> tools/restore.sh examples/insignia-ns55f301na25/debloat.txt com.amazon.tv.launcher
 # Apply (PowerShell): powershell -ExecutionPolicy Bypass -File tools\disable.ps1 -TvHost <tv ip> examples\insignia-ns55f301na25\debloat.txt
-# Undo  (PowerShell): powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost <tv ip> examples\insignia-ns55f301na25\debloat.txt -StockLauncher com.amazon.tv.launcher
+# Undo  (PowerShell): powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost <tv ip> examples\insignia-ns55f301na25\debloat.txt -Stock com.amazon.tv.launcher
 # (restore.sh re-enables the stock launcher as a matter of routine; on Fire OS it was never disabled, which is harmless.)
 # Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
 #

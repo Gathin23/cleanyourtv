@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photo Prints</string>
+    <!-- The date on the clock line, as cleanyourtv's Home writes it. -->
+    <string name="date_format">EEEE  d MMMM</string>
+    <string name="empty_title">No photos yet</string>
+    <string name="empty_body">Copy photos to this folder on the TV with photos.sh or adb push:</string>
+</resources>

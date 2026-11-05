@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A picture frame with a hill and a sun. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#FF14213D" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#FFF2F2F2" android:pathData="M8,11h32v26h-32z" />
+    <path android:fillColor="#FF5B8DEF" android:pathData="M10,13h28v22h-28z" />
+    <path android:fillColor="#FFFFC857" android:pathData="M30,20m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+    <path android:fillColor="#FF2E5E3E" android:pathData="M10,35l9,-11l7,7l5,-4l7,8z" />
+</vector>

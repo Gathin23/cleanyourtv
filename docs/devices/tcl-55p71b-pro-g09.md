@@ -1,7 +1,7 @@
 # TCL 55P71B Pro: second G09 unit, key filtering kills remote key repeat
 
 Checked on a real TV in one session on 2026-10-22 (India, Shan7anu_5G Wi-Fi), after a factory reset,
-then re-verified the next day. Companion list: [`examples/tcl-g09-google-tv/`](../examples/tcl-g09-google-tv),
+then re-verified the next day. Companion list: [`examples/tcl-g09-google-tv/`](../../examples/tcl-g09-google-tv),
 whose packages and remote-button table matched this unit.
 
 ## Identify the firmware, not just the generic model name

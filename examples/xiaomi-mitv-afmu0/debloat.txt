@@ -3,7 +3,7 @@
 # Fingerprint: Xiaomi/twilight/twilight:14/UKG3.250826.001/V816.0.11.0.UZFAABX:user/release-keys
 #
 # Apply:   TV_HOST=<box ip> tools/disable.sh examples/xiaomi-mitv-afmu0/debloat.txt
-# Undo:    TV_HOST=<box ip> tools/restore.sh examples/xiaomi-mitv-afmu0/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/xiaomi-mitv-afmu0/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled.
 # Tested for one evening so far (Home, grid, D-pad, dock apps) and across one reboot: the disabled list and the
 # default home survive it. Not lived with for days yet.

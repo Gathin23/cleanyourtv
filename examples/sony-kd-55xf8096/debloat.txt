@@ -1,0 +1,85 @@
+# Sony BRAVIA KD-55XF8096 (2018, model string "BRAVIA 4K GB ATV3", product BRAVIA_ATV3_4K_EU, MediaTek MT5891), Spain
+# Android TV 9 (API 28), firmware Sony/BRAVIA_ATV3_4K_EU/BRAVIA_ATV3_4K:9/PTT1.190515.001.S54/672201:user/release-keys,
+# security patch 2022-01-05 (Sony has stopped updating it). 2 GB RAM.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-55xf8096/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-55xf8096/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same hardware (MT5891) and Android build (S54) as examples/sony-bravia-4k-gb and examples/sony-kd-55xe8596 (S52).
+# BRAVIA_ATV3_4K_EU is the 2018 XF-series refresh of the 2017 BRAVIA_ATV2_EU (XE-series).
+# Package set is nearly identical; differences noted below.
+#
+# Applied and reboot-checked on 2026-10-22. Home, live TV, HDMI inputs, DLNA, IR remote and HbbTV
+# (red button) all work after reboot. Re-enable anything that breaks with `pm enable <package>`.
+#
+# Stock launcher: com.google.android.tvlauncher. Its HOME filter has priority 2,
+# so `cmd package set-home-activity` reports Success but does nothing until it is disabled.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it drives every HDMI input too.
+# Keep: com.sony.dtv.tvinput.*, braviasync* (HDMI-CEC), remotepairing, rcpowerkey, uinputservice,
+# imeproxy, sonysystemservice, settingsprovider, all com.mediatek.* and mtktvapi.agent, timers,
+# webapi.core, remoteaccess (Sony IP Control / Home Assistant Bravia integration),
+# com.sony.huey.dlna.module (DLNA renderer), com.uei.quicksetsdk.sony (IR universal remote),
+# com.vewd.core.integration.dia (HbbTV / red button).
+#
+# New in ATV3 vs ATV2/XE8596: com.sony.dtv.smarthomesettings (Alexa setup, runs at every boot),
+# com.sony.dtv.discovery + com.sony.dtv.bivlinfo (Sony Discover content bar and its feeds),
+# com.sony.dtv.scrums.action was present but uninstalled to remove home screen ads — not in this list
+# (disable.sh uses pm disable-user only; uninstall --user 0 is irreversible).
+
+# ACR viewing tracker
+tv.samba.ssm                                    # Samba TV — fingerprints what is on screen
+
+# Sony and Google content, ads and promos
+com.sony.dtv.sonyselect                         # Sony Select app store / promo tile
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.promos                             # My BRAVIA promos
+com.sony.dtv.discovery                          # Sony Discover content bar (ATV3-specific)
+com.sony.dtv.bivlinfo                           # BIVL content service list, feeds Discover (ATV3-specific)
+com.sony.dtv.tvlaunchercustomizer               # Sony tweaks to the stock home rows
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Smart home / voice assistant setup
+com.sony.dtv.smarthomesettings                  # "Works with Alexa" setup — runs at every boot (ATV3-specific)
+
+# Retail demo
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+
+# Telemetry, remote support and feedback
+com.sony.dtv.da.service                         # Sony device agent / remote support
+com.qterics.da.product                          # Qterics device agent
+com.sony.dtv.sonybugreportsys
+com.sony.dtv.sonyloglevelsettingsys
+com.sony.dtv.sonyloglevelsettingvnd
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+
+# Hotel / professional mode
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.rs232csupport                  # RS-232C control; re-enable if something drives the TV over serial
+com.sony.dtv.b2b.vendorprotocol                 # Node.js SDDP broadcaster for Control4-style home automation
+
+# Preloaded apps and leftovers
+com.sony.dtv.customersupport                    # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                            # i-Manual
+com.sony.dtv.youview                            # YouView (UK service, not present in Spain firmware but listed for completeness)
+com.google.android.videos                       # Play Movies — service shut down, was using 108 MB
+com.google.android.play.games
+com.google.android.marvin.talkback
+com.android.printspooler
+
+# Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
+# com.google.android.backdrop                   # ambient screensaver
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.google.android.katniss                   # Google Assistant / voice search
+# com.google.android.tv.remote.service         # Android TV phone-app remote (and Home Assistant's Android TV Remote)
+# com.sony.huey.dlna.module                    # DLNA renderer
+# com.sony.huey.dlna.renderersettings
+# com.uei.quicksetsdk.sony                     # IR universal remote (Logitech Harmony etc.)
+# com.vewd.core.integration.dia                # HbbTV / red button
+# screnmirroring.com                           # Screen mirroring (Miracast)
+# com.sony.dtv.networkapp.wifidirect

@@ -1,0 +1,44 @@
+# TCL 50P735 BeyondTV4 (Smart TV Pro, Android 11, SDK 30) debloat list
+# Shared by one owner (#911); the firmware build and a reboot check were not reported, so treat it as provisional
+# and compare with tcl-50c725k/ and tcl-55p638/ (same BeyondTV4 family).
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/tcl-50p735/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/tcl-50p735/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# com.tcl.versionUpdateApp is TCL's firmware updater: this owner turned it off; re-enable it to take an update.
+
+# 1. Telemetry and analytics
+com.tcl.bi
+com.tcl.logkit
+
+# 2. Content, promos, recommendation rows and Google extras
+com.tcl.partnercustomizer
+com.tcl.waterfall.overseas
+com.tcl.tv.tclhome_passive
+com.tcl.esticker
+com.tcl.channelplus
+com.tcl.overseasappshow
+com.google.android.videos
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.feedback
+com.google.android.onetimeinitializer
+com.google.android.partnersetup
+android.autoinstalls.config.google.gtvpai
+com.google.android.apps.nbu.smartconnect.tv
+
+# 3. Cleaners, background services, duplicate webview, and unused tools
+com.tcl.guard
+com.tcl.suspension
+com.tcl.gamebar
+com.tcl.ocean.instructions
+com.tcl.keyhelp
+com.tcl.ui_mediaCenter
+com.tcl.browser
+com.tcl.messagebox
+com.tcl.useragreement
+com.tcl.t_solo
+com.tcl.hearaid
+com.tcl.dashboard
+com.tcl.versionUpdateApp
+com.tcl.android.webview

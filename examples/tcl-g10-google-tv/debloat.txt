@@ -5,6 +5,16 @@
 # Also confirmed on a TCL 55P6K (Spain retail name for the same G10 platform), product
 # G10_4K_GB_NF_32BIT, identical firmware build STT2.230203.001 — this list applies unchanged.
 #
+# Also tested on a TCL 43P69K, Netherlands (G10_4K_GB_NF_32BIT, Android 12 / SDK 31,
+# build STT2.230203.001, ro.adb.secure=1). Unlike the original US unit, logkit, Samba TV ACR
+# and ttvs shipped enabled; all three were disabled and stayed off after a reboot (2026-10-22).
+# Its TCL Channel package is com.tcl.waterfall.overseas. That unit also disabled TGuard and
+# MagiConnect, but kept TalkBack and re-enabled dreamx to keep the screensaver menu in Settings.
+# Comment out TalkBack and dreamx below to match that choice; the unit-specific additions are optional.
+# Tweakers groups the Netherlands range as "TCL P6K/P69K/P61K":
+# https://tweakers.net/televisies/tcl/p6k-p69k-p61k_p1739438/vergelijken/
+# Only the 43P69K unit above was tested here; check the product and build before using this list.
+#
 # Also used on a TCL C69B (EU, product G10_4K_GB, software V8-R75PT01-LF1V548, same build
 # STT2.230203.001; tv.plus and smartlink.core are not installed there). That set kept
 # partnercustomizer, gamebar and tv.remote.service by choice, so those three are untested on it;
@@ -19,13 +29,16 @@
 # Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh, the default is wrong here).
 # Live TV app: com.tcl.tv (keep it, it also owns HDMI/antenna playback). Keep com.tcl.tvinput,
 # com.tcl.dashboard, com.tcl.suspension, com.tcl.autopair and com.tcl.systemserver too.
-# Already disabled at the factory: com.tcl.logkit, tv.samba.ssm.ui (Samba TV ACR), com.tcl.ttvs.
+# Already disabled at the factory on the original US unit: com.tcl.logkit, tv.samba.ssm.ui
+# (Samba TV ACR), com.tcl.ttvs. These shipped enabled on the Netherlands 43P69K (see optional lines).
 #
 # Known quirks on this firmware:
 # - The red "TV" tile disappears from the Google TV Home row after this list (probably
 #   com.tcl.partnercustomizer). TV stays in the Apps row and behind the Inputs tile.
 # - Disabling dreamx leaves screensaver_components pointing at it. Switch to the AOSP fallback with
 #   tools/tv.py 'settings put secure screensaver_components com.android.dreams.basic/.Colors'
+#   On the 43P69K it also removes the screensaver menu from Settings. dreamx was re-enabled there;
+#   leave its line commented out if you need that menu, even when using a third-party screensaver or the add-on photo-screensaver.
 # - screencap writes an empty file while Live TV/HDMI is on screen. Press Home first.
 # - The Google TV promo banner is drawn by launcherx itself, so only launcher/ removes it.
 # - Disabling the stock launcher alone is not enough to install a replacement:
@@ -34,10 +47,18 @@
 #   launcher as Home — launcher/build-and-install.sh does this automatically and rolls back if
 #   Home doesn't land on the new launcher. List it in your own debloat file so restore.sh brings
 #   it back. Confirmed on two separate 55P6K units.
+# - On the 43P69K, the saved setup Wi-Fi belonged to setupwraith (dumpsys wifi: cname=...setupwraith).
+#   Forget and re-join it in Settings BEFORE disabling setupwraith, so the network belongs to Settings;
+#   otherwise disabling its owner drops Wi-Fi and the ADB connection.
 # - TclAppBoot blocks the launcher's key services (and WireGuard's VPN) at every boot until the
 #   package has APP_AUTO_START (docs/TROUBLESHOOTING.md). Run `appops write-settings` after
 #   `appops set com.gathin.tvhome APP_AUTO_START allow`: app-ops are saved lazily, and a plain
 #   `reboot` drops the change. Confirmed on the C69B over three reboots.
+# - The remote's mic button needs com.google.android.tv.remote.service, which is commented out below: a
+#   press starts AtvSearchAssistantService inside that package, so with the package disabled the button
+#   does nothing (no key on any /dev/input/event*) and logcat says the service is "not found".
+#   `pm enable com.google.android.tv.remote.service` brings voice back without a reboot. Confirmed on a
+#   43T6C (G10, Realtek, build STT2.230203.001); the phone-remote app pairing needs it too. (#1441)
 
 # TCL content, ads and promos
 com.tcl.tv.plus                        # TCL TV+ content app
@@ -61,9 +82,16 @@ android.autoinstalls.config.google.gtvpai
 com.google.android.feedback
 com.google.android.marvin.talkback
 com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks above
-com.google.android.tv.remote.service   # Google TV phone-app remote
+# com.google.android.tv.remote.service # phone-app remote, and the remote mic's bridge: see quirks above
 
 # Optional: uncomment what you don't use
+# Tested on the Netherlands 43P69K; telemetry shipped enabled there, unlike the original US unit.
+# tv.samba.ssm.ui                      # Samba TV ACR viewing tracking
+# com.tcl.ttvs                        # TCL analytics; re-enable if firmware updates stop arriving
+# com.tcl.logkit                      # log capture and upload
+# com.tcl.waterfall.overseas           # TCL Channel / content feed on the 43P69K
+# com.tcl.guard                       # TGuard memory cleaner
+# com.tcl.magiconnectfree              # MagiConnect phone-to-TV app
 # com.tcl.airplay2                     # AirPlay, together with the next line
 # com.realtek.airplay2
 # com.netflix.ninja                    # Netflix, together with the next line

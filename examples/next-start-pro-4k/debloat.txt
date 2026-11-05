@@ -1,0 +1,89 @@
+# Next Start Pro 4K TV Box (SDT, product HPR314-Next, device RMQ, model UHD_Google_TV_STB), Turkey, streaming box
+# Realtek RTD1325, 2 GB RAM, 32 GB. Google TV on Android 14 (SDK 34), build UTT1.250214.001, firmware C1.0.8_20260520
+# Fingerprint: Next/HPR314-Next/RMQ:14/UTT1.250214.001/C1.0.8_20260520:user/release-keys
+#
+# Apply:   TV_HOST=<box ip> tools/disable.sh examples/next-start-pro-4k/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/next-start-pro-4k/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# A streaming box: no tuner and no HDMI-in, so leave live_tv_package empty in config.xml. Stock launcher:
+# com.google.android.apps.tv.launcherx. Tested with Projectivy Launcher (com.spocky.projengmenu) as Home, not
+# the repo launcher. Disabled on 21 October 2026, lived with since, rebooted several times.
+#
+# ADB: only Wireless debugging. Pair once (Developer options > Wireless debugging > Pair device with pairing
+# code), `adb pair <ip:pairport> <code>`, `adb connect <ip:port>`, then `adb tcpip 5555`. persist.adb.tcp.port
+# stays 5555, and port 5555 answered after later reboots. ro.adb.secure=1, so each computer is accepted on screen.
+#
+# Setup wizard (com.google.android.tungsten.setupwraith):
+# - With launcherx disabled and Projectivy as Home, setupwraith's RecoveryActivity took HOME and system_server
+#   crashed in a loop (FATAL EXCEPTION IN SYSTEM PROCESS: android.display, positionChildAt ... is not a child),
+#   as described in docs/TROUBLESHOOTING.md. Disabling setupwraith stopped it.
+# - The box then dropped off Wi-Fi: the network had been saved during setup, so it belonged to setupwraith.
+#   Re-joining it in Settings fixed it (owner now android.uid.system). tools/disable.sh checks this for you.
+# - The Cast credentials provider lives in setupwraith here too (CastInfoProvider), yet casting YouTube from a
+#   phone still worked four days and several reboots after disabling it, unlike on the Google TV Streamer list.
+#
+# AUDIO (Realtek Dolby MS12, soundbar over HDMI). See README.md in this folder for the logs.
+# - With Settings > Display & Sound > Advanced sound settings > Surround sound = Always
+#   (settings global encoded_surround_output=2), ExoPlayer apps (Stremio, Nuvio) open a DIRECT E-AC3 track and
+#   the sound stutters about once a second on a Samsung HW-Q990C. Never (=1) stops the stutter, but the
+#   soundbar then reports 2-channel PCM.
+# - Fix: keep Surround sound on Never and set Realtek's hidden "Preferred MS12 output" page to
+#   "Dolby Digital Plus/Dolby Atmos" (2nd entry; the list is MAT, DD+/Atmos, PCM, DD/AC3):
+#     adb shell am start -n com.android.tv.settings/.slice.SliceActivity \
+#       -d content://com.realtek.slices.sliceprovider/ms12 --es slice_uri content://com.realtek.slices.sliceprovider/ms12
+#     adb shell input keyevent DPAD_DOWN; adb shell input keyevent DPAD_CENTER
+#   logcat then reads `GetAudioMs12OutputMode ... mode=2`. It survives reboots (checked twice). Result: no
+#   stutter and the Q990C shows Dolby Atmos for an E-AC3 Atmos stream in Stremio.
+# - The box ships with HDMI-CEC auto wake/standby off; left that way.
+#
+# Kept on purpose: com.dolby.android.audio.service, com.realtek.slices (hidden audio/video pages),
+# com.rtk.partnerinterface, every com.sdt.* service (front panel LED, global keys, remote pairing
+# com.sdt.mecoolrcupair, OTA com.sdt.ota, device info, customization, backup manager), com.oemservice,
+# com.google.android.tv.remote.service and com.google.android.tv.dfuservice (remote), Play Store and Play
+# Services, Gboard, the Assistant (com.google.android.katniss), Chromecast (com.google.android.apps.mediashell),
+# Netflix, YouTube, Prime Video.
+
+# Google telemetry and feedback
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Ad personalisation on device
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Google TV home screen and setup wizard (install a replacement launcher first)
+com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith      # see header: takes HOME and crash-loops otherwise; owns setup Wi-Fi
+com.google.android.apps.tv.dreamx           # Google TV ambient screensaver with recommendations
+
+# Services a streaming box never uses
+com.android.printspooler
+com.android.cameraextensions
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.dreams.basic
+com.android.dynsystem                       # Dynamic System Updates (developer GSI installer)
+com.android.hotspot2.osulogin               # Passpoint sign-in
+com.android.nearby.halfsheet                # Nearby pairing pop-up
+
+# Factory test apps
+com.oem.qa                                  # BoxFactoryTest
+com.sdt.producttest
+
+# Preloaded apps (Next and partners)
+com.next.iptv                               # Next IPTV
+com.next.roket                              # Next Roket
+com.jettv.player                            # JetTV
+
+# Google apps, off by the owner's choice
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.marvin.talkback
+com.google.android.tts                      # text-to-speech; no app here needed it
+
+# Added 25 October 2026 from other lists here, reboot-checked only, not yet lived with for days
+# com.android.adservices.api
+# com.google.android.partnersetup
+# android.autoinstalls.config.RTKSTBAndroid.device
+# com.google.android.syncadapters.calendar

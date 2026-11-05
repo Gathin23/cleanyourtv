@@ -1,0 +1,67 @@
+# TCL 55S546 (5-Series, "Smart TV Pro", device BeyondTV4, product G03_4K_US), Google TV on Android 11 (SDK 30),
+# build RP1A.200622.001 GTV93. Fingerprint: TCL/G03_4K_US/BeyondTV4:11/RP1A.200622.001/GTV93:user/release-keys
+# Same G03 platform as examples/tcl-g03-google-tv; that list was the starting point. This US build lacks
+# com.tcl.logkit, overseasappshow, tclhome_passive, browser, gamebar, micmanager, miracast and
+# MultiScreenInteraction_TV, and adds com.tcl.tv.plus (TCL+) and com.tcl.tv.tclchannel (TCL Channel), both kept.
+# Nothing was disabled at the factory.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55s546-us/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55s546-us/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled.
+#
+# Tested 2026-10-21 on a real unit, applied in the six batches below with a screenshot after each, plus the stock
+# launcher com.google.android.apps.tv.launcherx (24 packages), then rebooted: every package stayed disabled (this
+# build re-enables nothing at boot), Home came up on launcher/ (mFocusedApp checked), Wi-Fi stayed up.
+# - The saved Wi-Fi belonged to android.uid.system, not setupwraith, so setupwraith was disabled without
+#   forgetting the network.
+# - With launcherx off, the real remote's Netflix, YouTube, Prime Video, Input (TCL source panel) and gear buttons
+#   all kept working, and volume kept auto-repeating: no InputKeyService / HomeKeyService needed.
+# - Mic / Google voice worked with com.tcl.assistant disabled.
+# - The first `pm install` of the launcher hung past tv.py's 120 s timeout with no dialog on screen; a retry of
+#   `pm install -r` on the already-pushed APK answered Success in a second.
+# - Wi-Fi pill shows "Wi-Fi" instead of the SSID because Location is off (location_mode 0); left off by choice.
+#
+# Kept by choice on this unit: Netflix, Prime Video, YouTube, YouTube Music, Google TV app, TCL Channel, TCL+,
+# USB media player, Google voice search / Assistant, Chromecast, TCL firmware updates.
+#
+# DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Input key's source
+# panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
+# com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.keyhelp,
+# com.google.android.tv.remote.service, com.google.android.inputmethod.latin (keyboard), com.tvos (framework res).
+
+# ---- 1. TCL and Google telemetry ----
+com.tcl.bi                                  # TCL BI analytics
+com.tcl.xian.StartandroidService            # background reporting service
+com.google.android.feedback                 # crash / feedback reporting
+
+# ---- 2. TCL and Google content, ads and recommendation rows ----
+com.tcl.dashboard                           # TCL dashboard / promo backend
+com.tcl.partnercustomizer                   # partner customisation channel, promo rows
+com.tcl.messagebox                          # TCL message / promo box
+com.tcl.esticker                            # sticker / emoji overlay
+com.tcl.waterfall.overseas                  # older copy of TCL's web-video portal (TCL+ is its own package)
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup             # partner-app attribution
+com.google.android.onetimeinitializer       # one-time setup leftovers
+
+# ---- 3. Background services and preloaded extras ----
+com.tcl.guard                               # TCL online support
+com.tcl.usercenter                          # TCL account sign-in nags
+com.tcl.ocean.instructions                  # e-manual
+com.tcl.android.webview                     # TCL WebView; com.google.android.webview stays the provider
+org.chromium.webview_shell                  # WebView test shell
+com.google.android.syncadapters.calendar    # calendar sync, no calendar on a TV
+com.google.android.play.games               # Play Games
+com.tcl.gallery                             # TCL photo gallery
+
+# ---- 4. Off by choice: voice assistants not used ----
+com.tcl.smartalexa                          # Alexa bridge
+com.tcl.assistant                           # TCL voice assistant / voice TV control
+
+# ---- 5. Google TV first-run wizard: claims HOME once launcherx is off ----
+# Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first; re-enable it before a factory reset.
+com.google.android.tungsten.setupwraith
+
+# ---- 6. Google ambient screensaver (promos) ----
+# Switch the screensaver first: settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+com.google.android.apps.tv.dreamx

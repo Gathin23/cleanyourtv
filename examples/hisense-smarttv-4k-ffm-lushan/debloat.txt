@@ -1,0 +1,62 @@
+# Hisense SmartTV 4K FFM (device lushan, board his9603, platform merak, MediaTek MT9676 / mt5896),
+# Google TV 12 (Android 12), firmware STT2.230929.001.092, security patch 2025-05-01. The Android model
+# string is "SmartTV 4K FFM", the same as examples/hisense-smarttv-4k-ffm/ (huangshan, Android TV 10) and
+# examples/hisense-smarttv-4k-ffm-android11/ (songshan); this is a third board with its own package set.
+# Mongolia, en-US locale.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-smarttv-4k-ffm-lushan/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-smarttv-4k-ffm-lushan/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED with pm disable-user, never uninstalled.
+#
+# Applied on 2026-10-22 in four batches, with a reboot and a screenshot after each: normal boot, no
+# crashes, the HDMI input, Wi-Fi and the remote's buttons kept working. In use since, with the Clean
+# Your TV launcher as Home.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (the Google TV home). It is disabled by the
+# launcher install, not by this list; pass it to tools/restore.sh as the stock launcher.
+# Left ON by choice here (deliberately not in this list): Google Assistant (katniss), casting and
+# mirroring (Chromecast, AirPlay, Miracast, DLNA), the OTA updaters, Netflix, YouTube, Spotify, Twitch.
+# Never disabled: com.hisense.tv.smartsense, com.vt.tv.smartsense.ui, com.vt.tv.aiot. The huangshan FFM
+# list notes that disabling them sent that set to Android Recovery.
+
+# Hisense telemetry
+com.vt.tv.evservice                          # viewing-data (ACR) service
+
+# Google tracking and feedback
+com.google.android.partnersetup              # partner referral tracking
+com.google.android.feedback                  # crash/feedback uploader
+com.google.android.syncadapters.calendar     # calendar sync, unused on a TV
+
+# Preloaded apps
+com.hisense.odinbrowser                      # Hisense browser
+com.google.android.youtube.tvmusic           # YouTube Music
+com.google.android.play.games                # Play Games
+com.vt.hishow                                # "Family Moment" screensaver and photo content
+
+# Store/hotel demo mode and the first-time setup flow (setup already complete)
+com.vt.storemode
+com.vt.fte
+
+# Streaming apps and voice, off by choice (comment out any you use)
+com.amazon.amazonvideo.livingroom            # Prime Video
+com.iqiyi.i18n.tv                            # iQIYI
+com.mercadolibre.android.mplay_tv            # Mercado Play
+com.wbd.stream                               # HBO Max
+com.vt.alexa                                 # Hisense Alexa (Google Assistant is kept)
+
+# Hisense device assistant: a cleaner with a boot receiver (cache clean, "turbo mode")
+com.vt.tv.protector
+
+# Google TV setup wizard. Its RecoveryActivity claims HOME and beats the new launcher once
+# com.google.android.apps.tv.launcherx is disabled; `pm disable` of that one component is refused, so
+# the whole package has to go for a launcher swap. It also owns saved Wi-Fi networks, so check first:
+# `dumpsys wifi | grep -o 'cname=[^ ]*'`. If the network the TV is actually connected to belongs to
+# setupwraith, forget and re-join it in Settings before running this, or the disable deletes that
+# network and takes the TV off Wi-Fi and ADB. Needs FORCE_SETUPWRAITH=1 to pass disable.sh's Wi-Fi guard.
+com.google.android.tungsten.setupwraith
+
+# Not a disable, but worth recording for this remote, for the launcher's config.xml app_keys (find
+# others with `tools/tv.py 'getevent -lt'`): YouTube is scancode 469 (KEY_FN_F4), the HDMI/provider
+# button is scancode 362 (KEY_PROGRAM, e.g. "scan:362:input:<HDMI input id>"), Apps is scancode 580
+# (KEY_APPSELECT) and Subtitle is scancode 370 (KEY_SUBTITLE). Only the stock launcher answered them.
+# A remote app button resumes the app where it was left (YouTube reopened on Subscriptions).

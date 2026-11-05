@@ -1,8 +1,17 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Samsung, LG, Roku or another non-Android TV?
+    url: https://cleanyour.tv/not-android
+    about: CleanYourTV can't run there. This guide turns off the tracking, step by step with your remote.
   - name: Question or "does it work on my TV?"
     url: https://github.com/Gathin23/cleanyourtv/discussions/categories/q-a
     about: Ask in Discussions. Issues are for bugs and TV lists.
+  - name: Problem with the phone app?
+    url: https://github.com/udhaykumarbala/cleanyourtv-app/issues
+    about: The Clean Your TV phone app is community-built and maintained separately. Report app bugs in its own repo.
+  - name: An idea or a feature request?
+    url: https://github.com/Gathin23/cleanyourtv/discussions/categories/ideas
+    about: Share it in Discussions, where people can upvote and talk it through. A pull request is always welcome too.
   - name: Show what you built
     url: https://github.com/Gathin23/cleanyourtv/discussions/categories/show-and-tell
     about: Screenshots, themes, forks. Launchers and ports also go in SHOWCASE.md by pull request.

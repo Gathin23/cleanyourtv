@@ -4,6 +4,7 @@
 # Not Google TV: CVTE's own launcher (com.cvte.tv.launcher.highend) and settings. The build fingerprint is spoofed
 # (google/shamu/...), so match the board name (ro.cvte.boardname) instead.
 # Tested on one set for a day, reboot-checked; launcher half done with a third-party launcher (see README.md).
+# Setup steps (ADB, remote access, Play Services) and troubleshooting: README.md in this folder.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/super-general-cvte-t972/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/super-general-cvte-t972/debloat.txt com.cvte.tv.launcher.highend

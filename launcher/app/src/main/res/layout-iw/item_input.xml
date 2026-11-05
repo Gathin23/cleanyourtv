@@ -20,7 +20,7 @@
         android:duplicateParentState="true"
         android:textSize="11sp"
         android:textDirection="locale"
-        android:fontFamily="@font/outfit"
+        android:fontFamily="@string/font_body"
         android:letterSpacing="0.04" />
 
     <View
@@ -40,7 +40,7 @@
         android:textColor="@drawable/pill_text"
         android:duplicateParentState="true"
         android:textSize="15sp"
-        android:fontFamily="@font/outfit_medium"
+        android:fontFamily="@string/font_medium"
         android:gravity="right"
         android:textDirection="locale"
         android:singleLine="true" />

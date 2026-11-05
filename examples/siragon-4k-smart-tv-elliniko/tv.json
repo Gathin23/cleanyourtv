@@ -1,0 +1,6 @@
+{
+  "tv": "Síragon 4K Smart TV (KTC, MediaTek MT9676, elliniko, KTC_SIRAGON_4K_24GV1), Venezuela",
+  "os": "Google TV 14",
+  "brand": "Síragon",
+  "notes": "Anoki ACR, Google feedback, partner rows, store demo, e-manual, Play Games (Ginga kept); Live TV is `com.mediatek.tv.oneworld.tvcenter`; remote settings/input keys routed via `com.mediatek.tv.agent`"
+}

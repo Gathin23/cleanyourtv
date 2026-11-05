@@ -1,0 +1,58 @@
+# BenQ GV32 portable projector (SDMC-built, product BenQ_GV01, device himalaya, MediaTek m7332), 1.8 GB RAM,
+# Google TV 14 (API 34), firmware UKNV.260626.001, UI at 1920x1080 (no display override).
+# Fingerprint: BenQ/BenQ_GV01/himalaya:14/UKNV.260626.001/15736158:user/release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/benq-gv32/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/benq-gv32/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. HOME claimants on stock: launcherx,
+# com.google.android.tungsten.setupwraith/.RecoveryActivity and com.android.tv.settings/.system.FallbackHome.
+#
+# KEEP, even though some names look like bloat:
+# - com.sdmc.kt: auto focus, auto keystone, quad correction, zoom, rotation, eye protection (GLOBAL_BUTTON).
+# - com.sdmc.btservice: Bluetooth remote auto-pairing and remote firmware update.
+# - com.sdmc.remotecontrolservice: the remote's input method. com.sdmc.service: GLOBAL_BUTTON, power events.
+# - fusion.android.tv.demo ("retail display"): handles the remote's Input key (TV_INPUT_BUTTON), as on
+#   examples/eko-2k-google-tv-tennoji.
+# - com.mediatek.wwtv.setupwizard, com.mediatek.tvinput, com.mediatek.tv.service, com.google.android.tv.inputplayer.
+# - Factory/test packages: com.dangs.factorytest, com.sdmc.sdmcfactory, com.sdmc.keyburn, mediatek.factorymenu.ui.
+#   Never launch them, not even to look.
+# - com.benq.benqnewrc: BenQ's Bluetooth remote companion (privileged Bluetooth); left alone.
+# - com.sdmc.implayer (USB media player) asks for android.permission.TV_INPUT_HARDWARE, so disable.sh skips it.
+#   It is not among `pm query-services --components -a android.media.tv.TvInputService` (only com.mediatek.tvinput
+#   and com.mediatek.tv.service are), so it is very likely a false positive as on examples/cecotec-shandao, but
+#   the HDMI picture could not be checked with nothing connected, so it stays enabled here.
+# - No separate vendor updater: system updates come through Google Play services.
+#
+# Notes from this unit (verified with screenshots, 21 October 2026):
+# - Only Wireless debugging (TLS) is offered; pair, connect, then `adb tcpip 5555`. Port 5555 came back by itself
+#   after a reboot.
+# - Launcher: HOME takeover works once setupwraith is disabled (mFocusedApp = com.gathin.tvhome after Home and after
+#   a reboot). Inputs lists HDMI 1 and HDMI 2; they open in com.google.android.tv.inputplayer. No tuner.
+# - Remote ("RCI078/079", BT): Home, Back, volume, D-pad, YouTube/Netflix/Prime Video buttons, Input (Google's input
+#   switcher), focus (com.sdmc.kt), auto-keystone (KEY_F20, ToF sensor and focus motor), the BenQ help button and the
+#   mic keep working without launcherx. Settings (KEY_F19, scancode 189) and profile (KEY_LOGOFF, scancode 433) go
+#   dead with launcherx; examples/benq-gv32/config.json maps them with app_keys and HOME_KEY_SERVICE=1.
+# - A bound key-filtering helper costs held-key repeat (volume moves one step per press), as on the TCL G09
+#   (docs/devices/tcl-55p71b-g09-key-repeat.md); checked both ways here. The owner kept the buttons.
+# - Reboot-checked: everything listed stays disabled, Home and the helper survive, Wi-Fi stays connected.
+
+# Batch 1: telemetry, ads and partner plumbing
+com.android.adservices.api              # Android ad services (Topics, attribution)
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup         # Google partner attribution pings
+com.mstar.android.tv.disclaimercustomization   # setup-only disclaimer screen
+
+# Batch 2: preloaded / unused apps (owner's choice)
+com.google.android.play.games
+com.instagram.airwave
+# com.sdmc.implayer                  # USB media player; asks for TV_INPUT_HARDWARE, see header
+
+# Disabling setupwraith gives Home back but can break casting (Chromecast built-in); comment out its
+# line below if you want to keep casting.
+# Batch 3: launcher handover. setupwraith's RecoveryActivity claims HOME behind launcherx and would take Home
+# once launcherx is off. It owned the Wi-Fi saved at setup on this unit: forget the network and join it again
+# in Settings first (owner becomes android.uid.system), or disabling it deletes the network.
+com.google.android.tungsten.setupwraith

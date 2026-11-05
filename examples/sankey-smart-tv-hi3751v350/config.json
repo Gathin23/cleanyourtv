@@ -1,0 +1,13 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.android.chrome",
+    "com.android.vending",
+    "com.maxhub.screenshare.server.tv"
+  ],
+  "hidden_apps": [
+    "com.android.traceur"
+  ],
+  "live_tv_package": "",
+  "source_panel_service": "com.cvte.tv.globalui/.InputSourceActivity"
+}

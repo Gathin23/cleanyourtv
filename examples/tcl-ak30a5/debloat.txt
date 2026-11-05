@@ -1,25 +1,40 @@
-# TCL ak30a5 — Chinese-market TCL Android TV 9, Amlogic SoC, 1.5 GB RAM
-# Android 9 (PPR1.180610.011), build date 20230208, locale zh-CN, NO Google services at all
+# TCL ak30a5 — Chinese-market TCL Android TV 9, Amlogic SoC
+# Android 9 (PPR1.180610.011), locale zh-CN, NO Google services at all
 # (0 com.google.* packages, no Play Store — apps come from com.tcl.appmarket2 or a USB stick).
 # Likely a good starting point for other 2020-2023 Chinese TCL sets on the same Amlogic firmware.
+#
+# TWO UNITS, TWO FIRMWARE GENERATIONS — read the build date before you use a line:
+#
+#   1) TCL ak30a5, build date 20230208, 1.5 GB RAM. The original list; its entries are unchanged.
+#   2) TCL 雷鸟雀4 55F270C-JN (2025 model), build date 20250610, 2 GB RAM, fingerprint
+#      TCL/ak30a5/ak30a5:9/PPR1.180610.011/20250610:user/dev-keys, China (zh-CN).
+#      Same board, same Android version, newer firmware. Lines marked "20250610" were only
+#      verified on that unit. It ran this list for three days, with the Home handover, the
+#      accessibility guard and the boot behaviour re-checked after several reboots.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-ak30a5/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-ak30a5/debloat.txt com.tcl.cyberui
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Stock launcher: com.tcl.cyberui (a PERSISTENT priv-app — see the note below before disabling it).
+# Stock launcher: com.tcl.cyberui. On 20230208 it is a PERSISTENT priv-app; on 20250610 it is a
+#   SYSTEM app with UPDATED_SYSTEM_APP (an update in /data/app over /system/priv-app), versionCode
+#   7748, and WITHOUT the PERSISTENT flag. See the note below before disabling it.
 # Live TV / HDMI: com.tcl.tv. There is NO standard TvInputManager on this firmware (`service list`
 #   has no tv_input), so the launcher's Inputs menu opens TCL's own source panel instead:
 #   startService(com.tcl.settings/com.tcl.insrc.ShowWindowService, action com.tcl.insrc.SHOW_WINDOW).
 #   Keep com.tcl.settings or that panel is gone. HDMI source ids: TV=2, AV1=3, HDMI1=8, HDMI2=9.
+#   That panel is a service, not an activity: `cmd package resolve-activity -a
+#   com.tcl.insrc.SHOW_WINDOW` answers "No activity found", so use `am start-service`.
 # Keep com.tcl.tv: it owns DTV/HDMI playback and the remote's source key (KEYCODE_TV_INPUT still
 #   opens the source panel over any launcher, cyberui or not).
 # Keep com.sohu.inputmethod.sogou.tv: it is the ONLY input method on the TV. Disable it and there is
 #   no on-screen keyboard at all.
 # Keep com.tcl.guard: 电视卫士 is also the only on-screen APK installer (应用安装, needs a USB stick).
 # Keep com.tcl.ui_mediaCenter if you play anything from USB.
+# Keep com.tcl.appmarket2 and com.tcl.versionUpdateApp: on 20250610 the boot package was
+#   com.tcl.appmarket2, and the OTA updater is worth keeping.
 #
-# Known quirks on this firmware:
+# Known quirks on the 20230208 firmware:
 # - `pm install` is patched to refuse shell installs ("install apk has be disabled from pm by
 #   system default"), and PackageInstallerActivity is exported=false with its intent filters removed.
 #   `pm install-commit` is not gated though: an APK can still be installed by creating a
@@ -41,10 +56,32 @@
 # - `screencap` cannot write to /data/local/tmp either, and returns an empty file while Live TV/HDMI
 #   is on screen (same as the G10). Press Home first.
 # - No com.android.dreams.basic fallback screensaver. Also no TCL equivalent of `pm install`.
-
+#
+# What is different on the 20250610 firmware (all measured on that unit, 2026-10-22 to 2026-10-25):
+# - `pm install` is NOT patched any more. With no argument it answers "Failed to parse APK file:
+#   null" — it reaches PackageManager. What refuses the APK is the verifier in front of `pm
+#   install` (INSTALL_FAILED_VERIFICATION_FAILURE), not the parse-time signing gate above, and
+#   `settings get global verifier_verify_adb_installs` is null.
+# - /data/local/tmp IS writable by the shell user. The narrower quirk: rename(2) is refused there,
+#   so `mv` answers "bad '/data/local/tmp/x': Permission denied" while `cp` and `> file` work. Use
+#   `cp`, not `mv`, when placing a file for tools/b64push.py, which verifies an md5 before it puts
+#   the file in place.
+# - The stock launcher is versionCode 7748 (7.7.48) there, not 7746.
+# - The firmware turns USB debugging back off on every reboot: service.adb.tcp.port is still 5555
+#   but nothing listens and `adb connect` answers "connection refused". It has to be re-enabled by
+#   hand on the TV each time (设置 → 本机信息 → remote-control "上上下下左右", or 信源 → 模拟接收
+#   → 菜单 → 对比度 → 输入 1950). Any scripted run that spans a reboot needs that manual step.
+#
 # TCL ads, telemetry, logging
 com.tcl.bootadservice                    # boots into a full-screen ad before Home
 com.tcl.bi                              # analytics/behaviour reporting
+# 20250610 unit, tested on one set (the 20230208 list keeps these on); uncomment to disable:
+# com.tcl.recognize.service               # screen recognition; also a silent-install channel.
+                                         # 20250610 only: disabled and lived with for three days, but
+                                         # the remote's voice/recognition path was not re-tested —
+                                         # re-enable this first if 小T misbehaves
+# com.tcl.c2dm.client                     # push channel used by some TCL apps. Disabled on the
+                                         # 20250610 unit; TCL app push stops with it
 
 # Preloaded TCL content and services
 com.tcl.ffkaraoke                       # karaoke
@@ -57,7 +94,7 @@ com.tcl.browser                         # bundled browser
 com.tcl.common.weather                  # weather widget service
 com.tcl.wholenetsearch                  # global search
 com.tcl.useragreement                   # EULA nag
-com.tcl.versionUpdateApp                # TCL updater (the OTA package com.snm.upgrade is already
+# com.tcl.versionUpdateApp              # TCL updater, kept on so updates arrive (the OTA package com.snm.upgrade is already
                                         # disabled at the factory on this model)
 com.tcl.tvhealthcheck                   # diagnostics uploader
 com.tcl.logkit                          # verbose logging
@@ -65,9 +102,9 @@ com.iflytek.xiri.translate              # iFlytek translate
 
 # Optional: uncomment what you don't use
 # com.tcl.ttvs                          # 3rd-party data/ACR. Also serves com.tcl.ttvs.proxy.business.data,
-#                                       # which the remote's shortcut-key menu reads — if that menu
-#                                       # stops working, re-enable this first.
-# com.tcl.c2dm.client                   # push channel used by some TCL apps
+                                       # which the remote's shortcut-key menu reads — if that menu
+                                       # stops working, re-enable this first. Disabled on the 20250610
+                                       # unit for the ACR reporting; that menu was not re-tested there
 # com.tcl.usercenter                    # TCL account (needed to sign in to TCL services)
 # com.tcl.m                             # unidentified TCL helper; left enabled on purpose
 # com.tcl.convergehome                  # TCL content aggregator; not the HOME app on this build
@@ -77,15 +114,17 @@ com.iflytek.xiri.translate              # iFlytek translate
 # com.tcl.miracast                      # Miracast / "无线投屏" in the source panel
 # com.tcl.weixin                        # WeChat on TV
 
-# Preloaded third-party apps — comment out the ones you watch
-# com.xftv.tv                           # 云视听极光 (Tencent Video)
-# com.newtv.cboxtv                      # 奇异果 (iQIYI)
-# com.xiaodianshi.tv.yst                # 小电视 (Bilibili)
-# com.cibn.tv                           # CIBN 高清影视
-# com.baidu.netdisk.tv                  # Baidu Netdisk
-# com.netease.cloudmusic.tv             # NetEase Cloud Music
-# com.quark.yun.tv                      # Quark cloud drive
-# com.huawei.himovceie                  # Huawei AI Life
+# The 20250610 unit disabled these first, and that broke the stock desktop: the 影视 row on
+# com.tcl.cyberui is the 腾讯视频版权 channel, and pressing OK has to hand the playback over to
+# com.tcl.vod. With com.tcl.vod disabled the row still shows - the data lives in cyberui - and
+# OK fails silently, with no activity started at all. The same goes for the 儿童 / 音乐 / 购物 /
+# 微信 rows and for com.tcl.usercenter, whose UserCenterService cyberui asks for.
+# A content app the stock UI links to must not be disabled, so these stay comments here.
+# com.tcl.ffeducation, com.tcl.ffkaraoke and com.tcl.tclmusic above are the 20230208 unit's own
+# entries and are left as they are - but by the same mechanism they would make the 儿童 and 音乐
+# rows on that unit dead, which is worth checking before applying this list as it stands.
+# com.tcl.tshop                         # 电视购物商城 (shopping mall)
+# com.tcl.vod                           # 腾讯视频 (Tencent Video)
 
 # NOT disabled, ever: com.tcl.tv, com.tcl.settings, com.tcl.guard, com.tcl.autopair,
 # com.tcl.providers.config, com.tcl.TFDS.service, com.tcl.dashboard.service,

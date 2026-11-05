@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Video camera: live video is playing. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M4,6h10a2,2 0 0 1 2,2v8a2,2 0 0 1 -2,2h-10a2,2 0 0 1 -2,-2v-8a2,2 0 0 1 2,-2z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M17,10.5l5,-3v9l-5,-3z" />
+</vector>

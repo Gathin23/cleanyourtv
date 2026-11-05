@@ -1,0 +1,6 @@
+{
+  "tv": "PEAQ PTV 43AQU-5023C (Changhong, reports OK. AI PONT, dundas, MediaTek m7332)",
+  "os": "Android TV 11",
+  "brand": "PEAQ",
+  "notes": "First PEAQ list, same platform as ok-ai-pont-ikebukuro: Anoki ACR, AI PONT portal, Google recommendations, partner auto-installs, Homwee store/help, Google preloads; Assistant, Ambient, Prime Video and Media Player off by choice; Chromecast and Miracast kept; 1080p, 1.3 GB; setupwraith owns the Wi-Fi network and does not claim HOME, left alone; remote buttons work without tvlauncher; config.json has the dock; reboot-checked"
+}

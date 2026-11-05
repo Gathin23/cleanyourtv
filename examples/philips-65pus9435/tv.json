@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 65PUS9435/12 (TP Vision TPM191E, PH9M_EA_5599, MediaTek MT5887), Germany",
+  "os": "Android TV 12",
+  "brand": "Philips",
+  "notes": "Same board and firmware as `philips-75pus8505/`, 4-sided Ambilight: DAC/GEL analytics, Top Picks, app gallery, Alexa, Play-Fi soft AP, unused streaming apps and five Philips web-app tiles; Assistant off by choice; Ambilight, Chromecast, Apple TV, ARTE and ARD kept; Play-Fi, usage logger and demo mode re-enable at boot, so they are left out; reboot-checked"
+}

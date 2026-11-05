@@ -3,5 +3,5 @@
     android:layout_width="match_parent" android:layout_height="84dp">
     <TextView android:id="@+id/btnLibrary" style="@style/TopButton"
         android:layout_gravity="center" android:text="@string/app_library"
-        android:drawableStart="@drawable/ic_apps" />
+        android:drawableStart="@drawable/ic_apps_pill" />
 </FrameLayout>

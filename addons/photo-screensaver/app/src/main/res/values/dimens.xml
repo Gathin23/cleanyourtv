@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The clear margin around each print that its shadow is drawn into (print.xml). -->
+    <dimen name="print_shadow_room">56dp</dimen>
+</resources>

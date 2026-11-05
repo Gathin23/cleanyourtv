@@ -1,0 +1,66 @@
+# Grundig 50 GFU 7850 B 50" 4K Android TV (Arcelik-built, device "sinchon", MediaTek M7322), Turkey
+# Android TV 11 (API 30), build RTO1.251027.001. ro.product.manufacturer = ARCELIK, ro.adb.secure = 1.
+# USB debugging alone opens port 5555 (tested over Wi-Fi and Ethernet), no pairing.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/grundig-50gfu7850b/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/grundig-50gfu7850b/debloat.txt
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\grundig-50gfu7850b\debloat.txt (restore.ps1 to undo)
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx).
+# Live TV, HDMI and the source menu: com.mediatek.wwtv.tvcenter, as on examples/grundig-kunyang.
+# Also claiming HOME: com.android.tv.settings/.system.FallbackHome. Make the new launcher Home before the stock one goes.
+#
+# KEEP, even though some names look like bloat (same Arcelik/MediaTek family as examples/grundig-kunyang and beko-b43b880b):
+# - fusion.android.tv.demo: the remote's Input key (answers android.intent.action.TV_INPUT_BUTTON).
+# - com.arcelik.tv.arcelikbacklight: backlight control service (keeps picture settings working).
+# - com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.wwtv.tvcenter: Live TV, HDMI, source menu.
+# - com.google.android.tungsten.setupwraith: Wi-Fi setup and saved network credentials.
+# - com.arcelik.ChannelEditor: TV channel management.
+# - Factory packages, never opened: arcelik.factorymenu.hatone, com.mediatek.tv.factory, mediatek.factorymenu.ui.
+#
+# Launcher works: installed with launcher/build-and-install.sh, owns Home (mFocusedApp) also after reboot;
+# every remote button (Home, Input, Settings, app keys) works without extra key services. Screensaver set to
+# com.gathin.tvhome/.ClockDream before backdrop goes.
+#
+# Inputs & HDMI-CEC:
+# Android TV Settings > Device Preferences > Inputs pre-assigns generic labels ("Game console", "Blu-ray")
+# to HDMI ports, which hides real device names. Clearing them via `settings put secure tv_input_custom_labels '""'`
+# lets CleanYourTV show HDMI-CEC devices natively (e.g. "PlayStation 5", "BD HTS") under the Inputs menu.
+#
+# Owner's choices: Chromecast kept; voice assistant, YouTube Music, Play Games, and TTS off.
+# Self-installed streaming apps untouched.
+
+# --- Ads, telemetry and partner auto-installs
+tv.anoki.acr.controller                         # Anoki automatic content recognition telemetry
+com.cltv.fast                                   # FAST channels: ad-supported channel rows
+com.google.android.feedback                     # Google feedback / bug report uploader
+com.google.android.partnersetup                 # partner-app attribution (RLZ)
+android.autoinstalls.config.arcelik.an          # Arcelik partner auto-installs config
+com.mstar.android.tv.disclaimercustomization    # MediaTek disclaimer popups
+com.google.android.syncadapters.calendar        # calendar sync, no calendar app on a TV
+com.google.android.onetimeinitializer           # first-setup leftover
+com.android.printspooler                        # printing
+
+# --- Factory tools & unused OEM services
+com.arcelik.tv.rctest                           # Factory RC remote testing tool
+com.arcelik.smartremoteservice                  # Arcelik mobile remote companion
+
+# --- Unused Android sync / providers
+com.android.providers.calendar                  # calendar provider
+com.android.providers.contacts                  # contacts provider
+com.android.providers.userdictionary            # user dictionary
+com.android.wallpaperbackup                     # wallpaper backup
+com.android.se                                  # Secure Element service (unsupported on this TV)
+
+# --- Owner's choice: not used
+com.google.android.play.games                   # Google Play Games
+com.google.android.youtube.tvmusic              # YouTube Music pre-install
+com.google.android.tts                          # Google Text-to-Speech
+com.google.android.katniss                      # Google voice search / Assistant (remote mic button)
+com.google.android.leanbacklauncher.partnercustomizer # OEM partner launcher rows
+
+# --- After launcher/ owns Home (build-and-install.sh disables com.google.android.tvlauncher itself)
+com.google.android.tvlauncher                   # stock Android TV home: sponsored rows & ad banners
+com.google.android.tvrecommendations            # feeds the stock home's recommendation rows
+com.google.android.backdrop                     # Ambient screensaver (eats ~140 MB RAM with WebView); replaced by ClockDream

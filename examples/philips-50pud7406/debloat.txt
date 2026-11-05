@@ -3,6 +3,9 @@
 # ro.product.model=2020/2021 UHD Android TV  ro.product.device=PH0M_EA_T32  ro.product.name=PH0M_LT_T32
 # Fingerprint: Philips/PH0M_LT_T32/PH0M_EA_T32:11/RTM2.210929.098/200321:user/release-keys
 # persist.odm.tpv.region=lt (Latin America). About 1.38 GB RAM, ro.config.low_ram=true.
+# Second unit: Europe (Denmark), retail model unknown. Same ro.product.device=PH0M_EA_T32 and build
+# RTM2.210929.098, but ro.product.name=PH0M_EA_T32, incremental 200715, persist.odm.tpv.region=eu.
+# Same RAM. On Wi-Fi. See "Second unit" below.
 #
 # Same board and firmware as docs/devices/philips-65pug7406-78.md, which is launcher notes only;
 # this is the first debloat list for PH0M_EA_T32. It is NOT the TP Vision org.droidtv platform of
@@ -44,6 +47,61 @@
 #    thrashing"); this is a 1.38 GB low_ram set, so every background service removed helps.
 # 4. Do not open com.mediatek.tv.factory or mediatek.factorymenu.ui to see what they do (see
 #    PROMPT.md); they are left alone.
+# 5. Boot to Live TV (EU unit). After a full reboot, Home comes up and about 0.2 s later system_server
+#    sends android.mtk.intent.action.ACTION_REQUEST_TOP_RESUME to
+#    com.mediatek.wwtv.tvcenter/.nav.TurnkeyUiMainActivity, so the TV lands in Live TV. Neither
+#    settings list has a switch for it. A normal power-on from standby lands on Home.
+#
+# SECOND UNIT (EU, Denmark, Danish UI). Tested the same day only, not over several days. The whole
+# list below applied cleanly, except that the owner kept com.google.android.apps.mediashell
+# (Chromecast, on a home network), Netflix and Spotify. org.droidtv.android.fitness is not installed
+# on this unit. The owner also disabled com.google.android.katniss (Assistant). Home handed over to
+# launcher/ on the first try. A reboot re-enabled nothing. Real-remote checks after the reboot: Home,
+# Source/Input and Settings keys, the Netflix key, Back, and held volume all work. Netflix, Spotify,
+# YouTube and live channels play (Live TV or TiviMate; the owner did not report them separately).
+# Private DNS (dns.adguard-dns.com) works.
+# HDMI picture is still untested: nothing is plugged in. org.droidtv.eum and nettvregistration
+# stayed enabled on this unit too, so the Source key result does not cover disabling them.
+# The owner also disabled com.mediatek.wwtv.mediaplayer (MMP, the USB photo/video player).
+# tools/disable.sh skips it because it requests TV_INPUT_HARDWARE, but on this unit it serves no
+# TvInputService: `pm query-services --components -a android.media.tv.TvInputService` lists only
+# com.mediatek.tvinput (tuner, HDMI, composite, ...) and com.mediatek.tv.service. It is left
+# commented out below until someone checks an HDMI picture with it disabled.
+#
+# THIRD UNIT (EU, Lithuania, Lithuanian UI): Philips 55PUS7906/12, wired Ethernet, nothing in the USB ports.
+# persist.odm.tpv.fw.revision=TPM215E_R.101.000.198.158, persist.odm.tpv.region=eu, ro.product.name=PH0M_EA_T32,
+# incremental 200715, board m7332, ro.config.low_ram=true: the build of the second unit, so it is noted here.
+# It names the retail model the second unit lacks. Tested the same evening only, not over several days.
+# Applied as written: the telemetry, nettv.market, fusion.android.tv.demo, disclaimercustomization,
+# partnercustomizer, mediashell (Chromecast, off by choice), videos, youtube.tvmusic, play.games, Netflix and
+# Prime Video. Not applied: tvrecommendations and backdrop (so quirk 1 did not come up), and fitness and
+# Spotify are not installed. Home handed over to launcher/ on the first try; setupwraith is installed but is
+# not a HOME claimant and owns no saved network. After one reboot the disabled list matched what was
+# applied (nothing re-enabled itself). With org.droidtv.eum, nettvregistration and the MMP player
+# (com.mediatek.wwtv.mediaplayer) all left ENABLED, the Home, Input/Source and Settings keys work on the
+# real remote, a PlayStation 4 on HDMI shows a picture, and DVB-T antenna channels play. That says nothing
+# about what disabling those three would break. The owner also disabled com.google.android.katniss
+# (Assistant). The commented lines at the end of the list were disabled here as well; they are a
+# same-evening test only, so they stay commented until someone has lived with them.
+#
+# FOURTH UNIT (EU, Germany, German UI): Philips 50PUS7906/12, wired Ethernet, nothing in the USB ports. The build of
+# the third unit: persist.odm.tpv.fw.revision=TPM215E_R.101.000.198.158, persist.odm.tpv.region=eu,
+# ro.product.name=PH0M_EA_T32, Android 11. Tested the same evening only, with two reboots.
+# Applied: the four telemetry lines, nettv.market, fusion.android.tv.demo, partnercustomizer, tvrecommendations,
+# backdrop (screensaver moved to com.gathin.tvhome/.ClockDream, quirk 1), videos, youtube.tvmusic, play.games and
+# Spotify, plus com.google.android.katniss (Assistant) by the owner's choice. Kept by choice: mediashell
+# (Chromecast, on a home network; casting from a phone works), Netflix and Prime Video. Fitness is not installed.
+# tools/disable.sh skipped com.mstar.android.tv.disclaimercustomization (dumpsys shows no permission block for it on
+# this unit), so it stayed enabled. Home handed over to launcher/ on the first try.
+# katniss came back after the first reboot: it had been disabled a few seconds before, and a `sync` in between did
+# not keep it. Disabled again and left well over 15 s before the second reboot, it stayed off, and the disabled list
+# matched what was applied. Quirk 5 (boot to Live TV) shows here too; power_on_home_always with HOME_KEY_SERVICE=1
+# brings Home back about 3 s after the firmware opens com.mediatek.wwtv.tvcenter.
+# Real remote with the launcher as Home: Home, Source/Input, Settings and the Netflix key work. The Rakuten key sends
+# keycode 249 (KEYCODE_TV_INPUT_COMPONENT_1, scancode 472, KEY_FN_F7); TPVTvService catches it ("launchRakutenApp")
+# and starts tv.wuaki.apptv, which this unit ships disabled, so the key does nothing. app_keys "249:<package>"
+# (HOME_KEY_SERVICE=1) gets the key first and opens that app instead (checked on the real remote).
+# Not checked here: HDMI picture and DVB-T (IPTV only), held volume (external audio).
 
 # TPV / Philips telemetry
 org.droidtv.candeebug                       # "DAC" analytics uploader, as on the 50PUS8517
@@ -59,6 +117,7 @@ org.droidtv.android.fitness                 # Fitness Buddy
 fusion.android.tv.demo                      # retail demo
 com.mstar.android.tv.disclaimercustomization # vendor disclaimer screen
 com.mediatek.android.leanbacklauncher.partnercustomizer # partner rows for the stock launcher
+# com.mediatek.wwtv.mediaplayer               # MMP USB media player; disabled on the EU unit, HDMI unchecked (see Second unit); needs TVINPUT_ALLOW=1
 
 # Google recommendations, ambient mode and casting
 com.google.android.tvrecommendations        # recommendation rows and notification panel
@@ -78,7 +137,15 @@ com.spotify.tv.android
 # Stock launcher, replaced by launcher/ -- build-and-install disables it after Home has moved
 # com.google.android.tvlauncher
 
-# Kept on purpose: com.google.android.katniss (Assistant/voice), com.android.tv.ota (updates),
+# Candidates from the third unit, disabled there with no regression in one evening (not yet lived with):
+# com.google.android.partnersetup             # Google partner setup: INTERNET, boot receiver
+# com.google.android.feedback
+# com.google.android.onetimeinitializer
+# android.autoinstalls.config.tpv.device      # PlayAutoInstallConfig: TPV's auto-install list
+# com.android.providers.calendar              # no calendar app on a TV; boot receiver, runs in the background
+# com.google.android.syncadapters.calendar
+#
+# Kept on purpose: com.google.android.katniss (Assistant/voice; the owners of the second and third unit disabled it), com.android.tv.ota (updates),
 # com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service, org.droidtv,
 # org.droidtv.icp, com.google.android.tv.remote.service, com.google.android.tungsten.setupwraith
 # (not a HOME claimant on this build; Home went to the new launcher without touching it),

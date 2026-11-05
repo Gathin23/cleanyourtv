@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a sun behind a cloud on a day sky. Drawn for this add-on, no third-party art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF1E4A7A" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FF2A6AA8" android:pathData="M0,110h320v70h-320z" />
+    <path android:fillColor="#FFFFC94A" android:pathData="M190,72m-34,0a34,34 0,1 1,68 0a34,34 0,1 1,-68 0" />
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M110,128h96a22,22 0,0 0,0 -44a30,30 0,0 0,-56 -10a24,24 0,0 0,-40 18a18,18 0,0 0,0 36z" />
+</vector>

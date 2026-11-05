@@ -1,0 +1,10 @@
+# Feeds for the news screensaver: one RSS or Atom address per line, https:// only, at most 10. A name before the
+# address and a bar ("DR | https://...") is shown instead of the feed's own title. Lines starting with # are skipped.
+# Copy this file to feeds.txt (git ignores that one), edit it and run setup.sh.
+DR | https://www.dr.dk/nyheder/service/feeds/senestenyt
+TV 2 | https://feeds.services.tv2.dk/api/feeds/nyheder/rss
+Ekstra Bladet | https://ekstrabladet.dk/rssfeed/nyheder/
+B.T. | https://www.bt.dk/bt/seneste/rss
+BBC News | https://feeds.bbci.co.uk/news/world/rss.xml
+# The Guardian | https://www.theguardian.com/world/rss
+# NPR | https://feeds.npr.org/1001/rss.xml

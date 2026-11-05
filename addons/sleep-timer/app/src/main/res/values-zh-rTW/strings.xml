@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">睡眠定時</string>
+    <string name="hint">選擇電視進入待機的時間，結束前一分鐘會提醒。</string>
+    <string name="in_minutes">%1$d 分鐘</string>
+    <string name="cancel">取消定時</string>
+    <string name="state_off">未設定定時。</string>
+    <string name="state_on">%1$s 待機。</string>
+    <string name="no_service">睡眠定時的無障礙服務未開啟（請執行安裝腳本）。</string>
+    <string name="warning_title">電視即將關閉</string>
+    <string name="warning_seconds">%1$d 秒後</string>
+    <string name="more">再 15 分鐘</string>
+    <string name="now">立即關閉</string>
+    <string name="service_label">睡眠定時</string>
+    <string name="service_description">只在睡眠定時結束時讓電視待機，不讀取畫面。</string>
+    <string name="quick_hint">◀ ▶ 選擇時間　OK 關閉</string>
+</resources>

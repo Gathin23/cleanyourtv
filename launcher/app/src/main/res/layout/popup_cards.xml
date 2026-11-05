@@ -19,7 +19,7 @@
         android:text="@string/module_cards"
         android:textColor="#8CFFFFFF"
         android:textSize="11sp"
-        android:fontFamily="@font/outfit_medium"
+        android:fontFamily="@string/font_medium"
         android:letterSpacing="0.18"
         android:textAllCaps="true" />
 

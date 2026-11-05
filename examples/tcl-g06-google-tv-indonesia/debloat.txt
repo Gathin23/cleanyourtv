@@ -1,0 +1,73 @@
+# TCL 40" Smart TV, Indonesia: device G06, model "Smart TV", Google TV 11 (Android TV 11, SDK 30),
+# build AR2101, TCL software V8-T221T02-LF1V058.000821, security patch 2026-03-05, kernel 4.19.116+.
+# First list for the T02 (Indonesia/Asia) firmware. Stock launcher: com.google.android.apps.tv.launcherx.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g06-google-tv-indonesia/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g06-google-tv-indonesia/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Built from examples/tcl-43c645 and examples/tcl-65c735 (TCL Google TV 11 on AR2101), checked against
+# this unit's `pm list packages`. ro.adb.secure=1. Run from Termux on an Android phone on the same Wi-Fi
+# (python, python-cryptography and a venv with adb-shell and rsa), debloat half only: launcherx stays
+# Home, so setupwraith is kept and the launcher half of the repo was not tried on this set.
+#
+# Applied in one run on 2026-10-26, then rebooted. tools/check.py after the reboot: 31 of 32 still
+# disabled; com.tcl.usercenter is switched back on at every boot (as on the other TCL AR2101 lists). It
+# stays idle, so it is left in the list. Checked after the reboot: Home, the Input key and HDMI, Wi-Fi,
+# the remote, Settings, YouTube, Netflix and Vidio all work. Tested on one day only (shorter than
+# CONTRIBUTING.md asks).
+#
+# Live TV / HDMI: com.tcl.tv + com.tcl.tvinput.
+# DO NOT DISABLE on this TV (kept and working):
+# com.tcl.tv com.tcl.tvinput              # Live TV, HDMI and the source picker
+# com.tcl.ttvs                            # firmware updater on AR2101
+# com.tcl.suspension                      # Input key / Quick Panel
+# com.tcl.system.server com.tcl.keyhelp   # remote-key plumbing
+# com.tcl.tcl_bt_rcu_service com.tcl.autopair   # Bluetooth remote
+# com.tcl.settings com.tcl.providers.config com.tcl.initsetup com.tcl.factory.view
+# com.tcl.inputmethod.international com.google.android.inputmethod.latin   # keyboards
+# com.tcl.common.shortcutmenu             # not tried
+# com.google.android.tv.remote.service    # phone remote, also the remote mic bridge on other TCL sets (#1441)
+# com.google.android.tungsten.setupwraith # only needed off with a replacement launcher
+# com.google.android.apps.tv.dreamx       # screensaver, kept
+# com.vidio.android.tv com.netflix.ninja com.google.android.youtube.tv   # kept by choice
+
+# TCL promos, popups and content
+com.tcl.esticker                        # store-demo sticker
+com.tcl.partnercustomizer               # promo rows
+com.tcl.messagebox                      # TCL messages/popups
+com.tcl.waterfall.overseas              # TCL content portal
+com.tcl.dashboard                       # TCL Home panel
+com.tcl.useragreement
+com.tcl.usercenter                      # TCL account, re-enabled at every boot (idle)
+com.tcl.guard                           # TGuard cleaner
+com.tcl.hotelmenu                       # hotel mode
+com.tcl.smartalexa                      # Alexa bridge
+com.tcl.copydatatotv                    # copy-data utility
+com.tcl.t_solo                          # Bluetooth "listen alone"
+
+# Google partner plumbing and telemetry
+com.google.android.partnersetup
+com.google.android.feedback
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.apps.nbu.smartconnect.tv   # data-saver VPN
+android.autoinstalls.config.google.gtvpai     # partner auto-installs
+
+# Unused preloads, off by choice on this unit
+com.google.android.videos               # Play Movies
+com.google.android.play.games
+com.google.android.youtube.tvmusic      # YouTube Music
+com.tcl.browser
+com.tcl.ui_mediaCenter                  # USB media player, re-enable for USB drives
+com.amazon.amazonvideo.livingroom       # Prime Video
+com.tencent.qqlivei18n                  # WeTV
+com.ottplay.ottplay                     # OTTPlay
+com.alphainventor.filemanager           # File Commander
+com.google.android.apps.mediashell      # Chromecast receiver, re-enable to cast from a phone
+com.google.android.marvin.talkback      # TalkBack
+
+# Voice assistant, off by choice (comment out all three to keep the remote's mic)
+com.google.android.katniss
+com.google.android.tv.assistant
+com.tcl.micmanager

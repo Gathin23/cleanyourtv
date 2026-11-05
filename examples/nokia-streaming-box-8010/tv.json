@@ -1,0 +1,6 @@
+{
+  "tv": "Nokia Streaming Box 8010 (Sagemcom/NES, SEI804NK, YYJ, Amlogic)",
+  "os": "Android TV 14",
+  "brand": "Nokia",
+  "notes": "Unlike the 8000, `pm disable-user` works and tvlauncher can be disabled, so the standard tools apply; Hoppr ad/analytics engine (preinstalled priv-app, mic/contacts/background location, not blocked by AdGuard DNS), Google ad services and feedback, recommendation rows, Nokia Shop/Discover config, partner auto-installs, NES bug reporter and factory tests, Backdrop (ClockDream first); Assistant, YouTube Music, YouTube, Prime Video off by choice; Chromecast, OTA, remote services kept; network ADB survives reboots; reboot-checked"
+}

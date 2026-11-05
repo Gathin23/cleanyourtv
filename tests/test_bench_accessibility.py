@@ -84,7 +84,7 @@ class ColdStartOrderTest(unittest.TestCase):
         def spy(command, read_timeout_s=None):
             if command.startswith("settings put secure enabled_accessibility_services"):
                 order.append("restore")
-            elif command.startswith("am start -W -n com.gathin.tvhome"):
+            elif command.startswith("am start -W ") and command.endswith("-n com.gathin.tvhome/.MainActivity"):
                 order.append("measure")
             return original_shell(command, read_timeout_s)
         tv.shell = spy

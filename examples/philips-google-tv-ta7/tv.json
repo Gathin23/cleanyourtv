@@ -1,0 +1,6 @@
+{
+  "tv": "Philips Google TV TA7 (TPV, PH3M_AL_T32, MediaTek), Brazil; 55PUD7908/77, Latin America",
+  "os": "Google TV 14",
+  "brand": "Philips",
+  "notes": "TP Vision `candeebug`/`gel` analytics, partner attribution and auto-installs, European operator apps, ad-consent and disclaimer popups; Netflix, Prime Video, Google TV app and Chromecast off by choice, Assistant and OTA kept; setupwraith + launcherx off for a custom launcher (setupwraith owned only an unused network); the gear button is KEYCODE_SETTINGS and needs HomeKeyService (`HOME_KEY_SERVICE=1`); theme"
+}

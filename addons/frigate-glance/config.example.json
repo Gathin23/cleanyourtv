@@ -1,0 +1,10 @@
+{
+  "mqtt": "mqtt://MQTT_USER:MQTT_PASSWORD@192.168.1.10:1883",
+  "frigateUrl": "https://192.168.1.11:8971",
+  "frigateUser": "FRIGATE_VIEWER_USER",
+  "frigatePassword": "FRIGATE_VIEWER_PASSWORD",
+  "cameras": {
+    "front_door": "Front door",
+    "driveway": "Driveway"
+  }
+}

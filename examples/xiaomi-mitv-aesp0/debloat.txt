@@ -17,6 +17,24 @@
 # - No HDMI/AV inputs: the launcher hides its Inputs pill by itself on this stick.
 # - Kept on this set: voice assistant (katniss/pumpkin), Chromecast (mediashell),
 #   Mi Cast (com.mitv.milinkservice) and firmware updates (com.xiaomi.mitv.updateservice).
+#
+# Second verified set (Indonesia-region unit, same firmware PI.2055, in daily use since
+# 21 Oct 2026 with Netflix / Jellyfin / SmartTube / Vidio): the groups marked
+# "second set" below are disabled on that stick on top of the original list.
+# Region note: the ID unit has only the misspelled autoinstalls package below, and
+# none of the preloaded apps in the original list (DAZN, Red Bull TV, Duo, TCL browser).
+#
+# Third verified set (France unit, same firmware PI.2055, patch 2022-08-05, debloated 21 Oct 2026; the group
+# marked "third set" below is on top of the original list, plus voice, Chromecast, Mi Cast, the phone remote and
+# the updater off by the owner's choice). Notes from that unit:
+# - The Home key arrived as KEYCODE_HOME (3), not ALL_APPS: `interceptKeyTq keycode=3` in logcat, then HOME
+#   started the launcher. HOME_KEY_SERVICE=1 was used anyway and does no harm; check your remote's revision.
+# - The Netflix key is Xiaomi keycode 1001, consumed by the system in interceptKeyBeforeQueueing without
+#   POLICY_FLAG_PASS_TO_USER, which launches Netflix itself. Accessibility services never see it, so it cannot
+#   be remapped (app_keys, Button Mapper) without root; with Netflix disabled the key just does nothing.
+# - Closing ADB: switching off "USB debugging" alone, then rebooting, left 5555 open. Switching off the
+#   Developer options master switch and rebooting closed it (tools/adb-closed.py: refused).
+# - Free memory: about 150 MB stock, about 265 MB right after a reboot with the list and the launcher.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
@@ -38,3 +56,60 @@ com.nousguide.android.rbtv                  # Red Bull TV
 com.google.android.apps.tachyon             # Google Duo
 com.google.android.play.games
 com.tcl.browser
+
+# Xiaomi extras (third set)
+com.xiaomo.tv.milegal                       # Xiaomi privacy-policy screen (sic, "xiaomo"); nothing else uses it
+
+# Xiaomi services (second set)
+# mitv.service registers the TvService system service that Xiaomi's own settings app reads the hardware
+# configuration from. Disabled on a China-market set whose settings app is com.xiaomi.mitv.settings it
+# freezes Settings for 20-30 s and then crashes it (#1310); the second set has run with the line below
+# disabled in daily use since 21 Oct 2026. Why, and how to put the service back without a reboot:
+# docs/TROUBLESHOOTING.md#xiaomi-cn-firmware-settings-freezes-or-crashes-after-the-debloat
+mitv.service                                # MiTV service framework for the rows removed above
+com.mitv.download.service                   # PatchWall download service
+com.mitv.videoplayer                        # stock Mi video player; comment out if you use it
+com.xiaomi.android.tvsetup.partnercustomizer  # partner customisation that seeds partner apps at setup
+
+# Xiaomi services (second set, optional — the original set keeps these)
+# com.xiaomi.mitv.updateservice             # firmware updates; the original set keeps it, uncomment to stop OTAs
+# com.mitv.milinkservice                    # Mi Cast receiver; the original set keeps it, uncomment if you never cast
+
+# Google TV plumbing this stick does not need (second set)
+com.google.android.tv                       # Live Channels; the stick has no tuner or HDMI input
+# (com.android.providers.tv, the TV content provider, stays enabled: the repo never disables it)
+com.google.android.videos                   # Google Play Movies & TV
+com.google.android.youtube.tvmusic         # YouTube Music TV
+com.google.android.tungsten.setupwraith     # setup wizard: gives Home back, costs casting (comment out to keep casting)
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.android.onetimeinitializer
+
+# Accounts, backup and printing plumbing (second set; nothing on a TV uses these)
+com.android.providers.contacts
+com.android.providers.calendar
+com.google.android.syncadapters.contacts
+com.google.android.syncadapters.calendar
+com.google.android.backuptransport
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.printspooler
+# com.android.companiondevicemanager        # kept: Bluetooth companion pairing, no list on main disables it
+com.android.settings.intelligence
+com.android.se                              # secure element; the stick has no NFC
+com.android.cts.ctsshim                     # CTS test shims, not user features
+com.android.cts.priv.ctsshim
+
+# Screensavers (second set; that stick runs always-on with its own home screen)
+com.google.android.backdrop
+com.android.dreams.basic
+com.mitv.dream
+
+# Voice, accessibility, phone remote (second set, optional; the original set keeps voice, so these stay
+# commented out here: uncomment the ones you don't use)
+# com.google.android.katniss                # voice search; the voice stack barely works on this firmware
+# com.google.android.speech.pumpkin
+# com.google.android.tts                    # text-to-speech; keep it if anything reads text aloud
+# com.google.android.marvin.talkback        # accessibility; only disable if nobody uses TalkBack
+# com.google.android.tv.remote.service      # kept enabled: phone-as-remote and the remote's mic bridge

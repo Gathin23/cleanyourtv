@@ -1,4 +1,5 @@
 # Sony BRAVIA 4K GB (EU: device BRAVIA_ATV2_EU, product BRAVIA_ATV2). Android TV 9 (API 28).
+# Retail model reported on the same platform and firmware: KD-75XE8596.
 # Firmware BRAVIA_ATV2_EU-user 9 PTT1.190515.001.S54 672201 release-keys
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-gb/debloat.txt

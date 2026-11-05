@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Disturbo TV</string>
+    <string name="watching">Disturbo quando la TV si accende</string>
+    <string name="hint">Un momento di assenza di segnale ogni volta che lo schermo si accende. Qualsiasi tasto lo interrompe.</string>
+    <string name="enabled_state">Effetto all\'accensione: %1$s</string>
+    <string name="sound_state">Audio: %1$s</string>
+    <string name="seconds_state">Durata: %1$d secondi</string>
+    <string name="test">Provalo ora</string>
+    <string name="style_state">Stile: %1$s</string>
+    <string name="style_snow">neve</string>
+    <string name="style_bars">barre colorate</string>
+    <string name="style_no_signal">nessun segnale</string>
+    <string name="style_random">casuale</string>
+    <string name="no_signal">NO SIGNAL</string>
+    <string name="osd_channel">CH 03</string>
+    <string name="on">attivo</string>
+    <string name="off">spento</string>
+    <string name="with_sound">attivo</string>
+    <string name="without_sound">disattivato</string>
+</resources>

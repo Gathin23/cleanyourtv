@@ -1,0 +1,98 @@
+# TCL 75" C845X2 Google TV, UK/Europe build (device G08, model "Smart TV Pro", MediaTek tcl9618)
+# Android 14 (Google TV), firmware V8-0012T01-LF1V667, product G08_4K_GB, fingerprint UTT2.250416.001 AU04.
+# Same G08 board and package set as examples/tcl-c755-google-tv and examples/tcl-qm6k-google-tv; the C755 list was the starting point.
+# Applied on a real 75C845X2 on 2026-10-20: Home, the CleanYourTV launcher and its dock apps worked afterwards.
+#
+# Extra choices on this unit compared with the C755 list: YouTube (com.google.android.youtube.tv) and
+# Google Play Movies & TV (com.google.android.videos) are disabled because SmartTube is used instead;
+# Chromecast, AirPlay and the game bar are KEPT (commented out below).
+#
+# Settings > Accounts & profiles: disabling the stock launcher (com.google.android.apps.tv.launcherx) empties that
+# list, but the accounts stay stored (dumpsys account still lists them). Enabling launcherx brings the list back and
+# takes Home back (it wins HOME at priority 2, set-home-activity does not override it). To switch profile:
+# pm enable com.google.android.apps.tv.launcherx, switch, then pm disable-user it again and set-home-activity last.
+# Not in UK builds: com.tcl.hotelmenu and au.com.stan.and (harmless "Unknown package" errors).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-c845x2-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-c845x2-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Keep: com.tcl.tv, com.tcl.tvinput, com.tcl.dashboard, com.tcl.suspension, com.tcl.autopair,
+# com.tcl.systemserver, com.tcl.providers.config, com.tcl.initsetup, com.tcl.useragreement,
+# com.tcl.globalkeyoverlay, com.tcl.systemui.plugin, com.tcl.factory.view, com.tcl.inputmethod.international
+# (the keyboard), com.tcl.eva, com.tcl.hearaid (sound/accessibility + TCL wireless speakers),
+# com.tcl.t_solo, tv.mopa.ginga (broadcast middleware) and all com.mediatek.* except AirPlay.
+# Firmware updates arrive through Google Play Services (no separate TCL updater on this set).
+# Also keep com.google.android.tv.remote.service: despite the name ("phone-app remote") it holds
+# AtvSearchAssistantService, which carries the Bluetooth remote's mic button. Disabled, the mic did nothing.
+# Keep com.tcl.suspension too: it IS the source panel the remote's Input button opens.
+#
+# Applied and verified on a real unit on 2026-10-20: Wi-Fi, HDMI switching (Inputs menu), Assistant,
+# Disney+/Netflix playback with AdGuard Private DNS, and the launcher's clock screensaver all worked.
+#
+# Known quirks on this firmware:
+# - The remote (BT_RC833_A1) sends KEYCODE_TV_INPUT for Input, and TCL's input policy hands it to
+#   com.tcl.suspension before accessibility services see it, so INPUT_KEY_SERVICE=1 can't redirect it.
+#   The Input button keeps opening TCL's source panel; the launcher's Inputs pill opens the glass menu.
+# - With com.tcl.interactive disabled, com.tcl.tv logs "tias_sdk getService failure" ~10x/s for a few
+#   seconds when the TV player starts, then stops. CPU on HDMI measured the same (~23%) with it on or off.
+# - Disabling dreamx: set screensaver_components to com.gathin.tvhome/.ClockDream first.
+
+# TCL tracking and analytics
+com.tcl.ttvs                           # Samba TV ACR viewing tracking, TCL "BI" analytics, Alexa core, T-Cast
+com.tcl.logkit                         # log capture and upload
+com.tcl.usercenter                     # TCL account sign-in nags
+
+# TCL content, ads and promos
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.interactive                    # TCL TIAS background service
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+
+# Retail demo / hotel mode
+com.tcl.exhibit
+com.tcl.esticker
+com.tcl.hotelmenu
+
+# Preloaded apps and services
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide
+com.tcl.smartalexa                     # Alexa
+com.tcl.guard                          # TCL "cleaner" / app manager
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup        # partner attribution
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.videos         # Google Play Movies & TV / Google TV app (movies you bought now play in YouTube)
+au.com.stan.and                        # Stan
+
+# Off by choice on this unit (casting, mirroring and extras not used here)
+# com.google.android.apps.mediashell     # Chromecast
+# com.tcl.airplay2                       # AirPlay, together with the next two lines
+# com.mediatek.AirplayAPK
+# com.mediatek.airplaydaemon
+com.tcl.miracast                       # Miracast screen mirroring
+com.tcl.magiconnectfree                # TCL T-Cast / Magiconnect phone mirroring
+# com.tcl.gamebar                        # game mode / VRR overlay for consoles
+com.tcl.ui_mediaCenter                 # USB media player
+com.tcl.gallery                        # USB photo gallery + TCL screensaver
+com.tcl.UpdatePeripheral               # TCL soundbar firmware updates
+com.google.android.youtube.tv          # YouTube (this owner uses SmartTube); comment out to keep it
+
+# Needed for the custom launcher. Disable only AFTER launcher/ is installed and set as Home:
+# with launcherx gone, setupwraith's RecoveryActivity claims HOME at priority 1 (blank screen).
+com.google.android.apps.tv.dreamx      # ambient screensaver (promos); switch screensaver_components first
+com.google.android.tungsten.setupwraith
+# com.spocky.projengmenu   # Projectivy Launcher: installed by the owner, not a preload; left out of the shared list
+
+# Kept on this unit: uncomment if you don't use them
+# com.google.android.tv.remote.service # phone-app remote AND the BT remote's mic button (see above)
+# com.google.android.katniss           # Google Assistant voice (mic button)
+# com.netflix.ninja                    # Netflix, together with the next line
+# com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom    # Prime Video

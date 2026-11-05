@@ -1,0 +1,46 @@
+# Skyworth SWTV-22AE-FHD (codename umeda, MediaTek), Google TV / Android 14 (SDK 34),
+# firmware UKNV.260211.001.
+# Live TV app: com.mediatek.wwtv.tvcenter (set it as live_tv_package and hide it in launcher config.xml).
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh and build-and-install.sh:
+#   STOCK_LAUNCHER=com.google.android.apps.tv.launcherx launcher/build-and-install.sh).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-swtv-22ae-fhd/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-swtv-22ae-fhd/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Keep (TV needs them):
+# com.smartdevice.global.service (handles SkwGlobalKeyReceiver, OneKeyMenuDialog, remote keys)
+# com.skyworth.backligthadjust (backlight control)
+# com.smartdevice.bleconnectservice (SkyAutoPair bluetooth remote pairing)
+# com.mediatek.* (LiveTV, tuners, video player services)
+# com.google.android.katniss (Google Assistant - kept per user choice)
+# com.google.android.apps.mediashell (Chromecast built-in - kept per user choice)
+# com.google.android.inputmethod.latin (Gboard on-screen keyboard)
+
+# Skyworth / Coocaa factory test & store demo apps
+com.coocaa.demonow.lightining
+fusion.android.tv.demo
+com.smartdevice.factory
+mediatek.factorymenu.ui
+
+# Skyworth telemetry, ads, recommendation rows
+com.smartdevice.aftersale
+com.smartdevice.recordactivation
+com.smartdevice.dailymanage
+com.smartdevice.dailyshortcut
+com.smartdevice.recommendation
+com.smartdevice.leanbacklauncher.customizer
+com.smartdevice.myapp
+com.Smartdevice.emanual
+
+# Google feedback
+com.google.android.feedback
+
+# Google TV setup wizard: RecoveryActivity claims Home with priority 1.
+# Must be disabled to free Home and prevent crash loops on Google TV 14!
+# Trade-off: disabling setupwraith gives Home back but costs casting (Chromecast built-in may stop working); re-enable it if you need casting.
+com.google.android.tungsten.setupwraith
+
+# Preloaded / unused apps (user opted out)
+com.google.android.play.games
+com.google.android.youtube.tvmusic

@@ -1,0 +1,16 @@
+{
+  "key_filter": false,
+  "app_library": true,
+  "live_tv_package": "com.jamdeo.tv.livetv",
+  "source_panel_service": "com.hisense.tv.inputs/com.hisense.tv.InputsUIService",
+  "source_panel_action": "com.hisense.tv.start_inputs",
+  "hidden_apps": [
+    "com.jamdeo.tv.vod",
+    "com.jamdeo.tv.livetv",
+    "com.hisense.tv.inputs",
+    "com.keylab.speech.view.vidaa",
+    "com.hisense.tv.globalui",
+    "com.hisense.uifac",
+    "com.hisense.tv.mirror"
+  ]
+}

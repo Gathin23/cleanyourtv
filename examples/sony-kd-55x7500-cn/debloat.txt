@@ -1,0 +1,36 @@
+# Sony KD-55X7500, China; Android TV 9 (API 28).
+# Firmware: BRAVIA_ATV3_4K_CN-user 9 PTT1.190515.001.S43 671651 release-keys
+# Android model: BRAVIA 4K GB ATV3; product: BRAVIA_ATV3_4K_CN.
+# The owner reports the retail model as KD-55X7500, without a letter suffix.
+#
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-55x7500-cn/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-55x7500-cn/debloat.txt com.google.android.tvlauncher
+# Reversible disables only. Comment out any feature you use before applying.
+#
+# These ten packages were disabled and checked on the TV on 2026-10-20.
+# Firmware, disabled state and custom Home were checked again over ADB on 2026-10-25.
+# On 2026-10-25, after several days of use, the owner reported that the remote,
+# HDMI inputs, networking and everyday apps worked, with no packages re-enabled.
+# Stock Home: com.google.android.tvlauncher/.HomeScreen. The custom launcher
+# was installed and verified first; set-home-activity alone did not take over,
+# so the stock launcher was disabled separately by the launcher setup.
+# Live TV and HDMI: com.sony.dtv.tvx -- keep it and its input services enabled.
+# Firmware updates, remote/Bluetooth pairing, keyboard, networking, casting,
+# USB media and user-installed streaming/music apps are outside this list.
+# China firmware differs from the EU/US ATV3 lists: do not apply those blindly.
+#
+# Sony content and recommendation surfaces
+com.sony.dtv.sonyselect                       # Sony Select
+com.sony.dtv.discovery                        # Sony Discover
+com.sony.dtv.bivlinfo                         # Sony content information/recommendations
+com.google.android.tvrecommendations         # Android TV recommendation rows
+
+# Store demonstration components
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+
+# Bug reporting and device agents
+com.sony.dtv.sonybugreportsys                 # Sony bug-report service
+com.sony.dtv.da.service                       # Sony device agent
+com.qterics.da.product                        # Qterics device agent

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65QM8L (Smart TV Pro, G17, G17_4K_US, MediaTek tcl9655), 2025, US",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "G17 board on US firmware UTT2.250416.001 AU27, the [65C8L](tcl-65c8l-google-tv/) list minus three packages the US build lacks (24 disabled, all survived a reboot); Samba TV ACR, TCL promos/FAST channels and the message hub, store/hotel demo, partner auto-installs, soundbar updater, a preloaded AstroTV service; Assistant, Chromecast, AirPlay, Miracast and streaming apps kept; Wireless debugging only; setupwraith owned the Wi-Fi network, re-join before disabling it; Settings/TV-guide/Netflix/Prime/YouTube buttons remapped by keycode in config.json, and the key helper costs continuous volume-repeat; HDMI input names are in `tv_input_custom_labels`; AdGuard Private DNS works; single-session test"
+}

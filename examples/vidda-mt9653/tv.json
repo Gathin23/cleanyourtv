@@ -1,0 +1,6 @@
+{
+  "tv": "Vidda VIDAA_TV (Hisense sub-brand; device MT9653, board mt5879), China JuUI",
+  "os": "Android TV 11",
+  "brand": "Vidda",
+  "notes": "First JuUI-namespace list (`com.jamdeo.*`): telemetry, Alibaba/CIBN shopping and ad services, operator widget rows, retail/hotel/factory, the 拍信创意 ad screensaver, and two vendor homes (`com.jamdeo.tv.vod`, `com.keylab.speech.view.vidaa` secondscreen, which boots by component name and can only be disabled as a package); `com.hisense.tv.tiletransition` must stay or input switching silently stops working; Home key arrives as KEYCODE_F12 (scancode 102); source panel is the only input path (no TvInputManager); `ro.adb.secure=0`; 3.8 GB"
+}

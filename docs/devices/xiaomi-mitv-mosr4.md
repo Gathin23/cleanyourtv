@@ -34,7 +34,7 @@ keeps that owner (same network ID). Forget it and join again; it then belongs to
 | Netflix | `000c008e` | 193 `BUTTON_6` |
 | Prime Video | `000c00b0` | 194 `BUTTON_7` |
 
-With launcherx disabled all five do nothing. They are global keys for
+With launcherx disabled all five do nothing on this build (`1585`). They are global keys for
 `com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver`, which starts launcherx
 activities and crashes. After a few crashes Android stops starting it:
 
@@ -42,6 +42,17 @@ activities and crashes. After a few crashes Android stops starting it:
 Unable to launch app com.xiaomi.android.tvsetup.partnercustomizer/1000 for broadcast
   Intent { act=android.intent.action.GLOBAL_BUTTON ... }: process is bad
 ```
+
+Which of them die is a build difference, so read logcat before installing anything. On
+build `RTM5.220609.003.1493` (launcher 3.0, [#1983](https://github.com/Gathin23/cleanyourtv/issues/1983))
+only the YouTube button was dead: the Netflix and Prime Video buttons still opened their apps with
+no helper installed. The YouTube press stopped in the firmware's own key handler -
+`WindowManager: interceptKeyTq keycode=190` and
+`MiTVWindowPolicyInjector: mKeyHandlerManager.handleAction190`, with no `GLOBAL_BUTTON` line and no
+activity start - while Netflix logged a `GlobalKey` line (`start netflix by key`). A `GLOBAL_BUTTON`
+line means the key reached the Xiaomi receiver and died with launcherx; a press that stops at
+`handleAction<N>` is one the key helpers have to take, and 190 is the key `app_keys` carries below.
+On that unit the helpers were not tried for 190, because they cost the volume's live repeat (below).
 
 Catch the keys before they get there:
 
@@ -54,6 +65,14 @@ TV_HOST=<tv ip> tools/theme.sh examples/xiaomi-mitv-mosr4
 the real remote (no `GLOBAL_BUTTON` lines, no crashes), using an equivalent key filter in a
 stand-alone launcher; not yet with `com.gathin.tvhome`. The Netflix button went to this receiver,
 not to overseaservice. The mic button keeps working.
+
+Both helpers cost the remote's live key repeat on this set: holding volume up or down moves one step
+per press, with `InputKeyService` alone as well as with both, and `dumpsys accessibility` shows the bound
+service at `capabilities=8` (`CAPABILITY_CAN_FILTER_KEY_EVENTS`) - [#944](https://github.com/Gathin23/cleanyourtv/issues/944).
+The bisect, the ways back to either behaviour and the way the repeat is lost are in
+[the G09 note](tcl-55p71b-g09-key-repeat.md). The empty-list control was not tried here: clearing the
+list unhooks the buttons this section installs the helpers for, so "the ramp returns with nothing bound"
+is that note's measurement, not this set's.
 
 ## Other
 

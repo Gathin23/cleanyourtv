@@ -3,18 +3,40 @@
 # MediaTek mt5877, 4 GB RAM.
 # Disabled on 2026-10-20 in batches; after each batch Home, Xiaomi settings, HDMI 1 and the
 # screensaver were checked. All but com.xiaomi.tv.gallery (added last) were also checked after a reboot.
-# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode) - KEEP IT ENABLED, see
-# "Home" below. This list is debloat only.
+# Stock launcher: com.mitv.tvhome (HOME activity .MainActivityUserMode). This list leaves it enabled;
+# disable it only after the allowlisted launcher build in "Home" below is installed.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mffu0/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mffu0/debloat.txt com.mitv.tvhome
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Notes from this firmware:
-# - Home: unlike MiTV-ANSP0, a sideloaded launcher cannot become Home here. HyperOS drops the HOME
-#   activities of ordinary (non-system) apps from resolution, and it refuses them as the preferred
-#   home, so `cmd package set-home-activity` does not help. With com.mitv.tvhome disabled, Home
-#   lands on com.xiaomi.mitv.settings/.entry.FallbackHome, a black screen.
+# - Home: HyperOS keeps only system apps and package names on Xiaomi's third-party-home allowlist as
+#   HOME candidates (ResolveIntentHelper.chooseBestActivity; the list is
+#   /data/system/mitv_security_center.xml, pushed by cloud control, not readable from the shell). It is
+#   the mechanism documented for MiTV-AETP0 (docs/devices/xiaomi-mitv-aetp0-dofus.md). The standard
+#   com.gathin.tvhome build installs and opens, but `cmd package set-home-activity` prints Success and
+#   changes nothing, and with com.mitv.tvhome disabled Home lands on
+#   com.xiaomi.mitv.settings/.entry.FallbackHome, a black screen.
+#   What works: the launcher built under an allowlisted package name, with com.mitv.tvhome disabled.
+#   This set has used it as Home since 2026-10-20, and boots straight into it: after a full reboot on
+#   2026-10-22 the system started it as Home at systemReady, with no FallbackHome or chooser.
+#     tools/tv.py 'pm path com.thunderstone.idun.dev'       # must print nothing
+#     (cd launcher && ./gradlew assembleRelease -PlauncherApplicationId=com.thunderstone.idun.dev)
+#     install the APK as in the AETP0 note, then: pm disable-user --user 0 com.mitv.tvhome
+#     cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME
+#       -> com.thunderstone.idun.dev/com.gathin.tvhome.MainActivity
+#   Unlike AETP0, the stock launcher must be disabled: with both enabled, Home opens the system's
+#   launcher chooser, because a third-party preferred Home is refused. Re-enabling com.mitv.tvhome (as a
+#   firmware update might) brings the chooser back; disabling it again restores the launcher.
+#   The allowlist is printed at boot: `logcat -d | grep 'MitvConfigParser: \[White\]'` soon after a
+#   boot gives <package>=<flags> lines, and Home needs the flag value 4 set (flags & 4). 42 of the 125
+#   entries here have it, com.ts.launcher (511) among them, but only com.thunderstone.idun.dev (511) was
+#   tested. The check is on the package name only, not the signature. tools/theme.sh and
+#   launcher/build-and-install.sh still use com.gathin.tvhome; a theme overlay for this build goes in
+#   /sdcard/Android/data/com.thunderstone.idun.dev/files/config.json.
+#   Undo: pm enable com.mitv.tvhome, then remove com.thunderstone.idun.dev like any app you installed
+#   (with both present Home shows the chooser).
 # - Network ADB (port 5555) closes on every reboot; re-enable it in
 #   Settings -> 账号与安全 (Account & Security) -> ADB 调试 after each power cycle.
 # - Not touched: mitv.service, com.xiaomi.mitv.tvplayer (input switching, HDMI/AV/DTMB),

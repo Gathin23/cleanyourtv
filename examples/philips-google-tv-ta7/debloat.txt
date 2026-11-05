@@ -29,6 +29,23 @@
 # - KEYCODE_GUIDE and KEYCODE_NOTIFICATION are global keys of launcherx; this remote does not send them.
 # - setupwraith owned one old saved network (not the one in use), and only that entry was deleted.
 #
+# Second set: Philips 55PUD7908/77, Latin America, same device and build (software
+# TPM237L_R.101.000.072.000, security patch 2026-03-05). Debloated on 2026-10-20 with the core of this
+# list (candeebug, gel, consentcmpapp, opapp, play.games, printspooler, Netflix, the Google TV films app,
+# setupwraith, launcherx) plus feedback, feedbackconsent, dreamx, fusion.android.tv.demo and
+# org.droidtv.eum, and a custom launcher; lived with since then through daily use and several reboots.
+# Nothing had to be re-enabled because something broke. Checked there as well:
+# - org.droidtv.eum (e-manual) is safe to disable on this firmware: the Source key and tvcenter's inputs
+#   panel still open.
+# - Live TV: tvcenter ignores TvContract.buildChannelsUriForInput(<tuner>) and stays on the last HDMI
+#   source, but switches to the tuner with TvContract.buildChannelUriForPassthroughInput(<tuner input id>)
+#   (TunerInputService/HW0 or HW8; it picks the right one itself). HDMI 1-4 are HDMIInputService/HW4..HW7.
+# - Location: Play Services re-applies the Google account's location consent at every boot
+#   (LocationConsentTransfer), so `cmd location set-location-enabled true` does not survive a reboot and
+#   apps read the Wi-Fi name as "<unknown ssid>" unless Location is turned on in Settings.
+# - The Settings key fix is the same: an accessibility service filtering KEYCODE_SETTINGS, checked with
+#   the real remote (`input keyevent` bypasses accessibility filters).
+#
 # Kept on purpose: org.droidtv (TPVTvService, sees every key press), org.droidtv.icp (persistent
 # sign-on service, purpose unclear), org.droidtv.ambisvc (Ambilight/Lounge), org.droidtv.eum (user
 # manual; hidden in the launcher instead), com.mediatek.tv.service (hot keys, Netflix key, TV agent),

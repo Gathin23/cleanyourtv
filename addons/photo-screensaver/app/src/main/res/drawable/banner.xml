@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 320x180, as Android TV banners are: one framed picture on a dark blue field. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#FF14213D" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFF2F2F2" android:pathData="M100,30h120v120h-120z" />
+    <path android:fillColor="#FF5B8DEF" android:pathData="M108,38h104v104h-104z" />
+    <path android:fillColor="#FFFFC857" android:pathData="M180,70m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0" />
+    <path android:fillColor="#FF2E5E3E" android:pathData="M108,142l34,-44l26,28l18,-16l26,32z" />
+</vector>

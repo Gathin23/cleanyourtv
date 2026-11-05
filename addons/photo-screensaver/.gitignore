@@ -1,0 +1,5 @@
+# Local build output and your own pictures stay out of git.
+.gradle/
+build/
+local.properties
+/pictures/

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65C735 (Smart TV Pro, G05, MediaTek), France; also TCL 55C728, Turkey, TCL 65C935, France, and TCL 65C745, France",
+  "os": "Google TV 11",
+  "brand": "TCL",
+  "notes": "TCL analytics, TGuard, promo dashboard and content feed, unused preloads; voice and AirPlay off by choice, Chromecast and Miracast kept; launcherx + setupwraith off (survived reboot); remote app buttons need launcherx (keycodes noted); USB port goes to gadget mode after a reboot with USB debugging on; on the 55C728 and 65C935 ttvs stays (it holds the system updater) and config.json maps the remote's buttons; the 65C935 notes a second setupwraith-owned SSID cleared with `cmd wifi forget-network`, Input 178, and HomeKeyService left unbound after a theme push; the 65C745 notes its source button's scancode 365 and the volume stepping twice with a key helper bound"
+}

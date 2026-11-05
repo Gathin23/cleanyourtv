@@ -1,0 +1,82 @@
+# TCL 75P8K, Europe / Nordics (device G10, product G10_4K_GB / C6KS, model "Smart TV Pro", Realtek RTD2875P / rtd6748)
+# Android 12 (Google TV, SDK 31), firmware STT2.230203.001 AS50, software V8-R75PT01-LF1V534 (client TCL-EU-RTD75P-S1)
+# Same Realtek G10 platform as tcl-g10-google-tv/, tcl-55p7k/ and tcl-55p8ls/, with European / Nordic preloads
+# (Rakuten TV, discovery+, Yle Areena, TVPlayer) and nothing disabled at the factory (0 packages disabled out of 151).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-75p8k/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-75p8k/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Applied in batches and verified across reboots with a custom launcher as Home.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Keep: com.tcl.tv, com.tcl.tvinput, com.tcl.suspension (the Input/source picker, com.android.tv.action.VIEW_INPUTS —
+# initially disabled and re-enabled after the remote's Input button stopped working), com.tcl.dashboard,
+# com.tcl.autopair, com.tcl.systemserver, com.tcl.providers.config, com.tcl.initsetup, com.tcl.factory.view,
+# com.tcl.globalkeyoverlay, com.tcl.inputmethod.international, com.tcl.hearaid, com.tcl.android.webview,
+# all com.realtek.* and com.tvos.
+# Kept by choice on this TV: com.tcl.airplay2 + com.realtek.airplay2 (AirPlay), com.google.android.apps.mediashell
+# (Chromecast), com.google.android.tv.remote.service (phone remote), com.google.android.katniss (Assistant),
+# Netflix, Prime Video, Disney+, Max, SkyShowtime, Spotify, Plex, YouTube, SVT Play, TV4 Play, UR Play, Viaplay.
+#
+# Known quirks on this firmware:
+# - Developer options has no separate Wireless/Network debugging toggle, but switching USB debugging ON
+#   opens network ADB on TCP port 5555 over Wi-Fi directly.
+# - `cmd package set-home-activity` prints Success, but launcherx keeps Home until it is disabled; then
+#   com.google.android.tungsten.setupwraith (`RecoveryActivity`) claims Home until setupwraith is disabled too.
+# - The Wi-Fi network saved during first-time setup belongs to setupwraith (`dumpsys wifi | grep -o 'cname=[^ ]*'`).
+#   Forget the network and re-join it in Settings > Network & Internet BEFORE disabling setupwraith (so the network
+#   is owned by com.android.tv.settings), or Android will delete the saved Wi-Fi network when setupwraith is disabled.
+# - com.tcl.suspension is TCL's Input/source picker (`VIEW_INPUTS`), not an ad overlay: keep it enabled.
+# - HDMI 1 is `com.tcl.tvinput/.passthroughinput.TvPassThroughService/HW15` (with HDMI-CEC child inputs under it).
+
+# TCL / Google tracking, analytics and consent prompts
+com.tcl.ttvs                           # TCL analytics service; re-enable if firmware updates stop arriving
+com.tcl.guard                          # TGuard memory/security agent
+com.tcl.usercenter                     # TCL account sign-in and analytics
+com.tcl.useragreement                  # TCL terms / consent prompts
+com.tcl.interactive                    # TCL TIAS background analytics service
+com.google.android.feedback
+com.google.android.partnersetup
+
+# TCL content, ads and overlays
+com.tcl.waterfall.overseas             # TCL Channel / content recommendation rows
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.gamebar                        # re-enable for the console game-mode overlay
+
+# Screensaver, accessibility and unused AOSP services
+com.google.android.apps.tv.dreamx      # ambient mode screensaver
+com.google.android.marvin.talkback
+com.android.printspooler
+com.android.wallpaper.livepicker
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+
+# Needed for a custom launcher. Disable only AFTER the new launcher is installed, and setupwraith only
+# after forgetting and re-joining Wi-Fi in Settings (see quirks).
+com.google.android.tungsten.setupwraith        # costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+com.google.android.apps.tv.launcherx
+
+# Disabled by choice on this TV (unused regional streaming preloads and games): comment out what you use
+tv.wuaki.apptv                         # Rakuten TV
+com.discovery.dplay                    # discovery+
+com.yle.webtv                          # Yle Areena
+ar.tvplayer.tv                         # TVPlayer
+com.google.android.play.games
+
+# Also present on this firmware (untested on this unit; disabled on tcl-55p8ls/ and tcl-55p7k/)
+# tv.samba.ssm.ui                      # Samba TV ACR viewing tracking
+# com.tcl.logkit                       # log capture and upload
+# com.tcl.tv.tclhome_passive           # pushes TCL content to the home screen at boot
+# com.tcl.partnercustomizer            # TCL tweaks to Google TV home rows
+# com.tcl.messagebox                   # TCL push messages and promos
+# android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+# com.tcl.exhibit                      # retail demo mode
+# com.tcl.esticker                     # retail e-sticker overlay
+# com.tcl.ocean.instructions           # e-manual
+# com.tcl.repairguide
+# com.tcl.UpdatePeripheral             # soundbar peripheral updater
+# com.tcl.smartalexa                   # Alexa
+# com.tcl.t_solo                       # T-Solo "listen alone"
+# com.tcl.magiconnectfree              # MagiConnect / T-Cast companion
+# com.tcl.miracast                     # screen mirroring from Android phones

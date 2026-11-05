@@ -72,8 +72,10 @@ A label is rejected when:
 - it contains `verified` or `official` anywhere: words that imply endorsement are reserved, and
   nothing a module declares is ever presented as endorsed (the same two words are refused in the
   caption);
-- it is one of the names the launcher's own UI uses, in English or in the TV's language:
-  `Home`, `Settings`, `Inputs`, `Wi-Fi`, `Live TV`, `Default home`, `Clock`, `cleanyourtv`, `tv-vibehack`;
+- it is one of the names the launcher's own UI uses, in English or in the TV's language: what its
+  pills and dialogs say (`Home`, `Settings`, `Inputs`, `Wi-Fi`, `Live TV`, `App library`,
+  `Choose default home`), the name of the clock screensaver in the TV's screensaver picker (`Clock`),
+  `Default home` word for word, and the two project names `cleanyourtv` and `tv-vibehack`;
 - it names an input the Inputs menu shows: `HDMI` and anything starting with it, `AV`;
 - while the prompt is due (a new card, or one whose signing key or label changed): it equals the label of
   another app installed on this TV (the names on the home screen), or the app's own label equals

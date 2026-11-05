@@ -1,0 +1,81 @@
+# Motorola SWTV-24AE-4K (Skyworth OEM, device eleonas, product SW10_TG, MediaTek merak), India
+# Google TV 14 (API 34), build UKN7.260716.014 (incremental 16009744), security patch 2026-08-01.
+# Same eleonas board as examples/skyworth-swtv-24ae-4k-nf, but the Motorola product SW10_TG on a newer build.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/motorola-swtv-24ae-4k/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/motorola-swtv-24ae-4k/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Applied 2026-10-22 in batches with a screenshot after each, then the CleanYourTV launcher. Home, D-pad,
+# Inputs, YouTube, casting and the clock screensaver checked, and everything held over several reboots.
+#
+# Stock launcher:   com.google.android.apps.tv.launcherx
+# Setup wizard:     com.google.android.tungsten.setupwraith (claims HOME)
+# Live TV / tuner:  com.cltv.hybrid (iWedia CanaliTV), with com.cltv.mal
+# HDMI/AV inputs:   com.mediatek.tis
+# Remote:           the Settings (gear) button sends keycode 83 (KEYCODE_NOTIFICATION); it needs HomeKeyService
+#                   (settings_key_keycodes 83). With the helper on, a held volume key steps only once.
+#
+# Quirks on this firmware, all seen on the TV:
+# - com.netflix.ninja is turned back on by the firmware at every boot. Disabling it only lasts until the
+#   next restart; block it from running in the background instead if you never use it:
+#   `cmd appops set com.netflix.ninja RUN_ANY_IN_BACKGROUND ignore`, the same for RUN_IN_BACKGROUND, then
+#   `cmd appops write-settings` (undo: set both back to `default`). That freed about 50 MB of RAM.
+# - Wi-Fi joined in the first-run wizard belongs to setupwraith, and Android forgets it the moment setupwraith
+#   is disabled. Check `dumpsys wifi | grep -o 'cname=[^ ]*'`: if it is not android.uid.system, forget the
+#   network and join it again in Settings before setupwraith goes.
+# - The ambient glow costs about 22 ms a frame on this GPU (~45 fps). reduced_motion true with
+#   focus_overshoot false keeps the glow at 11 ms a frame (60 fps).
+#
+# Disabled from the factory on this unit, so NOT listed here (restore.sh would turn them ON):
+#   com.mediatek.tv.oneworld.tvcenter, com.mediatek.tv.retaildemo, com.mediatek.opapp,
+#   com.mediatek.dtv.tvinput.atsctuner, com.mediatek.dtv.tvinput.isdbtuner and five jp.co.sharp.* demo apps.
+#
+# Kept on purpose: com.mediatek.tis (HDMI/AV), com.tianci.localmedia (USB media), com.mediatek.extservice
+#   and com.dolby.android.audio.service (HDMI-CEC/ARC and audio), com.smartdevice.global.service,
+#   com.mediatek.autopair and com.mediatek.tv.agent (remote, pairing, hot keys), com.smartdevice.dailyshortcut
+#   (quick menu), com.mediatek.tv.systemupdater (firmware updates), Play Store, Play Services, keyboards.
+
+# Skyworth telemetry and activation
+com.smartdevice.recordactivation             # records first activation, phones home on boot
+com.smartdevice.aftersale                    # "after-sale" service: boot + network receivers, can install APKs
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Android ad and personalisation services
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Skyworth content rows and analytics
+com.smartdevice.recommendation               # promo rows on home, bundles Sensors Data analytics
+com.smartdevice.leanbacklauncher.customizer  # partner config that injects sponsored rows into the home screen
+
+# Not needed on a TV
+com.Smartdevice.emanual                      # on-screen manual
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.smartdevice.dailymanage                  # TV Guard / cleaner
+com.smartdevice.myapp                        # Skyworth app manager
+com.google.android.play.games                # Google Play Games
+tv.mopa.ginga                                # Brazilian Ginga interactive TV, not used in India
+org.obs.mhegservice                          # UK MHEG interactive TV, not used in India
+
+# Ask the owner first: these depend on what is used. Uncomment only what the owner does NOT use.
+# This unit's owner disabled all of them except the Chromecast, mirroring and screensaver lines.
+# com.audiocn.karaoke.global.micmanager      # karaoke microphone manager
+# com.loostone.tuning                        # karaoke microphone tuning
+# com.amazon.amazonvideo.livingroom          # Prime Video
+# com.netflix.ninja                          # Netflix; the firmware turns it back on at every boot (see above)
+# com.netflix.tokenmanager                   # Netflix sign-in helper, goes with Netflix
+# com.google.android.youtube.tvmusic         # YouTube Music
+# com.google.android.katniss                 # Google Assistant: the remote's mic button stops working
+# com.google.android.apps.mediashell         # Chromecast built-in (cast from a phone)
+# com.mediatek.dialservice                   # DIAL, used with Chromecast to start apps from a phone
+# com.smartdevice.dtv.icast                  # screen mirroring (Miracast / DLNA)
+# com.google.android.apps.tv.dreamx          # Google screensaver / Ambient mode
+
+# Stock Google TV home and setup wizard
+# Disable only after installing and verifying the new launcher! Check the Wi-Fi owner first (see above).
+com.google.android.tungsten.setupwraith      # setup wizard; re-enable it before a factory reset
+com.google.android.apps.tv.launcherx         # stock Google TV launcher

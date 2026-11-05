@@ -1,5 +1,7 @@
 # onn 4K Streaming Box (2023, Walmart; device YOC, product onn_4k_gtv, Amlogic), 2 GB RAM
 # Google TV 14 (SDK 34), build URO4.260304.011.B1.15051976
+# Second unit: same model, device and build, Vietnam, 32-bit userspace (armeabi-v7a, zygote32), remote
+# "Onn-Remote Keyboard" (Vendor_0957_Product_0005.kl). Its notes are marked "second unit" below.
 #
 # Apply:   TV_HOST=<ip> tools/disable.sh examples/onn-4k-streaming-box-2023/debloat.txt
 # Undo:    TV_HOST=<ip> tools/restore.sh examples/onn-4k-streaming-box-2023/debloat.txt com.google.android.apps.tv.launcherx
@@ -14,9 +16,27 @@
 #   Find the box with `nc -z <lan>.x 5555` or `dns-sd -B _adb-tls-connect._tcp local.`.
 # - The Wi-Fi network saved during first setup belongs to setupwraith (dumpsys wifi: cname=...setupwraith).
 #   Forget and re-join it in Settings before disabling setupwraith, or the network is deleted.
+#   Second unit: this applies to every network saved during setup, not only the one in use - a second,
+#   out-of-range network saved at setup was still owned by setupwraith after the first was re-joined, and
+#   was deleted with it (`cmd wifi list-networks` lists them; check each one's cname in `dumpsys wifi`).
 # - As on the Chromecast, setupwraith's RecoveryActivity takes Home until setupwraith is disabled.
 # - Unlike the Chromecast, the remote's app buttons and mic keep working with launcherx disabled
 #   (com.gretzky.GlobalKey handles them; keep it). No key-mapper workaround needed.
+#   Second unit: not with its remote. Its YouTube button (KEYCODE_BUTTON_3, usage 0x0c0077), profile button
+#   (KEYCODE_PROFILE_SWITCH, 0x0c019c) and MACRO_1 (0x0c0186) are global keys routed to launcherx, and its
+#   Settings button (KEYCODE_NOTIFICATION 83, 0x0c009f) goes to com.droidlogic's receiver, which opens
+#   launcherx's quick settings: all four do nothing once launcherx is disabled (`dumpsys window policy` lists
+#   the routing). HOME_KEY_SERVICE=1 with settings_key_keycodes [83] and app_keys
+#   ["KEYCODE_BUTTON_3:com.google.android.youtube.tv", "KEYCODE_PROFILE_SWITCH:<app>"] brings them back, but
+#   the bound helper costs held-key repeat on this box (Volume Up moves one step per press), as on the TCL G09.
+#   The mic itself keeps working.
+# - Second unit: voice search for songs and videos needs launcherx. With it disabled, saying a title gives
+#   "Google Assistant is having trouble processing your request" (logcat: provider.OPEN UNKNOWN_ERROR); app
+#   commands ("open YouTube") still work. See docs/TROUBLESHOOTING.md. Apps only mode (Settings > Accounts)
+#   is no way out: on this build it switches the Assistant off.
+# - Second unit: casting with setupwraith disabled was not tested. On the Chromecast with Google TV the Cast
+#   receiver loses its device credentials with setupwraith (docs/TROUBLESHOOTING.md); check before relying on it.
+# - Second unit: `com.google.android.videos` is not preinstalled.
 #
 # Kept on purpose: Google Assistant (com.google.android.katniss), Cast receiver
 # (com.google.android.apps.mediashell), onn update prompts (com.onn.updatenotification), com.gretzky.GlobalKey (onn remote app buttons), com.gretzky.hwinfo,
@@ -27,6 +47,12 @@
 # Telemetry and feedback
 com.google.android.feedback
 com.android.tv.feedbackconsent
+
+# Privacy Sandbox / federated learning (second unit; also on the onn 4K Plus list, same build). APEX modules
+# under com.android.* names. Play Store, voice search (with launcherx enabled) and YouTube kept working.
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
 
 # Preloaded apps
 com.google.android.play.games

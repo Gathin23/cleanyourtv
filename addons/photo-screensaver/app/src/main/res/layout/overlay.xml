@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- On top of the pictures (Scene): the month and year of the picture, the bottom line with the time, the date
+     and the weather, and where to put pictures when there are none. Each part only when its option is on. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false">
+
+    <View
+        android:id="@+id/bottomFade"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_fade" />
+
+    <TextView
+        android:id="@+id/caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="40dp"
+        android:textColor="#F2FFFFFF"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:shadowColor="#CC000000"
+        android:shadowRadius="8" />
+
+    <LinearLayout
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_title"
+            android:textColor="#F2FFFFFF"
+            android:textSize="28sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/empty_body"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/emptyPath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="monospace" />
+    </LinearLayout>
+
+    <!-- Moved a little every minute so it does not burn in. -->
+    <LinearLayout
+        android:id="@+id/bottomLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="40dp"
+        android:baselineAligned="true"
+        android:orientation="horizontal">
+
+        <TextClock
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="h:mm"
+            android:format24Hour="HH:mm"
+            android:textColor="#F2FFFFFF"
+            android:textSize="56sp"
+            android:fontFamily="sans-serif-light"
+            android:includeFontPadding="false"
+            android:shadowColor="#99000000"
+            android:shadowRadius="6" />
+
+        <TextClock
+            android:id="@+id/ampm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:format12Hour="a"
+            android:format24Hour=""
+            android:textAllCaps="true"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:shadowColor="#99000000"
+            android:shadowRadius="6" />
+
+        <TextClock
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:format12Hour="@string/date_format"
+            android:format24Hour="@string/date_format"
+            android:letterSpacing="0.14"
+            android:textAllCaps="true"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:shadowColor="#99000000"
+            android:shadowRadius="6" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#F2FFFFFF"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-light"
+            android:shadowColor="#99000000"
+            android:shadowRadius="6" />
+    </LinearLayout>
+</FrameLayout>

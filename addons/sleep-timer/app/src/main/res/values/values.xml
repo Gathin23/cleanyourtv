@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sleep Timer</string>
+    <string name="hint">Choose when the TV goes to standby. A warning shows one minute before.</string>
+    <string name="in_minutes">%1$d min</string>
+    <string name="cancel">Cancel the timer</string>
+    <string name="state_off">No timer set.</string>
+    <string name="state_on">Standby at %1$s.</string>
+    <string name="no_service">The Sleep Timer accessibility service is off (run the install script).</string>
+    <string name="warning_title">The TV is turning off</string>
+    <string name="warning_seconds">in %1$d seconds</string>
+    <string name="more">15 more minutes</string>
+    <string name="now">Turn off now</string>
+    <string name="service_label">Sleep Timer</string>
+    <string name="quick_hint">◀ ▶ pick a time · OK close</string>
+    <string name="service_description">Only puts the TV in standby when the Sleep Timer ends. It does not read the screen.</string>
+
+    <style name="Warning" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+</resources>

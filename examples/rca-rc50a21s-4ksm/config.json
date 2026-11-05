@@ -1,0 +1,10 @@
+{
+  "dock_apps": ["com.google.android.youtube.tv", "com.netflix.ninja", "com.amazon.amazonvideo.livingroom", "com.android.vending"],
+  "live_tv_package": "",
+  "source_panel_service": "com.toptech.tvmenu/.input.InputActivity",
+  "source_panel_action": "com.toptech.tv.action.INPUT_ACTIVITY",
+  "columns": 4,
+  "rows_below_dock": 0,
+  "background_color": "#000000",
+  "wallpaper": false
+}

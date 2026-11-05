@@ -1,5 +1,5 @@
-# OnePlus TV (model D00, codename Dubai), Google TV / Android 14, firmware UTT1.240928.001
-# Live TV app: com.heytap.tv.livetv. Stock launcher: com.google.android.tvlauncher.
+# OnePlus TV (model D00, codename Dubai), Android TV 11 (build RTM1.210315.027) / Google TV 14 (build UTT1.240928.001)
+# Live TV app: com.heytap.tv.livetv. Stock launcher: com.google.android.tvlauncher or com.oneplus.tv.launcher.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/oneplus-tv-dubai/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oneplus-tv-dubai/debloat.txt

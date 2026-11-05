@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P)",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "Same G10 build as `tcl-g10-google-tv/` but logkit, Samba TV ACR and ttvs ship enabled; TCL Channel, push messages, TGuard, T-Solo, Alexa, hotel/demo; OSN+, Disney+ MEA, iQIYI off by choice; setupwraith before launcherx; Settings key is KEYCODE_NOTIFICATION, Web key 4159; TCL Audio Only turns the panel off with sound playing"
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv generator-info-name="tv-hub fixture">
+  <channel id="news.example"><display-name>Example News</display-name><icon src="http://192.168.1.10:8000/logos/news.png"/></channel>
+  <channel id="sport.example"><display-name lang="en">Example Sport</display-name></channel>
+  <channel id="movies.example"><display-name>Movies-Channel</display-name><display-name>Movies</display-name></channel>
+  <channel id="unused.example"><display-name>Nobody Watches</display-name></channel>
+  <programme start="20261022180000 +0000" stop="20261022190000 +0000" channel="news.example">
+    <title lang="en">Evening News</title><sub-title>Headlines</sub-title><desc lang="en">The day's news &amp; weather.</desc><category>News</category>
+  </programme>
+  <programme start="20261022190000 +0000" stop="20261022193000 +0000" channel="news.example"><title>Weather</title></programme>
+  <programme start="20261022180000 +0200" stop="20261022200000 +0200" channel="sport.example"><title>Match Day</title></programme>
+  <programme start="20261022180000" stop="20261022200000" channel="movies.example"><title>Feature Film</title></programme>
+  <programme start="20261022180000 +0000" stop="20261022190000 +0000" channel="unused.example"><title>Ignored</title></programme>
+  <programme start="20261030180000 +0000" stop="20261030190000 +0000" channel="news.example"><title>Too far ahead</title></programme>
+  <programme start="garbage" stop="20261022190000 +0000" channel="news.example"><title>Bad time</title></programme>
+  <programme start="20261022190000 +0000" stop="20261022180000 +0000" channel="news.example"><title>Stop before start</title></programme>
+</tv>

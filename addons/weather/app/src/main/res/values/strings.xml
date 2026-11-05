@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather</string>
+
+    <string name="feels_like">Feels like %1$d°</string>
+    <string name="humidity">Humidity %1$d%%</string>
+    <string name="wind">Wind %1$d km/h</string>
+    <string name="wind_mph">Wind %1$d mph</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Air quality %1$d · %2$s</string>
+    <string name="updated">Updated %1$s · Open-Meteo</string>
+    <string name="change_city">Change city</string>
+    <string name="loading">Loading the weather…</string>
+    <string name="offline">Can\'t reach Open-Meteo. Check the TV\'s internet connection; it tries again in 5 minutes.</string>
+
+    <string name="pick_title">Which city?</string>
+    <string name="pick_hint">City name, e.g. Ulaanbaatar</string>
+    <string name="pick_search">Search</string>
+    <string name="pick_none">No place called \"%1$s\"</string>
+    <string name="pick_first">Choose a city to see its weather.</string>
+
+    <string name="aqi_good">Good</string>
+    <string name="aqi_moderate">Moderate</string>
+    <string name="aqi_sensitive">Unhealthy for sensitive groups</string>
+    <string name="aqi_unhealthy">Unhealthy</string>
+    <string name="aqi_very_unhealthy">Very unhealthy</string>
+    <string name="aqi_hazardous">Hazardous</string>
+
+    <string name="sky_clear">Clear</string>
+    <string name="sky_sunny">Sunny</string>
+    <string name="sky_mostly_clear">Mostly clear</string>
+    <string name="sky_mostly_sunny">Mostly sunny</string>
+    <string name="sky_partly_cloudy">Partly cloudy</string>
+    <string name="sky_cloudy">Cloudy</string>
+    <string name="sky_fog">Fog</string>
+    <string name="sky_drizzle">Drizzle</string>
+    <string name="sky_freezing_drizzle">Freezing drizzle</string>
+    <string name="sky_light_rain">Light rain</string>
+    <string name="sky_rain">Rain</string>
+    <string name="sky_heavy_rain">Heavy rain</string>
+    <string name="sky_freezing_rain">Freezing rain</string>
+    <string name="sky_light_snow">Light snow</string>
+    <string name="sky_snow">Snow</string>
+    <string name="sky_heavy_snow">Heavy snow</string>
+    <string name="sky_snow_grains">Snow grains</string>
+    <string name="sky_showers">Showers</string>
+    <string name="sky_snow_showers">Snow showers</string>
+    <string name="sky_thunderstorm">Thunderstorm</string>
+</resources>

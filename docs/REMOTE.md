@@ -69,7 +69,7 @@ sudo tailscale set --advertise-routes=192.168.1.0/24
 ```
 
 Approve the route in your admin console: Machines → the helper → Subnets → Edit. You then reach the
-TV at its local address, e.g. `TV_HOST=192.168.1.40`.
+TV at its local address, e.g. `TV_HOST=192.168.1.50`.
 
 **The two networks must not overlap.** If their home uses the same range as yours (both
 `192.168.1.x`, say), your computer can't tell their TV from a device at home. Use option A, or
@@ -115,9 +115,27 @@ With option B, use the TV's local address instead of `100.x.y.z`.
 
 ## Afterwards
 
-1. They switch off USB debugging and Wireless debugging in Developer options. The launcher keeps
-   working.
-2. Remove the access: they revoke the share, or you remove the TV or the helper from your tailnet
+Close ADB as the [README](../README.md) FAQ "Isn't ADB access a security hole?" does, and check it
+before you remove the access: once the tunnel is gone, nobody can check from outside their home.
+`<tv ip>` is the address you connected to: `100.x.y.z`, or the TV's local address with option B.
+
+1. They switch off **USB debugging**, **Network/ADB debugging** and **Wireless debugging** in
+   Developer options, whichever the TV has, and revoke the USB debugging authorisations. The launcher
+   keeps working. If you connected through Wireless debugging, have them read you the port on the
+   Wireless debugging screen again just before they switch it off; mDNS doesn't cross the tunnel, so
+   only they can see it. Don't reuse the connect port from Connecting: Wireless debugging takes a new
+   port each time it starts, and on a
+   [TCL 65Q7D Pro](../examples/tcl-q7c-google-tv/README.md#connecting-wireless-debugging-only-and-its-port-moves)
+   it changed as soon as `tcpip 5555` restarted adbd. Check that port straight after Wireless
+   debugging goes off, before the reboot: `python3 tools/adb-closed.py <tv ip> <port>` must say that
+   port is closed.
+2. They reboot the TV. Once it is back on the tunnel, `python3 tools/adb-closed.py <tv ip>` must say
+   the port is closed, and Wireless debugging must still be off in Developer options. If it came
+   back, they switch it off and you check its new port as in step 1. With option A they may have to
+   open Tailscale on the TV again first: on an
+   [XGIMI Horizon S Pro](../examples/xgimi-horizon-s-pro/debloat.txt) it did not come back after a
+   reboot by itself. Until it is back, "did not answer" proves nothing.
+3. Then remove the access: they revoke the share, or you remove the TV or the helper from your tailnet
    (or turn off its routes) in the admin console. Uninstall Tailscale from the TV unless they use it.
 
 Did this on a TV where something worked differently? Add a line here in a pull request.

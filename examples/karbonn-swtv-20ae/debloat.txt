@@ -1,4 +1,6 @@
 # Karbonn SWTV-20AE (Skyworth OEM, SW4H, MediaTek), Android TV 10, firmware QTG3.200617.002
+# Unit 2: Motorola SWTV-20AE (India), product SW4_TG, device SW4H, MediaTek m7332, the same build
+#   QTG3.200617.002 (security patch 2022-04-05). Its notes are under "Unit 2" below.
 # ro.product.manufacturer=skyworth, device SW4H, API 29, armeabi-v7a, ~1.68 GB RAM.
 # Stock launcher: com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx).
 # Live TV: com.smartdevice.livetv / com.mediatek.tvinput.
@@ -17,6 +19,24 @@
 #   settings put global animator_duration_scale 0.5
 #   settings put global background_process_limit 2
 # Set reduced_motion: true in your theme's config.json for the CleanYourTV launcher.
+#
+# Unit 2 (Motorola SWTV-20AE), applied 2026-10-23 in batches with a screenshot after each, then the
+# CleanYourTV launcher with HomeKeyService; Home, helpers and every disable held over two reboots.
+# Seen on that unit:
+# - com.google.android.tvrecommendations froze system_server's main thread for 2 s every 32 s
+#   (logcat: "Slow dispatch took 2002ms ... AlarmManager", just before its ForegroundActivityTrackerJobService).
+#   While HomeKeyService filters keys, a key release that lands in that freeze makes Android auto-repeat, so
+#   the D-pad "keeps moving". Disabling it (already in this list) made the freezes rare.
+# - The firmware puts the screensaver back to Google Backdrop at boot (ScreenSaverSetDefTimeReceiver). To keep
+#   the launcher's clock, set both `settings put secure screensaver_components com.gathin.tvhome/.ClockDream`
+#   and `screensaver_default_component` to the same value.
+# - With HomeKeyService filtering keys, a held volume key steps only once: Android 10 applies the step before
+#   the helper sees the key. key_filter false brings hold-to-ramp back, at the cost of the remote buttons.
+# - Remote buttons handled by HomeKeyService ignore keys sent with `input keyevent`; test them with the remote.
+# - Granting usage access with appops is lost if the TV reboots before Android saves it: run
+#   `cmd appops write-settings` straight after.
+# - A saved Wi-Fi network joined in the first-run wizard belongs to setupwraith and is forgotten when it is
+#   disabled (`dumpsys wifi | grep -o 'cname=[^ ]*'`). The home network there was android.uid.system.
 
 # Skyworth content, ads and preloads
 com.smartdevice.leanbacklauncher.customizer  # partner config that injects ad rows into home screen
@@ -44,7 +64,21 @@ com.google.android.tv.bugreportsender
 com.google.android.backdrop
 
 # Stock home recommendation rows; disable after the new launcher owns Home
-com.google.android.tvrecommendations
+com.google.android.tvrecommendations         # on Unit 2 it also caused 2 s freezes every 32 s (see header)
+
+# Also disabled on Unit 2 (Motorola)
+com.google.android.play.games                # Google Play Games
+
+# Ask the owner first: streaming apps disabled on Unit 2 by its owner's choice. Uncomment only what is not used.
+# com.netflix.ninja                          # Netflix (stays disabled across reboots on this firmware)
+# com.amazon.amazonvideo.livingroom          # Prime Video
+# com.google.android.youtube.tvmusic         # YouTube Music
+# com.google.android.videos                  # Google Play Movies
+
+# Stock home and setup wizard: Unit 2 disabled these only after the new launcher was confirmed as Home,
+# and both reboots came back to it. Check the Wi-Fi owner (header) before setupwraith.
+# com.google.android.tungsten.setupwraith    # setup wizard; re-enable before a factory reset
+# com.google.android.tvlauncher              # stock Android TV home
 
 # Kept on purpose: com.mediatek.tvinput / com.mediatek.wwtv.setupwizard (HDMI/AV inputs),
 # com.smartdevice.livetv (Live TV), com.smartdevice.firewall (privacy screen, effect unclear),

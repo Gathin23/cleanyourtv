@@ -1,0 +1,6 @@
+{
+  "tv": "Google Chromecast with Google TV 4K (sabrina)",
+  "os": "Google TV 14",
+  "brand": "Google",
+  "notes": "Google telemetry and ad services, ambient mode, launcherx + setupwraith; wireless-debugging pairing, YouTube button remap; casting needs setupwraith (its CastInfoProvider holds the receiver's credentials): [debloat-keep-cast.txt](google-chromecast-gtv-4k/debloat-keep-cast.txt) keeps it and the stock home"
+}

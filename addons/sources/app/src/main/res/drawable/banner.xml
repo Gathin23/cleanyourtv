@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a screen with three plugs feeding it. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:strokeColor="#3DDC84" android:strokeWidth="8" android:fillColor="#00000000" android:pathData="M150,40h120v84h-120z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M50,56h56v14h-56zM50,86h56v14h-56zM50,116h56v14h-56z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:fillColor="#00000000" android:pathData="M106,63h44M106,93h44M106,123h44" />
+</vector>

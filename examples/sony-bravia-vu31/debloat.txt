@@ -51,8 +51,7 @@
 # - InputKeyService also takes the Input key, but com.android.tv.action.VIEW_INPUTS resolves to
 #   com.sony.dtv.smartui/.select.SmartSelectActivity here, the same menu the button opened before.
 # - The Ambient screensaver (dreamx) keeps working with launcherx disabled, for owners who want to keep it.
-# - com.android.camera2 is installed and crashes on open (the set has no camera); disabled here, not listed
-#   because it has not been lived with yet.
+# - com.android.camera2 is installed and crashes on open (the set has no camera); safe to disable.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
@@ -77,6 +76,7 @@ com.google.android.syncadapters.calendar # calendar sync; also carries Google's 
 com.android.printspooler                 # printing
 android.autoinstalls.config.google.gtvpai # Play partner auto-installs (2nd)
 com.android.gallery3d                    # legacy photo viewer (2nd)
+com.android.camera2                      # crashes on open; no camera on this set
 
 # Screensaver: set `settings put secure screensaver_components com.android.dreams.basic/.Colors` first, or
 # with the launcher installed its clock, com.gathin.tvhome/.ClockDream (2nd; runs in the launcher's process)
@@ -92,6 +92,8 @@ com.suntv.sunnxt                         # Sun NXT
 com.yupptv.scope.tvapp                   # YuppTV
 com.analiti.fastest.android              # analiti speed test
 com.google.android.marvin.talkback       # screen reader, off by choice (2nd)
+com.google.android.tts                   # text-to-speech, off by choice
+com.viacom18.tv.voot                     # Voot streaming preload
 
 # Launcher handover (2nd): setupwraith is safe to disable before the launcher (launcherx keeps Home), but
 # only once the Wi-Fi owner check above is clean.

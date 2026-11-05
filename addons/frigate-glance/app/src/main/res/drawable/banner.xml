@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a dark screen with a small card in its top-right corner. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#1E2630" android:pathData="M24,24h272v132h-272z" />
+    <path android:fillColor="#3DDC84" android:pathData="M196,36h88a6,6 0 0 1 6,6v50a6,6 0 0 1 -6,6h-88a6,6 0 0 1 -6,-6v-50a6,6 0 0 1 6,-6z" />
+    <path android:fillColor="#101418" android:pathData="M202,42h76v40h-76z" />
+    <path android:strokeColor="#3DDC84" android:strokeWidth="2" android:fillColor="#00000000" android:pathData="M226,50h24v26h-24z" />
+</vector>

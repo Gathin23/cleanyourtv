@@ -1,0 +1,6 @@
+{
+  "tv": "TCL BeyondTV2, Android 11 build (AR05, Realtek rtd285o)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "Different package set from the Android 9 BeyondTV2 above (adds `overseasappshow`, `usercenter`, MagiConnect, `notereminder`); **`com.tcl.overseasappshow` re-enables MagiConnect, notereminder and tclhome_master on every boot**, so it is the key entry; partnercustomizer kept (it carries the remote's TKey activity on this unit); voice, mirroring, phone remote and backdrop off by choice, OTA kept; 3 HDMI ports, TvInputManager works, setupwraith safe"
+}

@@ -1,9 +1,11 @@
 # Chromecast with Google TV 4K (2020, device sabrina, product sabrina_prod_stable), 2 GB RAM
 # Google TV 14 (SDK 34), build UTTC.250917.004 (14193937)
+# Second unit: Canada, same build, one day of use (2026-10-22). Notes under "Second unit" below.
 #
 # Apply:   TV_HOST=<ip> tools/disable.sh examples/google-chromecast-gtv-4k/debloat.txt
 # Undo:    TV_HOST=<ip> tools/restore.sh examples/google-chromecast-gtv-4k/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# To keep phone casting and the stock home (no new launcher), use debloat-keep-cast.txt in this folder instead.
 #
 # Stock launcher: com.google.android.apps.tv.launcherx. No Live TV app and no HDMI inputs (it's a dongle):
 # leave live_tv_package empty in config.xml.
@@ -12,10 +14,20 @@
 # - ADB on port 5555 is closed (connection refused) until you pair once through Wireless debugging with
 #   the stock adb: Developer options > Wireless debugging > Pair device with pairing code, `adb pair
 #   <ip:pairport> <code>`, `adb connect <ip:connectport>` (`adb mdns services` lists both ports), then
-#   `adb tcpip 5555`. After that tools/tv.py works on 5555 (README, Troubleshooting).
+#   `adb tcpip 5555`. After that tools/tv.py works on 5555
+#   (docs/TROUBLESHOOTING.md, "USB debugging never opens port 5555").
 # - `cmd package set-home-activity com.gathin.tvhome` returns Success but launcherx stays the default.
 #   Disable BOTH com.google.android.apps.tv.launcherx and com.google.android.tungsten.setupwraith
 #   (setupwraith re-enables launcherx), only after the new launcher is installed.
+# - WARNING: setupwraith can own a saved Wi-Fi network on this model too, as on the HD. On the second
+#   unit `dumpsys wifi | grep -o 'cname=[^ ]*'` named com.google.android.tungsten.setupwraith as the
+#   creator of one of its two saved networks; the network it was on when checked was created by
+#   android.uid.system:1000. Android deletes an app's saved networks when the app is disabled, so
+#   disabling setupwraith deletes that network, and if the stick is on it, Wi-Fi and ADB go with it.
+#   Before disabling setupwraith, forget that network and join it again in Settings > Network &
+#   Internet until every cname reads android.uid.system:1000 (the HD list, same build, also removes it
+#   under Wi-Fi > App preferences). tools/disable.sh skips setupwraith while it owns a network, and
+#   FORCE_SETUPWRAITH=1 overrides that (docs/TROUBLESHOOTING.md, "The TV drops off Wi-Fi for good").
 # - Disabling setupwraith also breaks casting from phones, reported on the Chromecast HD on the same
 #   build (#361). The Cast receiver (com.google.android.apps.mediashell) reads its factory device
 #   credentials from a provider inside setupwraith
@@ -28,6 +40,14 @@
 #   "Created singleton instance of ClientAuthSigner" in logcat, then disable it again - the receiver
 #   holds the credentials in memory, so casting works until the next reboot
 #   (docs/TROUBLESHOOTING.md, "Casting fails with Untrusted device").
+#   Seen again after a reboot: re-enabling setupwraith brought no ClientAuthSigner line within 3 minutes
+#   and phones did not list the device at all. With setupwraith enabled, restart the receiver instead:
+#   am force-stop com.google.android.apps.mediashell
+#   am start-foreground-service -n com.google.android.apps.mediashell/.CastReceiverService
+#   (nothing starts it again after a force-stop); the signer line follows within seconds.
+# - Turning USB debugging off leaves Wireless debugging listening on its own port. Switch both off when
+#   you are done. tools/adb-closed.py checks 5555 unless it is given that port: note the port from
+#   `adb mdns services` first, and check it with tools/adb-closed.py <ip> <port> before the reboot.
 # - With launcherx disabled the YouTube button on the remote does nothing. It sends BUTTON_3
 #   (keycode 190). Button Mapper only remaps added buttons in its paid Pro version; Key Mapper
 #   (open source, keymapperorg/KeyMapper) does it for free. Play Store lists Key Mapper as incompatible
@@ -43,6 +63,42 @@
 # - Disabling dreamx leaves screensaver_components pointing at it. Point it at the launcher's clock:
 #   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
 # - Animation scales already ship at 0.5x on this build.
+#
+# Second unit. The list's telemetry and preloaded-app groups were applied (the screensaver pair and
+# setupwraith were kept), plus a few apps by choice;
+# after a reboot the disabled list was unchanged. Private DNS validated, and YouTube and Plex loaded
+# their profiles. Power and Ethernet came through one USB-C hub.
+# - On Ethernet the Wireless debugging toggle flipped straight back off: unplug the cable, join Wi-Fi
+#   and pair as above. Wireless debugging also went off at every reboot (Wi-Fi drops during boot) and
+#   had to be switched on again by hand; the pairing was kept and the stock adb reconnected on its own.
+#   Port 5555 from `adb tcpip` lasted until the next reboot.
+# - The hub stayed powered with USB debugging on: `ip link` still listed eth0 (NO-CARRIER only because
+#   the cable was out), while `dumpsys usb` printed host_connected=false and sys.usb.config was "none",
+#   so host_connected=false was no proof the hub was gone. With USB debugging still on, plugging the
+#   Ethernet cable back in brought the Chromecast up on Ethernet, and tools/adb-closed.py then reported
+#   5555 refused (not checked whether that came from a restart or from Wireless debugging going off).
+# - The remote ("Chromecast Remote", 18d1:9450; /odm/usr/keylayout/Vendor_18d1_Product_9450.kl is not
+#   readable from the shell) shows YouTube and Netflix as KEY_UNKNOWN in `getevent -lt`, with MSC_SCAN
+#   000c0077 and 000c0078: the usages the Google TV Streamer list maps to BUTTON_3 (190) and
+#   BUTTON_4 (191).
+# - Home by redirect: launcherx and setupwraith left enabled for casting, stock_home_redirect set to
+#   com.google.android.apps.tv.launcherx, HomeKeyService enabled by hand. launcher/build-and-install.sh
+#   with STOCK_LAUNCHER=none installs, then stops at its Home check, as expected while launcherx is
+#   Home. Home pressed in an app landed on the new launcher. After a reboot the TV stayed on the Google
+#   TV home: it is drawn before Android binds HomeKeyService, so no window change reaches the redirect
+#   (#698 and #1024 work on this). With launcherx kept as Home, tools/check.py needs it as the second
+#   argument, or every run reports Home as drift: the Check line in debloat-keep-cast.txt, which is the
+#   list this setup matches.
+# - With the redirect on, the YouTube button did nothing although launcherx was enabled. The redirect
+#   opens the launcher with ACTION_MAIN + CATEGORY_HOME, so this is consistent with #698's explanation
+#   (this launcher becomes the Home process and launcherx loses its Android 14 exemption for background
+#   activity starts, BAL_BLOCK), but no BAL_BLOCK line was captured in logcat. app_keys
+#   "190:com.google.android.youtube.tv" and "191:<package>" in a theme, handled by HomeKeyService,
+#   worked with both buttons on the real remote. (Seen on a build with a local boot check added to
+#   HomeKeyService; the redirect's intent was main's.)
+# - Holding Volume Up on the real remote still ramped with HomeKeyService filtering keys (key_filter at
+#   its default) and Button Mapper's accessibility service enabled as well. Not checked with
+#   HomeKeyService alone.
 #
 # Kept on purpose: Google Assistant (com.google.android.katniss), Cast receiver
 # (com.google.android.apps.mediashell), phone remote (com.google.android.tv.remote.service), Play Store /

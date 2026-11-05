@@ -3,9 +3,15 @@ package com.gathin.tvhome;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.tv.TvContract;
+import android.os.Build;
+import android.provider.Settings;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 
 import java.util.ArrayList;
@@ -13,7 +19,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
+import java.util.regex.Pattern;
 
 /**
  * Remote buttons that only the stock launcher answered, for InputKeyService and HomeKeyService: app_keys
@@ -21,13 +29,24 @@ import java.util.function.ToIntFunction;
  * "KEYCODE_BUTTON_3:com.google.android.youtube.tv", or a scancode as "scan:490:com.wbd.hbomax". A "hold:"
  * prefix makes an entry the long-press action instead: "hold:KEYCODE_BUTTON_8:org.xbmc.kodi" opens Kodi when
  * that button is held for HOLD_MS, while the unprefixed entry still opens on a tap; "hold:scan:490:..." does
- * the same for a scancode. One set of maps for both services; whichever filters the key first consumes it.
- * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app.
+ * the same for a scancode. One set of maps for both services; Android hands a key to every service that filters,
+ * so both may call handle() for one event, and it answers each press once.
+ * A target of "input:<input id>" switches to that TV input (an HDMI port) instead of opening an app, a target
+ * of "inputs" opens the input switcher, for a remote whose source button sends a key Android does not map,
+ * one of the action words (back, home, recents, mute, sleep, screensaver, settings, wifi) does that action, and
+ * "package/.Activity" opens that activity rather than the app's launcher entry (an add-on's quick bar, say).
  */
 final class RemoteKeys {
 
     /** How long a button is held before its "hold:" entry wins (Android's long-press timeout). */
     static final long HOLD_MS = 500;
+
+    /** The app_keys target that opens the input switcher, as "scan:365:inputs". */
+    static final String INPUTS = "inputs";
+
+    /** Pre-compiled regex patterns to avoid re-compiling Patterns on every entry during key parsing. */
+    private static final Pattern NUMERIC_KEY = Pattern.compile("[0-9]{1,6}");
+    private static final Pattern KEYCODE_KEY = Pattern.compile("KEYCODE_[A-Z0-9_]+");
 
     private RemoteKeys() { }
 
@@ -53,9 +72,9 @@ final class RemoteKeys {
             if (parts.length != 2 || parts[1].trim().isEmpty()) continue;
             String key = parts[0].trim();
             int code;
-            if (key.matches("[0-9]{1,6}")) {
+            if (NUMERIC_KEY.matcher(key).matches()) {
                 code = Integer.parseInt(key);
-            } else if (key.matches("KEYCODE_[A-Z0-9_]+")) {
+            } else if (KEYCODE_KEY.matcher(key).matches()) {
                 code = names.applyAsInt(key);   // keyCodeFromString takes digits only from API 29, names always
             } else {
                 continue;
@@ -75,7 +94,20 @@ final class RemoteKeys {
     }
 
     static Map<Integer, String> parseHoldAppKeys(Iterable<String> entries, ToIntFunction<String> names) {
-        return parseAppKeys(holdEntries(entries), names);
+        return parseAppKeys(prefixed(entries, "hold:"), names);
+    }
+
+    /** keycode -> target from the "front:" entries, used while the button's own app is already in front. */
+    static Map<Integer, String> parseFrontAppKeys(Iterable<String> entries) {
+        return parseFrontAppKeys(entries, KeyEvent::keyCodeFromString);
+    }
+
+    static Map<Integer, String> parseFrontAppKeys(Iterable<String> entries, ToIntFunction<String> names) {
+        return parseAppKeys(prefixed(entries, "front:"), names);
+    }
+
+    static Map<Integer, String> parseFrontAppScancodes(Iterable<String> entries) {
+        return parseAppScancodes(prefixed(entries, "front:"));
     }
 
     /**
@@ -106,7 +138,7 @@ final class RemoteKeys {
             String[] parts = entry.split(":", 3);
             if (parts.length != 3 || !parts[0].trim().equals("scan") || parts[2].trim().isEmpty()) continue;
             String code = parts[1].trim();
-            if (!code.matches("[0-9]{1,6}")) continue;
+            if (!NUMERIC_KEY.matcher(code).matches()) continue;
             int scan = Integer.parseInt(code);
             if (scan > 0) keys.put(scan, parts[2].trim());
         }
@@ -115,30 +147,119 @@ final class RemoteKeys {
 
     /** scancode -> package from the "hold:scan:..." entries; the rest reads as it does in parseAppScancodes. */
     static Map<Integer, String> parseHoldAppScancodes(Iterable<String> entries) {
-        return parseAppScancodes(holdEntries(entries));
+        return parseAppScancodes(prefixed(entries, "hold:"));
     }
 
-    /** The entries with the "hold:" prefix removed, so the normal parsers can read them. */
-    private static Iterable<String> holdEntries(Iterable<String> entries) {
-        List<String> holds = new ArrayList<>();
+    /** The entries with this prefix ("hold:", "front:"), the prefix removed, so the normal parsers can read them. */
+    private static Iterable<String> prefixed(Iterable<String> entries, String prefix) {
+        List<String> found = new ArrayList<>();
         for (String entry : entries) {
             if (entry == null) continue;
             String text = entry.trim();
-            if (text.startsWith("hold:")) holds.add(text.substring(5).trim());
+            if (text.startsWith(prefix)) found.add(text.substring(prefix.length()).trim());
         }
-        return holds;
+        return found;
+    }
+
+    /** The package of a "guide:<package>" target, or null for any other target. */
+    static String guidePackage(String target) {
+        if (target == null || !target.startsWith("guide:")) return null;
+        String pkg = target.substring(6).trim();
+        return pkg.isEmpty() ? null : pkg;
     }
 
     /**
-     * Consumes a key mapped by either list. On release it opens the hold app after HOLD_MS, otherwise the normal
-     * one; false means neither list has this key, so the caller can pass it on.
+     * True when a tap's target is the app already in front ("package" or "package/.Activity"), so its "front:"
+     * entry applies instead. Inputs and action words never match.
+     */
+    static boolean inFront(String target, String front) {
+        if (target == null || front == null || front.isEmpty()) return false;
+        int slash = target.indexOf('/');
+        return (slash < 0 ? target : target.substring(0, slash)).equals(front);
+    }
+
+    /** Created on first use: building a Handler while the class loads breaks the JVM tests. */
+    private static Presses presses;
+
+    /**
+     * Consumes a key mapped by either list: the hold app opens once the button has been down for HOLD_MS, the
+     * normal one on an earlier release. False means neither list has this key, so the caller can pass it on.
      */
     static boolean handle(Context ctx, KeyEvent event, String app, String holdApp) {
         if (app == null && holdApp == null) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-            launch(ctx, target(app, holdApp, event.getEventTime() - event.getDownTime()));
+        if (presses == null) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            presses = new Presses(new Presses.Timer() {
+                @Override public void post(Runnable hold, long delayMs) { handler.postDelayed(hold, delayMs); }
+                @Override public void cancel(Runnable hold) { handler.removeCallbacks(hold); }
+            });
+        }
+        String button = event.getDeviceId() + ":" + event.getKeyCode() + ":" + event.getScanCode();
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            presses.down(button, event.getEventTime(), event.getRepeatCount(), holdApp, target -> launch(ctx, target));
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            presses.up(button, event.getEventTime(), event.getDownTime(), event.isCanceled(), app, holdApp,
+                    target -> launch(ctx, target));
         }
         return true;
+    }
+
+    /**
+     * Each button's presses, kept per device, keycode and scancode: KeyEvent.getDownTime() can't tell presses apart,
+     * since a key pressed together with another can report the other's. Both services get every event, so a DOWN
+     * or UP whose event time was already seen for that button is the other service's copy and is skipped. One small
+     * record per mapped button that has been pressed, not a history.
+     */
+    static final class Presses {
+        interface Timer {
+            void post(Runnable hold, long delayMs);
+            void cancel(Runnable hold);
+        }
+
+        private static final class Press {
+            long downAt = -1, upAt = -1;
+            boolean fired;
+            Runnable hold;
+        }
+
+        private final Map<String, Press> buttons = new HashMap<>();
+        private final Timer timer;
+
+        Presses(Timer timer) {
+            this.timer = timer;
+        }
+
+        void down(String button, long eventTime, int repeatCount, String holdApp, Consumer<String> open) {
+            if (repeatCount != 0) return;
+            Press press = buttons.computeIfAbsent(button, b -> new Press());
+            if (press.downAt == eventTime) return;
+            if (press.hold != null) timer.cancel(press.hold);   // its UP never came
+            press.downAt = eventTime;
+            press.fired = false;
+            press.hold = null;
+            if (holdApp == null) return;
+            press.hold = () -> {
+                press.hold = null;
+                press.fired = true;
+                open.accept(holdApp);
+            };
+            timer.post(press.hold, HOLD_MS);
+        }
+
+        void up(String button, long eventTime, long downTime, boolean canceled, String app, String holdApp,
+                Consumer<String> open) {
+            Press press = buttons.computeIfAbsent(button, b -> new Press());
+            if (press.upAt == eventTime) return;
+            boolean sawDown = press.downAt > press.upAt;
+            press.upAt = eventTime;
+            if (press.hold != null) {
+                timer.cancel(press.hold);
+                press.hold = null;
+            }
+            if (canceled || (sawDown && press.fired)) return;
+            // Without its DOWN (the service started while the button was held), the event's own down time will do.
+            open.accept(target(app, holdApp, eventTime - (sawDown ? press.downAt : downTime)));
+        }
     }
 
     /** The app a mapped key opens: its hold entry after HOLD_MS, otherwise its normal one. */
@@ -153,10 +274,104 @@ final class RemoteKeys {
         return id.isEmpty() ? null : id;
     }
 
+    /**
+     * The accessibility global action for an action word, or 0 when the target is something else. "sleep" is
+     * GLOBAL_ACTION_LOCK_SCREEN, which puts a TV in standby (as the Sleep Timer add-on does); Android has it from 28.
+     */
+    static int globalAction(String target, int sdk) {
+        switch (target) {
+            case "back": return AccessibilityService.GLOBAL_ACTION_BACK;
+            case "home": return AccessibilityService.GLOBAL_ACTION_HOME;
+            case "recents": return AccessibilityService.GLOBAL_ACTION_RECENTS;
+            case "sleep": return sdk >= 28 ? AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN : 0;
+            default: return 0;
+        }
+    }
+
+    /** Whether a target is an action word rather than an app or an input. A package name always has a dot. */
+    static boolean isAction(String target) {
+        switch (target) {
+            case "back": case "home": case "recents": case "mute": case "sleep":
+            case "screensaver": case "settings": case "wifi":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /** Runs an action word; false for an app or an input. Needs no permission the launcher does not already have. */
+    private static boolean runAction(Context ctx, String target) {
+        if (!isAction(target)) return false;
+        int global = globalAction(target, Build.VERSION.SDK_INT);
+        if (global != 0) {
+            if (ctx instanceof AccessibilityService) ((AccessibilityService) ctx).performGlobalAction(global);
+            return true;
+        }
+        switch (target) {
+            case "mute":
+                // The media stream a TV plays everything on, with its own volume bar, as a remote's mute button would.
+                AudioManager audio = ctx.getSystemService(AudioManager.class);
+                if (audio != null) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI);
+                break;
+            case "screensaver":
+                // The screensaver chosen in the TV's settings, through the system's "start now" shortcut; the
+                // launcher's own clock where the firmware has no such shortcut.
+                Intent dream = new Intent(Intent.ACTION_MAIN)
+                        .setClassName("com.android.systemui", "com.android.systemui.Somnambulator");
+                if (ctx.getPackageManager().resolveActivity(dream, 0) == null) dream = new Intent(ctx, ClockActivity.class);
+                start(ctx, dream);
+                break;
+            case "settings":
+                start(ctx, SystemSettings.intent(ctx, Settings.ACTION_SETTINGS));
+                break;
+            case "wifi":
+                start(ctx, SystemSettings.intent(ctx, Settings.ACTION_WIFI_SETTINGS));
+                break;
+            default:
+                break;   // "sleep" below Android 9: consumed, nothing to do
+        }
+        return true;
+    }
+
+    private static void start(Context ctx, Intent intent) {
+        try {
+            ctx.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (ActivityNotFoundException | SecurityException ignored) {
+        }
+    }
+
+    /**
+     * True for a "package/.Activity" target. An input id has slashes too, and ComponentName.unflattenFromString()
+     * would read "input:com.tcl.tvinput" as its package, so an "input:" target never counts.
+     */
+    static boolean isActivity(String target) {
+        return target != null && inputId(target) == null && target.indexOf('/') > 0;
+    }
+
     /** Opens an app from a remote button: its TV entry if it has one, else its phone entry. An "input:<id>" target
-     *  switches to that TV input (an HDMI port) instead. */
+     *  switches to that TV input (an HDMI port) instead, an action word runs that action, and a
+     *  "package/.Activity" target opens that activity. */
     static void launch(Context ctx, String pkg) {
-        if (pkg == null) return;
+        if (pkg == null || runAction(ctx, pkg)) return;
+        if (INPUTS.equals(pkg)) {
+            // This launcher's own Inputs menu, as InputsRequestActivity opens it: addressed to Home directly, so a
+            // vendor input picker that also answers VIEW_INPUTS never turns it into a chooser.
+            try {
+                ctx.startActivity(new Intent(ctx, MainActivity.class).setAction(MainActivity.ACTION_VIEW_INPUTS)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException ignored) {
+            }
+            return;
+        }
+        String guide = guidePackage(pkg);
+        if (guide != null) {
+            // The program guide, asked for the way Android TV's Live TV apps take it: the programs directory.
+            start(ctx, new Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(TvContract.Programs.CONTENT_URI, "vnd.android.cursor.dir/program")
+                    .setPackage(guide));
+            return;
+        }
         String inputId = inputId(pkg);
         if (inputId != null) {
             // The same passthrough URI the Inputs menu opens, which the Live TV app handles.
@@ -167,6 +382,14 @@ final class RemoteKeys {
             try {
                 ctx.startActivity(view);
             } catch (ActivityNotFoundException ignored) {
+            }
+            return;
+        }
+        ComponentName activity = isActivity(pkg) ? ComponentName.unflattenFromString(pkg) : null;
+        if (activity != null) {
+            try {
+                ctx.startActivity(new Intent().setComponent(activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException | SecurityException ignored) {
             }
             return;
         }

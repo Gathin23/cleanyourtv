@@ -1,0 +1,69 @@
+# TCL 58S571F (TCL Fire TV, S5 series, AFTDEC012E, codename ginza, MediaTek merak / mt5896), Fire OS 8 / Android 11
+# (SDK 30), firmware RS8185.3885N, US. Same Fire OS 8 generation as hisense-fire-tv-aftcibfbd1/ and its notes apply
+# here; this list adds what this TCL set ships on top: OpApp, the KSO service, Luna, News, Gallery and System Status.
+# The same AFTDEC012E platform is also in examples/tcl-43s450f-ca/ (the S4 sibling) and examples/amazon-fire-tv-aftdec012e/.
+#
+# FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher keeps Home and also owns the full Settings grid on this firmware
+# (MainSettingsActivity), so it must stay enabled. Live TV app: com.amazon.tv.livetv.
+#
+# Apply:  TV_HOST=<tv ip> tools/disable.sh examples/tcl-58s571f-fire-tv/debloat.txt
+# Undo:   TV_HOST=<tv ip> tools/restore.sh examples/tcl-58s571f-fire-tv/debloat.txt com.amazon.tv.launcher
+# Everything is DISABLED for user 0, not uninstalled. Comment out any line you want to keep.
+#
+# Lived with since 2026-10-20 (the last group since 2026-10-21), through several reboots: Netflix, YouTube
+# (SmartTube), Spotify, Stremio, AirPlay from an iPhone and a Mac, and Settings all work.
+# Every package stayed disabled across reboots.
+#
+# Fire OS 8 notes (as on the Hisense):
+# - com.amazon.vizzini (Alexa voice) comes back at every boot, so it is not listed. Setting secure voice_disabled=1
+#   turns voice off, but Fire OS resets it at boot too.
+# - com.amazon.ftvads.deeplinking and com.amazon.device.crashmanager are protected (pm disable-user is refused).
+# - com.amazon.device.telemetry.emitter disables, but its native emitter keeps running outside ActivityManager.
+#
+# Kept on purpose: AirPlay, Miracast, Live TV, OTA updates, Silk, Quick Settings, profile picker, and the Appstore
+# (app updates; the remote's branded buttons, Prime Video and the TV maker's app, are launched through it).
+# Personal choices are marked below.
+
+# Ads, shopping and content recognition
+com.amazon.shoptv.client               # Shop on Fire TV
+com.amazon.tv.acr                      # Automatic Content Recognition (what's on screen, HDMI included)
+com.amazon.tv.democontent.provider     # retail demo content
+com.amazon.media.recommendations       # sponsored and recommendation rows
+com.amazon.sneakpeek                   # autoplaying previews on Home
+com.amazon.hybridadidservice           # advertising ID
+com.amazon.kso.blackbird               # vendor service; purpose not established, nothing broke without it
+
+# Telemetry and metrics
+com.amazon.wirelessmetrics.service     # Wi-Fi metrics upload
+com.amazon.perfcollection              # performance telemetry
+com.amazon.perfc                       # performance telemetry
+com.amazon.dp.logger                   # device log upload
+com.amazon.device.telemetry.emitter    # telemetry emitter (see the header)
+
+# Tutorials
+com.amazon.storm.lightning.tutorial
+com.amazon.tmm.tutorial
+
+# Alexa (personal choice; vizzini itself comes back at every boot, see the header)
+com.amazon.tv.alexaalerts
+com.amazon.tv.alexanotifications
+com.amazon.alexamediaplayer.runtime.ftv
+com.amazon.alexa.externalmediaplayer.fireos
+
+# Preloads and placeholders (personal choice)
+com.amazon.tv.earlyaccess              # Early Access system stub
+com.amazon.bueller.music               # Amazon Music
+com.amazon.bueller.photos              # Amazon Photos
+com.amazon.minitv.android.app          # miniTV
+com.amazon.naatyam                     # Naatyam
+com.amazon.gamehub                     # games hub
+
+# Apps on this TCL (personal choice)
+com.mediatek.opapp                     # OpApp (broadcast operator app)
+com.amazon.smarthomemapviewapp         # Alexa Smart Home
+com.amazon.spiderpork                  # Amazon Luna
+com.amazon.tahoe                       # Amazon Kids
+com.amazon.hedwig                      # News
+com.amazon.tv.localgallery             # Gallery
+com.amazon.ssm                         # System Status Monitor
+com.amazon.firebat                     # Prime Video

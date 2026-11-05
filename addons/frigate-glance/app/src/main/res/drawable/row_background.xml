@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A settings row: transparent until focused, then the launcher's glass highlight. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#33FFFFFF" />
+            <stroke android:width="1dp" android:color="#55FFFFFF" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+    <!-- The menu's current section while focus is on its rows. -->
+    <item android:state_activated="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#1AFFFFFF" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+</selector>

@@ -1,0 +1,69 @@
+# TCL 65Q650G (US Q6 2023, reports as "Smart TV" / BeyondTV4), Android TV 11 (SDK 30), Realtek RTD2851
+# (client type TCL-NA-RTD51M), firmware V8-R51MT08-LF1V095, Google TV launcher
+# (com.google.android.apps.tv.launcherx), 2 GB RAM, 32-bit userspace.
+# List derived from examples/tcl-43c645 (same R51MT platform), checked against this unit's packages.
+# Same firmware family as examples/tcl-65q550g (a different model, tested over Ethernet there).
+#
+# Tested 2026-10-20 on a real unit, applied in three batches with a screenshot after each: Home, the
+# remote's Input panel (com.tcl.suspension) and Live TV (com.tcl.tv/.TVActivity, all four HDMI ports in
+# TvInputManager) kept working. Quirks: Git Bash rewrites /data/... paths for tools/tv.py --pull, so set
+# MSYS_NO_PATHCONV=1; screencap to /sdcard fails here, use /data/local/tmp. Launcher installed with
+# tools/tv.py --push + pm install, later with build-and-install.sh (b64push md5 matched). Reboot-checked: all
+# packages stayed disabled, Home stayed on the new launcher, both key services re-bound.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (disabled by build-and-install.sh). setupwraith claims
+# HOME (priority 1) once it is off, so it is in group 1b. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first:
+# on this unit the Wi-Fi network in use belonged to android.uid.system, so disabling setupwraith kept it.
+#
+# Remote (Bluetooth BT_RC813_M1, /dev/input/event3, /system/usr/keylayout/Generic.kl):
+# - Input (TV_INPUT) and the mic keep working without launcherx.
+# - Netflix (242, TCL_NETFLIX), YouTube (245, TCL_YOUTUBE) and Prime Video (752, TCL_PRIMEVIDEO) do nothing
+#   once launcherx is off: app_keys KEYCODE_TCL_NETFLIX:com.netflix.ninja, KEYCODE_TCL_YOUTUBE:
+#   com.google.android.youtube.tv, KEYCODE_TCL_PRIMEVIDEO:com.amazon.amazonvideo.livingroom with
+#   INPUT_KEY_SERVICE=1 bring them back (getevent -l names Prime KEY_PRIMEVIDEO; its scancode is 752, not 365).
+# - Gear (233, TCL_SET) also went dead; app_keys KEYCODE_TCL_SET did not catch it, settings_key_scancodes 233
+#   with HOME_KEY_SERVICE=1 did.
+# - TclAppBoot refuses to start the key services at boot until `appops set com.gathin.tvhome APP_AUTO_START allow`.
+# All verified with the real remote, also after a reboot. Live TV app: com.tcl.tv (live_tv_package, hidden_apps).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65q650g/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65q650g/debloat.txt com.google.android.apps.tv.launcherx
+# Kept by choice: voice (katniss, com.google.android.tv.assistant, com.tcl.assistant), Cast receiver
+# (mediashell), firmware updater (com.tcl.versionUpdateApp), YouTube TV and YouTube Music.
+# Never disable: com.tcl.providers.config com.tcl.initsetup com.tcl.factory.view com.tcl.system.server
+# com.tcl.tcl_bt_rcu_service com.tcl.autopair com.tcl.tvinput com.tcl.tv com.tcl.settings
+# com.tcl.suspension (Input panel) com.tcl.xian.StartandroidService com.tvos
+
+# 1. Telemetry, partner auto-installs, account and EULA nags
+com.tcl.bi
+com.tcl.esticker
+com.tcl.partnercustomizer
+com.tcl.messagebox
+com.google.android.partnersetup
+com.google.android.feedback
+com.google.android.onetimeinitializer
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.tcl.usercenter                          # TCL account sign-in nags
+com.tcl.useragreement                       # EULA screen, done after setup
+
+# 1b. Google TV first-run wizard (claims HOME once the stock launcher is off)
+com.google.android.tungsten.setupwraith
+
+# 2. Unused apps (off by choice) and extras
+com.tubitv
+tv.pluto.android
+com.tcl.channelplus                         # TCL Live FAST channels, also removes them from Live TV
+com.tcl.tv.plus                             # TCL TV+ content app
+com.tcl.waterfall.overseas                  # TCL web-video / recommendation portal
+com.espn.score_center
+com.google.android.play.games
+com.google.android.videos
+com.tcl.smartalexa                          # Works with Alexa
+com.tcl.guard                               # TGuard memory cleaner
+com.tcl.android.webview
+com.tcl.ocean.instructions                  # e-manual
+com.google.android.syncadapters.calendar
+
+# 3. TCL Home panel and remote key helper (disabled on their own; Input panel still worked)
+com.tcl.dashboard
+com.tcl.keyhelp

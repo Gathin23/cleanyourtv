@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Foto-screensaver</string>
+    <string name="dream_name">Foto\'s</string>
+    <string name="date_format">EEEE  d MMMM</string>
+    <string name="empty_title">Nog geen foto\'s</string>
+    <string name="empty_body">Zet foto\'s in deze map op de TV met sync.sh of sync.ps1:</string>
+    <string name="settings_title">Foto-screensaver</string>
+    <string name="option_clock">Tijd en datum tonen</string>
+    <string name="option_dates">Tonen wanneer een foto is gemaakt (maand en jaar)</string>
+    <string name="option_prints">Drie afdrukken in plaats van schermvullend (geen clips)</string>
+    <string name="option_sky">Lucht die meekleurt met het tijdstip achter de afdrukken</string>
+    <string name="option_weather">Het weer tonen (heeft de locatie van de TV nodig)</string>
+    <string name="weather_info">Gebruikt de globale locatie van de TV en Open-Meteo. Uit: er gaat niets over het netwerk.</string>
+    <string name="weather_no_permission">Sta locatietoegang toe voor het weer.</string>
+    <string name="weather_location_off">Locatieservices staan uit op deze TV: zet ze aan voor het weer.</string>
+    <string name="weather_ok">Locatie staat aan. Het weer wordt elke 30 minuten bijgewerkt.</string>
+    <string name="open_location_settings">Locatie-instellingen openen</string>
+    <string name="preview">Voorbeeld</string>
+</resources>

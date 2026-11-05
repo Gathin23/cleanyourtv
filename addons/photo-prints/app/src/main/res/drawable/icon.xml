@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A single print, for places that show the app's icon rather than its banner. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#FF0B1326" android:pathData="M0,0h48v48h-48z" />
+    <group android:rotation="-6" android:pivotX="24" android:pivotY="24">
+        <path android:fillColor="#FFF2F2F2" android:pathData="M10,10h28v28h-28z" />
+        <path android:fillColor="#FF8FC9A0" android:pathData="M12,12h24v18h-24z" />
+        <path android:fillColor="#FF4F8A63" android:pathData="M12,30l8,-9l6,6l4,-3l6,6z" />
+    </group>
+</vector>

@@ -1,0 +1,80 @@
+# Sony BRAVIA XBR-55X850C (2015, SVP-DTV15 "BRAVIA 4K 2015" platform, MediaTek), US firmware
+# Android TV 8.0 (API 26), build SVP4KDTV15_UC-user 8.0.0 OPR2.170623.027.S16 6.827, 1.5 GB RAM
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-xbr-55x850c/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-xbr-55x850c/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same build as examples/sony-kd-65x9300d. Stock launcher: com.google.android.tvlauncher (restore.sh's
+# default). The only other HOME handler is com.android.tv.settings. setupwraith has no HOME activity,
+# and the saved Wi-Fi belongs to android.uid.system, so it is left alone.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it also plays every HDMI input.
+# Keep: com.sony.dtv.tvinput.*, tvplayer*, braviasync* (HDMI-CEC), remotepairing, remotecontrolsettings,
+# uinputservice, imeproxy, settingsprovider, netflixmanager (Netflix button), duid.generator,
+# enclave.service, systemupdate, timers, all com.mediatek.* and mtktvapi.agent.
+# Left alone on purpose: the rest of com.sony.dtv.b2b.* (hotel/pro mode plumbing), webapi.core and
+# remoteaccess (Sony IP control), privacypolicy, sonyselect.overlay (a /vendor/overlay RRO),
+# DLNA (huey.dlna.*, sonyericsson.dlna*) and the USB media players (osat.*).
+# Nothing was disabled at the factory.
+#
+# Notes from this firmware:
+# - Disabling tvlaunchercustomizer removes the notifications, Inputs and Timer icons from the stock
+#   home's top bar; the remote's Input button still works through com.sony.dtv.tvx.
+# - build-and-install.sh hands Home over cleanly. Inputs lists HDMI 1-4 (with CEC names), Video 1/2
+#   and Live TV; HDMI 1 opens in com.sony.dtv.tvx. Hide com.sony.dtv.tvx and set live_tv_package to it.
+# - Home, Input, Netflix, Back and Action Menu all work on the real remote with no key services.
+# - Used RAM went from 1,119 MB to 1,003 MB after this list, the launcher and a reboot. Boots straight
+#   into the new launcher. com.sony.dtv.systembootmonitor crashes once at boot (Android 8 background
+#   service limit); it is not in this list.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+
+# Telemetry, remote support and feedback
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.sony.dtv.b2b.vendorprotocol                # SDDP model/MAC/IP broadcast for Control4-style home
+                                               # automation; re-enable if you use one
+
+# Sony and Google content, ads and promos
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.sony.dtv.tvlaunchercustomizer              # Sony tweaks to the stock home rows
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Preloaded apps and tutorials
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+com.sony.dtv.touchpad.tutorial                 # touchpad remote tutorial
+com.google.android.tvtutorials
+com.google.android.videos                      # Google Play Movies
+com.google.android.play.games
+com.google.android.music                       # Google Play Music, shut down in 2020
+com.amazon.aiv.us                              # US Prime Video stub
+com.google.android.inputmethod.japanese        # Japanese keyboard; Sony's com.sony.dtv.ime.chww stays the active keyboard
+
+# Voice assistant, off by owner's choice (removes the remote's mic search)
+com.google.android.katniss
+com.google.android.speech.pumpkin
+
+# Streaming apps the owner doesn't use
+com.amazon.amazonvideo.livingroom              # Prime Video
+com.disney.disneyplus
+com.hbo.hbonow                                 # HBO Max
+com.pandora.android.atv
+com.tubitv
+tv.pluto.android
+tv.twitch.android.app
+org.pbskids.video
+com.crackle.androidtv
+air.com.vudu.air.DownloaderTablet              # Vudu
+com.accuweather.android
+com.sony.rvu                                   # DIRECTV Ready (RVU client)
+
+# Kept by owner's choice: Netflix, YouTube, Hulu, Peacock, Plex, Spotify, Chromecast (apps.mediashell),
+# screen mirroring (screnmirroring.com, networkapp.wifidirect) and firmware updates (systemupdate).

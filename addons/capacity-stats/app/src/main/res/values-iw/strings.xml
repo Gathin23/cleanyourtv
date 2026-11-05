@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">זיכרון ואחסון</string>
+    <string name="loading">קורא נתונים…</string>
+    <string name="unavailable">הנתונים אינם זמינים</string>
+    <string name="back">חזרה</string>
+    <string name="memory">זיכרון RAM זמין: %1$s</string>
+    <string name="memory_used">זיכרון RAM בשימוש: %1$s</string>
+    <string name="storage">אחסון זמין: %1$s</string>
+    <string name="note">הזיכרון הזמין כולל מטמון שניתן לשחרור; הזיכרון בשימוש הוא הסך הכולל פחות הזמין. האחסון מתייחס למחיצת הנתונים.</string>
+</resources>

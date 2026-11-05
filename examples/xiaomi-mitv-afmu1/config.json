@@ -1,0 +1,13 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.android.vending"
+  ],
+  "app_keys": [
+    "KEYCODE_BUTTON_3:com.google.android.youtube.tv",
+    "KEYCODE_BUTTON_6:com.netflix.ninja",
+    "KEYCODE_BUTTON_7:com.amazon.amazonvideo.livingroom"
+  ]
+}

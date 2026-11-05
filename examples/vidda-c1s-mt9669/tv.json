@@ -1,0 +1,6 @@
+{
+  "tv": "Vidda C1S 4K laser projector (VIDAA_TV, device MT9669, board m7642), China JuUI",
+  "os": "Android 9",
+  "brand": "Vidda",
+  "notes": "Telemetry, push channel/poller, ad sidecars (聚好看 itself keeps rendering), operator weather card, retail/hotel/factory leftovers, food/calendar apps, the 拍信 ad screensaver, print spooler; stock launcher 聚好看 stays enabled — the firmware pins HOME to it and shields it from accessibility events, so the launcher is aerial with the one-line usage-stats patch (pengchujin/aerial-tv#545); voice, casting, NAS, OTA, IMEs, HDMI (tiletransition), laser engine kept; ADB needs on-screen authorization (ro.adb.secure=1); reboot-checked"
+}

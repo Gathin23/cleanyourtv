@@ -49,7 +49,12 @@ com.nvidia.diagtools                   # log collector; re-enable if NVIDIA supp
 com.google.android.feedback
 
 # Sponsored rows and auto-installs
-com.google.android.tvrecommendations   # sponsored / "Top picks" rows on the stock home
+# com.google.android.tvrecommendations - keep it enabled. Disabled, Android stops binding the SHIELD TV
+#   phone app's input service (com.nvidia.shield.remote.server, virtualinput.InputService, a TvRemoteProvider)
+#   at boot: the app still connects, but every key fails ("Key injection failed", "Beyonder_VIS ...
+#   isInitialized=false"). Bisected with a reboot per step on a 2017 SHIELD (darcy) and confirmed on a
+#   2015/2017 one (foster_e), SHIELD Experience on Android 11 (docs/TROUBLESHOOTING.md). The sponsored rows it
+#   feeds only show on the stock home, which this list replaces anyway.
 android.autoinstalls.config.nvidia     # Play auto-installs of partner apps
 
 # NVIDIA gaming leftovers (GameStream closed in 2023)

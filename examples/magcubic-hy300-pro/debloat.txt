@@ -1,0 +1,37 @@
+# Magcubic HY300 Pro projector (rk3566_rgo, device adt3, Askey; Allwinner/HTC firmware), Android 11 (SDK 30)
+# Firmware UI_Veng.projector.20260626.102242, 1280x720 panel.
+# Same firmware family as the Portronics Beem 470 (examples/portronics-beem-470/), different build.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/magcubic-hy300-pro/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/magcubic-hy300-pro/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Kept on purpose:
+# - com.htc.htcsettings: the projector's own settings (Wi-Fi, picture, keystone). Home resolves to
+#   com.htc.htclauncherhighenglishd08; it is left enabled, and the launcher takes Home with
+#   `cmd package set-home-activity`.
+# - The firmware updaters (com.htc.htcotaupdate, com.softwinner.update, android.rockchip.update.service).
+# - Factory and test packages (com.htc.hyk_test, com.softwinner.dragon*): not started, not disabled.
+# - The input and source services: HDMI1-3 and CVBS1 list in the launcher's Inputs menu.
+#
+# The Settings pill opens com.android.tv.settings; no settings_fallback_components entry is needed.
+
+# Apps nobody asked for
+com.android.calculator2
+com.android.music
+com.mobisystems.office                 # Office suite
+com.softwinner.TvdFileManager
+com.softwinner.TvdVideo                # stock USB video player; VLC covers playback
+com.softwinner.miracastReceiver        # screen mirroring; re-enable if you cast from a phone
+com.htc.storeos                        # HTC app store
+com.android.egg
+com.android.htmlviewer
+
+# Printing
+com.android.printspooler
+com.android.bips
+com.android.printservice.recommendation
+
+# Screensaver and backup extras
+com.android.dreams.web
+com.android.wallpaperbackup

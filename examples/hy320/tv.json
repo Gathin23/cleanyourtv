@@ -1,0 +1,6 @@
+{
+  "tv": "HY320 projector (t950s_be311, Google-certified Android TV)",
+  "os": "Android 13",
+  "brand": "HY320",
+  "notes": "Manufacturer ad/telemetry services, three manufacturer app stores, background services and preloaded apps disabled; stock launcher uses a custom HOME.JM category (the launcher manifest needs the category to take the Home key); projector settings, keystone, firmware updater, HDMI inputs kept; Google Assistant, recommendations, screensaver, Miracast, AirPlay kept by choice; AdGuard Private DNS works; config.json has the dock; 23 packages; reboot-checked"
+}

@@ -11,7 +11,8 @@
 # - ADB on port 5555 is closed (connection refused) until you pair once through Wireless debugging with
 #   the stock adb: Developer options > Wireless debugging > Pair device with pairing code, `adb pair
 #   <ip:pairport> <code>`, `adb connect <ip:connectport>` (`adb mdns services` lists both ports), then
-#   `adb tcpip 5555`. After that tools/tv.py works on 5555 (README, Troubleshooting).
+#   `adb tcpip 5555`. After that tools/tv.py works on 5555
+#   (docs/TROUBLESHOOTING.md, "USB debugging never opens port 5555").
 # - The Cast receiver (com.google.android.apps.mediashell) reads its factory device credentials from a
 #   provider hosted INSIDE the setup wizard package:
 #     Provider{com.google.android.tungsten.setupwraith/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider}
@@ -72,6 +73,22 @@
 #     pm grant io.github.sds100.keymapper android.permission.WRITE_SECURE_SETTINGS
 #     settings put secure enabled_accessibility_services io.github.sds100.keymapper/io.github.sds100.keymapper.system.accessibility.MyAccessibilityService
 #   Map trigger "Button 3" (short press) to action "Launch app > YouTube".
+# - The other two app buttons go silent with launcherx too. The remote's layout file
+#   (/system/usr/keylayout/Vendor_18d1_Product_9451.kl, named by `dumpsys input`) maps them by HID usage:
+#     usage 0x000c0077 -> BUTTON_3 (190)  YouTube
+#     usage 0x000c0078 -> BUTTON_4 (191)  Netflix
+#     usage 0x000c0186 -> MACRO_1  (313)  Star (launcherx opens the Google Home panel with it)
+#   so app_keys "191:com.netflix.ninja" and "313:<package>" bring them back, with InputKeyService on.
+#   `getevent -lt` prints the Star button as KEY_SPREADSHEET and the other two as KEY_UNKNOWN, which is
+#   why the layout file is the place to read them. All three checked with the real remote on
+#   UTTK.260317.003.
+# - Both helpers cost the remote's key auto-repeat on this build: with HomeKeyService or InputKeyService
+#   bound, holding Volume Up/Down stops after about six steps. The YouTube button can also be taken
+#   without an accessibility service, which keeps the ramp: a shell-owned process watches the remote's
+#   input device ("Google TV Remote Keyboard", found by name with `getevent -pl`, never by a fixed
+#   number) and starts the app itself. It cannot consume the press, so the button's own action still runs
+#   as well - see docs/TROUBLESHOOTING.md, "Remapping the remote's app buttons without a key helper"
+#   (#796).
 # - com.google.android.tvrecommendations and com.google.android.apps.education.cast2class ship
 #   disabled at the factory; `pm disable-user` on them fails with "Shell cannot change component
 #   state". Don't add them to a restore list either.

@@ -4,6 +4,15 @@
 # Same C06_2K_GB platform as the tested tcl-40s5400a list, on older firmware; that list is the
 # fuller reference for this platform and explains the HOME-priority and TGuard behaviour.
 #
+# Second unit, 2026-10-25: same C06 / C06_2K_GB, build AR2101, TCL software V8-T221T01-LF1V121. No
+# SonyLIV/YuppTV on this one (those two lines are skipped there); Netflix, Prime Video, Alexa
+# (com.tcl.smartalexa), Stan and Rakuten TV were already disabled when it arrived. The list below was applied
+# as is, plus the commented "second unit" block at the end, all checked the same day: launcher/ comes up as
+# Home after two reboots (the set boots straight to Home, not Live TV), HDMI 1 and the Inputs menu switch,
+# YouTube and Kodi open, and the physical remote's Input, YouTube, Settings and Home buttons all still work
+# with the stock launcher disabled and no key helper enabled. com.tcl.usercenter came back on at the first
+# reboot here too.
+#
 # Apply:  TV_HOST=<tv ip> tools/disable.sh examples/tcl-32s5400a/debloat.txt
 # Undo:   TV_HOST=<tv ip> tools/restore.sh examples/tcl-32s5400a/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -38,6 +47,13 @@
 # - screencap writes an empty file while an HDMI input is on screen. Press Home first.
 # - com.tcl.usercenter can be switched back on by the system at boot on some C06 units; it stays
 #   idle, so it is left in the list. Re-check `pm list packages -d` after a reboot.
+# - Storage reserve (second unit): the storage monitor keeps a fixed 500 MB free
+#   (`dumpsys devicestoragemonitor` shows lowBytes=524288000) on a 2.7 GB /data, and every install fails
+#   below it with "Requested internal only, but not enough space" - launcher/build-and-install.sh included.
+#   `tools/tv.py 'pm trim-caches 4G'` frees the app caches and was enough to get past it; check that
+#   devicestoragemonitor says level=NORMAL before installing. TGuard's "TV storage Low" popup comes from the
+#   same check and still showed once with com.tcl.guard disabled.
+# - `pm uninstall-updates` does not exist on this Android 11 build ("Unknown command").
 
 # TCL account, promos and content
 com.tcl.usercenter                     # TCL account; may be re-enabled by the system at boot
@@ -74,3 +90,22 @@ com.yupptv.scope.tvapp
 # au.com.stan.and
 # tv.wuaki.apptv
 # com.tcl.keyhelp
+
+# Second unit (V8-T221T01-LF1V121), disabled there and checked the same day only, so left commented.
+# Uncomment what you do not use:
+# android.autoinstalls.config.tcl.device   # partner-app auto installer config (in the tcl-40s5400a list)
+# com.google.android.tvrecommendations     # sponsored rows on the stock home
+# com.google.android.syncadapters.calendar
+# com.google.android.katniss               # Google Assistant / voice search: the mic button stops working
+# com.google.android.tv.assistant          # disable together with katniss
+# com.tcl.micmanager                       # remote microphone manager; together with katniss
+# com.google.android.tv.remote.service     # Google TV phone-app remote (casting does not need it)
+# com.tcl.ui_mediaCenter                   # USB media player, together with com.tcl.videoplayer
+# com.tcl.videoplayer                      # (com.tcl.audioplayer and com.tcl.imageplayer are in the list above)
+# com.tcl.t_solo                           # T-Solo: TV sound on Bluetooth headphones only
+# com.google.android.backdrop              # photo screensaver; screensaver_components was already
+#                                          # com.android.dreams.basic/.Colors on this unit
+# com.google.android.marvin.talkback       # TalkBack
+# com.google.android.tts                   # Google text-to-speech, together with TalkBack
+# com.tcl.dashboard                        # TCL Home panel, gift box and promo messages; kept above as a
+#                                          # precaution, but the remote's buttons all worked without it here

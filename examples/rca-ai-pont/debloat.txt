@@ -1,7 +1,11 @@
 # RCA AI PONT SA (Changhong, device redwood, product ISDB92RC)
 # Android 14, firmware UKNV.260504.001, security patch 2026-05-01
 # Also sold as the realme 100 cm (40-inch) Full HD Smart Android TV: same redwood board, firmware UKNV.260514.001
-# (pranabsarma18, PR #38).
+# (pranabsarma18, PR #38; confirmed by Sahil Shefeek).
+# Also sold as the AIWA AW32B4SMG 32-inch, Colombia: same redwood board (JUC7.820.0029.7270), product ISDB92AW,
+# same firmware UKNV.260504.001; see the AIWA variant notes below (escontreras, PR #815).
+# Also sold as the ERGO DVB92YC (Ukraine): same redwood board (MT5867), product DVB92YC, firmware UKNV.260514.001;
+# see the ERGO variant notes below.
 # 1 GB RAM (MemTotal about 935 MB). Stock launcher: com.google.android.tvlauncher
 # Live TV / tuner: com.mediatek.wwtv.tvcenter (leave it; the Inputs menu uses it)
 #
@@ -14,27 +18,79 @@
 # that starts at boot and talks to the factory. The physical remote and HDMI path
 # go through com.mediatek.tv.service and com.mediatek.tvinput, not through this list.
 #
-# Tested the same day on one set: Home opens, Netflix / Flow / Max / YouTube still
+# KEEP com.google.android.leanbacklauncher.partnercustomizer: provides the tvlauncher.widget
+# content provider. Disabling it causes com.mediatek.tv.service to crash-loop after the next
+# reboot ("Failed to find provider tvlauncher.widget") and remote hotkeys stop working.
+#
+# Tested on both sets: Home opens, Netflix / Flow / Max / YouTube still
 # resolve, Chromecast (mediashell) comes back after re-enable, HDMI stays in Inputs.
-# Not a multi-day soak.
 #
 # Known quirks on this firmware:
-# - USB debugging alone opens network ADB on port 5555. There is no separate
-#   wireless-debugging toggle.
+# - USB debugging alone opens network ADB on port 5555. On realme firmware UKNV.260514.001,
+#   Developer options also offers Wireless debugging with pairing.
 # - After a reboot the TV may take a new DHCP address.
-# - com.homwee.chtvmanager ("TV Manager") is a visible Homwee app. It was removed
-#   on the test set with uninstall --user 0, so it is intentionally not listed here.
+# - com.cltv.fast is automatically re-enabled by the Changhong vendor firmware at every boot.
+# - com.homwee.chtvmanager ("TV Manager") can be safely disabled with pm disable-user --user 0
+#   without uninstallation.
 # - The default IME is already Gboard. No Baidu-keyboard quirk.
 # - Disabling com.google.android.tvrecommendations does not clear the stock
 #   launcher's poster rows. Those go away only after launcher/ replaces Home.
 #   Disable com.google.android.tvlauncher only once the new home is the default,
 #   or Home can land on a factory activity.
+#
+# AIWA AW32B4SMG variant (two sets, tested the same day, three batches with screenshots, one reboot each):
+# - Differences in the list: keep com.homwee.upgrade and com.homwee.dmt.upgrade (comment them out) to keep
+#   firmware updates. com.homwee.alexacontrol is not installed. com.homwee.chtvmanager was disabled instead of
+#   uninstalled. Chromecast (mediashell), voice (katniss), com.homwee.multiscreenshare ("Midiacast"),
+#   com.homwee.mmp.screenshare, Netflix, YouTube Music and Play Games were also disabled, by the owner's choice.
+# - setupwraith was left enabled on both AIWA sets (comment it out to match) and the new launcher still owns
+#   Home. The saved Wi-Fi belonged to com.google.uid.shared on one set and android.uid.system on the other.
+# - com.cltv.fast ("Live TVx", FAST channels) is re-enabled by the firmware at every boot. config.json hides it,
+#   with Settings (the top-bar pill covers it) and the Live TV app.
+# - A cold boot came up in com.mediatek.wwtv.tvcenter instead of Home; waking from standby goes to Home.
+#   Settings has no "Power on behavior" entry.
+# - Besides 5555, Wireless debugging offers a random port (37683); the stock adb binary got "No route to host" on it.
+# - Play Movies & TV shows as a stock-launcher tile but com.google.android.videos is not installed.
+# - Private DNS dns.adguard-dns.com validates and survives a reboot.
+# - config.json: the AIWA test set's dock (YouTube, Prime Video, Play Store), applied by rebuilding with the
+#   same values in config.xml, not with theme.sh.
+#
+# CHiQ AI PONT (DVB92CQ, Changhong, redwood) variant (one set, Android TV 14, UKNV.260514.001,
+# 1 GB, 32-bit; tested 2026-10-24, not a multi-day soak):
+# - The saved Wi-Fi belongs to android.uid.system; setupwraith stays (it does not claim HOME here)
+#   and keeps the Cast credentials.
+# - Keep OTA: comment out com.homwee.upgrade and com.homwee.dmt.upgrade.
+# - Keep USB media and mirroring: comment out com.homwee.mmp.fileexplorer, imageplayer,
+#   com.homwee.mmp.screenshare and com.homwee.multiscreenshare.
+# - Keep TTS: comment out com.google.android.tts.
+# - Owner choice on this set: katniss (Assistant), tv.remote.service, alexacontrol, backdrop,
+#   play.games and syncadapters.calendar were disabled; re-enable the ones you use.
+# - com.cltv.fast returns on every boot; re-disable after a reboot.
+# - Cold boot opens Live TV (tvcenter BootBroadcastReceiver + Homwee hotel ProtocolActivity);
+#   fixed with power_on_home (#1445) + HOME_KEY_SERVICE=1. The launcher config sets it.
+#
+# ERGO DVB92YC variant (one set, Android TV 14, UKNV.260514.001, 1 GB, low_ram=true, 1280x720; 20-24 Oct 2026,
+# four days, several reboots, the launcher owning Home):
+# - Differences in the list: setupwraith kept, because here it owned the Wi-Fi network the TV was on (it was saved
+#   during first setup); disable.sh skips it by itself and Home still works. com.homwee.dmt.upgrade and
+#   com.google.android.tv.remote.service kept. Disabled as well, by the owner's choice:
+#   com.google.android.videos, com.google.android.youtube.tvmusic, com.google.android.play.games,
+#   com.google.android.apps.mediashell, com.amazon.amazonvideo.livingroom. com.google.android.marvin.talkback is
+#   not installed on this build.
+# - The remote is Bluetooth LE ("TVC0GWBT"): keep com.android.bluetooth and com.mediatek.autopair.
+# - com.cltv.fast came back enabled after the first reboot here too.
+# - Every power-on lands on Live TV, as on the CHiQ above; Android 14 refuses `pm disable` of the tvcenter boot
+#   receiver for the shell, and neither the Live TV menu nor Settings has a power-on option. power_on_home (#1445)
+#   with HOME_KEY_SERVICE=1 fixes it here too: checked across reboots, a wake from standby and the real remote.
+# - Memory, MemAvailable / swap in use about 7.5 min after a reboot: 263 / 386 MB stock, 330 / 216 MB with the list,
+#   343 / 209 MB with the extras above. tvlauncher took about 105 MB, com.gathin.tvhome 31 MB right after boot.
 
 # Homwee store, ads, installers and media extras
 com.homwee.aipont                       # brand portal
 com.homwee.store
 com.homwee.help                         # e-manual
 com.homwee.chinstallapk                 # silent installer
+com.homwee.chtvmanager                  # TV Manager cleaner / memory optimizer
 com.homwee.upgrade                      # re-enable to check for RCA firmware
 com.homwee.dmt.upgrade                  # second factory updater
 android.autoinstalls.config.homwee

@@ -22,6 +22,13 @@
             android:textSize="34sp" />
 
         <TextView
+            android:id="@+id/reorderChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:text="@string/reorder"
+            android:visibility="gone" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
@@ -62,6 +69,26 @@
         </LinearLayout>
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/dock_opacity_label"
+            android:textColor="#FFFFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView android:id="@+id/dock100" style="@style/SettingsColumnChoice" android:text="100%" />
+            <TextView android:id="@+id/dock70" style="@style/SettingsColumnChoice" android:text="70%" />
+            <TextView android:id="@+id/dock50" style="@style/SettingsColumnChoice" android:text="50%" />
+            <TextView android:id="@+id/dock30" style="@style/SettingsColumnChoice" android:text="30%" />
+        </LinearLayout>
+
+        <TextView
             android:id="@+id/wallpaperChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="28dp" />
@@ -83,6 +110,12 @@
             android:text="@string/advanced_effects_warning"
             android:textColor="#FFACB8C1"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/openOnStartChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/followThemeChoice"

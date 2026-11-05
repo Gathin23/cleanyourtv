@@ -1,7 +1,7 @@
 # TCL QM6K Pro Google TV, 2025, US (device G08, model "Smart TV Pro", MediaTek tcl9618)
 # Android 14 (Google TV), firmware UTT2.250416.001 AU16
 # Also seen on the same G08 board with AU14 firmware, a "Smart TV Pro" sold outside the US (prasta1, PR #23);
-# that set needed Wireless-debugging pairing (README, Troubleshooting).
+# that set needed Wireless-debugging pairing (docs/TROUBLESHOOTING.md, "USB debugging never opens port 5555").
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-qm6k-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-qm6k-google-tv/debloat.txt com.google.android.apps.tv.launcherx

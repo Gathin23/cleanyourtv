@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One print (Prints): the whole picture with rounded corners and its month and year over a fade along its
+     foot. The outer frame is a clear margin for the shadow (PrintShadow), drawn as one layer with the picture so
+     the tilted edges come out smooth. From Photo Prints by @shivamsingh262 (#936). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/print_shadow_room"
+    android:clipToPadding="false"
+    android:clipChildren="false">
+
+    <FrameLayout
+        android:id="@+id/printCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/print_card">
+
+        <ImageView
+            android:id="@+id/printPhoto"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitXY"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/printDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/print_caption_fade"
+            android:gravity="start|bottom"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="12dp"
+            android:singleLine="true"
+            android:textColor="#F2FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            android:shadowColor="#80000000"
+            android:shadowRadius="4" />
+    </FrameLayout>
+</FrameLayout>

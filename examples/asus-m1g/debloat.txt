@@ -1,0 +1,61 @@
+# ASUS M1G Google TV (built by MOKA, device dahu, Realtek RTD2851F), US
+# Android TV 11 (API 30) with the Google TV home, build RTK4.241026.032, security patch 2024-12-01.
+# About 1.8 GB RAM, armeabi-v7a. ro.product.manufacturer=MOKA, ro.product.brand=ASUS, ro.product.model=M1G.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/asus-m1g/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/asus-m1g/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Applied in small batches on 2026-10-24 with a screenshot after each, then a custom launcher installed
+# and the Home key checked the same day. NOT YET checked after a full power cycle: on other MOKA Google TV
+# firmware (docs/devices/acer-r4g.md, examples/kalley-43g200) FallbackHome re-enables setupwraith at boot
+# and its RecoveryActivity takes Home back. If that happens here, re-enable launcherx and please report it.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it to restore.sh / as STOCK_LAUNCHER).
+# Home claimants with launcherx and setupwraith off: com.realtek.keyintercept FallbackHome and
+# com.android.tv.settings FallbackHome; setupwraith's RecoveryActivity took Home when only launcherx was off.
+# Inputs: HDMI and DisplayPort through com.realtek.tv.passthrough (HDMITvInputService, DPTvInputService).
+# Disabled from the factory, so not listed (restore.sh would turn them ON): com.aiconnx.app.stream.tv001,
+# com.google.android.youtube.tvmusic.
+#
+# Quirks on this firmware, all checked on the TV:
+# - Port 5555 answered after turning on network debugging; tools/tv.py works directly.
+# - The Wi-Fi network saved during first setup belonged to setupwraith (`dumpsys wifi | grep cname=`).
+#   Forgetting and rejoining it in Settings made com.android.tv.settings the owner; only then was
+#   setupwraith disabled, and Wi-Fi stayed up.
+# - The TV has a second user profile (user 10). Settings > Install unknown apps saved its switch for
+#   that profile; `appops set <package> REQUEST_INSTALL_PACKAGES allow` sets it for the main one.
+# - `dumpsys audio | grep Muted:` shows the first stream, not music; read the STREAM_MUSIC block.
+# - No com.realtek.power.ILedManager service, so the standby-light call in docs/devices/philips-r8g.md
+#   doesn't apply.
+#
+# Kept on purpose: com.realtek.tv, com.realtek.tv.passthrough (inputs), com.realtek.menu (input/source
+# menu), com.realtek.keyintercept and com.realtek.mousekeyintercept (key handling, FallbackHome),
+# com.google.android.tv.remote.service (phone remote), com.realtek.rtkvirtualkeyboard and
+# com.google.android.inputmethod.latin (keyboards), com.realtek.hid.agent, Play Store, Play Services,
+# com.google.android.apps.mediashell (Chromecast), com.realsil.ota (firmware updates).
+# Left alone because their purpose is unclear from their components: com.apps.factory.ui,
+# com.realtek.display.monitor, com.realtek.ddcci, com.realtek.slices, com.aiconnx.service.stream.
+
+# Telemetry
+com.google.android.feedback
+
+# Manufacturer content
+com.realtek.leanbacklauncher.partnercustomizer # partner config that injects apps and rows into the home screen
+com.aiconnx.app.stream.tv044                   # "Multi-Platform streamer plus" preload
+com.realtek.officeweb                          # OfficeWeb document viewer preload
+com.realtek.userguide                          # on-TV user guide
+
+# Preloaded or auto-installed apps, off by owner's choice
+com.instagram.airwave                          # Instagram for TV, installed by the Play Store at setup
+com.haystack.android                           # Haystack News
+com.realtek.miracast                           # Cast2Display (Miracast mirroring); Chromecast stays
+com.rtk.mediabrowser                           # Media Player; also the USB media player, re-enable for USB drives
+
+# Voice and ambient mode, off by owner's choice
+com.google.android.katniss                     # voice assistant
+com.google.android.apps.tv.dreamx              # ambient mode; the screensaver was also turned off
+
+# Launcher swap: setupwraith first, then launcherx (see the Wi-Fi quirk above)
+com.google.android.tungsten.setupwraith        # costs phone casting after a reboot (the Cast receiver reads its credentials from setupwraith)
+com.google.android.apps.tv.launcherx

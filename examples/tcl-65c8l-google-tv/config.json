@@ -1,0 +1,13 @@
+{
+  "dock_apps": ["com.netflix.ninja", "au.net.abc.iview", "com.plexapp.android", "com.amazon.amazonvideo.livingroom"],
+  "columns": 4,
+  "live_tv_package": "com.tcl.tv",
+  "hidden_apps": [],
+  "app_keys": [
+    "83:com.android.tv.settings",
+    "4001:com.tcl.tv",
+    "4062:com.netflix.ninja",
+    "4099:com.amazon.amazonvideo.livingroom",
+    "190:com.google.android.youtube.tv"
+  ]
+}

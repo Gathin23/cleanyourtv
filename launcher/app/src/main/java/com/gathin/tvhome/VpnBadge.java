@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.text.style.ReplacementSpan;
 
 import androidx.annotation.NonNull;
@@ -16,9 +18,9 @@ import androidx.annotation.NonNull;
 final class VpnBadge extends ReplacementSpan {
 
     private static final int GREEN = 0xFF30D158;
-    private static final int INK = 0xFF06290F;
+    static final int INK = 0xFF06290F;
     private static final int RED = 0xFFFF453A;
-    private static final int INK_OFF = 0xFFFFFFFF;
+    static final int INK_OFF = 0xFFFFFFFF;
 
     private final Drawable lock;
     private final float density;
@@ -32,6 +34,34 @@ final class VpnBadge extends ReplacementSpan {
         this.lock = lock != null ? lock.mutate() : null;
         if (this.lock != null) this.lock.setTint(ink);
         this.density = density;
+    }
+
+    /** vpn_pill: what the VPN pill shows, from {@link #pillState}. */
+    static final int PILL_HIDDEN = 0, PILL_UP = 1, PILL_OFF = 2;
+
+    /**
+     * vpn_pill: green while any VPN is up, red "VPN off" while none is but the configured VPN app is installed (so a
+     * dropped VPN is noticed), hidden while neither is true: no pill on a TV without a VPN.
+     */
+    static int pillState(boolean vpnUp, boolean vpnAppInstalled) {
+        return vpnUp ? PILL_UP : vpnAppInstalled ? PILL_OFF : PILL_HIDDEN;
+    }
+
+    /** vpn_pill: the pill's background, solid green or red; focused it keeps its colour and gets a white ring. */
+    static StateListDrawable pillBackground(boolean up, float density) {
+        StateListDrawable bg = new StateListDrawable();
+        GradientDrawable focused = pillShape(up, density);
+        focused.setStroke(Math.round(3 * density), 0xFFFFFFFF);
+        bg.addState(new int[]{android.R.attr.state_focused}, focused);
+        bg.addState(new int[0], pillShape(up, density));
+        return bg;
+    }
+
+    private static GradientDrawable pillShape(boolean up, float density) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setColor(up ? GREEN : RED);
+        shape.setCornerRadius(21 * density);
+        return shape;
     }
 
     private float textSize(Paint p) {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Frigate Glance</string>
+    <string name="key_service_description">Lets two remote buttons dismiss or snooze a camera card while one is on screen. No other key is read, and none at all while no card shows.</string>
+</resources>

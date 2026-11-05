@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">News screensaver</string>
+    <string name="dream_name">News</string>
+    <string name="loading_title">Fetching the news…</string>
+    <string name="offline_title">No news right now</string>
+    <string name="offline_body">The feeds could not be reached. Check the TV\'s network connection and the feed addresses; the screensaver tries again in a couple of minutes.</string>
+    <string name="no_feeds_title">No feeds</string>
+    <string name="no_feeds_body">Add an RSS or Atom feed in the screensaver\'s settings, or with setup.sh.</string>
+    <string name="settings_title">News screensaver</string>
+    <string name="seconds_per_headline">Seconds per headline: %1$d</string>
+    <string name="feeds_heading">Feeds (OK on one removes it)</string>
+    <string name="feed_hint">Name | https://example.com/rss.xml (the name is optional)</string>
+    <string name="feed_add">Add feed</string>
+    <string name="feed_invalid">Use an https:// address, if you like after a name and a bar: Name | https://…</string>
+    <string name="feed_too_many">The feed list is full (%1$d).</string>
+    <string name="feed_remove">Remove this feed?</string>
+    <string name="feed_remove_yes">Remove</string>
+    <string name="settings_info">When the screensaver starts is set in the TV\'s own settings (Screensaver, or Energy saving), or with setup.sh. News is refreshed every 15 minutes while it shows.</string>
+    <string name="preview">Preview</string>
+</resources>

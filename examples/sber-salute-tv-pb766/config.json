@@ -1,0 +1,31 @@
+{
+  "dock_apps": [
+    "ru.kinopoisk.tv",
+    "ru.rt.video.app.tv",
+    "com.vk.tv",
+    "ru.rutube.app"
+  ],
+  "hidden_apps": [
+    "com.cvte.fac.menu",
+    "com.cvte.factory.at",
+    "com.cvte.license.at",
+    "com.cvte.tv.tools",
+    "ru.sberdevices.TvFactoryHelper",
+    "ru.sberdevices.webview",
+    "com.sberbank.settings",
+    "com.android.tv.settings",
+    "ru.more.play",
+    "ru.sberdevices.subscriptions",
+    "ru.sberdevices.smarthome.promo",
+    "ru.sberdevices.tv",
+    "ru.sberdevices.rcfupdater",
+    "ru.sberdevices.openbeta",
+    "ru.sberdevices.starkidsroom.prod"
+  ],
+  "live_tv_package": "",
+  "app_labels": [
+    "ru.sberdevices.starlauncher=Салют ТВ",
+    "ru.sberdevices.starmarket=Каталог Сбера",
+    "ru.sberdevices.settings=Центр управления"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "tv": "Formovie / Fengmi projector MiProjM05 (eva, Amlogic)",
+  "os": "Android TV 9",
+  "brand": "Formovie",
+  "notes": "First Formovie/Fengmi list: Google feedback/bug report, Xiaomi auto-installs, smartconnect, recommendation services, Ambient, user manual, Camera2, factory test suite, stock tvlauncher; preloaded streaming apps off by choice; keystone/focus (com.fengmi.projector.imaging), Formovie settings and droidlogic HDMI kept; leanbacklauncher re-enabled at boot; remote apps button (grid icon) is KEYCODE_ALL_APPS (284); second unit (Mi Smart Projector 2, build .1912): autofocus on a remote button with `app_keys` ([notes](formovie-mprojm05/README.md))"
+}

@@ -1,0 +1,63 @@
+# Xiaomi Redmi Smart TV A Pro 55" 2025 Energy-saving (MiTV-ASTR0, blueplanet, Amlogic
+# AMLT963D4/T5M), China firmware OS3.0.106.0.USTAATV (HyperOS TV 3), Android 14 (SDK 34),
+# 3 GB RAM. Stock launcher com.mitv.tvhome (PatchWall) - its line at the bottom is
+# commented out by default: on this build the stock launcher was replaced through the
+# com.ts.launcher allowlist trampoline (see the PatchWall block and the device doc)
+# before disabling it; uncomment that line only together with that setup.
+# Disabled and lived with on 2026-10-22; the screensaver-ad package was verified live
+# (resumed activity while the ad showed). See docs/devices/xiaomi-mitv-astr0-blueplanet.md
+# for the ad screensaver, the Home allowlist behavior and what must stay enabled.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-astr0/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-astr0/debloat.txt com.mitv.tvhome
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - The standby/screensaver ads come from com.xiaomi.mitv.hyper.screensaver: a plain
+#   Activity with its own downloaded carousel, not a DreamService, so screensaver_enabled=0
+#   does not touch it. com.mitv.screensaver / com.xiaomi.mitv.advertise do not exist here.
+# - Keep com.xiaomi.mitv.smartpanel enabled (Menu-button panel: source switcher +
+#   wireless tiles). Do NOT add it here; disabling it kills the Menu key.
+# - ADB over TCP closes on every boot: Settings -> 账号与安全 -> ADB 调试.
+# - No idle clock screensaver is possible: the idle timeout path is a hard panel-off
+#   (suspend), the AOSP dream never renders. Keep screen_off_timeout at 2147483647.
+
+# Xiaomi telemetry / ads / push
+com.miui.tv.analytics                    # TV usage statistics
+com.xiaomi.tvqs                          # quality/performance reporting
+com.xiaomi.mitv.tvpush.tvpushservice     # push ads/notifications
+com.mitv.overseaservice                  # overseas service partner helper
+com.miui.hybrid.tv                       # hybrid runtime container
+com.xm.webcontent                        # webview container for promotions
+com.mitv.shoplugin                       # TV Taobao shopping plugin
+com.xiaomi.mitv.shop                     # Xiaomi store
+com.duokan.videodaily                    # short-video promos, bundles the Mi ad SDK
+com.xiaomi.gamecenter.sdk.service.mibox  # game center SDK
+com.android.adservices.api
+com.android.ext.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Preloaded apps (WPS cn.wps.moffice_i18n_TV kept at owner request)
+com.xiaomi.mitv.calendar
+com.xiaomi.mitv.health
+com.xiaomi.mitv.healthdiagnosis
+com.xiaomi.mitv.karaoke.service
+com.xiaomi.screenrecorder
+com.xiaomi.tweather                      # weather provider; also feeds the Hyper screensaver
+com.mitv.gallery
+com.xiaomi.tv.gallery                    # "Pictorial" wallpaper app
+
+# Mi Home + cleaner (owner confirmed unused; re-enable tvmanager if XiaoAI "open app" goes quiet)
+com.xiaomi.smarthome.tv
+com.xiaomi.mitv.tvmanager                # cf. MFFU0: XiaoAI app-opening runs through its provider
+com.mitv.toolhouse
+
+# Screensaver ads (verified: resumed activity while the ad carousel showed, own cache)
+com.xiaomi.mitv.hyper.screensaver        # HyperOS screensaver Activity; see device doc
+
+# Stock launcher - LEFT COMMENTED OUT by default: uncomment ONLY together with the
+# allowlist trampoline from the device doc (§Home), or Home lands on FallbackHome's
+# black screen. disable.sh's Home guard normally skips it anyway. Undo path:
+# pm enable com.mitv.tvhome + reboot.
+#com.mitv.tvhome

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lunar_date_format">음력 %2$s월 %1$d일 · %3$s</string>
+    <string name="lunar_month_leap">윤%1$d</string>
+    <string name="lunar_year">%1$s%2$s년</string>
+    <string-array name="lunar_stems">
+        <item>갑</item><item>을</item><item>병</item><item>정</item><item>무</item>
+        <item>기</item><item>경</item><item>신</item><item>임</item><item>계</item>
+    </string-array>
+    <string-array name="lunar_branches">
+        <item>자</item><item>축</item><item>인</item><item>묘</item><item>진</item><item>사</item>
+        <item>오</item><item>미</item><item>신</item><item>유</item><item>술</item><item>해</item>
+    </string-array>
+</resources>

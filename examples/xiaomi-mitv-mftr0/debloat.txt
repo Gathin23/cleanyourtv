@@ -1,0 +1,61 @@
+# Xiaomi MiTV-MFTR0 (freeguy, MediaTek mt9653), China firmware OS2.0.23.0.RFTMATV
+# (HyperOS TV 2), Android 11 (SDK 30). Second CN-firmware set from the same live
+# sessions as MiTV-ASTR0 (see examples/xiaomi-mitv-astr0/); the same mechanisms carry
+# over 1:1 from HyperOS TV 3 to HyperOS TV 2. Input routes, settings intents and app
+# discovery for this model: docs/devices/xiaomi-mitv-mftr0-freeguy.txt; debloat and
+# Home notes: docs/devices/xiaomi-mitv-mftr0-debloat-home.md.
+# Disabled and lived with on 2026-10-22; everything verified per-package against
+# this firmware first (it ships no WPS, no com.mitv.overseaservice, and Android 11
+# has no AOSP adservices module packages).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mftr0/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mftr0/debloat.txt com.mitv.tvhome
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Notes from this firmware:
+# - The standby/screensaver ads come from com.xiaomi.mitv.hyper.screensaver, same as
+#   on OS3: a plain Activity with its own downloaded carousel; screensaver_enabled=0
+#   does not touch it. com.mitv.screensaver / com.xiaomi.mitv.advertise don't exist.
+# - Keep com.xiaomi.mitv.smartpanel enabled (it is the Menu-button panel: source
+#   switcher + wireless tiles). Do NOT add it here.
+# - First ADB connect needs the on-TV "允许USB调试" RSA confirmation; ADB over TCP
+#   then closes on every reboot (Settings -> 账号与安全 -> ADB 调试 to re-enable).
+# - Check /data/app before classifying anything as a preload: an owner-installed
+#   Moonlight (com.limelight) sat in an early draft of this list until `pm path`
+#   showed it was not a preload. It is intentionally absent here.
+
+# Xiaomi telemetry / ads / push
+com.miui.tv.analytics                    # TV usage statistics
+com.xiaomi.tvqs                          # quality/performance reporting
+com.xiaomi.mitv.tvpush.tvpushservice     # push ads/notifications
+com.miui.hybrid.tv                       # hybrid runtime container
+com.xm.webcontent                        # webview container for promotions
+com.mitv.shoplugin                       # TV Taobao shopping plugin
+com.xiaomi.mitv.shop                     # Xiaomi store
+com.duokan.videodaily                    # short-video promos, bundles the Mi ad SDK
+com.xiaomi.gamecenter.sdk.service.mibox  # game center SDK
+
+# Preloaded apps
+com.emotn.browser                        # Emotn browser preload (the launcher itself is a separate owner-installed app)
+com.xiaomi.mitv.calendar
+com.xiaomi.mitv.health
+com.xiaomi.mitv.healthdiagnosis
+com.xiaomi.mitv.karaoke.service
+com.xiaomi.screenrecorder
+com.xiaomi.tweather                      # weather provider; also feeds the Hyper screensaver
+com.mitv.gallery
+com.xiaomi.tv.gallery                    # "Pictorial" wallpaper app
+
+# Mi Home + cleaner (re-enable tvmanager if XiaoAI "open app" goes quiet, cf. MFFU0)
+com.xiaomi.smarthome.tv
+com.xiaomi.mitv.tvmanager
+com.mitv.toolhouse
+
+# Screensaver ads (same carrier as OS3; verified by settings + package state)
+com.xiaomi.mitv.hyper.screensaver        # HyperOS screensaver Activity; see device doc
+
+# Stock launcher - LEFT COMMENTED OUT by default: on this build the stock launcher
+# was replaced through the com.ts.launcher allowlist trampoline (see the device doc)
+# before disabling it; uncomment only together with that setup. Undo path:
+# pm enable com.mitv.tvhome + reboot.
+#com.mitv.tvhome

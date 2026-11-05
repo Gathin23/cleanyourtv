@@ -1,0 +1,77 @@
+# Sony BRAVIA KD-43X80L (2023, model string "BRAVIA 4K VH22", product BRAVIA_VH22_M_EU, device BRAVIA_VH22, MediaTek MT5895), EU
+# Android 12 (Google TV, API 31), build BRAVIA_VH22_M_EU-user 12 STT2.230505.001.S136 682241 release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-43x80l/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-43x80l/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV). Pass it to restore.sh as above.
+# Live TV / tuner app: com.sony.dtv.tvx (set it as live_tv_package in the launcher's config.xml and hide it).
+# Keep the com.sony.dtv.tvinput.* services, com.sony.dtv.braviasync*, com.sony.dtv.tvapi,
+# com.sony.dtv.sonysystemservice, settingsprovider, systemupdate/update (firmware), the Sony
+# settings apps and all com.mediatek.*: they drive HDMI, the tuner, Bravia Sync, updates and the remote.
+# Already disabled at the factory: com.sony.dtv.my5launcher, de.hdplus.tvapp.androidtv,
+# com.sony.dtv.soundslauncher, com.apple.atve.sony.appletv, com.sony.dtv.b2b.vendorprotocol,
+# com.youview.poa, com.sony.dtv.iplayerlauncher, com.sony.dtv.itvlauncher, com.sony.dtv.ardlauncher,
+# com.sony.dtv.b2b.softap, com.sony.dtv.all4launcher.
+#
+# Tested and lived with on a KD-43X80L running the clean Apple TV style launcher (com.gathin.tvhome).
+# setupwraith disabled safely (Wi-Fi network owned by com.android.tv.settings, no reconnection issues).
+# Disabling setupwraith gives Home back but can break casting (Chromecast built-in); comment out its line
+# below if you want to keep casting.
+# HDMI inputs (1-4, eARC), tuner TVX, remote control, and network streaming apps (Max, VLC, TIMVISION,
+# RaiPlay) verified working across reboots.
+
+# ACR viewing tracker and telemetry
+tv.samba.ssm                                   # Samba TV fingerprints what is on screen (ACR)
+tv.samba.ssm.ui                                # Samba TV UI
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.sonyericsson.idd.agent                     # Sony usage data / telemetry
+com.sony.dtv.sonybugreportsys                  # Sony bug report uploader
+com.google.android.feedback                    # Google feedback client
+com.sony.dtv.usercontext                       # User viewing context for recommendations
+
+# Sony content, ads and recommendations
+com.sony.dtv.promos                            # My BRAVIA promos
+com.sony.dtv.sonyselect                        # Sony Select app store / promo tile
+com.sony.dtv.sonytab                           # Sony tab on Google TV home
+
+# Retail demo / shop mode and help
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp                         # Smart Help
+com.sony.dtv.demosupport                       # Retail demo support
+com.sony.dtv.demosystemsupport                 # Retail demo system support
+com.sony.dtv.multiscreendemo                   # Retail multi-screen demo
+
+# Extras and hardware services
+com.sony.dtv.gestureapp                        # Gesture control app (BRAVIA CAM)
+com.vewd.core.integration.dia                  # Vewd browser / HbbTV DIA service
+com.vewd.core.service                          # Vewd core service
+com.uei.quicksetsdk.sony                       # QuickSet remote setup SDK
+
+# Sony IoT and ambient services
+com.sony.dtv.seeds.iot                         # Sony SEEDS IoT service
+com.sony.dtv.seeds.iot.remotestart             # Sony SEEDS IoT remote start
+com.sony.dtv.seeds.auth                        # Sony SEEDS authentication
+
+# Hotel / professional B2B mode (unused in a home)
+com.sony.dtv.b2b.prosettings                   # Pro mode settings
+com.sony.dtv.b2b.hotelmode                     # Hotel mode service
+com.sony.dtv.b2b.adminpassword                 # B2B admin password
+com.sony.dtv.b2b.deviceadminsettings           # B2B device admin settings
+com.sony.dtv.b2b.importexport                  # B2B settings import/export
+com.sony.dtv.b2b.rs232csupport                 # RS-232C serial control
+
+# Preloaded apps and disused services
+com.google.android.videos                      # Google TV / Play Movies & TV
+com.google.android.play.games                  # Google Play Games
+com.google.android.youtube.tvmusic             # YouTube Music
+
+# Voice assistant (removes remote mic search; comment out these three to keep it)
+com.google.android.katniss                     # Google Assistant / voice search
+com.sony.dtv.voicesearch                       # Sony voice search component
+com.sony.dtv.assistantadapter                  # Sony Assistant adapter
+
+# Google TV setup wizard: claims HOME once stock launcher is disabled
+com.google.android.tungsten.setupwraith

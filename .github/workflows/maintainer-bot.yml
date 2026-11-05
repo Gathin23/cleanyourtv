@@ -36,24 +36,26 @@ concurrency:
   cancel-in-progress: true
 jobs:
   review:
+    # Only here: forks have no OG_PC_API_KEY, so the job would fail on every pull request in them (#2032).
     if: >-
+      github.repository == 'Gathin23/cleanyourtv' && (
       (github.event_name == 'pull_request_target' && !github.event.pull_request.draft) ||
       github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' ||
       (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
        startsWith(github.event.comment.body, '/bot review') &&
-       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)))
     runs-on: ubuntu-latest
     # A single PR review gets 30 minutes; the backfill (workflow_dispatch) and the 6-hourly sweep keep 5 hours.
     timeout-minutes: ${{ (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') && 300 || 30 }}
     steps:
       - id: day
         run: echo "day=$(date -u +%F)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: .maintainer-bot
           key: maintainer-bot-ledger-${{ steps.day.outputs.day }}-${{ github.run_id }}
           restore-keys: maintainer-bot-ledger-${{ steps.day.outputs.day }}-
-      - uses: Gathin23/maintainer-bot@75610de1d7c6d389e6a49aa85cce31b866184bdd # maintainer-bot v4, pinned
+      - uses: Gathin23/maintainer-bot@234fba6b795ff34b461918cfd271b14c7afdce81 # maintainer-bot: tv.json lists, UTM-tagged 0G links, pinned
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           og-pc-api-key: ${{ secrets.OG_PC_API_KEY }}

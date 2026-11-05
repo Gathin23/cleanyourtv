@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA VU1 (KD-43X7500H, BRAVIA_VU1_UC, Realtek)",
+  "os": "Android TV 11",
+  "brand": "Sony",
+  "notes": "Realtek classic Android TV 11, 2 GB: Sony demo/help; Google feedback/partner setup/calendar/print/camera/gallery leftovers; Play Movies, TTS, Ambient and Assistant off by choice; Chromecast kept (about 31 MB PSS); the stock launcher outranks set-home-activity so it must be disabled after the new launcher; setupwraith answers HOME while enabled; wait 15 s before rebooting"
+}

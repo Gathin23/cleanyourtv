@@ -1,0 +1,107 @@
+# Sony BRAVIA KD-55XF7596 (2018, X75F series, model string "BRAVIA 4K GB ATV3", MediaTek mt5891), EU firmware
+# Product BRAVIA_ATV3_4K_EU, device BRAVIA_ATV3_4K (ro.build.product still says BRAVIA_ATV2). Android TV 9 (API 28).
+# Firmware Sony/BRAVIA_ATV3_4K_EU/BRAVIA_ATV3_4K:9/PTT1.190515.001.S54/672201:user/release-keys,
+# security patch 2022-01-05. 2 GB RAM (about 200 MB available with the stock UI), 8.1 GB /data, 3.4 GB free.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-55xf7596/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-55xf7596/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same firmware build (S54 672201) and platform as examples/sony-xbr-65x900f, so this is that list plus
+# the leftovers examples/sony-kd-55xe8596 disables, with this owner's feature choices.
+# Stock launcher: com.google.android.tvlauncher (restore.sh's default), HOME priority 2; the only other HOME
+# answer is com.android.tv.settings/com.sony.dtv.settings.system.FallbackHome. leanbacklauncher has no HOME.
+# Live TV / input app: com.sony.dtv.tvx. Keep it: it plays every HDMI input and the DVB tuner.
+# Keep: com.sony.dtv.tvinput.*, braviasync* (HDMI-CEC), remotepairing, rcpowerkey, uinputservice,
+# imeproxy, sonysystemservice, settingsprovider, all com.mediatek.* and mtktvapi.agent, timers,
+# webapi.core and remoteaccess (Sony IP control, Home Assistant), Play Store, Play Services, Gboard.
+# Also left alone, untested: com.sony.dtv.youview + com.youview.tv.servicehost (ship on the EU firmware
+# and hook into tvx), interactivetvutil, b2b.noderuntime.*, vewd/hbbtv, dialservice, servicemode.
+# Already off on this TV before the list: com.sony.dtv.promos, com.sony.dtv.smarthomesettings
+# (both listed below; restore leaves them disabled because the recovery record saw them that way).
+# Display: Physical size 1920x1080, Physical density 320, no overrides, display_density_forced null.
+#
+# Applied 2026-10-21 in six batches (the sections below), checking Home, Netflix, HDMI 1 and the DVB-T input
+# after each one, then rebooted: all 38 still disabled, nothing re-enabled by the firmware, no crashes,
+# display values unchanged, MemAvailable up from about 200 MB to about 500 MB after boot.
+# Notes from this firmware:
+# - Android 9 has no topResumedActivity line: check apps and inputs with
+#   `dumpsys activity activities | grep mResumedActivity`, and the input with
+#   `dumpsys tv_input | sed -n '/sessionStateMap/,$p' | grep inputId` (HDMI 1 = ExternalTvInputService/HW2).
+#   Netflix screencaps come back empty too, like HDMI and Live TV.
+# - disable.sh skips com.sony.dtv.smarthomesettings: it asks for TV_INPUT_HARDWARE. It was already off from
+#   the factory/owner and `pm query-services -a android.media.tv.TvInputService` does not list it, so it is a
+#   false positive here; no TVINPUT_ALLOW needed while it stays off.
+# - Launcher works: built from launcher/ and installed with build-and-install.sh, which disables tvlauncher
+#   (HOME priority 2) before set-home-activity. Home confirmed with `dumpsys window | grep mFocusedApp`
+#   (on Android 9 it is in dumpsys window, not dumpsys activity) before and after a reboot; Netflix,
+#   YouTube, Input, Settings and Home on the real remote all work without the accessibility services.
+#   config.xml: hidden_apps com.sony.dtv.tvx and com.sony.dtv.tvxlauncher.programguide,
+#   live_tv_package com.sony.dtv.tvx. The UI stays at 1920x1080 / 320 dpi, no zoom.
+# - With katniss and backdrop off, voice_interaction_service and screensaver_components still name them;
+#   Android ignores disabled components, and leaving them means restore.sh brings both back untouched.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+
+# Sony and Google content, ads and promos
+com.sony.dtv.promos                            # My BRAVIA promos (already off)
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.sony.dtv.tvlaunchercustomizer              # Sony tweaks to the stock home rows
+com.sony.dtv.tvlaunchercustomizer.overlay.apporder  # app order overlay for the stock home
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Retail demo
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+
+# Telemetry, remote support and feedback
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.sonybugreportsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+
+# Preloaded help apps
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+
+# Off by choice on this TV: features the owner doesn't use. Comment out any you want.
+com.google.android.katniss                     # Google Assistant / voice search (mic button)
+com.google.android.speech.pumpkin              # offline voice-command parser for the Assistant
+com.sony.dtv.smartmediaapp                     # Media Player, plays files from USB
+com.sony.dtv.osat.music                        # Music, plays music from USB
+com.sony.dtv.smarthomesettings                 # "Works with Alexa" setup (already off)
+com.google.android.inputmethod.japanese        # Japanese keyboard (Gboard stays the default)
+com.google.android.youtube.tvmusic             # YouTube Music
+com.google.android.backdrop                    # ambient screensaver
+com.google.android.videos                      # Play Movies
+com.google.android.play.games
+com.google.android.music                       # Google Play Music, shut down in 2020; FCM push, runs at boot
+
+# Hotel / professional mode and leftovers (as in examples/sony-kd-55xe8596)
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.rs232csupport                 # RS-232C control; re-enable if something drives the TV over serial
+com.google.android.leanbacklauncher            # old Android TV launcher, no HOME activity on this build
+com.android.printspooler                       # printing, nothing to print to
+
+# Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
+# com.google.android.apps.mediashell           # Chromecast built-in
+# screnmirroring.com                           # Screen mirroring (Miracast)
+# com.sony.dtv.networkapp.wifidirect
+# com.sony.huey.dlna.module                    # DLNA renderer
+# com.sony.huey.dlna.renderersettings
+# com.sonyericsson.dlna
+# com.google.android.tv.remote.service         # Android TV phone-app remote (and Home Assistant's Android TV Remote)
+# com.sony.dtv.b2b.vendorprotocol              # Node.js SDDP broadcaster for Control4-style automation (owner uses home automation)
+# com.amazon.amazonvideo.livingroom            # Prime Video
+# com.sony.dtv.systemupdate                    # Sony firmware updates
+# com.google.android.partnersetup              # RLZ partner pings; untested on these Sony lists

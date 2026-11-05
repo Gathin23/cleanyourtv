@@ -10,6 +10,69 @@
 # xtv, playtv, contentexplorer, homeintentresolver and the browser engine all stay on.
 # This file lists what this unit disabled on top of, or instead of, that list.
 #
+# Second unit: Philips 48OLED707/96 (48" OLED with Ambilight), Taiwan, on Wi-Fi.
+# Same board, same RTT2.211108.001 firmware, but an older build: 2769, security patch 2023-08-05.
+# Fingerprint: Philips/PH1M_EA_9970A/PH1M_EA_9970A:11/RTT2.211108.001/2769:user/release-keys
+# ro.boot.device_name and the global device_name read 48OLED707/96; 2.67 GB RAM as above.
+# - Out of the box, org.droidtv.freeviewplayers and 15 uk.co.freeview.* apps were already disabled,
+#   so they are not something to add here.
+# - Wi-Fi: com.google.android.tungsten.setupwraith was KEPT on this unit, as this list advises.
+#   com.google.android.tvrecommendations was kept too, so the notification panel stays.
+# - Everything else in this file that is installed on the set was disabled, and on top of it these
+#   entries from examples/philips-50pus8517: partnersetup, onetimeinitializer, sss.authbridge,
+#   syncadapters.calendar, nettvapp4655 (Deezer), m7opapp, marvin.talkback, Prime Video
+#   (com.amazon.amazonvideo.livingroom), dlna and ipcontrol. CHILI, Singa, Pluto TV, Rakuten TV and
+#   nettvapp4546/4932/5527 are not installed on this unit.
+# - All of them were still disabled after a restart, and the replacement launcher stayed Home.
+#   Idle-loop check after the debloat (50PUS8517 quirk 5 method, 30 s): 186 lines, no line repeating
+#   more than 10 times; the top repeater was WifiVendorHal's link-layer stats poll.
+# - Screensaver on an OLED: the firmware does not let Android's screensaver start on a timer. At every
+#   boot org.droidtv.tv.tptvservice (TPTvServiceReceiver) puts screen_off_timeout and sleep_timeout back
+#   to 604800000 ms, "Never", logging "screensaver put when to start is not never". A shorter "When to
+#   start", from the TV's settings or `settings put system screen_off_timeout`, works until the next
+#   boot and is then reset. Read from the receiver's code; the same strings are in the Android 9 build
+#   of tptvservice on PH9M_EA_5599 (examples/philips-tpm191e). What survives a reboot is the launcher's
+#   own idle clock: "home_idle_clock_minutes": 3 in a theme. It drifts the clock to spare the panel and
+#   starts only on Home, never over an app or Live TV. Checked here: the clock came up after 3 minutes
+#   on Home.
+#
+# Third unit: Philips 55OLED887/12 (55" OLED with Ambilight), Poland, on Wi-Fi. Same board and the same
+# RTT2.211108.001 build 21029 as the first unit (fingerprint above), security patch 2025-10-01, 2.7 GB RAM.
+# Applied in six batches with tools/disable.sh on one day with two reboots; not yet lived with for days,
+# so nothing below changes the list.
+# - Disabled there from this file: candeebug, gel, usagelogger, nettvrecommender, recommendation,
+#   nettv.market, demome, amazonalexa, feedback, setupwraith, katniss, play.games, videos,
+#   youtube.tvmusic, Rakuten TV, and tvrecommendations after the replacement launcher was Home. On top of
+#   it (owner's choice): org.droidtv.tv.frameworklogger, nettv_launcherapp, leanbackcustomizer (Philips
+#   partner rows for the stock launcher), m7opapp, astrahdplus, dropboxprovider, partnersetup,
+#   onetimeinitializer, sss.authbridge, syncadapters.calendar, marvin.talkback and
+#   com.google.android.backdrop. Not installed on that unit: nettvapps and the nettvapp* web apps, Fitness
+#   Buddy, CHILI, Singa, TED, WhaleLive, Pluto TV and Boosteroid.
+# - Kept there (owner's choice): everything Ambilight and Hue, the picture and sound settings and the audio
+#   path, Play-Fi soft AP included, Chromecast, DLNA, IP control, the Philips side menu, the firmware
+#   updaters, and Netflix, Prime Video, Apple TV, YouTube, MEGOGO and Sweet TV. The owner syncs Ambilight
+#   with Hue bulbs: AmbilightService, HueService, AmbiAirControllerService and the ambihue LinkService stayed
+#   bound after every batch, and Ambilight + Hue sync worked on screen after the list.
+# - Wi-Fi: the saved network belongs to android.uid.system (`dumpsys wifi | grep -o 'cname=[^ ]*'`), not to
+#   setupwraith, so disabling setupwraith kept the TV on Wi-Fi. This answers the Wi-Fi question above for
+#   this firmware, on one unit.
+# - disable.sh's TV-input guard held back usagelogger and demome. Neither serves a TvInputService
+#   (`pm query-services --components -a android.media.tv.TvInputService`), so both were disabled with
+#   TVINPUT_ALLOW=1, as on the 65PUS9206 in examples/philips-50pus8517. HDMI 2 still had a picture after
+#   a reboot, and the SOURCES drawer listed HDMI 1-4.
+# - After both reboots `pm list packages -d` was identical: nothing re-enabled itself. Idle log after the
+#   last batch (50PUS8517 quirk 5 method, 30 s): about 400 lines, almost all of them adbd's USB retry; no
+#   handleConnectAurora or connectCotextService loop.
+# - Launcher: build-and-install.sh ran through. The firmware opens org.droidtv.playtv at every power-on.
+#   power_on_home with HOME_KEY_SERVICE=1 did NOT send it to Home on this unit: Live TV came back after the
+#   boot probe and stayed. power_on_home_always did, after a reboot and after waking from standby with the
+#   real remote. With HomeKeyService bound, a held Volume + steps once per press, as measured on the
+#   65OLED804 in docs/devices/tcl-55p71b-g09-key-repeat.md; the owner kept the helper for Home at power-on.
+# - The board reports Composite (HW1), Component (HW2), SCART (HW3) and VGA (HW4) inputs that this model
+#   does not have; `input_sources` HW1=- to HW4=- leaves them out of the Inputs menu.
+# - Home, SOURCES, Netflix, Ambilight and Quick menu worked on the real remote afterwards; this remote has
+#   no Settings or YouTube button. Private DNS (AdGuard) works.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-55oled707/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55oled707/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

@@ -146,6 +146,27 @@ class ScreenshotTest(unittest.TestCase):
             self.assertNotIn("pull", [c[0] for c in device.calls])
             self.assertEqual(device.calls[-1], ("shell", f"rm -f {TV.SHOT_REMOTE}"))
 
+    def test_an_indented_rc_line_is_parsed_not_crashed(self):
+        # The match strips the status line (a CRLF firmware leaves a trailing "\r"), so the slice that
+        # reads the number has to strip it too: on a line that comes back indented, `line[3:]` reads
+        # "c=0" and int() raises before the capture is ever used. The strip keeps "rc=0" -> 0.
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / "home.png"
+            code, _, err, _ = self.run_tv(["--screenshot", str(local)], screencap_says="  rc=0\n")
+            self.assertEqual(code, 0, err)
+            self.assertEqual(local.read_bytes(), PNG)
+
+    def test_an_indented_failing_rc_is_read_as_the_failure_it_is(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            code, _, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "x.png")],
+                                          capture=b"", screencap_says="  rc=127\n")
+            self.assertEqual(code, 1)
+            self.assertIn("exit status 127", err)
+            # The status line is matched after stripping, so it is dropped from the error text the
+            # same way: an indented "rc=127" should not come back as the screencap output.
+            self.assertNotIn("rc=127", err)
+            self.assertIn("no output", err)
+
     def test_a_damaged_pull_is_not_passed_off_as_a_png(self):
         with tempfile.TemporaryDirectory() as tmp:
             code, _, err, _ = self.run_tv(["--screenshot", str(Path(tmp) / "home.png")], capture=b"garbage")
@@ -173,6 +194,22 @@ class ScreenshotTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             self.run_tv(["--screenshot", str(Path(tmp) / "a.png")])
             self.assertEqual(self.sleeps, [])
+
+    def test_wait_without_keys_still_pauses_before_the_capture(self):
+        # --wait with no keys used to be read and then dropped, so the capture came straight away.
+        with tempfile.TemporaryDirectory() as tmp:
+            code, _, err, device = self.run_tv(["--screenshot", str(Path(tmp) / "a.png"), "--wait", "3"])
+            self.assertEqual(code, 0, err)
+            self.assertEqual(self.sleeps, [3.0])
+            self.assertFalse(any("keyevent" in c[1] for c in device.calls if c[0] == "shell"))
+
+    def test_wait_without_a_number_says_so(self):
+        # A trailing --wait used to be reported as "not a key name: '--wait'".
+        code, _, err, device = self.run_tv(["--screenshot", "a.png", "HOME", "--wait"])
+        self.assertEqual(code, 2)
+        self.assertIn("--wait needs a number of seconds", err)
+        self.assertNotIn("not a key name", err)
+        self.assertEqual(device.calls, [], "nothing may reach the TV")
 
     def test_bad_key_names_and_waits_never_reach_the_tv(self):
         for args in (["--screenshot", "a.png", "home"], ["--screenshot", "a.png", "HOME;reboot"],

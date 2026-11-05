@@ -1,0 +1,8 @@
+{
+  "dock_apps": ["com.netflix.ninja", "com.google.android.youtube.tv", "com.disney.disneyplus", "com.android.mgstv"],
+  "hidden_apps": ["com.mediatek.wwtv.tvcenter"],
+  "columns": 4,
+  "rows_below_dock": 0,
+  "background_color": "#000000",
+  "wallpaper": false
+}

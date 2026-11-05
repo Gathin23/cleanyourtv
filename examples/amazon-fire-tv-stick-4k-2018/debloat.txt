@@ -21,6 +21,14 @@
 # com.amazon.diode, com.fireos.usagestats.proxy, com.amazon.ftvads.deeplinking, com.amazon.tv.csapp, com.amazon.tv.oobe.
 # No com.amazon.tv.acr on a stick (ACR is a TV-set thing).
 #
+# Second unit, same model and build (AFTMM, NS6711/5908), Europe, 2026-10-22: the list above applied cleanly.
+# Three more packages are protected on this build: com.amazon.tcomm, com.amazon.securitysyncclient and
+# com.amazon.whisperlink.core.android ("Cannot disable a protected package"). With com.amazon.vizzini disabled, Fire OS
+# re-enables it at every boot (all other disabled packages stay off), so dropping voice search means re-running
+# disable.sh after each reboot. Disabling the casting group at the end closed ports 8009, 55442 and 60000 on the LAN.
+# With Fire OS parental controls on ("PIN protect app launches"), any start of another app over Amazon's home,
+# including a Home-watcher launcher from SHOWCASE.md, opens the Prime Video PIN prompt every time.
+#
 # Kept on purpose: com.amazon.tv.launcher, com.amazon.tv.settings.*, com.amazon.venezia (Appstore),
 # com.amazon.tigris (Appstore UI), OTA updates, remote/Bluetooth services, com.amazon.tv.ime (keyboard),
 # com.amazon.vizzini (Alexa voice search for the remote mic) with com.amazon.aria/cardinal (its screens),
@@ -120,3 +128,31 @@ com.amazon.systemnotices                # system notices
 com.amazon.tv.releasenotes              # "what's new" release notes
 com.amazon.uxnotification               # UX notification popups
 # com.amazon.tv.oobe                    # out-of-box setup wizard (protected by Fire OS, cannot be disabled). If it ever is disabled it must be re-enabled before a factory reset
+
+# Second unit, disabled 2026-10-22 and survived reboots, not yet lived with for days: commented out until then.
+# Alexa and Prime Video leftovers, for an owner who also drops voice search and Prime Video (see the header)
+# com.amazon.vizzini                    # Alexa voice search; Fire OS re-enables it at every boot
+# com.amazon.vizzini.ftvcds
+# com.amazon.aria                       # voice search screens
+# com.amazon.cardinal                   # voice search screens
+# com.amazon.alexa.datastore.app
+# com.amazon.aca                        # Alexa hints/cues
+# com.amazon.audiohome                  # Alexa Home Theater
+# com.amazon.spotify.mediabrowserservice  # Spotify for Alexa (the Spotify app is separate)
+# com.amazon.firebat                    # Prime Video
+# com.amazon.tv.support                 # Prime Video helper
+# Background services that the Fire OS 7 lists here already disable
+# com.amazon.recess
+# com.amazon.naatyam
+# com.amazon.neodelegate
+# com.amazon.csm.htmlruntime            # HTML runtime for Amazon promos
+# com.android.printspooler
+# com.amazon.whisperplay.service.install  # remote app install from the phone app
+# Firmware update push: Amazon no longer ships updates for this stick, the OTA packages themselves stay protected
+# com.amazon.tv.forcedotaupdater.v2
+# Casting and mirroring (no Miracast, no DIAL/Fling from phones afterwards)
+# com.amazon.cast.sink                  # Miracast receiver
+# com.amazon.awvflingreceiver
+# com.amazon.dialservice
+# com.amazon.ssdpservice
+# com.amazon.whisperplay.contracts

@@ -1,0 +1,63 @@
+# Grundig Android UHD TV (Arcelik-built, codename "kunyang", product GxGrNM), Turkey
+# Android TV 14 (API 34), build UKNV.260115.001, MediaTek, 1.8 GB RAM, UI 1920x1080 on a 4K panel.
+# ro.product.manufacturer = ARCELIK, ro.adb.secure = 1. USB debugging alone opens port 5555.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/grundig-kunyang/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/grundig-kunyang/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx).
+# setupwraith does NOT claim HOME on this build, so it stays enabled (it also owns a saved Wi-Fi network).
+#
+# KEEP, even though the names look like bloat (checked with dumpsys package, none of them started):
+# - fusion.android.tv.demo: answers android.intent.action.TV_INPUT_BUTTON, i.e. the remote's Input key.
+# - com.arcelik.smartremoteservice: GLOBAL_BUTTON receiver and remote server (remote keys).
+# - com.mediatek.autopair (persistent): Bluetooth remote pairing.
+# - com.arcelik.tv.arcelikbacklight (persistent): backlight control service.
+# - com.mediatek.android.leanbacklauncher.partnercustomizer: crash-loops tv.service on MediaTek when off
+#   (see examples/cecotec-shandao, same Turkish Android 14 platform family).
+# - com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.wwtv.tvcenter: Live TV, HDMI, source menu.
+# - com.arcelik.ChannelEditor, .ecomode, .picturecustomizer, .ToneMaster, .easy_installation: TV settings.
+# - Factory packages, never opened: arcelik.factory.factorystart, com.mediatek.tv.factory,
+#   mediatek.factorymenu.ui, com.arcelik.tv.rctest.
+#
+# Reboot-checked: pm list packages -d identical before and after; nothing is re-enabled at boot.
+# Launcher works: installs over pm install (no verifier), owns Home (mFocusedApp) also after reboot;
+# every remote button (Home, Input, Settings, app keys) works without the key services. Live TV is
+# com.mediatek.wwtv.tvcenter. Screensaver set to com.gathin.tvhome/.ClockDream before backdrop goes.
+# Private DNS works on this set.
+#
+# Owner's choices: Chromecast and YouTube Music kept; voice assistant, AirScreen/AirCast,
+# YouTube Kids, Play Movies and Play Games off. Self-installed streaming apps untouched.
+
+# --- Telemetry, analytics and install attribution
+com.google.android.feedback                     # Google feedback / bug report uploader
+com.android.tv.feedbackconsent                  # feedback consent UI
+com.google.android.partnersetup                 # partner-app attribution (RLZ)
+android.autoinstalls.config.arcelik.gx          # Arcelik partner auto-installs config
+com.android.adservices.api                      # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services    # Privacy Sandbox on-device personalization
+com.android.federatedcompute.services           # Privacy Sandbox federated compute
+
+# --- Manufacturer content, ads and leftovers
+com.grundig.tv.channel                          # "Grundig Channel": Hoppr FAST/ad tiles, home-screen program rows
+com.arcelik.arserviceapp                        # HotelService (hotel/B2B mode), boot receiver, INSTALL_PACKAGES
+com.arcelik.tvcarehub                           # TV Care Hub promo/help videos
+com.mstar.android.tv.disclaimercustomization    # disclaimer popups
+com.google.android.syncadapters.calendar        # calendar sync, no calendar app on a TV
+com.google.android.onetimeinitializer           # first-setup leftover
+
+# --- Owner's choice: not used
+com.google.android.youtube.tvkids               # YouTube Kids
+com.google.android.videos                       # Google Play Movies & TV
+com.google.android.play.games                   # Google Play Games
+com.google.android.katniss                      # Google voice search / Assistant (remote mic button)
+com.google.android.tv.assistant                 # Assistant LED/demo service
+com.ionitech.airscreen                          # AirScreen (AirPlay/Miracast receiver; Chromecast kept)
+com.sand.aircasttv                              # AirCast receiver
+com.arcelik.smartremotecompanion.grundig        # Grundig Smart Remote phone-app companion
+
+# --- After launcher/ owns Home (build-and-install.sh disables com.google.android.tvlauncher itself)
+com.google.android.tvlauncher                   # stock Android TV home: shopping tab, sponsored rows
+com.google.android.tvrecommendations            # feeds the stock home's recommendation rows
+com.google.android.backdrop                     # Ambient screensaver, ~160 MB resident; replaced by com.gathin.tvhome/.ClockDream

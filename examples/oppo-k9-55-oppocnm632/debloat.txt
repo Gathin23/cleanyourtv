@@ -1,0 +1,57 @@
+# OPPO K9 55 (OPPOCNM632), Android 9 / ColorOS TV
+# Stock home: com.heytap.tv.launcher/com.oneplus.tv.launcher2.HomeLauncher.
+# The display build id was not captured. See docs/devices/oppo-k9-55-oppocnm632.md
+# before replacing Home.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/oppo-k9-55-oppocnm632/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oppo-k9-55-oppocnm632/debloat.txt com.heytap.tv.launcher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Keep com.heytap.tv.launcher enabled. It is the stock home. Do not build the launcher over
+# that package name, and do not pass it as STOCK_LAUNCHER: build-and-install.sh would disable
+# it. Keep com.android.tv.settings enabled.
+#
+# On this unit the alternate-id launcher installed, set-home-activity succeeded, the stock
+# home stayed enabled and the owner confirmed the screen. The packages below are the debloat
+# set for that unit (ads, telemetry, factory menus, paid screen-share). It has not been
+# described as a several-day run. Factory and AT packages are disabled here and never launched.
+# A slimmer optional set is debloat-extra.txt.
+#
+# Cast / paid screen-share. Already disabled on this unit; listed so a restore record keeps them.
+# HeyTap cast, paid mirroring and the Miracast-style share services.
+
+# Cast / paid screen-share
+com.heytap.tv.heycast
+com.hpplay.happyplay.aw
+com.apowersoft.mirror.tv
+com.heytap.iot.castservice
+com.heytap.optvmiracastservice
+
+# Ads, promo rows, push and the quick-app runtime
+com.opos.ott
+com.heytap.tv.pictorial
+com.heytap.tv.imagewall
+com.heytap.tv.msgboard
+com.heytap.mcs                               # HeyTap push
+com.nearme.instant.platform.tv
+
+# Telemetry, remote diagnose and crash upload
+com.heytap.feedback
+com.heytap.tv.remotediagnosing
+com.oplus.crashbox
+
+# Factory and engineering menus. Disabled, never launched.
+tpv.factorymenu.ui
+mediatek.factorymenu.ui
+com.cvte.factory.service
+com.cvte.factory.at
+com.cvte.fac.menu
+com.cvte.license.at
+com.gaochuang.factory.at
+com.konka.factory.at
+
+# Low-value system extras
+com.heytap.tv.userguide
+com.heytap.tv.oobe                            # first-run wizard, after setup has finished
+com.optv.aiengine
+com.heytap.tv.aicaption

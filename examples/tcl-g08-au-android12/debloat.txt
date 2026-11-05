@@ -1,0 +1,73 @@
+# TCL Smart TV Pro (G08, G08_4K_GB, MediaTek), Australian firmware, Android 12 (Google TV, Basic TV mode)
+# Model "Smart TV Pro", device G08, fingerprint TCL/G08_4K_GB/G08:12/STT2.221228.001/AS34:user/release-keys,
+# 32-bit userspace (armeabi-v7a), about 2.4 GB RAM.
+# Same fingerprint as examples/tcl-g08-eu-android12, but the Australian set also ships Stan, AirPlay
+# (com.tcl.airplay2 + com.mediatek.AirplayAPK), TCL Channel (com.tcl.waterfall.overseas), TCL Live free
+# channels (com.tcl.channelplus), com.tcl.esticker, com.tcl.hotelmenu and com.tcl.guard, and has no Google
+# Cast (mediashell) and no voice assistant (katniss). com.tcl.browser, com.tcl.messagebox,
+# com.tcl.smartalexa and com.google.android.videos from the EU list are not on it.
+#
+# Tested 22 October 2026 on one set, applied with tools/disable.sh in five batches with screenshots between
+# them. All 28 packages stayed disabled across a reboot (pm list packages -d compared before and after);
+# the Source key panel, HDMI 1/2 switching, SmartTube and Plex were checked afterwards (AirPlay and Miracast
+# sessions were not), and the launcher was installed with launcher/build-and-install.ps1 -HomeKeyService
+# (HOME_KEY_SERVICE=1 launcher/build-and-install.sh on macOS or Linux).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g08-au-android12/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g08-au-android12/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv.
+# Already disabled before this list on the tested set, by Google TV Basic TV mode: com.netflix.ninja,
+# com.google.android.youtube.tv, au.com.stan.and (the recovery record keeps them disabled on undo).
+# Left enabled on purpose: com.tcl.tv, com.tcl.tvinput, com.tcl.systemserver, com.tcl.ui_mediaCenter (USB
+# media player), com.tcl.partnercustomizer (its TKeyFree "TCL Channel" tile shows up as an app once launcherx
+# is off; hide it with hidden_apps instead), com.tcl.useragreement, tv.mopa.ginga, the keyboards,
+# Play Store and Play Services, plus the DO NOT DISABLE lines below.
+# Kept by the owner's choice: AirPlay (com.tcl.airplay2, com.mediatek.AirplayAPK, com.mediatek.airplaydaemon -
+# the EU list disables the daemon, AirPlay needs it) and screen mirroring (com.tcl.miracast).
+
+# TCL promo, demo and help
+com.tcl.dashboard                      # home-screen push messages
+com.tcl.exhibit                        # store demo mode
+com.tcl.esticker                       # retail-demo sticker
+com.tcl.hotelmenu                      # hotel-mode portal
+com.tcl.ocean.instructions             # onboarding/tips overlay
+com.tcl.repairguide
+com.tcl.logkit                         # log collection
+
+# TCL extras
+com.tcl.hearaid
+com.tcl.t_solo
+com.tcl.eva                            # TCL voice assistant layer
+com.tcl.magiconnectfree                # MagicConnect pairing promo
+com.tcl.gamebar
+com.tcl.UpdatePeripheral               # peripheral firmware helper
+com.tcl.guard                          # cleaner / "permission shield"
+
+# Duplicate webviews (com.google.android.webview stays the active one), MediaTek leftovers, Google extras
+com.tcl.android.webview
+com.iplayer.android.webview
+com.mediatek.support.webview
+com.mediatek.backgrounddetection
+com.mediatek.network
+com.google.android.apps.tv.dreamx      # photo screensaver; the basic one takes over
+com.google.android.tts
+com.android.printspooler
+com.google.android.feedback
+
+# Content apps
+com.tcl.waterfall.overseas             # TCL Channel
+com.tcl.channelplus                    # TCL Live free channels - see the README: with no aerial this is all Live TV has
+com.amazon.amazonvideo.livingroom      # Prime Video, off by choice
+
+# Home takeover for launcher/. On the tested set the saved Wi-Fi belonged to com.android.tv.settings, so the
+# setup wizard could go; disable.sh skips it by itself when the network belongs to setupwraith.
+com.google.android.apps.tv.launcherx   # stock Google TV home
+com.google.android.tungsten.setupwraith  # setup wizard; its RecoveryActivity takes Home when launcherx is off
+
+# DO NOT DISABLE - same as examples/tcl-g08-eu-android12:
+# com.tcl.autopair    - Bluetooth remote pairing.
+# com.tcl.suspension  - the Source key's QuickPanel (TclShortCutKeyManager -> com.tcl.suspension/.DismissService).
+# com.tcl.interactive - TIAS service com.tcl.tv binds for the source overlay.
+# com.tcl.ttvs        - same TIAS chain.

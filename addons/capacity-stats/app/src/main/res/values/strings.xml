@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Capacity Stats</string>
+    <string name="loading">Reading counters…</string>
+    <string name="unavailable">Readings unavailable</string>
+    <string name="back">Back</string>
+    <string name="memory">Available RAM: %1$s</string>
+    <string name="memory_used">Used RAM: %1$s</string>
+    <string name="storage">Available storage: %1$s</string>
+    <string name="note">Available RAM includes reclaimable caches; used RAM is total minus available. Storage refers to the data filesystem.</string>
+</resources>

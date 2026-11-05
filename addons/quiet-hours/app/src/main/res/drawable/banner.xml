@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a speaker with a volume bar stopped under a line, under a crescent moon. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#1E2630" android:pathData="M24,24h272v132h-272z" />
+    <path android:fillColor="#8E7CFF" android:pathData="M70,78h18l22,-18v60l-22,-18h-18z" />
+    <path android:fillColor="#8E7CFF" android:pathData="M132,110h20v10h-20zM160,100h20v20h-20zM188,90h20v30h-20z" />
+    <path android:fillColor="#3A4654" android:pathData="M216,80h20v40h-20zM244,70h20v50h-20z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="3" android:fillColor="#00000000" android:pathData="M126,84h146" />
+    <path android:fillColor="#FFFFFF" android:pathData="M262,36a14,14 0 1 0 12,22a11,11 0 1 1 -12,-22z" />
+</vector>

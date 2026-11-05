@@ -25,6 +25,26 @@
 # TvInputManager reports AV as connected with nothing plugged in. com.tcl.notereminder was enabled on that
 # unit, not disabled at the factory, so it is listed below.
 #
+# Also tested 2026-10-20/21 on a third unit in Brazil (product G07_4K_GB_NF, client TCL-LA-RTD51A-S1,
+# software V8-R51AT01-LF1V126, incremental AR07, fingerprint TCL/G07_4K_GB_NF/G07:11/RP1A.200622.001/AR17,
+# security patch 2024-12-05; Discussion #729):
+# - Stage 1 disabled 9 packages in two conservative batches (waterfall.overseas, esticker, notereminder,
+#   feedback, guard, then dashboard, partnercustomizer, messagebox, tv.tclhome_passive) while keeping the
+#   stock launcherx as Home. Stage 2 disabled 25 more packages, installed the reference launcher
+#   (INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1) with the ClockDream screensaver, and disabled launcherx,
+#   setupwraith (saved Wi-Fi belonged to android.uid.system, uid 1000) and dreamx.
+# - Kept by choice on that unit: com.tcl.ttvs (firmware updates), voice (com.google.android.katniss,
+#   com.tcl.assistant, com.google.android.tv.assistant), Chromecast (com.google.android.apps.mediashell)
+#   and com.google.android.youtube.tvmusic. Physical HDMI/AV playback, OTA update arrival and live
+#   tools/restore.sh rollback were not exercised in that session.
+# - Only au.com.stan.and and tv.wuaki.apptv came disabled at the factory (com.tcl.smartalexa and
+#   com.iqiyi.i18n.tv were not installed); com.google.android.videos and com.tcl.notereminder shipped
+#   enabled.
+# - Reboot check (tools/check.py): launcherx, setupwraith, dreamx and the other disabled packages stayed
+#   disabled across a reboot, but AR07 firmware automatically re-enabled com.tcl.notereminder and
+#   com.tcl.usercenter at boot. Adding both to hidden_apps in launcher/app/src/main/res/values/config.xml
+#   hides them from the app grid without fighting the firmware on every boot.
+#
 # Remote (IR, /dev/input/event0 "mtkinp"; scancodes from getevent with the real remote):
 # - Input (471, TV_INPUT) goes to TclPhoneWindowManager.startQuickPanelService, so it keeps working without
 #   launcherx and needs no InputKeyService.
@@ -41,6 +61,47 @@
 #   the real remote): settings_key_keycodes 4077, and app_keys KEYCODE_TCL_NETFLIX:com.netflix.ninja,
 #   KEYCODE_TCL_YOUTUBE:com.google.android.youtube.tv, 4099:com.amazon.amazonvideo.livingroom.
 # tools/b64push.py worked here (md5 match). Screenshots of Live TV and HDMI are 0 bytes; Netflix's are black.
+#
+# Also tested 2026-10-20 to 10-24 on a fourth unit in Brazil, same software as the third (V8-R51AT01-LF1V126,
+# incremental AR07, patch 2024-12-05), Bluetooth remote "TCL_RC902V_MG" on event3; launcher as Home through
+# reboots and four days of use:
+# - Gear sent KEY_FORWARDMAIL (233) as keycode 4077 here too; settings_key_keycodes 4077 with HOME_KEY_SERVICE=1
+#   fixed it (enabled and bound for user 0, then pressed on the real remote). It was SystemUI's
+#   TOGGLE_NOTIFICATION_HANDLER_PANEL, which only launcherx answers.
+# - Wi-Fi: setupwraith owned one of the five saved networks (an old one, not the network in use) and Android
+#   deleted only that one when setupwraith was disabled. Check the creator of every saved network, not just the
+#   current one: `dumpsys wifi`, then the cname= of each.
+# - com.tcl.micmanager and com.google.android.apps.nbu.smartconnect.tv were disabled for four days with no effect
+#   noticed (voice was off by choice, so the mic was not used).
+# - With com.tcl.channelplus off, the "free channels" stay listed with no picture: the Input panel's
+#   "Pressione para Canais gratuitos" row and the TV app's channel list. `pm clear com.tcl.suspension` swaps
+#   the panel's channel row for recent apps. The TV app's list is fetched by com.tcl.tv itself (it runs as
+#   uid 1000) and is not kept in TvProvider, so nothing on the TV removes it short of DNS blocking; the owner
+#   re-enabled channelplus and the channels played at once (streams from amagi.tv).
+# - ttvs's update screen (Settings > System > About > Software update > Network update > System update) cannot
+#   be started over adb (needs com.tcl.permission.START_CHECK_SYSTEMUPDATE) and blocks screenshots. With ttvs
+#   enabled for the check, V8-R51AT01-LF1V126 was the latest version on 2026-10-20; ttvs was off otherwise.
+# - Used RAM 150 s after boot: 1294 MB stock, 1004 MB debloated, 1019 MB with the launcher (MemAvailable
+#   683 -> 662 -> 801 MB).
+#
+# Also tested 2026-10-25 on a fifth unit, a Hitachi CDH-LE554KSMART26 (TCL-built re-badge for Latin America,
+# client HIT-LA-RTD51A-S1), same software as the third and fourth (V8-R51AT01-LF1V126, incremental AR07),
+# Bluetooth remote "HI_RC902V_MA" on event2. Tested on one day only, with a reboot; I will report back if
+# anything breaks.
+# - Applied in five batches with screenshots; launcher/ installed with HOME_KEY_SERVICE=1, settings_key_keycodes
+#   4077 and app_keys KEYCODE_TCL_NETFLIX, KEYCODE_TCL_YOUTUBE and 4099 (Prime Video), as on the fourth unit.
+#   With the real remote: Home, Back, Input (source panel), Gear (settings), Netflix, YouTube, Prime Video and
+#   the mic (Assistant) all work, and holding volume up still ramps with the helper on.
+# - Kept by choice: ttvs (updates), voice, T-Solo, com.tcl.gallery and com.tcl.ui_mediaCenter. Chromecast
+#   (mediashell) was disabled by choice on this unit.
+# - Already disabled at the factory: com.tcl.dashboard, com.tcl.notereminder, com.tcl.usercenter,
+#   com.tcl.MultiScreenInteraction_TV, com.tcl.smartalexa, au.com.stan.and, tv.wuaki.apptv. pm disable-user
+#   answers "Shell cannot change component state" for the first four; that is their factory state, not a refusal.
+#   None of the disabled packages came back after the reboot.
+# - Wi-Fi: an old saved network belonged to setupwraith (not the one in use), so tools/disable.sh skipped it.
+#   `cmd wifi list-networks` then `cmd wifi forget-network <id>` removed that network over adb, and setupwraith
+#   was disabled with the TV still on Wi-Fi.
+# - The remote's Guard and Channel buttons open TGuard and TCL Live, so they do nothing once those are off.
 #
 # DO NOT DISABLE: com.tcl.tv (Live TV, HDMI playback), com.tcl.tvinput (tuner, HDMI and AV inputs),
 # com.tcl.suspension (Quick Panel, also the Input key's source panel), com.tcl.keyhelp (remote virtual keys),
@@ -62,13 +123,13 @@ com.google.android.onetimeinitializer
 
 # 2. Content and ad services
 com.tcl.waterfall.overseas                 # content "waterfall" recommendations
-com.tcl.channelplus                        # TCL Live FAST channels (a TV input)
+com.tcl.channelplus                        # TCL Live FAST channels (a TV input); without it they stay listed, unplayable
 com.tcl.dashboard                          # TCL Home panel, promos
 com.tcl.partnercustomizer                  # TCL tweaks to Google TV home rows
 com.tcl.messagebox                         # pushed messages and promos
-com.tcl.notereminder                       # reminders fed by the message box (already off on AR20)
+com.tcl.notereminder                       # reminders fed by the message box (already off on AR20; re-enabled at boot on AR07, hide in config.xml)
 com.tcl.tv.tclhome_passive                 # TCL home content, starts at boot
-com.tcl.usercenter                         # TCL account
+com.tcl.usercenter                         # TCL account (re-enabled at boot on AR07, hide in config.xml)
 com.tcl.esticker                           # retail-demo sticker
 com.tcl.hotelmenu                          # hotel-mode portal
 android.autoinstalls.config.google.gtvpai  # partner app auto-installs
@@ -87,9 +148,18 @@ com.google.android.syncadapters.calendar
 com.amazon.amazonvideo.livingroom          # Prime Video
 com.google.android.youtube.tvmusic
 com.google.android.play.games
+com.google.android.videos                  # Google TV / Play Movies storefront (already off on AR20, enabled on AR07)
 com.tcl.ui_mediaCenter                     # USB media player
 com.tcl.gallery
 com.iqiyi.i18n.tv                          # partner auto-install
+# Regional partner preloads in /data/app on Brazil / Latin America sets (TCL-LA-RTD51A-S1, AR07);
+# uncomment any you do not use:
+# com.globo.globotv                        # Globoplay (check.py reported not installed after reboot on AR07)
+# com.mercadolibre.android.mplay_tv        # Mercado Play
+# br.com.sbt.mais                          # +SBT
+# br.com.claro.now.smarttvclient           # Claro tv+
+# com.cbs.ca                               # Paramount+
+# tv.pluto.android                         # Pluto TV
 
 # 5. Launcher handover (setupwraith's RecoveryActivity claims HOME once launcherx is off; the install
 #    script disables launcherx itself). Ambient mode replaced by the launcher's Clock screensaver.

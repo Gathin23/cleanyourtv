@@ -50,7 +50,7 @@ python tools/tv.py "pm enable com.tcl.usercenter"
 ### Restore All Debloated Packages
 Run the restore script:
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "$env:TV_HOST='192.168.1.3'; tools\restore.ps1 examples\tcl-32l5a\debloat.txt"
+powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost <tv ip> examples\tcl-32l5a\debloat.txt
 ```
 
 ---
@@ -59,12 +59,13 @@ powershell -ExecutionPolicy Bypass -Command "$env:TV_HOST='192.168.1.3'; tools\r
 
 To re-build and re-install the launcher with updated settings or key mappings:
 ```powershell
-powershell -ExecutionPolicy Bypass -File run_build.ps1
+powershell -ExecutionPolicy Bypass -File launcher\build-and-install.ps1 -TvHost <tv ip> -InputKeyService -HomeKeyService
 ```
 
-Or directly via `build-and-install.ps1`:
+If Gradle does not find a JDK 17, point `JAVA_HOME` at one first:
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "$env:JAVA_HOME='C:\Users\Anas\.jdks\jbr-17.0.14'; $env:TV_HOST='192.168.1.3'; & 'launcher\build-and-install.ps1' -InputKeyService -HomeKeyService"
+$env:JAVA_HOME='<path to JDK 17>'
+powershell -ExecutionPolicy Bypass -File launcher\build-and-install.ps1 -TvHost <tv ip> -InputKeyService -HomeKeyService
 ```
 
 ---
@@ -83,7 +84,7 @@ To customize the 4 apps pinned to the dock at the bottom of the screen:
        <item>com.spotify.tv.android</item>
    </string-array>
    ```
-3. Re-run `run_build.ps1` to rebuild and deploy.
+3. Rebuild and reinstall with the command in section 4 to deploy the change.
 
 Alternatively, you can place a `config.json` on the TV under `/sdcard/Android/data/com.gathin.tvhome/files/config.json`:
 ```json

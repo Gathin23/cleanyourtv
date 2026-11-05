@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photo screensaver</string>
+    <string name="dream_name">Photos</string>
+    <string name="date_format">EEEE  d MMMM</string>
+    <string name="empty_title">No pictures yet</string>
+    <string name="empty_body">Put pictures in this folder on the TV with sync.sh or sync.ps1:</string>
+    <string name="settings_title">Photo screensaver</string>
+    <string name="option_clock">Show the time and date</string>
+    <string name="option_dates">Show when a picture was taken (month and year)</string>
+    <string name="option_prints">Three prints instead of full screen (no clips)</string>
+    <string name="option_sky">Sky that follows the time of day behind the prints</string>
+    <string name="option_weather">Show the weather (needs the TV\'s location)</string>
+    <string name="weather_info">Uses the TV\'s rough location and Open-Meteo. Off: nothing goes over the network.</string>
+    <string name="weather_no_permission">Allow location access for the weather.</string>
+    <string name="weather_location_off">Location services are off on this TV: turn them on for the weather.</string>
+    <string name="weather_ok">Location is on. The weather is updated every 30 minutes.</string>
+    <string name="open_location_settings">Open location settings</string>
+    <string name="preview">Preview</string>
+</resources>

@@ -1,0 +1,81 @@
+# Sony BRAVIA 4K AE1 (device BRAVIA_AE_M6L, MediaTek MT5897), EU firmware
+# Android 12 (Google TV, API 31), build BRAVIA_AE1_EU-user 12 STT2.231117.001 634040
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-ae1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-ae1/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV). Install the launcher first
+# (launcher/build-and-install.sh): tools/disable.sh refuses to disable launcherx while it still owns Home.
+# Live TV / input player: com.sony.dtv.tvlin. It also plays the HDMI inputs, so keep it even if you never
+# watch broadcast TV; set it as live_tv_package and in hidden_apps (config.json here). The Inputs menu
+# lists HDMI 1-4 and Live TV, and picking an HDMI port opens tvlin on that input.
+# Keep com.sony.dtv.tvlin, com.sony.dtv.tvinput.dvbtuner, com.sony.dtv.sonysystemservice, imeproxy,
+# settingsprovider, the Sony settings apps, update/update.agent.* (firmware) and all com.mediatek.*:
+# they drive HDMI, the tuner, the remote and updates.
+# Kept by owner's choice: Netflix, YouTube, Prime Video, UEI QuickSet (IR blaster), Sony IoT/smart-speaker
+# control (seeds.iot), Sony IP control (webapi), firmware updates. Left alone because their components
+# don't say enough: fingerprinterserver, crashlogcollector, lastaccess, interactivetvutil.
+# This set has no Chromecast (mediashell) and no Google Assistant (katniss) package.
+# Already disabled at the factory: the my5, sounds, iplayer, itv and all4 launchers, com.youview.poa,
+# de.hdplus.tvapp.androidtv. Not in this list, so restore.sh leaves them as they are.
+#
+# Quirks on this firmware, all checked on the TV:
+# - setupwraith claims HOME with priority 1; on this unit it did not own the saved Wi-Fi network
+#   (`dumpsys wifi | grep -o 'cname=[^ ]*'` showed android.uid.system only). Check yours first.
+# - The remote's Input key opens Sony's own source panel (tvlin's GlobalKeyReceiver): no helper needed.
+# - With launcherx disabled the Settings, Netflix, YouTube and Prime Video buttons do nothing. They come
+#   back with HOME_KEY_SERVICE=1 and scancodes (getevent, decimal): Settings 646 (settings_key_scancodes,
+#   config.xml only), Netflix 583, YouTube 485, Prime Video 490 (app_keys, in config.json here).
+# - With that helper bound, a held Volume key moves one step instead of ramping, the same trade as
+#   docs/devices/tcl-55p71b-g09-key-repeat.md (checked on the real remote, before and after).
+#
+# Applied 22 October 2026 on one unit and reboot-checked: everything below stayed disabled and Home came
+# back on the new launcher. Not yet lived with for days; if something breaks, re-enable it with
+# `pm enable <package>` and please report it.
+
+# ACR viewing tracker and telemetry
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.da.service                        # remote-support session service
+com.sonyericsson.idd.agent                     # Sony usage data
+com.sony.dtv.usercontext                       # viewing context for recommendations
+com.google.android.feedback
+com.sony.dtv.sonybugreportsys                  # bug-report uploader
+com.sony.dtv.b2b.vendorprotocol                # broadcasts model/MAC/IP over SDDP
+
+# Sony ads and partner installs
+com.sony.dtv.promos
+com.sony.dtv.sonytab                           # Sony tab on the Google TV home; unused once launcherx is off
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# demo / shop mode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+
+# help
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+
+# features not used (off by choice)
+com.sony.dtv.voicesearch                       # remote's mic button stops working
+com.sony.dtv.assistantadapter
+com.sony.dtv.airplayapp                        # AirPlay
+com.sonyericsson.dlna                          # DLNA media server/renderer
+com.sony.huey.dlna.module
+com.sony.dtv.smartmediaapp                     # Media Player, re-enable to play USB files
+com.sony.dtv.osat.music                        # re-enable to play music from USB
+com.vewd.core.browser                          # Vewd web browser
+
+# UK broadcaster apps and USB recording (off by choice)
+com.youview.dtv.bbc
+com.itv.youviewandroidlauncher
+com.channel4.youviewandroidlauncher
+com.channel5.my5sony
+com.sony.dtv.recapp                            # records Live TV to a USB drive
+
+# Google TV setup wizard and home: setupwraith first, or its RecoveryActivity takes Home.
+# Re-enable both before a factory reset. See the Wi-Fi note above first.
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

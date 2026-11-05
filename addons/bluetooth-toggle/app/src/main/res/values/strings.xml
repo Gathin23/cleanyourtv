@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bluetooth Toggle</string>
+
+    <string name="state_on">Bluetooth on</string>
+    <string name="state_off">Bluetooth off</string>
+    <string name="state_turning_on">Turning Bluetooth on</string>
+    <string name="state_turning_off">Turning Bluetooth off</string>
+    <string name="state_none">This TV has no Bluetooth</string>
+
+    <string name="turn_on">Turn on</string>
+    <string name="turn_off">Turn off</string>
+    <string name="pair">Pair accessory</string>
+    <string name="settings">Bluetooth settings</string>
+
+    <string name="need_permission">Allow Bluetooth access to switch it from here.</string>
+    <string name="settings_only">This Android version lets only Settings switch Bluetooth off.</string>
+    <string name="not_switched">Bluetooth could not be switched.</string>
+</resources>

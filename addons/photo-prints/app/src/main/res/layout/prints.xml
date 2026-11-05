@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The scene (Prints): three photo prints on a time-of-day sky, swept off and dealt in by code, above a line with
+     the time and the date. With no photos, where to put them. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <io.github.shivamsingh262.photoprints.SkyView
+        android:id="@+id/sky"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
+    <FrameLayout
+        android:id="@+id/stage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false" />
+
+    <LinearLayout
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="60dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_title"
+            android:textColor="#F2FFFFFF"
+            android:textSize="28sp"
+            android:fontFamily="@font/outfit_regular" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/empty_body"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="@font/outfit_regular" />
+
+        <TextView
+            android:id="@+id/emptyPath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="monospace" />
+    </LinearLayout>
+
+    <!-- One line along the bottom: the time and the date. Moved a little at each sweep so it does not burn in. -->
+    <LinearLayout
+        android:id="@+id/clockLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="40dp"
+        android:orientation="horizontal"
+        android:baselineAligned="true">
+
+        <TextClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format12Hour="h:mm"
+            android:format24Hour="HH:mm"
+            android:textColor="#F2FFFFFF"
+            android:textSize="56sp"
+            android:fontFamily="@font/outfit_extralight"
+            android:letterSpacing="-0.04"
+            android:includeFontPadding="false" />
+
+        <TextClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:format12Hour="a"
+            android:format24Hour=""
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="@font/outfit_medium"
+            android:letterSpacing="0.08"
+            android:textAllCaps="true" />
+
+        <TextClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:format12Hour="@string/date_format"
+            android:format24Hour="@string/date_format"
+            android:textColor="#B3FFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="@font/outfit_regular"
+            android:letterSpacing="0.14"
+            android:textAllCaps="true" />
+    </LinearLayout>
+</FrameLayout>

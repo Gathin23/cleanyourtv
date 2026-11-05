@@ -4,9 +4,36 @@
 # Also applied cleanly on firmware QTG3.200305.006.5135 (Vietnam retail unit, 2026-10): every package
 # here disabled the same, and the "optional, by choice" mirroring/media apps below were additionally
 # disabled (wfdsinkhelperservice, milinkservice, smartshare, mitvplus, videos, youtube.tvmusic,
-# mediaexplorer, videoplayer) with Netflix/YouTube/VieON still playing afterwards. On that unit the
-# remote's Input/Source button sends KEYCODE_MEDIA_RECORD (kernel KEY_RECORD), not KEYCODE_TV, so the
-# launcher's InputKeyService must handle KEYCODE_MEDIA_RECORD for the Input button to open the menu.
+# mediaexplorer, videoplayer) with Netflix/YouTube/VieON still playing afterwards.
+#
+# ---- The remote's Input/Source button (#243, #1368) ----
+# It sends KEYCODE_MEDIA_RECORD (130, kernel KEY_RECORD), not KEYCODE_TV, so after the handover it does
+# nothing until the launcher is told to answer it. Either of these, in config.xml or a theme's config.json:
+# - "input_key_keycodes": [130] and "handle_view_inputs": true, built with INPUT_KEY_SERVICE=1. Checked on
+#   the firmware 5135 unit: pressed inside another app, the button opens the launcher's Inputs menu (Home
+#   comes to the front first).
+# - "app_keys": ["KEYCODE_MEDIA_RECORD:inputs"], with either key helper (HOME_KEY_SERVICE=1 or
+#   INPUT_KEY_SERVICE=1). The "inputs" target opens the launcher's own Inputs menu directly, so
+#   handle_view_inputs is not needed. Read from the launcher code (RemoteKeys), not yet tried on a MOOQ0.
+# Keep com.mediatek.hotkey.dispatcher enabled (it is in the keep list below): if `pm list packages -d`
+# shows it, `pm enable com.mediatek.hotkey.dispatcher`. Other app buttons (Netflix, Prime Video) are mapped
+# the same way, as "<keycode>:<package>" in app_keys; `getevent -l` shows what a button sends. Test with the
+# real remote: `input keyevent` skips the key helpers.
+#
+# ---- Android TV 11 variant: Xiaomi Mi TV P1 43" (MiTV-MOOQ0, croods, EU) ----
+# Firmware RTM4.220307.164.8835 (2026-10). The selected subset was applied and the TV remained
+# usable after a reboot; this does not claim every Android TV 10 entry was tested on Android TV 11.
+#
+# Kept enabled by choice: Google Backdrop, Miracast, Mi Cast and USB media players. Playback and
+# mirroring were not separately re-tested. com.xiaomi.floatingframe is installed and was left enabled.
+# These entries from the Android TV 10 list are not installed on this build:
+# com.google.android.tv.bugreportsender, com.aha.mitv, com.xiaomi.mitv.handbook,
+# com.jio.web.androidtv, com.google.android.youtube.tvkids, com.duokan.factorytest,
+# com.google.android.leanbacklauncher, com.google.android.leanbacklauncher.recommendations.
+#
+# Netflix returned after a reboot when disabled (the firmware turns it back on).
+# NetflixObserver is inside the core com.mediatek.tv.service APK; keep that service enabled. Details:
+# ../../docs/devices/xiaomi-mitv-mooq0-android11.md.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mooq0/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mooq0/debloat.txt

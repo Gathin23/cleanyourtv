@@ -41,7 +41,7 @@ was therefore built from main and installed with:
 
 ```sh
 adb install -r launcher/app/build/outputs/apk/release/app-release.apk
-adb shell am start -W -n com.gathin.tvhome/.MainActivity      # Status: ok, cold start 926 ms
+adb shell am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity      # Status: ok, cold start 926 ms
 adb shell cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity
 ```
 

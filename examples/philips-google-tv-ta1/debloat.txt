@@ -1,0 +1,49 @@
+# Philips Google TV TA1 (65PUS8729/60, TPV, PH1M_WW_9972, MediaTek), Google TV 14, build UKN2.241117.001
+# About 2.8 GB RAM, UI 1920x1080 on a 4K panel.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-google-tv-ta1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-google-tv-ta1/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Applied in two batches on 2026-10-25 with a screenshot after each, then the launcher installed; the TV was
+# rebooted cold afterwards and came back to Home with ADB, Wi-Fi and the launcher in place. HDMI and Live TV
+# were not exercised on this unit.
+# Kept on purpose: org.droidtv core, com.mediatek TV services, Play Store and Play Services, Assistant,
+# Chromecast (casting may stop after a reboot with setupwraith off), firmware updates, keyboards.
+#
+# Batch 1: vendor analytics, retail demo, auto-installs and apps the owner does not use.
+org.droidtv.candeebug
+org.droidtv.gel
+com.google.android.partnersetup
+android.autoinstalls.config.google.gtvpai
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.play.games
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.google.android.videos
+com.google.android.youtube.tvmusic
+ru.ivi.client
+com.vewd.core.browser
+org.droidtv.demome
+org.droidtv.amazonalexa
+com.phorus.playfi.softap
+com.phorus.playfi.tv
+com.tpv.nftgallery
+#
+# Batch 2: background services that run all day and that this owner does not use (about 100 MB of RAM back).
+tv.samba.ssm                          # Samba TV, viewing-data collection
+org.droidtv.control4app               # Control4 smart-home integration (four packages)
+org.droidtv.control4sddp
+org.droidtv.control4adapterservice
+org.droidtv.control4UcService
+com.mediatek.airplaydaemon            # AirPlay (two packages)
+com.mediatek.partner.airplay_sys
+org.droidtv.hbbtvopapp                # HbbTV for broadcast TV
+com.google.android.tts                # Google text-to-speech
+org.droidtv.customautologservice      # TP Vision log collector
+#
+# Stock home last, after the new launcher is installed. The Wi-Fi network was forgotten and added again first,
+# so setupwraith no longer owns it (disabling it while it did would have taken the TV off Wi-Fi and ADB).
+com.google.android.tungsten.setupwraith   # phone casting may stop after a reboot (the Cast receiver reads its credentials from setupwraith)
+com.google.android.apps.tv.launcherx

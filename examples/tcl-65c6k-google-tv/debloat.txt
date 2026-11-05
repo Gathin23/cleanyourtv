@@ -1,0 +1,91 @@
+# TCL 65C6K, Latin America (device G08, model "Smart TV Pro", product G08_4K_GB, MediaTek tcl9618 / mt5896, SoC MT9689)
+# Google TV, Android 14 (SDK 34), firmware UTT2.250416.001 AU02 - the same build as examples/tcl-c755-google-tv
+# and examples/tcl-85rm7l-google-tv. Those two lists were the starting point. Set up on Wi-Fi.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65c6k-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c6k-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Debloat only: the stock Google TV launcher (com.google.android.apps.tv.launcherx) stays, and so does
+# com.google.android.tungsten.setupwraith (it owned the saved Wi-Fi network on this set).
+# Live TV / HDMI app: com.tcl.tv.
+# Kept on purpose: com.tcl.tv, com.tcl.tvinput (tuner and HDMI), com.tcl.suspension (the Input key's source
+# panel), com.tcl.autopair, com.tcl.systemserver, com.tcl.providers.config, com.tcl.initsetup,
+# com.tcl.useragreement, com.tcl.globalkeyoverlay, com.tcl.systemui.plugin, com.tcl.factory.view,
+# com.tcl.inputmethod.international (the keyboard), com.tcl.eva, com.tcl.hearaid, com.tcl.t_solo,
+# tv.mopa.ginga, com.google.android.tv.remote.service (it carries the remote's mic button, see the C755 list),
+# com.google.android.apps.tv.dreamx and all com.mediatek.*.
+# com.tcl.dashboard (TCL Home) is in the C755 list's Keep line, but it is disabled here at the owner's request:
+# without it the Input key's source panel, the Settings button and the remote's other buttons still worked,
+# checked on the real remote, and it stayed disabled after a reboot.
+# com.tcl.ttvs stays enabled: it holds the T-Cast server as well as Samba TV ACR and TCL analytics (see the
+# 85RM7L list), and T-Cast was wanted here.
+# No separate TCL firmware updater on this build; the C755 and 85RM7L lists found updates come through
+# Google Play Services (not checked separately on this set).
+#
+# Applied on a real unit on 2026-10-23 in four batches with screenshots between them. Home, the Input key's
+# source panel, the Settings button, the remote's app buttons, an HDMI device on HDMI 4 and YouTube with AdGuard
+# Private DNS all kept working. All 27 packages stayed disabled after two reboots, and the set was used daily
+# for three days afterwards (to 2026-10-26) with nothing re-enabled.
+#
+# Known on this firmware:
+# - The TCL tab on Home stays. Google TV draws it from its own partner configuration, not from a TCL package:
+#   it survived disabling every package below, two reboots and a launcher restart. Its "TCL Channel" banners
+#   no longer open anything.
+# - The source panel's Apps row keeps the TCL Channel and User Guide tiles, which no longer open (as on the
+#   85RM7L).
+# - The source panel lists an HDMI port only while the device on it is switched on.
+
+# TCL tracking and analytics
+com.tcl.logkit                         # log capture and upload
+com.tcl.usercenter                     # TCL account sign-in nags
+
+# Feedback, diagnostics and Android 14 ad / privacy services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api             # Privacy Sandbox
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# TCL content, ads and promos
+com.tcl.channelplus                    # TCL Live FAST channels
+com.tcl.tv.tclhome_passive             # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
+com.tcl.interactive                    # TCL TIAS background service
+com.tcl.messagebox                     # TCL push messages and promos
+com.tcl.waterfall.overseas             # TCL Channel movie/show browser
+com.tcl.dashboard                      # TCL Home panel and its promos (kept on the C755, see above)
+android.autoinstalls.config.google.gtvpai   # silently installs partner apps
+com.google.android.partnersetup        # partner attribution
+
+# Retail demo / hotel mode
+com.tcl.exhibit
+com.tcl.esticker
+com.tcl.hotelmenu
+
+# Preloaded apps and services
+com.tcl.ocean.instructions             # e-manual
+com.tcl.repairguide
+com.tcl.smartalexa                     # Alexa
+com.tcl.guard                          # TCL "cleaner" / app manager
+com.tcl.UpdatePeripheral               # TCL soundbar / peripheral firmware updates
+
+# Off by the owner's choice
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.katniss             # Google Assistant voice
+
+# Kept on this unit: uncomment if you don't use them
+# com.google.android.apps.mediashell   # Chromecast
+# com.tcl.airplay2                     # AirPlay, together with the next two lines
+# com.mediatek.AirplayAPK
+# com.mediatek.airplaydaemon
+# com.tcl.miracast                     # Miracast screen mirroring
+# com.tcl.magiconnectfree              # TCL T-Cast / Magiconnect phone mirroring
+# com.tcl.gamebar                      # game mode / VRR overlay for consoles
+# com.tcl.ui_mediaCenter               # USB media player
+# com.tcl.gallery                      # USB photo gallery + TCL screensaver
+# com.netflix.ninja                    # Netflix, together with the next line
+# com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom    # Prime Video
+# com.google.android.youtube.tv

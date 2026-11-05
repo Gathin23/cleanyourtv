@@ -1,0 +1,18 @@
+{
+  "dock_apps": [
+    "com.plexapp.android",
+    "com.google.android.youtube.tv",
+    "com.crunchyroll.crunchyroid",
+    "com.collegehumor.chdropout"
+  ],
+  "hidden_apps": [
+    "com.sdmc.implayer"
+  ],
+  "live_tv_package": "",
+  "columns": 4,
+  "rows_below_dock": 0,
+  "app_keys": [
+    "scan:189:com.android.tv.settings",
+    "scan:433:com.plexapp.android"
+  ]
+}

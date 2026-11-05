@@ -1,0 +1,16 @@
+{
+  "dock_apps": [
+    "com.netflix.mediaclient",
+    "com.google.android.youtube.tv",
+    "com.smartwave.wave_iptv",
+    "com.mxtech.videoplayer.ad"
+  ],
+  "hidden_apps": [],
+  "live_tv_package": "",
+  "app_library": true,
+  "library_apps": [
+    "com.netflix.mediaclient"
+  ],
+  "columns": 4,
+  "wallpaper": false
+}

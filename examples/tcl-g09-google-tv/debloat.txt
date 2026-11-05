@@ -1,6 +1,7 @@
 # TCL Smart TV Pro, UK firmware (device G09, product G09_4K_GB, Amlogic T5M), used in Brazil
 # Android 12 (Google TV), firmware STT2.230203.001 AS24, 2 GB RAM
 # Same firmware family as examples/tcl-g10-google-tv.
+# Also tested on a TCL 55V6C, Colombia (product G09_4K_GB_NF), firmware STT2.230203.001 AS24.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g09-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat.txt com.google.android.apps.tv.launcherx
@@ -13,12 +14,15 @@
 # Firmware updates come through Play Services (gms SystemUpdatePanoActivity); there is no TCL OTA package.
 
 # TCL telemetry and analytics
-com.tcl.ttvs                           # TCL BI/awareness/identifier services
+com.tcl.ttvs                           # TCL BI/awareness/identifier services; see the README on TvSettings without it
 com.tcl.logkit                         # log capture and upload
 com.tcl.interactive                    # TCL TIAS background service
 com.google.android.feedback
 com.graymatrix.did                     # device analytics (data app; on the AS23 unit)
-com.mirakulo.astrotv.service           # analytics service (data app; on the AS23 unit)
+# com.mirakulo.astrotv.service is Ginga, the ISDB-Tb broadcast interactive-TV engine (AstroTVService,
+# com.tcl.tv.ginga.PERMISSION), not analytics. TvSettings reads Enable_ginga=false on this set, so it
+# frees nothing here; where Ginga is on, disabling it turns broadcasters' interactive apps off.
+com.mirakulo.astrotv.service           # Ginga (ISDB-Tb broadcast apps), not analytics
 
 # TCL content, ads and promos
 com.tcl.channelplus                    # TCL Live FAST channels, also removes them from Live TV
@@ -28,6 +32,7 @@ com.tcl.partnercustomizer              # TCL tweaks to Google TV home rows
 com.tcl.messagebox                     # TCL pushed messages and promos
 android.autoinstalls.config.google.gtvpai  # partner auto-installs
 com.tcl.smartlink.core                 # bundles a silent app installer
+com.tcl.magiconnectfree                # MagiConnect phone companion app (55V6C unit)
 
 # Background services
 com.tcl.guard                          # TGuard: device-use tracking, memory cleaner
@@ -38,7 +43,10 @@ com.tcl.usercenter                     # TCL account sign-in
 com.tcl.exhibit                        # store demo
 com.tcl.esticker                       # store demo stickers
 com.tcl.hotelmenu                      # hotel mode
-com.google.android.tv.remote.service   # Google TV phone-app remote
+# com.google.android.tv.remote.service pairs phone remote apps (_androidtvremote2._tcp, 6466 pairing,
+# 6467 remote) and bridges the physical remote's mic (docs/TROUBLESHOOTING.md). A phone's virtual-remote.kl
+# has no Settings/Info/Guide/Menu or channel keys: those presses arrive as KEYCODE_UNKNOWN.
+com.google.android.tv.remote.service   # phone remote apps and the mic too; pm enable restores it
 
 # Preloaded apps
 com.tcl.ocean.instructions             # e-manual

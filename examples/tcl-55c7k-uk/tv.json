@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 55C7K QD-Mini LED, 2025, UK (G08, MediaTek tcl9618)",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "Same build as the C755 list (UTT2.250416.001 AU02): Samba TV ACR (ttvs), TCL Live, promos, store demo, Alexa, partner auto-installs; Assistant, Netflix, Miracast/T-Cast, game bar, USB media and T-Solo off by choice, Chromecast and AirPlay kept; setupwraith owned the Wi-Fi until re-joined; launcherx, setupwraith and dreamx off for the launcher and Clock screensaver; reboot-checked on the day it was applied; ttvs is also the firmware updater; a 50C7K on Ethernet in Poland and a C6K on Ethernet in Brazil are in its README (Settings 83, Netflix 4062, YouTube 190 in config.json; HomeKeyService needs AUTO_START plus `appops write-settings` after a restart and costs volume repeat)"
+}

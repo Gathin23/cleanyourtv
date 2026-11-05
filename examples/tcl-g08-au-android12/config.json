@@ -1,0 +1,26 @@
+{
+  "dock_apps": [
+    "com.plexapp.android",
+    "org.smarttube.stable",
+    "com.android.vending",
+    "com.android.tv.settings"
+  ],
+  "fill_dock": false,
+  "hidden_apps": [
+    "com.tcl.tv",
+    "com.tcl.suspension",
+    "com.tcl.partnercustomizer"
+  ],
+  "live_tv_package": "",
+  "columns": 4,
+  "rows_below_dock": 1,
+  "settings_key_keycodes": [
+    83
+  ],
+  "settings_key_panel": false,
+  "app_keys": [
+    "4001:input:com.tcl.tvinput/.TvPassThroughService/HW15",
+    "4065:org.smarttube.stable",
+    "4062:com.plexapp.android"
+  ]
+}

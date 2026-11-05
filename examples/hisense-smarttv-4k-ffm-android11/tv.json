@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense SmartTV 4K FFM (songshan, MediaTek m7632); also the US Hisense 50A6H4",
+  "os": "Android 11 (SDK 30)",
+  "brand": "Hisense",
+  "notes": "Android 11 sibling of the FFM list (same model string, different board and package set): store demo, first-time experience, Google partner auto-install, disclaimer; setupwraith must go for a launcher swap (it owns an unused saved Wi-Fi network but not the active one, so check `dumpsys wifi`); smartsense/AIoT kept (Recovery risk on this family); remote app buttons are custom keycodes (YouTube 293, Prime Video 295) and scancodes (Disney+ 484, SonyLIV 606), gear is keycode 83, Netflix is firmware-handled; on the 50A6H4 every remote button kept working with no key helper; streaming/voice/cast/OTA left on"
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Headphones</string>
+    <string name="plays_through">Sound now plays through: %1$s</string>
+    <string name="output_speakers">the TV speakers</string>
+    <string name="output_fixed">the TV\'s audio output (HDMI ARC or optical)</string>
+    <string name="allow_title">Allow Bluetooth access</string>
+    <string name="allow_detail">To list your headphones and to notice when they drop. OK asks.</string>
+    <string name="not_allowed">Not allowed</string>
+    <string name="pair_title">Pair or connect headphones</string>
+    <string name="pair_detail">Opens the TV\'s Bluetooth settings. Put the headphones in pairing mode first.</string>
+    <string name="guard_title">Quiet when they drop</string>
+    <string name="guard_detail">Pauses what plays and mutes the TV speakers when headphones disconnect, so the sound doesn\'t jump to the room. Unmutes when they\'re back.</string>
+    <string name="guard_detail_fixed">Pauses what plays when headphones disconnect. This TV\'s volume is fixed (ARC or an amplifier), so it can\'t also mute the speakers.</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="unmute_title">Unmute the speakers</string>
+    <string name="unmute_detail">Muted when headphones dropped.</string>
+    <string name="muted">Muted</string>
+    <string name="heading_paired">Paired headphones and speakers</string>
+    <string name="no_bluetooth">No Bluetooth on this TV</string>
+    <string name="bluetooth_off">Bluetooth is off</string>
+    <string name="bluetooth_off_detail">Switch it on in the TV\'s settings.</string>
+    <string name="none_yet">None yet</string>
+    <string name="none_yet_detail">Use the row above to pair some.</string>
+    <string name="connected">Connected</string>
+    <string name="connected_battery">Connected, battery %1$s</string>
+    <string name="not_connected_detail">Not connected. OK opens Bluetooth settings to connect.</string>
+    <string name="unnamed">Unnamed device</string>
+    <string name="heading_several">Several headphones at once</string>
+    <string name="sharing_one_pair">This TV sends sound to one pair of Bluetooth headphones at a time. For two pairs, use a dual-link Bluetooth transmitter on the TV\'s headphone or optical output.</string>
+    <string name="sharing_auracast">This TV can broadcast to many LE Audio (Auracast) headphones at once: start sharing from the TV\'s Bluetooth settings.</string>
+    <string name="sharing_no_broadcast">This TV sends sound to one pair of Bluetooth headphones at a time; it has no LE Audio broadcast. For two pairs, use a dual-link Bluetooth transmitter on the TV\'s headphone or optical output.</string>
+</resources>

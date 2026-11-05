@@ -2,6 +2,7 @@
 # (API 28), build PPR1.180610.011, security patch 2021-01-05. Realtek RTD2851 family
 # (ro.board.platform = rtd285o), firmware V8-R851T02-LF1V660, client TCL-LA-RT2851-S1.
 # Fingerprint: TCL/BeyondTV2/BeyondTV:9/PPR1.180610.011/AP08:user/release-keys
+# What the launcher's clips, gradients and layers cost on this GPU: docs/devices/tcl-beyondtv2-v660.md
 # 2 GB RAM with 800 MB zRAM, 32-bit userspace, eMMC with 10 GB /data. Latin America set
 # (TCL app store, no India Jio/Airtel/Hotstar; a set of UK Freeview catch-up apps is preloaded
 # and was already disabled at the factory).
@@ -11,7 +12,9 @@
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.tvlauncher (restore.sh / build-and-install.sh defaults work).
-# Live TV app: com.tcl.tv, with com.tcl.tvinput for the tuner and HDMI 1-3.
+# Live TV app: com.tcl.tv, with com.tcl.tvinput for the tuner and HDMI 1-3 (3 ports on the second,
+# 55" unit below). launcher/ needs live_tv_package com.tcl.tv AND hidden_apps com.tcl.tv, or it
+# shows twice: once as a grid tile, once in the Inputs menu's own "Live TV" row.
 # This is a different set from examples/tcl-beyondtv (India market): same build number
 # PPR1.180610.011, different product name and different region, so the preloaded app set and the
 # factory-disabled set differ.
@@ -24,35 +27,95 @@
 # (idle CPU and app-open times stayed within run-to-run noise). They are kept for less telemetry,
 # not for speed.
 #
+# Second unit, same fingerprint, tested 2026-10-26: a 55" set, also Wi-Fi, launcher/ installed
+# (Home confirmed with mResumedActivity), Inputs menu (HDMI 1-3, AV, Live TV), D-pad edges and
+# YouTube launch checked, applied in nine batches with screenshots between them plus a reboot
+# check. This unit shipped with several packages the first unit's notes only listed as untested
+# or did not mention at all (see "Added on the second unit" below), and it had an extra Alexa
+# integration and a second, TCL-native Miracast app alongside MultiScreenInteraction_TV. Not yet
+# lived with for days either.
+#
 # Already disabled at the factory on this firmware: com.tcl.bootadservice, com.tcl.gallery,
 # au.com.stan.and, com.amazon.amazonvideo.livingroom, com.linecorp.linetv, tv.wuaki.apptv and
-# the 14 uk.co.freeview.* catch-up apps.
+# the 14 uk.co.freeview.* catch-up apps. Same set on the second unit.
+#
+# Four packages cannot be kept disabled on the second unit: com.tcl.notereminder,
+# com.tcl.smartalexa, com.tcl.tv.tclhome_master and com.tcl.usercenter came back enabled on
+# their own within minutes, with no reboot needed to trigger it - most likely
+# com.tcl.appstatecontroller (left alone below, "unclear roles, boot/package/network hooks")
+# watching and restoring them, the same way com.tcl.overseasappshow is documented to do for
+# notereminder and tclhome_master on the Android 11 BeyondTV2 (examples/tcl-beyondtv2-android-11).
+# They are listed below for completeness and because they do disable (just not stay disabled);
+# do not keep re-running disable.sh on them, per PROMPT.md.
 #
 # DO NOT DISABLE (load-bearing): com.tcl.tv com.tcl.tvinput com.tcl.sourcemananger (Live TV,
 # HDMI, tuner, Source menu), com.tcl.autopair com.tcl.tcl_bt_rcu_service
 # com.tcl.keycustomfunctionservice (remote, BT pairing, FallbackHome), com.tcl.framework.custom
 # com.tcl.keyhelp com.tcl.partnercustomizer (key handling, TKey activity),
 # com.tcl.inputmethod.international com.tcl.settings com.tcl.initsetup com.tcl.factory.view
-# com.tcl.common.terminalmanagerplus com.tcl.xian.StartandroidService com.tcl.appstatecontroller
-# com.tcl.copydatatotv com.android.ListenNetStateService (unclear roles, boot/package/network
-# hooks), com.realtek.netflix.setting (Netflix ESN/config), com.tcl.usercenter
-# com.tcl.useragreement (setup screens), com.google.android.katniss com.google.android.speech.pumpkin
-# com.tcl.assistant com.tcl.micmanager (voice), com.google.android.apps.mediashell (Chromecast),
-# com.tcl.versionUpdateApp com.tcl.rc.ota (firmware updates).
+# (never even opened - the name alone puts it in PROMPT.md's "never start a factory package"
+# category) com.tcl.common.terminalmanagerplus com.tcl.xian.StartandroidService
+# com.tcl.appstatecontroller com.android.ListenNetStateService (unclear roles, boot/package/network
+# hooks; appstatecontroller is also the suspected watchdog above), com.realtek.netflix.setting
+# (Netflix ESN/config), com.tcl.assistant com.tcl.micmanager (voice - but see "off by choice" and
+# "second pass" below for the other voice packages), com.tcl.versionUpdateApp com.tcl.rc.ota
+# (firmware updates).
+# Also left alone on the second unit, none of them tested: com.tcl.pvr.pvrplayer (USB/tuner PVR
+# recording playback), com.tcl.showmode (Dolby/DTS/night-mode sound settings, despite the name -
+# not just a retail demo), com.tcl.UpdatePeripheral (remote firmware update receiver),
+# com.tcl.android.webview (TCL's own WebView build; some kept apps may render through it),
+# com.google.android.sss.authbridge and com.tcl.systemuioverlay (both gave dumpsys almost nothing
+# to go on).
 
 # TCL analytics (telemetry)
 com.tcl.bi                              # analytics / telemetry service
 
 # Content pushed to the home screen at boot
 com.tcl.tv.tclhome_passive              # pushes TCL content to the home screen at boot
+com.tcl.tv.tclhome_master               # companion to tclhome_passive; second unit, see the note above
+com.tcl.notereminder                    # second unit; see the note above
+com.tcl.messagebox                      # local notification box (org.tcl.ttvs), second unit
 
-# Deliberately NOT in this list, with the reason:
-# com.tcl.esticker - the retail energy-label sticker. It was disabled on this unit on 2026-10-18
-#   and came back enabled the same night, and it stayed enabled after that, so it does not stick
-#   on this firmware. It is left out rather than listed as if it worked. (The Thomson 32HE5800
-#   profile in examples/thomson-32he5800 lists it as a valid target; on this TCL it does not hold.)
-# com.tcl.waterfall.overseas, com.tcl.tvweishi, com.tcl.notereminder, com.tcl.appmarket2 -
-#   installed on this unit but not disabled here, so this profile does not claim them.
-# com.google.android.tvrecommendations, com.google.android.leanbacklauncher.recommendations -
-#   not disabled here: the stock launcher was replaced, so there was no recommendation row to
-#   remove, and disabling them was not tested on this unit.
+# com.tcl.usercenter (account sign-in nags) and com.tcl.useragreement (one-time ToS screen) and
+# com.tcl.copydatatotv (phone-to-TV copy helper) were left alone above on the first unit, out of
+# caution; the second unit disabled all three cleanly, remote/HDMI/Settings/launcher unaffected
+# (usercenter is also one of the four the firmware restores on its own, see the note above).
+com.tcl.usercenter
+com.tcl.useragreement
+com.tcl.copydatatotv
+
+# Added on the second unit: content/promo apps the first unit's notes left untested or untouched
+com.tcl.waterfall.overseas
+com.tcl.tvweishi
+com.tcl.appmarket2
+com.tcl.esticker                        # stuck disabled through a reboot on the second unit; on
+                                        # the first unit above it came back the same night instead -
+                                        # comment this line out if it bounces back on yours too
+com.google.android.tvrecommendations
+# com.google.android.leanbacklauncher.recommendations: tools/disable.sh's TVINPUT_ALLOW safety
+# check skipped this one on the second unit (dumpsys showed no permission block to clear it with);
+# set TVINPUT_ALLOW=1 once every input still works after a reboot if you want it off too (#321).
+
+# Preloaded apps (second unit)
+com.google.android.videos               # Play Movies & TV
+com.google.android.play.games
+com.android.printspooler
+
+# Background service (second unit)
+com.tcl.samba                           # SMB file-sharing server
+
+# Off by choice (second unit's owner picked YouTube, Netflix, Prime Video, Globoplay and both
+# Miracast-like apps to keep; re-enable whichever of these you use)
+com.google.android.katniss              # Google Assistant / voice search
+com.google.android.tv.assistant         # Assistant's mic-indicator LED service
+com.tcl.smartalexa                      # TCL's Alexa integration; also reverts on its own, see above
+com.google.android.apps.mediashell      # Chromecast receiver
+com.google.android.youtube.tvmusic      # YouTube Music
+
+# Second pass, applied after the launcher. The launcher's Clock screensaver replaces Ambient Mode:
+#   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+com.google.android.backdrop             # Ambient Mode screensaver (Google content)
+com.google.android.tts                  # Google text-to-speech; only accessibility uses it
+com.google.android.marvin.talkback      # screen reader; re-enable if someone needs it
+com.google.android.speech.pumpkin       # offline hotword, unused once katniss is off
+com.android.dreams.basic

@@ -1,0 +1,82 @@
+# Sony BRAVIA KD-43X8000G (APAC: device BRAVIA_ATV3_4K, product BRAVIA 4K GB ATV3). Android TV 9 (API 28).
+# Firmware BRAVIA_ATV3_4K_PA-user 9 PTT1.190515.001.S54 672201 release-keys
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-43x8000g/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-43x8000g/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# 2019 Sony 4K Android TV (X8000G series, MediaTek). Stock launcher is
+# com.google.android.tvlauncher (the restore.sh default); Live TV and HDMI inputs
+# run through com.sony.dtv.tvx and com.sony.dtv.tvinput.*, so they are kept.
+# Built-in FallbackHome (com.sony.dtv.settings.system.FallbackHome) is present in
+# com.android.tv.settings, providing a safe recovery net.
+# Reference launcher installed, Home handover verified, and survived reboots clean.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+
+# Sony and Google content, ads, and promos
+com.sony.dtv.sonyselect                        # Sony Select app store/promo tile
+com.sony.dtv.promos                            # My BRAVIA promos
+com.sony.dtv.discovery                         # Sony Discover content bar
+com.sony.dtv.bivlinfo                          # BIVL content service list (feeds Discover)
+com.sony.dtv.tvlaunchercustomizer              # Sony tweaks to the stock home rows
+com.sony.dtv.tvlaunchercustomizer.overlay.apporder
+com.google.android.tvrecommendations           # recommendation rows for the stock launcher
+android.autoinstalls.config.sony.bravia        # Play auto-install of partner apps
+
+# Retail demo
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+
+# Telemetry, remote support, logging and diagnostics
+com.sony.dtv.da.service                        # Sony device agent / remote support
+com.qterics.da.product                         # Qterics device agent
+com.sony.dtv.sonybugreportsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.mediatek.agent                             # MediaTek diagnostics agent
+com.mediatek.dmagent                           # MediaTek device management agent
+com.sony.dtv.sonyloglevelsettingsys            # system log level daemon
+com.sony.dtv.sonyloglevelsettingvnd            # vendor log level daemon
+
+# Commercial and B2B services
+com.sony.dtv.b2b.vendorprotocol                # SDDP Control4 broadcast service
+com.sony.dtv.b2b.rs232csupport                 # RS232 serial control
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.webappruntimedrm
+
+# Broadcast and unused extensions
+com.sony.dtv.browser.webappruntimeextension
+com.sony.dtv.tuningconfirmation_dvbt
+com.sony.dtv.hbbtvlauncher
+com.sony.dtv.serviceinformation
+com.uei.quicksetsdk.sony                       # Universal remote setup daemon
+
+# Preloaded apps
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual                           # i-Manual
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.play.games
+com.google.android.backdrop                    # ambient screensaver
+
+# Left enabled on purpose: features, not bloat. Uncomment any line to disable it too.
+# com.sony.dtv.scrums.action                   # Action Menu overlay & remote button (TvDotAction.apk)
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.sony.dtv.smartmediaapp                   # Media Player, plays files from USB
+# com.sony.dtv.osat.music                      # plays music from USB
+# screnmirroring.com                           # Screen mirroring (Miracast)
+# com.sony.dtv.networkapp.wifidirect
+# com.sony.huey.dlna.module                    # DLNA renderer
+# com.sony.huey.dlna.renderersettings
+# com.sonyericsson.dlna
+# com.google.android.tv.remote.service         # Android TV phone-app remote
+# com.sony.dtv.systemupdate                    # Sony system firmware updater

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Static</string>
+    <string name="watching">Static when the TV turns on</string>
+    <string name="hint">An off-the-air moment whenever the screen turns on. Any key ends it.</string>
+    <string name="enabled_state">Effect on wake: %1$s</string>
+    <string name="sound_state">Sound: %1$s</string>
+    <string name="seconds_state">Length: %1$d seconds</string>
+    <string name="test">Try it now</string>
+    <string name="style_state">Style: %1$s</string>
+    <string name="style_snow">snow</string>
+    <string name="style_bars">colour bars</string>
+    <string name="style_no_signal">no signal</string>
+    <string name="style_random">random</string>
+    <string name="no_signal">NO SIGNAL</string>
+    <string name="osd_channel">CH 03</string>
+    <string name="on">on</string>
+    <string name="off">off</string>
+    <string name="with_sound">on</string>
+    <string name="without_sound">muted</string>
+
+    <style name="Static" parent="android:Theme.DeviceDefault.NoActionBar.Fullscreen">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+</resources>

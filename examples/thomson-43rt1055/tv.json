@@ -1,0 +1,6 @@
+{
+  "tv": "Thomson 43RT1055 FA Series (SPPL-built, sauve, Realtek RTD2841A), India",
+  "os": "Android TV 14",
+  "brand": "Thomson",
+  "notes": "First SPPL list: Anoki ACR, Privacy Sandbox APEX modules, Vewd, Google recommendation rows, partner auto-installs, retail demo; 1 GB; plain tvlauncher, no setupwraith handover; keep `tv.remote.service` (the remote's mic needs it); Anoki FAST channels, Chromecast, remote updaters, Ambient, USB media player off by choice; Live TV row reopens the last input until channels are scanned; config.json sets the Realtek Live TV app; reboot-checked"
+}

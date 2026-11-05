@@ -1,0 +1,55 @@
+# Anker Nebula Cosmos projector, model D2140 (device D2140-Cosmos, SDMC board, Amlogic/droidlogic,
+# armeabi-v7a, 2 GB RAM, 4 GB /data), Android TV 9 (SDK 28), build PI.20240530. Vietnam.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/anker-nebula-d2140/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/anker-nebula-d2140/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (HOME priority 2, ~190 MB RAM). Only other HOME claimant is
+# com.android.tv.settings/.system.FallbackHome. Default IME is already Gboard.
+# Remote global keys (keycodes 2000+) go to com.sdmc.GlobalKey (dumpsys window policy, mKeyMapping).
+# HDMI 1 and 2 come from com.droidlogic.tvinput, so the launcher's Inputs pill lists them.
+# /data was 90% full (411 MB free) out of the box; `pm trim-caches 999G` frees the app caches.
+# Netflix: Play Store says "not compatible". The set has no ro.nrdp.* properties, so it is not Netflix
+# certified; the TV app (com.netflix.ninja) does not run. A certified stick on HDMI is the way round it.
+#
+# DO NOT DISABLE on this model (projector hardware, inputs, remote):
+# com.droidlogic.*                      # SoC services, HDMI inputs, Live TV, subtitles, OTA
+# com.droidlogic.keystone               # keystone (picture shape) correction
+# com.sdmc.GlobalKey                    # remote global keys
+# com.sdmc.bluetoothconnect             # Bluetooth remote pairing wizard
+# com.sdmc.bluetoothspeaker             # Bluetooth speaker mode
+# com.sdmc.oemprovisionservice          # OEM provisioning
+# com.oceanwing.receiver                # remote control, Nebula IME, screen control
+# com.oceanwing.nebulalinker            # Nebula Connect phone app, device info, update dispatch
+# com.oceanwing.ota                     # firmware updates (kept by owner's choice)
+# com.google.android.tungsten.setupwraith  # owns the Wi-Fi saved during setup
+# Left alone, purpose unclear: com.sdmc.leakbackcustomer, com.sdmc.cleardataservice
+
+# --- Telemetry and feedback ---
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# --- Content and ad services ---
+com.google.android.leanbacklauncher.recommendations
+android.autoinstalls.config.sdmc             # Play auto-install of partner apps
+com.google.android.partnersetup              # partner-app attribution
+
+# --- Preloaded apps ---
+com.google.android.play.games
+com.tcl.browser                              # found installed as a user app; may not be on every unit
+com.zhixin.atvchannel                        # channel app, found installed as a user app (~200 MB with its data)
+
+# --- Off by owner's choice (comment out to keep) ---
+# Set the launcher's clock screensaver before disabling backdrop:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+com.google.android.backdrop                  # Ambient Mode screensaver
+com.google.android.marvin.talkback           # TalkBack screen reader
+com.google.android.tts                       # text-to-speech; re-enable if the Assistant stops speaking answers
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.oceanwing.m1testsample                   # Nebula factory test app
+
+# --- Stock home screen (only after the new launcher is installed: launcher/build-and-install.sh) ---
+com.google.android.tvlauncher
+com.google.android.tvrecommendations         # recommendation rows for the stock home

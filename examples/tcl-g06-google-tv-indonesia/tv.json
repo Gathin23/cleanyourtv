@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 40\" Smart TV (G06, MediaTek MT9221 / T221, AR2101, V8-T221T02-LF1V058), Indonesia",
+  "os": "Google TV 11",
+  "brand": "TCL",
+  "notes": "First T02 (Indonesia) firmware: TCL promos, popups, dashboard, TGuard, hotel menu, Google partner plumbing, voice assistant, Chromecast, USB player and unused preloads (Prime Video, WeTV, OTTPlay, File Commander) off; YouTube, Netflix, Vidio, launcherx, ttvs and the phone remote kept; usercenter comes back at every boot; debloat only, from Termux on a phone"
+}

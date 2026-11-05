@@ -1,0 +1,4 @@
+<!-- Feather (MIT) / Lucide (ISC) icon shapes, 24x24 strokes. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M21,12.79A9,9 0 1,1 11.21,3a7,7 0 0,0 9.79,9.79z" android:strokeColor="#FFFFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000" />
+</vector>

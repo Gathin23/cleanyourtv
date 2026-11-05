@@ -1,0 +1,6 @@
+{
+  "tv": "Grundig 50VLX22LDLBV (Arçelik, CO3Plus, sinchon, MediaTek), Netherlands",
+  "os": "Android TV 11",
+  "brand": "Grundig",
+  "notes": "Same Arçelik platform as [beko-b43b880b](beko-b43b880b/), with no ACR or FAST apps on this build: partner auto-installs, Google feedback, disclaimer popups; Netflix, YouTube Music, Assistant and the phone remote off by choice, Chromecast kept; setupwraith owns the saved Wi-Fi, keep it; launcher works, every remote button works with no key service, and `HOME_KEY_SERVICE` stops held keys repeating; reboot-checked"
+}

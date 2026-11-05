@@ -1,0 +1,10 @@
+{
+  "hidden_apps": ["com.tcl.tv"],
+  "live_tv_package": "com.tcl.tv",
+  "settings_key_keycodes": [4077],
+  "app_keys": [
+    "4062:com.netflix.ninja",
+    "4065:com.google.android.youtube.tv",
+    "4099:com.amazon.amazonvideo.livingroom"
+  ]
+}

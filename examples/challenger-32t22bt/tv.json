@@ -1,0 +1,6 @@
+{
+  "tv": "Challenger 32T22 BT (cvt_mt5863_col, board TP.MT5510.PB781, MediaTek MT5659, 1 GB RAM), Colombia",
+  "os": "Android 7.0",
+  "brand": "Challenger",
+  "notes": "Ultra-budget CVTE/TCL ODM set: CVTE factory test apps (`cn.cvte.tv.factory.autotest`, `com.cvte.tv.audiotest`, `com.cvte.fac.menu`, `com.tcl.FactoryMode`), background cleaner (`com.cvte.tvclean`), store preloads (`com.cvte.tv.appstore`, `cm.aptoidetv.pt.cvt_platform7`, `cn.tcl.odm.android.vstoresubclient`), FastScreen mirroring and redundant media players disabled; stock launcher `com.cvte.tv.launcher` replaced with reference launcher to free RAM; keep `com.cvte.tvservice`, `com.cvte.tv.androidsetting` and `com.mediatek.tv.agent` for inputs and TV tuning"
+}

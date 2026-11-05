@@ -1,0 +1,86 @@
+# OnePlus TV (model C00, codename Cebu), Android TV 10 (API 29), firmware QTG3.201207.001
+# MediaTek m7632, armeabi-v7a, UI at 1920x1080, ~1.8 GB RAM, India. Classic Android TV home, not Google TV.
+# Stock launcher: com.google.android.tvlauncher. Live TV app: com.heytap.tv.livetv.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/oneplus-tv-cebu/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/oneplus-tv-cebu/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Kept on purpose: the HDMI/tuner stack (com.mediatek.tvinput, com.mediatek.tv.agent, com.heytap.tv.support,
+# com.mediatek.tvinputservice.arbitratorservice, com.heytap.tvapiservice), Live TV (com.heytap.tv.livetv),
+# the remote service and TV keyboard (com.oneplus.tv.remote), the hot keys (com.mediatek.hotkey.dispatcher,
+# which handles the Input key), the Netflix key (com.mstar.netflixobserver), Google Assistant
+# (com.google.android.katniss), firmware updates (com.oneplus.tv.systemupgrade, com.heytap.oprcupgradeservice),
+# Play Store and Play Services. Left alone and never launched: the factory apps (com.heytap.optvfactory,
+# com.oneplus.tv.factory). setupwraith does not claim HOME here.
+# With launcher/ as Home (live_tv_package com.heytap.tv.livetv), Home, Input, Netflix, YouTube, Prime Video
+# and the Assistant mic on the remote work without InputKeyService or HomeKeyService.
+# USB debugging alone opens port 5555, and it stays open across reboots until switched off.
+# Reboot-checked: nothing came back enabled. AdGuard Private DNS validates.
+#
+# Second unit: same model on Android TV 11 (API 30), firmware RTM8.240401.135, India.
+# The telemetry and content groups were applied, plus some extras and preloads by choice;
+# Chromecast, Miracast, TV Mirror, OnePlus Connect and Bluetooth speaker mode were kept. After a reboot
+# the disabled list was unchanged.
+# - Not installed on this firmware: com.google.android.tv.bugreportsender, net.oneplus.odm(.provider),
+#   com.heytap.tv.imagewall and the streaming preloads below except YouTube Music and Play Movies.
+#   The USB gallery, music and video players are activities of com.heytap.tv.filebrowser here, so
+#   disabling that one package takes all four.
+# - Not installed either: com.mstar.netflixobserver and com.mediatek.tvinputservice.arbitratorservice. The
+#   remote's Home, Input, Netflix, YouTube, Prime Video and mic buttons still worked with launcher/ as Home
+#   and no key services.
+# - setupwraith does not claim HOME here either: only the stock launcher and Settings' FallbackHome did.
+# - The remote's Settings (gear) button sends KEY_MENU, which arrives as keycode 82. With
+#   "settings_key_keycodes": [82] and "settings_key_panel": true in a theme, it opens the quick settings
+#   panel on Home without HomeKeyService; inside apps it stays their Menu key.
+# - com.heytap.tv.btspeaker is only the screen that makes the TV discoverable as a Bluetooth speaker; the
+#   A2DP sink is in com.android.bluetooth. Keep it if a phone or laptop plays through the TV.
+# - The kernel reports a MemAvailable far above MemTotal (about 309 GB), so RAM readings that use it
+#   (launcher show_stats, addons/capacity-stats) show 0 MB used. Storage readings are right.
+# - Private DNS (Control D) validates.
+
+# Telemetry and diagnostics
+com.google.android.feedback                  # Google feedback agent
+com.google.android.tv.bugreportsender        # Bug report sender
+com.heytap.mcs                               # HeyTap push messaging, with nearx tracking
+com.heytap.tv.remotediagnosing               # HeyTap remote diagnosis
+net.oneplus.odm                              # OnePlus device manager (analytics)
+net.oneplus.odm.provider                     # its data provider
+com.heytap.rom.service                       # ROM log collector and uploader (ZipLogService, UpLoadLogReceiver); Android 11 firmware only
+com.heytap.tv.remotecontrolinspect           # Remote-control diagnostics app; Android 11 firmware only
+
+# OnePlus content, recommendation rows, auto-installs and preloaded extras
+com.oneplus.tv.launcher                      # OxygenPlay content page
+com.google.android.tvrecommendations         # Stock home recommendation rows; also its notification count
+# com.mediatek.android.leanbacklauncher.partnercustomizer # KEEP for the stock home: without it its top bar loses the Inputs and Wi-Fi icons (re-enabled)
+android.autoinstalls.config.OnePlus          # Play auto-installs config
+com.coloros.relax.tv                         # "Relax" ambient sounds app, with nearx tracking
+com.heytap.tv.imagewall                      # Image wall
+com.oneplus.tv.userguide                     # Built-in user guide
+com.heytap.tv.assistant.oneplus              # OnePlus TV Manager (cleaner, bandwidth alerts)
+com.oneplus.tv.screensaver                   # OnePlus screensaver (the system screensaver stays Google's Ambient mode); Android 11 firmware only
+
+# Casting, mirroring and OnePlus extras (off by choice)
+com.google.android.apps.mediashell           # Chromecast built-in
+com.heytap.optvmiracastservice               # Miracast
+com.heytap.ars.sink                          # OnePlus "TV Mirror" screen sharing
+com.heytap.olink                             # OnePlus Connect phone link
+oneplus.smarthome                            # OnePlus smart home control
+net.oneplus.weather                          # Weather
+com.heytap.tv.filebrowser                    # File manager (USB)
+com.heytap.tv.gallery3d                      # Gallery (USB)
+com.heytap.tv.musicplayer                    # Music player (USB)
+com.heytap.tv.videoplayer                    # Video player (USB)
+com.heytap.tv.camera                         # Camera app
+com.heytap.tv.btspeaker                      # Bluetooth speaker mode
+
+# Streaming and preloaded apps (off by choice)
+tv.airtel.xstream.tvapp                      # Airtel Xstream Play
+com.spotify.tv.android                       # Spotify
+com.google.android.youtube.tvmusic           # YouTube Music
+com.discoveryplus.tv.android                 # Discovery+
+video.laminar.tv.chaupal.android             # Chaupal
+com.jio.media.stb.ondemand                   # JioCinema / JioTV
+com.jio.web.androidtv                        # JioPages browser
+com.google.android.videos                    # Google Play Movies & TV
+com.google.android.play.games                # Google Play Games

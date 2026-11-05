@@ -16,6 +16,8 @@ import sys
 import tempfile
 import unittest
 
+from tools import privacy
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -116,7 +118,7 @@ class PrivacyAuditTest(unittest.TestCase):
             },
             "appops": {
                 "com.google.android.katniss": "No operations.",
-                "tv.inscape.tvclient.inscapeacr": "RECORD_AUDIO: time=+1m23s ago",
+                "tv.inscape.tvclient.inscapeacr": "RECORD_AUDIO: allow; time=+1m23s0ms ago",
             },
             "unreachable": False,
         }
@@ -146,10 +148,24 @@ class PrivacyAuditTest(unittest.TestCase):
         out = self.run_script().stdout
         katniss = out.split("com.google.android.katniss", 1)[1].split("\n\n", 1)[0]
         self.assertIn("declares RECORD_AUDIO", katniss)
-        self.assertIn("appops: no RECORD_AUDIO use since boot", katniss)
+        self.assertIn("appops: no RECORD_AUDIO history returned", katniss)
         inscape = out.split("tv.inscape.tvclient.inscapeacr", 1)[1].split("\n\n", 1)[0]
-        self.assertIn("appops: RECORD_AUDIO was used since boot", inscape)
+        self.assertIn("appops: recorded RECORD_AUDIO access", inscape)
         self.assertNotIn("declares RECORD_AUDIO", inscape)
+        self.assertNotIn("since boot", out)
+
+    def test_mode_or_rejection_is_not_reported_as_access(self):
+        for answer in ("RECORD_AUDIO: allow",
+                       "RECORD_AUDIO: ignore; rejectTime=+1m0s0ms ago",
+                       "RECORD_AUDIO: vendor history unavailable"):
+            with self.subTest(answer=answer):
+                self.tv(appops={"com.google.android.katniss": answer})
+                result = self.run_script()
+                self.assertEqual(result.returncode, 0, result.stderr)
+                entry = result.stdout.split("com.google.android.katniss", 1)[1].split("\n\n", 1)[0]
+                self.assertIn("appops: RECORD_AUDIO access is unknown", entry)
+                self.assertNotIn("recorded RECORD_AUDIO access", entry)
+                self.assertNotIn("was used", entry)
 
     def test_acr_is_kept_apart_from_the_microphone(self):
         out = self.run_script().stdout
@@ -248,6 +264,40 @@ class PrivacyAuditTest(unittest.TestCase):
         result = self.run_script("--write")
         self.assertEqual(result.returncode, 2)
         self.assertIn("usage: privacy.py", result.stderr)
+
+
+class AppOpsEvidenceTest(unittest.TestCase):
+    # AppOpsService's `get` prints mode unconditionally, but time/rejectTime separately:
+    # https://github.com/aosp-mirror/platform_frameworks_base/blob/android-11.0.0_r1/services/core/java/com/android/server/appop/AppOpsService.java#L4765-L4789
+
+    def test_access_time_or_running_is_evidence(self):
+        for answer in (
+                "RECORD_AUDIO: allow; time=+1m23s0ms ago; duration=+2s0ms",
+                "RECORD_AUDIO: allow; time=0 ago",
+                "RECORD_AUDIO: allow; time=-5ms ago",
+                "RECORD_AUDIO: allow (running)",
+                "RECORD_AUDIO: ignore; time=+1h0m0s0ms ago; rejectTime=+1m0s0ms ago",
+                "Uid mode: RECORD_AUDIO: allow\nRECORD_AUDIO: allow; time=+1s0ms ago"):
+            with self.subTest(answer=answer):
+                self.assertIs(privacy.used_microphone(answer), True)
+
+    def test_no_operations_means_no_returned_history(self):
+        for answer in ("No operations.", "No operations.\nDefault mode: allow"):
+            with self.subTest(answer=answer):
+                self.assertIs(privacy.used_microphone(answer), False)
+
+    def test_unsupported_or_non_access_output_is_unknown(self):
+        for answer in (
+                "", "Error: unknown package", "SecurityException: denied",
+                "RECORD_AUDIO: allow", "Uid mode: RECORD_AUDIO: allow",
+                "RECORD_AUDIO: ignore; rejectTime=+1m0s0ms ago",
+                "RECORD_AUDIO: allow; duration=+1s0ms",
+                "RECORD_AUDIO: vendor history unavailable",
+                "RECORD_AUDIO: allow; time=unknown ago",
+                "CAMERA: allow; time=+1s0ms ago\nRECORD_AUDIO: allow",
+                "No operations could be read: unsupported vendor command"):
+            with self.subTest(answer=answer):
+                self.assertIsNone(privacy.used_microphone(answer))
 
 
 class CatalogueTest(unittest.TestCase):

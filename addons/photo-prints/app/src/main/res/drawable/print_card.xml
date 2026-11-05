@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The rounded outline each photo is clipped to, and that casts its shadow. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FF101014" />
+    <corners android:radius="16dp" />
+</shape>

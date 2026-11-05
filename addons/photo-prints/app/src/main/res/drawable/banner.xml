@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app's own art: three tilted prints on a night sky. 320x180, as Android TV banners are. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:pathData="M0,0h320v180h-320z">
+        <aapt:attr xmlns:aapt="http://schemas.android.com/aapt" name="android:fillColor">
+            <gradient android:type="linear" android:startX="0" android:startY="0" android:endX="0" android:endY="180"
+                android:startColor="#FF0B1326" android:endColor="#FF3A2A4A" />
+        </aapt:attr>
+    </path>
+    <group android:rotation="-8" android:pivotX="92" android:pivotY="90">
+        <path android:fillColor="#FFE8A33D" android:pathData="M52,58h80v64h-80z" />
+        <path android:fillColor="#33000000" android:pathData="M52,106h80v16h-80z" />
+    </group>
+    <group android:rotation="6" android:pivotX="228" android:pivotY="90">
+        <path android:fillColor="#FF5B8DEF" android:pathData="M188,58h80v64h-80z" />
+        <path android:fillColor="#33000000" android:pathData="M188,106h80v16h-80z" />
+    </group>
+    <group android:rotation="-2" android:pivotX="160" android:pivotY="86">
+        <path android:fillColor="#FFF2F2F2" android:pathData="M116,46h88v80h-88z" />
+        <path android:fillColor="#FF8FC9A0" android:pathData="M122,52h76v58h-76z" />
+        <path android:fillColor="#FF4F8A63" android:pathData="M122,110l24,-26l18,18l12,-10l22,18z" />
+    </group>
+</vector>

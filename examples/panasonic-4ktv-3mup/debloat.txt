@@ -1,0 +1,45 @@
+# Panasonic 4KTV-3MUP (MOKA R4_GTV, Realtek rtd2851m), Taiwan, Google TV 14 (SDK 34), build UKR1.260308
+# Same platform as docs/devices/acer-r4g.md: com.android.tv.settings' FallbackHome re-enables a hard-coded
+# list of packages at every boot. Never disable launcherx or setupwraith here (setupwraith also owns Wi-Fi).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-4ktv-3mup/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-4ktv-3mup/debloat.txt
+# Everything is DISABLED, not uninstalled.
+#
+# Re-enabled by the firmware at boot on this set (checked 2026-10-25), so not disabled here; the
+# launcher hides the two apps with hidden_apps instead:
+#   com.amazon.amazonvideo.livingroom, com.google.android.youtube.tvmusic,
+#   com.google.android.partnersetup, com.google.android.syncadapters.calendar
+# Not touched (firmware's boot list per the R4G note): katniss, videos, play.games, feedback, ota, authota,
+#   realsil.ota, dfuservice, meeting.service, audiolink, esticker, esticker3, gdpr, scast, dreamx.
+# Never started: com.apps.factory.ui, com.realtek.factorytools.
+
+# Telemetry, ads and auto-installs
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.apps.mk.wd                                # boot receiver with ad-click activities
+android.autoinstalls.config.scbc.device       # Play auto-installs of partner apps
+
+# Background services a TV does not need
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.apps.wifihotspot
+com.android.dreams.basic
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.providers.calendar
+
+# Not used (owner's choice)
+com.disney.disneyplus
+com.chocolabs.app.chocotv.tv
+tv.twitch.android.app
+jp.or.nhk.nhkworld.tv
+com.apps.usbmediaplayer
+
+# Kept on purpose: launcherx + setupwraith (see above), com.realtek.tv* / com.realtek.dtv (Live TV, HDMI, AV),
+# key handlers (keyinterceptserver, globalkeyhandler, smartkey, virtualkey, fivekey, bluetoothremote),
+# YouTube, Netflix, Hami Video, KKBOX, Animad, Chromecast, AirPlay, TCL browser, Play Store/Services, Gboard.

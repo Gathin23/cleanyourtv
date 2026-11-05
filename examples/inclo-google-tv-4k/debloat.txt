@@ -1,0 +1,42 @@
+# INCLO Google TV 4K (KTC ODM, Realtek RTD6748, device khardi, product KTC_INCLO_4K_EU_23GV1), Taiwan
+# Google TV on Android 11 (SDK 30), build RTK5.250429.013, security patch 2025-05-01
+# Same KTC board family as examples/lumio-vision-7/ (also khardi), on an older Android 11 build.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/inclo-google-tv-4k/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/inclo-google-tv-4k/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (disabled by launcher/build-and-install.sh once the new
+#   launcher is Home). With launcherx and setupwraith both enabled, set-home-activity printed Success and Home
+#   stayed on launcherx.
+# setupwraith: the active Wi-Fi had been created by setupwraith during first setup. It was forgotten and re-joined
+#   in Settings first (then owned by com.android.tv.settings), so disable.sh's guard passed without
+#   FORCE_SETUPWRAITH. CastInfoProvider lives in setupwraith here and logcat reports "Failed to find provider
+#   info" after the disable, yet casting from an iPhone (YouTube) still worked after a reboot.
+# Live TV / input switcher: com.realtek.tv (.SelectInputActivity); set live_tv_package to com.realtek.tv.
+# Remote (RC-37, Bluetooth + IR): the gear sends keycode 83 over Bluetooth -> settings_key_keycodes [83] with
+#   HOME_KEY_SERVICE=1. The Netflix and YouTube buttons go out over IR as KTC keycodes 3001/3003 and are consumed
+#   by com.realtek.keyintercept, which on Google TV only broadcasts com.google.global_button.ACTION_LAUNCH_APP to
+#   launcherx: with launcherx disabled they do nothing, and no key helper sees them.
+#   With HomeKeyService bound, a held volume key stops repeating (one step per press), as on the TCL G09.
+# Kept: all com.realtek.* TV/input packages; com.realsil.ota (remote firmware updater, RcuUpdate); KTC factory
+#   packages com.kgzn.serialport and com.kgzn.tvfactory (global key receivers, never launched); Chromecast;
+#   voice (katniss, tv.remote.service); YouTube Music, karaoke, the ambient screensaver, TalkBack by choice.
+# No manufacturer firmware updater was found on this build.
+# Tested on one unit for ONE DAY only, not yet lived with for several days: HDMI game consoles, voice, casting and
+#   the gear button checked with the real remote, one reboot.
+
+# Ads and auto-installs
+android.autoinstalls.config.google.gtvpai        # Play auto-installs of promoted apps
+com.realtek.leanbacklauncher.partnercustomizer   # partner rows for the home screen
+
+# Telemetry
+com.google.android.feedback                      # feedback reports to Google
+
+# Manufacturer and Google preloads
+com.realtek.storemode                            # KtcStoreMode, retail demo
+com.electronic.manual                            # on-TV e-manual
+com.google.android.play.games                    # Google Play Games
+
+# Home handover (restore re-enables it; do that before a factory reset)
+com.google.android.tungsten.setupwraith          # first-run wizard; its RecoveryActivity claims Home

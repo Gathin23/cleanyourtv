@@ -4,7 +4,7 @@
 # the NA variant reports ro.product.vendor.model=SWTV-24AE-4K, confirming the shared board.
 #
 # Apply:   $env:TV_HOST="<tv ip>"; tools\disable.ps1 examples\skyworth-swtv-24ae-4k-nf\debloat.txt
-# Undo:    $env:TV_HOST="<tv ip>"; tools\restore.ps1 examples\skyworth-swtv-24ae-4k-nf\debloat.txt com.google.android.apps.tv.launcherx
+# Undo:    $env:TV_HOST="<tv ip>"; tools\restore.ps1 examples\skyworth-swtv-24ae-4k-nf\debloat.txt -Stock com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Re-enable any line with `pm enable --user 0 <package>`.
 #
 # Applied 2026-10-21 in batches with a screenshot after each, then custom launcher installed.
@@ -17,9 +17,9 @@
 #
 # Quirks on this firmware, all verified on the TV:
 # - Only Wireless debugging: port 5555 stays closed. Pair once with the stock adb:
-#     adb pair 192.168.1.122:<pairing port> <code>
-#     adb connect 192.168.1.122:<connect port>
-#     adb -s 192.168.1.122:<connect port> tcpip 5555
+#     adb pair <tv ip>:<pairing port> <code>
+#     adb connect <tv ip>:<connect port>
+#     adb -s <tv ip>:<connect port> tcpip 5555
 #   Port 5555 closes on every reboot; repeat `adb connect` + `adb tcpip 5555` each session.
 # - Android switches Wireless debugging off on every reboot; turn it back on in Developer options.
 # - All Wi-Fi networks owned by android.uid.system (not setupwraith) on this unit - safe to disable.

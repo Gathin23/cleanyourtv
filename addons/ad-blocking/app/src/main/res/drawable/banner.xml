@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a shield with a bar chart beside it. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#E84855" android:pathData="M110,40l44,14v34c0,26 -20,42 -44,52c-24,-10 -44,-26 -44,-52v-34z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M98,84h24v8h-24z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M190,110h16v26h-16zM214,90h16v46h-16zM238,66h16v70h-16z" />
+</vector>

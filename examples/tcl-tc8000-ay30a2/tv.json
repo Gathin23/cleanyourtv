@@ -1,0 +1,6 @@
+{
+  "tv": "TCL tc8000_ay30a2 (China, Amlogic ohm, TC8000, 3.8 GB)",
+  "os": "Android 11",
+  "brand": "TCL",
+  "notes": "No Google services; boot ad, analytics, push and preloads off; do not disable `com.tcl.cyberui` (boot never finishes); `adb install` of a HOME apk works on build 2024101221, unlike the MT9655; cold boot still starts cyberui, then `stock_home_redirect` plus `APP_AUTO_START` hands Home back; Inputs pill opens TCL's source panel; reboot-checked; [handover](../docs/devices/tcl-tc8000-ay30a2.md)"
+}

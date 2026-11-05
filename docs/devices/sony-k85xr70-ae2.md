@@ -61,7 +61,7 @@ Both commands, in this order, then a real reboot:
 ```sh
 tools/tv.py 'wm density 320'
 tools/tv.py 'settings --user 0 put secure display_density_forced 320'
-tools/tv.py reboot
+tools/tv.py --reboot               # returns once ADB accepts it; wait for the TV to come back
 tools/tv.py 'wm size; wm density; settings --user 0 get secure display_density_forced'
 ```
 

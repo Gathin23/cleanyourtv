@@ -85,6 +85,60 @@
 #    BEFORE disabling the stock launcher, and make sure your replacement is listed by
 #    `cmd package query-activities` for that intent. If it is not, you will be left without a
 #    home screen (see issue #90).
+#
+# SECOND UNIT: Philips 70PUS8505, from @mrfoodfoox-ops's report in #1376. Same board and build
+# (ro.product.model "2021/22 Philips UHD Android TV", PH1M_EA_9970A, RTT2.211108.001), so this list
+# applies; it is NOT the board of examples/philips-75pus8505 (PH9M_EA_5599, Android 12). Applied in six
+# batches with tools/disable.sh on one day (a few hours, one reboot), not yet lived with for days, so
+# nothing below changes the list. After the reboot every package was still disabled; Home, SOURCES,
+# the Netflix/YouTube keys and the Settings key worked on the real remote. The idle log stayed at
+# 70-130 lines per 30 s throughout, with no retry loop (quirk 5's method).
+# - Disabled there beyond this list (owner's choice; uncomment to match):
+#     org.droidtv.nettvapp3093 (ARD Mediathek), nettvapp3463 (Videociety), nettvapp5245 (TV SpieleCenter),
+#     org.droidtv.astrahdplus ("HD+" satellite info; not running, nothing binds it), cz.tmobile.tvgo
+#     (an older second Magenta TV app; de.telekom.magentatv.tv stayed), de.prosiebensat1digital.seventv
+#     (Joyn), com.zdf.android.mediathek, de.zdf.mediathek.tivi, com.ted.android.tv, and com.blacknut.client,
+#     tv.pluto.android, com.mgmedia.androidApp, com.mxtech.videoplayer.ad (these four in /data/app).
+# - Kept there: amazonalexa, dlna and ipcontrol (in use); Mimi Sound Personalization (io.mimi.sdk.service,
+#   io.mimi.tvapp, with its own vendor HAL service) and DTS Play-Fi (com.phorus.playfi.softap,
+#   com.phorus.playfi.tv), both system processes in the audio path, not tried disabled; stock YouTube and,
+#   of the preinstalled streaming block near the end, everything but Apple TV and Rakuten; mediashell (quirk 4). eum, channels and com.vewd.core.browserui stayed
+#   enabled and were only hidden from the grid with hidden_apps; SOURCES works with eum enabled.
+# - That unit came with org.droidtv.aurora and 15 uk.co.freeview.* apps already disabled.
+# - In two of the six disable.sh runs one package was still enabled about 12 s later
+#   (org.droidtv.usagelogger, org.droidtv.demome); one pm disable-user by hand worked and held through the
+#   reboot. Compare `pm list packages -d` with the list after each run on this board (see quirk 1).
+# - Launcher: Live TV package org.droidtv.playtv; build-and-install.sh ran through on its own. The first
+#   start of a Philips "FAST" channel shows an IAB consent screen
+#   (org.droidtv.nettvregistration/.onetrust.IABActivity), unrelated to the list. HOME_KEY_SERVICE=1 with
+#   settings_key_panel true: the Settings key opens the panel and holding Volume + still ramps.
+#   home_idle_clock_minutes works. MagentaTV opens straight into live TV with
+#   `am start -a android.intent.action.VIEW -d atv://de.telekom.magentatv/livetv de.telekom.magentatv.tv`.
+#
+# THIRD UNIT: Philips 65PUS9206/12. Same board and build (ro.product.model "2021/22 Philips UHD Android TV",
+# PH1M_EA_9970A, RTT2.211108.001), so this list applies. Applied in five batches with tools/disable.sh on one
+# day with two reboots, not yet lived with for days, so nothing below changes the list.
+# - Disabled from this list: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   demome, m7opapp, the five Google telemetry/setup entries, katniss, videos, play.games, marvin.talkback,
+#   and tvrecommendations after the new launcher was Home. All 18 were still disabled after both reboots,
+#   checked with `pm list packages -d`; none came back.
+# - Kept there (owner's choice): amazonalexa, dlna, ipcontrol, stock YouTube, mediashell (quirk 4).
+#   Not installed on that unit: the nettvapp* web apps, Fitness Buddy, Disney+, WhaleLive, Boosteroid,
+#   Vodafone TV, Sweet TV and Rakuten. Disabled from the factory: Netflix, Prime Video, Apple TV, YouTube
+#   Music, org.droidtv.aurora, org.droidtv.freeviewplayers and 15 uk.co.freeview.* apps.
+# - disable.sh's TV-input guard held back usagelogger and demome. `pm query-services --components -a
+#   android.media.tv.TvInputService` names neither (only com.mediatek.tvinput, dvbi, fastip, tv.agent and
+#   videos), so both were disabled with TVINPUT_ALLOW=1.
+# - Idle log after the last batch (quirk 5's method, 30 s): no handleConnectAurora or connectCotextService
+#   loop, only adbd's USB retry and the JointSpace server.
+# - The first SOURCES press showed org.droidtv.fastip/.fastIPPromoActivity ("free streaming" promo) over the
+#   drawer; after that the drawer opens on its own and works.
+# - Launcher: build-and-install.sh ran through on its own (cold start 0.7 s). The firmware opens
+#   org.droidtv.playtv at every power-on; power_on_home with HOME_KEY_SERVICE=1 sent it to Home about 13 s
+#   after boot. The remote's Netflix key is keycode 375, scancode 786 (GlobalKeyRcv logs it and hands it to
+#   TPTvServiceAgent); `app_keys` scan:786:org.xbmc.kodi remaps it with HomeKeyService alone, so
+#   InputKeyService was not enabled and SOURCES stays the Philips drawer. Checked on the real remote: Home,
+#   SOURCES, Settings, YouTube, Netflix -> Kodi, and holding Volume + still ramps (sound out to a soundbar).
 
 # TP Vision telemetry. org.droidtv.gel runs inside the candeebug process
 # (android:process="org.droidtv.candeebug"), so disabling candeebug alone leaves a process with

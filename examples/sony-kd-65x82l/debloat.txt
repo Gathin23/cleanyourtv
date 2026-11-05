@@ -1,5 +1,13 @@
 # Sony BRAVIA KD-65X82L (2023, device BRAVIA_VH22, MediaTek), India
 # Google TV 12 (API 31), build BRAVIA_VH22_M_PA-user 12 STT2.230505.001.S136 682241
+# Also Sony BRAVIA XR-65X90L (2023, BRAVIA_VH22, MediaTek MT5835), US/Canada, build
+# BRAVIA_VH22_M_UC-user 12 STT2.230505.001.S136 682241: every package below exists on it except
+# com.vewd.core.integration.dia. Applied there on 2026-10-26 in three batches: batch 1, batch 2 without
+# YouTube Music and Play Games (kept by choice), and batch 3. The TV was on Ethernet and setupwraith owned
+# only the Wi-Fi network saved during setup, which is deleted when it is disabled (FORCE_SETUPWRAITH=1 with
+# the owner's agreement). The launcher went in on the first try with HOME_KEY_SERVICE=1; the US remote's gear
+# button is scancode 646 too. Reboot-checked: everything stayed disabled, Home stayed on the launcher, and Home,
+# gear, app buttons, Input, the mic button and a power cycle checked on the real remote.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-65x82l/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-65x82l/debloat.txt com.google.android.apps.tv.launcherx

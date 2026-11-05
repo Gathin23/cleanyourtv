@@ -1,0 +1,86 @@
+# Sony BRAVIA 4K VH1 (device BRAVIA_VH1, KD-55XH9096, MediaTek MT5895 / MT5835), EU firmware
+# Google TV 12 (API 31), build BRAVIA_VH1_EU-user 12 STT2.230505.001.S137 626241
+# Product codename Valhalla_EU; ro.boot.product.hardware.sku = KD-55XH9096
+# Also Sony XBR-55X900H (2020, BRAVIA_VH1, MediaTek MT5835), US/Canada, Android TV 12 with the same stock
+# tvlauncher, build BRAVIA_VH1_UC-user 12 STT2.230505.001.S67 625001: every package below exists on it except
+# com.spocky.projengmenu, com.youview.poa and tv.samba.ssm.ui (com.sony.dtv.b2b.softap was disabled from the
+# factory). Applied there on 2026-10-26 in two batches, then tvlauncher by launcher/build-and-install.sh, all
+# except Assistant (katniss), Netflix and com.sony.dtv.homekit, kept by choice. With Backdrop disabled the
+# screensaver was set to com.android.dreams.basic/.Colors. setupwraith did not claim HOME there either and stayed
+# enabled; the Wi-Fi in use belonged to android.uid.system. No key helper was needed: Home, gear, Netflix,
+# YouTube, Input, the mic button, held volume and a power cycle all checked on the real remote. Reboot-checked:
+# everything stayed disabled and Home stayed on the launcher. One day of use so far.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-vh1/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-vh1/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher on this set: com.google.android.tvlauncher (leanback). Pass it to restore.sh as above.
+# Live TV / tuner app: com.sony.dtv.tvx (set it as live_tv_package in the launcher's config.xml and hide it).
+# Keep the com.sony.dtv.tvinput.* services, com.sony.dtv.braviasync*, com.sony.dtv.tvapi,
+# com.sony.dtv.sonysystemservice, imeproxy, settingsprovider, systemupdate/update (firmware), the Sony
+# settings apps and all com.mediatek.*: they drive HDMI, the tuner, Bravia Sync, updates and the remote.
+# Chromecast built-in (mediashell) and firmware updates kept.
+#
+# setupwraith is still enabled on this unit: Home already resolves to CleanYourTV. Disable
+# com.google.android.tungsten.setupwraith if the Google TV setup wizard retakes Home after a reboot.
+# Closest sibling list: examples/sony-bravia-4k-vh2/ (VH2 / KD-55X80J).
+# Same Android platform (BRAVIA_VH1) as the PA-firmware notes in
+# docs/devices/sony-kd-55x9000h.md (retail KD-55X9000H); this list is the EU build.
+#
+# Lived with for weeks on a KD-55XH9096 (Spain/EU) with CleanYourTV; Live TV, HDMI Inputs, Ethernet
+# and Chromecast still work. If something breaks, re-enable it with `pm enable <package>` and please report it.
+
+# ACR viewing tracker
+tv.samba.ssm                                   # Samba TV fingerprints what's on screen
+tv.samba.ssm.ui
+
+# telemetry and remote support
+com.qterics.da.product
+com.sony.dtv.da.service
+com.sonyericsson.idd.agent
+com.sony.dtv.sonybugreportsys
+com.google.android.feedback
+
+# demo / shop / hotel mode
+com.sony.dtv.demosupport
+com.sony.dtv.demosystemsupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.softap
+com.sony.dtv.b2b.rs232csupport
+
+# Sony promos, Select, help and partner install config
+com.sony.dtv.promos
+com.sony.dtv.sonyselect
+com.sony.dtv.sonytab
+com.sony.dtv.customersupport                   # Help tile
+com.sony.dtv.smarthelp
+com.sony.dtv.helpguidecontents
+com.sony.dtv.accessibility.tutorial
+android.autoinstalls.config.sony.bravia
+
+# Sony extras unused on this set
+com.sony.dtv.homekit
+com.sony.dtv.livingfit
+com.sony.dtv.osat.music
+com.sony.dtv.gestureapp
+com.spocky.projengmenu                         # engineering / project menu
+
+# Google rows and preloads
+com.google.android.tvrecommendations
+com.google.android.backdrop
+com.google.android.marvin.talkback
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.play.games
+com.android.printspooler
+com.youview.poa                                # YouView (UK); unused on this EU unit
+
+# Stock leanback Home (CleanYourTV owns HOME)
+com.google.android.tvlauncher
+
+# Off by owner's choice (re-enable if you use them)
+com.google.android.katniss                     # Google Assistant voice
+com.netflix.ninja
+com.netflix.partner.ncm

@@ -1,6 +1,7 @@
 # Hisense SmartTV 4K FFM (device songshan, product songshan_emH_FFM, board m7632, MediaTek),
 # Android 11 / SDK 30, firmware RTT2.220118.001 / 01.00.05.04. The Android model string is
 # "SmartTV 4K FFM".
+# Also sold as the Hisense 50A6H4 (US), Android model string "SmartTV 4K": the third unit below.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-smarttv-4k-ffm-android11/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-smarttv-4k-ffm-android11/debloat.txt com.google.android.apps.tv.launcherx
@@ -25,6 +26,46 @@
 # Left ON by choice here (deliberately not in this list): all streaming apps, voice assistant
 # (katniss / tv.assistant / hisense.alexa), casting and mirroring, and the firmware updaters
 # (hisense.tv.ota, hisense.remoteupgrade, vt.tv.usbota).
+#
+# Second unit (US, same device songshan and build RTT2.220118.001, one session plus standby and reboot
+# tests): com.hisense.storemode is not installed, com.hisense.evservice is (see the commented entry at the
+# end), and nothing on it came disabled from the factory. The owner also disabled katniss,
+# tv.assistant and hisense.alexa (no voice use); nothing else broke in that session. Notes from it:
+# - Standby (com.hisense.STR_SUSPEND) kills every third-party app except the one on screen
+#   ("PowerVtImp: kill 3rd app" in logcat), the launcher included, which takes its key helpers off. Install
+#   with restore_key_services on and -RestoreKeyServices / RESTORE_KEY_SERVICES=1 (docs/TROUBLESHOOTING.md,
+#   "Accessibility helper enabled but the remote button does nothing").
+# - Its remote differs from the SmartRC below: Disney+ is keycode 607 (scancode 418) and Peacock 608
+#   (scancode 421); YouTube 293, Prime Video 295 and the gear 83 (scancode 598) match. The firmware logs
+#   every press as "WindowManager: interceptKeyTq keycode=... scancode=...".
+# - HomeKeyService did not bind in the first session (it stayed under "Binding services" in dumpsys
+#   accessibility, with nothing in logcat), so settings_key_keycodes did nothing; in a later session it bound
+#   normally, cause unknown. Mapping the gear through InputKeyService works either way:
+#   app_keys 83:com.android.tv.settings.
+# - With InputKeyService bound, holding volume moves it one step
+#   (docs/devices/tcl-55p71b-g09-key-repeat.md).
+#
+# Third unit: the Hisense 50A6H4 (US retail model; same device songshan and build RTT2.220118.001,
+# incremental 00.00.00.53, security patch 2025-06-01, Android model string "SmartTV 4K"). One session on
+# 2026-10-24 with three reboots: this list plus the commented entries at the end marked "third unit",
+# applied in batches, then the launcher. Nothing came disabled from the factory; storemode is not
+# installed, evservice is. Notes from it:
+# - setupwraith passed disable.sh's Wi-Fi guard without FORCE_SETUPWRAITH: every saved network belonged to
+#   android.uid.system.
+# - With launcherx disabled and no key helper enabled, every button on its remote kept working when
+#   pressed for real: Input, the gear, YouTube, Netflix, Prime Video and the other app buttons.
+# - The owner also disabled katniss, hisense.alexa and mediashell (no voice or Chromecast use), Play Games,
+#   Google TV Movies, both VIDAA apps (net.vidaatv.*), HiBrowser, and some apps installed through the Play
+#   Store (Tubi, Pluto TV, Haystack News, YouTube TV, MX Player, the TCL browser); nothing broke.
+# - com.hisense.tv.dlna, Hisense's DLNA renderer, listens on ports 38400 and 39500. Disabled, it closed
+#   them only after a reboot; until then the port stayed open, even after am force-stop. AirPlay (7000)
+#   and the Google TV remote service (6466/6467) are separate and kept working.
+# - With setupwraith and launcherx disabled, Settings > Privacy > Usage & diagnostics opens nothing (focus
+#   goes to frameworkpackagestubs' SettingsPrivacyStub). The page is setupwraith's, not the Google TV
+#   home's: on a Chromecast with Google TV 4K (Google TV 14) only setupwraith answers it
+#   (README, "Are there switches in the TV's own Settings worth flipping too?"); not checked on this set. Set it before
+#   this list disables setupwraith.
+# - Private DNS (dns.adguard-dns.com) works; YouTube and the streaming apps still play.
 
 # Retail / store demo
 com.hisense.storemode
@@ -53,3 +94,15 @@ com.google.android.tungsten.setupwraith
 # 295 (KEYCODE_MIRSET4), Disney+ is scancode 484 and SonyLIV is scancode 606. The gear is keycode 83
 # (KEYCODE_NOTIFICATION, so settings_key_keycodes) and Input is KEYCODE_TV_INPUT (178), which
 # InputKeyService handles natively. Netflix is handled by the firmware.
+
+# Second and third units only: disabled for one session and its reboots (normal boot; Home and the key helper
+# back on the second unit), not yet lived with for days. Hisense ACR ("Enhanced Viewing" content
+# recognition), as on the huangshan FFM list.
+# com.hisense.evservice
+
+# Third unit only, the same one session: the feed of the "Hisense" (VIDAA) tab on the Google TV home, as on
+# the hengshan list; partner referral tracking, as on the lushan and hengshan lists; the crash and feedback
+# uploader, which came disabled from the factory on the first unit.
+# com.vidaa.oemtabcontentprovider
+# com.google.android.partnersetup
+# com.google.android.feedback
