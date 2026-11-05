@@ -232,7 +232,12 @@ only after the owner chose to give up those features.
 | `com.haier.tv.speakingtest` | Spoken-English learning | 0 |
 
 The disabled states survived a reboot. This is **one session**, not several
-days of normal use; there is deliberately no executable `examples/` list yet.
+days of normal use, so it stays a one-session observation. For an executable
+list, `examples/` has one for this board from another unit on build
+`PPR1.180610.011.20220314`:
+[`examples/haier-hra962x2/`](../../examples/haier-hra962x2/debloat.txt) disables
+six of these seven packages (all but `com.health.aisportcoach`); the build here
+is `PPR1.180610.011.20220620`, so read that list as a starting point.
 `com.yunos.tv.probe` was identified as **network diagnostics** and retained;
 its name alone was not a reason to call it telemetry. Existing video apps,
 casting, voice, input, Bluetooth and OTA packages were retained. Retaining a
