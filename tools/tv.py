@@ -508,13 +508,25 @@ def screenshot_target(local):
     have been judged this way since #2039; this is the flag the pages hand out most.
 
     A folder that is not there is still made rather than refused: that is the one shape the command is
-    expected to fix for itself.
+    expected to fix for itself. Two words are not a file name and are refused here: one that is only
+    whitespace, which `--screenshot "$SHOT"` sends when SHOT holds a space (the pull wrote a file named
+    "   " and the run printed `screenshot     (N bytes)`, exit 0, while the path the reader meant was
+    never made), and one that ends with a separator while that folder is not there yet - the check below
+    only answers a folder that exists, and os.path.abspath() drops the separator, so the folder was made
+    and `screencap` ran on the TV before the pull wrote to a name that is a folder.
     """
     if not local:
         usage_error("--screenshot needs the file to save to")
+    if not local.strip():
+        usage_error(f"--screenshot's file is blank ({local!r}): name the file to save to, such as "
+                    f"shots/01-home.png")
     if os.path.isdir(local):
         path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
                    f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
+    if local.endswith(("/", os.sep)):
+        path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
+                   f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
+                   f"Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
