@@ -30,26 +30,6 @@ public class WatchService extends Service {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private long lastOpen;
-    private android.database.ContentObserver standbyObserver;
-    private int standbyState;
-
-    /** Optional vendor standby flag, configured by the shell: no polling and no vendor API calls. */
-    private void watchStandby() {
-        if (standbyObserver != null) getContentResolver().unregisterContentObserver(standbyObserver);
-        standbyObserver = null;
-        String key = Prefs.standbySetting(this);
-        if (key.isEmpty()) return;
-        standbyState = android.provider.Settings.Global.getInt(getContentResolver(), key, -1);
-        standbyObserver = new android.database.ContentObserver(handler) {
-            @Override public void onChange(boolean selfChange) {
-                int state = android.provider.Settings.Global.getInt(getContentResolver(), key, -1);
-                if (state == 1) handler.removeCallbacks(open);
-                if (standbyState == 1 && state == 0) schedule(800);
-                standbyState = state;
-            }
-        };
-        getContentResolver().registerContentObserver(android.provider.Settings.Global.getUriFor(key), false, standbyObserver);
-    }
 
     private final Runnable open = new Runnable() {
         @Override
@@ -91,13 +71,11 @@ public class WatchService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            if (intent.hasExtra("standby_setting")) Prefs.setStandbySetting(this, intent.getStringExtra("standby_setting"));
             if (intent.hasExtra("app")) Prefs.setApp(this, intent.getStringExtra("app"));
             if (intent.hasExtra("link")) Prefs.setLink(this, intent.getStringExtra("link"));
             if (intent.getBooleanExtra("test", false)) Launch.open(this);
             else if (intent.getBooleanExtra(EXTRA_BOOT, false)) schedule(BOOT_EXTRA_MS);
         }
-        watchStandby();
         return START_STICKY;
     }
 
@@ -111,7 +89,6 @@ public class WatchService extends Service {
     public void onDestroy() {
         handler.removeCallbacks(open);
         unregisterReceiver(screen);
-        if (standbyObserver != null) getContentResolver().unregisterContentObserver(standbyObserver);
         super.onDestroy();
     }
 

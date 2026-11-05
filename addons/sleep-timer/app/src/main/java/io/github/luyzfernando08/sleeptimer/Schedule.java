@@ -79,7 +79,6 @@ final class Schedule {
     static void wakeScreen(Context c) {wakeScreen(c,()->{});}
     @SuppressWarnings("deprecation")
     static void wakeScreen(Context c,Runnable finished) {
-        if(ShizukuPower.ready()){ShizukuPower.setAwake(c,true,finished);return;}
         PowerManager pm=c.getSystemService(PowerManager.class);
         PowerManager.WakeLock lock=pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK|PowerManager.ACQUIRE_CAUSES_WAKEUP,"sleeptimer:schedule");
         lock.acquire(3000);
@@ -101,7 +100,7 @@ final class Schedule {
         Runnable done=()->{reschedule(c);finished.run();};
         if(on(c)&&at>0&&now>=at&&now-at<10*60_000L) {
             if(wake&&!ScheduleRules.paused(LocalDate.now(),pauses(c))){wakeScreen(c,done);return;}
-            if(!wake&&c.getSystemService(PowerManager.class).isInteractive()){Timer.sleepNow(c,done);return;}
+            if(!wake&&c.getSystemService(PowerManager.class).isInteractive()){Timer.sleepNow(c);done.run();return;}
         }
         done.run();
     }

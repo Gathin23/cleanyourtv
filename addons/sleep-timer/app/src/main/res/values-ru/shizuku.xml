@@ -1,5 +1,0 @@
-<resources>
-    <string name="shizuku_ready">Shizuku подключён · управление питанием через ADB</string>
-    <string name="shizuku_allow">Разрешить управление питанием через Shizuku</string>
-    <string name="shizuku_start">Запустить Shizuku · после перезагрузки ТВ нужен повторный запуск</string>
-</resources>

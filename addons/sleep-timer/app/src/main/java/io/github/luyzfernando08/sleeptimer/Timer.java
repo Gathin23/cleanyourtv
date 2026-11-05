@@ -49,19 +49,14 @@ final class Timer {
         am.cancel(pending(ctx, ACTION_SLEEP));
     }
 
-    /** Ends the timer and requests sleep. False when neither power backend is available. */
+    /** Ends the timer and puts the TV to sleep. False when the accessibility service is off. */
     static boolean sleepNow(Context ctx) {
-        return sleepNow(ctx,()->{});
-    }
-
-    static boolean sleepNow(Context ctx,Runnable finished) {
         cancel(ctx);
-        if(ShizukuPower.ready()) {ShizukuPower.setAwake(ctx,false,finished);return true;}
-        boolean slept=SleepService.sleep();finished.run();return slept;
+        return SleepService.sleep();
     }
 
     static boolean canSleep() {
-        return ShizukuPower.ready() || SleepService.running();
+        return SleepService.running();
     }
 
     private static void schedule(Context ctx, String action, long at) {

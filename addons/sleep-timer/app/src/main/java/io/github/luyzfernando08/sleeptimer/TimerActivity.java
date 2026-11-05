@@ -11,17 +11,11 @@ import android.widget.TextView;
 
 /** The card: pick when the TV goes to sleep, or cancel the timer. Choosing closes the screen. */
 public class TimerActivity extends Activity {
-    private TextView state, first, cancel, shizuku;
-    private final rikka.shizuku.Shizuku.OnRequestPermissionResultListener permissionListener=(code,result)->refresh();
-    private final rikka.shizuku.Shizuku.OnBinderReceivedListener binderListener=()->runOnUiThread(this::refresh);
-    private final rikka.shizuku.Shizuku.OnBinderDeadListener deadListener=()->runOnUiThread(this::refresh);
+    private TextView state, first, cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        rikka.shizuku.Shizuku.addRequestPermissionResultListener(permissionListener);
-        rikka.shizuku.Shizuku.addBinderReceivedListener(binderListener);
-        rikka.shizuku.Shizuku.addBinderDeadListener(deadListener);
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -71,9 +65,7 @@ public class TimerActivity extends Activity {
         schedule.setText(R.string.schedule_row);
         schedule.setOnClickListener(v -> startActivity(new Intent(this, ScheduleActivity.class)));
 
-        shizuku=Ui.row(root,798);
-        shizuku.setOnClickListener(v->ShizukuPower.connect(this));
-        for(TextView row:new TextView[]{cancel,schedule,shizuku})row.getLayoutParams().width=-1;
+        for(TextView row:new TextView[]{cancel,schedule})row.getLayoutParams().width=-1;
         android.widget.ScrollView scroll=new android.widget.ScrollView(this);
         scroll.setFillViewport(true);
         scroll.addView(root,new android.widget.ScrollView.LayoutParams(-1,-2));
@@ -89,19 +81,12 @@ public class TimerActivity extends Activity {
     }
 
     private void refresh() {
-        if(state==null||shizuku==null)return;
-        shizuku.setText(ShizukuPower.ready()?R.string.shizuku_ready:ShizukuPower.running()?R.string.shizuku_allow:R.string.shizuku_start);
+        if(state==null)return;
         long end = Timer.end(this);
         if (!Timer.canSleep()) state.setText(R.string.no_service);
         else if (end == 0) state.setText(R.string.state_off);
         else state.setText(getString(R.string.state_on, DateFormat.getTimeFormat(this).format(end)));
         String bed = Schedule.describe(this);
         if (!bed.isEmpty()) setTitle(getString(R.string.app_name) + " · " + bed);
-    }
-    @Override protected void onDestroy() {
-        rikka.shizuku.Shizuku.removeRequestPermissionResultListener(permissionListener);
-        rikka.shizuku.Shizuku.removeBinderReceivedListener(binderListener);
-        rikka.shizuku.Shizuku.removeBinderDeadListener(deadListener);
-        super.onDestroy();
     }
 }

@@ -32,7 +32,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             context.startActivity(new Intent(context, WarningActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else if (Timer.ACTION_SLEEP.equals(intent.getAction()) && System.currentTimeMillis() >= end) {
-            Timer.sleepNow(context,goAsync()::finish);
+            Timer.sleepNow(context);
         }
     }
 }

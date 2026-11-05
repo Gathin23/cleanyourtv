@@ -1,5 +1,0 @@
-<resources>
-    <string name="shizuku_ready">Shizuku 已連線 · 透過 ADB 控制電源</string>
-    <string name="shizuku_allow">允許透過 Shizuku 控制電源</string>
-    <string name="shizuku_start">啟動 Shizuku · 電視重新啟動後需再次啟動</string>
-</resources>

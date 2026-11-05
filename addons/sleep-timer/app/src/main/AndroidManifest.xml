@@ -13,8 +13,6 @@
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
-    <queries><package android:name="moe.shizuku.privileged.api" /></queries>
-
     <application
         android:allowBackup="false"
         android:banner="@drawable/banner"
@@ -30,11 +28,6 @@
                 <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
             </intent-filter>
         </receiver>
-        <provider android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="${applicationId}.shizuku" android:multiprocess="false"
-            android:enabled="true" android:exported="true"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
-        <meta-data android:name="moe.shizuku.client.V3_SUPPORT" android:value="true" />
         <!-- The quick bar, for a remote button: map it in the launcher's app_keys as
              hold:<keycode>:io.github.luyzfernando08.sleeptimer/.QuickActivity. The tile and the card open the picker. -->
         <activity
