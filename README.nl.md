@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md"><img src="https://img.shields.io/badge/README-English-cfffcf?style=flat&labelColor=15181e" alt="English"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/README-English-cfffcf?style=flat&labelColor=15181e" alt="English"></a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a>
   <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-cfffcf?style=flat&labelColor=15181e" alt="简体中文"></a>
   <a href="README.zh-TW.md"><img src="https://img.shields.io/badge/README-%E6%AD%A3%E9%AB%94%E4%B8%AD%E6%96%87-cfffcf?style=flat&labelColor=15181e" alt="正體中文"></a>
   <a href="README.vi.md"><img src="https://img.shields.io/badge/README-Ti%E1%BA%BFng%20Vi%E1%BB%87t-cfffcf?style=flat&labelColor=15181e" alt="Tiếng Việt"></a>
