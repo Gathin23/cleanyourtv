@@ -68,10 +68,12 @@ com.audiocn.karaoke.global.micmanager
 com.google.android.play.games
 com.tcl.browser                             # already disabled on the test set
 
-# Personal choice: Miracast screen mirroring. Comment out if you use it.
-com.mediatek.miracast
+# Personal choice: Miracast screen mirroring, off on the tested set. Shared lists keep casting on: uncomment it
+# if you never mirror a phone.
+# com.mediatek.miracast
 
 # First-run wizard. Its RecoveryActivity takes Home once launcherx is gone. See the Wi-Fi quirk above.
+# Disabling setupwraith gives Home back but can break casting (Chromecast built-in) on Google TV; keep it if you cast.
 com.google.android.tungsten.setupwraith
 
 # Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh,

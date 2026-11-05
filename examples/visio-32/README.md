@@ -11,5 +11,5 @@
 - **Stock launcher**: `com.google.android.tvlauncher` (Leanback).
 - **Live TV & Media**: Handled by MediaTek's `com.mediatek.wwtv.mediaplayer` and `com.mediatek.wwtv.tvcenter`. Kept enabled so HDMI inputs and TV tuner work normally.
 - **Backlight Adjust**: `com.skyworth.backligthadjust` controls the hardware display backlight via remote; kept enabled.
-- **ADB / Wireless**: Enable Developer options by clicking Build Number 7 times. USB debugging opens TCP port 5555.
+- **ADB**: Enable Developer options by clicking Build Number 7 times, then turn on USB debugging.
 - **Screenshot Quirk**: An adbd stdout wrapper outputs `Init wrapper sys mutex successful. Pid:xxxx` before raw PNG bytes when running `adb exec-out screencap -p`. Capture to `/sdcard/screencap.png` and pull via `adb pull` instead.

@@ -64,6 +64,8 @@ com.android.camera                  com.android.inputmethod.pinyin     com.andro
 com.android.musicfx                 com.android.dreams.basic           com.android.htmlviewer
 ```
 
+Owner's choice on this broadcast-only set: com.google.android.gms, com.google.android.gsf, com.google.android.gsf.notouch and com.android.vending stay enabled on any TV that uses Google apps.
+
 Disabling Play services and the Play Store was a choice for a TV that only shows broadcast channels: the
 leanback home and Live TV kept working and a reboot came up straight into Live TV. `MemFree` was 58 MB on the
 stock install; after the changes `dumpsys meminfo` reported about 330 to 390 MB Free RAM, cached memory included

@@ -31,7 +31,7 @@ This is an owner-reported, single-session note from 2026-11-04, not a reusable d
 
 - `com.android.ondevicepersonalization.services`, `com.android.adservices.api`, `com.android.federatedcompute.services`, `com.android.tv.feedbackconsent` and `com.google.android.feedback` were already disabled in the initial snapshot; they are not part of the changes above.
 - Activity Launcher, Google Play Store, Google Play Services, Google Assistant, Chromecast components, firmware updater services, HDMI/tuner services and Bluetooth remote services were kept enabled. The owner's streaming and utility apps were retained; no packages were uninstalled.
-- The final package snapshot showed Google Play Movies & TV (`com.android.mgstv`) enabled.
+- See also [ZTE ZXV10 B866F](zte-b866f.md): never disable both system launchers on these ZTE boxes.
 - The built-in updater reported that the software was up to date; no firmware was installed during the session.
 
 ## Limits of the report

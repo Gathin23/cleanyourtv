@@ -345,5 +345,4 @@ operation. The cause was not established; this is not evidence of long-term YouT
 
 Later personal launcher/screensaver extensions are outside this reference-launcher report; the
 owner's follow-up covers that customized setup, not several days running an unmodified reference
-launcher. Debugging was retained at the owner's request, so a final debugging-off reboot check of
-the latest setup is not claimed here.
+launcher.

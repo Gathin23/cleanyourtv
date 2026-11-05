@@ -37,8 +37,6 @@ HOME_KEY_SERVICE=1 SKIP_BUILD=1 TV_HOST=<tv ip> launcher/build-and-install.sh
 The nine-dot button is `KEYCODE_APPS` (390), a global key that used to open
 `com.google.android.tvlauncher` apps view. With that launcher disabled it does nothing.
 `app_keys` `390:home` plus `HomeKeyService` opens this launcher from any app. On this
-unit the Netflix button (`KEYCODE_BUTTON_1`, 188) opens Live TV and the Prime Video
-button (`KEYCODE_PRIMEVIDEO`, 409) opens `com.qjy.browser`. On this
 firmware a bound key helper makes a held volume key step once per press.
 
 ## Undo

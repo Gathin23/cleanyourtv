@@ -29,7 +29,7 @@
 com.skyworth.device                 # Device information and location reporting (SensorsData analytics)
 com.tianci.de                       # Tianci Data Engine daemons listening for package changes
 com.tianci.ad                       # Tianci advertising cloud push receiver
-com.coocaa.tvmanager                # CooCaa content recommendation and app scanning manager
+com.coocaa.tvmanager                # CooCaa content recommendation and app scanning manager; also scans USB/storage, so re-enable it if USB drives stop showing up
 
 # Other optional telemetry and apps (commented out by default):
 # com.skyworth.performance.monitors   # Performance monitors and telemetry

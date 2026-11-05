@@ -85,16 +85,6 @@ The cost of keeping launcherx enabled is that it stays resident in the backgroun
 two processes). Disabling it is possible but on this unit was not needed, and it would require
 disabling setupwraith first, which would delete the Wi-Fi network.
 
-## Extras applied on this unit
-
-System animation scales at 0.5 for perceived fluidity (no memory effect, survives reboots):
-
-```bash
-tools/tv.py "settings put global window_animation_scale 0.5; settings put global transition_animation_scale 0.5; settings put global animator_duration_scale 0.5"
-```
-
-Set them back to `1.0` to undo. Netflix's persistent background service was left alone on purpose.
-
 ## Notes on `config.json`
 
 Dock: Netflix, YouTube, Prime Video, Disney+, with `columns` 5 so the fifth slot fills from the grid.

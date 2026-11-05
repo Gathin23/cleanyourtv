@@ -47,8 +47,9 @@ com.android.health.connect.backuprestore
 com.android.printspooler
 com.apps.wifihotspot                           # MOKA hotspot app
 
-# Off on the tested set, which only uses apps and HDMI; comment it out if you use the red button on antenna TV
-com.seraphic.media.tv.interactive.app          # HbbTV interactive app (Seraphic)
+# HbbTV (the red button on antenna TV) stays on in this shared list; the tested set, which only uses apps and HDMI,
+# has it off: uncomment it if you never watch antenna TV.
+# com.seraphic.media.tv.interactive.app        # HbbTV interactive app (Seraphic)
 
 # KEEP: com.google.android.apps.tv.launcherx and com.google.android.tungsten.setupwraith (see above).
 #       com.google.android.youtube.tv, com.google.android.katniss (Assistant) and

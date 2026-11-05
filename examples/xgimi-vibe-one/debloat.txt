@@ -62,14 +62,14 @@ com.google.android.youtube.tvmusic            # YouTube Music
 com.google.android.marvin.talkback            # TalkBack (accessibility), off by choice
 com.android.printspooler                      # print spooler, no use on a projector
 
-# Preinstalled streaming apps the owner does not use (off by choice; they ship as user apps on this
-# Canadian unit)
-com.quickplay.android.bellmediaplayer         # Bell Fibe TV (153 MB resident, boot receiver)
-ca.bellmedia.cravetv                          # Crave
-com.cbs.ca                                    # CTV / Paramount+ Canada
-com.haystack.android                          # Haystack News
-com.tubitv                                    # Tubi
-com.apple.atve.androidtv.appletv              # Apple TV
+# Preinstalled streaming apps the owner does not use (they ship as user apps on this Canadian unit). Shared lists
+# keep streaming apps on, so they are comments: uncomment the ones you never open.
+# com.quickplay.android.bellmediaplayer         # Bell Fibe TV (153 MB resident, boot receiver); this set has it off
+# ca.bellmedia.cravetv                          # Crave; this set has it off
+# com.cbs.ca                                    # CTV / Paramount+ Canada; this set has it off
+# com.haystack.android                          # Haystack News; this set has it off
+# com.tubitv                                    # Tubi; this set has it off
+# com.apple.atve.androidtv.appletv              # Apple TV; this set has it off
 
 # Kept by choice on this unit: com.netflix.ninja, com.google.android.youtube.tv,
 # com.amazon.amazonvideo.livingroom, com.disney.disneyplus, com.google.android.katniss and

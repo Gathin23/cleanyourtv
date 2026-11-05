@@ -23,9 +23,10 @@ itself off at every restart and when the TV goes to standby: turn it on again af
 TV_HOST=<tv ip> tools/disable.sh examples/artel-a55lu8500/debloat.txt
 ```
 
-(Windows: `tools\disable.ps1 -TvHost <tv ip> examples\artel-a55lu8500\debloat.txt`.) The list disables 11
+(Windows: `tools\disable.ps1 -TvHost <tv ip> examples\artel-a55lu8500\debloat.txt`.) The list disables 10
 packages: telemetry, Android's ad services, the Realtek partner customizer, Google TV's partner auto-installs,
-Health Connect, print, the hotspot app and the HbbTV app. All 11 stayed disabled across two reboots.
+Health Connect, print and the hotspot app. All 10 stayed disabled across two reboots; the HbbTV app was off on the
+tested set too and is left as a comment, since shared lists keep broadcast features.
 
 Ten more disable fine but are back after the next boot, as on the Kalley and Acer sets: Netflix and its token
 manager, YouTube Music, Play Games, ambient mode, the SCast and FastScreen casting apps, the store-demo sticker,

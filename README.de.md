@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="433 TV-Modelle · 114 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 396 weitere: 412 Artikel aus 54 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="442 TV-Modelle · 117 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 396 weitere: 412 Artikel aus 54 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
 </p>
 
 ## Einstieg
@@ -129,23 +129,23 @@ meisten Listen, jede mit ihren Modellen auf der Website verlinkt:
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 81 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 49 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 42 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 22 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 16 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 81 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 49 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 42 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 22 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
-| [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 4 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
-| [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
-| [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 2 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 2 | [Hitachi](https://cleanyour.tv/tvs?q=Hitachi) · 2 |
+| [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 4 |
+| [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 |
+| [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [RockTek](https://cleanyour.tv/tvs?q=RockTek) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 |
 
 <details>
-<summary>+70 more brands and 14 projector brands</summary>
+<summary>+74 more brands and 13 projector brands</summary>
 
-**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Master-G** 2 · **Noblex** 2 · **PRISM+** 2 · **RockTek** 2 ·
-**Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
+**FFalcon** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Master-G** 2 · **Noblex** 2 ·
+**PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor ·
 DEXP · Dialog · DYON · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT ·
 Liberton · Lumio · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ · Philco ·
-Polytron · PPTV · Prosonic · Salora · SANYO · Seleco · Smarttech · Super General · TD Systems · Tele System · TiVo ·
-Tornado · Turkcell · Tuvio · Verizon · Vision · X.Vision ·
-Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
+Polytron · PPTV · Prosonic · Salora · SANYO · Seleco · Smarttech · SunWind · Super General · TD Systems · Tele System ·
+Tesla · TiVo · Tornado · Turkcell · Tuvio · Verizon · VISIO · Vision · X.Vision ·
+Alwtniet, Anker Nebula, BYINTEK, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
 
@@ -445,7 +445,7 @@ ihren eigenen Fernsehern gemacht, und ihre Antworten wurden zu den Listen hier: 
 ersten vier Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionieren.
 
 Zwei Wochen später war es das Repository auf Platz 1 der GitHub-Trends in der Woche vom 19. bis 25. Oktober, mit über 46.000 Sternen
-und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Die Listen umfassen jetzt 433 TV-Modelle von 114 Marken.
+und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Die Listen umfassen jetzt 442 TV-Modelle von 117 Marken.
 Die Berichterstattung: 412 Artikel aus 54 Ländern und 229 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 30. Oktober 2026).
 
 ## Mitmachen

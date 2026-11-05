@@ -34,7 +34,7 @@
 
 # TCL tracking and analytics
 tv.samba.ssm.ui                        # Samba TV ACR viewing tracking (enabled at the factory here)
-com.tcl.ttvs                           # TCL analytics service; re-enable if firmware updates stop arriving
+# com.tcl.ttvs                         # kept: on G10_4K_GB it also holds SystemUpdateActivity (firmware updates); the 55P7K unit had it off
 com.tcl.logkit                         # log capture and upload
 com.tcl.usercenter                     # TCL account sign-in nags
 com.google.android.feedback

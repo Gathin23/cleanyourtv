@@ -189,9 +189,7 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   This hides Home tiles without disabling the package or clearing app data; it is not a parental-control
   restriction. Undo by removing it from `hidden_apps` and restoring its dock entry, then rebuilding
   (or restoring the theme's keys). Seen on Xiaomi MiTV-AXSO0 (`dangal`, Android TV 9, `PI.6036`),
-  with the Kids package still enabled. An injected Home key left the notice, the owner subsequently
-  confirmed physical Home worked, and hiding the tile was verified. Kids-profile setup and playback
-  inside YouTube were deferred, not counted as a successful playback test.
+  with the Kids package still enabled.
 - **TCL's software update says "Local network or server abnormal" after the debloat**, while the
   network works. TCL's updater gets the TV's device number (dnum) from `com.tcl.xian.StartandroidService`,
   which the lists disable as reporting; without it the check stops with `dnum is null!` in logcat. Enable

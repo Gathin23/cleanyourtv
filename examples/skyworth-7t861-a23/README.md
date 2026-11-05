@@ -20,7 +20,7 @@ The [debloat list](debloat.txt) disables 4 packages by default:
 - **`com.skyworth.device`**: Device information, location reporting, and SensorsData analytics SDK.
 - **`com.tianci.de`**: Tianci Data Engine daemons listening for package additions and updates.
 - **`com.tianci.ad`**: Tianci advertising cloud push service maintaining persistent background connections.
-- **`com.coocaa.tvmanager`**: Coocaa TV Manager running background app and storage/USB scanner receivers.
+- **`com.coocaa.tvmanager`**: Coocaa TV Manager running background app and storage/USB scanner receivers. Re-enable it if USB drives stop showing up.
 
 Other optional content apps, stores, and diagnostic tools remain commented out in `debloat.txt` for selective debloating.
 
