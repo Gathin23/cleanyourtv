@@ -1,0 +1,33 @@
+# Sharp AQUOS-TVE19A (codename sindang, product tcbrae_a, CVTE board, MStar/MediaTek m7322),
+# Android TV 11, firmware RTOB.250721.001, manufacturer SHARP (UMC Europe), Poland.
+# Same board and firmware as examples/sharp-aquos-tve19c/. Stock launcher is
+# com.google.android.tvlauncher. Live TV is com.mediatek.wwtv.tvcenter. Running since 2026-11-04.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-aquos-tve19a/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-aquos-tve19a/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Factory-disabled on this unit before the debloat: Netflix, YouTube, YouTube Music,
+# Play Games, com.cltv.fast and the UK Freeview apps (uk.co.freeview.*). They are not in this list.
+# The firmware updater was left enabled on purpose.
+
+# Tracking and ads
+tv.anoki.acr.controller                # Anoki ACR: identifies what is on screen, for ads
+com.google.android.feedback            # Google crash/telemetry reporting
+fusion.android.tv.demo                 # store demo mode
+
+# Unused apps (owner's choice)
+com.google.android.videos              # Google TV / Play Movies
+com.rma.speedtesttv                    # Speedtest preload
+
+# Kept by the owner's choice: Prime Video, Digitalmedia Player, e-manual, Assistant (katniss),
+# Chromecast built-in (mediashell), ambient screensaver (backdrop), Smart Connect.
+# com.mediatek.dmp.mediaplayer
+# umc.com.emanual
+# com.google.android.katniss
+# com.google.android.backdrop
+# com.google.android.apps.nbu.smartconnect.tv
+
+# Stock launcher and its recommendation rows, replaced by launcher/
+com.google.android.tvlauncher
+com.google.android.tvrecommendations

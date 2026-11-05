@@ -1,0 +1,6 @@
+{
+  "tv": "Sharp AQUOS-TVE19A (sindang, CVTE/MStar m7322), PL",
+  "os": "Android TV 11",
+  "brand": "SHARP",
+  "notes": "Sibling of the TVE19C: Anoki ACR, store demo, Speedtest; ADB port opened without a reboot; Netflix button (KEYCODE_STEM_1) crashes the vendor TV service while Netflix is off; a held volume key steps once with HOME_KEY_SERVICE=1; two days"
+}
