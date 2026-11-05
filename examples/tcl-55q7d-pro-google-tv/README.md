@@ -49,8 +49,7 @@ button back, from any app:
 ```
 
 `app_keys` is read from a theme pushed with `tools/theme.sh` or from
-`launcher/app/src/main/res/values/config.xml` when the launcher is built. `docs/TROUBLESHOOTING.md` has the
-same fix beside the other remote-button entries.
+`launcher/app/src/main/res/values/config.xml` when the launcher is built.
 
 ## What was changed on this set
 

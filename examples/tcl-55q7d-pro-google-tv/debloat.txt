@@ -28,8 +28,8 @@
 # Live TV, the guide-less channel list and the input list were used for one evening without a visible loss,
 # so uncomment the line if TCL's channel browser matters to you.
 #
-# The TV icon button (keycode 4001) is swallowed by TCL's own shortcut manager on this firmware; see
-# docs/TROUBLESHOOTING.md for the app_keys entry that brings it back.
+# The TV icon button (keycode 4001) is swallowed by TCL's own shortcut manager on this firmware; the
+# README.md in this folder has the app_keys entry that brings it back.
 
 # TCL pushes, account, retail and hotel demo
 com.tcl.dashboard                      # TCL Home panel and its promotions
