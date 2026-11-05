@@ -14,6 +14,13 @@
 # loss in docs/devices/tcl-55p71b-g09-key-repeat.md, seen on this Sony too), so the helper was
 # removed again. Tested one day.
 #
+# Also confirmed 2026-11-05 on a Sony KD-55XE9005, Germany (device BRAVIA_ATV2_EU, model BRAVIA 4K GB), same build.
+# Applied in five batches with screenshots between them, together with the USB media lines and the Live TV lines at
+# the end, as Live TV is not watched there; com.sony.dtv.tvx stayed, as it carries the HDMI inputs. Every package was
+# disabled, including android.autoinstalls.config.sony.bravia and com.qterics.da.product, which the check above held
+# back on the XBR-49X705D. All stayed disabled across reboots. launcher/ installed; Home, HDMI and the remote's buttons
+# work. Channel Up/Down on Home open com.sony.dtv.tvx. Tested one day.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-gb/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-gb/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -74,3 +81,11 @@ com.google.android.backdrop                    # ambient screensaver, replaced b
 # com.sony.huey.dlna.renderersettings
 # com.sonyericsson.dlna
 # com.google.android.tv.remote.service         # Android TV phone-app remote
+
+# Optional if Live TV is not watched: disabled on the KD-55XE9005. Keep com.sony.dtv.tvx, it carries the HDMI inputs.
+# com.sony.dtv.youview                         # YouView, a UK service
+# com.youview.tv.servicehost                   # YouView's reporting and update services
+# com.sony.dtv.hbbtvlauncher                   # HbbTV
+# com.sony.dtv.tuningconfirmation_dvbt         # DVB-T tuning prompt
+# com.sony.dtv.tuningconfirmation_dvbs         # DVB-S tuning prompt
+# com.sony.dtv.tvxlauncher.titlelist           # Recorded Title List tile
