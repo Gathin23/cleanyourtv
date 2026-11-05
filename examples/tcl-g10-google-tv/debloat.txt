@@ -178,7 +178,7 @@ com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks ab
 # com.google.android.youtube.tv
 # Disabled on the India 55Q6CS (by the owner's choice for the apps):
 # com.tcl.messagebox                   # TCL push messages
-# com.tcl.t_solo                       # TCL promo app
+# com.tcl.t_solo                       # T-Solo "listen alone": TV sound to Bluetooth headphones
 # com.tcl.smartalexa                   # Alexa integration
 # com.tcl.hearaid                      # hearing-aid audio app
 # com.tcl.browser                      # TCL web browser

@@ -51,7 +51,7 @@ android.autoinstalls.config.tcl.device # partner auto-installer
 com.tcl.audioplayer                    # stock audio player
 com.tcl.imageplayer                    # stock image player
 com.tcl.copydatatotv                   # data migration utility
-com.tcl.t_solo                         # TCL promo app
+com.tcl.t_solo                         # T-Solo "listen alone": TV sound to Bluetooth headphones
 com.tcl.messagebox                     # TCL push messages & promos
 
 # Google extras & Assistant

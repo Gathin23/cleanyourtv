@@ -15,7 +15,7 @@ com.tcl.partnercustomizer              # Promo/recommendation rows on stock home
 com.tcl.waterfall.overseas             # TCL Channel / web video portal
 com.tcl.esticker                       # Store demo sticker app
 com.tcl.copydatatotv                   # Copy data utility
-com.tcl.t_solo                         # TCL promotional service
+com.tcl.t_solo                         # T-Solo "listen alone": TV sound to Bluetooth headphones
 
 # Web browsers and feedback bloat
 com.internet.tvbrowser                 # Preloaded TV Browser
