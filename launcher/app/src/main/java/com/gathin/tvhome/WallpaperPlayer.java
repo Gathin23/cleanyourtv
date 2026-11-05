@@ -128,6 +128,10 @@ final class WallpaperPlayer {
         }
     }
 
+    boolean hasWallpaper() {
+        return !files.isEmpty();
+    }
+
     void start() {
         active = true;
         update();

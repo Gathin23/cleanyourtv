@@ -673,6 +673,12 @@ final class Config {
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
+        File internalWallpaper = new File(ctx.getFilesDir(), WALLPAPER_NAME);
+        if (wallpaper != null) {
+            syncFile(wallpaper, internalWallpaper);
+        } else if (internalWallpaper.isFile() && internalWallpaper.length() > 0) {
+            wallpaper = internalWallpaper;
+        }
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
         if (!wallpaperEnabled) wallpaper = null;
@@ -754,6 +760,7 @@ final class Config {
     }
 
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
+        if (config == null || !config.isFile()) return;
         File revision = dir == null ? null : new File(dir, THEME_REVISION_NAME);
         String token = revisionToken(revision);
         String signature = fileStamp(config) + ":" + token;
@@ -804,6 +811,8 @@ final class Config {
         if (!mounted) return read(copy);
         JSONObject json = read(file);
         if (json == null) {
+            JSONObject fallback = read(copy);
+            if (fallback != null) return fallback;
             copy.delete();
         } else {
             try (FileOutputStream out = new FileOutputStream(copy)) {
@@ -813,6 +822,19 @@ final class Config {
             }
         }
         return json;
+    }
+
+    private static void syncFile(File src, File dst) {
+        if (src == null || !src.isFile()) return;
+        if (dst.isFile() && dst.length() == src.length() && dst.lastModified() == src.lastModified()) return;
+        try (InputStream in = new FileInputStream(src);
+             FileOutputStream out = new FileOutputStream(dst)) {
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+            dst.setLastModified(src.lastModified());
+        } catch (IOException ignored) {
+        }
     }
 
     private static JSONObject read(File file) {
