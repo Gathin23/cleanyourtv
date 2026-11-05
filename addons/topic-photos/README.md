@@ -1,6 +1,6 @@
 # Topic Photos
 
-Freely licensed photos of the topics you choose, full screen on the TV and as its screensaver. Type a few topics
+Freely licensed photos of the topics you choose, full screen on the TV and as its screensaver. Pick or type a few topics
 ("mountains, ocean, city at night"), and the app finds matching photos on [Wikimedia Commons](https://commons.wikimedia.org),
 keeps them on the TV and changes them on their own. For the [Clean Your TV](../../README.md) launcher it declares a
 [module card](../../docs/modules.md), so once you answer **Show card** its tile reads "Topic Photos"; on any other

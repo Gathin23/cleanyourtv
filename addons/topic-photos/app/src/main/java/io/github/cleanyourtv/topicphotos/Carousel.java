@@ -41,6 +41,8 @@ final class Carousel extends FrameLayout {
     private List<Photos.Photo> photos = new ArrayList<>();
     private int index = -1, generation;
     private boolean running;
+    /** Released by its owner: nothing more is decoded, looked up or painted. */
+    private boolean released;
     private final Runnable tick = () -> show(next(1), true);
 
     Carousel(Context c, String hint) {
@@ -107,6 +109,7 @@ final class Carousel extends FrameLayout {
     /** The photos to show; keeps the one on screen when it is still among them. */
     void setPhotos(List<Photos.Photo> list) {
         String current = index >= 0 && index < photos.size() ? photos.get(index).id : null;
+        generation++;   // a decode queued for the old list must not paint into the new one
         photos = new ArrayList<>(list);
         message.setVisibility(photos.isEmpty() ? VISIBLE : GONE);
         if (photos.isEmpty()) return;
@@ -132,6 +135,9 @@ final class Carousel extends FrameLayout {
 
     void release() {
         stop();
+        released = true;
+        generation++;
+        handler.removeCallbacksAndMessages(null);
         decoder.shutdownNow();
         network.shutdownNow();
     }
@@ -181,14 +187,14 @@ final class Carousel extends FrameLayout {
     }
 
     private void show(int chosen, boolean animate) {
-        if (photos.isEmpty()) return;
+        if (released || photos.isEmpty()) return;
         int ticket = ++generation;
         Photos.Photo p = photos.get(chosen);
         int[] screen = Photos.screen(getContext());
         decoder.execute(() -> {
             Bitmap b = decode(Photos.file(getContext(), p).getPath(), screen[0], screen[1]);
             handler.post(() -> {
-                if (ticket != generation) return;   // a later press won
+                if (released || ticket != generation) return;   // released, a new list, or a later press won
                 index = chosen;
                 if (b != null) {
                     ImageView fresh = layers[1 - front], old = layers[front];
@@ -202,7 +208,7 @@ final class Carousel extends FrameLayout {
                 }
                 credit.setText(creditLine(p));
                 if (infoShown()) fillInfo();
-                askPlace(p, chosen);
+                askPlace(p);
                 schedule();
             });
         });
@@ -218,14 +224,21 @@ final class Carousel extends FrameLayout {
         return s.append("    ▲ ").append(c.getString(R.string.details)).append(hint).toString();
     }
 
-    /** The place of the photo now on screen, asked once, off the main thread. */
-    private void askPlace(Photos.Photo p, int at) {
-        if (p.placed) return;
+    /**
+     * The place of the photo now on screen, asked once, off the main thread. The reply counts only while that same
+     * photo (by id, not by position, which a new list reuses) is still on screen.
+     */
+    private void askPlace(Photos.Photo p) {
+        if (released || p.placed) return;
         network.execute(() -> {
             Photos.place(getContext(), p);
             handler.post(() -> {
-                if (!p.placed || at != index) return;
-                credit.setText(creditLine(p));
+                if (released || !p.placed || index < 0 || index >= photos.size()) return;
+                Photos.Photo now = photos.get(index);
+                if (!now.id.equals(p.id)) return;
+                now.place = p.place;   // a refresh may have put a new copy of the same photo in the list
+                now.placed = true;
+                credit.setText(creditLine(now));
                 if (infoShown()) fillInfo();
             });
         });

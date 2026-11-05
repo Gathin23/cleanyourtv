@@ -268,12 +268,7 @@ final class Photos {
             }
             p.place = String.join(", ", parts);
             p.placed = true;
-            JSONObject index = readIndex(c);
-            JSONArray arr = index.optJSONArray("photos");
-            for (int i = 0; arr != null && i < arr.length(); i++) {
-                if (p.id.equals(arr.getJSONObject(i).optString("id"))) arr.put(i, p.toJson());
-            }
-            writeIndex(c, index);
+            mergePlace(c, p.id, p.place);
         } catch (Exception e) {
             Log.w(TAG, "place " + p.id + ": " + e);
         }
@@ -337,6 +332,27 @@ final class Photos {
         } finally {
             http.disconnect();
             if (part.exists() && !part.delete()) Log.w(TAG, "left " + part);
+        }
+    }
+
+    /**
+     * Writes a looked-up place into the index: read, change only that photo's place, write, all under writeIndex's
+     * lock, so a refresh published meanwhile is not overwritten with an older index. A photo no longer in it is
+     * left out. The lookup itself stays outside the lock.
+     */
+    static void mergePlace(Context c, String id, String place) throws Exception {
+        synchronized (Photos.class) {
+            JSONObject index = readIndex(c);
+            JSONArray arr = index.optJSONArray("photos");
+            boolean found = false;
+            for (int i = 0; arr != null && i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);
+                if (id.equals(o.optString("id"))) {
+                    o.put("place", place).put("placed", true);
+                    found = true;
+                }
+            }
+            if (found) writeIndex(c, index);
         }
     }
 
