@@ -103,6 +103,16 @@
 #   was disabled with the TV still on Wi-Fi.
 # - The remote's Guard and Channel buttons open TGuard and TCL Live, so they do nothing once those are off.
 #
+# Also checked 2026-11-04 on another TCL G07 unit in Brazil (Android TV 11, software
+# V8-R51AT01-LF1V126.020732, incremental AR07, security patch 2024-12-05):
+# - Ethernet remained connected after setupwraith was disabled and saved Wi-Fi profiles were cleared by choice,
+#   including after a reboot.
+# - In one post-change session, Home, Input, Settings, Netflix, YouTube and the Assistant microphone buttons
+#   worked on the physical remote; holding Volume+ repeated as expected. HDMI/AV playback was not tested.
+# - Kept enabled by choice: Netflix, YouTube, Prime Video, Disney+, Max, Spotify, Play Store, Google Assistant,
+#   Alexa (installed on this unit), Chromecast, Miracast, MagiConnect and the firmware updater. Long-term use
+#   was not tested.
+#
 # DO NOT DISABLE: com.tcl.tv (Live TV, HDMI playback), com.tcl.tvinput (tuner, HDMI and AV inputs),
 # com.tcl.suspension (Quick Panel, also the Input key's source panel), com.tcl.keyhelp (remote virtual keys),
 # com.tcl.autopair, com.google.android.tv.remote.service, com.tcl.inputmethod.international (the keyboard),
