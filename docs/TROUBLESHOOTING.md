@@ -175,6 +175,21 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
 
 - **Chained `pm` commands** (`pm disable a; pm disable b`) may silently stop after the first. Run
   one per shell call; `--batch` does exactly that.
+- **YouTube Kids opens a "YouTube Kids has moved" notice instead of videos.** The standalone
+  `com.google.android.youtube.tvkids` app is showing its migration notice; that screen alone is not
+  evidence of a launcher or debloat fault. [Google's TV instructions](https://support.google.com/youtubekids/answer/9618031?hl=en)
+  now use a YouTube Kids profile inside the regular YouTube app. Keep YouTube enabled, leave the notice
+  with Home and open YouTube. Choose the kid's profile on "Who's Watching?", or open the profile picture
+  in the left-hand menu if YouTube is already signed in. If no Kids profile exists, follow Google's
+  setup instructions; the owner should configure the profile and parental controls on the TV.
+  If the owner wants the obsolete Home shortcut hidden, remove `com.google.android.youtube.tvkids`
+  from `dock_apps` and add it to `hidden_apps` in
+  [config.xml](../launcher/app/src/main/res/values/config.xml), then rebuild and reinstall with the
+  existing launcher installer. An active [theme](../themes/README.md) can override those same keys.
+  This hides Home tiles without disabling the package or clearing app data; it is not a parental-control
+  restriction. Undo by removing it from `hidden_apps` and restoring its dock entry, then rebuilding
+  (or restoring the theme's keys). Seen on Xiaomi MiTV-AXSO0 (`dangal`, Android TV 9, `PI.6036`),
+  with the Kids package still enabled.
 - **TCL's software update says "Local network or server abnormal" after the debloat**, while the
   network works. TCL's updater gets the TV's device number (dnum) from `com.tcl.xian.StartandroidService`,
   which the lists disable as reporting; without it the check stops with `dnum is null!` in logcat. Enable
@@ -197,6 +212,20 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   launcher with `stock_home_redirect` (`themes/README.md`) instead of disabling it. Seen on a TCL Smart TV
   Pro (`G03_4K_US`, Google TV 11, GTV93,
   [#1653](https://github.com/Gathin23/cleanyourtv/issues/1653)).
+- **Once launcherx is enabled again, Apps offers no Disable for it, so Home cannot be handed back without
+  ADB** (TCL Smart TV Pro, `G10_4K_GB`, Android 14, `UTT2.250416.001`). Settings > Apps > See all apps >
+  Google TV shows Enable while the package is disabled, and once it is enabled the same screen offers only
+  Force stop and Uninstall updates: there is no Disable to press, and Uninstall updates reverts launcherx to
+  its factory version while leaving it installed and enabled, so it still wins Home on its priority. Neither
+  `cmd role add-role-holder android.app.role.HOME com.gathin.tvhome` nor
+  `cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity` moves Home while launcherx is
+  enabled: the role holder is recorded on the new launcher and Home still opens launcherx, and
+  `set-home-activity` answers `Success` and changes nothing, so the system Home picker behind it behaves the
+  same. Only disabling the package does, which after enabling it again needs ADB:
+  `pm disable-user --user 0 com.google.android.apps.tv.launcherx`, then
+  `cmd package clear-package-preferred-activities`, because the preferred-activity record still names
+  launcherx and Home otherwise falls through to `FallbackHome`, a blank screen. Plan for it before enabling
+  launcherx on a set where the person cannot re-open ADB themselves.
 - **Ambient mode's "Select albums" closes at once, or says "Unable to load content"**, while the
   slideshow itself keeps playing with launcherx and setupwraith off. Screen saver > Ambient mode
   settings (`am start -a dreamx.two.panel.SETTINGS -p com.google.android.apps.tv.dreamx`) > Google
@@ -1027,6 +1056,22 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `tools/tv.py 'am start -n com.android.systemui/.Somnambulator'`, then
   `tools/tv.py 'dumpsys dreams | grep mCurrentDreamName'`. The key helpers hit the same denial: see
   [Accessibility helper enabled but the remote button does nothing](#accessibility-helper-enabled-but-the-remote-button-does-nothing).
+- **On Android 14 the op is `ASSOC_START`, and `AUTO_START` alone is not enough** (TCL Smart TV Pro,
+  `G10_4K_GB`, Android 14, `UTT2.250416.001`). `cmd appops set <package> APP_AUTO_START allow` is refused
+  on this firmware with `Unknown operation string`, and the denial for a content provider is the start
+  association, not the start: with `AUTO_START` at `allow` and `ASSOC_START` at `ignore`, the firmware will
+  not start the helper's process for the caller, so the provider query throws and a launcher that hides its
+  row when the provider cannot be read shows nothing at all. The reading works from a shell
+  (`content query --uri content://<authority>/today` prints a row) while the launcher's own query fails,
+  which is what makes it look like an app bug. Allow both and save them:
+
+  ```sh
+  tools/tv.py 'appops set <package> AUTO_START allow; appops set <package> ASSOC_START allow; appops write-settings'
+  ```
+
+  `appops write-settings` matters here as it does for `AUTO_START`: app-ops reach the disk lazily and a
+  plain reboot drops an unsaved grant. Check with
+  `tools/tv.py 'cmd appops get <package> ASSOC_START'`. Verified on that set across reboots and reinstalls.
 - **The TV wakes from standby back on the last HDMI input, and `power_on_home` takes about 5 s or misses it**
   (Philips 65OLED706, Android TV 11): the firmware only resumes the `org.droidtv.playtv` window it left, which
   sends its window event once the input has a picture, if at all. Set `power_on_home_always` too: Home comes
@@ -1060,6 +1105,20 @@ that list. With `restore_key_services` on (`config.xml` or a theme) and `WRITE_S
 the grant back), Home puts the helpers that were running back on the list the next time it starts; a helper
 turned off in Settings stays off.
 
+- **The Settings key still opens the panel on Home, and does nothing anywhere else.** That is the same
+  force stop, not a broken panel: Home handles `KEYCODE_SETTINGS` itself while `MainActivity` is in front,
+  so the key keeps working there with no helper bound, and only outside Home does it need one. The panel
+  then looks half-broken — it opens over Home and never over an app, Live TV or Settings — which sends you
+  reading `QuickSettingsActivity` instead of the helper list. Check the list before the code: it reads
+  `null` after a force stop that took both helpers off, and these two writes put them back:
+
+  ```sh
+  tools/tv.py 'settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService:com.gathin.tvhome/.InputKeyService'
+  tools/tv.py 'settings put secure accessibility_enabled 1'
+  ```
+
+  Seen on a TCL Smart TV Pro (`G10_4K_GB`, Android 14, `UTT2.250416.001`), chasing a panel that had never
+  been at fault.
 - **Home puts the helper back on the list after a force stop, and it still is not bound.** `dumpsys
   accessibility` then shows `Bound services:{}`, `accessibility_enabled` falls back to `0`, and the helper
   sits under `Crashed services`: a killed helper is marked crashed, and Android never binds a crashed
@@ -1452,6 +1511,23 @@ TV TA5, with one more step on the Philips: see the next entry.
 - **A button that sends `android.intent.action.ALL_APPS` now shows a chooser**, because launcherx answers the
   action too. Pick the one you want with "Always" once.
 
+## The Bluetooth Pair screen ignores OK while a key helper is bound
+
+Pairing a headset or remote: Settings > Remotes & Accessories > Pair accessory opens the Pair/Cancel screen
+(`com.android.tv.settings/.accessories.BluetoothPairingDialog`), "Pair" looks selected, and OK, Up and Down do
+nothing. Press **Right**, then OK, and it pairs; with no key at all the bond times out after about 30 s
+(`bondStateChangeCallback: Status: 9 ... newState: 0`). Seen on a Polaroid AI PONT (Changhong `redwood`, MediaTek
+mt5867, Android TV 11, `RTMA.250416.071`, #3155) with `HomeKeyService` bound for `power_on_home`: `getevent -lt`
+shows the presses reaching the TV, and with `settings put secure enabled_accessibility_services ''` plus
+`accessibility_enabled 0` OK pairs at once. Neither OK nor the D-pad is mapped in `config.xml`, so it looks like
+the same family as [a held button that stopped repeating](#a-key-helper-is-bound-and-a-held-remote-button-stopped-repeating)
+(#763, #944): a bound key-filtering service (`capabilities=8`) changes key or focus
+delivery on this firmware even for keys the helper returns `false` for.
+
+Workaround: press **Right** on the Pair screen first, then OK. Or switch the helper off while pairing and back on
+afterwards (note what `tools/tv.py 'settings get secure enabled_accessibility_services'` prints first, and put
+that value back with `settings put`).
+
 ## App buttons crash the TV's own key service on a set with a second user (Skyworth/Coocaa)
 
 **Seen on:** a Coocaa Y74 Pro 65" that reports Skyworth `SWTV-24AE-4K`, product `SW10_TG`, device `eleonas`
@@ -1652,6 +1728,21 @@ MGA3200 that cleared the errors:
 ```sh
 tools/tv.py 'settings put global private_dns_mode opportunistic'
 ```
+
+A block can also leave playback alone and take out one feature. On a Chromecast with Google TV 4K
+(`sabrina`, Google TV 14, `UTTC.250917.004`) with `dns.adguard-dns.com` in hostname mode, Pluto TV
+(`tv.pluto.android`) kept playing but stopped remembering where an on-demand episode was left, from the day
+the resolver was set. AdGuard DNS answers `0.0.0.0` for `sp.pluto.tv` while the app's other hosts (`boot`,
+`api`, the catalogue and the stitcher) resolve. To check a host an app uses, ask the resolver and an
+unfiltered one from a computer:
+
+```sh
+nslookup sp.pluto.tv 94.140.14.14   # AdGuard DNS: 0.0.0.0
+nslookup sp.pluto.tv 1.1.1.1        # a real address
+```
+
+An unfiltered resolver in Private DNS (`dns.google`), or an allow rule for that host in a personal AdGuard
+DNS profile, lets the app reach it again.
 
 The other failure mode reads differently: when the TV itself says "No internet", either the resolver is
 down or unreachable, or — on a streaming box with no battery-backed clock after a mains power loss (or

@@ -22,8 +22,10 @@
 # Applied 2026-11-02 with tools/disable.sh in five batches (the groups below), checking Home, Live TV
 # (ISDB-T, com.sony.dtv.tvinput.tuner/.BrzTunerInputService) and Netflix after each one. Then the
 # reference launcher went in with launcher/build-and-install.sh, which disabled tvlauncher and made
-# com.gathin.tvhome Home (`dumpsys window | grep mFocusedApp`). Rebooted twice: all 41 still disabled,
-# nothing re-enabled by the firmware, launcher still Home at power-on, display values unchanged.
+# com.gathin.tvhome Home (`dumpsys window | grep mFocusedApp`). Rebooted twice: all 41 it had disabled
+# were still off - the 39 lines this list applies, plus the phone remote and the Nero mirror, which are
+# comments now - nothing re-enabled by the firmware, launcher still Home at power-on, display values
+# unchanged.
 # Same day only, not lived with for days yet.
 # On the real remote, without any key service: Home, Netflix, YouTube, Input, the Action Menu
 # (com.sony.dtv.scrums.action), Google Assistant (mic) and HDMI all work; held Volume+ ramps.

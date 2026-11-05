@@ -119,6 +119,7 @@ def undo_problem(path):
     return None
 
 
+@unittest.skipIf(os.name == "nt", "runs each header's command through bash, which Windows does not ship; CI's Ubuntu runner does")
 class HideHeaderTest(unittest.TestCase):
     def run_command(self, folder, command):
         with tempfile.TemporaryDirectory() as tmp:

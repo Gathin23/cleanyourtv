@@ -1,0 +1,6 @@
+{
+  "tv": "RockTek G2 (RT-G2, SEI Robotics/NES, SEI804RT, YYJ, Amlogic S905X4)",
+  "os": "Android TV 14",
+  "brand": "RockTek",
+  "notes": "Same board and build as the [Nokia Streaming Box 8010](nokia-streaming-box-8010/debloat.txt), without its Hoppr engine; stock tvlauncher replaced, Shop tab gone with it; Assistant, Chromecast, remote services and firmware updates kept; the Netflix key cannot be remapped; reboot-checked"
+}

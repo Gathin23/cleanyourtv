@@ -287,7 +287,8 @@ class TvConnectErrorTest(unittest.TestCase):
             result = self.run_tv(["-c", RUNNER, str(self.tv), "PermissionError", "Permission denied", key],
                                  TV_HOST="192.0.2.1")
             self.assertKeptTraceback(result, "PermissionError")
-            self.assertIn(key, result.stderr)
+            # The traceback prints the path as a repr, which doubles the backslashes of a Windows path.
+            self.assertIn(repr(key)[1:-1], result.stderr)
 
     def test_a_connection_reset_in_the_handshake_keeps_its_traceback(self):
         server = ResetPort()

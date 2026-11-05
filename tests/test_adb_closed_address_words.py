@@ -1,4 +1,4 @@
-"""tools/adb-closed.py names a first word that is a URL or a path, instead of asking it.
+"""tools/adb-closed.py names a first word that is a URL, a path or a flag, instead of asking it.
 
 The closing step in PROMPT.md, AGENTS.md and the README FAQ runs `tools/adb-closed.py <tv ip> [port]`,
 and an address pasted from a browser (or a page opened at it) reached the socket, where the answer was
@@ -12,10 +12,15 @@ about something else:
   * `<tv ip>:5555/` and `<tv ip>/6/system` read the same way ("not a port number: '5555/'", and the
     "Is the TV on" question for the path).
 
-The status was already 2 in all four, so only the words were wrong; the word is named before the socket
-now. Left alone on purpose: the second word still wins over a port in the address (`<tv ip>:5877 5555`
-asks 5555), the command line the tool documents and tests/test_adb_closed.py pins with
-test_cli_port_overrides_endpoint_port.
+A flag copied over from another tool read the same way as the URL: `--port 5555`, `-p 5555` and any
+other dash-led word went into getaddrinfo as a host named for the flag, because no hostname starts with
+a dash and nothing here takes an option. tools/restore.sh and tools/theme.sh refuse a dash-led word for
+the same reason; this check asks the socket instead and blamed the TV's power.
+
+The status was already 2 in every one of them, so only the words were wrong; the word is named before
+the socket now. Left alone on purpose: the second word still wins over a port in the address
+(`<tv ip>:5877 5555` asks 5555), the command line the tool documents and tests/test_adb_closed.py pins
+with test_cli_port_overrides_endpoint_port, and -h or --help on its own still prints the text.
 
 The TV cases run the script under a stand-in for socket.create_connection, so they reach no network: it
 refuses, takes or never answers by port, and notes every connection it is asked for - the note is how a
@@ -121,6 +126,58 @@ class AnAddressThatIsNotOneTest(unittest.TestCase):
         self.assertIn("that is a path, not the TV's address", result.stderr)
         self.assertNotIn("Is the TV on", result.stderr)
         self.assertEqual([], asked(result))
+
+    def test_a_flag_is_named_and_nothing_is_asked(self):
+        # `tools/adb-closed.py --port 5555` and `-p 5555` are the shape a reader copies from a tool that
+        # takes options. Nothing here does: the word went into getaddrinfo as a host named for the flag,
+        # and the run answered the OSError branch's "Is the TV on and on this network?" on a real
+        # terminal - a question about the TV's power, at the closing step whose only answer counts. Under
+        # the stand-in below there is no lookup, so the same word reached the stand-in and the run even
+        # said "closed: the TV refused the connection" with status 0, which reads as proof that ADB is
+        # off. Neither answer is about the command line, and the port after the flag was never read.
+        for word in ("--port", "-p", "--nope", "-x"):
+            with self.subTest(word=word):
+                result = check_tv(word, "5555", tv="5555=refused")
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertEqual("", result.stdout)
+                self.assertEqual([], asked(result))
+                self.assertIn("that is a flag, not the TV's address", result.stderr)
+                self.assertNotIn("Is the TV on", result.stderr)
+                self.assertNotIn("not a port number", result.stderr)
+
+    def test_the_reader_names_a_flag_and_leaves_addresses_alone(self):
+        module = address_problem_module()
+        for word in ("--port", "-p", "-x", "--nope", " --port "):
+            with self.subTest(word=word):
+                self.assertIn("a flag", module.address_problem(word))
+        for word in (TV, f"{TV}:5555", "[2001:db8::1]", "[2001:db8::1]:5555", "localhost",
+                     "tv.local", "tv.local:5877"):
+            with self.subTest(word=word):
+                self.assertIsNone(module.address_problem(word),
+                                  f"{word} is an address this check takes and was refused")
+
+    def test_a_name_that_really_does_not_resolve_keeps_its_own_words(self):
+        # The control for the branch above: a hostname that is not a flag still reaches the network, and
+        # its answer is about the TV's power rather than about the command line. .invalid never resolves
+        # (RFC 2606), so this runs offline and online alike.
+        result = subprocess.run([sys.executable, "-I", str(SCRIPT), "tv.invalid"],
+                                capture_output=True, text=True, timeout=30, env=env_with())
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertEqual("", result.stdout)
+        self.assertIn("could not check tv.invalid:5555", result.stderr)
+        self.assertIn("Is the TV on and on this network?", result.stderr)
+        self.assertNotIn("that is a flag", result.stderr)
+
+    def test_help_on_its_own_still_prints_the_text(self):
+        # -h and --help were already read before the address is judged; this change must not turn them
+        # into a flag refusal.
+        for word in ("-h", "--help"):
+            with self.subTest(word=word):
+                result = check_tv(word, tv="5555=refused")
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn("Check that the TV's network ADB port is closed", result.stderr)
+                self.assertNotIn("that is a flag", result.stderr)
+                self.assertEqual([], asked(result))
 
     def test_an_ipv6_address_still_is_one(self):
         # The control: a bracketed address with a port is an address, and is asked as one.

@@ -27,10 +27,22 @@
 # Fix: app_keys "4062:com.netflix.ninja" and "4077:settings" with INPUT_KEY_SERVICE=1. Checked on the real
 # remote, and a held volume button still ramps normally here with the helper on. YouTube sends 4065 / 569.
 # show_stats shows memory and storage but no CPU figure on this set.
+#
+# Second unit: a 65-inch A300 (TCL client type TCL-EU-MT9653-S1-A300PRO, so likely the 65A300 Pro), same product
+# G08_4K_GB_NF and firmware AS19, Sweden, on Wi-Fi, 3 November 2026, one evening and three reboots, with the
+# launcher as Home. Debloated from the tcl-g08-eu-android12 list rather than this one, so it is a second unit for
+# one finding, not for the whole list:
+# com.tcl.exhibit is not a store demo on the A300. It is the frame TV's art mode: the remote's Art button
+# (scancode 507, TCL_EXHIBIT) starts com.tcl.exhibit/.portal.view.activity.MainActivity, and the package holds the
+# art portal (com.tcl.cyberui.art) and the art-mode switch (com.tcl.multimode). Disabled, the Art button did
+# nothing; re-enabled with `pm enable --user 0 com.tcl.exhibit`, the button worked again and the art loaded after
+# a few minutes. It is commented out below. On this unit a held volume button stepped once with InputKeyService
+# bound (app_keys "4077:settings", "4056:com.tcl.suspension" for the 123 button, "4065:org.smarttube.stable"),
+# unlike the first unit: the trade in docs/devices/tcl-55p71b-g09-key-repeat.md. The owner kept the buttons.
 
 # TCL promos, demo, telemetry and account
 com.tcl.esticker                       # retail-demo sticker
-com.tcl.exhibit                        # store demo
+# com.tcl.exhibit                      # NOT a store demo here: the A300's art mode and the Art button (second unit)
 com.tcl.tv.tclhome_passive             # TCL content pushed to the home screen at boot
 com.tcl.messagebox                     # TCL pushed messages and promos
 com.tcl.logkit                         # log capture

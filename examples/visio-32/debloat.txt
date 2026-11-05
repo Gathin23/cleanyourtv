@@ -1,0 +1,42 @@
+# VISIO 32" (VISIO TV / Iris 2K TV, SW1 board, shinagawa, MediaTek m5621), Android TV 11, build RTO9.231120.001
+# Skyworth OEM (SW1 board, MediaTek m5621 / MT9638 family, 1 GB RAM, 720p). Tested on VISIO 32" Smart TV.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/visio-32/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/visio-32/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (replaced by launcher/)
+# Media player / Live TV: com.mediatek.wwtv.mediaplayer (kept)
+#
+# Quirks on this firmware:
+# - Screenshots: adb exec-out screencap -p is prefixed by an adbd wrapper ("Init wrapper sys mutex
+#   successful", Pid:xxxx). Use screencap -p to a file on the device and adb pull.
+#
+# Kept on purpose: com.mediatek.wwtv.mediaplayer, com.mediatek.wwtv.tvcenter (Live TV / HDMI),
+# com.mediatek.tvinput, com.mediatek.tv.service, com.skyworth.backligthadjust (hardware backlight),
+# com.google.android.youtube.tv, com.google.android.katniss (Assistant), Play Store and Play Services.
+
+# Skyworth OEM demos, customizers and user manuals
+android.autoinstalls.config.skyworth
+com.smartdevice.common.demonow
+com.smartdevice.leanbacklauncher.customizer
+com.Smartdevice.emanual
+fusion.android.tv.demo
+
+# Telemetry, feedback and partner setup
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.boot.appsplashscreen
+
+# Unused Google and preloaded streaming apps (comment out if you use them)
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+# com.amazon.amazonvideo.livingroom  # this set has it off
+# com.netflix.ninja  # this set has it off
+com.google.android.marvin.talkback
+com.google.android.syncadapters.calendar
+
+# Stock Android TV launcher and recommendation channels
+com.google.android.tvlauncher
+com.google.android.tvrecommendations

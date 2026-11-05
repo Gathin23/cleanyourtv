@@ -29,7 +29,10 @@ import manage  # noqa: E402
 # tools/tv.py's own words for a port that refuses, the sentence manage.py re-emits.
 REFUSED = ("127.0.0.1:1 refused the connection: nothing listens for ADB there, so network ADB is off or on "
            "another port.")
-VENV_LINE = "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt"
+# The line manage.py prints is the PowerShell one on Windows, as tools/tv.py's is.
+VENV_LINE = (r"run: python -m venv tools\venv; .\tools\venv\Scripts\python.exe -m pip install -r "
+             r"tools\requirements.txt" if sys.platform == "win32" else
+             "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt")
 
 
 def stop(call, *args, **kwargs):
@@ -51,9 +54,12 @@ class TvStatusTest(unittest.TestCase):
                 mock.patch.object(manage.subprocess, "run") as run:
             code, err = stop(manage.tv, "pm list packages")
         self.assertEqual(2, code)
-        self.assertIn("set TV_HOST to the TV IP address", err)
-        # tools/tv.py's own hint, which this line dropped when it was a one-line sys.exit
-        self.assertIn("Settings → Network", err)
+        if sys.platform == "win32":
+            self.assertIn("set $env:TV_HOST to the TV IP address", err)
+        else:
+            self.assertIn("set TV_HOST to the TV IP address", err)
+            # tools/tv.py's own hint, which this line dropped when it was a one-line sys.exit
+            self.assertIn("Settings → Network", err)
         self.assertIn("Nothing was asked of the TV.", err)
         run.assert_not_called()
 

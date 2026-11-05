@@ -36,7 +36,7 @@ com.tcl.esticker                        # retail demo energy label overlay
 com.tcl.notereminder                    # notes and reminder widget
 com.tcl.channelplus                     # TCL FAST streaming channels
 com.tcl.smartalexa                      # unused Alexa integration
-com.tcl.t_solo                          # TCL background service
+com.tcl.t_solo                          # T-Solo "listen alone": TV sound to Bluetooth headphones
 com.tcl.keyhelp                         # remote key help overlay
 
 # --- Google telemetry, attribution, and stock recommendation rows

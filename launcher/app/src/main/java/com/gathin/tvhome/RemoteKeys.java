@@ -434,6 +434,16 @@ final class RemoteKeys {
                     .setDataAndType(TvContract.buildChannelUriForPassthroughInput(inputId),
                             "vnd.android.cursor.item/channel")
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            // Aimed at the Live TV app first, as the Inputs menu does: an app that also claims the channel URI
+            // (the Fluffy file manager on a TCL G03) turned the press into a chooser.
+            String liveTv = Config.load(ctx).liveTvPackage;
+            if (liveTv != null && !liveTv.isEmpty()) {
+                try {
+                    ctx.startActivity(new Intent(view).setPackage(liveTv));
+                    return;
+                } catch (ActivityNotFoundException | SecurityException ignored) {
+                }
+            }
             try {
                 ctx.startActivity(view);
             } catch (ActivityNotFoundException ignored) {

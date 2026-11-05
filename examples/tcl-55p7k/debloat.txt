@@ -6,6 +6,11 @@
 # Same factory state; it ran everything above except the streaming apps, Alexa and T-Solo (kept by choice)
 # plus the extras at the end, for a day and two reboots. No com.tcl.browser and no com.tcl.hotelmenu on it.
 # Remote buttons, the Web key and power-on on that unit: README.md.
+# Third unit: TCL 55T7B (2024), Turkey, same G10_4K_GB build (STT2.230203.001, incremental AS50), on Wi-Fi. Same
+# factory state. It ran everything above except ttvs (kept: on this build it also holds SystemUpdateActivity, the
+# firmware updater), Spotify, Google TV / Play Movies and Play Games (kept by choice), plus the extras for the 55T7B
+# at the end, for four days and four reboots; the Clean Your TV launcher was Home for the last of them.
+# No com.tcl.hotelmenu, OSN+ or Disney+ MEA on it. Wi-Fi, setupwraith and casting on that unit: README.md.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55p7k/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55p7k/debloat.txt com.google.android.apps.tv.launcherx
@@ -29,7 +34,7 @@
 
 # TCL tracking and analytics
 tv.samba.ssm.ui                        # Samba TV ACR viewing tracking (enabled at the factory here)
-com.tcl.ttvs                           # TCL analytics service; re-enable if firmware updates stop arriving
+# com.tcl.ttvs                         # kept: on G10_4K_GB it also holds SystemUpdateActivity (firmware updates); the 55P7K unit had it off
 com.tcl.logkit                         # log capture and upload
 com.tcl.usercenter                     # TCL account sign-in nags
 com.google.android.feedback
@@ -76,3 +81,10 @@ com.google.android.syncadapters.calendar
 com.google.android.onetimeinitializer
 # com.google.android.youtube.tvmusic   # YouTube Music; the 55C655 unit has it off
 com.google.android.play.games          # Play Games
+
+# Extras, disabled on the 55T7B unit (Turkey); left commented here, as they are features some households use
+# com.google.android.partnersetup      # partner setup helper
+# com.netflix.tokenmanager             # Netflix sign-in helper, with com.netflix.ninja off
+# com.tcl.miracast                     # Miracast screen mirroring (Chromecast still casts)
+# com.tcl.magiconnectfree              # T-Cast phone app link
+# com.tcl.gamebar                      # game bar overlay

@@ -46,6 +46,14 @@
 #     PatchWall stayed disabled for 37 days and after each reboot.
 #   - Five minutes after you apply the list, do a check: compare `pm list packages -d` with this file.
 #
+# Fourth unit (same PI.3933 build), 2026-10-24. Details: docs/devices/xiaomi-mi-box-s.md
+#   - The "already disabled" group at the bottom was half applied before the session: PatchWall, the analytics,
+#     Alphonso, auto-install and update-service lines, plus Live Channels, TalkBack, the print spooler and Play
+#     Games. That unit added YouTube Music, Play Movies & TV and com.android.camera2 to the same group; Prime
+#     Video stayed because the owner uses it.
+#   - Casting and voice were kept, so the "Personal choice" lines above were not applied there: katniss,
+#     speech.pumpkin, mediashell, milinkservice, mivideoplayer and tv.remote.service stayed enabled.
+#
 # Fifth unit (same PI.3933 build), 2026-10-25. Details: docs/devices/xiaomi-mi-box-s.md
 #   - The Apps button as Home costs the volume ramp: with HomeKeyService bound, a held Volume key moves one
 #     step instead of ramping, the same trade as docs/devices/tcl-55p71b-g09-key-repeat.md. Checked on the

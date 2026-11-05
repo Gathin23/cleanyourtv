@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -122,7 +122,7 @@ Indietro per uscire e salvare. Il pulsante di riordino nella barra in alto è na
 `reorder_button` nella configurazione o in un tema.
 
 Anche tenendo premuto OK su un'app della Home compare il menu dei riquadri (`tile_menu`, attivo di serie): Sposta
-solleva subito quell'app, poi ci sono Rimuovi dalla Home e Info app. Se lo disattivi, tenere premuto OK apre le
+solleva subito quell'app, poi c'è Info app e, con la libreria app attiva, anche Rimuovi dalla Home. Se lo disattivi, tenere premuto OK apre le
 informazioni dell'app.
 
 La libreria app è disattivata di serie. Con `app_library` attivo nella configurazione o in un tema, l'accesso compare
@@ -333,7 +333,7 @@ pacchetti di sistema con `RECORD_AUDIO` che non registrano nulla, e i client ACR
 permesso audio. [`tools/privacy.py`](tools/privacy.py) riporta ciò che la TV dichiara davvero, con le prove per ogni
 candidato di voce, ACR e telemetria: `TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py`; con `--write`
 li trasforma in un normale elenco di app da disattivare. Non può però provare le intenzioni:
-[docs/privacy.md](docs/privacy.md) (in inglese) spiega perché.
+[docs/it/privacy.md](docs/it/privacy.md) ([versione inglese](docs/privacy.md)) spiega perché.
 
 ## Ripristinare il launcher e le app originali
 
@@ -368,7 +368,7 @@ TV_HOST=192.168.1.50 tools/restore.sh "examples/il-tuo-modello/debloat.txt" com.
 - Se l'ADB non si collega, puoi comunque riattivare le app dalle impostazioni della TV.
 
 Per i dettagli (cosa contiene il record, quando conta l'argomento del launcher originale, cosa succede senza record)
-vedi [docs/restore.md](docs/restore.md), in inglese.
+vedi [docs/it/restore.md](docs/it/restore.md) ([versione inglese](docs/restore.md)).
 
 ## Dopo un aggiornamento del firmware
 
@@ -381,7 +381,7 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/il-tuo-mod
 ```
 
 I codici di uscita, un controllo settimanale e i casi particolari sono in
-[docs/firmware-updates.md](docs/firmware-updates.md) (in inglese).
+[docs/it/firmware-updates.md](docs/it/firmware-updates.md) ([versione inglese](docs/firmware-updates.md)).
 
 ## Risoluzione dei problemi
 
@@ -438,7 +438,7 @@ Sì. La connessione ADB via TCP (di serie porta 5555) usata dagli strumenti non 
 chiedono nemmeno l'autorizzazione. Finito il lavoro, spegni il debug USB, il debug di rete / ADB e il debug wireless
 (quelli che ha la tua TV), revoca le autorizzazioni date, riavvia la TV e verifica dal computer che la porta sia
 chiusa: `python3 tools/adb-closed.py <ip della TV>` deve dire che la porta è chiusa. Il launcher funziona anche senza
-debug. Altri dettagli nelle [domande frequenti in inglese](docs/faq.md#isnt-adb-access-a-security-hole).
+debug. Altri dettagli nelle [domande frequenti](docs/it/faq.md#laccesso-adb-non-è-un-buco-di-sicurezza) ([versione inglese](docs/faq.md#isnt-adb-access-a-security-hole)).
 
 **Supporta DNS privato o AirPlay?**
 

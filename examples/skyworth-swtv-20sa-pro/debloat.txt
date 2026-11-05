@@ -1,0 +1,86 @@
+# Skyworth SWTV-20SA-PRO (product SW4H_FF_B, device SW4H_FF, board SW4, MediaTek m7332),
+# Android TV 10 (API 29), firmware QTG3.200617.002 (incremental 20220129), security patch 2022-02-05.
+# ro.product.manufacturer=skyworth, armeabi-v7a, ~1.6 GB RAM (MemTotal 1724612 kB), 320 dpi.
+# Same firmware build as examples/karbonn-swtv-20ae (device SW4H there). Not the Android 11
+# SW4H_FF build in examples/tornado-65ua1400e.
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx).
+# Live TV: com.smartdevice.livetv. Inputs: com.mediatek.tvinput. Never disable a com.mediatek.* package.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/skyworth-swtv-20sa-pro/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/skyworth-swtv-20sa-pro/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Disabled before this debloat, so not listed (restore.sh would turn them ON):
+# com.sky.market, com.smartdevice.tvworkwithalexa.
+# com.smartdevice.tvworkwithalexa asks for TV_INPUT_HARDWARE. On the SW4H lists, disabling it
+# blacks out HDMI and AV. If those pictures are black, enable it again. Do not launch
+# com.smartdevice.factory.
+#
+# USB debugging alone opened port 5555 (service.adb.tcp.port=5555). Android 10 has no
+# Wireless debugging pairing screen. ro.adb.secure=1.
+#
+# setupwraith owned a saved Wi-Fi network (dumpsys wifi cname included
+# com.google.android.tungsten.setupwraith and android.uid.system). It stays enabled:
+# disabling it deletes that network and drops ADB. Forget the network and join it again
+# in Settings before uncommenting the line below.
+#
+# fusion.android.tv.demo is commented out. examples/tornado-65ua1400e keeps it because it
+# receives the remote's Input key. This unit had it disabled and the launcher's Entradas
+# menu still listed HDMI 1-4, AV and Live TV. The physical Input key was not pressed, so
+# the line stays commented until that button is confirmed.
+#
+# The nine-dot button is KEYCODE_APPS (390), routed to com.mediatek.partner.netflix, which
+# opens com.google.android.tvlauncher apps view. With that launcher disabled the button
+# does nothing. config.json maps 390 to home. Install with HOME_KEY_SERVICE=1. A bound key helper makes a held
+# volume key step once on this firmware.
+#
+# Tested on the day of the debloat (2026-11-04), one reboot, not yet lived with for days.
+# After the reboot Home was com.gathin.tvhome and every package named below was still disabled.
+# No separate firmware-updater package; updates live in Settings.
+#
+# Kept on purpose: com.mediatek.tvinput, com.mediatek.tv.agent, com.mediatek.hotkey.dispatcher,
+# com.mediatek.wwtv.setupwizard, com.mediatek.partner.netflix, com.mstar.netflixobserver,
+# com.smartdevice.livetv, com.smartdevice.duplebluetooth, com.smartdevice.factory,
+# com.mediatek.OledFuctionService, com.tianci.localmedia, com.google.android.katniss,
+# com.google.android.tv.assistant, com.google.android.apps.mediashell, Play Store and Play Services.
+
+# Skyworth ads, shop demo and recommendation rows
+com.smartdevice.leanbacklauncher.customizer
+com.smartdevice.acr.recommendation
+com.smartdevice.recommendation
+com.smartdevice.epopplayer
+com.Smartdevice.emanual
+com.mstar.android.tv.disclaimercustomization
+com.google.android.leanbacklauncher.partnercustomizer
+android.autoinstalls.config.SW
+
+# Telemetry, feedback and the ambient ad screensaver
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.google.android.backdrop
+
+# Stock home recommendation rows. Disable only after the new launcher owns Home.
+com.google.android.tvrecommendations
+
+# Stock launcher: launcher/build-and-install.sh disables it after Home has moved.
+# com.google.android.tvlauncher
+
+# Setup wizard. Owns a saved Wi-Fi network on this unit; see the header.
+# com.google.android.tungsten.setupwraith
+
+# Shop demo player. May receive the remote's Input key on this platform; see the header.
+# fusion.android.tv.demo
+
+# This unit's owner left these off. Uncomment only what you do not use.
+# com.facebook.katana
+# com.qjy.browser
+# com.tcl.browser
+# com.phlox.tvwebbrowser
+# de.stefanpledl.localcast
+# com.uptodown.installer
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom
+# com.google.android.videos
+# com.google.android.play.games
+# com.smartdevice.dtv.icast
+# com.smartdevice.firewall

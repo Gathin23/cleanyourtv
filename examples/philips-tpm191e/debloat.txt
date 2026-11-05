@@ -218,6 +218,9 @@
 # - All 46 disabled packages (the 17 found disabled, the 28 disabled on this unit, tvrecommendations included,
 #   and the stock launcher) stayed disabled through restarts (`pm list packages -d` compared before and after).
 # - Private DNS in hostname mode validated on this firmware, as on the sixth unit.
+# - Cold boot RTC & Private DNS: MediaTek MT5887 lacks an RTC battery backup. On complete power loss (cold boot),
+#   the clock reverts to Dec 2025. If Private DNS (DoT) is on, TLS certificate validation fails before NTP can
+#   sync, leading to a network deadlock. If DNS fails after a cold boot, set private_dns_mode=off.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader
@@ -255,3 +258,14 @@ com.phorus.playfi.softap                  # DTS Play-Fi soft access point
 # (OPEN_NOTIFICATIONS_PANEL, TOGGLE_NOTIFICATION_HANDLER_PANEL) on this firmware: that panel goes too.
 com.google.android.tvrecommendations      # "Android TV Core Services": recommendation rows, notification panel
 #                                         # second unit: re-enabled by the firmware at the next boot
+
+# Batch 5: Broadcast / DVB tuner suite, for streaming-only sets with no aerial. Left as comments: uncomment
+# them only if you never watch broadcast TV; Live TV, channel scans and teletext stop working. The tester had them off.
+# Disabling this permanently eliminates the modal "No Signal" trap on power-on and when pressing
+# the remote's TV button (scancode 170 / KEY_ISO). Android rejects the activity instantly, Home/Back
+# remain 100% responsive, and no accessibility key-filter is required (avoiding the Volume Up/Down repeat lag).
+# HDMI input switching (org.droidtv.channels / SourcesDrawerActivity) remains 100% functional.
+# org.droidtv.playtv                        # Live TV / tuner front-end
+# org.droidtv.euinstallertc                 # DVB-T/C cable/terrestrial installer
+# org.droidtv.euinstallersat                # DVB-S satellite installer
+# org.droidtv.teletext                      # Teletext engine

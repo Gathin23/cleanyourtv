@@ -9,6 +9,7 @@
   <a href="README.vi.md"><img src="https://img.shields.io/badge/README-Ti%E1%BA%BFng%20Vi%E1%BB%87t-cfffcf?style=flat&labelColor=15181e" alt="Tiếng Việt"></a>
   <a href="README.ja.md"><img src="https://img.shields.io/badge/README-%E6%97%A5%E6%9C%AC%E8%AA%9E-cfffcf?style=flat&labelColor=15181e" alt="日本語"></a>
   <a href="README.it.md"><img src="https://img.shields.io/badge/README-Italiano-cfffcf?style=flat&labelColor=15181e" alt="Italiano"></a>
+  <a href="README.pt-BR.md"><img src="https://img.shields.io/badge/README-Portugu%C3%AAs-cfffcf?style=flat&labelColor=15181e" alt="Português"></a>
   <a href="README.de.md"><img src="https://img.shields.io/badge/README-Deutsch-cfffcf?style=flat&labelColor=15181e" alt="Deutsch"></a>
   <a href="README.uk.md"><img src="https://img.shields.io/badge/README-%D0%A3%D0%BA%D1%80%D0%B0%D1%97%D0%BD%D1%81%D1%8C%D0%BA%D0%B0-cfffcf?style=flat&labelColor=15181e" alt="Українська"></a>
   <a href="README.tr.md"><img src="https://img.shields.io/badge/README-T%C3%BCrk%C3%A7e-cfffcf?style=flat&labelColor=15181e" alt="Türkçe"></a>
@@ -28,7 +29,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="427 tv-modellen · 111 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 396 media: 412 artikelen uit 54 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="442 tv-modellen · 117 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 396 media: 412 artikelen uit 54 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -36,7 +37,7 @@
 Op 17 oktober 2026 plaatste ik voor-en-na-beelden van de tv van mijn ouders, die ik via wifi met Claude Code had opgeschoond.
 Het bericht kreeg 8,6 miljoen weergaven. Mensen gingen hetzelfde doen met hun eigen tv's en hun reacties vormden de basis voor de lijsten hier: meer dan 170 tv-modellen, aangeleverd door ruim 200 bijdragers in de eerste vier dagen. Tot en met de 19e heette deze repository tv-vibehack; oude links werken nog.
 
-Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. De lijsten tellen nu 427 tv-modellen van 111 merken. De berichtgeving: 412 artikelen uit 54 landen en 229 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 30 oktober 2026).
+Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. De lijsten tellen nu 442 tv-modellen van 117 merken. De berichtgeving: 412 artikelen uit 54 landen en 229 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 30 oktober 2026).
 
 **Thema's, schakelaars en uitbreidingen:** [cleanyour.tv/addons](https://cleanyour.tv/addons)
 
@@ -125,23 +126,23 @@ Tested lists from contributors, one folder per model in [`examples/`](examples/)
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 81 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 47 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 42 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 22 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 16 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 15 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 81 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 49 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 42 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 22 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
-| [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 4 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 |
-| [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 |
-| [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 2 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 2 | [Hitachi](https://cleanyour.tv/tvs?q=Hitachi) · 2 |
+| [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 4 |
+| [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 |
+| [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [RockTek](https://cleanyour.tv/tvs?q=RockTek) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 | [CHiQ](https://cleanyour.tv/tvs?q=CHiQ) · 2 | [EKO](https://cleanyour.tv/tvs?q=EKO) · 2 |
 
 <details>
-<summary>+67 more brands and 14 projector brands</summary>
+<summary>+74 more brands and 13 projector brands</summary>
 
-**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Master-G** 2 · **Noblex** 2 · **PRISM+** 2 · **RockTek** 2 ·
-**Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
-AiPro2K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor · DEXP ·
-Dialog · DYON · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Koryo · KTC · KUNFT · Liberton ·
-Lumio · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ · Polytron · PPTV ·
-Prosonic · Salora · SANYO · Seleco · Smarttech · Super General · TD Systems · Tele System · TiVo · Tornado · Turkcell ·
-Tuvio · Verizon · Vision · X.Vision ·
-Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
+**FFalcon** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Master-G** 2 · **Noblex** 2 ·
+**PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
+AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Challenger · Compac · Dcolor ·
+DEXP · Dialog · DYON · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT ·
+Liberton · Lumio · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ · Philco ·
+Polytron · PPTV · Prosonic · Salora · SANYO · Seleco · Smarttech · SunWind · Super General · TD Systems · Tele System ·
+Tesla · TiVo · Tornado · Turkcell · Tuvio · Verizon · VISIO · Vision · X.Vision ·
+Alwtniet, Anker Nebula, BYINTEK, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
 
@@ -159,6 +160,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Acer P Series AR32AP2841HDFL 32" HD (SCBC R1, Realtek RTD2841), India | Android TV 11 |
 | Acer R3 (SCBC device R3, Realtek rtd2841a), India | Android TV 14 |
 | AiPro2K (Expressluck, dongnae; Changhong AI PONT family) | Android TV 14 |
+| AiPro4K (Expressluck, sepolia; Changhong AI PONT family) | Android TV 14 |
 | AIWA AI PONT SA (Changhong, osaka, ISDB86AW) | Google TV 14 |
 | Alwtniet HY320 Mini projector (device adt3, Askey; Allwinner/HTC firmware), 1 GB, 720p | Android 11 |
 | Amazon Fire TV 4K smart TV, 50" and 75" Omni Series (AFTTIFF43, brandenburg) | Fire OS 7.7.1.4 / 7.7.1.7, Android 9 |
@@ -175,6 +177,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Anker Nebula projector D2426 (D2426_CapsuleIIIPro, baekdu, SDMC/MediaTek m7632, 1.7 GB), Brazil | Android TV 14 |
 | AQUA MatrixTV EE 50" 4K (Haier, AQ9676EU, omonia, MediaTek), Indonesia | Google TV 14 |
 | Artel 43D1200B (Yandex TV / YaOS, CVTE, MediaTek m5621), Uzbekistan | Android 9 |
+| Artel A55LU8500 (device R3GS, MOKA, Realtek RTD2841A), Uzbekistan | Google TV 14 |
 | Artel smart TV (CVTE TP.MT5510S.PB782, cvt_mt5863_eu, SMART_TV), Uzbekistan | Android 7.0 |
 | ASUS M1G Google TV (MOKA, dahu, Realtek RTD2851F), US | Android TV 11 |
 | Beko B43B880B (Arçelik, sinchon, MediaTek), Turkey | Android TV 11 |
@@ -191,7 +194,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Caxium 58" 147 cm UHD Smart TV (Realtek RTD285O, RTK2851P, TopTech + Zeasn), Colombia | Android TV 9 |
 | Cecotec VQU10065S 65" QLED (Vestel-built, shandao, MediaTek), Spain | Android TV 14 |
 | Challenger 32T22 BT (cvt_mt5863_col, board TP.MT5510.PB781, MediaTek MT5659, 1 GB RAM), Colombia | Android 7.0 |
-| CHiQ AI PONT (Changhong GTVU65, dangni, MediaTek mt5867) | Google TV 14 |
+| CHiQ AI PONT (Changhong GTVU65, dangni, MediaTek mt5867); also CHiQ L32FM10V | Google TV 14 |
 | CHiQ AI PONT (DVB93CQ); also OK. ODL 43951UC-TAB (DVB93KO) | Android TV 11 |
 | Compac ATV R2 (SCBC R2, Realtek RTD285O) | Android TV 9 |
 | Coocaa P9 projector (MediaTek mt5862), China | Android 9 (Coocaa OS) |
@@ -206,6 +209,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | FFalcon (雷鸟) 鹤6 PRO 65S585C Pro (China, tcl_mt5879_cn, MediaTek MT9653) | Android TV 11 |
 | Formovie / Fengmi projector MiProjM05 (eva, Amlogic) | Android TV 9 |
 | Formovie Laser 4K projector / Formovie Theater (hanlla, MediaTek T31 / m7632, 1.8 GB) | Android TV 14 |
+| Formovie Theater (L206FGN-X2, koroli, MediaTek m7632) | Android TV 11 (Google TV home) |
 | Formovie XMing Page One projector (XMM2101, tianshan, MediaTek MT9630) | Google TV (Android 11) |
 | Freebox Player POP (Free, fbx8am, Amlogic), IPTV/DVB-T box | Android TV 10 |
 | Gadnic PROJ100W projector (built-in Google TV stick: SkyworthDigital YYT, Amlogic HP46B), Argentina | Google TV 14 |
@@ -238,6 +242,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Hisense SmartTV 4K FFM (songshan, MediaTek m7632); also the US Hisense 50A6H4 and 65U6G | Android 11 (SDK 30) |
 | Hisense U7 / 55U7SG (wutaishan, MediaTek MT9690), US | Google TV 14 |
 | Hisense U75 / 75U75N / 65U7ESG (hengshan, MediaTek), Latin America and US | Google TV 12 |
+| Hisense VIDAA_TV (AMLOGICT963), China; retail model unconfirmed | Android 9 |
 | Hitachi 65QLEDSM20 (MTC, bangbae, MediaTek m7322), Australia | Android TV 11 |
 | Hitachi CDH-LE32SMART21 (TCL-built C06, C06_2K_GB, MediaTek MT9221, 1 GB), Argentina | Android TV 11 |
 | Home+ STB-6252C (中嘉寬頻, Inspur, MT5221), DVB-C/OTT box | Android TV 11 |
@@ -260,6 +265,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Kalley 43G200 (device R3_GTV, MOKA, Realtek RTD2841A), Latin America | Google TV 14 |
 | Kalley R10G (device R10G, product ACER_FFM, MOKA, Realtek RTD2875P), Latin America | Google TV 14 |
 | Karbonn / Motorola SWTV-20AE (Skyworth OEM, SW4H, MediaTek), India | Android TV 10 |
+| Kodak 55CA0909 (SPPL-built, Skyworth SW3_ATV, MediaTek MT5886), India | Android TV 9 |
 | Kogan G7 (Expressluck, cottongreen, Realtek), Australia | Google TV (Android 11) |
 | Kogan Google TV (Changhong CHiQ AI PONT, GTVU65KG, dangni, MediaTek mt5867), Australia | Google TV 14 |
 | Koryo 55" 4K Smart TV (CVTE TP.HV553.PC821B, HiSilicon Hi3751V553, 1 GB) | Android 7.0 |
@@ -275,20 +281,21 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Master-G Android TV 2K (Expressluck martin, MASTERG_2K_ATV), Chile | Android TV 14 |
 | Master-G MGA3200 (SCBC R1, Realtek; Android reports model `ATV R1`), Chile | Android TV 9 |
 | MECOOL KM2 Plus | Android TV 14 |
-| Motorola / Coocaa SWTV-24AE-FHD (24LP6000G, Skyworth OEM, beomil), India/SEA | Google TV 14 |
+| Motorola / Coocaa / Telefunken SWTV-24AE-FHD (24LP6000G, Skyworth OEM, beomil), India/SEA/Tunisia | Google TV 14 |
 | Motorola MT4310 (Newsan; Hisense board, hayward, MediaTek), Argentina | Android TV 11 |
 | Motorola SWTV-24AE-4K (Skyworth OEM, eleonas, MediaTek), India | Google TV 14 |
 | MTC UK 2K Android TV (tabata, MediaTek m5621; JVC-family firmware, `android.autoinstalls.config.JVC` present), UK | Android TV 11 |
 | Next Start Pro 4K TV Box (SDT HPR314-Next, Realtek RTD1325), Turkey, streaming box | Google TV 14 |
 | Noblex DB58X7550 (Changhong AI PONT, ISDB93CH, sindorim, MediaTek m7322), Argentina | Android TV 11 |
 | Noblex NoblexTV (Skyworth-built, shinjuku, MediaTek m5621), Argentina | Android TV 11 |
+| Nokia ATV R2 (SCBC R2, Realtek RTD285O) | Android TV 11 |
 | Nokia R4 smart TV (Realtek, R4) | Android TV 11 |
 | Nokia Streaming Box 8000 (Sagemcom/NES, SEI600NK4, HND, Amlogic) | Android TV 14 |
 | Nokia Streaming Box 8010 (Sagemcom/NES, SEI804NK, YYJ, Amlogic) | Android TV 14 |
 | NVIDIA SHIELD TV 2017 (darcy) | Android TV 11 |
 | NVIDIA SHIELD TV 2019 tube (P3430, sif) | Android TV 11 |
 | NVIDIA SHIELD TV Pro 2019 (P2897, mdarcy) | Android TV 11 |
-| OK. AI PONT (Changhong, ikebukuro, MediaTek), Italy; also Nikkei DVB91NK | Android TV 11 |
+| OK. AI PONT (Changhong, ikebukuro, MediaTek), Italy; also Nikkei DVB91NK; also Saba SA40S67A9 | Android TV 11 |
 | OnePlus TV (C00, Cebu, MediaTek m7632), India | Android TV 10 and 11 |
 | OnePlus TV (D00, Dubai) | Android TV 11 / Google TV 14 |
 | OnePlus TV (Dosa, Oneplus_Dosa_IN) | Android TV 11 |
@@ -306,6 +313,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Panasonic TH-40HS550K (Skyworth-built, GS655 shibuya, MediaTek) | Android TV 11 |
 | PANAVOX Google TV (dongnae) | Google TV 14 |
 | PEAQ PTV 43AQU-5023C (Changhong, reports OK. AI PONT, dundas, MediaTek m7332) | Android TV 11 |
+| Philco Smart TV (Skyworth-built, sunnyvale, MediaTek), Brazil | Android TV 14 |
 | Philips 49PUS6561/12 / 55PUS6581/12 (TP Vision QM163E, QM16XE_U, MediaTek MT5890), Europe and Turkey | Android TV 8.0 |
 | Philips 50PUD7406/43 (TPV, PH0M_EA_T32, MStar/MediaTek), Chile; 55PUS7906/12, Lithuania; 50PUS7906/12, Germany; 43PUS7406/12, Italy; 50PUD7406/77, Latin America; 50PUS8107/12, EU; 65PUS7956, EU | Android TV 11 and 14 |
 | Philips 50PUF7099/T3 (TPV EBONY_V560, Hisilicon), China | Android TV 9 |
@@ -340,6 +348,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Redmi TV (MiTV-ANTL0, starwars) | Android 5.1.1 (not Android TV) |
 | Redmi TV (MiTV-MFTP0, alita), China firmware 23.2.10.6129 | Android TV 9 (CN build) |
 | Redmi TV 43" (MiTV-MOOQ3, tarzan) | Android TV 11 |
+| RockTek G2 (RT-G2, SEI Robotics/NES, SEI804RT, YYJ, Amlogic S905X4) | Android TV 14 |
 | RockTek GB1 | Google TV 14 |
 | RockTek GX1 (HPR3A1325_4K) | Google TV 14 |
 | Salora SMART24TV (Vestel-built, Ata/Aslan, tokyo, MediaTek m5621), Italy | Android TV 11 |
@@ -369,6 +378,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Skyworth Coocaa K3 Pro 90P3D Max (8R145_P3DM, Realtek RTD2885N), China market | Android 11 (Coocaa OS) |
 | Skyworth SW-22HK NF (SW6H, MediaTek m7332) | Android TV 11 (Google TV home) |
 | Skyworth SW-22SA (SW6H, MediaTek), ~1.9 GB | Android TV 14 (Google TV home) |
+| Skyworth SWTV-20SA-PRO (SW4H_FF, MediaTek m7332) | Android TV 10 |
 | Skyworth SWTV-21AE (sunnyvale, MediaTek) | Android TV 14 |
 | Skyworth SWTV-22AE-FHD (umeda, MediaTek), Vietnam/Global | Google TV 14 |
 | Skyworth SWTV-24AE-4K NF (eleonas, MediaTek mt5896), South Africa/Global | Google TV 14 |
@@ -390,7 +400,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Sony BRAVIA 9 II (K-65XR90M2, BRAVIA_AE3, MediaTek MT5838) | Google TV 14 |
 | Sony BRAVIA BF1 (BRAVIA 2 II class, BRAVIA_BF1_4K_A, MediaTek) | Google TV 12 |
 | Sony BRAVIA KD-43X8000G (2019, BRAVIA_ATV3_4K, MediaTek), APAC | Android TV 9 |
-| Sony BRAVIA KD-43X80L (2023, BRAVIA_VH22, MediaTek MT5895), EU | Google TV 12 |
+| Sony BRAVIA KD-43X80L / KD-55X80L (2023, BRAVIA_VH22, MediaTek MT5895), EU | Google TV 12 |
 | Sony BRAVIA KD-49X8000G (2019, BRAVIA_ATV3_4K, MediaTek), Hong Kong | Android TV 9 |
 | Sony BRAVIA KD-49X8307C (2015, "BRAVIA 4K 2015", SVP-DTV15, MediaTek), EU firmware | Android TV 7.0 |
 | Sony BRAVIA KD-55X75K (BRAVIA_VU3_4K, Realtek rtd2885m) | Google TV 14 |
@@ -406,6 +416,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Sony BRAVIA KD-65X9300D (2016, SVP-DTV15, MediaTek), Asia-Pacific | Android TV 8.0 |
 | Sony BRAVIA KDL-43W950D (2015/2016, SVP-DTV15, MediaTek), India ("PA") firmware | Android TV 8.0.0 |
 | Sony BRAVIA KDL-55W800C (2015, "BRAVIA 2015", SVP-DTV15, MediaTek), Taiwan firmware | Android TV 7.0 |
+| Sony BRAVIA KJ-55X9300D (2016, SVP-DTV15, MediaTek mt5890), Japan | Android TV 7.0 |
 | Sony BRAVIA TL2 (OD0M_EA_T32, TPV-built, MediaTek), Europe | Android TV 11 |
 | Sony BRAVIA VU1 (KD-43X7500H, KD-65X750H, BRAVIA_VU1_UC, Realtek) | Android TV 11 |
 | Sony BRAVIA VU2 (BRAVIA_VU2, Realtek rtd2885m), India | Android TV 11, 14 |
@@ -416,6 +427,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Sony BRAVIA XBR-55X850D (Android model "BRAVIA 4K 2015"), firmware 6.827 | Android TV 8.0.0 |
 | Sony BRAVIA XBR-65X900E (2017, BRAVIA_ATV2) | Android TV 9 |
 | Sony BRAVIA XBR-65X900F (2018, BRAVIA_ATV3_4K, MediaTek MT5891), US/Canada | Android TV 9 |
+| Sony BRAVIA XBR-x805G (BRAVIA_ATV3_4K, MediaTek MT5891), Latin America | Android TV 9 |
 | Sony BRAVIA XR-55A95L (A95L, 2023 QD-OLED; Android reports BRAVIA 4K AE1, BRAVIA_AE_M6L, MediaTek MT5838), EU | Google TV 12 |
 | Sony BRAVIA XR-85X90L (2023, BRAVIA_VH22, MediaTek), China | Google TV 12 |
 | Sony KD-55X7500 (BRAVIA 4K GB ATV3, BRAVIA_ATV3_4K_CN), China | Android TV 9 |
@@ -424,6 +436,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Sony XR-77A80L (77-inch OLED, 2023, BRAVIA_VH22, MediaTek), North America | Google TV 12 |
 | Stellamore T950S projector (Droidlogic be30a3, Amlogic txhd2) | Android 13 |
 | Strong LEAP-S3 box (SkyworthDigital YDA, Amlogic S905Y4), Italy | Google TV 14 |
+| SunWind SUN-LED32XS305 32" (Yandex TV / YaOS, CVTE TP.MT9256.PB721, MediaTek MT9256), Russia | Android 11 |
 | Super General 55" 4K (CVTE TP.SK708D.PC821, Amlogic T972, x30a4, 1 GB), Saudi Arabia | Android 9 |
 | Síragon 4K Smart TV (KTC, MediaTek MT9676, elliniko, KTC_SIRAGON_4K_24GV1), Venezuela | Google TV 14 |
 | Síragon 58DA7000 (KTC, MediaTek MT7632, zhongshan, KTC_SIRAGON_4K_SA_21V2), Venezuela | Android TV 11 |
@@ -459,7 +472,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | TCL 55C845X2 / 75C845X2, UK/Europe (G08_4K_GB, MediaTek tcl9618) | Google TV 14 |
 | TCL 55EP640 (Greece, BeyondTV, Realtek RTD2851 / rtd285o, AR04) | Android TV 11 |
 | TCL 55P638 (Smart TV, BeyondTV4) | Android TV 11 |
-| TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P); also TCL 55C655, Italy (same build) | Google TV 12 |
+| TCL 55P7K, Middle East (G10, G10_4K_GB, Realtek RTD2875P); also TCL 55C655, Italy, and TCL 55T7B, Turkey (same build) | Google TV 12 |
 | TCL 55P8LS QD-Mini LED, Vietnam (G10, G10_4K_GB_32BIT, Realtek rtd6748) | Google TV 12 |
 | TCL 55Q10G Pro (China, tcl_mt5879_cn, MediaTek MT9952) | Android TV 11 |
 | TCL 55Q6CX1 (Smart TV Pro, G08, G08_4K_GB, MediaTek) | Google TV 12 |
@@ -509,6 +522,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | TCL UnionTV, Latin America (TCL-built like Thomson 32HE5800, Realtek RT2841); also confirmed on a TCL 32S6500S and L40S6500 (persist.tcl.client_type TCL-LA-RT41KB-S1) and a TCL-CA-RT41KA-S1 unit | Android TV 9 |
 | TD Systems (Changhong, redwood, DVB92TD, CH17F40S) | Android 14 |
 | Tele System TS ON T2/HD (ONT2HD, SDMC, Amlogic), Italy | Android TV 11 |
+| Tesla Smart TV Q55E655GUS (Expressluck, sepolia, mt5896) | Google TV 14 |
 | Thomson 32HE5800 (TCL-built UnionTV, Realtek RT2841), Spain | Android TV 9 |
 | Thomson 43RT1055 FA Series (SPPL-built, sauve, Realtek RTD2841A), India | Android TV 14 |
 | Thomson SPPL 4K Google TV (Skyworth SW6H, MediaTek, same board as `skyworth-sw-22sa/`), India, ~1.9 GB | Android TV 14 (Google TV home) |
@@ -526,6 +540,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | Verizon Stream TV, 1st gen (WNC JS8V, Amlogic), US | Android 12 |
 | Vidda C1S and C1 4K laser projectors (VIDAA_TV, device MT9669, board m7642), China JuUI | Android 9 |
 | Vidda VIDAA_TV (Hisense sub-brand; device MT9653, board mt5879), China JuUI | Android TV 11 |
+| VISIO 32" (VISIO TV / Iris 2K TV, shinagawa, MediaTek m5621) | Android TV 11 |
 | Vision 2024VISION43STV (CVTE TP.T950D4T.PB751, Amlogic T950D4, 1 GB), Europe | Android 13 |
 | Vu 4K (HVCL, lushan, MediaTek), India | Google TV 12 |
 | Vu Premium FHD 43-inch (Smart 2K ATV4, hamamatsucho), India | Android TV 9 |
@@ -539,6 +554,7 @@ Alwtniet, Anker Nebula, BYINTEK, Epson, Formovie, Gadnic, HOTACK, HY320, JMGO, M
 | XGIMI MoGo 4 Laser projector (WK03K, altai, MediaTek) | Google TV 14 |
 | XGIMI MoGo 4 projector (WK08K, altai, MediaTek) | Google TV 14 |
 | XGIMI RS10 Ultra projector (device pig_chivalrous, MediaTek m7642), China | Android 9 |
+| XGIMI Vibe One projector (WM03H, altai, MediaTek m7332) | Google TV 11 |
 | Xiaomi F2 Fire TV (AFTMA2857F, shine) | Fire OS 7.7.1.7 / Android 9 |
 | Xiaomi Fire TV (AFTNE4E43F, ginzaeu) | Fire OS 8.1.8.5 / Android 11 |
 | Xiaomi Mi Box 3 (MIBOX3, once), streaming box | Android TV 9 |
@@ -683,7 +699,7 @@ De **tv** moet Android 8.0 (API 26) of nieuwer gebruiken. `minSdk` stelt de mini
 | **Thema's** | Achtergrond, wallpaper en indeling komen uit een via wifi verzonden `config.json`; opnieuw bouwen is niet nodig. In [`themes/`](themes/) staan eenentwintig thema's, inclusief het ingebouwde `default/`. |
 | **31 talen** | Volgt de taal van de tv, met een volledig gespiegeld rechts-naar-links ontwerp voor Hebreeuws. |
 | **Appbibliotheek** | Optioneel: bekijk alle geïnstalleerde apps en voeg snelkoppelingen op het startscherm toe of verwijder ze. Zie [de handleiding voor de appbibliotheek](docs/app-library.md). |
-| **Tegelmenu** | Standaard aan (`tile_menu`): houd OK ingedrukt op een tegel voor Verplaatsen, Verwijderen van startscherm en App-info. Staat dit uit, dan opent lang indrukken de app-info. |
+| **Tegelmenu** | Standaard aan (`tile_menu`): houd OK ingedrukt op een tegel voor Verplaatsen en App-info, en met de appbibliotheek aan ook Verwijderen van startscherm. Staat dit uit, dan opent lang indrukken de app-info. |
 | **Modulekaarten** | Elke tv-app kan een eigen tegel aanbieden; je keurt elke app één keer goed. Zie [`docs/modules.md`](docs/modules.md). |
 | **Uitbreidingen** | Optionele apps die als modulekaart worden toegevoegd. Ze staan in [`addons/`](addons/) en worden nooit in de launcher ingebouwd. |
 | **Klokschermbeveiliging** | Een langzaam bewegende klok over de gloed, zodat het beeld niet inbrandt. |
@@ -800,7 +816,7 @@ De nieuwe launcher blijft geïnstalleerd (verwijder hem via Instellingen → App
 
 Een update wordt over het opgeschoonde systeem geïnstalleerd: pakketten uit de lijst keren terug, het startscherm schakelt over naar de standaardlauncher en er kunnen nieuwe vooraf geïnstalleerde apps verschijnen die niet in een lijst staan. Dit wordt niet automatisch gedetecteerd, dus vergelijk de tv met de toegepaste lijst.
 
-De controle en `--fix` bereiken de tv via netwerk-ADB. Als je ADB hebt afgesloten zoals beschreven bij [Is ADB-toegang geen beveiligingsrisico?](#questions-people-ask), schakel het dan eerst weer in: zet USB-foutopsporing en, als de tv die optie heeft, Netwerk-/ADB-foutopsporing aan volgens stap 1 van [Snel aan de slag](#quick-start). Bij tv's waarbij poort 5555 alleen via Draadloze foutopsporing wordt geopend, schakel je die ook in, koppel je opnieuw met de standaardversie van `adb` en voer je `adb tcpip 5555` uit, zoals beschreven bij [Zelf handmatig uitvoeren](#doing-it-by-hand). Door ADB af te sluiten is de toestemming voor deze computer ingetrokken; accepteer daarom op de tv de melding 'USB-foutopsporing toestaan?' wanneer de controle verbinding maakt. Zolang ADB uitstaat, kan de controle alleen melden dat de tv niet bereikbaar is, ook als de tv aanstaat en `TV_HOST` correct is ingesteld. Sluit ADB na afloop op dezelfde manier weer af. Wanneer ADB actief is:
+De controle en `--fix` bereiken de tv via netwerk-ADB. Als je ADB hebt afgesloten zoals beschreven bij [Is ADB-toegang geen beveiligingsrisico?](#veelgestelde-vragen), schakel het dan eerst weer in: zet USB-foutopsporing en, als de tv die optie heeft, Netwerk-/ADB-foutopsporing aan volgens stap 1 van [Snel aan de slag](#snel-aan-de-slag). Bij tv's waarbij poort 5555 alleen via Draadloze foutopsporing wordt geopend, schakel je die ook in, koppel je opnieuw met de standaardversie van `adb` en voer je `adb tcpip 5555` uit, zoals beschreven bij [Zelf handmatig uitvoeren](#zelf-handmatig-uitvoeren). Door ADB af te sluiten is de toestemming voor deze computer ingetrokken; accepteer daarom op de tv de melding 'USB-foutopsporing toestaan?' wanneer de controle verbinding maakt. Zolang ADB uitstaat, kan de controle alleen melden dat de tv niet bereikbaar is, ook als de tv aanstaat en `TV_HOST` correct is ingesteld. Sluit ADB na afloop op dezelfde manier weer af. Wanneer ADB actief is:
 
 ```bash
 TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/debloat.txt
@@ -815,7 +831,7 @@ Alleen code `1` betekent dat er afwijkingen zijn. Een taak die alleen bij code `
 
 `TV_HOST` wordt vooraf ingelezen. Als je die variabele niet instelt, stopt `tools/tv.py` met een eigen melding en eindigt de opdracht ook met code `1`. Stel de variabele daarom in de taakregel zelf in, zoals hierboven; cron neemt deze niet over uit je shell.
 
-De taak krijgt alleen antwoord van een tv waarop netwerk-ADB tussen uitvoeringen actief blijft en die toestemming heeft gegeven aan de computer die de taak uitvoert, met 'Altijd toestaan vanaf deze computer' aangevinkt. Zonder dit vinkje vraagt de tv bij elke uitvoering opnieuw om toestemming; als niemand dit accepteert, eindigt de opdracht met code `2`. De open poort is precies de poort die je volgens [Is ADB-toegang geen beveiligingsrisico?](#questions-people-ask) moet sluiten, omdat elk apparaat op het netwerk erbij kan. Als ADB zoals daar beschreven is afgesloten, eindigt elke uitvoering met code `2`. Voer de controle na een update dan handmatig uit en schakel ADB daarvoor tijdelijk weer in.
+De taak krijgt alleen antwoord van een tv waarop netwerk-ADB tussen uitvoeringen actief blijft en die toestemming heeft gegeven aan de computer die de taak uitvoert, met 'Altijd toestaan vanaf deze computer' aangevinkt. Zonder dit vinkje vraagt de tv bij elke uitvoering opnieuw om toestemming; als niemand dit accepteert, eindigt de opdracht met code `2`. De open poort is precies de poort die je volgens [Is ADB-toegang geen beveiligingsrisico?](#veelgestelde-vragen) moet sluiten, omdat elk apparaat op het netwerk erbij kan. Als ADB zoals daar beschreven is afgesloten, eindigt elke uitvoering met code `2`. Voer de controle na een update dan handmatig uit en schakel ADB daarvoor tijdelijk weer in.
 
 `--fix` past de lijst opnieuw toe op onderdelen die zijn afgeweken: het schakelt het startscherm over naar de launcher die de lijst niet uitschakelt (geef als je een fork gebruikt het pakket als tweede argument op), schakelt daarna teruggekeerde pakketten uit en leest de tv opnieuw uit om beide wijzigingen te controleren. Het maakt zelf geen herstelbestand aan, omdat alleen het bestand van de eerste uitvoering de toestand van vóór het opschonen bevat. Als er zo'n bestand bestaat, voegt `--fix` er eerst dezelfde gegevens aan toe als een tweede uitvoering van `tools/disable.sh` zou doen: nieuwe pakketnamen in de lijst en pakketten die eerder niet geïnstalleerd waren maar nu wel zijn geïnstalleerd en ingeschakeld. Zo kan `tools/restore.sh` de tv daarna nog steeds naar de oorspronkelijke toestand terugzetten. Eerst wordt het startscherm hersteld; als er geen launcher overblijft die het kan overnemen, wijzigt `--fix` niets en meldt het dat.
 
@@ -875,7 +891,7 @@ Als de tv niet meer ver genoeg opstart om dit te doen of ADB te gebruiken, is ee
 <details>
 <summary><b>Hoe zit het met firmware-updates?</b></summary>
 
-In de meeste lijsten blijft de updater ingeschakeld, zodat firmware-updates gewoon binnenkomen. Sommige lijsten schakelen de updater van de tv zelf uit; in dat geval komt een firmware-update pas binnen nadat je die weer hebt ingeschakeld. Een update wordt over het opgeschoonde systeem geïnstalleerd, waardoor pakketten kunnen terugkomen en je het script opnieuw moet uitvoeren. Zie [Na een firmware-update](#after-a-firmware-update).
+In de meeste lijsten blijft de updater ingeschakeld, zodat firmware-updates gewoon binnenkomen. Sommige lijsten schakelen de updater van de tv zelf uit; in dat geval komt een firmware-update pas binnen nadat je die weer hebt ingeschakeld. Een update wordt over het opgeschoonde systeem geïnstalleerd, waardoor pakketten kunnen terugkomen en je het script opnieuw moet uitvoeren. Zie [Na een firmware-update](#na-een-firmware-update).
 
 </details>
 

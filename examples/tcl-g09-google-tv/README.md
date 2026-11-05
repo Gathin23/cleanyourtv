@@ -10,7 +10,7 @@ the AS24 list and install sequence that follow.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 36 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 35 packages that were disabled, grouped and commented |
 | `config.json` | Dock order, hidden apps, Live TV app, columns; push it with `tools/theme.sh` |
 
 All commands run from the repo root, with the TV's IP in `TV_HOST`. USB debugging must be on while you
@@ -69,13 +69,16 @@ back through the launcher's `InputKeyService`, which is why the install line abo
 **Ask for that only if you want the buttons more than a ramping volume.** Once a key-filtering service is
 bound, holding volume up/down moves one step instead of repeating, on the whole TV, and one helper or both
 makes no difference - see [the G09 key-repeat note](../../docs/devices/tcl-55p71b-g09-key-repeat.md) for the
-bisect and for the third option (leave launcherx enabled). The Input button below needs no helper.
+bisect and for the third option (leave launcherx enabled). On one AS24 unit `"consume_volume_keys": true`
+in `config.json` kept both; see [below](#input_key_service1-and-volume-repeat). The Input button below needs
+no helper.
 
 | Button | Keycode | Scancode | Note |
 |---|---|---|---|
 | Netflix | 4062 | 472 | `app_keys` |
 | Prime Video | 4099 | 473 | `app_keys` |
 | YouTube | 4065 | 569 | `app_keys` |
+| Sony LIV | 4166 | 641 | `app_keys`; on the India remote |
 | Disney+ | | | keeps working on its own |
 | TCL Channel | 4020 | 456 | opens `com.tcl.waterfall.overseas`, which the list disables; map it to any app you like |
 | Shield (TCL Guard) | 4140 | 660 | opens TGuard, which the list disables; free to map |
@@ -94,6 +97,16 @@ service stay bound with filtering off, which is the repeat-keeping half of that 
 [docs/TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md) and
 [the unit's note](../../docs/devices/tcl-55p71b-pro-g09.md). The same unit also lost the volume beep for
 good when launcherx was disabled — re-enabling every debloated package did not bring it back.
+
+On a unit with firmware `STT2.230203.001.AS24` (`G09_4K_GB`, India, measured on 3 November 2026), the
+launcher's `consume_volume_keys` switch gave both. launcherx and setupwraith were disabled with this launcher as
+Home, `InputKeyService` was the only service bound, with key filtering on and `app_keys` mapping Netflix, Prime
+Video, YouTube and Sony LIV (table above) plus `83:settings` for the gear. That setup stepped once per press.
+With `"consume_volume_keys": true` added to `config.json` and pushed with `theme.sh`, the owner held Volume Up
+and Down on the real remote and both ramped, one tap still moved one step, and Netflix still opened. The
+helper swallows the volume keys and repeats a held one itself, so it needs `key_filter` left on. One unit:
+a reboot after the switch and a soundbar or eARC setup were not checked, and it was not tried on AS23. Details
+in [the key-repeat note](../../docs/devices/tcl-55p71b-g09-key-repeat.md#choices).
 
 ## TCL 55P7L (G09, AS23): stock-home redirect
 

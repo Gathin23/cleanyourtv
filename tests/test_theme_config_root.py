@@ -45,7 +45,13 @@ class ThemeConfigRootTest(unittest.TestCase):
         (self.tools / "tv.py").write_text(FAKE_TV)
         venv = self.tools / "venv" / "bin"
         venv.mkdir(parents=True)
-        (venv / "python").symlink_to(sys.executable)
+        try:
+            (venv / "python").symlink_to(sys.executable)
+        except OSError:
+            # Windows without the symlink privilege (WinError 1314). Only the theme.sh runs use this
+            # python, and they skip there; the checks of theme.ps1 still run.
+            if os.name != "nt":
+                raise
         self.theme = self.base / "my-theme"
         self.theme.mkdir()
         self.log = self.base / "tv-calls.log"

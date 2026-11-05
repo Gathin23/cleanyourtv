@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No permissions: Tatami is drawn on the TV, and nothing goes over the network. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/banner"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Tatami">
+
+        <!-- The tile, and the card on cleanyourtv's Home (docs/modules.md): Tatami full screen. OK opens the
+             effects list, Back leaves. -->
+        <activity
+            android:name="io.github.pbanddev.tatami.PreviewActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="com.gathin.tvhome.category.DOCK_CARD" />
+            </intent-filter>
+            <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
+        </activity>
+
+        <!-- The effects list over Tatami. Exported so the TV's screensaver settings can open it (dream_info.xml).
+             Single-top, so a look given as an extra reaches it while it is open. -->
+        <activity
+            android:name="io.github.pbanddev.tatami.SettingsActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape" />
+
+        <!-- The screensaver: Settings > Device Preferences > Screen saver > Tatami. install.sh sets it. -->
+        <service
+            android:name="io.github.pbanddev.tatami.FloorPlanDream"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.dream"
+                android:resource="@xml/dream_info" />
+        </service>
+    </application>
+</manifest>

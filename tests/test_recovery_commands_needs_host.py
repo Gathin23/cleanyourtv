@@ -73,6 +73,9 @@ class NoTVHostTest(unittest.TestCase):
         env = {key: value for key, value in os.environ.items()
                if key not in ("TV_HOST", "TV_PORT")}
         env["HOME"] = str(self.home)
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         if host is not None:
             env["TV_HOST"] = host
         return env

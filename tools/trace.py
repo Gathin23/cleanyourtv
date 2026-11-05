@@ -42,7 +42,9 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import sys
+import tempfile
 import time
 
 PACKAGE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$")
@@ -197,12 +199,19 @@ def record_one(dev, setup, steps, package, out_path, run_shell=None):
         if run_shell(alive).strip() != "running":
             break
         time.sleep(1)
-    dev.pull(REMOTE, out_path, transport_timeout_s=300.0, read_timeout_s=300.0)
-    run_shell(f"rm -f {REMOTE}")
-    size = os.path.getsize(out_path)
-    if size == 0:
-        os.remove(out_path)
-        raise RuntimeError("perfetto wrote an empty trace; run with --runs 1 and see tools/trace.md")
+    # A failed or empty pull must not truncate an earlier recording. Stage on the same filesystem so
+    # the completed trace replaces it only after the download and remote cleanup both succeed.
+    folder, name = os.path.split(os.path.abspath(out_path))
+    with tempfile.TemporaryDirectory(prefix=".trace-", dir=folder) as staging:
+        part = os.path.join(staging, name)
+        dev.pull(REMOTE, part, transport_timeout_s=300.0, read_timeout_s=300.0)
+        run_shell(f"rm -f {REMOTE}")
+        size = os.path.getsize(part)
+        if size == 0:
+            raise RuntimeError("perfetto wrote an empty trace; run with --runs 1 and see tools/trace.md")
+        if os.path.isfile(out_path):
+            shutil.copymode(out_path, part)
+        os.replace(part, out_path)
     return size
 
 

@@ -416,6 +416,9 @@ class RecoveryRecordTest(unittest.TestCase):
     def run_recovery(self, *args):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         return subprocess.run(
             [sys.executable, str(ROOT / "tools" / "recovery.py"), *args],
             cwd=self.repo, env=env, capture_output=True, text=True, timeout=120,

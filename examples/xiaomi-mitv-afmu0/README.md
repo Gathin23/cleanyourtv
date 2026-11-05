@@ -7,7 +7,7 @@ Firmware: `UKG3.250826.001 / V816.0.11.0.UZFAABX` (HyperOS), 2 GB RAM, `ro.adb.s
 ## What was verified
 
 - **Debloat:** Disabled 24 packages in batches (telemetry, PatchWall, promos, unused preloaded streaming apps).
-- **Kept by choice:** Google Play Store, Google Assistant and Bluetooth remote microphone (`com.google.android.katniss`, `com.google.android.tv.remote.service`), Chromecast (`com.google.android.apps.mediashell`), YouTube (`com.google.android.youtube.tv`), Netflix (`com.netflix.ninja`), TrueID TV (`com.truedmp.idtv`), and Xiaomi USB media players (`com.mitv.gallery`, `com.mitv.videoplayer`, `com.xiaomi.mitv.mediaexplorer`).
+- **Kept by choice:** Google Play Store, Google Assistant and Bluetooth remote microphone (`com.google.android.katniss`, `com.google.android.tv.remote.service`), Chromecast (`com.google.android.apps.mediashell`), Miracast and Mi share (`com.xiaomi.mitv.smartshare`, `com.xiaomi.wfdsinkhelperservice`, `com.xiaomi.mi_connect_service`), YouTube Music (`com.google.android.youtube.tvmusic`), YouTube (`com.google.android.youtube.tv`), Netflix (`com.netflix.ninja`) and TrueID TV (`com.truedmp.idtv`). The list itself disables Miracast and Mi share, YouTube Music and the Xiaomi USB media players (`com.mitv.gallery`, `com.mitv.videoplayer`, `com.xiaomi.mitv.mediaexplorer`), so comment out the lines for any of these you want to keep before applying it.
 - **Wi-Fi handover from setupwraith:** During initial wizard setup, Wi-Fi is owned by `com.google.android.tungsten.setupwraith`. Disabling setupwraith while it owns Wi-Fi will cause Android 14 to delete the network and drop ADB. On the TV, forgetting the network and re-joining it in Settings switches ownership to `android.uid.system:1000`. Once owned by system, setupwraith can be disabled safely.
 - **Launcher handover:** Built reference launcher (`com.gathin.tvhome`) with platform 34 and minSdk 26. `setupwraith` disabled first, then `com.google.android.apps.tv.launcherx` disabled, and `com.gathin.tvhome/.MainActivity` set as Home activity.
 
@@ -28,3 +28,12 @@ Enabling `HomeKeyService` (`settings put secure enabled_accessibility_services c
 
 ## Private DNS (AdGuard DoT)
 Private DNS (such as AdGuard DoT) works on this set.
+
+## YouTube kept playing with the TV off
+
+On another unit, same firmware, tried in November 2026: after the TV was turned off, YouTube played on for
+hours and the box was slow at the next start. `attentive_timeout` was `-1` after a factory reset, so nothing
+stopped playback. `settings put secure attentive_timeout 21600000` is the "when inactive" setting at 6 hours,
+as a safety net: Android warns before it sleeps and any key cancels. With HDMI-CEC on, the power key on the
+remote put both the TV and the box to sleep (`mLastSleepReason=hdmi`). The 6-hour timer itself was set but
+not watched to the end. To undo it: `settings put secure attentive_timeout -1`.

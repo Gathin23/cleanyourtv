@@ -1,0 +1,6 @@
+{
+  "tv": "Tesla Smart TV Q55E655GUS (Expressluck, sepolia, mt5896)",
+  "os": "Google TV 14",
+  "brand": "Tesla",
+  "notes": "Anoki ACR, retail demo, karaoke mic, Miracast; same board as aipro4k on UKN7; setupwraith owns the saved Wi-Fi (forget and rejoin first), then setupwraith before launcherx; Live TV is tvcenter; Wireless debugging only, random port; firmware updater kept"
+}

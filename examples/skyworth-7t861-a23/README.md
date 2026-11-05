@@ -12,15 +12,17 @@ Tested on Skyworth 7T861_A23 (MediaTek MT9638 / mt5872, Android 10, build `eng.n
 >
 > Recovery requires entering hardware Recovery Mode and performing a factory reset ("Wipe data / factory reset"). Keep all four enabled at all times.
 
-## Recommended: Zero Debloat via Office Mode (100% Safe)
+## Background Telemetry and Monitoring Debloat
 
-> [!TIP]
-> **No packages need to be disabled on this model.**
-> Switching the TV to **办公模式 (Office Mode)** in the native system settings shuts off all video streaming feeds, banner advertisements, and background cloud preloading directly from the source.
->
-> In `debloat.txt`, only `com.skyworth.device` is active by default; the rest are commented out:
-> - **Zero native loading screens**: Cold boot seamlessly transitions into CleanYourTV without intermediate "正在准备..." loading screens or network preloading delay.
-> - **Zero brick risk**: All system packages remain untouched (`pm list packages -d` is empty), ensuring 100% firmware stability and OTA update safety.
+Switching the TV to **办公模式 (Office Mode)** in the native system settings shuts off video streaming feeds, banner advertisements, and background cloud preloading directly from the source.
+
+The [debloat list](debloat.txt) disables 4 packages by default:
+- **`com.skyworth.device`**: Device information, location reporting, and SensorsData analytics SDK.
+- **`com.tianci.de`**: Tianci Data Engine daemons listening for package additions and updates.
+- **`com.tianci.ad`**: Tianci advertising cloud push service maintaining persistent background connections.
+- **`com.coocaa.tvmanager`**: Coocaa TV Manager running background app and storage/USB scanner receivers. Re-enable it if USB drives stop showing up.
+
+Other optional content apps, stores, and diagnostic tools remain commented out in `debloat.txt` for selective debloating.
 
 ## Applying the debloat list (Optional)
 

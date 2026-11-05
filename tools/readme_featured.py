@@ -85,6 +85,13 @@ def logo_problem():
             return (f"cannot read {path}: there is no such file. The logos the panel draws are the names "
                     f"in LOGOS here, read from docs/press/ in this checkout, so run this from the "
                     f"repository root and give a renamed logo its picture")
+        try:
+            if os.path.samefile(OUT, path):
+                return f"cannot write {OUT}: it is the same file as input picture {path}"
+        except FileNotFoundError:
+            pass  # A distinct output that does not exist yet is fine.
+        except OSError as error:
+            return f"cannot compare output {OUT} with input picture {path}: {error}"
     return None
 
 
