@@ -1,5 +1,8 @@
 # TCL C7K (G08, Google TV, Android 14), UK and EU firmware
 
+A [50C805 compatibility report](#compatibility-report-tcl-50c805-wi-fi) below covers a conservative
+subset on the same AU02 build; it does not validate the complete debloat list in this folder.
+
 TCL C7K QD-Mini LED, device `G08`, model "Smart TV Pro", firmware `UTT2.250416.001 AU02`, MediaTek, about
 2.4 GB RAM. Three units have run this list: a 55C7K-UK on Wi-Fi (the first, see the header of `debloat.txt`), a
 50C7K on Ethernet in Poland and a C6K on Ethernet in Brazil (both below). Both halves work on this set: the
@@ -292,3 +295,55 @@ package stayed disabled (26 in user 0, the 25 from the list plus launcherx), Hom
   disabled, so T-Cast keeps working.
 
 This is a two-session compatibility report, not several days with the list.
+
+## Compatibility report: TCL 50C805, Wi-Fi
+
+Checked on 4 November 2026: retail model TCL 50C805, reported model `Smart TV Pro`, device `G08`,
+product `G08_4K_GB`, Google TV 14 (SDK 34), build `tcl9618-user 14 UTT2.250416.001 AU02 release-keys`.
+The initial compatibility checks covered one session and a reboot. The owner subsequently reported
+a couple of days of normal use with the later personal setup and no further issues; this does not
+confirm that the complete list above was applied. The older 50C805X1 report in
+[the EU Android 12 folder](../tcl-g08-eu-android12/) describes different firmware (`AS34`).
+
+The reference launcher installed through the guarded installer, took Home from Google TV and
+returned as Home after reboot. D-pad navigation through the dock, app grid and top bar was checked.
+The owner confirmed the real remote's Home, Input/Source, microphone/Google Assistant and Settings
+buttons, Netflix and YouTube shortcuts, and streaming playback. Input/Source continued opening
+TCL's source panel; the launcher also displayed the HDMI entries. This does not establish tuner
+reception or playback through every HDMI port.
+
+**Conservative package choices:** the session disabled `com.tcl.logkit`, `com.tcl.messagebox`,
+`com.tcl.usercenter`, `com.tcl.tv.tclhome_passive`, `com.tcl.esticker`, `com.tcl.exhibit`,
+`com.tcl.waterfall.overseas`, `com.google.android.feedback` and `com.android.tv.feedbackconsent`.
+The guarded Home handover also disabled `com.google.android.tungsten.setupwraith` and
+`com.google.android.apps.tv.launcherx`. The saved Wi-Fi ownership was checked before disabling
+setupwraith, and the connection remained available. These selections stayed disabled after reboot.
+Prime Video was already disabled before the session and is not a newly tested removal.
+
+`com.tcl.ttvs` remained enabled to preserve the TCL services and firmware-update path it hosts.
+Assistant, Play Services, the TV/input services, remote services, keyboard, casting/mirroring
+packages and peripheral updater were left enabled; retaining them is not a comprehensive test of
+casting or firmware updates. Google Ambient (`dreamx`) also remained installed and enabled. DNS
+was unchanged. No packages were uninstalled.
+
+Remote behavior on this unit:
+
+- With Google TV's launcher disabled, Settings/gear, Netflix, YouTube and Person/Profile stopped
+  performing their original actions. `HomeKeyService` restored the requested shortcuts using
+  Settings keycode 83, Netflix 4062 and YouTube 190. Person/Profile sends 288 and was repurposed
+  as a configurable app shortcut; the Google TV profile panel was not retained.
+- `AUTO_START` was allowed and persisted with `appops write-settings`; `HomeKeyService` was enabled
+  and bound after reboot. The owner tested the physical buttons after the restart.
+- A held Volume Up/Down no longer ramped with the helper enabled; each press moved one step. The
+  owner accepted that tradeoff to retain the remapped buttons. This agrees with the other AU02
+  reports above; it is not a claim that volume repeat was fixed.
+
+YouTube for Android TV 5.30.340 later opened to a flat grey screen, including when launched directly.
+Stopping and reopening only YouTube restored its existing profile chooser and signed-in home screen
+without clearing app data, changing packages or changing DNS. The owner subsequently confirmed normal
+operation. The cause was not established; this is not evidence of long-term YouTube stability.
+
+Later personal launcher/screensaver extensions are outside this reference-launcher report; the
+owner's follow-up covers that customized setup, not several days running an unmodified reference
+launcher. Debugging was retained at the owner's request, so a final debugging-off reboot check of
+the latest setup is not claimed here.
