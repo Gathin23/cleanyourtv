@@ -67,6 +67,7 @@ public class GamesActivity extends Activity {
         density=getResources().getDisplayMetrics().density;
         File external=getExternalFilesDir(null);
         directory=external==null?null:new File(external,"moonlight");
+        if(directory!=null)directory.mkdirs(); // Made by the app itself: a folder adb creates is not readable by the app.
         build();
     }
 
@@ -188,14 +189,14 @@ public class GamesActivity extends Activity {
                     }
                     images.add(image);
                 }
-            } catch(Exception ignored) {result=null;}
+            } catch(Exception e) {android.util.Log.w("WolfGames","Catalog rejected",e);result=null;}
             final MoonlightCatalog ready=result;
             main.post(()-> {
                 busy=false;
                 if(destroyed) {recycle(images);return;}
                 loadedStamp=stamp;
                 if(ready==null) {recycle(images);showFallback();}
-                else {catalog=ready;hostNames=names;hostUuids=uuids;bitmaps.addAll(images);buildShelf();}
+                else {clearShelf();catalog=ready;hostNames=names;hostUuids=uuids;bitmaps.addAll(images);buildShelf();}
             });
         });
     }
@@ -252,7 +253,6 @@ public class GamesActivity extends Activity {
     }
 
     private void buildShelf() {
-        clearShelf();
         status.setVisibility(View.GONE);
         scroll.setVisibility(View.VISIBLE);
         String saved=getSharedPreferences(PREFS,0).getString("game_name","");

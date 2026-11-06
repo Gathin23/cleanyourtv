@@ -32,7 +32,7 @@ more than one host.
 
 ## Provisioning
 
-Catalog and covers (repeat after every change, then reopen the add-on):
+Open the add-on once first, so it creates its `moonlight` folder (a folder made by adb is not readable by the app). Then push the catalog and covers; repeat after every change and reopen the add-on:
 
 ```bash
 adb connect <tv ip>

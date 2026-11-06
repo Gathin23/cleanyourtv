@@ -8,6 +8,9 @@
          with a pinned certificate. Catalog and covers are read from files; nothing else. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Android 11+ hides other apps; the shelf only needs to see Moonlight. -->
+    <queries><package android:name="com.limelight" /></queries>
+
     <application
         android:allowBackup="false"
         android:banner="@drawable/banner"
