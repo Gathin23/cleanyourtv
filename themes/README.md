@@ -289,7 +289,10 @@ Open a PR with a new folder here containing:
 - `wallpaper.jpg` or `wallpapers/` if the theme uses them.
 
 Then add a row to the table above with the screenshot, the same way as the others, and bump the count in
-the repository's `README.md`, in its Themes feature row (the `N ship in themes/` sentence):
-`tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails until the
-two agree. Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
+the Themes feature row of every front page that states it: `README.md` (the `N ship in themes/` sentence),
+`README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` (the last two in digits)
+and `README.he.md`, each in its own words. Those pages are the ones that state it today rather than the
+rule: `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails on a
+page whose number is not that count, naming the page, so its list is the one a page that starts stating the
+count joins. Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
 and say which TV you tried it on in the PR description.
