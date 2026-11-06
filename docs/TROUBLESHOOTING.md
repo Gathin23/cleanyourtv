@@ -1218,6 +1218,11 @@ turned off in Settings stays off.
   `settings_key_keycodes`. `83` is `KEYCODE_NOTIFICATION`, the code the stock Google TV home turned into
   its quick settings panel. The gear then opens the launcher's panel (TV settings, Display, Network, Apps,
   Launcher settings) from Home or another app, and the helper was still bound after a reboot on both sets.
+  Where `InputKeyService` is already bound for the app buttons, the same key needs no second helper:
+  `83:settings` in `app_keys` opens the TV's Settings app from Home and from inside other apps, and
+  `settings_key_keycodes` can stay as the Home-only fallback. That route is quicker and needs no rebuild
+  with `HOME_KEY_SERVICE=1`, but it opens the Settings app rather than the launcher's panel; verified on a
+  TCL 55Q7D Pro (`G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU02`), in SmartTube and on Home.
   Press the real button; a key injected over ADB does not reach the helper. Holding volume may step only
   once while the helper is bound, which is the usual trade on these two boards.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
