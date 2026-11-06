@@ -38,6 +38,8 @@ updated. Add-ons with custom shell installers still need Bash; this native Windo
 
 | Theme | What it does | Screenshot |
 |---|---|---|
+| `gojo-void/` | Original dark blue Gojo fan-art wallpaper with an infinity sky, icon-only controls and app-color focus; static theme using existing switches | <img src="gojo-void/screenshot.jpg" width="320" alt="Gojo Void theme on an Android TV"> |
+| `sukuna-shrine/` | Original dark crimson Sukuna fan-art wallpaper with a shrine backdrop, icon-only controls and app-color focus; static theme using existing switches | <img src="sukuna-shrine/screenshot.jpg" width="320" alt="Sukuna Shrine theme on an Android TV"> |
 | `default/` | The built-in look written out as JSON, as a starting point for your own | <img src="default/screenshot.jpg" width="320" alt="default theme"> |
 | `dock-glass/` | A single frosted-glass dock row at the bottom: six columns with even padding, the focused app's name above it, no grid rows below, icon-only top buttons, and the app-colour glow over a near-black sky. No wallpaper of its own: add a `wallpaper.jpg` to put a picture behind the glass | <img src="dock-glass/screenshot.jpg" width="320" alt="dock-glass theme"> |
 | `aurora/` | A dark aurora wallpaper (teal and violet on navy, darker at the bottom) with a matching background colour | <img src="aurora/screenshot.jpg" width="320" alt="aurora theme"> |

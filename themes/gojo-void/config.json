@@ -1,0 +1,10 @@
+{
+  "background_color": "#050A16",
+  "wallpaper": true,
+  "wallpaper_true_color": true,
+  "dock_band": false,
+  "dock_border": false,
+  "icon_only_buttons": true,
+  "app_glow": true,
+  "focus_overshoot": false
+}
