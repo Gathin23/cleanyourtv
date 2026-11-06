@@ -1091,8 +1091,13 @@ Read the state without changing anything:
 ```sh
 tools/tv.py 'am get-current-user'
 tools/tv.py 'settings --user current get secure enabled_accessibility_services'
+tools/tv.py 'settings --user current get secure accessibility_enabled'
 tools/tv.py 'dumpsys accessibility'
+tools/tv.py 'appops get com.gathin.tvhome'
 ```
+
+For a bug report, give these outputs as the model, Android version, build, current user and the relevant
+redacted lines, not the raw dump, as the auto-start note at the end of this section asks.
 
 | Helper | Component in the enabled-services list | Key it filters |
 | --- | --- | --- |
