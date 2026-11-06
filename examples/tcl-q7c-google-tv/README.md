@@ -652,8 +652,11 @@ minutes later without anything else changing on the TV. Wireless debugging was n
 
 `com.tcl.smartlink.core` (version `2.0.4f88555`) is installed here and was left alone: its components are a
 `com.tcl.custominstall.CustomInstallService` and a `BootCompletedReceiver`, which read as a boot-time installer
-for TCL's partner apps, but no list has disabled it yet. Live TV (`com.tcl.tv/com.tcl.player.TVActivity`) was
-checked after the batches. After two reboots `pm list packages -d` still listed all 33, and none came back.
+for TCL's partner apps. Other lists take it on that reading: `tcl-qm6k-google-tv`, on this same G08 board, disables
+it with the note "bundles a silent app installer", and `tcl-g09-google-tv`, `tcl-55s470g`,
+`tcl-65c8l-google-tv`, `tcl-65qm8l-google-tv` and `tcl-g10-google-tv` disable it too. It stayed on here, so add the
+line to this list if you want it gone. Live TV (`com.tcl.tv/com.tcl.player.TVActivity`) was checked after the
+batches. After two reboots `pm list packages -d` still listed all 33, and none came back.
 
 ### Home with launcherx and setupwraith enabled
 
