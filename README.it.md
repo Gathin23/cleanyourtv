@@ -135,9 +135,9 @@ possono richiedere comunque un mouse o uno schermo touch.
 - Toglierla dalla Home non disinstalla l'app. La scelta resta dopo il riavvio, dopo gli aggiornamenti delle app e
   quando applichi o reimposti un tema.
 
-Vedi anche la [guida alla libreria app](docs/app-library.md). La pagina delle impostazioni del launcher, riga per riga,
+Vedi anche la [guida alla libreria app](docs/it/app-library.md) ([versione inglese](docs/app-library.md)). La pagina delle impostazioni del launcher, riga per riga,
 la home predefinita, le lingue, i tasti del telecomando, il salvaschermo e la compilazione da soli sono in
-[docs/launcher.md](docs/launcher.md) (in inglese).
+[docs/it/launcher.md](docs/it/launcher.md) ([versione inglese](docs/launcher.md)).
 
 ## Quali TV sono supportate
 
