@@ -30,6 +30,16 @@ more than one host.
   shelf uses (`moonlight/catalog.json` plus `*.png`/`*.jpg` covers). You push it with adb; the add-on
   never goes online to fetch a catalog.
 
+## Shown only with Moonlight
+
+Without Moonlight the add-on hides itself: the launcher tile and the module card disappear. Once
+Moonlight is installed, they come back at the next boot (or when the add-on is updated); to bring
+them back right away:
+
+```bash
+adb shell pm enable io.github.vitorcamillo.wolfgames/.GamesActivity
+```
+
 ## Provisioning
 
 Open the add-on once first, so it creates its `moonlight` folder (a folder made by adb is not readable by the app). Then push the catalog and covers; repeat after every change and reopen the add-on:
@@ -62,8 +72,11 @@ controller is not provisioned.
 - `INTERNET` — used only by the optional Wolf session controller: HTTPS to a single private IPv4
   address (10/8, 172.16/12 or 192.168/16), port 47991 only, with a pinned certificate and a bearer
   token, plus the catalog/cover refresh through the same connection. No other host is ever
-  contacted. There is no telemetry, no ads, no analytics, no background service, no boot receiver,
-  no polling: the screen reads data when it opens or resumes, and nothing runs behind it.
+  contacted. There is no telemetry, no ads, no analytics, no background service, no polling: the
+  screen reads data when it opens or resumes, and nothing runs behind it.
+- `RECEIVE_BOOT_COMPLETED` (start at boot) — a receiver that, on boot, only checks whether Moonlight
+  is installed and shows or hides the tile and the card; it never opens the network and never keeps
+  running.
 
 The launcher itself needs no permission from this add-on: it talks to the launcher only through the
 module card.

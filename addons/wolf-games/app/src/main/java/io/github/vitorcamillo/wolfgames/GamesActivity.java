@@ -76,7 +76,8 @@ public class GamesActivity extends Activity {
         Provisioning.accept(this);
         if(!moonlightInstalled()) {
             loadedStamp=Long.MIN_VALUE;
-            showStatus("O Moonlight não está instalado. Instale o Moonlight na TV para transmitir jogos do seu PC.");
+            MoonlightGate.sync(this);
+            showStatus("O Moonlight não está instalado. Instale o Moonlight na TV; o Wolf Games volta para a tela inicial quando a TV reiniciar.");
             return;
         }
         hideStatus();
