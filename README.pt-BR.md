@@ -518,7 +518,7 @@ as mesmas regras para ele.
 |---|---|
 | **Lista de remoção da sua TV** | É a contribuição mais útil: a próxima pessoa com esse modelo não precisará fazer a etapa de identificação. |
 | **Launcher e prompt** | Melhorias no launcher e ajustes para deixar o prompt mais claro também são bem-vindos. |
-| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne cento e noventa e três projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
+| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e dezoito projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
 
 As pessoas cujo trabalho faz parte deste repositório:
 
