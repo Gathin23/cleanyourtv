@@ -41,6 +41,11 @@
          "boot_to_live_tv": true in a theme's config.json. -->
     <bool name="boot_to_live_tv">false</bool>
 
+    <!-- From the launcher home screen, pressing any number key (0-9) immediately opens Live TV,
+         like a traditional TV set. Off by default; also "numeric_keys_open_live_tv": true in a
+         theme or TV config.json. -->
+    <bool name="numeric_keys_open_live_tv">false</bool>
+
     <!-- An "Open on start" row in Launcher settings: pick any app on the TV, and the first time Home comes up
          after the TV starts it opens that app instead. Once per boot, like boot_to_live_tv (which wins when
          both are set); Home after that stays Home, and an app that is gone or disabled leaves Home on screen.

@@ -106,6 +106,8 @@ final class Config {
     final boolean reducedMotion;
     /** Open the Live TV app on the first Home after the TV starts (config.xml, boot_to_live_tv). */
     final boolean bootToLiveTv;
+    /** Number keys (0-9) on the home screen immediately open Live TV (config.xml, numeric_keys_open_live_tv). */
+    final boolean numericKeysOpenLiveTv;
     /** Show the Open on start row in Launcher settings (config.xml, open_on_start_choice). */
     final boolean openOnStartChoice;
     /** Seconds the boot's app waits for a validated network; 0 opens it at once (open_on_start_network_wait). */
@@ -283,7 +285,7 @@ final class Config {
                    Map<String, String> appBanners, String sourcePanelService, String sourcePanelAction,
                    String sourcePanelExtra, boolean coocaaSources, String inputAction, List<String> inputSources,
                    String inputUriScheme, int columns, int rowsBelowDock, boolean animations, boolean advancedEffects,
-                   boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
+                   boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean numericKeysOpenLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
                    boolean showHomeSettingsShortcut, boolean showStats, String gameDay, boolean appLibrary, boolean appLibrarySelection, boolean libraryOkOpens, boolean uniformTiles, int backgroundColor, int skyIntensity,
                    int[] settingsKeycodes, boolean settingsKeyPanel, boolean restoreKeyServices, boolean wallpaperEnabled, File wallpaper, List<File> wallpapers,
                    int wallpaperRotationMinutes, int wallpaperDim, int dockOpacity, String wallpaperOrder, boolean overlayApplied,
@@ -331,6 +333,7 @@ final class Config {
         this.moduleCards = moduleCards;
         this.reducedMotion = reducedMotion;
         this.bootToLiveTv = bootToLiveTv;
+        this.numericKeysOpenLiveTv = numericKeysOpenLiveTv;
         this.openOnStartChoice = openOnStartChoice;
         this.dockTitle = dockTitle;
         this.dockRow = dockRow;
@@ -460,6 +463,7 @@ final class Config {
         boolean moduleCards = res.getBoolean(R.bool.module_cards);
         boolean reducedMotion = res.getBoolean(R.bool.reduced_motion);
         boolean bootToLiveTv = res.getBoolean(R.bool.boot_to_live_tv);
+        boolean numericKeysOpenLiveTv = res.getBoolean(R.bool.numeric_keys_open_live_tv);
         boolean openOnStartChoice = res.getBoolean(R.bool.open_on_start_choice);
         int openOnStartNetworkWait = res.getInteger(R.integer.open_on_start_network_wait);
         boolean openOnStartOnWake = res.getBoolean(R.bool.open_on_start_on_wake);
@@ -574,6 +578,7 @@ final class Config {
             moduleCards = bool(json, "module_cards", moduleCards);
             reducedMotion = bool(json, "reduced_motion", reducedMotion);
             bootToLiveTv = bool(json, "boot_to_live_tv", bootToLiveTv);
+            numericKeysOpenLiveTv = bool(json, "numeric_keys_open_live_tv", numericKeysOpenLiveTv);
             openOnStartChoice = bool(json, "open_on_start_choice", openOnStartChoice);
             openOnStartNetworkWait = integer(json, "open_on_start_network_wait", openOnStartNetworkWait, 0, 600);
             openOnStartOnWake = bool(json, "open_on_start_on_wake", openOnStartOnWake);
@@ -703,7 +708,7 @@ final class Config {
 
         return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
                 packageMap(appBanners), panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
-                Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv,
+                Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv, numericKeysOpenLiveTv,
                 openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill,
                 iconOnlyButtons, iconOnlyInputs, libraryButton, showLibraryPill, wifiLabelWidth, alwaysShowNames, wallpaperTrueColor, focusOvershoot,
                 vpn, homeSettings, showStats, gameDay, library, librarySelection, libraryOkOpens, uniformTiles, background,

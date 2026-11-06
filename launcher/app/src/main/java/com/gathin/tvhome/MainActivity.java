@@ -275,6 +275,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static LocalDate lastPetalShower;
     /** boot_to_live_tv: open the Live TV app on the first Home of each boot. */
     private boolean bootToLiveTv;
+    /** numeric_keys_open_live_tv: pressing 0-9 on Home immediately opens Live TV. */
+    private boolean numericKeysOpenLiveTv;
     /** open_on_start_choice: the app picked in Launcher settings may open on the first Home of each boot. */
     private boolean openOnStartChoice;
     /** open_on_start_network_wait, in ms; the boot's app while it waits for the network, and until when. */
@@ -484,6 +486,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         idleClockMs = cfg.homeIdleClockMinutes * MINUTE_MS;
         backOpensClock = cfg.backOpensClock;
         bootToLiveTv = cfg.bootToLiveTv;
+        numericKeysOpenLiveTv = cfg.numericKeysOpenLiveTv;
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
         openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
@@ -1405,6 +1408,31 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return false;
     }
 
+    /**
+     * From the launcher home screen, pressing any number key (0-9) immediately opens Live TV when enabled.
+     */
+    private boolean handleNumericKey(KeyEvent event) {
+        if (!resumed || reordering) return false;
+        int code = event.getKeyCode();
+        boolean isDigit = (code >= KeyEvent.KEYCODE_0 && code <= KeyEvent.KEYCODE_9)
+                || (code >= KeyEvent.KEYCODE_NUMPAD_0 && code <= KeyEvent.KEYCODE_NUMPAD_9)
+                || code == KeyEvent.KEYCODE_11 || code == KeyEvent.KEYCODE_12;
+        if (!isDigit) return false;
+        if (homeAppKeys.containsKey(code)) {
+            return RemoteKeys.handle(this, event, homeAppKeys.get(code), homeHoldAppKeys.get(code));
+        }
+        if (!numericKeysOpenLiveTv) return false;
+        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+            if (openPopup != null) {
+                openPopup.dismiss();
+                openPopup = null;
+            }
+            Intent liveTv = liveTvIntent();
+            if (liveTv != null) open(liveTv);
+        }
+        return true;
+    }
+
     // ---- reorder ---------------------------------------------------------------------------------
 
     /** Blue the glass turns while reorder mode is on. */
@@ -1424,6 +1452,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // taken after that would arm one nothing releases.
         if (resumed && event.getKeyCode() >= 1000 && RemoteKeys.handle(this, event, homeAppKeys.get(event.getKeyCode()),
                 homeHoldAppKeys.get(event.getKeyCode()))) return true;
+        if (resumed && handleNumericKey(event)) return true;
         if (handleSettingsKey(event)) return true;
         if (holdOk(event)) return true;
         if (tileMenuEnabled && !reordering && openPopup == null && cardPrompt == null
