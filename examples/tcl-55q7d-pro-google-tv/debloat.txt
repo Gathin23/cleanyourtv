@@ -1,0 +1,77 @@
+# TCL 55Q7D Pro (model "Smart TV Pro", device G08, product G08_4K_GB, client type TCL-EU-MT9653-S1,
+# MediaTek tcl9618), EU Google TV build (SKU eu): Android 14 (Google TV), firmware UTT2.250416.001 AU02.
+# Remote BT_RC833A_B5 (Bluetooth).
+# Same G08 board as examples/tcl-g08-us-google-tv (US, AU16) and the C755 / QM6K / 85RM7L Google TV lists;
+# this list started from the US one and keeps only what this build ships.
+#
+# Tested 5 November 2026 on one set. 33 packages in all: 18 were already off from an earlier session, the
+# other 15 went with tools/disable.sh in four batches, a screenshot between batches, and then a reboot; all
+# 33 were still disabled afterwards. Home, Live TV, the input list, Play Store and the streaming apps still
+# worked. That is one evening of use, not weeks.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q7d-pro-google-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q7d-pro-google-tv/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV / HDMI app: com.tcl.tv, and its "Live TV"
+# input is com.tcl.channelplus/com.tcl.iptv.service.InputService.
+# Left enabled on purpose: com.tcl.tv, com.tcl.tvinput, com.tcl.channelplus, com.tcl.suspension (the input
+# list), com.tcl.autopair, com.tcl.systemserver, com.tcl.providers.config, com.tcl.initsetup,
+# com.tcl.useragreement, com.tcl.globalkeyoverlay, com.tcl.systemui.plugin, com.tcl.factory.view,
+# com.tcl.gamebar, com.tcl.ttvs (also TCL's firmware OTA updater on this build), com.google.android.katniss
+# (voice), com.google.android.mediashell (Cast), Google TTS, AirPlay/Miracast, the Play Store, Play Services
+# and every streaming app.
+#
+# com.tcl.interactive is disabled here and the remote's Source key still opens the input list — the older
+# Android 12 EU build (examples/tcl-g08-eu-android12) loses that key without it, so do not carry this line to
+# that list. On this build com.tcl.tv then logs a Tbrowser getService NullPointerException while Live TV runs;
+# Live TV, the guide-less channel list and the input list were used for one evening without a visible loss,
+# so uncomment the line if TCL's channel browser matters to you.
+#
+# The TV icon button (keycode 4001) is swallowed by TCL's own shortcut manager on this firmware; the
+# README.md in this folder has the app_keys entry that brings it back.
+
+# TCL pushes, account, retail and hotel demo
+com.tcl.dashboard                      # TCL Home panel and its promotions
+com.tcl.messagebox                     # TCL pushed messages and promos
+com.tcl.esticker                       # retail-demo sticker
+com.tcl.exhibit                        # store demo mode
+com.tcl.tv.tclhome_passive             # TCL content pushed to the home screen at boot
+com.tcl.ocean.instructions             # on-TV manual and tips overlay
+com.tcl.repairguide                    # TCL self-diagnosis app
+com.tcl.usercenter                     # TCL account sign-in
+com.tcl.waterfall.overseas             # TCL movie/show recommendation browser
+com.tcl.partnercustomizer              # TCL regional preload customiser
+
+# Telemetry, diagnostics and unused TCL extras
+com.tcl.logkit                         # log capture service
+com.tcl.guard                          # TCL "cleaner" / app manager, retried by the system when it is on
+com.tcl.hearaid                        # hearing test / accessibility helper, unused
+com.tcl.eva                            # TCL voice layer; Katniss handles the Assistant
+com.tcl.t_solo                         # Bluetooth "listen alone" speaker mode, unused
+com.tcl.interactive                    # TCL source/HbbTV overlay; the Source key still works without it here
+com.tcl.UpdatePeripheral               # peripheral firmware helper (remote/dongles), not the TV OTA
+
+# Android 14 ad, privacy and on-device learning services
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Google extras this set does not need
+com.google.android.play.games
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+android.autoinstalls.config.google.gtvpai
+com.google.android.onetimeinitializer   # first boot only, long done
+com.google.android.syncadapters.calendar # no Google calendar on this TV
+com.google.android.apps.tv.dreamx       # photo screensaver
+
+# Duplicate webviews (com.google.android.webview is the active one) and printing
+com.tcl.android.webview
+com.mediatek.support.webview
+com.android.printspooler
+
+# Replaced or superseded by the custom launcher. Uncomment launcherx to get Google TV's Home back.
+com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith  # setup wizard; its RecoveryActivity takes Home when launcherx is off
