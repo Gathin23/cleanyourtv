@@ -117,6 +117,16 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   USB debugging on: `eth0` stayed listed, and Ethernet connected with debugging still on. It printed
   `host_connected=false` while the adapter was present as `eth0`, so there `host_connected=false` was
   no proof the adapter was gone ([its list](../examples/google-chromecast-gtv-4k/debloat.txt)).
+  The port can also stop enumerating anything at all, not just lose its power: on a Xiaomi TV A Pro 55"
+  2026 (`MiTV-MZTU1`, MediaTek MT5873, Android TV 14, `UKN1.240806.017.V816.0.26.6.8.3.UZTMBTV`) no
+  keyboard, flash drive or mouse came up while debugging was on, `/dev/bus/usb` never gained a device,
+  and `/dev/block/sd*` stayed empty. Its `/vendor/etc/init/hw/init.common.usb.rc` loads the dual-role
+  `mtu3` controller as a gadget (`mtu3_dev_en=1`) whenever `persist.sys.usb.config=adb`, and as host
+  (`mtu3_dev_en=0`) only at `none` - the kernel log shows `[Vbus] port0 ... [off]` - so on that board
+  ADB and a USB host port cannot both be on. Setting the property from the shell is refused
+  (`avc: denied { set } for property=sys.usb.config ... tclass=property_service`), and re-enabling every
+  package that set's list had disabled left the port dead, so the firmware is the cause, not the list
+  ([#3368](https://github.com/Gathin23/cleanyourtv/issues/3368)).
 - **Port 5555 refuses the connection although network debugging is on**, and no Wireless debugging is
   advertised, seen on a [Wanbo T6R Max projector](devices/wanbo-t6r-max.md) (MediaTek MT5862, Android 9,
   `TVOS-04.16.031.01.12`): the firmware starts `adbd` on its own port, 5877 there (`service.adb.tcp.port`),
