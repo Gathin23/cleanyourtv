@@ -273,12 +273,22 @@ TRANSLATIONS = {"README.nl.md": ("tv-modellen", "merken", "talen"),
                 "README.de.md": ("TV-Modelle", "Marken", "Sprachen"),
                 "README.uk.md": (("модель телевізорів", "моделі телевізорів", "моделей телевізорів"),
                                  ("бренд", "бренди", "брендів"), ("мова", "мови", "мов")),
-                "README.tr.md": ("TV modeli", "marka", "dil")}
+                "README.tr.md": ("TV modeli", "marka", "dil"),
+                "README.ru.md": (("модель телевизора", "модели телевизоров", "моделей телевизоров"),
+                                 ("бренд", "бренда", "брендов"), ("язык", "языка", "языков"))}
 
 
 def readme(text, entries, root, path, words=WORDS):
     """A README with its brand block (required), its short TV table (only if it has the markers) and counts."""
-    text = between(text, "tv-brands", brand_lines(entries), path)
+    lines = brand_lines(entries)
+    if path == "README.ru.md":
+        lines = [line.replace(" more brands", " других брендов")
+                     .replace(" projector brands", " брендов проекторов")
+                     .replace(" and ", " и ") if line.startswith("<summary>") else line
+                 for line in lines]
+        lines = [line[:-len(" projectors")].replace(" and ", ", ") + " — проекторы"
+                 if line.endswith(" projectors") else line for line in lines]
+    text = between(text, "tv-brands", lines, path)
     if has_markers(text, "tv-table"):
         text = between(text, "tv-table", readme_rows(entries), path)
     return counts(text, entries, root, words)
