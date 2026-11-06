@@ -458,6 +458,7 @@ on that firmware, grouped and commented. These are starting points: comment out 
 
 Notes for models that have no tested list yet live in [`docs/devices/`](../docs/devices/):
 
+- [Magcubic HY320 Pro](../docs/devices/magcubic-hy320-pro.md) (Android 14 / SDK 34, `Projector_20260713.153921`): APK/Home observations, stock projector controls kept, and separately maintained helper-free launcher source; no tested disable list.
 - [Skyworth / Coocaa K3 (创维/酷开 K3)](../docs/devices/skyworth-7t634-p3h.md), `7T634_P3H`, Android 13, `eng.www-da.20260902.162554`: locally built v3.1.0 launcher with external Home/boot helpers, physical Home and one reboot verified, Coocaa Inputs-list configuration and helper-side continuous-volume troubleshooting; no tested debloat list.
 - [PRISM+ Q55 Ultra 2026](../docs/devices/prismplus-q55-ultra-r10g.md) (`R10G`, Google TV 14, `UKR1.260612.001`): one-session cleanup and stock-Home redirect notes; stock Home and setup wizard retained, repeated Home and held-volume checks, and owner-confirmed Input/antenna playback after restart. No several-day debloat list.
 - [Kodak PATH_7XPRO / LEDTV32HD](../docs/devices/kodak-path-7xpro.md), SPPL, Android TV 9 `PI.20210601`: same-day Home handover and reboot observations, protected input handlers, owner-selected cleanup, aerial playback and unresolved Bluetooth voice pairing; no several-day debloat list.
