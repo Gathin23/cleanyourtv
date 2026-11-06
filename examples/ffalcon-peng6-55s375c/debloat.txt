@@ -1,0 +1,63 @@
+# FFalcon (雷鸟) 鹏6 55S375C (China, 24款, 55" 4K), device tc8000_ay30a2, Amlogic ohm (TC8000),
+# Android 11 (SDK 30), build RQ3A.210705.001.2024052816 (2024-05-28), 3 GB RAM, 64 GB storage,
+# armeabi-v7a only. The set's own version string: VB-T800T11-LF1V066.000483. No Google services.
+# Same platform as examples/tcl-tc8000-ay30a2/, but the 3 GB version on an earlier firmware build;
+# that list's notes on the stock launcher and the boot hand-off apply here as well.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/ffalcon-peng6-55s375c/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/ffalcon-peng6-55s375c/debloat.txt com.tcl.cyberui
+#
+# Stock launcher: com.tcl.cyberui (灵控桌面), the only HOME handler. Never disable it: with it gone
+# the boot animation never finishes and the Home key does nothing.
+# Live TV app: com.tcl.tv (the tuner). The firmware's own 信号源 panel lives in com.tcl.settings, so
+# keep that too; com.droidlogic.tvinput registers HDMI and AV behind it.
+# Nothing was disabled at the factory (`pm list packages -d` was empty).
+#
+# DO NOT DISABLE: com.tcl.cyberui, com.tcl.tv, com.tcl.settings, com.tcl.systemserver, com.tcl.ttvs,
+#   com.sohu.inputmethod.sogou.tv (the only keyboard), com.tcl.autopair (remote pairing),
+#   com.tcl.tcl_bt_rcu_service (remote), com.tcl.walleve (小T voice), com.tcl.miracast (casting),
+#   com.tcl.MultiScreenInteraction_TV (phone push), com.tcl.versionUpdateApp, com.snm.upgrade
+#   (firmware updates).
+#
+# Tested on a real 鹏6 from 2026-10-30 to 2026-11-06: the three packages below went in as one batch,
+# survived two full reboots, and the crash buffer stayed empty. Only these three were tested here;
+# every group further down is commented out.
+# Wait at least 10 seconds after disable.sh before rebooting: PackageManager writes the new states to
+# disk after a short delay, and a reboot inside that window brings the packages back enabled.
+
+# Boot advertisement, vendor telemetry and log upload — the three this unit ran with
+com.tcl.bootadservice    # full-screen ad before Home; the ad is gone on this unit
+com.tcl.bi               # vendor behaviour analytics
+com.tcl.logkit           # log collection and upload
+
+# NOT TESTED on this unit. What the platform list examples/tcl-tc8000-ay30a2/ offers beyond the three
+# above. Uncomment what you want and run Apply again; nothing here was disabled on this 鹏6, so
+# nothing is known about how these behave on this firmware.
+#
+# Vendor ads, push and silent install
+# com.tcl.c2dm.client                      # TCL push, long-lived connection
+# android.autoinstalls.config.tcl.device   # first-boot auto-install of preloaded apps
+# com.tcl.recognize.service                # screen recognition; silent-install channel
+#
+# Preloaded content and promo apps
+# com.tcl.appreciate.art                   # art wallpaper / screensaver with a membership pitch
+# com.tcl.playskill                        # "tips" promo app
+# com.tcl.useragreement                    # user-agreement popup
+# com.tcl.wholenetsearch                   # whole-net search with VOD promotions
+# com.tcl.vod                              # TCL's own video app
+# com.tcl.tliveplay                        # live-TV promo channels
+# com.tcl.browser                          # preloaded browser
+# com.tcl.common.weather                   # weather widget and its background service
+# com.tcl.ffeducation                      # kids / education content
+# com.tcl.ffkaraoke                        # karaoke
+# com.audiocn.karaoke.micmanager           # karaoke microphone manager
+# com.tcl.gamebar                          # game bar
+# com.tcl.weixin                           # WeChat on TV
+#
+# Kept on this unit by choice: uncomment one to try it, and expect the feature it carries to stop.
+# com.tcl.usercenter                       # TCL account and VIP
+# com.tcl.appmarket2                       # TCL app store (当贝市场 installs apps instead)
+# com.tcl.guard                            # 电视卫士, also the USB APK installer
+# com.tcl.ui_mediaCenter                   # USB playback
+# com.tcl.t_solo                           # 蓝牙单独听
+# com.kookong.tvplus                       # 机顶盒设置, IR learning for a set-top box
