@@ -554,11 +554,19 @@ def cmd_set(key, value, theme_folder):
     command = theme_command(folder)
     data[key] = parsed
     f = folder / "config.json"
+    replaced = False
     try:
         # own_folder_problem() above refuses a missing folder; an existing empty one is valid.
         folder.mkdir(parents=True, exist_ok=True)
         # Resolve the file as well as its folder: keep an owner's config.json symlink intact.
-        target = f.resolve()
+        try:
+            target = f.resolve(strict=True)
+        except FileNotFoundError:
+            # An empty folder or a dangling link may start a config, but a link loop must be refused.
+            target = f.resolve()
+        except RuntimeError as e:
+            # Older pathlib versions use RuntimeError for a symlink loop; report the same write refusal.
+            raise OSError(str(e)) from e
         if target.exists():
             with target.open("r+b"):
                 pass   # keep refusing a read-only file, even when its folder permits replacement
@@ -568,10 +576,14 @@ def cmd_set(key, value, theme_folder):
             if target.exists():
                 shutil.copymode(target, pending)
             os.replace(pending, target)
+            replaced = True
     except OSError as e:
-        # Finish and close a copy beside the destination before replacing it, so a failed write
-        # cannot truncate the owner's previous config. Nothing has been pushed at this point.
-        sys.exit(f"cannot write {f}: {reason(e)}. Nothing was pushed.")
+        if not replaced:
+            # Until replace succeeds, a failed write leaves the owner's previous config intact.
+            sys.exit(f"cannot write {f}: {reason(e)}. Nothing was pushed.")
+        # The local edit is already saved: staging cleanup must not turn that into a write failure.
+        sys.stderr.write(f"Saved {f} locally, but staging cleanup failed: {reason(e)}. "
+                         f"The temporary folder may remain at {staging}. Continuing with the theme push.\n")
     print(f"{key} = {json.dumps(parsed)} in {f}")
     code = push_theme(command)
     if code:
