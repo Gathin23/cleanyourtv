@@ -12,6 +12,31 @@ place is bedtime in one press: a 30-minute timer plus the Brightness add-on's ni
 off again on the next press. The picker shows when the
 TV will turn off and can cancel the timer.
 
+## Weekly schedule
+
+Open **Schedule** in the timer picker. Add multiple wake or sleep events, choose any weekdays and a
+24-hour time for each. Times belong to the actual calendar day: Monday 01:00 means Monday morning.
+**Save** applies the list and its On/Off switch; Back discards edits. The schedule screen keeps
+Save visible below the scrolling event list. Wake and sleep entries use separate accent colours.
+
+Time and exclusion dates use D-pad numeric fields, without a keyboard or number buttons. Left/Right
+select a field, Up/Down change its value (holding accelerates), OK moves to the next field and then
+Save. Back cancels the picker. Hours and minutes wrap independently; date fields clamp invalid days
+when changing month or year. Select Save in the main schedule screen to apply the completed edits. Existing weekday/weekend sleep
+settings are migrated to Monday-Friday and Saturday-Sunday events.
+
+Add any number of date ranges without automatic wake, for example during closures, maintenance
+or any planned break in use. Both end dates are included; overlapping ranges work. These
+ranges suppress scheduled wake events only, leaving sleep events and manual remote power available.
+Sleep events enter standby immediately at the selected time, without the timer countdown.
+
+Wake requires power and Android standby; it cannot start an unplugged or fully powered-off TV.
+**Scheduled wake depends on firmware:** an Android wake lock can request screen wake only when
+the TV delivers the scheduled alarm. Deep standby may delay alarms or prevent screen wake, even
+with exact-alarm access. Test sleep and wake separately on the target device.
+Schedules are restored after boot, app updates and clock/time-zone changes. A late event is ignored
+when more than ten minutes late. Without exact-alarm access Android may delay an event.
+
 ## How it turns the TV off
 
 An ordinary app cannot put Android to sleep: there is no permission for it. A device admin's `lockNow()` is
@@ -49,17 +74,46 @@ it without waiting, the first lines of `build-and-install.sh` have an adb comman
   content and reads no keys. The uninstall takes it off the enabled list and leaves any other services alone.
 - **Display over other apps** (`SYSTEM_ALERT_WINDOW`), granted with `appops`: Android 10 and later only let an
   app open its warning from the background when it holds this. The app draws no overlay window.
+- **Wake lock** (`WAKE_LOCK`): briefly wakes the screen for a scheduled wake event; no continuously held lock.
+- **Start at boot** (`RECEIVE_BOOT_COMPLETED`): restores the saved alarms after restart.
 - **Exact alarms** (`SCHEDULE_EXACT_ALARM`), granted with `appops` where it exists (Android 12+), so the
   timer fires on the minute; without it the alarm may come a few minutes late.
 - **Auto-start** (`AUTO_START` or `APP_AUTO_START`, TCL only), granted with `appops` and saved with
   `appops write-settings`: TCL's TclAppBoot otherwise refuses to bind `SleepService` while the app is not
   running, so the timer ends without putting the TV to standby. Other TVs do not have the op and ignore it.
-- No network, no storage permission, no background service: between setting the timer and its end there are
-  two alarms and nothing running.
+- No network or storage permission. Alarms drive the timer; the add-on does not run an app
+  foreground service or poll settings.
 - **`AlarmReceiver`** is exported only to callers holding `WRITE_SECURE_SETTINGS`, which the adb shell has and
   ordinary apps cannot get, for the test action above. **`TimerActivity`** (exported) is the tile and the card; `QuickActivity` and `BedtimeActivity` (exported) answer a remote button.
+
+To test wake from standby using the protected ADB test receiver:
+
+```sh
+# Set a one-off screen wake in 60 seconds, then put the TV in standby with its remote.
+python tools/tv.py 'am broadcast -a io.github.luyzfernando08.sleeptimer.TEST -n io.github.luyzfernando08.sleeptimer/.AlarmReceiver --ez wake true --ei seconds 60'
+```
+
+This test leaves the saved weekly schedule unchanged.
+
+## Schedule calculation checks
+
+[tests/ScheduleCheck.java](tests/ScheduleCheck.java) checks weekdays, exact boundaries, overlapping
+exclusion periods, the year boundary, daylight saving time, empty lists and simultaneous sleep/wake events.
+Run with JDK 17 from the repository root (output stays in the ignored work folder):
+
+```sh
+mkdir -p work/schedule-check
+javac -d work/schedule-check addons/sleep-timer/app/src/main/java/io/github/luyzfernando08/sleeptimer/ScheduleRules.java addons/sleep-timer/tests/ScheduleCheck.java
+java -cp work/schedule-check io.github.luyzfernando08.sleeptimer.ScheduleCheck
+```
 
 ## Tested on
 
 Xiaomi Mi Box S (MIBOX4, Android TV 9) with the reference launcher 2.6: the card, the picker, the warning at
 one minute, standby on the second, and the TV turned off with it over HDMI-CEC.
+
+The add-on author also tested this PR on Xiaomi Mi Box S (MIBOX4, Android 9, launcher 3.3): the
+Schedule screen, event dialog, weekday list and Portuguese strings worked with a D-pad; the one-off
+countdown still put the box to sleep through accessibility, and Open on wake installed and started.
+On that box, a scheduled one-off wake alarm was deferred in standby and fired 272 ms after the
+remote woke the box. Exclusion periods and reboot were not tested on this box.
