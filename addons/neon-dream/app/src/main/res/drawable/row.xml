@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A row of the settings screen: dim, with a neon outline while focused. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape>
+            <solid android:color="#552A1050" />
+            <stroke android:width="3dp" android:color="#FFFF2A6D" />
+            <corners android:radius="6dp" />
+            <padding android:left="20dp" android:right="20dp" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="#33200A40" />
+            <corners android:radius="6dp" />
+            <padding android:left="20dp" android:right="20dp" />
+        </shape>
+    </item>
+</selector>
