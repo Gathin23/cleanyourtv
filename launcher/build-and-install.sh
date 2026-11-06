@@ -68,31 +68,44 @@ fi
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
+# A stock launcher that still owns Home while this launcher is installed and its HomeKeyService is on is
+# the stock_home_redirect setup (debloat-keep-cast.txt and the other lists that keep casting): the stock
+# launcher stays Home on purpose and the helper hands over from it, so a rerun to upgrade the launcher
+# must not disable it, nor hand Home over. The TV answers redirect, no-helper (installed, helper off) or
+# not-installed, each read checked; anything else is a failed read.
+REDIRECT_PROBE='p=$(pm list packages com.gathin.tvhome) || { echo probe-failed; exit; }; if printf "%s\n" "$p" | grep -qx package:com.gathin.tvhome; then s=$(settings get secure enabled_accessibility_services) || { echo probe-failed; exit; }; case "$s" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; *) echo no-helper ;; esac; else echo not-installed; fi'
+probe_redirect() { "$PY" -I ../tools/tv.py "$REDIRECT_PROBE" 2>/dev/null | tr -d '\r' | tail -n 1 || true; }
+# The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
+# so it comes back on unless HOME_KEY_SERVICE=0 is passed.
+keep_stock_home() {
+  STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}; KEEP_HOME=$1
+  echo "$1 owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
+  echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
+}
+GIVEN_STOCK=${STOCK_LAUNCHER:-}
 KNOWN_STOCK_LAUNCHERS="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher com.mitv.tvhome"
 if [ -z "${STOCK_LAUNCHER:-}" ]; then
   HOME_PKG=$("$PY" -I ../tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
     | tail -n 1 | tr -d '\r' | cut -d/ -f1) || {
     echo "ERROR: could not ask the TV which launcher owns Home. Check TV_HOST and the debugging prompt on the TV," >&2
     echo "or pass STOCK_LAUNCHER=<package> yourself." >&2; exit 1; }
-  # A stock launcher that still owns Home while this launcher is installed and its HomeKeyService is on
-  # is the stock_home_redirect setup (debloat-keep-cast.txt and the other lists that keep casting): the
-  # stock launcher stays Home on purpose and the helper hands over from it. Running this script again to
-  # upgrade the launcher must not disable it, which a rerun without STOCK_LAUNCHER=none used to do.
-  # The TV answers redirect or no-redirect, each read checked; anything else (a failed read, an empty or
-  # cut-off reply) stops the script before the install, since guessing no-redirect would disable it.
-  REDIRECT_PROBE='p=$(pm list packages com.gathin.tvhome) || { echo probe-failed; exit; }; if printf "%s\n" "$p" | grep -qx package:com.gathin.tvhome; then s=$(settings get secure enabled_accessibility_services) || { echo probe-failed; exit; }; case "$s" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; *) echo no-redirect ;; esac; else echo no-redirect; fi'
   case " $KNOWN_STOCK_LAUNCHERS " in
     *" $HOME_PKG "*)
-      REDIRECT=$("$PY" -I ../tools/tv.py "$REDIRECT_PROBE" | tr -d '\r' | tail -n 1) || REDIRECT=""
+      REDIRECT=$(probe_redirect)
       case "$REDIRECT" in
         redirect)
-          # The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
-          # so it comes back on unless HOME_KEY_SERVICE=0 is passed.
-          STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}; KEEP_HOME=$HOME_PKG
-          echo "$HOME_PKG owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
-          echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
+          keep_stock_home "$HOME_PKG"
           echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG." ;;
-        no-redirect) STOCK_LAUNCHER=$HOME_PKG ;;
+        not-installed) STOCK_LAUNCHER=$HOME_PKG ;;
+        no-helper)
+          # Installed, but the helper is off: a redirect TV whose helper an earlier upgrade dropped looks
+          # like this, and so does a handover that never finished. Disabling would be wrong for the first.
+          echo "ERROR: this launcher is installed, but $HOME_PKG owns Home and HomeKeyService is off, so this" >&2
+          echo "script cannot tell a stock_home_redirect TV whose helper was dropped from a handover that never" >&2
+          echo "finished. Nothing was installed or disabled. Say which one:" >&2
+          echo "  STOCK_LAUNCHER=none HOME_KEY_SERVICE=1   keep $HOME_PKG as Home and turn the helper back on" >&2
+          echo "  STOCK_LAUNCHER=$HOME_PKG   hand Home over and disable it" >&2
+          exit 1 ;;
         *)
           echo "ERROR: $HOME_PKG owns Home, and the TV did not say whether this launcher's HomeKeyService is on" >&2
           echo "(stock_home_redirect). Nothing was installed or disabled. Run again, or name it yourself:" >&2
@@ -126,6 +139,16 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
         echo "  anything else                            = another launcher is the default" >&2
         echo "Run again with STOCK_LAUNCHER=<package to disable> or STOCK_LAUNCHER=none." >&2; exit 1
       fi ;;
+  esac
+fi
+# STOCK_LAUNCHER=none given by hand, as debloat-keep-cast.txt says to: on a redirect TV it means keep the
+# stock launcher as Home, so it gets the same treatment. Elsewhere (a Xiaomi list that keeps PatchWall
+# enabled but wants this launcher as Home) it still means hand Home over and disable nothing.
+if [ "$GIVEN_STOCK" = none ]; then
+  HOME_PKG=$("$PY" -I ../tools/tv.py "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME" \
+    2>/dev/null | tail -n 1 | tr -d '\r' | cut -d/ -f1 || true)
+  case " $KNOWN_STOCK_LAUNCHERS " in
+    *" $HOME_PKG "*) if [ "$(probe_redirect)" = redirect ]; then keep_stock_home "$HOME_PKG"; fi ;;
   esac
 fi
 echo "Stock launcher: $STOCK_LAUNCHER"
