@@ -1,0 +1,39 @@
+# STRONG SRT 43UD6593 (Changhong, reports model "AI PONT", device dundas, product DVB94ST), Android TV 11
+# (API 30), firmware RTMA.250416.196, MediaTek m7332, 1920x1080, about 1.3 GB RAM (MemTotal 1405164 kB).
+# Same platform and firmware as examples/peaq-ptv43aqu-5023c; this list is that one without its personal-choice batches.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/strong-srt-43ud6593/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/strong-srt-43ud6593/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher. Shipped disabled: com.cltv.fast, com.google.android.marvin.talkback.
+# The one saved Wi-Fi network belongs to setupwraith, so setupwraith is left alone. Only tvlauncher and
+# com.android.tv.settings/.system.FallbackHome answer HOME.
+# Tested on one set on 5 Nov 2026, the same day and through one reboot, not a multi-day soak. Disabled in two
+# batches with a screenshot between them; every package stayed disabled through the reboot. Then
+# launcher/build-and-install.sh set com.gathin.tvhome as Home (mFocusedApp checked, also after the reboot) and
+# tools/theme.sh pushed config.json. The remote's buttons were pressed on the real remote and worked.
+#
+# KEEP: Google Assistant (com.google.android.katniss), Prime Video, com.homwee.dmt.upgrade and com.homwee.upgrade
+# (updates), com.homwee.synckey (remote keys), com.homwee.chtvmanager, com.homwee.factory, com.mediatek.* (Live TV,
+# inputs, remote pairing, picture), com.google.android.apps.mediashell (Chromecast), com.homwee.multiscreenshare
+# and com.homwee.mmp.screenshare (mirroring).
+
+# Batch 1: telemetry, ads and recommendation rows
+tv.anoki.acr.controller                 # Anoki automatic content recognition
+com.homwee.aipont                       # AI PONT brand portal and its recommendation channels
+com.google.android.tvrecommendations
+android.autoinstalls.config.homwee      # partner-app auto-installs
+
+# Batch 2: vendor and preloaded apps
+com.homwee.store
+com.homwee.help
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.videos               # Google Play Movies & TV
+com.google.android.youtube.tvmusic
+com.google.android.syncadapters.calendar
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh, which disables it only
+# after the new home is installed and set as default; restore.sh re-enables it.
+# com.google.android.tvlauncher
