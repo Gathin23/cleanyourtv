@@ -260,9 +260,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   stopped it within the second and disabling it again started it again, nothing on screen changes, and idle
   CPU for the whole TV still fell from 22.6% to 9% after the debloat and the launcher swap. Turning the
   wizard back on is not the quiet way out either, since its `.RecoveryActivity` takes Home from the
-  launcher: leave it off and let the line repeat. Seen on that one set
-  ([#2853](https://github.com/Gathin23/cleanyourtv/issues/2853)); whether VH2 and VH21 units do the same has
-  not been reported yet.
+  launcher: leave it off and let the line repeat. Seen on that set
+  ([#2853](https://github.com/Gathin23/cleanyourtv/issues/2853)) and on a VH2, an XR-55X90JK (`BRAVIA_VH2_SA`,
+  the same build) with setupwraith and launcherx disabled: there the line came every 500 ms from a single
+  process, each time with `CountrySettingsModule: SetupProviderGateway getCountryCode() failed to query
+  SetupProvider.`, and nothing on screen was wrong. Whether VH21 units do the same has not been reported yet.
 - **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
   skips every package in the list and says to reboot first (older copies of the script said "the TV's dumpsys
   shows neither a requested nor a granted permission block" and named Android 5.x instead). Android's watchdog
