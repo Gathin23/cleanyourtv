@@ -10,7 +10,8 @@
    more: N articles from N countries"), the Dutch `README.nl.md` ("nog N media: N artikelen uit N landen") and
    the German `README.de.md` ("und N weitere: N Artikel aus N Ländern"), the Ukrainian
    `README.uk.md` ("та ще N видань: N статей із N країн") and the Turkish `README.tr.md`
-   ("ve N yayın daha: N ülkeden N makale", the country count before the article total) - and `MORE` in
+   ("ve N yayın daha: N ülkeden N makale", the country count before the article total), the Russian
+   `README.ru.md` ("и ещё N изданий: N статей из N стран") - and `MORE` in
    `tools/readme_featured.py`. Every page shows the same picture, so a translation that copies it states the
    same numbers in its own words: the pages named here are the ones that carry it today, not the rule.
    The end of each page's story section repeats the three numbers once more, in prose ("The coverage: 351
