@@ -24,6 +24,12 @@ Two shapes of a destination were left after that: a word that is only whitespace
 after which that folder was made and the pull wrote to a folder name. Both are refused now, by the
 same judge, before the TV is opened; each has a test below.
 
+A last word of `.` or `..` was the third shape of the same kind (`--screenshot newshots/.`, and
+`newshots/..`): the folder it names is not there, so isdir() answers no and abspath() drops the tail the
+way it drops a separator, and the run went on to `screencap` before the pull's open() failed on a path
+with no such folder - exit 1, the code kept for a capture that came back empty. Refused with the other
+two, and a `.` in the middle of a path (`shots/./01-home.png`) is still one file name.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
@@ -168,6 +174,31 @@ class ScreenshotTargetTest(unittest.TestCase):
         target = os.path.join(str(self.work()), "newshots") + os.sep
         self.assertRefused(["--screenshot", target], "ends with a separator", "01-home.png",
                            "Nothing was captured.")
+
+    def test_a_destination_that_ends_in_one_dot_is_refused(self):
+        # `--screenshot newshots/.` names that folder itself, and the folder is not there yet: isdir()
+        # answers no, and the separator check sees a dot rather than a separator. The folder was then
+        # made and the pull wrote to a name that is a folder, after `screencap` had run on the TV.
+        work = self.work()
+        target = os.path.join(str(work), "newshots", ".")
+        self.assertRefused(["--screenshot", target], "names a folder rather than a file",
+                           "01-home.png", "Nothing was captured.")
+
+    def test_a_destination_that_ends_in_two_dots_is_refused(self):
+        # The same shape one level up: `--screenshot newshots/..` names the folder that holds `newshots`,
+        # which an owner reading the name does not expect, and the pull cannot write it as a file.
+        work = self.work()
+        target = os.path.join(str(work), "newshots", "..")
+        self.assertRefused(["--screenshot", target], "names a folder rather than a file",
+                           "01-home.png", "Nothing was captured.")
+
+    def test_a_dot_in_the_middle_of_the_path_is_still_a_file(self):
+        # `shots/./01-home.png` is one file name with a pointless hop in it; it must keep working.
+        work = self.work()
+        local = Path(os.path.join(str(work), "shots", ".", "01-home.png"))
+        status, out, err, opened, sent = self.run_tv(["--screenshot", str(local), ], work)
+        self.assertEqual(0, status, err)
+        self.assertTrue((work / "shots" / "01-home.png").is_file(), err)
 
     def test_a_blank_destination_is_refused(self):
         # `--screenshot "$SHOT"` with SHOT holding a space: accepted, the pull wrote a file named "   ",

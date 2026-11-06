@@ -509,12 +509,15 @@ def screenshot_target(local):
     have been judged this way since #2039; this is the flag the pages hand out most.
 
     A folder that is not there is still made rather than refused: that is the one shape the command is
-    expected to fix for itself. Two words are not a file name and are refused here: one that is only
+    expected to fix for itself. Three words are not a file name and are refused here: one that is only
     whitespace, which `--screenshot "$SHOT"` sends when SHOT holds a space (the pull wrote a file named
     "   " and the run printed `screenshot     (N bytes)`, exit 0, while the path the reader meant was
-    never made), and one that ends with a separator while that folder is not there yet - the check below
+    never made), one that ends with a separator while that folder is not there yet - the check below
     only answers a folder that exists, and os.path.abspath() drops the separator, so the folder was made
-    and `screencap` ran on the TV before the pull wrote to a name that is a folder.
+    and `screencap` ran on the TV before the pull wrote to a name that is a folder - and one whose last
+    word is `.` or `..`, which names the folder itself or its parent (`--screenshot newshots/.`): the
+    folder is not there, isdir() answers no and abspath() drops the tail as well, so the pull's open() of
+    the destination was the first thing to fail.
     """
     if not local:
         usage_error("--screenshot needs the file to save to")
@@ -528,6 +531,14 @@ def screenshot_target(local):
         path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
                    f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
                    f"Nothing was captured.")
+    if os.path.basename(local) in (".", ".."):
+        # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
+        # is not there yet: os.path.isdir() answers no, the check above sees a dot rather than a separator,
+        # and os.path.abspath() drops the tail, so the parent was made, `screencap` ran on the TV, and the
+        # pull's open() of the destination - a path with no such folder - was the first thing to fail.
+        path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
+                   f"and --screenshot saves the PNG to a file: give the file a name such as "
+                   f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
