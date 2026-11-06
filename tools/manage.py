@@ -555,6 +555,8 @@ def cmd_set(key, value, theme_folder):
     data[key] = parsed
     f = folder / "config.json"
     try:
+        # own_folder_problem() above refuses a missing folder; an existing empty one is valid.
+        folder.mkdir(parents=True, exist_ok=True)
         # Resolve the file as well as its folder: keep an owner's config.json symlink intact.
         target = f.resolve()
         if target.exists():
