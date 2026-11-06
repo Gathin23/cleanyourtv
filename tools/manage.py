@@ -47,6 +47,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -554,11 +555,20 @@ def cmd_set(key, value, theme_folder):
     data[key] = parsed
     f = folder / "config.json"
     try:
-        folder.mkdir(parents=True, exist_ok=True)
-        f.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        # Resolve the file as well as its folder: keep an owner's config.json symlink intact.
+        target = f.resolve()
+        if target.exists():
+            with target.open("r+b"):
+                pass   # keep refusing a read-only file, even when its folder permits replacement
+        with tempfile.TemporaryDirectory(prefix=".manage-config-", dir=target.parent) as staging:
+            pending = Path(staging) / target.name
+            pending.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            if target.exists():
+                shutil.copymode(target, pending)
+            os.replace(pending, target)
     except OSError as e:
-        # A folder that is read-only, a path with a file in the middle of it, a full disk: the key is not
-        # written and the theme on the TV is untouched, so say which file and why rather than a traceback.
+        # Finish and close a copy beside the destination before replacing it, so a failed write
+        # cannot truncate the owner's previous config. Nothing has been pushed at this point.
         sys.exit(f"cannot write {f}: {reason(e)}. Nothing was pushed.")
     print(f"{key} = {json.dumps(parsed)} in {f}")
     code = push_theme(command)

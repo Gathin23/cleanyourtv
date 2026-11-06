@@ -332,6 +332,75 @@ class SetThemeFolderTest(unittest.TestCase):
         self.assertIn("Nothing was pushed", refusal)
         self.push.assert_not_called()
 
+    def test_a_partial_write_preserves_the_existing_config(self):
+        self.config.write_text('{"greeting_name": "Keep me", "dock_band": false}\n', encoding="utf-8")
+        original = self.config.read_bytes()
+        write_text = Path.write_text
+
+        def interrupted(path, text, *args, **kwargs):
+            write_text(path, text[:12], *args, **kwargs)
+            raise OSError(28, "No space left on device")
+
+        with mock.patch.object(Path, "write_text", interrupted):
+            refusal = self.set_key()
+        self.assertIn("cannot write", refusal)
+        self.assertEqual(self.config.read_bytes(), original)
+        self.assertEqual(list(self.theme.iterdir()), [self.config])
+        self.push.assert_not_called()
+
+    def test_a_partial_first_write_leaves_no_config(self):
+        write_text = Path.write_text
+
+        def interrupted(path, text, *args, **kwargs):
+            write_text(path, text[:12], *args, **kwargs)
+            raise OSError(28, "No space left on device")
+
+        with mock.patch.object(Path, "write_text", interrupted):
+            refusal = self.set_key()
+        self.assertIn("cannot write", refusal)
+        self.assertEqual(list(self.theme.iterdir()), [])
+        self.push.assert_not_called()
+
+    def test_a_failed_replace_keeps_the_original_and_cleans_staging(self):
+        self.config.write_text('{"greeting_name": "Keep me"}\n', encoding="utf-8")
+        original = self.config.read_bytes()
+        with mock.patch.object(manage.os, "replace", side_effect=PermissionError("replace refused")):
+            refusal = self.set_key()
+        self.assertIsNotNone(refusal)
+        self.assertEqual(self.config.read_bytes(), original)
+        self.assertEqual(list(self.theme.iterdir()), [self.config])
+        self.push.assert_not_called()
+
+    def test_a_symlink_still_updates_its_target_and_keeps_its_mode(self):
+        target = Path(self.tmp.name) / "shared.json"
+        target.write_text('{"greeting_name": "Keep me"}\n', encoding="utf-8")
+        target.chmod(0o640)
+        try:
+            self.config.symlink_to(target)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks unavailable")
+        mode = target.stat().st_mode
+        self.assertIsNone(self.set_key())
+        self.assertTrue(self.config.is_symlink())
+        self.assertEqual(json.loads(target.read_text()), {"greeting_name": "Keep me", "dock_band": True})
+        self.assertEqual(target.stat().st_mode, mode)
+        self.assertEqual(list(self.theme.iterdir()), [self.config])
+        self.assertEqual(set(Path(self.tmp.name).iterdir()), {self.theme, target})
+        self.push.assert_called_once()
+
+    @unittest.skipIf(sys.platform == "win32", "POSIX write permissions")
+    def test_a_read_only_config_is_not_replaced(self):
+        self.config.write_text('{"greeting_name": "Keep me"}\n', encoding="utf-8")
+        original = self.config.read_bytes()
+        self.config.chmod(0o444)
+        self.addCleanup(self.config.chmod, 0o644)
+        if manage.os.access(self.config, manage.os.W_OK):
+            self.skipTest("process can write read-only files")
+        self.assertIsNotNone(self.set_key())
+        self.assertEqual(self.config.read_bytes(), original)
+        self.assertEqual(list(self.theme.iterdir()), [self.config])
+        self.push.assert_not_called()
+
     def test_a_folder_this_checkout_ships_is_refused(self):
         # A checkout of its own, so the project's real files are never touched by this test.
         # Resolved like manage.ROOT is, so a temporary folder behind a symlink (/var on macOS) still compares.
