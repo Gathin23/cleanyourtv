@@ -25,10 +25,11 @@ Exit codes: 0 in sync (or fixed), 1 drift, an incomplete fix, or packages a safe
 2 the TV or the list could not be read, which includes ADB timing out or failing partway (after which
 a --fix may be partial, and the next check says what is left), a run with no TV_HOST set or no ADB
 client to read the TV with, or the command line asked for something this script does not do, which
-includes naming a launcher the TV does not have. That last one matters: README.md tells an owner to
+includes naming a launcher the TV does not have: not installed, or installed with no HOME activity
+(a disabled launcher, or an app that is not one). That last one matters: README.md tells an owner to
 run this from a weekly job and hear about it on exit 1, so a mistyped flag must not come back as
-drift, nor a mistyped launcher as "nothing drifted". A recovery record --fix cannot read or update is
-2 as well, with nothing changed on the TV.
+drift, nor a mistyped launcher as "nothing drifted" or as drift no --fix can clear. A recovery record
+--fix cannot read or update is 2 as well, with nothing changed on the TV.
 """
 import os
 import re
@@ -434,6 +435,23 @@ def main():
                              f"against it; there is no report and nothing was changed. Check the "
                              f"package name of the launcher Home should be on, and run this again.\n")
             return 2
+        if preferred:
+            # Installed is not enough: a typo that lands on another app (com.android.vending) made
+            # every run report Home drift that no --fix could clear, and --fix then stopped in
+            # launcher_to_use with exit 1. Judged only when the TV listed a real HOME activity: a
+            # firmware without a working `cmd` lists none, and one still locked after a reboot lists
+            # only its FallbackHome placeholders, and then nothing can be told apart.
+            claims = [c for c in home_activities(dev) if not FALLBACK_HOME_RE.search(c)]
+            if claims and not any(home_of(c) == preferred for c in claims):
+                if preferred in disabled:
+                    why = (f"{preferred} is installed but disabled, so it answers no HOME activity: "
+                           f"turn it back on (pm enable --user 0 {preferred}) or name the launcher "
+                           f"Home should be on")
+                else:
+                    why = (f"{preferred} is installed but answers no HOME activity on this TV, so "
+                           f"Home cannot be checked against it: name the launcher Home should be on")
+                sys.stderr.write(f"{why}. There is no report and nothing was changed.\n")
+                return 2
         code = report(list_path, listed, home, back_on, gone, home_drifted, expected)
         if code and wanted:
             # restore.sh puts back only what the recovery record holds, so before anything is disabled,
