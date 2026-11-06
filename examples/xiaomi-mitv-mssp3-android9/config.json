@@ -1,0 +1,25 @@
+{
+  "columns": 5,
+  "handle_view_inputs": true,
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.mediatek.wwtv.tvcenter",
+    "com.android.vending"
+  ],
+  "app_banners": [
+    "com.mediatek.wwtv.tvcenter=banner_tv"
+  ],
+  "app_keys": [
+    "192:com.tdtchannels.player",
+    "KEYCODE_BUTTON_5:com.tdtchannels.player",
+    "265:com.google.android.youtube.tv",
+    "KEYCODE_STEM_1:com.google.android.youtube.tv",
+    "193:com.google.android.youtube.tv",
+    "KEYCODE_BUTTON_6:com.google.android.youtube.tv",
+    "scan:240:com.google.android.youtube.tv",
+    "scan:416:com.google.android.youtube.tv",
+    "scan:393:com.google.android.youtube.tv"
+  ]
+}

@@ -92,3 +92,31 @@ no `app_keys` entry were needed on this unit: the app buttons go through
 `com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver` and `com.mstar.netflixobserver`, which stay
 enabled. The microphone does nothing by design, since the voice assistant is disabled. An injected `KEYCODE_TV`
 over ADB does not open Live TV here, which says nothing about the remote; the Inputs pill opens it.
+
+## Third unit: PI.7274 (EU retail Mi TV 4S 55", Spain)
+
+A third set running Android 9 (SDK 28, build `PI.7274 release-keys`, `ro.product.model = MiTV-MSSP3`,
+`ro.product.device = machuca`, 1.8 GB RAM).
+
+### Debloat batches & kept packages
+Applied in four batches (telemetry; PatchWall and content rows; cleaner and unused preloads; and the old leanback
+home after CleanYourTV was verified as default Home).
+
+Kept deliberately:
+- Firmware updater (`com.xiaomi.mitv.updateservice`)
+- Chromecast built-in (`com.google.android.apps.mediashell`)
+- Screensavers (`com.google.android.backdrop`, `com.mitv.dream`)
+- Gallery (`com.mitv.gallery`) for local wallpapers / photos in Galería
+- Voice assistant (`com.google.android.katniss`)
+- Streaming apps: Netflix, YouTube, Prime Video, HBO Max, RTVE, Atresplayer, Mitele, Tivify, Apple TV, Spotify, and TDT Channels
+
+### Launcher configuration and remote keys
+Configured via `config.json` in this folder:
+- `"columns": 5`
+- `"handle_view_inputs": true` (allows the physical and remote Input button to open the launcher's Inputs menu)
+- `"dock_apps"`: YouTube, Netflix, Prime Video, Live TV (`com.mediatek.wwtv.tvcenter`), and Play Store (`com.android.vending`)
+- `"app_banners"`: `"com.mediatek.wwtv.tvcenter=banner_tv"`
+- `"app_keys"`:
+  - Mi button (`192` / `KEYCODE_BUTTON_5`) mapped to open TDT Channels (`com.tdtchannels.player`).
+  - Netflix button (`265` / `KEYCODE_STEM_1`, `193` / `KEYCODE_BUTTON_6`, scancodes `scan:240`, `scan:416`, `scan:393`) remapped to YouTube (`com.google.android.youtube.tv`).
+
