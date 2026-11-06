@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A stylised gamepad. Own art; no third-party logos. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101216" android:pathData="M0,0h320v180h-320z" />
+    <group android:scaleX="6" android:scaleY="6" android:translateX="88" android:translateY="18">
+        <path android:fillColor="#4FC3F7" android:pathData="M7,5h10c2.8,0 5,2.2 5,5v3.5c0,2.5 -2,4.5 -4.5,4.5c-1.5,0 -2.9,-0.8 -3.7,-2l-0.6,-1h-2.4l-0.6,1c-0.8,1.2 -2.2,2 -3.7,2C4,18 2,16 2,13.5V10c0,-2.8 2.2,-5 5,-5z" />
+        <path android:fillColor="#101216" android:pathData="M6.3,8.6h1.4v1.4h1.4v1.4h-1.4v1.4h-1.4v-1.4h-1.4v-1.4h1.4z" />
+        <path android:fillColor="#101216" android:pathData="M16,8.6a1.1,1.1 0 1 1 -0.1,0z" />
+        <path android:fillColor="#101216" android:pathData="M18.4,11.5a1.1,1.1 0 1 1 -0.1,0z" />
+    </group>
+</vector>
