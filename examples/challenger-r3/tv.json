@@ -1,0 +1,6 @@
+{
+  "tv": "Challenger R3 (SCBC R3, Realtek rtd2841a, 1.5 GB RAM), Colombia",
+  "os": "Android TV 11",
+  "brand": "Challenger",
+  "notes": "Same SCBC platform as the [Compac ATV R2](compac-atv-r2/debloat.txt) and SANYO ATV R2, on Android 11: S-Channel rows, recommendations, hotspot, HbbTV, factory tools and the Google screensaver disabled; remote, input and Live TV packages (`com.apps.*`, `com.realtek.*`) kept; 96% full storage needs `pm trim-caches` before the launcher installs"
+}
