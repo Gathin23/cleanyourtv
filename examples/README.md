@@ -559,3 +559,5 @@ Notes for models that have no tested list yet live in [`docs/devices/`](../docs/
 
 To add your TV, see [CONTRIBUTING.md](../CONTRIBUTING.md). The quickest way to get a list is to
 run the prompt in [PROMPT.md](../PROMPT.md) and copy the packages your assistant disabled.
+
+- [Xiaomi F Pro L55MB-FPEU](../docs/devices/xiaomi-l55mb-fpeu.md) (`AFTBR92D74`, `ginzaeu`, Fire OS 8.1.8.5 / Android 11, `RS8185.3885N`): initial one-session report; 20 packages remain disabled after reboot, five ad packages return, Amazon Music and satellite TV retained; no several-day list yet.
