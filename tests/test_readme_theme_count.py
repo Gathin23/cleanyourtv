@@ -31,6 +31,14 @@ page this file could not see while it said "Dezoito temas": Portuguese words wer
 so the claim was read as no claim at all, and the pin below named five pages while the tree held
 twenty-one themes and that page said eighteen.
 
+README.he.md is the seventh, and it was invisible for a second reason: the page says "21 ערכות"
+beside a link written without code spans around the folder ("[themes](themes/)"), while every entry
+in claims() was matched by the exact string "[`themes/`](themes/)". So the page's number was read as
+no claim at all - not as a wrong one - and the fold-in 3c122bc0, which bumped the Themes row from
+twenty-one to twenty-six on the six pages it could see, left the Hebrew page offering a reader five
+fewer looks than the repo ships. The link is matched with or without the code spans now, because the
+count is a claim about the tree whatever shape the link has.
+
 That one table is what README.md's row is read through too. The row had a twelve-word table of its own
 while the sentences were read through one that carries twenty, and the two agreed only while themes/
 held twelve: the thirteenth theme, "thirteen ship in themes/", is what docs/workflows/theme.md step 5
@@ -96,7 +104,10 @@ NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7
 # "one" is the one word the table leaves out and the row can carry, because COUNT anchors the number
 # to "ship": "one ship in themes/" is a count where a bare "een"/"ein" on a page line is an article.
 COUNT_WORDS = {"one": 1, **NUMBER_WORDS}
-THEMES_LINK = "[`themes/`](themes/)"
+# The link is written with the folder in code spans on every page but README.he.md, which writes
+# "[themes](themes/)"; both are the themes link, so both are read. Matching the code-span form alone
+# made the Hebrew page's count invisible rather than wrong, which is the failure this file exists for.
+THEMES_LINK = re.compile(r"\[`?themes/?`?\]\(themes/?\)")
 
 
 def word_alternation(words):
@@ -149,7 +160,7 @@ def claims(text):
     """
     found = []
     for line in text.split("\n"):
-        if THEMES_LINK not in line:
+        if THEMES_LINK.search(line) is None:
             continue
         values = {int(t) if t.isdigit() else NUMBER_WORDS[t.lower()] for t in NUMBER.findall(line)}
         if values:
@@ -185,17 +196,18 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these six pages state the count today, so one that stops
+        # stale in the first place: these seven pages state the count today, so one that stops
         # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
         # the Ukrainian words above; before that it stated its count and this list still read three.
         # README.tr.md states its count in digits, so it needs no words in the table, and
         # README.pt-BR.md is the sixth: it stated "Dezoito temas" (eighteen, against twenty-one in
         # themes/) where this list did not look, so a page that leaves the list now fails here in
-        # the same sentence that names the pages which still state the count.
+        # the same sentence that names the pages which still state the count. README.he.md is the
+        # seventh, and it was missing for the other reason a page can be invisible: its link.
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.md", "README.nl.md", "README.pt-BR.md",
-                          "README.tr.md", "README.uk.md"],
-                         "the front pages that state the theme count are not the six that did: "
+                         ["README.de.md", "README.he.md", "README.md", "README.nl.md",
+                          "README.pt-BR.md", "README.tr.md", "README.uk.md"],
+                         "the front pages that state the theme count are not the seven that did: "
                          f"{sorted(set(stating))}")
 
 
@@ -261,6 +273,16 @@ class CountTest(unittest.TestCase):
                       "`config.json` enviado pelo Wi-Fi, sem recompilação. 21 temas estão incluídos em "
                       "[`themes/`](themes/), incluindo o `default/` integrado. |")
         self.assertEqual([({21}, portuguese)], claims(portuguese))
+
+    def test_a_link_without_code_spans_is_read(self):
+        """README.he.md's row as the page writes it: the folder is not in code spans."""
+        hebrew = ("| **ערכות עיצוב** | רקע, תמונה ופריסה מקובץ <code dir=\"ltr\">config.json</code> "
+                  "שנשלח דרך הרשת. יש 26 ערכות ב־[themes](themes/), כולל ברירת המחדל. |")
+        self.assertEqual([({26}, hebrew)], claims(hebrew))
+
+    def test_a_link_without_code_spans_and_without_a_number_is_not_a_claim(self):
+        tools = "[`theme.sh`](tools/theme.sh) | Push a folder from [themes](themes/)"
+        self.assertEqual([], claims(tools))
 
     def test_a_row_that_does_not_state_a_count_is_not_a_claim(self):
         tools = "| [`theme.sh`](tools/theme.sh) | Push a folder from [`themes/`](themes/) |"
