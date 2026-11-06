@@ -514,7 +514,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambient = findViewById(R.id.ambient);
         // The glow is one bitmap, so its alpha can be applied while drawing it. Otherwise every frame of
         // a fade renders it into a full-screen offscreen buffer first.
-        ambient.forceHasOverlappingRendering(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ambient.forceHasOverlappingRendering(false);
         ambientGlow = cfg.ambientGlow;
         glowSnap = cfg.glowSnap;
         appGlow = cfg.appGlow;
@@ -523,7 +523,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         hero = findViewById(R.id.hero);
         // The hero is now a group (name, and the cinematic lines): without this every fade of the default
         // shelf would render it through an offscreen buffer first, as the glow above notes.
-        hero.forceHasOverlappingRendering(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) hero.forceHasOverlappingRendering(false);
         heroMeta = findViewById(R.id.heroMeta);
         heroDots = findViewById(R.id.heroDots);
         heroArt = findViewById(R.id.heroArt);
@@ -1990,7 +1990,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroDots.setVisibility(heroDotsShown ? View.VISIBLE : View.GONE);
         heroArt.setVisibility(heroArtAlpha > 0f ? View.VISIBLE : View.GONE);
         // One stretched bitmap: apply its alpha while drawing instead of through an offscreen buffer.
-        heroArt.forceHasOverlappingRendering(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) heroArt.forceHasOverlappingRendering(false);
         if (scrimPercent <= 0) return;   // cinematic_scrim 0: no scrim at all
         View scrim = findViewById(R.id.heroScrim);
         Drawable shade = scrimDrawable();
