@@ -66,7 +66,11 @@ final class ServiceRepair {
                 if (updated.length() > 0) updated.append(':');
                 updated.append(name.flattenToShortString());
             }
-            if (!missing) return;
+            // The list can still name the helper while Android has marked it crashed and dropped the master
+            // switch to 0: a standby that kills third-party apps on Hisense songshan does exactly that (#3404).
+            // A recorded helper with the switch off needs the same cycle as one missing from the list.
+            boolean switchedOff = Settings.Secure.getInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 0;
+            if (!missing && !switchedOff) return;
             // A killed helper also lands on Android's "Crashed services" list (dumpsys accessibility), and a
             // crashed service is never bound again, so putting it back on the list alone binds nothing and the
             // switch falls back to 0 (Hisense songshan, Android 11, whose standby kills third-party apps). Android

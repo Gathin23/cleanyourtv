@@ -54,17 +54,16 @@ def section(text, heading):
     return "\n".join(out)
 
 
-def flag_written_after_the_list_check(java):
-    """True when `ServiceRepair` writes the flag only once it has also finished the enabled list.
+def repairs_a_complete_list_with_the_flag_off(java):
+    """True when `ServiceRepair` also runs its repair for a complete list while the flag reads 0 (#3404).
 
-    The note tells a reader that `restore_key_services` cannot repair a complete list, which is true
-    only while the flag write sits after the `if (!missing) return;` early exit. Once the launcher
-    repairs this state itself, this test fails and the note has to say so instead.
+    Before #3404 the note could say `restore_key_services` did not cover this state, because the flag
+    write sat after an `if (!missing) return;` early exit. The early exit now also lets through a
+    recorded helper whose master switch is off, and the note says so.
     """
     body = java.split("static void restore(Context context)")[1]
-    early_return = body.find("if (!missing) return;")
-    flag_write = body.find("ACCESSIBILITY_ENABLED")
-    return early_return != -1 and flag_write != -1 and early_return < flag_write
+    return ("if (!missing && !switchedOff) return;" in body
+            and "Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 0" in body)
 
 
 class AccessibilityFlagNoteTest(unittest.TestCase):
@@ -113,11 +112,11 @@ class AccessibilityFlagNoteTest(unittest.TestCase):
         self.assertIn("restore_key_services", self.note)
         self.assertIn("ServiceRepair", self.note)
 
-    def test_service_repair_still_returns_before_writing_the_flag(self):
+    def test_service_repair_repairs_a_complete_list_with_the_flag_off(self):
         # The note's claim, checked against the code it names rather than against the wording.
-        self.assertTrue(flag_written_after_the_list_check(self.java),
-                        "ServiceRepair now writes the flag on a complete list too: the note says it "
-                        "does not, so reword the note (and this test) with the launcher change")
+        self.assertTrue(repairs_a_complete_list_with_the_flag_off(self.java),
+                        "ServiceRepair no longer repairs a complete list with the flag off: "
+                        "reword the note (and this test) with the launcher change")
         self.assertIn("ENABLED_ACCESSIBILITY_SERVICES", self.java)
 
     def test_themes_readme_still_scopes_restore_key_services_to_a_force_stop(self):
@@ -164,14 +163,14 @@ class AccessibilityFlagNoteTest(unittest.TestCase):
 
     def test_the_flag_check_reads_the_early_return(self):
         # A checker that returned True for any file would let the note go stale unnoticed.
-        self.assertTrue(flag_written_after_the_list_check(
+        self.assertTrue(repairs_a_complete_list_with_the_flag_off(
+            "static void restore(Context context) {\n"
+            "boolean switchedOff = Settings.Secure.getInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 0;\n"
+            "if (!missing && !switchedOff) return;\n}"))
+        self.assertFalse(repairs_a_complete_list_with_the_flag_off(
             "static void restore(Context context) {\nif (!missing) return;\n"
             "Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);\n}"))
-        self.assertFalse(flag_written_after_the_list_check(
-            "static void restore(Context context) {\n"
-            "Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);\n"
-            "if (!missing) return;\n}"))
-        self.assertFalse(flag_written_after_the_list_check("static void restore(Context context) {}"))
+        self.assertFalse(repairs_a_complete_list_with_the_flag_off("static void restore(Context context) {}"))
 
 
 if __name__ == "__main__":
