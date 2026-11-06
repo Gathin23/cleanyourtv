@@ -1,16 +1,19 @@
-"""The Durabrand (#470) device note, and the factory-menu trap it reports.
+"""The Durabrand device note (#470 and a second unit), and the factory-menu trap it reports.
 
 The note is documentation only, so the tests pin the facts that make it useful (the packages, the
 two that the firmware restores, the recovery sequence) and that its links still resolve.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import json
 import re
 from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTE = ROOT / "docs" / "devices" / "durabrand-durat32isdb.md"
+LIST = ROOT / "examples" / "durabrand-durat32isdb" / "debloat.txt"
+TV_JSON = LIST.parent / "tv.json"
 TROUBLE = ROOT / "docs" / "TROUBLESHOOTING.md"
 EXAMPLES_README = ROOT / "examples" / "README.md"
 PROMPT = ROOT / "PROMPT.md"
@@ -78,13 +81,14 @@ class DurabrandNoteTest(unittest.TestCase):
         self.assertIn("com.at.factory.factorymanager", text)
         self.assertRegex(text, r"(?i)re-?enabled? (?:on|at) every\s+boot|come back on every\s+boot")
 
-    def test_note_admits_it_is_not_a_tested_list(self):
+    def test_note_keeps_the_first_report_apart_from_the_list(self):
+        # The first report was one day long; the list in examples/ is the second unit's, run for
+        # several days. The note has to say which is which and point at the list.
         text = NOTE.read_text(encoding="utf-8")
         self.assertRegex(text, r"(?i)not\*\* a tested list|not a tested list")
         self.assertIn("several days", text)
-        # A one-day report must not be indexed as an examples/ list.
-        self.assertFalse(list((ROOT / "examples").glob("durabrand*")),
-                         "a same-day report does not belong in examples/")
+        self.assertTrue(LIST.is_file(), "examples/durabrand-durat32isdb/debloat.txt missing")
+        self.assertIn("examples/durabrand-durat32isdb/", text)
 
     def test_note_keeps_the_input_panel_and_setupwraith_apart(self):
         text = NOTE.read_text(encoding="utf-8")
@@ -139,11 +143,14 @@ class TroubleshootingTrapTest(unittest.TestCase):
 
 
 class IndexAndPromptTest(unittest.TestCase):
-    def test_examples_readme_lists_the_note(self):
+    def test_the_list_row_links_the_note(self):
+        # With a list of its own the note is linked from the folder's row (its tv.json), no longer
+        # from the section for models that have no tested list yet.
+        notes = json.loads(TV_JSON.read_text(encoding="utf-8"))["notes"]
+        self.assertIn("../docs/devices/durabrand-durat32isdb.md", notes)
         text = EXAMPLES_README.read_text(encoding="utf-8")
         section = text.split("Notes for models that have no tested list yet", 1)[1]
-        self.assertIn("docs/devices/durabrand-durat32isdb.md", section)
-        self.assertIn("DURAT32ISDB", section)
+        self.assertNotIn("docs/devices/durabrand-durat32isdb.md", section)
         self.assertEqual(broken_links(EXAMPLES_README), [])
 
     def test_prompt_tells_the_assistant_not_to_open_factory_menus(self):
