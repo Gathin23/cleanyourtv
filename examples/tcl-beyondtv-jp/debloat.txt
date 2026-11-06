@@ -1,5 +1,5 @@
 # TCL BeyondTV, Japan market (ro.product.model BeyondTV, client type TCL-JP-RT2851-S1, Realtek RTD2851 /
-# rtd285o, software V8-R851T03-LF1V153), Android TV 9 (API 28), build PPR1.180610.011 AP04. Likely the 55P8S.
+# rtd285o, software V8-R851T03-LF1V153), Android TV 9 (API 28), build PPR1.180610.011 AP04. Tested on a 50P8S; the 55P8S likely shares this firmware.
 # Same platform as examples/tcl-beyondtv-rt2851/ (EU, V8-R851T02, AP06), which was the starting point, with
 # examples/tcl-beyondtv2-latin-america/ as the cross-check. The Japanese firmware ships a smaller set: no
 # appmarket2, messagebox, usercenter, notereminder, smartalexa, miracast or TCL keyboard (Gboard is the IME).
