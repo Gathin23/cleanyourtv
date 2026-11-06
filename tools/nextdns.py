@@ -28,7 +28,8 @@ The first run records the TV's own `private_dns_mode` and `private_dns_specifier
 docs/faq.md gives.
 
 Exit status: 0 done (or the status printed), 1 it reached the TV and then failed (the TV is older than
-Android 9, the values did not stick, or the network did not validate with NextDNS), 2 the run never got
+Android 9, the values did not stick, the network did not validate with NextDNS, or --off read back
+other values than it put, in which case the record stays for another --off), 2 the run never got
 as far as the TV: an argument was refused, `tools/tv.py` could not be loaded, `TV_HOST` is not set, or
 the TV could not be reached. Why it stopped goes to stderr.
 """
@@ -214,18 +215,31 @@ def turn_on(dev, host):
 
 def turn_off(dev):
     path = record_path()
-    if os.path.exists(path):
+    recorded = os.path.exists(path)
+    if recorded:
         with open(path) as f:
             before = json.load(f)
-        for key in ("private_dns_mode", "private_dns_specifier"):
-            put(dev, key, before.get(key))
+        want = {key: before.get(key) for key in KEYS}
+    else:
+        want = {"private_dns_mode": "opportunistic", "private_dns_specifier": None}
+    for key in KEYS:
+        put(dev, key, want[key])
+    # put() does not read the TV's answer, so only the readback shows whether the TV took both
+    # values. The record is deleted after a matching readback: deleted first, a refused write would
+    # leave NextDNS on with nothing left to put back, and the next --off would fall to opportunistic.
+    after = read_values(dev)
+    if after != want:
+        sys.stderr.write("the TV did not take back the values:\n")
+        print_status(after)
+        if recorded:
+            sys.stderr.write(f"The record in {path} is kept; run --off again.\n")
+        raise SystemExit(1)
+    if recorded:
         os.remove(path)
         print(f"Put back the TV's own Private DNS values from {path}")
     else:
-        put(dev, "private_dns_mode", "opportunistic")
-        put(dev, "private_dns_specifier", None)
         print("No record of the TV's own values, so Private DNS is back to opportunistic, the default.")
-    print_status(read_values(dev))
+    print_status(after)
 
 
 def main(args):

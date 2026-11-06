@@ -44,15 +44,19 @@ def answer(command):
     if command == "getprop ro.build.version.sdk":
         return state["sdk"] + "\n"
     if words[:3] == ["settings", "get", "global"]:
+        if state.get("reads_fail"):
+            raise ConnectionError("connection reset by peer")
         value = state["global"].get(words[3])
         return ("null" if value is None else value) + "\n"
     if words[:3] == ["settings", "put", "global"]:
-        if not state.get("read_only"):
+        if not state.get("read_only") and words[3] not in state.get("refused", []):
             state["global"][words[3]] = words[4]
             state.setdefault("log", []).append(command)
             save(state)
         return ""
     if words[:3] == ["settings", "delete", "global"]:
+        if words[3] in state.get("refused", []):
+            return ""
         state["global"].pop(words[3], None)
         state.setdefault("log", []).append(command)
         save(state)
@@ -192,6 +196,61 @@ class NextDnsTest(unittest.TestCase):
         values = self.state()["global"]
         self.assertEqual(values["private_dns_mode"], "opportunistic")
         self.assertNotIn("private_dns_specifier", values)
+
+    def refuse(self, *keys, **flags):
+        state = self.state()
+        state["refused"] = list(keys)
+        state.update(flags)
+        self.state_path.write_text(json.dumps(state))
+
+    def test_off_keeps_the_record_when_a_write_is_refused(self):
+        self.tv(**{"global": {"private_dns_mode": "opportunistic", "auto_time": "1"}})
+        self.run_script("abc123")
+        self.refuse("private_dns_mode")
+        run = self.run_script("--off")
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("did not take back", run.stderr)
+        self.assertNotIn("Put back", run.stdout)
+        self.assertTrue(self.record().exists())
+
+    def test_off_keeps_the_record_when_a_delete_is_refused(self):
+        self.run_script("abc123")
+        self.refuse("private_dns_specifier")
+        run = self.run_script("--off")
+        self.assertEqual(run.returncode, 1)
+        self.assertEqual(self.state()["global"]["private_dns_specifier"], "abc123.dns.nextdns.io")
+        self.assertTrue(self.record().exists())
+
+    def test_off_again_after_a_partial_restore_puts_the_original_back(self):
+        self.tv(**{"global": {"private_dns_mode": "hostname",
+                              "private_dns_specifier": "dns.adguard-dns.com", "auto_time": "1"}})
+        self.run_script("abc123")
+        self.refuse("private_dns_specifier")
+        self.assertEqual(self.run_script("--off").returncode, 1)
+        self.refuse()
+        run = self.run_script("--off")
+        self.assertEqual(run.returncode, 0, run.stderr)
+        values = self.state()["global"]
+        self.assertEqual(values["private_dns_mode"], "hostname")
+        self.assertEqual(values["private_dns_specifier"], "dns.adguard-dns.com")
+        self.assertFalse(self.record().exists())
+
+    def test_off_keeps_the_record_when_the_readback_fails(self):
+        self.run_script("abc123")
+        self.refuse(reads_fail=True)
+        run = self.run_script("--off")
+        self.assertNotEqual(run.returncode, 0)
+        self.assertNotIn("Put back", run.stdout)
+        self.assertTrue(self.record().exists())
+
+    def test_off_without_a_record_reports_a_refused_write(self):
+        self.tv(**{"global": {"private_dns_mode": "hostname",
+                              "private_dns_specifier": "abc123.dns.nextdns.io"}})
+        self.refuse("private_dns_mode")
+        run = self.run_script("--off")
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("did not take back", run.stderr)
+        self.assertNotIn("back to opportunistic", run.stdout)
 
     def test_status_names_nextdns(self):
         self.run_script("abc123")
