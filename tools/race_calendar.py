@@ -237,10 +237,16 @@ def main():
     text = json.dumps(theme, indent=2, ensure_ascii=False) + "\n"
     # Stage beside the actual target: a failed write must leave the theme alone, and a symlinked
     # config.json must still update its target without replacing the link itself.
+    published = False
     try:
         try:
-            target = config.resolve() if config.is_symlink() else config
-        except RuntimeError as e:   # Path.resolve() reports a symlink loop this way on Python 3.11.
+            target = config
+            if config.is_symlink():
+                try:
+                    target = config.resolve(strict=True)
+                except FileNotFoundError:
+                    target = config.resolve()
+        except RuntimeError as e:   # Path.resolve() reports symlink loops this way before Python 3.13.
             raise OSError(str(e)) from e
         if target.is_file():
             # Check write permission without truncation; rename alone can bypass a read-only file.
@@ -252,10 +258,14 @@ def main():
             if target.is_file():
                 shutil.copymode(target, part)
             os.replace(part, target)
+            published = True
     except OSError as e:
-        return refuse(f"could not write {config} ({e.strerror or e}). The {response_season} calendar was "
-                      f"fetched but is not in the theme: check the folder's permissions, or move what is "
-                      f"at that path aside, and run it again.")
+        if not published:
+            return refuse(f"could not write {config} ({e.strerror or e}). The {response_season} calendar was "
+                          f"fetched but is not in the theme: check the folder's permissions, or move what is "
+                          f"at that path aside, and run it again.")
+        print(f"warning: the {response_season} calendar is in {config}, but its staging folder {staging} "
+              f"could not be cleaned up ({e.strerror or e}).", file=sys.stderr)
     first = races[0]
     print(f"{len(races)} races from the {response_season} season -> {config}")
     print(f"next: round {first['round']} {first['name']}, race {first['sessions'][-1]['start']}")

@@ -522,8 +522,16 @@ class ConfigWriteTest(unittest.TestCase):
             self.skipTest(f"symlinks unavailable: {error}")
         self.target = target
 
-    def run_main(self, how="ok"):
+    def run_main(self, how="ok", *, cleanup_error=False):
         real_open = Path.open
+        real_directory = tempfile.TemporaryDirectory
+
+        class FailedCleanup(real_directory):
+            def __exit__(self, *exc):
+                # Keep real writes, replacement and resource cleanup; only the reported error is
+                # injected, after leaving the staging context.
+                super().__exit__(*exc)
+                raise PermissionError(errno.EACCES, "staging cleanup denied")
 
         class FailedWrite:
             def __init__(self, stream):
@@ -559,6 +567,9 @@ class ConfigWriteTest(unittest.TestCase):
         out, err = io.StringIO(), io.StringIO()
         with contextlib.ExitStack() as stack:
             stack.enter_context(mock.patch.object(Path, "open", opening))
+            if cleanup_error:
+                stack.enter_context(mock.patch.object(race_calendar.tempfile, "TemporaryDirectory",
+                                                       FailedCleanup))
             if how in ("replace", "copymode"):
                 owner, name = (os, "replace") if how == "replace" else (shutil, "copymode")
                 stack.enter_context(mock.patch.object(owner, name,
@@ -584,10 +595,18 @@ class ConfigWriteTest(unittest.TestCase):
         self.assertEqual(self.snapshot(), before,
                          "original hashes and modes must match; no staged files may remain")
 
-    def assert_updated(self, result, before):
+    def assert_updated(self, result, before, *, cleanup_warning=False):
         status, out, err = result
         self.assertEqual(status, 0, err)
-        self.assertEqual(err, "")
+        if cleanup_warning:
+            self.assertIn("warning", err.lower())
+            self.assertIn("staging cleanup denied", err)
+            self.assertIn(str(self.config), err)
+            self.assertNotIn("not in the theme", err)
+            self.assertNotIn("could not write", err)
+            self.assertNotIn("Traceback", err)
+        else:
+            self.assertEqual(err, "")
         self.assertEqual(out, f"1 races from the 2026 season -> {self.config}\n"
                          "next: round 1 Example Grand Prix, race 2026-01-04T14:00:00Z\n")
         data = self.target.read_bytes()
@@ -676,6 +695,61 @@ class ConfigWriteTest(unittest.TestCase):
         self.link(self.config)
         before = self.snapshot()
         self.assert_write_refused(self.run_main(), before)
+
+    def test_symlink_cycle_retains_the_write_refusal(self):
+        other = self.folder / "other.json"
+        self.link(other)
+        other.symlink_to(self.config.name)
+        before = self.snapshot()
+        self.assert_write_refused(self.run_main(), before)
+
+    def test_nonmissing_resolution_errors_are_not_retried(self):
+        target = self.root / "shared" / "target.json"
+        target.parent.mkdir()
+        target.write_bytes(self.old)
+        self.link(target)
+        resolve = Path.resolve
+        for number in (errno.EACCES, errno.EIO):
+            with self.subTest(errno=number):
+                target.write_bytes(self.old)
+                before = self.snapshot()
+                calls = []
+
+                def resolving(path, strict=False):
+                    if path == self.config:
+                        calls.append(strict)
+                        if strict:
+                            raise OSError(number, os.strerror(number))
+                    return resolve(path, strict=strict)
+
+                with mock.patch.object(Path, "resolve", resolving):
+                    self.assert_write_refused(self.run_main(), before)
+                self.assertEqual(calls, [True], "only a missing target permits non-strict resolution")
+
+    def test_cleanup_failure_after_publication_warns_and_keeps_success(self):
+        for symlinked in (False, True):
+            with self.subTest(symlinked=symlinked):
+                if symlinked:
+                    target = self.root / "shared" / "target.json"
+                    target.parent.mkdir()
+                    target.write_bytes(self.old)
+                    self.link(target)
+                before = self.snapshot()
+                self.assert_updated(self.run_main(cleanup_error=True), before, cleanup_warning=True)
+                self.assertEqual(self.config.is_symlink(), symlinked)
+
+    def test_replace_failure_with_cleanup_error_keeps_the_refusal(self):
+        for symlinked in (False, True):
+            with self.subTest(symlinked=symlinked):
+                if symlinked:
+                    target = self.root / "shared" / "target.json"
+                    target.parent.mkdir()
+                    target.write_bytes(self.old)
+                    self.link(target)
+                before = self.snapshot()
+                result = self.run_main("replace", cleanup_error=True)
+                self.assert_write_refused(result, before)
+                self.assertIn("staging cleanup denied", result[2])
 
     def test_staging_is_unique_and_beside_the_resolved_target(self):
         target = self.root / "shared" / "target.json"
