@@ -767,6 +767,7 @@ final class Config {
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
         File revision = dir == null ? null : new File(dir, THEME_REVISION_NAME);
         String token = revisionToken(revision);
+        if (token == null) return;   // I/O failure or short read: skip sync, retry next load
         String signature = fileStamp(config) + ":" + token;
         String seen = choices.getString(THEME_SIGNATURE_KEY, null);
         if (seen == null) {
@@ -795,12 +796,15 @@ final class Config {
 
     private static String revisionToken(File file) {
         if (file == null || !file.isFile() || file.length() > 64) return "absent";
+        if (file.length() == 0) return "absent";
         try (InputStream in = new FileInputStream(file)) {
             byte[] bytes = new byte[(int) file.length()];
-            int n = in.read(bytes);
-            return n > 0 ? new String(bytes, 0, n, StandardCharsets.US_ASCII) : "absent";
+            int n = 0, r;
+            while (n < bytes.length && (r = in.read(bytes, n, bytes.length - n)) > 0) n += r;
+            if (n < bytes.length) return null;   // short read: treat as I/O failure
+            return new String(bytes, 0, n, StandardCharsets.US_ASCII);
         } catch (Exception ignored) {
-            return "absent";
+            return null;
         }
     }
 
@@ -817,10 +821,20 @@ final class Config {
         if (json == null) {
             copy.delete();
         } else {
-            try (FileOutputStream out = new FileOutputStream(copy)) {
-                out.write(json.toString().getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+            synchronized (SYNC_LOCK) {
+                File tmp = new File(ctx.getFilesDir(), FILE_NAME + ".tmp");
+                try (FileOutputStream out = new FileOutputStream(tmp)) {
+                    out.write(json.toString().getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                } catch (IOException e) {
+                    tmp.delete();
+                    Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+                    return json;
+                }
+                if (!tmp.renameTo(copy)) {
+                    tmp.delete();
+                    Log.w(TAG, "could not rename staging copy of " + file);
+                }
             }
         }
         return json;
