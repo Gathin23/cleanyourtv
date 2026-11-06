@@ -26,8 +26,11 @@ import argparse
 import datetime
 import http.client
 import json
+import os
 from pathlib import Path
+import shutil
 import sys
+import tempfile
 import urllib.error
 import urllib.request
 
@@ -232,12 +235,23 @@ def main():
         return 1
     theme["race_calendar"] = races
     text = json.dumps(theme, indent=2, ensure_ascii=False) + "\n"
-    # The write is the other half of the same file, and a write that could not start (a read-only
-    # checkout, a folder of another user's, config.json a symlink into a folder that is not there) used
-    # to be an OSError traceback with exit 1, after the fetch - so a run that did nothing reported the
-    # code this script keeps for an answer.
+    # Stage beside the actual target: a failed write must leave the theme alone, and a symlinked
+    # config.json must still update its target without replacing the link itself.
     try:
-        config.write_text(text, encoding="utf-8")
+        try:
+            target = config.resolve() if config.is_symlink() else config
+        except RuntimeError as e:   # Path.resolve() reports a symlink loop this way on Python 3.11.
+            raise OSError(str(e)) from e
+        if target.is_file():
+            # Check write permission without truncation; rename alone can bypass a read-only file.
+            with target.open("r+", encoding="utf-8"):
+                pass
+        with tempfile.TemporaryDirectory(prefix=".race-calendar-", dir=target.parent) as staging:
+            part = Path(staging) / target.name
+            part.write_text(text, encoding="utf-8")
+            if target.is_file():
+                shutil.copymode(target, part)
+            os.replace(part, target)
     except OSError as e:
         return refuse(f"could not write {config} ({e.strerror or e}). The {response_season} calendar was "
                       f"fetched but is not in the theme: check the folder's permissions, or move what is "
