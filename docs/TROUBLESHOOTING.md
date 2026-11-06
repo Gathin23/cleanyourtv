@@ -24,6 +24,10 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   network?` followed by the Local Network note, exit 2, so a machine without the permission can neither
   confirm nor deny that the port is closed. Grant it to the terminal, reopen it, and check again: only a
   "closed" from a granted terminal counts.
+  If `tools/tv.py` reaches the TV from that terminal but the stock `adb` still answers `No route to host
+  (65)`, the terminal holds the permission and the server `adb` leaves behind does not, so granting it
+  again cannot help: [tools/native-adb.md](../tools/native-adb.md#macos-a-stock-adb-that-cannot-reach-the-lan)
+  has a loopback relay for that case ([#3336](https://github.com/Gathin23/cleanyourtv/issues/3336)).
 - **No "wireless debugging" toggle** on some TVs, Xiaomi among them. USB debugging alone opens
   network ADB on port 5555.
 - **USB debugging is greyed out and there is no Wireless debugging entry either**, seen on a carrier
