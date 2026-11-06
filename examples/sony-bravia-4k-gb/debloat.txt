@@ -1,6 +1,18 @@
 # Sony BRAVIA 4K GB (EU: device BRAVIA_ATV2_EU, product BRAVIA_ATV2). Android TV 9 (API 28).
-# Retail model reported on the same platform and firmware: KD-75XE8596.
+# Retail models reported on the same platform and firmware: KD-75XE8596, KD-65XD7505.
 # Firmware BRAVIA_ATV2_EU-user 9 PTT1.190515.001.S54 672201 release-keys
+#
+# Also confirmed 2026-10-26 on a Sony KD-65XD7505 (2016, EU, reports as BRAVIA 4K GB), same build, Wi-Fi.
+# Applied in four batches with screenshots between them; Home, the inputs and Settings kept working. Also
+# disabled by choice: com.google.android.katniss, com.google.android.tv.remote.service, com.sony.dtv.smartmediaapp,
+# com.sony.dtv.osat.music, screnmirroring.com, com.sony.dtv.tvxlauncher.titlelist, com.netflix.ninja,
+# com.amazon.amazonvideo.livingroom and com.vewd.core.integration.dia (the browser's UI; com.vewd.core.service
+# stayed on). launcher/ installed (live_tv_package com.sony.dtv.tvx, no key helper). Home and the disabled list held
+# through a reboot and a cold boot from mains, with no Live TV takeover. Home and Input work on a universal
+# remote; the original remote's app buttons were not tried. Ten days of use, nothing odd seen: boot_count went from
+# 1360 to 1374 (3 of those deliberate), and the most recent boots lasted about 80 s before standby; dropbox, which
+# held two days, had no crash, watchdog or kernel entry. No figure from before the list, so whether stock boots
+# as often is unknown. See #1592 for a KD-55XD8005 on this build.
 #
 # Also confirmed 2026-10-27 on a Sony XBR-49X705D, Latin America variant (product BRAVIA_ATV2_BR, model
 # BRAVIA 4K GB), same build: BRAVIA_ATV2_BR-user 9 PTT1.190515.001.S54 672201 release-keys. Wi-Fi.
