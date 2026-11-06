@@ -4,7 +4,9 @@
 
 Every JPEG, PNG, WebP and (with pillow-heif) HEIC file in the first folder is centre-cropped to 16:9, shrunk to
 1280x720, darkened so the clock, the grid and the dock stay readable, and saved as 01.jpg, 02.jpg, ... in the
-second folder. The originals are never touched. Each picture is kept under --max-kb (300 by default, what
+second folder. The originals are never touched: a target that is the source folder (by any spelling or
+link), or an 01.jpg there that is a symlink or hard link to one of your photos, stops the run before
+anything is written. Each picture is kept under --max-kb (300 by default, what
 themes/README.md asks for) by lowering the JPEG quality a step at a time.
 
 The darkening is painted into the picture, so wallpaper_dim can stay at 0 and the launcher draws no shade
