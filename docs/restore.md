@@ -56,8 +56,14 @@ is enabled again only if it was:
 
 ## Without a record
 
-Without a record (an older run, or a record you deleted) the script says so and falls back to
-enabling the whole list and resetting the scales to `1.0`, which is what it used to do.
+Without a record (an older run, a record you deleted, or the TV reached at a new address - a record
+is filed under the address it was taken at) the script says so and falls back to enabling the whole
+list and resetting the scales to `1.0`, which is what it used to do.
+
+A record for the same list under another address is named with its file before that batch runs, as
+that is the case where the fallback turns on packages you had disabled before cleanup: run the undo
+at that address instead, or move the record to the name the run prints. If the other address is a
+second TV you cleaned with the same list, both records are right and nothing is wrong.
 
 ## What restore leaves alone
 

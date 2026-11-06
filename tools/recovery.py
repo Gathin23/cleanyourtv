@@ -17,7 +17,9 @@ reaches the TV, and `restore.sh` replays it.
 Records live in ~/.cleanyourtv/, one per TV and list. The first one wins: a retry after a
 half-applied list must not record the broken state as the original. The TV is the address it was
 reached at, so a set that takes a new address gets a new record: save() warns when a record under
-another address still holds, as enabled, a package it just found disabled (#2139). A later run, and check.py --fix,
+another address still holds, as enabled, a package it just found disabled (#2139), and --commands,
+finding none at this address, names the records for the same list under the others before it prints
+the batch that enables every listed package. A later run, and check.py --fix,
 only add the names the list gained since then, with their state before this list disabled them, and
 record a package that was absent then and is installed and enabled now as enabled.
 
@@ -571,6 +573,26 @@ def restore_commands(list_path, stock, host):
             "Enabling every listed package and resetting Home and the animation scales to their\n"
             "defaults. Packages that were already disabled before cleanup will be enabled too:\n"
             "check the list before running this.\n")
+        # The record for this list can be on this machine under another address: the setupwraith step
+        # asks the owner to forget and re-join the TV's Wi-Fi network, and the router hands out a new
+        # lease. undo at the new address then finds nothing, which is save()'s warning read from the
+        # other side (#2139) - and this is the run that enables the packages the owner had disabled
+        # before cleanup, while the record that says which of them were on is filed under the old
+        # address. Nothing here reaches the TV, so the records cannot be compared with what is
+        # disabled now: name them, and the two readings, instead of choosing one.
+        under_other_addresses = records_under_other_addresses(list_path, path)
+        for tag, other in under_other_addresses:
+            sys.stderr.write(f"a recovery record for this same list is under {tag}: {other}\n")
+        if under_other_addresses:
+            sys.stderr.write(
+                "If this is that TV on a new address (a new DHCP lease, or the Wi-Fi forget and\n"
+                "re-join the setupwraith step asks for), run tools/restore.sh at that address\n"
+                "instead of here, or move that record to\n"
+                f"  {path}\n"
+                "once you are sure it is this set: this run otherwise enables packages that were off\n"
+                "before cleanup.\n"
+                "If this is a second set cleaned with the same list, nothing is wrong: that record\n"
+                "is the other set's, and this address has none.\n")
         for name in packages:
             commands.append(f"pm enable {name}")
         if stock:
