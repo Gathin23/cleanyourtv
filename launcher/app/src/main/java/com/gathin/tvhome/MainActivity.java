@@ -230,6 +230,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ColorStateList vpnPlainInk;
     private SpringAnimation springX, springY;
     private float glassTargetX, glassTargetY;
+    private float dockHeroTopInRoot = Float.NaN;
     // How far the grid has scrolled the glass. springY works without it, in grid content space, so a
     // scroll moves the glass in lockstep with its tile instead of becoming a moving spring target.
     private float glassScrollShift;
@@ -315,6 +316,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Set when a decision could not be saved: no more prompts until the next resume, instead of asking in a loop. */
     private boolean promptsPaused;
     /** Between onStop and onStart: Home was fully covered by an app, not just by the translucent quick panel. */
+    private boolean firstHomeFocusPending = true;
     private boolean stopped;
     /** Between onStart and onStop: Home is (at least partly) on screen. */
     private boolean started;
@@ -542,6 +544,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         clockBlock = findViewById(R.id.leftBlock);
         clockRefresh = new ClockRefresh(clockBlock);
         greetingColor = greeting.getCurrentTextColor();
+
+        // Keep the header readable over bright and changing hero artwork.
+        float headerShadowRadius = 7f * density;
+        int headerShadowColor = 0xE6000000;
+        TextView[] headerText = new TextView[]{
+                greeting, findViewById(R.id.clock), findViewById(R.id.ampm),
+                findViewById(R.id.date), findViewById(R.id.shamsiDate),
+                findViewById(R.id.lunarDate)
+        };
+        for (TextView text : headerText) {
+            if (text != null) {
+                text.setShadowLayer(headerShadowRadius, 0f, 2f * density, headerShadowColor);
+            }
+        }
         if (!cfg.showGreeting) greeting.setVisibility(View.GONE);
         // Keep the other header layouts as designed: their extra lines change the block's centre.
         if (!cfg.showGreeting && !cfg.dateBelowClock && !cfg.shamsiDate && !cfg.lunarDate
@@ -685,7 +701,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         if (dockRow) grid.addItemDecoration(new DockDecoration(COLUMNS, density, cinematic, cfg.alwaysShowNames, cfg.dockOpacity, cfg.dockGlass, cfg.dockEvenPadding, cfg.dockBand,
                 singleRow, cfg.dockBandAll));
-        if (cfg.fadeRows) TopFade.attach(grid, 48 * density);
+        if (!singleRow) TopFade.attach(grid, 150 * density);
         // Reduced motion: the tiles are simply there, with no entrance (reloadApps skips it there too).
         if (animations && !reducedMotion) {
             grid.setLayoutAnimation(new LayoutAnimationController(
@@ -700,9 +716,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // tvOS layout: push the dock row towards the bottom of the screen, leaving room for
         // rows_below_dock grid rows under it; the rest of the grid stays below until you press Down.
+        View youtubeHeroSpacer = findViewById(R.id.youtubeHeroSpacer);
         int rowsBelowDock = cfg.rowsBelowDock;
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            int h = b - t;
+            int spacerReduction = Math.max(0, Math.round(192 * density) - youtubeHeroSpacer.getLayoutParams().height);
+            int h = Math.max(1, b - t - spacerReduction);
             // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
             int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
             int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow, density);
@@ -809,8 +827,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 // Critically damped: glides straight onto the tile without swinging past it.
                 s.setSpring(new SpringForce().setStiffness(advancedEffects ? 520f : 440f).setDampingRatio(1f));
             } else {
-                s.setSpring(new SpringForce().setStiffness(advancedEffects ? 320f : 260f)
-                        .setDampingRatio(advancedEffects ? 0.76f : 0.58f));
+                s.setSpring(new SpringForce().setStiffness(advancedEffects ? 420f : 360f)
+                        .setDampingRatio(advancedEffects ? 0.88f : 0.82f));
             }
         }
 
@@ -900,6 +918,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
                 // Back to the dock tile Up came from, not wherever the focus finder lands.
+                if (focusYouTubeHero()) return true;
                 focusTile(singleRow ? lastFocused : lastFocused % COLUMNS);
                 return true;
             }
@@ -930,7 +949,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
-            if (!onTile) hideGlass();
+            if (!onTile) {
+                hideGlass();
+                if (grid != null && !grid.hasFocus()) dimOthers();
+            }
         });
 
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
@@ -1277,8 +1299,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         final int returnSlot = lastFocused;
         grid.post(() -> {
             int pos = adapter.positionOf(returnKey);
-            if (returnToLibrary || libraryFocusPending) focusLibrary();
-            else focusTile(pos >= 0 ? pos : returnSlot);
+            if (firstHomeFocusPending && !returnToLibrary && !libraryFocusPending) {
+                firstHomeFocusPending = false;
+                if (!focusYouTubeHero()) focusTile(pos >= 0 ? pos : returnSlot);
+            } else {
+                firstHomeFocusPending = false;
+                if (returnToLibrary || libraryFocusPending) focusLibrary();
+                else focusTile(pos >= 0 ? pos : returnSlot);
+            }
             tilesReady = true;
             startPendingSettingsReorder();
             showCardPrompt();
@@ -1648,6 +1676,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return pos != RecyclerView.NO_POSITION && movingKey.equals(adapter.keyAt(pos)) ? 1f : 0.45f;
         }
         if (dockEditSlot >= 0 && pos >= 0 && pos < COLUMNS && pos != dockEditSlot) return 0.45f;
+        if (grid != null && grid.hasFocus() && pos >= 0 && pos < adapter.appCount()) {
+            return pos == lastFocused ? 1f : 0.25f;
+        }
         return 1f;
     }
 
@@ -1797,6 +1828,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     public void onTileFocused(int position, View card) {
         lastFocused = position;
+        updateHeroDots(position);
         lastFocusedKey = adapter.keyAt(position);
         // Focus restored before the first layout (cold start): the tile has no size yet, and the glass
         // would be sized to 2*pad. Run again once the tile is laid out.
@@ -1806,6 +1838,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             });
             return;
         }
+        dimOthers();
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
@@ -1869,11 +1902,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 if (!animations || reducedMotion) grid.scrollBy(0, dy);
                 else grid.smoothScrollBy(0, dy);
             }
-            showHero(position, scroll ? r.top - dy : r.top);
+            dockHeroTopInRoot = scroll ? r.top - dy : r.top;
+            showHero(position, dockHeroTopInRoot);
         } else {
-            // Below the dock (or in a plain grid) the glow follows the tile without the big name; letting it
-            // fade out left the grid on plain black.
-            showGlowOnly(position);
+            // Every focused app gets its name, including apps below the dock row.
+            float titleTop = dockHeroTopInRoot;
+            if (Float.isNaN(titleTop)) {
+                Rect gridRect = new Rect(0, 0, grid.getWidth(), grid.getHeight());
+                root.offsetDescendantRectToMyCoords(grid, gridRect);
+                titleTop = gridRect.top + grid.getPaddingTop() + Math.round(6 * density);
+            }
+            showHero(position, titleTop);
             // Scroll just enough so the whole glass (not only the tile) is visible.
             revealRect.set(0, -(int) pad * 2, item.getWidth(), item.getHeight() + (int) pad);
             grid.requestChildRectangleOnScreen(item, revealRect, reducedMotion);
@@ -1883,20 +1922,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Refits the glass to the focused holder once the grid layout and tile dimensions settle. */
     private void refitGlass() {
         if (isDestroyed() || adapter.appCount() == 0 || libraryFocusPending) return;
+
         int pos = Math.max(0, Math.min(lastFocused, adapter.appCount() - 1));
         RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
         View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
+
         if (card == null || card.getWidth() <= 0 || !card.isFocused()) return;
-        float pad = 6f * density;
-        float scale = adapter.focusScale();
-        int w = (int) (card.getWidth() * scale + 2 * pad);
-        int h = (int) (card.getHeight() * scale + 2 * pad);
-        // The tile's rect, not only its width: the grid's top padding lands after the tile has its width, so a
-        // cold start can leave the glass at the right size and the wrong place. Comparing the rect catches that.
+
         Rect r = tileRect;
         r.set(0, 0, card.getWidth(), card.getHeight());
         root.offsetDescendantRectToMyCoords(card, r);
-        if (!glassShown || card.getWidth() != glassCardW || glass.getWidth() != w || glass.getHeight() != h
+
+        float pad = 6f * density;
+        float scale = adapter.focusScale();
+        float w = card.getWidth() * scale + 2 * pad;
+        float h = card.getHeight() * scale + 2 * pad;
+        float x = r.exactCenterX() - w / 2f;
+
+        boolean lifted = advancedEffects
+                && !DockSlots.inDockRow(dockRow, singleRow, pos, COLUMNS);
+        float y = r.exactCenterY() - h / 2f - (lifted ? 4f * density : 0f);
+
+        boolean positionChanged = Math.abs(glassTargetX - x) > 1f
+                || Math.abs(glassTargetY - y) > 1f;
+
+        if (!glassShown
+                || card.getWidth() != glassCardW
+                || glass.getWidth() != (int) w
+                || glass.getHeight() != (int) h
+                || positionChanged
                 || !glassCardRect.equals(r)) {
             onTileFocused(pos, card);
         }
@@ -1987,7 +2041,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * scrimPercent of its strength (cinematic_scrim). cinematic_art 0 leaves the artwork out, 0 percent the scrim.
      */
     private void setUpCinematicShelf(int scrimPercent) {
-        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 68f);
+        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 34f);
         heroName.setLetterSpacing(-0.025f);
         heroMeta.setVisibility(View.INVISIBLE);   // keeps its height, so the name does not jump when it fills in
         heroDots.setVisibility(heroDotsShown ? View.VISIBLE : View.GONE);
@@ -2073,35 +2127,94 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroMeta.setVisibility(View.VISIBLE);
     }
 
-    /** One dot per dock app, the focused one drawn long and white. Hebrew docks start on the right, so do the dots. */
+    /** One marker per app in the focused row; the active app is highlighted. */
     private void updateHeroDots(int position) {
-        if (!heroDotsShown) return;
-        int count = Math.min(adapter.dockFilled(), COLUMNS);
-        heroDots.setVisibility(count > 1 ? View.VISIBLE : View.INVISIBLE);
+        if (!heroDotsShown || heroDots == null || adapter == null) return;
+
+        int appCount = adapter.appCount();
+
+        if (appCount <= 0) {
+            heroDots.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        position = Math.max(0, Math.min(position, appCount - 1));
+
+        // In a vertical grid use its real span count. In single-row mode,
+        // group the horizontal strip into logical pages of COLUMNS.
+        int columns = Math.max(1, COLUMNS);
+
+        if (!singleRow && grid != null
+                && grid.getLayoutManager() instanceof GridLayoutManager) {
+            columns = Math.max(1,
+                    ((GridLayoutManager) grid.getLayoutManager()).getSpanCount());
+        }
+
+        int rowStart = (position / columns) * columns;
+        int count = Math.min(columns, appCount - rowStart);
+
+        // Preserve the existing dock's empty-slot behaviour.
+        if (dockRow && rowStart == 0) {
+            count = Math.min(count, adapter.dockFilled());
+        }
+
+        int active = position - rowStart;
+
+        if (count <= 1 || active < 0 || active >= count) {
+            heroDots.setVisibility(View.INVISIBLE);
+            return;
+        }
+
+        heroDots.setVisibility(View.VISIBLE);
+
         if (heroDots.getChildCount() != count) {
             heroDots.removeAllViews();
+
             for (int i = 0; i < count; i++) {
                 View dot = new View(this);
-                GradientDrawable bg = new GradientDrawable();
-                bg.setCornerRadius(3 * density);
-                dot.setBackground(bg);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams((int) (6 * density), (int) (6 * density));
-                if (i > 0) lp.leftMargin = (int) (6 * density);
-                heroDots.addView(dot, lp);
+
+                GradientDrawable background = new GradientDrawable();
+                background.setCornerRadius(3f * density);
+                dot.setBackground(background);
+
+                LinearLayout.LayoutParams params =
+                        new LinearLayout.LayoutParams(
+                                (int) (6 * density),
+                                (int) (6 * density));
+
+                if (i > 0) {
+                    params.leftMargin = (int) (6 * density);
+                }
+
+                heroDots.addView(dot, params);
             }
         }
+
         for (int i = 0; i < count; i++) {
-            View dot = heroDots.getChildAt(rtlAppGrid ? count - 1 - i : i);
-            boolean on = i == position;
-            ((GradientDrawable) dot.getBackground()).setColor(on ? 0xFFFFFFFF : 0x4DFFFFFF);
-            ViewGroup.LayoutParams lp = dot.getLayoutParams();
-            int w = (int) ((on ? 20 : 6) * density);
-            if (lp.width != w) {
-                lp.width = w;
-                dot.setLayoutParams(lp);
+            View dot = heroDots.getChildAt(
+                    rtlAppGrid ? count - 1 - i : i);
+
+            boolean selected = i == active;
+
+            GradientDrawable background =
+                    (GradientDrawable) dot.getBackground();
+
+            background.setColor(
+                    selected ? 0xFFFFFFFF : 0x4DFFFFFF);
+
+            ViewGroup.LayoutParams params = dot.getLayoutParams();
+
+            int width = (int) ((selected ? 20 : 6) * density);
+            int height = (int) (6 * density);
+
+            if (params.width != width || params.height != height) {
+                params.width = width;
+                params.height = height;
+                dot.setLayoutParams(params);
             }
         }
     }
+
 
     /**
      * The glow used to be a full-screen radial GradientDrawable. On Android 10 that drawable is
@@ -2421,6 +2534,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     // ---- navigation ------------------------------------------------------------------------------
 
+    private boolean focusYouTubeHero() {
+        View heroView = findViewById(R.id.youtubeHero);
+        if (heroView == null) return false;
+
+        if (heroView.getVisibility() != View.VISIBLE) {
+            heroView.setVisibility(View.VISIBLE);
+        }
+
+        if (!heroView.requestFocus()) return false;
+        hideHero();
+        return true;
+    }
+
     @Override
     public boolean onTileVerticalKey(int position, int keyCode) {
         int count = adapter.appCount();
@@ -2428,7 +2554,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (singleRow) {
             // One row: Up leaves for the top bar, Down has nowhere to go, and Left/Right walk the whole row,
             // stopping at its two ends (the default focus search scrolls the row to the next tile).
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return false;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return focusYouTubeHero();
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) return true;
             boolean forward = rtlAppGrid ? keyCode == KeyEvent.KEYCODE_DPAD_LEFT : keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
             int last = adapter.focusablePosition(count - 1);
@@ -2452,7 +2578,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                     rtlAppGrid, keyCode == KeyEvent.KEYCODE_DPAD_LEFT);
         }
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
+            if (position < COLUMNS) return focusYouTubeHero();          // dock row: let focus move to the top bar
             target = position - COLUMNS;
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;

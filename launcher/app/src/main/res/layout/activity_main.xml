@@ -1,302 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FF000000">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/root" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#FF000000" android:clipChildren="false" android:clipToPadding="false">
 
     <!-- Time-of-day backdrop, drawn once a minute (config.xml sky_intensity; 0 keeps it hidden). -->
-    <com.gathin.tvhome.SkyView
-        android:id="@+id/sky"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:importantForAccessibility="no" />
+    <com.gathin.tvhome.SkyView android:id="@+id/sky" android:layout_width="match_parent" android:layout_height="match_parent" android:importantForAccessibility="no" />
+    <com.gathin.tvhome.YouTubeDiscoverHero android:id="@+id/youtubeHero" android:layout_width="match_parent" android:layout_height="match_parent" android:nextFocusDown="@id/grid" android:nextFocusUp="@id/btnSettings" android:focusable="true" android:clickable="true" />
 
     <!-- Cinematic top shelf (cinematic_home): the focused dock app's artwork, a few pixels across and
          stretched over the screen, which softens it like a blur without the cost of one. Hidden otherwise. -->
-    <ImageView
-        android:id="@+id/heroArt"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        android:alpha="0"
-        android:visibility="gone"
-        android:importantForAccessibility="no" />
+    <ImageView android:id="@+id/heroArt" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitXY" android:alpha="0" android:visibility="gone" android:importantForAccessibility="no" />
 
     <!-- Ambient glow in the colour of the focused dock app. -->
-    <View
-        android:id="@+id/ambient"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0" />
+    <View android:id="@+id/ambient" android:layout_width="match_parent" android:layout_height="match_parent" android:alpha="0" />
 
     <!-- Race-weekend panel (a theme's race_calendar, see RaceWeekend): in the free space under the clock,
          shown only from shortly before a weekend's first session until the race is over. Updated once a
          minute with the clock, never animated. -->
-    <LinearLayout
-        android:id="@+id/racePanel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="158dp"
-        android:orientation="vertical"
-        android:focusable="false"
-        android:importantForAccessibility="no"
-        android:visibility="gone">
+    <LinearLayout android:id="@+id/racePanel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="top|left" android:layout_marginStart="60dp" android:layout_marginTop="158dp" android:orientation="vertical" android:focusable="false" android:importantForAccessibility="no" android:visibility="gone">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
 
             <!-- A short kerb-red bar, the panel's one accent. -->
-            <View
-                android:layout_width="3dp"
-                android:layout_height="13dp"
-                android:layout_marginEnd="10dp"
-                android:id="@+id/raceBar"
-                android:background="@drawable/race_bar" />
+            <View android:layout_width="3dp" android:layout_height="13dp" android:layout_marginEnd="10dp" android:id="@+id/raceBar" android:background="@drawable/race_bar" />
 
-            <TextView
-                android:id="@+id/raceKicker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textColor="#B3FFFFFF"
-                android:textSize="12sp"
-                android:fontFamily="@string/font_medium"
-                android:letterSpacing="0.22"
-                android:textAllCaps="true" />
+            <TextView android:id="@+id/raceKicker" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:textColor="#B3FFFFFF" android:textSize="12sp" android:fontFamily="@string/font_medium" android:letterSpacing="0.22" android:textAllCaps="true" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/raceHeadline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:singleLine="true"
-            android:textColor="#FFFFFFFF"
-            android:textSize="34sp"
-            android:fontFamily="@string/font_light"
-            android:letterSpacing="-0.01"
-            android:includeFontPadding="false" />
+        <TextView android:id="@+id/raceHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:singleLine="true" android:textColor="#FFFFFFFF" android:textSize="34sp" android:fontFamily="@string/font_light" android:letterSpacing="-0.01" android:includeFontPadding="false" />
 
-        <TextView
-            android:id="@+id/raceSessions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:singleLine="true"
-            android:textColor="#99FFFFFF"
-            android:textSize="12sp"
-            android:fontFamily="@string/font_medium"
-            android:letterSpacing="0.12" />
+        <TextView android:id="@+id/raceSessions" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:singleLine="true" android:textColor="#99FFFFFF" android:textSize="12sp" android:fontFamily="@string/font_medium" android:letterSpacing="0.12" />
 
         <!-- game_day: one dot per turn when the panel rotates between games (and the F1 weekend). -->
-        <LinearLayout
-            android:id="@+id/racePager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:visibility="gone" />
+        <LinearLayout android:id="@+id/racePager" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal" android:visibility="gone" />
     </LinearLayout>
 
     <!-- Cinematic top shelf: darkens the edge behind the shelf and the lower half, so the text and the
          dock stay readable over the artwork. -->
-    <View
-        android:id="@+id/heroScrim"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:importantForAccessibility="no" />
+    <View android:id="@+id/heroScrim" android:layout_width="match_parent" android:layout_height="match_parent" android:visibility="gone" android:importantForAccessibility="no" />
+    <View android:id="@+id/headerContrast" android:layout_width="match_parent" android:layout_height="190dp" android:layout_gravity="top" android:background="@drawable/header_contrast" android:importantForAccessibility="no" />
 
     <!-- Top shelf: the focused dock app's name, positioned above the dock in code. -->
-    <LinearLayout
-        android:id="@+id/hero"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
-        android:orientation="vertical"
-        android:alpha="0">
+    <LinearLayout android:id="@+id/hero" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="68dp" android:orientation="vertical" android:alpha="0">
 
-        <TextView
-            android:id="@+id/heroName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFFFF"
-            android:textSize="48sp"
-            android:fontFamily="@string/font_light"
-            android:letterSpacing="-0.02"
-            android:includeFontPadding="false"
-            android:singleLine="true" />
+        <TextView android:id="@+id/heroName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFFFF" android:textSize="34sp" android:fontFamily="@string/font_light" android:letterSpacing="-0.02" android:includeFontPadding="false" android:singleLine="true" />
 
         <!-- Cinematic shelf only: when the app was last opened, and the dock position dots. -->
-        <TextView
-            android:id="@+id/heroMeta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="12dp"
-            android:singleLine="true"
-            android:textColor="#B3FFFFFF"
-            android:textSize="15sp"
-            android:fontFamily="@string/font_light"
-            android:visibility="gone" />
+        <TextView android:id="@+id/heroMeta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:layout_marginTop="12dp" android:singleLine="true" android:textColor="#B3FFFFFF" android:textSize="15sp" android:fontFamily="@string/font_light" android:visibility="gone" />
 
-        <LinearLayout
-            android:id="@+id/heroDots"
-            android:layout_width="wrap_content"
-            android:layout_height="6dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:visibility="gone" />
+        <LinearLayout android:id="@+id/heroDots" android:layout_width="wrap_content" android:layout_height="6dp" android:layout_marginStart="4dp" android:layout_marginTop="16dp" android:orientation="horizontal" android:visibility="gone" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingStart="56dp"
-        android:paddingEnd="56dp"
-        android:paddingTop="26dp"
-        android:clipChildren="false"
-        android:clipToPadding="false">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:paddingStart="56dp" android:paddingEnd="56dp" android:paddingTop="26dp" android:clipChildren="false" android:clipToPadding="false">
 
         <!-- No clipping down to the pills: with advanced effects a focused pill scales up past its row. -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false">
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:clipChildren="false" android:clipToPadding="false">
 
-            <LinearLayout
-                android:id="@+id/leftBlock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@+id/topButtons"
-                android:layout_marginEnd="16dp"
-                android:orientation="vertical">
+            <LinearLayout android:id="@+id/leftBlock" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentStart="true" android:layout_toStartOf="@+id/topButtons" android:layout_marginEnd="16dp" android:orientation="vertical">
 
                 <!-- The header texts use gravity left, not start: the launcher lays out left to right
                      (no supportsRtl), and with start a right-to-left script such as Arabic would move to the
                      right edge of these full-width lines instead of staying under the clock. -->
-                <TextView
-                    android:id="@+id/greeting"
-                    android:gravity="left"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:layout_marginStart="4dp"
-                    android:textColor="#8CFFFFFF"
-                    android:textSize="12sp"
-                    android:fontFamily="@string/font_medium"
-                    android:letterSpacing="0.22"
-                    android:textAllCaps="true" />
+                <TextView android:id="@+id/greeting" android:gravity="left" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="end" android:layout_marginStart="4dp" android:textColor="#F5FFFFFF" android:textSize="12sp" android:fontFamily="@string/font_medium" android:letterSpacing="0.22" android:textAllCaps="true" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:baselineAligned="true">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="true">
 
-                    <TextClock
-                        android:id="@+id/clock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:format12Hour="h:mm"
-                        android:format24Hour="HH:mm"
-                        android:textColor="#FFFFFFFF"
-                        android:textSize="52sp"
-                        android:fontFamily="@string/font_light"
-                        android:letterSpacing="-0.04"
-                        android:includeFontPadding="false" />
+                    <TextClock android:id="@+id/clock" android:layout_width="wrap_content" android:layout_height="wrap_content" android:format12Hour="h:mm" android:format24Hour="HH:mm" android:textColor="#FFFFFFFF" android:textSize="54sp" android:fontFamily="@string/font_light" android:letterSpacing="-0.04" android:includeFontPadding="false" />
 
-                    <TextClock
-                        android:id="@+id/ampm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_gravity="bottom"
-                        android:layout_marginBottom="8dp"
-                        android:format12Hour="a"
-                        android:format24Hour=""
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="15sp"
-                        android:fontFamily="@string/font_medium"
-                        android:letterSpacing="0.08"
-                        android:textAllCaps="true" />
+                    <TextClock android:id="@+id/ampm" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_gravity="bottom" android:layout_marginBottom="8dp" android:format12Hour="a" android:format24Hour="" android:textColor="#F5FFFFFF" android:textSize="15sp" android:fontFamily="@string/font_medium" android:letterSpacing="0.08" android:textAllCaps="true" />
 
-                    <View
-                        android:id="@+id/clockDivider"
-                        android:layout_width="1dp"
-                        android:layout_height="26dp"
-                        android:layout_gravity="bottom"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:background="#33FFFFFF" />
+                    <View android:id="@+id/clockDivider" android:layout_width="1dp" android:layout_height="26dp" android:layout_gravity="bottom" android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginBottom="8dp" android:background="#B3FFFFFF" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:layout_marginBottom="9dp"
-                        android:orientation="vertical">
+                    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_gravity="bottom" android:layout_marginBottom="9dp" android:orientation="vertical">
 
                         <!-- Shamsi date ("27 Mehr 1405"), shown when shamsi_date is on. -->
-                        <TextView
-                            android:id="@+id/shamsiDate"
-                            android:gravity="left"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:singleLine="true"
-                            android:ellipsize="end"
-                            android:textColor="#E6FFFFFF"
-                            android:textSize="17sp"
-                            android:fontFamily="@string/font_regular"
-                            android:letterSpacing="0.02"
-                            android:includeFontPadding="false"
-                            android:visibility="gone" />
+                        <TextView android:id="@+id/shamsiDate" android:gravity="left" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="end" android:textColor="#FFFFFFFF" android:textSize="18sp" android:fontFamily="@string/font_regular" android:letterSpacing="0.02" android:includeFontPadding="false" android:visibility="gone" />
 
-                        <TextClock
-                            android:id="@+id/date"
-                            android:gravity="left"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:singleLine="@bool/date_single_line"
-                            android:maxLines="2"
-                            android:lineSpacingExtra="6dp"
-                            android:ellipsize="end"
-                            android:format12Hour="@string/date_format_home"
-                            android:format24Hour="@string/date_format_home"
-                            android:textColor="#A6FFFFFF"
-                            android:textSize="14sp"
-                            android:fontFamily="@string/font_regular"
-                            android:letterSpacing="0.14"
-                            android:textAllCaps="true" />
+                        <TextClock android:id="@+id/date" android:gravity="left" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="@bool/date_single_line" android:maxLines="2" android:lineSpacingExtra="6dp" android:ellipsize="end" android:format12Hour="@string/date_format_home" android:format24Hour="@string/date_format_home" android:textColor="#F5FFFFFF" android:textSize="15sp" android:fontFamily="@string/font_regular" android:letterSpacing="0.14" android:textAllCaps="true" />
 
                         <!-- Lunar date ("Lunar 13/9 · Year of the Horse"), shown when lunar_date is on. -->
-                        <TextView
-                            android:id="@+id/lunarDate"
-                            android:gravity="left"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:singleLine="true"
-                            android:ellipsize="end"
-                            android:textColor="#80FFFFFF"
-                            android:textSize="14sp"
-                            android:fontFamily="@string/font_regular"
-                            android:letterSpacing="0.14"
-                            android:textAllCaps="true"
-                            android:visibility="gone" />
+                        <TextView android:id="@+id/lunarDate" android:gravity="left" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:singleLine="true" android:ellipsize="end" android:textColor="#F5FFFFFF" android:textSize="15sp" android:fontFamily="@string/font_regular" android:letterSpacing="0.14" android:textAllCaps="true" android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -304,111 +85,34 @@
 
             <!-- Shown only when show_stats is on. Outside leftBlock, so the top buttons stay level with the clock
                  row; gone, it takes no space. -->
-            <TextView
-                android:id="@+id/stats"
-                android:layout_width="wrap_content"
-                android:layout_below="@id/leftBlock"
-                android:layout_alignStart="@id/leftBlock"
-                android:gravity="left"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textColor="#D9FFFFFF"
-                android:textSize="14sp"
-                android:fontFamily="@string/font_medium"
-                android:letterSpacing="0.04"
-                android:focusable="false"
-                android:visibility="gone" />
+            <TextView android:id="@+id/stats" android:layout_width="wrap_content" android:layout_below="@id/leftBlock" android:layout_alignStart="@id/leftBlock" android:gravity="left" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:singleLine="true" android:ellipsize="end" android:textColor="#D9FFFFFF" android:textSize="14sp" android:fontFamily="@string/font_medium" android:letterSpacing="0.04" android:focusable="false" android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/topButtons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignBottom="@id/leftBlock"
-                android:layout_marginBottom="6dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="horizontal">
+            <LinearLayout android:id="@+id/topButtons" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:layout_alignBottom="@id/leftBlock" android:layout_marginBottom="6dp" android:clipChildren="false" android:clipToPadding="false" android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/btnInputs"
-                    style="@style/TopButton"
-                    android:text="@string/inputs"
-                    android:drawableStart="@drawable/ic_input"
-                    android:nextFocusDown="@+id/grid" />
+                <TextView android:id="@+id/btnInputs" style="@style/TopButton" android:text="@string/inputs" android:drawableStart="@drawable/ic_input" android:nextFocusDown="@id/youtubeHero" />
 
-                <TextView
-                    android:id="@+id/btnWifi"
-                    style="@style/TopButton"
-                    android:maxWidth="180dp"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="@string/wifi"
-                    android:drawableStart="@drawable/ic_wifi"
-                    android:nextFocusDown="@+id/grid" />
+                <TextView android:id="@+id/btnWifi" style="@style/TopButton" android:maxWidth="180dp" android:singleLine="true" android:ellipsize="end" android:text="@string/wifi" android:drawableStart="@drawable/ic_wifi" android:nextFocusDown="@id/youtubeHero" />
 
-                <TextView
-                    android:id="@+id/btnVpn"
-                    style="@style/TopButton"
-                    android:visibility="gone"
-                    android:singleLine="true"
-                    android:text="@string/vpn"
-                    android:nextFocusDown="@+id/grid" />
+                <TextView android:id="@+id/btnVpn" style="@style/TopButton" android:visibility="gone" android:singleLine="true" android:text="@string/vpn" android:nextFocusDown="@id/youtubeHero" />
 
-                <TextView
-                    android:id="@+id/btnReorder"
-                    style="@style/TopButtonIcon"
-                    android:contentDescription="@string/reorder"
-                    android:drawableStart="@drawable/ic_swap_vert"
-                    android:nextFocusDown="@+id/grid" />
+                <TextView android:id="@+id/btnReorder" style="@style/TopButtonIcon" android:contentDescription="@string/reorder" android:drawableStart="@drawable/ic_swap_vert" android:nextFocusDown="@id/youtubeHero" />
 
-                <TextView
-                    android:id="@+id/btnLibraryTop"
-                    style="@style/TopButtonIcon"
-                    android:visibility="gone"
-                    android:contentDescription="@string/app_library"
-                    android:drawableStart="@drawable/ic_apps_pill"
-                    android:nextFocusDown="@+id/grid" />
+                <TextView android:id="@+id/btnLibraryTop" style="@style/TopButtonIcon" android:visibility="gone" android:contentDescription="@string/app_library" android:drawableStart="@drawable/ic_apps_pill" android:nextFocusDown="@id/youtubeHero" />
 
-                <TextView
-                    android:id="@+id/btnSettings"
-                    style="@style/TopButton"
-                    android:text="@string/settings"
-                    android:drawableStart="@drawable/ic_settings"
-                    android:nextFocusDown="@+id/grid" />
+                <TextView android:id="@+id/btnSettings" style="@style/TopButton" android:text="@string/settings" android:drawableStart="@drawable/ic_settings" android:nextFocusDown="@id/youtubeHero" />
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- The wrapper clips at the grid's edge; the grid itself must not clip so scaled tiles can overflow their cells. -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="10dp">
+        <!-- Offline NEXUS feature hero with bundled artwork and rotating local text. -->
+        <View android:id="@+id/youtubeHeroSpacer" android:layout_width="match_parent" android:layout_height="192dp" android:layout_marginTop="8dp" android:layout_marginBottom="4dp" android:focusable="false" android:importantForAccessibility="no" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="10dp"
-                android:paddingBottom="40dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:clipToPadding="false"
-                android:clipChildren="false"
-                android:overScrollMode="never"
-                android:scrollbars="none"
-                android:descendantFocusability="afterDescendants" />
+        <!-- The wrapper clips at the grid's edge; the grid itself must not clip so scaled tiles can overflow their cells. -->
+        <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="10dp">
+
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/grid" android:layout_width="match_parent" android:layout_height="match_parent" android:paddingTop="10dp" android:paddingBottom="40dp" android:paddingStart="10dp" android:paddingEnd="10dp" android:clipToPadding="false" android:clipChildren="false" android:nextFocusUp="@id/youtubeHero" android:overScrollMode="never" android:scrollbars="none" android:descendantFocusability="afterDescendants" />
         </FrameLayout>
     </LinearLayout>
 
     <!-- The single floating glass highlight that springs between tiles. -->
-    <com.gathin.tvhome.GlassView
-        android:id="@+id/glass"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:alpha="0"
-        android:importantForAccessibility="no" />
+    <com.gathin.tvhome.GlassView android:id="@+id/glass" android:layout_width="10dp" android:layout_height="10dp" android:alpha="0" android:importantForAccessibility="no" />
 </FrameLayout>
