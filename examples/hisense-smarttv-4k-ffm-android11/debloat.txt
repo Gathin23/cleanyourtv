@@ -114,6 +114,33 @@
 #   AirPlay and the firmware updaters stayed on. Every package stayed disabled across both reboots.
 # - After "Revoke USB debugging authorizations", a detached `settings put global adb_enabled 0; reboot` started
 #   from the same ADB shell never ran (port 5555 stayed open); switching USB debugging off with the remote closed it.
+#
+# Eighth unit (Costa Rica; same device songshan, build RTT2.220118.001, security patch 2024-01-05, Android model
+# string "SmartTV 4K FFM"; retail model not checked). One session on 2026-11-05 with three reboots: this list plus
+# the commented partnersetup and feedback entries, applied in batches with a screenshot between them, then the
+# launcher. Nothing came disabled from the factory; storemode is installed, evservice and the VIDAA tab provider are
+# not. Notes from it:
+# - tools/disable.sh disabled gtvpai and disclaimercustomization without TVINPUT_ALLOW; every HDMI, AV and tuner
+#   input was still registered after the reboot.
+# - setupwraith owned a WPA3 copy of the SSID the TV was on; the active copy (WPA2) belonged to android.uid.system.
+#   FORCE_SETUPWRAITH=1 deleted only the WPA3 copy, and the TV stayed on Wi-Fi and ADB. Usage & diagnostics was
+#   switched off in Settings first.
+# - With launcherx still enabled, launcher/build-and-install.sh STOCK_LAUNCHER=none ran set-home-activity, which
+#   printed Success, and Home still resolved to launcherx: on this set the takeover needs launcherx disabled.
+# - A third-party app can claim HOME too: an old build of a cable operator's app (eu.motv.tv.MainActivity) listed
+#   itself under android.intent.category.HOME. Check cmd package query-activities before the takeover.
+# - With launcherx disabled and no key helper enabled, Home, Back, Input, the gear, Netflix and the Media button
+#   worked when pressed for real, and a held Volume Up ramped; YouTube, Prime Video, Disney+ and the Apps button
+#   (four squares) did nothing. logcat printed no interceptKeyTq line here, so the codes came from getevent -lt:
+#   YouTube KEY_FN_F4 (469), Prime Video KEY_FN_F3 (468), Disney+ KEY_ZOOMIN (418), Apps KEY_F18 (188), the gear
+#   KEY_NOTIFICATION. With HOME_KEY_SERVICE=1, app_keys scan:469:com.google.android.youtube.tv,
+#   scan:468:com.amazon.amazonvideo.livingroom, scan:418:com.disney.disneyplus and scan:188:library, and
+#   settings_key_keycodes 83 with settings_key_panel, all of them worked when pressed for real. HomeKeyService
+#   bound at once.
+# - Power-on goes FallbackHome, then the new launcher; the firmware does not put Live TV in front by itself.
+# - Private DNS (dns.adguard-dns.com) works; YouTube and the streaming apps still play.
+# - The owner also disabled iQIYI, Pluto TV, YouTube TV, Star+, Play Games, Google TV Movies, HiBrowser, TikTok,
+#   PBS and TED; voice, Chromecast, AirPlay, Miracast, DLNA and the firmware updaters stayed on.
 
 # Retail / store demo
 com.hisense.storemode
