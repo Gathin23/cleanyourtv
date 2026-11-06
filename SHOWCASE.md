@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-218 projects so far.
+219 projects so far.
 
 ## Home screens built as their own app
 
@@ -327,7 +327,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **OnePlus:** [Apple TV Frosted Glass for OnePlus TV](https://github.com/sireesh0204-stack/cleanyourtv/tree/backup/oneplus-apple-frosted-glass), [Hogwarts TV](https://github.com/ikevinadams/hogwarts-tv-home), [KinoDock](https://github.com/vedraj360/kinodock)
 - **onn (Walmart):** [Cine Home](https://github.com/gabos4nchez/cine-home), [Vibe Launcher](https://github.com/maydings/vibe-launcher), [Apple TV-style home with Continue watching](https://github.com/SYNLiquify/cleanyourtv/tree/apple-tv-home)
 - **Philips:** [CleanYourTV Cinema & OLED Edition](https://github.com/RuckieOfficial/cleanyourtv), [CleanYourTV UI, themes edition](https://github.com/pokelvo/cleanyourtv-ui), [Cosy Home](https://github.com/oliverjwroberts/cosy-home-tv), [Liquid Glass Home for Philips TA1](https://github.com/Nefritor/cleanyourtv-liquid-glass/tree/liquid-glass), [Moving aurora behind Home](https://github.com/mrk1987/cleanyourtv/tree/aurora), [Forslag](https://github.com/modist/forslag), [XMB Home](https://github.com/amachador/xmb-home), [QuickVol TV](https://github.com/thenewnano/quickvol-google-tv), [Provider banner behind the dock](https://github.com/misterzed83/cleanyourtv), [Apps button to Inputs](https://github.com/roelvveen-alt/cleanyourtv/tree/launcher/apps-key-inputs), [Now playing bar under the clock](https://github.com/drkdw/cleanyourtv/blob/launcher-now-playing/FORK.md)
-- **Panasonic:** [Weather and night on Home](https://github.com/javierfn/cleanyourtv/blob/tv-extras/FORK.md)
+- **Panasonic:** [Weather and night on Home](https://github.com/javierfn/cleanyourtv/blob/tv-extras/FORK.md), [CleanYourTV Desktop Manager](https://github.com/Gnzikoune/CleanYourTV-Desktop)
 - **Polytron:** [Glass and day/night on a Polytron](https://github.com/andikatuluspangestu/cleanyourtv/tree/polytron-glass-launcher)
 - **PRISM+:** [TV Air Dashboard](https://github.com/srykar/tv-air-dashboard)
 - **RCA:** [ZenTV](https://github.com/hernanzini/zentv)
