@@ -16,8 +16,8 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-4ktv-0su/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Disabled before this debloat, so not listed (restore.sh would turn them ON): com.sky.market,
-# com.smartdevice.tvworkwithalexa.
+# Disabled before debloat on unit 1, but active and debloated on second unit (both listed below):
+# com.sky.market, com.smartdevice.tvworkwithalexa.
 #
 # Status: disabled in one batch on one TV on 2026-10-20, then checked with remote-key injection and
 # screenshots: stock home (sponsored "Daily Play" row gone), Live TV, HDMI input switching, YouTube
