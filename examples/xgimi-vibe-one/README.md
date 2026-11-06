@@ -49,8 +49,10 @@ pause. `restore.sh` was not tried on this setup, so check its result the same wa
 is kept. The stock launcher is kept too: see below.
 
 Result: Bell Fibe TV (`com.quickplay.android.bellmediaplayer`), the largest resident process before
-the debloat at 153 MB with a boot receiver, no longer runs. All 19 entries stayed disabled after a
-reboot.
+the debloat at 153 MB with a boot receiver, no longer runs. All 19 entries the owner applied stayed
+disabled after a reboot. Six of them are the streaming preloads - Bell Fibe TV, Crave, CTV, Haystack,
+Tubi and Apple TV - which `debloat.txt` leaves commented out, because a shared list keeps streaming
+apps on: it disables 13 packages, and uncommenting those six gives the 19 this unit ran.
 
 ## Launcher
 
