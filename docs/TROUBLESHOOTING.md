@@ -275,8 +275,8 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   CPU for the whole TV still fell from 22.6% to 9% after the debloat and the launcher swap. Turning the
   wizard back on is not the quiet way out either, since its `.RecoveryActivity` takes Home from the
   launcher: leave it off and let the line repeat. Seen on that set
-  ([#2853](https://github.com/Gathin23/cleanyourtv/issues/2853)) and on a VH2, an XR-55X90JK (`BRAVIA_VH2_SA`,
-  the same build) with setupwraith and launcherx disabled: there the line came every 500 ms from a single
+  ([#2853](https://github.com/Gathin23/cleanyourtv/issues/2853)) and on a VH2, an XR-55X90JK (`BRAVIA_VH2_SA`, Google TV 12,
+  build `STT2.230505.001.S136 682241`) with setupwraith and launcherx disabled: there the line came every 500 ms from a single
   process, each time with `CountrySettingsModule: SetupProviderGateway getCountryCode() failed to query
   SetupProvider.`, and nothing on screen was wrong. Whether VH21 units do the same has not been reported yet.
 - **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
@@ -1112,8 +1112,8 @@ tools/tv.py 'dumpsys accessibility'
 tools/tv.py 'appops get com.gathin.tvhome'
 ```
 
-For a bug report, give these outputs as the model, Android version, build, current user and the relevant
-redacted lines, not the raw dump, as the auto-start note at the end of this section asks.
+For a bug report, give the model, Android version, build, current user and the relevant redacted lines from
+these outputs, not the raw dump, as the auto-start note at the end of this section asks.
 
 | Helper | Component in the enabled-services list | Key it filters |
 | --- | --- | --- |

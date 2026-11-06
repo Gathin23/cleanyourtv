@@ -104,7 +104,7 @@ com.tcl.micmanager                          # remote microphone manager (~83 MB 
 com.google.android.tv.assistant             # Assistant LED service
 
 # 7. Apps the TV turns back on (second unit, 50EP640X1). Undo also enables the four that ship disabled.
-com.tcl.appstatecontroller                  # boot/wake/network/package receivers that put TCL's app set back
+# com.tcl.appstatecontroller  # off on the 50EP640X1 only (12 days fine); uncomment if TCL apps come back on
 com.tcl.smartalexa                          # Alexa bridge; ships disabled, came back on by itself
 com.tcl.usercenter                          # TCL account centre; ships disabled, came back on by itself
 com.tcl.notereminder                        # TCL reminders; ships disabled, came back on by itself

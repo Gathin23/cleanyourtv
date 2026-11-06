@@ -32,7 +32,8 @@ com.hx.httpvideotest
 com.hx.videotest
 com.hx.apkbridge
 com.chihihx.store
-com.chihihx.launcher.upgrade
+# this set has these off; enable for others only if you don't use them
+# com.chihihx.launcher.upgrade
 
 # Factory / burn-in (disable only; do not launch)
 com.hx.projectortest
@@ -43,8 +44,8 @@ com.softwinner.dragonatt
 com.softwinner.agingdragonbox
 
 # Owner declined: Netflix, Assistant, cast/mirror, Chrome, MX Player, Aptoide
-com.netflix.mediaclient
-com.netflix.ninja
+# com.netflix.mediaclient
+# com.netflix.ninja
 com.google.android.katniss
 com.softwinner.miracastReceiver
 com.apowersoft.mirror.tv
@@ -54,7 +55,7 @@ com.mxtech.videoplayer.ad
 cm.aptoidetv.pt
 
 # Softwinner extras (no tuner; themes/logs/screenshot)
-com.softwinner.awlivetv
+# com.softwinner.awlivetv
 com.softwinner.awlogsettings
 com.softwinner.screenshot
 com.softwinner.theme.color

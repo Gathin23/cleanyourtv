@@ -101,7 +101,7 @@ A third `MiTV-MSSP3` (`machuca`) unit on the older Indian retail Android 9 build
 `ro.product.model = MiTV-MSSP3`, `ro.product.device = machuca`, Android 9 (SDK 28),
 `ro.build.display.id = PI.3591 release-keys`, `ro.build.version.security_patch = 2020-01-05`, 1.8 GB RAM, on Wi-Fi.
 
-**Status:** applied 2026-11-05 in batches, in daily use since then (provisional until multi-day follow-up).
+**Status:** applied 2026-11-05 in batches; provisional, no reboot or multi-day follow-up reported yet.
 `com.google.android.tungsten.setupwraith`, `mitv.service`, `com.xiaomi.android.tvsetup.partnercustomizer`,
 `com.xiaomo.tv.milegal` and `com.mitv.videoplayer` stay enabled as in the table above.
 

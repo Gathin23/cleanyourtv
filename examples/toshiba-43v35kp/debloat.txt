@@ -16,8 +16,8 @@
 # Live TV / HDMI:   com.mediatek.wwtv.tvcenter. NEVER disable this or any com.mediatek.* package.
 # Keep enabled:     com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.tvcenter,
 #                   com.airoha.android.btd (Bluetooth remote pairing), com.cvte.autobacklight (keep),
-#                   com.cvte.hotkey.receiver (if present — remote shortcut keys),
-#                   com.cvte.tv.infoprovider is telemetry; it is disabled below.
+#                   com.cvte.hotkey.receiver (if present — remote shortcut keys).
+# Note: com.cvte.tv.infoprovider is telemetry; it is disabled below.
 # NEVER open (even to look): com.cvte.tv.fac.*, com.cvte.tv.hisensefac, com.cvte.tv.at,
 #                   com.at.factory.*, mediatek.factorymenu.ui — on CVTE/Hisense boards, launching
 #                   any factory app can flip a persistent factory-mode flag the shell cannot undo.
@@ -26,8 +26,8 @@
 # it did NOT claim HOME (confirmed: set-home-activity succeeded without it). Its RecoveryActivity
 # was not observed claiming Home. Check `dumpsys wifi | grep -o 'cname=[^ ]*'` first; if the TV's
 # active Wi-Fi network belongs to setupwraith, forget and re-join it in Settings before running this.
-# Note: setupwraith is kept on examples/motorola-mt4310 (also hayward); check your unit if you need
-# Chromecast built-in, as casting may require it on some firmware variants.
+# Note: setupwraith is kept on examples/motorola-mt4310 (also hayward). Disabling setupwraith gives Home back
+# but costs Chromecast built-in (casting); keep it enabled if you cast.
 #
 # com.at.factory.factorymanager: disabled and confirmed safe on this unit. On examples/motorola-mt4310
 # (same board, different firmware) it re-enables com.google.android.katniss and tvrecommendations at

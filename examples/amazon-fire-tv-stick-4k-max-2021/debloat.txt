@@ -20,10 +20,10 @@
 # disabled; Home, Netflix, Disney+ and MagentaTV open.
 # tools/disable.sh holds two of the listed packages back on this build:
 # - com.amazon.tv.livetv answers VIEW vnd.android.cursor.item/channel (.TvChannelsPlayerActivityAlias), which the
-#   script reads as the HDMI input handler; a stick has no tuner or HDMI input. HANDLERS_ALLOW=1 in front of the
-#   Apply line disables it. The German unit kept it, as MagentaTV is in use there.
+#   script reads as the HDMI input handler; a stick has no tuner or HDMI input.
+#   The German unit kept it, as MagentaTV is in use there.
 # - com.amazon.systemnotices asks for no permissions, so its dumpsys has no requested-permissions block and the
-#   input-driver check cannot read it. TVINPUT_ALLOW=1 in front of the Apply line disables it. The German unit kept it.
+#   input-driver check cannot read it. The German unit kept it.
 # com.amazon.client.metrics, the service behind com.amazon.client.metrics.api, is protected on this build
 # (pm disable-user: "Cannot disable a protected package"), so it is not listed.
 #
