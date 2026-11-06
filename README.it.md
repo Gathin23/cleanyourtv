@@ -4,7 +4,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · Italiano · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -135,9 +135,9 @@ possono richiedere comunque un mouse o uno schermo touch.
 - Toglierla dalla Home non disinstalla l'app. La scelta resta dopo il riavvio, dopo gli aggiornamenti delle app e
   quando applichi o reimposti un tema.
 
-Vedi anche la [guida alla libreria app](docs/app-library.md). La pagina delle impostazioni del launcher, riga per riga,
+Vedi anche la [guida alla libreria app](docs/it/app-library.md) ([versione inglese](docs/app-library.md)). La pagina delle impostazioni del launcher, riga per riga,
 la home predefinita, le lingue, i tasti del telecomando, il salvaschermo e la compilazione da soli sono in
-[docs/launcher.md](docs/launcher.md) (in inglese).
+[docs/it/launcher.md](docs/it/launcher.md) ([versione inglese](docs/launcher.md)).
 
 ## Quali TV sono supportate
 

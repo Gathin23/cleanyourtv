@@ -1,0 +1,34 @@
+<resources>
+    <string name="sched_0">"Programmazione TV"</string>
+    <string name="sched_1">"Gli orari si riferiscono al giorno selezionato. I periodi di esclusione bloccano solo il risveglio automatico. Indietro annulla le modifiche."</string>
+    <string name="sched_2">"Programmazione: attiva"</string>
+    <string name="sched_3">"Programmazione: disattiva"</string>
+    <string name="sched_4">"+ Aggiungi risveglio / standby"</string>
+    <string name="sched_5">"Non accendere: "</string>
+    <string name="sched_6">"Periodo senza risveglio automatico"</string>
+    <string name="sched_7">"Modifica date"</string>
+    <string name="sched_8">"Elimina"</string>
+    <string name="sched_9">"+ Aggiungi periodo di esclusione"</string>
+    <string name="sched_10">"Salva"</string>
+    <string name="sched_11">"Risveglio  "</string>
+    <string name="sched_12">"Standby  "</string>
+    <string name="sched_13">"Aggiungi evento"</string>
+    <string name="sched_14">"Risveglio"</string>
+    <string name="sched_15">"Standby"</string>
+    <string name="sched_16">"Giorni della settimana"</string>
+    <string name="sched_17">"Annulla"</string>
+    <string name="sched_18">"Ora"</string>
+    <string name="sched_19">"Seleziona almeno un giorno"</string>
+    <string name="sched_20">"La fine deve essere uguale o successiva all’inizio"</string>
+    <string name="sched_21">"Ultimo giorno incluso"</string>
+    <string name="sched_22">"Primo giorno incluso"</string>
+    <string name="sched_23">"Lunedì"</string>
+    <string name="sched_24">"Martedì"</string>
+    <string name="sched_25">"Mercoledì"</string>
+    <string name="sched_26">"Giovedì"</string>
+    <string name="sched_27">"Venerdì"</string>
+    <string name="sched_28">"Sabato"</string>
+    <string name="sched_29">"Domenica"</string>
+    <string name="schedule_row">"Programmazione"</string>
+    <string name="quick_hint">Frecce: scegli ora; OK: chiudi</string>
+</resources>

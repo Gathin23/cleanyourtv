@@ -68,6 +68,24 @@
 #     checked with the real remote.
 #   - The optional "second round" at the end of this list was also disabled and lived with on this TV.
 #
+# Fifth TV, MiTV-MOOR6 (also venom, Android 11, same firmware RTM5.220609.003.2674, 1.8 GB RAM, built-in
+# Ethernet; 5 Nov 2026): the list went on in five batches with a screenshot between them, and all of it was still
+# disabled after two reboots, with these differences:
+#   - com.xiaomi.mitv.manualhelp, com.mitv.milinkservice and com.graymatrix.did are not installed.
+#   - com.xiaomi.mitv.smartshare and com.xiaomi.wfdsinkhelperservice kept (Mi Cast / Miracast in use), and the
+#     firmware updaters kept as well; com.google.android.youtube.tvmusic, com.google.android.katniss (voice search)
+#     and com.google.android.tv.assistant disabled by choice.
+#   - setupwraith owned a hidden Wi-Fi network saved during first setup while the TV ran on Ethernet, so it went
+#     off with FORCE_SETUPWRAITH=1 once the owner accepted losing that network; ADB stayed up.
+#   - Launcher installed with HOME_KEY_SERVICE=1 INPUT_KEY_SERVICE=1 and 190:com.google.android.youtube.tv in
+#     app_keys: Home, Settings, Input, YouTube and Netflix worked on the real remote; held Volume stepped once per
+#     press. The Inputs menu listed HDMI 1-3 and Live TV, and the TV powered on to the launcher, not Live TV
+#     (the firmware briefly resumes partnercustomizer's PictureActivity and SoundActivity during boot, then Home).
+#   - Private DNS dns.adguard-dns.com works; Netflix still plays.
+#   - Closing ADB: USB debugging had to be switched off a second time before tools/adb-closed.py reported 5555
+#     closed after the restart.
+#   First-day report, like the ones above.
+#
 
 # Remote buttons once launcherx is disabled (that second TV; `dumpsys window policy` lists who gets
 # each global key, logcat shows what happens):

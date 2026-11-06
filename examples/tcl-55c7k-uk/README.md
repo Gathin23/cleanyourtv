@@ -201,8 +201,10 @@ back. This is a single-session report, not several days of use.
 
 **Different choices from the UK unit:** `com.tcl.ttvs` kept, for firmware updates. Netflix, YouTube, Chromecast
 and Assistant (`katniss`) kept; Prime Video, AirPlay (all three packages) and the soundbar updater disabled.
-Also disabled, as on the C755 and G08 US lists: `com.android.adservices.api`,
-`com.android.federatedcompute.services` and `com.android.ondevicepersonalization.services`.
+Also disabled on this unit, as the G08 US list does (`examples/tcl-g08-us-google-tv`):
+`com.android.adservices.api`, `com.android.federatedcompute.services` and
+`com.android.ondevicepersonalization.services`. Neither this folder's list nor the C755 one
+(`examples/tcl-c755-google-tv`) applies them, so add those three lines for the same result.
 
 What was checked on the TV: Home and the Input button's source panel after each batch, the Inputs menu (HDMI 1-4
 and Live TV), switching to HDMI 1 (`com.tcl.tv/.TVActivity` on top), D-pad from the dock into the grid, up to the

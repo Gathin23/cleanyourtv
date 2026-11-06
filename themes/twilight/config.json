@@ -1,0 +1,11 @@
+{
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 60,
+  "wallpaper_order": "sequential",
+  "wallpaper_captions": true,
+  "wallpaper_dim": 30,
+  "ambient_glow": false,
+  "dock_glass": true,
+  "dock_opacity": 60
+}
+

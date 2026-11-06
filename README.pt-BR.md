@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  Leia em: <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · Português · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
+  Leia em: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · Português · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -283,7 +283,7 @@ explicado em [Solução de problemas](docs/TROUBLESHOOTING.md).
 |---|---|
 | **Configuração** | Ordem do dock, aplicativos ocultos, aplicativo de TV ao vivo, de 4 a 7 blocos por linha e animações reduzidas. Tudo em [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Configurações na TV** | Mantenha OK pressionado em Configurações para abrir as configurações do launcher. Opcionalmente, `launcher_settings_button` faz com que um clique normal as abra diretamente; as configurações da TV continuam disponíveis na página de configurações e no bloco do aplicativo correspondente. |
-| **Temas** | Plano de fundo, papel de parede e layout definidos em um `config.json` enviado pelo Wi-Fi, sem recompilação. 21 temas estão incluídos em [`themes/`](themes/), incluindo o `default/` integrado. |
+| **Temas** | Plano de fundo, papel de parede e layout definidos em um `config.json` enviado pelo Wi-Fi, sem recompilação. 26 temas estão incluídos em [`themes/`](themes/), incluindo o `default/` integrado. |
 | **31 idiomas** | Segue o idioma da TV, com layout totalmente espelhado da direita para a esquerda em hebraico. |
 | **Biblioteca de aplicativos** | Opcional: permite navegar por todos os aplicativos instalados e adicionar ou remover atalhos da tela inicial. Consulte [o guia da biblioteca de aplicativos](docs/app-library.md). |
 | **Menu dos blocos** | Ativado por padrão (`tile_menu`): mantenha OK pressionado em um bloco para acessar Mover, Remover da tela inicial e Informações do app. Se estiver desativado, manter OK pressionado abre Informações do app. |
@@ -503,7 +503,7 @@ quatro dias. Até o dia 19, o repositório se chamava tv-vibehack; os links anti
 
 Duas semanas depois, o projeto era o repositório em alta nº 1 no GitHub na semana de 19 a 25 de outubro,
 com mais de 46 mil estrelas e 5,7 mil forks, além de 1,4 milhão de visualizações e 260 mil clones em 14 dias.
-As listas agora abrangem 442 modelos de TV de 117 marcas. A repercussão: 412 artigos em 54 países e
+As listas agora abrangem 450 modelos de TV de 122 marcas. A repercussão: 412 artigos em 54 países e
 229 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
 (dados de 30 de outubro de 2026).
 

@@ -43,8 +43,9 @@
 # Quirks on this firmware:
 # - Stock tvlauncher declares HOME priority 2, so `cmd package set-home-activity` alone does not
 #   take Home while it is enabled. Disable it after the replacement is running.
-# - com.tcl.ttvs is the firmware updater, not text-to-speech. It is disabled below to stay on
-#   V8-T221T05-LF1V005; comment it out if you want OTA updates.
+# - com.tcl.ttvs is the firmware updater, not text-to-speech. It is kept here, as on the 40S5400A: its
+#   line is commented out under "Firmware updater" below, so OTA updates stay on. Uncomment it there to
+#   stay on V8-T221T05-LF1V005.
 # - screencap writes an empty file while an HDMI input is on screen. Press Home first.
 # - com.tcl.usercenter can be switched back on by the system at boot on some C06 units; it stays
 #   idle, so it is left in the list. Re-check `pm list packages -d` after a reboot.

@@ -1,0 +1,57 @@
+# Essentiel b R3 (SCBC device R3, Realtek rtd2841a), Android TV 11 (SDK 30), build RTT7.230810.001
+# Fingerprint ESSENTIELB/ESSENTIELB/R3:11/RTT7.230810.001/1168:user/release-keys. Sold in France under the
+# Boulanger house brand, 1280x720, wired Ethernet. Google TV home screen (com.google.android.tvlauncher).
+# Same SCBC/Realtek platform as examples/acer-ar3-r3 (Android 14 there, Android 11 and another build here).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/essentiel-b-r3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/essentiel-b-r3/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher. The only other HOME claimants are com.realtek.menu
+# (FallbackHome, left enabled) and com.android.tv.settings. launcher/build-and-install.sh took Home
+# with set-home-activity directly: no redirect or key helper was needed.
+# HDMI/AV and Live TV: com.realtek.tv, com.realtek.tv.passthrough, com.realtek.dtv, com.realtek.tv.atv.
+#
+# Applied on two units of the same model and build (2026-11-04 and 2026-11-05), each in two small batches
+# with a screenshot of Home after the first. After the launcher was installed each TV was restarted
+# (a reboot on the first, the power cable pulled on the second): pm list packages -d was identical before
+# and after (17 lines, this list plus the stock launcher), and both came back on the new Home. The owner
+# pressed the real remote buttons (Home, Netflix, YouTube, Input, Settings) on both and they all worked.
+# The second unit already had com.creative.fastscreen.tv disabled before the run. Both are short tests
+# (a day or two): nothing had to be re-enabled, and the header will say if that changes.
+#
+# Kept on purpose, do not disable:
+# - com.apps.* (channels, tvmanager, smartkey, virtualkey, fivekey, sys, ota, authota, ...) and
+#   com.mk.service.tvmidware: SCBC's TV functions and remote keys, and the middleware. As with the
+#   Haier com.cltv.mal note (#1578), the names say little and the TV needs them.
+# - com.realtek.*: tuner, HDMI/AV inputs, key interceptor, power and menu.
+# - com.apps.ota, com.apps.authota: the firmware updater, kept enabled (preferred).
+# - Netflix, Prime Video, YouTube, Orange TV and the user's own apps.
+# - com.google.android.tungsten.setupwraith: Google TV's setup wizard. It does not claim HOME here, but it
+#   owns the Wi-Fi network saved at first setup (dumpsys wifi), so disabling it can drop that network.
+# - com.google.android.tts, com.google.android.marvin.talkback, Play Store and Play Services.
+
+# Google extras nobody asked for
+com.google.android.play.games
+com.google.android.videos              # Google TV movies and shows
+com.google.android.youtube.tvmusic
+com.google.android.feedback
+com.google.android.backdrop            # screensaver
+
+# Voice assistant, cast and HbbTV (chosen by the owner; re-enable what you use)
+com.google.android.katniss             # Assistant / voice search
+com.google.android.apps.mediashell     # Chromecast built-in
+com.apps.scast
+com.creative.fastscreen.tv             # FastCast
+com.seraphic.hbbtv.app                 # HbbTV
+com.seraphic.webview                   # HbbTV's own WebView
+
+# Unused system apps and demo services
+com.android.gallery3d
+com.android.htmlviewer
+com.android.printspooler
+com.android.wallpaper.livepicker
+com.mk.tv.meeting.service              # digital-signage accessibility service
+
+# Stock Google TV launcher, replaced by launcher/
+com.google.android.tvlauncher

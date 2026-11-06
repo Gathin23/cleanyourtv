@@ -62,6 +62,13 @@
 #   batches with a screenshot after each, two reboots, HDMI, Live TV and the real remote checked the same day;
 #   updated 2026-11-02 after five days of daily use with no problems and nothing re-enabled. What it disables
 #   and keeps, where it differs from this list, and the remote-button results are in README.md in this folder.
+# - Older Android 9 firmware PI.3591 (ro.build.display.id "PI.3591 release-keys", security patch 2020-01-05,
+#   1.8 GB set), India, Wi-Fi. Status: applied 2026-11-05, no reboot or multi-day follow-up reported yet, so treat its notes
+#   as provisional until the owner reports back. Like PI.4663, com.mitv.tvhome.michannel and com.mitv.dream
+#   are absent and com.google.android.leanbacklauncher(.recommendations) are present; adds Indian retail
+#   Sensara EPG packages (co.sensara.tv.mitv, co.sensara.tv.mitv.res), com.mitv.tvhome.mitvplus,
+#   com.google.android.tv.bugreportsender and factory-enabled com.google.android.music. Full list and
+#   regional partner preloads are in README.md in this folder.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
