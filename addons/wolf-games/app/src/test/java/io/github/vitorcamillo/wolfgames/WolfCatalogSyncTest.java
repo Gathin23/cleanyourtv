@@ -23,10 +23,15 @@ public class WolfCatalogSyncTest {
         String failure;
         String host = HOST;
         int downloads;
+        Runnable onGames, onCover;
         public String hostUuid() { return host; }
-        public List<WolfCatalogSync.Entry> games() { return entries; }
+        public List<WolfCatalogSync.Entry> games() {
+            if (onGames != null) onGames.run();
+            return entries;
+        }
         public byte[] cover(String id) throws WolfControlClient.ControlException {
             downloads++;
+            if (onCover != null) onCover.run();
             if (failure != null) throw new WolfControlClient.ControlException(failure);
             return image;
         }
@@ -92,6 +97,87 @@ public class WolfCatalogSyncTest {
         fake.host = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
         assertTrue(WolfCatalogSync.sync(fake, dir)); String second = json(dir).getJSONArray("games").getJSONObject(0).getString("image");
         assertNotEquals(first, second); assertTrue(new File(dir, second).isFile()); assertEquals(2, fake.downloads);
+    }
+    private File seedCatalog(File dir, Fake fake, String name) throws Exception {
+        fake.entries.add(entry("1", name));
+        assertTrue(WolfCatalogSync.sync(fake, dir));
+        File catalog = new File(dir, "catalog.json");
+        assertTrue(catalog.setLastModified(100000));
+        return catalog;
+    }
+    @Test public void lateCatalogResponsePreservesCatalog() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        byte[] before = Files.readAllBytes(catalog.toPath());
+        fake.entries.set(0, entry("1", "Renamed")); // Catalog-only change: the cover is already cached.
+        long[] now = {0};
+        fake.onGames = () -> now[0] = 100;
+        try { WolfCatalogSync.sync(fake, dir, 50, () -> now[0]); fail(); } catch (java.io.IOException expected) { assertEquals("Sync deadline", expected.getMessage()); }
+        assertArrayEquals(before, Files.readAllBytes(catalog.toPath())); assertEquals(100000, catalog.lastModified());
+    }
+    @Test public void lateLastCoverPreservesCatalog() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        byte[] before = Files.readAllBytes(catalog.toPath());
+        fake.entries.add(entry("2", "Two"));
+        long[] now = {0};
+        fake.onCover = () -> now[0] = 100;
+        try { WolfCatalogSync.sync(fake, dir, 50, () -> now[0]); fail(); } catch (java.io.IOException expected) { assertEquals("Sync deadline", expected.getMessage()); }
+        assertFalse(new File(dir, "wolf-111111112222-2.png").exists());
+        assertArrayEquals(before, Files.readAllBytes(catalog.toPath())); assertEquals(100000, catalog.lastModified());
+    }
+    @Test public void lateNotFoundPreservesCatalog() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        byte[] before = Files.readAllBytes(catalog.toPath());
+        fake.entries.add(entry("2", "Two")); fake.failure = "not_found";
+        long[] now = {0};
+        fake.onCover = () -> now[0] = 100;
+        try { WolfCatalogSync.sync(fake, dir, 50, () -> now[0]); fail(); } catch (java.io.IOException expected) { assertEquals("Sync deadline", expected.getMessage()); }
+        assertFalse(new File(dir, "wolf-111111112222-2.png").exists());
+        assertArrayEquals(before, Files.readAllBytes(catalog.toPath())); assertEquals(100000, catalog.lastModified());
+    }
+    @Test public void interruptedSyncPreservesCatalog() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        byte[] before = Files.readAllBytes(catalog.toPath());
+        fake.entries.add(entry("2", "Two"));
+        Thread.currentThread().interrupt();
+        try {
+            try { WolfCatalogSync.sync(fake, dir); fail(); } catch (java.io.IOException expected) { assertEquals("Sync cancelled", expected.getMessage()); }
+        } finally { Thread.interrupted(); }
+        assertFalse(new File(dir, "wolf-111111112222-2.png").exists());
+        assertArrayEquals(before, Files.readAllBytes(catalog.toPath())); assertEquals(100000, catalog.lastModified());
+    }
+    @Test public void interruptDuringCoverPreservesCatalog() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        byte[] before = Files.readAllBytes(catalog.toPath());
+        fake.entries.add(entry("2", "Two"));
+        fake.onCover = () -> Thread.currentThread().interrupt();
+        try {
+            try { WolfCatalogSync.sync(fake, dir); fail(); } catch (java.io.IOException expected) { assertEquals("Sync cancelled", expected.getMessage()); }
+        } finally { Thread.interrupted(); }
+        assertFalse(new File(dir, "wolf-111111112222-2.png").exists());
+        assertArrayEquals(before, Files.readAllBytes(catalog.toPath())); assertEquals(100000, catalog.lastModified());
+    }
+    @Test public void repairedCoverReportsChangeWithoutRewritingCatalog() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        File cover = new File(dir, "wolf-111111112222-1.png");
+        Files.write(cover.toPath(), new byte[0]);
+        byte[] before = Files.readAllBytes(catalog.toPath());
+        assertTrue(WolfCatalogSync.sync(fake, dir));
+        assertTrue(cover.isFile()); assertArrayEquals(PNG, Files.readAllBytes(cover.toPath()));
+        assertArrayEquals(before, Files.readAllBytes(catalog.toPath())); assertEquals(100000, catalog.lastModified());
+    }
+    @Test public void unchangedCacheStillReportsNoChange() throws Exception {
+        File dir = folder.newFolder(); Fake fake = new Fake();
+        File catalog = seedCatalog(dir, fake, "One");
+        int downloads = fake.downloads;
+        assertFalse(WolfCatalogSync.sync(fake, dir));
+        assertEquals(downloads, fake.downloads);
+        assertEquals(100000, catalog.lastModified());
     }
 
 }

@@ -55,7 +55,7 @@ public class GamesActivity extends Activity {
     private List<String> hostUuids=new ArrayList<>();
     private String pickedName,pickedUuid;
     private float density;
-    private boolean destroyed,busy,syncing;
+    private boolean destroyed,busy,syncing,reloadPending;
     private long loadedStamp=Long.MIN_VALUE;
     private int selected;
     private String activeGameId;
@@ -198,6 +198,7 @@ public class GamesActivity extends Activity {
                 loadedStamp=stamp;
                 if(ready==null) {recycle(images);showFallback();}
                 else {clearShelf();catalog=ready;hostNames=names;hostUuids=uuids;bitmaps.addAll(images);buildShelf();}
+                if(reloadPending) {reloadPending=false;loadedStamp=Long.MIN_VALUE;load();} // A cover changed under a load in flight: reload once.
             });
         });
     }
@@ -239,9 +240,12 @@ public class GamesActivity extends Activity {
                 WolfControlClient client=WolfControlClient.load(new File(getFilesDir(),"wolf-control.json"));
                 if(client!=null && (directory.isDirectory() || directory.mkdirs()))
                     changed=WolfCatalogSync.sync(adapter(client),directory,SystemClock.uptimeMillis()+20000,SystemClock::uptimeMillis);
-            } catch(Exception ignored) { /* Keep the current catalog. */ }
+            } catch(Exception e) {android.util.Log.w("WolfGames","Catalog sync failed, keeping the current catalog",e);}
             final boolean updated=changed;
-            main.post(()-> {syncing=false;if(updated && !destroyed)load();});
+            main.post(()-> {
+                syncing=false;
+                if(updated && !destroyed) {if(busy)reloadPending=true;else {loadedStamp=Long.MIN_VALUE;load();}}
+            });
         });
     }
 

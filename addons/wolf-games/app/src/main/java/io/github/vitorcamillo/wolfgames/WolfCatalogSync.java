@@ -34,8 +34,11 @@ final class WolfCatalogSync {
         return sync(source, directory, Long.MAX_VALUE, System::currentTimeMillis);
     }
 
+    /** Returns true when something visible changed: the catalog or any cover file. */
     static boolean sync(Source source, File directory, long deadline, LongSupplier clock) throws IOException, WolfControlClient.ControlException {
+        checkAlive(deadline, clock);
         List<Entry> entries = source.games();
+        checkAlive(deadline, clock);
         File catalog = MoonlightCatalog.localFile(directory, "catalog.json");
         JSONObject old = null;
         if (catalog.isFile() && catalog.length() <= MoonlightCatalog.MAX_CATALOG_BYTES) {
@@ -49,6 +52,7 @@ final class WolfCatalogSync {
                 old = new JSONObject(new String(out.toByteArray(), StandardCharsets.UTF_8));
             } catch (Exception ignored) { old = null; }
         }
+        boolean coversWritten = false;
         try {
             String hostKey = UUID.fromString(source.hostUuid()).toString().replace("-", "").substring(0, 12);
             String hostName = old == null ? "Wolf" : old.optString("host_name", "Wolf");
@@ -71,13 +75,15 @@ final class WolfCatalogSync {
                     boolean png = entry.cover.endsWith(".png");
                     if (file.isFile() && !validImageFile(file, png) && !file.delete()) throw new IOException("Cannot remove invalid cover");
                     if (!file.isFile()) {
-                        if (clock.getAsLong() > deadline) throw new IOException("Sync deadline");
+                        checkAlive(deadline, clock);
                         try {
                             byte[] bytes = source.cover(entry.appId);
-                            if (validImage(bytes, png)) writeAtomic(file, bytes);
+                            checkAlive(deadline, clock);
+                            if (validImage(bytes, png)) { writeAtomic(file, bytes); coversWritten = true; }
                             else file.delete();
                         } catch (WolfControlClient.ControlException error) {
                             if (!"not_found".equals(error.code)) throw new IOException("Cover download failed", error);
+                            checkAlive(deadline, clock);
                         }
                     }
                     if (file.isFile() && validImageFile(file, png)) {
@@ -95,10 +101,11 @@ final class WolfCatalogSync {
                     .put("host_uuid", source.hostUuid());
             if (hosts != null) result.put("hosts", hosts);
             result.put("games", games);
+            checkAlive(deadline, clock);
             if (old != null && old.optInt("schema_version") == 1
                     && result.getString("host_uuid").equals(old.optString("host_uuid", ""))
                     && hostName.equals(old.optString("host_name", ""))
-                    && same(hosts, old.optJSONArray("hosts")) && same(games, old.optJSONArray("games"))) return false;
+                    && same(hosts, old.optJSONArray("hosts")) && same(games, old.optJSONArray("games"))) return coversWritten;
             writeAtomic(catalog, result.toString().getBytes(StandardCharsets.UTF_8));
             File[] files = directory.listFiles();
             if (files != null) for (File file : files) {
@@ -110,6 +117,11 @@ final class WolfCatalogSync {
         } catch (Exception error) {
             throw new IOException("Invalid catalog", error);
         }
+    }
+    /** Fails before any further write once the sync is cancelled or past its deadline. */
+    private static void checkAlive(long deadline, LongSupplier clock) throws IOException {
+        if (Thread.currentThread().isInterrupted()) throw new IOException("Sync cancelled");
+        if (clock.getAsLong() > deadline) throw new IOException("Sync deadline");
     }
     private static boolean same(JSONArray a, JSONArray b) {
         return a == null ? b == null : b != null && a.toString().equals(b.toString());
