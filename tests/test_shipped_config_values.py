@@ -18,6 +18,16 @@ reader that changes its range, or stops reading a key, fails this test rather th
 theme quietly ignored. Keys read by another class (`race_calendar` in RaceCalendar.java,
 `wallpaper_moods` in WallpaperRotation.java) are not this file's business.
 
+Three keys are narrowed further, to a set of values rather than a type: `glow_style` (radial or horizon),
+`glass_style` (glass, rim or halo) and `wallpaper_order` (sequential or shuffle). `string()` keeps any
+string, so a value outside the set is not something the checks above see; the reader then folds it to its
+fallback without a word. `themes/cinematic` and `themes/red-rain` shipped `"glow_style": "off"`, a value
+`Config.glowStyle()` answers with radial, so a theme that meant to say "no glow here" said nothing at all -
+and a theme author who copies either one has the same line, since the Keys table named the two values it
+takes and said nothing about a third. The sets are read out of the constants those readers compare
+against, so a value the launcher stops taking fails this test rather than leaving a shipped theme on its
+fallback.
+
 The same bounds are stated a second time, in the Keys table of themes/README.md, and that copy is the
 one a theme author reads: the cell gives `0 to 300` for `wifi_label_width`, `1 to 8` for `columns`,
 and tools/manage.py set refuses a value outside that cell before it writes anything
@@ -39,7 +49,19 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "Config.java"
+WALLPAPER_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "WallpaperRotation.java"
 KEYS_TABLE = ROOT / "themes" / "README.md"
+
+# The keys a reader narrows to a set of its own, and where that set is written down: the class holding the
+# constants, the prefix they share, and how the reader compares a value - `trimmed` for glowStyle() and
+# glassStyle(), which trim and equalsIgnoreCase, `exact` for WallpaperRotation.validOrder(), which compares
+# the string as it was read.
+ENUMS = {
+    "glow_style": ("Config.java", "GLOW_", "trimmed"),
+    "glass_style": ("Config.java", "GLASS_", "trimmed"),
+    "wallpaper_order": ("WallpaperRotation.java", "ORDER_", "exact"),
+}
+CONSTANT = r"\b{prefix}([A-Z_]+)\s*=\s*\"([a-z-]+)\""
 
 # The readers that take no bounds, and what the launcher needs for each. `string(json, ...)` is matched
 # before `stringList(json, ...)` would be by the alternation, so the longer name comes first.
@@ -67,8 +89,21 @@ def readers(java_text):
     return found
 
 
-def problems(values, kinds):
+def enum_values(java_text, prefix):
+    """Every value a class gives a constant named with that prefix, comments aside."""
+    return {value for _, value in re.findall(CONSTANT.format(prefix=prefix), java_text)}
+
+
+def accepted_enums():
+    """key -> (values, how), read out of the constants those readers compare a value against."""
+    java = {"Config.java": CONFIG_JAVA, "WallpaperRotation.java": WALLPAPER_JAVA}
+    return {key: (enum_values(java[name].read_text(encoding="utf-8"), prefix), how)
+            for key, (name, prefix, how) in ENUMS.items()}
+
+
+def problems(values, kinds, enums=None):
     """[(key, why)] for the values the launcher would drop, judged by the reader the key is read with."""
+    enums = enums or {}
     out = []
     for key, value in values.items():
         if key not in kinds:
@@ -80,6 +115,12 @@ def problems(values, kinds):
         elif kind == "string":
             if not isinstance(value, str):
                 out.append((key, f"{json.dumps(value)} is not a string, and string() keeps the fallback"))
+            elif key in enums:
+                allowed, how = enums[key]
+                seen = value.strip().lower() if how == "trimmed" else value
+                if seen not in allowed:
+                    out.append((key, f"{json.dumps(value)} is not one of {', '.join(sorted(allowed))}, "
+                                     f"and the launcher keeps the value it falls back to"))
         elif kind == "integer":
             if isinstance(value, bool) or not isinstance(value, (int, float)):
                 out.append((key, f"{json.dumps(value)} is not a number, and integer() keeps the fallback"))
@@ -155,6 +196,7 @@ def range_problems(table, kinds):
 class ShippedConfigValuesTest(unittest.TestCase):
     def setUp(self):
         self.kinds = readers(CONFIG_JAVA.read_text(encoding="utf-8"))
+        self.enums = accepted_enums()
 
     def test_the_readers_are_there(self):
         # A parser that read nothing would make every check below pass for any value.
@@ -169,6 +211,41 @@ class ShippedConfigValuesTest(unittest.TestCase):
         self.assertEqual(self.kinds.get("wifi_label_width"), ("integer", (0, 300)),
                          "wifi_label_width's bounds moved; the example and the Keys row follow them")
 
+    def test_the_enum_values_are_read_out_of_the_launcher(self):
+        # A constant parse that found nothing would let every value through, the way it did for "off".
+        self.assertEqual(self.enums.get("glow_style"), ({"radial", "horizon"}, "trimmed"))
+        self.assertEqual(self.enums.get("glass_style"), ({"glass", "rim", "halo"}, "trimmed"))
+        self.assertEqual(self.enums.get("wallpaper_order"), ({"sequential", "shuffle"}, "exact"))
+
+    def test_a_value_outside_the_set_is_reported(self):
+        # "off" is the value the two themes shipped: a string, so the type sweep passed it and
+        # glowStyle() answered radial. The spelling is the reader's - glow and glass trim and ignore
+        # case, validOrder() does not, so `Sequential` is not `sequential`.
+        for key, value, listed in (("glow_style", "off", "horizon, radial"),
+                                   ("glass_style", "frosted", "glass, halo, rim"),
+                                   ("wallpaper_order", "Sequential", "sequential, shuffle")):
+            with self.subTest(key=key, value=value):
+                reported = dict(problems({key: value}, self.kinds, self.enums))
+                self.assertIn(key, reported, f"`{key}: {value}` was let through")
+                self.assertIn(listed, reported[key])
+        for key, value in (("glow_style", " HORIZON "), ("glass_style", "rim"),
+                           ("wallpaper_order", "shuffle")):
+            with self.subTest(key=key, value=value):
+                self.assertEqual(problems({key: value}, self.kinds, self.enums), [])
+
+    def test_the_themes_that_want_no_glow_say_it_with_the_booleans(self):
+        # MainActivity reads `if (!ambientGlow) ambient.setVisibility(View.GONE)` and returns from
+        # setAmbient() while the glow is off, so these two booleans are what a theme has to say; there
+        # is no glow_style that means "none", and a third value reaches the screen as radial.
+        for name in ("cinematic", "red-rain"):
+            path = ROOT / "themes" / name / "config.json"
+            values = json.loads(path.read_text(encoding="utf-8"))
+            with self.subTest(theme=name):
+                self.assertFalse(values.get("ambient_glow"), f"{name} no longer turns the ambient glow off")
+                self.assertFalse(values.get("app_glow"), f"{name} no longer turns the app glow off")
+                self.assertEqual(problems(values, self.kinds, self.enums), [],
+                                 f"{name} asks for a value the launcher folds to its fallback")
+
     def test_no_shipped_value_is_one_the_launcher_drops(self):
         files = config_files()
         self.assertGreaterEqual(len(files), 50, "fewer config.json files found than the tree ships")
@@ -178,7 +255,7 @@ class ShippedConfigValuesTest(unittest.TestCase):
         for path in files:
             values = json.loads(path.read_text(encoding="utf-8"))
             checked += sum(1 for key in values if key in self.kinds)
-            for key, why in problems(values, self.kinds):
+            for key, why in problems(values, self.kinds, self.enums):
                 with self.subTest(file=str(path.relative_to(ROOT)), key=key):
                     self.fail(f"{path.relative_to(ROOT)} sets `{key}` and {why}: the launcher shows its "
                               f"built-in value instead, and nothing says so")

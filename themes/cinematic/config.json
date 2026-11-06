@@ -26,7 +26,6 @@
   "icon_only_buttons": true,
   "ambient_glow": false,
   "app_glow": false,
-  "glow_style": "off",
   "focus_overshoot": false,
   "advanced_effects": true
 }
