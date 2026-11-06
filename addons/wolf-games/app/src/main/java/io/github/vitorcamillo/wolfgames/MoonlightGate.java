@@ -12,7 +12,7 @@ import android.content.pm.PackageManager;
  * Moonlight is installed. Another app's PACKAGE_ADDED never reaches a manifest receiver on
  * Android 8+, so the comeback happens on boot (or when the add-on itself is updated).
  */
-final class MoonlightGate extends BroadcastReceiver {
+public final class MoonlightGate extends BroadcastReceiver {
     static final String MOONLIGHT="com.limelight";
 
     /** Pure: DEFAULT (manifest, i.e. enabled) when Moonlight is there, DISABLED otherwise. */
