@@ -2023,6 +2023,35 @@ tools/tv.py 'settings delete global private_dns_specifier'
 Not checked in that report: other VPN clients and Android versions, and whether a specifier the VPN's
 resolver can reach validates.
 
+## After a power cut the clock is wrong and no app connects, with strict Private DNS
+
+A TV that keeps no time without power can start with an old date, and in hostname mode that is enough to
+take it off the internet for good. Seen on a Philips 70PUS8545/12 (TPM191E, `PH9M_EA_5599`, MediaTek mt5887,
+Android TV 12, `STT2.230526.001`) with `dns.adguard-dns.com` in hostname mode: after a power cut it came up
+on 9 December 2025, almost a year back. The resolver's certificate does not validate against that date
+(`validateDnsTlsServer returned 0` in `logcat`), and hostname mode does not fall back, so no name resolved at
+all. The TV's own time service (`org.droidtv.icp` on this set) asks `pool.ntp.org`, a name, so it could never
+correct the clock, and Android's `auto_time` is 0 from the factory on this firmware, so nothing else set it
+either. Every app failed, and nothing on screen pointed at DNS. ADB kept working, since it needs no lookup.
+
+The two settings to read first:
+
+```sh
+tools/tv.py 'date; settings get global private_dns_mode'
+```
+
+A date in the past next to `hostname` is this loop. Set the mode back, then restart the TV from its menu, so
+the time service can reach its server again:
+
+```sh
+tools/tv.py 'settings put global private_dns_mode opportunistic'
+```
+
+On that set the first restart put the clock right; Android's own internet check, which had failed on the old
+date, passed only after a second one. Hostname mode was left off there afterwards, since the next power cut
+would start the loop again, and ad blocking on the router is not affected by the TV's clock. Not checked:
+other brands' time services, and whether a TV whose `auto_time` is on gets out of the loop by itself.
+
 ## An app that runs a local VPN is on until the next boot, then gone
 
 A DNS filter, an ad blocker or a VPN client you keep, set to start with the TV, works once switched on, and
