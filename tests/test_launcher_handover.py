@@ -243,10 +243,17 @@ class HandoverTest(unittest.TestCase):
     def test_upgrade_over_stock_home_redirect_leaves_stock_launcher_enabled(self):
         # The stock launcher owns Home and this launcher's HomeKeyService is on: a rerun to upgrade the
         # launcher on a stock_home_redirect TV, where disabling the stock launcher breaks the redirect.
-        result, state = self.handover(redirect=True)
+        # set_home_fails: as on the sabrina (Google TV 14), where set-home-activity answers Success and the
+        # stock launcher keeps Home. The script must not count that as a failed handover and stop before
+        # HomeKeyService is turned back on, which a run there did.
+        result, state = self.handover(redirect=True, set_home_fails=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("stock_home_redirect", result.stdout)
         self.assertIn("Stock launcher: none", result.stdout)
+        self.assertIn("Home still resolves to " + STOCK_HOME, result.stdout)
+        self.assertFalse(any("set-home-activity" in c for c in state["commands"]),
+                         "Home is not handed over on a redirect TV")
+        self.assertEqual(state["home"], STOCK_HOME)
         self.assertFalse(any("pm disable-user" in c for c in state["commands"]))
         self.assertFalse(state["stock_disabled"])
         # The reinstall drops the helper, and on this setup the helper is the redirect.
@@ -254,7 +261,7 @@ class HandoverTest(unittest.TestCase):
                         "HomeKeyService is put back after the reinstall")
 
     def test_redirect_tv_with_home_key_service_0_leaves_the_helper_off(self):
-        result, state = self.handover(redirect=True, home_key_service="0")
+        result, state = self.handover(redirect=True, home_key_service="0", set_home_fails=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(state["stock_disabled"])
         self.assertFalse(any("echo HomeKeyService enabled" in c for c in state["commands"]))

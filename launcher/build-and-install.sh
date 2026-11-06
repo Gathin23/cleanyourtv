@@ -88,7 +88,7 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
         redirect)
           # The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
           # so it comes back on unless HOME_KEY_SERVICE=0 is passed.
-          STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}
+          STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}; KEEP_HOME=$HOME_PKG
           echo "$HOME_PKG owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
           echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
           echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG." ;;
@@ -174,11 +174,14 @@ if ! printf '%s' "$START_OUT" | grep -qF 'Status: ok' || printf '%s' "$START_OUT
   echo "ERROR: the new launcher did not start (see above); $STOCK_LAUNCHER was left enabled." >&2
   exit 1
 fi
+# On a stock_home_redirect TV the stock launcher stays Home on purpose, so Home is not handed over.
+if [ -n "${KEEP_HOME:-}" ]; then SET_HOME="echo Home left with $KEEP_HOME"
+else SET_HOME="cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity"; fi
 printf '%s\n' \
   "pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted" \
   "cmd package compile -m speed -f com.gathin.tvhome" \
   "$DISABLE_STOCK" \
-  "cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity" \
+  "$SET_HOME" \
   | "$PY" -I ../tools/tv.py --batch
 
 # Home's owner, or an empty string when the TV cannot be reached (pipefail would otherwise make a
@@ -223,6 +226,7 @@ rollback_home() {
 HOME_NOW=$(query_home)
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
+  "${KEEP_HOME:-none}"/*) echo "Home still resolves to $HOME_NOW (stock_home_redirect); HomeKeyService hands over from it." ;;
   *)
     if [ -z "$HOME_NOW" ]; then
       echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2
