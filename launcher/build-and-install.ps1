@@ -61,6 +61,7 @@ if ($env:SKIP_BUILD -ne '1') {
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
+$keepHome = ''   # the stock launcher that stays Home on a stock_home_redirect TV
 $knownStock = @('com.google.android.tvlauncher', 'com.google.android.apps.tv.launcherx', 'com.google.android.leanbacklauncher', 'com.mitv.tvhome')
 if (-not $StockLauncher) {
     $homePkg = & $py -I ..\tools\tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' | Select-Object -Last 1
@@ -77,7 +78,7 @@ if (-not $StockLauncher) {
         }
         if ($redirect -eq 'redirect') {
             # The reinstall switches HomeKeyService off, and the redirect is that helper, so it comes back on.
-            $StockLauncher = 'none'
+            $StockLauncher = 'none'; $keepHome = $homePkg
             if (-not $PSBoundParameters.ContainsKey('HomeKeyService')) { $HomeKeyService = $true }
             Write-Host "$homePkg owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
             Write-Host "and turning HomeKeyService back on after the install (-HomeKeyService:`$false to skip that)."
@@ -152,8 +153,14 @@ if ($LASTEXITCODE -ne 0) { Write-Warning "tv.py --batch failed (exit code $LASTE
 # launcher is a HOME candidate whenever it is installed, so the chooser check below cannot tell a
 # switch that took from one that did not on its own (#4068). It prints "Success" when the preference
 # took; anything else means it did not.
-$setHomeOut = (& $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>$null) -join "`n"
-$setHomeOk = ($LASTEXITCODE -eq 0 -and $setHomeOut -match 'Success')
+# On a stock_home_redirect TV the stock launcher stays Home on purpose, so Home is not handed over.
+if ($keepHome) {
+    Write-Host "Home left with $keepHome"
+    $setHomeOk = $false
+} else {
+    $setHomeOut = (& $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>$null) -join "`n"
+    $setHomeOk = ($LASTEXITCODE -eq 0 -and $setHomeOut -match 'Success')
+}
 
 $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 # Home's owner, or '' when the TV cannot be reached: $null.Trim() would throw past the rollback.
@@ -207,13 +214,16 @@ if ($homeNow -eq 'android' -and $setHomeOk) {
         Write-Host "Home is Android's chooser; set-home-activity reported Success and com.gathin.tvhome is a registered HOME candidate (a second launcher also claims Home), so the handover is kept."
     }
 }
-if ($homeNow -notlike 'com.gathin.tvhome/*') {
+if ($keepHome -and $homeNow -like "$keepHome/*") {
+    Write-Host "Home still resolves to $homeNow (stock_home_redirect); HomeKeyService hands over from it."
+}
+elseif ($homeNow -notlike 'com.gathin.tvhome/*') {
     $reason = if ($homeNow) { "Home resolves to '$homeNow', not to the new launcher" } else { 'the TV stopped answering while Home was being switched, so the outcome is unknown' }
     $restored = Undo-Handover
     $hint = if ($homeNow) { ' On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to your debloat list (see README, Troubleshooting), apply it, then run this script again.' } else { '' }
     throw "$reason; $(if ($restored) { "$StockLauncher was re-enabled." } else { 'recovery is incomplete (see above).' })$hint"
 }
-Write-Host "Home now resolves to $homeNow"
+else { Write-Host "Home now resolves to $homeNow" }
 # Optional accessibility services, appended to enabled_accessibility_services without dropping others.
 function Enable-Service([string]$Name) {
     $svc = "com.gathin.tvhome/.$Name"

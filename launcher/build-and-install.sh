@@ -88,7 +88,7 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
         redirect)
           # The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
           # so it comes back on unless HOME_KEY_SERVICE=0 is passed.
-          STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}
+          STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}; KEEP_HOME=$HOME_PKG
           echo "$HOME_PKG owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
           echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
           echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG." ;;
@@ -192,11 +192,17 @@ printf '%s\n' \
 # is installed, so the chooser check below cannot tell a successful switch from a failed one on its
 # own (#4068). `cmd package set-home-activity` prints "Success" when the preference took; anything
 # else (a SecurityException, "Failure", an empty answer from a dropped link) means it did not.
-SET_HOME_OUT=$("$PY" -I ../tools/tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>/dev/null || true)
-case "$SET_HOME_OUT" in
-  *Success*) SET_HOME_OK=yes ;;
-  *) SET_HOME_OK=no ;;
-esac
+# On a stock_home_redirect TV the stock launcher stays Home on purpose, so Home is not handed over.
+if [ -n "${KEEP_HOME:-}" ]; then
+  echo "Home left with $KEEP_HOME"
+  SET_HOME_OK=no
+else
+  SET_HOME_OUT=$("$PY" -I ../tools/tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' 2>/dev/null || true)
+  case "$SET_HOME_OUT" in
+    *Success*) SET_HOME_OK=yes ;;
+    *) SET_HOME_OK=no ;;
+  esac
+fi
 
 # Home's owner, or an empty string when the TV cannot be reached (pipefail would otherwise make a
 # lost connection abort the script with no explanation).
@@ -256,6 +262,7 @@ if [ "$HOME_NOW" = android ] && [ "$SET_HOME_OK" = yes ]; then
 fi
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
+  "${KEEP_HOME:-none}"/*) echo "Home still resolves to $HOME_NOW (stock_home_redirect); HomeKeyService hands over from it." ;;
   *)
     if [ -z "$HOME_NOW" ]; then
       echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2
