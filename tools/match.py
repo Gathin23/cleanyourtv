@@ -12,7 +12,8 @@ says.
 It reads files only: no TV, no ADB client, nothing written. It ranks nothing and suggests no list; the
 counts are what the lists say, not a verdict for this TV.
 
-Exit codes: 0 the table was printed, 2 the packages file or the examples folder could not be read.
+Exit codes: 0 the table was printed, 2 the packages file, the examples folder or a list in it could not
+be read.
 """
 import argparse
 from collections import Counter
@@ -83,7 +84,12 @@ def tally(packages, examples):
     disabled, commented = Counter(), Counter()
     notes = {name: Counter() for name in packages}
     for path in lists:
-        off, kept = read_list(path.read_text(encoding="utf-8-sig", errors="replace"))
+        try:
+            text = path.read_text(encoding="utf-8-sig", errors="replace")
+        except OSError as e:
+            # One unreadable list stops the whole tally: partial counts would read as the real ones.
+            raise SystemExit(f"could not read {path} ({e.strerror or e}): no counts printed")
+        off, kept = read_list(text)
         for counter, entries in ((disabled, off), (commented, kept)):
             for name, note in entries.items():
                 if name not in wanted:

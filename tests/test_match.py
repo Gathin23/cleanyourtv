@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
@@ -135,6 +136,31 @@ class TallyTest(MatchCase):
             match.tally(["com.example.ads"], self.examples)
         self.assertIn("no */debloat.txt", str(caught.exception.code))
 
+    def test_a_list_that_is_a_directory_stops_the_whole_tally(self):
+        self.add_list("a", "com.example.ads\n")
+        bad = self.examples / "b" / "debloat.txt"
+        bad.mkdir(parents=True)
+        with self.assertRaises(SystemExit) as caught:
+            match.tally(["com.example.ads"], self.examples)
+        self.assertIn("could not read", str(caught.exception.code))
+        self.assertIn(str(bad), str(caught.exception.code))
+
+    def test_a_list_that_cannot_be_read_stops_the_whole_tally(self):
+        self.add_list("a", "com.example.ads\n")
+        bad = self.add_list("b", "com.example.ads\n")
+        real_read_text = Path.read_text
+
+        def read_text(path, *args, **kwargs):
+            if path == bad:
+                raise PermissionError(13, "Permission denied", str(path))
+            return real_read_text(path, *args, **kwargs)
+
+        with mock.patch.object(Path, "read_text", read_text):
+            with self.assertRaises(SystemExit) as caught:
+                match.tally(["com.example.ads"], self.examples)
+        self.assertIn(str(bad), str(caught.exception.code))
+        self.assertIn("Permission denied", str(caught.exception.code))
+
 
 class MainTest(MatchCase):
     def run_main(self, *args):
@@ -215,6 +241,29 @@ class CommandLineTest(MatchCase):
 
     def test_an_unreadable_file_exits_2_without_a_traceback(self):
         result = self.run_script(str(self.base / "gone.txt"), "--examples", str(self.examples))
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual("", result.stdout)
+
+    def test_a_list_that_is_a_directory_exits_2_without_a_traceback(self):
+        self.add_list("a", "com.example.ads\n")
+        (self.examples / "b" / "debloat.txt").mkdir(parents=True)
+        packages = self.write("p.txt", "package:com.example.ads\n")
+        result = self.run_script(str(packages), "--examples", str(self.examples))
+        self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertIn("could not read", result.stderr)
+        self.assertEqual("", result.stdout)
+
+    def test_a_dangling_list_symlink_exits_2_without_a_traceback(self):
+        folder = self.examples / "a"
+        folder.mkdir()
+        try:
+            (folder / "debloat.txt").symlink_to(self.base / "gone.txt")
+        except (OSError, NotImplementedError) as e:
+            self.skipTest(f"cannot create a symlink here: {e}")
+        packages = self.write("p.txt", "package:com.example.ads\n")
+        result = self.run_script(str(packages), "--examples", str(self.examples))
         self.assertEqual(2, result.returncode, result.stdout + result.stderr)
         self.assertNotIn("Traceback", result.stderr)
         self.assertEqual("", result.stdout)
