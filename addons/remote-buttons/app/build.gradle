@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.knochango.remotebuttons'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'io.github.knochango.remotebuttons'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            // Sideloaded over ADB, never published.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        // READ_LOGS is granted over ADB by the install script (pm grant); lint only knows it as a system permission.
+        disable 'ProtectedPermissions'
+    }
+}

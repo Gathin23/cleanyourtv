@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A remote with one highlighted button and an arrow to an app tile, on a dark tile. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path android:fillColor="#15181F" android:pathData="M0,0h320v180h-320z" />
+    <!-- remote -->
+    <path android:fillColor="#2A2F3A" android:pathData="M88,30h40a14,14 0,0 1,14 14v92a14,14 0,0 1,-14 14h-40a14,14 0,0 1,-14 -14v-92a14,14 0,0 1,14 -14z" />
+    <path android:fillColor="#3A4150" android:pathData="M108,52m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0" />
+    <path android:fillColor="#3A4150" android:pathData="M92,84h14v10h-14z M110,84h14v10h-14z M92,100h14v10h-14z" />
+    <!-- the chosen button -->
+    <path android:fillColor="#7C9CFF" android:pathData="M110,100h14v10h-14z" />
+    <!-- arrow -->
+    <path android:strokeColor="#7C9CFF" android:strokeWidth="5" android:strokeLineCap="round"
+        android:pathData="M156,105 L196,105 M186,95 L196,105 L186,115" />
+    <!-- app tile -->
+    <path android:fillColor="#7C9CFF" android:pathData="M214,80h56a10,10 0,0 1,10 10v30a10,10 0,0 1,-10 10h-56a10,10 0,0 1,-10 -10v-30a10,10 0,0 1,10 -10z" />
+    <path android:fillColor="#15181F" android:pathData="M236,94 L236,116 L256,105 Z" />
+</vector>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Remote buttons</string>
+    <string name="service_name">Remote buttons</string>
+    <string name="service_description">Opens the app you chose for a remote button, from any app. It reads the key log and blocks no key, so held volume keeps ramping.</string>
+    <string name="hint">Each button below opens the app you chose, from any app. Volume and the other buttons work as before.</string>
+    <string name="add">Add a button</string>
+    <string name="learning">Press the remote button now (Back cancels)</string>
+    <string name="learn_timeout">No button arrived. Check the status below.</string>
+    <string name="mapping">%1$s → %2$s</string>
+    <string name="key_label">Button %1$d (%2$s)</string>
+    <string name="none">None</string>
+    <string name="library">App library</string>
+    <string name="missing">Not installed: %1$s</string>
+    <string name="status_service">Helper: %1$s</string>
+    <string name="status_logs">Reading the key log: %1$s</string>
+    <string name="status_overlay">Opening over other apps: %1$s</string>
+    <string name="status_last">Last button seen: %1$s</string>
+    <string name="none_yet">none yet</string>
+    <string name="on">on</string>
+    <string name="off">off (Settings, Accessibility, Remote buttons)</string>
+    <string name="allowed">allowed</string>
+    <string name="not_allowed">not allowed (run the install script)</string>
+    <string name="pick_title">Open with this button</string>
+    <string name="pick_hint">OK picks the app. None takes the button off.</string>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Botones del mando</string>
+    <string name="service_name">Botones del mando</string>
+    <string name="service_description">Abre la app que eligió para un botón del mando, desde cualquier app. Lee el registro de teclas y no bloquea ninguna, así que el volumen sigue subiendo al mantenerlo pulsado.</string>
+    <string name="hint">Cada botón de abajo abre la app que eligió, desde cualquier app. El volumen y los demás botones funcionan como antes.</string>
+    <string name="add">Añadir un botón</string>
+    <string name="learning">Pulse ahora el botón del mando (Atrás cancela)</string>
+    <string name="learn_timeout">No llegó ningún botón. Revise el estado más abajo.</string>
+    <string name="mapping">%1$s → %2$s</string>
+    <string name="key_label">Botón %1$d (%2$s)</string>
+    <string name="none">Ninguna</string>
+    <string name="library">Biblioteca de apps</string>
+    <string name="missing">No instalada: %1$s</string>
+    <string name="status_service">Servicio: %1$s</string>
+    <string name="status_logs">Lectura del registro de teclas: %1$s</string>
+    <string name="status_overlay">Abrir encima de otras apps: %1$s</string>
+    <string name="status_last">Último botón visto: %1$s</string>
+    <string name="none_yet">ninguno todavía</string>
+    <string name="on">activado</string>
+    <string name="off">desactivado (Ajustes, Accesibilidad, Botones del mando)</string>
+    <string name="allowed">permitido</string>
+    <string name="not_allowed">no permitido (ejecute el script de instalación)</string>
+    <string name="pick_title">Abrir con este botón</string>
+    <string name="pick_hint">OK elige la app. Ninguna quita el botón.</string>
+</resources>
