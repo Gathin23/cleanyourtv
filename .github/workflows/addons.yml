@@ -37,6 +37,27 @@ jobs:
             [ -d "addons/$a" ] || continue
             [ -f "addons/$a/gradlew" ] || { echo "addons/$a has no gradlew"; exit 1; }
             echo "::group::addons/$a"
-            (cd "addons/$a" && chmod +x gradlew && ./gradlew --no-daemon assembleRelease)
+            if [ "$a" = "family-renewals" ]; then
+              (cd "addons/$a" && chmod +x gradlew && ./gradlew --no-daemon testReleaseUnitTest lintRelease assembleRelease)
+            else
+              (cd "addons/$a" && chmod +x gradlew && ./gradlew --no-daemon assembleRelease)
+            fi
             echo "::endgroup::"
           done
+      - name: Prepare Family Renewals QA APK and verification files
+        if: ${{ hashFiles('addons/family-renewals/app/build/outputs/apk/release/app-release.apk') != '' }}
+        run: |
+          out="$RUNNER_TEMP/family-renewals-test"
+          mkdir -p "$out"
+          cp addons/family-renewals/app/build/outputs/apk/release/app-release.apk "$out/family-renewals-test.apk"
+          sha256sum "$out/family-renewals-test.apk" > "$out/SHA256SUMS.txt"
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$out/family-renewals-test.apk" > "$out/apk-signature.txt"
+          echo "This is a CI-generated QA build signed with the runner's debug key; it is not a public release." > "$out/BUILD-NOTE.txt"
+      - name: Upload Family Renewals QA APK
+        if: ${{ hashFiles('addons/family-renewals/app/build/outputs/apk/release/app-release.apk') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: family-renewals-qa-apk
+          path: ${{ runner.temp }}/family-renewals-test/
+          if-no-files-found: error
+          retention-days: 7
