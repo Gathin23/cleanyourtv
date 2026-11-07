@@ -1,0 +1,42 @@
+# Challenger R3 (manufacturer SCBC, device R3, Realtek rtd2841a, TCL "android-tcl-scbc-tv" platform), Android TV 11 (API 30),
+# firmware RTT7.220427.001 (build 1083, 2022-06-30), 1.5 GB RAM, 4 GB storage, 1280x720. Sold in Colombia.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/challenger-r3/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/challenger-r3/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher is com.google.android.tvlauncher. It is not in this list: disable it only once a
+# replacement Home is installed (launcher/build-and-install.sh does that in the right order).
+# Live TV app: com.apps.livetv. Same SCBC platform as examples/compac-atv-r2 and examples/sanyo-atv-r2 (Android 9).
+#
+# Notes from this TV (tried for one evening, with the new launcher as Home and a reboot afterwards):
+# - Kept in use: Chromecast built-in and FastScreen / SCast mirroring, firmware updates (com.apps.ota,
+#   com.apps.authota), the Live TV and input packages (com.apps.livetv, com.apps.passthrough, com.apps.tvsettings),
+#   remote helpers (com.apps.smartkey, virtualkey, bluetoothremote), every com.realtek.* except factorytools.
+# - The saved Wi-Fi network belongs to android.uid.system, not setupwraith.
+# - Not disabled: tools/disable.sh skips com.apps.function.gdpr, android.autoinstalls.config.scbc.device and
+#   com.android.htmlviewer here, because this firmware's dumpsys does not let it check them for input drivers.
+# - /data was 96% full: the launcher's `pm install` failed with "not enough space" until `pm trim-caches 900M`.
+# - Left alone, not understood well enough: com.mk.tv.fivekey (receiver for the remote's menu key),
+#   com.mk.service.tvmidware (store-app and UART service) and com.mk.tv.meeting.service (an accessibility
+#   service for digital signage). Nothing was started to find out.
+# - Nothing came back enabled after a reboot. After the reboot Home came up as the new launcher, not Live TV.
+# Telemetry and feedback
+com.google.android.feedback
+# Content rows and recommendations
+com.apps.channels                      # "S-Channel" content rows on Home
+com.google.android.tvrecommendations   # recommendation rows of the stock Home
+# Extras and duplicates
+com.apps.wifihotspot                   # TV as a Wi-Fi hotspot
+com.android.printspooler
+com.android.gallery3d
+com.seraphic.hbbtv.app                 # HbbTV browser
+com.google.android.play.games
+com.google.android.videos              # Play Movies
+com.google.android.backdrop            # Google ambient screensaver
+# Factory tools: only disabled, never started
+com.apps.factory.ui
+com.realtek.factorytools
+# Personal choice: voice assistants (comment out to keep them)
+com.google.android.katniss             # Google Assistant
+com.apps.wwalexa                       # Alexa
