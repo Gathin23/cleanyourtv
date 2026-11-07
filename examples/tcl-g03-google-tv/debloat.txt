@@ -190,6 +190,31 @@
 #   allow). Both were changed, then it kept running.
 # - Disabling dreamx leaves screensaver_components pointing at it; set another one before (see group 7).
 #
+# TCL 65S45G, US, 2026-10-25, status 2026-11-07 (13 days, nothing re-enabled): product G03_4K_US (BeyondTV4, Realtek
+# rtd288o, board RTD2851M), software V8-R51MT08-LF1V053, Google TV 11, build RP1A.200622.001 AR24, security patch
+# 2023-03-05, client TCL-NA-RTD51M-S1, 32-bit userspace (armeabi-v7a). Groups 1-3 applied in three batches with a
+# screenshot after each, then Netflix, YouTube Music, the USB player, TCL browser and smartalexa from group 4/5 (the
+# rest of 4/5 kept by choice), then setupwraith (it owned the Wi-Fi: forgotten and re-joined first),
+# launcher/build-and-install.sh, the screensaver switch and dreamx. Rebooted after the debloat, after the launcher and
+# again on 2026-11-07: Home came up on the new launcher with no RecoveryActivity, Wi-Fi stayed up, the Inputs menu
+# listed HDMI 1-3, AV and Live TV. Found on this unit:
+# - Not installed here: com.tcl.logkit, com.tcl.overseasappshow, com.tcl.tv.tclhome_passive, com.tcl.gamebar,
+#   com.tcl.micmanager, com.tcl.miracast, com.tcl.MultiScreenInteraction_TV (disable.sh reports them as unknown).
+# - com.google.android.apps.tv.dreamx is enabled again at every boot on AR24. The screensaver setting survives the
+#   reboot, so the promo screensaver still never shows; dreamx is left enabled rather than disabled after each boot.
+# - If you keep Google voice search (katniss), keep group 5's com.google.android.tv.assistant and com.tcl.assistant
+#   too: the first is only the voice LED service here (AssistantLedService, /system/priv-app/LedService), and the
+#   second ships as /product/app/google_assistant and handles the mic long-press
+#   (com.tcl.framework.custom.longpress.voice) and the TvControl, media and settings services voice commands use.
+# - Gear (4077), YouTube (KEYCODE_TCL_YOUTUBE) and Prime Video (4099) did nothing without launcherx and came back with
+#   HOME_KEY_SERVICE=1 and the settings_key_keycodes, settings_key_panel and app_keys in config.json (real remote).
+# - The Input key (0x0c0049, KEY_GAMES, KEYCODE_TV_INPUT in Generic.kl) opened com.tcl.suspension's source panel with
+#   no helper, as on the Latin America unit above, until another launcher (Projectivy, with its own accessibility
+#   service) was installed and removed on 2026-11-07. After that it opened nothing, though
+#   `am start -a com.android.tv.action.VIEW_INPUTS` still opened the panel. The cause was not found;
+#   "KEYCODE_TV_INPUT:com.tcl.suspension/.ui.main.InputActivity" in app_keys with HOME_KEY_SERVICE=1 brought it back
+#   (real remote, and after a reboot).
+#
 # DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput (Live TV, tuner, HDMI/AV), com.tcl.suspension (Quick panel and the
 # Input key's source panel), com.tcl.settings, com.tcl.system.server, com.tcl.providers.config, com.tcl.initsetup,
 # com.tcl.factory.view, com.tcl.tcl_bt_rcu_service, com.tcl.autopair (remote), com.tcl.inputmethod.international
