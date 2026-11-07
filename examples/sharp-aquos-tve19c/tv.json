@@ -1,6 +1,6 @@
 {
-  "tv": "Sharp AQUOS-TVE19C (sindang, CVTE/MStar)",
+  "tv": "Sharp AQUOS-TVE19C and TVE19A (sindang, CVTE/MStar)",
   "os": "Android TV 11",
   "brand": "SHARP",
-  "notes": "Anoki ACR, store demo; ADB port needs a reboot; Netflix button is KEYCODE_STEM_1; Freeview apps came factory-disabled"
+  "notes": "Anoki ACR, store demo; ADB port needs a reboot; Netflix button is KEYCODE_STEM_1; Freeview apps came factory-disabled; on the TVE19A the ADB port opened without a reboot, the Netflix button crashes the vendor TV service and a held volume key steps once with HOME_KEY_SERVICE=1"
 }
