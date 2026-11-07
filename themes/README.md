@@ -100,6 +100,7 @@ A new key needs one there in the same pull request.
 | `input_uri_scheme` | string | Scheme an HDMI/AV row's passthrough URI is sent with instead of `content://`, with no MIME type (YaOS: `live-tv`, which its source player answers) |
 | `input_sources` | list | Vendor source numbers for the Inputs menu, `HW<n>=<number>` by the input id's last part; a mapped input opens by sending `input_action` with the number as the int extra `input`, and `HW<n>=-` leaves a port the set doesn't have out of the menu. Xiaomi/Redmi China firmware: [redmi-mitv-mftp0](../examples/redmi-mitv-mftp0/) |
 | `columns` | 1 to 8 | Tiles per row; tiles shrink to fit from 5 up |
+| `center_last_row` | bool | A last grid row with fewer apps than `columns` sits in the middle, with equal space on both sides, instead of starting at the first column; Up and Down, and Reorder mode, go to the tile on screen. Not the dock row or `single_row` (`false` by default) |
 | `rows_below_dock` | 0 to 3 | Grid rows left visible under the dock; tiles shrink if the dock, its title and that many rows would not fit the screen height |
 | `dock_title` | bool | The focused dock app's name in large type above the dock (`true`); `false` keeps only the glow |
 | `dock_row` | bool | The dock as its own row with a band (`true`); `false` makes the dock apps the first tiles of one plain grid |

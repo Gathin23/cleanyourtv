@@ -104,6 +104,50 @@ public class GridNavigationTest {
         }
     }
 
+    @Test public void sixColumnsWithFourAppsLeaveOneColumnEachSide() {
+        // Dock row of 6, then 6, 6 and a last row of 4: positions 18-21.
+        assertEquals(2, GridNavigation.lastRowHalfShift(22, 6, true));
+        assertEquals(18, GridNavigation.intoLastRow(0, 22, 6, 2));
+        assertEquals(18, GridNavigation.intoLastRow(1, 22, 6, 2));
+        assertEquals(19, GridNavigation.intoLastRow(2, 22, 6, 2));
+        assertEquals(21, GridNavigation.intoLastRow(4, 22, 6, 2));
+        assertEquals(21, GridNavigation.intoLastRow(5, 22, 6, 2));
+        assertEquals(1, GridNavigation.columnAbove(18, 22, 6, 2));
+        assertEquals(4, GridNavigation.columnAbove(21, 22, 6, 2));
+    }
+
+    @Test public void oddGapShiftsByHalfAColumn() {
+        assertEquals(3, GridNavigation.lastRowHalfShift(21, 6, true));
+        assertEquals(19, GridNavigation.intoLastRow(2, 21, 6, 3));
+        assertEquals(20, GridNavigation.intoLastRow(3, 21, 6, 3));
+        assertEquals(1, GridNavigation.columnAbove(18, 21, 6, 3));
+        assertEquals(3, GridNavigation.columnAbove(20, 21, 6, 3));
+    }
+
+    @Test public void fullRowsAndALoneDockRowStayPut() {
+        assertEquals(0, GridNavigation.lastRowHalfShift(24, 6, true));
+        assertEquals(0, GridNavigation.lastRowHalfShift(4, 6, true));
+        assertEquals(2, GridNavigation.lastRowHalfShift(4, 6, false));
+        assertEquals(0, GridNavigation.lastRowHalfShift(0, 6, true));
+        assertEquals(0, GridNavigation.lastRowHalfShift(5, 1, false));
+    }
+
+    @Test public void upThenDownReturnsToTheSameLastRowTile() {
+        for (int columns = 2; columns <= 8; columns++) {
+            for (int inLast = 1; inLast < columns; inLast++) {
+                int count = 2 * columns + inLast;
+                int shift = GridNavigation.lastRowHalfShift(count, columns, true);
+                assertEquals(columns - inLast, shift);
+                for (int p = 2 * columns; p < count; p++) {
+                    int column = GridNavigation.columnAbove(p, count, columns, shift);
+                    assertTrue(column >= 0 && column < columns);
+                    assertEquals("columns=" + columns + " count=" + count + " p=" + p,
+                            p, GridNavigation.intoLastRow(column, count, columns, shift));
+                }
+            }
+        }
+    }
+
     private static List<GridCase> grids() {
         List<GridCase> grids = new ArrayList<>();
         for (int columns = 1; columns <= 8; columns++) {
