@@ -54,7 +54,10 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.InputDevice;
+import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.SoundEffectConstants;
 import android.view.ViewGroup;
@@ -2420,6 +2423,50 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     }
 
     // ---- navigation ------------------------------------------------------------------------------
+
+    /** Mouse-wheel and touchpad scrolls as arrow presses (MouseWheel). */
+    private final MouseWheel wheel = new MouseWheel();
+
+    /**
+     * A mouse wheel or touchpad over Home moves the focus one row per notch, through the keys the remote's arrows
+     * send, instead of RecyclerView scrolling the grid freely. A free scroll slid the focused dock tile up under the
+     * clock: the glass followed it over the header and the dock title stayed put over the grid (Magicsee N5,
+     * Android TV 9, driven by a wireless mouse). While a menu or prompt has the focus the scroll is dropped, so no
+     * row moves behind it.
+     */
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        if (event.getActionMasked() != MotionEvent.ACTION_SCROLL
+                || !event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
+            return super.dispatchGenericMotionEvent(event);
+        }
+        if (!hasWindowFocus()) return true;
+        float v = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+        float h = event.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        int key = MouseWheel.keyFor(v, h, singleRow, rtlAppGrid);
+        int presses = wheel.presses(key, Math.max(Math.abs(v), Math.abs(h)));
+        for (int i = 0; i < presses; i++) pressArrow(key);
+        return true;
+    }
+
+    /** One arrow press as the remote sends it: the focused view's own key handling first, then Android's focus search. */
+    private void pressArrow(int keyCode) {
+        long now = SystemClock.uptimeMillis();
+        KeyEvent down = new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0, 0,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, InputDevice.SOURCE_DPAD);
+        if (!dispatchKeyEvent(down)) {
+            // What ViewRootImpl does with an arrow no view consumed: the dock's Up into the top bar, a mid-row Left.
+            int direction = keyCode == KeyEvent.KEYCODE_DPAD_UP ? View.FOCUS_UP
+                    : keyCode == KeyEvent.KEYCODE_DPAD_DOWN ? View.FOCUS_DOWN
+                    : keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? View.FOCUS_LEFT : View.FOCUS_RIGHT;
+            View focused = getCurrentFocus();
+            View next = focused == null ? null : focused.focusSearch(direction);
+            if (next != null && next != focused && next.requestFocus(direction)) {
+                next.playSoundEffect(SoundEffectConstants.getContantForFocusDirection(direction));
+            }
+        }
+        dispatchKeyEvent(KeyEvent.changeAction(down, KeyEvent.ACTION_UP));
+    }
 
     @Override
     public boolean onTileVerticalKey(int position, int keyCode) {
