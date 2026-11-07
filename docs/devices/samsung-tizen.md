@@ -323,5 +323,38 @@ What it rules out, as on the AU8000 above: no ADB on retail firmware, so no `pm 
 list is possible from outside. Remote-key settings or DNS blocking are the realistic routes; see
 [cleanyour.tv/not-android](https://cleanyour.tv/not-android).
 
-Not checked: port scan, 8002, 26101, Developer Mode, a remote-key pairing prompt, and whether
-the firmware can be read through `sdb`.
+Not checked: a full port scan, 26101, Developer Mode, and whether the firmware can be read
+through `sdb`.
+
+### UA50MU7000: the remote socket paired, and blind navigation still failed
+
+The 8002 remote websocket was then tested on this unit, from Windows with Python's `websockets`
+and a self-signed certificate accepted for the local connection only.
+
+| Step | Result |
+|---|---|
+| `wss://<tv>:8002/api/v2/channels/samsung.remote.control?name=<base64>` | `ms.channel.connect`, after the owner accepted the on-screen prompt |
+| Token | Returned on first connect and reused on later connections with no second prompt |
+| `ms.remote.control` / `SendRemoteKey` clicks | Delivered; `KEY_MENU` opened the settings menu |
+
+So the key-press half of the "settings by remote keys plus DNS" idea above works on a 2017 set,
+and the grant survives reconnection. The other half is what fails.
+
+**Without a screen capture, a key sequence cannot be driven open-loop.** Two sequences were sent
+blind, each checked by asking the owner what the TV showed:
+
+- `KEY_MENU` then five `KEY_DOWN`: expected the bottom of the left column, landed inside Support
+  on Terms & Privacy.
+- Two `KEY_UP`, expecting Software Update one or two rows above: landed on a Live TV setup screen.
+
+The attempt was abandoned there with `KEY_RETURN` and `KEY_EXIT`, and the firmware update was done
+from the owner's remote instead. Nothing was confirmed with `KEY_ENTER` at any point, which is the
+only reason a wrong screen stayed harmless: the Support list on this model is two rows from a
+channel retune.
+
+The lesson for a Tizen port is not that the remote API is unusable, but that menu position is
+unknowable from outside. Row order differs by year, region and firmware, the highlight does not
+start in a fixed place, and `/api/v2/` reports no UI state. A port that walks menus needs either a
+person reading the screen at each step, which is what happened here, or a capture path this
+generation does not offer. Launching an app by id through
+`/api/v2/applications/<appId>` stays the one deterministic action.
