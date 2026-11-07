@@ -443,8 +443,9 @@ def write_list(path, result, include_low):
             # entries, including dangling symlinks which open("x") can follow on Windows.
             staged = None
             try:
-                with tempfile.NamedTemporaryFile(mode="w", prefix=".privacy-", suffix=".tmp",
-                                                 dir=os.path.dirname(path) or ".", delete=False) as f:
+                with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix=".privacy-",
+                                                 suffix=".tmp", dir=os.path.dirname(path) or ".",
+                                                 delete=False) as f:
                     staged = f.name
                     f.write(text)
                 os.rename(staged, path)
@@ -458,7 +459,7 @@ def write_list(path, result, include_low):
         else:
             # A failed write may leave this newly created file. Do not unlink a path another
             # process could have replaced after creation.
-            with open(path, "x") as f:
+            with open(path, "x", encoding="utf-8") as f:
                 f.write(text)
     except OSError as error:
         # The audit is two shell calls for each package it probed, slow on old firmware: a file the
