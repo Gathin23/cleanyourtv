@@ -50,12 +50,15 @@
    card states (387, 103)`), so they move in the same commit.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
    free prose; three things in a README are read back, two of them against the list beside it.
-   A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
-   compared with what `tools/disable.sh` would send for the list, so a line added or commented out later moves
-   the number in the README with it: `tests/test_example_list_count.py` answers
+   A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages", "The
+   list disables **N packages**", "The list contains N packages", "`debloat.txt` is the list: N
+   packages") is compared with what `tools/disable.sh` would send for the list, so a line added or
+   commented out later moves the number in the README with it: `tests/test_example_list_count.py` answers
    `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. A
-   sentence the page wraps across two lines is still read as one sentence, so a break cannot hide the
-   number. Its undo
+   sentence that only says "The list disables 10 packages" is read while `debloat.txt` is the folder's
+   only list, and not in the folders that also ship a `debloat-keep-cast.txt` or another list beside it,
+   where those words could be about that file. A sentence the page wraps across two lines is still read
+   as one sentence, so a break cannot hide the number. Its undo
    is the other: the restore command a README shows passes the same stock launcher as the list's own Undo line,
    or none where the list passes none, because those two are where an owner looks for the way back and the copy
    that passes a different package leaves the stock home disabled. `tests/test_folder_undo_agrees.py` names each
