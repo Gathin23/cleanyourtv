@@ -48,9 +48,10 @@
 # _airplay._tcp and _raop._tcp through NsdManager and listens on 7000. It is useless on a managed
 # network that isolates clients, though, because mDNS never reaches the other devices. Check with
 # `arp -n <tv ip>`: a placeholder MAC means proxy ARP and no AirPlay discovery, whatever you install.
-# Toshiba owner's choices: Netflix, Prime Video, Disney+, YouTube, Chromecast and the aerial
-# screensaver (com.google.android.backdrop, kept) stay; Assistant (katniss) off as below, which
-# leaves that remote's microphone button doing nothing; RiksTV off (commented line below).
+# Toshiba owner's choices: Netflix, Prime Video, Disney+, YouTube and Chromecast stay; the aerial
+# screensaver does not, since com.google.android.backdrop is disabled below - comment that line out
+# to keep it. Assistant (katniss) off as below, which leaves that remote's microphone button doing
+# nothing; RiksTV off (commented line below).
 
 # Vestel telemetry, logging and "cleaner"
 com.vestel.vestelreporter                        # Vestel reporter: INTERNET + BOOT_COMPLETED, no UI
