@@ -1,0 +1,152 @@
+# XGIMI H3 projector (model XK03E, device ironman, product Product_ys, reported model string
+# "XGIMI TV"), GMUI (XGIMI's own UI, NOT Android TV), Android 8.0.0 (SDK 26), low-RAM build
+# (ro.config.low_ram=true), build OPR5.170623.014 / v1.15.93 user dev-keys.
+# CleanYourTV launcher applied on a real unit on 2026-10-31..11-02; every package below was disabled
+# with `pm disable-user --user 0` (never uninstalled) and the unit was checked afterwards: launcher,
+# GMUI settings service, Wi-Fi page, remote keys (incl. the Settings key) and the cast receiver all
+# still work, no crashes in the drop box. Reboot-checked over a full power cycle: the 41 packages stay
+# disabled, Home is still the default HOME, the cast receiver comes back on its own (~20 s).
+# Note for anyone applying this list: `adb reboot` on this firmware powers the unit down instead of
+# restarting it - it has to be woken with the remote, and it sleeps (and drops ADB) after a few idle
+# minutes, so plan the checks around that.
+#
+# Status: verified on a real unit 2026-11-02 (Android 8.0, GMUI v1.15.93): launcher is Home, the
+# disabled packages stay disabled across a full power cycle, GMUI settings service, the Wi-Fi page,
+# remote keys (incl. the Settings key, keyCode 82) and the cast receiver all work; phone remote from
+# the XGIMI mobile app works only while com.xgimi.mobilebridgeservice + com.xgimi.vcontrol stay enabled.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/xgimi-h3/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/xgimi-h3/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.xgimi.home (GMUI). NOT in this list: the launcher script disables it and
+# restore.sh brings it back. Nothing else claims HOME on this firmware except the old boot wizard
+# (disabled below) and CleanYourTV itself.
+#
+# ADB: this firmware ships ADB closed. Two ways in: System info page -> long-press LEFT on the remote
+# opens the factory menu, ADB is on its second page; or install local.z7x.adb (kept enabled here on
+# purpose - it is the enabler this unit was opened with; disabling it does not close the port once
+# persist.service.adb.enable=1 / persist.adb.tcp.port=5555 are set, but it is the known-good way back
+# in after a factory reset). Port 5555 over TCP.
+#
+# GMUI notes (needed by the CleanYourTV theme on this model):
+# - Settings is a SERVICE, not an activity: action "XGimiSettingAction" on service
+#   com.android.newsettings/com.xgimi.newsettings.SettingService with string extra "data" holding a
+#   page URI (main, Settings://com.xgimi.settings.net/wifi, Settings://com.xgimi.settings.net/ap).
+#   Reverse-engineered from /system/app/newsettings; used for the header gear, launcher settings,
+#   quick panel and the remote Settings key.
+# - The remote's Settings key is keyCode 82 (KEYCODE_MENU, scanCode 127), not 176.
+# - The built-in cast receiver ("我的H3", DLNA/SSDP on :1718, com.xgimi.wirelessscreen) auto-downloads
+#   云视听小电视 (com.gitvjimi.video) on first use; it and the content apps are disabled below.
+#   Cast receiver is LeanCast (io.leancast, MIT, pure DLNA/UPnP MediaRenderer) instead: boot-autostart
+#   foreground service, deviceidle-whitelisted. HPPlay 乐播投屏 (com.hpplay.happyplay.aw) is installed
+#   but nothing starts it - only its .app.MainActivity fully initializes the SDK, broadcasts alone
+#   leave an empty process, and its DaemonService dies within a minute on GMUI. Note the first
+#   receiver tried, weekdayjast/MiracastReceiver, was removed again: it kept a Wi-Fi Direct
+#   group up permanently, which is a hotspot mode on this single-MAC WiFi chip and starved the
+#   wlan0 interface of multicast. Miracast itself stays impossible without root
+#   (wifi_display_on=0, WFD IE needs signature-level CONFIGURE_WIFI_DISPLAY), so phones use the
+#   cast button inside video apps (DLNA), which does work.
+
+# DO NOT DISABLE on the H3 (projector hardware, input, voice, power):
+# com.xgimi.autokst                    # auto keystone correction
+# com.xgimi.tof                        # ToF autofocus
+# com.xgimi.config                     # eye-protection (ToF), microphone effect, global animation
+# com.xgimi.xrmservice                 # persistent: GLOBAL_BUTTON hotkeys, picture/sound adaptation
+# com.xgimi.bluetoothservice           # Bluetooth remote
+# com.xgimi.controllerconnection       # Bluetooth gamepad/sound controller pairing
+# com.xgimi.soundermodeservice         # sound modes / Bluetooth speaker mode
+# com.xgimi.xgimiservice               # core XGIMI system service
+# com.xgimi.inuiserver                 # XGIMI UI dispatcher service
+# com.xgimi.windowsystem               # window/keystone service
+# com.xgimi.shutdown                   # power menu / shutdown
+# com.xgimi.systemui                   # GMUI SystemUI
+# com.xgimi.duertts                    # DuerOS voice
+# com.xgimi.voiceoffline               # offline voice
+# com.xgimi.xhplayer                   # HDMI input player
+# com.android.newsettings              # the GMUI settings service itself
+# mstar.* and com.mstar.*              # MStar SoC HAL services, TV providers, picture/sound settings
+#
+# Kept enabled on purpose (not bloat, not telemetry):
+# com.xgimi.screensaver                # handles SCREEN_ON/SLEEP_ON/STR_ON; atmosphere is disabled
+#                                      # below, removing this too would risk broken idle sleep
+# com.xgimi.filemanager                # install APKs from USB
+# com.xgimi.appdb                      # app database used by settings/file manager
+# com.xgimiui.api                      # XgimiUiApiService; GMUI/settings helper (has a location
+#                                      # provider - revisit if you do not use GMUI settings)
+# com.xgimi.remote                     # /system/app/RemoteDebug, purpose unclear: kept
+# com.xgimi.minitvfactory, mstar.factorymenu.ui  # factory menus: they are the documented way to
+#                                                  # re-open ADB on this firmware
+# local.z7x.adb                        # the ADB enabler this unit was opened with
+# com.xgimi.skin*, com.xgimi.skinmanager, com.xgimi.skinconfig, com.xgimi.movin.black.classicblue
+#                                      # GMUI theme resources, idle, harmless: kept
+# com.xgimi.stream.media, com.xgimi.stream.video, com.xgimi.gimiplayer
+#                                      # local playback/redirect services: kept for local files
+# com.hpplay.happyplay.aw              # 乐播投屏, installed but idle: replaced by LeanCast as receiver
+# com.dangbeimarket                    # app store; com.gotokeep.androidtv, com.xx.blbl (bilibili),
+#                                      # com.sohu.inputmethod.sogou.tv kept as chosen apps
+
+# Phone remote from the XGIMI mobile app - DO NOT DISABLE either one:
+# com.xgimi.mobilebridgeservice       # the phone<->projector bridge the app connects through
+# com.xgimi.vcontrol                  # runs the commands the app sends (virtual control); it also
+#                                      # carries a silent-app-download receiver and a Richinfo push SDK -
+#                                      # that is the price of phone remote, so re-disable both only if you
+#                                      # never use the phone app. Disabling either makes the app report
+#                                      # "network inconsistent / cannot connect" even when Wi-Fi is fine.
+
+# Telemetry, ads, push and silent installs
+com.xgimi.adservice                   # XGIMI ad service
+com.xgimi.datareporter                # XGIMI usage reporting
+com.xgimi.bugreportsender             # XGIMI bug report uploader
+com.xgimi.gmservice                   # log reporter (installs to /data/app, not system)
+com.xgimi.msgcenter                   # message/push center
+com.xgimi.activitypage                # operations/promotion activity pages
+com.xgimi.manager                     # Baidu tvshield cleaner: storage warnings, deep clean,
+                                      # promotion receivers (LaunchReceiver)
+com.xgimi.transfer                    # Tencent history-transfer helper (/data/app)
+com.xgimi.user                        # XGIMI user center: login, VIP/membership, purchase pages
+
+# Cast interfaces (云视听小电视 auto-download prevention; LeanCast io.leancast is the receiver instead)
+com.xgimi.wirelessscreen              # built-in DLNA renderer "我的H3", SSDP on :1718
+com.xgimi.miracast                    # Miracast sink
+com.xgimi.streammeadiaplayer          # stream media player receiver
+# com.xgimi.castscreen and com.android.mcast are already hidden+disabled by the factory
+
+# XGIMI account and payments
+com.xgimi.account                     # XGIMI account
+com.xgimi.payview                     # payment view
+
+# Store, updates and wizards
+com.xgimi.newappmarket                # XGIMI app market
+com.xgimi.upgrade                     # firmware updater; re-enable to receive updates
+com.xgimi.newbluetoothota             # Bluetooth remote firmware OTA
+com.xgimi.bootwizard                  # old boot wizard; HOME claimant at priority 1000, safe to
+                                      # disable once provisioned (device_provisioned=1)
+com.xgimi.smartconnect                # SmartConnect GLOBAL_BUTTON handler, redundant with the
+                                      # persistent com.xgimi.xrmservice one
+
+# XGIMI extras
+com.xgimi.atmosphere                  # ambient screensaver; seizes the foreground when idle and
+                                      # kills third-party launchers (com.xgimi.screensaver stays)
+com.xgimi.doubanfm                    # Douban FM, speaker-mode screen
+com.xgimi.karaokesdk                  # karaoke SDK
+com.xgimi.instruction30               # on-device manual
+com.xgimi.iot                         # XGIMI IoT service (Mi Home bridge)
+com.xgimi.xgimiframeworkui            # GMUI framework UI (GMUI launcher is off)
+
+# Content apps (off by choice; bilibili TV and Keep are installed apps and stay)
+com.gitvjimi.video                    # 云视听小电视 (bilibili TV) - the cast auto-download target
+cn.miguvideo.migutv                   # 咪咕视频
+com.edufound.ott                      # 小小优趣
+com.huanxi.tv                         # 欢喜视频
+com.ixigua.android.tv.wasu            # 西瓜视频华数版
+com.ktcp.csvideo                      # 腾讯视频(C)
+com.ktcp.tvvideo                      # 腾讯视频
+com.pptv.tvsports                     # PPTV 体育
+com.tencent.karaoketv                 # 唱吧
+com.tencent.qqmusicjimisdk            # QQ 音乐 SDK
+tv.fun.orangemovie_jimi               # 华数橙子影院
+
+# Third-party preload SDKs
+com.baidu.oases                       # Baidu preload SDK
+com.jd.smart.tv.sdk                   # JD preload SDK
