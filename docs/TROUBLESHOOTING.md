@@ -1242,9 +1242,11 @@ turned off in Settings stays off.
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
   `enabled_accessibility_services` naming `com.gathin.tvhome/com.gathin.tvhome.HomeKeyService` while
   `accessibility_enabled` read `0`, `dumpsys accessibility` showed `Bound services:{}` and the Home
-  button opened Google TV. `restore_key_services` does not repair this state: `ServiceRepair` writes
-  `accessibility_enabled 1` only on the path that also puts a missing helper back on the list, and here
-  the list was complete. Write the flag back, then read the dump again; toggling the service off and on
+  button opened Google TV. On a build before #3404
+  `restore_key_services` did not repair this state: `ServiceRepair` wrote
+  `accessibility_enabled 1` only on the path that also put a missing helper back on the list, and here
+  the list was complete. Now it also runs when the flag reads `0` and a helper that had connected is
+  recorded, so a newer build repairs it when Home starts. Write the flag back, then read the dump again; toggling the service off and on
   in Accessibility, which is what the owner did, brought the redirect back for that session. Whether
   that manual flag change survived the next reboot was not retested; the cold-boot follow-up below
   tests the fork's separate opt-in startup repair. In one cold-boot test of that repair, TCL had reset
