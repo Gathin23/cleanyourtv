@@ -30,5 +30,16 @@
             </intent-filter>
             <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
         </activity>
+
+        <!-- The optional screensaver (README, Screensaver): the time, date and weather on a frosted card. Android starts
+             it only when the owner picks it under Settings, Screensaver. -->
+        <service
+            android:name=".WeatherDream"
+            android:exported="true"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>
