@@ -76,8 +76,7 @@
 #   picture_color_temperature reads 2 in HDR before and 0 after; SDR is untouched.
 # - Turning "Video autoplay" off (Settings > Accounts & profiles > <profile>) stops trailers on the
 #   stock home; the Continue watching row stays.
-# - Private DNS: dns.adguard-dns.com answered in about 140 ms from this Brazilian ISP and
-#   p2.freedns.controld.com in about 57 ms; the latter was kept (validated, ad domains resolve to 127.0.0.1).
+# - Private DNS works on this set.
 #
 # Kept on purpose: org.droidtv (TPVTvService, sees every key press), org.droidtv.icp (persistent
 # sign-on service, purpose unclear), org.droidtv.ambisvc (Ambilight/Lounge), org.droidtv.eum (user
