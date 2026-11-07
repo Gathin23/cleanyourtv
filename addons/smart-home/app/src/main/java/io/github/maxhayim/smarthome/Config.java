@@ -24,11 +24,24 @@ final class Config {
     final String token;
     /** Entity ids for the glance header, in order; empty means auto-pick weather and fuel prices. */
     final List<String> glance;
+    /** List rows to show, in this order within each section; empty means every supported entity. */
+    final List<String> show;
+    /** List rows to leave out: entity ids, or a prefix ending in '*' such as "scene.office_*". */
+    final List<String> hide;
+    /** Leave out rows Home Assistant reports as unavailable (and unknown, except scenes). */
+    final boolean hideUnavailable;
 
     Config(String url, String token, List<String> glance) {
+        this(url, token, glance, null, null, false);
+    }
+
+    Config(String url, String token, List<String> glance, List<String> show, List<String> hide, boolean hideUnavailable) {
         this.url = url;
         this.token = token;
         this.glance = Collections.unmodifiableList(glance == null ? Collections.emptyList() : glance);
+        this.show = Collections.unmodifiableList(show == null ? Collections.emptyList() : show);
+        this.hide = Collections.unmodifiableList(hide == null ? Collections.emptyList() : hide);
+        this.hideUnavailable = hideUnavailable;
     }
 
     boolean complete() {
@@ -41,7 +54,13 @@ final class Config {
 
     static Config load(Context c) {
         SharedPreferences p = prefs(c);
-        return new Config(p.getString("url", ""), p.getString("token", ""), readGlance(p.getString("glance", "")));
+        return new Config(p.getString("url", ""), p.getString("token", ""), readGlance(p.getString("glance", "")),
+                readGlance(p.getString("show", "")), readGlance(p.getString("hide", "")),
+                p.getBoolean("hide_unavailable", false));
+    }
+
+    private static void saveList(Context c, String key, List<String> ids) {
+        prefs(c).edit().putString(key, joinGlance(ids)).apply();
     }
 
     static void saveUrl(Context c, String url) {
@@ -56,7 +75,10 @@ final class Config {
         prefs(c).edit().putString("glance", joinGlance(ids)).apply();
     }
 
-    /** Takes a pushed config.json ({"url": ..., "token": ..., "glance": [...]}) if there is one, and deletes it. */
+    /**
+     * Takes a pushed config.json ({"url": ..., "token": ..., "glance": [...], "show": [...], "hide": [...],
+     * "hide_unavailable": true}) if there is one, and deletes it. Only the keys present change.
+     */
     static boolean importPushed(Context c) {
         File dir = c.getExternalFilesDir(null);
         File f = dir == null ? null : new File(dir, PUSHED);
@@ -66,6 +88,11 @@ final class Config {
             if (o.has("url")) saveUrl(c, o.optString("url"));
             if (o.has("token")) saveToken(c, o.optString("token"));
             if (o.has("glance")) saveGlance(c, parseGlance(o.opt("glance")));
+            if (o.has("show")) saveList(c, "show", parseGlance(o.opt("show")));
+            if (o.has("hide")) saveList(c, "hide", parseGlance(o.opt("hide")));
+            if (o.has("hide_unavailable")) {
+                prefs(c).edit().putBoolean("hide_unavailable", o.optBoolean("hide_unavailable", false)).apply();
+            }
             return true;
         } catch (Exception e) {
             return false;
