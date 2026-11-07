@@ -21,8 +21,21 @@ written in the test holds the walk itself: a folder with `restore.sh`, a script 
 `.ps1` and a script beside the list are each reported, and a folder carrying only what a list folder ships
 is quiet.
 
+The same step's last clause, `pm uninstall` steps, was named in that sentence and in `MAINTAINER.md`
+("`pm uninstall` steps in a list folder -> rework: keep the folder to disabling only") without a check:
+the walk above reads file suffixes, and a command sits inside the list's own comments. Two lists handed
+one out - `examples/xiaomi-mitv-mssp3` (`pm uninstall --user 0 com.mstar.netflixobserver`, in a header
+that also said the list only disables) and `examples/xiaomi-mitv-mssp3-android9` (the same for
+`com.google.android.katniss`, in a five-line removal recipe with its `cmd package install-existing`
+undo). A list's Undo line is `tools/restore.sh`, which runs `pm enable`: it cannot put back what an
+uninstall removes, so the step and the undo do not belong in one file. `uninstall_steps()` reads every
+`debloat*.txt` in the tree for the command shape - the line, once its `#` and indentation are gone, is
+`pm uninstall` with a package name - and leaves prose alone (`pm uninstall fails with ...`, "even after
+`pm uninstall --user 0`", `pm uninstall-updates`).
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import re
 import subprocess
 import tempfile
 import unittest
@@ -34,7 +47,24 @@ EXAMPLES = ROOT / "examples"
 # The suffixes a shell on the reader's computer runs without being asked twice.
 SCRIPT_SUFFIXES = (".sh", ".bash", ".zsh", ".fish", ".ps1", ".bat", ".cmd")
 
+# A `pm uninstall <package>` step, read once the line's `#` and indentation are gone: the command itself,
+# with a package name as the last word of the line. `pm uninstall-updates` is a different command and a
+# sentence that mentions the command without a package (`pm uninstall fails with ...`, "even after
+# `pm uninstall --user 0`.") hands nothing to a reader, so neither is a step.
+UNINSTALL = re.compile(r"(?:adb\s+shell\s+)?pm\s+uninstall(?:\s+\S+)*?\s+[A-Za-z][\w]*\.[\w.]+$")
+
 # What step 6 tells a list author, and the check it is now held to.
+
+
+def uninstall_steps(examples):
+    """`folder/file:line: text` for every `pm uninstall <package>` step a list under `examples/` hands out."""
+    found = []
+    for path in sorted(examples.rglob("debloat*.txt")):
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            text = line.strip().lstrip("#").strip()
+            if UNINSTALL.match(text):
+                found.append(f"{path.relative_to(examples).as_posix()}:{number}: {text}")
+    return found
 
 
 def scripts(examples):
@@ -67,6 +97,14 @@ class ListFoldersTest(unittest.TestCase):
                          "'Do not add install or restore scripts, Private DNS or AdGuard setup, or `pm "
                          "uninstall` steps', and tools/disable.sh, tools/restore.sh and the launcher's own "
                          "install script do everything a folder needs. Found: " + ", ".join(found))
+
+    def test_no_list_hands_out_an_uninstall_step(self):
+        found = uninstall_steps(EXAMPLES)
+        self.assertEqual([], found,
+                         "a list disables and re-enables, so its Undo line (tools/restore.sh) cannot put "
+                         "back what a `pm uninstall` removes: docs/workflows/tv-list.md step 6 asks for no "
+                         "`pm uninstall` steps and MAINTAINER.md marks them rework ('keep the folder to "
+                         "disabling only'). Found: " + ", ".join(found))
 
     def test_the_walk_reads_every_folder(self):
         # Without this, a walk that stopped finding folders would pass the test above by finding nothing.
@@ -137,6 +175,45 @@ class TheWalkTest(unittest.TestCase):
                     self.assertNotIn(f"examples/{folder.name}/restore.sh", line,
                                      f"{page.relative_to(ROOT)} tells a reader to run a script inside the "
                                      f"list folder; the undo is tools/restore.sh {page.relative_to(ROOT).parent}/debloat.txt")
+
+    def test_a_commented_uninstall_command_is_reported(self):
+        # The shape both lists had: the command indented under a `#` bullet, in the header's notes.
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = self.tree(tmp, {"x/debloat.txt": "# TV\n#   Beyond this repo:\n"
+                                                      "#     pm uninstall --user 0 com.example.one\n"})
+            self.assertEqual(["x/debloat.txt:3: pm uninstall --user 0 com.example.one"],
+                             uninstall_steps(examples))
+
+    def test_an_active_uninstall_line_is_reported_too(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = self.tree(tmp, {"x/debloat.txt": "# TV\ncom.example.one\n",
+                                       "x/debloat-keep-cast.txt": "pm uninstall com.example.two\n"})
+            self.assertEqual(["x/debloat-keep-cast.txt:1: pm uninstall com.example.two"],
+                             uninstall_steps(examples))
+
+    def test_an_adb_shell_wrapper_is_the_same_step(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = self.tree(tmp, {"x/debloat.txt": "#   adb shell pm uninstall --user 0 com.example.one\n"})
+            self.assertEqual(1, len(uninstall_steps(examples)))
+
+    def test_a_sentence_that_mentions_the_command_is_not_a_step(self):
+        # Every one of these is on main: a failure the firmware answers, a history line, and a command
+        # whose name only starts the same way. None of them hands a reader a package to remove.
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = self.tree(tmp, {"x/debloat.txt": (
+                "# - pm uninstall fails with DELETE_FAILED_INTERNAL_ERROR; the commented-out line\n"
+                "#   and it re-enabled them even after `pm uninstall --user 0`.\n"
+                "# - `pm uninstall-updates` does not exist on this Android 11 build\n"
+                "#   pm uninstall --user 0, as the owner did before this list\n"
+                "com.example.one\n")})
+            self.assertEqual([], uninstall_steps(examples))
+
+    def test_the_walk_reads_a_list_at_any_depth(self):
+        # A folder can ship more than one list (a keep-cast twin); the walk covers the folder, not one name.
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = self.tree(tmp, {"x/lists/debloat.txt": "#     pm uninstall com.example.one\n"})
+            self.assertEqual(["x/lists/debloat.txt:1: pm uninstall com.example.one"],
+                             uninstall_steps(examples))
 
 
 if __name__ == "__main__":
