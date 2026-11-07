@@ -1,0 +1,6 @@
+{
+  "tv": "Realme REA75P 75\" (DN_R5U_REA_GTV, chester, Realtek rtd6748), India",
+  "os": "Google TV 14",
+  "brand": "Realme",
+  "notes": "Anoki ACR, partner customizer, retail demo, Vewd store; setupwraith must go (its RecoveryActivity keeps Home on this build); Wi-Fi owned by android.uid.system so nothing dropped off the network; Assistant, Chromecast and Miracast off by choice; tuner absent, Inputs lists HDMI 1-3 and AV; reboot-checked"
+}

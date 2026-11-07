@@ -1,0 +1,81 @@
+# Realme REA75P 75" (realme TechLife; device chester, product DN_R5U_REA_GTV, Realtek rtd6748, 32-bit ARM), India
+# Google TV 14 (API 34), build UKRE.260524.035, security patch 2026-08-01. About 1.9 GB RAM, armeabi-v7a.
+# ro.product.manufacturer=Dixon India, ro.product.brand=realmeTechLife, ro.product.model=REA75P.
+# Fingerprint realmeTechLife/DN_R5U_REA_GTV/chester:14/UKRE.260524.035/15882790:user/release-keys.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/realme-rea75p/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/realme-rea75p/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Same Realtek Google TV 14 board family as philips-r8g-google-tv (build UKRE.260524.058) and
+# thomson-43rt1055 (.055); this one is .035 and calls its board rtd6748.
+#
+# Applied on 2026-10-31 in four small batches, a screenshot after each, then a reboot: the new Home came
+# back, all 25 packages stayed disabled (nothing re-enabled at boot), ADB stayed up, the Inputs menu
+# still listed HDMI 1-3 and AV, and Netflix opened. Not yet lived with for days; if something breaks,
+# re-enable it with `pm enable <package>` and please report it.
+#
+# Home: stock launcher is com.google.android.apps.tv.launcherx (pass it to restore.sh / as STOCK_LAUNCHER).
+# Claimants: launcherx (priority 2), setupwraith RecoveryActivity (1), com.realtek.systemservice
+# FallbackHome (-999), com.android.tv.settings FallbackHome (-1000). `cmd package set-home-activity` prints
+# Success here but setupwraith's RecoveryActivity keeps Home until the whole package is disabled.
+# The saved Wi-Fi belongs to android.uid.system:1000 (checked with `dumpsys wifi | grep -o 'cname=[^ ]*'`),
+# so disabling setupwraith did not take the TV off the network.
+# No tuner app: the Inputs menu lists HDMI 1-3 and AV, switched by com.realtek.tv.passthrough.
+# `service.adb.tcp.port=5555` was already set, so tools/tv.py connected without a pairing code.
+#
+# Kept on purpose: the TV stack (com.realtek.tv, .passthrough, .atsc, .atv, .dtmb, .isdb), the source menu
+# (com.realtek.menu), com.realtek.systemservice, the middleware com.cltv.mal and com.cltv.hybrid (a Haier
+# set restarted in a loop with com.cltv.mal off, #1578), both keyboards (com.realtek.rtkvirtualkeyboard,
+# com.google.android.inputmethod.latin), Play Store and Play Services, Dolby
+# (com.dolby.android.audio.service), the remote firmware and find-my-remote (com.google.android.tv.dfuservice)
+# and the firmware updater (see the commented line at the end).
+# Kept by the owner's choice: Netflix (com.netflix.ninja, com.netflix.tokenmanager), Prime Video
+# (com.amazon.amazonvideo.livingroom), YouTube (com.google.android.youtube.tv), JioHotstar
+# (in.startv.hotstar), ZEE5 (com.graymatrix.did), SonyLIV, Fancode, MX Player and Tata Sky Binge.
+# Left alone because their purpose is unclear or they touch the TV hardware: com.hk.factorymenu and
+# com.factory.factoryautomation (factory test; never launched), com.realtek.tvfactory, com.realtek.slices,
+# com.realtek.media.notification, com.realtek.secservice, com.realtek.connecteddevices,
+# com.realtek.mdnsoffload, com.realtek.display.monitor, com.realtek.energymode.
+
+# Telemetry, ads and feedback
+tv.anoki.acr.anokiacroptin                     # Anoki ACR: fingerprints what is on the screen
+com.android.tv.feedbackconsent
+com.google.android.feedback
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Not a TV feature
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+
+# Manufacturer content and retail
+com.realtek.leanbacklauncher.partnercustomizer # partner config that injects rows and apps into Home
+com.realtek.retailmode
+com.vewd.core.service                          # Vewd app store / HbbTV core
+
+# Preloaded apps the owner does not use
+com.apple.atve.androidtv.appletv
+com.rtk.mediabrowser                           # USB media player; MX Player covers local files
+com.realtek.kara                               # karaoke
+com.realtek.karaoke.userguide
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.syncadapters.calendar
+com.google.android.partnersetup
+com.android.dreams.basic
+
+# Off by the owner's choice: voice assistant, Chromecast receiver, screen mirroring.
+# Casting from a phone stops working with mediashell off; look under docs/TROUBLESHOOTING.md if it was
+# wanted (it can also fail with "Untrusted device" once setupwraith is disabled).
+com.google.android.katniss                     # Assistant / Gemini; the mic button does nothing without it
+com.google.android.apps.mediashell             # Chromecast receiver
+com.realtek.miracast
+
+# Stock home. Disable only after a new launcher is installed and set as Home; restore.sh re-enables both.
+com.google.android.tungsten.setupwraith        # its RecoveryActivity otherwise takes over Home
+com.google.android.apps.tv.launcherx
+
+# Kept on purpose, uncomment only if you do not want firmware updates:
+# com.realsil.ota                              # Bluetooth remote firmware updates
