@@ -153,3 +153,5 @@ com.google.android.leanbacklauncher.recommendations
 - On `PI.3591`, `dumpsys wifi` records `cname=android.uid.system:1000` (and
   `com.google.android.apps.nbu.smartconnect.tv`) on saved networks rather than
   `com.google.android.tungsten.setupwraith`; `setupwraith` is still left enabled.
+
+**PI.7274 unit (@cetrulin, #3434):** the list ran on firmware PI.7274 too; `com.google.android.tv.bugreportsender` was added from that unit.

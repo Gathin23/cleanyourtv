@@ -28,7 +28,7 @@ class DisableShLocale(unittest.TestCase):
     @unittest.skipIf(sys.platform == "win32", "needs bash and a POSIX locale")
     def test_turkish_locale_does_not_refuse_names_with_an_i(self):
         have = subprocess.run(["locale", "-a"], capture_output=True, text=True).stdout
-        if "tr_TR.utf8" not in have.lower().replace("-", ""):
+        if "tr_tr.utf8" not in have.lower().replace("-", ""):
             self.skipTest("tr_TR.UTF-8 is not generated here")
         with tempfile.TemporaryDirectory() as tmp:
             lst = Path(tmp) / "debloat.txt"

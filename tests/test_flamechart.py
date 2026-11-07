@@ -245,7 +245,8 @@ class WriteFailureTest(unittest.TestCase):
                 flamechart.main([str(trace), "--out", str(out)])
         self.assertEqual(f"cannot write {out}: No space left on device", caught.exception.code)
         self.assertEqual("", output.getvalue())
-        self.assertEqual("", error.getvalue())
+        stray = [l for l in error.getvalue().splitlines() if "ResourceWarning" not in l and not l.startswith("  ")]
+        self.assertEqual([], stray)   # a GC ResourceWarning from another test may land here; nothing else may
         image.save.assert_called_once_with(str(out))
         close.assert_called_once_with()
 

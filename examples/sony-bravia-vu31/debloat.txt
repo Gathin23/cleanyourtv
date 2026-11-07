@@ -85,10 +85,6 @@
 # - With ~25 streaming apps in /data, swap was over 80% full and apps opened slowly; disabling or removing the
 #   unused ones freed about 200 MB of swap. Play Store compiling app updates after a reboot (dex2oat) also slows
 #   it for a while.
-# - Ad-blocking Private DNS: OTTplay never starts a SonyLIV live stream unless imasdk.googleapis.com,
-#   pubads.g.doubleclick.net and googleads.g.doubleclick.net are answered (allow them; FanCode's ads then come
-#   through too); Prime Video's ads ride on *.api.amazonvideo.com and can't be DNS-blocked; reboot after a
-#   Private DNS change, Android caches the old answers.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos

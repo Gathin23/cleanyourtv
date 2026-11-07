@@ -72,18 +72,18 @@ com.google.android.videos                   # Play Movies & TV
 com.google.android.play.games               # Play Games
 com.google.android.music                    # Play Music, a discontinued service
 com.android.printspooler                    # print spooler
-com.tcl.MultiScreenInteraction_TV           # MagiConnect phone link (off by choice)
+# com.tcl.MultiScreenInteraction_TV           # MagiConnect phone link (off on the tested set by choice; uncomment if unused)
 com.google.android.partnersetup             # partner attribution (RLZ pings); Play Store checked afterwards
 
-# 4. Streaming apps off by choice on this unit; comment out any you use. NHK+ (nhk.app.screen) kept.
-air.jp.co.fujitv.fodviewer.tv               # FOD
-jp.happyon.android                          # Hulu (Japan)
-jp.unext.tv.player                          # U-NEXT
-tv.abema                                    # ABEMA (registers a TV input for its own live channels)
-jp.ne.docomo.lemino.androidtv               # Lemino
-jp.co.rakuten.nba.tv.android                # Rakuten NBA
-com.disney.disneyplus                       # Disney+
-tv.twitch.android.app                       # Twitch
+# 4. Streaming apps: off on the tested set by the owner's choice; uncomment what you don't use. NHK+ (nhk.app.screen) kept.
+# air.jp.co.fujitv.fodviewer.tv               # FOD
+# jp.happyon.android                          # Hulu (Japan)
+# jp.unext.tv.player                          # U-NEXT
+# tv.abema                                    # ABEMA (registers a TV input for its own live channels)
+# jp.ne.docomo.lemino.androidtv               # Lemino
+# jp.co.rakuten.nba.tv.android                # Rakuten NBA
+# com.disney.disneyplus                       # Disney+
+# tv.twitch.android.app                       # Twitch
 
 # 5. After the launcher is installed and the clock screensaver is set
 com.google.android.backdrop                 # Ambient Mode screensaver
