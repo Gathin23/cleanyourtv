@@ -71,6 +71,10 @@ public class HomeKeyService extends AccessibilityService {
     private final Set<String> stockHome = new HashSet<>();
     /** stock_home_redirect, the stock launcher's package. */
     private String stockHomePackage = "";
+    /** stock_home_redirect_delay_ms: how long a redirect waits for a screen the stock launcher opens over its home; 0 is at once. */
+    private int stockHomeRedirectDelayMs;
+    /** The redirect that stock_home_redirect_delay_ms holds back, so a later window can cancel it. */
+    private final Runnable stockHomeRedirect = this::openHome;
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -201,6 +205,8 @@ public class HomeKeyService extends AccessibilityService {
         boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
         stockHome.clear();
         stockHomePackage = config.stockHomeRedirect;
+        stockHomeRedirectDelayMs = config.stockHomeRedirectDelayMs;
+        handler.removeCallbacks(stockHomeRedirect);
         if (!config.stockHomeRedirect.isEmpty()) {
             Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(config.stockHomeRedirect);
             for (ResolveInfo ri : getPackageManager().queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) {
@@ -296,6 +302,7 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public boolean onUnbind(Intent intent) {
         RemoteKeys.release(this);
+        handler.removeCallbacks(stockHomeRedirect);
         if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
         return super.onUnbind(intent);
     }
@@ -320,8 +327,33 @@ public class HomeKeyService extends AccessibilityService {
             return;
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
-        CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+        switch (stockHomeRedirect(stockHome, stockHomePackage, event.getPackageName(), event.getClassName(), stockHomeRedirectDelayMs)) {
+            case NOW:
+                openHome();
+                break;
+            case LATER:
+                handler.removeCallbacks(stockHomeRedirect);
+                handler.postDelayed(stockHomeRedirect, stockHomeRedirectDelayMs);
+                break;
+            case CANCEL:
+                handler.removeCallbacks(stockHomeRedirect);
+                break;
+            default:
+                break;
+        }
+    }
+
+    enum Redirect { NOW, LATER, CANCEL, NONE }
+
+    /** stock_home_redirect for one window: its home screen is sent back here at once, or after
+     *  stock_home_redirect_delay_ms. Google TV's profile button opens launcherx's home and then its profile chooser
+     *  about 70 ms later, and an immediate redirect buried the chooser, so the button seemed to do nothing (#2779).
+     *  With a delay, any other window of the stock launcher that comes up meanwhile cancels the redirect: a screen
+     *  it opened over its home is what the user asked for. 0 keeps the immediate redirect. */
+    static Redirect stockHomeRedirect(Set<String> stockHome, String stockPackage, CharSequence pkg, CharSequence cls, int delayMs) {
+        if (stockHome.isEmpty() || cls == null) return Redirect.NONE;
+        if (stockHome.contains(cls.toString())) return delayMs > 0 ? Redirect.LATER : Redirect.NOW;
+        return delayMs > 0 && pkg != null && stockPackage.contentEquals(pkg) ? Redirect.CANCEL : Redirect.NONE;
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
