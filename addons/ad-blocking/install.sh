@@ -32,7 +32,15 @@ case "$OUT" in *Success*) ;; *) echo "ERROR: pm install failed" >&2; exit 1 ;; e
 if [ -n "$CONFIG" ]; then
   STAGE=/data/local/tmp/ad-blocking-config.json
   tv --push "$CONFIG" "$STAGE" >/dev/null
-  tv "content write --uri content://$PKG.config/config.json < $STAGE; rm -f $STAGE; echo config pushed"
+  # Some TVs cannot resolve the provider until its app is running (as reported for Smart Home in #1752).
+  tv "am start -n $PKG/.MainActivity >/dev/null; sleep 2; echo opened"
+  # tv.py does not pass through the remote shell status, and Android's content command may print an
+  # error while exiting 0. Accept only an exit-0 write with no diagnostic output.
+  OUT=$(tv "ok=0; for attempt in 1 2 3; do if write_out=\$(content write --user 0 --uri content://$PKG.config/config.json < $STAGE 2>&1) && [ -z \"\$write_out\" ]; then ok=1; break; fi; [ -z \"\$write_out\" ] || printf '%s\n' \"\$write_out\"; [ \"\$attempt\" -eq 3 ] || sleep 1; done; if rm -f $STAGE && [ \"\$ok\" -eq 1 ]; then echo __AD_BLOCKING_CONFIG_OK__; fi")
+  case "$OUT" in
+    *__AD_BLOCKING_CONFIG_OK__*) echo "config pushed" ;;
+    *) echo "$OUT" >&2; echo "ERROR: config write failed (or staged config could not be removed)" >&2; exit 1 ;;
+  esac
 fi
 tv "am start -n $PKG/.MainActivity >/dev/null; echo opened"
 echo "Installed. Ad Blocking is open on the TV; press Home and answer Show card for the card."
