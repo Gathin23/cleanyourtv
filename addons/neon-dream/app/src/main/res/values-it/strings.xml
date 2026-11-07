@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Neon Dream</string>
+    <string name="scene">Scena: %1$s</string>
+    <string name="scene_city">Città sotto la pioggia</string>
+    <string name="scene_grid">Griglia al neon</string>
+    <string name="palette">Colori: %1$s</string>
+    <string name="magenta">Magenta</string>
+    <string name="amber">Ambra</string>
+    <string name="green">Verde</string>
+    <string name="clock">Orologio: %1$s</string>
+    <string name="on">attivo</string>
+    <string name="off">spento</string>
+    <string name="preview">Anteprima (Indietro per uscire)</string>
+    <string name="choose">Scegli il salvaschermo…</string>
+    <string name="hint">Scegli Neon Dream nel menu del salvaschermo. Le modifiche valgono dal prossimo avvio.</string>
+</resources>
