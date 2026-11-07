@@ -47,7 +47,11 @@
    picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
    story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
    to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
-   card states (387, 103)`), so they move in the same commit.
+   card states (387, 103)`), so they move in the same commit. The brand grid itself is hand-kept on one page:
+   `README.he.md` carries neither the card nor the `tv-brands` markers, so `tools/gen_tables.py` cannot write
+   it and `tests/test_readme_he_brand_block.py` reads its grid, its two-list line, its single-list names and
+   its `<summary>` numbers against README.md's copy - a regeneration moves the Hebrew page with it, while a
+   list PR, which touches only its own folder, leaves both pages where they were and stays green.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
    free prose; three things in a README are read back, two of them against the list beside it.
    A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
