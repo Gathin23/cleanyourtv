@@ -1237,6 +1237,14 @@ turned off in Settings stays off.
   TCL 55Q7D Pro (`G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU02`), in SmartTube and on Home.
   Press the real button; a key injected over ADB does not reach the helper. Holding volume may step only
   once while the helper is bound, which is the usual trade on these two boards.
+- **The gear opens Settings, but Back lands on Display & Sound** (Skyworth 2K NSTV, MediaTek, Google TV 14,
+  `UKNV.260211.001`): the gear sends keycode 83 and, on most presses, `KEYCODE_SETTINGS` (scan 139).
+  `dumpsys window policy` routes `KEYCODE_SETTINGS` to `com.mediatek.tv.service/.hotkey.dispatcher.GlobalKeyReceiver`,
+  which opens `com.android.tv.settings/.partnercustomizer.DisplayAndSoundActivity` as the key goes down, before
+  the helper can take it (`logcat` shows `HotKey_SettingsAction`). Settings then opens in the same task, on top of
+  it. Set `settings_key_clear_task` (with `settings_key_panel` off) and add 139 to `settings_key_scancodes`:
+  Settings replaces that page and Back goes Home. The shell cannot disable a single receiver, so this is the
+  route without root.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left

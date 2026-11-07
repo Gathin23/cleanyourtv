@@ -256,6 +256,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** config settings_key_keycodes / settings_key_panel, so the Settings button works on Home without HomeKeyService. */
     private int[] settingsKeycodes = new int[0];
     private boolean settingsKeyPanel;
+    private boolean settingsKeyClearTask;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     private boolean reducedMotion;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
@@ -472,6 +473,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         applyViewInputsHandler(cfg.handleViewInputs);
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
+        settingsKeyClearTask = cfg.settingsKeyClearTask;
         COLUMNS = cfg.columns;
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
@@ -1399,8 +1401,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         for (int code : settingsKeycodes) {
             if (event.getKeyCode() != code) continue;
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
-                open(settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
-                        : systemIntent(Settings.ACTION_SETTINGS));
+                Intent settings = settingsKeyPanel ? new Intent(this, QuickSettingsActivity.class)
+                        : systemIntent(Settings.ACTION_SETTINGS);
+                // settings_key_clear_task, as in HomeKeyService: Back from Settings goes Home, not to a vendor page.
+                if (settingsKeyClearTask && !settingsKeyPanel) settings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                open(settings);
             }
             return true;
         }
