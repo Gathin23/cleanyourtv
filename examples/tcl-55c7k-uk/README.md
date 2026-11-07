@@ -298,6 +298,54 @@ package stayed disabled (26 in user 0, the 25 from the list plus launcherx), Hom
 
 This is a two-session compatibility report, not several days with the list.
 
+## Compatibility report: TCL 85C81K, Netherlands, Wi-Fi
+
+TCL 85C81K QD-Mini LED (2025), model "Smart TV Pro", device `G08`, product `G08_4K_GB`, MediaTek `tcl9618` /
+`mt5896`, Google TV 14 (SDK 34), firmware `UTT2.250416.001 AU02` (software `V8-T653T01-LF1V641`, client type
+`TCL-EU-MT9653-S1`, as on the 65P89L), about 2.4 GB RAM, 32-bit only (`armeabi-v7a,armeabi`), on Wi-Fi. Set up
+on 7 November 2026 in one session from this list as the 75C81K report above applied it: 22 of its 32 entries, plus
+`com.android.adservices.api`, `com.android.federatedcompute.services` and
+`com.android.ondevicepersonalization.services` as on the 50C71K, in three batches with screenshots and the Input
+button's source panel checked between them. Then setupwraith, the launcher (built in Docker with
+`tools/docker-build.sh`, installed with `SKIP_BUILD=1 HOME_KEY_SERVICE=1`) and dreamx once the screensaver was
+switched to `com.gathin.tvhome/.ClockDream`. Rebooted once with ADB: every package stayed disabled (26 in user 0,
+the 25 the owner applied plus launcherx), Home came back as `com.gathin.tvhome/.MainActivity`, and Wi-Fi and port
+5555 were back within about 35 s. A final restart followed with Developer options off.
+
+**Different choices from the UK unit:** `com.tcl.ttvs` kept, for firmware updates, as on the C6K, 55P8K and
+50C71K. Also kept: Assistant (`katniss`), Netflix (both packages), Prime Video, YouTube, Chromecast, AirPlay,
+Miracast, MagiConnect/T-Cast, the game bar, the USB media player and gallery, T-Solo and the soundbar updater.
+
+- **setupwraith owned the saved Wi-Fi network** (`cname=com.google.android.tungsten.setupwraith`). Forgetting the
+  network and joining it again in Settings moved it to `com.android.tv.settings`; setupwraith was then disabled
+  without `FORCE_SETUPWRAITH` and the TV stayed on Wi-Fi.
+- **Network ADB**: switching on USB debugging alone opened port 5555 on Wi-Fi. At the end, after the owner
+  switched USB debugging off and restarted, `tools/adb-closed.py` still found 5555 open; with the main
+  Developer options switch off and one more restart it reported the port closed. Whether the first toggle had
+  not taken or the main switch is needed on this build was not established.
+- **Remote** (`BT_RC933B_B1`): `HOME_KEY_SERVICE=1` with `settings_key_keycodes` 83 and `app_keys` 4062
+  (Netflix), 190 (YouTube) and 4099 (Prime Video) in the theme, and the `AUTO_START` plus `appops write-settings`
+  line from the Install section. The owner confirmed Settings, Netflix, YouTube, Prime Video, Input, the mic,
+  Home, Back and volume on the real remote, and the four shortcut buttons again after the final restart with
+  debugging off. Held volume moves one step per press with the helper bound; the owner kept the buttons.
+- **A force-stop clears the helper's setting here, not only its binding**: after `am force-stop
+  com.gathin.tvhome`, `settings get secure enabled_accessibility_services` answered `null`, so the helper would
+  not have come back at the next boot either. Writing `com.gathin.tvhome/.HomeKeyService` back into
+  `enabled_accessibility_services`, with `accessibility_enabled` 1, bound it again at once.
+- **Input panel**: TCL's source panel (`com.tcl.suspension`) kept opening after every batch. Its TCL Channel and
+  User Guide shortcuts still show in the panel with `com.tcl.channelplus` and `com.tcl.ocean.instructions`
+  disabled.
+- **Hidden users** 10 and 11, as on the 75C81K: `com.android.tv.settings` shows as disabled there from the
+  factory, so `pm list packages -d` without `--user 0` lists it.
+- `wm size` shows the same factory override of 1920x1080, density 320.
+- **Measured** with `tools/bench.py` (`--keys 36 --series 3`), launcherx before and the reference launcher after,
+  with a theme of photos under `wallpaper_moods` and `app_glow` and `ambient_glow` off: focus movement p50 876 to
+  450 ms and p95 1264 to 462 ms, janky frames 1.55% to 0%, launcher PSS 109 to 24 MB and its idle CPU 3.2% to
+  0%. First-frame response p50 83 to 89 ms, and the launcher's cold start 448 to 634 ms, with that theme decoding
+  a 1920x1080 picture in true colour first.
+
+This is a single-session compatibility report, not several days with the list.
+
 ## Compatibility report: TCL 50C805, Wi-Fi
 
 Checked on 4 November 2026: retail model TCL 50C805, reported model `Smart TV Pro`, device `G08`,
