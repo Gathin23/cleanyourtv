@@ -247,7 +247,11 @@ class BenchResultWriteTest(unittest.TestCase):
         (self.folder / "result.json").write_text(earlier, encoding="utf-8")
         elsewhere = self.folder / "another-result.json"
         elsewhere.write_text('{"keep": "me"}', encoding="utf-8")
-        os.symlink(elsewhere, self.folder / "result.json.part")
+        try:
+            os.symlink(elsewhere, self.folder / "result.json.part")
+        except (OSError, NotImplementedError) as error:
+            # Windows allows a symlink only with Developer Mode or an elevated shell.
+            self.skipTest(f"cannot make a symlink here: {error}")
         self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
         self.assertEqual('{"keep": "me"}', elsewhere.read_text(encoding="utf-8"),
                          "the write followed the symlink and overwrote the file it pointed at")
