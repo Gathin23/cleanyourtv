@@ -6,7 +6,8 @@ Run [`examples/tcl-qm6k-google-tv/debloat.txt`](../../examples/tcl-qm6k-google-t
 same `G08` board, same `AU14` build — and read the deltas and the two traps below. A second owner
 confirmed the cast-receiver symptom on a TCL BeyondTV2 in the same thread. A second unit, a
 55QM751G on the same build, is [further down](#a-second-unit-55qm751g-same-build): reboot
-persistence, the remote's keycodes, the mic, and the volume trade with a key helper.
+persistence, the remote's keycodes, the mic, and the volume trade with a key helper. A third, a
+[65QM7K (2025)](#a-third-unit-65qm7k-2025-same-build), adds which buttons still work with no helper.
 
 ## Identify the firmware, not the retail name
 
@@ -165,6 +166,54 @@ answered: USB debugging was on again in Developer options. Switched off a second
 through a restart, and `tools/adb-closed.py` reported 5555 closed. Whether the first switch did not
 take or the restart put it back was not told apart.
 
+## A third unit: 65QM7K (2025), same build
+
+A 65QM7K, sold as a 2025 model in the US, reported the same `ro.product.device` `G08`, `ro.product.model`
+`Smart TV Pro` and `tcl9618-user 14 UTT2.250416.001 AU14 release-keys`, SDK 34, `ro.adb.secure=1`, with
+product `G08_4K_US`. `ro.odm.tcl.model.year` reads `2024` on it, so the retail year is no guide either. One
+owner, cleaned on 4 November 2026 and checked again on the next day, so two days of use, not a week.
+
+**Connection.** Network ADB answered on 5555 over Wi-Fi with no pairing step, with Wireless debugging off
+(`adb_wifi_enabled=0`). `wm size` showed the same 1920x1080 override on the 3840x2160 panel, left alone.
+
+**The list.** The QM6K list was applied from Windows with `tools/disable.ps1` in four batches, with a
+screenshot of Home after each. Not installed on this preload: `com.tcl.repairguide`, `com.tcl.smartalexa` and
+`com.google.android.youtube.tvmusic`. Installed but not in the QM6K list, and kept: `com.tcl.hearaid` (TCL's
+wireless-speaker and sound-field settings) and `com.tvos` (a framework resource package). Kept by the owner's
+choice: Chromecast (`com.google.android.apps.mediashell`), AirPlay (`com.tcl.airplay2` and the two MediaTek
+packages), Assistant (`com.google.android.katniss`) and the USB media player (`com.tcl.ui_mediaCenter`). From
+the optional block, `com.google.android.tv.remote.service`, `com.tcl.gamebar`, `com.tcl.UpdatePeripheral` and
+`com.google.android.marvin.talkback` were disabled. With setupwraith, ambient mode
+(`com.google.android.apps.tv.dreamx`, after the launcher's clock screensaver was set) and launcherx, 26
+packages were disabled. After `sync`, a 15-second wait and a reboot, `pm list packages -d` was the same, and
+again a day later. The TV started into the new Home (`FallbackHome`, then `com.gathin.tvhome`), and after
+power off and on with the remote it came back to Home too.
+
+**setupwraith.** As on the 55QM751G, it owned one saved network that the TV was not using.
+`cmd wifi forget-network <id>` removed it, `tools/disable.ps1` then disabled setupwraith without
+`FORCE_SETUPWRAITH=1` while launcherx was still Home, Wi-Fi stayed connected, and the new launcher became
+Home on the first run of `launcher/build-and-install.ps1`.
+
+**The remote's keys.**
+
+| Setup | Gear (83) | YouTube (190) | Prime Video (4099) | Held volume |
+|---|---|---|---|---|
+| Both helpers, `app_keys` for all three | works everywhere | works everywhere | works everywhere | one step per press |
+| Both helpers, `"consume_volume_keys": true` | works everywhere | works everywhere | works everywhere | one step per press |
+| No helper, `settings_key_keycodes` `[83]` and `app_keys` `4099:com.amazon.amazonvideo.livingroom` | from Home only | nothing | from Home only | ramps |
+
+`consume_volume_keys` did not bring the ramp back on this Android 14 build, as on the G08 Android 12 set in
+[the key-repeat note](tcl-55p71b-g09-key-repeat.md), unlike the G09. The owner kept the ramp, with no helper
+bound. The remote's Disney+ button opened Disney+ from any screen with launcherx disabled and no helper, so the
+firmware answers that button itself. Its keycode was not read. Input kept working in every setup.
+
+**The mic.** With `com.google.android.tv.remote.service` and launcherx both disabled, the owner pressed the
+remote's mic button and the Assistant answered. Whether Microphone access under Settings > Privacy had already
+been switched on was not checked.
+
+**Closing ADB.** After Network debugging and USB debugging were switched off, the authorisations revoked and
+the TV restarted, `tools/adb-closed.py` reported 5555 closed.
+
 ## Test limits
 
 - One set, one firmware, one session, same day. Nothing here has been lived with for days.
@@ -179,3 +228,6 @@ take or the restart put it back was not told apart.
   off. Casting, AirPlay and the Cast receiver hang above were not checked on it. The mic was tested
   before the reboot, not after. Playback was checked once per case: one app with AdGuard DNS on,
   and Prime Video with it on (failed) and off (played).
+- The 65QM7K is one set and one firmware too, with two days of use. It kept Chromecast, AirPlay and the
+  Assistant enabled; casting, AirPlay and the Cast receiver hang above were not checked on it, and Private DNS
+  was not set. The key table was pressed on the real remote, once per setup.
