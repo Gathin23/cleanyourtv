@@ -536,7 +536,7 @@ first four days. The repo was called tv-vibehack until the 19th; old links work.
 Two weeks on, it was the #1 trending repository on GitHub for the week of 19–25 October, with over 46K stars
 and 5.7K forks, and 1.4M views and 260K clones in 14 days. The lists now cover 450 TV models from 122 brands.
 The coverage: 412 articles from 54 countries and 229 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
-(numbers as of 30 October 2026).
+(numbers as of 31 October 2026).
 
 ## Contributing
 
