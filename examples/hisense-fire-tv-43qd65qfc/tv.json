@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 43QD65QFC Fire TV (AFTOLCBC82, ginza), US",
+  "os": "Fire OS 8.1.8.0 / Android 11",
+  "brand": "Hisense",
+  "notes": "43-inch sibling of the tested 55QD6QF on the same RS8180.3746N build; all 51 names verified installed before disabling; Alexa group and Miracast off by choice like the sister list, but vizzini stayed off across a reboot here; Tubi is a user install on US sets, not a preload, so it is not in the list; the ADB allow-popup only renders while adbd restarts, toggle ADB debugging off and on to raise it; debloat only"
+}
