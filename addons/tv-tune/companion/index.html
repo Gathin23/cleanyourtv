@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="TV Tune: picture setup and an honest phone camera compatibility experiment.">
+  <title>TV Tune · Picture lab</title>
+  <link rel="icon" type="image/svg+xml" href="cover.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <div id="phone-view">
+    <header class="topbar">
+      <a class="brand" href="?" aria-label="TV Tune"><span class="brand-icon" aria-hidden="true">◫</span> TV Tune<span class="brand-sub">PICTURE LAB</span></a>
+      <div class="top-actions"><span class="badge" data-en="Experimental">Experimental</span><button id="language" class="text-button" aria-label="Switch language">EN</button></div>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow" data-en="YOUR SCREEN. A CLEARER START.">TU PANTALLA. UN BUEN PUNTO DE PARTIDA.</p>
+          <h1 id="hero-title" data-en="A better picture starts here.">La imagen<br>empieza aquí.</h1>
+          <p class="hero-description" data-en="Show a pattern on your TV. Check what your phone can capture. Take the first step towards a better picture, with clear limits.">Muestra un patrón en la tele. Comprueba qué puede captar tu móvil. El primer paso hacia una mejor imagen, con límites claros.</p>
+          <div class="hero-actions"><a id="camera-jump" class="button primary" href="#camera-section" data-en="Check my phone ↗">Comprobar mi móvil ↗</a><a class="button secondary tv-link" href="?view=tv" data-en="Show TV patterns">Ver patrones para la tele</a></div>
+          <p class="quiet" data-en="No account. No microphone. No image uploads.">Sin cuenta. Sin micrófono. Sin subir imágenes.</p>
+        </div>
+        <div class="hero-art"><img src="cover.svg" width="640" height="440" alt="Original illustration of a television with a neutral test patch and colour swatches"><span class="art-caption" data-en="A small patch. An important question.">Un pequeño patrón. Una pregunta importante.</span></div>
+      </section>
+      <section class="boundary" aria-label="Experiment scope"><span class="boundary-mark" aria-hidden="true">i</span><p data-en="This experiment checks camera controls and capture stability. It does not measure colour accuracy or calibrate your TV.">Este experimento comprueba los controles de cámara y la estabilidad de la captura. No mide la precisión del color ni calibra tu tele.</p></section>
+      <section id="camera-section" tabindex="-1" class="lab" aria-labelledby="camera-title">
+        <div class="section-heading"><div><p class="eyebrow" data-en="PHONE CHECK">COMPROBACIÓN DEL MÓVIL</p><h2 id="camera-title" data-en="Look at the same patch.">Mira el mismo patrón.</h2></div><span class="session-tag" data-en="LOCAL SESSION">SESIÓN LOCAL</span></div>
+        <div class="lab-grid">
+          <div class="preview-column">
+            <div class="camera-preview">
+              <img id="preview-placeholder" src="cover.svg" alt="" aria-hidden="true">
+              <video id="preview" muted playsinline aria-label="Live camera preview"></video>
+              <div class="reticle" aria-hidden="true" hidden><span></span></div>
+              <span class="preview-label" data-en="Fill the entire sampling frame with the uniform TV patch">Cubre todo el marco de captura con el patrón uniforme de la tele</span>
+            </div>
+            <div class="camera-actions"><button id="start" class="button primary" data-en="Start camera">Iniciar cámara</button><button id="stop" class="button secondary" disabled data-en="Stop camera">Parar cámara</button></div>
+            <p id="camera-status" class="status" role="status" aria-live="polite">La cámara está apagada.</p>
+          </div>
+          <div class="setup-column">
+            <div class="step-label"><span>1</span><h3 data-en="Choose the TV patch">Elige el patrón de la tele</h3></div>
+            <p class="description" data-en="Use the TV add-on or open the pattern screen on your display. Both screens must show the same patch ID.">Usa el complemento en la tele o abre la pantalla de patrones en tu monitor. Las dos pantallas deben indicar el mismo ID.</p>
+            <label for="patch" data-en="Patch ID">ID del patrón</label><select id="patch"></select>
+            <a class="button secondary tv-link patch-display-link" href="?view=tv" data-en="Show this patch on a display">Mostrar este patrón en una pantalla</a>
+            <label class="confirmation"><input type="checkbox" id="confirm"><span data-en="I can see this ID on the TV, and the rear camera is aimed at the patch.">Veo este ID en la tele y estoy apuntando al patrón con la cámara trasera.</span></label>
+            <p class="small-note" data-en="Manual confirmation. The phone and TV are not automatically paired.">Confirmación manual. El móvil y la tele no están emparejados automáticamente.</p>
+            <div class="step-label capture-step"><span>2</span><h3 data-en="Hold still and check">Mantén el móvil quieto</h3></div>
+            <p class="description" data-en="We sample the centre of the camera preview for up to five seconds. Your phone keeps the images in memory.">Tomamos muestras del centro de la cámara durante un máximo de cinco segundos. Las imágenes permanecen en la memoria del móvil.</p>
+            <button id="capture" class="button primary full-width" disabled data-en="Check capture">Comprobar captura</button>
+            <dl class="capabilities">
+              <div><dt data-en="Manual capability reported">Capacidad manual indicada</dt><dd id="controls-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Last observed exposure">Última exposición observada</dt><dd id="exposure-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Last observed white balance">Último balance de blancos observado</dt><dd id="white-balance-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Last observed focus">Último enfoque observado</dt><dd id="focus-state" data-en="Camera off">Cámara apagada</dd></div>
+              <div><dt data-en="Measurement">Medición</dt><dd class="amber" data-en="Colour accuracy not validated">Precisión del color no validada</dd></div>
+            </dl>
+            <p class="description" data-en="Modes are read when the camera starts and at capture start/end, not continuously. Manual capability does not mean manual mode is active. TV Tune does not change or lock camera controls.">Los modos se leen al iniciar la cámara y al inicio/final de la captura, no continuamente. La capacidad manual no significa que el modo manual esté activo. TV Tune no cambia ni bloquea los controles de cámara.</p>
+          </div>
+        </div>
+      </section>
+      <section id="results" class="results" aria-labelledby="result-title" hidden>
+        <p class="eyebrow" data-en="CAPTURE OBSERVATION">OBSERVACIÓN DE LA CAPTURA</p><h2 id="result-title" data-en="What the camera observed.">Lo que ha observado la cámara.</h2>
+        <div class="metrics"><div><span id="frame-count">—</span><p data-en="Distinct frames">Fotogramas distintos</p></div><div><span id="duration">—</span><p data-en="Capture interval">Intervalo capturado</p></div><div><span id="deviation">—</span><p data-en="Largest RGB standard deviation (8-bit codes)">Desviación RGB máxima (códigos de 8 bits)</p></div></div>
+        <ul id="warnings" class="observations"></ul>
+        <p class="description" data-en="These numbers describe processed camera video. A stable capture may still have incorrect colours. Black and white fields can legitimately reach the code endpoints.">Estos valores describen vídeo procesado por la cámara. Una captura estable puede tener colores incorrectos. En los campos negro y blanco es normal alcanzar los extremos de los códigos.</p>
+        <div class="report-actions"><button id="review" class="button secondary" data-en="Review report">Revisar informe</button><button id="download" class="button secondary" disabled data-en="Download JSON">Descargar JSON</button></div>
+        <pre id="report-preview" role="region" tabindex="0" aria-label="Report preview" hidden></pre>
+      </section>
+      <section class="next-step"><div><p class="eyebrow" data-en="WHAT COMES NEXT">EL SIGUIENTE PASO</p><h2 data-en="Repeatability is only the beginning.">Repetir no es acertar.</h2></div><p data-en="To measure colour, a camera needs characterisation and comparison with an independent reference instrument. This lab helps decide which devices are worth testing next.">Para medir el color, una cámara necesita caracterización y comparación con un instrumento de referencia independiente. Este laboratorio ayuda a decidir con qué dispositivos continuar.</p></section>
+    </main>
+    <footer><span>TV Tune · Open-source picture research</span><a href="https://github.com/kalt2212/cleanyourtv/tree/feat/tv-tune/addons/tv-tune" target="_blank" rel="noopener noreferrer" data-en="Source code ↗">Código fuente ↗</a><a href="https://github.com/Gathin23/cleanyourtv/discussions/1140" target="_blank" rel="noopener noreferrer" data-en="Read the proposal ↗">Leer la propuesta ↗</a></footer>
+  </div>
+  <main id="tv-view" hidden aria-label="TV pattern presenter">
+    <div class="tv-heading"><a href="?" aria-label="Back to TV Tune">TV Tune</a><span>SDR · sRGB · 8-bit · 0–255</span></div>
+    <button id="handoff-toggle" class="button secondary tv-handoff-toggle" aria-controls="handoff-panel" aria-expanded="false" data-en="Phone link">Enlace al móvil</button>
+    <section id="handoff-panel" class="tv-handoff" aria-labelledby="qr-status" hidden>
+      <img id="phone-qr" alt="QR" hidden>
+      <p id="qr-status" role="status" aria-live="polite"></p>
+      <p data-en="Open this patch on your phone">Abre este patrón en tu móvil</p>
+      <p id="handoff-patch"></p>
+      <a id="phone-link" href="#">Enlace al móvil</a>
+      <button id="copy-phone-link" class="button secondary" data-en="Copy phone link">Copiar enlace al móvil</button>
+      <p class="handoff-boundary" data-en="This link selects one patch, without pairing or synchronising. Resume a paused TV and compare its ID/RGB before confirming.">El enlace selecciona un patrón, sin emparejar ni sincronizar. Reanuda la tele si está en pausa y compara el ID/RGB antes de confirmar.</p>
+      <p id="handoff-status" role="status" aria-live="polite"></p>
+    </section>
+    <div id="tv-patch" aria-label="Neutral measurement patch"></div>
+    <div class="tv-caption"><h1 id="tv-patch-id">grey-128</h1><p id="tv-code"></p><p id="tv-status" role="status"></p></div>
+    <nav class="tv-controls" aria-label="Pattern controls"><button id="previous" class="button secondary" data-en="← Previous">← Anterior</button><button id="fullscreen" class="button secondary" data-en="Fullscreen">Pantalla completa</button><button id="next" class="button secondary" data-en="Next →">Siguiente →</button></nav>
+  </main>
+</body>
+</html>

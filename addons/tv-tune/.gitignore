@@ -1,0 +1,9 @@
+.gradle/
+build/
+app/build/
+local.properties
+companion/node_modules/
+companion/coverage/
+*.keystore
+*.jks
+captures/
