@@ -171,7 +171,17 @@ class PlayerActivity : Activity() {
         // on a spinner for over a minute. Recovery below decides what happens next.
         val factory = DefaultMediaSourceFactory(this).setDataSourceFactory(http)
             .setLoadErrorHandlingPolicy(androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy(1))
-        p.setMediaSource(factory.createMediaSource(item))
+        // DefaultMediaSourceFactory loads each container's module by reflection, so a stream whose
+        // module this build does not carry throws here instead of reporting a PlaybackException,
+        // and onError below never sees it. Without this the process died on a .mpd URL.
+        val source = try {
+            factory.createMediaSource(item)
+        } catch (e: Exception) {
+            Log.w("Cannot open ${s.url}: $e")
+            showError("This build cannot play this stream's format.")
+            return
+        }
+        p.setMediaSource(source)
         p.prepare()
         p.play()
     }
