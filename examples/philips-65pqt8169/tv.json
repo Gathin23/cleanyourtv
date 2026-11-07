@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 65PQT8169/56 (KTC, KTC_PHILIPS_4K_DVB_22GV1, hongkong, MediaTek m7632), UAE",
+  "os": "Google TV 11",
+  "brand": "Philips",
+  "notes": "A 2024 KTC-built Philips on the `hongkong` board's Android 11 firmware (`ktc-4k-smart-tv-hongkong/` is Google TV 14): Google feedback, partner auto-installs, setup and rows, data-saver VPN, calendar sync, printing, ambient mode and three factory tools (never launched); `ktc.factorymenu.ui` kept (remote hotkeys); setupwraith owned a saved network that was not in use (Ethernet), so `FORCE_SETUPWRAITH=1`, and casting still works with it off (MediaDRM credentials); launcherx off for this launcher, with the app buttons and Input still working; the gear button needs `settings_key_scancodes` 397 and HOME_KEY_SERVICE=1, after which a held volume key steps once per press; streaming apps and Chromecast kept by choice; one session, reboot-checked"
+}

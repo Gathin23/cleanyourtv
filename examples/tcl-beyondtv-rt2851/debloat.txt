@@ -35,9 +35,12 @@
 # itself: com.tcl.smartalexa, tv.wuaki.apptv, com.tcl.notereminder, com.tcl.usercenter and com.tcl.cyberui
 # (the first four ship disabled). com.tcl.appstatecontroller is the likely cause: a system app with
 # receivers for boot, wake from standby, network changes and package changes, which puts TCL's app set
-# back. With it disabled (group 7), `pm list packages -d` still listed every package 12 days later,
+# back. That unit ran with it off, and `pm list packages -d` still listed every package 12 days later,
 # across reboots, with Home, the remote, HDMI inputs, wake from standby and the network still working.
-# If inputs or the remote misbehave, re-enable it first: TV_HOST=<tv ip> tools/tv.py 'pm enable com.tcl.appstatecontroller'
+# The group 7 line is commented out here because this list is shared, so a run leaves the package
+# enabled and TCL's app set can come back by itself, as it did there: uncomment it to repeat that
+# unit's result. If inputs or the remote misbehave with it off, re-enable it first:
+# TV_HOST=<tv ip> tools/tv.py 'pm enable com.tcl.appstatecontroller'
 #
 # Already disabled at the factory, left alone: the 14 uk.co.freeview.* apps, com.tcl.bootadservice,
 # com.tcl.common.terminalmanagerplus, com.tcl.gallery, Prime Video, Stan, ZEE5, LINE TV, Play Music,

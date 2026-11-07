@@ -1,6 +1,6 @@
 """tools/match.py reads a saved `pm list packages` and counts how the tested lists treat each package.
 
-It reads files only: a package file and a folder of */debloat.txt lists. For each package it prints how
+It reads files only: a package file and a folder of */debloat*.txt lists. For each package it prints how
 many lists disable it, how many name it commented out, and the note those lines give it most often; a
 package disable.sh refuses as one of Android's core packages (#884) is printed as `never`. A packages
 file or examples folder that cannot be used ends the run at 2 with one line, no traceback.
@@ -123,18 +123,43 @@ class TallyTest(MatchCase):
         counts, _ = match.tally(["com.example.ads"], self.examples)
         self.assertEqual(["com.example.ads"], list(counts))
 
-    def test_only_debloat_txt_one_folder_down_is_read(self):
+    def test_every_list_beside_debloat_txt_is_read(self):
+        # A folder may ship a second list beside debloat.txt - google-chromecast-gtv-4k/debloat-keep-cast.txt,
+        # sony-bravia-4k-ur3/debloat-display-only.txt - and tools/disable.sh applies one like any other, so
+        # the tally reads it too. One folder down only, as before: a bare debloat.txt at the top of
+        # examples/, or a list inside a subfolder, is not one of examples/'s lists.
         self.add_list("a", "com.example.ads\n")
-        (self.examples / "a" / "debloat-extra.txt").write_text("com.example.ads\n")
+        (self.examples / "a" / "debloat-extra.txt").write_text("com.example.ads\ncom.example.extra\n")
         (self.examples / "debloat.txt").write_text("com.example.ads\n")
+        (self.examples / "a" / "nested" / "debloat.txt").parent.mkdir()
+        (self.examples / "a" / "nested" / "debloat.txt").write_text("com.example.ads\n")
+        counts, read = match.tally(["com.example.ads", "com.example.extra"], self.examples)
+        self.assertEqual(2, read)
+        self.assertEqual((2, 0, ""), counts["com.example.ads"])
+        self.assertEqual((1, 0, ""), counts["com.example.extra"])
+
+    def test_a_package_only_a_second_list_disables_is_counted(self):
+        # The shape examples/oppo-k9-55-oppocnm632/debloat-extra.txt has: com.changba.sd is on that list
+        # alone, and the tally printed 0 for it while the tool read debloat.txt only.
+        self.add_list("a", "com.example.ads\n")
+        (self.examples / "a" / "debloat-extra.txt").write_text("com.changba.sd  # karaoke\n")
+        counts, read = match.tally(["com.changba.sd"], self.examples)
+        self.assertEqual(2, read)
+        self.assertEqual((1, 0, "karaoke"), counts["com.changba.sd"])
+
+    def test_a_second_list_counts_as_its_own_list(self):
+        # The counts are per list, as the closing line says, so a package both of a folder's lists carry
+        # reads as two lists rather than one folder.
+        self.add_list("a", "com.example.ads\n")
+        (self.examples / "a" / "debloat-keep-two.txt").write_text("com.example.ads\n")
         counts, read = match.tally(["com.example.ads"], self.examples)
-        self.assertEqual(1, read)
-        self.assertEqual((1, 0, ""), counts["com.example.ads"])
+        self.assertEqual(2, read)
+        self.assertEqual((2, 0, ""), counts["com.example.ads"])
 
     def test_a_folder_without_lists_stops(self):
         with self.assertRaises(SystemExit) as caught:
             match.tally(["com.example.ads"], self.examples)
-        self.assertIn("no */debloat.txt", str(caught.exception.code))
+        self.assertIn("no */debloat*.txt", str(caught.exception.code))
 
     def test_a_list_that_is_a_directory_stops_the_whole_tally(self):
         self.add_list("a", "com.example.ads\n")
@@ -220,7 +245,7 @@ class MainTest(MatchCase):
         code, out, err = self.run_main(str(packages), "--examples", str(self.examples))
         self.assertEqual(2, code)
         self.assertEqual("", out)
-        self.assertIn("no */debloat.txt", err)
+        self.assertIn("no */debloat*.txt", err)
 
     def test_the_default_examples_folder_is_this_checkout(self):
         self.assertEqual(ROOT / "examples", match.EXAMPLES)

@@ -1,9 +1,10 @@
-# Sony BRAVIA 4K VH2 (XR-55X90JK, Latin America): Apps and Audio buttons after the debloat
+# Sony BRAVIA 4K VH2 (XR-55X90JK, Latin America): Apps, Help and Audio buttons after the debloat
 
 This is an owner report from 2026-10-31 for the seventh unit in
 [`examples/sony-bravia-4k-vh2/`](../../examples/sony-bravia-4k-vh2/debloat.txt). It is not an upstream
 launcher option. It records what the remote's Apps and Audio buttons do once launcherx is disabled, and the
-keyboard-layout overlay that gave Apps a job again without a key-filtering helper.
+keyboard-layout overlay that gave Apps a job again without a key-filtering helper. A follow-up from
+2026-11-06 adds the Help button, which the same overlay brought back.
 
 ## Observed firmware
 
@@ -13,7 +14,7 @@ keyboard-layout overlay that gave Apps a job again without a key-filtering helpe
 | Android model | `BRAVIA 4K VH2` |
 | Product | `BRAVIA_VH2_SA` (Latin American firmware), retail model XR-55X90JK |
 | Android / API | `12` / `31` |
-| Fingerprint | `Sony/BRAVIA_VH2_SA/BRAVIA_VH2:12/STT2.230505.001.S136/682241:user/release-keys` |
+| Fingerprint | `Sony/BRAVIA_VH2_SA/BRAVIA_VH2:12/STT2.230505.001.S136/682241:user/release-keys` (Help: `S158/682461`, after a firmware update) |
 | Remote | `SONY TV VRC 001`, vendor `054c`, product `0x0d8d` (Bluetooth) |
 | Home | the owner's own launcher (not this repo's); launcherx and setupwraith disabled |
 
@@ -56,6 +57,48 @@ E KeyCharacterMap: <package>/<package>.<Receiver>/<layout>:8: Expected keyword a
 `dumpsys input` keeps naming the vendor `.kcm` either way, so it cannot tell whether an overlay is active. The
 scan-code line alone was enough on this remote.
 
+## Help button: a Sony global key for a disabled app
+
+The Help key arrives as `KEY_HELP`, scan code 138, HID usage `0x000c0095`, and Android turns it into
+`KEYCODE_HELP` (259). It never reaches an app: Sony's global-key table (`dumpsys window policy`) hands it to
+the support app,
+
+```text
+KEYCODE_HELP=com.sony.dtv.customersupport/com.sony.dtv.customersupport.CustomerSupportReceiver,dispatchWhenNonInteractive=false
+```
+
+and the VH2 list disables `com.sony.dtv.customersupport` (with `smarthelp` and `helpguidecontents`), so each
+press is swallowed and nothing opens. Logcat on each press:
+
+```text
+D GlobalKeyManager: handleGlobalKey keyCode=259 actionO:com.android.server.policy.GlobalKeyManager$GlobalKeyAction@...
+D GlobalKeyManager: package=com.sony.dtv.customersupport action=0
+```
+
+One more line in the same overlay gives it a job:
+
+```text
+type OVERLAY
+map key 580 CALCULATOR
+map key 138 CALENDAR
+```
+
+`KEYCODE_CALENDAR` (208) is not in Sony's table on this build, so `GlobalKeyManager` logs
+`handleGlobalKey keyCode=208 actionO:null` and lets it through, and Android starts `MAIN` + `APP_CALENDAR`.
+Nothing answered that category before (`cmd package query-activities -a android.intent.action.MAIN -c
+android.intent.category.APP_CALENDAR`; `APP_CONTACTS` was free too). The owner's own help app answers it. With
+`getevent` and logcat running, and confirmed by the owner on the physical remote:
+
+- Help opens it from Home, from YouTube and over Live TV (`com.sony.dtv.tvx`); Back returns to the tuner, with
+  no crash.
+- Apps still opens the app list, and held volume still ramps (no accessibility service,
+  `InputFilterEnabled: false`).
+- After a reboot, Help, Apps and the volume ramp behaved the same.
+
+The [VH22 Settings-key note](sony-bravia-4k-vh22-settings-key.md) maps the gear key to `CALENDAR`. A set that
+wants both keys needs another free category for one of them, such as `CONTACTS`. Re-enabling
+`customersupport` to get Sony's own Help screen back was not tried.
+
 ## Audio button: the tuner app crashes
 
 `KEYCODE_MEDIA_AUDIO_TRACK` (222) does nothing on Home or in the apps tried. While watching TV it closes
@@ -77,8 +120,11 @@ not prove a stock set crashes the same way. No workaround was tried.
 
 ## What it does not cover
 
-- Standby/wake, a re-paired or second remote, and firmware updates were not tested with the overlay.
-- The Calculator category is reserved: a calculator app would compete for the key.
+- Standby/wake and a re-paired or second remote were not tested with the overlay. The selection survived one
+  firmware update (S136 to S158): Apps still worked afterwards.
+- The layout is selected for the Bluetooth remote only. Over the TV's IR receiver (`mtkinp_ir_events`) Apps and
+  Help were not tested.
+- The Calculator and Calendar categories are reserved: a calculator or calendar app would compete for the keys.
 - Nothing is shipped here: the provider and the selection step are in the owner's own launcher.
 
 This report omits network addresses, serials, Android IDs, MAC addresses and account details.

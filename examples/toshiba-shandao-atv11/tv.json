@@ -1,0 +1,6 @@
+{
+  "tv": "Toshiba Android TV (Vestel shandao, MediaTek), UK, build RTM6.230109.207",
+  "os": "Android TV 11",
+  "brand": "Toshiba",
+  "notes": "Vestel board with UK Freeview Play: only Play Games, Play Movies and YouTube Music disabled; Netflix commented out; Freeview Play apps and every MediaTek/Vestel package left alone; stock Home com.google.android.tvlauncher; provisional, no reboot reported yet"
+}

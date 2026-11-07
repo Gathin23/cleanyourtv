@@ -61,6 +61,16 @@ def fake_trace(extra_threads=()):
     return lambda sql: [dict(r) for r in db.execute(sql)]
 
 
+def fake_pillow():
+    """Enough Pillow for draw() to reach the final image save without the optional dependency."""
+    pil = mock.MagicMock()
+    image = pil.Image.new.return_value
+    image.size = (1600, 100)
+    pil.ImageDraw.Draw.return_value.textlength.return_value = 0
+    pil.ImageFont.load_default.return_value = object()
+    return pil, image
+
+
 class HighlightTest(unittest.TestCase):
     def test_nested_work_is_counted_once_and_drawn_magenta(self):
         q = fake_trace()
@@ -213,6 +223,56 @@ class OutputArgumentTest(unittest.TestCase):
                         args = flamechart.parse(argv)
                         self.assertEqual(args.out, out)
                         self.assertEqual(args.width, 1600 if width is None else width)
+
+
+class WriteFailureTest(unittest.TestCase):
+    def test_a_png_that_cannot_be_written_is_named_without_a_traceback(self):
+        """A write can fail after trace work even when --out passed its argument checks."""
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart.png")
+            close = mock.Mock()
+            refusal = OSError(28, "No space left on device")
+            pil, image = fake_pillow()
+            image.save.side_effect = refusal
+            with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                    mock.patch.object(flamechart.trace_report, "opener",
+                                      return_value=lambda path: (fake_trace(), close)), \
+                    contextlib.redirect_stdout(io.StringIO()) as output, \
+                    contextlib.redirect_stderr(io.StringIO()) as error, \
+                    self.assertRaises(SystemExit) as caught:
+                flamechart.main([str(trace), "--out", str(out)])
+        self.assertEqual(f"cannot write {out}: No space left on device", caught.exception.code)
+        self.assertEqual("", output.getvalue())
+        stray = [l for l in error.getvalue().splitlines() if "ResourceWarning" not in l and not l.startswith("  ")]
+        self.assertEqual([], stray)   # a GC ResourceWarning from another test may land here; nothing else may
+        image.save.assert_called_once_with(str(out))
+        close.assert_called_once_with()
+
+    def test_a_font_load_failure_is_not_called_an_output_write_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart.png")
+            close = mock.Mock()
+            pil, image = fake_pillow()
+            pil.ImageFont.load_default.side_effect = OSError("cannot open resource")
+            with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                    mock.patch.object(flamechart.trace_report, "opener",
+                                      return_value=lambda path: (fake_trace(), close)), \
+                    contextlib.redirect_stdout(io.StringIO()) as output, \
+                    contextlib.redirect_stderr(io.StringIO()) as error, \
+                    self.assertRaises(OSError) as caught:
+                flamechart.main([str(trace), "--out", str(out)])
+        self.assertEqual("cannot open resource", str(caught.exception))
+        self.assertNotIn("cannot write", str(caught.exception))
+        self.assertEqual("", output.getvalue())
+        self.assertEqual("", error.getvalue())
+        pil.ImageFont.load_default.assert_called_once_with(size=11)
+        pil.Image.new.assert_not_called()
+        image.save.assert_not_called()
+        close.assert_called_once_with()
 
 
 class ThreadNamesTest(unittest.TestCase):

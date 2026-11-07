@@ -16,7 +16,7 @@ the usage block and exit 2, and a folder is named as a folder with the file name
 path it is: refused when it is there, "there is no folder" when it is not.
 
 The write itself is guarded too, because the audit is the expensive half: a file that cannot be created
-(a symlink pointing into a folder that is not there is the one that can be written in a test) answered
+(a controlled filesystem failure after the audit is used in the test) answered
 "could not be written" with the path and the reason, and the list that was to go into it is printed on
 stdout first, so the audited TV does not have to be audited again.
 
@@ -38,6 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(ROOT / "tools"))
 from test_privacy_audit import FAKE_TV, OWN_DUMP  # noqa: E402
+from test_privacy_write_target_first import SENTINEL, WRITE_HOOK  # noqa: E402
 import recovery  # noqa: E402
 
 KATNISS = "com.google.android.katniss"
@@ -68,9 +69,13 @@ class PrivacyWriteNameTest(unittest.TestCase):
         state.update(overrides)
         self.state_path.write_text(json.dumps(state))
 
-    def write(self, *args):
+    def write(self, *args, hook=None):
         env = dict(os.environ, TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path))
-        return subprocess.run([sys.executable, str(self.repo / "tools" / "privacy.py"), *args],
+        command = [sys.executable, str(self.repo / "tools" / "privacy.py"), *args]
+        if hook:
+            env.update(PRIVACY_WRITE_HOOK=hook, PRIVACY_SENTINEL=SENTINEL.hex())
+            command = [sys.executable, "-c", WRITE_HOOK, *command[1:]]
+        return subprocess.run(command,
                               cwd=self.repo, env=env, capture_output=True, text=True,
                               stdin=subprocess.DEVNULL, timeout=120)
 
@@ -140,13 +145,8 @@ class PrivacyWriteNameTest(unittest.TestCase):
 
     # The write, when the folder took the check and not the file
 
-    @unittest.skipUnless(hasattr(os, "symlink"), "no symlinks on this platform")
     def test_a_file_that_cannot_be_created_keeps_the_audit_on_stdout(self):
-        try:
-            os.symlink("no-such-folder/privacy.txt", self.repo / "privacy.txt")
-        except (OSError, NotImplementedError) as error:  # Windows without the symlink privilege
-            self.skipTest(f"cannot make a symlink here: {error}")
-        result = self.write("--write", "privacy.txt")
+        result = self.write("--write", "privacy.txt", hook="creation_error")
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertNotIn("Traceback", result.stderr)
         self.assertIn("privacy.txt could not be written", result.stderr)
@@ -158,6 +158,9 @@ class PrivacyWriteNameTest(unittest.TestCase):
         copy.write_text(result.stdout)
         self.assertEqual(recovery.read_list(copy), [KATNISS])
         self.assertNotIn("wrote", result.stderr)
+        self.assertNotIn("wrote", result.stdout)
+        self.assertFalse((self.repo / "privacy.txt").exists())
+        self.assertEqual(list(self.repo.glob(".privacy-*")), [])
 
 
 if __name__ == "__main__":

@@ -40,6 +40,7 @@ updated. Add-ons with custom shell installers still need Bash; this native Windo
 |---|---|---|
 | `default/` | The built-in look written out as JSON, as a starting point for your own | <img src="default/screenshot.jpg" width="320" alt="default theme"> |
 | `dock-glass/` | A single frosted-glass dock row at the bottom: six columns with even padding, the focused app's name above it, no grid rows below, icon-only top buttons, and the app-colour glow over a near-black sky. No wallpaper of its own: add a `wallpaper.jpg` to put a picture behind the glass | <img src="dock-glass/screenshot.jpg" width="320" alt="dock-glass theme"> |
+| `ambient-glass/` | A dark five-column grid with a frosted-glass dock, round icon-only buttons, and a rotating collection of high-resolution alpine and desert landscapes. The photos are under the Unsplash License: see `ambient-glass/CREDITS.md` | <img src="ambient-glass/screenshot.jpg" width="320" alt="ambient-glass theme"> |
 | `aurora/` | A dark aurora wallpaper (teal and violet on navy, darker at the bottom) with a matching background colour | <img src="aurora/screenshot.jpg" width="320" alt="aurora theme"> |
 | `blocky/` | Eleven blocky pixel-art scenes that follow the time of day: a meadow by day, at dusk and at night, plains, desert, a snowy forest, jungle, ocean, a blossom grove, a cave and a lava cavern, each with its name under the buttons and behind the clock screensaver; the sun, moon and clouds sit behind the hills and trees. Drawn in code by `tools/blocky_wallpapers.py`, and the header rows stay plain sky | <img src="blocky/screenshot.jpg" width="320" alt="blocky theme"> |
 | `cinematic/` | OLED and cinema look: true-colour wallpaper, a 6-column frosted-glass dock, no ambient glow and the idle clock after two minutes. The wallpaper is CC0, not MIT: see `cinematic/CREDITS.md` | <img src="cinematic/screenshot.jpg" width="320" alt="cinematic theme"> |
@@ -186,8 +187,8 @@ A new key needs one there in the same pull request.
 | `clock_wallpaper` | bool | The clock screensaver over Home's wallpaper instead of black with a coloured glow; the clock still moves every minute (`false` by default) |
 | `clock_wallpaper_dim` | 0 to 90 | How dark that wallpaper is behind the clock, in percent (50 by default) |
 | `clock_glow` | bool | The clock screensaver's coloured glow (`true` by default); `false` leaves the moving clock on plain black, e.g. for an OLED |
-| `glow_style` | string | Shape of the glow behind the focused app, in its colour: `radial` (default) or `horizon`, the colour washing down from the top edge to black; the cinematic shelf keeps its own |
-| `glass_style` | string | Look of the focus highlight: `glass` (default: a translucent slab with a bright top sheen, a crisp rim and a faint outer glow), `rim` (the crisp rim alone, no sheen, fill or glow, for a quiet focus over a wallpaper) or `halo` (the rim with a lighter outer glow) |
+| `glow_style` | string | Shape of the glow behind the focused app, in its colour: `radial` (default) or `horizon`, the colour washing down from the top edge to black; the cinematic shelf keeps its own. Any other value falls back to `radial`; there is no value for "none", so a theme without a glow sets `ambient_glow` and `app_glow` to `false` |
+| `glass_style` | string | Look of the focus highlight: `glass` (default: a translucent slab with a bright top sheen, a crisp rim and a faint outer glow), `rim` (the crisp rim alone, no sheen, fill or glow, for a quiet focus over a wallpaper) or `halo` (the rim with a lighter outer glow). Any other value falls back to `glass` |
 | `cinematic_home` | bool | Cinematic top shelf: the focused dock app's artwork, softened, fills the top of the screen in its colour, with a larger name, "Last opened" (apps opened from Home), dock position dots, a focus glow in the app's colour and a translucent dock band; off by default |
 | `cinematic_dots` | bool | With `cinematic_home`, the dock position dots under the app's name (`true` by default); `false` leaves them out |
 | `cinematic_white_focus` | bool | With `cinematic_home`, the focus highlight stays white on the dock instead of taking the focused app's colour (`false` by default); `app_glow` still colours every tile |
@@ -289,7 +290,10 @@ Open a PR with a new folder here containing:
 - `wallpaper.jpg` or `wallpapers/` if the theme uses them.
 
 Then add a row to the table above with the screenshot, the same way as the others, and bump the count in
-the repository's `README.md`, in its Themes feature row (the `N ship in themes/` sentence):
-`tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails until the
-two agree. Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
+the Themes feature row of every front page that states it: `README.md` (the `N ship in themes/` sentence),
+`README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` (the last two in digits)
+and `README.he.md`, each in its own words. Those pages are the ones that state it today rather than the
+rule: `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails on a
+page whose number is not that count, naming the page, so its list is the one a page that starts stating the
+count joins. Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
 and say which TV you tried it on in the PR description.

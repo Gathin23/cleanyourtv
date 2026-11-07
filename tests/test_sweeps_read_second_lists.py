@@ -10,9 +10,14 @@ check (tests/test_stock_launcher_undo.py) and the rule that a list's undo names 
 or an undo that names another file passed all three. tests/test_core_packages.py and
 tests/test_apply_override_caveat.py already read both.
 
-Each test below runs the function a sweep calls (format_problems, sweep, commands_for_another_list) on
-a temp tree whose second list breaks that sweep's rule, so a sweep that goes back to reading
-debloat.txt alone fails here.
+tools/match.py's per-package tally was the fourth: it printed how many examples/*/debloat.txt disable a
+package, so a package only a second list carries - examples/oppo-k9-55-oppocnm632/debloat-extra.txt's
+com.changba.sd, com.google.android.videos on four of the eight second lists - read as 0, "no tested list
+has tried this", in the one tool an owner runs before disabling something.
+
+Each test below runs the function a sweep calls (format_problems, sweep, commands_for_another_list,
+match.tally) on a temp tree whose second list breaks that sweep's rule, so a sweep that goes back to
+reading debloat.txt alone fails here.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -28,6 +33,9 @@ import test_restore_references as references  # noqa: E402
 import test_stock_launcher_undo as stock_undo  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+import match  # noqa: E402
+
 KEEP_CAST = ROOT / "examples" / "google-chromecast-gtv-4k" / "debloat-keep-cast.txt"
 LAUNCHERX = "com.google.android.apps.tv.launcherx"
 
@@ -87,6 +95,18 @@ class SecondListsTest(unittest.TestCase):
                 with self.subTest(pattern=pattern.pattern):
                     self.assertEqual([("examples/x/debloat-keep-two.txt", "examples/x/debloat.txt")],
                                      references.commands_for_another_list(root, pattern))
+
+    def test_the_tally_reads_a_second_list(self):
+        # tools/match.py counted only debloat.txt, so a package on the second list alone printed as 0 -
+        # the answer an owner reads as "no tested list disables this".
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = Path(tmp) / "examples"
+            write(examples, "x/debloat.txt", "com.example.one\n")
+            write(examples, "x/debloat-extra.txt", "com.example.two  # karaoke\n")
+            counts, read = match.tally(["com.example.one", "com.example.two"], examples)
+            self.assertEqual(2, read, "the second list was not counted")
+            self.assertEqual((1, 0, ""), counts["com.example.one"])
+            self.assertEqual((1, 0, "karaoke"), counts["com.example.two"])
 
 
 if __name__ == "__main__":

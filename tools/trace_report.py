@@ -204,6 +204,10 @@ def engine_path(engine):
     if os.name == "posix" and not os.access(engine, os.X_OK):
         raise ValueError(f"--engine {engine} is not executable: run chmod +x on the trace_processor_shell "
                          "you downloaded (tools/trace.md)")
+    # Perfetto passes this to Popen: a bare POSIX filename searches PATH instead of running the file
+    # checked above. Keep paths containing / unchanged, including symlinks followed by .. .
+    if os.name == "posix" and not os.path.dirname(engine):
+        return os.path.join(".", engine)
     return engine
 
 

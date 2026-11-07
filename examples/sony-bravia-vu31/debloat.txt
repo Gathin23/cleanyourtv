@@ -71,6 +71,20 @@
 # - With launcherx off, Down in the Ambient screensaver no longer opens its Screensaver settings panel
 #   (dreamx/.settingsv2.TwoPanelActivity); the same panel is under Settings > System > Ambient screensaver > Settings.
 # - The stock screensaver delay was 10 minutes (screen_off_timeout 600000); Google TV has no on-screen setting for it.
+#
+# Fifth VU31, sold as the BRAVIA 2 K-50S20B (50"), same build, 2026-10-31: the Sony, ad and Google groups above,
+# the launcher, and the (5th) lines below, in five batches with a screenshot and crash-log check after each, then
+# reboot-checked. Streaming preloads, Chromecast, AirPlay, Ambient screensaver and the updater kept. Notes from it:
+# - ADB went over Wireless debugging (adb pair, then TV_ADB_BINARY=adb and TV_HOST=<tv ip>:<port> as in
+#   tools/native-adb.md); after the first reboot USB debugging alone answered on 5555, as on the first set.
+# - Unlike the second set, the Input button also did nothing once launcherx was off, like YouTube, Netflix, Prime
+#   Video and the gear. INPUT_KEY_SERVICE=1 with the app_keys of the third and fourth sets brought all five back,
+#   checked with the real remote; holding volume then steps once per press, as on the fourth set.
+# - com.sony.dtv.m2.seeds.iot and .remotestart (Alexa) were disabled and came back at the first reboot, as on the
+#   fourth set.
+# - With ~25 streaming apps in /data, swap was over 80% full and apps opened slowly; disabling or removing the
+#   unused ones freed about 200 MB of swap. Play Store compiling app updates after a reboot (dex2oat) also slows
+#   it for a while.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
@@ -113,6 +127,9 @@ com.analiti.fastest.android              # analiti speed test
 com.google.android.marvin.talkback       # screen reader, off by choice (2nd)
 com.google.android.tts                   # text-to-speech, off by choice
 com.viacom18.tv.voot                     # Voot streaming preload
+# com.google.android.katniss               # Google Assistant / voice search; the mic button stops working (5th)
+# com.sony.dtv.assistantadapter            # Sony's Assistant setup glue, boot receiver only (5th)
+# com.google.android.youtube.tvmusic       # YouTube Music (system app) (5th)
 
 # Launcher handover (2nd): setupwraith is safe to disable before the launcher (launcherx keeps Home), but
 # only once the Wi-Fi owner check above is clean.

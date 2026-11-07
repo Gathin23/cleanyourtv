@@ -1755,6 +1755,35 @@ the home network, which the PROMPT's last step closes on purpose; on a set with 
 Home Theatre Control panel (`com.sony.dtv.HomeTheatreControl`) for about half a second, which also
 wakes the soundbar and needs no ADB, at the cost of the panel flashing on screen.
 
+## The soundbar stays silent after a console wakes the TV, and only unplugging the bar fixes it
+
+Sound stays on the TV's speakers when a console turns the TV on, and nothing on the TV brings the soundbar back.
+Seen on a Philips 70PUS8545/12 (TPM191E, `PH9M_EA_5599`, Android TV 12, `STT2.230526.001`) with a Philips TAB5305
+soundbar on HDMI 3 (ARC) and a Nintendo Switch 2 on HDMI 1; the owner had it from the start, before any debloat.
+`mArcEstablished` and `mSystemAudioActivated` are `false`, as in the section above, but here the TV cannot send
+anything on the CEC line at all. The message history and the log show it, and both are lost at a restart, so read
+them first:
+
+```sh
+tools/tv.py 'dumpsys hdmi_control' | grep -E "mIsCecAvailable|mArcEstablished|\[[SRH]\]" | tail -20
+tools/tv.py 'logcat -d' | grep -E "Tx notify NOT coming|EnqueueTx|Failed to send" | tail -5
+```
+
+In the capture, the Switch's `<Image View On>` and the soundbar's `<Set System Audio Mode>` (on) arrived within
+200 ms of each other as the TV woke. Three seconds later every message the TV sent failed
+(`CEC_HAL: Tx notify NOT coming, Timeout`, `Failed to send <Report Physical Address> ... with errorCode=2`), after a
+minute the queue itself refused (`MTCEC_EnqueueTx() fail`, `send_msg Enqeue Fail ret BUSY`), nothing more was
+received, the CEC device list stayed empty and `mIsCecAvailable` read `false`. Turning CEC off and on with
+`settings put global hdmi_control_enabled 0` then `1` did not clear it, and neither did unplugging the Switch's HDMI
+cable. Cutting the soundbar's mains power did, at once: 17 seconds later the TV was polling and talking to the
+Switch again, so the soundbar was the one holding the line. Plugged back in, it turned itself on and set up ARC on
+its own. `cmd hdmi_control setsam on` from the section above was not tried; it has to go out on the same line.
+
+So when it happens, unplug the soundbar from the mains for about ten seconds; the TV needs no restart. To keep the
+two messages from colliding, the Switch 2's option to turn the TV on can be switched off and the TV turned on with
+its own remote first. That avoidance comes from one capture, and no TAB5305 firmware fix was found. Not checked:
+other soundbars and consoles, and other TV boards.
+
 ## Moonlight: two controllers both drive player 1, or a DualSense button opens the exit prompt
 
 With `HomeKeyService` bound (`HOME_KEY_SERVICE=1`) and filtering keys, Moonlight streaming from Sunshine on a
@@ -2022,6 +2051,35 @@ tools/tv.py 'settings delete global private_dns_specifier'
 
 Not checked in that report: other VPN clients and Android versions, and whether a specifier the VPN's
 resolver can reach validates.
+
+## After a power cut the clock is wrong and no app connects, with strict Private DNS
+
+A TV that keeps no time without power can start with an old date, and in hostname mode that is enough to
+take it off the internet for good. Seen on a Philips 70PUS8545/12 (TPM191E, `PH9M_EA_5599`, MediaTek mt5887,
+Android TV 12, `STT2.230526.001`) with `dns.adguard-dns.com` in hostname mode: after a power cut it came up
+on 9 December 2025, almost a year back. The resolver's certificate does not validate against that date
+(`validateDnsTlsServer returned 0` in `logcat`), and hostname mode does not fall back, so no name resolved at
+all. The TV's own time service (`org.droidtv.icp` on this set) asks `pool.ntp.org`, a name, so it could never
+correct the clock, and Android's `auto_time` is 0 from the factory on this firmware, so nothing else set it
+either. Every app failed, and nothing on screen pointed at DNS. ADB kept working, since it needs no lookup.
+
+The two settings to read first:
+
+```sh
+tools/tv.py 'date; settings get global private_dns_mode'
+```
+
+A date in the past next to `hostname` is this loop. Set the mode back, then restart the TV from its menu, so
+the time service can reach its server again:
+
+```sh
+tools/tv.py 'settings put global private_dns_mode opportunistic'
+```
+
+On that set the first restart put the clock right; Android's own internet check, which had failed on the old
+date, passed only after a second one. Hostname mode was left off there afterwards, since the next power cut
+would start the loop again, and ad blocking on the router is not affected by the TV's clock. Not checked:
+other brands' time services, and whether a TV whose `auto_time` is on gets out of the loop by itself.
 
 ## An app that runs a local VPN is on until the next boot, then gone
 

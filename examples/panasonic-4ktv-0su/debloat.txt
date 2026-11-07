@@ -16,8 +16,8 @@
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-4ktv-0su/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
-# Disabled before this debloat, so not listed (restore.sh would turn them ON): com.sky.market,
-# com.smartdevice.tvworkwithalexa.
+# Disabled before debloat on unit 1, but active and debloated on second unit (both listed below):
+# com.sky.market, com.smartdevice.tvworkwithalexa.
 #
 # Status: disabled in one batch on one TV on 2026-10-20, then checked with remote-key injection and
 # screenshots: stock home (sponsored "Daily Play" row gone), Live TV, HDMI input switching, YouTube
@@ -33,6 +33,11 @@
 #   shortcuts, not the apps. Irrelevant once launcher/ is Home.
 # - HDMI-CEC devices are named in the input list ("HDMI Apple TV").
 # - About 1.7 GB of RAM; MemAvailable went from 775 MB to 1.0 GB after this list, /data from 90% to 82% full.
+#
+# Second unit: Panasonic 4KTV-0SU (Skyworth SW4H, MediaTek m7332), firmware G0017.75WW_01_20240410.
+# Tested on 2026-11-06: confirms setupwraith owns the saved Wi-Fi network (cname), so it stays enabled.
+# Adds com.community.oneroom (listens on TCP port 33367), com.sky.market and com.smartdevice.tvworkwithalexa.
+# Keeps com.google.android.partnersetup enabled: needed for YouTube and Play Store sign-in / playback.
 
 # Skyworth retail demo, shop promos, auto-installs and first-run leftovers
 android.autoinstalls.config.SW                # Play Auto Installs config for preloaded apps
@@ -47,10 +52,13 @@ com.smartdevice.acr.recommendation            # ACR: automatic content recogniti
 com.smartdevice.leanbacklauncher.customizer   # partner rows and the "Shop" tab on the stock launcher
 com.smartdevice.firewall                      # Skyworth background service with camera, mic, contacts and account permissions; not running
 com.smartdevice.dtv.icast                     # "CastPlay" screen mirroring, 4 services at boot; the Apple TV box handles mirroring here
+com.community.oneroom                         # second unit: telemetry daemon listening on TCP :33367
+com.sky.market                                # second unit: preloaded Skyworth app store
+com.smartdevice.tvworkwithalexa               # second unit: Alexa voice companion
 
 # Google telemetry, recommendations and setup leftovers
 com.google.android.feedback
-com.google.android.partnersetup
+# com.google.android.partnersetup               # kept: needed for YouTube and Play Store sign-in / playback on second unit
 com.google.android.onetimeinitializer
 com.google.android.tvrecommendations          # recommendation rows
 com.google.android.backdrop                   # ambient-mode screensaver; the launcher's Clock screensaver replaces it

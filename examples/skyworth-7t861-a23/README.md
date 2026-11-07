@@ -16,11 +16,15 @@ Tested on Skyworth 7T861_A23 (MediaTek MT9638 / mt5872, Android 10, build `eng.n
 
 Switching the TV to **办公模式 (Office Mode)** in the native system settings shuts off video streaming feeds, banner advertisements, and background cloud preloading directly from the source.
 
-The [debloat list](debloat.txt) disables 4 packages by default:
+The [debloat list](debloat.txt) disables 5 packages by default (the three marked optional are commented out):
 - **`com.skyworth.device`**: Device information, location reporting, and SensorsData analytics SDK.
 - **`com.tianci.de`**: Tianci Data Engine daemons listening for package additions and updates.
 - **`com.tianci.ad`**: Tianci advertising cloud push service maintaining persistent background connections.
 - **`com.coocaa.tvmanager`**: Coocaa TV Manager running background app and storage/USB scanner receivers. Re-enable it if USB drives stop showing up.
+- **`com.coocaa.guide`** (optional, commented out): Boot guide and EPG program guide / cloud push receiver (`SkyPushReceiver`).
+- **`com.coocaa.theme_package_ccos_nine`**: Stock Coocaa OS theme package (GoldenFaith); unneeded when using CleanYourTV.
+- **`com.skyworth.angel.voice`** (optional, commented out): Skyworth XiaoWei AI voice assistant; disable to silence mic listening and free RAM (remote voice button will stop responding).
+- **`com.skyworth.microphone`** (optional, commented out): Skyworth karaoke and external microphone companion service (karaoke mics will not route). Note that `com.loostone.tuning` must remain enabled for system audio.
 
 Other optional content apps, stores, and diagnostic tools remain commented out in `debloat.txt` for selective debloating.
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app icon: the banner's sun and horizon, square. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FF14052B" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#FFFF2A6D" android:pathData="M30,60a24,24 0 0 1 48,0z" />
+    <path android:fillColor="#FF05D9E8" android:pathData="M0,60h108v3h-108z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M0,76h108v2h-108z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M0,92h108v2h-108z" />
+</vector>

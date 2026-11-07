@@ -19,13 +19,11 @@
 # - The voice assistant (katniss) does not stay disabled: at every boot the package manager rescans it
 #   as an updated system app ("Expecting better updated system app for com.google.android.katniss"
 #   in logcat -b events) and it comes back enabled, bound as voice_interaction_service. Disabling it is
-#   all this list does. Beyond what this repo does, and your own call: removing it for user 0 and
-#   clearing the voice services held across reboots here
+#   all this list does, and all its Undo line can put back: a removal for user 0 is outside what this repo
+#   does, so this list hands out no uninstall for it. The bindings it holds are cleared with
 #     settings put secure voice_interaction_service ''
 #     settings put secure voice_recognition_service ''
-#     pm uninstall --user 0 com.google.android.katniss
-#   and is undone with
-#     cmd package install-existing com.google.android.katniss
+#   and undone with
 #     settings put secure voice_interaction_service com.google.android.katniss/.search.serviceapi.KatnissVoiceInteractionService
 #     settings put secure voice_recognition_service com.google.android.katniss/com.google.android.apps.tvsearch.voice.recognition.KatnissRecognitionService
 # - Left alone on purpose: com.mediatek.wwtv.tvcenter / tvinput* (HDMI + tuner), mitv.service,
@@ -74,6 +72,7 @@
 com.miui.tv.analytics
 com.xiaomi.statistic
 com.google.android.feedback
+com.google.android.tv.bugreportsender
 
 # PatchWall, content rows, sponsored rows
 com.mitv.tvhome.atv                         # PatchWall

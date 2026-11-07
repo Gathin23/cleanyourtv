@@ -2,11 +2,20 @@
 
 `docs/workflows/tv-list.md` step 2 asks for the Apply and Undo lines beside the model, the firmware
 and the stock launcher, because the file an owner downloads is the only place they look: the tools
-want `TV_HOST` and the list path, and `tools/restore.sh` wants the same list back. 397 of the 398
-folders in `examples/` name one of `tools/disable.sh`, `tools/disable.ps1`, `tools/restore.sh`,
-`tools/restore.ps1` or `tools/check.py` in the comment block above their first package line, or point
+want `TV_HOST` and the list path, and `tools/restore.sh` wants the same list back. Every folder in
+`examples/` that ships a list names one of `tools/disable.sh`, `tools/disable.ps1`, `tools/restore.sh`,
+`tools/restore.ps1` or `tools/check.py` in the comment block above its first package line, or points
 at a README that does (four of them say "the commands in README.md here" because the firmware refuses
 `pm disable-user` and the batch is their own).
+
+The walk reads every list a folder ships (`*/debloat*.txt`), not only its `debloat.txt`. Eight folders
+keep a second list beside it - `debloat-keep-cast.txt` on the two Google TV boxes that keep casting,
+`debloat-display-only.txt` on the two Sony sets used as a screen, and `debloat-65u7esg.txt`,
+`debloat-32-inch.txt`, `debloat-extra.txt`, `debloat-75t8c-eu.txt` - and each is a file an owner opens
+and applies with the same two commands (the header of the OPPO one says to apply it on top of the
+folder's own list). The other sweeps over lists in `tests/` already read them (`test_examples.py`,
+`test_list_header_counts.py`, `test_stock_launcher_undo.py`); this one globbed `debloat.txt`, so eight
+headers were held to no rule at all. They name a command today, and the walk now says so.
 
 `examples/mecool-km2-plus` named none: seven header lines of model and build, one package, and no
 command at all, so an owner who opened it had to work out which script sends a list and that undo is
@@ -17,6 +26,7 @@ The rule is about the header, not the file: a comment halfway down that happens 
 usually a quirk about that package ("disable.sh still refused setupwraith because of the old network"),
 not the way to apply the list.
 """
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -55,9 +65,14 @@ def problem(text):
             "opens the list has no command to apply it or undo it")
 
 
-def lists():
-    """(folder name, path) for every debloat.txt in examples/, in tree order."""
-    return [(path.parent.name, path) for path in sorted(EXAMPLES.glob("*/debloat.txt"))]
+def lists(root=None):
+    """(folder name, path) for every list in examples/, in tree order.
+
+    `debloat*.txt`, the discovery the other list sweeps use: a folder that ships a second list
+    (`debloat-extra.txt`, `debloat-display-only.txt`) ships a second file an owner opens and applies.
+    """
+    tree = root or EXAMPLES
+    return [(path.parent.name, path) for path in sorted(tree.glob("*/debloat*.txt")) if path.is_file()]
 
 
 class TreeTest(unittest.TestCase):
@@ -68,8 +83,58 @@ class TreeTest(unittest.TestCase):
         for folder, path in found:
             why = problem(path.read_text(encoding="utf-8"))
             if why:
-                bad.append(f"examples/{folder}/debloat.txt: {why}")
+                bad.append(f"examples/{folder}/{path.name}: {why}")
         self.assertEqual([], bad, "a list header that gives an owner no command")
+
+    def test_the_walk_reaches_the_second_list_a_folder_ships(self):
+        names = {path.name for _, path in lists()}
+        self.assertIn("debloat-extra.txt", names,
+                      "a folder's second list is a file an owner applies, so it is read too")
+        self.assertGreater(len(names), 1)
+
+
+class TheWalk(unittest.TestCase):
+    """lists() over a tree written here, so the discovery is pinned rather than the repo's names."""
+
+    def walk(self, files):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, text in files.items():
+                path = Path(tmp, name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            return sorted(path.name for _, path in lists(Path(tmp)))
+
+    def test_a_second_list_that_names_no_command_is_reported(self):
+        command = "# Apply: tools/disable.sh examples/tv/debloat.txt\ncom.example.bloat\n"
+        quiet = "# Some TV, second unit\n# Build: X\ncom.example.other\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, text in {"tv/debloat.txt": command, "tv/debloat-extra.txt": quiet}.items():
+                path = Path(tmp, name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            found = lists(Path(tmp))
+            self.assertEqual(["debloat-extra.txt", "debloat.txt"],
+                             sorted(path.name for _, path in found))
+            bad = [f"examples/{folder}/{path.name}"
+                   for folder, path in found
+                   if problem(path.read_text(encoding="utf-8"))]
+            self.assertEqual(["examples/tv/debloat-extra.txt"], bad,
+                             "the second list is the one that gives a reader no command")
+
+    def test_a_second_list_that_names_a_command_passes(self):
+        same = ("# Some TV, second unit\n"
+                "# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tv/debloat-extra.txt\n"
+                "com.example.other\n")
+        self.assertIsNone(problem(same))
+        self.assertEqual(["debloat-extra.txt"],
+                         self.walk({"tv/debloat-extra.txt": same}),
+                         "a folder with no debloat.txt still has its list read")
+
+    def test_a_list_two_folders_down_and_a_stray_txt_are_not_lists(self):
+        text = "# no command here\ncom.example.bloat\n"
+        self.assertEqual([], self.walk({"tv/2026/debloat.txt": text,
+                                        "tv/debloat.txt.bak": text,
+                                        "tv/debloat-old.md": text}))
 
 
 class TheReader(unittest.TestCase):

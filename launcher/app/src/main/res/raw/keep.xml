@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- app_banners names drawables at run time, which resource shrinking cannot see: keep every banner_*. -->
+<!-- app_banners names drawables at run time, which resource shrinking cannot see: keep every banner_*.
+     Strict: that is the launcher's only getIdentifier, and safe mode also keeps every resource whose name
+     matches a string literal anywhere in the code (AndroidX translations among them). -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/banner_*" />
+    tools:keep="@drawable/banner_*"
+    tools:shrinkMode="strict" />

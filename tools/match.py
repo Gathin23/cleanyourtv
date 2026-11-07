@@ -4,10 +4,13 @@
     match.py <saved pm list packages> [--examples <folder>]
 
 Save the TV's packages once (`tools/venv/bin/python -I tools/tv.py 'pm list packages' > packages.txt`),
-then run this: for every package in that file it prints how many examples/*/debloat.txt disable it, how
-many name it commented out (kept on), and the trailing comment those lines give it most often. A package
-that disable.sh refuses as one of Android's core packages (#884) is marked `never`, whatever any list
-says.
+then run this: for every package in that file it prints how many of the lists in examples/ disable it,
+how many name it commented out (kept on), and the trailing comment those lines give it most often. A
+folder can hold a second list beside its debloat.txt - google-chromecast-gtv-4k/debloat-keep-cast.txt,
+sony-bravia-4k-ur3/debloat-display-only.txt - and tools/disable.sh applies one like any other, so every
+debloat*.txt is read rather than the first only: a package that one of them alone disables is a package
+some tested set turned off, and counting it as 0 would read as no list having tried it. A package that
+disable.sh refuses as one of Android's core packages (#884) is marked `never`, whatever any list says.
 
 It reads files only: no TV, no ADB client, nothing written. It ranks nothing and suggests no list; the
 counts are what the lists say, not a verdict for this TV.
@@ -76,10 +79,12 @@ def read_list(text):
 
 
 def tally(packages, examples):
-    """{package: (disabled, commented, most common note)} over every examples/*/debloat.txt."""
-    lists = sorted(Path(examples).glob("*/debloat.txt"))
+    """{package: (disabled, commented, most common note)} over every examples/*/debloat*.txt."""
+    # The same discovery tests/test_examples.py and tests/test_stock_launcher_undo.py sweep with: a folder
+    # may ship a second list beside debloat.txt, and tools/disable.sh takes it like the first.
+    lists = sorted(Path(examples).glob("*/debloat*.txt"))
     if not lists:
-        raise SystemExit(f"{examples}: no */debloat.txt lists in it")
+        raise SystemExit(f"{examples}: no */debloat*.txt lists in it")
     wanted = set(packages)
     disabled, commented = Counter(), Counter()
     notes = {name: Counter() for name in packages}
