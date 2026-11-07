@@ -505,7 +505,7 @@ Duas semanas depois, o projeto era o repositório em alta nº 1 no GitHub na sem
 com mais de 46 mil estrelas e 5,7 mil forks, além de 1,4 milhão de visualizações e 260 mil clones em 14 dias.
 As listas agora abrangem 450 modelos de TV de 122 marcas. A repercussão: 412 artigos em 54 países e
 229 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
-(dados de 30 de outubro de 2026).
+(dados de 31 de outubro de 2026).
 
 ## Como contribuir
 
