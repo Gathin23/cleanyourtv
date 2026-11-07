@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 65A300W NXTFRAME picture-frame TV (2024, G08, G08_4K_US_NF), US",
+  "os": "Google TV 12",
+  "brand": "TCL",
+  "notes": "Firmware AS24 build of the [55A300W list](tcl-55a300w/), corrected on this set: com.tcl.exhibit is the art-mode gallery here, not a store demo, so it is kept; calendar sync kept; batch 1 with dashboard, home pushes, e-sticker and TCL account applied and checked with art mode; batch 2 applied except hearing aid and solo listening (kept by the owner) and batch 3 applied, after moving Wi-Fi off setupwraith; launcher applied after setupwraith was off, Home held through a reboot; 13 TCL packages the 55A300W list lacks are noted, none disabled"
+}
