@@ -85,11 +85,16 @@
 # - With ~25 streaming apps in /data, swap was over 80% full and apps opened slowly; disabling or removing the
 #   unused ones freed about 200 MB of swap. Play Store compiling app updates after a reboot (dex2oat) also slows
 #   it for a while.
-# - Private DNS set to AdGuard (the README's optional extra) broke SonyLIV live cricket inside OTTplay
-#   (com.htlabs.ottplay): its pre-roll ad request to pubads.g.doubleclick.net gets AdGuard's blocked answer and
-#   the app never starts the stream (no ExoPlayer load, no DRM session after onVideoAdError). The SonyLIV app
-#   plays the same match. Android keeps the blocked answers in its DNS cache after Private DNS is switched off:
-#   reboot after the change before judging it.
+# - Ad-blocking Private DNS (the README's optional extra) and the Indian streaming apps, one week in:
+#   - OTTplay (com.htlabs.ottplay) never starts a SonyLIV live stream once its pre-roll ad request is blocked
+#     (onVideoAdError, then no ExoPlayer load and no DRM session); the SonyLIV app plays the same match. It needs
+#     imasdk.googleapis.com, pubads.g.doubleclick.net and googleads.g.doubleclick.net answered, which a resolver
+#     with a per-domain allowlist (NextDNS and the like) can do while the rest stays blocked. With those three
+#     open, FanCode's ads come through too (same Google ad path), and OTTplay shows SonyLIV's whole ad pod.
+#   - Prime Video's ads are served from *.api.amazonvideo.com with the stream itself; the amazon-adsystem.com
+#     domains are blocked and the ads still play, so no DNS blocking removes them. JioHotstar's ads are blocked.
+#   - Android keeps the blocked answers in its DNS cache after Private DNS changes: reboot before judging a change
+#     (a week of "DNS is not the cause" here came from not doing that).
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
