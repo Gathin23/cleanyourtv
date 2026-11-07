@@ -8,7 +8,7 @@ The four packages in `debloat.txt` were disabled with `pm disable-user --user 0`
 
 Setting `com.gathin.tvhome/.MainActivity` with `cmd package set-home-activity` alone did not change the HOME remote-button behaviour: Android still resolved and opened the Google launcher. The official Windows `launcher/build-and-install.ps1` script, using `-StockLauncher com.google.android.tvlauncher`, successfully disabled the old launcher and selected CleanYourTV. This persisted across reboot.
 
-The owner checked Live TV, EPG, HbbTV, Netflix, Chromecast, Google Assistant/voice, HDMI inputs, BRAVIA Sync/HDMI-CEC, remote HOME and Sony settings after the changes. No regression was reported in these checks. This does **not** establish multi-day reliability; confirm stability over several days before opening a pull request.
+The owner checked Live TV, EPG, HbbTV, Netflix, Chromecast, Google Assistant/voice, HDMI inputs, BRAVIA Sync/HDMI-CEC, remote HOME and Sony settings after the changes. No regression was reported in these checks.
 
 ## Restore
 
