@@ -1,0 +1,165 @@
+Clean Your TV: TV report
+App: 0.3.4 (full)
+Phone: Samsung SM-T220, Android 14
+
+TV
+Brand: Toshiba
+Manufacturer: My
+Model: Android TV
+Device: shandao
+Android: 11 (SDK 30)
+Build: Toshiba/EMIR_Toshiba/shandao:11/RTM6.230109.207/10391326:user/release-keys
+Google Play services: yes
+Home screen it came with: Android TV (Leanback)
+Read from the TV: 2026-10-25, before any change
+
+Matching
+Profile: none
+Home switch: blocked WIZARD_WIFI
+
+Home screen
+Resolves to: com.google.android.tvlauncher/.MainActivity
+Claimant: com.google.android.tvlauncher/.MainActivity priority 2
+Claimant: com.android.tv.settings/.system.FallbackHome priority -1000
+
+System apps (138)
+android default
+android.auto_generated_rro_product__ default
+android.auto_generated_rro_vendor__ default
+android.autoinstalls.config.vestel.medusa default
+com.amazon.amazonvideo.livingroom default
+com.android.backupconfirm default
+com.android.bluetooth default
+com.android.bluetooth.auto_generated_rro_product__ default
+com.android.bluetooth.auto_generated_rro_vendor__ default
+com.android.captiveportallogin default
+com.android.certinstaller default
+com.android.companiondevicemanager default
+com.android.cts.ctsshim default
+com.android.cts.priv.ctsshim default
+com.android.dreams.basic default
+com.android.dynsystem default
+com.android.externalstorage default
+com.android.hotspot2.osulogin default
+com.android.htmlviewer default
+com.android.inputdevices default
+com.android.keychain default
+com.android.localtransport default
+com.android.location.fused default
+com.android.networkstack.inprocess default
+com.android.networkstack.permissionconfig default
+com.android.networkstack.tethering.inprocess default
+com.android.networkstack.tethering.inprocess.rro default
+com.android.networkstack.tethering.rro default
+com.android.pacprocessor default
+com.android.printspooler default
+com.android.providers.calendar default
+com.android.providers.contacts default
+com.android.providers.contacts.auto_generated_rro_product__ default
+com.android.providers.downloads default
+com.android.providers.media default
+com.android.providers.media.module default
+com.android.providers.settings default
+com.android.providers.settings.auto_generated_rro_product__ default
+com.android.providers.settings.auto_generated_rro_vendor__ default
+com.android.providers.tv default
+com.android.providers.userdictionary default
+com.android.proxyhandler default
+com.android.se default
+com.android.settings.intelligence default
+com.android.sharedstoragebackup default
+com.android.shell default
+com.android.soundpicker default
+com.android.statementservice default
+com.android.systemui default
+com.android.tv.overlay.lowram default
+com.android.tv.settings default
+com.android.vending enabled
+com.android.vpndialogs default
+com.android.wallpaperbackup default
+com.android.wifi.resources default
+com.android.wifi.resources.rro default
+com.dolby.android.audio.service default
+com.google.android.apps.mediashell default
+com.google.android.backdrop default
+com.google.android.ext.services default
+com.google.android.ext.shared default
+com.google.android.feedback default
+com.google.android.gms default
+com.google.android.gsf default
+com.google.android.inputmethod.latin default
+com.google.android.katniss default
+com.google.android.marvin.talkback disabled
+com.google.android.modulemetadata default
+com.google.android.onetimeinitializer default
+com.google.android.overlay.modules.ext.services default
+com.google.android.overlay.modules.modulemetadata.forframework default
+com.google.android.overlay.modules.permissioncontroller default
+com.google.android.overlay.modules.permissioncontroller.forframework default
+com.google.android.packageinstaller default
+com.google.android.partnersetup default
+com.google.android.permissioncontroller default
+com.google.android.play.games disabled-user
+com.google.android.sss.authbridge default
+com.google.android.syncadapters.calendar default
+com.google.android.tts default
+com.google.android.tungsten.setupwraith default
+com.google.android.tv.assistant default
+com.google.android.tv.frameworkpackagestubs default
+com.google.android.tv.remote.service default
+com.google.android.tvlauncher default
+com.google.android.tvrecommendations default
+com.google.android.videos disabled-user
+com.google.android.webview default
+com.google.android.youtube.tv default
+com.google.android.youtube.tvmusic disabled-user
+com.mediatek.android.boot.appsplashscreen default
+com.mediatek.android.leanbacklauncher.partnercustomizer default
+com.mediatek.autopair default
+com.mediatek.network default
+com.mediatek.overlay.tv.service default
+com.mediatek.tv.factory default
+com.mediatek.tv.freeviewplay default
+com.mediatek.tv.service default
+com.mediatek.tvinput default
+com.mediatek.wwtv.mediaplayer default
+com.mediatek.wwtv.setupwizard default
+com.mediatek.wwtv.tvcenter default
+com.mediatek.wwtv.webview default
+com.mstar.android.tv.disclaimercustomization default
+com.netflix.ninja disabled-user
+com.vestel.overlay.tv.settings default
+com.vestel.overlay.tv.settings.oled default
+com.vestel.overlay.tv.settings.panasonic default
+com.vestel.overlay.tv.settings.retailvideo default
+com.vestel.overlay.tv.settings.vrr default
+com.vestel.overlay.tvcenter default
+com.vestel.smartcenter default
+com.vestel.smartlogger default
+com.vestel.tv.backlight default
+com.vestel.tv.eib default
+com.vestel.tv.interfaceservice default
+com.vestel.tv.keycontroller default
+com.vestel.tv.rcupdater default
+com.vestel.tv.service default
+com.vestel.tv.speedup default
+com.vestel.tv.websocketservice default
+com.vestel.vestelreporter default
+fusion.android.tv.demo default
+mediatek.factorymenu.ui default
+uk.co.freeview.amc_catchup disabled
+uk.co.freeview.amc_horror disabled
+uk.co.freeview.bbc disabled
+uk.co.freeview.bbc_sounds disabled
+uk.co.freeview.ch4_vod disabled
+uk.co.freeview.ch5 disabled
+uk.co.freeview.explore disabled
+uk.co.freeview.fvpconfigauth disabled
+uk.co.freeview.itv disabled
+uk.co.freeview.mdsclient disabled
+uk.co.freeview.onnow disabled
+uk.co.freeview.stv disabled
+uk.co.freeview.tifbridge disabled
+uk.co.freeview.uktv disabled
+
+Other apps: 4 (not named)
