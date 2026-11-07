@@ -45,10 +45,15 @@ com.google.android.youtube.tvmusic  # YouTube Music
 com.google.android.play.games   # Play Games
 com.sonypicturescore            # Sony Pictures Core
 
-# Home: do these by hand, in steps, AFTER our launcher is installed (not with this file in one go).
+# Home: do these in steps, AFTER our launcher is installed (not with this file in one go).
 # com.google.android.tungsten.setupwraith also claims Home, next to launcherx.
 #   1. launcher/build-and-install.sh with STOCK_LAUNCHER=none (Google TV stays Home)
-#   2. pm disable-user --user 0 com.google.android.tungsten.setupwraith, then watch the TV for 5 minutes
+#   2. uncomment the setupwraith line below and run Apply again at the same TV_HOST (reserve the IP,
+#      see Quirks above): disable.sh records it first, so Undo brings it back. It skips setupwraith
+#      while that owns any saved Wi-Fi network (dumpsys wifi | grep -o 'cname=[^ ]*'): forget each
+#      network it owns, not only the one in use, join yours again in Settings and run Apply once
+#      more. Watch the TV for 5 minutes, and go on to step 3 only once pm list packages -d shows
+#      setupwraith: while it is on, Home falls to its RecoveryActivity.
 #   3. pm disable-user --user 0 com.google.android.apps.tv.launcherx
 #      cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity
 # It boots straight into the launcher afterwards. Re-enable setupwraith before a factory reset.
