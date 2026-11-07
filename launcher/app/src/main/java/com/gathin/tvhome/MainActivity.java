@@ -1418,7 +1418,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 || (code >= KeyEvent.KEYCODE_NUMPAD_0 && code <= KeyEvent.KEYCODE_NUMPAD_9)
                 || code == KeyEvent.KEYCODE_11 || code == KeyEvent.KEYCODE_12;
         if (!isDigit) return false;
-        if (homeAppKeys.containsKey(code)) {
+        if (homeAppKeys.containsKey(code) || homeHoldAppKeys.containsKey(code)) {
             return RemoteKeys.handle(this, event, homeAppKeys.get(code), homeHoldAppKeys.get(code));
         }
         if (!numericKeysOpenLiveTv) return false;
