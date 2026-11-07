@@ -26,6 +26,12 @@ A page that carries no such parenthetical is not judged: README.he.md writes its
 only the parenthetical that follows the link is what keeps that sentence - a statement about a star count,
 not about the press numbers - out of this check.
 
+The recipe that a press PR follows said nothing about this day: docs/workflows/press.md step 2 listed the
+places the counts live and step 3 stated the video table's "views as of" rule, so a contributor
+bumping the counts left the date on the previous sweep and met this file with no line in the recipe to
+point at. Step 2 states it now, and RecipeTest holds the recipe to naming this check, the rule, and every
+page that dates its numbers today.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
@@ -36,6 +42,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 PRESS = ROOT / "docs" / "PRESS.md"
+PRESS_RECIPE = ROOT / "docs" / "workflows" / "press.md"
 
 # The link every front page uses to point at the press list, in the story paragraph.
 PRESS_LINK = re.compile(r"\[docs/PRESS\.md\]\([^)]*\)")
@@ -197,6 +204,42 @@ class TreeTest(unittest.TestCase):
             self.assertIn(month, set(ARTICLE_MONTHS.values()), f"{name}'s month is one the press page uses")
             self.assertEqual(2026, year,
                              f"{name} dates the press numbers in a year the lists do not cover")
+
+
+class RecipeTest(unittest.TestCase):
+    """docs/workflows/press.md tells a press PR to move the date, as it tells it to move the counts."""
+
+    def recipe_step(self):
+        """Step 2 of the recipe, the one that lists the places the numbers live, on one line.
+
+        The step wraps at about 100 columns, so a phrase it states can straddle two lines; the words are
+        what a reader takes from it, not where the break fell.
+        """
+        text = PRESS_RECIPE.read_text(encoding="utf-8")
+        return " ".join(text.split("\n2. ")[1].split("\n3. ")[0].split())
+
+    def test_the_recipe_names_the_check_that_reads_the_date(self):
+        # The date landed with this file and the recipe was not told: step 2 sent a contributor to the
+        # places the counts live and said nothing about the parenthetical, so following it to the letter
+        # left the day on the previous sweep and this file red with no line in the recipe to point at.
+        step = self.recipe_step()
+        self.assertTrue("tests/test_press_as_of_date.py" in step,
+                        "docs/workflows/press.md step 2 does not name the check that reads the dated clause")
+
+    def test_the_recipe_states_the_rule_the_day_is_held_to(self):
+        step = self.recipe_step()
+        self.assertTrue("newest article row" in step,
+                        "docs/workflows/press.md step 2 does not say the day may not be earlier than the "
+                        "newest article row in docs/PRESS.md")
+
+    def test_the_recipe_names_every_page_that_dates_its_numbers(self):
+        # Same rule as the counts beside it: the pages come from the tree, so a translation that copies
+        # the dated clause is named here without this test being edited first.
+        step = self.recipe_step()
+        for name, _ in dated_pages():
+            with self.subTest(readme=name):
+                self.assertTrue(name in step,
+                                f"docs/workflows/press.md step 2 does not name {name}, which dates its numbers")
 
 
 class ReaderTest(unittest.TestCase):
