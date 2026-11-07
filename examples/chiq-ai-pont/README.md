@@ -134,15 +134,3 @@ The 15 packages in the main list were disabled in batches with a full package an
 
 All 15 packages stayed disabled after cold reboot.
 
-### Sleep timeout and screen stay-awake
-On this firmware build, `screen_off_timeout` defaults to 300000 ms (5 minutes), which puts the display to sleep when idle. To keep the display on continuously without sleeping:
-```text
-settings put system screen_off_timeout 2147483647
-settings put global stay_on_while_plugged_in 7
-settings put secure sleep_timeout -1
-settings put secure screensaver_enabled 0
-```
-
-### Quick settings panel
-Setting `"settings_key_panel": true` in the theme config routes the remote's physical Settings key through `HomeKeyService` to open CleanYourTV's quick settings glass panel.
-
