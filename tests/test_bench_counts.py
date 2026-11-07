@@ -96,6 +96,8 @@ def run(argv):
     # An empty TV_PORT reads as 5555 (tools/tv.py does the same), so the port this run keeps does not
     # depend on what the machine running the suite exported.
     environment = {"TV_HOST": "", "TV_PORT": ""}
+    # Python 3.14 argparse also reads __main__.__spec__ for its program name. Model a
+    # direct bench.py invocation, rather than inheriting `python -m unittest`'s spec.
     out, err = io.StringIO(), io.StringIO()
     status = 0
     with mock.patch.object(bench, "TV", FakeTV), \
@@ -103,6 +105,7 @@ def run(argv):
             mock.patch.object(bench.time, "sleep", lambda seconds: None), \
             mock.patch.dict(os.environ, environment), \
             mock.patch.object(sys, "argv", ["bench.py"] + argv), \
+            mock.patch.object(sys.modules["__main__"], "__spec__", None, create=True), \
             contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
         try:
             bench.main()
