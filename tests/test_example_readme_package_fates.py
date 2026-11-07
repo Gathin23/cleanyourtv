@@ -21,10 +21,21 @@ list: the stock launchers launcher/build-and-install.sh takes Home from (the lis
 names them in a header comment). The exempt set is read out of that script rather than
 copied here.
 
+A row also states how heavy its list is - "16 packages disabled", "19 packages;
+[folder README](...)", "6 packages after 7 days" - and that number is the size a reader
+takes from the generated Notes column before opening anything. The folder README's own
+count is read by tests/test_example_list_count.py, but a row that states it in tv.json
+was read by nothing: an editor who comments a line out of debloat.txt and forgets the
+row leaves the table describing a list that is one package shorter, with the suite green.
+So a count in the notes is compared with the number of packages the list would send,
+the same way a fate is.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import json
 import re
+import shutil
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -37,6 +48,16 @@ EXAMPLES = ROOT / "examples"
 BACKTICKED = re.compile(r"`([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+)`")
 # What a row says about that package, right after the closing backtick.
 FATE = re.compile(r"^\s*(?:is\s+)?(kept|disabled|refused)\b", re.IGNORECASE)
+# How heavy a row says its list is: "16 packages disabled", "(12 packages)", "34 packages".
+# Only the word the rows in the tree use is read; a row that stated a size another way
+# ("12 apps") would go unseen until one exists to read - the same choice the count reader
+# in tests/test_example_list_count.py makes about the shapes its pages use.
+SIZE = re.compile(r"\b(\d+)\s+packages\b")
+
+
+def sizes(text):
+    """Every package count a row states, in the order it states them."""
+    return [int(match.group(1)) for match in SIZE.finditer(text)]
 
 
 def claims(text):
@@ -98,17 +119,27 @@ def disagreements(folder, notes, active, exempt):
         if fate == "disabled" and package not in active and package not in exempt:
             problems.append(
                 f"{folder}: says {package} is disabled, but its debloat.txt does not list it")
+    for size in sizes(notes):
+        if size != len(active):
+            problems.append(
+                f"{folder}: its row says {size} packages and its debloat.txt carries "
+                f"{len(active)} (move the number with the list, or state no number)")
+    return problems
+
+
+def problems_in(examples, exempt=None):
+    """Every row under `examples` whose notes disagree with the list beside it."""
+    exempt = stock_launchers() if exempt is None else exempt
+    problems = []
+    for folder, where, notes in table_rows(examples):
+        active = list_packages(Path(examples) / folder / "debloat.txt")
+        problems += [f"{where} {p}" for p in disagreements(folder, notes, active, exempt)]
     return problems
 
 
 class ReadmePackageFatesTest(unittest.TestCase):
     def test_every_claim_matches_the_list(self):
-        exempt = stock_launchers()
-        problems = []
-        for folder, where, notes in table_rows(EXAMPLES):
-            active = list_packages(EXAMPLES / folder / "debloat.txt")
-            problems += [f"{where} {p}"
-                         for p in disagreements(folder, notes, active, exempt)]
+        problems = problems_in(EXAMPLES)
         self.assertFalse(problems, "\n".join(problems))
 
     def test_it_reads_the_rows_that_state_a_fate(self):
@@ -117,6 +148,35 @@ class ReadmePackageFatesTest(unittest.TestCase):
         stated = [(f, n) for f, n, notes in table_rows(EXAMPLES) if claims(notes)]
         self.assertGreaterEqual(len(stated), 8,
                                 f"only {len(stated)} rows state a package's fate: {stated}")
+
+    def test_it_reads_the_rows_that_state_a_size(self):
+        # Same reason, for the count: the rows state their list's size in tv.json, and a
+        # reader that stopped matching would satisfy the sweep above by finding nothing.
+        stated = [(f, sizes(notes)) for f, n, notes in table_rows(EXAMPLES) if sizes(notes)]
+        self.assertGreaterEqual(len(stated), 12,
+                                f"only {len(stated)} rows state a package count: {stated}")
+
+    def test_a_row_a_list_shrank_under_is_reported(self):
+        # A stand-in tree, so the sweep is known to fail on the drift it exists for: the
+        # row keeps "5 packages" after a line of the list was commented out.
+        root = Path(tempfile.mkdtemp())
+        try:
+            folder = root / "examples" / "acme-32"
+            folder.mkdir(parents=True)
+            (folder / "tv.json").write_text(
+                json.dumps({"tv": "Acme 32", "os": "Android TV 11", "brand": "Acme",
+                            "notes": "ads and tracking; 5 packages, reboot-checked"}),
+                encoding="utf-8")
+            (folder / "debloat.txt").write_text(
+                "# Acme 32, Android TV 11\n"
+                "com.a.one\ncom.a.two\ncom.a.three\ncom.a.four\n"
+                "# com.a.five   # left on: the owner uses it\n", encoding="utf-8")
+            problems = problems_in(root / "examples", exempt=set())
+            self.assertEqual(len(problems), 1, problems)
+            self.assertIn("says 5 packages", problems[0])
+            self.assertIn("carries 4", problems[0])
+        finally:
+            shutil.rmtree(root)
 
 
 class ReaderTest(unittest.TestCase):
@@ -137,6 +197,39 @@ class ReaderTest(unittest.TestCase):
     def test_claims_ignores_a_fate_word_that_belongs_to_another_package(self):
         # "Chromecast kept" after an unrelated package name is not a claim about it.
         self.assertEqual(claims("AirScreen off (`com.ionitech.airscreen`; Chromecast kept)"), [])
+
+    def test_sizes_reads_the_shapes_the_rows_use(self):
+        self.assertEqual(sizes("16 packages disabled"), [16])
+        self.assertEqual(sizes("five low-value Google TV apps (12 packages), no content app"), [12])
+        self.assertEqual(sizes("6 packages after 7 days: test shims, feedback"), [6])
+        self.assertEqual(sizes("27 packages survived a reboot; single-session test"), [27])
+
+    def test_sizes_reads_no_number_a_row_does_not_state(self):
+        # A row carries the firmware, the RAM and the tuner count as well; only the size of
+        # the list is a claim this reader can compare with debloat.txt.
+        self.assertEqual(sizes("Android TV 11, RP1A.200720.011, 1.5 GB RAM, 2 tuners"), [])
+        self.assertEqual(sizes(""), [])
+
+    def test_a_count_the_list_is_short_of_is_reported(self):
+        problems = disagreements("acme-32", "ads and tracking; 5 packages, reboot-checked",
+                                 active={"com.a.one", "com.a.two", "com.a.three", "com.a.four"},
+                                 exempt=set())
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("says 5 packages", problems[0])
+        self.assertIn("carries 4", problems[0])
+
+    def test_a_count_that_matches_the_list_is_fine(self):
+        problems = disagreements("acme-32", "ads and tracking; 3 packages, reboot-checked",
+                                 active={"com.a.one", "com.a.two", "com.a.three"}, exempt=set())
+        self.assertEqual(problems, [])
+
+    def test_a_count_is_read_beside_a_fate_in_the_same_row(self):
+        # Both claims are read in one pass, and a fate the list backs up does not hide the
+        # count it does not.
+        problems = disagreements("acme-32", "`com.a.one` disabled; 4 packages",
+                                 active={"com.a.one", "com.a.two", "com.a.three"}, exempt=set())
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("says 4 packages", problems[0])
 
     def test_list_packages_reads_the_line_not_its_comment(self):
         path = ROOT / "tests" / "_fates_list.txt"
