@@ -49,6 +49,8 @@ def stand_in(address, timeout=None, *args, **kwargs):
     answer = answers.get(str(address[1]), "refused")
     if answer == "silent":
         raise socket.timeout("timed out")
+    if answer == "unresolved":
+        raise socket.gaierror(socket.EAI_NONAME, "Name or service not known")
     if answer == "refused":
         raise ConnectionRefusedError(61, "Connection refused")
     return socket.socket()
@@ -157,16 +159,15 @@ class AnAddressThatIsNotOneTest(unittest.TestCase):
                                   f"{word} is an address this check takes and was refused")
 
     def test_a_name_that_really_does_not_resolve_keeps_its_own_words(self):
-        # The control for the branch above: a hostname that is not a flag still reaches the network, and
-        # its answer is about the TV's power rather than about the command line. .invalid never resolves
-        # (RFC 2606), so this runs offline and online alike.
-        result = subprocess.run([sys.executable, "-I", str(SCRIPT), "tv.invalid"],
-                                capture_output=True, text=True, timeout=30, env=env_with())
+        # A valid hostname reaches the connection attempt. Inject the lookup failure:
+        # real DNS can stall or be synthesized by a VPN even for a reserved .invalid name.
+        result = check_tv("tv.invalid", tv="5555=unresolved")
         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertEqual("", result.stdout)
         self.assertIn("could not check tv.invalid:5555", result.stderr)
         self.assertIn("Is the TV on and on this network?", result.stderr)
         self.assertNotIn("that is a flag", result.stderr)
+        self.assertEqual(["[stand-in] connect tv.invalid:5555"], asked(result))
 
     def test_help_on_its_own_still_prints_the_text(self):
         # -h and --help were already read before the address is judged; this change must not turn them
