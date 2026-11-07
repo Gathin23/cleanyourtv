@@ -158,6 +158,8 @@
 #  - The remote's Apps button (scan 580, ALL_APPS) then does nothing, as on the KD-65A8F; the key-layout
 #    overlay from ../../docs/devices/sony-bravia-4k-vh22-settings-key.md brings it back without an
 #    accessibility service. See ../../docs/devices/sony-bravia-4k-vh2-remote-keys.md for this remote.
+#  - The Help button is a Sony global key for com.sony.dtv.customersupport, so it does nothing once that is
+#    disabled; one more line in the same overlay (scan 138 to CALENDAR) gives it a job. Same note.
 #  - The Audio button closes the tuner app (com.sony.dtv.tvx) while watching TV. That is a crash in TVX
 #    itself, not this list: it still crashed with b2b.hotelmode and b2b.rs232csupport enabled again. Same note.
 
