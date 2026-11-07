@@ -108,6 +108,12 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/themeChoice"
+            style="@style/SettingsRow"
+            android:layout_marginTop="28dp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/wallpaperChoice"
             style="@style/SettingsRow"
             android:layout_marginTop="28dp" />

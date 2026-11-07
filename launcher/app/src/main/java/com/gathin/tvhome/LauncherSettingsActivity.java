@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,7 @@ public final class LauncherSettingsActivity extends Activity {
     private final TextView[] dockChoices = new TextView[DOCK_OPACITIES.length];
     private static final String[] CLOCK_FORMATS = {"system", "12", "24"};
     private final TextView[] clockChoices = new TextView[CLOCK_FORMATS.length];
+    private TextView themeChoice;
     private TextView wallpaperChoice;
     private TextView animationsChoice;
     private TextView advancedChoice;
@@ -123,6 +125,11 @@ public final class LauncherSettingsActivity extends Activity {
             reverseRow(dockChoices);
             reverseRow(clockChoices);
         }
+        themeChoice = findViewById(R.id.themeChoice);
+        if (!ThemeCatalog.names(Config.dir(this)).isEmpty()) {
+            themeChoice.setVisibility(View.VISIBLE);
+            themeChoice.setOnClickListener(v -> showThemePicker());
+        }
         wallpaperChoice = findViewById(R.id.wallpaperChoice);
         wallpaperChoice.setOnClickListener(v -> showWallpaperPicker());
         animationsChoice = findViewById(R.id.animationsChoice);
@@ -181,6 +188,29 @@ public final class LauncherSettingsActivity extends Activity {
         LinearLayout row = (LinearLayout) views[0].getParent();
         row.removeAllViews();
         for (int i = views.length - 1; i >= 0; i--) row.addView(views[i]);
+    }
+
+    /** The themes tools/theme-catalog.sh put on the TV. A pick replaces the active theme and Home rebuilds. */
+    private void showThemePicker() {
+        File dir = Config.dir(this);
+        List<String> names = ThemeCatalog.names(dir);
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.theme_label)
+                .setSingleChoiceItems(names.toArray(new String[0]), names.indexOf(ThemeCatalog.current(dir)),
+                        (dialog, which) -> {
+                    dialog.dismiss();
+                    try {
+                        ThemeCatalog.apply(dir, names.get(which));
+                    } catch (IOException e) {
+                        Toast.makeText(this, R.string.not_available, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    // Config clears the on-TV choices on the next load, as after a push; Home rebuilds on resume.
+                    changed();
+                    finish();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private void showWallpaperPicker() {
@@ -311,6 +341,8 @@ public final class LauncherSettingsActivity extends Activity {
                 getString(advancedEffects ? R.string.on : R.string.off)));
         advancedChoice.setEnabled(animations);
         advancedChoice.setAlpha(animations ? 1f : 0.5f);
+        String theme = ThemeCatalog.current(Config.dir(this));
+        themeChoice.setText(getString(R.string.theme_state, theme != null ? theme : "-"));
         String wallpaperCurrent = choices.getString(Config.WALLPAPER_CHOICE_KEY, null);
         wallpaperChoice.setText(getString(R.string.wallpaper_state,
                 "none".equals(wallpaperCurrent) ? getString(R.string.wallpaper_none)

@@ -53,6 +53,9 @@
     <string name="columns_label">Apps per row</string>
     <string name="rows_below_dock_label">Rows below dock</string>
     <string name="dock_opacity_label">Dock band opacity</string>
+    <!-- Launcher settings: the themes tools/theme-catalog.sh put on the TV; %1$s is the theme's folder name. -->
+    <string name="theme_label">Theme</string>
+    <string name="theme_state">Theme: %1$s</string>
     <string name="wallpaper_label">Wallpaper</string>
     <string name="wallpaper_state">Wallpaper: %1$s</string>
     <string name="wallpaper_none">None</string>

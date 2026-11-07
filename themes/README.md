@@ -275,6 +275,40 @@ launcher follows the real sun only when `latitude` and `longitude` are set in
 `launcher/app/src/main/res/values/config.xml`, which is a build setting a theme cannot carry: see
 [docs/sky.md](../docs/sky.md) for the two lines and what still falls back.
 
+## Switching themes on the TV
+
+`tools/theme-catalog.sh` puts theme folders on the TV without making any of them active. Launcher settings
+then shows a **Theme** row that lists them, and picking one replaces the active theme as `theme.sh` would: its
+`config.json` and pictures are copied over the active ones and the on-TV choices are cleared. Without a catalog
+the row is not shown, and nothing else changes.
+
+```bash
+TV_HOST=192.168.1.50 tools/theme-catalog.sh themes/aurora themes/glass themes/minimal   # add or replace these
+TV_HOST=192.168.1.50 tools/theme-catalog.sh --clear                                    # remove them all
+powershell -ExecutionPolicy Bypass -File tools\theme-catalog.ps1 -TvHost 192.168.1.50 themes\aurora
+```
+
+A theme is listed by its folder name, so the name has to be lower-case letters, digits, `-` and `_`.
+
+**Keys for this TV, kept across themes.** A theme's `config.json` carries the whole overlay, so switching
+from a theme that has this TV's `app_keys` or `live_tv_package` to one that does not loses them. Put such keys
+in a `device.json` instead: its keys are laid over every theme, the pushed one and the picked ones alike.
+
+```json
+{
+  "settings_key_keycodes": [83],
+  "app_keys": ["190:com.google.android.youtube.tv"]
+}
+```
+
+```bash
+TV_HOST=192.168.1.50 tools/theme-catalog.sh --device my-tv/device.json   # restarts Home, so the key helpers read it
+TV_HOST=192.168.1.50 tools/theme-catalog.sh --device none                # remove it
+```
+
+The key helpers read their keys when they start, which `--device` and `theme.sh` take care of. A pick on the
+TV does not restart them, so remote-button keys belong in `device.json` rather than in the themes.
+
 ## Adding a theme
 
 Want a step-by-step prompt to hand to a coding agent with shell access to the TV?

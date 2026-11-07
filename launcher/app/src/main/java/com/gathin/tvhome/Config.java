@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +55,9 @@ final class Config {
     static boolean settingsChanged(long seen, long current) {
         return seen != current;
     }
-    private static final String THEME_REVISION_NAME = "theme_revision";
+    static final String THEME_REVISION_NAME = "theme_revision";
+    /** This TV's own keys (remote buttons, Live TV), laid over every theme: tools/theme-catalog.sh --device. */
+    static final String DEVICE_NAME = "device.json";
     private static final String THEME_SIGNATURE_KEY = "theme_signature";
 
     final List<String> dockApps;
@@ -782,7 +785,7 @@ final class Config {
         return file != null && file.isFile() ? file.length() + "@" + file.lastModified() : "absent";
     }
 
-    private static String revisionToken(File file) {
+    static String revisionToken(File file) {
         if (file == null || !file.isFile() || file.length() > 64) return "absent";
         try (InputStream in = new FileInputStream(file)) {
             byte[] bytes = new byte[(int) file.length()];
@@ -797,12 +800,25 @@ final class Config {
     /**
      * The overlay, or before external storage is mounted, the copy kept from the last time it was read. Home can
      * start before the card is mounted (seen at every boot on a Xiaomi MiTV-MTEQ0), and without the copy it comes
-     * up with the built-in dock order. A missing file on mounted storage still means no overlay.
+     * up with the built-in dock order. A missing file on mounted storage still means no overlay. device.json's keys
+     * are laid over the theme's, so a theme picked on the TV keeps this TV's remote buttons.
      */
     private static JSONObject readOverlay(Context ctx, File file, boolean mounted) {
         File copy = new File(ctx.getFilesDir(), FILE_NAME);
         if (!mounted) return read(copy);
         JSONObject json = read(file);
+        JSONObject device = file == null ? null : read(new File(file.getParentFile(), DEVICE_NAME));
+        if (device != null) {
+            try {
+                if (json == null) json = new JSONObject();
+                for (Iterator<String> keys = device.keys(); keys.hasNext(); ) {
+                    String key = keys.next();
+                    json.put(key, device.get(key));
+                }
+            } catch (JSONException e) {
+                Log.w(TAG, "ignoring " + DEVICE_NAME + ": " + e.getMessage());
+            }
+        }
         if (json == null) {
             copy.delete();
         } else {

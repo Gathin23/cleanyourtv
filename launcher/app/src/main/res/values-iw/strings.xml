@@ -118,6 +118,8 @@
     <string name="greeting_with_name">%1$s, %2$s</string>
     <string name="rows_below_dock_label">שורות מתחת לשורת המועדפים</string>
     <string name="wallpaper_label">טפט</string>
+    <string name="theme_label">ערכת נושא</string>
+    <string name="theme_state">ערכת נושא: %1$s</string>
     <string name="wallpaper_state">טפט: %1$s</string>
     <string name="wallpaper_none">ללא</string>
     <string name="wallpaper_applied">הטפט שונה</string>
