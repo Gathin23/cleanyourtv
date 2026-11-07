@@ -117,6 +117,7 @@ use it and ends with the check to run.
 - [`showcase.md`](docs/workflows/showcase.md): list a project that lives in its own repository.
 - [`press.md`](docs/workflows/press.md): add an article and update the four press counts.
 - [`docs-notes.md`](docs/workflows/docs-notes.md): add a troubleshooting entry or a `PROMPT.md` fix, keeping pinned facts.
+- [`input-sources.md`](docs/workflows/input-sources.md): diagnose or change HDMI/AV input switching, with the checklist to run every time.
 - [`perf-ab.md`](docs/workflows/perf-ab.md): an optional check of a launcher change for performance regressions with
   `tools/bench.py`, and measure an improvement or a failed check with traces, a report and flame charts.
 
