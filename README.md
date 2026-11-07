@@ -64,6 +64,7 @@ before touching anything you might use.
 | **A computer** | Use the prompt with a coding assistant: the three steps below. |
 | **A computer, no coding assistant** | Run the three steps yourself: the commands are in [Doing it by hand](#doing-it-by-hand). |
 | **A phone or laptop, no coding assistant** | Pick one of the [community apps](https://cleanyour.tv/app): free, open-source apps built on these TV lists by independent developers. |
+| **Just your TV remote** | Install [Vibe Launcher](https://github.com/maydings/vibe-launcher) with the Downloader app (code **5573341**) and debloat from the TV itself, in its Settings → Advanced, using these lists. A phone is only needed for a one-time pairing on TVs that have just Wireless debugging. |
 
 The three steps below are written for a coding assistant: the computer needs to be on the same Wi-Fi as
 the TV, with a shell on it, plus Python 3, a JDK from 17 through 22, and Android SDK platform 34
