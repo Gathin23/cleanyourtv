@@ -1,4 +1,5 @@
-# Lumio Arc 5 Projector, Google TV on MediaTek board
+# Lumio Arc 5 Projector (SDMC himalaya, MediaTek MT9630), Google TV on Android 14 (SDK 34)
+# Tested on: Lumio Arc 5 on Android 14 (firmware build UKNV.260904.001); all 16 disabled packages survived cold reboot with zero drift.
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/lumio-arc-5/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/lumio-arc-5/debloat.txt
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.

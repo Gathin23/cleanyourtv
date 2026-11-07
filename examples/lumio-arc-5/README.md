@@ -1,6 +1,6 @@
 # Lumio Arc 5 Projector (Google TV on MediaTek board)
 
-Notes and debloat list for the **Lumio Arc 5 Projector**, running Google TV on a MediaTek SoC.
+Notes and debloat list for the **Lumio Arc 5 Projector** (SDMC himalaya, MediaTek MT9630), running Google TV on Android 14 (firmware build `UKNV.260904.001`). Tested on the real device; all 16 disabled packages survived a cold reboot with zero drift.
 
 The [debloat list](debloat.txt) disables 16 packages: Google feedback and telemetry, background backup services, ad attribution, and unused preloads.
 
