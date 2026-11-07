@@ -11,6 +11,9 @@ android {
         // Xiaomi: docs/devices/xiaomi-mitv-aetp0-dofus.md (com.ts.launcher).
         // ColorOS TV: docs/devices/oppo-k9-55-oppocnm632.md (com.oneplus.tv.launcher2).
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
+        // Optional private process suffix for firmware-specific startup restrictions.
+        // The default remains the application ID; package, UID and permissions do not change.
+        manifestPlaceholders = [launcherProcess: providers.gradleProperty('launcherProcess').getOrElse(applicationId)]
         minSdk 26
         targetSdk 34
         versionCode 13
