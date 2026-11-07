@@ -1,0 +1,23 @@
+# Sony BRAVIA KD-55XE9005 (BRAVIA_ATV2_EU), Android TV 9 (SDK 28)
+# Firmware: Sony/BRAVIA_ATV2_EU/BRAVIA_ATV2:9/PTT1.190515.001.S54/672201:user/release-keys
+# Tested using CleanYourTV 3.4 with Aurora on Windows 11 (ADB over Wi-Fi).
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-55xe9005/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-55xe9005/debloat.txt com.google.android.tvlauncher
+# On Windows, use tools/disable.ps1 and tools/restore.ps1 with their documented parameters.
+# Everything is DISABLED with pm disable-user, never uninstalled.
+# Stock launcher: com.google.android.tvlauncher (disabled only after new Home was tested).
+# Live TV: com.sony.dtv.tvx (KEPT); HDMI input: com.sony.dtv.tvinput.external (KEPT).
+# Kept: Chromecast, Google Assistant/voice, screensaver, HbbTV, EPG, HDMI-CEC,
+# Netflix, firmware updater, Play Store and Sony TV/input/remote services.
+# Device-specific checks passed across reboots. Long-term multi-day stability
+# should be confirmed before submitting this list upstream.
+
+# Sony promotions / content recognition
+com.sony.dtv.promos
+tv.samba.ssm
+
+# Sony Select content promotions and app discovery
+com.sony.dtv.sonyselect
+
+# Original Android TV Home, replaced with CleanYourTV after verified install
+com.google.android.tvlauncher
