@@ -19,7 +19,9 @@ the [Clean Your TV](../../README.md) launcher it declares a [module card](../../
 | Doors and windows | `binary_sensor.*` with device class door, window, garage door or opening | Shown only |
 | Locks | `lock.*`, locked or unlocked | **Shown only: a TV remote never unlocks a door** |
 
-At most 80 entities, sorted by name within each section; unavailable ones are dimmed. The glance header takes the
+At most 80 entities, sorted by name within each section; unavailable ones are dimmed. A scene that has never
+run reads `unknown` in Home Assistant and can still be run. Fuel prices show as Home Assistant reports them, with
+all their decimals (1.689 €/L). The glance header takes the
 first available weather entity and up to six fuel-price sensors unless you name the entities in the config (below).
 It reads `GET /api/states` every 10 seconds while the screen is open, and nothing when it is closed.
 
