@@ -68,6 +68,21 @@ fi
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
+# A stock launcher that still owns Home while this launcher is installed and its HomeKeyService is on is
+# the stock_home_redirect setup (debloat-keep-cast.txt and the other lists that keep casting): the stock
+# launcher stays Home on purpose and the helper hands over from it, so a rerun to upgrade the launcher
+# must not disable it, nor hand Home over. The TV answers redirect, no-helper (installed, helper off) or
+# not-installed, each read checked; anything else is a failed read.
+REDIRECT_PROBE='p=$(pm list packages com.gathin.tvhome) || { echo probe-failed; exit; }; if printf "%s\n" "$p" | grep -qx package:com.gathin.tvhome; then s=$(settings get secure enabled_accessibility_services) || { echo probe-failed; exit; }; case "$s" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; *) echo no-helper ;; esac; else echo not-installed; fi'
+probe_redirect() { "$PY" -I ../tools/tv.py "$REDIRECT_PROBE" 2>/dev/null | tr -d '\r' | tail -n 1 || true; }
+# The reinstall switches HomeKeyService off (see enable_service below), and the redirect is that helper,
+# so it comes back on unless HOME_KEY_SERVICE=0 is passed.
+keep_stock_home() {
+  STOCK_LAUNCHER=none; HOME_KEY_SERVICE=${HOME_KEY_SERVICE:-1}; KEEP_HOME=$1
+  echo "$1 owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
+  echo "and turning HomeKeyService back on after the install (HOME_KEY_SERVICE=0 to skip that)."
+}
+GIVEN_STOCK=${STOCK_LAUNCHER:-}
 KNOWN_STOCK_LAUNCHERS="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher com.mitv.tvhome"
 if [ -z "${STOCK_LAUNCHER:-}" ]; then
   HOME_PKG=$("$PY" -I ../tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
@@ -75,7 +90,29 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
     echo "ERROR: could not ask the TV which launcher owns Home. Check TV_HOST and the debugging prompt on the TV," >&2
     echo "or pass STOCK_LAUNCHER=<package> yourself." >&2; exit 1; }
   case " $KNOWN_STOCK_LAUNCHERS " in
-    *" $HOME_PKG "*) STOCK_LAUNCHER=$HOME_PKG ;;
+    *" $HOME_PKG "*)
+      REDIRECT=$(probe_redirect)
+      case "$REDIRECT" in
+        redirect)
+          keep_stock_home "$HOME_PKG"
+          echo "To hand Home over and disable it instead, run again with STOCK_LAUNCHER=$HOME_PKG." ;;
+        not-installed) STOCK_LAUNCHER=$HOME_PKG ;;
+        no-helper)
+          # Installed, but the helper is off: a redirect TV whose helper an earlier upgrade dropped looks
+          # like this, and so does a handover that never finished. Disabling would be wrong for the first.
+          echo "ERROR: this launcher is installed, but $HOME_PKG owns Home and HomeKeyService is off, so this" >&2
+          echo "script cannot tell a stock_home_redirect TV whose helper was dropped from a handover that never" >&2
+          echo "finished. Nothing was installed or disabled. Say which one:" >&2
+          echo "  STOCK_LAUNCHER=none HOME_KEY_SERVICE=1   keep $HOME_PKG as Home and turn the helper back on" >&2
+          echo "  STOCK_LAUNCHER=$HOME_PKG   hand Home over and disable it" >&2
+          exit 1 ;;
+        *)
+          echo "ERROR: $HOME_PKG owns Home, and the TV did not say whether this launcher's HomeKeyService is on" >&2
+          echo "(stock_home_redirect). Nothing was installed or disabled. Run again, or name it yourself:" >&2
+          echo "  STOCK_LAUNCHER=none           keep $HOME_PKG (stock_home_redirect, or the lists that keep it)" >&2
+          echo "  STOCK_LAUNCHER=$HOME_PKG   hand Home over and disable it" >&2
+          exit 1 ;;
+      esac ;;
     *)
       if [ "$HOME_PKG" = com.gathin.tvhome ]; then
         STOCK_LAUNCHER=none; echo "Home already belongs to this launcher; nothing will be disabled."
@@ -102,6 +139,16 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
         echo "  anything else                            = another launcher is the default" >&2
         echo "Run again with STOCK_LAUNCHER=<package to disable> or STOCK_LAUNCHER=none." >&2; exit 1
       fi ;;
+  esac
+fi
+# STOCK_LAUNCHER=none given by hand, as debloat-keep-cast.txt says to: on a redirect TV it means keep the
+# stock launcher as Home, so it gets the same treatment. Elsewhere (a Xiaomi list that keeps PatchWall
+# enabled but wants this launcher as Home) it still means hand Home over and disable nothing.
+if [ "$GIVEN_STOCK" = none ]; then
+  HOME_PKG=$("$PY" -I ../tools/tv.py "cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME" \
+    2>/dev/null | tail -n 1 | tr -d '\r' | cut -d/ -f1 || true)
+  case " $KNOWN_STOCK_LAUNCHERS " in
+    *" $HOME_PKG "*) if [ "$(probe_redirect)" = redirect ]; then keep_stock_home "$HOME_PKG"; fi ;;
   esac
 fi
 echo "Stock launcher: $STOCK_LAUNCHER"
@@ -150,11 +197,14 @@ if ! printf '%s' "$START_OUT" | grep -qF 'Status: ok' || printf '%s' "$START_OUT
   echo "ERROR: the new launcher did not start (see above); $STOCK_LAUNCHER was left enabled." >&2
   exit 1
 fi
+# On a stock_home_redirect TV the stock launcher stays Home on purpose, so Home is not handed over.
+if [ -n "${KEEP_HOME:-}" ]; then SET_HOME="echo Home left with $KEEP_HOME"
+else SET_HOME="cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity"; fi
 printf '%s\n' \
   "pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted" \
   "cmd package compile -m speed -f com.gathin.tvhome" \
   "$DISABLE_STOCK" \
-  "cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity" \
+  "$SET_HOME" \
   | "$PY" -I ../tools/tv.py --batch
 
 # Home's owner, or an empty string when the TV cannot be reached (pipefail would otherwise make a
@@ -199,6 +249,7 @@ rollback_home() {
 HOME_NOW=$(query_home)
 case "$HOME_NOW" in
   com.gathin.tvhome/*) echo "Home now resolves to $HOME_NOW" ;;
+  "${KEEP_HOME:-none}"/*) echo "Home still resolves to $HOME_NOW (stock_home_redirect); HomeKeyService hands over from it." ;;
   *)
     if [ -z "$HOME_NOW" ]; then
       echo "ERROR: the TV stopped answering while Home was being switched, so the outcome is unknown." >&2

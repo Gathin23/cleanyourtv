@@ -47,12 +47,45 @@ $py = '..\tools\venv\Scripts\python.exe'
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
 # the stock home, and the default applicationId is refused as Home on that firmware.
 # docs/devices/oppo-k9-55-oppocnm632.md.
+$keepHome = ''   # the stock launcher that stays Home on a stock_home_redirect TV
+# Same check as build-and-install.sh: a stock launcher that owns Home while this launcher is installed and its
+# HomeKeyService is on is the stock_home_redirect setup, which an upgrade must neither disable nor hand Home
+# away from. The TV answers redirect, no-helper (installed, helper off) or not-installed; '' is a failed read.
+function Get-RedirectState {
+    $answer = & $py -I ..\tools\tv.py 'p=$(pm list packages com.gathin.tvhome) || { echo probe-failed; exit; }; if printf "%s\n" "$p" | grep -qx package:com.gathin.tvhome; then s=$(settings get secure enabled_accessibility_services) || { echo probe-failed; exit; }; case "$s" in *com.gathin.tvhome/.HomeKeyService*) echo redirect ;; *) echo no-helper ;; esac; else echo not-installed; fi' 2>$null | Select-Object -Last 1
+    if ($LASTEXITCODE -ne 0) { return '' }
+    return "$answer".Trim()
+}
+function Set-KeepStockHome([string]$Pkg) {
+    # The reinstall switches HomeKeyService off, and the redirect is that helper, so it comes back on.
+    $script:StockLauncher = 'none'; $script:keepHome = $Pkg
+    if (-not $script:homeKeyGiven) { $script:HomeKeyService = $true }
+    Write-Host "$Pkg owns Home while this launcher's HomeKeyService is on (stock_home_redirect); leaving it enabled"
+    Write-Host "and turning HomeKeyService back on after the install (-HomeKeyService:`$false to skip that)."
+}
+$homeKeyGiven = $PSBoundParameters.ContainsKey('HomeKeyService')
+$givenStock = $StockLauncher
 $knownStock = @('com.google.android.tvlauncher', 'com.google.android.apps.tv.launcherx', 'com.google.android.leanbacklauncher', 'com.mitv.tvhome')
 if (-not $StockLauncher) {
     $homePkg = & $py -I ..\tools\tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' | Select-Object -Last 1
     if ($LASTEXITCODE -ne 0 -or -not $homePkg) { throw 'could not ask the TV which launcher owns Home; check -TvHost and the debugging prompt, or pass -StockLauncher <package>' }
     $homePkg = "$homePkg".Trim().Split('/')[0]
-    if ($knownStock -contains $homePkg) { $StockLauncher = $homePkg }
+    if ($knownStock -contains $homePkg) {
+        $redirect = Get-RedirectState
+        if ($redirect -eq 'redirect') {
+            Set-KeepStockHome $homePkg
+            Write-Host "To hand Home over and disable it instead, run again with -StockLauncher $homePkg."
+        }
+        elseif ($redirect -eq 'not-installed') { $StockLauncher = $homePkg }
+        elseif ($redirect -eq 'no-helper') {
+            # A redirect TV whose helper an earlier upgrade dropped looks like this, and so does a handover
+            # that never finished; disabling would be wrong for the first.
+            throw "this launcher is installed, but $homePkg owns Home and HomeKeyService is off, so this script cannot tell a stock_home_redirect TV whose helper was dropped from a handover that never finished. Nothing was installed or disabled. Pass -StockLauncher none -HomeKeyService to keep $homePkg as Home and turn the helper back on, or -StockLauncher $homePkg to hand Home over and disable it."
+        }
+        else {
+            throw "$homePkg owns Home, and the TV did not say whether this launcher's HomeKeyService is on (stock_home_redirect). Nothing was installed or disabled. Run again, or pass -StockLauncher none (keep $homePkg) or -StockLauncher $homePkg (disable it)."
+        }
+    }
     elseif ($homePkg -eq 'com.gathin.tvhome') { $StockLauncher = 'none'; Write-Host 'Home already belongs to this launcher; nothing will be disabled.' }
     elseif ($homePkg -eq 'android') {
         # Android's chooser: launchers tie and no default is set (a restore followed by a re-applied list
@@ -64,6 +97,14 @@ if (-not $StockLauncher) {
         else { throw "Home is Android's launcher chooser and $($found.Count) known stock launchers claim Home: pick a default on the TV first, or run again with -StockLauncher <package to disable> or -StockLauncher none." }
     }
     else { throw "Home currently resolves to '$homePkg', which is not a stock launcher this script knows (android = launcher chooser, com.google.android.tungsten.setupwraith = setup wizard, see README Troubleshooting; anything else = another launcher is the default). Run again with -StockLauncher <package to disable> or -StockLauncher none." }
+}
+# -StockLauncher none given by hand, as debloat-keep-cast.txt says to: on a redirect TV it means keep the
+# stock launcher as Home, so it gets the same treatment. Elsewhere it still means hand Home over and
+# disable nothing.
+if ($givenStock -eq 'none') {
+    $homeNow = & $py -I ..\tools\tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' 2>$null | Select-Object -Last 1
+    $homeNow = "$homeNow".Trim().Split('/')[0]
+    if ($knownStock -contains $homeNow -and (Get-RedirectState) -eq 'redirect') { Set-KeepStockHome $homeNow }
 }
 Write-Host "Stock launcher: $StockLauncher"
 $disableStock = if ($StockLauncher -eq 'none') { 'echo stock launcher left alone' } else { "pm disable-user --user 0 $StockLauncher" }
@@ -96,7 +137,8 @@ if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m
     'pm grant com.gathin.tvhome android.permission.ACCESS_FINE_LOCATION 2>/dev/null; echo location-granted',
     'cmd package compile -m speed -f com.gathin.tvhome',
     $disableStock,
-    'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
+    # On a stock_home_redirect TV the stock launcher stays Home on purpose, so Home is not handed over.
+    $(if ($keepHome) { "echo Home left with $keepHome" } else { 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity' })
 ) | & $py -I ..\tools\tv.py --batch
 # A failed batch is not fatal here: the stock launcher may already be disabled, so fall through to the
 # Home check, which rolls back when Home is not ours.
@@ -144,13 +186,16 @@ function Undo-Handover {
 # Order matters, see build-and-install.sh: start the new launcher, disable the stock one, set the
 # preference last, then check where Home ended up and put the stock launcher back if it is not ours.
 $homeNow = Get-HomeNow
-if ($homeNow -notlike 'com.gathin.tvhome/*') {
+if ($keepHome -and $homeNow -like "$keepHome/*") {
+    Write-Host "Home still resolves to $homeNow (stock_home_redirect); HomeKeyService hands over from it."
+}
+elseif ($homeNow -notlike 'com.gathin.tvhome/*') {
     $reason = if ($homeNow) { "Home resolves to '$homeNow', not to the new launcher" } else { 'the TV stopped answering while Home was being switched, so the outcome is unknown' }
     $restored = Undo-Handover
     $hint = if ($homeNow) { ' On Google TV this usually means com.google.android.tungsten.setupwraith also claims Home: add it to your debloat list (see README, Troubleshooting), apply it, then run this script again.' } else { '' }
     throw "$reason; $(if ($restored) { "$StockLauncher was re-enabled." } else { 'recovery is incomplete (see above).' })$hint"
 }
-Write-Host "Home now resolves to $homeNow"
+else { Write-Host "Home now resolves to $homeNow" }
 # Optional accessibility services, appended to enabled_accessibility_services without dropping others.
 function Enable-Service([string]$Name) {
     $svc = "com.gathin.tvhome/.$Name"
