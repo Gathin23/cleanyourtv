@@ -216,6 +216,8 @@ final class Config {
     final String wallpaperOrder;
     /** Whether the overlay file was present and parsed. */
     final boolean overlayApplied;
+    /** Whether external storage was not yet mounted when this configuration was loaded. */
+    final boolean storageUnmounted;
     /** Festive skin from a theme (festival, festival_until, greeting, accent_color); {@link Festival#NONE} if none. */
     final Festival festival;
     /** F1 weekends from a theme's race_calendar (see RaceWeekend); empty when the theme has none. */
@@ -288,7 +290,7 @@ final class Config {
                    boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
                    boolean showHomeSettingsShortcut, boolean showStats, String gameDay, boolean appLibrary, boolean appLibrarySelection, boolean libraryOkOpens, boolean uniformTiles, int backgroundColor, int skyIntensity,
                    int[] settingsKeycodes, boolean settingsKeyPanel, boolean restoreKeyServices, boolean wallpaperEnabled, File wallpaper, List<File> wallpapers,
-                   int wallpaperRotationMinutes, int wallpaperDim, int dockOpacity, String wallpaperOrder, boolean overlayApplied,
+                   int wallpaperRotationMinutes, int wallpaperDim, int dockOpacity, String wallpaperOrder, boolean overlayApplied, boolean storageUnmounted,
                    Festival festival, int[] inputKeycodes, List<String> appKeys, String stockHomeRedirect,
                    List<RaceWeekend.Race> raceCalendar, boolean cinematicHome, boolean ambientGlow, boolean appGlow, boolean fadeRows, int homeIdleClockMinutes,
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
@@ -373,6 +375,7 @@ final class Config {
         this.dockOpacity = dockOpacity;
         this.wallpaperOrder = wallpaperOrder;
         this.overlayApplied = overlayApplied;
+        this.storageUnmounted = storageUnmounted;
         this.festival = festival;
         this.raceCalendar = Collections.unmodifiableList(raceCalendar);
         this.cinematicHome = cinematicHome;
@@ -673,6 +676,14 @@ final class Config {
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
+        File internalWallpaper = new File(ctx.getFilesDir(), WALLPAPER_NAME);
+        if (wallpaper != null) {
+            syncFile(wallpaper, internalWallpaper);
+        } else if (!mounted && internalWallpaper.isFile() && internalWallpaper.length() > 0) {
+            wallpaper = internalWallpaper;
+        } else if (mounted) {
+            internalWallpaper.delete();
+        }
         // A theme can also switch the wallpaper off while the file is still there.
         boolean wallpaperEnabled = json == null || bool(json, "wallpaper", true);
         if (!wallpaperEnabled) wallpaper = null;
@@ -713,7 +724,7 @@ final class Config {
                 iconOnlyButtons, iconOnlyInputs, libraryButton, showLibraryPill, wifiLabelWidth, alwaysShowNames, wallpaperTrueColor, focusOvershoot,
                 vpn, homeSettings, showStats, gameDay, library, librarySelection, libraryOkOpens, uniformTiles, background,
                 Math.max(0, Math.min(100, skyIntensity)), settingsKeycodes, settingsKeyPanel, restoreKeyServices, wallpaperEnabled, wallpaper,
-                wallpapers, rotationMinutes, wallpaperDim, dockOpacity, wallpaperOrder, applied, festival, inputKeycodes, appKeys, stockHomeRedirect,
+                wallpapers, rotationMinutes, wallpaperDim, dockOpacity, wallpaperOrder, applied, !mounted, festival, inputKeycodes, appKeys, stockHomeRedirect,
                 json == null ? Collections.emptyList() : raceCalendar(json), cinematic, ambientGlow, appGlow, fadeRows,
                 Math.max(0, idleClockMinutes), keyFilter, dockGlass, glowStyle, wallpaperCaptions, handleViewInputs, tileMenu, dockEvenPadding,
                 dockBand, cinematicDots, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough,
@@ -756,6 +767,7 @@ final class Config {
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
         File revision = dir == null ? null : new File(dir, THEME_REVISION_NAME);
         String token = revisionToken(revision);
+        if (token == null) return;   // I/O failure or short read: skip sync, retry next load
         String signature = fileStamp(config) + ":" + token;
         String seen = choices.getString(THEME_SIGNATURE_KEY, null);
         if (seen == null) {
@@ -784,12 +796,15 @@ final class Config {
 
     private static String revisionToken(File file) {
         if (file == null || !file.isFile() || file.length() > 64) return "absent";
+        if (file.length() == 0) return "absent";
         try (InputStream in = new FileInputStream(file)) {
             byte[] bytes = new byte[(int) file.length()];
-            int n = in.read(bytes);
-            return n > 0 ? new String(bytes, 0, n, StandardCharsets.US_ASCII) : "absent";
+            int n = 0, r;
+            while (n < bytes.length && (r = in.read(bytes, n, bytes.length - n)) > 0) n += r;
+            if (n < bytes.length) return null;   // short read: treat as I/O failure
+            return new String(bytes, 0, n, StandardCharsets.US_ASCII);
         } catch (Exception ignored) {
-            return "absent";
+            return null;
         }
     }
 
@@ -806,13 +821,49 @@ final class Config {
         if (json == null) {
             copy.delete();
         } else {
-            try (FileOutputStream out = new FileOutputStream(copy)) {
-                out.write(json.toString().getBytes(StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+            synchronized (SYNC_LOCK) {
+                File tmp = new File(ctx.getFilesDir(), FILE_NAME + ".tmp");
+                try (FileOutputStream out = new FileOutputStream(tmp)) {
+                    out.write(json.toString().getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+                } catch (IOException e) {
+                    tmp.delete();
+                    Log.w(TAG, "could not keep a copy of " + file + ": " + e.getMessage());
+                    return json;
+                }
+                if (!tmp.renameTo(copy)) {
+                    tmp.delete();
+                    Log.w(TAG, "could not rename staging copy of " + file);
+                }
             }
         }
         return json;
+    }
+
+    private static final Object SYNC_LOCK = new Object();
+
+    static void syncFile(File src, File dst) {
+        if (src == null || !src.isFile()) return;
+        if (dst.isFile() && dst.length() == src.length() && dst.lastModified() == src.lastModified()) return;
+        synchronized (SYNC_LOCK) {
+            File parent = dst.getParentFile();
+            if (parent == null) return;
+            File tmp = new File(parent, dst.getName() + ".tmp");
+            try (InputStream in = new FileInputStream(src);
+                 FileOutputStream out = new FileOutputStream(tmp)) {
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                out.flush();
+            } catch (IOException ignored) {
+                tmp.delete();
+                return;
+            }
+            tmp.setLastModified(src.lastModified());
+            if (!tmp.renameTo(dst)) {
+                tmp.delete();
+            }
+        }
     }
 
     private static JSONObject read(File file) {
