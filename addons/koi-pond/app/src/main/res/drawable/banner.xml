@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a red-and-white koi under a lily pad on teal water. Drawn for this add-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF1E5E55" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FF2A7468" android:pathData="M0,120q80,-20 160,0t160,0v60h-320z" />
+    <path android:fillColor="#33000000" android:pathData="M120,104q40,-26 96,-6q-18,16 -56,18q-26,0 -40,-12z" />
+    <path android:fillColor="#FFF4EEE2" android:pathData="M110,92q40,-26 96,-6q-18,16 -56,18q-26,0 -40,-12z" />
+    <path android:fillColor="#FFF4EEE2" android:pathData="M204,86l26,-14l-6,16l8,14l-28,-8z" />
+    <path android:fillColor="#FFD2321E" android:pathData="M130,84q14,-8 26,-4q-4,12 -18,12q-6,0 -8,-8zM166,82q12,-2 20,4q-8,8 -18,6z" />
+    <path android:fillColor="#FF1E4A2E" android:pathData="M262,40a44,44 0 1,0 0.1,0zM262,84l40,-24l4,10z" />
+    <path android:fillColor="#FF2F7A3E" android:pathData="M258,46a36,36 0 1,0 0.1,0z" />
+    <path android:fillColor="#FFF07AA0" android:pathData="M248,60l8,12l8,-12l2,14l12,-4l-8,10l12,6l-14,2l4,12l-12,-8l-4,12l-4,-12l-12,8l4,-12l-14,-2l12,-6l-8,-10l12,4z" />
+    <path android:fillColor="#FFF0A030" android:pathData="M256,82a4,4 0 1,0 0.1,0z" />
+</vector>
