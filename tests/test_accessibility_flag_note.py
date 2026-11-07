@@ -3,14 +3,14 @@
 Android can leave `enabled_accessibility_services` naming the launcher's `HomeKeyService` while
 `accessibility_enabled` reads `0`: on a TCL C6K Pro (`G08`, Android 14) that is what a reboot left
 behind, so nothing was bound, the Home button opened Google TV, and the page's two existing cases (a
-force stop that empties the list, and a firmware `APP_AUTO_START` denial) did not describe it. The
-launcher's own `restore_key_services` does not reach this state either: `ServiceRepair.restore()` writes
-`ACCESSIBILITY_ENABLED` only after it has put a missing helper back on the list, and returns early when
-the list is already complete.
+force stop that empties the list, and a firmware `APP_AUTO_START` denial) did not describe it. At the
+time the launcher's own `restore_key_services` did not reach this state either: `ServiceRepair.restore()`
+wrote `ACCESSIBILITY_ENABLED` only after it had put a missing helper back on the list, and returned early
+when the list was already complete. It now also cycles a recorded helper that is listed but not bound.
 
 Documentation only, so the tests pin what a reader has to be able to act on - both settings, the dump,
 the three commands, the device it was seen on - and pin the claim about `ServiceRepair` to its own code,
-so the note cannot go stale if the launcher starts repairing that state too. A misspelled `settings`
+so the note cannot go stale if the launcher stops repairing that state. A misspelled `settings`
 key or a wrong class name sends a reader back to "nothing changed".
 
 Run from the repository root: python3 -m unittest discover -s tests -v
@@ -54,17 +54,22 @@ def section(text, heading):
     return "\n".join(out)
 
 
-def flag_written_after_the_list_check(java):
-    """True when `ServiceRepair` writes the flag only once it has also finished the enabled list.
+def repairs_a_complete_list(java):
+    """True when `ServiceRepair.restore()` also cycles a helper that is listed but not bound.
 
-    The note tells a reader that `restore_key_services` cannot repair a complete list, which is true
-    only while the flag write sits after the `if (!missing) return;` early exit. Once the launcher
-    repairs this state itself, this test fails and the note has to say so instead.
+    The note tells a reader that `restore_key_services` now reaches a complete list: that holds while
+    `restore()` asks `listedButUnbound` before giving up on a list with nothing missing, and the flag
+    write still follows. If the launcher drops that check, this test fails and the note has to say so.
     """
-    body = java.split("static void restore(Context context)")[1]
-    early_return = body.find("if (!missing) return;")
+    parts = java.split("static void restore(Context context)")
+    if len(parts) < 2:
+        return False
+    body = parts[1]
+    check = body.find("listedButUnbound(")
+    early_return = body.find("return;", check)
     flag_write = body.find("ACCESSIBILITY_ENABLED")
-    return early_return != -1 and flag_write != -1 and early_return < flag_write
+    return "if (!missing) return;" not in body and check != -1 and early_return != -1 \
+        and flag_write != -1 and check < flag_write
 
 
 class AccessibilityFlagNoteTest(unittest.TestCase):
@@ -109,16 +114,20 @@ class AccessibilityFlagNoteTest(unittest.TestCase):
     def test_bullet_links_the_issue(self):
         self.assertIn("[#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)", self.note)
 
-    def test_bullet_says_restore_key_services_does_not_cover_it(self):
+    def test_bullet_names_restore_key_services_and_service_repair(self):
         self.assertIn("restore_key_services", self.note)
         self.assertIn("ServiceRepair", self.note)
 
-    def test_service_repair_still_returns_before_writing_the_flag(self):
+    def test_service_repair_reaches_a_complete_list(self):
         # The note's claim, checked against the code it names rather than against the wording.
-        self.assertTrue(flag_written_after_the_list_check(self.java),
-                        "ServiceRepair now writes the flag on a complete list too: the note says it "
-                        "does not, so reword the note (and this test) with the launcher change")
+        self.assertTrue(repairs_a_complete_list(self.java),
+                        "ServiceRepair no longer repairs a helper that is listed but not bound: the note "
+                        "says it does, so reword the note (and this test) with the launcher change")
         self.assertIn("ENABLED_ACCESSIBILITY_SERVICES", self.java)
+
+    def test_bullet_says_it_is_not_retested_on_the_tcl(self):
+        # The repair was seen working on the Hisense standby case only; the note must not promise more.
+        self.assertIn("on the TCL G08 that is not retested", self.note)
 
     def test_themes_readme_still_scopes_restore_key_services_to_a_force_stop(self):
         row = next(line for line in self.themes.split("\n")
@@ -162,16 +171,20 @@ class AccessibilityFlagNoteTest(unittest.TestCase):
         sample = "\n".join(["## One", "body", "## Two", "other"])
         self.assertEqual(section(sample, "## One"), "body")
 
-    def test_the_flag_check_reads_the_early_return(self):
+    def test_the_repair_check_reads_the_code(self):
         # A checker that returned True for any file would let the note go stale unnoticed.
-        self.assertTrue(flag_written_after_the_list_check(
+        self.assertTrue(repairs_a_complete_list(
+            "static void restore(Context context) {\n"
+            "if (listedOnly && !listedButUnbound(context, enabled, recorded)) return;\n"
+            "Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);\n}"))
+        self.assertFalse(repairs_a_complete_list(
             "static void restore(Context context) {\nif (!missing) return;\n"
             "Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);\n}"))
-        self.assertFalse(flag_written_after_the_list_check(
+        self.assertFalse(repairs_a_complete_list(
             "static void restore(Context context) {\n"
-            "Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);\n"
-            "if (!missing) return;\n}"))
-        self.assertFalse(flag_written_after_the_list_check("static void restore(Context context) {}"))
+            "Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, 1);\n}"))
+        self.assertFalse(repairs_a_complete_list("static void restore(Context context) {}"))
+        self.assertFalse(repairs_a_complete_list("class Other {}"))
 
 
 if __name__ == "__main__":
