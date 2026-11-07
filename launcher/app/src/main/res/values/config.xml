@@ -508,6 +508,10 @@
          press, which a slow GPU such as the Mali-G52 cannot keep up with. Can also be set with "glow_snap" in a
          theme's config.json. -->
     <bool name="glow_snap">false</bool>
+    <!-- true: a last row of the app grid with fewer apps than columns sits in the middle, with equal space on both
+         sides, instead of starting at the first column. Up and Down move to the nearest tile, in Reorder mode too.
+         The dock row and single_row are left as they are. Also "center_last_row" in a theme's config.json. -->
+    <bool name="center_last_row">false</bool>
     <!-- The focus highlight glows in the focused app's colour on every tile, as the cinematic shelf does for the
          dock, without cinematic_home. Can also be set with "app_glow": true in a theme's config.json. -->
     <bool name="app_glow">false</bool>

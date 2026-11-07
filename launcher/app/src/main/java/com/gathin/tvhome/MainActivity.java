@@ -256,6 +256,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** config settings_key_keycodes / settings_key_panel, so the Settings button works on Home without HomeKeyService. */
     private int[] settingsKeycodes = new int[0];
     private boolean settingsKeyPanel;
+    /** center_last_row: a part-filled last row of the grid is laid out in the middle (GridNavigation). */
+    private boolean centerLastRow;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     private boolean reducedMotion;
     /** config.xml dock_row: the first row is a separate dock (band, parked low, top shelf) rather than plain grid. */
@@ -472,6 +474,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         applyViewInputsHandler(cfg.handleViewInputs);
         settingsKeycodes = cfg.settingsKeycodes;
         settingsKeyPanel = cfg.settingsKeyPanel;
+        centerLastRow = cfg.centerLastRow;
         COLUMNS = cfg.columns;
         animations = cfg.animations;
         advancedEffects = cfg.animations && cfg.advancedEffects;
@@ -619,6 +622,22 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             @Override
             protected boolean isLayoutRTL() {
                 return rtlAppGrid;
+            }
+
+            /** center_last_row: every placement, on layout and on scroll, passes here; the last row moves over. */
+            @Override
+            public void layoutDecoratedWithMargins(@NonNull View child, int left, int top, int right, int bottom) {
+                int dx = 0;
+                if (centerLastRow && !singleRow && adapter != null) {
+                    int count = adapter.appCount();
+                    int position = getPosition(child);
+                    int shift = GridNavigation.lastRowHalfShift(count, COLUMNS, dockRow);
+                    if (shift > 0 && position >= GridNavigation.lastRowStart(count, COLUMNS) && position < count) {
+                        dx = shift * (getWidth() - getPaddingLeft() - getPaddingRight()) / (2 * COLUMNS);
+                        if (rtlAppGrid) dx = -dx;
+                    }
+                }
+                super.layoutDecoratedWithMargins(child, left + dx, top, right + dx, bottom);
             }
 
             /**
@@ -1704,8 +1723,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) to = from - COLUMNS;
         else if (from + COLUMNS < n) to = from + COLUMNS;
         else to = from / COLUMNS < (n - 1) / COLUMNS ? n - 1 : from;
+        // center_last_row: Up and Down across the shifted last row go to the slot on screen, as focus does.
+        int shift = lastRowShift();
+        if (shift > 0 && (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
+            int count = adapter.appCount();
+            int lastStart = GridNavigation.lastRowStart(count, COLUMNS);
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP && from >= lastStart) {
+                to = lastStart - COLUMNS + GridNavigation.columnAbove(from, count, COLUMNS, shift);
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN && from >= lastStart - COLUMNS && from < lastStart) {
+                to = Math.min(n - 1, GridNavigation.intoLastRow(from % COLUMNS, count, COLUMNS, shift));
+            }
+        }
         if (to < 0 || to >= n || to == from) return;
-        keepScroll(() -> adapter.move(from, to));
+        int dest = to;
+        keepScroll(() -> adapter.move(from, dest));
         // The owner carries this tile: where it lands decides whether it is in the dock, not dock_apps (#499).
         if (to < COLUMNS) dockInSession.add(movingKey);
         else dockInSession.remove(movingKey);
@@ -2454,6 +2485,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
             if (position < COLUMNS) return false;          // dock row: let focus move to the top bar
             target = position - COLUMNS;
+            // center_last_row: from the shifted last row, up to the tile above it on screen.
+            if (lastRowShift() > 0 && position >= GridNavigation.lastRowStart(count, COLUMNS)) {
+                target = GridNavigation.lastRowStart(count, COLUMNS) - COLUMNS
+                        + GridNavigation.columnAbove(position, count, COLUMNS, lastRowShift());
+            }
         } else {
             int lastRowStart = ((count - 1) / COLUMNS) * COLUMNS;
             if (position >= lastRowStart) {
@@ -2461,6 +2497,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return true;
             }
             target = Math.min(position + COLUMNS, count - 1);
+            if (lastRowShift() > 0 && target >= lastRowStart) {
+                target = GridNavigation.intoLastRow(position % COLUMNS, count, COLUMNS, lastRowShift());
+            }
         }
         focusTile(target);
         // The default focus search clicks for Left/Right; Up/Down are handled here, so click for them too.
@@ -2608,7 +2647,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override public void onLibraryUp() {
         if (adapter.appCount() == 0) { firstTopButton().requestFocus(); return; }
         int lastRow = ((adapter.appCount() - 1) / COLUMNS) * COLUMNS;
-        focusTile(Math.min(lastRow + lastFocused % COLUMNS, adapter.appCount() - 1));
+        focusTile(lastRowShift() > 0
+                ? GridNavigation.intoLastRow(lastFocused % COLUMNS, adapter.appCount(), COLUMNS, lastRowShift())
+                : Math.min(lastRow + lastFocused % COLUMNS, adapter.appCount() - 1));
+    }
+
+    /** center_last_row's shift of the grid's last row, in half columns; 0 when it is off or the row is full. */
+    private int lastRowShift() {
+        return centerLastRow && !singleRow && adapter != null
+                ? GridNavigation.lastRowHalfShift(adapter.appCount(), COLUMNS, dockRow) : 0;
     }
 
     private void focusLibrary() {
