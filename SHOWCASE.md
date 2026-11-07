@@ -293,6 +293,7 @@ Walkthroughs other people wrote or recorded. Press coverage is listed in [docs/P
 - [Video tutorial, in Chinese](https://x.com/op7418/status/2112835248870592903), by [@op7418](https://x.com/op7418) on X
 - [Write-up, in Chinese](https://x.com/hfcorriez/status/2112732522937553003), by [@hfcorriez](https://x.com/hfcorriez) on X
 - [Factory, clean-up and a new home screen, measured on one 2 GB Google TV](https://github.com/MikeKiselyov/glass-home-android/blob/main/docs/SPEED.md): memory, idle CPU, frames and Home key time after a factory reset, the same script for each state, by [MikeKiselyov](https://github.com/MikeKiselyov) on GitHub
+- [Clean Your TV on a rooted webOS 3.5 TV](https://github.com/ferrets6/cytv-rooted-webos3): how [Clean Your TV — LG webOS](https://github.com/Razdva122/clean-your-tv-lg-webos) runs on a rooted LG 49UJ651V (webOS 3.5) with the standard IR remote, and what root adds: no LG Home bar on Home, Home kept in memory, Helper started at boot, by [ferrets6](https://github.com/ferrets6) on GitHub
 
 ## Find a project by TV brand
 
