@@ -1148,7 +1148,20 @@ turned off in Settings stays off.
   therefore adds the helpers, removes them and adds them again, a second apart. Seen on a Hisense SmartTV
   4K FFM (`songshan`, Android 11, `RTT2.220118.001`), whose standby (`com.hisense.STR_SUSPEND`) kills every
   third-party app except the one on screen (`PowerVtImp: kill 3rd app`): the remote's app buttons stopped
-  after the first standby with another app open. By hand, the same three writes:
+  after the first standby with another app open. On another unit of that set (the same build) the standby
+  kill left the helper on the enabled list rather than taking it off, under `Crashed services` with nothing
+  bound, so Home saw nothing missing and the helper's buttons stayed dead until a reinstall. `ServiceRepair` now runs the
+  same cycle for a recorded helper that is listed but not bound, three seconds after Home starts so a helper
+  still binding at boot is left to finish. Just after a wake one cycle with 1 s pauses was not always
+  enough there (Android read the list late, found it unchanged and kept the mark), so a cycle whose helper
+  is still not bound 5 s later is repeated with 2 s, then 4 s pauses. With that build, two standbys with
+  YouTube in front each left the helper crashed, and it was bound again 6 to 7 s after Home started (the
+  first cycle was enough both times). A
+  helper stuck under `Binding services` is not cleared by the cycle: on that unit it happened after a power
+  cut and after a plain reboot, with `dumpsys activity services com.gathin.tvhome` showing no record at all.
+  A force stop of the launcher (`am force-stop com.gathin.tvhome`, or Force stop in Settings > Apps) and then
+  Home cleared it there, since the force stop takes the helper off the list and Home puts it back. By hand,
+  the same three writes:
 
   ```sh
   tools/tv.py "settings put secure enabled_accessibility_services com.gathin.tvhome/.InputKeyService; sleep 1; settings put secure enabled_accessibility_services ''; sleep 1; settings put secure enabled_accessibility_services com.gathin.tvhome/.InputKeyService"
@@ -1242,9 +1255,11 @@ turned off in Settings stays off.
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
   `enabled_accessibility_services` naming `com.gathin.tvhome/com.gathin.tvhome.HomeKeyService` while
   `accessibility_enabled` read `0`, `dumpsys accessibility` showed `Bound services:{}` and the Home
-  button opened Google TV. `restore_key_services` does not repair this state: `ServiceRepair` writes
-  `accessibility_enabled 1` only on the path that also puts a missing helper back on the list, and here
-  the list was complete. Write the flag back, then read the dump again; toggling the service off and on
+  button opened Google TV. `restore_key_services` did not repair this state when this was seen: `ServiceRepair`
+  wrote `accessibility_enabled 1` only on the path that also puts a missing helper back on the list, and here
+  the list was complete. It now also runs its cycle and writes the flag for a recorded helper that is listed but
+  not bound, which repaired the Hisense songshan standby case above; on the TCL G08 that is not retested. Write
+  the flag back, then read the dump again; toggling the service off and on
   in Accessibility, which is what the owner did, brought the redirect back for that session. Whether
   that manual flag change survived the next reboot was not retested; the cold-boot follow-up below
   tests the fork's separate opt-in startup repair. In one cold-boot test of that repair, TCL had reset
