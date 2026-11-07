@@ -72,6 +72,7 @@
 com.miui.tv.analytics
 com.xiaomi.statistic
 com.google.android.feedback
+com.google.android.tv.bugreportsender
 
 # PatchWall, content rows, sponsored rows
 com.mitv.tvhome.atv                         # PatchWall
