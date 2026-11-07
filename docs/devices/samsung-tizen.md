@@ -293,3 +293,35 @@ available nor tested on this generation. `TokenAuthSupport: true` is an API-decl
 remote-control session was opened, so no "Allow" prompt was triggered, no pairing grant exists from
 this session, and grant duration remains unmeasured on this set. The `/api/v2/` reply carried the
 DUID, the Wi-Fi MAC and the access point's MAC, which are left out of everything published here.
+
+## UA50MU7000: second-unit read, 7 Series 50", over Wi-Fi
+
+A third owner's read-only check of a Samsung UA50MU7000 (7 Series 50", 2019) on the same
+home network as a PC. Captured from `GET http://<tv>:8001/api/v2/` only, plus a photo of the
+"About This TV" screen. Nothing on the TV was changed, and no ports beyond 8001 were probed.
+Identifiers (serial, MAC, Smart Hub IDs, Netflix ESN, device UID) are omitted on purpose.
+
+| Field | Observed value |
+|---|---|
+| Model string (`/api/v2/`) | `17_KANTM_UHD_BASIC` |
+| Retail model | UA50MU7000 |
+| System | Tizen (Samsung Smart Hub) |
+| Software version (About screen) | `T-KTMUABC-1410.1` |
+| Sub-micom version | `T-KTMINTV-1012` |
+| e-Manual version | `KTMISDBL-3.2.1` |
+| `firmwareVersion` (API) | `Unknown` |
+| `developerMode` | `0` |
+| `TokenAuthSupport` | `true` |
+| `networkType` | wireless |
+| Country code (API) | `MA` |
+| Resolution (API) | 3840x2160 |
+
+What this unit answers: the 8001 HTTP API with model metadata, the remote websocket
+(`TokenAuthSupport: true`), and a Samsung SmartTV `type`. Developer Mode is off.
+
+What it rules out, as on the AU8000 above: no ADB on retail firmware, so no `pm disable-user`
+list is possible from outside. Remote-key settings or DNS blocking are the realistic routes; see
+[cleanyour.tv/not-android](https://cleanyour.tv/not-android).
+
+Not checked: port scan, 8002, 26101, Developer Mode, a remote-key pairing prompt, and whether
+the firmware can be read through `sdb`.
