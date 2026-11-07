@@ -22,6 +22,33 @@ if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }
 $env:TV_HOST = $TvHost
 Set-Location $PSScriptRoot
 
+# The tools venv's Python runs tv.py and b64push.py. Without it, say how to make one (as tools\disable.ps1
+# does) instead of failing on the missing executable (#1142). The tools are named absolutely: pwsh on
+# Linux hands a native argument's backslashes to Python untouched, so `..\tools\tv.py` would not open.
+$py = '..\tools\venv\Scripts\python.exe'
+if (-not (Test-Path $py)) { throw 'run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt' }
+$toolsDir = Join-Path $PSScriptRoot '..\tools'
+$tvPy = Join-Path $toolsDir 'tv.py'
+$b64pushPy = Join-Path $toolsDir 'b64push.py'
+
+# Below minSdk, `pm install` refuses the APK with INSTALL_FAILED_OLDER_SDK - and only after gradle has
+# spent a minute building and b64push has pushed the APK to the TV (#576). Ask the TV first. The
+# number comes from the build file, so it follows the launcher instead of a hard-coded copy here.
+$minSdk = $null
+$gradleMinSdk = Select-String -Path app\build.gradle -Pattern '^\s*minSdk\s+(\d{1,3})\s*$' -ErrorAction SilentlyContinue |
+    Select-Object -First 1
+if ($gradleMinSdk) { $minSdk = $gradleMinSdk.Matches[0].Groups[1].Value }
+$tvSdk = ''
+# A getprop that fails, or a TV that does not answer, must not stop the check: Windows PowerShell 5.1
+# turns a native command's redirected stderr into a terminating error (#2890).
+try { $tvSdk = ((& $py -I $tvPy 'getprop ro.build.version.sdk' 2>$null) -join "`n") -replace '[^0-9]', '' } catch { }
+if ($minSdk -and $tvSdk -and [int]$tvSdk -lt [int]$minSdk) {
+    throw ("ERROR: this TV runs SDK $tvSdk and the launcher is built with minSdk $minSdk (app\build.gradle)," + "`n" +
+           "so pm install would answer INSTALL_FAILED_OLDER_SDK. Nothing was built, pushed or disabled." + "`n" +
+           "The debloat half of the repo still applies to that set, from its own home screen; the launcher" + "`n" +
+           "half would need your own build with a lower minSdk (docs\TROUBLESHOOTING.md).")
+}
+
 # SKIP_BUILD=1 installs the APK already built (tools\docker-build.ps1 builds it in Docker, with no JDK here).
 if ($env:SKIP_BUILD -ne '1') {
     if (-not $env:JAVA_HOME -or -not (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
@@ -41,7 +68,6 @@ if ($env:SKIP_BUILD -ne '1') {
     throw 'SKIP_BUILD=1 but there is no app\build\outputs\apk\release\app-release.apk; build it first (tools\docker-build.ps1)'
 }
 
-$py = '..\tools\venv\Scripts\python.exe'
 # Which app owns Home differs by build; ask the TV, but only accept a launcher we recognise (the answer
 # can also be Android's chooser "android", the setup wizard, or another third-party launcher).
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
@@ -49,7 +75,7 @@ $py = '..\tools\venv\Scripts\python.exe'
 # docs/devices/oppo-k9-55-oppocnm632.md.
 $knownStock = @('com.google.android.tvlauncher', 'com.google.android.apps.tv.launcherx', 'com.google.android.leanbacklauncher', 'com.mitv.tvhome')
 if (-not $StockLauncher) {
-    $homePkg = & $py -I ..\tools\tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' | Select-Object -Last 1
+    $homePkg = & $py -I $tvPy 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' | Select-Object -Last 1
     if ($LASTEXITCODE -ne 0 -or -not $homePkg) { throw 'could not ask the TV which launcher owns Home; check -TvHost and the debugging prompt, or pass -StockLauncher <package>' }
     $homePkg = "$homePkg".Trim().Split('/')[0]
     if ($knownStock -contains $homePkg) { $StockLauncher = $homePkg }
@@ -57,7 +83,7 @@ if (-not $StockLauncher) {
     elseif ($homePkg -eq 'android') {
         # Android's chooser: launchers tie and no default is set (a restore followed by a re-applied list
         # ends here). Take the one known stock launcher among the HOME claimants, if there is exactly one.
-        $claimants = (& $py -I ..\tools\tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
+        $claimants = (& $py -I $tvPy 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME') -join "`n"
         if ($LASTEXITCODE -ne 0) { throw 'could not query Home claimants; stock launcher was left untouched' }
         $found = @($knownStock | Where-Object { $claimants -match ([regex]::Escape($_) + '/') })
         if ($found.Count -eq 1) { $StockLauncher = $found[0]; Write-Host "Home is Android's chooser; the stock launcher among the candidates is $StockLauncher." }
@@ -69,27 +95,30 @@ Write-Host "Stock launcher: $StockLauncher"
 $disableStock = if ($StockLauncher -eq 'none') { 'echo stock launcher left alone' } else { "pm disable-user --user 0 $StockLauncher" }
 
 $apk = 'app\build\outputs\apk\release\app-release.apk'
-& $py -I ..\tools\b64push.py $apk /data/local/tmp/tvhome.apk
+& $py -I $b64pushPy $apk /data/local/tmp/tvhome.apk
 if ($LASTEXITCODE -ne 0) { throw 'APK upload failed' }
-$out = & $py -I ..\tools\tv.py 'pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk'
+$out = & $py -I $tvPy 'pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk'
 Write-Host $out
-if ($LASTEXITCODE -ne 0 -or "$out" -notmatch 'Success') { throw 'pm install failed; the stock launcher was left untouched' }
+if ($LASTEXITCODE -ne 0 -or "$out" -notmatch 'Success') {
+    if ("$out" -match 'INSTALL_FAILED_OLDER_SDK') {
+        # The pre-flight above missed it (a TV whose getprop did not answer, or an APK built elsewhere):
+        # name the real cause instead of leaving the raw Failure line to be read as an ADB problem.
+        throw "pm install refused the APK as too new for this set (INSTALL_FAILED_OLDER_SDK): the TV runs an older SDK than the launcher's minSdk $(if ($minSdk) { $minSdk } else { 'in app\build.gradle' }). The stock launcher was left untouched. Read both numbers and see docs\TROUBLESHOOTING.md."
+    }
+    throw 'pm install failed; the stock launcher was left untouched'
+}
 # Stop the instance Android restarted mid-update, which can come up non-occluding (see build-and-install.sh,
 # #1101), and write back a key helper the force stop took off the list. Through stdin: Windows PowerShell 5.1
 # drops the inner double quotes from a native argument.
 's=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop com.gathin.tvhome; case "$s" in *com.gathin.tvhome*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac' |
-    & $py -I ..\tools\tv.py --batch | Out-Null
-# Android 9 only accepts a component here; Android 10+ also takes a bare package name.
-$out = & $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
-Write-Host $out
-if ($LASTEXITCODE -ne 0 -or "$out" -match 'Error') { throw 'could not set the new launcher as home; the stock launcher was left untouched' }
+    & $py -I $tvPy --batch | Out-Null
 # Start the launcher on its own, before the stock Home is touched (see build-and-install.sh, #239):
 # in the batch a failed start only prints an Error line and the stock launcher would be disabled anyway.
 # With -StockLauncher none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would make this
 # launcher the home process until a restart, and Android then blocks the stock launcher's button launches (#1274).
 $startCmd = if ($StockLauncher -eq 'none') { 'am start -W -n com.gathin.tvhome/.MainActivity' }
             else { 'am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n com.gathin.tvhome/.MainActivity' }
-$start = (& $py -I ..\tools\tv.py $startCmd) -join "`n"
+$start = (& $py -I $tvPy $startCmd) -join "`n"
 Write-Host $start
 if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m)^Error') { throw "the new launcher did not start (see above); $StockLauncher was left enabled" }
 @(
@@ -97,7 +126,7 @@ if ($LASTEXITCODE -ne 0 -or $start -notmatch 'Status: ok' -or $start -match '(?m
     'cmd package compile -m speed -f com.gathin.tvhome',
     $disableStock,
     'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
-) | & $py -I ..\tools\tv.py --batch
+) | & $py -I $tvPy --batch
 # A failed batch is not fatal here: the stock launcher may already be disabled, so fall through to the
 # Home check, which rolls back when Home is not ours.
 if ($LASTEXITCODE -ne 0) { Write-Warning "tv.py --batch failed (exit code $LASTEXITCODE); checking where Home ended up" }
@@ -106,7 +135,7 @@ $homeQuery = 'cmd package resolve-activity --brief -a android.intent.action.MAIN
 # Home's owner, or '' when the TV cannot be reached: $null.Trim() would throw past the rollback.
 function Get-HomeNow {
     $ErrorActionPreference = 'Continue'
-    $line = @(& $py -I ..\tools\tv.py $homeQuery 2>$null) | Where-Object { $_ -match '\S' } | Select-Object -Last 1
+    $line = @(& $py -I $tvPy $homeQuery 2>$null) | Where-Object { $_ -match '\S' } | Select-Object -Last 1
     if ($LASTEXITCODE -ne 0) { return '' }
     "$line".Trim()
 }
@@ -118,11 +147,11 @@ function Undo-Handover {
         return $false
     }
     $ErrorActionPreference = 'Continue'
-    & $py -I ..\tools\tv.py "pm enable --user 0 $StockLauncher" 2>$null | Out-Null
+    & $py -I $tvPy "pm enable --user 0 $StockLauncher" 2>$null | Out-Null
     $enableExit = $LASTEXITCODE
     if ($enableExit -ne 0) { Write-Warning "stock launcher enable failed (exit code $enableExit); checking recovery" }
     # set-home-activity needs pkg/activity on Android 9, so resolve the stock component on the TV.
-    & $py -I ..\tools\tv.py "cmd package set-home-activity --user 0 `$(cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME $StockLauncher | tail -n 1)" 2>$null | Out-Null
+    & $py -I $tvPy "cmd package set-home-activity --user 0 `$(cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME $StockLauncher | tail -n 1)" 2>$null | Out-Null
     $setHomeExit = $LASTEXITCODE
     if ($setHomeExit -ne 0) { Write-Warning "stock Home restore failed (exit code $setHomeExit); checking recovery" }
     $back = Get-HomeNow
@@ -158,7 +187,7 @@ function Enable-Service([string]$Name) {
     # TV's shell then fails with "no closing quote" while the service stays off.
     # TCL names the op AUTO_START or APP_AUTO_START; without write-settings the grant is lost at the next reboot.
     ('cmd appops set com.gathin.tvhome AUTO_START allow 2>/dev/null; cmd appops set com.gathin.tvhome APP_AUTO_START allow 2>/dev/null; appops write-settings 2>/dev/null; s=$(settings get secure enabled_accessibility_services); case "$s" in *' + $Name + '*) settings put secure enabled_accessibility_services ""; settings put secure accessibility_enabled 0; sleep 1; settings put secure enabled_accessibility_services "$s" ;; null|"") settings put secure enabled_accessibility_services ' + $svc + ' ;; *) settings put secure enabled_accessibility_services "$s:' + $svc + '" ;; esac; settings put secure accessibility_enabled 1; echo ' + $Name + ' enabled') |
-        & $py -I ..\tools\tv.py --batch
+        & $py -I $tvPy --batch
     if ($LASTEXITCODE -ne 0) { throw "could not enable $Name (tv.py exit code $LASTEXITCODE); Home is already the new launcher" }
 }
 if ($InputKeyService) { Enable-Service 'InputKeyService' }
@@ -178,7 +207,7 @@ if ($RestoreKeyServices) {
     $mark = 'secure-settings-revoked'
     $hint = 'the launcher may still hold it; run again with -RestoreKeyServices to keep it on purpose'
 }
-$out = ($step | & $py -I ..\tools\tv.py --batch) -join "`n"
+$out = ($step | & $py -I $tvPy --batch) -join "`n"
 Write-Host $out
 # Only a line that is the marker and nothing else counts: tv.py --batch echoes the step, which contains it too.
 if (($out -split '\r?\n') -cnotcontains $mark) { throw "WRITE_SECURE_SETTINGS is not in the state this install asked for ($mark missing): $hint. The launcher is installed and is Home. Check by hand: tools\tv.py 'dumpsys package com.gathin.tvhome'" }
