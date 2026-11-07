@@ -1,6 +1,6 @@
 {
-  "tv": "TIM TIMVISION Box (Vantiva/Technicolor UZW4010TIM, Marvell BG4CT), Italy",
-  "os": "Android TV 8.0",
+  "tv": "TIM TIMVISION Box (Technicolor Jade, uzw4010tim, Marvell BG4CT), Italy, DVB-T2",
+  "os": "Android TV 8.0.0",
   "brand": "TIM",
-  "notes": "Operator streaming box: TIMVISION telemetry, Smarts monitoring agent, Movenda OMA-DM device management, Technicolor boot trace, Google feedback and recommendation rows, TIM smart home; TIMVISION service parts commented out (off on this set, no subscription); voice, mirroring and preloaded apps off by choice; the stock launcher is the TIMVISION app with HOME priority 2, so the new launcher needs it disabled (`STOCK_LAUNCHER=timvision.launcher`); Chromecast, updaters and remote services kept; reboot-checked"
+  "notes": "Marvell BG4CT SoC, 2 GB RAM, 8 GB Flash, integrated DVB-T/T2 tuner; TIM telemetry, OMA-DM, Broadpeak nanoCDN, autoperiodicreboot, silent autoinstalls and commercial preloads disabled; Chromecast, Assistant, Remote Control and DVB-T scan/tuner preserved; dual-mode support for Complete Debloat or Hybrid DTT Live TV"
 }
