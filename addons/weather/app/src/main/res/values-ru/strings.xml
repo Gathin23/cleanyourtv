@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода</string>
+
+    <string name="feels_like">Ощущается как %1$d°</string>
+    <string name="humidity">Влажность %1$d%%</string>
+    <string name="wind">Ветер %1$d км/ч</string>
+    <string name="wind_mph">Ветер %1$d миль/ч</string>
+    <string name="other_unit_c">%1$d°C</string>
+    <string name="other_unit_f">%1$d°F</string>
+    <string name="high_low">%1$d° / %2$d°</string>
+    <string name="aqi_line">Качество воздуха %1$d · %2$s</string>
+    <string name="updated">Обновлено %1$s · Open-Meteo</string>
+    <string name="change_city">Сменить город</string>
+    <string name="weather_settings">Настройки погоды</string>
+    <string name="settings_done">Готово</string>
+    <string name="setting_units">Единицы температуры</string>
+    <string name="unit_c">Цельсий (°C)</string>
+    <string name="unit_f">Фаренгейт (°F)</string>
+    <string name="setting_both_units">Показывать обе единицы</string>
+    <string name="setting_days">Длина прогноза</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d день</item>
+        <item quantity="few">%1$d дня</item>
+        <item quantity="many">%1$d дней</item>
+        <item quantity="other">%1$d дней</item>
+    </plurals>
+    <string name="setting_humidity">Показывать влажность</string>
+    <string name="setting_wind">Показывать ветер</string>
+    <string name="setting_reset">Сбросить настройки погоды</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">Вкл</string>
+    <string name="option_off">Выкл</string>
+    <string name="loading">Загружаем погоду…</string>
+    <string name="offline">Не удаётся связаться с Open-Meteo. Проверьте подключение ТВ к интернету; повторная попытка через 5 минут.</string>
+
+    <string name="pick_title">Какой город?</string>
+    <string name="pick_hint">Название города, например Улан-Батор</string>
+    <string name="pick_search">Найти</string>
+    <string name="pick_none">Место с названием \"%1$s\" не найдено</string>
+    <string name="pick_first">Выберите город, чтобы увидеть погоду.</string>
+
+    <string name="aqi_good">Хорошо</string>
+    <string name="aqi_moderate">Умеренно</string>
+    <string name="aqi_sensitive">Нездорово для чувствительных групп</string>
+    <string name="aqi_unhealthy">Нездорово</string>
+    <string name="aqi_very_unhealthy">Очень нездорово</string>
+    <string name="aqi_hazardous">Опасно</string>
+
+    <string name="sky_clear">Ясно</string>
+    <string name="sky_sunny">Солнечно</string>
+    <string name="sky_mostly_clear">Преимущественно ясно</string>
+    <string name="sky_mostly_sunny">Преимущественно солнечно</string>
+    <string name="sky_partly_cloudy">Переменная облачность</string>
+    <string name="sky_cloudy">Облачно</string>
+    <string name="sky_fog">Туман</string>
+    <string name="sky_drizzle">Морось</string>
+    <string name="sky_freezing_drizzle">Ледяная морось</string>
+    <string name="sky_light_rain">Небольшой дождь</string>
+    <string name="sky_rain">Дождь</string>
+    <string name="sky_heavy_rain">Сильный дождь</string>
+    <string name="sky_freezing_rain">Ледяной дождь</string>
+    <string name="sky_light_snow">Небольшой снег</string>
+    <string name="sky_snow">Снег</string>
+    <string name="sky_heavy_snow">Сильный снег</string>
+    <string name="sky_snow_grains">Снежные зёрна</string>
+    <string name="sky_showers">Ливень</string>
+    <string name="sky_snow_showers">Ливневый снег</string>
+    <string name="sky_thunderstorm">Гроза</string>
+</resources>
