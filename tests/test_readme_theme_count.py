@@ -31,6 +31,14 @@ page this file could not see while it said "Dezoito temas": Portuguese words wer
 so the claim was read as no claim at all, and the pin below named five pages while the tree held
 twenty-one themes and that page said eighteen.
 
+README.he.md is the seventh, and it was invisible for a second reason: the page says "21 ערכות"
+beside a link written without code spans around the folder ("[themes](themes/)"), while every entry
+in claims() was matched by the exact string "[`themes/`](themes/)". So the page's number was read as
+no claim at all - not as a wrong one - and the fold-in 3c122bc0, which bumped the Themes row from
+twenty-one to twenty-six on the six pages it could see, left the Hebrew page offering a reader five
+fewer looks than the repo ships. The link is matched with or without the code spans now, because the
+count is a claim about the tree whatever shape the link has.
+
 That one table is what README.md's row is read through too. The row had a twelve-word table of its own
 while the sentences were read through one that carries twenty, and the two agreed only while themes/
 held twelve: the thirteenth theme, "thirteen ship in themes/", is what docs/workflows/theme.md step 5
@@ -60,7 +68,7 @@ ROW_START = "| **Themes** |"
 # Every feature row that names themes/ and states how many ship there, whatever language it is in:
 # English "eleven ship in", German "Zehn liegen in", Dutch "staan tien thema's", Ukrainian
 # "постачається чотирнадцять". The words come from the four languages whose front pages write the
-# count as a word today (README.tr.md writes digits), two to twenty-five each; one is left out because
+# count as a word today (README.tr.md writes digits), two to thirty each; one is left out because
 # "een" and "ein" are also the articles those languages put before a noun, so an English "one" would
 # read a Dutch sentence as a claim of one theme.
 NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
@@ -68,16 +76,19 @@ NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7
                 "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
                 "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20,
                 "twenty-one": 21, "twenty-two": 22, "twenty-three": 23, "twenty-four": 24, "twenty-five": 25,
+                "twenty-six": 26, "twenty-seven": 27, "twenty-eight": 28, "twenty-nine": 29, "thirty": 30,
                 "zwei": 2, "drei": 3, "vier": 4, "fünf": 5, "sechs": 6, "sieben": 7, "acht": 8,
                 "neun": 9, "zehn": 10, "elf": 11, "zwölf": 12, "dreizehn": 13, "vierzehn": 14,
                 "fünfzehn": 15, "sechzehn": 16, "siebzehn": 17, "achtzehn": 18, "neunzehn": 19,
                 "zwanzig": 20, "einundzwanzig": 21, "zweiundzwanzig": 22, "dreiundzwanzig": 23,
-                "vierundzwanzig": 24, "fünfundzwanzig": 25,
+                "vierundzwanzig": 24, "fünfundzwanzig": 25, "sechsundzwanzig": 26, "siebenundzwanzig": 27,
+                "achtundzwanzig": 28, "neunundzwanzig": 29, "dreißig": 30,
                 "twee": 2, "drie": 3, "vijf": 5, "zes": 6, "zeven": 7, "negen": 9, "tien": 10,
                 "twaalf": 12, "dertien": 13, "veertien": 14, "vijftien": 15, "zestien": 16,
                 "zeventien": 17, "achttien": 18, "negentien": 19, "twintig": 20,
                 "eenentwintig": 21, "tweeëntwintig": 22, "drieëntwintig": 23, "vierentwintig": 24,
-                "vijfentwintig": 25,
+                "vijfentwintig": 25, "zesentwintig": 26, "zevenentwintig": 27, "achtentwintig": 28,
+                "negenentwintig": 29, "dertig": 30,
                 # Ukrainian, README.uk.md's row as it is written today. The apostrophe is the page's
                 # own: п'ять, дев'ять and п'ятнадцять carry a straight one there.
                 "два": 2, "три": 3, "чотири": 4, "п'ять": 5, "шість": 6, "сім": 7, "вісім": 8,
@@ -85,14 +96,18 @@ NUMBER_WORDS = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7
                 "чотирнадцять": 14, "п'ятнадцять": 15, "шістнадцять": 16, "сімнадцять": 17,
                 "вісімнадцять": 18, "дев'ятнадцять": 19, "двадцять": 20,
                 "двадцять одна": 21, "двадцять дві": 22, "двадцять три": 23, "двадцять чотири": 24,
-                "двадцять п'ять": 25}
+                "двадцять п'ять": 25, "двадцять шість": 26, "двадцять сім": 27, "двадцять вісім": 28,
+                "двадцять дев'ять": 29, "тридцять": 30}
 # The row is read through that same table, so a thirteenth theme is "thirteen ship in themes/" and not
 # a row that states nothing. A second table for the row - one that stopped at twelve while this one
 # carried twenty - is what made the thirteenth theme fail as "the Themes row states no count".
 # "one" is the one word the table leaves out and the row can carry, because COUNT anchors the number
 # to "ship": "one ship in themes/" is a count where a bare "een"/"ein" on a page line is an article.
 COUNT_WORDS = {"one": 1, **NUMBER_WORDS}
-THEMES_LINK = "[`themes/`](themes/)"
+# The link is written with the folder in code spans on every page but README.he.md, which writes
+# "[themes](themes/)"; both are the themes link, so both are read. Matching the code-span form alone
+# made the Hebrew page's count invisible rather than wrong, which is the failure this file exists for.
+THEMES_LINK = re.compile(r"\[`?themes/?`?\]\(themes/?\)")
 
 
 def word_alternation(words):
@@ -145,7 +160,7 @@ def claims(text):
     """
     found = []
     for line in text.split("\n"):
-        if THEMES_LINK not in line:
+        if THEMES_LINK.search(line) is None:
             continue
         values = {int(t) if t.isdigit() else NUMBER_WORDS[t.lower()] for t in NUMBER.findall(line)}
         if values:
@@ -181,17 +196,18 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these six pages state the count today, so one that stops
+        # stale in the first place: these seven pages state the count today, so one that stops
         # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
         # the Ukrainian words above; before that it stated its count and this list still read three.
         # README.tr.md states its count in digits, so it needs no words in the table, and
         # README.pt-BR.md is the sixth: it stated "Dezoito temas" (eighteen, against twenty-one in
         # themes/) where this list did not look, so a page that leaves the list now fails here in
-        # the same sentence that names the pages which still state the count.
+        # the same sentence that names the pages which still state the count. README.he.md is the
+        # seventh, and it was missing for the other reason a page can be invisible: its link.
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.md", "README.nl.md", "README.pt-BR.md",
-                          "README.tr.md", "README.uk.md"],
-                         "the front pages that state the theme count are not the six that did: "
+                         ["README.de.md", "README.he.md", "README.md", "README.nl.md",
+                          "README.pt-BR.md", "README.tr.md", "README.uk.md"],
+                         "the front pages that state the theme count are not the seven that did: "
                          f"{sorted(set(stating))}")
 
 
@@ -257,6 +273,16 @@ class CountTest(unittest.TestCase):
                       "`config.json` enviado pelo Wi-Fi, sem recompilação. 21 temas estão incluídos em "
                       "[`themes/`](themes/), incluindo o `default/` integrado. |")
         self.assertEqual([({21}, portuguese)], claims(portuguese))
+
+    def test_a_link_without_code_spans_is_read(self):
+        """README.he.md's row as the page writes it: the folder is not in code spans."""
+        hebrew = ("| **ערכות עיצוב** | רקע, תמונה ופריסה מקובץ <code dir=\"ltr\">config.json</code> "
+                  "שנשלח דרך הרשת. יש 26 ערכות ב־[themes](themes/), כולל ברירת המחדל. |")
+        self.assertEqual([({26}, hebrew)], claims(hebrew))
+
+    def test_a_link_without_code_spans_and_without_a_number_is_not_a_claim(self):
+        tools = "[`theme.sh`](tools/theme.sh) | Push a folder from [themes](themes/)"
+        self.assertEqual([], claims(tools))
 
     def test_a_row_that_does_not_state_a_count_is_not_a_claim(self):
         tools = "| [`theme.sh`](tools/theme.sh) | Push a folder from [`themes/`](themes/) |"

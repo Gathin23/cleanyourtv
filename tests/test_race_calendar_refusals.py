@@ -22,11 +22,15 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 import argparse
 import contextlib
 import datetime
+import errno
+import hashlib
 import http.client
 import io
 import json
 import os
 from pathlib import Path
+import shutil
+import stat
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -477,6 +481,344 @@ class RefusalTest(unittest.TestCase):
         self.assertEqual(status, 0, stderr)
         self.assertIn("--season", self.out.getvalue())
         self.urlopen.assert_not_called()
+
+
+class ConfigWriteTest(unittest.TestCase):
+    """Failed local writes leave the theme, including a symlink's target, as it was."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name).resolve()
+        self.folder = self.root / "theme-客廳 Trịnh"
+        self.folder.mkdir()
+        self.config = self.folder / "config.json"
+        self.target = self.config
+        self.original = {**THEME, "greeting_name": "客廳 Trịnh", "columns": 6,
+                         "dock_apps": ["com.example.player"]}
+        self.old = (json.dumps(self.original, ensure_ascii=False, indent=2) + "\n") \
+            .replace("\n", "\r\n").encode("utf-8-sig")
+        self.config.write_bytes(self.old)
+        (self.folder / "unrelated.bin").write_bytes(b"unrelated sentinel")
+
+    def snapshot(self):
+        found = {}
+        for path in self.root.rglob("*"):
+            if path.is_symlink():
+                value = ("link", os.readlink(path))
+            elif path.is_dir():
+                value = ("directory",)
+            else:
+                value = ("file", hashlib.sha256(path.read_bytes()).hexdigest(),
+                         stat.S_IMODE(path.stat().st_mode))
+            found[str(path.relative_to(self.root))] = value
+        return found
+
+    def link(self, target):
+        self.config.unlink()
+        try:
+            self.config.symlink_to(os.path.relpath(target, self.folder))
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"symlinks unavailable: {error}")
+        self.target = target
+
+    def run_main(self, how="ok", *, cleanup_error=False):
+        real_open = Path.open
+        real_directory = tempfile.TemporaryDirectory
+
+        class FailedCleanup(real_directory):
+            def __exit__(self, *exc):
+                # Keep real writes, replacement and resource cleanup; only the reported error is
+                # injected, after leaving the staging context.
+                super().__exit__(*exc)
+                raise PermissionError(errno.EACCES, "staging cleanup denied")
+
+        class FailedWrite:
+            def __init__(self, stream):
+                self.stream = stream
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                try:
+                    if how in ("flush", "close") and exc[0] is None:
+                        self.stream.flush()
+                        raise OSError(errno.ENOSPC, f"{how} failed: No space left on device")
+                finally:
+                    self.stream.close()
+
+            def write(self, text):
+                if how in ("flush", "close"):
+                    return self.stream.write(text)
+                if how != "before":
+                    self.stream.write(text[:12])
+                    self.stream.flush()
+                number = errno.ENOSPC if how == "enospc" else errno.EIO
+                raise OSError(number, os.strerror(number))
+
+        def opening(path, mode="r", *args, **kwargs):
+            if how == "denied" and path == self.target and mode in ("r+", "w"):
+                raise PermissionError(errno.EACCES, "write permission denied")
+            stream = real_open(path, mode, *args, **kwargs)
+            return FailedWrite(stream) if mode == "w" and how in (
+                "before", "partial", "enospc", "flush", "close") else stream
+
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(mock.patch.object(Path, "open", opening))
+            if cleanup_error:
+                stack.enter_context(mock.patch.object(race_calendar.tempfile, "TemporaryDirectory",
+                                                       FailedCleanup))
+            if how in ("replace", "copymode"):
+                owner, name = (os, "replace") if how == "replace" else (shutil, "copymode")
+                stack.enter_context(mock.patch.object(owner, name,
+                    side_effect=PermissionError(errno.EACCES, f"{how} denied")))
+            fetch = stack.enter_context(mock.patch.object(race_calendar.urllib.request, "urlopen",
+                side_effect=lambda *a, **k: io.BytesIO(RESPONSE)))
+            stack.enter_context(mock.patch.object(race_calendar, "datetime", clock()))
+            stack.enter_context(mock.patch.object(sys, "argv", ["race_calendar.py", str(self.folder),
+                                                                 "--season", "2026"]))
+            stack.enter_context(contextlib.redirect_stdout(out))
+            stack.enter_context(contextlib.redirect_stderr(err))
+            status = race_calendar.main()
+            fetch.assert_called_once()
+        return status, out.getvalue(), err.getvalue()
+
+    def assert_write_refused(self, result, before):
+        status, out, err = result
+        self.assertEqual(status, 2, err)
+        self.assertEqual(out, "")
+        self.assertNotIn("Traceback", err)
+        self.assertIn(f"could not write {self.config}", err)
+        self.assertIn("is not in the theme", err)
+        self.assertEqual(self.snapshot(), before,
+                         "original hashes and modes must match; no staged files may remain")
+
+    def assert_updated(self, result, before, *, cleanup_warning=False):
+        status, out, err = result
+        self.assertEqual(status, 0, err)
+        if cleanup_warning:
+            self.assertIn("warning", err.lower())
+            self.assertIn("staging cleanup denied", err)
+            self.assertIn(str(self.config), err)
+            self.assertNotIn("not in the theme", err)
+            self.assertNotIn("could not write", err)
+            self.assertNotIn("Traceback", err)
+        else:
+            self.assertEqual(err, "")
+        self.assertEqual(out, f"1 races from the 2026 season -> {self.config}\n"
+                         "next: round 1 Example Grand Prix, race 2026-01-04T14:00:00Z\n")
+        data = self.target.read_bytes()
+        self.assertFalse(data.startswith(b"\xef\xbb\xbf"))
+        updated = json.loads(data.decode("utf-8"))
+        self.assertEqual(updated["race_calendar"], [{
+            "round": 1, "name": "Example Grand Prix", "place": "",
+            "sessions": [{"name": "RACE", "start": "2026-01-04T14:00:00Z"}],
+        }])
+        expected = self.original if before.get(str(self.target.relative_to(self.root))) else {}
+        self.assertEqual({k: v for k, v in updated.items() if k != "race_calendar"},
+                         {k: v for k, v in expected.items() if k != "race_calendar"})
+        # write_text() used platform-default newline translation, including CRLF on Windows.
+        text = (json.dumps(updated, indent=2, ensure_ascii=False) + "\n").replace("\n", os.linesep)
+        self.assertEqual(data, text.encode("utf-8"))
+        after = self.snapshot()
+        key = str(self.target.relative_to(self.root))
+        before = {k: v for k, v in before.items() if k != key}
+        after.pop(key)
+        self.assertEqual(after, before, "only the target changes; no staging or unrelated edits")
+
+    def test_success_updates_or_creates_config_with_compatible_output(self):
+        for existing in (True, False):
+            with self.subTest(existing=existing):
+                if not existing:
+                    self.config.unlink()
+                    (self.folder / "ordinary.txt").write_text("control", encoding="utf-8")
+                before = self.snapshot()
+                self.assert_updated(self.run_main(), before)
+                if not existing:
+                    self.assertEqual(stat.S_IMODE(self.config.stat().st_mode),
+                                     stat.S_IMODE((self.folder / "ordinary.txt").stat().st_mode))
+
+    def test_failed_writes_preserve_existing_config_and_leave_missing_config_absent(self):
+        for existing in (True, False):
+            for how in ("before", "partial", "enospc", "flush", "close", "replace", "denied"):
+                with self.subTest(existing=existing, how=how):
+                    self.config.write_bytes(self.old)
+                    if not existing:
+                        self.config.unlink()
+                    if how == "denied" and not existing:
+                        continue
+                    before = self.snapshot()
+                    result = self.run_main(how)
+                    if how in ("enospc", "flush", "close"):
+                        self.assertIn("No space left on device", result[2])
+                    self.assert_write_refused(result, before)
+
+    def test_permission_copy_failure_leaves_existing_config_unchanged(self):
+        before = self.snapshot()
+        self.assert_write_refused(self.run_main("copymode"), before)
+
+    def test_successful_symlink_update_keeps_the_link_and_updates_its_target(self):
+        target = self.root / "shared" / "target.json"
+        target.parent.mkdir()
+        target.write_bytes(self.old)
+        self.link(target)
+        before = self.snapshot()
+        self.assert_updated(self.run_main(), before)
+        self.assertTrue(self.config.is_symlink())
+
+    def test_failed_symlink_updates_preserve_link_and_target(self):
+        target = self.root / "shared" / "target.json"
+        target.parent.mkdir()
+        self.link(target)
+        for how in ("before", "partial", "enospc", "flush", "close", "copymode", "replace", "denied"):
+            with self.subTest(how=how):
+                target.write_bytes(self.old)
+                before = self.snapshot()
+                self.assert_write_refused(self.run_main(how), before)
+
+    def test_dangling_symlink_can_still_create_its_target(self):
+        target = self.root / "shared" / "target.json"
+        target.parent.mkdir()
+        self.link(target)
+        before = self.snapshot()
+        self.assert_updated(self.run_main(), before)
+        self.assertTrue(self.config.is_symlink())
+
+    def test_dangling_symlink_with_missing_parent_is_refused_without_changes(self):
+        self.link(self.root / "missing" / "target.json")
+        before = self.snapshot()
+        self.assert_write_refused(self.run_main(), before)
+
+    def test_symlink_loop_retains_the_write_refusal(self):
+        self.link(self.config)
+        before = self.snapshot()
+        self.assert_write_refused(self.run_main(), before)
+
+    def test_symlink_cycle_retains_the_write_refusal(self):
+        other = self.folder / "other.json"
+        self.link(other)
+        other.symlink_to(self.config.name)
+        before = self.snapshot()
+        self.assert_write_refused(self.run_main(), before)
+
+    def test_nonmissing_resolution_errors_are_not_retried(self):
+        target = self.root / "shared" / "target.json"
+        target.parent.mkdir()
+        target.write_bytes(self.old)
+        self.link(target)
+        resolve = Path.resolve
+        for number in (errno.EACCES, errno.EIO):
+            with self.subTest(errno=number):
+                target.write_bytes(self.old)
+                before = self.snapshot()
+                calls = []
+
+                def resolving(path, strict=False):
+                    if path == self.config:
+                        calls.append(strict)
+                        if strict:
+                            raise OSError(number, os.strerror(number))
+                    return resolve(path, strict=strict)
+
+                with mock.patch.object(Path, "resolve", resolving):
+                    self.assert_write_refused(self.run_main(), before)
+                self.assertEqual(calls, [True], "only a missing target permits non-strict resolution")
+
+    def test_cleanup_failure_after_publication_warns_and_keeps_success(self):
+        for symlinked in (False, True):
+            with self.subTest(symlinked=symlinked):
+                if symlinked:
+                    target = self.root / "shared" / "target.json"
+                    target.parent.mkdir()
+                    target.write_bytes(self.old)
+                    self.link(target)
+                before = self.snapshot()
+                self.assert_updated(self.run_main(cleanup_error=True), before, cleanup_warning=True)
+                self.assertEqual(self.config.is_symlink(), symlinked)
+
+    def test_replace_failure_with_cleanup_error_keeps_the_refusal(self):
+        for symlinked in (False, True):
+            with self.subTest(symlinked=symlinked):
+                if symlinked:
+                    target = self.root / "shared" / "target.json"
+                    target.parent.mkdir()
+                    target.write_bytes(self.old)
+                    self.link(target)
+                before = self.snapshot()
+                result = self.run_main("replace", cleanup_error=True)
+                self.assert_write_refused(result, before)
+                self.assertIn("staging cleanup denied", result[2])
+
+    def test_staging_is_unique_and_beside_the_resolved_target(self):
+        target = self.root / "shared" / "target.json"
+        target.parent.mkdir()
+        target.write_bytes(self.old)
+        self.link(target)
+        write_text = Path.write_text
+        payloads = []
+
+        def writing(path, text, **kwargs):
+            self.assertEqual(path.parent.parent, target.parent)
+            self.assertNotEqual(path.parent, target.parent)
+            self.assertEqual(path.name, target.name)
+            self.assertEqual(target.read_bytes(), self.old)
+            payloads.append(path)
+            return write_text(path, text, **kwargs)
+
+        for _ in range(2):
+            target.write_bytes(self.old)
+            before = self.snapshot()
+            with mock.patch.object(Path, "write_text", autospec=True, side_effect=writing):
+                self.assert_updated(self.run_main(), before)
+        self.assertNotEqual(payloads[0].parent, payloads[1].parent)
+        self.assertTrue(all(not path.parent.exists() for path in payloads))
+
+    def test_success_breaks_hardlink_sharing_without_changing_the_alias(self):
+        alias = self.folder / "alias.json"
+        try:
+            os.link(self.config, alias)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"hardlinks unavailable: {error}")
+        before = self.snapshot()
+        self.assert_updated(self.run_main(), before)
+        self.assertEqual(alias.read_bytes(), self.old)
+        self.assertFalse(os.path.samefile(self.config, alias))
+
+    def test_readonly_file_is_not_updated_by_replacing_its_directory_entry(self):
+        self.config.chmod(stat.S_IREAD)
+        try:
+            if os.name != "nt" and os.access(self.config, os.W_OK):
+                self.skipTest("this account can write read-only files")
+            before = self.snapshot()
+            self.assert_write_refused(self.run_main(), before)
+        finally:
+            self.config.chmod(stat.S_IREAD | stat.S_IWRITE)
+
+    @unittest.skipUnless(os.name == "nt", "Windows replacement refuses a target opened without delete sharing")
+    def test_windows_locked_target_is_unchanged(self):
+        before = self.snapshot()
+        with self.config.open("rb"):
+            self.assert_write_refused(self.run_main(), before)
+
+    @unittest.skipIf(os.name == "nt", "Windows chmod does not implement POSIX permission bits")
+    def test_success_preserves_custom_permission_bits(self):
+        self.config.chmod(0o640)
+        before = self.snapshot()
+        self.assert_updated(self.run_main(), before)
+        self.assertEqual(stat.S_IMODE(self.config.stat().st_mode), 0o640)
+
+    @unittest.skipIf(os.name == "nt", "umask permission bits are POSIX behaviour")
+    def test_missing_config_takes_ordinary_creation_permissions(self):
+        self.config.unlink()
+        previous = os.umask(0o027)
+        try:
+            before = self.snapshot()
+            self.assert_updated(self.run_main(), before)
+            self.assertEqual(stat.S_IMODE(self.config.stat().st_mode), 0o640)
+        finally:
+            os.umask(previous)
 
 
 if __name__ == "__main__":

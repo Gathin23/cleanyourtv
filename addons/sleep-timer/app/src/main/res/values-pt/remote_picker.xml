@@ -1,0 +1,13 @@
+<resources>
+    <string name="remote_hours">"Horas"</string>
+    <string name="remote_minutes">"Minutos"</string>
+    <string name="remote_day">"Dia"</string>
+    <string name="remote_month">"Mês"</string>
+    <string name="remote_year">"Ano"</string>
+    <string name="remote_hint">"Esquerda / Direita: campo · Cima / Baixo: valor · OK: próximo · Voltar: cancelar"</string>
+    <string name="remote_page_hint">"Escolha uma linha com as setas e pressione OK. Salve para aplicar alterações."</string>
+    <string name="remote_events">"EVENTOS SEMANAIS"</string>
+    <string name="remote_exclusions">"PERÍODOS SEM LIGAR AUTOMATICAMENTE"</string>
+    <string name="remote_wake_time">"Hora de ligar"</string>
+    <string name="remote_sleep_time">"Hora de desligar"</string>
+</resources>

@@ -18,27 +18,33 @@
 # On this model, switching the television to "Office Mode" (办公模式) in the native settings
 # shuts off all video streaming feeds, banner advertisements, and background cloud preloading.
 #
-# The debloat list disables 4 packages by default: background device telemetry, app installation
-# listeners, cloud ad push daemons, and app/storage scanning.
+# The debloat list disables 5 packages by default: background device telemetry, app installation
+# listeners, cloud ad push daemons, app/storage scanning, EPG guide/push daemons, stock theme package,
+# voice assistant, and external mic companion.
 # Other non-essential content apps and stores are commented out by default.
 # For replacing the home screen safely, see docs/devices/skyworth-7t861-a23.md.
 
-# Telemetry and background monitoring (disabled by default)
+# Telemetry, push services, and stock themes (disabled by default)
 # Verified safe across cold boots; disables device telemetry, package monitoring,
-# cloud ad pushes, and background app scanning:
+# cloud ad pushes, app/storage scanning, boot guide/push daemons, and stock theme resources:
 com.skyworth.device                 # Device information and location reporting (SensorsData analytics)
 com.tianci.de                       # Tianci Data Engine daemons listening for package changes
 com.tianci.ad                       # Tianci advertising cloud push receiver
 com.coocaa.tvmanager                # CooCaa content recommendation and app scanning manager; also scans USB/storage, so re-enable it if USB drives stop showing up
+# Optional: this set has the EPG guide off; it is TV middleware, so it stays on here
+# com.coocaa.guide                    # Boot guide & EPG program guide / push receiver
+com.coocaa.theme_package_ccos_nine  # Stock Coocaa OS theme package (GoldenFaith)
+
+# Voice assistant and karaoke microphone: off on the tested set, optional; uncomment to disable
+# Verified safe across cold boots; disables remote voice key / XiaoWei AI assistant
+# and external karaoke microphone companion; com.loostone.tuning keeps system audio working:
+# com.skyworth.angel.voice             # Skyworth XiaoWei AI voice assistant
+# com.skyworth.microphone              # Skyworth karaoke and external microphone manager
 
 # Other optional telemetry and apps (commented out by default):
 # com.skyworth.performance.monitors   # Performance monitors and telemetry
 # com.skyworth.testtime               # Factory testing timer
 # com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
-
-# Ads and manufacturer content (optional to disable)
-# com.coocaa.guide                    # EPG program guide and content pushes
-# com.coocaa.theme_package_ccos_nine  # Default theme package
 
 # Preloaded content and stores (optional to disable)
 # com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming

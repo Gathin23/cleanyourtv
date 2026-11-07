@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a synthwave sun over a grid. Drawn for this add-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF14052B" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFFF2A6D" android:pathData="M120,90a40,40 0 0 1 80,0z" />
+    <path android:fillColor="#FF05D9E8" android:pathData="M0,90h320v3h-320z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M0,110h320v2h-320z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M0,132h320v2h-320z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M0,160h320v2h-320z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M158,93h4l30,87h-6z" />
+    <path android:fillColor="#9905D9E8" android:pathData="M158,93h4l-30,87h-6z" />
+</vector>

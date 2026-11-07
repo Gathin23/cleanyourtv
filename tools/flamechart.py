@@ -189,7 +189,10 @@ def draw(panels, rx, title, subtitle, out, width=1600):
                     d.text((x0 + 3, yy + 1), text, fill="white" if s["id"] in hit else "#222", font=small)
             y += h + 26
         y += 10
-    im.save(out)
+    try:
+        im.save(out)
+    except OSError as e:
+        sys.exit(f"cannot write {out}: {e.strerror or e}")
     return im.size
 
 

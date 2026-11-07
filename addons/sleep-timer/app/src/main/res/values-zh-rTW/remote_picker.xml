@@ -1,0 +1,13 @@
+<resources>
+    <string name="remote_hours">"時"</string>
+    <string name="remote_minutes">"分"</string>
+    <string name="remote_day">"日"</string>
+    <string name="remote_month">"月"</string>
+    <string name="remote_year">"年"</string>
+    <string name="remote_hint">"左右：選擇欄位 · 上下：更改數值 · OK：下一欄 · 返回：取消"</string>
+    <string name="remote_page_hint">"使用方向鍵選擇項目並按 OK。儲存後才會套用變更。"</string>
+    <string name="remote_events">"每週事件"</string>
+    <string name="remote_exclusions">"不自動喚醒的期間"</string>
+    <string name="remote_wake_time">"喚醒時間"</string>
+    <string name="remote_sleep_time">"待機時間"</string>
+</resources>

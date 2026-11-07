@@ -1,0 +1,5 @@
+# wallpaper_captions: the name shown under the top-right pills, as "<file><TAB><name>", one per line
+01-fuji-twilight.jpg	Mount Fuji twilight
+02-coastal-train.jpg	Seaside coastal train
+03-ancient-arch.jpg	Ancient stone arch
+

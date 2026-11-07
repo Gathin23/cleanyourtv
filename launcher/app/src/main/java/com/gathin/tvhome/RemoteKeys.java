@@ -303,6 +303,11 @@ final class RemoteKeys {
      */
     static final int XIAOMI_SHORT_MENU_FLAGS = 0x7531;
 
+    /** Channel Up or Down, for home_ignore_channel_keys. */
+    static boolean isChannelKey(int keyCode) {
+        return keyCode == KeyEvent.KEYCODE_CHANNEL_UP || keyCode == KeyEvent.KEYCODE_CHANNEL_DOWN;
+    }
+
     /** True for the UP that ends a Menu press: not cancelled, or cancelled only as Xiaomi's injected short press is. */
     static boolean menuReleased(int action, int flags) {
         if (action != KeyEvent.ACTION_UP) return false;

@@ -44,8 +44,17 @@ def out_problem(path):
     `img.save()` answers a folder with IsADirectoryError, a path through a file with NotADirectoryError,
     a folder that is not there with FileNotFoundError and a name with no extension with `unknown file
     extension` - each a traceback that names neither the argument nor whether a picture was written.
+    An empty name is its own case, because `$OUT` unset is how a reader reaches it: no path at all, and
+    a message that starts with a space.
     Judged here, before Pillow is imported, so a machine without Pillow gives the same answer.
     """
+    if not path.strip():
+        # The name came out empty, which is not a path at all: `$OUT` unset is how a reader meets it.
+        # Pillow's answer for it is `unknown file extension: ` - a message that starts with a space and
+        # names neither the argument nor the variable, so the shape has its own words here.
+        return (f"the picture was given as {path!r}, an empty name, so no picture would be written: "
+                f"name the file, e.g. docs/card.jpg - and if the name came from a shell variable, "
+                f"that variable was empty")
     if os.path.isdir(path):
         return (f"{path} is a folder, and this writes one picture: pass a file name such as "
                 f"docs/card.jpg")
@@ -65,7 +74,8 @@ FONT, OUT = font_and_out(sys.argv)
 # The picture is the other argument the reader types, and Pillow only refuses it after the whole thing
 # has been drawn: a folder, a folder that is not there, a path through a file and a suffixless name were
 # each a 12-line traceback with exit 1, the code a run that wrote nothing returns, saying nothing about
-# what was written. Judged before the Pillow import, so a machine without it answers the same way.
+# what was written. A name that came out empty is judged here too: Pillow answers it the same way, in
+# words that start with a space. Judged before the Pillow import, so a machine without it answers the same way.
 OUT_PROBLEM = out_problem(OUT)
 if OUT_PROBLEM:
     sys.exit(f"{OUT_PROBLEM}. Nothing was written.")

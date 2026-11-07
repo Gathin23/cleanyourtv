@@ -1,0 +1,90 @@
+# TCL BeyondTV, Japan market (ro.product.model BeyondTV, client type TCL-JP-RT2851-S1, Realtek RTD2851 /
+# rtd285o, software V8-R851T03-LF1V153), Android TV 9 (API 28), build PPR1.180610.011 AP04. Tested on a 50P8S; the 55P8S likely shares this firmware.
+# Same platform as examples/tcl-beyondtv-rt2851/ (EU, V8-R851T02, AP06), which was the starting point, with
+# examples/tcl-beyondtv2-latin-america/ as the cross-check. The Japanese firmware ships a smaller set: no
+# appmarket2, messagebox, usercenter, notereminder, smartalexa, miracast or TCL keyboard (Gboard is the IME).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-beyondtv-jp/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-beyondtv-jp/debloat.txt
+# Stock launcher: com.google.android.tvlauncher (restore.sh default). It claims HOME at priority 2, so
+# set-home-activity prints Success and changes nothing while it is enabled: launcher/build-and-install.sh
+# disables it in the same step. Other HOME claimants are fallbacks only (com.tcl.keycustomfunctionservice and
+# com.android.tv.settings FallbackHome). setupwraith owns the Wi-Fi network saved at first setup and does not
+# claim HOME: leave it enabled.
+# Live TV app: com.tcl.tv. Tuner: com.tcl.tvinput. HDMI: com.tcl.tvpassthrough. There are no separate ISDB or
+# B-CAS packages; the EPG lives in com.android.providers.tv.
+#
+# Order: install the launcher before the "after the launcher" group (tvweishi carries a PackageInstallerService),
+# and switch the screensaver to the launcher's clock before Ambient Mode goes:
+#   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+#
+# Tested 2026-11-05 on one unit over Wi-Fi: applied in nine batches, each followed by a reboot that confirmed
+# every package stayed disabled (nothing re-enabled itself, com.tcl.overseasappshow included), Home, Live TV,
+# the tuner and HDMI inputs registered. Play Store opens an app's details page after partnersetup. Remote
+# arrows, OK, Home, Input/Source and held Volume Up checked on the real remote. One session plus reboots;
+# not yet lived with for days.
+# Quirks on this firmware:
+# - With the stock launcher gone the set no longer opens Live TV at boot, and the remote's keys stayed
+#   unlocked (sys.enable_key true), unlike the V237 build in docs/devices/tcl-beyondtv-rt2851.md.
+# - KEYCODE_SLEEP puts it into deep standby (suspend-to-RAM): Wi-Fi and ADB drop until the remote's Power key.
+# - power_on_home with HOME_KEY_SERVICE=1 works. Straight after an install Android cleared the helper from
+#   enabled_accessibility_services; the three-write repair in docs/TROUBLESHOOTING.md bound it, and it then
+#   stayed bound across reboots and a theme push.
+# - The "TCL CHANNEL" tile left in the launcher grid is com.tcl.partnercustomizer's TKeyActivity, not the
+#   disabled waterfall.overseas. Hidden with hidden_apps here, so the T button keeps working.
+#
+# Three apps the owner had installed from the Play Store (a screensaver, a cast browser, an AirPlay receiver)
+# were disabled too and are not listed: they are not part of the set.
+#
+# Already disabled at the factory, left alone: com.tcl.bootadservice, com.tcl.cyberui,
+# com.google.android.apps.inputmethod.hindi.
+#
+# DO NOT DISABLE (load-bearing): com.tcl.tv com.tcl.tvinput com.tcl.tvpassthrough com.tcl.sourcemananger
+# com.android.providers.tv (Live TV, tuner, HDMI, source menu, EPG), com.tcl.keycustomfunctionservice
+# com.tcl.framework.custom com.tcl.tcl_bt_rcu_service com.tcl.autopair com.google.android.tv.remote.service
+# (remote, Bluetooth pairing), com.google.android.inputmethod.latin (Gboard, the only keyboard),
+# com.tcl.settings com.tcl.initsetup com.tcl.factory.view (never opened) com.tcl.xian.StartandroidService
+# com.tcl.common.terminalmanagerplus com.tcl.overseasappshow com.tcl.systemuioverlay
+# com.realtek.netflix.setting com.android.WifiCountryService com.google.android.tungsten.setupwraith.
+# Kept by choice on this unit: Chromecast (mediashell), Google Assistant (katniss, speech.pumpkin) and TTS,
+# the firmware updater (versionUpdateApp, rc.ota), USB media players (ui_mediaCenter, audio/image/video
+# player), com.tcl.partnercustomizer and com.tcl.keyhelp (the EU list disables both; the Latin America list
+# keeps them for key handling; not tested off here). If firmware updates stop arriving, re-enable com.tcl.bi
+# first.
+
+# 1. Telemetry and analytics
+com.tcl.bi                                  # TCL BI analytics
+com.google.android.feedback                 # "send feedback"
+com.google.android.tv.bugreportsender       # bug report uploader
+com.google.android.onetimeinitializer       # one-time setup leftovers
+android.autoinstalls.config.tcl.device      # partner-app auto installer
+
+# 2. Content, recommendation rows and promos
+com.google.android.tvrecommendations        # home-screen recommendation rows
+com.google.android.leanbacklauncher.recommendations
+com.tcl.esticker                            # retail demo stickers
+com.tcl.waterfall.overseas                  # "TCL CHANNEL" content feed
+com.tcl.copydatatotv                        # phone-to-TV copy helper, starts at boot
+com.tcl.eletronicpolicy                     # e-warranty/policy screen; boot and screen on/off receivers
+
+# 3. Preloads
+com.google.android.videos                   # Play Movies & TV
+com.google.android.play.games               # Play Games
+com.google.android.music                    # Play Music, a discontinued service
+com.android.printspooler                    # print spooler
+# com.tcl.MultiScreenInteraction_TV           # MagiConnect phone link (off on the tested set by choice; uncomment if unused)
+com.google.android.partnersetup             # partner attribution (RLZ pings); Play Store checked afterwards
+
+# 4. Streaming apps: off on the tested set by the owner's choice; uncomment what you don't use. NHK+ (nhk.app.screen) kept.
+# air.jp.co.fujitv.fodviewer.tv               # FOD
+# jp.happyon.android                          # Hulu (Japan)
+# jp.unext.tv.player                          # U-NEXT
+# tv.abema                                    # ABEMA (registers a TV input for its own live channels)
+# jp.ne.docomo.lemino.androidtv               # Lemino
+# jp.co.rakuten.nba.tv.android                # Rakuten NBA
+# com.disney.disneyplus                       # Disney+
+# tv.twitch.android.app                       # Twitch
+
+# 5. After the launcher is installed and the clock screensaver is set
+com.google.android.backdrop                 # Ambient Mode screensaver
+com.tcl.tvweishi                            # TCL "TV Guard" cleaner (installer service; Play Store unaffected)

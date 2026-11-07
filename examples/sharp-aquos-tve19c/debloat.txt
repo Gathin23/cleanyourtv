@@ -1,6 +1,8 @@
 # Sharp AQUOS-TVE19C (codename sindang, CVTE board, MStar/MediaTek SoC), Android TV 11,
 # firmware RTOB.250721.001, manufacturer SHARP (UMC Europe). Stock launcher is
 # com.google.android.tvlauncher with the Google-TV-style home. Running since 2026-10-19.
+# Second unit: Sharp AQUOS-TVE19A (product tcbrae_a, m7322), same firmware RTOB.250721.001,
+# Poland, running since 2026-11-04 with the launcher from launcher/. See README.md.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-aquos-tve19c/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-aquos-tve19c/debloat.txt
@@ -26,9 +28,12 @@ umc.com.emanual                        # Sharp on-screen manual
 # com.netflix.ninja
 # com.mediatek.partner.netflix         # Netflix partner service; the remote's Netflix
                                        # button (KEYCODE_STEM_1) can be remapped, see README.md
-# com.google.android.videos            # Google TV / Play Movies
+# com.google.android.videos            # Google TV / Play Movies (the TVE19A unit disabled it)
 # com.google.android.youtube.tvmusic
 # com.google.android.play.games
+
+# Preload on the TVE19A unit (disabled there)
+# com.rma.speedtesttv                  # Speedtest
 
 # Google services (owner's choice; Chromecast built-in was kept)
 com.google.android.katniss             # Assistant / voice search

@@ -509,12 +509,15 @@ def screenshot_target(local):
     have been judged this way since #2039; this is the flag the pages hand out most.
 
     A folder that is not there is still made rather than refused: that is the one shape the command is
-    expected to fix for itself. Two words are not a file name and are refused here: one that is only
+    expected to fix for itself. Three words are not a file name and are refused here: one that is only
     whitespace, which `--screenshot "$SHOT"` sends when SHOT holds a space (the pull wrote a file named
     "   " and the run printed `screenshot     (N bytes)`, exit 0, while the path the reader meant was
-    never made), and one that ends with a separator while that folder is not there yet - the check below
+    never made), one that ends with a separator while that folder is not there yet - the check below
     only answers a folder that exists, and os.path.abspath() drops the separator, so the folder was made
-    and `screencap` ran on the TV before the pull wrote to a name that is a folder.
+    and `screencap` ran on the TV before the pull wrote to a name that is a folder - and one whose last
+    word is `.` or `..`, which names the folder itself or its parent (`--screenshot newshots/.`): the
+    folder is not there, isdir() answers no and abspath() drops the tail as well, so the pull's open() of
+    the destination was the first thing to fail.
     """
     if not local:
         usage_error("--screenshot needs the file to save to")
@@ -528,6 +531,14 @@ def screenshot_target(local):
         path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
                    f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
                    f"Nothing was captured.")
+    if os.path.basename(local) in (".", ".."):
+        # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
+        # is not there yet: os.path.isdir() answers no, the check above sees a dot rather than a separator,
+        # and os.path.abspath() drops the tail, so the parent was made, `screencap` ran on the TV, and the
+        # pull's open() of the destination - a path with no such folder - was the first thing to fail.
+        path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
+                   f"and --screenshot saves the PNG to a file: give the file a name such as "
+                   f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
@@ -608,7 +619,10 @@ def screenshot(dev, local, keys=(), wait=0.0):
 
     `local` and the folder it needs are judged - and the folder made - by screenshot_target() before the
     TV is opened: agents pass shots/01-home.png before that folder exists (#364), and a destination that
-    cannot be written has to be answered before a capture is run for it."""
+    cannot be written has to be answered before a capture is run for it.
+
+    A picture the TV does not send is pull()'s failure, not an empty screenshot: it answers in words,
+    exit 1, and the file that was already there is left as it was."""
     for i, key in enumerate(keys):
         if i:
             time.sleep(KEY_GAP_S)
@@ -624,7 +638,19 @@ def screenshot(dev, local, keys=(), wait=0.0):
         dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
         print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
         return 1
-    dev.pull(SHOT_REMOTE, local, transport_timeout_s=300.0, read_timeout_s=300.0)
+    # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
+    # local path before it asks the TV, so a dropped connection emptied the picture that was already
+    # there - the one the reader was about to compare against - and ended in a traceback out of a
+    # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
+    # it before this run says anything about a picture it did not get.
+    if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
+        # What usually failed is the transport, so the capture nobody will read is worth one attempt
+        # only, and that attempt cannot raise on top of the failure the pull just reported.
+        try:
+            dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+        except Exception:
+            pass
+        return 1
     dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
     size = os.path.getsize(local) if os.path.exists(local) else 0
     if size == 0:
@@ -652,14 +678,17 @@ def screenshot(dev, local, keys=(), wait=0.0):
     return 0
 
 
-def pull(dev, remote, local):
+def pull(dev, remote, local, announce=True):
     """Pull `remote` into `local`, which is replaced only once the whole file has come back. Returns 0,
     or 1 when the TV did not send the file.
 
     adb_shell opens the local path for writing before it asks the TV for the file, so a path the TV does
     not have, or a connection that dropped halfway, emptied the copy that was there (or left a 0-byte
     file where there was none) and then ended in a traceback. The pull goes into a file of its own in
-    the same folder, so the os.replace() that puts it in place stays on one filesystem."""
+    the same folder, so the os.replace() that puts it in place stays on one filesystem.
+
+    `announce=False` is for a caller that prints its own line about the file, as a capture does; a
+    failure is reported either way, because it is the run's answer rather than a note about it."""
     folder, name = os.path.split(os.path.abspath(local))
     part = os.path.join(folder, f".{name}.{os.getpid()}.part")
     try:
@@ -681,7 +710,8 @@ def pull(dev, remote, local):
         kept = "was left as it was" if os.path.exists(local) else "was not written"
         print(f"could not pull {remote}: {type(e).__name__}: {e}\n{local} {kept}.", file=sys.stderr)
         return 1
-    print(f"pulled {remote} -> {local}")
+    if announce:
+        print(f"pulled {remote} -> {local}")
     return 0
 
 

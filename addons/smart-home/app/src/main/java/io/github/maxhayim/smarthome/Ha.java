@@ -50,6 +50,8 @@ final class Ha {
         }
 
         boolean available() {
+            // A scene's state is the time it last ran, and "unknown" until it has run once: that one can still run.
+            if (kind == Kind.SCENE) return !"unavailable".equals(state);
             return !"unavailable".equals(state) && !"unknown".equals(state);
         }
 
@@ -60,11 +62,7 @@ final class Ha {
                 case WEATHER:
                     return Double.isNaN(current) ? capital(state) : number(current) + "°";
                 case PRICE:
-                    try {
-                        return number(Double.parseDouble(state)) + (unit.isEmpty() ? "" : " " + unit);
-                    } catch (NumberFormatException e) {
-                        return state;
-                    }
+                    return price(state) + (unit.isEmpty() ? "" : " " + unit);
                 case SCENE:
                     return "Run";
                 case TOGGLE:
@@ -97,7 +95,7 @@ final class Ha {
     static final class Glance {
         final Entity weather;
         final List<Entity> prices;
-        /** One line, for example "21° · E10 1.69 €/L · Diesel 1.55 €/L". Empty when nothing to show. */
+        /** One line, for example "21° · E10 1.689 €/L · Diesel 1.549 €/L". Empty when nothing to show. */
         final String text;
         /** clear, cloudy, rain, snow, storm, fog, night, or empty. */
         final String icon;
@@ -122,11 +120,7 @@ final class Ha {
                 if (!p.available()) continue;
                 if (b.length() > 0) b.append(" · ");
                 b.append(shortName(p.name));
-                try {
-                    b.append(' ').append(number(Double.parseDouble(p.state)));
-                } catch (NumberFormatException e) {
-                    b.append(' ').append(p.state);
-                }
+                b.append(' ').append(price(p.state));
                 if (p.unit != null && !p.unit.isEmpty()) b.append(' ').append(p.unit);
             }
             return b.toString();
@@ -376,6 +370,20 @@ final class Ha {
 
     static String number(double v) {
         return v == Math.rint(v) ? String.valueOf((long) v) : String.format(Locale.ROOT, "%.1f", v);
+    }
+
+    /**
+     * A price exactly as Home Assistant reports it, never rounded: fuel prices come with three decimals (1.689),
+     * and the last one is the tenth of a cent the station charges. At least two decimals, so 2.1 reads 2.10.
+     */
+    static String price(String state) {
+        try {
+            java.math.BigDecimal d = new java.math.BigDecimal(state.trim());
+            if (d.scale() < 2) d = d.setScale(2);
+            return d.toPlainString();
+        } catch (NumberFormatException | ArithmeticException e) {
+            return state;
+        }
     }
 
     private static String capital(String s) {

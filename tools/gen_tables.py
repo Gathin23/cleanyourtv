@@ -100,6 +100,9 @@ def load(root, allow_missing=False):
             continue
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
+        except OSError as e:
+            problems.append(f"{where}: cannot read ({e.strerror or e})")
+            continue
         except ValueError as e:
             problems.append(f"{where}: not valid JSON ({e})")
             continue

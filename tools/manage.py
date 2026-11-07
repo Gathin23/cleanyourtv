@@ -47,6 +47,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -553,13 +554,36 @@ def cmd_set(key, value, theme_folder):
     command = theme_command(folder)
     data[key] = parsed
     f = folder / "config.json"
+    replaced = False
     try:
+        # own_folder_problem() above refuses a missing folder; an existing empty one is valid.
         folder.mkdir(parents=True, exist_ok=True)
-        f.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        # Resolve the file as well as its folder: keep an owner's config.json symlink intact.
+        try:
+            target = f.resolve(strict=True)
+        except FileNotFoundError:
+            # An empty folder or a dangling link may start a config, but a link loop must be refused.
+            target = f.resolve()
+        except RuntimeError as e:
+            # Older pathlib versions use RuntimeError for a symlink loop; report the same write refusal.
+            raise OSError(str(e)) from e
+        if target.exists():
+            with target.open("r+b"):
+                pass   # keep refusing a read-only file, even when its folder permits replacement
+        with tempfile.TemporaryDirectory(prefix=".manage-config-", dir=target.parent) as staging:
+            pending = Path(staging) / target.name
+            pending.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            if target.exists():
+                shutil.copymode(target, pending)
+            os.replace(pending, target)
+            replaced = True
     except OSError as e:
-        # A folder that is read-only, a path with a file in the middle of it, a full disk: the key is not
-        # written and the theme on the TV is untouched, so say which file and why rather than a traceback.
-        sys.exit(f"cannot write {f}: {reason(e)}. Nothing was pushed.")
+        if not replaced:
+            # Until replace succeeds, a failed write leaves the owner's previous config intact.
+            sys.exit(f"cannot write {f}: {reason(e)}. Nothing was pushed.")
+        # The local edit is already saved: staging cleanup must not turn that into a write failure.
+        sys.stderr.write(f"Saved {f} locally, but staging cleanup failed: {reason(e)}. "
+                         f"The temporary folder may remain at {staging}. Continuing with the theme push.\n")
     print(f"{key} = {json.dumps(parsed)} in {f}")
     code = push_theme(command)
     if code:

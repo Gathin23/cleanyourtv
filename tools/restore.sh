@@ -26,6 +26,18 @@ case "$LIST" in
     echo "usage: TV_HOST=<tv ip> tools/restore.sh <debloat list> [stock launcher package]" >&2
     exit 2 ;;
 esac
+# The same word one place later. The second word is the optional stock launcher package, and the flag
+# that gets pasted there - `--reset` copied over from theme.sh, `-h` - passed the list check because the
+# list itself was fine; recovery.py then answered "not a package name: '--reset'" and exited 1, the status
+# this script keeps for a restore that started and did not finish, with no usage line and nothing saying
+# the TV was left alone, so a reader who typed a flag read it as a failed restore. restore.ps1 refuses it
+# on its own: PowerShell reads a dash-led word as a parameter name.
+case "${2:-}" in
+  -*)
+    echo "restore.sh takes a debloat list and an optional stock launcher package, and $2 is a flag it does not have. Nothing was sent to the TV." >&2
+    echo "usage: TV_HOST=<tv ip> tools/restore.sh <debloat list> [stock launcher package]" >&2
+    exit 2 ;;
+esac
 # A list and the optional stock launcher, and nothing else. Only the first two words were read, so a
 # line with a word appended - the stock package named twice, a second list path, `--reset` copied over
 # from theme.sh - restored the TV while that word was dropped without a word, on the one script an

@@ -19,10 +19,12 @@ be written is printed to stdout instead, with exit 1 saying the file is not it. 
 script beside a stub tools/tv.py that records every command, so "nothing was asked of the TV" means the
 stub's log is not there - no TV, no network and no ADB key is needed.
 """
+import errno
 import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -133,8 +135,10 @@ class BenchOutDirTest(unittest.TestCase):
         self.assertLess(start, source.index("    samples = []"),
                         "a folder that cannot be created has to be answered before measuring")
         # The write at the end is guarded, and the numbers are printed when it fails.
-        write = source.index('    try:\n        with open(path, "w", encoding="utf-8") as f:')
-        self.assertIn("except OSError as e:", source[write:write + 900])
+        self.assertIn("os.open(stage, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)", source)
+        self.assertIn("os.replace(stage, path)", source)
+        write = source.index("    failed = write_result(path, result)\n")
+        self.assertIn("if failed is not None:", source[write:write + 400])
         self.assertIn("this run's only copy", source)
         self.assertIn("    return 1\n", source[write:])
         self.assertIn("sys.exit(main())", source)
@@ -145,6 +149,120 @@ class BenchOutDirTest(unittest.TestCase):
         self.assertIn("Exit status: 0", docstring)
         self.assertIn("2 an --out-dir that cannot be written into", docstring)
         self.assertIn("1 anything else", docstring)
+
+
+class BenchResultWriteTest(unittest.TestCase):
+    """result.json is written through a staging file this run owns, so a failed write keeps the last.
+
+    `open(path, "w")` truncates first: a run whose write failed - the disk that filled up during the
+    minutes it measures, which is the failure bench.py's own message is about - left a half file
+    under the name a reader opens, and took the result.json of the run before with it. Those numbers
+    cannot be measured again the same way (the tool says so itself), so the write ends in
+    os.replace() and either lands whole or not at all.
+
+    The staging name is random and created with O_EXCL, which is what keeps the guarantee whole: a
+    fixed `result.json.part` was followed by `open()`, so a hardlink to the earlier result was
+    truncated before the write and a symlink wrote through to whatever it pointed at, and a new file
+    under a name that was there took the mode of a fresh one (0600 under mkstemp, 0644 under the old
+    `open()`) instead of the mode the earlier result had.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.folder = Path(self._tmp.name)
+        sys.path.insert(0, str(ROOT / "tools"))
+        import bench  # noqa: E402  the write_result() under test
+        self.bench = bench
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def write(self, result):
+        return self.bench.write_result(str(self.folder / "result.json"), result)
+
+    def names(self):
+        return sorted(p.name for p in self.folder.iterdir())
+
+    def fail_after_a_few_bytes(self):
+        """Make json.dump stop mid-write, the way a disk that fills up during the run does."""
+        class HalfWrite:
+            def dump(self, obj, handle, **kwargs):   # noqa: D401 - a stand-in for json, not a test
+                handle.write("{")                    # this run's first bytes reach the staging file
+                raise OSError(errno.ENOSPC, "No space left on device")
+
+        real = self.bench.json
+        self.bench.json = HalfWrite()
+        self.addCleanup(setattr, self.bench, "json", real)
+
+    def test_a_write_that_cannot_finish_leaves_the_earlier_result(self):
+        earlier = {"keys": {"series": 3, "per_series": 36}, "response_ms": {"p50": 41}}
+        (self.folder / "result.json").write_text(json.dumps(earlier, indent=2), encoding="utf-8")
+        self.fail_after_a_few_bytes()
+        failed = self.write({"keys": {}, "response_ms": {"p50": 99}})
+        self.assertIsInstance(failed, OSError)
+        self.assertEqual(earlier, json.loads((self.folder / "result.json").read_text(encoding="utf-8")),
+                         "a write that failed replaced the numbers of the run before it")
+        self.assertEqual(["result.json"], self.names(),
+                         "a write that failed left its staging file in the results folder")
+
+    def test_a_finished_write_replaces_the_result_and_leaves_no_staging_file(self):
+        (self.folder / "result.json").write_text('{"response_ms": {"p50": 41}}', encoding="utf-8")
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual({"response_ms": {"p50": 99}},
+                         json.loads((self.folder / "result.json").read_text(encoding="utf-8")))
+        self.assertEqual(["result.json"], self.names(),
+                         "a staging file was left in the results folder")
+
+    @unittest.skipUnless(os.name == "posix", "file modes are a POSIX idea")
+    def test_the_earlier_result_keeps_its_mode(self):
+        result = self.folder / "result.json"
+        result.write_text('{"response_ms": {"p50": 41}}', encoding="utf-8")
+        os.chmod(result, 0o600)
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual(0o600, stat.S_IMODE(os.stat(result).st_mode),
+                         "a successful write loosened the permissions of the result it replaced")
+
+    @unittest.skipUnless(os.name == "posix", "file modes are a POSIX idea")
+    def test_a_fresh_result_takes_the_mode_an_open_would_have_left(self):
+        # 0666 masked by the umask, as `open("w")` left it: not the 0600 a bare mkstemp() makes,
+        # which would take a result.json a group or another account could read before.
+        previous = os.umask(0o022)
+        self.addCleanup(os.umask, previous)
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual(0o644, stat.S_IMODE(os.stat(self.folder / "result.json").st_mode))
+
+    def test_a_hardlink_at_the_old_part_name_does_not_truncate_the_earlier_result(self):
+        earlier = json.dumps({"response_ms": {"p50": 41}}, indent=2)
+        result = self.folder / "result.json"
+        result.write_text(earlier, encoding="utf-8")
+        part = self.folder / "result.json.part"
+        os.link(result, part)          # a fixed staging name left from an older version of the tool
+        self.fail_after_a_few_bytes()
+        self.assertIsInstance(self.write({"response_ms": {"p50": 99}}), OSError)
+        self.assertEqual(earlier, result.read_text(encoding="utf-8"),
+                         "the write went through the hardlink and truncated the earlier result")
+
+    def test_a_symlink_at_the_old_part_name_is_not_written_through(self):
+        earlier = '{"response_ms": {"p50": 41}}'
+        (self.folder / "result.json").write_text(earlier, encoding="utf-8")
+        elsewhere = self.folder / "another-result.json"
+        elsewhere.write_text('{"keep": "me"}', encoding="utf-8")
+        os.symlink(elsewhere, self.folder / "result.json.part")
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual('{"keep": "me"}', elsewhere.read_text(encoding="utf-8"),
+                         "the write followed the symlink and overwrote the file it pointed at")
+
+    def test_a_staging_file_a_killed_run_left_behind_is_left_alone(self):
+        # A run killed after its staging file was opened leaves it under its own random name; the
+        # next run writes its own and does not trip over, or clean up, a file it did not create.
+        orphan = self.folder / ".result.json.0badc0de.part"
+        orphan.write_text('{"response_ms": {"p50": 1', encoding="utf-8")
+        self.assertIsNone(self.write({"response_ms": {"p50": 99}}))
+        self.assertEqual({"response_ms": {"p50": 99}},
+                         json.loads((self.folder / "result.json").read_text(encoding="utf-8")))
+        self.assertEqual('{"response_ms": {"p50": 1', orphan.read_text(encoding="utf-8"),
+                         "a staging file this run did not create was touched")
+        self.assertEqual([".result.json.0badc0de.part", "result.json"], self.names())
 
 
 if __name__ == "__main__":

@@ -92,3 +92,66 @@ no `app_keys` entry were needed on this unit: the app buttons go through
 `com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver` and `com.mstar.netflixobserver`, which stay
 enabled. The microphone does nothing by design, since the voice assistant is disabled. An injected `KEYCODE_TV`
 over ADB does not open Live TV here, which says nothing about the remote; the Inputs pill opens it.
+
+---
+
+## Indian retail unit on older Android 9 firmware PI.3591
+
+A third `MiTV-MSSP3` (`machuca`) unit on the older Indian retail Android 9 build:
+`ro.product.model = MiTV-MSSP3`, `ro.product.device = machuca`, Android 9 (SDK 28),
+`ro.build.display.id = PI.3591 release-keys`, `ro.build.version.security_patch = 2020-01-05`, 1.8 GB RAM, on Wi-Fi.
+
+**Status:** applied 2026-11-05 in batches; provisional, no reboot or multi-day follow-up reported yet.
+`com.google.android.tungsten.setupwraith`, `mitv.service`, `com.xiaomi.android.tvsetup.partnercustomizer`,
+`com.xiaomo.tv.milegal` and `com.mitv.videoplayer` stay enabled as in the table above.
+
+### What the PI.3591 unit runs
+
+```
+# Xiaomi + Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+# PatchWall, Sensara EPG and content rows
+com.mitv.tvhome.atv                         # PatchWall
+com.mitv.tvhome.mitvplus                    # Xiaomi TV+
+co.sensara.tv.mitv                          # Sensara Live TV / EPG daemon (_sensy-remote._tcp on port 7367)
+co.sensara.tv.mitv.res                      # Sensara resources
+com.xm.webcontent
+com.xiaomi.floatingframe
+com.google.android.tvrecommendations
+android.autoinstalls.config.xiaomi.amelie   # Play auto-install of partner apps
+# Xiaomi background services
+com.xiaomi.mitv.tvmanager                   # "TV Manager" cleaner
+# Ambient screensaver
+com.google.android.backdrop
+# Preloaded apps
+com.xiaomi.mimusic2
+com.google.android.music                    # Play Music (enabled from factory on PI.3591)
+com.google.android.videos                   # Play Movies & TV (enabled from factory on PI.3591)
+com.google.android.play.games
+com.mitv.gallery                            # Media Player still opens USB photos
+# The older Android TV home, disabled only once the new Home is set
+com.google.android.leanbacklauncher
+com.google.android.leanbacklauncher.recommendations
+```
+
+### Differences on PI.3591 (India)
+
+- Like `PI.4663`, `com.mitv.tvhome.michannel` and `com.mitv.dream` are not installed on `PI.3591`, and both
+  `com.google.android.leanbacklauncher` and `com.google.android.leanbacklauncher.recommendations` are present and
+  enabled alongside `com.google.android.tvlauncher`.
+- Unlike `PI.4663`, `com.mitv.tvhome.mitvplus`, `com.google.android.music` and `com.google.android.videos` are
+  installed and enabled from the factory on `PI.3591`, alongside `com.google.android.tv.bugreportsender`.
+- Indian retail builds include **Sensara** (`co.sensara.tv.mitv` and `co.sensara.tv.mitv.res`) for PatchWall Live
+  TV guide integration; it keeps a background process resident (~13 MB PSS) and listens on TCP port 7367
+  (`_sensy-remote._tcp` mDNS). Both packages disable cleanly with `tools/disable.sh`.
+- System-preloaded regional streaming apps on this build (`com.fancode.tv`, `com.graymatrix.did` [ZEE5],
+  `com.sonyliv`, `tv.airtel.xstream.tvapp`, `com.lionsgateplay.videoapp`, `in.startv.hotstar`,
+  `com.apple.atve.androidtv.appletv`) are kept by choice or can be added to the list if unused.
+- On `PI.3591`, `dumpsys wifi` records `cname=android.uid.system:1000` (and
+  `com.google.android.apps.nbu.smartconnect.tv`) on saved networks rather than
+  `com.google.android.tungsten.setupwraith`; `setupwraith` is still left enabled.
+
+**PI.7274 unit (@cetrulin, #3434):** the list ran on firmware PI.7274 too; `com.google.android.tv.bugreportsender` was added from that unit.
