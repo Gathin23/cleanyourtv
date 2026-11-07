@@ -85,6 +85,11 @@
 # - With ~25 streaming apps in /data, swap was over 80% full and apps opened slowly; disabling or removing the
 #   unused ones freed about 200 MB of swap. Play Store compiling app updates after a reboot (dex2oat) also slows
 #   it for a while.
+# - Private DNS set to AdGuard (the README's optional extra) broke SonyLIV live cricket inside OTTplay
+#   (com.htlabs.ottplay): its pre-roll ad request to pubads.g.doubleclick.net gets AdGuard's blocked answer and
+#   the app never starts the stream (no ExoPlayer load, no DRM session after onVideoAdError). The SonyLIV app
+#   plays the same match. Android keeps the blocked answers in its DNS cache after Private DNS is switched off:
+#   reboot after the change before judging it.
 
 # Sony promos, store demo and help tiles
 com.sony.dtv.promos                      # My BRAVIA promos
