@@ -15,6 +15,7 @@ import json
 import os
 from pathlib import Path
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -420,6 +421,52 @@ class EnginePathTest(unittest.TestCase):
                 contextlib.redirect_stderr(io.StringIO()) as err, self.assertRaises(SystemExit) as caught:
             report.opener(None)
         self.assertIn("requirements-perf.txt", str(caught.exception.code))
+
+    @unittest.skipUnless(os.name == "posix", "POSIX searches PATH for executable names without a slash")
+    def test_an_engine_filename_runs_the_selected_local_file_instead_of_searching_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            local, search = folder / "local", folder / "path"
+            local.mkdir()
+            search.mkdir()
+            name = "trace_processor_shell"
+            engine = local / name
+            engine.write_text("#!/bin/sh\nprintf 'local engine'\n", encoding="utf-8")
+            engine.chmod(0o755)
+            previous = os.getcwd()
+            try:
+                os.chdir(local)
+                for competitor in (False, True):
+                    with self.subTest(competitor_on_path=competitor):
+                        if competitor:
+                            other = search / name
+                            other.write_text("#!/bin/sh\nprintf 'PATH engine'\n", encoding="utf-8")
+                            other.chmod(0o755)
+                        checked = report.engine_path(name)
+                        result = subprocess.check_output([checked], env={**os.environ, "PATH": str(search)})
+                        self.assertEqual(result, b"local engine")
+            finally:
+                os.chdir(previous)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX engine paths follow symlinks before resolving ..")
+    def test_engine_paths_keep_symlink_parent_traversal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            local, actual = folder / "local", folder / "actual"
+            local.mkdir()
+            (actual / "nested").mkdir(parents=True)
+            for directory, message in ((local, "wrong engine"), (actual, "selected engine")):
+                engine = directory / "trace_processor_shell"
+                engine.write_text(f"#!/bin/sh\nprintf '{message}'\n", encoding="utf-8")
+                engine.chmod(0o755)
+            (local / "alias").symlink_to(actual / "nested", target_is_directory=True)
+            previous = os.getcwd()
+            try:
+                os.chdir(local)
+                checked = report.engine_path("alias/../trace_processor_shell")
+                self.assertEqual(subprocess.check_output([checked]), b"selected engine")
+            finally:
+                os.chdir(previous)
 
     def test_the_report_answers_a_typo_before_it_reads_the_trace(self):
         with tempfile.TemporaryDirectory() as tmp:
