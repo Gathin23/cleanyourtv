@@ -2067,23 +2067,15 @@ the window manager delivers it. Beyond dropping held-volume repeats
 stops responding inside system overlays and dialogs (`org.droidtv.settings`, `org.droidtv.channels`),
 leaving the screen stuck in menus, and every D-pad press suffers 100–300 ms of input delay.
 
-Check whether an accessibility service is bound, then clear the list and register the launcher as the native
-default Home activity instead (which needs no key filter once the stock launcher is disabled):
+Check whether an accessibility service is bound, then turn off the launcher's accessibility service so keys
+bypass the input filter:
 
 ```sh
+tools/tv.py 'dumpsys accessibility'
 tools/tv.py 'settings get secure enabled_accessibility_services'
 tools/tv.py 'settings put secure enabled_accessibility_services null'
 tools/tv.py 'settings put secure accessibility_enabled 0'
-tools/tv.py 'cmd package set-home-activity com.spocky.projengmenu/.ui.home.MainActivity'
-tools/tv.py 'pm disable-user --user 0 com.google.android.tvlauncher'
 ```
-
-On streaming-only Philips sets with no aerial connected, also uncomment the broadcast tuner batch
-(`org.droidtv.playtv`, `org.droidtv.euinstallertc`, `org.droidtv.euinstallersat`, `org.droidtv.teletext`) in
-[`examples/philips-65pus9435/debloat.txt`](../examples/philips-65pus9435/debloat.txt) or
-[`examples/philips-tpm191e/debloat.txt`](../examples/philips-tpm191e/debloat.txt) so pressing the remote's
-TV button (`KEY_ISO`, scancode 170) or booting does not open the modal "No Signal" tuner screen that swallows
-`KEYCODE_BACK` and `KEYCODE_HOME`.
 
 ## Streaming apps take 10–20 seconds to open from a cold start (`cmd package compile -m speed`)
 
