@@ -1264,6 +1264,14 @@ turned off in Settings stays off.
   tools/tv.py 'dumpsys accessibility'
   ```
 
+- **The Google PIN screen shows the plain digit grid, where the wheel with three digits per row is expected.**
+  Google TV's `ReauthActivity` (profile lock, shown after a cold boot) draws the scrambled wheel only while no
+  enabled accessibility service declares `feedbackGeneric`: its check is
+  `AccessibilityManager.getEnabledAccessibilityServiceList(FEEDBACK_GENERIC)`, and any hit gives the grid,
+  which shows the highlighted digit on screen. The launcher's helpers declare `feedbackVisual` for that
+  reason; a helper or another app with generic feedback brings the grid back.
+  Starting `android.apps.tv.launcherx.PROFILE_LOCK_REAUTH` over adb shows the screen without a restart.
+
 A force-stop switches the helpers off for good: after `am force-stop com.gathin.tvhome` (or Force stop in
 Settings > Apps) Android removes the launcher's services from the enabled list, and they do not come back
 when the launcher starts again (seen on a TCL 55C715, Android TV 9). Enable them again the same way you did

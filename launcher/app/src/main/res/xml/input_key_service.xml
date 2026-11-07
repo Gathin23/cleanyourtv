@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Keys only: no accessibilityEventTypes (0), so the system never calls into the launcher for
      accessibility events, which both services ignore. Key filtering depends only on
-     flagRequestFilterKeyEvents and canRequestFilterKeyEvents, not on the event types. -->
+     flagRequestFilterKeyEvents and canRequestFilterKeyEvents, not on the event types.
+     feedbackVisual, not feedbackGeneric: Google TV's PIN screen (ReauthActivity) shows the plain digit grid instead of
+     the scrambled wheel whenever an enabled accessibility service has feedbackGeneric (its check is
+     AccessibilityManager.getEnabledAccessibilityServiceList(FEEDBACK_GENERIC)). -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFeedbackType="feedbackVisual"
     android:accessibilityFlags="flagRequestFilterKeyEvents"
     android:canRequestFilterKeyEvents="true"
     android:description="@string/input_key_service_description" />
