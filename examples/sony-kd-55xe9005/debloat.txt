@@ -9,8 +9,7 @@
 # Live TV: com.sony.dtv.tvx (KEPT); HDMI input: com.sony.dtv.tvinput.external (KEPT).
 # Kept: Chromecast, Google Assistant/voice, screensaver, HbbTV, EPG, HDMI-CEC,
 # Netflix, firmware updater, Play Store and Sony TV/input/remote services.
-# Device-specific checks passed across reboots. Long-term multi-day stability
-# should be confirmed before submitting this list upstream.
+# Device-specific checks passed across reboots.
 
 # Sony promotions / content recognition
 com.sony.dtv.promos
