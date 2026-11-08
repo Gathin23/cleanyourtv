@@ -22,6 +22,21 @@ if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }
 $env:TV_HOST = $TvHost
 Set-Location $PSScriptRoot
 
+$py = '..\tools\venv\Scripts\python.exe'
+# No venv yet: say how to make one, as build-and-install.sh does, instead of building first and then failing
+# on "python.exe is not recognized" (#1142, #3187).
+if (-not (Test-Path $py)) { throw 'run: py -3 -m venv tools\venv; tools\venv\Scripts\pip install -r tools\requirements.txt (from the repo root). Nothing was built or sent to the TV.' }
+# Below minSdk, pm install refuses the APK with INSTALL_FAILED_OLDER_SDK, and only after Gradle has built it
+# and b64push has pushed it (#576). Ask the TV first; the number comes from app\build.gradle (#3187).
+$minSdk = Select-String -Path 'app\build.gradle' -Pattern '^\s*minSdk\s+(\d{1,3})\s*$' -ErrorAction SilentlyContinue |
+    Select-Object -First 1 | ForEach-Object { [int]$_.Matches[0].Groups[1].Value }
+$ErrorActionPreference = 'Continue'
+$tvSdk = "$(@(& $py -I ..\tools\tv.py 'getprop ro.build.version.sdk' 2>$null) -join '')" -replace '[^0-9]', ''
+$ErrorActionPreference = 'Stop'
+if ($minSdk -and $tvSdk -and [int]$tvSdk -lt $minSdk) {
+    throw "this TV runs SDK $tvSdk and the launcher is built with minSdk $minSdk (app\build.gradle), so pm install would answer INSTALL_FAILED_OLDER_SDK. Nothing was built, pushed or disabled. The debloat half of the repo still applies to that set; the launcher half would need your own build with a lower minSdk (docs/TROUBLESHOOTING.md)."
+}
+
 # SKIP_BUILD=1 installs the APK already built (tools\docker-build.ps1 builds it in Docker, with no JDK here).
 if ($env:SKIP_BUILD -ne '1') {
     if (-not $env:JAVA_HOME -or -not (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
@@ -41,7 +56,6 @@ if ($env:SKIP_BUILD -ne '1') {
     throw 'SKIP_BUILD=1 but there is no app\build\outputs\apk\release\app-release.apk; build it first (tools\docker-build.ps1)'
 }
 
-$py = '..\tools\venv\Scripts\python.exe'
 # Which app owns Home differs by build; ask the TV, but only accept a launcher we recognise (the answer
 # can also be Android's chooser "android", the setup wizard, or another third-party launcher).
 # ColorOS TV's com.heytap.tv.launcher stays out of the list below: recognising it would disable
@@ -73,17 +87,19 @@ $apk = 'app\build\outputs\apk\release\app-release.apk'
 if ($LASTEXITCODE -ne 0) { throw 'APK upload failed' }
 $out = & $py -I ..\tools\tv.py 'pm install -r /data/local/tmp/tvhome.apk; rm -f /data/local/tmp/tvhome.apk'
 Write-Host $out
+if ("$out" -match 'INSTALL_FAILED_OLDER_SDK') {
+    # The preflight above missed it (getprop did not answer, or an APK built elsewhere): name the real cause.
+    throw "pm install refused the APK as too new for this set (INSTALL_FAILED_OLDER_SDK): the TV runs an older SDK than the launcher's minSdk $(if ($minSdk) { $minSdk } else { 'in app\build.gradle' }). The stock launcher was left untouched; see docs/TROUBLESHOOTING.md."
+}
 if ($LASTEXITCODE -ne 0 -or "$out" -notmatch 'Success') { throw 'pm install failed; the stock launcher was left untouched' }
 # Stop the instance Android restarted mid-update, which can come up non-occluding (see build-and-install.sh,
 # #1101), and write back a key helper the force stop took off the list. Through stdin: Windows PowerShell 5.1
 # drops the inner double quotes from a native argument.
 's=$(settings get secure enabled_accessibility_services); a=$(settings get secure accessibility_enabled); am force-stop com.gathin.tvhome; case "$s" in *com.gathin.tvhome*) settings put secure enabled_accessibility_services ""; settings put secure enabled_accessibility_services "$s"; settings put secure accessibility_enabled "$a" ;; esac' |
     & $py -I ..\tools\tv.py --batch | Out-Null
-# Android 9 only accepts a component here; Android 10+ also takes a bare package name.
-$out = & $py -I ..\tools\tv.py 'cmd package set-home-activity --user 0 com.gathin.tvhome/.MainActivity'
-Write-Host $out
-if ($LASTEXITCODE -ne 0 -or "$out" -match 'Error') { throw 'could not set the new launcher as home; the stock launcher was left untouched' }
-# Start the launcher on its own, before the stock Home is touched (see build-and-install.sh, #239):
+# Start the launcher on its own, before Home or the stock launcher is touched (see build-and-install.sh, #239):
+# Home moves to it only in the batch below, after this start check passed, so a launcher that does not
+# start is never left as Home (#3187). Android 9 only accepts a component for set-home-activity.
 # in the batch a failed start only prints an Error line and the stock launcher would be disabled anyway.
 # With -StockLauncher none the stock launcher stays Home (stock_home_redirect): a MAIN+HOME start would make this
 # launcher the home process until a restart, and Android then blocks the stock launcher's button launches (#1274).
