@@ -112,3 +112,25 @@ After the owner restarted the TV, port 5555 explicitly refused connections over
 both Ethernet IPv4 and the link-local IPv6 address used during setup.
 No antenna/cable scan, full restore or several-day soak was performed. This note
 does not validate every package in `debloat.txt` for the OK. unit.
+
+## Also tested: Changhong AI PONT (ikebukuro / RTO2.250804.001)
+
+Observations from 2026-11-07 on a Changhong set reporting model `AI PONT`, device `ikebukuro`,
+firmware `RTO2.250804.001` (Android TV 11 / API 30):
+
+| Field | Observed value |
+|---|---|
+| Android / API | 11 / 30 |
+| Model / Device | `AI PONT` / `ikebukuro` |
+| Firmware | `RTO2.250804.001` |
+| Stock Home | `com.google.android.tvlauncher/.MainActivity` |
+| Live TV | `com.mediatek.wwtv.tvcenter` |
+
+### Cleanup applied
+The 15 packages in the main list were disabled in batches with a full package and settings backup saved first:
+- Telemetry and bloat: `tv.anoki.acr.controller`, `com.homwee.aipont`, `com.google.android.tvrecommendations`, `android.autoinstalls.config.homwee`
+- Vendor services: `com.homwee.store`, `com.homwee.help`, `com.homwee.howtocast`
+- Unused preloads: `com.google.android.feedback`, `com.google.android.play.games`, `com.google.android.youtube.tvmusic`, `com.google.android.videos`, `com.google.android.syncadapters.calendar`, `com.homwee.multiscreenshare`, `com.homwee.mmp.screenshare`, `com.google.android.backdrop`
+
+All 15 packages stayed disabled after cold reboot.
+
