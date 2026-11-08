@@ -43,5 +43,5 @@ buttons (YouTube, Prime Video, Disney+) kept working through the key services.
 ## Firmware updates
 
 An OTA update will re-enable the listed packages and put Home back on launcherx. Re-run the list with
-`tools/disable.sh` after re-opening ADB, and `tools/check.py examples/indurama-google-tv-4k-ktc-hongkong/debloat.txt`
+`tools/disable.sh` after re-opening ADB, and `tools/venv/bin/python -I tools/check.py examples/indurama-google-tv-4k-ktc-hongkong/debloat.txt`
 shows what came back.
