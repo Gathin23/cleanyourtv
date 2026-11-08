@@ -22,6 +22,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import venv
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -152,11 +153,15 @@ class TvInputGuardPs1Test(unittest.TestCase):
             shutil.copy2(ROOT / "tools" / name, self.tools / name)
         (self.tools / "tv.py").write_text(FAKE_TV)
         # disable.ps1 asks for the Windows path; PowerShell on this machine resolves it to this shim,
-        # which runs the interpreter the tests already use.
-        client = self.tools / "venv" / "Scripts" / "python.exe"
-        client.parent.mkdir(parents=True)
-        client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
-        client.chmod(0o755)
+        # which runs the interpreter the tests already use. Windows cannot start a #!/bin/sh file, so
+        # there it is a real venv of this interpreter instead.
+        if os.name == "nt":
+            venv.create(self.tools / "venv", with_pip=False)
+        else:
+            client = self.tools / "venv" / "Scripts" / "python.exe"
+            client.parent.mkdir(parents=True)
+            client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+            client.chmod(0o755)
 
         self.home_dir = self.base / "home"
         self.home_dir.mkdir()
