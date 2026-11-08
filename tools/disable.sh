@@ -42,7 +42,7 @@ export MSYS_NO_PATHCONV=1
 # so a list whose entries are all commented out (what CONTRIBUTING asks for while one is untested)
 # read exactly like a run that died halfway.
 PKGS=$(LC_ALL=C awk 'NR==1{sub(/^\357\273\277/,"")} {sub(/\r$/,""); print}' "$LIST" \
-  | grep -vE '^\s*(#|$)' | sed -E 's/[[:space:]]+#.*$//' | awk '{print $1}' || true)
+  | grep -vE '^\s*(#|$)' | sed -E 's/#.*$//' | awk '{print $1}' || true)
 BAD=$(printf '%s\n' "$PKGS" | grep -vE '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$' || true)
 if [ -n "$BAD" ]; then
   { echo "refusing $LIST: not a package name:"; printf '%s\n' "$BAD" | sed 's/^/  /'; } >&2
