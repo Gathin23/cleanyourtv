@@ -19,14 +19,15 @@
 # shuts off all video streaming feeds, banner advertisements, and background cloud preloading.
 #
 # The debloat list disables 5 packages by default: background device telemetry, app installation
-# listeners, cloud ad push daemons, app/storage scanning, EPG guide/push daemons, stock theme package,
-# voice assistant, and external mic companion.
+# listeners, cloud ad push daemons, app/storage scanning, and the stock theme package.
+# The three optional lines stay commented out: the EPG guide/push daemons, the voice assistant and the
+# external mic companion.
 # Other non-essential content apps and stores are commented out by default.
 # For replacing the home screen safely, see docs/devices/skyworth-7t861-a23.md.
 
 # Telemetry, push services, and stock themes (disabled by default)
 # Verified safe across cold boots; disables device telemetry, package monitoring,
-# cloud ad pushes, app/storage scanning, boot guide/push daemons, and stock theme resources:
+# cloud ad pushes, app/storage scanning, and stock theme resources (the guide line below is optional):
 com.skyworth.device                 # Device information and location reporting (SensorsData analytics)
 com.tianci.de                       # Tianci Data Engine daemons listening for package changes
 com.tianci.ad                       # Tianci advertising cloud push receiver
