@@ -1,0 +1,15 @@
+{
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "org.courville.nova"
+  ],
+  "columns": 5,
+  "stock_home_redirect": "com.google.android.apps.tv.launcherx",
+  "live_tv_package": "",
+  "hidden_apps": [
+    "com.ref.devicedataexport",
+    "com.sdmc.implayer"
+  ]
+}
