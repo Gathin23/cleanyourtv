@@ -14,6 +14,12 @@
      instead, which counts.
    - One package per line, grouped under a comment that names the group, with a trailing comment on anything
      non-obvious. No duplicates, nothing but package names outside comments.
+   - A folder may ship a second list beside `debloat.txt` - `debloat-keep-cast.txt` for the unit that keeps
+     casting, `debloat-65u7esg.txt` for another unit - named for the unit it is for or what it keeps. An owner
+     applies it with `tools/disable.sh` like the first, so every `debloat*.txt` is read the same way: its own
+     first line, its own Apply and Undo, and the rule above (one of the five scripts, or the folder's
+     `README.md`), which `tests/test_list_gives_commands.py` holds for each list rather than for `debloat.txt`
+     alone.
 3. List only packages you actually disabled and lived with for a few days. Note anything you re-enabled.
    Mark untested entries as comments.
 4. Add `examples/<folder>/tv.json` beside the list, like `examples/xiaomi-mi-tv-4a/tv.json`:
@@ -63,8 +69,10 @@
    `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. A
    sentence that only says "The list disables 10 packages" is read while `debloat.txt` is the folder's
    only list, and not in the folders that also ship a `debloat-keep-cast.txt` or another list beside it,
-   where those words could be about that file. A sentence the page wraps across two lines is still read
-   as one sentence, so a break cannot hide the number. Its undo
+   where those words could be about that file. What a second list's own header states about the pair is read
+   instead: "eight more packages are off here than there" is counted against what that list sends and
+   `debloat.txt` does not, in digits or words, by `tests/test_list_header_counts.py`. A sentence the page wraps
+   across two lines is still read as one sentence, so a break cannot hide the number. Its undo
    is the other: the restore command a README shows passes the same stock launcher as the list's own Undo line,
    or none where the list passes none, because those two are where an owner looks for the way back and the copy
    that passes a different package leaves the stock home disabled. `tests/test_folder_undo_agrees.py` names each
