@@ -1,0 +1,10 @@
+{
+  "live_tv_package": "com.mitv.livetv",
+  "settings_key_keycodes": [176],
+  "settings_key_panel": true,
+  "volume_pauses_filter": true,
+  "app_keys": [
+    "190:com.google.android.youtube.tv",
+    "296:com.google.android.youtube.tv"
+  ]
+}

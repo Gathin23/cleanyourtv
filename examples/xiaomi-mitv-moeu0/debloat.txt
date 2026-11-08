@@ -32,6 +32,12 @@
 # Down on the real remote stepped once per press (as on the MiTV-MOSR4, #944). key_filter false in
 # config.xml brought the ramp back with both services still bound, at the cost of the Settings (176),
 # YouTube (190) and TV+ (192) buttons, which then do nothing; their tiles and the Settings pill remain.
+# volume_pauses_filter true in config.xml keeps both: a volume change stops key filtering for 4 s, so
+# the first press steps once, a hold within those 4 s ramps, and the buttons work again once the pause
+# ends. Checked on a 55" MiTV-MOEU0 (Xiaomi TV S Mini LED 55 2025, firmware V816.0.25.12.1, then V816.0.26.10.12.1) whose remote
+# sends different codes: YouTube 296 (KEYCODE_VIDEO_APP_8), Netflix 289 and Prime Video 290
+# (KEYCODE_VIDEO_APP_1/2, global keys mitv.service starts Netflix and Prime from, free for app_keys
+# when those apps are removed), Apps 284, gear 176. config.json in this folder maps both YouTube codes.
 #
 # Sideloading works, including apps that claim HOME, so the launcher half is possible.
 # HOME: setupwraith/.RecoveryActivity claims Home next to launcherx, so it is disabled below. On this
