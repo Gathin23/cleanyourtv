@@ -20,6 +20,23 @@
 # Kept by choice: Netflix, YouTube, Prime Video, Disney+, Apple TV, Paramount+, Tubi, TCLtv+,
 # TCL Live (com.tcl.channelplus), AirPlay, firmware updates.
 # No separate Miracast package on this firmware.
+#
+# Also tested on a TCL 65S450G-CA, Canada (S4 class, 65"): same device G10, product G10_4K_US_NF, build
+# STT2.230203.001 AS50, software V8-R75PT01-LF1V534, Realtek rtd6748. Applied 2026-11-07 in five batches with a
+# screenshot after each, with the launcher from launcher/; nothing came back over two checked reboots. On that unit:
+# - Samba TV's front end (tv.samba.ssm.ui) shipped disabled by the firmware, and pm disable-user refuses it there
+#   (SecurityException), so take its line out first. logkit and ttvs shipped enabled; ttvs was kept, as above.
+# - Kept by choice: Assistant voice and the remote mic (katniss, tv.remote.service), Chromecast (mediashell) and
+#   the USB media player (ui_mediaCenter): comment those four lines out. Netflix, TCL TV+ and TCL Live were off
+#   by choice: the commented lines before setupwraith below.
+# - The saved Wi-Fi belonged to android.uid.system, so setupwraith was safe to disable; until it was, its
+#   RecoveryActivity held Home and the launcher install rolled back.
+# - Remote, with launcherx disabled: Input and the mic work; the gear (keycode 83, scancode 233) and the app
+#   buttons (Netflix 4062, Prime Video 4099, YouTube 4065, TCL 4020, Apple TV 4160, Pluto TV 4163) do nothing.
+#   settings_key_keycodes 83 with HOME_KEY_SERVICE=1 makes the gear open Settings. The bound helper then stops
+#   Android repeating a held volume key; consume_volume_keys true in config.xml brings the ramp back (held ramps,
+#   a tap is one step, checked on the real remote and again after a reboot). The app buttons were left dead.
+# - AdGuard Private DNS works.
 
 # Batch 1: tracking and analytics
 tv.samba.ssm.ui                        # Samba TV ACR front end (the frame service lives in ttvs, see above); re-enabled at every boot while ttvs is enabled, so also opt out in Settings
@@ -58,6 +75,12 @@ com.google.android.youtube.tvmusic
 com.google.android.videos              # Google TV app (purchases/rentals)
 com.tcl.smartalexa                     # Alexa
 com.google.android.tv.remote.service   # Google TV phone-app remote, and the remote mic's bridge on this build (#1441): comment out with katniss to keep voice
+
+# Off by choice on the 65S450G-CA only; uncomment to disable them too
+# com.netflix.ninja                    # Netflix
+# com.netflix.tokenmanager             # Netflix sign-in, goes with it
+# com.tcl.tv.plus                      # TCL TV+
+# com.tcl.channelplus                  # TCL Live FAST channels; reboot after re-enabling it
 
 # Needed for the custom launcher. Disable only AFTER launcher/ is installed
 # (see docs/TROUBLESHOOTING.md, "The new launcher still doesn't own Home").
