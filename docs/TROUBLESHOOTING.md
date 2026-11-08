@@ -451,6 +451,32 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   tools/tv.py 'pm list packages -d | grep com.heytap.tv.support'
   tools/tv.py 'pm enable --user 0 com.heytap.tv.support'
   ```
+- **The Inputs menu lists HDMI 1, HDMI 2 and AV but has no TV, tuner or Live TV entry**, on a TCL
+  U49C70 (Android 8, [#2716](https://github.com/Gathin23/cleanyourtv/issues/2716)). That menu is
+  built from the TV's passthrough inputs, so a tuner is never a row of its own; the last row is the
+  Live TV app, and it is added only when `live_tv_package` - the value in `config.xml`, or in a
+  theme's `config.json` - names an app that is on the TV. The shipped default is
+  `com.mediatek.wwtv.tvcenter`, MediaTek's own tuner app, so a set whose channels sit in a vendor
+  app shows the ports and nothing else while the tuner stays registered. Two commands say which of
+  the two a set is:
+  ```sh
+  tools/tv.py 'cmd package query-activities --brief -a android.intent.action.VIEW -t vnd.android.cursor.dir/channel'
+  tools/tv.py 'dumpsys tv_input | grep -iE "inputId|type"'
+  ```
+  On that TCL the first named `com.tcl.tv/.TVActivity` and the second the tuner input
+  `com.tcl.tvinput/.TDTVInputService/HW1413742848`, so this set is missing the package, not the
+  tuner. Name the app the first command printed in a theme folder's `config.json` and push it with
+  `tools/theme.sh`:
+  ```json
+  { "live_tv_package": "com.tcl.tv" }
+  ```
+  That package is the one that brought the row back on another TCL ([the 75C63B
+  note](devices/tcl-75c63b.md)), which also records the trap: naming the tuner service
+  (`com.tcl.tvinput`) hides the row again, because it has no launcher activity, and both packages
+  have to stay enabled. A Live TV app with no leanback entry takes `live_tv_action` for the action
+  that starts it, and a set you would rather drive from the firmware's own source panel takes
+  `source_panel_service`, which makes the Inputs pill open that instead. Not confirmed on #2716's
+  set yet.
 - **Picking HDMI 1 in the Inputs menu opened an unrelated app**, seen on an RCA Android TV 9
   (Toptech/Zeasn firmware `RTK2851P`, Realtek RTD2851P,
   [#805](https://github.com/Gathin23/cleanyourtv/issues/805)). The launcher switches to a passthrough
