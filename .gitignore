@@ -21,3 +21,6 @@ bench-results/
 *.aab
 launcher/hs_err_pid*.log
 launcher/replay_pid*.log
+
+launcher/elppa/build/
+.impeccable/review/

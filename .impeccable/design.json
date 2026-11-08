@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-08T16:18:00.664266+00:00",
+  "title": "Design System: elppA TV",
+  "extensions": {
+    "colorMeta": {
+      "text": {
+        "role": "primary",
+        "displayName": "Warm-white text",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Quiet supporting text",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Charcoal card",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Midnight background",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "control-initial": {
+        "role": "neutral",
+        "displayName": "Initial action fill",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "icon-initial": {
+        "role": "neutral",
+        "displayName": "Initial icon fill",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "control-rest": {
+        "role": "neutral",
+        "displayName": "Unfocused control fill",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "control-focus": {
+        "role": "neutral",
+        "displayName": "Focused control fill",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "media-label": {
+        "role": "neutral",
+        "displayName": "Focused media label scrim",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "icon": {
+        "role": "neutral",
+        "displayName": "Vector white",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      },
+      "dialog-accent": {
+        "role": "neutral",
+        "displayName": "Native dialog accent",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(61% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ],
+        "rampPurpose": "Synthetic neutral panel reference only; not runtime colour tokens."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Hero title",
+        "purpose": "Two-line native auto-size title. Frontmatter size is the reference preferred size, not a fixed rendered size."
+      },
+      "body": {
+        "displayName": "Supporting text",
+        "purpose": "Subtitle, Next pick and card fallback; native font-scale fitting differs by role."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "focus-scale",
+        "value": "1.035; 130ms; Android default interpolator",
+        "purpose": "Visible native focus; snaps when app/system animation is disabled."
+      },
+      {
+        "name": "hero-crossfade",
+        "value": "250ms TransitionDrawable",
+        "purpose": "Crossfade a new hero over an existing image, including explicit media selection."
+      },
+      {
+        "name": "featured-rotation",
+        "value": "15000ms",
+        "purpose": "Separate opt-out rotation while Home is active and focused on the app dock."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "large-text-layout",
+        "value": "Android Configuration.fontScale > 1.05"
+      }
+    ],
+    "native": {
+      "platform": "Android TV, Java Activity and AndroidX RecyclerView; API 26 minimum, API 34 compile/target",
+      "referenceCanvas": {
+        "width": 960,
+        "height": 540,
+        "unit": "logical pixel at viewportScale=1 and fontScale=1"
+      },
+      "viewportScale": "min(width/960, height/540), centred canvas",
+      "typeScale": "logical * viewportScale * min(fontScale, 1.5), except title/subtitle uniform auto-size maximum uses uncapped fontScale",
+      "focusStroke": "2 device pixels",
+      "focusTarget": "D-pad remote; no runtime hover state",
+      "scrims": {
+        "leftToRightAndroidArgb": [
+          "0xF2090B10",
+          "0x99090B10",
+          "0x00090B10"
+        ],
+        "topToBottomAndroidArgb": [
+          "0x00090B10",
+          "0x00090B10",
+          "0xD9090B10",
+          "0xFF090B10"
+        ]
+      },
+      "previewMode": "Opt-in, false by default; Preview · sample content label; sample action opens explanation only",
+      "specimenLimit": "HTML/CSS are reference-scale translations for the design panel, not app code or native verification. Browser font fallback and hover are panel-only affordances. Native screenshots and physical Sony tests remain pending.",
+      "notCanonized": [
+        "Literal initial control radii versus scaled focus radii",
+        "Literal empty-message padding",
+        "Fixed device-pixel stroke requires device review"
+      ],
+      "validation": "Debug/release builds, 322 release unit tests and zero-error release lint passed; software emulator supplied no valid native capture; native visual and Sony device acceptance pending"
+    }
+  },
+  "components": [
+    {
+      "name": "Hero action",
+      "kind": "button",
+      "refersTo": "hero-action",
+      "description": "Reference-scale specimen of the native explicit action; actual font comes from the bundled Android resource.",
+      "html": "<button class=\"ds-control ds-hero-action\">Continue</button>",
+      "css": ".ds-control{border:0;color:#f4f2ef;background:#34384077;font-family:Outfit,sans-serif;font-weight:400;border-radius:22px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.ds-hero-action{width:155px;height:36px;font-size:14px}.ds-control:hover,.ds-control:focus-visible{background:#353943cc;outline:2px solid #f4f2ef;transform:scale(1.035)}.ds-control:active{background:#353943cc}.ds-control{transition:transform 130ms}@media(prefers-reduced-motion:reduce){.ds-control{transition:none}}"
+    },
+    {
+      "name": "Next pick",
+      "kind": "button",
+      "refersTo": "next-pick",
+      "description": "Manual featured-title change, visible only when more than one recommendation exists.",
+      "html": "<button class=\"ds-control ds-next-pick\">Next pick</button>",
+      "css": ".ds-control{border:0;color:#f4f2ef;background:#34384077;font-family:Outfit,sans-serif;font-weight:400;border-radius:22px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.ds-next-pick{width:112px;height:36px;font-size:13px}.ds-control:hover,.ds-control:focus-visible{background:#353943cc;outline:2px solid #f4f2ef;transform:scale(1.035)}.ds-control:active{background:#353943cc}.ds-control{transition:transform 130ms}@media(prefers-reduced-motion:reduce){.ds-control{transition:none}}"
+    },
+    {
+      "name": "Network control",
+      "kind": "nav",
+      "refersTo": "icon-control",
+      "description": "Native vector utility button. Browser specimen models focus only; it does not indicate real connectivity.",
+      "html": "<button class=\"ds-control ds-network\" aria-label=\"Network settings\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"#fff\" d=\"M1,9l2,2c4.97,-4.97 13.03,-4.97 18,0l2,-2C16.93,2.93 7.08,2.93 1,9zM9,17l3,3 3,-3c-1.65,-1.66 -4.34,-1.66 -6,0zM5,13l2,2c2.76,-2.76 7.24,-2.76 10,0l2,-2C15.14,9.14 8.87,9.14 5,13z\"/></svg></button>",
+      "css": ".ds-control{border:0;color:#f4f2ef;background:#34384077;font-family:Outfit,sans-serif;font-weight:400;border-radius:22px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.ds-network{width:42px;height:42px;padding:10px;border-radius:24px;background:#292d3544}.ds-network svg{width:22px;height:22px}.ds-control:hover,.ds-control:focus-visible{background:#353943cc;outline:2px solid #f4f2ef;transform:scale(1.035)}.ds-control:active{background:#353943cc}.ds-control{transition:transform 130ms}@media(prefers-reduced-motion:reduce){.ds-control{transition:none}}"
+    },
+    {
+      "name": "All apps tile",
+      "kind": "card",
+      "refersTo": "app-card",
+      "description": "Representative app dock tile; the icon uses the shipped vector path and the caption appears on focus.",
+      "html": "<button class=\"ds-control ds-app\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"#fff\" d=\"M4,4h4v4H4zM10,4h4v4h-4zM16,4h4v4h-4zM4,10h4v4H4zM10,10h4v4h-4zM16,10h4v4h-4zM4,16h4v4H4zM10,16h4v4h-4zM16,16h4v4h-4z\"/></svg><span>All apps</span></button>",
+      "css": ".ds-control{border:0;color:#f4f2ef;background:#34384077;font-family:Outfit,sans-serif;font-weight:400;border-radius:22px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.ds-app{position:relative;width:116px;height:76px;border-radius:10px;background:#191d25;padding:0}.ds-app svg{position:absolute;width:41px;height:41px;top:12px;left:37.5px}.ds-app span{position:absolute;bottom:0;left:8px;width:100px;height:19px;font-size:10.5px;text-align:left;visibility:hidden}.ds-app:hover span,.ds-app:focus-visible span{visibility:visible}.ds-control:hover,.ds-control:focus-visible{background:#353943cc;outline:2px solid #f4f2ef;transform:scale(1.035)}.ds-control:active{background:#353943cc}.ds-control{transition:transform 130ms}@media(prefers-reduced-motion:reduce){.ds-control{transition:none}}"
+    },
+    {
+      "name": "Media fallback tile",
+      "kind": "card",
+      "refersTo": "media-card",
+      "description": "Native no-art fallback specimen; sample label is illustrative and does not imply published history.",
+      "html": "<button class=\"ds-control ds-media\" aria-label=\"Beyond the horizon, Preview, Sample title\"><span class=\"ds-fallback\">Beyond the horizon</span><span class=\"ds-caption\">Beyond the horizon · Preview</span><span class=\"ds-progress\"></span></button>",
+      "css": ".ds-control{border:0;color:#f4f2ef;background:#34384077;font-family:Outfit,sans-serif;font-weight:400;border-radius:22px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.ds-media{position:relative;width:172px;height:97px;border-radius:10px;background:#191d25;padding:0;white-space:normal}.ds-fallback{position:absolute;left:12px;top:12px;width:148px;height:73px;display:flex;align-items:center;justify-content:center;font-size:13px}.ds-caption{position:absolute;bottom:5px;left:8px;width:148px;height:19px;padding:0 4px;font-size:10px;background:#090b10bb;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;visibility:hidden;text-align:left}.ds-media:hover .ds-caption,.ds-media:focus-visible .ds-caption{visibility:visible}.ds-progress{position:absolute;left:6px;bottom:3px;width:56px;height:2px;background:#f4f2ef}.ds-control:hover,.ds-control:focus-visible{background:#353943cc;outline:2px solid #f4f2ef;transform:scale(1.035)}.ds-control:active{background:#353943cc}.ds-control{transition:transform 130ms}@media(prefers-reduced-motion:reduce){.ds-control{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Cinematic Home",
+    "overview": "The supplied cinematic Apple-TV-like mockup remains the visual authority: landscape artwork fills the television, a left/bottom scrim carries readable text, and horizontal app and media rails keep the next action close. This is a remote-first native Android TV surface for the Sony KD-50X75, viewed from a sofa.\n\nWarm-white Outfit text, charcoal surfaces and restrained focus feedback let provider artwork supply the colour. Native Android dialogs handle occasional settings and recovery tasks. This document records the implemented source; it does not establish visual acceptance or certify the Sony device.",
+    "keyCharacteristics": [
+      "Full-bleed still artwork with left and bottom scrims.",
+      "A large show title, explicit action and horizontal landscape rails.",
+      "Visible D-pad focus, remembered row position and bounded motion.",
+      "Honest loading, permission, empty and opt-in sample states."
+    ],
+    "rules": [
+      {
+        "name": "The Artwork Colour Rule",
+        "body": "Provider artwork supplies colour; chrome stays neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The Remote Focus Rule",
+        "body": "Every actionable Home control has a visible focus treatment and a D-pad route back to the app dock.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Honest Preview Rule",
+        "body": "Sample titles require explicit Preview mode and remain visibly labelled; they never imply real watch history or launch playback.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do preserve the supplied cinematic composition and horizontal cards.",
+      "Do reuse bundled Outfit through UiFont, including the existing system-family locale fallback.",
+      "Do retain readable title/action text when artwork is missing, permission is denied or a provider publishes no usable rows.",
+      "Do respect the app animation preference and system animator setting; keep automatic rotation separate from animation.",
+      "Do test both default and enlarged text on the actual television before accepting the visual result.",
+      "Do leave physical microphone, phone remote, TV inputs and Sony settings with their platform services."
+    ],
+    "donts": [
+      "Don't use Space Grotesk, decorative eyebrows, neon glow or realtime blur.",
+      "Don't replace the horizontal shelf with a portrait poster grid.",
+      "Don't present app-published recommendations as Google's personalised feed or universal OTT history.",
+      "Don't infer Sony device compatibility, physical remote success, readability or performance from a successful build or emulator run.",
+      "Don't copy the literal-pixel inconsistencies noted below into new components."
+    ]
+  }
+}

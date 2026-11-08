@@ -1,3 +1,11 @@
+# elppA TV — cinematic Android TV Home
+
+This fork adds **elppA TV** in `launcher/elppa`: a recommended-show backdrop, an apps dock, and horizontal Continue Watching / Play Next cards for an Android TV remote. Start with the [Phase 1 plan](docs/elppa/PHASE-1.md) and [build / setup guide](docs/elppa/SETUP.md). Content depends on what installed apps publish; Google Assistant, Google Home's phone remote and Sony settings remain system services.
+
+Build the `:elppa` module. The inherited `:app` and cleanup tools remain the CleanYourTV reference implementation below; **the cleanup prompt is not the elppA installation procedure**. No debloating is required for this fork.
+
+---
+
 <p align="center">
   <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
 </p>
@@ -193,6 +201,7 @@ python3 tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers   # your phot
 
 | Tool | What it does |
 |---|---|
+| [`tools/elppa.py`](tools/elppa.py) | This fork's explicit elppA install, content-access grant, Home selection and recorded Home restore. No package disabling. [Build and setup](docs/elppa/SETUP.md). |
 | [`tools/tv.py`](tools/tv.py) | Pure-Python ADB client: shell, batch, push, pull, reboot, and screenshots, optionally pressing remote keys first. Works where the stock `adb` binary is blocked. Optional [paired Google ADB backend](tools/native-adb.md) for encrypted Wireless debugging. |
 | [`tools/docker-build.sh`](tools/docker-build.sh) | Builds the launcher or an add-on in Docker (JDK 17, Android SDK 34), so this computer needs nothing but Docker. Install the result with `SKIP_BUILD=1`. [Guide](tools/docker-build.md). |
 | [`tools/b64push.py`](tools/b64push.py) | Uploads large files such as APKs in base64 chunks and verifies the checksum. |

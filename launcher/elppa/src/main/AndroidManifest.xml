@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-feature android:name="android.software.leanback" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
+    <queries>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
+        <intent><action android:name="android.settings.SETTINGS" /></intent>
+        <intent><action android:name="android.settings.WIFI_SETTINGS" /></intent>
+        <intent><action android:name="android.settings.HOME_SETTINGS" /></intent>
+        <intent><action android:name="android.intent.action.ASSIST" /></intent>
+        <intent><action android:name="com.android.tv.action.VIEW_INPUTS" /></intent>
+        <package android:name="com.google.android.katniss" />
+        <package android:name="com.google.android.tv.remote.service" />
+    </queries>
+    <application android:label="@string/elppa_name" android:icon="@drawable/elppa_icon"
+        android:banner="@drawable/elppa_banner" android:theme="@style/Theme.Elppa"
+        android:allowBackup="false" android:usesCleartextTraffic="false">
+        <activity android:name=".ElppaHomeActivity" android:exported="true" android:launchMode="singleTask"
+            android:excludeFromRecents="true" android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".AppLaunchActivity" android:exported="true" android:noHistory="true"
+            android:excludeFromRecents="true" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="market" android:host="launch" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
