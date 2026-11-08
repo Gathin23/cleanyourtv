@@ -4,9 +4,9 @@ Android can leave `enabled_accessibility_services` naming the launcher's `HomeKe
 `accessibility_enabled` reads `0`: on a TCL C6K Pro (`G08`, Android 14) that is what a reboot left
 behind, so nothing was bound, the Home button opened Google TV, and the page's two existing cases (a
 force stop that empties the list, and a firmware `APP_AUTO_START` denial) did not describe it. The
-launcher's own `restore_key_services` does not reach this state either: `ServiceRepair.restore()` writes
-`ACCESSIBILITY_ENABLED` only after it has put a missing helper back on the list, and returns early when
-the list is already complete.
+launcher's own `restore_key_services` did not reach this state until #3404: `ServiceRepair.restore()`
+returned early whenever the list was complete. It now runs its add, remove, add cycle and writes the flag
+also when the list is complete but `accessibility_enabled` reads a confirmed `0`, and the note says so.
 
 Documentation only, so the tests pin what a reader has to be able to act on - both settings, the dump,
 the three commands, the device it was seen on - and pin the claim about `ServiceRepair` to its own code,
@@ -109,15 +109,18 @@ class AccessibilityFlagNoteTest(unittest.TestCase):
     def test_bullet_links_the_issue(self):
         self.assertIn("[#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)", self.note)
 
-    def test_bullet_says_restore_key_services_does_not_cover_it(self):
+    def test_bullet_says_what_restore_key_services_covers(self):
         self.assertIn("restore_key_services", self.note)
         self.assertIn("ServiceRepair", self.note)
 
-    def test_service_repair_still_returns_before_writing_the_flag(self):
-        # The note's claim, checked against the code it names rather than against the wording.
-        self.assertTrue(flag_written_after_the_list_check(self.java),
-                        "ServiceRepair now writes the flag on a complete list too: the note says it "
-                        "does not, so reword the note (and this test) with the launcher change")
+    def test_service_repair_also_runs_on_a_confirmed_zero_flag(self):
+        # The note's claim (#3404), checked against the code it names rather than against the wording:
+        # a complete list passes the early return only when the flag reads a confirmed 0 (default -1).
+        self.assertFalse(flag_written_after_the_list_check(self.java),
+                         "ServiceRepair returns on a complete list again: the note says it repairs a "
+                         "zeroed flag, so reword the note (and this test) with the launcher change")
+        self.assertIn("if (!missing && Settings.Secure.getInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED, -1) != 0) return;",
+                      self.java)
         self.assertIn("ENABLED_ACCESSIBILITY_SERVICES", self.java)
 
     def test_themes_readme_still_scopes_restore_key_services_to_a_force_stop(self):
@@ -144,7 +147,8 @@ class AccessibilityFlagNoteTest(unittest.TestCase):
         self.assertEqual(broken, [], "the bullet must not link a page that does not exist")
         for target in LINK.findall(self.note):
             if target.startswith(("http://", "https://")):
-                self.assertEqual(target, "https://github.com/Gathin23/cleanyourtv/issues/1047")
+                self.assertIn(target, ("https://github.com/Gathin23/cleanyourtv/issues/1047",
+                                       "https://github.com/Gathin23/cleanyourtv/issues/3404"))
 
     def test_bullet_extraction_stops_at_the_next_bullet(self):
         sample = "\n".join([START + " one", "  two", "- **Next** three"])
