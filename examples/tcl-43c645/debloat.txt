@@ -21,10 +21,10 @@
 # YouTube kept working, also after a cold reboot with launcherx off. The remote's app buttons need the
 # launcher's key services: see README.md, config.json and build-and-install.sh.
 #
-# Not tested here: a TCL 43C641 (product G03_4K_GB, device BeyondTV4, V8-R51MT05-LF1V652 AR11), reported in
-# #3533, did a full reboot when waking from standby with group 4 applied. The units above were checked across
-# a reboot, not a standby wake, so the com.tcl.usercenter line stays in: comment it out before applying if your
-# set reboots on waking from standby, and the Undo line above puts it back if you have applied the list already.
+# Left out: com.tcl.usercenter (TCL account). A TCL 43C641 (product G03_4K_GB, device BeyondTV4,
+# V8-R51MT05-LF1V652 AR11), reported in #3533, did a full reboot on every wake from standby with it disabled.
+# The units above were checked across a reboot, not a standby wake, so the line is commented out below. If you
+# applied the list before, turn it back on with: TV_HOST=<tv ip> tools/tv.py pm enable com.tcl.usercenter
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43c645/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43c645/debloat.txt com.google.android.apps.tv.launcherx
@@ -73,7 +73,7 @@ com.tcl.miracast                            # screen mirroring (Cast receiver ke
 com.tcl.ttvs                                # TCL identifier/awareness services
 com.tcl.logkit                              # log collection, remote diagnosis
 com.tcl.waterfall.overseas                  # TCL content recommendations
-com.tcl.usercenter                          # TCL account; a 43C641 rebooted on waking from standby, see above
+# com.tcl.usercenter                        # TCL account: a 43C641 reboots on waking from standby with it off (#3533)
 com.tcl.channelplus                         # TCL Live: FAST IPTV channels with ads (its own TV input)
 com.tcl.smartalexa                          # Alexa integration
 com.tcl.ocean.instructions                  # on-screen manual
