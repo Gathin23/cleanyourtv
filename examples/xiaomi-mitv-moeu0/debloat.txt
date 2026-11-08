@@ -64,6 +64,26 @@
 # com.google.android.tungsten.setupwraith/.RecoveryActivity, and the installer put launcherx back. After the
 # saved Wi-Fi network's owner was checked (see the second unit above), setupwraith was disabled with
 # tools/disable.ps1 and the installer run again: the launcher owns Home, also after a reboot (#3088).
+#
+# Fourth unit: Xiaomi TV S Mini LED 65 2025, EU, same MiTV-MOEU0 / ladybird, firmware
+# UKN1.240806.017.V816.0.26.10.12.1.ULBMIXM, launcher installed without the key helpers (held volume ramps).
+# The list applied as is after a factory reset, in this order: the saved Wi-Fi network belonged to setupwraith
+# again (first-run wizard), so it was forgotten and joined again first; setupwraith was disabled while launcherx
+# was still enabled; then the installer took Home. Home, Wi-Fi and phone casting held through a reboot.
+# Do NOT re-enable setupwraith while launcherx is disabled, not even for a minute: on this unit Home resolved
+# to setupwraith/.RecoveryActivity, and the reboot after it never finished. Wi-Fi and ADB never came up,
+# Android's "Cannot load Android system" rescue screen followed, "Try again" failed three times and only a
+# factory reset brought the TV back. Re-enable launcherx first, as for the MiTV-MOSR4 in docs/TROUBLESHOOTING.md.
+# Casting: with launcherx off, the cached-app freezer froze com.google.android.apps.mediashell a few minutes
+# after each wake (`freezing <pid> com.google.android.apps.mediashell` in logcat, 8009 not answering) and
+# phones lost the TV. `settings put global cached_apps_freezer disabled` and a reboot kept the receiver
+# awake; undo with `device_default`. The receiver loads its keys without setupwraith on this firmware
+# (`Created singleton instance of ClientAuthSigner`, no `No private key` line).
+# Privacy, first day only: the extra Xiaomi packages under "Fourth unit" below are commented out until they
+# have been lived with. Xiaomi's own switches were on after the reset and can be turned off from the shell:
+# `settings put global user_experience_enabled 0` and `settings put secure upload_log_pref 0`.
+# Still running with Xiaomi's tracking SDK inside (api.ad.xiaomi.com, tracking.miui.com in the dex), and needed:
+# mitv.service, com.mitv.livetv, com.mi.bluetooth, com.xiaomi.tvqs.overseas.y24 (see DO NOT DISABLE above).
 
 # Telemetry
 com.miui.tv.analytics
@@ -82,6 +102,12 @@ android.autoinstalls.config.google.gtvpai    # Play auto-installs
 
 # Cleaner with Firebase analytics
 com.xiaomi.mitv.tvmanager
+
+# Fourth unit, first day: disabled there with no change seen on screen; uncomment once lived with
+# com.miui.misightservice                    # MiSight: DiagnosisReceiver, RemoteDiagnosis; mioffice.cn, mitvos.com
+# com.xiaomi.mitv.detection                  # diagnosis and benchmark (benchmarkcn); ad and tracking SDK
+# com.mitv.toolhouse                         # network speed test (speedtest.cn), no activities
+# com.xiaomi.mi_connect_service              # Mi Connect / Milink (Airkan) casting for Xiaomi phones
 
 # Preloaded apps
 com.google.android.youtube.tvmusic
