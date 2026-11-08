@@ -72,9 +72,11 @@
 #   (dreamx/.settingsv2.TwoPanelActivity); the same panel is under Settings > System > Ambient screensaver > Settings.
 # - The stock screensaver delay was 10 minutes (screen_off_timeout 600000); Google TV has no on-screen setting for it.
 #
-# Fifth VU31, sold as the BRAVIA 2 K-50S20B (50"), same build, 2026-10-31: the Sony, ad and Google groups above,
-# the launcher, and the (5th) lines below, in five batches with a screenshot and crash-log check after each, then
-# reboot-checked. Streaming preloads, Chromecast, AirPlay, Ambient screensaver and the updater kept. Notes from it:
+# Fifth VU31, sold as the BRAVIA 2 K-50S20B (50"), same build, 2026-10-31: the Sony, ad and Google groups above, the
+# launcher, and the three (5th) lines that close the off-by-choice group, in five batches with a screenshot and
+# crash-log check after each, then reboot-checked. Those three are comments here so this shared list keeps Assistant,
+# its Sony glue and YouTube Music on every other VU31; uncomment them to repeat that set. Streaming preloads,
+# Chromecast, AirPlay, Ambient screensaver and the updater kept. Notes from it:
 # - ADB went over Wireless debugging (adb pair, then TV_ADB_BINARY=adb and TV_HOST=<tv ip>:<port> as in
 #   tools/native-adb.md); after the first reboot USB debugging alone answered on 5555, as on the first set.
 # - Unlike the second set, the Input button also did nothing once launcherx was off, like YouTube, Netflix, Prime
