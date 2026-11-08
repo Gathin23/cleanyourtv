@@ -82,7 +82,19 @@ def tally(packages, examples):
     """{package: (disabled, commented, most common note)} over every examples/*/debloat*.txt."""
     # The same discovery tests/test_examples.py and tests/test_stock_launcher_undo.py sweep with: a folder
     # may ship a second list beside debloat.txt, and tools/disable.sh takes it like the first.
-    lists = sorted(Path(examples).glob("*/debloat*.txt"))
+    # glob() suppresses directory read errors, which would silently produce a partial tally.
+    lists = []
+    root = Path(examples)
+    try:
+        with os.scandir(root) as folders:
+            for folder in folders:
+                if folder.is_dir():
+                    with os.scandir(folder.path) as entries:
+                        lists.extend(Path(entry.path) for entry in entries
+                                     if Path(entry.name).match("debloat*.txt"))
+    except OSError as e:
+        raise SystemExit(f"could not read {e.filename or examples} ({e.strerror or e}): no counts printed")
+    lists.sort()
     if not lists:
         raise SystemExit(f"{examples}: no */debloat*.txt lists in it")
     wanted = set(packages)
