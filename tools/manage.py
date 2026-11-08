@@ -16,8 +16,10 @@ pushes it with the platform's theme script, as themes/README.md describes; it ne
 --theme at the project's themes/ or examples/ is refused before anything is written. set reads the value the way
 the key's own type in the Keys table needs - true or false for a bool, a JSON list, object or number where the
 table says so, the text itself for a string - and refuses one the launcher would ignore or a number outside the
-range the table states. A theme's config.json is hand-edited, so one that cannot be read, is not JSON, or is not a
-JSON object is named before the key is written, and a write it cannot make says so instead of ending in a traceback.
+range the table states. A string whose row names the values it takes (glow_style, glass_style, wallpaper_order,
+clock_format) is held to them, since the launcher answers any other value with its own default. A theme's
+config.json is hand-edited, so one that cannot be read, is not JSON, or is not a JSON object is named before the
+key is written, and a write it cannot make says so instead of ending in a traceback.
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
 left over are answered with the usage line and exit 2 before a theme folder is read or written. list, status,
 show, install and remove read their own words the same way, before anything is read from this checkout or asked
@@ -218,6 +220,41 @@ def number_in_range(key, item, parsed, text):
     return value
 
 
+# The string keys a Keys-table row names the values of, with the one the launcher answers instead and whether its
+# reader ignores case. Config.glowStyle() is `GLOW_HORIZON.equalsIgnoreCase(value.trim()) ? GLOW_HORIZON :
+# GLOW_RADIAL` and glassStyle() answers glass to anything else; WallpaperRotation.validOrder() is
+# `ORDER_SEQUENTIAL.equals(order) || ORDER_SHUFFLE.equals(order)`, so `Sequential` is shuffle; ClockFormat applies
+# "12" or "24" and lets every other mode follow the TV, which is what `system` means, so a capital in SYSTEM is the
+# same mode. A value outside these sets is not an error on the TV - the default comes back - so set would report a
+# switch it left where it was, the dead `"glow_style": "off"` #3429 removed from two themes.
+ENUMS = {
+    "glow_style": (("radial", "horizon"), "radial", True),
+    "glass_style": (("glass", "rim", "halo"), "glass", True),
+    "clock_format": (("12", "24", "system"), "system", True),
+    "wallpaper_order": (("shuffle", "sequential"), "shuffle", False),
+}
+
+
+def enum_value(key, value):
+    """The string as the key's own reader keeps it, or a refusal naming the values it takes.
+
+    The launcher trims every string it reads (`string()`, `v instanceof String ? ((String) v).trim() : fallback`),
+    so the value written is the trimmed one. A key with no closed set - a name, a festival, a locale - is handed
+    back untouched, and so is a number written for a string key (`set greeting_name 42` is the text 42).
+    """
+    rule = ENUMS.get(key)
+    if rule is None:
+        return value
+    values, fallback, ignores_case = rule
+    trimmed = value.strip()
+    kept = trimmed.lower() if ignores_case else trimmed
+    if kept not in values:
+        allowed = ", ".join(values[:-1]) + " or " + values[-1]
+        sys.exit(f"{key} takes {allowed}, so {value!r} is not one the launcher keeps: it answers "
+                 f"{fallback} instead, and the theme would change nothing. Nothing was written or pushed.")
+    return trimmed
+
+
 def value_as(key, item, text):
     """The argument read the way the key's type needs, or a refusal naming what the key takes."""
     kind = declared_kind(item)
@@ -231,9 +268,9 @@ def value_as(key, item, text):
         try:
             parsed = json.loads(text)
         except ValueError:
-            return text
+            return enum_value(key, text)
         # A string key is read as a String only, so `set greeting_name 42` means the text 42, not a number.
-        return parsed if isinstance(parsed, str) else text
+        return enum_value(key, parsed if isinstance(parsed, str) else text)
     try:
         parsed = json.loads(text)
     except ValueError:
