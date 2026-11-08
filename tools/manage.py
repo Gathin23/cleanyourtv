@@ -11,7 +11,9 @@ build-and-install.sh, or the steps in addons/README.md; tools/theme.sh or theme.
     TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py remove <add-on>
     TV_HOST=<tv ip> tools/venv/bin/python -I tools/manage.py set <switch> <json value> --theme <your theme folder>
 
-install on an installed add-on updates it (pm install -r). set writes the key into a theme folder of your own and
+install on an installed add-on updates it (pm install -r). show prints every picture a switch's row carries in
+docs/switches.md, since a few keys have two (the pill up and at rest for `vpn_pill`), and a reader who copies
+only the first path would see half of what the page documents. set writes the key into a theme folder of your own and
 pushes it with the platform's theme script, as themes/README.md describes; it never edits a folder in this checkout, so pointing
 --theme at the project's themes/ or examples/ is refused before anything is written. set reads the value the way
 the key's own type in the Keys table needs - true or false for a bool, a JSON list, object or number where the
@@ -84,6 +86,21 @@ def img_src(cell):
     return m.group(1) if m else None
 
 
+def img_srcs(cell):
+    """Every <img src> in a cell, in the order the page draws them.
+
+    docs/switches.md lets one row show more than one picture - `vpn_pill` carries the pill up and the pill at
+    rest - and tests/test_switches.py already reads every one of them. A reader that stops at the first `<img
+    src>` reports half of what the page gives the key, which is what `show` did while the page grew a second
+    picture per row. A picture with no src keeps its place as an empty string, as that page's own reader has it.
+    """
+    out = []
+    for tag in re.findall(r"<img\b[^>]*>", cell or ""):
+        m = re.search(r'\bsrc="([^"]*)"', tag)
+        out.append(m.group(1) if m else "")
+    return out
+
+
 def plain(cell):
     """A Markdown cell as text: links to their words, code marks dropped."""
     s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", cell or "")
@@ -149,15 +166,17 @@ def switches(root=ROOT):
     sw = root / "docs" / "switches.md"
     if sw.is_file():
         for c in table_rows(sw.read_text(encoding="utf-8"), "| Key |"):
-            src = img_src(c[1]) if len(c) > 1 else None
-            if src:
+            srcs = [str((sw.parent / s).resolve()) for s in img_srcs(c[1]) if s] if len(c) > 1 else []
+            if srcs:
                 for k in re.findall(r"`([a-z_]+)`", c[0]):
-                    shots[k] = str((sw.parent / src).resolve())
+                    shots[k] = srcs
     out = []
     for c in table_rows(keys_part, "| Key |"):
         for k in re.findall(r"`([a-z_]+)`", c[0]):
+            pictures = shots.get(k, [])
             out.append({"kind": "switch", "name": k, "id": k, "type": plain(c[1]) if len(c) > 1 else "",
-                        "what": plain(c[2]) if len(c) > 2 else "", "screenshot": shots.get(k)})
+                        "what": plain(c[2]) if len(c) > 2 else "",
+                        "screenshot": pictures[0] if pictures else None, "screenshots": pictures})
     return out
 
 
@@ -541,9 +560,14 @@ def cmd_show(name):
     item = find(name)
     if not item:
         sys.exit(f"no add-on, theme or switch called {name}")
-    for k in ("kind", "name", "what", "type", "author", "tested", "permissions", "package", "screenshot"):
+    for k in ("kind", "name", "what", "type", "author", "tested", "permissions", "package"):
         if item.get(k):
             print(f"{k:>12}: {item[k]}")
+    # A switch's row in docs/switches.md may carry more than one picture (the state on each side of the
+    # switch); print every one, or a reader copying a path gets half of what the page shows.
+    pictures = item.get("screenshots") or ([item["screenshot"]] if item.get("screenshot") else [])
+    for picture in pictures:
+        print(f"{'screenshot':>12}: {picture}")
     if item["kind"] == "add-on":
         how = item["script"] or "the steps in addons/README.md"
         if sys.platform == "win32" and item["script"]:
