@@ -1,8 +1,10 @@
 # Xiaomi Mi Box 4S Pro (MiTV-AZFP0, frozen)
 
-China-market streaming box, tested on 2026-10-30. This is a single-session
-device report, not a several-day debloat list. No `examples/` list is provided
-until the new changes have been used for several days.
+China-market streaming box, read on 2026-10-30 before any change. This page is
+that single-session device report; the list it grew into is
+[`examples/xiaomi-mi-box-4s-pro-frozen/`](../../examples/xiaomi-mi-box-4s-pro-frozen/debloat.txt) -
+same box, same build, twelve packages, with the owner's later reports behind it. Its README is where
+the shipped list, the recovery line and what is still untested live.
 
 ## Device and scope
 
@@ -79,8 +81,11 @@ speed-up percentage.
   states were read back; the four previously disabled packages stayed disabled.
   The later four owner-choice packages were recorded by the same recovery
   mechanism, but their restoration was not separately exercised.
-- Casting, standby/wake, OTA installation and several-day use remain untested.
-  Keeping a package enabled is not a functional pass for it.
+- Casting and physical-remote standby/wake were confirmed by the owner on
+  2026-11-05, and two days of intensive use were reported without problems on
+  2026-11-02; the folder's README records what was not - the casting source
+  device, app and protocol, the standby/wake cycle count, app download and OTA
+  installation. Keeping a package enabled is not a functional pass for it.
 
 ## Home and ADB
 

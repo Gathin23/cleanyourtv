@@ -1,20 +1,25 @@
-# Toshiba Android TV 11 (Vestel `shandao`): an observed-state note, no list yet
+# Toshiba Android TV 11 (Vestel `shandao`): the report behind its list
 
 One owner-reported read on 2026-10-25 (#1829), taken with the phone app (0.3.4) before any change
-was made. This is an observed-state note, not a debloat list: nothing has been disabled on this set
-yet. Android identifies it as brand `Toshiba`, manufacturer `My`, device `shandao`, Android 11 /
-SDK 30, firmware `Toshiba/EMIR_Toshiba/shandao:11/RTM6.230109.207/10391326:user/release-keys`, with
-138 system packages and the stock Home on `com.google.android.tvlauncher` (Android TV Leanback).
-The report does not name the retail model: the model string alone reads `Android TV`.
+was made, and the list the same owner sent for that set landed on 2026-11-07
+([#3382](https://github.com/Gathin23/cleanyourtv/pull/3382)): this page is the read, and what to
+apply is [`examples/toshiba-shandao-atv11/`](../../examples/toshiba-shandao-atv11/debloat.txt) -
+same unit, same firmware. Android identifies it as brand `Toshiba`, manufacturer `My`, device
+`shandao`, Android 11 / SDK 30, firmware
+`Toshiba/EMIR_Toshiba/shandao:11/RTM6.230109.207/10391326:user/release-keys`, with 138 system
+packages and the stock Home on `com.google.android.tvlauncher` (Android TV Leanback). Neither the
+report nor the list names the retail model: the model string alone reads `Android TV`.
 
 It is the third unit of the Vestel `shandao` family in the repo.
 [examples/cecotec-shandao](../../examples/cecotec-shandao/) is the same `shandao` board on Android
 TV 14 (MediaTek), and its second unit is already a Toshiba (65QA7D63DG, Norway, `UKNV.260528.001`,
 where `com.google.android.tvrecommendations` comes back enabled at every boot); this set is the
-older Android TV 11 firmware, carrying Freeview. The closest tested list is
+older Android TV 11 firmware, carrying Freeview. This set's own list is
+[examples/toshiba-shandao-atv11](../../examples/toshiba-shandao-atv11/), whose three Google apps are
+the whole of what it disables; the nearest board with a tested list that is not this one is
 [examples/toshiba-cosmos-android-tv](../../examples/toshiba-cosmos-android-tv/) (Vestel Cosmos170
 `yeoksam`, Android TV 11, Spain): its groups cover the Vestel telemetry and the retail demo named
-below. Do not apply either list solely because the brand or the board name matches.
+below. Do not apply a list solely because the brand or the board name matches.
 
 ## What the read showed
 
@@ -44,6 +49,10 @@ installed and no package changed during the read.
 
 The candidates the report names - the Vestel telemetry, `com.google.android.tvrecommendations`,
 the retail demo - are the groups the Cosmos list already disables, and the Freeview catch-up apps
-need nothing, being off already. Once this set's owner has run a list on the TV and lived with it
-for a few days, it becomes an `examples/` folder of its own, the way
-[docs/workflows/tv-list.md](../workflows/tv-list.md) describes.
+need nothing, being off already. The list this set now ships does not take them:
+[examples/toshiba-shandao-atv11](../../examples/toshiba-shandao-atv11/debloat.txt) disables
+`com.google.android.play.games`, `com.google.android.videos` and
+`com.google.android.youtube.tvmusic`, leaves Netflix commented out, and touches no Vestel or
+MediaTek package, so an owner who wants the telemetry and the retail demo off as well adds those
+lines by hand, with the Cosmos list as the tested starting point. The folder is provisional until
+that owner reports a reboot, the way [docs/workflows/tv-list.md](../workflows/tv-list.md) asks.
