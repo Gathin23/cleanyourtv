@@ -16,7 +16,9 @@ pushes it with the platform's theme script, as themes/README.md describes; it ne
 --theme at the project's themes/ or examples/ is refused before anything is written. set reads the value the way
 the key's own type in the Keys table needs - true or false for a bool, a JSON list, object or number where the
 table says so, the text itself for a string - and refuses one the launcher would ignore or a number outside the
-range the table states. A theme's config.json is hand-edited, so one that cannot be read, is not JSON, or is not a
+range the table states. A list of keycodes is read the same way one entry at a time, because the launcher's
+intArray() answers a list holding a word or a number under 1 with the built-in default instead of the list.
+A theme's config.json is hand-edited, so one that cannot be read, is not JSON, or is not a
 JSON object is named before the key is written, and a write it cannot make says so instead of ending in a traceback.
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
 left over are answered with the usage line and exit 2 before a theme folder is read or written. list, status,
@@ -218,6 +220,29 @@ def number_in_range(key, item, parsed, text):
     return value
 
 
+# The Keys-table cell of a list the launcher reads with intArray() - `[83, 176]` for the remote buttons those
+# keys add. A list with anything else in it is answered with the built-in default, not the list.
+KEYCODES = "list of keycodes"
+
+
+def keycode_problem(values):
+    """The first entry intArray() would throw the whole list away for, or None.
+
+    intArray() is `if (!(item instanceof Number)) return fallback; ... if (out[i] < 1) return fallback;`, so one
+    entry that is a word, or a number under 1, gives the launcher config.xml's array instead of the list: the
+    remote buttons the key was meant to add do nothing while set has already reported the list as written.
+    Number.intValue() truncates, so a fraction is read as the whole number below it rather than dropped.
+    """
+    for entry in values:
+        if isinstance(entry, bool) or not isinstance(entry, (int, float)):
+            return f"{entry!r} is not a number"
+        if entry != int(entry):
+            return f"{entry} is not a whole number (the launcher reads it as {int(entry)})"
+        if int(entry) < 1:
+            return f"{int(entry)} is below 1"
+    return None
+
+
 def value_as(key, item, text):
     """The argument read the way the key's type needs, or a refusal naming what the key takes."""
     kind = declared_kind(item)
@@ -245,6 +270,12 @@ def value_as(key, item, text):
         sys.exit(f"{key} takes {item.get('type')}, so pass {example}, not {text}")
     if kind == "number":
         return number_in_range(key, item, parsed, text)
+    if (item.get("type") or "").strip() == KEYCODES:
+        problem = keycode_problem(parsed)
+        if problem:
+            sys.exit(f"{key} takes {KEYCODES}, so every entry has to be a whole number of at least 1: {problem}, "
+                     f"and the launcher ignores the whole list when one entry is not, so those remote buttons "
+                     f"would do nothing. Nothing was written or pushed.")
     return parsed
 
 
