@@ -4,7 +4,7 @@ It used to start tools/tv.py for every shell command: a new Python, a new TCP co
 ADB handshake, several times per key, plus the whole main log pulled back for every key (about
 100 MB on a TCL C755, 41 s a read). Through a
 relay one full run took over 45 minutes. Now the TV class connects once with tools/tv.py's client
-and reuses it, reopening it once if it drops; only the log's newest lines are read, filtered on the
+and reuses it, reopening it once for a safe query; only the log's newest lines are read, filtered on the
 TV, and not at all once the first keys show the TV doesn't log them; and the key loop looks up Home once. --host also has to reach the client: the old subprocesses only read TV_HOST. It reaches it as TV_HOST/TV_PORT, and the target the run keeps is the one tools/tv.py made of those two (it splits `host:port` and checks the range), not the arguments again.
 
 A TV that cannot be reached is the other half, and the run's first connect is also the one it reopens
@@ -112,7 +112,7 @@ class OneConnectionTest(unittest.TestCase):
     def test_a_dropped_connection_is_reopened_once(self):
         first, second = FakeDevice(fail_first=True), FakeDevice({"echo": b"ok"})
         tv, client = self.tv_with(first, second)
-        self.assertEqual(tv.shell("echo ok"), "ok")
+        self.assertEqual(tv.shell("echo ok", retry=True), "ok")
         self.assertEqual(client.connects, 2)
         self.assertTrue(first.closed)
 
@@ -135,7 +135,7 @@ class FakeTV:
         self.log = log
         self.commands = []
 
-    def shell(self, command):
+    def shell(self, command, *, retry=False):
         self.commands.append(command)
         if "framestats" in command:
             return "Uptime: 2000\n"
