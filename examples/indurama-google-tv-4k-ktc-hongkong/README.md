@@ -6,9 +6,10 @@ firmware UKNV.260626.001); this is the Ecuadorian ISDB-Tb variant.
 
 ## The list
 
-`debloat.txt` disables **43 packages**. Applied over network ADB with the repo's tools, reboot-checked,
-nothing re-enabled by the firmware at boot. Netflix and Max were off the owner's keep-list and are in
-the list; they had arrived factory-disabled on this set anyway (so did YouTube Music).
+`debloat.txt` disables **41 packages**. Applied over network ADB with the repo's tools, reboot-checked,
+nothing re-enabled by the firmware at boot. Netflix and Max were off the owner's keep-list: on the
+tested set they are disabled (commented out in this shared list, so each owner opts in) and had
+arrived factory-disabled here anyway, as had YouTube Music, which the list does send.
 
 Kept: the owner's streaming apps (YouTube, Prime Video, Disney+, Spotify, DirecTV Go, TuneIn), Google
 Assistant (katniss), Chromecast, Miracast (`com.mediatek.androidbox`), Xuper/Magis TV

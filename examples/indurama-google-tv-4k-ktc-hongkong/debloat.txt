@@ -80,6 +80,6 @@ com.android.hotspot2.osulogin
 com.android.htmlviewer
 com.android.wallpaperbackup
 
-# --- F. Streaming apps NOT on the keep-list ---
-com.netflix.ninja
-com.wbd.stream
+# --- F. Streaming apps kept for a shared list (disabled on the tested set) ---
+# com.netflix.ninja                # disabled on the tested set by owner choice (uncomment to do the same)
+# com.wbd.stream                   # disabled on the tested set by owner choice (uncomment to do the same)
