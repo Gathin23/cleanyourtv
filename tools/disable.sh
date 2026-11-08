@@ -263,7 +263,7 @@ if [ -n "$PKGS" ] && [ -z "${TVINPUT_ALLOW:-}" ]; then
   # asks for. Every name was checked as a bare package name above, so none of them can add shell syntax
   # here. </dev/null so the client cannot read this script's stdin (that is the piped batch below);
   # tr -d '\r' because adb can end lines with CRLF, which would leave a CR on every name.
-  NAMES="$(printf '%s ' $PKGS)"
+  NAMES="$(printf '%s ' "$PKGS" | tr '\n' ' ')"
   # Trailing `; true`: the loop's status is the last package's `grep -q`, which is nonzero whenever
   # the last listed package is not an input driver — the common case — and would look like a failed
   # check. Only a real failure (tv.py cannot reach the TV) should reach the warning below.
