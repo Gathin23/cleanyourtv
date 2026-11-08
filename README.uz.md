@@ -7,10 +7,6 @@
 </p>
 
 <p align="center">
-  <em>Tarjima: <a href="https://t.me/xpr0gram">t.me/xpr0gram</a></em>
-</p>
-
-<p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Yulduzlar"></a>
   <a href="https://github.com/Gathin23/cleanyourtv/pulls?q=is%3Amerged"><img src="https://img.shields.io/github/issues-search?query=repo%3AGathin23%2Fcleanyourtv%20is%3Apr%20is%3Amerged&style=flat&cacheSeconds=1800&label=merged%20PRs&color=cfffcf&labelColor=15181e" alt="Birlashtirilgan PR lar"></a>
   <a href="https://github.com/Gathin23/cleanyourtv/network/members"><img src="https://img.shields.io/github/forks/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Fork lar"></a>
@@ -483,7 +479,7 @@ birinchi toʻrt kunda 200 dan ortiq hissa qoʻshuvchidan 170 dan ortiq TV modeli
 deb ataldi; eski havolalar ishlaydi.
 
 Ikki hafta oʻtib, 19–25 oktabr haftasida GitHub ning 1-oʻrindagi trend ombori boʻldi; 46 mingdan ortiq yulduz,
-5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. Roʻyxatlar endi 456 TV modelini va 122 brendni
+5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. Roʻyxatlar endi 457 TV modelini va 122 brendni
 qamrab oladi. Matbuotdagi aks: 412 maqola (54 mamlakatdan) va YouTube hamda Bilibili da 229 video, hammasi
 [docs/PRESS.md](docs/PRESS.md) da (raqamlar 2026-yil 31-oktabr holatiga).
 

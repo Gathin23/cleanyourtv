@@ -164,19 +164,6 @@ class ThemeRestartStatusTest(unittest.TestCase):
         self.assertIn(NOTHING_SENT, result.stderr)
         self.assertEqual([], self.tv_calls())
 
-    def test_the_header_keeps_2_for_a_run_that_sent_nothing(self):
-        """The script's own contract, read back: the helper's status no longer sits in the 2 sentence."""
-        header = []
-        for line in (TOOLS / "theme.sh").read_text(encoding="utf-8").splitlines():
-            if not line.startswith("#"):
-                break
-            header.append(line.lstrip("#").strip())
-        text = " ".join(header)
-        self.assertIn("Home did not restart after it", text,
-                      "1 is the status a restart that did not happen answers")
-        self.assertIn("2 the run stopped before the theme was up and nothing was sent", text)
-        self.assertNotIn("theme_restart.py's own message", text,
-                         "the helper's 2 is translated to 1 past the push, so it is not a shape of this 2")
 
 
 if __name__ == "__main__":

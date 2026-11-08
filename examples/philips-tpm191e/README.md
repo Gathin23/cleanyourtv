@@ -189,7 +189,7 @@ unit (`STT2.230526.001`), with its original Philips remote (Bluetooth, with a mi
 checked again 7 November 2026. The household watches broadcast TV through an app, not the tuner.
 
 - The lead list with Prime Video and YouTube Music commented out, the Assistant (`katniss`) off by choice.
-  `tools/disable.ps1` skipped `org.droidtv.usagelogger` and `org.droidtv.demome` (TV_INPUT_HARDWARE), as on the
+  The Windows disable script skipped `org.droidtv.usagelogger` and `org.droidtv.demome` (TV_INPUT_HARDWARE), as on the
   65PUS9435, and `com.google.android.tvrecommendations` went last, after the launcher had Home. Everything stayed
   disabled through a reboot and the two weeks; a 30 s idle log showed no retry loop.
 - `launcher/build-and-install.ps1` ran through on its own: cold start in 2.3 s, and 2.7 s for a reinstall with

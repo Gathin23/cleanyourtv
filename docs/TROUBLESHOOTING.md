@@ -2228,14 +2228,12 @@ the window manager delivers it. Beyond dropping held-volume repeats
 stops responding inside system overlays and dialogs (`org.droidtv.settings`, `org.droidtv.channels`),
 leaving the screen stuck in menus, and every D-pad press suffers 100–300 ms of input delay.
 
-Check whether an accessibility service is bound, then turn off the launcher's accessibility service so keys
-bypass the input filter:
+Check whether an accessibility service is bound, then turn off only that launcher's service under Settings >
+Accessibility, leaving any others on, so keys bypass the input filter:
 
 ```sh
 tools/tv.py 'dumpsys accessibility'
 tools/tv.py 'settings get secure enabled_accessibility_services'
-tools/tv.py 'settings put secure enabled_accessibility_services null'
-tools/tv.py 'settings put secure accessibility_enabled 0'
 ```
 
 ## Streaming apps take 10–20 seconds to open from a cold start (`cmd package compile -m speed`)

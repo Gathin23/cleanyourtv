@@ -108,10 +108,10 @@
 <div dir="ltr" align="left">
 
 **Challenger** 2 · **CHiQ** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 ·
-**Master-G** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
+**Lumio** 2 · **Master-G** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Dcolor · DEXP · Dialog ·
 Durabrand · DYON · Essentiel b · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Kodak · Koryo · KTC ·
-KUNFT · Liberton · Lumio · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ ·
+KUNFT · Liberton · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ ·
 Philco · Polytron · PPTV · Prosonic · Salora · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General ·
 TD Systems · Tele System · Tesla · TiVo · Tornado · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · X.Vision ·
 Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo, XGIMI
@@ -376,7 +376,7 @@ ADB ברשת ביציאה 5555 אינו מוצפן. בחלק מהטלוויזי�
 
 ב־17 באוקטובר 2026 פרסם יוצר הפרויקט [תמונות לפני ואחרי](https://x.com/gathint/status/2111379569030939102) של הטלוויזיה של הוריו, אחרי ניקוי באמצעות Claude Code דרך Wi-Fi. הפרסום הגיע ל־8.6 מיליון צפיות. בתוך ארבעה ימים הקהילה תרמה רשימות ליותר מ־170 דגמים, בעזרת יותר מ־200 תורמים. עד 19 באוקטובר המאגר נקרא tv-vibehack, והקישורים הישנים עדיין עובדים.
 
-בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. הרשימות כיסו 456 דגמים מ־122 מותגים. סיקור בתקשורת: 412 כתבות מ־54 מדינות ו־229 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md)
+בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. הרשימות כיסו 457 דגמים מ־122 מותגים. סיקור בתקשורת: 412 כתבות מ־54 מדינות ו־229 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md)
 
 ## תרומה לפרויקט
 

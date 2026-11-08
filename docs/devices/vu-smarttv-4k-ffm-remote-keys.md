@@ -24,9 +24,8 @@ YouTube, Prime Video, Disney+ Hotstar) are kept enabled.
 
 With `launcherx` disabled:
 
-- **Netflix** keeps working: Netflix certification requires TV manufacturers to handle the Netflix key
-  at the kernel/driver level (`com.mstar.netflixobserver.NetflixKeyReceiver`), so it launches independently
-  of the stock launcher.
+- **Netflix** keeps working: the firmware handles the Netflix key (`com.mstar.netflixobserver.NetflixKeyReceiver`),
+  so it launches independently of the stock launcher.
 - **YouTube, Prime Video, and Disney+ Hotstar** do nothing: on Google TV, stock `launcherx` intercepted
   these buttons via `com.google.android.apps.tv.launcherx.globalbutton.GlobalButtonLaunch_Receiver`. Once
   `launcherx` is disabled, the broadcast has no recipient and the button presses fall through silently.
@@ -88,6 +87,9 @@ Or in a pushed theme `config.json`:
 ```
 
 ### 2. Enable `InputKeyService`
+
+Check `settings get secure enabled_accessibility_services` first; if it lists other services, append
+`:com.gathin.tvhome/.InputKeyService` instead of replacing them.
 
 ```bash
 cmd appops set com.gathin.tvhome AUTO_START allow 2>/dev/null || true

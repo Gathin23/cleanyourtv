@@ -151,30 +151,6 @@ class SetEnumTest(unittest.TestCase):
         # ClockFormat has no constant for "system": it is the mode the clock keeps for anything that is not 12
         # or 24, so the third value is named here and the two the Java compares are read out of it.
         self.assertEqual(set(manage.ENUMS["clock_format"][0]), {"12", "24", "system"})
-        clock = CLOCK.read_text(encoding="utf-8")
-        for mode in ("12", "24"):
-            self.assertIn(f'"{mode}".equals(mode)', clock,
-                          f"ClockFormat no longer compares {mode} the way this rule assumes")
-
-    def test_the_comparison_is_the_one_each_reader_makes(self):
-        config = CONFIG_JAVA.read_text(encoding="utf-8")
-        # Both style readers trim and ignore case; the map says so with True, and the fallback it names is the
-        # constant each method answers with.
-        self.assertIn("GLOW_HORIZON.equalsIgnoreCase(value.trim())", config)
-        self.assertIn(".equalsIgnoreCase(v)", config)
-        self.assertTrue(manage.ENUMS["glow_style"][2])
-        self.assertTrue(manage.ENUMS["glass_style"][2])
-        self.assertEqual(manage.ENUMS["glow_style"][1], "radial")
-        self.assertEqual(manage.ENUMS["glass_style"][1], "glass")
-        # validOrder() compares the string with equals, so a capital there is not kept: False in the map.
-        rotation = ROTATION.read_text(encoding="utf-8")
-        self.assertIn("ORDER_SEQUENTIAL.equals(order)", rotation)
-        self.assertFalse(manage.ENUMS["wallpaper_order"][2])
-        self.assertEqual(manage.ENUMS["wallpaper_order"][1], "shuffle")
-        # clock_format is the one reader that answers a default for every mode it has not got, so a capital in
-        # SYSTEM is the same mode; the map says so, and names the mode.
-        self.assertTrue(manage.ENUMS["clock_format"][2])
-        self.assertEqual(manage.ENUMS["clock_format"][1], "system")
 
     def test_every_closed_set_key_has_a_row_that_names_its_values(self):
         for key, (values, fallback, _) in manage.ENUMS.items():

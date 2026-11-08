@@ -170,10 +170,7 @@
 #   stayed under `Binding services`, neither bound nor crashed, with no record in `dumpsys activity services`;
 #   rewriting the enabled list did not clear it, a reinstall did, and so did a force stop of the launcher
 #   followed by Home with restore_key_services on.
-# - The owner kept no helper (for the ramp) and opens Settings from the gear with a private build that reads that
-#   TvNotificationPanel line (READ_LOGS) in the launcher's own process; Android aborted that start from the
-#   background ("Abort background activity starts") until SYSTEM_ALERT_WINDOW was declared and allowed with
-#   appops. It adds permissions, so it is not part of this repo.
+# - The owner kept no key helper, to keep the held-volume ramp.
 # - The owner also disabled Google TV Movies and both VIDAA apps (net.vidaatv.*); streaming apps, voice,
 #   Chromecast, AirPlay, DLNA and the firmware updaters stayed on.
 

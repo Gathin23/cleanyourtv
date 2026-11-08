@@ -296,9 +296,9 @@ DUID, the Wi-Fi MAC and the access point's MAC, which are left out of everything
 
 ## UA50MU7000: second-unit read, 7 Series 50", over Wi-Fi
 
-A third owner's read-only check of a Samsung UA50MU7000 (7 Series 50", 2019) on the same
+A third owner's read-only check of a Samsung UA50MU7000 (7 Series 50", 2017) on the same
 home network as a PC. Captured from `GET http://<tv>:8001/api/v2/` only, plus a photo of the
-"About This TV" screen. Nothing on the TV was changed, and no ports beyond 8001 were probed.
+"About This TV" screen. Nothing on the TV was changed, and no ports beyond 8001 were probed in this first read (the 8002 test follows below).
 Identifiers (serial, MAC, Smart Hub IDs, Netflix ESN, device UID) are omitted on purpose.
 
 | Field | Observed value |

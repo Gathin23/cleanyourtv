@@ -10,7 +10,6 @@ The [debloat list](debloat.txt) disables 16 packages: Google feedback and teleme
 |---|---|
 | `debloat.txt` | The 16 packages that were disabled, grouped and commented |
 | `tv.json` | Model metadata for the TV list tables |
-| `config.json` | Dock apps, column layout, and Home redirection for `com.gathin.tvhome` |
 | `README.md` | This page |
 
 ## Critical Projector, Sideloaded Apps & USB Safeguards
@@ -44,12 +43,6 @@ Build and install `com.gathin.tvhome` with `launcher/build-and-install.sh`:
 
 ```bash
 TV_HOST=<tv ip> launcher/build-and-install.sh
-```
-
-Apply dock settings and theme configuration with `tools/theme.sh`:
-
-```bash
-TV_HOST=<tv ip> tools/theme.sh examples/lumio-arc-5
 ```
 
 ## Closing ADB Afterwards
