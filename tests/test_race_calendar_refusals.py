@@ -31,6 +31,7 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import subprocess
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -225,6 +226,225 @@ class RefusalTest(unittest.TestCase):
                 self.assert_api_leaves_config(payload, 2, field)
                 if field == "round":
                     self.assertNotIn("timestamp", self.err.getvalue())
+
+    def assert_timestamp_leaves_config(self, payload):
+        for existing in (False, True):
+            with self.subTest(existing=existing):
+                self.config.unlink(missing_ok=True)
+                if existing:
+                    self.config.write_bytes(THEME_BYTES)
+                for stream in (self.out, self.err):
+                    stream.seek(0)
+                    stream.truncate(0)
+                self.stub(body=json.dumps(payload).encode("utf-8"))
+                status, stderr = self.run_main(str(self.theme))
+                self.assert_refused(status, stderr, "timestamp")
+                self.assertEqual(self.out.getvalue(), "")
+                self.urlopen.assert_called_once()
+                self.assertEqual(sorted(p.name for p in self.theme.iterdir()),
+                                 ["config.json"] if existing else [])
+                if existing:
+                    self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+                else:
+                    self.assertFalse(self.config.exists())
+
+    def test_published_session_timestamps_are_validated_before_writing(self):
+        cases = (("2026-01-02", "not-a-time"), ("2026-02-30", "14:00:00Z"),
+                 ("2026-01-02", "25:00:00Z"), ("2026-01-02", "14:60:00Z"),
+                 ("2026-01-02", "14:00:61Z"), ("2026-01-02", "14:00:00ZZ"),
+                 ("2026-01-02", "14:00:00+01:00"), ("2026-01-02", "14:00Z"),
+                 ("2026-01-02", "140000Z"), ("20260102", "14:00:00Z"),
+                 ("2026-01-02", "14:00:00.1234567890Z"))
+        for key in ("FirstPractice", "Qualifying"):
+            for date, time in cases:
+                with self.subTest(session=key, date=date, time=time):
+                    payload = json.loads(RESPONSE)
+                    race = payload["MRData"]["RaceTable"]["Races"][0]
+                    race["FirstPractice"] = {"date": "2026-01-02", "time": "14:00:00Z"}
+                    race["Qualifying"] = {"date": "2026-01-03", "time": "14:00:00Z"}
+                    race[key] = {"date": date, "time": time}
+                    self.assert_timestamp_leaves_config(payload)
+
+    def test_race_timestamps_python_accepts_but_the_launcher_drops_are_refused(self):
+        for date, time in (("2026-01-04", "14:00Z"), ("2026-01-04", "140000Z"),
+                           ("20260104", "14:00:00Z"),
+                           ("2026-01-04", "14:00:00.1234567890Z")):
+            with self.subTest(date=date, time=time):
+                payload = json.loads(RESPONSE)
+                payload["MRData"]["RaceTable"]["Races"][0].update(date=date, time=time)
+                self.assert_timestamp_leaves_config(payload)
+
+    def test_valid_weekend_timestamps_and_unpublished_sessions_remain_compatible(self):
+        for sprint_key in (None, "SprintQualifying", "SprintShootout"):
+            for time in ("14:00:00Z", "14:00:00", "14:00:00.123456789Z"):
+                for existing in (False, True):
+                    with self.subTest(sprint_key=sprint_key, time=time, existing=existing):
+                        self.config.unlink(missing_ok=True)
+                        if existing:
+                            self.config.write_bytes(THEME_BYTES)
+                        payload = json.loads(RESPONSE)
+                        race = payload["MRData"]["RaceTable"]["Races"][0]
+                        race["FirstPractice"] = {"date": "2026-01-02", "time": time}
+                        race["Qualifying"] = {"date": "2026-01-03", "time": "14:00:00Z"}
+                        if sprint_key:
+                            race[sprint_key] = {"date": "2026-01-02", "time": "18:00:00Z"}
+                            race["Sprint"] = {"date": "2026-01-03", "time": "10:00:00Z"}
+                            race["SecondPractice"] = {"date": "2026-01-02", "time": None}
+                            race["ThirdPractice"] = {"time": "10:00:00Z"}
+                            names = ["FP1", "SPRINT QUALI", "SPRINT", "QUALIFYING", "RACE"]
+                        else:
+                            race["SecondPractice"] = {"date": "2026-01-02", "time": "18:00:00Z"}
+                            race["ThirdPractice"] = {"date": "2026-01-03", "time": "10:00:00Z"}
+                            names = ["FP1", "FP2", "FP3", "QUALIFYING", "RACE"]
+                        for stream in (self.out, self.err):
+                            stream.seek(0)
+                            stream.truncate(0)
+                        self.stub(body=json.dumps(payload).encode("utf-8"))
+                        status, stderr = self.run_main(str(self.theme))
+                        self.assertEqual(status, 0, stderr)
+                        self.assertEqual(stderr, "")
+                        self.urlopen.assert_called_once()
+                        updated = json.loads(self.config.read_text(encoding="utf-8"))
+                        sessions = updated["race_calendar"][0]["sessions"]
+                        self.assertEqual([s["name"] for s in sessions], names)
+                        self.assertEqual(sessions[0]["start"], "2026-01-02T" + time.rstrip("Z") + "Z")
+                        self.assertEqual(sessions[-1], {"name": "RACE", "start": "2026-01-04T14:00:00Z"})
+                        self.assertEqual({k: v for k, v in updated.items() if k != "race_calendar"},
+                                         {k: v for k, v in THEME.items() if k != "race_calendar"}
+                                         if existing else {})
+
+    def test_cli_published_timestamp_errors_preserve_existing_or_missing_config(self):
+        script = """import io, pathlib, runpy, sys, urllib.request
+from unittest import mock
+script, payload, *args = sys.argv[1:]
+body = pathlib.Path(payload).read_bytes()
+sys.argv = [script, *args]
+with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io.BytesIO(body)):
+    runpy.run_path(script, run_name='__main__')
+"""
+        for time in ("not-a-time", "14:00Z", "14:00:00Z"):
+            for existing in (False, True):
+                with self.subTest(time=time, existing=existing):
+                    self.config.unlink(missing_ok=True)
+                    if existing:
+                        self.config.write_bytes(THEME_BYTES)
+                    payload = json.loads(RESPONSE)
+                    payload["MRData"]["RaceTable"]["season"] = "2099"
+                    race = payload["MRData"]["RaceTable"]["Races"][0]
+                    race["date"] = "2099-01-04"
+                    race["FirstPractice"] = {"date": "2099-01-02", "time": time}
+                    response = Path(self.tmp.name) / "response.json"
+                    response.write_text(json.dumps(payload), encoding="utf-8")
+                    run = subprocess.run([sys.executable, "-B", "-c", script, race_calendar.__file__,
+                                          str(response), str(self.theme), "--season", "2099"],
+                                         capture_output=True, text=True, timeout=60)
+                    self.assertNotIn("Traceback", run.stderr)
+                    if time == "14:00:00Z":
+                        self.assertEqual(run.returncode, 0, run.stderr)
+                        updated = json.loads(self.config.read_text(encoding="utf-8"))
+                        self.assertEqual(updated["race_calendar"][0]["sessions"][0],
+                                         {"name": "FP1", "start": "2099-01-02T14:00:00Z"})
+                    else:
+                        self.assertEqual(run.returncode, 2, run.stdout + run.stderr)
+                        self.assertEqual(run.stdout, "")
+                        self.assertIn("timestamp", run.stderr)
+                        self.assertIn("Nothing was written", run.stderr)
+                        if existing:
+                            self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+                        else:
+                            self.assertFalse(self.config.exists())
+                    self.assertEqual(sorted(p.name for p in self.theme.iterdir()),
+                                     ["config.json"] if existing or time == "14:00:00Z" else [])
+
+    def run_midseason(self, races, existing):
+        class MidseasonDatetime(FixedDatetime):
+            @classmethod
+            def now(cls, tz=None):
+                return cls(2026, 7, 1, tzinfo=tz)
+
+        self.config.unlink(missing_ok=True)
+        if existing:
+            self.config.write_bytes(THEME_BYTES)
+        for stream in (self.out, self.err):
+            stream.seek(0)
+            stream.truncate(0)
+        payload = json.loads(RESPONSE)
+        payload["MRData"]["RaceTable"]["Races"] = races
+        self.stub(body=json.dumps(payload).encode("utf-8"))
+        with mock.patch(f"{__name__}.FixedDatetime", MidseasonDatetime):
+            result = self.run_main(str(self.theme))
+        self.urlopen.assert_called_once()
+        return result
+
+    def test_excluded_session_timestamps_do_not_block_upcoming_races(self):
+        upcoming = {"round": "12", "raceName": "Upcoming Grand Prix", "date": "2026-07-04",
+                    "time": "14:00:00Z", "FirstPractice": {"date": "2026-07-02", "time": "14:00:00Z"},
+                    "Qualifying": {"date": "2026-07-03", "time": "14:00:00Z"}}
+        bad = {"date": "2026-01-02", "time": "not-a-time"}
+        cases = ({"FirstPractice": bad},
+                 {"FirstPractice": {"date": "2026-02-30", "time": "14:00:00Z"}},
+                 {"FirstPractice": {"date": "2026-01-02", "time": "14:00Z"}},
+                 {"time": None, "FirstPractice": bad},
+                 {"date": None, "FirstPractice": bad},
+                 {"time": "14:00Z"}, {"date": "20260104"},
+                 {"time": "14:00:00.1234567890Z"},
+                 {"round": "bad"}, {"raceName": None}, {"Circuit": None})
+        for changes in cases:
+            for existing in (False, True):
+                with self.subTest(changes=changes, existing=existing):
+                    past = json.loads(RESPONSE)["MRData"]["RaceTable"]["Races"][0]
+                    past.update(changes)
+                    status, stderr = self.run_midseason([past, upcoming], existing)
+                    self.assertEqual(status, 0, stderr)
+                    self.assertEqual(stderr, "")
+                    updated = json.loads(self.config.read_text(encoding="utf-8"))
+                    self.assertEqual(updated["race_calendar"], [{
+                        "round": 12, "name": "Upcoming Grand Prix", "place": "", "sessions": [
+                            {"name": "FP1", "start": "2026-07-02T14:00:00Z"},
+                            {"name": "QUALIFYING", "start": "2026-07-03T14:00:00Z"},
+                            {"name": "RACE", "start": "2026-07-04T14:00:00Z"}],
+                    }])
+                    self.assertEqual({k: v for k, v in updated.items() if k != "race_calendar"},
+                                     {k: v for k, v in THEME.items() if k != "race_calendar"}
+                                     if existing else {})
+                    self.assertEqual(sorted(p.name for p in self.theme.iterdir()), ["config.json"])
+
+    def test_excluded_bad_optional_time_alone_keeps_no_upcoming_exit(self):
+        for existing in (False, True):
+            with self.subTest(existing=existing):
+                past = json.loads(RESPONSE)["MRData"]["RaceTable"]["Races"][0]
+                past["FirstPractice"] = {"date": "2026-01-02", "time": "not-a-time"}
+                status, stderr = self.run_midseason([past], existing)
+                self.assertEqual(status, 1, stderr)
+                self.assertEqual(self.out.getvalue(), "")
+                self.assertIn("no upcoming races", stderr)
+                if existing:
+                    self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+                else:
+                    self.assertFalse(self.config.exists())
+
+    def test_excluded_race_early_refusals_are_preserved(self):
+        upcoming = {"round": "12", "raceName": "Upcoming Grand Prix", "date": "2026-07-04",
+                    "time": "14:00:00Z"}
+        cases = ({"FirstPractice": []},
+                 {"FirstPractice": {"date": "2026-01-02", "time": 123}},
+                 {"time": None, "FirstPractice": []},
+                 {"time": None, "FirstPractice": {"date": "2026-01-02", "time": 123}},
+                 {"time": "not-a-time"}, {"date": "2026-02-30"})
+        for changes in cases:
+            for existing in (False, True):
+                with self.subTest(changes=changes, existing=existing):
+                    past = json.loads(RESPONSE)["MRData"]["RaceTable"]["Races"][0]
+                    past.update(changes)
+                    status, stderr = self.run_midseason([past, upcoming], existing)
+                    self.assert_refused(status, stderr)
+                    self.assertEqual(self.out.getvalue(), "")
+                    if existing:
+                        self.assertEqual(self.config.read_bytes(), THEME_BYTES)
+                    else:
+                        self.assertFalse(self.config.exists())
+                    self.assertEqual(sorted(p.name for p in self.theme.iterdir()),
+                                     ["config.json"] if existing else [])
 
     def test_api_valid_years_optional_fields_and_unpublished_sessions(self):
         for year in ("2026", 2026):

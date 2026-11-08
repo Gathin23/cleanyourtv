@@ -28,6 +28,7 @@ import http.client
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import sys
 import tempfile
@@ -77,6 +78,14 @@ def calendar(races, now):
         # The launcher keeps a weekend on screen for four hours after the start; a day covers that.
         if datetime.datetime.fromisoformat(start.replace("Z", "+00:00")) < now - datetime.timedelta(days=1):
             continue
+        # Strict checks apply only to exported sessions; the race was already parsed for the cutoff.
+        for session in sessions:
+            value = session["start"]
+            if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+                                r"(?:\.[0-9]{1,9})?Z", value):
+                raise ValueError(f"invalid UTC session timestamp: {value!r}")
+            if session is not sessions[-1]:
+                datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
         try:
             number = int(race["round"])
         except (TypeError, ValueError, OverflowError):
