@@ -7,13 +7,14 @@
 #        TV_HOST=192.168.1.50 tools/theme.sh --reset        # remove the overlay, back to config.xml
 #
 # One argument, and --reset takes none: a second word is refused rather than dropped (see below). Exit status:
-# 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not restart after
-# it; 2 the run stopped before the theme was up and nothing was sent - the command line is not one theme folder
-# or --reset (a word that starts with a dash is not a folder name, -h and --help included), the folder has no
+# 0 the theme is on the TV, or the reset ran; 1 the run reached the TV and the theme could not be pushed, or
+# Home did not restart after it - the files are on the set by then, so the next Home start picks them up; 2 the
+# run stopped before the theme was up and nothing was sent - the command line is not one theme folder or
+# --reset (a word that starts with a dash is not a folder name, -h and --help included), the folder has no
 # config.json or one the launcher would drop, a wallpaper name b64push.py refuses, TV_HOST is unset or empty,
-# the checkout has no tools/venv, or the TV was not reached (tv.py's and theme_restart.py's own message says
-# which). 1 is a run that reached the push, so a theme this script cannot read before it sends anything is not
-# one: it answers 2 with the sentence every one of those refusals ends with.
+# the checkout has no tools/venv, or tv.py could not reach the TV before the first file went out (its own
+# message says which). 1 is a run that reached the push, so a theme this script cannot read before it sends
+# anything is not one: it answers 2 with the sentence every one of those refusals ends with.
 set -euo pipefail
 THEME_ARG="${1:-}"
 # A theme folder or --reset, and nothing else. The first word alone decided everything the script did, so
@@ -112,9 +113,26 @@ del() { echo "rm -f $DIR/$1 2>/dev/null; content delete --uri $URI/$1 2>/dev/nul
 # that left the pictures behind still shows the theme it just removed. Both paths use this one string.
 CLEAR_WALLPAPERS="rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP][eE][gG] $DIR/wallpapers/*.[pP][nN][gG] $DIR/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null"
 
+# Both paths end with the same restart, and both are past the point where the TV was written to. The helper's
+# own 2 ("the TV did not answer, so nothing was asked of it") describes the restart alone: on this side of the
+# push it arrives after the config.json is on the set, or after the reset removed it, and `set -e` passed that
+# status straight out of this script - as 2, the status its header gives a run that sent nothing, which sends an
+# owner back to a theme they think never reached the TV. theme.ps1 throws for the same failure, and an uncaught
+# throw leaves that script with 1. Everything after the push is a run that reached the TV, so this answers 1 and
+# says where the theme stands; the word in $1 is the only thing the two paths say differently.
+restart_home() {
+  local status=0
+  "$PY" -I theme_restart.py || status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "Home did not restart after $1, so the launcher keeps the screen it has until it starts again." \
+      "The TV is already in the state you asked for: the next Home start picks it up." >&2
+    exit 1
+  fi
+}
+
 if [ "${1:-}" = --reset ]; then
   tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $CLEAR_WALLPAPERS; printf '%s' '$REVISION' > $TMP-theme_revision; $(put theme_revision)" >/dev/null
-  "$PY" -I theme_restart.py
+  restart_home "the theme was removed"
   echo reset
   exit 0
 fi
@@ -190,6 +208,6 @@ else
   tv "$(del wallpapers/captions.txt)" >/dev/null
 fi
 tv "printf '%s' '$REVISION' > $TMP-theme_revision; $(put theme_revision)" >/dev/null
-"$PY" -I theme_restart.py
+restart_home "the theme was pushed"
 echo applied
 echo "Theme $(basename "$THEME") is on the TV. Undo with: tools/theme.sh --reset"
