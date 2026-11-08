@@ -1,0 +1,18 @@
+{
+  "dock_apps": [
+    "com.mediatek.wwtv.tvcenter",
+    "ru.kinopoisk.tv",
+    "net.gtvbox.videoplayer",
+    "ru.ivi.client",
+    "ru.more.play"
+  ],
+  "columns": 5,
+  "hidden_apps": [],
+  "live_tv_package": "com.mediatek.wwtv.tvcenter",
+  "boot_to_live_tv": true,
+  "settings_key_keycodes": [83],
+  "app_keys": [
+    "172:guide:com.mediatek.wwtv.tvcenter",
+    "201:ru.kinopoisk.tv"
+  ]
+}

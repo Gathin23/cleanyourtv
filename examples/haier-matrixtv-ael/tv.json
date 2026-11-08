@@ -1,0 +1,6 @@
+{
+  "tv": "Haier S7 65\" (Haier MatrixTV AEL, HRT51EUL, irvine, MediaTek mt5889), Russia",
+  "os": "Google TV 14",
+  "brand": "Haier",
+  "notes": "Anoki ACR, Google feedback, retail demo, partner rows, Haier tab/e-manual/IoT, TV Housekeeper, Gaming Bar, HaiCast, TalkBack; Netflix, Prime Video, YouTube Music, Google TV, Play Games and sideloaded browsers off by choice; setupwraith off (Wi-Fi owned by system, set on Ethernet); `com.haier.apps` kept: it is the trampoline behind the remote's Kinopoisk and Okko buttons and the Haier key dispatcher crashes without it; gear 83, guide 172 and Kinopoisk 201 mapped in config.json with HOME_KEY_SERVICE, which costs the volume ramp; oemtabprovider re-enables at boot; the firmware opens Live TV after boot, config.json has boot_to_live_tv and the dock"
+}

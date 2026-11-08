@@ -1,0 +1,92 @@
+# Haier S7 65" (ro.product.model "Haier MatrixTV AEL", product HRT51EUL, device irvine), Google TV 14 (API 34),
+# firmware UKNV.260720.004, MediaTek mt5889 (CVTE-family board: com.cvte.tv.at, com.cvte.autobacklight present),
+# armeabi-v7a, 2.7 GB RAM. 3840x2160 panel, UI rendered at 1920x1080 (wm size override), 320 dpi. Russia (ru-RU).
+# Tested on 8 November 2026 on one set, with the real remote, over two reboots. Same-day test, not a multi-day soak.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/haier-matrixtv-ael/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/haier-matrixtv-ael/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (.home.HomeActivity); launcher/build-and-install.sh disables it
+# after the new launcher is Home, so it is not in this list.
+# Live TV: com.mediatek.wwtv.tvcenter (.nav.TurnkeyUiMainActivity); its program guide is .epg.eu.EPGEuActivity.
+# Already disabled from the factory: it.hon.service, it.hon.onboarding, com.haier.launcher.haiermatrix.
+# Order used: this list in four batches with a Home screenshot between them, while launcherx still owned Home,
+# then launcher/build-and-install.sh, then a reboot before any key helper was bound (#741).
+#
+# Home claimants: launcherx (priority 2), setupwraith .RecoveryActivity (1), ru.haier.evo .TvMainActivity (0),
+# FallbackHome. Both launcherx and setupwraith have to go for a third-party Home to win; set-home-activity alone
+# changes nothing. The saved Wi-Fi networks on the test set belonged to android.uid.system, not setupwraith, and
+# the set was on Ethernet (its own LAN port), so disabling setupwraith cost nothing. Check dumpsys wifi first on yours.
+#
+# KEEP, even though the names look like bloat (components checked with dumpsys package):
+# - com.haier.apps: looks like a Kinopoisk promo app (one activity, .KinopoiskActivity), but it is the trampoline the
+#   remote's app buttons go through. Kinopoisk: KEYCODE_BUTTON_14 -> com.haier.appmanager.dispatcher ->
+#   com.haier.apps/.KinopoiskActivity. Okko: KEYCODE_TV_INPUT_COMPONENT_2 -> com.mediatek.tv.service hotkey dispatcher
+#   -> com.haier.apps/.MainActivity -> okko://home. With it disabled the Haier dispatcher crashed twice on the first
+#   press and Android marked it a bad process (dumpsys activity processes, "Bad processes"), which killed every
+#   button it answers until the next reboot. Re-enabled the same day; never list it.
+# - com.haier.appmanager.dispatcher, com.haier.hkcfac, com.haier.tv.hmagicboard: global key receivers (remote hot keys;
+#   hmagicboard also sound settings). com.mediatek.autopair, com.haier.bt_pair_tips: Bluetooth remote pairing.
+#   com.telink.lt.ota: remote (Telink BLE) firmware.
+# - com.cvte.tv.at, com.cvte.autobacklight, com.cvte.automaticbrightnesscontrol, com.at.factory.*, mediatek.factorymenu.ui:
+#   factory. Never start them (Haier/CVTE factory-mode flag, PROMPT.md). The firmware itself resumes
+#   com.at.factory.factorymanager/.MainActivity for a few seconds at every boot; that is its own flow, not damage.
+# - com.mediatek.tvinput, com.mediatek.wwtv.tvcenter, com.mediatek.tv.service, com.mediatek.wwtv.setupwizard,
+#   com.google.android.tv.inputplayer, com.mediatek.wwtv.mediaplayer (USB media), com.mediatek.wwtv.webview.
+# - By owner choice: Assistant (com.google.android.katniss, com.google.android.tv.assistant), Chromecast
+#   (com.google.android.apps.mediashell), Ambient screensaver (com.google.android.apps.tv.dreamx), the firmware updater,
+#   Haier Evo (ru.haier.evo, com.haier.apps.evoSmart), YouTube, ivi, Kinopoisk, Okko, Rutube, VLC, Vimu, a file manager.
+#
+# Quirks on this firmware, all checked on the TV:
+# - USB debugging on: network ADB answered on port 5555 straight away (service.adb.tcp.port=5555, not persisted);
+#   ro.adb.secure=1 (authorisation prompt). Wireless debugging was off. After the final reboot with USB debugging off,
+#   tools/adb-closed.py reported 5555 refused.
+# - pm install of a debug-signed APK declaring HOME works (pushed + pm install -r).
+# - com.haier.oemtabprovider comes back enabled at every boot (as on examples/haier-hr9216eu); inert with launcherx off.
+# - The firmware opens Live TV by itself about 1.5 minutes after boot; the owner wanted Live TV at power-on anyway,
+#   so config.json sets boot_to_live_tv and the launcher opens it 6 s after Home comes up.
+# - Remote (BLE HID "HaierTV-RC Consumer Control", events re-injected through a "virtual-search" device, vendor .kl not
+#   readable from the shell): gear = KEYCODE_NOTIFICATION 83, program guide = KEYCODE_GUIDE 172, both routed only to
+#   launcherx (dumpsys window policy mKeyMapping), so they die with it; Kinopoisk = KEYCODE_BUTTON_14 201 (scan 409);
+#   Okko = KEYCODE_TV_INPUT_COMPONENT_2 250 (scan 240). The codes came from dumpsys activity broadcasts (the
+#   GLOBAL_BUTTON records carry the KeyEvent); getevent shows only HID usages here. config.json maps 83, 172 (guide
+#   target, which opens EPGEuActivity) and 201; Okko works through the firmware once com.haier.apps is on. Needs
+#   HOME_KEY_SERVICE=1 on the install line.
+# - With HomeKeyService bound a held volume key moves one step per press (the key-filter trade of
+#   docs/devices/tcl-55p71b-g09-key-repeat.md). consume_volume_keys did not bring the ramp back on this set.
+#   The owner kept the buttons; the two settings writes in README.md toggle between the two.
+# - Vimu, YouTube, Kinopoisk, Okko and Live TV launch from the launcher; HDMI 1-4 (HW5-HW8), composite (HW2) and the
+#   digital tuner (TunerInputService/HW0) are listed by the Inputs menu; a CEC soundbar showed as connected on HDMI 3.
+
+# Telemetry, feedback, retail demo, partner rows
+tv.anoki.acr.anokiacroptin                        # Anoki ACR opt-in: recognises what is on screen
+com.google.android.feedback                       # Google usage feedback / bug reports
+fusion.android.tv.demo                            # retail demo mode
+com.mediatek.android.leanbacklauncher.partnercustomizer  # partner rows on the stock home
+
+# Haier content, IoT, manual
+com.haier.oemtabprovider                          # the "Haier" tab on the Google TV home; re-enables itself at every boot
+com.haier.emanual                                 # on-TV e-manual
+com.haierubic.usmartdevice                        # Haier smart-device / IoT service
+# com.haier.apps                                  # KEEP: remote app-button trampoline, see the header
+
+# Haier and MediaTek services the owner does not use
+com.haier.tvhousekeeper                           # "TV Housekeeper" cleaner
+com.haier.gamingbar                               # Gaming Bar overlay (GlobalKeyReceiver, boot receiver)
+com.mediatek.androidbox                           # HaiCast / Miracast mirroring; Chromecast (mediashell) is separate and kept
+com.google.android.marvin.talkback                # TalkBack screen reader, not used
+
+# Apps the owner does not use (owner's choice; comment out the ones you use)
+com.netflix.ninja                                 # Netflix (stayed disabled over two reboots here, unlike examples/haier-matrixtv-de)
+com.amazon.amazonvideo.livingroom                 # Prime Video
+com.google.android.youtube.tvmusic                # YouTube Music
+com.google.android.videos                         # Google TV / Play Movies app
+com.google.android.play.games                     # Play Games
+com.yandex.browser.tv                             # Yandex Browser (sideloaded by the owner)
+com.tcl.browser                                   # TCL Browser (sideloaded by the owner)
+com.irishin.buttonsremapper                       # Button Mapper (sideloaded by the owner, inactive)
+
+# Google TV setup recovery claims HOME ahead of any third-party launcher. Check the Wi-Fi note in the header first;
+# tools/disable.sh applies that guard.
+com.google.android.tungsten.setupwraith
