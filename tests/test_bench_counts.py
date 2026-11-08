@@ -71,7 +71,7 @@ class FakeTV:
     def focused_window(self):
         return "u0 com.gathin.tvhome/.MainActivity"
 
-    def shell(self, command):
+    def shell(self, command, *, retry=False):
         self.commands.append(command)
         if command.startswith("pidof"):
             return "1234\n"

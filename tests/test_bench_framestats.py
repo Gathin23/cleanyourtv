@@ -70,7 +70,7 @@ class FrameStatsTest(unittest.TestCase):
                 tv = mock.Mock()
                 tv.home_component.return_value = "com.gathin.tvhome/.MainActivity"
                 tv.package_of.return_value = "com.gathin.tvhome"
-                tv.shell.side_effect = answers.__getitem__
+                tv.shell.side_effect = lambda command, *, retry=False: answers[command]
                 with mock.patch.object(bench.time, "sleep"):
                     self.assertEqual(bench.measure_key(tv, 22), (20.0, 20.0, 2, 0))
 
