@@ -49,7 +49,13 @@
    picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
    story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
    to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
-   card states (387, 103)`), so they move in the same commit. The brand grid itself is hand-kept on one page:
+   card states (387, 103)`), so they move in the same commit. The sentence is not only on those five pages:
+   `README.pt-BR.md`, `README.he.md` and `README.uz.md` carry the story paragraph without the card, so
+   `tools/gen_tables.py` writes nothing there and the same check holds their pair to `README.md`'s alt text in
+   the same words a card page's pair is held to - a regeneration that bumps the five pages above and stops
+   leaves those three red. A translation that copies the story paragraph joins them the day it lands, and so
+   does this step: a page the check reads from the tree and this list does not name fails `RecipeTest` in
+   `tests/test_press_counts.py`. The brand grid itself is hand-kept on one page:
    `README.he.md` carries neither the card nor the `tv-brands` markers, so `tools/gen_tables.py` cannot write
    it and `tests/test_readme_he_brand_block.py` reads its grid, its two-list line, its single-list names and
    its `<summary>` numbers against README.md's copy - a regeneration moves the Hebrew page with it, while a
