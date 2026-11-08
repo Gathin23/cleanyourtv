@@ -8,10 +8,15 @@
    and art you have the right to use. `tests/test_theme_wallpapers.py` holds every picture to those numbers
    (a smaller 16:9 picture is fine, the launcher scales it) and names one the launcher would never draw: a
    `wallpapers/` file that is not a JPEG, PNG or WebP, or a single picture not called `wallpaper.jpg`.
+   Pictures you did not draw need a `CREDITS.md` beside them, the format in `themes/sweden/CREDITS.md`:
+   `tests/test_theme_picture_credits.py` holds each picture the folder ships to a line there.
 3. Push it to a real TV with `TV_HOST=<tv ip> tools/theme.sh themes/<name>` and take `screenshot.jpg` of
    Home with the focus on the dock: a JPEG at 1280x720 (16:9), at most 300 KB. Not a mock-up, not an
    emulator. `tests/test_themes.py` fails without it.
-4. Add a row to the table in `themes/README.md` showing the screenshot, like the others.
+4. Add a row to the table in `themes/README.md` showing the screenshot, like the others. Two sentences the
+   neighbours' rows carry are read back by `tests/test_theme_row_claims.py`: a rotation ("a new one every
+   20 minutes") against that theme's `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT")
+   against its `CREDITS.md`, which the folder then has to ship.
 5. Bump the count in the Themes feature row of every front page that states it: today `README.md` ("`N ship
    in themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` and
    `README.he.md` (the last three in digits), each in its own words; the seven are today's pages rather
