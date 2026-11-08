@@ -293,3 +293,68 @@ available nor tested on this generation. `TokenAuthSupport: true` is an API-decl
 remote-control session was opened, so no "Allow" prompt was triggered, no pairing grant exists from
 this session, and grant duration remains unmeasured on this set. The `/api/v2/` reply carried the
 DUID, the Wi-Fi MAC and the access point's MAC, which are left out of everything published here.
+
+## UA50MU7000: second-unit read, 7 Series 50", over Wi-Fi
+
+A third owner's read-only check of a Samsung UA50MU7000 (7 Series 50", 2019) on the same
+home network as a PC. Captured from `GET http://<tv>:8001/api/v2/` only, plus a photo of the
+"About This TV" screen. Nothing on the TV was changed, and no ports beyond 8001 were probed.
+Identifiers (serial, MAC, Smart Hub IDs, Netflix ESN, device UID) are omitted on purpose.
+
+| Field | Observed value |
+|---|---|
+| Model string (`/api/v2/`) | `17_KANTM_UHD_BASIC` |
+| Retail model | UA50MU7000 |
+| System | Tizen (Samsung Smart Hub) |
+| Software version (About screen) | `T-KTMUABC-1410.1` |
+| Sub-micom version | `T-KTMINTV-1012` |
+| e-Manual version | `KTMISDBL-3.2.1` |
+| `firmwareVersion` (API) | `Unknown` |
+| `developerMode` | `0` |
+| `TokenAuthSupport` | `true` |
+| `networkType` | wireless |
+| Country code (API) | `MA` |
+| Resolution (API) | 3840x2160 |
+
+What this unit answers: the 8001 HTTP API with model metadata, the remote websocket
+(`TokenAuthSupport: true`), and a Samsung SmartTV `type`. Developer Mode is off.
+
+What it rules out, as on the AU8000 above: no ADB on retail firmware, so no `pm disable-user`
+list is possible from outside. Remote-key settings or DNS blocking are the realistic routes; see
+[cleanyour.tv/not-android](https://cleanyour.tv/not-android).
+
+Not checked: a full port scan, 26101, Developer Mode, and whether the firmware can be read
+through `sdb`.
+
+### UA50MU7000: the remote socket paired, and blind navigation still failed
+
+The 8002 remote websocket was then tested on this unit, from Windows with Python's `websockets`
+and a self-signed certificate accepted for the local connection only.
+
+| Step | Result |
+|---|---|
+| `wss://<tv>:8002/api/v2/channels/samsung.remote.control?name=<base64>` | `ms.channel.connect`, after the owner accepted the on-screen prompt |
+| Token | Returned on first connect and reused on later connections with no second prompt |
+| `ms.remote.control` / `SendRemoteKey` clicks | Delivered; `KEY_MENU` opened the settings menu |
+
+So the key-press half of the "settings by remote keys plus DNS" idea above works on a 2017 set,
+and the grant survives reconnection. The other half is what fails.
+
+**Without a screen capture, a key sequence cannot be driven open-loop.** Two sequences were sent
+blind, each checked by asking the owner what the TV showed:
+
+- `KEY_MENU` then five `KEY_DOWN`: expected the bottom of the left column, landed inside Support
+  on Terms & Privacy.
+- Two `KEY_UP`, expecting Software Update one or two rows above: landed on a Live TV setup screen.
+
+The attempt was abandoned there with `KEY_RETURN` and `KEY_EXIT`, and the firmware update was done
+from the owner's remote instead. Nothing was confirmed with `KEY_ENTER` at any point, which is the
+only reason a wrong screen stayed harmless: the Support list on this model is two rows from a
+channel retune.
+
+The lesson for a Tizen port is not that the remote API is unusable, but that menu position is
+unknowable from outside. Row order differs by year, region and firmware, the highlight does not
+start in a fixed place, and `/api/v2/` reports no UI state. A port that walks menus needs either a
+person reading the screen at each step, which is what happened here, or a capture path this
+generation does not offer. Launching an app by id through
+`/api/v2/applications/<appId>` stays the one deterministic action.
