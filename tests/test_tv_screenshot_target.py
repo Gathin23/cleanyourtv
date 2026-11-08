@@ -189,8 +189,10 @@ class ScreenshotTargetTest(unittest.TestCase):
         # which an owner reading the name does not expect, and the pull cannot write it as a file.
         work = self.work()
         target = os.path.join(str(work), "newshots", "..")
-        self.assertRefused(["--screenshot", target], "names a folder rather than a file",
-                           "01-home.png", "Nothing was captured.")
+        # Windows folds `newshots\..` into the folder that holds it, which is there, so the check for
+        # an existing folder answers first; POSIX will not step through a `newshots` that is not there.
+        said = "is a folder" if os.name == "nt" else "names a folder rather than a file"
+        self.assertRefused(["--screenshot", target], said, "01-home.png", "Nothing was captured.")
 
     def test_a_dot_in_the_middle_of_the_path_is_still_a_file(self):
         # `shots/./01-home.png` is one file name with a pointless hop in it; it must keep working.
