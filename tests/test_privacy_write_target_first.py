@@ -169,13 +169,16 @@ class PrivacyWriteTargetTest(unittest.TestCase):
         self.state_path.write_text(json.dumps(state))
 
     def write(self, target, *args, hook=None):
-        env = dict(os.environ, TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path))
+        # The fake tv.py does not reconfigure the streams as the real one does, so name UTF-8 for the
+        # Unicode paths of the test below; a Windows pipe would otherwise use the ANSI code page.
+        env = dict(os.environ, TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
+                   PYTHONIOENCODING="utf-8")
         command = [sys.executable, str(self.script), "--write", str(target), *args]
         if hook:
             env.update(PRIVACY_WRITE_HOOK=hook, PRIVACY_SENTINEL=SENTINEL.hex())
             command = [sys.executable, "-c", WRITE_HOOK, *command[1:]]
         return subprocess.run(command,
-                              cwd=self.repo, env=env, capture_output=True, text=True,
+                              cwd=self.repo, env=env, capture_output=True, text=True, encoding="utf-8",
                               stdin=subprocess.DEVNULL, timeout=120)
 
     def symlink(self, link, target):
