@@ -181,3 +181,29 @@ note; this section covers the launcher side.
 - The remote's Netflix (632), Rakuten TV (779) and App Gallery (695) buttons, the same scancodes as the sixth to
   eighth units, opened the chosen apps with `app_keys` `scan:632:<package>`, `scan:779:<package>` and
   `scan:695:<package>`.
+
+## Philips 58PUS8505/12: notes after two weeks
+
+Checked on a Philips 58PUS8505/12 (LED, Spain, on Wi-Fi), same TP Vision TPM191E board and firmware as the lead
+unit (`STT2.230526.001`), with its original Philips remote (Bluetooth, with a microphone). Applied 21 October,
+checked again 7 November 2026. The household watches broadcast TV through an app, not the tuner.
+
+- The lead list with Prime Video and YouTube Music commented out, the Assistant (`katniss`) off by choice.
+  `tools/disable.ps1` skipped `org.droidtv.usagelogger` and `org.droidtv.demome` (TV_INPUT_HARDWARE), as on the
+  65PUS9435, and `com.google.android.tvrecommendations` went last, after the launcher had Home. Everything stayed
+  disabled through a reboot and the two weeks; a 30 s idle log showed no retry loop.
+- `launcher/build-and-install.ps1` ran through on its own: cold start in 2.3 s, and 2.7 s for a reinstall with
+  `-InputKeyService`.
+- A held Home press did nothing, as on the fifth and sixth units: `getevent -lt` showed the press that failed held
+  for 0.42 s against `long_press_timeout` 400, and it logged
+  `START u0 {act=android.intent.action.ALL_APPS pkg=com.android.tv.settings}`. This unit was set up before
+  `home_long_press_home` existed, so it uses `app_keys` `KEYCODE_HOME:com.gathin.tvhome` with `-InputKeyService`
+  instead; a held Home has opened Home on the real remote since.
+- The remote's TV button sends `KEYCODE_TV` (`key=170,scan=170`). With `-InputKeyService` it opens the sources
+  drawer by default; `app_keys` `KEYCODE_TV:<package>` opened an app instead, checked on the real remote. Rakuten
+  TV is 779, as on the sixth to ninth units, and `scan:779:<package>` worked too.
+- The remote's microphone button cannot be remapped on this unit. Each press comes in over Bluetooth as HID
+  `0x0c0221`, is re-sent as `KEY_SEARCH` on the `TPV_SMTRC` input device, and the firmware logs
+  `scanCode = 217` and `NettvLoggerLocalSvc: LogKeyEvent: key=602,scan=217`. With `katniss` disabled nothing
+  opens, and none of `app_keys` `scan:217:<package>`, `KEYCODE_SEARCH:<package>`, `KEYCODE_VOICE_ASSIST:<package>`,
+  `KEYCODE_ASSIST:<package>` or `602:<package>` reached `InputKeyService`: no start was logged for any of them.
