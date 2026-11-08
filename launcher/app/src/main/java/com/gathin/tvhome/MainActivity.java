@@ -361,6 +361,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private RecyclerView.OnScrollListener pendingFocusScroll;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private int themeFolderTries;
+    /** Polls every 2 s, for at most 3 minutes, until the theme folder can be read (see Config.themeFolderReady). */
+    private final Runnable themeFolderCheck = new Runnable() {
+        @Override
+        public void run() {
+            if (Config.themeFolderReady(MainActivity.this)) recreate();
+            else if (++themeFolderTries < 90) handler.postDelayed(this, 2000);
+        }
+    };
     /** Refreshes the network pill when the connection changes: at boot Wi-Fi often connects after Home is shown. */
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
@@ -460,6 +469,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
+        // Shared storage not up yet (early boot): wait for the theme folder, then rebuild with its wallpapers.
+        if (!Config.themeFolderReady(this)) handler.postDelayed(themeFolderCheck, 2000);
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         clockFormat = cfg.clockFormat;
         ClockFormat.apply(getWindow().getDecorView(), clockFormat);
@@ -1376,6 +1387,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        handler.removeCallbacks(themeFolderCheck);
         RemoteKeys.release(this);
         cancelHoldOk();
         if (gameDay != null) gameDay.shutdown();

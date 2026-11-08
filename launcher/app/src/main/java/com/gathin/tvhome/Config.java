@@ -436,6 +436,18 @@ final class Config {
         return ctx.getExternalFilesDir(null);
     }
 
+    /**
+     * False while a pushed theme is known (readOverlay kept its private copy) but its folder cannot be read yet.
+     * At boot some TVs start Home before shared storage is up (Xiaomi MiTV-MOEU0, Google TV 14): config.json then
+     * comes from the copy, but the wallpapers only live in the folder, so Home came up without them until restarted.
+     */
+    static boolean themeFolderReady(Context ctx) {
+        if (!new File(ctx.getFilesDir(), FILE_NAME).isFile()) return true;
+        File dir = dir(ctx);
+        return dir != null && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                && new File(dir, FILE_NAME).isFile();
+    }
+
     static Config load(Context ctx) {
         Resources res = ctx.getResources();
         List<String> dock = new ArrayList<>(Arrays.asList(res.getStringArray(R.array.dock_apps)));
