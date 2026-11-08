@@ -8,6 +8,8 @@ second folder. The originals are never touched: a target that is the source fold
 link), or an 01.jpg there that is a symlink or hard link to one of your photos, stops the run before
 anything is written. Each picture is kept under --max-kb (300 by default, what
 themes/README.md asks for) by lowering the JPEG quality a step at a time.
+Each output is replaced only after a complete JPEG is ready; a failed conversion leaves any earlier
+wallpaper at that name intact.
 
 The darkening is painted into the picture, so wallpaper_dim can stay at 0 and the launcher draws no shade
 layer. The numbers that worked on a Xiaomi Mi Box S (2 GB) are the defaults: brightness 0.25 and a gradient
@@ -21,7 +23,10 @@ Use pictures you have the right to show.
 """
 import argparse
 import os
+from pathlib import Path
+import stat
 import sys
+import tempfile
 
 EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"}
 
@@ -80,13 +85,38 @@ def prepare(path, out_path, size, brightness, gradient, quality, max_kb):
         image = ImageOps.exif_transpose(opened).convert("RGB")
     image = ImageOps.fit(image, size, Image.LANCZOS, centering=(0.5, 0.5))
     image = darken(image, brightness, gradient)
-    q = quality
-    while True:
-        image.save(out_path, "JPEG", quality=q, optimize=True)
-        kb = os.path.getsize(out_path) / 1024
-        if kb <= max_kb or q <= 50:
-            return round(kb), q
-        q -= 6
+    # Save candidates beside the destination, so an encoder/disk failure leaves
+    # an earlier wallpaper intact. Resolve links as Image.save did, but reject loops.
+    target = Path(out_path)
+    try:
+        target = target.resolve(strict=True)
+    except FileNotFoundError:
+        target = target.resolve()
+    mode = stat.S_IMODE(target.stat().st_mode) if target.exists() else None
+    if mode is not None and not os.access(target, os.W_OK):
+        raise PermissionError(f"cannot write {out_path}")
+    committed = False
+    try:
+        with tempfile.TemporaryDirectory(prefix=".wallpaper-", dir=target.parent) as folder:
+            stage = Path(folder) / "wallpaper.jpg"
+            q = quality
+            while True:
+                image.save(stage, "JPEG", quality=q, optimize=True)
+                kb = stage.stat().st_size / 1024
+                if kb <= max_kb or q <= 50:
+                    break
+                q -= 6
+            if mode is not None:
+                stage.chmod(mode)
+            os.replace(stage, target)
+            committed = True
+    except OSError as error:
+        if not committed:
+            raise
+        # Replacement succeeded; failing to remove the staging directory must
+        # not make main() report that this picture was skipped.
+        print(f"warning: {out_path} was written, but staging cleanup failed: {error}", file=sys.stderr)
+    return round(kb), q
 
 
 def main(argv=None):
