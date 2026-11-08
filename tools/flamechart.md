@@ -17,6 +17,8 @@ tools/venv/bin/python tools/flamechart.py traces/before traces/after \
 before the traces are opened, so a typo cannot read as a chart that failed. A `TRACE` path is checked the
 same way, before the trace engine is started: a path that is not there is `not a file: <path>`, the words
 `tools/trace_report.py` uses, and a folder with no `.pftrace` in it names the folder.
+An output that is the same file as any input trace (including symbolic and hard links) is refused
+with exit 2 before the engine starts, so drawing the chart cannot overwrite a recording.
 
 | Option | Default | Notes |
 |---|---|---|
