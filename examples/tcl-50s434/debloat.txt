@@ -26,9 +26,8 @@
 #
 # Kept by the owner's choice: Netflix, Prime Video, YouTube, YouTube TV, Chromecast, Play Store.
 # Off by choice: Google Assistant / TCL voice / Alexa, YouTube Music, Play Movies, Play Games,
-# TCL Channel, TCL HOME, Gallery, the USB media player, TCL Guard, and the firmware updater
-# (com.tcl.versionUpdateApp). The updater is disabled because this set is not meant to take OTA
-# updates; re-enable that one line to check for firmware.
+# TCL Channel, TCL HOME, Gallery, the USB media player, and TCL Guard. The firmware updater
+# stayed off on the tested set, but it is commented out below so a shared list keeps it on.
 #
 # setupwraith owned the saved Wi-Fi network after first setup (`dumpsys wifi` showed
 # cname=com.google.android.tungsten.setupwraith). The network was forgotten and joined again in
@@ -79,9 +78,9 @@ com.google.android.katniss                  # Google Assistant / voice search
 com.google.android.tv.assistant             # Assistant LED / helper
 com.tcl.assistant                           # TCL voice assistant
 
-# ---- 5. Firmware updater, off by choice ----
-# Re-enable to check for system updates. Left off because this set is not meant to take OTA.
-com.tcl.versionUpdateApp
+# ---- 5. Firmware updater ----
+# off on the tested set (not meant to take OTA); shared lists keep the updater on
+# com.tcl.versionUpdateApp
 
 # ---- 6. First-run wizard: claims HOME once tvlauncher is off ----
 # Forget the Wi-Fi network and join it again first if dumpsys wifi still shows cname=...setupwraith.
