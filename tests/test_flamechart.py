@@ -21,6 +21,8 @@ import unittest
 import warnings
 from unittest import mock
 
+from tests.test_trace_report import first_frame_trace
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 spec = importlib.util.spec_from_file_location("cyt_flamechart", ROOT / "tools" / "flamechart.py")
@@ -343,12 +345,14 @@ class ThreadNamesTest(unittest.TestCase):
     def test_thread_names_flow_through_main_to_draw(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp, "chart.png")
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
             for name in ("worker/io", "Thread (pooled)", "O'Brien", "quote''only", "worker' OR 1=1 --"):
                 q = fake_trace([(3, 2, name)])
                 close = mock.Mock()
                 with (self.subTest(name=name),
                       mock.patch.dict(sys.modules, {"PIL": mock.MagicMock(), "perfetto": None}),
-                      mock.patch.object(flamechart.trace_report, "expand", return_value=["nav-1.pftrace"]) as expand,
+                      mock.patch.object(flamechart.trace_report, "expand", return_value=[str(trace)]) as expand,
                       mock.patch.object(flamechart.os.path, "isfile", return_value=True),
                       mock.patch.object(flamechart.trace_report, "opener", return_value=lambda path: (q, close)) as opener,
                       mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw,
@@ -369,6 +373,76 @@ class ThreadNamesTest(unittest.TestCase):
                     self.assertEqual((path, width), (str(out), 1600))
                     self.assertEqual(output.getvalue(), f"{out}: 1600x100\n")
                     self.assertFalse(out.exists())
+
+
+class InputPanelsTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.folder = Path(self.tmp.name)
+        self.before = self.folder / "before"
+        self.before.mkdir()
+        for n, value in ((10, 100), (1, 1000), (2, 10)):
+            (self.before / f"home-{n}.pftrace").write_text(str(value), encoding="utf-8")
+        self.opened = []
+
+    def open_trace(self, path):
+        self.opened.append(path)
+        q = first_frame_trace(int(Path(path).read_text(encoding="utf-8")))
+        return q, q.close
+
+    def run_chart(self, inputs):
+        self.opened.clear()
+        with mock.patch.dict(sys.modules, {"PIL": mock.MagicMock()}), \
+                mock.patch.object(flamechart.trace_report, "opener", return_value=self.open_trace) as opener, \
+                mock.patch.object(flamechart, "window", return_value=(0, MS)), \
+                mock.patch.object(flamechart, "lanes", return_value=[]), \
+                mock.patch.object(flamechart, "draw", return_value=(1600, 100)) as draw, \
+                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            code = flamechart.main([*map(str, inputs), "--out", str(self.folder / "chart.png")])
+        return code, draw.call_args.args[0], opener
+
+    def alias_in_folder(self, kind):
+        original = self.before / "home-2.pftrace"
+        alias = self.before / "home-20.pftrace"
+        try:
+            (os.symlink if kind == "symlink" else os.link)(original, alias)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"cannot create {kind}: {error}")
+        code, panels, _ = self.run_chart([self.before])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(self.before / f"home-{n}.pftrace") for n in (1, 2, 10, 10)])
+        self.assertEqual(panels[0]["note"], "median of 3 runs by time to first frame (home-10.pftrace)")
+
+    def test_folder_symlink_does_not_select_the_fast_run_as_median(self):
+        self.alias_in_folder("symlink")
+
+    def test_folder_hardlink_does_not_select_the_fast_run_as_median(self):
+        self.alias_in_folder("hardlink")
+
+    def test_matching_positional_panels_remain_independent(self):
+        path = self.before / "home-10.pftrace"
+        code, panels, _ = self.run_chart([path, path])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(path), str(path)])
+        self.assertEqual([(p["label"], p["note"]) for p in panels],
+                         [("Before", path.name), ("After", path.name)])
+
+    def test_directory_and_contained_file_remain_separate_panels(self):
+        path = self.before / "home-1.pftrace"
+        code, panels, _ = self.run_chart([self.before, path])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(self.before / f"home-{n}.pftrace") for n in (1, 2, 10, 10, 1)])
+        self.assertEqual([p["note"] for p in panels],
+                         ["median of 3 runs by time to first frame (home-10.pftrace)", path.name])
+
+    def test_overlapping_folders_remain_independent_panels(self):
+        code, panels, _ = self.run_chart([self.before, self.before])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(self.before / f"home-{n}.pftrace")
+                                      for _ in range(2) for n in (1, 2, 10, 10)])
+        self.assertEqual([p["note"] for p in panels],
+                         ["median of 3 runs by time to first frame (home-10.pftrace)"] * 2)
 
 
 @unittest.skipUnless(importlib.util.find_spec("PIL"), "drawing needs Pillow (tools/requirements-perf.txt)")
