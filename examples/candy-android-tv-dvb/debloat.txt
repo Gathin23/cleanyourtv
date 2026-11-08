@@ -19,6 +19,9 @@
 #   com.at.factory.androidtvaidlservice, mediatek.factorymenu.ui. Never open these either (see the DVB2K list).
 # - Live TV and inputs: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service.
 # - com.google.android.katniss (voice search), com.google.android.backdrop (screensaver).
+# - com.cltv.fast, com.mediatek.androidbox: Free My TV protects both on a CVTE/MediaTek sibling (Multilaser),
+#   with the remote keys, live TV and the media player. They were off on this set for a while with no fault seen,
+#   then turned back on to be safe.
 
 # Content recognition and retail demo
 tv.anoki.acr.anokiacroptin                       # Anoki ACR opt-in / recognition
@@ -50,12 +53,10 @@ com.tcl.browser
 # com.amazon.amazonvideo.livingroom              # Prime Video
 # com.google.android.youtube.tvmusic             # YouTube Music
 # com.google.android.tts                         # Google text-to-speech: Assistant answers become text only
-# com.mediatek.androidbox                        # HaiCast / Miracast
 
 # Came back on at the next boot while com.cvte.haier.tv.appmanager was still enabled, and were then removed
 # for the user on this set instead (pm uninstall --user 0, which this repo does not use). Not yet tested as a
 # plain disable with the app manager off, so left commented:
-# com.cltv.fast                                  # free ad-supported channels
 # com.google.android.tvrecommendations           # recommendation and ad rows
 # com.google.android.syncadapters.calendar
 # com.haier.launcher.haiermatrix                 # Haier/Zeasn content launcher, not the system Home
