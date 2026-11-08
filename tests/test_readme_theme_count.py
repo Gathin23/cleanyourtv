@@ -39,6 +39,17 @@ twenty-one to twenty-six on the six pages it could see, left the Hebrew page off
 fewer looks than the repo ships. The link is matched with or without the code spans now, because the
 count is a claim about the tree whatever shape the link has.
 
+README.uz.md is the eighth, and it was invisible for a third reason: an Uzbek count is written with the
+classifier stuck to the number word - "yigirma birta" is twenty-one, "yigirma sakkizta" twenty-eight -
+so a table of Uzbek numerals would read nothing unless it carried every classified form too, and this
+page's row was read as no claim at all. It said twenty-one themes while themes/ holds twenty-eight: the
+text was translated against the row as the English page read while themes/ held twenty-one (d7b0d4a5),
+and it landed with the translation two days later, when the English row already said twenty-eight
+(0102a9a9). The bumps after that - 3c122bc0's twenty-six, 6b7bcb38's twenty-seven, d451b175's
+twenty-eight - reached the pages this check could see and never this one. The page writes the count in
+digits now ("28 ta tema"), the shape README.tr.md and README.pt-BR.md use, so the classifier no longer
+sits between the number and the link, and the page is in the pin below.
+
 That one table is what README.md's row is read through too. The row had a twelve-word table of its own
 while the sentences were read through one that carries twenty, and the two agreed only while themes/
 held twelve: the thirteenth theme, "thirteen ship in themes/", is what docs/workflows/theme.md step 5
@@ -196,7 +207,7 @@ class ReadmeThemeCountTest(unittest.TestCase):
                         f"{page.name} says {claimed} themes and themes/ holds {len(shipped)}: "
                         f"{', '.join(shipped)}")
         # The walk above passes while finding nothing, which is how the German and Dutch rows went
-        # stale in the first place: these seven pages state the count today, so one that stops
+        # stale in the first place: these eight pages state the count today, so one that stops
         # saying it fails here rather than quietly leaving the check. README.uk.md joined them with
         # the Ukrainian words above; before that it stated its count and this list still read three.
         # README.tr.md states its count in digits, so it needs no words in the table, and
@@ -204,10 +215,12 @@ class ReadmeThemeCountTest(unittest.TestCase):
         # themes/) where this list did not look, so a page that leaves the list now fails here in
         # the same sentence that names the pages which still state the count. README.he.md is the
         # seventh, and it was missing for the other reason a page can be invisible: its link.
+        # README.uz.md is the eighth, missing for a third: its count was a numeral with the
+        # classifier attached, which this file reads as no claim at all.
         self.assertEqual(sorted(set(stating)),
                          ["README.de.md", "README.he.md", "README.md", "README.nl.md",
-                          "README.pt-BR.md", "README.tr.md", "README.uk.md"],
-                         "the front pages that state the theme count are not the seven that did: "
+                          "README.pt-BR.md", "README.tr.md", "README.uk.md", "README.uz.md"],
+                         "the front pages that state the theme count are not the eight that did: "
                          f"{sorted(set(stating))}")
 
 
@@ -273,6 +286,18 @@ class CountTest(unittest.TestCase):
                       "`config.json` enviado pelo Wi-Fi, sem recompilação. 21 temas estão incluídos em "
                       "[`themes/`](themes/), incluindo o `default/` integrado. |")
         self.assertEqual([({21}, portuguese)], claims(portuguese))
+
+    def test_an_uzbek_row_in_digits_is_read(self):
+        """README.uz.md's row as the page writes it now: digits, with the -ta classifier after them."""
+        uzbek = ("| **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va "
+                 "joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 28 ta tema "
+                 "[`themes/`](themes/) da keladi |")
+        self.assertEqual([({28}, uzbek)], claims(uzbek))
+
+    def test_a_classified_numeral_is_not_read_as_a_claim(self):
+        """The shape that hid README.uz.md: "yigirma birta" is a numeral with the classifier attached."""
+        uzbek = ("| **Mavzular** | ... birga yigirma birta [`themes/`](themes/) da keladi |")
+        self.assertEqual([], claims(uzbek))
 
     def test_a_link_without_code_spans_is_read(self):
         """README.he.md's row as the page writes it: the folder is not in code spans."""
