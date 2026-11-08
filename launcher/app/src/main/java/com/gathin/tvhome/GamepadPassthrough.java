@@ -58,7 +58,11 @@ final class GamepadPassthrough implements InputManager.InputDeviceListener {
         boolean filtering = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
         if (filter == filtering) return;
         // Without the flag no more keys come, the UP of a button held right now included.
-        if (!filter) RemoteKeys.release(service);
+        if (!filter) {
+            RemoteKeys.release(service);
+            // consume_volume_keys: the held key's UP will not come either, so end its repeat too.
+            VolumeKeys.stop();
+        }
         info.flags ^= AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
         service.setServiceInfo(info);
     }
