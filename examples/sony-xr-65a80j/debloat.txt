@@ -30,6 +30,29 @@
 # Saved snapshots confirm all 38 listed packages disabled, plus launcherx separately.
 # Ethernet was used. End-to-end casting and Wi-Fi reconnection are not confirmed by the snapshots.
 # Source setup and before/after snapshots: https://github.com/samipuro/tv-launcher
+#
+# Second unit: XR-55A80J (55-inch), EU firmware, the same build: BRAVIA_VH2_EU-user 12
+# STT2.230505.001.S136 682241. Status: applied 2026-11-07 over Wi-Fi in five batches with a Home
+# screenshot after each, then rebooted twice; every disabled package stayed disabled. Not yet lived
+# with for days. Differences from the first unit:
+#
+#  - Kept the stock Google TV launcher (launcherx) and setupwraith: no replacement launcher yet, so
+#    Batch 8 was not applied. Here setupwraith owned a saved Wi-Fi network from first setup (a stale
+#    one; the network in use belonged to android.uid.system), so check `dumpsys wifi | grep -o
+#    'cname=[^ ]*'` before disabling it.
+#  - Batch 6: HbbTV disabled; AirPlay and the DLNA renderer kept by owner's choice (both in use).
+#  - com.sony.dtv.promos ("My BRAVIA" tile) shipped ENABLED on this unit, so it is now an active line
+#    below; on a set that has it off at the factory the recovery record keeps it that way on undo.
+#  - fi.mtv.svod is not installed on this unit; disable.sh skips it. Miracast has no package on this
+#    firmware (no screnmirroring.com or com.mediatek.wfd).
+#  - Also disabled on this unit by owner's choice, listed as commented lines at the end (Batch 9):
+#    voice assistant, unused Google and Sony apps, Ambient mode, Living Decor, Timers & Clock, Sony
+#    usage collectors, the Vewd engine, TalkBack and Google TTS.
+#  - Checked by the owner on the real remote and devices afterwards: Chromecast, AirPlay from an iPad,
+#    the Netflix, YouTube and Input buttons, Plex, Home and HDMI inputs.
+#  - Google TV "Apps only" mode works with this list. A network ad-blocker that blocks
+#    androidtvlauncherxfe-pa.googleapis.com makes Apps-only Home show a "Network error" banner; that
+#    host is the Google TV home's own backend, so allow it if you keep the stock launcher.
 
 # Batch 1: tracking and telemetry
 tv.samba.ssm                                   # Samba TV, fingerprints what's on screen (ACR)
@@ -80,6 +103,7 @@ com.sony.dtv.distancealert
 com.sony.dtv.sensingcamera.fwupdate
 com.sony.dtv.sensingcamera.settings
 com.sony.dtv.notificationcenter                # "BRAVIA notifications" inbox
+com.sony.dtv.promos                            # "My BRAVIA" promos tile; enabled at the factory on the second unit
 fi.mtv.svod                                    # old MTV app (v1.0.56, last updated 2024-01); MTV Katsomo is fi.mtvkatsomo
 
 # Batch 8: setup wizard; disable only after a replacement launcher is installed
@@ -89,3 +113,25 @@ fi.mtv.svod                                    # old MTV app (v1.0.56, last upda
 # On the A80L (VH22) with it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat
 # repeats "Failed to find provider info for ...setupwraith": harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith
+
+# Batch 9: second unit only, disabled there by owner's choice (applied 2026-11-07, reboot-checked, not
+# yet lived with for days). Uncomment what you don't use.
+# com.google.android.katniss                   # Google Assistant / voice search: the mic button stops working
+# com.sony.dtv.voicesearch
+# com.sony.dtv.assistantadapter
+# com.google.android.youtube.tvmusic           # YouTube Music (enabled at the factory on the second unit)
+# com.google.android.videos                    # Google TV / Play Movies store
+# com.google.android.play.games
+# com.sony.dtv.recapp                          # "Recorded Title List" tile; recservice stays (also a DLNA receiver)
+# com.sony.dtv.livingfit                       # Living Decor
+# com.sony.dtv.osat.music                      # "Music" player for USB files
+# com.sony.dtv.calibrationmonitor              # "Calman for BRAVIA" tile
+# com.sony.dtv.ecodashboard                    # Eco Dashboard tile
+# com.sony.dtv.timers                          # Timers & Clock: the sleep timer and on/off timers go too
+# com.google.android.apps.tv.dreamx            # Ambient mode screensaver
+# com.sony.dtv.lastaccess                      # usage agent
+# com.sony.dtv.interactivetvutil               # ActionLogCollector / ApplicationLogCollector
+# com.sony.dtv.usercontext                     # user-context provider
+# com.vewd.core.service                        # Vewd browser engine (HbbTV, old Sony store)
+# com.google.android.marvin.talkback           # TalkBack screen reader
+# com.google.android.tts                       # Google text-to-speech
