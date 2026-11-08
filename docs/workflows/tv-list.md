@@ -56,6 +56,15 @@
    list PR, which touches only its own folder, leaves both pages where they were and stays green.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
    free prose; three things in a README are read back, two of them against the list beside it.
+   A whole theme may sit in a theme/ subfolder beside the list instead of a `config.json` at the folder's
+   root: six folders do (`motorola-mt4310`, `nokia-streaming-box-8000`, `philips-google-tv-ta7`,
+   `tivo-stream-4k`, `xiaomi-mi-box-s`, `xiaomi-mitv-afmu0`), a wallpaper and a wallpapers/ collection
+   included, and the folder's own `README.md` is where the owner is told to edit it and push it with
+   `tools/theme.sh examples/philips-google-tv-ta7/theme`. Both checks that read a shipped `config.json`
+   (`tests/test_shipped_config_keys_are_read.py` and `tests/test_shipped_config_values.py`) walk
+   `examples/` at any depth, so a key or a value in that subfolder is judged where it sits rather than
+   skipped, and `tools/theme.sh` is handed the folder that holds the `config.json` - the subfolder, not
+   the list folder, which has none.
    A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages", "The
    list disables **N packages**", "The list contains N packages", "`debloat.txt` is the list: N
    packages") is compared with what `tools/disable.sh` would send for the list, so a line added or
