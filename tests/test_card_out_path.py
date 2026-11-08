@@ -161,15 +161,18 @@ class PicturePathTest(unittest.TestCase):
                 self.assertLess(guard, pillow, f"{name} judges the picture after importing Pillow")
 
     def test_the_write_at_the_end_is_guarded(self):
-        # A folder that went read-only, a full disk or an unknown extension is found at the write, after
-        # the drawing: that one belongs to its own handler rather than to a traceback.
+        # A read-only file, a full disk or an unknown extension is found at the write, after the drawing:
+        # that one belongs to its own handler rather than to a traceback, and it goes through
+        # tools/picture_file.py, which encodes beside the file so a failed redraw cannot cut the picture
+        # the repository ships (see tests/test_card_picture_staging.py).
         for name in CARD_SCRIPTS:
             with self.subTest(script=name):
                 text = (TOOLS / name).read_text(encoding="utf-8")
                 handler = text.find("except (OSError, ValueError) as error:")
                 self.assertGreater(handler, 0, f"{name} leaves the save to a bare traceback")
-                last_save = text.rfind(".save(OUT")
-                self.assertGreater(last_save, 0, f"{name} no longer saves to OUT, so this check would prove nothing")
+                last_save = text.rfind("picture_file.save(")
+                self.assertGreater(last_save, 0, f"{name} no longer publishes its picture by rename, "
+                                                f"so this check would prove nothing")
                 self.assertLess(handler, last_save, f"{name} does not guard the write that ends it")
 
 
