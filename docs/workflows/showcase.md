@@ -8,7 +8,10 @@
    keeps one line in that index: add the link to the line the brand already has, never a second bullet for
    the same brand. `tests/test_showcase_brand_index.py` fails on a brand named twice - "a brand is listed
    twice in 'Find a project by TV brand', so a project on one of the lines is hard to find" - and prints
-   the links only one of the two lines carries, which is a fork nobody scrolling the first line sees.
+   the links only one of the two lines carries, which is a fork nobody scrolling the first line sees. It
+   reads the index back the other way too: a link whose address no table row carries is reported, so a
+   project renamed or repinned in the tables is dropped from the line rather than left there at the commit
+   it used to point at.
 2. Bump the three counts by one: `SHOWCASE.md` opens with an `N projects so far.` line, and the "Built
    something on top?" row spells the same number in words on two front pages - `README.md` ("... projects
    already live") and `README.pt-BR.md` ("que já reúne ... projetos"). `tests/test_showcase_project_count.py`
