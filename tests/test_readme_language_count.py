@@ -56,9 +56,14 @@ def front_pages(root=ROOT):
     return sorted(p for p in root.glob("README*.md") if p.is_file())
 
 
+# Ukrainian declines the word by number, and tools/gen_tables.py writes the declined form (31 мова,
+# 32 мови, 35 мов), so the row is read back under the table's one word.
+DECLINED = {"мови": "мова", "мов": "мова"}
+
+
 def rows(text):
     """[(number, word)] for every `| **N word** |` row on a page, in page order."""
-    return [(int(m.group(1)), m.group(2).strip()) for m in ROW.finditer(text)]
+    return [(int(m.group(1)), DECLINED.get(m.group(2).strip(), m.group(2).strip())) for m in ROW.finditer(text)]
 
 
 def claimed(text, word):

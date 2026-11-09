@@ -49,6 +49,7 @@ NAMES = {
     "es-419": "Latin American Spanish",
     "fi": "Finnish",
     "fr": "French",
+    "hu": "Hungarian",
     "in": "Indonesian",
     "it": "Italian",
     "iw": "Hebrew",
