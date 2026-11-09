@@ -163,6 +163,17 @@
 #  - The Audio button closes the tuner app (com.sony.dtv.tvx) while watching TV. That is a crash in TVX
 #    itself, not this list: it still crashed with b2b.hotelmode and b2b.rs232csupport enabled again. Same note.
 
+# Reported 9 November 2026 (#3608), on an adapter in the TV's USB port, product BRAVIA_VH2_M_PA, build
+# STT2.230505.001.S136 682241 - the build number every unit above reports: after the list was applied and
+# the set restarted, Ethernet through the adapter stopped working while Wi-Fi stayed up. Disabling
+# com.sony.dtv.sonybugreportsys alone broke it; with that one back on, disabling
+# com.sonyericsson.idd.agent broke it again; with both kept, the rest of the list ran over several
+# restarts with Ethernet up. Both sit in the shared system UID beside com.sony.dtv.networksettings and
+# com.android.networkstack.inprocess, both hold NETWORK_SETTINGS, and idd.agent has a BOOT_COMPLETED
+# receiver. They are commented out below for that reason: a set that reaches the network without a USB
+# adapter can uncomment them, and one where they are off gets Ethernet back with
+# `pm enable com.sony.dtv.sonybugreportsys` and the same for idd.agent, one package per call.
+
 # ACR viewing tracker
 tv.samba.ssm                                   # Samba TV fingerprints what's on screen
 tv.samba.ssm.ui
@@ -170,8 +181,10 @@ tv.samba.ssm.ui
 # telemetry and remote support
 com.qterics.da.product
 com.sony.dtv.da.service
-com.sonyericsson.idd.agent
-com.sony.dtv.sonybugreportsys
+# Kept enabled, both: on BRAVIA_VH2, disabling either one stopped Ethernet through a USB-to-Ethernet
+# adapter (#3608, the report at the top of this list). Uncomment on a set that has no such adapter.
+# com.sonyericsson.idd.agent
+# com.sony.dtv.sonybugreportsys
 com.google.android.feedback
 
 # demo / shop mode
