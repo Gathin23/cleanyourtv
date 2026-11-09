@@ -27,12 +27,15 @@
    `tests/test_press_as_of_date.py` reads that parenthetical in each page's own words, off every page whose
    story paragraph carries the link, and a page that writes none is not judged: `README.he.md` dates the
    stars it had in the sentence before, and its coverage sentence ends at the link. That paragraph is also
-   read on the two front pages that have it without the card:
-   `README.pt-BR.md` and the Hebrew `README.he.md` show no `docs/card.jpg`, so their numbers are held to
-   `README.md`'s alt text and to `docs/PRESS.md` on their own, and their coverage clause has to open with a
-   colon like the others ("A repercussão: 412 artigos ...", "סיקור בתקשורת: 412 כתבות ..."), since that colon
-   is what the reader cuts the three numbers at. A page counts as one of them by its paragraph, so a
-   translation that copies the story without the picture is read without the test being edited.
+   read on the three front pages that have it without the card:
+   `README.pt-BR.md`, the Hebrew `README.he.md` and the Uzbek `README.uz.md` show no `docs/card.jpg`, so their
+   numbers are held to `README.md`'s alt text and to `docs/PRESS.md` on their own, and their coverage clause
+   has to open with a colon like the others ("A repercussão: 412 artigos ...", "סיקור בתקשורת: 412 כתבות
+   ...", "Matbuotdagi aks: 412 maqola ..."), since that colon is what the reader cuts the three numbers at.
+   The Uzbek page dates them too ("(raqamlar 2026-yil 31-oktabr holatiga)"), the year before the day and the
+   month in its own language, and the date check reads that shape like the other six. A page counts as one
+   of them by its paragraph, so a translation that copies the story without the picture is read without the
+   test being edited.
    Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the performance requirements install:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
    `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and
