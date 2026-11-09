@@ -14,6 +14,7 @@ disable.sh refuses as one of Android's core packages (#884) is marked `never`, w
 
 It reads files only: no TV, no ADB client, nothing written. It ranks nothing and suggests no list; the
 counts are what the lists say, not a verdict for this TV.
+Package files may be UTF-8 (with or without a BOM), or BOM-marked UTF-16 as Windows PowerShell writes.
 
 Exit codes: 0 the table was printed, 2 the packages file, the examples folder or a list in it could not
 be read.
@@ -37,9 +38,12 @@ def read_packages(path):
     name on its own line is taken too, so a hand-trimmed file works.
     """
     try:
-        text = Path(path).read_text(encoding="utf-8-sig", errors="replace")
+        data = Path(path).read_bytes()
     except OSError as e:
         raise SystemExit(f"could not read {path} ({e.strerror or e}): pass a saved `pm list packages`")
+    # PowerShell 5.1 redirection writes UTF-16; its BOM identifies the byte order.
+    encoding = "utf-16" if data.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig"
+    text = data.decode(encoding, errors="replace")
     names = set()
     for line in text.splitlines():
         line = line.strip()

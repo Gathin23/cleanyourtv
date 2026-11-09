@@ -7,6 +7,7 @@ file or examples folder that cannot be used ends the run at 2 with one line, no 
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import codecs
 import errno
 import io
 import os
@@ -59,6 +60,17 @@ class ReadPackagesTest(MatchCase):
         path = self.base / "p.txt"
         path.write_bytes(b"\xef\xbb\xbfcom.example.first\r\n  com.example.second  \r\n")
         self.assertEqual(["com.example.first", "com.example.second"], match.read_packages(path))
+
+    def test_utf16_package_files_with_a_bom_are_read(self):
+        text = ("package:com.example.second\r\n"
+                "package:/system/app/Foo/base.apk=com.example.first\r\n"
+                "com.example.second\r\n")
+        for encoding, bom in (("utf-16-le", codecs.BOM_UTF16_LE),
+                              ("utf-16-be", codecs.BOM_UTF16_BE)):
+            with self.subTest(encoding=encoding):
+                path = self.base / "p.txt"
+                path.write_bytes(bom + text.encode(encoding))
+                self.assertEqual(["com.example.first", "com.example.second"], match.read_packages(path))
 
     def test_lines_that_are_not_package_names_are_skipped(self):
         path = self.write("p.txt", "error: device offline\n\npackage:com.example.ok\nnot_a_package\n"
@@ -285,6 +297,31 @@ class CommandLineTest(MatchCase):
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("com.example.ads", result.stdout)
         self.assertNotIn("Traceback", result.stderr)
+
+    def test_package_encodings_produce_the_same_tally(self):
+        self.add_list("a", "com.example.ads  # ads\n# com.example.store  # updates\n"
+                           "com.android.packageinstaller\n")
+        text = ("package:com.example.store\r\npackage:com.example.ads\r\n"
+                "package:com.android.packageinstaller\r\npackage:com.example.ads\r\n")
+        expected = None
+        for encoding, bom in (("utf-8", b""), ("utf-8-sig", b""),
+                              ("utf-16-le", codecs.BOM_UTF16_LE),
+                              ("utf-16-be", codecs.BOM_UTF16_BE)):
+            with self.subTest(encoding=encoding):
+                packages = self.base / "p.txt"
+                original = bom + text.encode(encoding)
+                packages.write_bytes(original)
+                result = self.run_script(str(packages), "--examples", str(self.examples))
+                self.assertEqual(0, result.returncode, result.stderr)
+                if expected is None:
+                    expected = result.stdout
+                self.assertEqual(expected, result.stdout)
+                rows = {line.split()[0]: line.split()[1:] for line in result.stdout.splitlines()[1:]}
+                self.assertEqual(["1", "0", "ads"], rows["com.example.ads"])
+                self.assertEqual(["0", "1", "updates"], rows["com.example.store"])
+                self.assertEqual(["never"], rows["com.android.packageinstaller"])
+                self.assertIn("3 packages, counted over 1 lists", result.stderr)
+                self.assertEqual(original, packages.read_bytes())
 
     def test_an_empty_examples_path_uses_the_current_directory(self):
         self.add_list("a", "com.example.ads  # ads\n# com.example.store  # updates\n")
