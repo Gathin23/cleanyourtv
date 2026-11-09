@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import venv
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -136,11 +137,16 @@ class HomeGuardTest(unittest.TestCase):
         # The scripts call the tools venv's Python. Run the real interpreter, which imports the fake
         # tv.py for the transport and the real recovery.py for the logic. disable.ps1 asks for the
         # Windows path, which PowerShell resolves to tools/venv/Scripts/python.exe here too.
-        for client in (self.tools / "venv" / "bin" / "python",
-                       self.tools / "venv" / "Scripts" / "python.exe"):
-            client.parent.mkdir(parents=True, exist_ok=True)
-            client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
-            client.chmod(0o755)
+        # Windows cannot start a #!/bin/sh file ("not a valid application for this OS platform"), so
+        # there the client is a real venv of this interpreter; the scripts only need the standard library.
+        if os.name == "nt":
+            venv.create(self.tools / "venv", with_pip=False)
+        else:
+            for client in (self.tools / "venv" / "bin" / "python",
+                           self.tools / "venv" / "Scripts" / "python.exe"):
+                client.parent.mkdir(parents=True, exist_ok=True)
+                client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+                client.chmod(0o755)
 
         self.home = self.base / "home"
         self.home.mkdir()
