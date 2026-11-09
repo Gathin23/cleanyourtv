@@ -1246,8 +1246,10 @@ turned off in Settings stays off.
   answered before the settings branch in
   `HomeKeyService.onKeyEvent`: `"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"` in
   `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -lt` while pressing the button,
-  as the `scan:` bullet above does for a Sony remote). A keycode entry cannot: `"176:..."` is
-  `KEYCODE_SETTINGS`, which the helper takes itself before it looks at any app key.
+  as the `scan:` bullet above does for a Sony remote). A keycode entry, `"176:..."` (`KEYCODE_SETTINGS`), is
+  also answered before the settings branch, when it has a tap target: a `hold:176:...` entry alone leaves the tap
+  to Settings, and a button listed in `settings_key_scancodes` stays Settings (read from the launcher's code, not
+  yet tried on a set).
 - **The gear does nothing after the stock launcher is disabled** (onn 4K Streaming Box, `YOC`, Google TV 14,
   `URO4.260304.011.B1.15051976`, and Hisense SmartTV 4K, `lushan` / `his9603`, Google TV 12,
   `STT2.230929.001.092`). The app buttons and the mic can keep working while this one does not: on the onn
