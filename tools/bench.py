@@ -297,7 +297,9 @@ def measure_key(tv, keycode, binary=None, package=None):
         t0 = t_before
     if t0 is None:
         return None
-    rows = frame_rows(stats)
+    # gfxinfo emits a PROFILEDATA block per window, not one global timeline.
+    # Pick the first completion and movement gap in time order across those blocks.
+    rows = sorted(frame_rows(stats), key=lambda row: row[2])
     threshold = t0 * 1_000_000
     first = last = prev = None
     for flags, intended, completed in rows:
@@ -308,7 +310,7 @@ def measure_key(tv, keycode, binary=None, package=None):
             continue
         if (intended - prev) / 1e6 > 50:      # a gap: the movement is over
             break
-        last, prev = completed, intended
+        last, prev = completed, max(prev, intended)
     if first is None:
         return None
     # A key that moves nothing (the end of a row, the focus on the top bar) leaves the next
