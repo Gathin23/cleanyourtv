@@ -20,6 +20,15 @@ What counts: markdown links and images, reference definitions and `href`/`src` i
 does not: `http(s)`, `mailto:`, `data:` and the insides of fenced code blocks, where a path is an
 example rather than a link. An anchor on a link that leaves the repository is not ours to judge.
 
+A link to a folder carries its section in the README.md GitHub renders inside that folder, and that
+shape was read by nothing: `dangling_anchors()` asked only whether a link's file gives the anchor, so
+a destination that is a folder was skipped whole. `examples/README.md` carried one -
+`examples/tcl-55c7k-uk/#compatibility-report-tcl-50c805-wi-fi`, the only `#section` in that table's
+100 relative note links that sat on a folder rather than a file - and its fragment could be changed
+to a heading the README does not have with every test still green. A folder link is now followed into
+its README.md, which is where the heading has to be, and a folder with no README.md is reported
+because nothing there can give the section.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
@@ -124,6 +133,9 @@ def dangling_anchors(root):
 
     A destination whose file is not there is left to broken_links(): this asks only whether the
     section a reader is sent to is one the page has. A link that leaves the repository is not ours.
+    A destination that is a folder is read as its README.md - the page GitHub shows there, and the
+    one whose headings a `folder/#section` link lands on - and a folder with no README.md gives no
+    section at all, so it is reported rather than skipped.
     """
     root = Path(root)
     out = []
@@ -136,7 +148,12 @@ def dangling_anchors(root):
             if not anchor:
                 continue
             page = (path.parent / unquote(local)).resolve() if local else path
+            if not page.exists():
+                continue
+            if page.is_dir():
+                page = page / "README.md"
             if not page.is_file():
+                out.append((path.relative_to(root).as_posix(), target))
                 continue
             if anchor.lower() not in anchors(page):
                 out.append((path.relative_to(root).as_posix(), target))
@@ -279,6 +296,58 @@ class AnchorTest(unittest.TestCase):
                 "## Điều khiển\n\n[từ xa](#%C4%90i%E1%BB%81u-khi%E1%BB%83n)\n",
                 encoding="utf-8")
             self.assertEqual([], dangling_anchors(root))
+
+
+class FolderLinkTest(unittest.TestCase):
+    """A link to a folder carries the section its README.md gives.
+
+    `examples/README.md` builds its rows from the folders' tv.json notes, and one note wrote
+    `tcl-55c7k-uk/#compatibility-report-tcl-50c805-wi-fi`: a folder and the heading inside the
+    README GitHub shows there. The anchor check asked only whether a *file* gives the anchor, so the
+    destination was skipped and no heading was ever read - the shape is now judged like the rest.
+    """
+
+    def test_the_readme_inside_the_folder_gives_the_anchor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "examples" / "tv").mkdir(parents=True)
+            (root / "examples" / "tv" / "README.md").write_text(
+                "# TCL C7K\n\n## Compatibility report: TCL 50C805, Wi-Fi\n", encoding="utf-8")
+            (root / "examples" / "README.md").write_text(
+                "| `tv/` | ... a [50C805 report](tv/#compatibility-report-tcl-50c805-wi-fi) records ... |\n",
+                encoding="utf-8")
+            self.assertEqual([], dangling_anchors(root))
+            self.assertEqual([], broken_links(root))
+
+    def test_a_heading_the_readme_does_not_give_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "examples" / "tv").mkdir(parents=True)
+            (root / "examples" / "tv" / "README.md").write_text(
+                "# TCL C7K\n\n## Compatibility report: TCL 50C805, Wi-Fi\n", encoding="utf-8")
+            (root / "examples" / "README.md").write_text(
+                "[report](tv/#compatibility-report-tcl-55c61k)\n", encoding="utf-8")
+            self.assertEqual([], broken_links(root))
+            self.assertEqual([("examples/README.md", "tv/#compatibility-report-tcl-55c61k")],
+                             dangling_anchors(root))
+
+    def test_a_folder_with_no_readme_gives_no_section(self):
+        # Nothing there can give the heading, and the folder exists, so broken_links() is quiet:
+        # only this check can say that the jump lands nowhere.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "examples" / "tv").mkdir(parents=True)
+            (root / "examples" / "tv" / "debloat.txt").write_text("com.example.tv\n", encoding="utf-8")
+            (root / "examples" / "README.md").write_text("[report](tv/#second-unit)\n", encoding="utf-8")
+            self.assertEqual([], broken_links(root))
+            self.assertEqual([("examples/README.md", "tv/#second-unit")], dangling_anchors(root))
+
+    def test_a_folder_that_is_not_there_is_left_to_the_link_check(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("[gone](examples/moved/#second-unit)\n", encoding="utf-8")
+            self.assertEqual([], dangling_anchors(root))
+            self.assertEqual([("README.md", "examples/moved/#second-unit")], broken_links(root))
 
 
 if __name__ == "__main__":
