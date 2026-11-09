@@ -38,7 +38,9 @@
 
     <!-- Open the Live TV app above the first time Home comes up after the TV is switched on, for sets that are
          mostly used for broadcast TV. Once per boot: Home after that stays Home. Can also be set with
-         "boot_to_live_tv": true in a theme's config.json. -->
+         "boot_to_live_tv": true in a theme's config.json. When launch_actions below gives live_tv_package an
+         "input:<id>" target, that input opens instead, as the tile does: for a Live TV app that starts on the
+         empty tuner at every boot ("please scan channels") while the set is used on an HDMI input. -->
     <bool name="boot_to_live_tv">false</bool>
 
     <!-- An "Open on start" row in Launcher settings: pick any app on the TV, and the first time Home comes up

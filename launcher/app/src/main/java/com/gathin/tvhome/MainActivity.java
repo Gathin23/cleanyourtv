@@ -277,6 +277,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private static LocalDate lastPetalShower;
     /** boot_to_live_tv: open the Live TV app on the first Home of each boot. */
     private boolean bootToLiveTv;
+    /** The input in the Live TV tile's launch_actions ("input:<id>"), opened at power-on instead of the Live TV app. */
+    private String bootInputId;
     /** open_on_start_choice: the app picked in Launcher settings may open on the first Home of each boot. */
     private boolean openOnStartChoice;
     /** open_on_start_network_wait, in ms; the boot's app while it waits for the network, and until when. */
@@ -488,6 +490,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         idleClockMs = cfg.homeIdleClockMinutes * MINUTE_MS;
         backOpensClock = cfg.backOpensClock;
         bootToLiveTv = cfg.bootToLiveTv;
+        bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
         openOnStartWaitMs = cfg.openOnStartNetworkWait * 1000L;
         openOnStartOnWake = OpenOnStart.onWake(cfg.openOnStartChoice, cfg.openOnStartOnWake);
@@ -3236,6 +3239,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String target = bootToLiveTv ? liveTvPkg : app;
         if (!OpenOnStart.due(boot, prefs.getInt(OpenOnStart.BOOT_KEY, -1), target, getPackageName())) return false;
         if (!prefs.edit().putInt(OpenOnStart.BOOT_KEY, boot).commit()) return false;
+        if (bootToLiveTv && bootInputId != null) {
+            openInput(bootInputId);
+            return true;
+        }
         Intent i = bootToLiveTv ? liveTvIntent() : OpenOnStart.intent(getPackageManager(), app);
         if (i == null) return false;
         return openWhenReady(i);
