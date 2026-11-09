@@ -110,6 +110,18 @@ public class GameDayTest {
         assertEquals(45, GameDay.turnSeconds(rows));
     }
 
+    @Test public void headlineIsReadWhenGivenAndEmptyOtherwise() {
+        List<Object[]> rows = Arrays.asList(
+                new Object[] {"LVIV · CLEAR", "", 1000L, 5000L, 0xFF4A90D9, "weather", 30, "2°   ↑5°  ↓-1°"},
+                new Object[] {"No headline column", "Kickoff", 1000L, 5000L, 0, "x", 30},
+                new Object[] {"Null headline", "Kickoff", 1000L, 5000L, 0, "x", 30, null});
+        List<GameDay.Turn> t = GameDay.fromRows(rows);
+        assertEquals(3, t.size());
+        assertEquals("2°   ↑5°  ↓-1°", t.get(0).headline);
+        assertEquals("", t.get(1).headline);
+        assertEquals("", t.get(2).headline);
+    }
+
     @Test public void turnSecondsOutOfRangeBecomesThirty() {
         assertEquals(30, GameDay.turnSeconds(Collections.singletonList(new Object[] {"a", "b", 1L, 2L, 0, "c", 500})));
         assertEquals(30, GameDay.turnSeconds(Collections.singletonList(new Object[] {"a", "b", 1L, 2L, 0, "c", 3})));

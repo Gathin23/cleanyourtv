@@ -142,6 +142,12 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    | `calendar` | text | Where the row came from; not shown. |
    | `turn_seconds` | integer | Seconds per turn, 10 to 120; anything else means 30. Read from the first row. |
 
+   One optional column more, `headline` (text): when a row carries it, the panel shows it as it is in place of
+   the countdown and "Live now", for a reading rather than an event (the [Weather](../addons/weather/) add-on
+   sends "2°   ↑5°  ↓-1°"). Give such a row a `start_ms` in the past and an `end_ms` when the reading goes stale;
+   while one is on Home the launcher asks again every 10 minutes, and the app decides whether that needs a fetch.
+   A provider without the column reads as before.
+
    An empty cursor hides the panel. Keep it to what Home shows anyway: the provider is exported without a
    permission, so it must hold no links, accounts or other private data.
 3. Call `notifyChange` on that URI when the rows change. The launcher queries when Home comes back, when Home is

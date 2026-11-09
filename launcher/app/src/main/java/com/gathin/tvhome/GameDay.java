@@ -28,6 +28,23 @@ final class GameDay {
     static final String META = "com.gathin.tvhome.games";
     static final int TURN_DEFAULT = 30;
     private static final String[] COLUMNS = {"top_line", "word", "start_ms", "end_ms", "colour", "calendar", "turn_seconds"};
+    /** Optional eighth column: fixed text in place of the countdown (a reading, such as the weather). */
+    static final String HEADLINE = "headline";
+    private static final String[] PROJECTION = withHeadline();
+
+    private static String[] withHeadline() {
+        String[] p = java.util.Arrays.copyOf(COLUMNS, COLUMNS.length + 1);
+        p[COLUMNS.length] = HEADLINE;
+        return p;
+    }
+
+    private static String str(Cursor c, int i) {
+        return i < 0 || c.isNull(i) ? null : c.getString(i);
+    }
+
+    private static Object num(Cursor c, int i) {
+        return i < 0 || c.isNull(i) ? null : (Object) c.getLong(i);
+    }
 
     private final Context ctx;
     private final Uri uri;
@@ -102,10 +119,15 @@ final class GameDay {
         try {
             io.execute(() -> {
                 List<Object[]> rows = new ArrayList<>();
-                try (Cursor c = ctx.getContentResolver().query(uri, COLUMNS, null, null, null)) {
+                try (Cursor c = ctx.getContentResolver().query(uri, PROJECTION, null, null, null)) {
+                    // By name: a provider may answer with its own column set (MatrixCursor ignores the projection),
+                    // and "headline" is optional, so a provider without it reads as before.
+                    int[] at = new int[PROJECTION.length];
+                    for (int i = 0; c != null && i < PROJECTION.length; i++) at[i] = c.getColumnIndex(PROJECTION[i]);
                     while (c != null && c.moveToNext()) {
-                        rows.add(new Object[] {c.getString(0), c.getString(1), c.getLong(2), c.getLong(3), c.getInt(4),
-                                c.getString(5), c.getInt(6)});
+                        rows.add(new Object[] {str(c, at[0]), str(c, at[1]), num(c, at[2]), num(c, at[3]),
+                                at[4] < 0 ? null : (Object) c.getInt(at[4]), str(c, at[5]),
+                                at[6] < 0 ? null : (Object) c.getInt(at[6]), str(c, at[7])});
                     }
                 } catch (RuntimeException gone) {
                     // Uninstalled or crashed mid-query: keep what is on screen.
@@ -142,7 +164,8 @@ final class GameDay {
             if (start < 0 || end <= start) continue;
             String word = r[1] instanceof String ? (String) r[1] : "";
             int colour = r[4] instanceof Number ? ((Number) r[4]).intValue() : 0xFFFFFFFF;
-            out.add(new Turn((String) r[0], word, start, end, colour));
+            String headline = r.length > 7 && r[7] instanceof String ? (String) r[7] : "";
+            out.add(new Turn((String) r[0], word, start, end, colour, headline));
         }
         return out;
     }
@@ -165,18 +188,25 @@ final class GameDay {
         /** ARGB, for the short bar. */
         final int colour;
         final boolean f1;
+        /** Fixed text in place of the countdown or "Live now" (a weather reading); empty for a game. */
+        final String headline;
 
         Turn(String topLine, String word, long startMs, long endMs, int colour) {
-            this(topLine, word, startMs, endMs, colour, false);
+            this(topLine, word, startMs, endMs, colour, "");
         }
 
-        private Turn(String topLine, String word, long startMs, long endMs, int colour, boolean f1) {
+        Turn(String topLine, String word, long startMs, long endMs, int colour, String headline) {
+            this(topLine, word, startMs, endMs, colour, false, headline);
+        }
+
+        private Turn(String topLine, String word, long startMs, long endMs, int colour, boolean f1, String headline) {
             this.topLine = topLine;
             this.word = word;
             this.startMs = startMs;
             this.endMs = endMs;
             this.colour = colour;
             this.f1 = f1;
+            this.headline = headline == null ? "" : headline;
         }
     }
 
@@ -191,7 +221,7 @@ final class GameDay {
         }
         if (f1 != null) {
             long key = f1.live == null && f1.next != null ? f1.next.start.toEpochMilli() : nowMs;
-            out.add(new Turn("", "", key, Long.MAX_VALUE, 0, true));
+            out.add(new Turn("", "", key, Long.MAX_VALUE, 0, true, ""));
         }
         Collections.sort(out, Comparator.comparingLong(t -> t.startMs));
         return out;

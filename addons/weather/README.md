@@ -18,6 +18,16 @@ sky-blue glow; on any other Android TV home it is an ordinary app.
 - It reads Open-Meteo only while the page is on screen, every 30 minutes, or 5 minutes after a failure.
 - Degrees Celsius by default (Fahrenheit is an option below); English or French words, with the TV's language; day names follow the TV's language.
 
+## On Home, under the clock
+
+With `"game_day": "io.github.sumyabazar1.weather"` in a theme's `config.json` (or `game_day` in the launcher's
+`config.xml`), the launcher shows the weather as one line in the race panel's place under the clock, over the
+wallpaper: the city and the sky ("LVIV · CLEAR"), then now and today's high and low ("2°   ↑5°  ↓-1°"). It uses
+the [game_day contract](../../docs/modules.md) with its optional `headline` column, so the launcher still never
+goes online: `HomeLineProvider` here answers its query and fetches a small reading from Open-Meteo only when
+the last one is older than 30 minutes (5 after a failure), never in the background. A reading older than three
+hours is not shown. Nothing appears until a city is chosen in the app.
+
 ## Options
 
 Open **Weather settings** beside **Change city** at the bottom of the page. Use Up/Down and OK to change
@@ -47,6 +57,10 @@ Saved choices override these defaults. With no saved choices the page is as abov
 |---|---|
 | `INTERNET` | Open-Meteo: the place search, the weather and the air quality. |
 
+The line under the clock is served by a read-only provider (`io.github.sumyabazar1.weather.home`), exported
+without a permission as the game_day contract asks; it holds only what Home shows anyway, the city name and
+the reading.
+
 That is all. What is sent: the city name you type in the search, then that place's latitude and longitude. No
 account, no telemetry, no ads, no background service, no location permission. The chosen city stays in the
 app's own storage (backups are off).
@@ -73,6 +87,10 @@ Hisense SmartTV 4K FFM (lushan, MediaTek MT9676), Google TV 12 / Android 12: cit
 the weather page, the card prompt, and the card shown in the launcher's dock.
 
 The options: Xiaomi TV (MiTV-MOOR2), Google TV 11, with `forecast_days` 7, `show_humidity` and `show_wind` on.
+
+The line under the clock: Philips QM163E (QM16XE_U, MediaTek MT5890), Android TV 8.0, with the nature-calm
+theme: shown after the city was chosen, refreshed when Home came back, and the same panel and dock layout as
+without it.
 
 ## Maintainer
 

@@ -206,6 +206,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private LinearLayout racePager;
     private long rotationStart;
     private long lastEndedRead;
+    private long lastHeadlineRead;
     private final Runnable turnTick = this::updatePanel;
     /** config.xml show_stats, overridable by a theme. Off: the line is gone and nothing is read. */
     private boolean showStats;
@@ -2795,6 +2796,17 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         handler.removeCallbacks(turnTick);
         long now = System.currentTimeMillis();
         List<GameDay.Turn> games = gameDay.turns();
+        // A reading (the weather line) changes without anything ending: ask again every 10 minutes while Home is
+        // up. The add-on decides whether that needs a fetch.
+        if (!stopped && now - lastHeadlineRead > 10 * MINUTE_MS) {
+            for (GameDay.Turn g : games) {
+                if (!g.headline.isEmpty()) {
+                    lastHeadlineRead = now;
+                    gameDay.read();
+                    break;
+                }
+            }
+        }
         for (GameDay.Turn g : games) {
             if (g.endMs <= now && now - lastEndedRead > MINUTE_MS) {
                 // A game is over: the add-on already has that team's next one.
@@ -2823,7 +2835,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             bar.setColor(t.colour);
             raceBar.setBackground(bar);
             raceKicker.setText(t.topLine);
-            if (GameDay.live(t, now)) {
+            if (!t.headline.isEmpty()) {
+                raceHeadline.setText(t.headline);
+            } else if (GameDay.live(t, now)) {
                 SpannableString live = new SpannableString("\u25CF  " + getString(R.string.game_live));
                 live.setSpan(new ForegroundColorSpan(RACE_RED), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 raceHeadline.setText(live);

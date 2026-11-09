@@ -176,6 +176,23 @@ final class Forecast {
         return out;
     }
 
+    /**
+     * The small reading for the launcher's line under the clock: temperature, WMO code, day or night and today's
+     * high and low, in one request (no air quality). Returns {tempC, code, day (1/0), maxC, minC}.
+     */
+    static double[] now(double latitude, double longitude) throws IOException, JSONException {
+        String where = String.format(Locale.ROOT, "latitude=%.4f&longitude=%.4f", latitude, longitude);
+        JSONObject reply = get("https://api.open-meteo.com/v1/forecast?" + where + "&models=icon_seamless"
+                + "&current=temperature_2m,relative_humidity_2m,weather_code,is_day"
+                + "&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1");
+        JSONObject current = reply.getJSONObject("current");
+        double temp = current.getDouble("temperature_2m");
+        int code = snowIfCold(current.getInt("weather_code"), temp, current.getDouble("relative_humidity_2m"));
+        JSONObject daily = reply.getJSONObject("daily");
+        return new double[] {temp, code, current.getInt("is_day"),
+                daily.getJSONArray("temperature_2m_max").getDouble(0), daily.getJSONArray("temperature_2m_min").getDouble(0)};
+    }
+
     private static int aqiOrUnknown(String where) {
         try {
             JSONObject current = get("https://air-quality-api.open-meteo.com/v1/air-quality?" + where

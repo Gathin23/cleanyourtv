@@ -15,6 +15,14 @@
         android:supportsRtl="false"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
 
+        <!-- The weather line under the launcher's clock (game_day contract, docs/modules.md). Read-only, and it
+             holds only what Home shows anyway: the city name and the reading. -->
+        <meta-data android:name="com.gathin.tvhome.games" android:value="io.github.sumyabazar1.weather.home" />
+        <provider
+            android:name=".HomeLineProvider"
+            android:authorities="io.github.sumyabazar1.weather.home"
+            android:exported="true" />
+
         <activity
             android:name=".WeatherActivity"
             android:exported="true"
