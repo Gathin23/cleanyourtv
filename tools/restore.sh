@@ -107,7 +107,7 @@ if [ -n "$WANT_HOME" ]; then
   NOW="$("$PY" -I tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME' \
     2>/dev/null | tr -d '\r' | tail -n 1)" || NOW=""
   # pkg/pkg.Activity and pkg/.Activity are the same component.
-  short() { printf '%s\n' "$1" | sed -E 's#^([^/]+)/\1\.#\1/.#'; }
+  short() { p=${1%%/*}; a=${1#*/}; case "$1" in */"$p".*) a=".${a#"$p".}" ;; esac; printf '%s\n' "$p/$a"; }
   if ! printf '%s\n' "$NOW" | grep -qE '^[A-Za-z_][A-Za-z0-9_.]*/[A-Za-z0-9_.$]+$'; then
     echo "Could not check Home: the TV did not name the activity that answers it. Check it with" \
       "tools/tv.py 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'." >&2

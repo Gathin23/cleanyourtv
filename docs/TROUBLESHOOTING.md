@@ -1268,8 +1268,8 @@ turned off in Settings stays off.
   XGIMI Elfin Plus (`WK03C`, `altai`, MediaTek, Android 11,
   [#3613](https://github.com/Gathin23/cleanyourtv/issues/3613)) the remote's gear printed `MSC_SCAN
   00070041` with `EV_KEY KEY_F8`, and its key layout (`Vendor_000d_Product_3838.kl`) could not be read
-  from the shell, so nothing there said which keycode it becomes. `139` (`KEYCODE_F8`) in
-  `settings_key_keycodes` did nothing; `66`, the `input-event-codes.h` number for `KEY_F8`, in
+  from the shell, so nothing there said which keycode it becomes. `139` in `settings_key_keycodes` did nothing (the report
+  took it for `KEYCODE_F8`, which is `138`; `138` was not tried); `66`, the `input-event-codes.h` number for `KEY_F8`, in
   `settings_key_scancodes` opened the launcher's panel with `settings_key_panel`. So read both numbers
   off one `getevent -lt` press and try the `EV_KEY` one when the `MSC_SCAN` one matches nothing. That
   board also brings the stock launcher back within minutes of `pm disable-user` (the

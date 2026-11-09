@@ -49,7 +49,7 @@ com.mstar.android.tv.disclaimercustomization
 com.mediatek.wwtv.setupwizard
 com.mediatek.wwtv.webview
 com.esaba.downloader
-com.eltelon.zapping
+# com.eltelon.zapping              # disabled on the tested set by owner choice (uncomment to do the same)
 # KEEP by owner: com.android.mgstv (Mango TV == "xuper o magis"), com.mercadolibre.android.mplay_tv
 # (Mercado Play), com.apple.atve.androidtv.appletv, flar2.homebutton
 

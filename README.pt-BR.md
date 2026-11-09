@@ -503,7 +503,7 @@ quatro dias. Até o dia 19, o repositório se chamava tv-vibehack; os links anti
 
 Duas semanas depois, o projeto era o repositório em alta nº 1 no GitHub na semana de 19 a 25 de outubro,
 com mais de 46 mil estrelas e 5,7 mil forks, além de 1,4 milhão de visualizações e 260 mil clones em 14 dias.
-As listas agora abrangem 457 modelos de TV de 122 marcas. A repercussão: 412 artigos em 54 países e
+As listas agora abrangem 463 modelos de TV de 124 marcas. A repercussão: 412 artigos em 54 países e
 229 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
 (dados de 31 de outubro de 2026).
 
@@ -518,7 +518,7 @@ as mesmas regras para ele.
 |---|---|
 | **Lista de remoção da sua TV** | É a contribuição mais útil: a próxima pessoa com esse modelo não precisará fazer a etapa de identificação. |
 | **Launcher e prompt** | Melhorias no launcher e ajustes para deixar o prompt mais claro também são bem-vindos. |
-| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e vinte e nove projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
+| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e trinta projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
 
 As pessoas cujo trabalho faz parte deste repositório:
 

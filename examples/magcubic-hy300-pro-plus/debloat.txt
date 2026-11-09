@@ -18,14 +18,10 @@
 # Wireless debugging page with Activity Launcher), then `adb tcpip 5555` and Wireless debugging off. 5555
 # closes again at every reboot.
 #
-# Second unit (same firmware): Developer options showed only "USB debug" and "ADB debug"; neither a USB ADB
-# connection nor usable network ADB was available by toggling them alone. The owner used the
-# [HY300 ADB Opener APK](https://github.com/MUSTARDWOLF3/hy300-adb-opener), mentioned in this
-# [CleanYourTV discussion](https://github.com/Gathin23/cleanyourtv/discussions/2074#discussioncomment-19471670),
-# to enable Wi-Fi ADB, then connected with stock `adb`. This is an observed workaround for that unit, not a
-# general compatibility promise: the APK project documents RK3326 `userdebug` firmware, while this unit
-# reports RK3566 / Android 14 / `user`. TLS ADB may require the stock `adb` via `TV_ADB_BINARY`; see
-# [native ADB notes](../../tools/native-adb.md).
+# Second unit (same firmware): Developer options showed only "USB debug" and "ADB debug", and toggling them gave
+# neither USB ADB nor usable network ADB; see the
+# [CleanYourTV discussion](https://github.com/Gathin23/cleanyourtv/discussions/2074#discussioncomment-19471670).
+# TLS ADB may need the stock `adb` via `TV_ADB_BINARY`; see [native ADB notes](../../tools/native-adb.md).
 #
 # Home: with the stock launcher left enabled (STOCK_LAUNCHER=none) the firmware opens com.htc.magcubicos at
 # every boot whatever the default Home, and stock_home_redirect does not help: something with the system uid

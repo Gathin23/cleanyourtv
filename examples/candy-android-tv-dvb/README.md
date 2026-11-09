@@ -13,8 +13,6 @@ list's notes on the remote and factory packages hold here too.
   reboot. Apply it in the first batch.
 - **The stock home lost its Wi-Fi icon** after `com.mediatek.android.leanbacklauncher.partnercustomizer` was
   disabled. Connectivity was unaffected, and the launcher's own network pill replaces it.
-- **Wireless debugging forgot the pairing** after some reboots, and its port changes each time. Port 5555
-  opened with USB debugging on and was the dependable route for `tools/tv.py`.
 - **Memory:** MemAvailable went from about 450 MB to about 485 MB. Most of the RAM belongs to YouTube, the
   system and Play services.
 

@@ -55,14 +55,14 @@ android.autoinstalls.config.google.gtvpai       # Play auto-install of promoted 
 
 # Batch 2: preloads (owner opted out)
 com.Smartdevice.emanual
-org.liskovsoft.androidtv.rukeyboard             # Russian keyboard, not the active IME (Gboard is)
+# org.liskovsoft.androidtv.rukeyboard           # Russian keyboard, not the active IME (Gboard is); lists never disable a keyboard
 com.tianci.localmedia                           # Skyworth USB media player
 com.google.android.marvin.talkback
 com.google.android.play.games
 com.google.android.videos                       # Google TV / Play Movies store
 
 # Batch 3: streaming and casting the owner does not use (Chromecast and Assistant are kept)
-com.amazon.amazonvideo.livingroom               # Prime Video
+# com.amazon.amazonvideo.livingroom             # Prime Video, off on the tested set by the owner's choice
 com.smartdevice.dtv.icast                       # CastPlay: AirPlay / DLNA receiver, starts at boot
 com.mediatek.androidbox                         # Miracast sink (WFDSinkTest), starts at boot
 

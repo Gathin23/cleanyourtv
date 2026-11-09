@@ -58,8 +58,7 @@ allowing them to be caught and remapped by an accessibility helper (tested with 
 - **Input button:** sends `KEYCODE_TV_INPUT`, which TCL firmware routes to `com.tcl.suspension` before accessibility
   services see it; cannot be redirected.
 
-To allow sideloaded accessibility remappers on Android 14 TCL G08 firmware:
-- `appops set <package> ACCESS_RESTRICTED_SETTINGS allow` (Android 13/14 restricted settings)
+To let a key remapper start at boot on Android 14 TCL G08 firmware:
 - `appops set <package> AUTO_START allow; appops write-settings` (`TclAppBoot` blocks auto-start unless `AUTO_START` is allowed)
 
 **Launcher and Wi-Fi:**

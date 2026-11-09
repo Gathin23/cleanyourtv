@@ -290,7 +290,7 @@ class CountTest(unittest.TestCase):
     def test_an_uzbek_row_in_digits_is_read(self):
         """README.uz.md's row as the page writes it now: digits, with the -ta classifier after them."""
         uzbek = ("| **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va "
-                 "joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 28 ta tema "
+                 "joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 28 ta mavzu "
                  "[`themes/`](themes/) da keladi |")
         self.assertEqual([({28}, uzbek)], claims(uzbek))
 

@@ -30,7 +30,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="457 tv-modellen · 122 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 396 media: 412 artikelen uit 54 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="463 tv-modellen · 124 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 396 media: 412 artikelen uit 54 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -38,7 +38,7 @@
 Op 17 oktober 2026 plaatste ik voor-en-na-beelden van de tv van mijn ouders, die ik via wifi met Claude Code had opgeschoond.
 Het bericht kreeg 8,6 miljoen weergaven. Mensen gingen hetzelfde doen met hun eigen tv's en hun reacties vormden de basis voor de lijsten hier: meer dan 170 tv-modellen, aangeleverd door ruim 200 bijdragers in de eerste vier dagen. Tot en met de 19e heette deze repository tv-vibehack; oude links werken nog.
 
-Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. De lijsten tellen nu 457 tv-modellen van 122 merken. De berichtgeving: 412 artikelen uit 54 landen en 229 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 31 oktober 2026).
+Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. De lijsten tellen nu 463 tv-modellen van 124 merken. De berichtgeving: 412 artikelen uit 54 landen en 229 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 31 oktober 2026).
 
 **Thema's, schakelaars en uitbreidingen:** [cleanyour.tv/addons](https://cleanyour.tv/addons)
 
@@ -127,22 +127,23 @@ Tested lists from contributors, one folder per model in [`examples/`](examples/)
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 83 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 49 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 43 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
-| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 84 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 50 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 43 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 7 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 |
 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 |
 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [RockTek](https://cleanyour.tv/tvs?q=RockTek) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 |
 
 <details>
-<summary>+78 more brands and 14 projector brands</summary>
+<summary>+80 more brands and 14 projector brands</summary>
 
-**Challenger** 2 · **CHiQ** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 ·
-**Lumio** 2 · **Master-G** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 · **Vidda** 2 ·
-AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Dcolor · DEXP · Dialog ·
-Durabrand · DYON · Essentiel b · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Jio · Karbonn · Kodak · Koryo · KTC ·
-KUNFT · Liberton · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ · Philco ·
-Polytron · PPTV · Prosonic · Salora · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General · TD Systems ·
-Tele System · Tesla · TiVo · Tornado · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · X.Vision ·
+**Challenger** 2 · **CHiQ** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 · **Kalley** 2 ·
+**Kogan** 2 · **Lumio** 2 · **Master-G** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 ·
+**Vidda** 2 ·
+AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Dcolor · Dialog ·
+Durabrand · DYON · Essentiel b · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak ·
+Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ ·
+Philco · Polytron · PPTV · Prosonic · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General ·
+TD Systems · Tele System · Tesla · TiVo · Tornado · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · X.Vision ·
 Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -192,6 +193,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | BGH Smart TV (reported model; UKNV.260821.001) | Android TV 14 |
 | BYINTEK Love U4 projector, 1080P (Skyworth RG_HS352, HiSilicon Hi3751V350, 1 GB), Brazil | Android 9 |
 | BYINTEK T5 Max projector (built-in Google TV stick: SkyworthDigital YYT, Amlogic), Brazil | Google TV 14 |
+| CANDY Android TV DVB (Haier, MediaTek m7332) | Android TV 14 |
 | Caxium 58" 147 cm UHD Smart TV (Realtek RTD285O, RTK2851P, TopTech + Zeasn), Colombia | Android TV 9 |
 | Cecotec VQU10065S 65" QLED (Vestel-built, shandao, MediaTek), Spain | Android TV 14 |
 | Challenger 32T22 BT (cvt_mt5863_col, board TP.MT5510.PB781, MediaTek MT5659, 1 GB RAM), Colombia | Android 7.0 |
@@ -202,6 +204,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | Compac ATV R2 (SCBC R2, Realtek RTD285O) | Android TV 9 |
 | Coocaa P9 projector (MediaTek mt5862), China | Android 9 (Coocaa OS) |
 | Dcolor GD2 (YHT) | Google TV 14 (SDK 34) |
+| DEXP 65UHG2 (HKC 4K PA Google TV, HKC_4K_GTV_PA, lakeside) | Google TV 14 |
 | DEXP A651 (Changhong AI PONT, longshan); also Hyundai AI PONT | Android TV 14 |
 | Dialog ViU (SEI Robotics SEI103DL, Amlogic, NES middleware), Sri Lanka | Android TV 9 |
 | Durabrand DB Android TV 4K (DURAT32ISDB, dupont, m7332 Haier/CVTE) | Android TV 11 |
@@ -257,6 +260,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | HY320 projector (t950s_be311, Google-certified Android TV) | Android 13 |
 | Impex evoQ 4K (Changhong, GTVU64IP, board alimos, MediaTek mt5896), India | Google TV 14 |
 | INCLO Google TV 4K (KTC, Realtek, khardi, KTC_INCLO_4K_EU_23GV1), Taiwan | Google TV 11 |
+| Indurama Google TV 4K (KTC hongkong, ISDB) | Google TV 14 |
 | Insignia 42" F20 Fire TV (NS-42F201NA22, AFTEAMR311, blanche) | Fire OS 6.7.1.1 / Android 7.1.2 |
 | Insignia 55" F30 4K Fire TV (NS-55F301NA25, AFTDCT31, duckie) | Fire OS 7 / Android 9 |
 | Jio STB C200A (Jio, 4KOTTSTB, MSTB, Amlogic) | Android 11 (AOSP, no Google services) |
@@ -361,6 +365,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | RockTek GB1 | Google TV 14 |
 | RockTek GX1 (HPR3A1325_4K) | Google TV 14 |
 | Salora SMART24TV (Vestel-built, Ata/Aslan, tokyo, MediaTek m5621), Italy | Android TV 11 |
+| SAMPO OLED-55ZW8212 (SWTV-22TW-4K, Skyworth anaheim, MediaTek), Taiwan | Google TV 11 |
 | Sankey SMART2KTVSE (Whale OS, SiliconPlayer am30bm) | Android TV 13 |
 | Sankey SMART_TV (CVTE, HiSilicon Hi3751V350, 1 GB) | Android 12 |
 | SANYO ATV R2 (SCBC, Realtek RTD285O) | Android TV 9 |
@@ -398,7 +403,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | Sony BRAVIA 4K GB (BRAVIA_ATV2_UC, MediaTek mt5891) | Android TV 9 |
 | Sony BRAVIA 4K GB (KD-75XE8596, KD-55XE9005, KD-65XD7505, XBR-49X705D; BRAVIA_ATV2_EU, BRAVIA_ATV2_BR) | Android TV 9 |
 | Sony BRAVIA 4K UR2 (BRAVIA_UR2_4K, MediaTek) | Android TV 10 |
-| Sony BRAVIA 4K UR3 / KD-55X8000H / KD-65A8 / XBR-55A8H (BRAVIA_UR3, MediaTek mt5893), EU, TW and US | Android TV 10 |
+| Sony BRAVIA 4K UR3 / KD-55X8000H / KD-65A8 / XBR-55A8H / KD-43XH8196 (BRAVIA_UR3, MediaTek mt5893), EU, TW and US | Android TV 10 |
 | Sony BRAVIA 4K VH1 (KD-55XH9096 / KD-65XH9296 / XBR-55X900H, BRAVIA_VH1, MediaTek MT5895), EU, UK and US | Google TV 12 |
 | Sony BRAVIA 4K VH2 (KD-55X80J / XR-65A83J / XR-55X90JK, BRAVIA_VH2, MediaTek), EU, North America, India and Latin America | Google TV 12 |
 | Sony BRAVIA 4K VH21 (KD-43X80K, 2022, BRAVIA_VH21, MediaTek), Latin America | Google TV 12 |
@@ -406,6 +411,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | Sony BRAVIA 4K VH21 (XR-55A80K, 2022, BRAVIA_VH21, MediaTek mt5895), EU | Google TV 12 |
 | Sony BRAVIA 4K VH21 (XR-65A95K, XR-55A95K, 2022, BRAVIA_VH21, MediaTek), US | Google TV 12 |
 | Sony BRAVIA 4K VH21 (XRM-65X95K, 2022, BRAVIA_VH21, MediaTek MT5895), Taiwan | Google TV 12 |
+| Sony BRAVIA 8 II (K-55XR8M2, BRAVIA_AE2), UK/EU | Google TV 14 |
 | Sony BRAVIA 9 II (K-65XR90M2, BRAVIA_AE3, MediaTek MT5838) | Google TV 14 |
 | Sony BRAVIA BF1 (BRAVIA 2 II class, BRAVIA_BF1_4K_A, MediaTek) | Google TV 12 |
 | Sony BRAVIA KD-43X8000G (2019, BRAVIA_ATV3_4K, MediaTek), APAC | Android TV 9 |
@@ -473,6 +479,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | TCL 50P615 (Greece and Türkiye, BeyondTV, Realtek RTD2851 / rtd285o, AR05) | Android TV 11 |
 | TCL 50P735 (BeyondTV4, Smart TV Pro) | Google TV 11 |
 | TCL 50P8S (BeyondTV), Japan (Realtek RTD2851, V8-R851T03-LF1V153) | Android TV 9 |
+| TCL 50S434 (4-Series, C03_4K_NA, BeyondTV4, Realtek rtd288o, 2 GB), US AR02 build | Android TV 11 |
 | TCL 55" 4K Google TV, 2023 (G10, G10_4K_US_NF); also TCL 55P6K, Spain and TCL 43P69K, Netherlands (G10_4K_GB_NF_32BIT); and TCL 55Q651G, US (G10_4K_US_NF); and TCL 55Q6CS, India (G10_4K_GB); and TCL 55C6KS, Italy (G10_4K_GB); and TCL 55C69B, France (G10_4K_GB) | Google TV 12 |
 | TCL 55A300W picture-frame TV (2023, G08, G08_4K_US_NF, MediaTek MT9653), US | Google TV 12 |
 | TCL 55C715 QLED (Europe, BeyondTV2, Realtek RTD2851, V8-R851T02-LF1V606); also TCL 55C718 (Finland, same build) | Android TV 9 |
@@ -488,10 +495,10 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | TCL 55Q10G Pro (China, tcl_mt5879_cn, MediaTek MT9952) | Android TV 11 |
 | TCL 55Q6CX1 (Smart TV Pro, G08, G08_4K_GB, MediaTek) | Google TV 12 |
 | TCL 55Q7D Pro (Smart TV Pro, G08, G08_4K_GB, MediaTek tcl9618), EU Google TV build | Google TV 14 |
-| TCL 55S470G (G10, G10_4K_US_NF, Realtek), US | Google TV 12 |
+| TCL 55S470G (G10, G10_4K_US_NF, Realtek), US; also TCL 65S450G-CA, Canada (same build) | Google TV 12 |
 | TCL 55S546 (5-Series, G03_4K_US, BeyondTV4, GTV93), US | Google TV 11 |
 | TCL 58S571F (TCL Fire TV, AFTDEC012E, ginza, MediaTek mt5896), US | Fire OS 8 / Android 11 |
-| TCL 65C6K (Smart TV Pro, G08, G08_4K_GB, MediaTek tcl9618 / mt5896, SoC MT9689), Latin America; also TCL 55C6K, Vietnam | Google TV 14 |
+| TCL 65C6K (Smart TV Pro, G08, G08_4K_GB, MediaTek tcl9618 / mt5896, SoC MT9689), Latin America; also TCL 55C6K, Vietnam & India | Google TV 14 |
 | TCL 65C725 (Smart TV Pro, BeyondTV4) | Android TV 11 |
 | TCL 65C735 (Smart TV Pro, G05, MediaTek), France; also TCL 55C728, Turkey, TCL 65C935, France, and TCL 65C745, France | Google TV 11 |
 | TCL 65C7K (Smart TV Pro, G08, G08_4K_GB, MediaTek mt5896), Brazil and Australia | Google TV 14 |
@@ -997,7 +1004,7 @@ De nuttigste bijdrage is de opschoonlijst voor jouw tv, zodat de volgende gebrui
 |---|---|
 | **De opschoonlijst voor jouw tv** | De nuttigste bijdrage: de volgende gebruiker met dat model hoeft de software niet opnieuw te inventariseren. |
 | **Launcher en prompt** | Verbeteringen aan de launcher en duidelijkere promptteksten zijn ook welkom. |
-| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 228 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
+| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 230 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
 
 De volgende mensen hebben bijgedragen aan deze repository:
 

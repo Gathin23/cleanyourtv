@@ -59,9 +59,8 @@
    `README.pt-BR.md`, `README.he.md` and `README.uz.md` carry the story paragraph without the card, so
    `tools/gen_tables.py` writes nothing there and the same check holds their pair to `README.md`'s alt text in
    the same words a card page's pair is held to - a regeneration that bumps the five pages above and stops
-   leaves those three red. A translation that copies the story paragraph joins them the day it lands, and so
-   does this step: a page the check reads from the tree and this list does not name fails `RecipeTest` in
-   `tests/test_press_counts.py`. The brand grid itself is hand-kept on one page:
+   leaves those three red. A translation that copies the story paragraph joins them the day it lands. The brand
+   grid itself is hand-kept on one page:
    `README.he.md` carries neither the card nor the `tv-brands` markers, so `tools/gen_tables.py` cannot write
    it and `tests/test_readme_he_brand_block.py` reads its grid, its two-list line, its single-list names and
    its `<summary>` numbers against README.md's copy - a regeneration moves the Hebrew page with it, while a

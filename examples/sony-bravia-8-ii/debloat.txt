@@ -12,7 +12,7 @@
 # with for days; if something breaks, re-enable it with `pm enable <package>` and please report it.
 #
 # Connecting: USB debugging alone leaves port 5555 closed. Pair once through Developer options > Wireless
-# debugging > Pair device with pairing code, then either `adb tcpip 5555`, or keep the encrypted connection and
+# debugging > Pair device with pairing code, then keep the encrypted connection and
 # point the tools at it with TV_ADB_BINARY (tools/native-adb.md); this list was applied that way. Wireless
 # debugging came back OFF after every reboot on this set, on a new port each time it is switched on.
 #
@@ -60,9 +60,9 @@ com.sony.dtv.demosupport
 com.sony.dtv.demosystemsupport
 com.sony.dtv.multiscreendemo
 
-# Optional features, off by owner's choice
-com.google.android.apps.mediashell             # Chromecast built-in
-com.sony.dtv.airplayapp                        # AirPlay
+# Optional features, off on the tested set by owner's choice (left on in this list)
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.sony.dtv.airplayapp                      # AirPlay
 com.google.android.play.games                  # Google Play Games
 
 # Needed for a custom launcher on Google TV: the setup wizard grabs Home once launcherx is disabled.

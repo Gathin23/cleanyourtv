@@ -6,7 +6,7 @@ firmware UKNV.260626.001); this is the Ecuadorian ISDB-Tb variant.
 
 ## The list
 
-`debloat.txt` disables **41 packages**. Applied over network ADB with the repo's tools, reboot-checked,
+`debloat.txt` disables **40 packages**. Applied over network ADB with the repo's tools, reboot-checked,
 nothing re-enabled by the firmware at boot. Netflix and Max were off the owner's keep-list: on the
 tested set they are disabled (commented out in this shared list, so each owner opts in) and had
 arrived factory-disabled here anyway, as had YouTube Music, which the list does send.
@@ -21,7 +21,7 @@ Assistant (katniss), Chromecast, Miracast (`com.mediatek.androidbox`), Xuper/Mag
 - `com.google.android.apps.tv.launcherx` is the stock launcher; the CleanYourTV launcher took Home
   from it. `com.google.android.tungsten.setupwraith` answers HOME ahead of an installed launcher on
   Google TV (its `.RecoveryActivity`), so it was disabled in the same pass as launcherx.
-- The active Wi-Fi ("eleunion" on this set) belonged to the user, not the wizard
+- The active Wi-Fi belonged to the user, not the wizard
   (`networkCreator=CREATOR_USER`), so disabling setupwraith did not delete the network and ADB
   survived. Check yours with `dumpsys wifi | grep -o 'cname=[^ ]*'` first.
 - Applied with `HOME_KEY_SERVICE=1 INPUT_KEY_SERVICE=1 RESTORE_KEY_SERVICES=1`; volume auto-repeat

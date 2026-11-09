@@ -25,7 +25,7 @@
 #
 # Quirks on this firmware, all checked on the TV:
 # - With USB debugging on, network ADB answered on port 5555 in plaintext straight away; the Wireless
-#   debugging port the set also offers asks for TLS and needs `adb pair` first.
+#   debugging port the set also offers asks for TLS and needs `adb pair` first, so turn USB debugging off when you are done.
 # - `cmd package set-home-activity` from the shell does not stick while the stock home is enabled:
 #   Home kept resolving to com.google.android.apps.tv.launcherx. It sticks once launcherx and
 #   setupwraith are disabled; a third-party HOME filter is capped at priority 0.
