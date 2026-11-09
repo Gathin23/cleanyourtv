@@ -20,13 +20,13 @@ The fourth is the TV the command is for. Every one of these scripts reads `$TvHo
 and stops at its own guard before it sends anything - `pass -TvHost <tv ip> or set $env:TV_HOST`, the
 line tests/test_powershell_command_quotes.py quotes from the TCL 32L5A page - so a command that hands
 one a list with no TV named sends nothing to the TV at all. examples/acer-ar3-r3's README had one,
-`tools\disable.ps1 examples\acer-ar3-r3\debloat.txt`, and the Apply lines of examples/acer-ar3-r3 and
+`tools\\disable.ps1 examples\\acer-ar3-r3\\debloat.txt`, and the Apply lines of examples/acer-ar3-r3 and
 examples/tdsystems-ch17f40s-redwood wrote the TV the way a POSIX shell writes it,
-`TV_HOST=<tv ip> tools\disable.ps1 <list>`: PowerShell reads a bare `NAME=value` word as the name of
+`TV_HOST=<tv ip> tools\\disable.ps1 <list>`: PowerShell reads a bare `NAME=value` word as the name of
 the command to run, so those lines died too. The setting is `$env:TV_HOST = '<tv ip>'` as its own
 statement (or the script's own -TvHost), which is the shape the other pages and headers already use.
 
-A page that names a script in passing - "`tools\disable.ps1` then disabled the wizard" - hands it no
+A page that names a script in passing - "`tools\\disable.ps1` then disabled the wizard" - hands it no
 path and is not read as a command.
 
 Parameters are read out of the scripts themselves (`param( ... )`), so a script that renames a
