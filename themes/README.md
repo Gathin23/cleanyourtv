@@ -290,6 +290,10 @@ Open a PR with a new folder here containing:
   for example `sips -z 720 1280 -s format jpeg s.png --out screenshot.jpg` on macOS. Leave the focus on
   the dock so the glow and the hero name show. A PR without it fails CI (`tests/test_themes.py`).
 - `wallpaper.jpg` or `wallpapers/` if the theme uses them.
+- `CREDITS.md` when the pictures are not yours: where each one came from, its photographer and the
+  licence it is redistributed under, as [`themes/sweden/CREDITS.md`](sweden/CREDITS.md) does.
+  `tests/test_theme_picture_credits.py` holds every picture the folder ships to a line there, and a
+  licence the row states is read against the same file.
 
 Then add a row to the table above with the screenshot, the same way as the others, and bump the count in
 the Themes feature row of every front page that states it: `README.md` (the `N ship in themes/` sentence),
@@ -297,5 +301,12 @@ the Themes feature row of every front page that states it: `README.md` (the `N s
 and `README.he.md`, each in its own words. Those pages are the ones that state it today rather than the
 rule: `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails on a
 page whose number is not that count, naming the page, so its list is the one a page that starts stating the
-count joins. Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
+count joins.
+
+Two sentences a row may state are read back by `tests/test_theme_row_claims.py`: a rotation ("a new one
+every 20 minutes") against that theme's `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT")
+against its `CREDITS.md` - a row that states a licence while the folder ships no `CREDITS.md` is reported,
+because the file is what the claim rests on.
+
+Keep the dock list generic (the big streaming apps) unless the theme is for a specific TV,
 and say which TV you tried it on in the PR description.
