@@ -30,7 +30,20 @@ Because the stock launcher package (`com.amazon.tv.launcher`) remains enabled, A
 
 ---
 
-## 2. Wireless Setup: Fire OS 7 (`kara` / `sheldon` / 4K Max 1st Gen)
+## 2. External Prerequisites & Companion Repositories
+
+CleanYourTV is strictly an application launcher and does not bundle or distribute root exploit binaries within its repository. Because transient in-memory root requires device-specific and kernel-version-specific memory offsets, users obtain the matching binaries and profiles from dedicated open-source companion projects:
+
+- **For Fire OS 7 (`kara` / `sheldon` / Fire TV Stick 4K Max 1st Gen):**
+  Use the [firetv-clean-root](https://github.com/saisarathbb/firetv-clean-root) companion toolchain. It provides the pre-built `ghostlock_root` binary compiled for Android 9 / API 28 along with Sheldon/Kara configuration profiles.
+- **For Fire OS 6 (`mantis` / Fire TV Stick 4K 1st Gen):**
+  Use the [firetv-mantis-standalone](https://github.com/Delitants/firetv-mantis-standalone) toolchain. It provides the MediaTek MT8695 memory profile (`mantis-NS6711-5908.conf`) and patch files to compile GhostLock targeting Android 7.1 / API 24 libc.
+- **Upstream Exploit Engine:**
+  The underlying in-memory privilege escalation mechanism is maintained at [GhostLock](https://github.com/R0rt1z2/GhostLock).
+
+---
+
+## 3. Wireless Setup: Fire OS 7 (`kara` / `sheldon` / 4K Max 1st Gen)
 
 ### Requirements
 - Fire OS 7.x (e.g. 7.7.1.3).
@@ -76,7 +89,7 @@ Because the stock launcher package (`com.amazon.tv.launcher`) remains enabled, A
 
 ---
 
-## 3. Wireless Setup: Fire OS 6 (`mantis` / 4K 1st Gen)
+## 4. Wireless Setup: Fire OS 6 (`mantis` / 4K 1st Gen)
 
 Fire OS 6 uses Android 7.1.2 (API 25) with a 32-bit `armv7l` kernel (4.4.120+). Pre-built Fire OS 7 GhostLock binaries will fail on Fire OS 6 with:
 ```text
@@ -139,7 +152,7 @@ To build a compatible root binary for Mantis:
 
 ---
 
-## 4. Boot Animation Watchdog Delay (60-second Fix)
+## 5. Boot Animation Watchdog Delay (60-second Fix)
 
 ### The Issue
 By analyzing `/system/framework/oat/arm/fosservices.odex`, we identified that Fire OS's WindowManagerService (`FireTvWindowManagerServiceCallback$HomeInitialisationObserver`) listens for a signal on the secure setting:
@@ -176,7 +189,7 @@ FireTvWmsCallback: Stopping boot animation because real home sent signal.
 
 ---
 
-## 5. Full Amazon Settings vs "About" Screen
+## 6. Full Amazon Settings vs "About" Screen
 
 On Fire OS:
 - `com.amazon.tv.settings.v2/.tv.device.DeviceActivity` opens only the single-page "My Fire TV / About" subscreen.
@@ -186,7 +199,7 @@ By disabling only `com.amazon.tv.launcher/.ui.HomeActivity_vNext` (instead of th
 
 ---
 
-## 6. Verification and Rollback
+## 7. Verification and Rollback
 
 ### Verification
 Check default Home resolver over Wi-Fi ADB:
