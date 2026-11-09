@@ -257,6 +257,8 @@ def keycode_problem(values):
     for entry in values:
         if isinstance(entry, bool) or not isinstance(entry, (int, float)):
             return f"{entry!r} is not a number"
+        if isinstance(entry, float) and not math.isfinite(entry):
+            return f"{entry} is not a finite number"
         if entry != int(entry):
             return f"{entry} is not a whole number (the launcher reads it as {int(entry)})"
         if int(entry) < 1:
