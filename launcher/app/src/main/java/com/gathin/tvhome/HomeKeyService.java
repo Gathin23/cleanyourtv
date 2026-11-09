@@ -247,9 +247,14 @@ public class HomeKeyService extends AccessibilityService {
         return alt != null && RemoteKeys.inFront(target, frontPackage) ? alt : target;
     }
 
+    private boolean isSettingsScancode(KeyEvent event) {
+        for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
+        return false;
+    }
+
     private boolean isSettingsKey(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_SETTINGS) return true;
-        for (int code : settingsScancodes) if (event.getScanCode() == code) return true;
+        if (isSettingsScancode(event)) return true;
         for (int code : settingsKeycodes) if (event.getKeyCode() == code) return true;
         return false;
     }
@@ -265,9 +270,20 @@ public class HomeKeyService extends AccessibilityService {
         // A scancode entry is more specific than any keycode, so it goes first.
         if (RemoteKeys.handle(this, event, inFront(appScancodes, frontAppScancodes, event.getScanCode()),
                 holdAppScancodes.get(event.getScanCode()))) return true;
+        // A keycode app_keys entry with a tap target wins over the Settings keycodes (InputKeyService opens it too, and
+        // RemoteKeys answers a press once), but not over a button named in settings_key_scancodes. A hold-only entry
+        // leaves the tap to Settings and still runs its hold.
+        boolean settingsKey = isSettingsKey(event);
+        String tap = inFront(appKeys, frontAppKeys, event.getKeyCode());
+        String hold = holdAppKeys.get(event.getKeyCode());
+        if ((!settingsKey || (tap != null && !isSettingsScancode(event))) && RemoteKeys.handle(this, event, tap, hold)) {
+            return true;
+        }
         // The stock launcher handled the remote's Settings button; with it disabled the button does nothing.
-        if (isSettingsKey(event)) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+        if (settingsKey) {
+            RemoteKeys.handle(this, event, null, hold);
+            boolean held = hold != null && event.getEventTime() - event.getDownTime() >= RemoteKeys.HOLD_MS;
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled() && !held) {
                 Intent open = settingsPanel ? new Intent(this, QuickSettingsActivity.class)
                         : SystemSettings.intent(this, Settings.ACTION_SETTINGS);
                 // settings_key_clear_task: on MediaTek boards KEYCODE_SETTINGS is also a global key that opens Display &
@@ -281,8 +297,6 @@ public class HomeKeyService extends AccessibilityService {
             }
             return true;
         }
-        if (RemoteKeys.handle(this, event, inFront(appKeys, frontAppKeys, event.getKeyCode()),
-                holdAppKeys.get(event.getKeyCode()))) return true;
         // home_long_press_home: Android never sees the Home key, so a held press cannot turn into ALL_APPS.
         if (homeLongPressHome && event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
             if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome();
