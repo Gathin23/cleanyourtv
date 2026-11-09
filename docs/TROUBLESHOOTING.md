@@ -1255,6 +1255,16 @@ turned off in Settings stays off.
   consuming the key in the helper also keeps it from the vendor receiver
   `com.homwee.factory/.FactoryKeyReciver`, which `dumpsys window policy` routes `KEYCODE_NOTIFICATION`
   to once the stock launcher is gone.
+  A press can print two numbers, and the one the framework reports is not always the `MSC_SCAN`: on a
+  XGIMI Elfin Plus (`WK03C`, `altai`, MediaTek, Android 11,
+  [#3613](https://github.com/Gathin23/cleanyourtv/issues/3613)) the remote's gear printed `MSC_SCAN
+  00070041` with `EV_KEY KEY_F8`, and its key layout (`Vendor_000d_Product_3838.kl`) could not be read
+  from the shell, so nothing there said which keycode it becomes. `139` (`KEYCODE_F8`) in
+  `settings_key_keycodes` did nothing; `66`, the `input-event-codes.h` number for `KEY_F8`, in
+  `settings_key_scancodes` opened the launcher's panel with `settings_key_panel`. So read both numbers
+  off one `getevent -lt` press and try the `EV_KEY` one when the `MSC_SCAN` one matches nothing. That
+  board also brings the stock launcher back within minutes of `pm disable-user` (the
+  `com.xgimi.xrmservice` bullet above), and while it is on, the gear and Home open Google TV.
 - **All vendor buttons die at once** and `logcat` says `GLOBAL_BUTTON ... process is bad`: the
   global-key receiver crashes on the disabled launcherx and Android stops starting it. Map every such
   keycode in the helpers, also for disabled apps. See [the MOSR4 note](devices/xiaomi-mitv-mosr4.md).
