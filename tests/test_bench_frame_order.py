@@ -43,6 +43,17 @@ class FrameOrderTest(unittest.TestCase):
                 with self.subTest(version=version, order=order):
                     self.assertEqual(self.measure(order, 5), (20.0, 80.0, 5, 0))
 
+    def test_a_late_completion_cannot_move_the_vsync_cursor_backwards(self):
+        for version, header in HEADERS.items():
+            # An older frame can finish after the first response in another window.
+            older = frame(header, -100_000_000).split(",")
+            older[header.split(",").index("FrameCompleted")] = "1030000000"
+            blocks = (profile(header, frame(header), ",".join(older)),
+                      profile(header, frame(header, 20_000_000), frame(header, 40_000_000)))
+            for order in itertools.permutations(blocks):
+                with self.subTest(version=version, order=order):
+                    self.assertEqual(self.measure(order, 4), (20.0, 60.0, 4, 0))
+
 
 if __name__ == "__main__":
     unittest.main()

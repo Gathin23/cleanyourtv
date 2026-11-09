@@ -310,7 +310,7 @@ def measure_key(tv, keycode, binary=None, package=None):
             continue
         if (intended - prev) / 1e6 > 50:      # a gap: the movement is over
             break
-        last, prev = completed, intended
+        last, prev = completed, max(prev, intended)
     if first is None:
         return None
     # A key that moves nothing (the end of a row, the focus on the top bar) leaves the next
