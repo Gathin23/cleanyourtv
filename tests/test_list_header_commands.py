@@ -14,6 +14,13 @@ sends `pm hide`. A header that only says `pm hide` is refused by its firmware (t
 google-tv-streamer-4k-kirkwood, xiaomi-mitv-ansp0, philips-65oled907, xiaomi-mitv-mteq0) gives no such
 batch and is not one.
 
+It found the folders and then read each one's debloat.txt, so the second list eight folders ship
+(debloat-keep-cast.txt in two, debloat-65u7esg.txt, debloat-32-inch.txt, debloat-extra.txt,
+debloat-display-only.txt in two, debloat-75t8c-eu.txt) was held to no rule at all - though
+tools/disable.sh applies each like the first, and AGENTS.md's rule is about the list a reader applies.
+`hiding()` now reads every `debloat*.txt` and answers the list's path rather than its folder's name, so a
+failure names the file whose header is wrong.
+
 examples/anker-nebula-mars-3-air: the header and README said `tools/check.py --fix` re-disables
 Assistant after a boot, but the list keeps com.google.android.katniss commented out and check.py reads
 only active lines, so --fix never touched it. They now say to uncomment it and its LED service, then
@@ -80,8 +87,20 @@ def hide_command(lines):
     return " ".join(parts)
 
 
+def list_files(root=None):
+    """Every list in the tree, in a stable order: a folder may ship a second one beside debloat.txt."""
+    return sorted((root or EXAMPLES).rglob("debloat*.txt"))
+
+
 def hiding(root=None):
-    """The list folders whose header hides: a `grep ... tools/tv.py --batch` pipeline that sends `pm hide`.
+    """The lists whose header hides, as paths relative to the tree root.
+
+    A folder can ship a second list beside debloat.txt (debloat-keep-cast.txt in two folders,
+    debloat-65u7esg.txt, debloat-32-inch.txt, debloat-extra.txt, debloat-display-only.txt in two,
+    debloat-75t8c-eu.txt), and tools/disable.sh applies each like the first, so the walk reads every
+    `debloat*.txt`: one of those hiding with no `pm unhide` breaks AGENTS.md's rule as quietly as
+    debloat.txt would. The path is answered rather than the folder's name, so a failure names the file
+    the reader applies.
 
     The firmware on these sets refuses `pm disable-user` to the shell, so the header's Apply line is a
     batch of `pm hide` (Android 5.1: FFalcon r34a0, Redmi MiTV-ANTL0, PPTV p34a4p) instead of
@@ -89,11 +108,12 @@ def hiding(root=None):
     (tivo-stream-4k, google-tv-streamer-4k-kirkwood, xiaomi-mitv-ansp0, philips-65oled907,
     xiaomi-mitv-mteq0) gives no such batch and is not one of these.
     """
+    base = root or EXAMPLES
     found = []
-    for path in sorted((root or EXAMPLES).rglob("debloat.txt")):
+    for path in list_files(base):
         command = hide_command(header(path))
         if command and HIDE in command and "--batch" in command:
-            found.append(path.parent.name)
+            found.append(path.relative_to(base).as_posix())
     return sorted(found)
 
 
@@ -121,12 +141,17 @@ def undo_problem(path):
 
 @unittest.skipIf(os.name == "nt", "runs each header's command through bash, which Windows does not ship; CI's Ubuntu runner does")
 class HideHeaderTest(unittest.TestCase):
-    def run_command(self, folder, command):
+    def run_command(self, relative, command):
+        """Run a list's own Apply line in a copy of the repository holding just that list.
+
+        `relative` is the list's path under examples/, so a folder's second list (debloat-extra.txt,
+        debloat-keep-cast.txt) is run as it ships rather than as its folder's debloat.txt.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp) / "repo"
-            listing = repo / "examples" / folder / "debloat.txt"
+            listing = repo / "examples" / relative
             listing.parent.mkdir(parents=True)
-            listing.write_bytes((ROOT / "examples" / folder / "debloat.txt").read_bytes())
+            listing.write_bytes((EXAMPLES / relative).read_bytes())
             client = repo / "tools" / "venv" / "bin" / "python"
             client.parent.mkdir(parents=True)
             client.write_text(FAKE_CLIENT)
@@ -143,37 +168,42 @@ class HideHeaderTest(unittest.TestCase):
     def test_the_walk_finds_the_lists_that_hide(self):
         """A read guard: a walk that stopped finding a list would pass both tests below in silence."""
         found = hiding()
-        self.assertLessEqual({"redmi-mitv-antl0", "ffalcon-r34a0-cn", "pptv-p34a4p"}, set(found),
+        self.assertLessEqual({"redmi-mitv-antl0", "ffalcon-r34a0-cn", "pptv-p34a4p"},
+                             {Path(relative).parent.name for relative in found},
                              f"the walk read {found}")
+        second = [p for p in list_files(EXAMPLES) if p.name != "debloat.txt"]
+        self.assertGreaterEqual(len(list_files(EXAMPLES)), 450, "the walk over examples/ read too few lists")
+        self.assertGreaterEqual(len(second), 8,
+                                "a walk that reads only debloat.txt finds no second list to hold to the rule")
 
     def test_the_apply_command_hides_every_listed_package(self):
-        for folder in hiding():
-            with self.subTest(folder=folder):
-                command = hide_command(header(ROOT / "examples" / folder / "debloat.txt"))
+        for relative in hiding():
+            with self.subTest(list=relative):
+                command = hide_command(header(EXAMPLES / relative))
                 self.assertIsNotNone(command, "the header gives no `pm hide` batch to apply the list")
-                self.assertIn(f"examples/{folder}/debloat.txt", command)
+                self.assertIn(f"examples/{relative}", command)
                 self.assertIn("TV_HOST=<tv ip>", command)
-                args, sent = self.run_command(folder, command.replace("<tv ip>", "192.168.1.50"))
+                args, sent = self.run_command(relative, command.replace("<tv ip>", "192.168.1.50"))
                 self.assertEqual(args, ["192.168.1.50", "-I", "tools/tv.py", "--batch"])
-                listed = recovery.read_list(ROOT / "examples" / folder / "debloat.txt")
+                listed = recovery.read_list(EXAMPLES / relative)
                 self.assertEqual(sent, [f"pm hide {name}" for name in listed])
 
     def test_the_undo_line_unhides_and_no_line_runs_the_disable_scripts(self):
-        for folder in hiding():
-            with self.subTest(folder=folder):
-                self.assertIsNone(undo_problem(EXAMPLES / folder / "debloat.txt"))
+        for relative in hiding():
+            with self.subTest(list=relative):
+                self.assertIsNone(undo_problem(EXAMPLES / relative))
 
 
 class HideDiscoveryTest(unittest.TestCase):
     """The walk itself, over lists written here: the rules above are only as wide as it is."""
 
-    def tree(self, lists):
-        """A folder of lists as examples/<folder>/debloat.txt, written into a temporary directory."""
+    def tree(self, lists, name="debloat.txt"):
+        """A folder of lists as examples/<path>/<name>, written into a temporary directory."""
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
         root = Path(tmp.name) / "examples"
         for folder, text in lists.items():
-            path = root / folder / "debloat.txt"
+            path = root / folder / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8")
         return root
@@ -188,7 +218,14 @@ class HideDiscoveryTest(unittest.TestCase):
 
     def test_a_list_that_hides_is_found(self):
         root = self.tree({"hide-tv": self.APPLY.format(folder="hide-tv") + self.UNDO + "\ncom.a.b\n"})
-        self.assertEqual(hiding(root), ["hide-tv"])
+        self.assertEqual(hiding(root), ["hide-tv/debloat.txt"])
+
+    def test_a_second_list_that_hides_is_found(self):
+        # examples/oppo-k9-55-oppocnm632/debloat-extra.txt ships beside debloat.txt and tools/disable.sh
+        # applies it the same way: a walk that reads only debloat.txt holds it to no rule.
+        text = self.APPLY.format(folder="hide-tv") + self.UNDO + "\ncom.a.b\n"
+        root = self.tree({"hide-tv": text}, name="debloat-keep-cast.txt")
+        self.assertEqual(hiding(root), ["hide-tv/debloat-keep-cast.txt"])
 
     def test_a_list_that_only_mentions_hide_is_not_one(self):
         # The tivo-stream-4k shape: the firmware refuses pm hide too, and the list is suspended.
@@ -208,7 +245,7 @@ class HideDiscoveryTest(unittest.TestCase):
     def test_a_hide_list_a_folder_down_is_read_too(self):
         text = self.APPLY.format(folder="nested") + self.UNDO + "\ncom.a.b\n"
         root = self.tree({"nested/one-level-down": text})
-        self.assertEqual(hiding(root), ["one-level-down"])
+        self.assertEqual(hiding(root), ["nested/one-level-down/debloat.txt"])
 
     def test_a_hide_list_with_no_undo_is_reported(self):
         root = self.tree({"hide-tv": self.APPLY.format(folder="hide-tv") + "\ncom.a.b\n"})
