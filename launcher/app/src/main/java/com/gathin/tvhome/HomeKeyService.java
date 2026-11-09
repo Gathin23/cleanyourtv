@@ -190,6 +190,7 @@ public class HomeKeyService extends AccessibilityService {
         // in onServiceConnected: the note is in credential-protected storage too, readable only after the unlock.
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
+        GuardKeep.setSwitchedOff(this, false);
         settingsKeycodes = config.settingsKeycodes;
         settingsPanel = config.settingsKeyPanel;
         settingsClearTask = config.settingsKeyClearTask;
@@ -302,6 +303,7 @@ public class HomeKeyService extends AccessibilityService {
     public boolean onUnbind(Intent intent) {
         RemoteKeys.release(this);
         if (repairRecord && !steppingOut) ServiceRepair.disconnected(this, getClass());
+        if (!steppingOut) GuardKeep.setSwitchedOff(this, true);
         return super.onUnbind(intent);
     }
 
