@@ -53,8 +53,9 @@ class DebloatPathsTest(unittest.TestCase):
             '  shift 2\n'
             f'  exec "{sys.executable}" "{ROOT / "tools" / "recovery.py"}" "$@"\n'
             'fi\n'
-            # The read-back after the batch (#1376) answers nothing, so CAPTURE keeps the batch.
-            'case "$*" in *"pm list packages -e"*) exit 0 ;; esac\n'
+            # The read-backs after the batch (disable.sh's #1376, restore.sh's disabled list and Home) answer
+            # nothing, so CAPTURE keeps the batch.
+            'case "$*" in *"pm list packages -e"*|*"pm list packages -d --user 0"*|*"resolve-activity"*) exit 0 ;; esac\n'
             'cat > "$CAPTURE"\n'
         )
         client.chmod(0o755)
