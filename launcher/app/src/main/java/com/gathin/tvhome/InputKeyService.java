@@ -25,6 +25,9 @@ public class InputKeyService extends AccessibilityService {
     private Map<Integer, String> appScancodes = Collections.emptyMap();
     private Map<Integer, String> holdAppKeys = Collections.emptyMap();
     private Map<Integer, String> holdAppScancodes = Collections.emptyMap();
+    /** app_keys "front:" entries, chosen the way HomeKeyService chooses them (RemoteKeys.tap). */
+    private Map<Integer, String> frontAppKeys = Collections.emptyMap();
+    private Map<Integer, String> frontAppScancodes = Collections.emptyMap();
     /** restore_key_services was on when the config was read: this helper is noted for ServiceRepair. */
     private boolean repairRecord;
     /** consume_volume_keys: Volume Up/Down go to VolumeKeys instead of on to the firmware. */
@@ -47,6 +50,8 @@ public class InputKeyService extends AccessibilityService {
         RemoteKeys.applyKeyFilter(this, config.keyFilter);
         holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
         holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
+        frontAppKeys = RemoteKeys.parseFrontAppKeys(config.appKeys);
+        frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
         // gamepad_passthrough, off by default. Only with key_filter on: off, the service never filters keys.
         if (config.gamepadPassthrough && config.keyFilter && gamepads == null) {
             gamepads = new GamepadPassthrough(this);
@@ -64,9 +69,11 @@ public class InputKeyService extends AccessibilityService {
     protected boolean onKeyEvent(KeyEvent event) {
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
         // A scancode entry is more specific than any keycode, so it goes first.
-        if (RemoteKeys.handle(this, event, appScancodes.get(event.getScanCode()),
+        if (RemoteKeys.handle(this, event, RemoteKeys.tap(appScancodes.get(event.getScanCode()),
+                frontAppScancodes.get(event.getScanCode())),
                 holdAppScancodes.get(event.getScanCode()))) return true;
-        if (RemoteKeys.handle(this, event, appKeys.get(event.getKeyCode()),
+        if (RemoteKeys.handle(this, event, RemoteKeys.tap(appKeys.get(event.getKeyCode()),
+                frontAppKeys.get(event.getKeyCode())),
                 holdAppKeys.get(event.getKeyCode()))) return true;
         if (!isInputKey(event.getKeyCode())) return false;
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {

@@ -77,10 +77,9 @@ public class HomeKeyService extends AccessibilityService {
     private long powerOnUntil;
     /** home_long_press_home: this service takes every Home press, held ones included. */
     private boolean homeLongPressHome;
-    /** app_keys "front:" entries, and the package of the activity in front, from window changes while there are any. */
+    /** app_keys "front:" entries; the package in front goes to RemoteKeys.frontPackage, for both helpers. */
     private Map<Integer, String> frontAppKeys = Collections.emptyMap();
     private Map<Integer, String> frontAppScancodes = Collections.emptyMap();
-    private String frontPackage = "";
     /** power_on_home_always: Home at every power-on, not only over Live TV. */
     private boolean powerOnAlways;
     /** power_on_home: re-arms after the screen turns on; null unless the key is on. */
@@ -139,6 +138,7 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         if (running == this) running = null;
+        RemoteKeys.frontPackage = "";
         RemoteKeys.release(this);
         stopWaitingForUnlock();
         if (screenOnReceiver != null) unregisterReceiver(screenOnReceiver);
@@ -242,9 +242,7 @@ public class HomeKeyService extends AccessibilityService {
 
     /** A tap's target: the "front:" entry while the button's own app is already in front, else the usual one. */
     private String inFront(Map<Integer, String> keys, Map<Integer, String> front, int code) {
-        String target = keys.get(code);
-        String alt = front.get(code);
-        return alt != null && RemoteKeys.inFront(target, frontPackage) ? alt : target;
+        return RemoteKeys.tap(keys.get(code), front.get(code));
     }
 
     private boolean isSettingsKey(KeyEvent event) {
@@ -314,7 +312,7 @@ public class HomeKeyService extends AccessibilityService {
             try {
                 ComponentName window = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
                 getPackageManager().getActivityInfo(window, 0);
-                frontPackage = window.getPackageName();
+                RemoteKeys.frontPackage = window.getPackageName();
             } catch (PackageManager.NameNotFoundException notAnActivity) {
                 // a dialog, panel or overlay: the app under it is still in front
             }

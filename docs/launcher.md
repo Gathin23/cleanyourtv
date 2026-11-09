@@ -120,8 +120,8 @@ tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.Clock
 - A `hold:` prefix on an `app_keys` entry gives that button a second app: a normal press opens the
   unprefixed app, holding for half a second opens the hold one (by keycode or `hold:scan:...`). An entry can
   name an activity (`package/.Activity`), such as an add-on's quick bar, instead of the app's launcher entry.
-  A `front:` prefix sets what a tap opens while that button's own app is already in front (`HomeKeyService`
-  only).
+  A `front:` prefix sets what a tap opens while that button's own app is already in front. It needs
+  `HomeKeyService` bound (`HOME_KEY_SERVICE=1`); `InputKeyService` follows it then.
 - In place of an app, an `app_keys` entry can name an action: `back`, `home`, `recents`, `mute`, `sleep`
   (standby, Android 9 and later), `screensaver`, `settings`, `wifi`, `library` (Home with the App library
   open, for a remote's Apps button; needs `app_library`) or `ignore` (the button does nothing), so a spare
