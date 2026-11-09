@@ -734,7 +734,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   enough; forget the network first (Xiaomi MiTV-MOSR4, where this also switched USB debugging off).
 - **A reboot on setupwraith's recovery screen factory-reset the TV** (Xiaomi MiTV-MOSR4). Disable
   setupwraith before launcherx. If `mFocusedApp` shows `.RecoveryActivity`, re-enable launcherx
-  first and do not reboot. [Notes](devices/xiaomi-mitv-mosr4.md).
+  first and do not reboot. [Notes](devices/xiaomi-mitv-mosr4.md). The same happens the other way round:
+  re-enabling setupwraith while launcherx stays disabled (for casting, say) made Home resolve to
+  `.RecoveryActivity` on a Xiaomi MiTV-MOEU0 (`V816.0.26.10.12.1`), `set-home-activity` did not change it,
+  and after one reboot the TV never left the boot animation and only a factory reset brought it back
+  ([#3578](https://github.com/Gathin23/cleanyourtv/issues/3578)). Enable launcherx first, every time.
 - **Home worked for days, then went black after a power cut** (Acer R4G and Panasonic 4KTV-3MUP,
   MOKA `R4_GTV`, Google TV 14): the firmware re-enables setupwraith at every cold boot and its
   `.RecoveryActivity` takes Home. `logcat | grep RecoveryActivity` shows it starting several times a
@@ -862,7 +866,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   inside setupwraith (`...tv.setupwraith.libs.castinfo.CastInfoProvider`), so disabling the wizard
   takes the credentials with it. Re-enable it and within a minute the log shows
   `SetupWraith|CastInfoProvider: querying cast infos` and `Created singleton instance of
-  ClientAuthSigner`, and casting works. You cannot keep the provider and give up only Home:
+  ClientAuthSigner`, and casting works. If launcherx is disabled, enable it before setupwraith and keep it
+  enabled until setupwraith is off again, also for the after-each-boot sequence below: with setupwraith on
+  and launcherx off, Home resolves to setupwraith's `.RecoveryActivity`, and a reboot in that state ended in
+  a factory reset on a Xiaomi MiTV-MOEU0 ([#3578](https://github.com/Gathin23/cleanyourtv/issues/3578)).
+  Before casting is put down to setupwraith, check the cached-app freezer (below): on that set the receiver
+  loaded its keys without setupwraith. You cannot keep the provider and give up only Home:
   `pm disable-user` on `setupwraith/.RecoveryActivity` is refused with `SecurityException: Shell
   cannot change component state`. So either debloat without setupwraith and launcherx (for the 4K:
   [`debloat-keep-cast.txt`](../examples/google-chromecast-gtv-4k/debloat-keep-cast.txt)), or re-enable
