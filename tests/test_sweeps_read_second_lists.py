@@ -19,6 +19,11 @@ Each test below runs the function a sweep calls (format_problems, sweep, command
 match.tally) on a temp tree whose second list breaks that sweep's rule, so a sweep that goes back to
 reading debloat.txt alone fails here.
 
+The kept-stock-launcher rule (tests/test_kept_stock_launcher_install.py) was the last one: it read only
+each folder's debloat.txt, so a second list could pass a stock launcher as STOCK_LAUNCHER= while its own
+note says to keep that package enabled - the failure mode the rule exists for on the two Xiaomi CN lists
+- and nothing saw it. Its walk reads both kinds of file now.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import sys
@@ -29,6 +34,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 # Imported as modules so their tests do not run twice.
 import test_examples as list_format  # noqa: E402
+import test_kept_stock_launcher_install as kept_install  # noqa: E402
 import test_restore_references as references  # noqa: E402
 import test_stock_launcher_undo as stock_undo  # noqa: E402
 
@@ -107,6 +113,20 @@ class SecondListsTest(unittest.TestCase):
             self.assertEqual(2, read, "the second list was not counted")
             self.assertEqual((1, 0, ""), counts["com.example.one"])
             self.assertEqual((1, 0, "karaoke"), counts["com.example.two"])
+
+    def test_the_kept_stock_launcher_sweep_reads_a_second_list(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            examples = Path(tmp) / "examples"
+            write(examples, "x/debloat.txt", "# Stock launcher: com.mitv.tvhome\ncom.example.one\n")
+            write(examples, "x/debloat-keep-two.txt",
+                  "# Stock launcher: com.mitv.tvhome - KEEP IT ENABLED, the cast receiver needs its Home.\n"
+                  "# Install with: STOCK_LAUNCHER=com.mitv.tvhome launcher/build-and-install.sh\n"
+                  "com.example.one\n")
+            lists, second, _, _, failures = kept_install.sweep(examples)
+            self.assertEqual((2, 1), (lists, second))
+            self.assertEqual(1, len(failures), failures)
+            self.assertIn("debloat-keep-two.txt", failures[0])
+            self.assertIn("passes STOCK_LAUNCHER=com.mitv.tvhome", failures[0])
 
 
 if __name__ == "__main__":
