@@ -89,13 +89,15 @@ Or in a pushed theme `config.json`:
 ### 2. Enable `InputKeyService`
 
 Check `settings get secure enabled_accessibility_services` first; if it lists other services, append
-`:com.gathin.tvhome/.InputKeyService` instead of replacing them.
+`:com.gathin.tvhome/.InputKeyService` instead of replacing them. On a set whose answer is empty or `null`
+there is nothing to keep in front of it, and the launcher's service alone is the list.
 
 ```bash
 cmd appops set com.gathin.tvhome AUTO_START allow 2>/dev/null || true
 cmd appops set com.gathin.tvhome APP_AUTO_START allow 2>/dev/null || true
 appops write-settings 2>/dev/null || true
-settings put secure enabled_accessibility_services com.gathin.tvhome/.InputKeyService
+# <existing> is the answer the get above printed: the services this set already had
+settings put secure enabled_accessibility_services '<existing>:com.gathin.tvhome/.InputKeyService'
 settings put secure accessibility_enabled 1
 ```
 
