@@ -281,7 +281,7 @@ bir cihazda neyin kaldığı [Sorun giderme](docs/TROUBLESHOOTING.md) belgesinde
 |---|---|
 | **Yapılandırma** | Dock sırası, gizli uygulamalar, Canlı TV uygulaması, satır başına 4 ile 7 arası kutucuk, azaltılmış hareket. Hepsi [`config.xml`](launcher/app/src/main/res/values/config.xml) içinde |
 | **TV'deki ayarlar** | Başlatıcı ayarları için Ayarlar üzerinde OK'u basılı tutun. İsteğe bağlı `launcher_settings_button`, normal bir tıklamanın onları doğrudan açmasını sağlar; TV ayarları ayarlar sayfasında ve kendi uygulama kutucuğunda kalır. |
-| **Temalar** | Wi-Fi üzerinden gönderilen bir `config.json` ile arka plan, duvar kâğıdı ve düzen, yeniden derleme yok. Yerleşik `default/` dahil 21 tema [`themes/`](themes/) içinde gelir |
+| **Temalar** | Wi-Fi üzerinden gönderilen bir `config.json` ile arka plan, duvar kâğıdı ve düzen, yeniden derleme yok. Yerleşik `default/` dahil 22 tema [`themes/`](themes/) içinde gelir |
 | **31 dil** | TV'nin diline uyar; İbranice için tamamen aynalanmış, sağdan sola bir düzen sunar |
 | **Uygulama kitaplığı** | İsteğe bağlı: yüklü tüm uygulamalara göz atın ve Ana ekran kısayolları ekleyin veya kaldırın. Bkz. [uygulama kitaplığı kılavuzu](docs/app-library.md) |
 | **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgisi için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgisini açar |
