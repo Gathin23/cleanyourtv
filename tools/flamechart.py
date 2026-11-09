@@ -286,6 +286,10 @@ def main(argv=None):
         print(f"{e}. No trace was read or written.", file=sys.stderr)
         return 2
     try:
+        sets = [trace_report.unique_traces(paths) for paths in sets]
+    except ValueError as e:
+        sys.exit(str(e))
+    try:
         import PIL  # noqa: F401
     except ImportError:
         sys.exit("flamechart.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt")
