@@ -15,9 +15,16 @@ package, so a package only a second list carries - examples/oppo-k9-55-oppocnm63
 com.changba.sd, com.google.android.videos on four of the eight second lists - read as 0, "no tested list
 has tried this", in the one tool an owner runs before disabling something.
 
+The mic walk (tests/test_remote_mic_bridge_lists.py) was the fifth, on both halves of the same rule: the
+`grep -l '^com.google.android.tv.remote.service'` that docs/TROUBLESHOOTING.md hands a reader who wants
+to know which lists turn the remote's bridge off, and the walk that models it. Both read
+`examples/*/debloat.txt`, so a second list that carries the line - examples/tcl-65c7k-google-tv's
+debloat-75t8c-eu.txt, which already carries a katniss line with the mirror of the same warning - would
+answer "not in the set" to the reader and to the check.
+
 Each test below runs the function a sweep calls (format_problems, sweep, commands_for_another_list,
-match.tally) on a temp tree whose second list breaks that sweep's rule, so a sweep that goes back to
-reading debloat.txt alone fails here.
+match.tally, the mic walk's lists and grep) on a temp tree whose second list breaks that sweep's rule, so
+a sweep that goes back to reading debloat.txt alone fails here.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -29,6 +36,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 # Imported as modules so their tests do not run twice.
 import test_examples as list_format  # noqa: E402
+import test_remote_mic_bridge_lists as mic_lists  # noqa: E402
 import test_restore_references as references  # noqa: E402
 import test_stock_launcher_undo as stock_undo  # noqa: E402
 
@@ -107,6 +115,18 @@ class SecondListsTest(unittest.TestCase):
             self.assertEqual(2, read, "the second list was not counted")
             self.assertEqual((1, 0, ""), counts["com.example.one"])
             self.assertEqual((1, 0, "karaoke"), counts["com.example.two"])
+
+    def test_the_mic_walk_and_its_grep_read_a_second_list(self):
+        # docs/TROUBLESHOOTING.md's bullet and the walk that models it both read examples/*/debloat.txt,
+        # so a second list carrying the line answered "not in the set".
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root, "examples/x/debloat.txt", "com.example.one\n")
+            second = write(root, "examples/x/debloat-display-only.txt",
+                           f"# TV\n{mic_lists.PACKAGE}\n")
+            self.assertIn(second, mic_lists.lists(root))
+            self.assertEqual({"x"}, mic_lists.grep_finds(
+                "^" + mic_lists.PACKAGE.replace(".", r"\."), mic_lists.LISTS_GLOB, root))
 
 
 if __name__ == "__main__":
