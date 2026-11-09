@@ -1,0 +1,6 @@
+{
+  "tv": "Metz 43MUB8000 (Skyworth SW3H_ATV, MediaTek MT5886), Europe",
+  "os": "Android TV 9",
+  "brand": "Metz",
+  "notes": "Same firmware build as the Kodak 55CA0909: Google feedback, retail demo, e-manual, Backdrop and partner auto-install/Leanback hooks; streaming apps, Assistant, Play apps and TTS off by choice; Chromecast and USB player kept; no network debugging toggle, opened over a USB-C to USB-A cable; clock stuck at 2000 until automatic time was toggled; ~1.6 GB; reboot-checked same day"
+}
