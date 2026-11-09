@@ -352,6 +352,9 @@ def publish(root, pages):
     try:
         for name, text in pages:
             target = Path(os.path.realpath(root / name))
+            if target.exists():
+                # Rename can replace a read-only file; check write access without truncating it.
+                os.close(os.open(target, os.O_WRONLY))
             folder = Path(tempfile.mkdtemp(prefix="." + target.name + "-", dir=target.parent))
             folders.append(folder)
             pending = folder / target.name
