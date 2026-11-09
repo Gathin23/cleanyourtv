@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A folder with a magnifier inside the adaptive icon's safe zone. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#3B84D6" android:pathData="M36,36H48L52,40H72A4,4 0 0 1 76,44V68A4,4 0 0 1 72,72H36A4,4 0 0 1 32,68V40A4,4 0 0 1 36,36Z" />
+    <path android:fillColor="#4DA8F6" android:pathData="M36,44H72A4,4 0 0 1 76,48V68A4,4 0 0 1 72,72H36A4,4 0 0 1 32,68V48A4,4 0 0 1 36,44Z" />
+    <path android:strokeColor="#F5F5F5" android:strokeWidth="3" android:fillColor="#00000000" android:pathData="M56,58a8,8 0 1 0 16,0a8,8 0 1 0 -16,0" />
+    <path android:strokeColor="#F5F5F5" android:strokeWidth="4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M58.5,63.5L52,70" />
+</vector>

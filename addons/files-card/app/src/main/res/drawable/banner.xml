@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner on the add-on panel, in Amaze File Manager's colours: a folder with sparkles and a magnifier. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#1E2630" android:pathData="M24,24h272v132h-272z" />
+    <group android:translateX="35.2" android:translateY="17.9" android:scaleX="0.78" android:scaleY="0.78">
+    <!-- Folder: shadow, back with tab, front -->
+    <path android:fillColor="#155FA8" android:pathData="M95,40H140L152,52H227A8,8 0 0 1 235,60V146A8,8 0 0 1 227,154H93A8,8 0 0 1 85,146V50A10,10 0 0 1 95,40Z" />
+    <path android:fillColor="#3B84D6" android:pathData="M93,36H138L150,48H227A8,8 0 0 1 235,56V140A8,8 0 0 1 227,148H93A8,8 0 0 1 85,140V44A8,8 0 0 1 93,36Z" />
+    <path android:fillColor="#4DA8F6" android:pathData="M93,56H227A8,8 0 0 1 235,64V140A8,8 0 0 1 227,148H93A8,8 0 0 1 85,140V64A8,8 0 0 1 93,56Z" />
+    <!-- Sparkles -->
+    <path android:fillColor="#3A7FD5" android:pathData="M142,68Q147,84 164,89Q147,94 142,110Q137,94 120,89Q137,84 142,68Z" />
+    <path android:fillColor="#3A7FD5" android:pathData="M114,112Q117,120 125,122Q117,124 114,132Q111,124 103,122Q111,120 114,112Z" />
+    <!-- Magnifier -->
+    <path android:fillColor="#6FA6DF" android:pathData="M180,106a20,20 0 1 0 40,0a20,20 0 1 0 -40,0Z" />
+    <path android:fillColor="#4A7FC8" android:pathData="M200,94Q204,103 212,106Q204,109 200,118Q196,109 188,106Q196,103 200,94Z" />
+    <path android:strokeColor="#F5F5F5" android:strokeWidth="7" android:fillColor="#00000000" android:pathData="M176,106a24,24 0 1 0 48,0a24,24 0 1 0 -48,0" />
+    <path android:strokeColor="#F5F5F5" android:strokeWidth="9" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M183,124L163,147" />
+    </group>
+</vector>
