@@ -1,0 +1,63 @@
+# CANDY Android TV DVB (Haier, CVTE board, MediaTek m7332), Android TV 14, firmware UKNV.260408.001, about 1.4 GB RAM.
+# A newer sibling of examples/haier-android-tv-dvb2k (Android 11, broadway): many of the same Haier/CVTE
+# packages, a different chip and firmware. One set, cleaned 1 and 8 Nov 2026; see README.md in this folder.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/candy-android-tv-dvb/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/candy-android-tv-dvb/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (.MainActivity). launcher/build-and-install.sh disabled it
+# after the new launcher was confirmed as Home; it is not in this list.
+# Live TV: com.mediatek.wwtv.tvcenter.
+#
+# KEEP, even though the names look like bloat:
+# - com.example.bt_pair_tips, com.mediatek.autopair: Bluetooth remote pairing. bt_pair_tips was disabled
+#   here first as a "tips" popup and enabled again once the DVB2K list showed what it is.
+# - com.haier.tv.hmagicboard, com.cvte.tv.hkcfac: remote hot keys.
+# - com.google.android.tv.remote.service: the phone remote (Google's and third-party Android TV remote apps).
+# - Factory: com.cvte.tv.fac.menu, com.cvte.tv.fac.aging, com.cvte.tv.at, com.at.factory.factorymanager,
+#   com.at.factory.androidtvaidlservice, mediatek.factorymenu.ui. Never open these either (see the DVB2K list).
+# - Live TV and inputs: com.mediatek.wwtv.tvcenter, com.mediatek.tvinput, com.mediatek.tv.service.
+# - com.google.android.katniss (voice search), com.google.android.backdrop (screensaver).
+# - com.cltv.fast, com.mediatek.androidbox: Free My TV protects both on a CVTE/MediaTek sibling (Multilaser),
+#   with the remote keys, live TV and the media player. They were off on this set for a while with no fault seen,
+#   then turned back on to be safe.
+
+# Content recognition and retail demo
+tv.anoki.acr.anokiacroptin                       # Anoki ACR opt-in / recognition
+fusion.android.tv.demo                           # retail demo
+
+# Haier apps, auto-install and the boot-time app manager
+android.autoinstalls.config.haier.hanyang        # Haier auto-install stub
+com.cvte.haier.tv.appmanager                     # boot receiver: re-enabled disabled apps at every boot until this was off
+com.haier.apps                                   # Haier apps promo
+com.haier.apps.evoSmart
+ru.haier.evo
+com.haierubic.usmartdevice                       # Haier smart-device service
+com.haier.tvhousekeeper                          # "TV housekeeper" cleaner
+com.mcontent                                     # content feed
+
+# Partner setup and stock-home customisation
+com.google.android.partnersetup
+com.mediatek.android.leanbacklauncher.partnercustomizer   # the stock home's Wi-Fi icon went with it
+
+# Google extras
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.play.games
+
+# Bundled browser
+com.tcl.browser
+
+# The owner's choices on this set (disabled here, left to you):
+# com.amazon.amazonvideo.livingroom              # Prime Video
+# com.google.android.youtube.tvmusic             # YouTube Music
+# com.google.android.tts                         # Google text-to-speech: Assistant answers become text only
+
+# Came back on at the next boot while com.cvte.haier.tv.appmanager was still enabled, and were then removed
+# for the user on this set instead (pm uninstall --user 0, which this repo does not use). Not yet tested as a
+# plain disable with the app manager off, so left commented:
+# com.google.android.tvrecommendations           # recommendation and ad rows
+# com.google.android.syncadapters.calendar
+# com.haier.launcher.haiermatrix                 # Haier/Zeasn content launcher, not the system Home
+# com.netflix.ninja                              # Netflix, the owner's choice
