@@ -358,3 +358,58 @@ start in a fixed place, and `/api/v2/` reports no UI state. A port that walks me
 person reading the screen at each step, which is what happened here, or a capture path this
 generation does not offer. Launching an app by id through
 `/api/v2/applications/<appId>` stays the one deterministic action.
+
+## CU7700 (2023, India): token reused, no app list, manual DNS not kept, checked on 2026-11-05
+
+An owner's check of a 2023 set in India (the year from the model string's `23_` prefix), reported in
+[#3326](https://github.com/Gathin23/cleanyourtv/issues/3326) by
+[@vishal-s22](https://github.com/vishal-s22), from a Mac on the same network. Developer Mode was off.
+The network side was read-only: `GET` requests, TCP connections, and two remote-control websocket
+connections in which no key was sent. The owner then changed privacy and network settings with the
+remote. One set, one firmware, one session. The `/api/v2/` reply carried the DUID, the Wi-Fi MAC, the
+access point's MAC and the IP address, which are left out here.
+
+| Field | Observed value |
+|---|---|
+| Retail model | UA65CU7700KLXL, 65" CU7700, India |
+| Model string (`/api/v2/`) | `23_KSUE_UV_T09` |
+| System | Tizen; the API returned `Unknown` for the firmware version |
+| API | `version` 2.0.25, `TokenAuthSupport: true`, `developerMode: 0`, `PowerState: on`, `countryCode: IN` |
+| Network | Wi-Fi |
+
+| Port | CU7700 result | Verification | Limits |
+|---|---|---|---|
+| 8001 | open | HTTP `GET /api/v2/` returned model metadata | |
+| 8002 | open | HTTPS `GET /api/v2/` returned the same values as 8001 in the fields compared; the remote websocket connected (below) | Self-signed TLS certificate verification was bypassed for this local connection only |
+| 8080 | open | HTTP `GET /` answered `403 Forbidden` | Service not identified |
+| 9197 | open | `GET /dmr` returned a UPnP description listing AVTransport, RenderingControl and ConnectionManager | |
+| 7678 | open | `GET /nservice/` returned a DIAL (`dial:1`) description whose `sec:ProductCap` includes `Tizen,Y2021` | |
+| 9080 | closed | No TCP connection | |
+| 5555 | closed | No TCP connection | No ADB on retail firmware |
+| 26101 | closed | No TCP connection | Developer Mode off; `sdb` not tested |
+| 1515 | closed | No TCP connection | Checked because the set has an IP Remote toggle in its network settings; the toggle was not changed |
+
+**Remote websocket.** `wss://<tv>:8002/api/v2/channels/samsung.remote.control?name=<base64>` raised
+the "Allow" prompt; the owner accepted it and the TV issued a token. A second connection with that
+token returned `ms.channel.connect` without the owner accepting a prompt again, as on the
+UA50MU7000. Whether the grant survives a TV reboot was not measured. The pairing was removed in
+Device Connection Manager afterwards.
+
+**App inventory.** `ed.installedApp.get`, sent over that socket in two attempts, got no reply; the
+second attempt waited 15 seconds. `GET /api/v2/applications/<appId>` on 8001 did answer per id, with
+the app's name, version and running state, and with `404` for ids not found on the set.
+
+**Privacy settings, with the remote.** The owner switched off Viewing Information Services and
+Interest-Based Advertisement. The advertising identifier is offered as **Reset PSID**, and the owner
+reset it. Terms & Privacy had no Voice Recognition Services entry.
+
+**DNS was not kept.** A manual DNS server (`94.140.14.14`) entered under Network Status → IP Settings
+was back on automatic when the owner checked again, both with IP Setting on automatic and after IP
+Setting was set to manual too. `samsungads.com`, which that resolver answers with `0.0.0.0`, still
+loaded in the TV's browser, consistent with the setting not being applied. DNS set on the router was
+not tried.
+
+What carries over unchanged: 5555 and 26101 give no TCP connection, so there is no ADB and no `sdb`
+to work with, as on the AU8000, NU7405 and Q67BA. This unit adds two data points: **9080** is closed
+on a 2023 set (open on the 2021 and 2022 units, closed on the 2018 and 2024 ones), and the TV did
+not keep a manual DNS server.
