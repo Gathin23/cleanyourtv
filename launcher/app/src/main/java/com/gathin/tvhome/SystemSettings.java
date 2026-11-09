@@ -47,13 +47,13 @@ final class SystemSettings {
         for (String value : context.getResources().getStringArray(R.array.settings_fallback_components)) {
             ComponentName component = ComponentName.unflattenFromString(value);
             if (component == null) continue;
-            // Explicit resolveActivity() always succeeds, so check the package exists instead.
             try {
                 pm.getPackageInfo(component.getPackageName(), 0);
             } catch (PackageManager.NameNotFoundException e) {
                 continue;
             }
-            return new Intent().setComponent(component);
+            Intent intent = new Intent().setComponent(component);
+            if (intent.resolveActivity(pm) != null) return intent;
         }
         return null;
     }

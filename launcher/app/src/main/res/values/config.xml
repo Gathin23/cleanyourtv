@@ -10,9 +10,10 @@
     <!-- Tried in order when no standard settings handler is usable; each package must also be visible
          through <queries> in the manifest. -->
     <string-array name="settings_fallback_components" translatable="false">
+        <item>com.amazon.tv.launcher/com.amazon.tv.launcher.ui.MainSettingsActivity</item>
+        <item>com.amazon.tv.settings.v2/com.amazon.tv.settings.v2.tv.device.DeviceActivity</item>
         <item>com.xiaomi.mitv.settings/com.xiaomi.mitv.settings.entry.MainActivity</item>
         <item>com.tcl.settings/com.tcl.settings.ui.MainActivity</item>
-        <item>com.amazon.tv.launcher/com.amazon.tv.launcher.ui.MainSettingsActivity</item>
     </string-array>
 
     <!-- Apps pinned to the dock row at the bottom, in this order. Missing apps are skipped. -->

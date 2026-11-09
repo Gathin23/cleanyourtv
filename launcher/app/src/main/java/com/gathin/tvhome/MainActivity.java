@@ -451,6 +451,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dismissFireTvBootAnimation();
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
@@ -1077,6 +1078,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        dismissFireTvBootAnimation();
         resumed = true;
         // A festival that started or ended while Home was in the background: rebuild with or without it.
         if (festive != festival.active(LocalDate.now())) {
@@ -1141,6 +1143,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** Launcher settings' change count (Config.SETTINGS_REVISION_KEY); onResume rebuilds Home when it moved. */
     private long settingsRevision() {
         return getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE).getLong(Config.SETTINGS_REVISION_KEY, 0);
+    }
+
+    /**
+     * Signals Fire OS that the active home launcher is ready.
+     * When Amazon's stock launcher is disabled, Fire OS WMS waits up to a 60-second fallback timer
+     * before dismissing the boot animation unless Settings.Secure "bootanim.real_home_ready" is set to 1.
+     */
+    private void dismissFireTvBootAnimation() {
+        try {
+            android.provider.Settings.Secure.putInt(getContentResolver(), "bootanim.real_home_ready", 1);
+        } catch (Throwable ignored) {
+        }
     }
 
     /**
@@ -1226,11 +1240,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** True when PackageManager reports apps changed since the last rebuild (one binder call). */
     private boolean packagesChangedSinceRebuild() {
+        if (android.os.Build.VERSION.SDK_INT < 26) return false;
         ChangedPackages changed = getPackageManager().getChangedPackages(packageSequence);
         return changed != null && !changed.getPackageNames().isEmpty();
     }
 
     private int currentPackageSequence(int since) {
+        if (android.os.Build.VERSION.SDK_INT < 26) return since;
         ChangedPackages changed = getPackageManager().getChangedPackages(since);
         return changed != null ? changed.getSequenceNumber() : since;
     }
