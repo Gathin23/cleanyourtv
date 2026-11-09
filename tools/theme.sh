@@ -104,7 +104,12 @@ stage() { echo "$TMP-${1//\//-}"; }
 # A folder is the shell's when the shell makes it (drwxrws--- shell ext_data_rw), and the provider, which runs as the
 # launcher, then gets EACCES writing into it. Nothing makes wallpapers/ up front: the provider creates it with the
 # first picture, and only the cp fallback, where the shell does the writing, runs mkdir.
-put() { echo "rm -f $DIR/$1 2>/dev/null; { o=\$(content write --uri $URI/$1 < $(stage "$1") 2>&1) && case \"\$o\" in *'Unsupported operation'*|*'Error while accessing provider'*) false ;; esac; } || { mkdir -p $(dirname "$DIR/$1") 2>/dev/null; cp $(stage "$1") $DIR/$1 2>/dev/null; }; rm -f $(stage "$1")"; }
+# Both writes can be refused (Android 8/9 with Android/data locked), so the line NOT_WRITTEN <name> says the file
+# is not there: unless one of the writes succeeded (w) and the file, read by the shell or through the provider, is
+# the staged upload's size. An empty file is a file; an old copy that survived a refused rm, even one of the same
+# size, is not the new one.
+NOT_WRITTEN=cyt-theme-not-written
+put() { echo "rm -f $DIR/$1 2>/dev/null; w=; { o=\$(content write --uri $URI/$1 < $(stage "$1") 2>&1) && case \"\$o\" in *'Unsupported operation'*|*'Error while accessing provider'*) false ;; esac && w=1; } || { mkdir -p $(dirname "$DIR/$1") 2>/dev/null; cp $(stage "$1") $DIR/$1 2>/dev/null && w=1; }; s=\$(wc -c 2>/dev/null < $(stage "$1")); rm -f $(stage "$1"); [ -n \"\$w\" ] && { { [ -e $DIR/$1 ] && [ \"\$(wc -c < $DIR/$1)\" = \"\$s\" ]; } || [ \"\$(content read --uri $URI/$1 2>/dev/null | wc -c)\" = \"\$s\" ]; } || echo $NOT_WRITTEN $1"; }
 del() { echo "rm -f $DIR/$1 2>/dev/null; content delete --uri $URI/$1 2>/dev/null"; }
 
 # The collection a theme can push. A push empties it before writing the theme's own pictures, and --reset has to
@@ -130,8 +135,25 @@ restart_home() {
   fi
 }
 
+# From the first put on the TV holds part of the theme, so a step that fails is 1 and says where it stopped,
+# as restart_home does: not the 2 ("nothing was sent") of a tv.py or b64push.py that lost the TV, and not 0
+# for a file the TV took neither way.
+stopped() {
+  echo "The theme stopped at $1: the files before it are on the TV, the rest are not. Run the same command" \
+    "again once the TV answers." >&2
+  exit 1
+}
+put_on() {   # put $1, after the optional command $2 in the same shell call
+  local out
+  out="$(tv "${2:+$2; }$(put "$1")")" || stopped "$1"
+  if printf '%s\n' "$out" | tr -d '\r' | grep -qxF "$NOT_WRITTEN $1"; then
+    echo "The TV took neither the provider write nor the copy of $1." >&2
+    stopped "$1"
+  fi
+}
 if [ "${1:-}" = --reset ]; then
-  tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $CLEAR_WALLPAPERS; printf '%s' '$REVISION' > $TMP-theme_revision; $(put theme_revision)" >/dev/null
+  tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $CLEAR_WALLPAPERS" >/dev/null
+  put_on theme_revision "printf '%s' '$REVISION' > $TMP-theme_revision"
   restart_home "the theme was removed"
   echo reset
   exit 0
@@ -188,26 +210,26 @@ fi
 
 tv "mkdir -p $DIR" >/dev/null 2>&1 || true
 tv --push "$THEME/config.json" "$TMP-config.json" >/dev/null
-tv "$(put config.json)"
+put_on config.json
 if [ -f "$THEME/wallpaper.jpg" ]; then
-  "$PY" -I b64push.py "$THEME/wallpaper.jpg" "$TMP-wallpaper.jpg"
-  tv "$(put wallpaper.jpg)"
+  "$PY" -I b64push.py "$THEME/wallpaper.jpg" "$TMP-wallpaper.jpg" || stopped wallpaper.jpg
+  put_on wallpaper.jpg
 else
-  tv "$(del wallpaper.jpg)" >/dev/null
+  tv "$(del wallpaper.jpg)" >/dev/null || stopped "removing wallpaper.jpg"
 fi
-tv "$CLEAR_WALLPAPERS" >/dev/null
+tv "$CLEAR_WALLPAPERS" >/dev/null || stopped "clearing wallpapers/"
 for NAME in $NAMES; do
-  "$PY" -I b64push.py "$THEME/wallpapers/$NAME" "$(stage "wallpapers/$NAME")"
-  tv "$(put "wallpapers/$NAME")" >/dev/null
+  "$PY" -I b64push.py "$THEME/wallpapers/$NAME" "$(stage "wallpapers/$NAME")" || stopped "wallpapers/$NAME"
+  put_on "wallpapers/$NAME"
 done
 # The collection's names (wallpaper_captions); a theme without them leaves no stale names behind.
 if [ -f "$THEME/wallpapers/captions.txt" ]; then
-  "$PY" -I b64push.py "$THEME/wallpapers/captions.txt" "$(stage wallpapers/captions.txt)"
-  tv "$(put wallpapers/captions.txt)" >/dev/null
+  "$PY" -I b64push.py "$THEME/wallpapers/captions.txt" "$(stage wallpapers/captions.txt)" || stopped wallpapers/captions.txt
+  put_on wallpapers/captions.txt
 else
-  tv "$(del wallpapers/captions.txt)" >/dev/null
+  tv "$(del wallpapers/captions.txt)" >/dev/null || stopped "removing wallpapers/captions.txt"
 fi
-tv "printf '%s' '$REVISION' > $TMP-theme_revision; $(put theme_revision)" >/dev/null
+put_on theme_revision "printf '%s' '$REVISION' > $TMP-theme_revision"
 restart_home "the theme was pushed"
 echo applied
 echo "Theme $(basename "$THEME") is on the TV. Undo with: tools/theme.sh --reset"
