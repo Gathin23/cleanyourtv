@@ -31,9 +31,20 @@ PKG = "com.gathin.tvhome"
 MS = 1_000_000
 
 
+# Every fake trace stays referenced until the module ends and is closed there: an unreferenced one would be
+# collected at a random point and its ResourceWarning could land in a test that captures stderr.
+_FAKE_DBS = []
+
+
+def tearDownModule():
+    while _FAKE_DBS:
+        _FAKE_DBS.pop().close()
+
+
 def fake_trace(extra_threads=()):
     """The launcher brought to the front at 1000 ms: performStart, onResume with nested work, a traversal, a frame."""
     db = sqlite3.connect(":memory:")
+    _FAKE_DBS.append(db)
     db.row_factory = sqlite3.Row
     db.executescript("""
         create table process (upid integer, pid integer, name text);
