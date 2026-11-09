@@ -16,8 +16,14 @@ presses reach the TV as KEYCODE_UNKNOWN.
 The helpers read the list the way `tools/disable.sh` does - the text before the first `#` is the package,
 everything after it is a comment - so a note that drifts onto the wrong package, or a package a later
 edit comments out, fails here instead of being silently unverifiable.
+
+`labelled_as_analytics` walks every list a folder ships, not only its `debloat.txt`: eight folders here
+carry a second list (`debloat-keep-cast.txt` in two, `debloat-65u7esg.txt`, `debloat-32-inch.txt`,
+`debloat-extra.txt`, `debloat-display-only.txt` in two, `debloat-75t8c-eu.txt`) and `tools/disable.sh`
+applies each like the first, so a mirakulo line moved into one would have kept its wrong label unseen.
 """
 from pathlib import Path
+import tempfile
 import unittest
 
 
@@ -74,6 +80,42 @@ def remote_service_label_ok(text):
     """A correct label carries both duties: phone remote apps and the remote's microphone."""
     text = text.lower()
     return "phone" in text and "mic" in text
+
+
+def mirakulo_lines(path):
+    """(line number, comment) for every active `com.mirakulo.astrotv.service` line of one list."""
+    return [(number, trailing(line))
+            for number, line in enumerate(path.read_text(encoding="utf-8").split("\n"), 1)
+            if code(line) == MIRAKULO]
+
+
+def lists(root=EXAMPLES):
+    """Every list under `examples`, not only each folder's debloat.txt.
+
+    Eight folders ship a second list beside it (debloat-keep-cast.txt in two, debloat-65u7esg.txt,
+    debloat-32-inch.txt, debloat-extra.txt, debloat-display-only.txt in two, debloat-75t8c-eu.txt),
+    and tools/disable.sh applies one like the first, so the label rule below is the same for a line
+    carried there.
+    """
+    return sorted(Path(root).glob("*/debloat*.txt"))
+
+
+def labelled_as_analytics(paths):
+    """[(path, line number, comment)] for every mirakulo line whose label still sells Ginga as analytics."""
+    wrong = []
+    for path in paths:
+        for number, comment in mirakulo_lines(path):
+            if not no_analytics_claim(comment):
+                wrong.append((path, number, comment))
+    return wrong
+
+
+def where(path):
+    """The path a reader can act on: relative to the repository when it is inside it."""
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 class G09LabelTest(unittest.TestCase):
@@ -148,16 +190,27 @@ class CheckerTest(unittest.TestCase):
         self.assertIsNone(package_line(afmu0, REMOTE_SERVICE))
 
     def test_no_list_labels_mirakulo_as_analytics(self):
-        scanned = 0
-        for path in sorted(EXAMPLES.glob("*/debloat.txt")):
-            for line in path.read_text(encoding="utf-8").split("\n"):
-                if code(line) != MIRAKULO:
-                    continue
-                scanned += 1
-                with self.subTest(list=path.parent.name):
-                    self.assertTrue(no_analytics_claim(trailing(line)),
-                                    f"{path.parent.name} still sells Ginga as analytics: {trailing(line)!r}")
+        scanned = sum(len(mirakulo_lines(path)) for path in lists())
+        wrong = labelled_as_analytics(lists())
+        self.assertFalse(wrong, "\n".join(f"{where(path)}:{number} still sells Ginga as analytics: "
+                                          f"{comment!r}" for path, number, comment in wrong))
         self.assertGreaterEqual(scanned, 2, "the scan found no mirakulo lines, so it proved nothing")
+
+    def test_the_sweep_reads_a_second_list(self):
+        # The rule is only as wide as the walk: a folder's second list is applied like its first.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "acme-tv").mkdir()
+            (root / "acme-tv" / "debloat.txt").write_text(
+                f"{MIRAKULO}   # Ginga (ISDB-Tb broadcast apps), not analytics\n", encoding="utf-8")
+            extra = root / "acme-tv" / "debloat-extra.txt"
+            extra.write_text(f"{MIRAKULO}   # analytics service, safe to drop\n", encoding="utf-8")
+            self.assertIn(extra, lists(root))
+            self.assertEqual([(path.name, number) for path, number, _ in labelled_as_analytics(lists(root))],
+                             [("debloat-extra.txt", 1)])
+            extra.write_text(f"{MIRAKULO}   # Ginga (ISDB-Tb broadcast apps), not analytics\n",
+                             encoding="utf-8")
+            self.assertEqual(labelled_as_analytics(lists(root)), [])
 
 
 if __name__ == "__main__":
