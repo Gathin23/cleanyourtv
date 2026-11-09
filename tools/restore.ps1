@@ -4,6 +4,7 @@
 # list you used with disable.ps1.
 #
 # Usage: tools\restore.ps1 -TvHost 192.168.1.50 examples\xiaomi-mi-tv-4a\debloat.txt [-Stock stock.launcher.package]
+# The list path is taken as typed: a folder like "tv [old]" needs no backtick escaping.
 param(
     [Parameter(Mandatory = $true, Position = 0)][string]$List,
     [string]$Stock = 'com.google.android.tvlauncher',
@@ -13,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 # Pipe plain UTF-8 to native commands; the default here prepends a BOM that corrupts the first command.
 $OutputEncoding = New-Object System.Text.UTF8Encoding $false
 $repo = Split-Path -Parent $PSScriptRoot
-$List = (Resolve-Path $List).Path
+$List = (Resolve-Path -LiteralPath $List).Path
 $py = Join-Path $repo 'tools\venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $py)) { throw 'run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt' }
 if (-not $TvHost) { throw 'pass -TvHost <tv ip> or set $env:TV_HOST' }

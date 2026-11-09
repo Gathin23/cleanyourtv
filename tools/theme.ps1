@@ -38,9 +38,9 @@ $env:TV_HOST = $TvHost
 # record and a script line number, where theme.sh stops at "no config.json in <typed path>" - a message about
 # the folder the reader named, not about the cmdlet.
 if ($Theme -and (Test-Path -LiteralPath $Theme)) { $Theme = (Resolve-Path -LiteralPath $Theme).Path }
-Set-Location $PSScriptRoot
-$py = 'venv\Scripts\python.exe'
-if (-not (Test-Path $py)) {
+Set-Location -LiteralPath $PSScriptRoot
+$py = Join-Path $PSScriptRoot 'venv\Scripts\python.exe'
+if (-not (Test-Path -LiteralPath $py)) {
     # As in theme.sh: the venv is on this computer, so nothing was sent and this is a run that stopped before the
     # theme was up, not a push that ran and failed.
     [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
@@ -99,7 +99,7 @@ if (-not (Test-Path -LiteralPath $config)) {
     [Console]::Error.WriteLine("no config.json in $Theme. Nothing was sent to the TV.")
     exit 2
 }
-try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json }
+try { $themeJson = Get-Content -LiteralPath $config -Raw | ConvertFrom-Json }
 catch {
     [Console]::Error.WriteLine("$config is not valid JSON, so there is no theme to push (themes/README.md says what the file holds). Nothing was sent to the TV.")
     exit 2
@@ -115,8 +115,8 @@ if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
 # through the push left the new config.json and part of the collection behind. b64push.py refuses '..' in a path.
 $wallpapers = Join-Path $Theme 'wallpapers'
 $images = @()
-if (Test-Path $wallpapers -PathType Container) {
-    $images = @(Get-ChildItem $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
+if (Test-Path -LiteralPath $wallpapers -PathType Container) {
+    $images = @(Get-ChildItem -LiteralPath $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
     foreach ($image in $images) {
         if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) {
             [Console]::Error.WriteLine("unsupported wallpaper filename: $($image.Name) (b64push.py takes letters, digits, '.', '_' and '-', with no '..' in the name). Nothing was sent to the TV.")
@@ -130,7 +130,7 @@ Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; true" | Out-Null
 Invoke-Tv tv.py --push $config "$tmp-config.json" | Out-Null
 Invoke-Tv tv.py (Put 'config.json')
 $wall = Join-Path $Theme 'wallpaper.jpg'
-if (Test-Path $wall) { Invoke-Tv b64push.py $wall "$tmp-wallpaper.jpg"; Invoke-Tv tv.py (Put 'wallpaper.jpg') } else { Invoke-Tv tv.py (Drop 'wallpaper.jpg') | Out-Null }
+if (Test-Path -LiteralPath $wall) { Invoke-Tv b64push.py $wall "$tmp-wallpaper.jpg"; Invoke-Tv tv.py (Put 'wallpaper.jpg') } else { Invoke-Tv tv.py (Drop 'wallpaper.jpg') | Out-Null }
 Invoke-Tv tv.py $clearWallpapers | Out-Null
 foreach ($image in $images) {
     Invoke-Tv b64push.py $image.FullName (Stage "wallpapers/$($image.Name)")
@@ -138,7 +138,7 @@ foreach ($image in $images) {
 }
 # The collection's names (wallpaper_captions); a theme without them leaves no stale names behind.
 $captions = Join-Path $Theme 'wallpapers\captions.txt'
-if (Test-Path $captions -PathType Leaf) {
+if (Test-Path -LiteralPath $captions -PathType Leaf) {
     Invoke-Tv b64push.py $captions (Stage 'wallpapers/captions.txt')
     Invoke-Tv tv.py (Put 'wallpapers/captions.txt') | Out-Null
 } else {
