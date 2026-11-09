@@ -41,8 +41,12 @@ def window(q, package, spec, nav):
     if main is None:
         raise ValueError(f"no {package} process in the trace")
     if spec == "all" or nav:
+        # lanes() draws only completed, positive-duration slices. An unfinished
+        # slice has dur=-1, so ts+dur is not an end time for the chart's axis.
         row = q(f"select min(s.ts) as t0, max(s.ts + s.dur) as t1 from slice s join thread_track tt on s.track_id = tt.id "
-                f"join thread t using(utid) where t.upid = {upid}")[0]
+                f"join thread t using(utid) where t.upid = {upid} and s.dur > 0")[0]
+        if row["t0"] is None or row["t1"] is None:
+            raise ValueError(f"no completed slices to draw for {package} in the trace")
         return row["t0"], row["t1"]
     anchor, end = trace_report.start_window(q, package)
     if anchor is None:

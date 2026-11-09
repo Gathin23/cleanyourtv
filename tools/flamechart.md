@@ -45,5 +45,7 @@ A Home change usually needs two charts:
 - **Pass folders, not single runs.** The tool picks the median run. If you pass single traces, say why.
 - **Magenta is main and render thread time only.** Work moved to another thread or to the GPU isn't gone:
   add that thread as a lane, or use the `nav` GPU numbers.
+- **Unfinished slices have no measured end.** The `all` and `nav` axis covers completed slices with a
+  positive duration, as the lanes do. A process with none is refused instead of drawing an empty chart.
 
 The whole before/after method for a pull request is in [`docs/workflows/perf-ab.md`](../docs/workflows/perf-ab.md).
