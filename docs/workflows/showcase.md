@@ -12,12 +12,14 @@
    reads the index back the other way too: a link whose address no table row carries is reported, so a
    project renamed or repinned in the tables is dropped from the line rather than left there at the commit
    it used to point at.
-2. Bump the three counts by one: `SHOWCASE.md` opens with an `N projects so far.` line, and the "Built
-   something on top?" row spells the same number in words on two front pages - `README.md` ("... projects
-   already live") and `README.pt-BR.md` ("que já reúne ... projetos"). `tests/test_showcase_project_count.py`
-   counts the rows and reads each page's spelled number with the parser for its language (its
-   SPELLED_PAGES table, which is where a translation that starts spelling the count is added), and
-   refuses a row that leaves any of the three behind.
+2. Bump the count by one everywhere it is stated: `SHOWCASE.md` opens with an `N projects so far.` line,
+   and the "Built something on top?" row carries the same number on five translated front pages -
+   `README.md` ("... projects already live") and `README.pt-BR.md` ("que já reúne ... projetos") spell it
+   in words, while `README.de.md`, `README.nl.md`, `README.uk.md` and `README.uz.md` write it in digits,
+   the shape a German compound or an Uzbek classified numeral cannot be read out of.
+   `tests/test_showcase_project_count.py` counts the rows and reads every page in its COUNT_PAGES table
+   with the parser or the digits reader that page needs, and refuses a row that leaves any of them
+   behind; a translation that starts stating the count joins that table.
 3. Keep each cell to one line: what it is, what it was built and tested on, and the author.
 4. The project is open source with a link people can read and build, says which TV it was tested on, collects
    nothing beyond what its README says, and is yours or listed with the author's blessing.
