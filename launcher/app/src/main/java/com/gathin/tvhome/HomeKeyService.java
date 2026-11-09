@@ -92,7 +92,7 @@ public class HomeKeyService extends AccessibilityService {
     /** disableSelf is how this service leaves for standby, not the user turning it off. */
     private boolean steppingOut;
     /** The bound helper, so the opt-in broadcast can arm it without waiting for a new connection. */
-    private static HomeKeyService running;
+    static HomeKeyService running;
 
     @Override
     protected void onServiceConnected() {
