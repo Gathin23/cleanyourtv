@@ -6,8 +6,10 @@ with setupwraith enabled loads the credentials in seconds, but only `am crash` r
 started by hand with `am start-foreground-service`, `CastReceiverService` never calls
 `startForeground()`, Android kills it 30 s later, and the copy that comes back after setupwraith is off
 has no credentials (#2615). So the notes say `am crash`, and to check the pid survives 30 s before
-disabling setupwraith. Closing up, turning USB debugging off left the Wireless debugging port open,
-which tools/adb-closed.py does not check.
+disabling setupwraith. `am crash` takes the pid: with the package name it hit a helper process
+(:privileged_process1) and left the receiver running with its old pid, which passes the 30 s check.
+Closing up, turning USB debugging off left the Wireless debugging port open, which tools/adb-closed.py
+does not check.
 
 Run from the repository root:
 python3 -m unittest discover -s tests -v
@@ -20,7 +22,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 DOC = (ROOT / "docs" / "TROUBLESHOOTING.md").read_text(encoding="utf-8")
 EXAMPLE = (ROOT / "examples" / "google-chromecast-gtv-4k" / "debloat.txt").read_text(encoding="utf-8")
-CRASH = "am crash com.google.android.apps.mediashell"
+CRASH = "am crash $(pidof com.google.android.apps.mediashell)"
+BY_PACKAGE = "am crash com.google.android.apps.mediashell"
 PIDOF = "pidof com.google.android.apps.mediashell"
 
 
@@ -55,6 +58,7 @@ class SabrinaCastRestartNoteTest(unittest.TestCase):
         self.assertIn("sabrina", casting)
         self.assertIn(CRASH, casting)
         self.assertIn(PIDOF, casting)
+        self.assertIn("helper processes", casting)
         self.assertIn("30 s", casting)
         self.assertIn("ClientAuthSigner", casting)
         # The receiver is restarted before setupwraith goes off again, not after.
@@ -70,6 +74,8 @@ class SabrinaCastRestartNoteTest(unittest.TestCase):
         header = "\n".join(l for l in EXAMPLE.splitlines() if l.startswith("#"))
         self.assertIn(CRASH, header)
         self.assertIn(PIDOF, header)
+        # The package-name crash is only named as the one not to use.
+        self.assertIn("Crash it by pid, not by package name: " + BY_PACKAGE, header)
         # The old restart is only named as the one not to use.
         self.assertIn("Not am force-stop plus am start-foreground-service", header)
         self.assertIn("Wireless debugging", header)
