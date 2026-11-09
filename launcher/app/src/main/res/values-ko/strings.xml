@@ -151,4 +151,5 @@
     <string name="clock_format_system">시스템</string>
     <string name="clock_format_12">12시간</string>
     <string name="clock_format_24">24시간</string>
+    <string name="tile_uninstall">제거</string>
 </resources>

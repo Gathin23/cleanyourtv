@@ -133,6 +133,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean appLibraryEnabled;
     /** The same opt-in menu is available from either hold-OK or the remote's Menu key. */
     private boolean tileMenuEnabled;
+    private boolean tileUninstallEnabled;
     private String inputAction;
     private List<String> inputSources;
     private String inputUriScheme;
@@ -498,6 +499,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         liveTvInputId = cfg.liveTvInputId;
         appLibraryEnabled = cfg.appLibrary;
         tileMenuEnabled = cfg.tileMenu;
+        tileUninstallEnabled = cfg.tileUninstall;
         inputAction = cfg.inputAction;
         inputSources = cfg.inputSources;
         inputUriScheme = cfg.inputUriScheme;
@@ -3830,6 +3832,57 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         onTileLongPress(position, card);
     }
 
+    /** True for an app the owner installed; system apps, updated or not, stay out of tile_uninstall. */
+    private boolean isUserInstalled(String pkg) {
+        try {
+            return (getPackageManager().getApplicationInfo(pkg, 0).flags & ApplicationInfo.FLAG_SYSTEM) == 0;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * The app's name over Cancel / Uninstall, Cancel focused, then Android's own uninstall prompt. Holding OK on a tile keeps
+     * sending key repeats after the menu opens, and on a Vontar X2 they clicked straight through a plain dialog
+     * into the system prompt and removed the app: this one ignores OK for half a second after it shows, every
+     * repeat, and a release whose press it did not see, so only a fresh press can confirm.
+     */
+    private void confirmUninstall(String pkg) {
+        CharSequence label = pkg;
+        try {
+            label = getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(pkg, 0));
+        } catch (PackageManager.NameNotFoundException ignored) {
+        }
+        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(this)
+                .setTitle(label)
+                // Cancel is the default (positive) button, so focus starts on it.
+                .setPositiveButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.tile_uninstall, (d, which) -> {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_DELETE, Uri.parse("package:" + pkg)));
+                    } catch (ActivityNotFoundException ignored) {
+                    }
+                })
+                .create();
+        final boolean[] pressSeen = {false};
+        final long shownAt = android.os.SystemClock.uptimeMillis();
+        dialog.setOnKeyListener((d, keyCode, event) -> {
+            if (!isOkKey(keyCode)) return false;
+            if (event.getEventTime() - shownAt < 500) return true;
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if (event.getRepeatCount() > 0) return true;
+                pressSeen[0] = true;
+                return false;
+            }
+            return !pressSeen[0];
+        });
+        dialog.setOnShowListener(d -> {
+            View cancel = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE);
+            cancel.post(cancel::requestFocus);
+        });
+        dialog.show();
+    }
+
     @Override
     public void onTileLongPress(int position, View card) {
         if (reordering || openPopup != null) return;
@@ -3860,6 +3913,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Some firmware has no App info page at all; a row that only toasts "can't open" helps nobody.
         Intent info = SystemSettings.appInfo(this, pkg);
         if (info != null) addSettingsMenuRow(rows, popup, R.string.library_app_info, () -> open(info));
+        if (tileUninstallEnabled && isUserInstalled(pkg)) {
+            addSettingsMenuRow(rows, popup, R.string.tile_uninstall, () -> confirmUninstall(pkg));
+        }
         panel.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         popup.setWidth(Math.max((int) (200 * density), panel.getMeasuredWidth()));
         // Dock tiles sit near the bottom of the screen: open the menu above the tile when it would not fit below.

@@ -398,6 +398,10 @@
          app_library) and App info. On by default since 3.3; false keeps the old behaviour: holding OK opens the app's
          App info page. A theme's config.json can set "tile_menu" either way. -->
     <bool name="tile_menu">true</bool>
+    <!-- Adds Uninstall to the tile menu (tile_menu) for apps the owner installed, never for system apps. It shows
+         the app's name over Cancel / Uninstall with Cancel focused, ignores the held OK that opened the menu, and then hands over to
+         Android's own uninstall prompt. Off by default; a theme's config.json can set "tile_uninstall". -->
+    <bool name="tile_uninstall">false</bool>
 
     <!-- Grid rows left visible under the dock on the home screen. 0 = dock sits at the very bottom. Tiles shrink if
          the dock, its title and this many rows would not otherwise fit the screen height. -->
