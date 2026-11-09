@@ -14,8 +14,15 @@ language than the launcher ships, on two pages a reader picks their language fro
 `tools/gen_tables.py --check` green. Both pages set to 30 on this checkout of main: 2987 tests OK
 (skipped=27) and `--check` exit 0, so neither number is read anywhere.
 
+A third page stays outside the table for a second reason, and it is the one this file could not see:
+README.uz.md states the row as `| **31 til** |`, and `til` is not `dil` - the Turkish word the table
+already carries - so the coverage test at the end of this file, which reads the rows that use one of
+the words above, found nothing to report. The page landed (0102a9a9) the day before this check was
+written and has stated the count since its first version, so "all seven" - what
+`docs/workflows/translation.md` step 9 said the check read - has been eight pages the whole time.
+
 The number is never copied here. It is `tools/gen_tables.py`'s own `languages()`, the count the script
-writes, and each page's row is read out of the page. The row carries the number in digits on all seven
+writes, and each page's row is read out of the page. The row carries the number in digits on all eight
 pages today, which is what `docs/workflows/translation.md` step 9 asks for; a page that writes it as a
 word is refused by name rather than read as no claim at all.
 
@@ -34,8 +41,10 @@ import gen_tables  # noqa: E402  (needs tools/ on the path)
 RECIPE = ROOT / "docs" / "workflows" / "translation.md"
 
 # The pages that state how many languages the launcher ships, and the word each one states it in. The
-# five above the last two are the pages tools/gen_tables.py writes (its TRANSLATIONS map, plus
-# README.md); README.he.md and README.pt-BR.md are the hand-kept pair this file was written for.
+# five above the last three are the pages tools/gen_tables.py writes (its TRANSLATIONS map, plus
+# README.md); README.he.md and README.pt-BR.md are the hand-kept pair this file was written for, and
+# README.uz.md is the page it could not see: its word is `til`, not the Turkish `dil` the table carries,
+# so the cover test below - which reads a row written in one of these words - passed over it.
 LANG_ROW = {
     "README.md": "languages",
     "README.de.md": "Sprachen",
@@ -44,6 +53,7 @@ LANG_ROW = {
     "README.pt-BR.md": "idiomas",
     "README.tr.md": "dil",
     "README.uk.md": "мова",
+    "README.uz.md": "til",
 }
 
 # `| **31 languages** | Follows the TV's language ...`. A step row such as `| **1. On the TV** |` is not
@@ -98,9 +108,9 @@ class LanguageCountTest(unittest.TestCase):
         """A page that copies a label this file knows is read, not left outside it.
 
         README.uk.md, README.tr.md and README.pt-BR.md each joined the table after stating their count
-        where nothing looked. A page that copies one of these seven words is the same case; one that
-        writes the count in a word this file does not carry (a new translation's own) is out of its
-        reach, and that word is the line to add here.
+        where nothing looked. A page that copies one of these eight words is the same case; one that
+        writes the count in a word this file does not carry (a new translation's own, as README.uz.md's
+        `til` was beside the Turkish `dil`) is out of its reach, and that word is the line to add here.
         """
         words = set(LANG_ROW.values())
         for page in front_pages():
@@ -145,6 +155,13 @@ class TheReader(unittest.TestCase):
         text = ("| **31 idiomas** | Segue o idioma da TV, com layout totalmente espelhado da direita "
                 "para a esquerda em hebraico. |")
         self.assertEqual(31, claimed(text, "idiomas"))
+
+    def test_the_uzbek_row_is_read(self):
+        """`til`, the word the cover test could not match against the Turkish `dil`."""
+        text = ("| **31 til** | Televizor tiliga ergashadi; ivrit uchun toʻliq oynalashtirilgan, "
+                "oʻngdan chapga joylashuv |")
+        self.assertEqual(31, claimed(text, "til"))
+        self.assertIsNone(claimed(text, "dil"))
 
     def test_a_step_row_is_not_a_language_row(self):
         text = "| **1. On the TV** | Settings → About → press OK on **Build** seven times |"
