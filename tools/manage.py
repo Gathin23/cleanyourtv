@@ -512,7 +512,12 @@ def install_addon(item, extra):
         return code
     out = tv("pm install -r /data/local/tmp/addon.apk; rm -f /data/local/tmp/addon.apk")
     print(out.strip())
-    return 0 if "Success" in out else 1
+    return 0 if pm_succeeded(out) else 1
+
+
+def pm_succeeded(out):
+    """pm printed its own Success line; a Failure line that names a package containing the word is not one."""
+    return "Success" in (line.strip() for line in out.splitlines())
 
 
 # ---------------------------------------------------------------- commands
@@ -604,7 +609,7 @@ def cmd_remove(name):
         sys.exit(f"no add-on called {name}")
     out = tv(f"pm uninstall {item['package']}")
     print(out.strip())
-    return 0 if "Success" in out else 1
+    return 0 if pm_succeeded(out) else 1
 
 
 def cmd_set(key, value, theme_folder):

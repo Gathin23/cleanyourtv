@@ -155,7 +155,8 @@ def main():
             print(f"{remote} was left as it was.", file=sys.stderr)
             return 1
         out = dev.shell(f"mv -f {q(part)} {q(remote)} && echo moved", read_timeout_s=60.0)
-        if "moved" not in out:
+        # The marker's own line: a refusal that names a path containing "moved" is not a move.
+        if "moved" not in (line.strip() for line in out.splitlines()):
             # SELinux on a TCL ak30a5 (20250610) refuses rename(2) in /data/local/tmp while cp works
             # there (#1588). Copy the verified file over the target instead and check that copy too.
             # Unlike the move it is not atomic: a copy that stops part-way can leave the target
