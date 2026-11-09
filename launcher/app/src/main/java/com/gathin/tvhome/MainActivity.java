@@ -676,8 +676,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
         grid.setHasFixedSize(true);
         grid.setItemAnimator(null);
-        // Tiles that scroll out while one is carried come back from the view cache without a rebind; set their
-        // dimming again whenever one attaches, so none stays dim after the drop.
+        // Tiles that scroll out while reordering come back from the view cache without a rebind; set their
+        // dimming again whenever one attaches, so alpha matches the current mode.
         grid.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(@NonNull View v) {
@@ -1642,7 +1642,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dimOthers();
     }
 
-    /** While a tile is carried, every other tile is dimmed so the carried one stands out; otherwise all are full. */
+    /** Applies tileAlpha to every attached tile (carried tile bright; the rest dim while reordering). */
     private void dimOthers() {
         for (int i = 0; i < grid.getChildCount(); i++) {
             View item = grid.getChildAt(i);
@@ -1650,12 +1650,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    /** A tile's alpha: dim unless it is the carried one, or, in edit-dock mode, a dock tile other than the chosen place. */
+    /** A tile's alpha: the carried tile stays bright; every other tile is dim while reordering, including after a
+     * drop, until Back ends the mode. In edit-dock mode, dock tiles other than the chosen place are dimmed. */
     private float tileAlpha(int pos) {
         if (movingKey != null) {
             return pos != RecyclerView.NO_POSITION && movingKey.equals(adapter.keyAt(pos)) ? 1f : 0.45f;
         }
         if (dockEditSlot >= 0 && pos >= 0 && pos < COLUMNS && pos != dockEditSlot) return 0.45f;
+        if (reordering) return 0.45f;
         return 1f;
     }
 
@@ -1667,6 +1669,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         dockEditAppKey = null;
         drop();
         reordering = false;
+        dimOthers();   // drop() ran while reordering was still on; restore full brightness now the mode is off
         adapter.setReordering(false);
         glass.setAccent(festive ? festival.accentColor() : 0);
         btnReorder.setActivated(false);
