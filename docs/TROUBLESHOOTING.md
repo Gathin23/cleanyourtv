@@ -945,6 +945,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   launcher does not do that today. That the freezing causes the lost discovery is inferred from the two
   showing up together, not proven: if `isFrozen=true` is not there, the receiver is hung, as above.
   [The G08 US notes](../examples/tcl-g08-us-google-tv/README.md#fourth-unit-cast-and-the-freezer).
+  Without a launcher change, switching the freezer off works from the shell: on a Xiaomi TV S Mini LED 65 2025
+  (MiTV-MOEU0, `V816.0.26.10.12.1.ULBMIXM`) phones lost the TV with the same `freezing <pid>` lines and 8009
+  not answering, and `tools/tv.py "settings put global cached_apps_freezer disabled"` followed by a reboot
+  left the receiver at `isFrozen=false` with 8008 and 8009 open, and casting worked again. It is the Developer
+  options switch "Suspend execution for cached apps", it covers every cached app, not only the receiver, and
+  `device_default` undoes it ([the MOEU0 list](../examples/xiaomi-mitv-moeu0/debloat.txt), fourth unit).
 - **The TV drops off Wi-Fi every minute right after the install**, seen on Google TV 14 (Xiaomi
   MiTV-MZTU0): the same setupwraith `.RecoveryActivity` took Home and system_server crash-looped
   on it. The install script now starts the new launcher before disabling the stock one, sets the
