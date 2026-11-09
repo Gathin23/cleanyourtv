@@ -36,11 +36,18 @@ stated when the translation landed while the card had moved on. Its coverage cla
 "inclui" rather than a colon, the one shape every other page uses, so the reader found nothing to cut the
 three numbers out of. Both are read here now, against README.md's alt text and docs/PRESS.md.
 
-README.he.md, added with the Hebrew translation (4af8a7ee), is the second page of that kind: a story
+README.he.md, added with the Hebrew translation (4af8a7ee), was the second page of that kind: a story
 section with the totals sentence and the coverage clause, and no card, so neither the alt-text walk nor the
 pt-BR name reached it. All five numbers it states - the tree's two totals and the press three - could go
-stale with the suite green. The pages are found by their paragraph now, so this page and any translation
-that copies the story are read without a name being added here.
+stale with the suite green. The pages are found by their paragraph now, so this page, README.uz.md (the
+third, which arrived with the Uzbek translation) and any translation that copies the story are read
+without a name being added here.
+
+A page read from the tree is still a page a maintainer has to move by hand, and the recipe they follow to
+regenerate the tables named five: `docs/workflows/tv-list.md` step 5 listed the pages that show the card
+and stopped, so a run that bumped those five and stopped left the three without one at the old pair and
+the suite red naming pages the step never mentioned. RecipeTest reads that step out of the page and holds
+it to the pages found here, so the document and the check move together.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
@@ -55,6 +62,7 @@ PRESS = ROOT / "docs" / "PRESS.md"
 README = ROOT / "README.md"
 FEATURED = ROOT / "tools" / "readme_featured.py"
 PRESS_RECIPE = ROOT / "docs" / "workflows" / "press.md"
+TV_LIST_RECIPE = ROOT / "docs" / "workflows" / "tv-list.md"
 
 LATAM = "Latin America (Spanish-language)"
 ONLINE = "Online (newsletters, blogs, AI news)"
@@ -76,14 +84,15 @@ VIDEO_LINK = re.compile(r"\((https?://[^)\s]*(?:youtube\.com|bilibili\.com)/[^)\
 CARD_ALT = re.compile(r'src="docs/card(?:-halloween)?\.jpg"[^>]*?alt="([^"]*)"')
 # The front pages that show the card and repeat its numbers in the story section today.
 STORY_PAGES = ("README.md", "README.de.md", "README.nl.md", "README.uk.md", "README.tr.md")
-# Two front pages carry the story paragraph without the card: README.pt-BR.md and README.he.md have
-# no docs/card.jpg, so card_alt_texts() never reaches them and none of the checks above read the
-# numbers they write. README.pt-BR.md said the totals README.md had when the translation landed (420
-# models, 108 brands) and its coverage clause opened with "inclui" rather than a colon, so
-# coverage_numbers() cut nothing out of it either; README.he.md was read by nothing at all, and a
-# stale pair there left every test green. A page is found by its paragraph, not added here by hand:
-# see story_pages().
-STORY_WITHOUT_CARD = ("README.he.md", "README.pt-BR.md")
+# Front pages that carry the story paragraph without the card: README.pt-BR.md, README.he.md and
+# README.uz.md have no docs/card.jpg, so card_alt_texts() never reaches them and none of the checks
+# above read the numbers they write. README.pt-BR.md said the totals README.md had when the
+# translation landed (420 models, 108 brands) and its coverage clause opened with "inclui" rather than
+# a colon, so coverage_numbers() cut nothing out of it either; README.he.md was read by nothing at all,
+# and a stale pair there left every test green. A page is found by its paragraph, not added here by
+# hand: see story_pages(). This tuple is the floor, the pages a copy of the story is expected to
+# keep - the walk below judges every page it finds, named here or not.
+STORY_WITHOUT_CARD = ("README.he.md", "README.pt-BR.md", "README.uz.md")
 # The story paragraph's closing sentence, which repeats the three numbers in prose: "The coverage: 351
 # articles from 46 countries and 229 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)".
 # Every translation writes its own words around the numbers but keeps them in that order, so they are read
@@ -96,6 +105,9 @@ NUMBER = re.compile(r"\d[\d.,]*")
 # followed by space, so the counts written with a separator ("46.000 sterren", "5.700 forks", "1.4M
 # views") stay inside their sentence rather than being split off into a shorter one.
 SENTENCE = re.compile(r"(?<=[.!?])\s+")
+# A numbered step of a recipe page: "5. Change nothing outside the folder." The recipe's steps are
+# indented paragraphs, so this is where one ends and the next begins.
+STEP_START = re.compile(r"^(\d+)\. ")
 
 
 def card_alt_texts():
@@ -142,6 +154,46 @@ def story_pages(root=ROOT):
                 out.append(path.name)
                 break
     return out
+
+
+def recipe_step(text, number):
+    """Step `number` of docs/workflows/tv-list.md as one line, or "" when the recipe has no such step.
+
+    The recipe is a numbered list of indented paragraphs, so a step runs from its `N. ` line to the
+    next line that starts one; the wrapped lines are joined with a space, which is how a page name
+    written across two lines is still read as one word.
+    """
+    lines = text.splitlines()
+    start = prefix = None
+    for i, line in enumerate(lines):
+        match = STEP_START.match(line)
+        if match and int(match.group(1)) == number:
+            start, prefix = i, line
+            break
+    if start is None:
+        return ""
+    end = next((i for i in range(start + 1, len(lines)) if STEP_START.match(lines[i])), len(lines))
+    return " ".join(line.strip() for line in [prefix] + lines[start + 1:end] if line.strip())
+
+
+def totals_sentences(step):
+    """The sentences of a recipe step that describe the totals check: those naming the card's alt text.
+
+    A page named elsewhere in the step is not an instruction to move its totals: step 5 also names
+    README.he.md beside the hand-kept brand grid, and a maintainer regenerating the counts reads the
+    sentence that says what the check compares. So the pages are judged against these sentences only.
+    """
+    return [sentence for sentence in SENTENCE.split(step) if "alt text" in sentence]
+
+
+def pages_missing_from_recipe(pages, step):
+    """The pages of `pages` the step's totals sentence does not name, in the order they were given.
+
+    A page is named by its file name (`README.uz.md`), which is how the recipe sends a maintainer to
+    one; a step with no totals sentence reads as naming nothing, so the walk cannot pass by silence.
+    """
+    sentence = " ".join(totals_sentences(step))
+    return [name for name in pages if name not in sentence]
 
 
 def coverage_numbers(text):
@@ -800,6 +852,59 @@ class VideoReaderTest(unittest.TestCase):
         problems = video_problems(text)
         self.assertIn("the Videos section no longer says when the views were read "
                       "('views as of <date>')", problems)
+
+
+class RecipeTest(unittest.TestCase):
+    """Step 5 of the TV-list recipe names every front page the story totals are stated on.
+
+    A maintainer regenerating the tables follows that step and stops when the pages it names are done.
+    It named the five that show the card, so the three that carry the story paragraph without one -
+    README.pt-BR.md, README.he.md and README.uz.md - were left at the old pair, and the suite went red
+    on pages the step never mentioned. The pages come from the tree instead (story_pages() minus the
+    card pages), so a translation that copies the paragraph joins the list the day it lands and the
+    step has to name it too.
+    """
+
+    def test_step_5_names_every_front_page_that_carries_the_story_without_a_card(self):
+        step = recipe_step(TV_LIST_RECIPE.read_text(encoding="utf-8"), 5)
+        self.assertTrue(step, "docs/workflows/tv-list.md has no step 5, so the totals have no instructions")
+        self.assertIn("tests/test_press_counts.py", step,
+                      "step 5 no longer names the check that reads the story sentence")
+        without = [name for name in story_pages() if name not in card_alt_texts()]
+        self.assertGreaterEqual(len(without), len(STORY_WITHOUT_CARD),
+                                f"only {len(without)} front pages carry the story without a card ({without})")
+        missing = pages_missing_from_recipe(without, step)
+        self.assertEqual([], missing,
+                         f"step 5's totals sentence does not name {', '.join(missing)}: a maintainer who "
+                         f"follows it moves the five pages that show the card and leaves these at the old "
+                         f"totals, and tests/test_press_counts.py fails on pages the step never mentioned")
+
+    def test_a_step_is_read_up_to_the_next_step(self):
+        recipe = ("# Workflow\n\n"
+                  "4. Four, and README.he.md is not this step.\n"
+                  "5. Five names README.he.md\n"
+                  "   and carries the sentence on to here.\n"
+                  "6. Six names README.uz.md.\n")
+        step = recipe_step(recipe, 5)
+        self.assertIn("Five names README.he.md", step)
+        self.assertIn("carries the sentence on to here.", step,
+                      "a step wrapped over two lines is read as one line")
+        self.assertNotIn("Six names", step)
+        self.assertEqual("", recipe_step(recipe, 7), "a recipe with no such step reads as nothing")
+
+    def test_a_page_named_elsewhere_in_the_step_is_not_named_for_the_totals(self):
+        # Step 5 names README.he.md beside the hand-kept brand grid as well; that is not where a
+        # maintainer regenerating the counts is sent, so the totals sentence is what is read.
+        step = ("5. The check holds the pair to the alt text beside it. The brand grid is hand-kept on "
+                "README.he.md.")
+        self.assertEqual(["README.he.md"], pages_missing_from_recipe(["README.he.md"], step))
+        self.assertEqual([], totals_sentences("5. The brand grid is hand-kept on README.he.md."))
+
+    def test_a_page_the_recipe_does_not_name_is_reported(self):
+        step = "5. The check holds the pair to the alt text beside it; the totals move on README.md and README.he.md."
+        self.assertEqual([], pages_missing_from_recipe(["README.md", "README.he.md"], step))
+        self.assertEqual(["README.uz.md"],
+                         pages_missing_from_recipe(["README.md", "README.uz.md"], step))
 
 
 if __name__ == "__main__":
