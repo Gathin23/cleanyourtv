@@ -179,6 +179,14 @@ final class RemoteKeys {
         return (slash < 0 ? target : target.substring(0, slash)).equals(front);
     }
 
+    /** The app in front, from HomeKeyService's window changes while app_keys has "front:" entries; "" otherwise. */
+    static String frontPackage = "";
+
+    /** A tap's target for both helpers: its "front:" entry while the button's own app is in front, else the usual one. */
+    static String tap(String target, String alt) {
+        return alt != null && inFront(target, frontPackage) ? alt : target;
+    }
+
     /** Created on first use: building a Handler while the class loads breaks the JVM tests. */
     private static Presses presses;
 
