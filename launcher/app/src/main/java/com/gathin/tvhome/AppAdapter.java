@@ -19,6 +19,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -220,6 +222,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean uniformTiles;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
+    /** A theme's terminal_text: every tile is a line of monospace text over black, no icon and no banner. */
+    private final boolean terminalText;
+    /** Terminal text colour: the theme's terminal_color, or TerminalPrompt's phosphor red when it names none. */
+    private final int terminalColor;
     private final List<Entry> items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -248,6 +254,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         this.uniformTiles = cfg.uniformTiles;
+        this.terminalText = cfg.terminalText;
+        this.terminalColor = cfg.terminalColor != 0 ? cfg.terminalColor : TerminalPrompt.DEFAULT_COLOR;
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -452,7 +460,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot, terminalText, terminalColor);
     }
 
     @Override
@@ -474,40 +482,45 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         h.card.setVisibility(View.VISIBLE);
         h.card.setFocusable(true);
-        h.name.setText(e.name);
-        // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
-        // In a single row every tile is the dock's kind: the big title above names it.
-        boolean dockKind = DockSlots.inDockRow(dockRow, singleRow, position, dockSize);
-        h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
-        h.inDock = dockKind;
-        boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
-        h.name.setAlpha(focused ? 1f : restNameAlpha);
-        h.card.setScaleX(focused && animations ? focusScale() : 1f);
-        h.card.setScaleY(focused && animations ? focusScale() : 1f);
-        h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
-        h.card.setTranslationZ(focused && advancedEffects ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
-        h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
-        h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
-        // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
-        // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
-        h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
-        if (uniformTiles && e.banner == null) {
-            if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
-            h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
-        }
-        if (e.banner != null) {
-            h.icon.setImageDrawable(null);
-            h.banner.setImageDrawable(e.banner);
-            h.banner.setVisibility(View.VISIBLE);
-            h.icon.setVisibility(View.GONE);
-            h.label.setVisibility(View.GONE);
+        h.entryLabel = e.label;
+        if (terminalText) {
+            bindTerminal(h, e, position);
         } else {
-            h.banner.setImageDrawable(null);
-            h.banner.setVisibility(View.GONE);
-            h.icon.setImageDrawable(e.icon);
-            h.icon.setVisibility(View.VISIBLE);
-            h.label.setText(e.label);
-            h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
+            h.name.setText(e.name);
+            // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
+            // In a single row every tile is the dock's kind: the big title above names it.
+            boolean dockKind = DockSlots.inDockRow(dockRow, singleRow, position, dockSize);
+            h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
+            h.inDock = dockKind;
+            boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
+            h.name.setAlpha(focused ? 1f : restNameAlpha);
+            h.card.setScaleX(focused && animations ? focusScale() : 1f);
+            h.card.setScaleY(focused && animations ? focusScale() : 1f);
+            h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
+            h.card.setTranslationZ(focused && advancedEffects ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
+            h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
+            h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
+            // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
+            // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
+            h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
+            if (uniformTiles && e.banner == null) {
+                if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
+                h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
+            }
+            if (e.banner != null) {
+                h.icon.setImageDrawable(null);
+                h.banner.setImageDrawable(e.banner);
+                h.banner.setVisibility(View.VISIBLE);
+                h.icon.setVisibility(View.GONE);
+                h.label.setVisibility(View.GONE);
+            } else {
+                h.banner.setImageDrawable(null);
+                h.banner.setVisibility(View.GONE);
+                h.icon.setImageDrawable(e.icon);
+                h.icon.setVisibility(View.VISIBLE);
+                h.label.setText(e.label);
+                h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
+            }
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
@@ -524,6 +537,38 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             return true;
         });
+    }
+
+    /**
+     * A theme's terminal_text: the tile is one line of monospace text over black. The banner and the icon go
+     * away, the card keeps its box only to hold the focus (no fill, no outline) and the label moves into it from
+     * its corner at the bottom. Nothing here changes the tile's size, so the grid, the dock and every test
+     * around them keep their numbers; only what is drawn inside a row changes.
+     */
+    private void bindTerminal(Holder h, Entry e, int position) {
+        h.banner.setImageDrawable(null);
+        h.banner.setVisibility(View.GONE);
+        h.icon.setImageDrawable(null);
+        h.icon.setVisibility(View.GONE);
+        h.name.setVisibility(View.GONE);
+        h.card.setBackground(null);
+        // A recycled tile can still be zoomed or lifted from a non-terminal bind: put it back level.
+        h.card.setScaleX(1f);
+        h.card.setScaleY(1f);
+        h.card.setTranslationY(0f);
+        h.card.setTranslationZ(0f);
+        h.banner.setScaleX(1f);
+        h.banner.setScaleY(1f);
+        h.inDock = DockSlots.inDockRow(dockRow, singleRow, position, dockSize);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) h.label.getLayoutParams();
+        lp.gravity = Gravity.START | Gravity.CENTER_VERTICAL;
+        h.label.setLayoutParams(lp);
+        h.label.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+        h.label.setText(TerminalPrompt.row(e.label, h.card.isFocused()));
+        h.label.setTextColor(h.card.isFocused() ? terminalColor : TerminalPrompt.dim(terminalColor));
+        h.label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f);
+        h.label.setLetterSpacing(0.02f);
+        h.label.setVisibility(View.VISIBLE);
     }
 
     /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
@@ -913,12 +958,18 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final boolean reducedMotion;
         /** Alpha of the name while the tile is not focused (always_show_names). */
         final float restNameAlpha;
+        /** A theme's terminal_text: the tile draws one line of text, so the focus code must not zoom or lift it. */
+        final boolean terminalText;
+        /** The terminal text colour, so the focus listener can dim the rows that are not focused. */
+        final int terminalColor;
+        /** The label bound into this holder, so the focus marker can be moved to it without a rebind. */
+        String entryLabel;
         final boolean overshoot;
         /** A dock tile: it grows in place without advanced_effects' lift, which reads as off-centre in the band (#2135). */
         boolean inDock;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
-               boolean reducedMotion, float restNameAlpha, boolean overshoot) {
+               boolean reducedMotion, float restNameAlpha, boolean overshoot, boolean terminalText, int terminalColor) {
             super(v);
             card = v.findViewById(R.id.card);
             cardBackground = card.getBackground();
@@ -926,6 +977,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
+            this.terminalText = terminalText;
+            this.terminalColor = terminalColor;
             this.animations = animations;
             this.advancedEffects = advancedEffects;
             this.reducedMotion = reducedMotion;
@@ -952,6 +1005,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             card.setOnFocusChangeListener((view, focused) -> {
                 view.animate().cancel();
+                if (terminalText) {
+                    // A terminal prompt does not zoom, lift or fade: the row lights up and the > marker
+                    // moves to it, and the text under it (the dock title) still refreshes through the listener.
+                    label.setText(TerminalPrompt.row(entryLabel, focused));
+                    label.setTextColor(focused ? terminalColor : TerminalPrompt.dim(terminalColor));
+                    int pos = getBindingAdapterPosition();
+                    if (focused && listener != null && pos != RecyclerView.NO_POSITION) {
+                        listener.onTileFocused(pos, view);
+                    }
+                    return;
+                }
                 banner.animate().cancel();
                 name.animate().cancel();
                 float scale = !animations ? 1f : advancedEffects ? 1.12f : 1.10f;

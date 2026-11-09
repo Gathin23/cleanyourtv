@@ -70,3 +70,9 @@ rule sit on its wanted list until a screenshot arrives.
 | `clock_format` | <img src="switches/clock_format.jpg" width="320" alt="clock_format on a TV"> |
 | `glow_snap` | <img src="switches/glow_snap.jpg" width="320" alt="glow_snap on a TV: the glow in Netflix red behind the dock"> |
 | `settings_key_clear_task` | <img src="switches/settings_key_clear_task.jpg" width="320" alt="settings_key_clear_task on a TV: the TV Settings screen the gear opens"> |
+| `terminal_text` | <img src="switches/terminal_text.jpg" width="320" alt="terminal_text on a TV: the apps as lines of monospace text, > on the focused one"> |
+| `terminal_color` | <img src="switches/terminal_color.jpg" width="320" alt="terminal_color on a TV: the whole screen in phosphor red"> |
+| `terminal_prompt` | <img src="switches/terminal_prompt.jpg" width="320" alt="terminal_prompt on a TV: a shell prompt of two lines with a block cursor after the typed name"> |
+| `terminal_typing` | <img src="switches/terminal_typing.jpg" width="320" alt="terminal_typing on a TV: the dock title typed out one character at a time"> |
+| `terminal_host` | <img src="switches/terminal_host.jpg" width="320" alt="terminal_host on a TV: the prompt's context line naming root@host"> |
+| `terminal_path` | <img src="switches/terminal_path.jpg" width="320" alt="terminal_path on a TV: the prompt's context line naming the path"> |

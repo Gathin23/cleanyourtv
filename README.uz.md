@@ -277,7 +277,7 @@ Eskiroq qurilmada nima qolgani [Nosozliklarni bartaraf etish](docs/TROUBLESHOOTI
 |---|---|
 | **Sozlash** | Dock tartibi, yashirin ilovalar, Jonli TV ilovasi, qatoriga 4 dan 7 gacha katakcha, kamaytirilgan harakat. Hammasi [`config.xml`](launcher/app/src/main/res/values/config.xml) da |
 | **Televizordagi sozlamalar** | Launcher sozlamalari uchun Sozlamalar ustida OK ni bosib turing. Ixtiyoriy `launcher_settings_button` oddiy bosish ularni toʻgʻridan-toʻgʻri ochishini taʼminlaydi; televizor sozlamalari sozlamalar sahifasida va oʻz ilova katakchasida qoladi. |
-| **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 28 ta mavzu [`themes/`](themes/) da keladi |
+| **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 29 ta mavzu [`themes/`](themes/) da keladi |
 | **31 til** | Televizor tiliga ergashadi; ivrit uchun toʻliq oynalashtirilgan, oʻngdan chapga joylashuv |
 | **Ilovalar kutubxonasi** | Ixtiyoriy: oʻrnatilgan barcha ilovalarni koʻrib chiqing va Home yorliqlarini qoʻshing yoki olib tashlang. Qarang: [ilovalar kutubxonasi qoʻllanmasi](docs/app-library.md) |
 | **Katakcha menyusi** | Standart boʻyicha yoqilgan (`tile_menu`): Koʻchirish va Ilova maʼlumoti uchun katakchada OK ni bosib turing; ilovalar kutubxonasi yoqilganda Home dan olib tashlash ham chiqadi. Oʻchiqda OK ni bosib turish Ilova maʼlumotini ochadi |

@@ -122,18 +122,8 @@
         android:orientation="vertical"
         android:alpha="0">
 
-        <TextView
-            android:id="@+id/heroName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFFFF"
-            android:textSize="48sp"
-            android:fontFamily="@string/font_light"
-            android:letterSpacing="-0.02"
-            android:includeFontPadding="false"
-            android:singleLine="true" />
-
-        <!-- Cinematic shelf only: when the app was last opened, and the dock position dots. -->
+        <!-- Terminal prompt's context line: user@host - [/path], read by MainActivity when a terminal
+             theme is on. Cinematic_home also uses this TextView for its "Last opened" line. -->
         <TextView
             android:id="@+id/heroMeta"
             android:layout_width="wrap_content"
@@ -142,9 +132,20 @@
             android:layout_marginTop="12dp"
             android:singleLine="true"
             android:textColor="#B3FFFFFF"
-            android:textSize="15sp"
+            android:textSize="19sp"
             android:fontFamily="@string/font_light"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/heroName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFFFF"
+            android:textSize="40sp"
+            android:fontFamily="@string/font_light"
+            android:letterSpacing="-0.02"
+            android:includeFontPadding="false"
+            android:singleLine="true" />
 
         <LinearLayout
             android:id="@+id/heroDots"

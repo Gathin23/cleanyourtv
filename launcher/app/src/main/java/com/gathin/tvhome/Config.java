@@ -100,8 +100,20 @@ final class Config {
     /** Language tag the launcher shows itself in instead of the TV's, or "" for the TV's (config.xml, locale). */
     final String locale;
     /** Name after the greeting ("Good morning, Mr. Trịnh"); empty for the greeting alone. */
-    final String greetingName;
-    final boolean moduleCards;
+     final String greetingName;
+    /** Type the dock title out one character at a time (a theme's config.json terminal_typing; off until pushed). */
+    final boolean terminalTyping;
+    /** A blinking block cursor behind the dock title (a theme's config.json terminal_prompt; off until pushed). */
+    final boolean terminalPrompt;
+    /** Every tile is one line of monospace text over black, no icon and no banner (a theme's config.json terminal_text). */
+    final boolean terminalText;
+    /** Terminal text colour, #RRGGBB, for the tiles, the shelf and the header; 0 leaves the launcher's own colours. */
+    final int terminalColor;
+    /** The host the prompt's context line names (a theme's config.json terminal_host); null for the prompt's default. */
+    final String terminalHost;
+    /** The directory the prompt's context line shows (a theme's config.json terminal_path); null for the prompt's default. */
+    final String terminalPath;
+     final boolean moduleCards;
     /** Calmer motion for weak GPUs (config.xml, reduced_motion): stiff spring, short fades, no replay. */
     final boolean reducedMotion;
     /** Open the Live TV app on the first Home after the TV starts (config.xml, boot_to_live_tv). */
@@ -287,7 +299,7 @@ final class Config {
                    Map<String, String> appBanners, String sourcePanelService, String sourcePanelAction,
                    String sourcePanelExtra, boolean coocaaSources, String inputAction, List<String> inputSources,
                    String inputUriScheme, int columns, int rowsBelowDock, boolean animations, boolean advancedEffects,
-                   boolean shamsiDate, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
+                   boolean shamsiDate, boolean terminalTyping, boolean terminalPrompt, boolean terminalText, int terminalColor, String terminalHost, String terminalPath, String greetingName, boolean moduleCards, boolean reducedMotion, boolean bootToLiveTv, boolean openOnStartChoice, boolean dockTitle, boolean dockRow, boolean topMenu, boolean launcherSettingsButton, boolean reorderButton, boolean showNetworkPill, boolean showInputsPill, boolean iconOnlyButtons, boolean iconOnlyInputs, boolean libraryButton, boolean showLibraryPill, int wifiLabelWidth, boolean alwaysShowNames, boolean wallpaperTrueColor, boolean focusOvershoot, String vpnApp,
                    boolean showHomeSettingsShortcut, boolean showStats, String gameDay, boolean appLibrary, boolean appLibrarySelection, boolean libraryOkOpens, boolean uniformTiles, int backgroundColor, int skyIntensity,
                    int[] settingsKeycodes, boolean settingsKeyPanel, boolean restoreKeyServices, boolean wallpaperEnabled, File wallpaper, List<File> wallpapers,
                    int wallpaperRotationMinutes, int wallpaperDim, int dockOpacity, String wallpaperOrder, boolean overlayApplied,
@@ -333,6 +345,12 @@ final class Config {
         this.vpnPill = vpnPill;
         this.locale = locale;
         this.greetingName = greetingName;
+        this.terminalTyping = terminalTyping;
+        this.terminalPrompt = terminalPrompt;
+        this.terminalText = terminalText;
+        this.terminalColor = terminalColor;
+        this.terminalHost = terminalHost;
+        this.terminalPath = terminalPath;
         this.moduleCards = moduleCards;
         this.reducedMotion = reducedMotion;
         this.bootToLiveTv = bootToLiveTv;
@@ -464,6 +482,16 @@ final class Config {
         boolean lunar = res.getBoolean(R.bool.lunar_date);
         int lunarOffset = -1;
         String greetingName = res.getString(R.string.greeting_name).trim();
+        // terminal_typing / terminal_prompt: theme keys with no config.xml line, so the built-in value is
+        // false here (Config.java reads the overlay's, see below). They are not in the Keys table of
+        // themes/README.md yet: that table owes every key in it a screenshot from a real TV
+        // (tests/test_switches.py), and this session had no TV to take one on.
+        boolean terminalTyping = false;
+        boolean terminalPrompt = false;
+        boolean terminalText = false;
+        int terminalColor = 0;
+        String terminalHost = null;
+        String terminalPath = null;
         boolean moduleCards = res.getBoolean(R.bool.module_cards);
         boolean reducedMotion = res.getBoolean(R.bool.reduced_motion);
         boolean bootToLiveTv = res.getBoolean(R.bool.boot_to_live_tv);
@@ -580,6 +608,12 @@ final class Config {
             lunar = bool(json, "lunar_date", lunar);
             lunarOffset = integer(json, "lunar_utc_offset", lunarOffset, -1, 14);
             greetingName = string(json, "greeting_name", greetingName).trim();
+            terminalTyping = bool(json, "terminal_typing", terminalTyping);
+            terminalPrompt = bool(json, "terminal_prompt", terminalPrompt);
+            terminalText = bool(json, "terminal_text", terminalText);
+            terminalColor = color(json, "terminal_color", terminalColor);
+            terminalHost = string(json, "terminal_host", terminalHost);
+            terminalPath = string(json, "terminal_path", terminalPath);
             moduleCards = bool(json, "module_cards", moduleCards);
             reducedMotion = bool(json, "reduced_motion", reducedMotion);
             bootToLiveTv = bool(json, "boot_to_live_tv", bootToLiveTv);
@@ -714,7 +748,7 @@ final class Config {
 
         return new Config(dock, fillDock, hidden, libraryApps, libraryExcludedApps, liveTv, liveTvAction, liveTvInputId, packageMap(launchActions), packageMap(appLabels),
                 packageMap(appBanners), panelService, panelAction, panelExtra, coocaaSources, inputAction, inputSources, inputUriScheme, Math.max(1, columns),
-                Math.max(0, rowsBelow), animations, advancedEffects, shamsi, greetingName, moduleCards, reducedMotion, bootToLiveTv,
+                Math.max(0, rowsBelow), animations, advancedEffects, shamsi, terminalTyping, terminalPrompt, terminalText, terminalColor, terminalHost, terminalPath, greetingName, moduleCards, reducedMotion, bootToLiveTv,
                 openOnStartChoice, dockTitle, dockRow, topMenu, launcherSettingsButton, reorderButton, showNetworkPill, showInputsPill,
                 iconOnlyButtons, iconOnlyInputs, libraryButton, showLibraryPill, wifiLabelWidth, alwaysShowNames, wallpaperTrueColor, focusOvershoot,
                 vpn, homeSettings, showStats, gameDay, library, librarySelection, libraryOkOpens, uniformTiles, background,

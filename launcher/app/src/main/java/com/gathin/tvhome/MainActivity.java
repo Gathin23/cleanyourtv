@@ -113,6 +113,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean rtlAppGrid;
     private static final long MINUTE_MS = 60_000L;
     private static final long STATS_MS = 10_000L;
+    /** Milliseconds per character of the dock title being typed out (terminal_typing). */
+    private static final long TYPE_DELAY_MS = 18L;
+    /** Milliseconds the block cursor stays on, then off, behind the dock title (terminal_prompt). */
+    private static final long CURSOR_PERIOD_MS = 530L;
     /**
      * 2025-01-01. TVs without a clock battery boot at the epoch (08:00 in China) and keep it until network
      * time arrives; the clock, date and greeting stay hidden before then.
@@ -179,6 +183,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** config.xml glow_snap: the glow takes a new colour in one frame instead of the dip-and-fade. */
     private boolean glowSnap;
     private boolean heroShown;
+    /** The label the shelf was last filled with, cursor aside: the shelf only refills when the app changes. */
+    private String lastHeroLabel = "";
+    /** terminal_typing/terminal_prompt: the label being typed out, and how much of it is on screen so far. */
+    private String typingLabel;
+    private int typedChars;
+    /** Whether the block cursor behind the shelf is drawn this half of its blink. */
+    private boolean cursorOn = true;
     private boolean animations;
     private boolean advancedEffects;
     private TextView greeting;
@@ -216,6 +227,18 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean shamsi;
     /** greeting_name: said after the greeting, which is shown in capitals. */
     private String greetingName = "";
+    /** terminal_typing: the dock title types itself out one character at a time (a theme's config.json). */
+    private boolean terminalTyping;
+    /** terminal_prompt: a blinking block cursor behind the dock title (a theme's config.json). */
+    private boolean terminalPrompt;
+    /** terminal_text: every tile is a line of monospace text, no icon and no banner (a theme's config.json). */
+    private boolean terminalText;
+    /** A theme's terminal_color, the colour the terminal text is drawn in; 0 keeps the launcher's own. */
+    private int terminalColor;
+    /** A theme's terminal_host: the host the prompt's context line names; null keeps the prompt's default. */
+    private String terminalHost;
+    /** A theme's terminal_path: the directory the prompt's context line shows; null keeps its default. */
+    private String terminalPath;
     /** Optional time-of-day backdrop (config.xml, sky_intensity); 0 keeps it hidden. */
     private SkyView sky;
     private String vpnApp;
@@ -596,6 +619,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         lunarOffset = Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault());
         if (lunar) lunarDate.setVisibility(View.VISIBLE);
         greetingName = cfg.greetingName;
+        terminalTyping = cfg.terminalTyping;
+        terminalPrompt = cfg.terminalPrompt;
+        terminalText = cfg.terminalText;
+        terminalColor = cfg.terminalColor;
+        terminalHost = cfg.terminalHost;
+        terminalPath = cfg.terminalPath;
         if (cfg.dateBelowClock) moveDateBelowClock();
         if (cfg.dateBelowClock && cfg.iconOnlyButtons && !cfg.topMenu
                 && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
@@ -972,6 +1001,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (savedInstanceState == null && !openLauncherSettingsIfAsked(getIntent()) && !openLibraryIfAsked(getIntent())) {
             openInputsIfAsked(getIntent());
         }
+        applyTerminalTint();
     }
 
     /**
@@ -1317,6 +1347,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         hero.animate().cancel();
         ambient.animate().cancel();
         heroArt.animate().cancel();
+        // A cursor blinking behind another app would keep repainting it, and a half-typed title would be left
+        // on screen for the next Home; the label comes back whole, with its cursor lit, when Home is back.
+        stopTyping();
+        if (terminalPrompt && lastHeroLabel != null) {
+            heroName.setText(shelfLine(lastHeroLabel, lastHeroLabel.length(), true));
+        }
         handler.removeCallbacks(minuteTick);
         handler.removeCallbacks(openWhenOnline);
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
@@ -1671,7 +1707,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         reordering = false;
         dimOthers();   // drop() ran while reordering was still on; restore full brightness now the mode is off
         adapter.setReordering(false);
-        glass.setAccent(festive ? festival.accentColor() : 0);
+        // The festive accent wins over the terminal colour, as it does while the mode runs; with neither, plain white.
+        glass.setAccent(festive ? festival.accentColor() : terminalTint());
         btnReorder.setActivated(false);
         List<String> keys = adapter.movableKeys();
         List<String> before = orderAtStart;
@@ -1919,7 +1956,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         String label = adapter.labelAt(position);
         int color = adapter.ambientColorAt(position);
         float y = dockTopInRoot - 14 * density - 26 * density - hero.getHeight();
-        boolean changed = !label.contentEquals(heroName.getText());
+        boolean changed = !TextUtils.equals(label, lastHeroLabel);
         if (cinematic && heroArtAlpha > 0f) showHeroArt(position);
 
         if (!animations || reducedMotion) {
@@ -1985,10 +2022,83 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** The shelf's text for this dock app: its name and, on the cinematic shelf, "Last opened" and the dots. */
     private void fillHero(int position, String label) {
+        lastHeroLabel = label;
+        if (terminalPrompt || terminalTyping) {
+            typeOutHero(label);
+            // The prompt owns the shelf's second TextView: the cinematic "Last opened" line must not take it.
+            if (!cinematic) return;
+            updateHeroDots(position);
+            return;
+        }
+        stopTyping();
         heroName.setText(label);
         if (!cinematic) return;
         updateHeroMeta(position);
         updateHeroDots(position);
+    }
+
+    /**
+     * The shelf's second line: the command line with the prompt's {@code └─# } in front of the name when the
+     * prompt is on, the plain name otherwise. The cursor is drawn after it while the prompt is on.
+     */
+    private CharSequence shelfLine(String label, int typed, boolean cursorOn) {
+        return terminalPrompt
+                ? TerminalPrompt.command(label, typed, true, cursorOn)
+                : TerminalPrompt.text(label, typed, false, false);
+    }
+
+    /** The shelf's text as a shell prompt: the name typed out a character at a time, then a cursor blinking behind it. */
+    private void typeOutHero(String label) {
+        stopTyping();
+        typedChars = 0;
+        cursorOn = true;
+        // labelAt never answers null, but a Home screen must not crash on one: an empty label just draws nothing.
+        if (label == null) label = "";
+        // Nothing to schedule on the reduced-motion path: the name lands whole, and a lit cursor instead of a blinking one.
+        if (TerminalPrompt.types(label, terminalTyping, reducedMotion)) {
+            typingLabel = label;
+            handler.post(typeChar);
+            return;
+        }
+        if (terminalPrompt) {
+            typingLabel = label;
+            heroName.setText(shelfLine(label, label.length(), true));
+            if (!reducedMotion) handler.postDelayed(blinkCursor, CURSOR_PERIOD_MS);
+            return;
+        }
+        typingLabel = null;
+        heroName.setText(label);
+    }
+
+    /** Types one more character of the shelf, and starts the cursor's blink once the whole label is up. */
+    private final Runnable typeChar = new Runnable() {
+        @Override
+        public void run() {
+            if (typingLabel == null || typedChars >= typingLabel.length()) return;
+            typedChars++;
+            heroName.setText(shelfLine(typingLabel, typedChars, cursorOn));
+            if (typedChars < typingLabel.length()) handler.postDelayed(this, TYPE_DELAY_MS);
+            else if (terminalPrompt) handler.postDelayed(blinkCursor, CURSOR_PERIOD_MS);
+            else typingLabel = null;
+        }
+    };
+
+    /** Swaps the block cursor behind the shelf on and off. */
+    private final Runnable blinkCursor = new Runnable() {
+        @Override
+        public void run() {
+            if (typingLabel == null) return;
+            cursorOn = !cursorOn;
+            heroName.setText(shelfLine(typingLabel, typingLabel.length(), cursorOn));
+            handler.postDelayed(this, CURSOR_PERIOD_MS);
+        }
+    };
+
+    /** Drops whatever the shelf was typing out, and its scheduled callbacks. */
+    private void stopTyping() {
+        handler.removeCallbacks(typeChar);
+        handler.removeCallbacks(blinkCursor);
+        typingLabel = null;
     }
 
     // ---- cinematic shelf -------------------------------------------------------------------------
@@ -2769,10 +2879,47 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             greeting.setText(greetingName.isEmpty() ? getString(res)
                     : getString(R.string.greeting_with_name, getString(res), greetingName));
-            greeting.setTextColor(greetingColor);
+            greeting.setTextColor(terminalTint() != 0 ? terminalTint() : greetingColor);
         }
         if (shamsi) shamsiDate.setText(Shamsi.today(getResources()));
         if (lunar) lunarDate.setText(Lunar.today(getResources(), lunarOffset));
+    }
+
+    /**
+     * The colour the terminal text is drawn in, or 0 when no theme asks for one. A theme's terminal_color
+     * names it; otherwise any of the other terminal keys turns the phosphor red on. Both come through a
+     * theme's config.json only, so a launcher nobody themed keeps its own whites.
+     */
+    private int terminalTint() {
+        return terminalColor != 0 ? terminalColor
+                : (terminalTyping || terminalPrompt || terminalText) ? TerminalPrompt.DEFAULT_COLOR : 0;
+    }
+
+    /**
+     * Draws the header's text and the shelf in the terminal colour: the clock, the date, the greeting (each
+     * minute, from updateGreeting) and the dock title, plus the labels the top-bar pills still carry. The
+     * pill icons stay as they are: they are drawn, not text. Called once, late in onCreate, when every one
+     * of these views exists.
+     */
+    private void applyTerminalTint() {
+        int tint = terminalTint();
+        if (tint == 0) return;
+        glass.setAccent(tint);
+        heroName.setTextColor(tint);
+        TextView meta = findViewById(R.id.heroMeta);
+        if (meta != null) {
+            meta.setTextColor(tint);
+            // The prompt's context line, in place from the start: the shelf then has the height it keeps,
+            // so the name under it never jumps when the first tile takes focus.
+            meta.setText(TerminalPrompt.context(terminalHost, terminalPath));
+            meta.setVisibility(View.VISIBLE);
+        }
+        ((TextView) findViewById(R.id.clock)).setTextColor(tint);
+        ((TextView) findViewById(R.id.ampm)).setTextColor(tint);
+        TextView date = findViewById(R.id.date);
+        if (date != null) date.setTextColor(tint);
+        TextView inputs = findViewById(R.id.btnInputs);
+        if (inputs != null) inputs.setTextColor(tint);
     }
 
     // ---- race-weekend panel (a theme's race_calendar) -----------------------------------------------
