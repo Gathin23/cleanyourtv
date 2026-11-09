@@ -355,8 +355,10 @@ class FontTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "repo").mkdir()
             root = tree(Path(tmp) / "repo", [("tcl-a", tv("TCL A", "TCL"))])
-            # The real script, whose counts this tree changes, so --font hands it the font.
+            # The real script, whose counts this tree changes, so --font hands it the font. It publishes
+            # through tools/picture_file.py, imported from beside it.
             shutil.copy(ROOT / "tools" / "readme_stats.py", root / "tools" / "readme_stats.py")
+            shutil.copy(ROOT / "tools" / "picture_file.py", root / "tools" / "picture_file.py")
             # A checkout has docs/, where the picture goes: the script names the folder it cannot find.
             (root / "docs").mkdir()
             caller = Path(tmp) / "caller"

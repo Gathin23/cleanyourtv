@@ -9,6 +9,9 @@ Google Fonts, and its file is not in this repo: download it and pass the path of
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import picture_file  # noqa: E402  the staged write the wallpaper scripts use
+
 USAGE = ("usage: readme_stats.py [--halloween] <font.ttf> <out.png>\n"
          "  Fredoka, the variable TTF from Google Fonts, is not in this repo: download it and pass the\n"
          "  path of the file you saved.")
@@ -110,8 +113,10 @@ for i, (n, l) in enumerate(STATS):
     for c in l: d.text((x, 160), c, font=lab, fill="#aab3bd"); x += d.textlength(c, font=lab) + sp
     if i: d.line([(PAD + col * i, 56), (PAD + col * i, H - 56)], fill="#2c313a", width=3)
 try:
-    img.save(OUT, optimize=True)
+    picture_file.save(img, OUT, optimize=True)
 except (OSError, ValueError) as error:
-    # The read-only folder or the full disk, or an extension Pillow does not know (`.txt`): found at the
-    # write, after the drawing. Name the file and say that no picture came of the run.
+    # The read-only file, the full disk or an extension Pillow does not know (`.txt`) is found at the
+    # write, after the drawing: the picture is encoded beside the file and renamed into place first, so
+    # an old docs/stats.png is still there for tools/readme_card.py to stack, and this line is true -
+    # the old img.save() opened the destination before encoding and left it cut short.
     sys.exit(f"cannot write {OUT}: {error}. Nothing was written.")

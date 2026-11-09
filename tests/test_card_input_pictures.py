@@ -217,6 +217,8 @@ class SourceCollisionTest(unittest.TestCase):
         (self.template / "tools").mkdir(parents=True)
         for script in (CARD, FEATURED):
             shutil.copy2(script, self.template / "tools" / script.name)
+            # picture_file.py is imported from beside the script: the staging write it publishes with.
+            shutil.copy2(TOOLS / "picture_file.py", self.template / "tools" / "picture_file.py")
         shutil.copy2(LAUNCHER_FONT, self.template / "font.ttf")
         for name in set(read_paths(CARD, halloween=True) + read_paths(FEATURED)):
             target = self.template / name

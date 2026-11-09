@@ -8,6 +8,9 @@ in this repo: pass the path of the copy you downloaded.
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import picture_file  # noqa: E402  the staged write the wallpaper scripts use
+
 USAGE = ("usage: readme_featured.py <font.ttf> <out.png>\n"
          "  Fredoka, the variable TTF from Google Fonts, is not in this repo: download it and pass the\n"
          "  path of the file you saved.")
@@ -161,8 +164,10 @@ ax, ay = x0 + w - 26, ty + 22  # arrow: Fredoka has no U+2192
 d.line([(ax - 12, ay), (ax + 12, ay)], fill="#cfffcf", width=4)
 d.line([(ax + 2, ay - 10), (ax + 13, ay), (ax + 2, ay + 10)], fill="#cfffcf", width=4, joint="curve")
 try:
-    img.convert("RGB").save(OUT, optimize=True)
+    picture_file.save(img.convert("RGB"), OUT, optimize=True)
 except (OSError, ValueError) as error:
-    # The read-only folder or the full disk, or an extension Pillow does not know (`.txt`): found at the
-    # write, after the drawing. Name the file and say that no picture came of the run.
+    # The read-only file, the full disk or an extension Pillow does not know (`.txt`) is found at the
+    # write, after the drawing: the picture is encoded beside the file and renamed into place first, so
+    # the docs/featured.png that was there is intact, and this line is true - the old img.save() opened the
+    # destination before encoding and left it cut short.
     sys.exit(f"cannot write {OUT}: {error}. Nothing was written.")

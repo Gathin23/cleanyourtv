@@ -15,6 +15,9 @@ docs/new-home.jpg and the two its siblings draw - so run it from the repository 
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import picture_file  # noqa: E402  the staged write the wallpaper scripts use
+
 USAGE = ("usage: readme_card.py [--halloween] <font.ttf> <out.jpg>\n"
          "  Fredoka, the variable TTF from Google Fonts, is not in this repo: download it and pass the\n"
          "  path of the file you saved.")
@@ -250,8 +253,10 @@ for i, p in enumerate(parts):
 if HALLOWEEN:
     decorate(card)
 try:
-    card.save(OUT, quality=88, optimize=True)
+    picture_file.save(card, OUT, quality=88, optimize=True)
 except (OSError, ValueError) as error:
-    # The read-only folder or the full disk, or an extension Pillow does not know (`.txt`): found at the
-    # write, after the drawing. Name the file and say that no picture came of the run.
+    # The read-only file, the full disk or an extension Pillow does not know (`.txt`) is found at the
+    # write, after the drawing: the card is encoded beside the file and renamed into place first, so
+    # the docs/card.jpg the front page shows is intact, and this line is true - the old img.save() opened
+    # the destination before encoding and left it cut short.
     sys.exit(f"cannot write {OUT}: {error}. Nothing was written.")
