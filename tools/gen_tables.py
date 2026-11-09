@@ -34,15 +34,21 @@ The counts are the card's alt text ("N TV models · B brands · L languages · "
 feature row and STATS in tools/readme_stats.py. Exit codes: 0 up to date (or written), 1 out of date
 (--check), or a count moved and --font could not draw one of the pictures (the tables are written; the
 picture is not - redraw it before committing), 2 what it was given cannot be read: a tv.json, a marker, or
-the path in --root or --adopt (nothing is written then), or an --adopt row main has changed since the PR
-was written: the tv.json files the patch did apply are on disk and the message names them, the tables are
-not regenerated, so that row is moved into its tv.json by hand and the script run again.
+the path in --root or --adopt (nothing is written then), or a page or a tv.json it cannot write: the pages
+are written beside themselves and replaced only once all of them are, so such a run leaves every page with
+the text it had and names the one that stopped it (the tv.json files an --adopt run already wrote stay
+written), or an --adopt row main has changed since the PR was written: the tv.json files the patch did
+apply are on disk and the message names them, the tables are not regenerated, so that row is moved into
+its tv.json by hand and the script run again.
 """
 import argparse
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from urllib.parse import quote
 
@@ -62,7 +68,7 @@ LINK = re.compile(r"\]\(([^)\s]+)\)")
 
 
 class Problem(Exception):
-    """A tv.json or a marker the script cannot work with; the message says which and why."""
+    """A tv.json, a marker or a page the script cannot work with or write; the message says which and why."""
 
 
 def folders(root):
@@ -325,8 +331,61 @@ def guess_brand(folder, tv, known):
     return re.split(r"[\s,(]", tv)[0]
 
 
-def write_json(path, data):
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+def publish(root, pages):
+    """Replace every (name relative to root, text) in `pages` as one set, or leave all of them as they were.
+
+    Path.write_text() opens the file before it writes, so a page it cannot finish - a full disk, a
+    read-only checkout, a file another process holds open - is left cut short under the name the
+    repository ships it at. On README.md that is the front page cut to whatever the write got to, a
+    traceback and exit 1, the code --check keeps for "the tables are out of date"; the page then has to
+    be restored from git before the run can even be read. A write that stopped halfway through the set
+    was the other half of it: the pages before it held the new counts, the ones after it the old ones,
+    so a --check answer was about a tree no single run wrote.
+
+    So each page is written beside itself first and the pages are replaced only once all of them are
+    written: a run that cannot finish leaves the checkout byte for byte as it was and names the page that
+    stopped it. A page that is a symlink keeps its link (the file it points at is replaced, as
+    write_text did through it), an existing page keeps its mode, and a fresh one gets what write_text
+    would have left it (0666 less the umask, which open() applies to the staging file).
+    """
+    staged, folders, name = [], [], None
+    try:
+        for name, text in pages:
+            target = Path(os.path.realpath(root / name))
+            folder = Path(tempfile.mkdtemp(prefix="." + target.name + "-", dir=target.parent))
+            folders.append(folder)
+            pending = folder / target.name
+            pending.write_text(text, encoding="utf-8")
+            if target.exists():
+                shutil.copymode(target, pending)
+            staged.append((name, pending, target))
+    except OSError as e:
+        for folder in folders:
+            shutil.rmtree(folder, ignore_errors=True)
+        raise Problem(f"cannot write {name}: {e.strerror or e}. Nothing was written: every page this "
+                      f"run had to write keeps the text it had, so --check still answers for the tree "
+                      f"that is there.")
+    written = []
+    try:
+        for name, pending, target in staged:
+            os.replace(pending, target)
+            written.append(name)
+    except OSError as e:
+        # Almost unreachable (the staging folder is beside the page, so a folder that refuses the
+        # rename refused the staging file first), but the message must not claim the checkout is
+        # untouched once some of it is not.
+        raise Problem(f"cannot write {name}: {e.strerror or e}. These pages are written: "
+                      f"{', '.join(written) or 'none'}; these are not: "
+                      f"{', '.join(n for n, _, _ in staged[len(written):])}. Run it again once that is fixed.")
+    finally:
+        for folder in folders:
+            shutil.rmtree(folder, ignore_errors=True)
+    return written
+
+
+def write_json(root, name, data):
+    """`examples/<name>/tv.json`, published by rename: a write that stops leaves the file it was."""
+    publish(root, [(name, json.dumps(data, indent=2, ensure_ascii=False) + "\n")])
 
 
 def adopt(root, patch_text):
@@ -361,6 +420,21 @@ def adopt(root, patch_text):
     have = dict(load(root, allow_missing=True))
     known = sorted({d.get("brand", "") for d in have.values()} - {""})
     out, stale_rows = [], []
+
+    def wrote():
+        """The lines saying which tv.json files this run has written: nothing may read as 'nothing happened'."""
+        written = [f"examples/{n}/tv.json: {what}" for n, what in out]
+        return (["These tv.json files are written and stay written:"] + written) if written \
+            else ["No tv.json was written."]
+
+    def save(name, data):
+        """write_json, or stop: the message says which file failed and what the run left behind."""
+        try:
+            write_json(root, f"examples/{name}/tv.json", data)
+        except Problem as e:
+            raise Problem("\n".join([str(e)] + wrote() + ["The tables were not regenerated, so a later "
+                                                          "--check still answers for them."]))
+
     for name, (tv, os_cell, notes) in sorted(rows.items()):
         folder = root / "examples" / name
         if not folder.is_dir():
@@ -373,26 +447,24 @@ def adopt(root, patch_text):
                 stale_rows.append(f"examples/{name}/tv.json: the row this PR edits has changed on main since; "
                                   f"move the PR's change into tv.json by hand")
                 continue
-            write_json(folder / "tv.json", dict(have[name], tv=tv, os=os_cell, notes=notes))
+            save(name, dict(have[name], tv=tv, os=os_cell, notes=notes))
             out.append((name, "updated tv, os and notes from the PR's row"))
             continue
         brand = guess_brand(name, tv, known)
         data = {"tv": tv, "os": os_cell, "brand": brand, "notes": notes}
         if readme_os.get(tv, os_cell) != os_cell:
             data["readme_os"] = readme_os[tv]
-        write_json(folder / "tv.json", data)
+        save(name, data)
         out.append((name, f"new, brand {brand}" + ("" if brand in known else " (a new brand: check the spelling)")))
     if stale_rows:
         # The files this run did write are said as written, above the rows it did not apply: a maintainer
         # who reads the whole block as "nothing happened" leaves those tv.json files uncommitted, or
         # commits them beside tables that were never regenerated - and the next --check run is the one
         # that says so.
-        written = [f"examples/{n}/tv.json: {what}" for n, what in out]
-        head = (["These tv.json files are written and stay written:"] + written) if written \
-            else ["No tv.json was written."]
+        head = wrote()
         raise Problem("\n".join(head + ["These rows were not applied:"] + stale_rows + [
             "The tables were not regenerated, so README.md and examples/README.md still hold the rows they "
-            "had" + (" and this checkout now answers --check with 1" if written else "") + ". Move that row's change into its tv.json by "
+            "had" + (" and this checkout now answers --check with 1" if out else "") + ". Move that row's change into its tv.json by "
             "hand, then run python3 tools/gen_tables.py again."]))
     return out
 
@@ -474,11 +546,9 @@ def main(argv=None):
                       f"a maintainer runs python3 tools/gen_tables.py after merging and commits the result.")
                 return 1
             return 0
-        changed = []
-        for path, text in render(root).items():
-            if (root / path).read_text(encoding="utf-8") != text:
-                (root / path).write_text(text, encoding="utf-8")
-                changed.append(path)
+        pages = [(path, text) for path, text in render(root).items()
+                 if (root / path).read_text(encoding="utf-8") != text]
+        changed = publish(root, pages)
     except Problem as e:
         print(e, file=sys.stderr)
         return 2
