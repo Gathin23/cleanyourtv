@@ -279,6 +279,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   build `STT2.230505.001.S136 682241`) with setupwraith and launcherx disabled: there the line came every 500 ms from a single
   process, each time with `CountrySettingsModule: SetupProviderGateway getCountryCode() failed to query
   SetupProvider.`, and nothing on screen was wrong. Whether VH21 units do the same has not been reported yet.
+- **The TV stays slow after the debloat, `system_server` keeps a core busy, and `logcat` repeats
+  `IpClient.eth0: ERROR IPv4 configuration failed: java.lang.IllegalStateException: Null LinkAddress given`.**
+  The unused Ethernet port is set to a static address with no address in it: `tools/tv.py 'dumpsys ethernet'`
+  shows `eth0: IP assignment: STATIC` above an empty `Static configuration`. Android starts `IpClient` on
+  `eth0`, fails at once and starts it again, in bursts tens of milliseconds apart, with no cable plugged in. On a
+  Vu Premium FHD 43-inch (`Smart_2K_ATV4`, `hamamatsucho`, Android TV 9, `PTM3.190725.242`) that was 166 errors
+  a minute, `system_server` at 121% and `netd` at 27% in `top` (of 400% for four cores), and 189% idle on the
+  Home screen. It was there before anything was disabled, and no package list touches it. The fix is in the
+  TV's own menu, without a cable: Settings > Network & Internet > Ethernet > IP settings > DHCP. Right after,
+  `dumpsys ethernet` read `IP assignment: DHCP`, the error stopped (0 in the next minute) and idle rose to
+  356-365% over three samples. Not yet checked across a reboot. How the port came to be static on that set is
+  not known.
 - **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
   skips every package in the list and says to reboot first (older copies of the script said "the TV's dumpsys
   shows neither a requested nor a granted permission block" and named Android 5.x instead). Android's watchdog
