@@ -493,5 +493,20 @@ class RecoveryRecordTest(unittest.TestCase):
         self.assertNotIn("could not read", result.stderr)
 
 
+class RecordShapeTest(unittest.TestCase):
+    def test_a_record_that_is_json_but_not_an_object_is_named_not_a_traceback(self):
+        sys.path.insert(0, str(ROOT / "tools"))
+        self.addCleanup(sys.path.remove, str(ROOT / "tools"))
+        import recovery
+        for text in ("[]", "null", '"x"', "7"):
+            with self.subTest(record=text), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "recovery-192.168.1.50-cafab3f3.json"
+                path.write_text(text)
+                with self.assertRaises(SystemExit) as caught:
+                    recovery.load_record(str(path))
+                self.assertIn("unknown recovery record format", str(caught.exception))
+                self.assertEqual(path.read_text(), text, "the file is left for inspection")
+
+
 if __name__ == "__main__":
     unittest.main()
