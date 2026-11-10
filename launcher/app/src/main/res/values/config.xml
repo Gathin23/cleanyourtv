@@ -143,6 +143,14 @@
          the helper's own. Leave it off where a tap is one step. A theme can set it ("consume_volume_keys"). -->
     <bool name="consume_volume_keys">false</bool>
 
+    <!-- With key_filter on, a volume change stops HomeKeyService and InputKeyService filtering keys for 4 s. For
+         firmware that changes volume once per press while any service filters keys, so a held volume key never
+         repeats, and the helpers never see the volume keys (Xiaomi MOEU0, Google TV 14): the first press steps
+         once, a press or hold within those 4 s repeats as usual, and the remote buttons below work again once the
+         pause ends. With gamepad_passthrough on too, filtering stays off while a gamepad is connected. A theme can
+         set it ("volume_pauses_filter"). -->
+    <bool name="volume_pauses_filter">false</bool>
+
     <!-- true: Channel Up/Down do nothing while Home is in front. Unhandled, they open the TV's Live TV app (Sony
          BRAVIA, Android 9: com.sony.dtv.tvx), which is a stray press on a set nobody watches broadcast on. Inside any
          other app the keys go on as before, and no key helper is needed. A theme can set it

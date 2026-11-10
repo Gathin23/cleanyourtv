@@ -38,6 +38,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `gamepad_passthrough` | <img src="switches/gamepad_passthrough.jpg" width="320" alt="gamepad_passthrough on a TV"> |
 | `home_ignore_channel_keys` | <img src="switches/home_ignore_channel_keys.png" width="320" alt="home_ignore_channel_keys on a TV"> |
 | `consume_volume_keys` | <img src="switches/consume_volume_keys.jpg" width="320" alt="consume_volume_keys on a TV"> |
+| `volume_pauses_filter` | <img src="switches/volume_pauses_filter.jpg" width="320" alt="volume_pauses_filter on a TV"> |
 | `wifi_status_warnings` | <img src="switches/wifi_status_warnings.jpg" width="320" alt="wifi_status_warnings on a TV"> |
 | `top_bar_apps` | <img src="switches/top_bar_apps.jpg" width="320" alt="top_bar_apps on a TV"> |
 | `show_greeting` | <img src="switches/show_greeting.jpg" width="320" alt="show_greeting on a TV"> |
