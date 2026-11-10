@@ -188,9 +188,10 @@ class SetValueTest(unittest.TestCase):
         self.assertEqual("string", manage.declared_kind(manage.find("greeting_name")))
         self.assertEqual("config-only", manage.declared_kind(manage.find("settings_fallback_components")))
         self.assertEqual("list", manage.declared_kind(manage.find("input_sources")))
+        self.assertEqual("colour", manage.declared_kind(manage.find("background_color")))
         # A type cell this file does not recognise would fall through to "string" and let a wrong value
         # through, so every cell the table carries today has to land on a kind.
-        known = {"bool", "list", "number", "object", "string", "config-only"}
+        known = {"bool", "list", "number", "object", "string", "config-only", "colour"}
         for cell in sorted(set(types.values())):
             with self.subTest(cell=cell):
                 self.assertIn(manage.declared_kind({"type": cell}), known)
