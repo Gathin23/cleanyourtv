@@ -14,6 +14,16 @@
 # Disabled before this debloat, so not listed (restore.sh would turn them ON):
 # com.google.android.youtube.tvmusic, com.google.android.marvin.talkback.
 #
+# Second unit: Britania Smart TV (Android-reported model "Britania Smart TV", device sunnyvale, manufacturer
+# skyworth), Brazil, Android TV 14, the same firmware UKNV.260821.001: the same set sold under the Britania name.
+# Applied 8 November 2026 in three batches with a Home screenshot after each; rebooted twice and
+# `pm list packages -d` was unchanged both times; in daily use through 10 November with nothing re-enabled. The owner also uncommented katniss, play.games and backdrop
+# and kept com.cltv.fast. Only talkback was disabled out of the box on this unit (tvmusic was enabled).
+# The saved Wi-Fi network belonged to setupwraith here too; the list does not touch it, and the Home handover
+# needed no setupwraith step. power_on_home with HOME_KEY_SERVICE=1 brought Home back under a second after
+# Live TV took the screen at boot. With HomeKeyService on, the real remote's Home, Input, Settings and app
+# buttons worked and a held Volume Up still repeated.
+#
 # Quirks on this firmware, all checked on the TV:
 # - Port 5555 opened with USB debugging alone (no Wireless debugging pairing); off again with USB debugging off.
 # - setupwraith does not answer HOME here (only tvlauncher and Settings' FallbackHome do), so
