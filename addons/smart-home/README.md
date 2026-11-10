@@ -40,8 +40,49 @@ Assistant, open your profile, then Security, then Long-lived access tokens, Crea
   ```
 
   `glance` is optional: without it the app picks the first weather entity and up to six euro fuel-price sensors.
+  `show`, `hide` and `hide_unavailable` are optional too, see [Choosing the rows](#choosing-the-rows).
   The app takes the file into its own storage and deletes it. Keep the file outside the repo (`backup/` is
   git-ignored).
+
+### Choosing the rows
+
+With many entities the list gets long. Three optional keys in the pushed file pick what it shows:
+
+| Key | What it does |
+|---|---|
+| `show` | Only these entity ids, in this order within each section. Empty or missing: every supported entity. |
+| `hide` | Leave these out: entity ids, or a prefix ending in `*`, such as `scene.office_*`. |
+| `hide_unavailable` | `true` leaves out what Home Assistant reports as unavailable (and unknown, except scenes). |
+
+```json
+{"show": ["scene.living_room_bright", "light.floor_lamp", "climate.living_room"], "hide_unavailable": true}
+```
+
+Only the keys in a pushed file change, so a file with these keys alone keeps the address and token. An empty list
+switches that filter off. The rows are filtered before the 80-row cap, and the glance header is not filtered. 
+
+
+<details>
+<summary><b>ℹ️ TIPP: How to find easy a room's entities in Home Assistant</b></summary>
+In [Home Assistant Configuration](https://my.home-assistant.io/redirect/config) go to:  /tools/template
+ 
+ 
+**For a simple Template lists a room's entities:** 
+
+```jinja
+{{ area_entities('Living room') | join(', ') }}  
+```
+
+**More complex Template:**
+
+```jinja
+{% for e in area_entities('terrasse') | select('match', '^(scene|light|switch|fan|input_boolean|climate|sensor|binary_sensor|lock)\.') | sort %}
+{{ e }} – {{ state_attr(e, 'friendly_name') }} ({{ states(e) }})
+{% endfor %}
+```
+
+</details>
+
 
 ## Permissions
 
@@ -74,8 +115,8 @@ change to the glance header.
 - **Self-signed HTTPS** certificates are refused. Use `http://` on the home network or a public certificate.
 - **`homeassistant.local`** names only resolve where the TV's network does mDNS name lookups; use the IP address
   if it doesn't.
-- **Which entities** for the remote list is fixed by domain and device class; the glance list can be named in
-  `config.json`. There is no on-TV picker yet.
+- **Which entities** can appear is fixed by domain and device class; within that, `show` and `hide` pick the rows
+  and the glance list can be named, all in `config.json`. There is no on-TV picker yet.
 
 ## Tested on
 
