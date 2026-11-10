@@ -30,7 +30,8 @@ final class GameDay {
     private static final String[] COLUMNS = {"top_line", "word", "start_ms", "end_ms", "colour", "calendar", "turn_seconds"};
     /** Optional eighth column: fixed text in place of the countdown (a reading, such as the weather). */
     static final String HEADLINE = "headline";
-    private static final String[] PROJECTION = withHeadline();
+    /** The names read out of the answer. Not sent as the projection: see read(). */
+    private static final String[] NAMES = withHeadline();
 
     private static String[] withHeadline() {
         String[] p = java.util.Arrays.copyOf(COLUMNS, COLUMNS.length + 1);
@@ -119,11 +120,12 @@ final class GameDay {
         try {
             io.execute(() -> {
                 List<Object[]> rows = new ArrayList<>();
-                try (Cursor c = ctx.getContentResolver().query(uri, PROJECTION, null, null, null)) {
-                    // By name: a provider may answer with its own column set (MatrixCursor ignores the projection),
-                    // and "headline" is optional, so a provider without it reads as before.
-                    int[] at = new int[PROJECTION.length];
-                    for (int i = 0; c != null && i < PROJECTION.length; i++) at[i] = c.getColumnIndex(PROJECTION[i]);
+                // A null projection (every column), read by name. Asking for "headline" by name would let a provider
+                // that validates the projection against the seven-column contract reject the whole query, and the
+                // panel would go empty; a provider without the column simply answers without it.
+                try (Cursor c = ctx.getContentResolver().query(uri, null, null, null, null)) {
+                    int[] at = new int[NAMES.length];
+                    for (int i = 0; c != null && i < NAMES.length; i++) at[i] = c.getColumnIndex(NAMES[i]);
                     while (c != null && c.moveToNext()) {
                         rows.add(new Object[] {str(c, at[0]), str(c, at[1]), num(c, at[2]), num(c, at[3]),
                                 at[4] < 0 ? null : (Object) c.getInt(at[4]), str(c, at[5]),

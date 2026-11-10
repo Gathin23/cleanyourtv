@@ -146,7 +146,8 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    the countdown and "Live now", for a reading rather than an event (the [Weather](../addons/weather/) add-on
    sends "2°   ↑5°  ↓-1°"). Give such a row a `start_ms` in the past and an `end_ms` when the reading goes stale;
    while one is on Home the launcher asks again every 10 minutes, and the app decides whether that needs a fetch.
-   A provider without the column reads as before.
+   The launcher queries with a null projection and reads every column by name, so a provider without the
+   column, or one that checks a projection against the seven columns above, reads as before.
 
    An empty cursor hides the panel. Keep it to what Home shows anyway: the provider is exported without a
    permission, so it must hold no links, accounts or other private data.
