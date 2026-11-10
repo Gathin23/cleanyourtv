@@ -80,7 +80,7 @@
     <string name="card_prompt_names">การ์ดชื่อ \'%1$s\' แอปคือ \'%2$s\'</string>
     <string name="card_prompt_resigned">%1$s อัปเดตด้วยคีย์ลายเซ็นต์ใหม่ คำตอบก่อนหน้าจึงใช้ไม่ได้แล้ว ตัดสินใจใหม่สำหรับการ์ดของแอปนี้</string>
     <string name="card_prompt_relabelled">%1$s เปลี่ยนชื่อการ์ดหลังจากที่คุณตัดสินใจแล้ว ตัดสินใจใหม่อีกครั้ง</string>
-    <string name="card_prompt_hint">เปลี่ยนได้ภายหลัง: กดค้าง OK ที่การตั้งค่า แล้วเลือก การ์ดโมดูล</string>
+    <string name="card_prompt_hint">เปลี่ยนได้ภายหลัง: กดค้าง OK ที่การตั้งค่า แล้วเลือกการ์ดโมดูล</string>
     <string name="card_prompt_identity">%1$s, คีย์ %2$s</string>
     <string name="card_keep_hidden">เก็บไว้ซ่อน</string>
     <string name="card_show">แสดงการ์ด</string>
@@ -129,8 +129,8 @@
     <string name="race_practice_1">ฝึกซ้อม 1</string>
     <string name="race_practice_2">ฝึกซ้อม 2</string>
     <string name="race_practice_3">ฝึกซ้อม 3</string>
-    <string name="race_sprint_qualifying">ควอลิฟายสปรินต์</string>
-    <string name="race_sprint">สปรินต์</string>
+    <string name="race_sprint_qualifying">ควอลิฟายสปรินท์</string>
+    <string name="race_sprint">สปรินท์</string>
     <string name="race_qualifying">ควอลิฟาย</string>
     <string name="race_race">เรซ</string>
     <string name="race_practice_1_short">FP1</string>
