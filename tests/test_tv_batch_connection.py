@@ -119,7 +119,7 @@ class TvBatchConnectionTest(unittest.TestCase):
     def tearDownClass(cls):
         cls._tmp.cleanup()
 
-    def run_tv(self, args, stdin_text="", drop_at=0, failure="reset"):
+    def run_tv(self, args, stdin_text="", drop_at=0, failure="reset", stdin_bytes=None):
         """(exit status, stdout, stderr, the commands that reached the TV)."""
         work = Path(tempfile.mkdtemp(dir=Path(self._tmp.name)))
         mark, cmds = work / "mark", work / "cmds"
@@ -132,7 +132,10 @@ class TvBatchConnectionTest(unittest.TestCase):
         env["STUB_MARK"], env["STUB_CMDS"] = str(mark), str(cmds)
         env["STUB_DROP_AT"], env["STUB_FAILURE"] = str(drop_at), failure
         r = subprocess.run([sys.executable, str(SCRIPT)] + args, cwd=str(ROOT), env=env,
-                           input=stdin_text, capture_output=True, text=True)
+                           input=stdin_text if stdin_bytes is None else stdin_bytes,
+                           capture_output=True, text=stdin_bytes is None)
+        if stdin_bytes is not None:
+            r.stdout, r.stderr = r.stdout.decode("utf-8"), r.stderr.decode("utf-8")
         sent = cmds.read_text(encoding="utf-8").splitlines() if cmds.exists() else []
         return r.returncode, r.stdout, r.stderr, sent
 
@@ -203,6 +206,44 @@ class TvBatchConnectionTest(unittest.TestCase):
         self.assertIn("Traceback", err)
         self.assertIn("this is not a connection error", err)
         self.assertNotIn("may or may not have run it", err)
+
+    def test_a_batch_that_is_not_utf8_is_refused_before_anything_is_sent(self):
+        # stdin is decoded in chunks, so a bad byte late in the list used to stop the run after the
+        # commands before it had already gone to the TV.
+        lines = [f"pm list packages -d {n}" for n in range(400)]
+        lines[350] = "# T\u00e9l\u00e9 du salon"
+        data = ("\n".join(lines) + "\n").encode("cp1252")
+        status, out, err, sent = self.run_tv(["--batch"], stdin_bytes=data)
+        self.assertEqual(2, status, err)
+        self.assertEqual([], sent, "nothing reaches the TV")
+        self.assertEqual("", out)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("UTF-8", err)
+        self.assertIn("line 351", err)
+
+    def test_the_line_named_counts_a_bom_and_lone_cr_line_ends(self):
+        for name, data in (("BOM", b"\xef\xbb\xbfgetprop a\ngetprop b\n# T\xe9l\xe9\n"),
+                           ("lone CR", b"getprop a\rgetprop b\r# T\xe9l\xe9\r")):
+            with self.subTest(name):
+                status, out, err, sent = self.run_tv(["--batch"], stdin_bytes=data)
+                self.assertEqual(2, status, err)
+                self.assertEqual([], sent)
+                self.assertIn("line 3 ", err)
+
+    def test_a_utf16_batch_is_refused_before_anything_is_sent(self):
+        # What Windows PowerShell 5.1 writes for `>`.
+        data = "pm list packages -d\ngetprop ro.product.model\n".encode("utf-16")
+        status, out, err, sent = self.run_tv(["--batch"], stdin_bytes=data)
+        self.assertEqual(2, status, err)
+        self.assertEqual([], sent)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("UTF-8", err)
+
+    def test_a_utf8_batch_with_a_bom_still_runs_every_command(self):
+        data = "\ufeffpm list packages -d\n# T\u00e9l\u00e9\ngetprop ro.product.model\n".encode("utf-8")
+        status, _, err, sent = self.run_tv(["--batch"], stdin_bytes=data)
+        self.assertEqual(0, status, err)
+        self.assertEqual(["pm list packages -d", "getprop ro.product.model"], sent)
 
 
 if __name__ == "__main__":

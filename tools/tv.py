@@ -25,6 +25,7 @@ Set TV_ADB_BINARY to the Google adb executable to use an already connected, pair
 (including encrypted Wireless debugging). See tools/native-adb.md.
 """
 import errno
+import io
 import os
 import re
 import shutil
@@ -754,6 +755,20 @@ def push(dev, local, remote):
 def main():
     args = sys.argv[1:]
     check_arity(args)
+    batch_lines = None
+    if args and args[0] == "--batch":
+        # The whole list is decoded before the TV is contacted, so a bad byte refuses the run instead of
+        # stopping it half way. utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
+        raw = sys.stdin.buffer.read()
+        try:
+            batch_lines = io.StringIO(raw.decode("utf-8-sig"), newline=None)
+        except UnicodeDecodeError as e:
+            # e.start counts from after a BOM; a lone CR ends a line too, as it does in the loop below.
+            head = raw[:e.start + (3 if raw.startswith(b"\xef\xbb\xbf") else 0)]
+            bad_line = head.replace(b"\r\n", b"\n").replace(b"\r", b"\n").count(b"\n") + 1
+            print(f"--batch: line {bad_line} of the list is not UTF-8; nothing was sent to the TV. "
+                  f"Save the file as UTF-8 and run it again.", file=sys.stderr)
+            return 2
     try:
         dev = connect()
     except Exception as e:
@@ -785,10 +800,8 @@ def main():
         status = pull(dev, args[1], args[2])
     elif args[0] == "--batch":
         # one shell command per stdin line, each run separately on the same connection.
-        # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
-        sys.stdin.reconfigure(encoding="utf-8-sig")
         sent = 0
-        for line in sys.stdin:
+        for line in batch_lines:
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
