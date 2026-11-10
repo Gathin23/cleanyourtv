@@ -52,7 +52,7 @@
 #   takes them and opens that app, or its Appstore page (com.amazon.venezia/.pdi.AppLaunchActivity) when it is
 #   disabled. launcher/'s app_keys cannot remap them here, by keycode or scancode: InputKeyService saw no press.
 #   Fire OS logs each press first ("KeyPressReceiver: Remote button pressed. keyCode: 293"), which is what
-#   Fire Buttons (SHOWCASE.md) reads to open another app instead.
+#   an app holding READ_LOGS can read to open another app instead.
 #
 # Kept on purpose: Live TV and the TV inputs, settings, the Appstore, Silk, OTA updates, the keyboard, remote and
 # Bluetooth services, casting (DIAL, Matter casting), AirPlay (personal choice: mirroring from an iPhone or a Mac),

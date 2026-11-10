@@ -76,11 +76,11 @@ com.apowersoft.mirror.tv
 com.instantbits.cast.receiver
 
 # Preloaded apps (off by choice; comment out any you use)
-com.netflix.ninja
-com.amazon.amazonvideo.livingroom
-com.disney.disneyplus
-com.dazn
-com.google.android.youtube.tv
+# com.netflix.ninja  # off on this set by the owner's choice; uncomment to disable it too
+# com.amazon.amazonvideo.livingroom  # off on this set by the owner's choice; uncomment to disable it too
+# com.disney.disneyplus  # off on this set by the owner's choice; uncomment to disable it too
+# com.dazn  # off on this set by the owner's choice; uncomment to disable it too
+# com.google.android.youtube.tv  # off on this set by the owner's choice; uncomment to disable it too
 com.google.android.youtube.tvkids
 com.google.android.youtube.tvmusic
 com.sky.ott.client.androidtv.SkyIT
@@ -101,8 +101,8 @@ com.figc.vivoazzurrotv
 it.sensiunici_atv
 com.vativision.vativisionapp
 it.rds.androidtv.rdssocialtv
-it.mediaset.infinitytv
-com.apple.atve.androidtv.appletv
+# it.mediaset.infinitytv  # off on this set by the owner's choice; uncomment to disable it too
+# com.apple.atve.androidtv.appletv  # off on this set by the owner's choice; uncomment to disable it too
 ro.antenaplay.app
 ru.iptvremote.android.iptv
 com.mxtech.videoplayer.ad

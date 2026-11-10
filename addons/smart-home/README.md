@@ -59,30 +59,10 @@ With many entities the list gets long. Three optional keys in the pushed file pi
 ```
 
 Only the keys in a pushed file change, so a file with these keys alone keeps the address and token. An empty list
-switches that filter off. The rows are filtered before the 80-row cap, and the glance header is not filtered. 
+switches that filter off. The rows are filtered before the 80-row cap, and the glance header is not filtered.
 
-
-<details>
-<summary><b>ℹ️ TIPP: How to find easy a room's entities in Home Assistant</b></summary>
-In [Home Assistant Configuration](https://my.home-assistant.io/redirect/config) go to:  /tools/template
- 
- 
-**For a simple Template lists a room's entities:** 
-
-```jinja
-{{ area_entities('Living room') | join(', ') }}  
-```
-
-**More complex Template:**
-
-```jinja
-{% for e in area_entities('terrasse') | select('match', '^(scene|light|switch|fan|input_boolean|climate|sensor|binary_sensor|lock)\.') | sort %}
-{{ e }} – {{ state_attr(e, 'friendly_name') }} ({{ states(e) }})
-{% endfor %}
-```
-
-</details>
-
+Tip: to list a room's entities, open Developer tools > Template in Home Assistant and enter
+`{{ area_entities('Living room') | join(', ') }}`; the ids it prints go straight into `show`.
 
 ## Permissions
 

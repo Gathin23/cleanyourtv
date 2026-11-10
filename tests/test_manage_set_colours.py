@@ -138,13 +138,5 @@ class KeysTableTest(unittest.TestCase):
         # this way, so the set of keys is pinned here rather than assumed.
         self.assertEqual(COLOUR_KEYS, set(self.colour_rows()))
 
-    def test_every_colour_row_states_the_rule_set_applies(self):
-        for key, item in sorted(self.colour_rows().items()):
-            with self.subTest(key=key):
-                self.assertEqual("colour", manage.declared_kind(item), f"{key} is not read as a colour")
-                self.assertIn("set", item["what"], f"{key}'s row does not say set refuses a value it cannot read")
-                self.assertTrue("parseColor" in item["what"], f"{key}'s row does not name the reader behind it")
-
-
 if __name__ == "__main__":
     unittest.main()

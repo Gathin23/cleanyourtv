@@ -283,7 +283,7 @@ explicado em [Solução de problemas](docs/TROUBLESHOOTING.md).
 |---|---|
 | **Configuração** | Ordem do dock, aplicativos ocultos, aplicativo de TV ao vivo, de 4 a 7 blocos por linha e animações reduzidas. Tudo em [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Configurações na TV** | Mantenha OK pressionado em Configurações para abrir as configurações do launcher. Opcionalmente, `launcher_settings_button` faz com que um clique normal as abra diretamente; as configurações da TV continuam disponíveis na página de configurações e no bloco do aplicativo correspondente. |
-| **Temas** | Plano de fundo, papel de parede e layout definidos em um `config.json` enviado pelo Wi-Fi, sem recompilação. 28 temas estão incluídos em [`themes/`](themes/), incluindo o `default/` integrado. |
+| **Temas** | Plano de fundo, papel de parede e layout definidos em um `config.json` enviado pelo Wi-Fi, sem recompilação. 29 temas estão incluídos em [`themes/`](themes/), incluindo o `default/` integrado. |
 | **31 idiomas** | Segue o idioma da TV, com layout totalmente espelhado da direita para a esquerda em hebraico. |
 | **Biblioteca de aplicativos** | Opcional: permite navegar por todos os aplicativos instalados e adicionar ou remover atalhos da tela inicial. Consulte [o guia da biblioteca de aplicativos](docs/app-library.md). |
 | **Menu dos blocos** | Ativado por padrão (`tile_menu`): mantenha OK pressionado em um bloco para acessar Mover, Remover da tela inicial e Informações do app. Se estiver desativado, manter OK pressionado abre Informações do app. |
@@ -503,7 +503,7 @@ quatro dias. Até o dia 19, o repositório se chamava tv-vibehack; os links anti
 
 Duas semanas depois, o projeto era o repositório em alta nº 1 no GitHub na semana de 19 a 25 de outubro,
 com mais de 46 mil estrelas e 5,7 mil forks, além de 1,4 milhão de visualizações e 260 mil clones em 14 dias.
-As listas agora abrangem 463 modelos de TV de 124 marcas. A repercussão: 534 artigos em 57 países e
+As listas agora abrangem 466 modelos de TV de 126 marcas. A repercussão: 534 artigos em 57 países e
 663 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
 (dados de 9 de novembro de 2026).
 
@@ -518,7 +518,7 @@ as mesmas regras para ele.
 |---|---|
 | **Lista de remoção da sua TV** | É a contribuição mais útil: a próxima pessoa com esse modelo não precisará fazer a etapa de identificação. |
 | **Launcher e prompt** | Melhorias no launcher e ajustes para deixar o prompt mais claro também são bem-vindos. |
-| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e trinta e um projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
+| **Criou algo com base no projeto?** | Um launcher, port ou tema: adicione-o ao [SHOWCASE.md](SHOWCASE.md), que já reúne duzentos e trinta e quatro projetos organizados em telas iniciais, forks, complementos, ferramentas e outras plataformas, além de um índice por marca de TV. |
 
 As pessoas cujo trabalho faz parte deste repositório:
 

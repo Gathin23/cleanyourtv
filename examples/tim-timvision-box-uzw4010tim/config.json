@@ -26,7 +26,7 @@
     "com.technicolor.android.dtvscan.project=banner_tv"
   ],
   "app_keys": [
-    "170=timvision.launcher"
+    "170:timvision.launcher"
   ],
   "live_tv_package": "timvision.launcher",
   "restore_key_services": true,

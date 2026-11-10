@@ -75,7 +75,7 @@ com.android.providers.calendar
 com.google.android.syncadapters.calendar
 
 # Apps the third unit does not use
-com.google.android.videos                  # Google TV movies and rentals
-com.hbo.hbonow                             # HBO Max
+# com.google.android.videos                  # Google TV movies and rentals  (off on the third unit by the owner's choice)
+# com.hbo.hbonow                             # HBO Max  (off on the third unit by the owner's choice)
 com.vestel.tv.eib                          # the on-screen e-manual (its label was confirmed on screen)
 com.vewd.core.browser                      # the Vewd browser

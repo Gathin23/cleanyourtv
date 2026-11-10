@@ -24,8 +24,8 @@
   both are read: `tests/test_doc_addresses.py` wants `<tv ip>` or `192.168.1.50` where the address of the
   unit was, and `tests/test_doc_identifiers.py` wants no MAC address and no Android ID, each reported as
   `docs/devices/<name>.md:<line>: <the value>`. A serial number has no shape a test can recognise, so it is
-  left out by hand: `docs/devices/coop-cotv-0001.md` printed one in its Device table while the notes around it
-  say they leave the serial out. Both guards read the same AGENTS.md sentence as the lists do.
+  left out by hand: `docs/devices/coop-cotv-0001.md` once printed one in its Device table while the notes around it
+  said they left the serial out (taken out since). Both guards read the same AGENTS.md sentence as the lists do.
 - Several tests pin facts in `docs/devices/` notes, `PROMPT.md` and `docs/TROUBLESHOOTING.md` (the
   `tests/test_*_note.py` files). If you reword one of those passages, run the suite and keep the fact.
 - Docs and the README stay in step: a new list gets its `tv.json` (the TV tables are generated from it), and a

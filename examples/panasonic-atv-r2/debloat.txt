@@ -55,6 +55,6 @@ com.google.android.marvin.talkback     # TalkBack screen reader: comment out if 
 com.google.android.apps.tachyon        # Google Meet / Duo video calling
 
 # Not used (owner's choice): comment these out to keep them
-com.google.android.katniss             # Google Assistant / voice search (the remote's mic button)
-com.google.android.apps.mediashell     # Chromecast built-in
-com.creative.fastscreen.tv             # FastCast Miracast screen mirroring
+# com.google.android.katniss             # Google Assistant / voice search (the remote's mic button)  (off on this set by the owner's choice)
+# com.google.android.apps.mediashell     # Chromecast built-in  (off on this set by the owner's choice)
+# com.creative.fastscreen.tv             # FastCast Miracast screen mirroring  (off on this set by the owner's choice)

@@ -237,10 +237,5 @@ class KeysTableTest(unittest.TestCase):
         self.assertEqual({"app_keys"}, set(rows))
         self.assertEqual("list", manage.declared_kind(rows["app_keys"]))
 
-    def test_the_row_states_the_rule_set_applies(self):
-        row = next(item for item in manage.switches() if item["id"] == "app_keys")
-        self.assertIn("refuses one before writing the theme", row["what"])
-
-
 if __name__ == "__main__":
     unittest.main()

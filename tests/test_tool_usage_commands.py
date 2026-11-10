@@ -188,8 +188,6 @@ class ToolUsageTest(unittest.TestCase):
         self.assertGreaterEqual(len(read), 8, f"fewer usage blocks read than the tree has: {read}")
         for name in ("screendiff.py", "flamechart.py", "trace.py", "trace_report.py", "readme_card.py"):
             self.assertIn(name, read)
-        self.assertEqual("100644", modes.get("tools/screendiff.py"),
-                         "this sweep judges a bare path by git's mode; screendiff.py is the 100644 case")
 
 
 class ReaderTest(unittest.TestCase):

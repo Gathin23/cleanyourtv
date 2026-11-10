@@ -66,9 +66,9 @@ com.mstar.android.tv.disclaimercustomization     # disclaimer screen used only b
 
 # Preloaded apps and services (off by the owner's choice)
 com.google.android.play.games                    # Play Games
-com.google.android.katniss                       # Google Assistant / voice search
-com.google.android.apps.mediashell               # Chromecast built-in. Keep it if you cast from a phone.
-com.mediatek.androidbox                          # Miracast screen mirroring (MiracastService)
+# com.google.android.katniss                       # Google Assistant / voice search  (off on this set by the owner's choice)
+# com.google.android.apps.mediashell               # Chromecast built-in. Keep it if you cast from a phone.  (off on this set by the owner's choice)
+# com.mediatek.androidbox                          # Miracast screen mirroring (MiracastService)  (off on this set by the owner's choice)
 com.mediatek.tv.freeviewplay                     # Freeview Play, UK only
 
 # Dead weight on a TV
