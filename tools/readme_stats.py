@@ -1,10 +1,10 @@
 """Renders the stat strip (docs/stats.png), the top part of the README card.
 
-Update STATS, then: python3 tools/readme_stats.py Fredoka.ttf docs/stats.png
+Update STATS, then: tools/venv/bin/python -I tools/readme_stats.py Fredoka.ttf docs/stats.png
 and rebuild the card with tools/readme_card.py.
-python3 tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png draws the October strip for
-tools/readme_card.py --halloween: the same STATS in pumpkin orange. Fredoka is the variable TTF from
-Google Fonts, and its file is not in this repo: download it and pass the path of the copy you saved.
+tools/venv/bin/python -I tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png draws the
+October strip for tools/readme_card.py --halloween: the same STATS in pumpkin orange. Fredoka is the variable
+TTF from Google Fonts, and its file is not in this repo: download it and pass the path of the copy you saved.
 """
 import os
 import sys
