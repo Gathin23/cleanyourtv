@@ -341,7 +341,8 @@ def write(out):
                 # Rename alone can bypass a read-only file; check write access without truncating it.
                 os.close(os.open(target, os.O_WRONLY))
             with tempfile.TemporaryDirectory(prefix=".blocky-", dir=os.path.dirname(target)) as staging:
-                part = os.path.join(staging, os.path.basename(target))
+                # The scene is a PNG even if its symlink points to a differently named file.
+                part = os.path.join(staging, os.path.basename(path))
                 cv.img.save(part, optimize=True)
                 if previous is not None:
                     shutil.copymode(target, part)

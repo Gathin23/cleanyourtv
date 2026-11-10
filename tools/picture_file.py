@@ -58,7 +58,8 @@ def save(image, path, **options):
     published = False
     try:
         with tempfile.TemporaryDirectory(prefix=".picture-", dir=os.path.dirname(target)) as staging:
-            part = os.path.join(staging, os.path.basename(target))
+            # Pillow infers the format from the requested name, not a symlink target's suffix.
+            part = os.path.join(staging, os.path.basename(path))
             image.save(part, **options)
             if previous is not None:
                 shutil.copymode(target, part)
