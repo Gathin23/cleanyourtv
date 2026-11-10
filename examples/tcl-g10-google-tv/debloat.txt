@@ -109,12 +109,26 @@
 # - Disabling the stock launcher alone is not enough to install a replacement:
 #   com.google.android.tungsten.setupwraith (the setup wizard) also claims Home at a lower
 #   priority and takes over once launcherx is disabled. Disable it too before setting the new
-#   launcher as Home — launcher/build-and-install.sh does this automatically and rolls back if
-#   Home doesn't land on the new launcher. List it in your own debloat file so restore.sh brings
-#   it back. Confirmed on two separate 55P6K units.
+#   launcher as Home, from your own debloat file so restore.sh brings it back
+#   (`pm disable-user --user 0 com.google.android.tungsten.setupwraith`, one package per call):
+#   launcher/build-and-install.sh does not do it. With the wizard still claiming Home, the script
+#   stops at "Home resolves to ..., not to the new launcher", puts the stock launcher back and tells
+#   you to add the wizard to the list - the same order examples/aipro2k and examples/benq-e55-760
+#   record. Confirmed on two separate 55P6K units.
 # - On the 43P69K, the saved setup Wi-Fi belonged to setupwraith (dumpsys wifi: cname=...setupwraith).
 #   Forget and re-join it in Settings BEFORE disabling setupwraith, so the network belongs to Settings;
 #   otherwise disabling its owner drops Wi-Fi and the ADB connection.
+# - Disabling setupwraith also costs phone casting. The Cast receiver (com.google.android.apps.mediashell)
+#   loads its factory device credentials from a provider inside the wizard
+#   (...setupwraith.libs.castinfo.CastInfoProvider), so once it is off a phone answers "Untrusted device"
+#   and logcat says "No private key, hence empty signature" (docs/TROUBLESHOOTING.md, the bullet that
+#   starts "Casting from a phone fails"). A 65T69C owner on this list reported Chromecast, and
+#   screen mirroring with it, stopped once the list was applied (#3446); the maintainer's reply
+#   points at this wizard. To cast again, enable launcherx first - the
+#   wizard's RecoveryActivity takes Home with launcherx off, see above - then
+#   `pm enable com.google.android.tungsten.setupwraith`; if no ClientAuthSigner line comes,
+#   `am crash $(pidof com.google.android.apps.mediashell)` starts the receiver again with it. The other
+#   Google TV lists state the same cost (examples/google-chromecast-gtv-hd, examples/asus-m1g).
 # - TclAppBoot blocks the launcher's key services (and WireGuard's VPN) at every boot until the
 #   package has APP_AUTO_START (docs/TROUBLESHOOTING.md). Run `appops write-settings` after
 #   `appops set com.gathin.tvhome APP_AUTO_START allow`: app-ops are saved lazily, and a plain
