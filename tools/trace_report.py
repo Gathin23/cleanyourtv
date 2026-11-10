@@ -310,8 +310,12 @@ def compare(before, after, names, markdown):
 
 def render(head, rows, markdown):
     if markdown:
-        lines = ["| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
-        return "\n".join(lines + ["| " + " | ".join(r) + " |" for r in rows])
+        def row(cells):
+            # Run names come from filenames: a pipe must stay inside its table cell.
+            escaped = [str(c).replace("\\", "\\\\").replace("|", "\\|") for c in cells]
+            return "| " + " | ".join(escaped) + " |"
+        lines = [row(head), "|" + "---|" * len(head)]
+        return "\n".join(lines + [row(r) for r in rows])
     widths = [max(len(str(r[i])) for r in [head] + rows) for i in range(len(head))]
     return "\n".join("  ".join(str(c).ljust(w) for c, w in zip(r, widths)).rstrip() for r in [head] + rows)
 
