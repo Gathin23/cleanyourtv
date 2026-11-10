@@ -1,7 +1,9 @@
-"""Every `tools/<x>.py` command on a page a reader follows names the Python that runs it.
+"""Every command on a page a reader follows that runs a tool from `tools/` runs in a clone.
 
-A clone cannot run the scripts bare: `git ls-files -s tools` has all of them as 100644 except
-`tools/tv.py`, which is 100755 with the venv restart `tests/test_tv_runs_as_documented.py` exists for.
+A clone cannot run the Python scripts bare: `git ls-files -s tools` has them as 100644 except
+`tools/tv.py` and `tools/adb-closed.py`, which are 100755 - tv.py with the venv restart
+`tests/test_tv_runs_as_documented.py` exists for, adb-closed.py because pages run it bare
+(`tools/adb-closed.py <tv ip>`) and it needs only the standard library.
 So a page that writes `tools/check.py --fix` hands the reader this:
 
     $ tools/check.py --fix list.txt
@@ -29,6 +31,15 @@ command. PROMPT.md and .github/maintainer/MAINTAINER.md run `tools/relay.py` and
 bare too and are the maintainer's files (AGENTS.md, "Safety rules ... CI and workflows"), so they are not
 in the sweep.
 
+The four shell scripts are the other half, and they were unread: the pattern above ended at `.py`, though
+`tools/disable.sh`, `restore.sh`, `theme.sh` and `docker-build.sh` are what 301 commands on these pages
+run - the debloat, the undo and the theme push, all of them bare, as `TV_HOST=<tv ip> tools/disable.sh
+<list>` (the four are 100755 in git, which is the only reason those commands work). A page may put `bash`
+in front instead, and that reads the file whatever its mode; without one, the mode is the rule, as it is
+for `.py`. Nothing read either half of that, so a script whose mode was lost - the way tools/tv.py lost
+its own twice - would leave every page printing `Permission denied` and the sweep green. The modes are
+still git's, and the walk is still the pages.
+
 Needs no TV and no interpreter: the modes are git's and the pages are read.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
@@ -45,8 +56,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PAGE_GLOBS = ("README*.md", "docs/**/*.md", "themes/**/*.md", "examples/**/*.md", "addons/**/*.md")
 
 SPAN = re.compile(r"`([^`\n]+)`")
-# The script a command runs, in the forms the pages use: tools/x.py, ./tools/x.py, tools\x.py.
-SCRIPT = re.compile(r"(?:\./)?tools[/\\]([A-Za-z0-9_.-]+)\.py")
+# The script a command runs, in the forms the pages use: tools/x.py, ./tools/x.py, tools\x.py - and the
+# shell scripts beside them, which a page runs bare because git carries them executable.
+SCRIPT = re.compile(r"(?:\./)?tools[/\\]([A-Za-z0-9_.-]+)\.(py|sh)")
+# A shell named in front of a shell script: `bash tools/disable.sh <list>` reads the file whatever its mode.
+# The path form is allowed (/bin/sh), and so are flags (bash -e); the name has to end the prefix.
+SHELL = re.compile(r"(?:^|[\s;&|/])(?:bash|sh|dash|zsh|ksh)(?:\s+-[A-Za-z]+)*\s*$")
 # A shell assignment of an interpreter, and a variable used as one: PY=tools/venv/bin/python, "$PY" -I ...
 ASSIGNMENT = re.compile(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(\S+)")
 VARIABLE = re.compile(r"\$(?:\{([A-Za-z_][A-Za-z0-9_]*)\}|([A-Za-z_][A-Za-z0-9_]*))")
@@ -93,7 +108,7 @@ def judged(text):
             continue
         if not command[match.end():][:1].isspace():
             continue          # the path alone, or a path with a comment after it: a mention, not a command
-        found.append((number, command, "tools/" + match.group(1) + ".py", match.start()))
+        found.append((number, command, "tools/" + match.group(1) + "." + match.group(2), match.start()))
     return found
 
 
@@ -114,25 +129,35 @@ def refusals(text, modes, page=""):
     for number, command, script, start in judged(text):
         prefix = command[:start]
         where = f"{page}:{number}" if page else f"line {number}"
-        if "python" in prefix.lower():
-            continue          # `tools/venv/bin/python -I tools/x.py ...`
-        named = [one or two for one, two in VARIABLE.findall(prefix)]
-        if named:
-            # `"$PY" -I tools/x.py ...`: fine when the page sets PY to an interpreter.
-            unset = [name for name in named if name not in variables]
-            if unset:
-                problems.append(f"{where}: `{command}` runs on ${unset[0]}, which the page never sets: "
-                                f"the shell answers `command not found`, so nothing reaches the TV. Set "
-                                f"{unset[0]}=tools/venv/bin/python, or name the venv's Python in the command")
-            elif not any("python" in variables[name] for name in named):
-                problems.append(f"{where}: `{command}` runs on ${named[0]}, which the page sets to "
-                                f"{variables[named[0]]}, not a Python")
-            continue
+        shell_script = script.endswith(".sh")
+        if shell_script:
+            if SHELL.search(prefix):
+                continue      # `bash tools/disable.sh <list>`: the shell reads the file whatever its mode
+        else:
+            if "python" in prefix.lower():
+                continue      # `tools/venv/bin/python -I tools/x.py ...`
+            named = [one or two for one, two in VARIABLE.findall(prefix)]
+            if named:
+                # `"$PY" -I tools/x.py ...`: fine when the page sets PY to an interpreter.
+                unset = [name for name in named if name not in variables]
+                if unset:
+                    problems.append(f"{where}: `{command}` runs on ${unset[0]}, which the page never sets: "
+                                    f"the shell answers `command not found`, so nothing reaches the TV. Set "
+                                    f"{unset[0]}=tools/venv/bin/python, or name the venv's Python in the command")
+                elif not any("python" in variables[name] for name in named):
+                    problems.append(f"{where}: `{command}` runs on ${named[0]}, which the page sets to "
+                                    f"{variables[named[0]]}, not a Python")
+                continue
         mode = modes.get(script)
         if mode == "100755":
-            continue          # tv.py starts again under tools/venv itself
+            continue          # git carries it executable, which is what a bare command needs
         if mode is None:
             problems.append(f"{where}: `{command}` names {script}, which tools/ does not hold")
+        elif shell_script:
+            problems.append(f"{where}: `{command}` starts {script}, which git has as {mode}: "
+                            f"the shell answers `Permission denied` (exit 126). Name a shell in front, "
+                            f"e.g. bash {script} ..., or keep the file executable in git "
+                            f"(git update-index --chmod=+x {script})")
         else:
             problems.append(f"{where}: `{command}` starts {script}, which git has as {mode}: "
                             f"the shell answers `Permission denied` (exit 126). Name the venv's Python, "
@@ -174,11 +199,33 @@ class DocumentedCommandsTest(unittest.TestCase):
                 seen.append("%s:%d %s" % (Path(path).relative_to(ROOT), number, command))
         self.assertGreaterEqual(len(seen), 40, "the sweep read %d tool commands:\n%s" % (len(seen), "\n".join(seen)))
 
+    def test_the_sweep_reads_the_shell_script_commands_too(self):
+        # 301 commands on these pages run a tools/*.sh bare; a pattern that ended at `.py` read none of them.
+        counts = {}
+        for path in pages():
+            for _, _, script, _ in judged(Path(path).read_text(encoding="utf-8", errors="replace")):
+                counts[script] = counts.get(script, 0) + 1
+        shell = {one: count for one, count in counts.items() if one.endswith(".sh")}
+        self.assertGreaterEqual(sum(shell.values()), 200, "the sweep read %d shell-script commands: %s"
+                                % (sum(shell.values()), shell))
+        for name in ("tools/disable.sh", "tools/restore.sh", "tools/theme.sh"):
+            self.assertIn(name, shell, "no page runs %s" % name)
+
+    def test_every_shell_script_is_executable_in_git(self):
+        # A page runs these bare, so the mode is the whole rule; the fix is git's, not the page's.
+        modes = self.modes or {}
+        scripts = sorted(one for one in modes if one.endswith(".sh"))
+        self.assertGreaterEqual(len(scripts), 4, "tools/ holds %d shell scripts: %s" % (len(scripts), scripts))
+        lost = ["%s is %s" % (one, modes[one]) for one in scripts if modes[one] != "100755"]
+        self.assertEqual([], lost, "a page runs these bare, so a mode other than 100755 answers "
+                                   "`Permission denied` (exit 126): " + ", ".join(lost))
+
 
 class ReaderTest(unittest.TestCase):
     """The rule itself, on pages written here: a command is judged, a mention is not."""
 
-    MODES = {"tools/check.py": "100644", "tools/readme_card.py": "100644", "tools/tv.py": "100755"}
+    MODES = {"tools/check.py": "100644", "tools/readme_card.py": "100644", "tools/tv.py": "100755",
+             "tools/disable.sh": "100755", "tools/theme.sh": "100644"}
 
     def test_a_bare_command_is_refused(self):
         problems = refusals("Run `tools/check.py --fix list.txt` on that list.", self.MODES, "page.md")
@@ -233,6 +280,38 @@ class ReaderTest(unittest.TestCase):
         problems = refusals(text, self.MODES, "page.md")
         self.assertEqual(1, len(problems), problems)
         self.assertIn("which the page sets to /bin/true, not a Python", problems[0])
+
+    def test_a_shell_script_git_carries_executable_may_be_given_bare(self):
+        # The form every list page uses: the env prefix, then the script, as git has it executable.
+        for text in ("`TV_HOST=<tv ip> tools/disable.sh examples/acme/debloat.txt`",
+                     "```bash\nTV_HOST=192.168.1.50 tools/disable.sh examples/acme/debloat.txt\n```"):
+            self.assertEqual([], refusals(text, self.MODES, "page.md"), text)
+
+    def test_a_shell_script_whose_mode_was_lost_is_refused(self):
+        problems = refusals("`TV_HOST=<tv ip> tools/theme.sh examples/hy320` pushes it.",
+                            self.MODES, "page.md")
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("page.md:1", problems[0])
+        self.assertIn("tools/theme.sh", problems[0])
+        self.assertIn("100644", problems[0])
+        self.assertIn("Permission denied", problems[0])
+        self.assertIn("bash tools/theme.sh", problems[0])
+        self.assertIn("git update-index --chmod=+x tools/theme.sh", problems[0])
+
+    def test_a_shell_in_front_reads_the_script_whatever_its_mode(self):
+        for text in ("`bash tools/theme.sh examples/hy320`", "`/bin/sh tools/theme.sh examples/hy320`",
+                     "`TV_HOST=<tv ip> bash -e tools/theme.sh examples/hy320`"):
+            self.assertEqual([], refusals(text, self.MODES, "page.md"), text)
+
+    def test_a_shell_script_the_tree_does_not_hold_is_named(self):
+        problems = refusals("`tools/no_such_thing.sh examples/acme/debloat.txt`", self.MODES, "page.md")
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("which tools/ does not hold", problems[0])
+
+    def test_a_mention_of_a_shell_script_is_not_a_command(self):
+        for text in ("`tools/theme.sh` takes the theme folder.",
+                     "| [`tools/restore.sh`](tools/restore.sh) | Puts every package back. |"):
+            self.assertEqual([], refusals(text, self.MODES, "page.md"), text)
 
 
 if __name__ == "__main__":
