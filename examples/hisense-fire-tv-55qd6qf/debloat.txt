@@ -27,6 +27,11 @@
 #   hero banner; Amazon's own promotions stay (they come from the protected launcher's feed).
 # - Animation scales at 0.5 make the ☰ side menu open nothing, as on amazon-fire-tv-stick-4k-2023/.
 # - ADB Debugging switched itself off after one of the three reboots: check Developer Options before running a script.
+# - Keep com.amazon.providers.contentsupport if you voice-type inside apps. With it disabled, the Fire TV keyboard
+#   (com.amazon.tv.ime) logs "Voice input is disabled since user's locale = en_US is not supported" and the mic
+#   inside apps (SmartTube, Stremio) does nothing, while the remote's Alexa button still works. Found on a second
+#   55QD6QF (US, same RS8180.3746N build) on 2026-11-09 by re-enabling packages in halves; re-enabling only this
+#   one brings the mic back. The Alexa core (vizzini and its media players, aca) stayed enabled on that unit.
 #
 # For launcher authors (what Fire OS 8 reserves to Amazon here, read from the APKs' manifests):
 # - Switching to an HDMI input: com.amazon.tv.inputpreference.service's PassthroughPlayerActivity needs
@@ -64,7 +69,7 @@ com.amazon.hybridadidservice           # advertising ID
 com.amazon.kso.blackbird               # launcher ad sync / bidding
 com.amazon.media.recommendations       # sponsored and recommendation rows
 com.amazon.sneakpeek                   # autoplaying previews on Home
-com.amazon.providers.contentsupport    # content support provider
+# com.amazon.providers.contentsupport  # KEEP: with it off, the keyboard turns off voice input inside apps (see header)
 com.amazon.shoptv.client               # Shop on Fire TV
 com.amazon.tv.democontent.provider     # retail demo content
 com.amazon.tv.easyupgrade              # "upgrade your Fire TV" promos
