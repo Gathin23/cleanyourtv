@@ -37,8 +37,12 @@ TV_HOST=<tv ip> tools/theme.sh examples/tcl-43c645                        # dock
 TV_HOST=<tv ip> tools/restore.sh examples/tcl-43c645/debloat.txt com.google.android.apps.tv.launcherx   # undo
 ```
 
-On WSL2 the adb daemon hung while forking; `adb -P 15037 nodaemon server` in another terminal plus
-`ADB_PORT=15037` worked.
+On WSL2 the adb daemon hung while forking; `adb -P 15037 nodaemon server` in another terminal, with
+`ANDROID_ADB_SERVER_PORT=15037` exported in the shell that runs the `adb shell` commands below, worked.
+adb reads its server's port from `ANDROID_ADB_SERVER_PORT`, so that is the variable to set (`-P` names a
+port for that one call, and `ADB_PORT` is not one adb reads). The shared tools here do not go through that
+daemon: `tools/tv.py` opens its own connection to the TV, and one that answers on another port is named in
+`TV_HOST=<tv ip>:<port>` (a paired adb connection instead is `TV_ADB_BINARY`, `tools/native-adb.md`).
 
 ## Re-enable one app
 
