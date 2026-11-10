@@ -503,8 +503,8 @@ quatro dias. Até o dia 19, o repositório se chamava tv-vibehack; os links anti
 
 Duas semanas depois, o projeto era o repositório em alta nº 1 no GitHub na semana de 19 a 25 de outubro,
 com mais de 46 mil estrelas e 5,7 mil forks, além de 1,4 milhão de visualizações e 260 mil clones em 14 dias.
-As listas agora abrangem 463 modelos de TV de 124 marcas. A repercussão: 517 artigos em 57 países e
-630 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
+As listas agora abrangem 463 modelos de TV de 124 marcas. A repercussão: 533 artigos em 57 países e
+663 vídeos no YouTube e no Bilibili, todos relacionados em [docs/PRESS.md](docs/PRESS.md)
 (dados de 9 de novembro de 2026).
 
 ## Como contribuir
