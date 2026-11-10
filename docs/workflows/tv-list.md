@@ -35,12 +35,14 @@
    `notes` the Notes cell in `examples/README.md`: one line of Markdown, links relative to `examples/`, `\|`
    for a pipe. Two things in it are read back: a package named in backticks with `kept`, `disabled` or
    `refused` straight after it is a claim about what the list does, and
-   `tests/test_example_readme_package_fates.py` holds it to the list - `kept` and `refused` have to be off
-   an active line, `disabled` on one (the stock launcher `launcher/build-and-install.sh` takes Home from is
-   the exception) - so a package left commented out is not `disabled` however the comment reads, and a
-   package the list still sends is not `kept`. The other is a package count ("19 packages"), which the same
-   test compares with the number of packages the list sends, so a line commented out of `debloat.txt` moves
-   the number in the row with it. Any other wording after the name claims nothing, which is
+   `tests/test_example_readme_package_fates.py` holds it to the lists the folder ships - `kept` and `refused`
+   have to be off an active line of every one of them, `disabled` on an active line of any (the stock launcher
+   `launcher/build-and-install.sh` takes Home from is the exception) - so a package left commented out is not
+   `disabled` however the comment reads, a package any list still sends is not `kept`, and a package a second
+   list turns off can be stated as `disabled`. The other is a package count ("19 packages"), which the same
+   test compares with the number of packages `debloat.txt` sends, so a line commented out of `debloat.txt` moves
+   the number in the row with it - a row that also counts a second list says which list it means. Any other
+   wording after the name claims nothing, which is
    how `notes` stays free prose. `readme_os` is the one optional key: it is the OS cell of the two-column
    table in `README.nl.md`,
    for a set whose row there should read shorter than the same set's row in `examples/README.md` - that table

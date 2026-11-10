@@ -30,6 +30,15 @@ row leaves the table describing a list that is one package shorter, with the sui
 So a count in the notes is compared with the number of packages the list would send,
 the same way a fate is.
 
+A folder may also ship a second list beside its debloat.txt - eight do today, from
+examples/hisense-u75-hengshan/debloat-65u7esg.txt to examples/sony-bravia-4k-ur3/debloat-display-only.txt -
+and tools/disable.sh applies each of them like the first. This walk read the folder's debloat.txt alone, so a
+row that said a package was `kept` while the second list sent it passed: the same failure #1203 fixed inside
+one list, and the one tests/test_sweeps_read_second_lists.py records for the other walks (#3553, #3596, #3618,
+#3598). A fate is judged against every list the folder ships. Only the size stays on debloat.txt: the number a
+row states is the list a reader applies first, and a row that also counts a second list's packages names that
+list itself.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import json
@@ -88,6 +97,30 @@ def list_packages(path):
     return packages
 
 
+def list_files(folder):
+    """Every list one folder ships, debloat.txt first and the second lists by name after it.
+
+    A folder may hold a second list beside its debloat.txt (tests/test_sweeps_read_second_lists.py names the
+    eight that do), with its own Apply and Undo lines, and tools/disable.sh applies it like the first - so a
+    package "kept" in a row has to be off all of them, not only off debloat.txt.
+    """
+    lists = sorted(Path(folder).glob("debloat*.txt"))
+    lists.sort(key=lambda path: (path.name != "debloat.txt", path.name))
+    return lists
+
+
+def folder_packages(folder):
+    """{file name: the packages that file would send} for every list the folder ships, debloat.txt first."""
+    return {path.name: list_packages(path) for path in list_files(folder)}
+
+
+def sent_by(senders, main):
+    """The files that send a package, in a phrase: "its debloat.txt", or all of them when there are two."""
+    if senders == [main]:
+        return "its debloat.txt"
+    return "its " + ", ".join(senders)
+
+
 def stock_launchers():
     """The stock launchers launcher/build-and-install.sh disables once Home has moved."""
     script = (ROOT / "launcher" / "build-and-install.sh").read_text(encoding="utf-8")
@@ -104,36 +137,48 @@ def table_rows(examples):
     return rows
 
 
-def disagreements(folder, notes, active, exempt):
-    """Lines describing every claim in `notes` that the list does not back up."""
+def disagreements(folder, notes, lists, exempt):
+    """Lines describing every claim in `notes` that the folder's lists do not back up.
+
+    `lists` is {file name: packages} for every list the folder ships, debloat.txt first: a package a row calls
+    `kept` or `refused` has to be off all of them, and one it calls `disabled` may sit on any of them, because
+    tools/disable.sh applies each list the same way. The size a row states is still compared with debloat.txt
+    alone - it is the list a reader applies first, and a row that also counts a second list says which list it
+    means (examples/oppo-k9-55-oppocnm632's notes point at debloat-extra.txt in words).
+    """
     problems = []
+    main = next(iter(lists))
     for package, fate in claims(notes):
-        if fate == "kept" and package in active:
+        senders = [name for name, packages in lists.items() if package in packages]
+        if fate == "kept" and senders:
             problems.append(
-                f"{folder}: says {package} is kept, but its debloat.txt disables it "
+                f"{folder}: says {package} is kept, but {sent_by(senders, main)} sends it "
                 f"(a trailing comment does not keep a package off the TV)")
-        if fate == "refused" and package in active:
+        if fate == "refused" and senders:
             problems.append(
-                f"{folder}: says the firmware refuses {package}, but its debloat.txt "
-                f"still lists it (comment the line out, with the reason)")
-        if fate == "disabled" and package not in active and package not in exempt:
+                f"{folder}: says the firmware refuses {package}, but {sent_by(senders, main)} still lists it "
+                f"(comment the line out, with the reason)")
+        if fate == "disabled" and not senders and package not in exempt:
             problems.append(
-                f"{folder}: says {package} is disabled, but its debloat.txt does not list it")
+                f"{folder}: says {package} is disabled, but no list in it sends the package "
+                f"({', '.join(lists)})")
     for size in sizes(notes):
-        if size != len(active):
+        if size != len(lists[main]):
             problems.append(
                 f"{folder}: its row says {size} packages and its debloat.txt carries "
-                f"{len(active)} (move the number with the list, or state no number)")
+                f"{len(lists[main])} (move the number with the list, or state no number)")
     return problems
 
 
 def problems_in(examples, exempt=None):
-    """Every row under `examples` whose notes disagree with the list beside it."""
+    """Every row under `examples` whose notes disagree with the lists beside it."""
     exempt = stock_launchers() if exempt is None else exempt
     problems = []
     for folder, where, notes in table_rows(examples):
-        active = list_packages(Path(examples) / folder / "debloat.txt")
-        problems += [f"{where} {p}" for p in disagreements(folder, notes, active, exempt)]
+        lists = folder_packages(Path(examples) / folder)
+        if not lists:
+            continue     # a folder with no list of its own is tests/test_examples.py's business
+        problems += [f"{where} {p}" for p in disagreements(folder, notes, lists, exempt)]
     return problems
 
 
@@ -178,6 +223,50 @@ class ReadmePackageFatesTest(unittest.TestCase):
         finally:
             shutil.rmtree(root)
 
+    def test_a_row_a_second_list_contradicts_is_reported(self):
+        # The stand-in tree for the gap this widened: the row says a package is kept, debloat.txt
+        # comments it out, and the folder's second list sends it. tools/disable.sh applies that one too,
+        # so the claim is wrong and read as right while only the first list was read.
+        root = Path(tempfile.mkdtemp())
+        try:
+            folder = root / "examples" / "acme-55"
+            folder.mkdir(parents=True)
+            (folder / "tv.json").write_text(
+                json.dumps({"tv": "Acme 55", "os": "Google TV 12", "brand": "Acme",
+                            "notes": "ads and promos; casting `com.acme.cast` kept on this unit"}),
+                encoding="utf-8")
+            (folder / "debloat.txt").write_text(
+                "# Acme 55, Google TV 12\n"
+                "com.acme.ads\n"
+                "# com.acme.cast   # kept: the phone casts to this unit\n", encoding="utf-8")
+            (folder / "debloat-display-only.txt").write_text(
+                "# Acme 55 with no phone in the room\n"
+                "com.acme.ads\ncom.acme.cast\n", encoding="utf-8")
+            problems = problems_in(root / "examples", exempt=set())
+            self.assertEqual(len(problems), 1, problems)
+            self.assertIn("com.acme.cast", problems[0])
+            self.assertIn("debloat-display-only.txt", problems[0])
+        finally:
+            shutil.rmtree(root)
+
+    def test_the_walk_reads_every_list_a_folder_ships(self):
+        # So the sweep above cannot pass by reading debloat.txt alone again: eight folders ship a second
+        # list, and the walk is what hands it to every row's judgement.
+        second = [path for folder in EXAMPLES.iterdir() if folder.is_dir()
+                  for path in list_files(folder) if path.name != "debloat.txt"]
+        self.assertGreaterEqual(len(second), 8,
+                                f"only {len(second)} second lists read: {[str(p) for p in second]}")
+        self.assertIn(EXAMPLES / "hisense-u75-hengshan" / "debloat-65u7esg.txt", second)
+        for folder in sorted(p for p in EXAMPLES.iterdir() if p.is_dir()):
+            lists = list_files(folder)
+            if not lists:
+                continue
+            with self.subTest(folder=folder.name):
+                self.assertEqual("debloat.txt", lists[0].name,
+                                 f"{folder.name}'s lists are read as {[p.name for p in lists]}")
+                for path in lists:
+                    self.assertIn(path.name, folder_packages(folder))
+
 
 class ReaderTest(unittest.TestCase):
     def test_claims_reads_both_fates(self):
@@ -212,7 +301,7 @@ class ReaderTest(unittest.TestCase):
 
     def test_a_count_the_list_is_short_of_is_reported(self):
         problems = disagreements("acme-32", "ads and tracking; 5 packages, reboot-checked",
-                                 active={"com.a.one", "com.a.two", "com.a.three", "com.a.four"},
+                                 {"debloat.txt": {"com.a.one", "com.a.two", "com.a.three", "com.a.four"}},
                                  exempt=set())
         self.assertEqual(len(problems), 1, problems)
         self.assertIn("says 5 packages", problems[0])
@@ -220,14 +309,14 @@ class ReaderTest(unittest.TestCase):
 
     def test_a_count_that_matches_the_list_is_fine(self):
         problems = disagreements("acme-32", "ads and tracking; 3 packages, reboot-checked",
-                                 active={"com.a.one", "com.a.two", "com.a.three"}, exempt=set())
+                                 {"debloat.txt": {"com.a.one", "com.a.two", "com.a.three"}}, exempt=set())
         self.assertEqual(problems, [])
 
     def test_a_count_is_read_beside_a_fate_in_the_same_row(self):
         # Both claims are read in one pass, and a fate the list backs up does not hide the
         # count it does not.
         problems = disagreements("acme-32", "`com.a.one` disabled; 4 packages",
-                                 active={"com.a.one", "com.a.two", "com.a.three"}, exempt=set())
+                                 {"debloat.txt": {"com.a.one", "com.a.two", "com.a.three"}}, exempt=set())
         self.assertEqual(len(problems), 1, problems)
         self.assertIn("says 4 packages", problems[0])
 
@@ -251,33 +340,75 @@ class ReaderTest(unittest.TestCase):
     def test_a_stock_launcher_may_be_claimed_disabled_without_a_line(self):
         # The install script disables it, not the list, so the row is still right.
         problems = disagreements("tcl-x", "stock launcher `com.google.android.tvlauncher` disabled",
-                                 active=set(), exempt={"com.google.android.tvlauncher"})
+                                 {"debloat.txt": set()}, exempt={"com.google.android.tvlauncher"})
         self.assertEqual(problems, [])
 
     def test_a_kept_claim_on_an_active_line_is_reported(self):
         problems = disagreements("sankey", "Live TV `com.zeasn.livetv` kept (needed for HDMI)",
-                                 active={"com.zeasn.livetv"}, exempt=set())
+                                 {"debloat.txt": {"com.zeasn.livetv"}}, exempt=set())
         self.assertEqual(len(problems), 1)
         self.assertIn("com.zeasn.livetv", problems[0])
-        self.assertIn("disables it", problems[0])
+        self.assertIn("sends it", problems[0])
 
     def test_a_refused_claim_on_an_active_line_is_reported(self):
         problems = disagreements("liberton", "`com.google.android.marvin.talkback` is refused",
-                                 active={"com.google.android.marvin.talkback"}, exempt=set())
+                                 {"debloat.txt": {"com.google.android.marvin.talkback"}}, exempt=set())
         self.assertEqual(len(problems), 1)
         self.assertIn("com.google.android.marvin.talkback", problems[0])
         self.assertIn("still lists it", problems[0])
 
     def test_a_refused_claim_without_a_line_is_fine(self):
         problems = disagreements("liberton", "`com.google.android.marvin.talkback` is refused",
-                                 active={"com.a.b"}, exempt=set())
+                                 {"debloat.txt": {"com.a.b"}}, exempt=set())
         self.assertEqual(problems, [])
 
     def test_a_disabled_claim_without_a_line_is_reported(self):
         problems = disagreements("sankey", "camera `com.android.camera2` disabled",
-                                 active={"com.a.b"}, exempt=set())
+                                 {"debloat.txt": {"com.a.b"}}, exempt=set())
         self.assertEqual(len(problems), 1)
-        self.assertIn("does not list it", problems[0])
+        self.assertIn("no list in it sends the package", problems[0])
+
+    def test_a_kept_claim_a_second_list_sends_is_reported(self):
+        # What a row calls kept has to be off every list the folder ships: tools/disable.sh applies the
+        # second one the same way, so a comment in debloat.txt does not keep anything off the TV.
+        problems = disagreements(
+            "acme-65", "casting `com.acme.cast` kept on this unit",
+            {"debloat.txt": {"com.acme.one"},
+             "debloat-65-inch.txt": {"com.acme.one", "com.acme.cast"}}, exempt=set())
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("com.acme.cast", problems[0])
+        self.assertIn("debloat-65-inch.txt", problems[0])
+
+    def test_a_kept_claim_a_second_list_alone_never_sends_is_fine(self):
+        problems = disagreements(
+            "acme-65", "casting `com.acme.cast` kept on this unit",
+            {"debloat.txt": {"com.acme.one"}, "debloat-65-inch.txt": {"com.acme.two"}}, exempt=set())
+        self.assertEqual(problems, [])
+
+    def test_a_disabled_claim_a_second_list_backs_is_read_as_backed(self):
+        # The opposite direction: a row may name a package the second list turns off, which debloat.txt
+        # alone answered as "does not list it".
+        problems = disagreements(
+            "acme-65", "gallery `com.acme.gallery` disabled by the extra list",
+            {"debloat.txt": {"com.acme.one"}, "debloat-extra.txt": {"com.acme.gallery"}}, exempt=set())
+        self.assertEqual(problems, [])
+
+    def test_list_files_reads_the_second_list_after_the_first(self):
+        root = Path(tempfile.mkdtemp())
+        try:
+            folder = root / "acme-55"
+            folder.mkdir()
+            (folder / "debloat.txt").write_text("com.a.one\n", encoding="utf-8")
+            (folder / "debloat-extra.txt").write_text("com.a.two\n", encoding="utf-8")
+            (folder / "debloat-65-inch.txt").write_text("com.a.three\n", encoding="utf-8")
+            self.assertEqual(["debloat.txt", "debloat-65-inch.txt", "debloat-extra.txt"],
+                             [path.name for path in list_files(folder)])
+            self.assertEqual({"debloat.txt": {"com.a.one"},
+                              "debloat-65-inch.txt": {"com.a.three"},
+                              "debloat-extra.txt": {"com.a.two"}}, folder_packages(folder))
+            self.assertEqual([], list_files(root / "no-such-folder"))
+        finally:
+            shutil.rmtree(root)
 
     def test_rows_are_read_from_the_list_folders_only(self):
         rows = table_rows(EXAMPLES)
