@@ -1,29 +1,24 @@
 # TIM TIMVISION Box (uzw4010tim)
 
-Technicolor's Android TV 8.0 Oreo set-top box for Telecom Italia (TIM) (`uzw4010tim`, board `skipper_tim`, Marvell Berlin BG4CT SoC, 2 GB RAM, 8 GB Flash, integrated DVB-T/T2 tuner), debloated and running CleanYourTV.
+Technicolor's Android TV 8.0 Oreo set-top box for Telecom Italia (TIM) (`uzw4010tim`, board `skipper_tim`, Marvell Berlin BG4CT SoC, 2 GB RAM, 8 GB Flash, integrated DVB-T/T2 tuner), debloated and running CleanYourTV, with antenna TV still working.
 
 Everything is disabled safely with `pm disable-user`, nothing is uninstalled from system partitions.
 
 ---
 
-## Operating Modes: Complete Debloat vs. Hybrid DTT
+## Antenna TV without TIMVISION
 
-On the TIM Box, `timvision.launcher` serves two distinct roles:
-1. It is the stock system operator launcher (registered with `category.HOME` at `priority=2`).
-2. It hosts the hardware-accelerated Live TV video player for antenna digital terrestrial channels (`com.canal.player.ui.tv.dvb.BoxPlayerV2Activity`).
+On the TIM Box, `timvision.launcher` is two things at once:
+1. the stock operator launcher, registered with `category.HOME` at `priority=2`, so on Android 8.0 it keeps Home as long as it is enabled;
+2. the app that hosts TIMVISION's own antenna player (`com.canal.player.ui.tv.dvb.BoxPlayerV2Activity`, not exported).
 
-CleanYourTV supports two configurations:
+The tuner itself does not live there. It is a standard Android TV Input Framework service, `com.technicolor.android.dtvinput/.DtvInputService`, which runs on its own and accepts any client.
 
-### Option 1: Complete Debloat (Pure Clean)
-* **How it works:** `timvision.launcher` is disabled alongside all other operator packages.
-* **Home key:** CleanYourTV is the sole launcher on the system. The physical remote HOME button opens CleanYourTV in 0ms.
-* **Live TV:** Use streaming IPTV apps like **OpenTV** (`app.opentv`, preconfigured in dock slot 3) to stream Italian TV channels over the internet.
+The separate **[Digitale Terrestre](https://github.com/Thevirtualmask/timbox-dtt)** app plays it through a `TvView` and scans channels through the tuner's own installer broadcast. With that app installed, `timvision.launcher` is disabled like the rest, Home goes to CleanYourTV natively, and the antenna keeps working.
 
-### Option 2: Hybrid DTT Setup (Keep Terrestrial Antenna TV)
-* **How it works:** `timvision.launcher` remains enabled so the hardware tuner and scanned DTT channels function normally.
-* **Home key:** Because `timvision.launcher` has HOME priority 2 on Android 8.0 Oreo, the Home button opens TIMVISION unless redirected by an accessibility service.
-* **Opening TV:** The 4th slot of the dock opens Live TV directly (`timvision.launcher`).
-* **Channel Tuning:** The **Sintonia DTT** tile (`com.technicolor.android.dtvscan.project`) allows rescanning antenna channels.
+That app is not part of this repository. It is its own project with its own permissions (it uses the box's local ADB to read the scanned channel list), described in its README.
+
+Without it, disabling `timvision.launcher` also removes antenna TV; an IPTV app such as **OpenTV** (`app.opentv`, dock slot 3) covers the Italian channels over the internet.
 
 ---
 
@@ -47,17 +42,19 @@ On Windows (PowerShell):
 tools\disable.ps1 examples/tim-timvision-box-uzw4010tim/debloat.txt -TvHost <tv ip>
 ```
 
-### 3. Install CleanYourTV Launcher
+### 3. (Optional) Install the Digitale Terrestre app for antenna TV
 
-For **Option 1 (Complete Debloat)**, disable the stock launcher during install:
+Install it before the next step and open it once: the first start scans the antenna channels. See its README for the steps and the permissions it asks for.
+
+### 4. Install CleanYourTV Launcher and disable the stock one
+
 ```bash
 TV_HOST=<tv ip> STOCK_LAUNCHER=timvision.launcher launcher/build-and-install.sh
 ```
 
-For **Option 2 (Hybrid DTT)**, keep `timvision.launcher` enabled for antenna playback:
-```bash
-TV_HOST=<tv ip> launcher/build-and-install.sh
-```
+The script disables `timvision.launcher` only after the new launcher has started, and rolls back if Home does not follow.
+
+`config.json` puts Digitale Terrestre in dock slot 4, maps the remote's TV key (keycode 170) to it and adds a **Sintonia DTT** tile (`it.alessio.dtt.sintonia`) for rescans. Without the app those entries simply don't show.
 
 ---
 
@@ -79,4 +76,4 @@ tools\restore.ps1 examples/tim-timvision-box-uzw4010tim/debloat.txt -Stock timvi
 
 ## Background Auto-Installers Note
 
-The TIM Box firmware includes `com.technicolor.app.ota` (ApplicationOta) and `com.google.android.partnersetup`. These services silently re-download commercial preloads (Disney+, Mediaset Infinity, Paramount+/CBS, Hayu, etc.) in the background at night. The debloat list disables both to keep the system clean.
+The TIM Box firmware includes `com.technicolor.app.ota` (ApplicationOta) and `com.google.android.partnersetup`. These services silently re-download commercial preloads (Disney+, Mediaset Infinity, Paramount+/CBS, Hayu, etc.) in the background at night; ApplicationOta also updates `timvision.launcher` itself. The debloat list disables both to keep the system clean. Real firmware updates (`com.technicolor.ota`, `com.technicolor.checkota`) are kept.

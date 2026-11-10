@@ -2,5 +2,5 @@
   "tv": "TIM TIMVISION Box (Vantiva/Technicolor UZW4010TIM, Marvell BG4CT), Italy",
   "os": "Android TV 8.0",
   "brand": "TIM",
-  "notes": "Operator streaming box with DVB-T/T2 tuner: timvision.launcher hosts antenna Live TV (BoxPlayerV2Activity); TIM telemetry, OMA-DM, Broadpeak nanoCDN and commercial preloads disabled; Chromecast, Assistant and tuner preserved; supports complete debloat or keeping timvision.launcher for antenna DTT; reboot-checked"
+  "notes": "Operator streaming box with DVB-T/T2 tuner: TIMVISION launcher, TIM telemetry, OMA-DM, silent partner re-installers (ApplicationOta, Partner Setup) and commercial preloads disabled; antenna TV kept through the tuner's standard TV input with the separate [Digitale Terrestre](https://github.com/Thevirtualmask/timbox-dtt) app; Chromecast, Assistant and firmware updaters preserved; reboot-checked"
 }

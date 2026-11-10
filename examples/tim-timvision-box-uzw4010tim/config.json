@@ -4,7 +4,7 @@
     "com.nuvio.tv",
     "org.smarttube.stable",
     "app.opentv",
-    "timvision.launcher",
+    "it.alessio.dtt",
     "com.nordvpn.android"
   ],
   "hidden_apps": [
@@ -17,18 +17,18 @@
     "com.nuvio.tv=Nuvio",
     "org.smarttube.stable=SmartTube",
     "app.opentv=OpenTV",
-    "timvision.launcher=Digitale Terrestre",
-    "com.technicolor.android.dtvscan.project=Sintonia DTT",
-    "com.nordvpn.android=NordVPN"
+    "it.alessio.dtt=Digitale Terrestre",
+    "com.nordvpn.android=NordVPN",
+    "it.alessio.dtt.sintonia=Sintonia DTT"
   ],
   "app_banners": [
-    "timvision.launcher=banner_tv",
-    "com.technicolor.android.dtvscan.project=banner_tv"
+    "it.alessio.dtt=banner_tv",
+    "it.alessio.dtt.sintonia=banner_tv"
   ],
   "app_keys": [
-    "170:timvision.launcher"
+    "170:it.alessio.dtt"
   ],
-  "live_tv_package": "timvision.launcher",
+  "live_tv_package": "it.alessio.dtt",
   "restore_key_services": true,
   "wallpaper": true,
   "wallpaper_rotation_minutes": 60,
