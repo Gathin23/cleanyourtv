@@ -61,5 +61,20 @@
             android:fontFamily="@string/font_regular"
             android:letterSpacing="0.14"
             android:textAllCaps="true" />
+
+        <!-- lunar_date's second date line (the lunisolar date, or the Hebrew date on an iw/he
+             locale), under the Gregorian date like on Home. Hidden until set. -->
+        <TextView
+            android:id="@+id/dreamLunarDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="2dp"
+            android:textColor="#6EFFFFFF"
+            android:textSize="15sp"
+            android:fontFamily="@string/font_regular"
+            android:letterSpacing="0.10"
+            android:textAllCaps="true"
+            android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

@@ -15,12 +15,14 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -45,6 +47,7 @@ final class ClockScene {
     private final View content;
     private final ClockRefresh clockRefresh;
     private final ImageView ambient;
+    private final TextView lunarDate;
     private final GradientDrawable glow;
     private int colorIndex;
     private int glowColor;
@@ -79,6 +82,7 @@ final class ClockScene {
         content = root.findViewById(R.id.dreamContent);
         clockRefresh = new ClockRefresh(content);
         ambient = root.findViewById(R.id.dreamAmbient);
+        lunarDate = root.findViewById(R.id.dreamLunarDate);
         glow = new GradientDrawable();
         glow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
         ambient.setBackground(glow);
@@ -120,6 +124,14 @@ final class ClockScene {
             cfg = Config.load(ctx);
         } catch (RuntimeException e) {
             return;
+        }
+        // lunar_date's second date line, the same one Home shows under its date: the Hebrew
+        // calendar on an iw/he locale, the lunisolar one otherwise.
+        if (cfg.lunarDate) {
+            lunarDate.setText(Hebrew.isLocale() ? Hebrew.today(ctx.getResources())
+                    : Lunar.today(ctx.getResources(),
+                            Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault())));
+            lunarDate.setVisibility(View.VISIBLE);
         }
         if (!cfg.clockWallpaper) {
             // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
