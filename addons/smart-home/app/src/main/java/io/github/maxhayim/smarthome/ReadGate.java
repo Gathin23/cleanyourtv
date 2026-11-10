@@ -19,7 +19,12 @@ final class ReadGate {
         return generation;
     }
 
-    /** Whether a read started under this generation should still go out or be applied (any thread). */
+    /** The generation now, taken when a command goes out: its reply is dropped if this changes first. */
+    int generation() {
+        return generation;
+    }
+
+    /** Whether a read or a command reply started under this generation should still go out or be applied (any thread). */
     boolean current(int gen) {
         return gen == generation;
     }

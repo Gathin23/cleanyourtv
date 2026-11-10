@@ -153,11 +153,13 @@ public class MainActivity extends Activity {
     private void send(Ha.Call call) {
         if (call == null) return;
         Config c = config;
+        // A reply that comes back after leaving the screen or a new connection is dropped: no status, no read.
+        int gen = reads.generation();
         targets.sent();
         submit(() -> {
             HaClient.Reply r = new HaClient(c.url, c.token).post(call.path, call.body);
             main.post(() -> {
-                if (isFinishing()) return;
+                if (isFinishing() || !reads.current(gen)) return;
                 targets.replied();
                 if (!r.ok()) status.setText(Ha.problem(r.code));
                 main.removeCallbacks(afterCommand);

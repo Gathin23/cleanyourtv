@@ -54,6 +54,33 @@ public class RefreshTest {
         assertTrue(g.finish(now));
     }
 
+    @Test
+    public void aCommandReplyAfterLeavingIsDropped() {
+        ReadGate g = new ReadGate();
+        int sent = g.generation();      // taken when the command goes out
+        g.reset();                      // the screen is left, or the address or token changes
+        assertFalse(g.current(sent));   // so the reply sets no status and starts no read
+    }
+
+    @Test
+    public void aCommandReplyOnTheSameScreenIsKept() {
+        ReadGate g = new ReadGate();
+        int sent = g.generation();
+        int read = g.start();           // reads come and go while the command is out
+        assertTrue(g.finish(read));
+        assertTrue(g.current(sent));
+    }
+
+    @Test
+    public void aCommandSentAfterComingBackIsKept() {
+        ReadGate g = new ReadGate();
+        int old = g.generation();
+        g.reset();
+        int sent = g.generation();
+        assertFalse(g.current(old));
+        assertTrue(g.current(sent));
+    }
+
     private static Ha.Entity thermostat(double target) {
         return new Ha.Entity("climate.nursery", Ha.Kind.CLIMATE, "Nursery", "heat", -1, 21.4, target, "°C");
     }
