@@ -283,6 +283,20 @@ class ReportTest(unittest.TestCase):
         self.assertIn("| start to first frame drawn (ms) | 90 | 48 | -47% |", text)
         self.assertIn("|---|---|---|---|", text)
 
+    def test_markdown_keeps_pipes_and_backslashes_in_the_run_name_cell(self):
+        runs = [("home|gpu-1", {"first frame": 90}), (r"home\|gpu-2", {"first frame": 80})]
+        text = report.report(runs, None, True, nav=False)
+        self.assertEqual(text.splitlines()[1], r"|  | home\|gpu-1 | home\\\|gpu-2 | median | range |")
+        self.assertEqual(text.splitlines()[2], "|---|---|---|---|---|")
+        self.assertIn("| start to first frame drawn (ms) | 90 | 80 | 85 | 80–90 |", text)
+
+    def test_plain_text_keeps_the_original_run_names(self):
+        runs = [("home|gpu-1", {"first frame": 90}), (r"home\|gpu-2", {"first frame": 80})]
+        text = report.report(runs, None, False, nav=False)
+        self.assertIn("home|gpu-1", text)
+        self.assertIn(r"home\|gpu-2", text)
+        self.assertIn("80–90", text)
+
     def test_metrics_no_run_has_are_left_out(self):
         text = report.report(self.RUNS, None, False, nav=False)
         self.assertNotIn("bindApplication", text)
