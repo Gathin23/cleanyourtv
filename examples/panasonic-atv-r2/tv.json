@@ -1,0 +1,6 @@
+{
+  "tv": "Panasonic ATV R2 (SCBC R2, Realtek RTD285O)",
+  "os": "Android TV 11",
+  "brand": "Panasonic",
+  "notes": "Same Android 11 SCBC R2 build as the Nokia ATV R2: recommendation rows, E-SHOW, E-Sticker, S-Channel ad rows, partner auto-installs, the SCBC consent agent, Ambient mode, Play Movies, Play Games, YouTube Music, TalkBack, Meet; Assistant, Chromecast and FastCast off by choice; firmware updaters and the Realtek inputs and remote helpers stay on; setupwraith owns a saved Wi-Fi network. The firmware reopens the last input at power-on, so the launcher's power_on_home was used, and its Home-button helper made a held volume key step once"
+}
