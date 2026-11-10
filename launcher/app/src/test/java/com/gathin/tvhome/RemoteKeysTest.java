@@ -103,6 +103,8 @@ public class RemoteKeysTest {
         assertEquals(2, scans.size());
         assertEquals("com.wbd.hbomax", scans.get(490));
         assertEquals("e.f", scans.get(491));
+        // scancodes are decimal: getevent's hex form is skipped
+        assertTrue(RemoteKeys.parseAppScancodes(Arrays.asList("scan:1ea:a.b")).isEmpty());
         // and the keycode parser leaves scancode entries alone
         assertEquals(1, parse(entries.toArray(new String[0])).size());
     }

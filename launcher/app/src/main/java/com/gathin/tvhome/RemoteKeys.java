@@ -129,8 +129,9 @@ final class RemoteKeys {
     /**
      * scancode -> package, from the "scan:490:com.wbd.hbomax" entries of the same list. For remotes that send
      * several app buttons as one keycode and tell them apart by scancode (Sony BRAVIA: YouTube, Prime Video and
-     * Disney+ are all keycode 196, scancodes 485, 490 and 491). Find it with `getevent -lt` while pressing the
-     * button: the EV_KEY code, in hex. Other entries are skipped; for a scancode listed twice the last entry wins.
+     * Disney+ are all keycode 196, scancodes 485, 490 and 491). Find it with `getevent -t` while pressing the
+     * button: the EV_KEY code, the hex number after 0001 on its line, which this list takes in decimal (01ea is 490).
+     * Other entries are skipped; for a scancode listed twice the last entry wins.
      */
     static Map<Integer, String> parseAppScancodes(Iterable<String> entries) {
         Map<Integer, String> keys = new HashMap<>();
