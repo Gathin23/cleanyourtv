@@ -72,6 +72,11 @@ if args and args[0] == "--push":
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     with open(src, "rb") as f, open(dst, "wb") as g:
         g.write(f.read())
+elif args == ["--batch"]:
+    for line in sys.stdin:
+        line = line.strip()
+        if line:
+            sys.stdout.write(f"$ {line}\n" + Device().shell(line))
 else:
     Device().shell(" ".join(args))
 '''
