@@ -5,6 +5,8 @@
 #
 # Usage: TV_HOST=192.168.1.50 tools/theme.sh themes/aurora
 #        TV_HOST=192.168.1.50 tools/theme.sh --reset        # remove the overlay, back to config.xml
+#        TV_HOST=192.168.1.50 LAUNCHER_PACKAGE=com.ts.launcher tools/theme.sh themes/aurora
+#                                                           # a build under another application id (see below)
 #
 # One argument, and --reset takes none: a second word is refused rather than dropped (see below). Exit status:
 # 0 the theme is on the TV, or the reset ran; 1 the run reached the TV and the theme could not be pushed, or
@@ -12,9 +14,10 @@
 # run stopped before the theme was up and nothing was sent - the command line is not one theme folder or
 # --reset (a word that starts with a dash is not a folder name, -h and --help included), the folder has no
 # config.json or one the launcher would drop, a wallpaper name b64push.py refuses, TV_HOST is unset or empty,
-# the checkout has no tools/venv, or tv.py could not reach the TV before the first file went out (its own
-# message says which). 1 is a run that reached the push, so a theme this script cannot read before it sends
-# anything is not one: it answers 2 with the sentence every one of those refusals ends with.
+# LAUNCHER_PACKAGE is not an application id, the checkout has no tools/venv, or tv.py could not reach the TV
+# before the first file went out (its own message says which). 1 is a run that reached the push, so a theme this
+# script cannot read before it sends anything is not one: it answers 2 with the sentence every one of those
+# refusals ends with.
 set -euo pipefail
 # The wallpaper-name check further down matches with an ASCII range, `^[A-Za-z0-9_.-]+$`, and in a Turkish
 # locale bash leaves i and I out of [A-Za-z] (glibc's collation, the same reason disable.sh pinned it in #3414
@@ -85,8 +88,63 @@ PY=venv/bin/python
 [ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt." \
   "Nothing was sent to the TV." >&2; exit 2; }
 export MSYS_NO_PATHCONV=1
-PKG=com.gathin.tvhome
-DIR=/sdcard/Android/data/$PKG/files
+# The launcher does not always run under its default id. Some firmware only lets a package name it allowlists
+# be Home, so launcher/app/build.gradle exposes -PlauncherApplicationId and the docs send people there (Xiaomi
+# China wants com.ts.launcher, ColorOS TV com.oneplus.tv.launcher2 - docs/devices/xiaomi-mitv-mftr0-debloat-home.md).
+# The directory below, the provider this script opens and the package it restarts were all the default id, so on
+# such a set the theme landed in a directory no launcher reads and the run ended "Theme restart failed: TV
+# refused the command" (#3703). The activity class does not move with the id - it is always
+# <applicationId>/com.gathin.tvhome.MainActivity - so the TV is asked which package wears it, the same HOME
+# query disable.sh reads its claimants with. LAUNCHER_PACKAGE names the id by hand for a set that cannot answer
+# (an Android 8 firmware without `cmd package query-activities`, or a launcher the TV will not start yet), and
+# com.gathin.tvhome stays the answer for a TV that says nothing: that is the build almost every reader has.
+LAUNCHER_ACTIVITY=com.gathin.tvhome.MainActivity
+CLAIM_QUERY='cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
+# An id by hand is still an id: a value with anything else in it would become a directory name and a
+# `content://` authority, and the run would report a theme it never sent.
+case "${LAUNCHER_PACKAGE:-}" in
+  "") ;;
+  *[!A-Za-z0-9_.]*) echo "LAUNCHER_PACKAGE takes the launcher's application id, e.g." \
+    "LAUNCHER_PACKAGE=com.ts.launcher, so $LAUNCHER_PACKAGE is not one. Nothing was sent to the TV." >&2
+    exit 2 ;;
+esac
+# Read once, before the first command that reaches the TV: a command line this script cannot read still sends
+# nothing, so the reset branch and the push below each call this just before they touch the set. The first HOME
+# claimant wearing the launcher's own MainActivity answers; a set that ships the launcher under two ids answers
+# with the first of them.
+resolve_launcher() {
+  if [ -n "${PKG:-}" ]; then return 0; fi
+  PKG="${LAUNCHER_PACKAGE:-}"
+  if [ -z "$PKG" ]; then
+    local claims line candidate
+    claims="$(tv "$CLAIM_QUERY" 2>/dev/null)" || claims=""
+    while IFS= read -r line; do
+      line="${line%$'\r'}"
+      line="${line#"${line%%[![:space:]]*}"}"
+      case "$line" in
+        */"$LAUNCHER_ACTIVITY")
+          candidate="${line%/"$LAUNCHER_ACTIVITY"}"
+          case "$candidate" in
+            ""|*[!A-Za-z0-9_.]*) ;;
+            *) PKG="$candidate"; break ;;
+          esac ;;
+      esac
+    done <<< "$claims"
+  fi
+  PKG="${PKG:-com.gathin.tvhome}"
+  DIR="/sdcard/Android/data/$PKG/files"
+  # The provider is com.<applicationId>.theme (launcher/app/src/main/AndroidManifest.xml), so it moves with
+  # the id too.
+  URI="content://$PKG.theme"
+  # The collection a theme can push. A push empties it before writing the theme's own pictures, and --reset has
+  # to empty it too: the launcher's wallpaper picker (LauncherSettingsActivity.showWallpaperPicker) lists that
+  # folder itself, and an on-TV pick of one of its pictures is read back from it (WallpaperRotation.chosen), so
+  # a reset that left the pictures behind still shows the theme it just removed. Both paths use this one string,
+  # and it is built here because it carries the id.
+  CLEAR_WALLPAPERS="rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP][eE][gG] $DIR/wallpapers/*.[pP][nN][gG] $DIR/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null"
+  # theme_restart.py restarts Home and knows the launcher from its key helpers, so it restarts this id.
+  export LAUNCHER_PACKAGE="$PKG"
+}
 # A unique marker lets the launcher clear on-TV layout/motion choices after every theme push,
 # including a push of identical config.json bytes and --reset.
 REVISION="$("$PY" -I -c 'import uuid; print(uuid.uuid4().hex)')"
@@ -101,7 +159,6 @@ tv() { "$PY" -I tv.py "$@"; }
 # silently ignores the theme whenever the file did not exist yet - a fresh install, or after a reinstall.
 # A provider write creates the file as the launcher, and it cannot truncate a file the shell owns either, so
 # remove our copy first. cp stays as the fallback for firmware without the provider.
-URI=content://$PKG.theme
 TMP=/data/local/tmp/cyt-theme
 # A file's staging path; wallpapers/a.jpg is staged as $TMP-wallpapers-a.jpg.
 stage() { echo "$TMP-${1//\//-}"; }
@@ -120,11 +177,6 @@ NOT_WRITTEN=cyt-theme-not-written
 put() { echo "rm -f $DIR/$1 2>/dev/null; w=; { o=\$(content write --uri $URI/$1 < $(stage "$1") 2>&1) && case \"\$o\" in *'Unsupported operation'*|*'Error while accessing provider'*) false ;; esac && w=1; } || { mkdir -p $(dirname "$DIR/$1") 2>/dev/null; cp $(stage "$1") $DIR/$1 2>/dev/null && w=1; }; s=\$(wc -c 2>/dev/null < $(stage "$1")); rm -f $(stage "$1"); [ -n \"\$w\" ] && { { [ -e $DIR/$1 ] && [ \"\$(wc -c < $DIR/$1)\" = \"\$s\" ]; } || [ \"\$(content read --uri $URI/$1 2>/dev/null | wc -c)\" = \"\$s\" ]; } || echo $NOT_WRITTEN $1"; }
 del() { echo "rm -f $DIR/$1 2>/dev/null; content delete --uri $URI/$1 2>/dev/null"; }
 
-# The collection a theme can push. A push empties it before writing the theme's own pictures, and --reset has to
-# empty it too: the launcher's wallpaper picker (LauncherSettingsActivity.showWallpaperPicker) lists that folder
-# itself, and an on-TV pick of one of its pictures is read back from it (WallpaperRotation.chosen), so a reset
-# that left the pictures behind still shows the theme it just removed. Both paths use this one string.
-CLEAR_WALLPAPERS="rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP][eE][gG] $DIR/wallpapers/*.[pP][nN][gG] $DIR/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null"
 
 # Both paths end with the same restart, and both are past the point where the TV was written to. The helper's
 # own 2 ("the TV did not answer, so nothing was asked of it") describes the restart alone: on this side of the
@@ -160,6 +212,7 @@ put_on() {   # put $1, after the optional command $2 in the same shell call
   fi
 }
 if [ "${1:-}" = --reset ]; then
+  resolve_launcher
   tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $CLEAR_WALLPAPERS" >/dev/null
   put_on theme_revision "printf '%s' '$REVISION' > $TMP-theme_revision"
   restart_home "the theme was removed"
@@ -216,6 +269,8 @@ if [ -d "$THEME/wallpapers" ]; then
   done
 fi
 
+# Everything the TV is asked from here on names the launcher, so the id is read now: the check above sent nothing.
+resolve_launcher
 tv "mkdir -p $DIR" >/dev/null 2>&1 || true
 tv --push "$THEME/config.json" "$TMP-config.json" >/dev/null
 put_on config.json

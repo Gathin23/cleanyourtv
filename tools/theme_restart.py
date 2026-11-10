@@ -3,6 +3,9 @@
 
 Used by theme.sh and theme.ps1, and it takes no arguments: --help prints this text (no tools/venv, no
 TV_HOST and no TV needed for it), and a word it does not take is refused before the TV is asked anything.
+Both callers read the launcher's application id off the TV and pass it in LAUNCHER_PACKAGE (a firmware that
+only lets a package name it allowlists be Home needs the launcher built under that id, #3703); a run of this
+file by hand restarts the default build, com.gathin.tvhome.
 
 Exit status: 0 Home is up and the key helpers it had are bound again, or --help printed this text; 1 the TV
 ran the restart and it failed (a command it refused, or a helper that did not stay bound); 2 nothing was
@@ -16,10 +19,24 @@ import shlex
 import sys
 import time
 
-PACKAGE = "com.gathin.tvhome"
+# The launcher does not always run under its default id: a firmware that only lets a package name it allowlists
+# be Home needs it built with -PlauncherApplicationId (launcher/app/build.gradle), and this helper then
+# force-stopped, started and read the key helpers of a package the set does not have, so a theme that was
+# pushed and did restart Home was reported as "TV refused the command" (#3703). Both callers read the id off the
+# TV and name it here (tools/theme.sh, tools/theme.ps1); a run of this file by hand keeps the default build.
+DEFAULT_PACKAGE = "com.gathin.tvhome"
 SERVICES = "enabled_accessibility_services"
 FLAG = "accessibility_enabled"
 ACTION = "android.accessibilityservice.AccessibilityService"
+
+
+def package():
+    """The launcher's application id on this TV: the one the caller read (LAUNCHER_PACKAGE), else the default.
+
+    A value that is not a package name is not one this helper can restart, and restarting it would answer a
+    theme that is on the TV with a failure about a package nobody has, so it is the default instead."""
+    chosen = os.environ.get("LAUNCHER_PACKAGE", "").strip()
+    return chosen if re.fullmatch(r"[A-Za-z0-9_.]+", chosen) else DEFAULT_PACKAGE
 
 
 def shell(dev, command):
@@ -101,23 +118,25 @@ def restart(dev, pause=time.sleep):
     if not user_text.isdecimal():
         raise RuntimeError("Could not identify the current Android user")
     user = int(user_text)
+    # One reading for the whole restart: the key helpers belong to this id, and so do the commands below.
+    launcher = package()
     get = lambda key: shell(dev, f"settings --user {user} get secure {key}")
     saved = components(get(SERVICES))
     enabled = get(FLAG)
     if enabled not in ("0", "1", "null"):
         raise RuntimeError("Could not read the accessibility enabled flag")
-    helpers = {component for component in saved if component.split("/", 1)[0] == PACKAGE}
+    helpers = {component for component in saved if component.split("/", 1)[0] == launcher}
     home = shell(dev, "cmd package resolve-activity --brief --user " + str(user)
                  + " -a android.intent.action.MAIN -c android.intent.category.HOME")
     def write(services, flag):
         shell(dev, settings_command(user, services, flag))
 
     try:
-        shell(dev, f"am force-stop --user {user} {PACKAGE}")
-        if home.splitlines()[-1:] and home.splitlines()[-1].startswith(PACKAGE + "/"):
+        shell(dev, f"am force-stop --user {user} {launcher}")
+        if home.splitlines()[-1:] and home.splitlines()[-1].startswith(launcher + "/"):
             start = "-a android.intent.action.MAIN -c android.intent.category.HOME"
         else:
-            start = "-n " + PACKAGE + "/.MainActivity"
+            start = "-n " + launcher + "/.MainActivity"
         shell(dev, f"am start --user {user} {start}")
         if not helpers:
             return
@@ -141,7 +160,7 @@ def restart(dev, pause=time.sleep):
                 current = components(get(SERVICES))
                 saved.update(current)
                 flag = get(FLAG)
-                bound = bound_services(shell(dev, f"dumpsys activity services {PACKAGE}"), user)
+                bound = bound_services(shell(dev, f"dumpsys activity services {launcher}"), user)
                 stable = stable + 1 if saved.keys() <= current.keys() and flag == "1" and helpers <= bound else 0
                 # Three readings span two seconds; a first successful bind alone does
                 # not catch the later removal reported on Chromecast (#994).

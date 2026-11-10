@@ -3,14 +3,17 @@
 #
 # Usage: tools\theme.ps1 -TvHost 192.168.1.50 themes\aurora
 #        tools\theme.ps1 -TvHost 192.168.1.50 -Reset
+#        $env:LAUNCHER_PACKAGE='com.ts.launcher'; tools\theme.ps1 -TvHost 192.168.1.50 themes\aurora
+#                                               # a build under another application id (see below)
 #
 # One argument, and -Reset takes none: both together are refused rather than one of them dropped (below).
 # Exit status: 0 the theme is on the TV, or the reset ran; 1 the theme could not be pushed, or Home did not
 # restart after it (a failure of the shared helper stops this script with that status); 2 the run stopped
 # before the theme was up and nothing was sent - the command line is not one theme folder or -Reset, the
 # folder has no config.json or one the launcher would drop, a wallpaper name b64push.py refuses, no TV host
-# was given, or tools\venv is missing. 1 is a run that reached the push, so a theme this script cannot read
-# answers 2, as theme.sh does, instead of stopping with a PowerShell error record.
+# was given, LAUNCHER_PACKAGE is not an application id, or tools\venv is missing. 1 is a run that reached the
+# push, so a theme this script cannot read answers 2, as theme.sh does, instead of stopping with a PowerShell
+# error record.
 param(
     [Parameter(Position = 0)][string]$Theme,
     [switch]$Reset,
@@ -46,7 +49,22 @@ if (-not (Test-Path -LiteralPath $py)) {
     [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
     exit 2
 }
-$pkg = 'com.gathin.tvhome'
+# The launcher does not always run under its default id, and this script's paths, provider and restart all named
+# the default: some firmware only lets a package name it allowlists be Home, so launcher/app/build.gradle exposes
+# -PlauncherApplicationId and the docs send people there (Xiaomi China wants com.ts.launcher, ColorOS TV
+# com.oneplus.tv.launcher2), and a theme pushed to such a set landed where no launcher reads it and the run
+# ended "Home restart recovery failed" (#3703). The activity class does not move with the id - it is always
+# <applicationId>/com.gathin.tvhome.MainActivity - so the TV is asked which package wears it, as theme.sh does
+# with the same query. $env:LAUNCHER_PACKAGE names the id for a set that cannot answer (an Android 8 firmware
+# without `cmd package query-activities`), and com.gathin.tvhome stays the answer for a TV that says nothing:
+# that is the build almost every reader has.
+$launcherActivity = 'com.gathin.tvhome.MainActivity'
+$claimQuery = 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
+# An id by hand is still an id: anything else would become a directory name and a `content://` authority.
+if ($env:LAUNCHER_PACKAGE -and $env:LAUNCHER_PACKAGE -notmatch '^[A-Za-z0-9_.]+$') {
+    [Console]::Error.WriteLine("LAUNCHER_PACKAGE takes the launcher's application id, e.g. LAUNCHER_PACKAGE=com.ts.launcher, so $($env:LAUNCHER_PACKAGE) is not one. Nothing was sent to the TV.")
+    exit 2
+}
 # Runs tools\tv.py or b64push.py and stops on a non-zero exit: 'Stop' only covers cmdlets, so a failed
 # native call would otherwise fall through to "Theme ... is on the TV".
 function Invoke-Tv {
@@ -62,8 +80,6 @@ function Invoke-Tv {
     if ($missing.Count -gt 0) { throw "the TV took neither the provider write nor the copy of $($missing[0].Trim().Split(' ')[1]); the theme was not fully applied" }
     $out
 }
-$dir = "/sdcard/Android/data/$pkg/files"
-$revision = [guid]::NewGuid().ToString('N')
 # One shared recovery path verifies the helpers after Home restarts.
 
 # Some firmware (TCL G07, Android 11) locks the shell out of Android/data. Files are staged in
@@ -73,7 +89,7 @@ $revision = [guid]::NewGuid().ToString('N')
 # silently ignores the theme whenever the file did not exist yet - a fresh install, or after a reinstall.
 # A provider write creates the file as the launcher, and it cannot truncate a file the shell owns either, so
 # remove our copy first. cp stays as the fallback for firmware without the provider.
-$uri = "content://$pkg.theme"
+$revision = [guid]::NewGuid().ToString('N')
 $tmp = '/data/local/tmp/cyt-theme'
 # A file's staging path; wallpapers/a.jpg is staged as $tmp-wallpapers-a.jpg.
 function Stage($name) { "$tmp-$($name -replace '/', '-')" }
@@ -94,10 +110,39 @@ function Drop($name) { "rm -f $dir/$name 2>/dev/null; content delete --uri $uri/
 # The collection a theme can push. A push empties it before writing the theme's own pictures, and -Reset has to
 # empty it too: the launcher's wallpaper picker lists that folder itself, and an on-TV pick of one of its
 # pictures is read back from it, so a reset that left the pictures behind still shows the theme it just removed.
-# Both paths use this one string (the same one theme.sh has).
-$clearWallpapers = "rm -f $dir/wallpapers/*.[jJ][pP][gG] $dir/wallpapers/*.[jJ][pP][eE][gG] $dir/wallpapers/*.[pP][nN][gG] $dir/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $uri/wallpapers 2>/dev/null"
+# What this run calls the launcher, and the two paths built from it. Read once, before the first command that
+# reaches the TV: the refusals below send nothing, so -Reset and the push each call this just before they touch
+# the set. A TV that answers no claimant wearing the launcher's MainActivity, or cannot answer at all, keeps
+# com.gathin.tvhome.
+function Set-Launcher {
+    if ($script:dir) { return }
+    $chosen = $env:LAUNCHER_PACKAGE
+    if (-not $chosen) {
+        # A read that fails is not a reason to stop here: the default id is what the other builds of the
+        # launcher use, and the push itself reports a TV that does not answer.
+        foreach ($line in @(& $py -I tv.py $claimQuery 2>$null)) {
+            $text = "$line".Trim()
+            if ($text.EndsWith("/$launcherActivity")) {
+                $candidate = $text.Substring(0, $text.Length - $launcherActivity.Length - 1)
+                if ($candidate -match '^[A-Za-z0-9_.]+$') { $chosen = $candidate; break }
+            }
+        }
+    }
+    $script:pkg = if ($chosen) { $chosen } else { 'com.gathin.tvhome' }
+    $script:dir = "/sdcard/Android/data/$($script:pkg)/files"
+    # The provider is com.<applicationId>.theme (launcher/app/src/main/AndroidManifest.xml), so it moves too.
+    $script:uri = "content://$($script:pkg).theme"
+    # The collection a theme can push. A push empties it before writing the theme's own pictures, and -Reset has
+    # to empty it too: the launcher's wallpaper picker lists that folder itself, and an on-TV pick of one of its
+    # pictures is read back from it, so a reset that left the pictures behind still shows the theme it just
+    # removed. Both paths use this one string (the same one theme.sh has), and it carries the launcher's id.
+    $script:clearWallpapers = "rm -f $dir/wallpapers/*.[jJ][pP][gG] $dir/wallpapers/*.[jJ][pP][eE][gG] $dir/wallpapers/*.[pP][nN][gG] $dir/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $uri/wallpapers 2>/dev/null"
+    # theme_restart.py restarts Home and knows the launcher from its key helpers, so it restarts this id.
+    $env:LAUNCHER_PACKAGE = $script:pkg
+}
 
 if ($Reset) {
+    Set-Launcher
     $checkPut = $true
     Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; $(Drop 'config.json'); $(Drop 'wallpaper.jpg'); $(Drop 'wallpapers/captions.txt'); $clearWallpapers; printf '%s' '$revision' > $tmp-theme_revision; $(Put 'theme_revision')" | Out-Null
     & $py -I theme_restart.py
@@ -139,6 +184,9 @@ if (Test-Path -LiteralPath $wallpapers -PathType Container) {
     }
 }
 
+# Everything the TV is asked from here on names the launcher, so the id is read now: the checks above sent
+# nothing.
+Set-Launcher
 # Tolerated, as in theme.sh: a TV that locks Android/data still takes the files through ThemeProvider.
 Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; true" | Out-Null
 Invoke-Tv tv.py --push $config "$tmp-config.json" | Out-Null
