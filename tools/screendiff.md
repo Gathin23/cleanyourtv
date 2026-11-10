@@ -25,6 +25,10 @@ tools/venv/bin/python tools/screendiff.py shots/before.png shots/after.png \
 | `--labels` | The two labels over the pair, comma-separated (`Before,After` by default); anything but two is refused. |
 | `--threshold N` | Channel difference to ignore (default 8, compression noise). |
 
+Each output picture replaces an existing report only after it has finished encoding. A failed write
+leaves that report intact and removes the partial new file. A destination symlink is kept; an output
+with multiple hard links is refused rather than leaving its other names on the old picture.
+
 ## Boxes
 
 Boxes are `x0,y0,x1,y1` in the screenshot's pixels. On a 1080p TV with the default layout:

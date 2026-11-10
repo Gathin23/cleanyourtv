@@ -17,6 +17,9 @@ from pathlib import Path
 import re
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import picture_file  # noqa: E402 - also available when the documented command uses -I
+
 BOX = re.compile(r"^\d+,\d+,\d+,\d+$")
 
 
@@ -75,14 +78,14 @@ def same_file(first, second):
 
 
 def write(image, path):
-    """Save one picture, naming the path and the reason if it cannot be written.
+    """Stage one picture before replacing its destination, naming a failed write.
 
     Pillow answers an unwritable destination with OSError and an extension it does not know with
     ValueError; either left alone ends the run in a traceback with exit 1, the status the page reads as
     'the screenshots differ'.
     """
     try:
-        image.save(path)
+        picture_file.save(image, path)
     except (OSError, ValueError) as e:
         raise ValueError(f"cannot write {path}: {getattr(e, 'strerror', None) or e}") from e
 
