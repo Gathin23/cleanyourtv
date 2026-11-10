@@ -15,6 +15,7 @@
   <a href="README.tr.md"><img src="https://img.shields.io/badge/README-T%C3%BCrk%C3%A7e-cfffcf?style=flat&labelColor=15181e" alt="Türkçe"></a>
   <a href="README.uz.md"><img src="https://img.shields.io/badge/README-O%CA%BBzbekcha-cfffcf?style=flat&labelColor=15181e" alt="Oʻzbekcha"></a>
   <a href="README.fr.md"><img src="https://img.shields.io/badge/README-Fran%C3%A7ais-cfffcf?style=flat&labelColor=15181e" alt="Français"></a>
+  <a href="README.es.md"><img src="https://img.shields.io/badge/README-Espa%C3%B1ol-cfffcf?style=flat&labelColor=15181e" alt="Español"></a>
 </p>
 
 <p align="center">
