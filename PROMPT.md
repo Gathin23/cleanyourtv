@@ -126,8 +126,9 @@ Debloat
   (`docs/devices/acer-r4g.md`).
 - Offer me ad-blocking DNS as an optional extra: on Android 9 and newer, Private DNS set to an
   ad-blocking resolver (`settings put global private_dns_specifier dns.adguard-dns.com`, then
-  `settings put global private_dns_mode hostname`). Tell me it doesn't block YouTube ads, check an app
-  still plays afterwards, and note the undo (`private_dns_mode opportunistic`) in the README.
+  `settings put global private_dns_mode hostname`). Tell me it doesn't block YouTube ads and that lookups
+  can hang for a minute or two after standby (`docs/TROUBLESHOOTING.md`), check an app still plays
+  afterwards, and note the undo (`private_dns_mode opportunistic`) in the README.
   Ask me first whether my router already filters or routes traffic by domain through its own DNS
   (Pi-hole, AdGuard Home, a VPN with domain lists, a fake-IP proxy): Private DNS goes around it, so those
   rules stop applying to the TV, and blocking on the router is the better choice there.
