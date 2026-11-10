@@ -71,7 +71,7 @@
    root: six folders do (`motorola-mt4310`, `nokia-streaming-box-8000`, `philips-google-tv-ta7`,
    `tivo-stream-4k`, `xiaomi-mi-box-s`, `xiaomi-mitv-afmu0`), a wallpaper and a wallpapers/ collection
    included, and the folder's own `README.md` is where the owner is told to edit it and push it with
-   `tools/theme.sh examples/philips-google-tv-ta7/theme`. Both checks that read a shipped `config.json`
+   `TV_HOST=<tv ip> tools/theme.sh examples/philips-google-tv-ta7/theme`. Both checks that read a shipped `config.json`
    (`tests/test_shipped_config_keys_are_read.py` and `tests/test_shipped_config_values.py`) walk
    `examples/` at any depth, so a key or a value in that subfolder is judged where it sits rather than
    skipped, and `tools/theme.sh` is handed the folder that holds the `config.json` - the subfolder, not

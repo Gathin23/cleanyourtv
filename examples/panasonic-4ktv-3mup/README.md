@@ -11,7 +11,7 @@ the other 20 stayed disabled.
 ## Debloat
 
 ```bash
-tools/disable.sh examples/panasonic-4ktv-3mup/debloat.txt
+TV_HOST=<tv ip> tools/disable.sh examples/panasonic-4ktv-3mup/debloat.txt
 ```
 
 20 packages, all disabled, none uninstalled; 14 more from a second unit (below) are in the list commented out until the HDMI inputs are checked. The header of [`debloat.txt`](debloat.txt) says what each group is,
@@ -26,10 +26,11 @@ owns the saved Wi-Fi network (`dumpsys wifi | grep -o 'cname=[^ ]*'`).
 `set-home-activity` does not stick, so launcherx stays Home and the launcher takes the Home button through
 `HomeKeyService` with `stock_home_redirect` ([`config.json`](config.json)).
 
-1. `STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 launcher/build-and-install.sh`. The script stops at its "Home
-   resolves to launcherx" check and suggests disabling setupwraith: don't, on this set. Turn `HomeKeyService` on
-   instead (Settings > Accessibility, or the `enabled_accessibility_services` lines in the script).
-2. `tools/theme.sh examples/panasonic-4ktv-3mup`.
+1. `TV_HOST=<tv ip> STOCK_LAUNCHER=none HOME_KEY_SERVICE=1 launcher/build-and-install.sh`.
+   The script stops at its "Home resolves to launcherx" check and suggests disabling setupwraith:
+   don't, on this set. Turn `HomeKeyService` on instead (Settings > Accessibility, or the
+   `enabled_accessibility_services` lines in the script).
+2. `TV_HOST=<tv ip> tools/theme.sh examples/panasonic-4ktv-3mup`.
 
 After a reboot the new launcher was back on screen in about 6 seconds, with no `RecoveryActivity`, and the set
 did not open Live TV at power-on, so `power_on_home` is not needed. The D-pad, the Home button and the Inputs
@@ -70,8 +71,8 @@ cold boot, and lived with for 6 days.
 ## Undo
 
 ```bash
-tools/restore.sh examples/panasonic-4ktv-3mup/debloat.txt
-tools/theme.sh --reset
+TV_HOST=<tv ip> tools/restore.sh examples/panasonic-4ktv-3mup/debloat.txt
+TV_HOST=<tv ip> tools/theme.sh --reset
 ```
 
 Uninstall the launcher (`pm uninstall com.gathin.tvhome`) to give the Home button back to launcherx.

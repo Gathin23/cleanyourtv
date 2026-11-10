@@ -22,6 +22,6 @@ It turns itself off on every reboot or Wi-Fi drop and comes back on a new port.
 
 `config.json` hides the tiles the top bar already covers (Live TV, TV Settings) and two Hisense apps (MyMusic and the
 USB media center). It also points the Inputs menu at the Live TV app. Push it with
-`tools/theme.sh examples/hisense-u7-wutaishan`.
+`TV_HOST=<tv ip> tools/theme.sh examples/hisense-u7-wutaishan`.
 
 Google's screensaver (`dreamx`) keeps working with launcherx disabled.
