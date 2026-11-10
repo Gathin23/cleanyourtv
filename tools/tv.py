@@ -261,6 +261,8 @@ class NativeAdbDevice:
     # b64push sizes its shell commands from this payload bound. A small value also
     # keeps adb's command-line arguments below Windows' process argument limit.
     max_chunk_size = 4096
+    # A shell OPEN also carries the service prefix and its terminating NUL.
+    max_shell_command_size = max_chunk_size - len(b"shell:\0")
 
     def __init__(self, binary, host, port, timeout):
         self.binary = binary
