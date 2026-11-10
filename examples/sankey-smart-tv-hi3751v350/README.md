@@ -48,6 +48,6 @@ and #1201 rather than carried here. The firmware's missing App info page is #120
 `config.json` in this folder makes the **Inputs** pill open the TV's own source picker (DTV, ATV, AV, HDMI 1-3):
 the HDMI ports are not registered with TvInputManager, only an IPTV app's input is. It also hides System Tracing
 (`com.android.traceur`), which shows up as a tile and cannot open without Developer options. Push it with
-`tools/theme.sh examples/sankey-smart-tv-hi3751v350`.
+`TV_HOST=<tv ip> tools/theme.sh examples/sankey-smart-tv-hi3751v350`.
 
 Screenshots work on the stock home screen too, live TV preview included.
