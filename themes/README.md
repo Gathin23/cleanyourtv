@@ -297,11 +297,11 @@ Open a PR with a new folder here containing:
 
 Then add a row to the table above with the screenshot, the same way as the others, and bump the count in
 the Themes feature row of every front page that states it: `README.md` (the `N ship in themes/` sentence),
-`README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` (the last two in digits)
-and `README.he.md`, each in its own words. Those pages are the ones that state it today rather than the
-rule: `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and fails on a
-page whose number is not that count, naming the page, so its list is the one a page that starts stating the
-count joins.
+`README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`, `README.he.md` and
+`README.uz.md` (the last four in digits), each in its own words. Those eight pages are the ones that state
+it today rather than the rule: `tests/test_readme_theme_count.py` counts the folders here that carry a
+`config.json` and fails on a page whose number is not that count, naming the page, so its list is the one
+a page that starts stating the count joins.
 
 Two sentences a row may state are read back by `tests/test_theme_row_claims.py`: a rotation ("a new one
 every 20 minutes") against that theme's `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT")
