@@ -13,7 +13,10 @@
 # - setupwraith's RecoveryActivity (HOME priority 1, launcherx 2, a sideloaded launcher 0) takes Home once
 #   launcherx is off, so setupwraith has to go too, and it has to go FIRST. Redone in that order (setupwraith,
 #   then launcherx), Home went straight to the new launcher. This is the same crash-loop xiaomi-tv-a-pro-2026
-#   describes. Re-enable setupwraith to re-pair the remote.
+#   describes. Re-enable setupwraith to re-pair the remote, with launcherx enabled first
+#   (`pm enable com.google.android.apps.tv.launcherx`) and both disabled again once the remote is paired, one
+#   package per call: with launcherx off RecoveryActivity is Home again, and a reboot in that state ended in a
+#   factory reset on a MiTV-MOEU0 (`V816.0.26.10.12.1`, #3578).
 # - Disabling setupwraith takes the box off Wi-Fi in either order if the network was saved during first setup:
 #   that network belongs to setupwraith, and Android deletes it with the app. The first run here most likely lost
 #   Wi-Fi this way; the redo stayed online because the network had been re-joined by hand in between. Seen on a

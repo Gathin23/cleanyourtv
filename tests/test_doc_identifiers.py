@@ -20,6 +20,16 @@ as the symptom a disable leaves behind (`examples/tcl-50dp660/debloat.txt`,
 A partial address such as the `f0:fd:6c:5b...` in `docs/devices/tcl-50dp660.txt` is not a whole address
 either, and a note may name it.
 
+A third shape in that sentence was read by nothing either: account emails. The text a contributor
+pastes into a page is a session log, and the address that names the person on the unit travels with it -
+a Play Store or sign-in error, a `dumpsys account` dump, an About screen, a screenshot's transcript.
+CODE_OF_CONDUCT.md counts an account among the private information a device's identifiers carry, and an
+email has a shape of its own, so it is read here the way a MAC address is. The project's own contact,
+`hello@itsgathin.com`, is the one address a page may print: SECURITY.md hands it out for private
+reports and the front pages' press row for queries, the same way the symptom MAC is the one value a page
+may name. A Kotlin or Groovy label (`this@ChannelsScreen`, `return@forEach`) is a word before the `@`
+rather than an address, and is left alone so a page quoting add-on code stays green.
+
 The pages read are the ones `tests/test_doc_addresses.py` reads - this repository's front pages,
 `tools/*.md`, and everything under `examples/`, `docs/` and `themes/` - so the two guards look at the
 same reading a contributor can paste a command from.
@@ -45,6 +55,13 @@ MAC = re.compile(r"(?i)(?<![\w:])(?:[0-9a-f]{2}:){5}[0-9a-f]{2}(?![\w:])")
 # An Android ID: the SSAID Android's Settings shows, sixteen hex digits, claimed as one by the words
 # beside it. A 40-character commit hash is not one: the closing boundary fails inside it.
 ANDROID_ID = re.compile(r"(?i)\bandroid[_ ]id\b[^0-9a-f\n]{0,16}([0-9a-f]{16})\b")
+# An account email: a local part, a domain and a dotted suffix of at least two letters, so `shell@android`
+# and `@Override` are not one. The project's own contact is the address a page may print (SECURITY.md and
+# the front pages' press row), and the words a Kotlin or Groovy label puts before its `@` are not local
+# parts: `this@ChannelsScreen` and `return@forEach` name a scope, not a person.
+EMAIL = re.compile(r"(?i)(?<![\w.%+-])([A-Za-z0-9._%+-]+)@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,})(?![\w-])")
+PROJECT_CONTACT = "hello@itsgathin.com"
+LABELS = {"this", "super", "return", "break", "continue", "it"}
 
 
 def pages(root):
@@ -67,6 +84,19 @@ def mac_addresses(line):
 def android_ids(line):
     """The Android IDs one line states."""
     return [match.group(1) for match in ANDROID_ID.finditer(line)]
+
+
+def emails(line):
+    """The account emails one line states, leaving out the project's own contact and a label's word."""
+    out = []
+    for match in EMAIL.finditer(line):
+        if match.group(1).lower() in LABELS:
+            continue
+        address = match.group(0)
+        if address.lower() == PROJECT_CONTACT:
+            continue
+        out.append(address)
+    return out
 
 
 def problems(root, find):
@@ -108,6 +138,24 @@ class ReaderTest(unittest.TestCase):
         self.assertEqual([], android_ids("Android ID is 0123456789abcdef0123456789abcdef01234567 here"))
 
 
+    def test_an_account_email_is_found(self):
+        self.assertEqual(["someone@gmail.com"], emails("| Account | someone@gmail.com |"))
+        self.assertEqual(["first.last+tv@example.co.uk"],
+                         emails("the Play Store error named first.last+tv@example.co.uk"))
+        self.assertEqual(["a.b@mail.example.net", "c@example.org"],
+                         emails("`dumpsys account` listed a.b@mail.example.net and c@example.org"))
+
+    def test_the_project_contact_and_a_label_are_not(self):
+        # SECURITY.md hands this one out for private reports and the front pages' press row for queries.
+        self.assertEqual([], emails('[hello@itsgathin.com](mailto:hello@itsgathin.com) with "Security" '
+                                    'in the subject'))
+        # A word before the @ naming a scope, not a person: Kotlin's this@Outer and Groovy's return@each.
+        self.assertEqual([], emails("val row = this@ChannelsScreen.adapter"))
+        self.assertEqual([], emails("items.forEach { return@forEach }"))
+        # A host or a shell prompt has no dotted suffix of two letters, and @Override has no local part.
+        self.assertEqual([], emails("shell@android reboots and @Override is overridden"))
+
+
 class DocIdentifiersTest(unittest.TestCase):
     def test_pages_are_read(self):
         read = {path.relative_to(ROOT).as_posix() for path in pages(ROOT)}
@@ -124,6 +172,11 @@ class DocIdentifiersTest(unittest.TestCase):
     def test_no_page_gives_an_android_id(self):
         self.assertEqual([], problems(ROOT, android_ids),
                          "an Android ID stays out of a page: it identifies the unit")
+
+    def test_no_page_states_an_account_email(self):
+        self.assertEqual([], problems(ROOT, emails),
+                         "an account email stays out of a page: it names the person on the unit. The "
+                         "project's own contact (%s) is the one a page may print" % PROJECT_CONTACT)
 
 
 if __name__ == "__main__":

@@ -18,9 +18,9 @@
    20 minutes") against that theme's `wallpaper_rotation_minutes`, and a licence ("CC BY, not MIT")
    against its `CREDITS.md`, which the folder then has to ship.
 5. Bump the count in the Themes feature row of every front page that states it: today `README.md` ("`N ship
-   in themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` and
-   `README.he.md` (the last three in digits), each in its own words; the seven are today's pages rather
-   than the rule.
+   in themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`,
+   `README.he.md`, `README.uz.md` and `README.fr.md` (the last five in digits), each in its own words; the nine are
+   today's pages rather than the rule.
    `tests/test_readme_theme_count.py` counts the folders that carry a `config.json` and fails on a page
    whose number is not that count, naming the page and the folders (`README.nl.md says 10 themes and
    themes/ holds 11: aurora, ...`). A language whose number words the test does not carry yet is a page it

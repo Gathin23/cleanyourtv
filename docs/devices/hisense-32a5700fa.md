@@ -88,7 +88,7 @@ The checks:
   the launcher.
 - The owner confirmed the same with the remote's Power button.
 
-`tools/theme.sh --reset`, or Open on start → Off, undoes it.
+`TV_HOST=<tv ip> tools/theme.sh --reset`, or Open on start → Off, undoes it.
 
 ## Notes and limits
 

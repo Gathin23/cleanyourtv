@@ -122,12 +122,12 @@ and a licence it states ("The photos are CC BY / CC BY-SA, not MIT") to that the
 the folder then has to have. A row that states neither is quiet.
 
 Then bump the count in the Themes feature row of every front page that states it: `README.md` ("`N ship in
-themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` (the last two
-in digits) and `README.he.md`, each in its own words. Those pages are the ones that state it today rather
-than the rule. `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and
-fails on a page whose number is not that count, naming the page and the folders (`README.de.md says 14
-themes and themes/ holds 15: aurora, ...`), so the page you leave behind is the one that stops the PR - and
-a page that starts stating the count is one to add to that test's list.
+themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`,
+`README.he.md`, `README.uz.md` and `README.fr.md` (the last five in digits), each in its own words. Those nine pages are
+the ones that state it today rather than the rule. `tests/test_readme_theme_count.py` counts the folders
+here that carry a `config.json` and fails on a page whose number is not that count, naming the page and the
+folders (`README.de.md says 14 themes and themes/ holds 15: aurora, ...`), so the page you leave behind is
+the one that stops the PR - and a page that starts stating the count is one to add to that test's list.
 
 ## 7. Open the pull request
 

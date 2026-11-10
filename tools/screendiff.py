@@ -6,8 +6,8 @@ screenshots pixel by pixel, leaving out the regions you --mask (the clock moves 
 many pixels differ and where. It also writes the pair side by side, with the regions you --blur
 pixelated (your Wi-Fi name, an account picture), ready to attach.
 
-    tools/screendiff.py shots/before.png shots/after.png --mask 90,40,900,220 \\
-        --blur 1265,125,1525,197 --out shots/before-after.png
+    tools/venv/bin/python -I tools/screendiff.py shots/before.png shots/after.png \
+        --mask 90,40,900,220 --blur 1265,125,1525,197 --out shots/before-after.png
 
 Boxes are x0,y0,x1,y1 in the screenshots' pixels. Exit status: 0 identical, 1 different, 2 an error.
 Needs Pillow (tools/requirements-perf.txt). Read tools/screendiff.md first.

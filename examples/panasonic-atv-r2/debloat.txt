@@ -1,0 +1,60 @@
+# Panasonic ATV R2 (manufacturer SCBC, device R2, Realtek RTD285O), Android TV 11 (API 30),
+# firmware RTT7.220308.001 (build 1067), 2 GB RAM, 1920x1080.
+# Fingerprint: PANASONIC/PANASONIC/R2:11/RTT7.220308.001/1067:user/release-keys
+# Same SCBC R2 platform and firmware as examples/nokia-atv-r2 (build 1050); the Compac and SANYO ATV R2
+# lists are the Android 9 build.
+#
+# Status: applied 2026-11-06 in five batches with a screenshot after each, checked across three reboots
+# (nothing re-enabled by the firmware). Lived with daily from 2026-11-06 to 2026-11-10: nothing broke and
+# nothing was re-enabled.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/panasonic-atv-r2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/panasonic-atv-r2/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher is com.google.android.tvlauncher and Live TV is com.android.tv (Realtek RtkLiveTv), so the
+# defaults in tools/restore.sh and launcher/build-and-install.sh work unchanged. The reference launcher was
+# installed as Home on this TV: see README.md in this folder for power-on behaviour.
+#
+# Notes from this TV:
+# - Kept: firmware updaters (com.apps.ota, com.apps.authota), Netflix, YouTube, Prime Video, Play Store and
+#   Services, TV Booster (com.apps.clear), the phone remote service (com.google.android.tv.remote.service).
+# - Leave alone, as on the Nokia, Compac and SANYO: com.realtek.* (inputs, tuner, key handler, engineering and
+#   factory menus, never started here), com.realtek.leanbacklauncher.partnercustomizer, com.apps.smartkey /
+#   virtualkey / bluetoothremote / fivekey (remote), com.apps.puresound, com.apps.usbmediaplayer, com.apps.sys.
+# - com.google.android.tungsten.setupwraith owns one of the saved Wi-Fi networks on this TV
+#   (dumpsys wifi | grep -o 'cname=[^ ]*'), so it stays enabled.
+# - com.google.android.backdrop is the Ambient-mode screensaver. The screensaver was switched to the built-in
+#   one first (settings put secure screensaver_components com.android.dreams.basic/.Colors, and the same for
+#   screensaver_default_component); the Colors dream was checked to start.
+# - Not tried: com.vewd.core.service (Vewd/HbbTV core, disabled on the Compac list), com.apps.networkspeed,
+#   com.apps.timeclock.
+
+# Content rows, store-demo apps and promos
+com.google.android.tvrecommendations   # recommendation rows on the stock Home
+com.apps.eshow                         # vendor E-SHOW store-demo app
+com.apps.esticker                      # vendor E-Sticker overlay (ShowService)
+com.apps.channels                      # "S-Channel" content rows (ClickAdActivity, ClickAppActivity)
+
+# SCBC / Google telemetry, consent and auto-installs
+com.google.android.feedback
+com.apps.function.gdpr                 # SCBC data-consent agent
+android.autoinstalls.config.scbc.device  # Play auto-installs of partner apps
+
+# Background services
+com.android.printspooler
+com.apps.wifihotspot                   # TV as a Wi-Fi hotspot
+com.google.android.backdrop            # Ambient-mode screensaver (see the note above)
+
+# Google apps nobody in this household used
+com.google.android.videos              # Google TV / Play Movies & TV app
+com.google.android.play.games
+com.google.android.youtube.tvmusic     # YouTube Music
+com.google.android.syncadapters.calendar  # Google Calendar sync adapter
+com.google.android.marvin.talkback     # TalkBack screen reader: comment out if anyone needs it
+com.google.android.apps.tachyon        # Google Meet / Duo video calling
+
+# Not used (owner's choice): comment these out to keep them
+# com.google.android.katniss             # Google Assistant / voice search (the remote's mic button)  (off on this set by the owner's choice)
+# com.google.android.apps.mediashell     # Chromecast built-in  (off on this set by the owner's choice)
+# com.creative.fastscreen.tv             # FastCast Miracast screen mirroring  (off on this set by the owner's choice)

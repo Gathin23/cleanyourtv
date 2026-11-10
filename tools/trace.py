@@ -10,10 +10,10 @@ tools/trace.md first: it says which scenario to use and what can mislead.
 Recording needs nothing beyond tools/requirements.txt; the perfetto client already ships on Android 9
 and later. Set TV_HOST to the TV's IP (and TV_PORT if it is not 5555). Usage:
 
-    tools/trace.py home --runs 5 --out traces/before
-    tools/trace.py cold|coldsys|home|nav --runs N --out DIR [--package PKG] [--app COMPONENT]
-    tools/trace.py custom --setup 'input keyevent KEYCODE_HOME' --setup 'sleep 2' \\
-                          --step 'input keyevent KEYCODE_DPAD_RIGHT' --step 'sleep 1' --out DIR
+    tools/venv/bin/python -I tools/trace.py home --runs 5 --out traces/before
+    tools/venv/bin/python -I tools/trace.py cold|coldsys|home|nav --runs N --out DIR [--package PKG] [--app COMPONENT]
+    tools/venv/bin/python -I tools/trace.py custom --setup 'input keyevent KEYCODE_HOME' --setup 'sleep 2' \
+                                         --step 'input keyevent KEYCODE_DPAD_RIGHT' --step 'sleep 1' --out DIR
 
 --out DIR is the folder the traces go into; it is created if it is not there. A file where the folder
 goes, a path through a file, and an empty --out are refused as argument errors (exit 2) before the TV is

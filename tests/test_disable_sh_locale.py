@@ -1,4 +1,4 @@
-"""tools/disable.sh matches package names by bytes, whatever the computer's locale (#3286).
+"""tools/disable.sh and restore.sh match names by bytes, whatever the computer's locale (#3286).
 
 In tr_TR.UTF-8 GNU grep 3.12 leaves i and I out of [A-Za-z], so disable.sh refused every package name
 with an i in it, and its sed that reads the Live TV and Settings handlers matched nothing. The script
@@ -16,14 +16,19 @@ import unittest
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "tools" / "disable.sh"
+RESTORE = ROOT / "tools" / "restore.sh"
 
 
 class DisableShLocale(unittest.TestCase):
     def test_locale_is_pinned_before_the_first_name_check(self):
-        lines = SCRIPT.read_text(encoding="utf-8").splitlines()
-        pin = next(i for i, l in enumerate(lines) if l.strip() == "export LC_ALL=C")
-        first = next(i for i, l in enumerate(lines) if "[A-Za-z" in l and not l.lstrip().startswith("#"))
-        self.assertLess(pin, first)
+        # restore.sh reads Home back with the same kind of range.
+        for script in (SCRIPT, RESTORE):
+            with self.subTest(script=script.name):
+                lines = script.read_text(encoding="utf-8").splitlines()
+                pin = next((i for i, l in enumerate(lines) if l.strip() == "export LC_ALL=C"), None)
+                self.assertIsNotNone(pin, f"{script.name} does not set LC_ALL=C")
+                first = next(i for i, l in enumerate(lines) if "[A-Za-z" in l and not l.lstrip().startswith("#"))
+                self.assertLess(pin, first)
 
     @unittest.skipIf(sys.platform == "win32", "needs bash and a POSIX locale")
     def test_turkish_locale_does_not_refuse_names_with_an_i(self):

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · Deutsch · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a>
+  <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · Deutsch · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a>
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="463 TV-Modelle · 124 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 396 weitere: 412 Artikel aus 54 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="466 TV-Modelle · 126 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 518 weitere: 534 Artikel aus 57 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
 </p>
 
 ## Einstieg
@@ -130,22 +130,23 @@ meisten Listen, jede mit ihren Modellen auf der Website verlinkt:
 | | | | | | |
 |---|---|---|---|---|---|
 | [TCL](https://cleanyour.tv/tvs?q=TCL) · 84 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 50 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 43 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
-| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 7 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
+| [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 |
 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 |
 | [NVIDIA Shield](https://cleanyour.tv/tvs?q=NVIDIA%20Shield) · 3 | [onn](https://cleanyour.tv/tvs?q=onn) · 3 | [RCA](https://cleanyour.tv/tvs?q=RCA) · 3 | [Redmi](https://cleanyour.tv/tvs?q=Redmi) · 3 | [RockTek](https://cleanyour.tv/tvs?q=RockTek) · 3 | [Vu](https://cleanyour.tv/tvs?q=Vu) · 3 |
 
 <details>
-<summary>+80 more brands and 14 projector brands</summary>
+<summary>+82 more brands and 14 projector brands</summary>
 
 **Challenger** 2 · **CHiQ** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 · **Kalley** 2 ·
 **Kogan** 2 · **Lumio** 2 · **Master-G** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 ·
 **Vidda** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · Caxium · Cecotec · Compac · Dcolor · Dialog ·
 Durabrand · DYON · Essentiel b · Freebox · HAAM · Hikeen · Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak ·
-Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom · MarQ · MECOOL · MTC · Next · OK. · OPPO · Panavox · PEAQ ·
-Philco · Polytron · PPTV · Prosonic · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind · Super General ·
-TD Systems · Tele System · Tesla · TiVo · Tornado · Turkcell · Tuvio · Verizon · VISIO · Vision · Vityas · X.Vision ·
+Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom · MarQ · MECOOL · Metz · MTC · Next · OK. · OPPO · Panavox ·
+PEAQ · Philco · Polytron · PPTV · Prosonic · Salora · SAMPO · SANYO · Seleco · Smarttech · STRONG · SunWind ·
+Super General · TD Systems · Tele System · Tesla · TiVo · Tornado · Turbo-X · Turkcell · Tuvio · Verizon · VISIO ·
+Vision · Vityas · X.Vision ·
 Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magcubic, Portronics, Stellamore, Wanbo and XGIMI projectors
 
 </details>
@@ -260,7 +261,7 @@ Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).
 |---|---|
 | **Einrichten** | Dock-Reihenfolge, versteckte Apps, Live-TV-App, 4 bis 7 Kacheln je Zeile, reduzierte Bewegung. Alles in [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Einstellungen am Fernseher** | OK auf Einstellungen halten für die Launcher-Einstellungen. Ein optionales `launcher_settings_button` lässt einen normalen Klick sie direkt öffnen; die TV-Einstellungen bleiben auf der Einstellungsseite und ihrer App-Kachel. |
-| **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Achtundzwanzig liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
+| **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Neunundzwanzig liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
 | **31 Sprachen** | Folgt der Sprache des Fernsehers, mit vollständig gespiegeltem Layout von rechts nach links für Hebräisch |
 | **App-Bibliothek** | Optional: jede installierte App durchsehen und Home-Verknüpfungen hinzufügen oder entfernen. Siehe [die Anleitung zur App-Bibliothek](docs/app-library.md) |
 | **Kachelmenü** | Standardmäßig an (`tile_menu`): OK auf einer Kachel halten für Verschieben und App-Info, mit eingeschalteter App-Bibliothek auch Von Home entfernen. Aus: OK halten öffnet App-Info |
@@ -446,8 +447,8 @@ ihren eigenen Fernsehern gemacht, und ihre Antworten wurden zu den Listen hier: 
 ersten vier Tagen. Das Repo hieß bis zum 19. tv-vibehack; alte Links funktionieren.
 
 Zwei Wochen später war es das Repository auf Platz 1 der GitHub-Trends in der Woche vom 19. bis 25. Oktober, mit über 46.000 Sternen
-und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Die Listen umfassen jetzt 463 TV-Modelle von 124 Marken.
-Die Berichterstattung: 412 Artikel aus 54 Ländern und 229 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 31. Oktober 2026).
+und 5.700 Forks sowie 1,4 Millionen Aufrufen und 260.000 Klonen in 14 Tagen. Die Listen umfassen jetzt 466 TV-Modelle von 126 Marken.
+Die Berichterstattung: 534 Artikel aus 57 Ländern und 663 Videos auf YouTube und Bilibili, alle in [docs/PRESS.md](docs/PRESS.md) (Stand: 9. November 2026).
 
 ## Mitmachen
 
@@ -459,7 +460,7 @@ Du arbeitest über einen Coding-Agenten mit? [AGENTS.md](AGENTS.md) gibt ihm die
 |---|---|
 | **Die Debloat-Liste deines Fernsehers** | Die nützlichste: die nächste Person mit diesem Modell überspringt das Entdecken. |
 | **Launcher und Prompt** | Verbesserungen am Launcher und schärfere Prompt-Formulierungen sind auch willkommen. |
-| **Etwas darauf gebaut?** | Ein Launcher, eine Portierung, ein Theme: trag es in [SHOWCASE.md](SHOWCASE.md) ein, wo schon 230 Projekte leben, sortiert in Startbildschirme, Forks, Add-ons, Werkzeuge und andere Plattformen, mit einem Index nach TV-Marke. |
+| **Etwas darauf gebaut?** | Ein Launcher, eine Portierung, ein Theme: trag es in [SHOWCASE.md](SHOWCASE.md) ein, wo schon 234 Projekte leben, sortiert in Startbildschirme, Forks, Add-ons, Werkzeuge und andere Plattformen, mit einem Index nach TV-Marke. |
 
 Die Menschen, deren Arbeit in diesem Repo steckt:
 

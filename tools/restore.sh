@@ -10,6 +10,9 @@
 # list plus an optional stock launcher package - no list word at all, an empty one, or a dash-led word
 # that is a flag somewhere else - so nothing was sent to the TV.
 set -euo pipefail
+# The Home read-back below checks the component with ASCII ranges such as [A-Za-z]; in a Turkish locale
+# GNU grep leaves i and I out of them, so a Home with an i in its name went unchecked. Match bytes.
+export LC_ALL=C
 LIST="${1:-}"
 if [ -z "$LIST" ]; then
   echo "restore.sh takes a debloat list: pass the same one you ran disable.sh with. Nothing was sent to the TV." >&2

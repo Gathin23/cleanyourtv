@@ -126,6 +126,12 @@ def tally(packages, examples):
 
 
 def main(argv=None):
+    # A console code page such as cp1252 cannot print every note; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     parser = argparse.ArgumentParser(
         description="For each package in a saved `pm list packages`, how many tested lists in examples/ "
                     "disable it or keep it commented out. Reads files only.")

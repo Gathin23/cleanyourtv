@@ -2,6 +2,11 @@
 # build UKNV.260416.001. About 1.8 GB RAM, /data 8.7 GB with 20% used before debloating.
 # Second unit: the same model in Spain (system language es-ES), build UKNV.260729.001, on Ethernet, 4K panel drawn
 # at 1920x1080. The groups marked "second unit" below were disabled on it and lived with from 26 to 29 Oct 2026.
+# Third unit: the same model again (system language es-ES, build UKNV.260729.001, Ethernet, 4K panel drawn at
+# 1920x1080), keeping its streaming apps (Netflix, Prime Video and YouTube are used daily). The groups marked
+# "third unit" below were disabled on it from 24 Oct 2026.
+# Status: 2026-11-10 - the third unit's groups have been off for 17 days with nothing broken; nothing was
+# re-enabled. The first and second unit groups are unchanged.
 # Google TV home: the stock launcher is com.google.android.apps.tv.launcherx, not tvlauncher.
 #
 # Stock launcher:  com.google.android.apps.tv.launcherx (build-and-install.sh disables it when the launcher takes Home)
@@ -47,3 +52,30 @@ fusion.android.tv.demo                     # retail demo mode
 
 # Ethernet only (second unit): the setup wizard owns the saved Wi-Fi, see the header; keep it on Wi-Fi
 # com.google.android.tungsten.setupwraith
+
+# Telemetry and feedback (third unit)
+com.android.tv.feedbackconsent             # the "send diagnostic reports" consent screen
+com.google.android.partnersetup            # partner setup leftovers
+com.android.federatedcompute.services      # federated learning / on-device personalisation
+
+# Setup and backup leftovers (third unit)
+com.android.htmlviewer                     # internal HTML viewer
+com.android.backupconfirm                  # backup confirmation dialogs
+com.android.sharedstoragebackup            # shared-storage backup transport
+com.android.wallpaperbackup                # wallpaper backup transport
+com.android.cameraextensions               # camera extensions; the set has no camera
+com.android.health.connect.backuprestore   # Health Connect backup transport
+com.android.hotspot2.osulogin              # Passpoint / Hotspot 2.0 web login
+
+# Screensaver (third unit): the basic daydream is off, the Google one (com.google.android.apps.tv.dreamx) stays
+com.android.dreams.basic
+
+# Calendar on a TV nobody signs in to (third unit; the provider is one the tools allow)
+com.android.providers.calendar
+com.google.android.syncadapters.calendar
+
+# Apps the third unit does not use
+# com.google.android.videos                  # Google TV movies and rentals  (off on the third unit by the owner's choice)
+# com.hbo.hbonow                             # HBO Max  (off on the third unit by the owner's choice)
+com.vestel.tv.eib                          # the on-screen e-manual (its label was confirmed on screen)
+com.vewd.core.browser                      # the Vewd browser

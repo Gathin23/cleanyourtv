@@ -27,6 +27,11 @@
 #   hero banner; Amazon's own promotions stay (they come from the protected launcher's feed).
 # - Animation scales at 0.5 make the ☰ side menu open nothing, as on amazon-fire-tv-stick-4k-2023/.
 # - ADB Debugging switched itself off after one of the three reboots: check Developer Options before running a script.
+# - Keep com.amazon.providers.contentsupport if you voice-type inside apps. With it disabled, the Fire TV keyboard
+#   (com.amazon.tv.ime) logs "Voice input is disabled since user's locale = en_US is not supported" and the mic
+#   inside apps (SmartTube, Stremio) does nothing, while the remote's Alexa button still works. Found on a second
+#   55QD6QF (US, same RS8180.3746N build) on 2026-11-09 by re-enabling packages in halves; re-enabling only this
+#   one brings the mic back. The Alexa core (vizzini and its media players, aca) stayed enabled on that unit.
 #
 # For launcher authors (what Fire OS 8 reserves to Amazon here, read from the APKs' manifests):
 # - Switching to an HDMI input: com.amazon.tv.inputpreference.service's PassthroughPlayerActivity needs
@@ -40,6 +45,14 @@
 # - The Appstore (com.amazon.venezia/.grid.AppsGridLauncherActivity) has no screen of its own: it opens Amazon's Home on
 #   its Apps page.
 # - An accessibility service that opens another home screen over HomeActivity_vNext works as a replacement Home.
+#   Projectivy Launcher 4.73 does on the second unit below (its service switched on over ADB, since its own setup
+#   stopped at the permission step); Fire OS logs it as "A11yAuthorizer ... trust=false" and lets it run anyway.
+# - The remote's app buttons never reach an accessibility key filter: Netflix sends KEYCODE_APP_1 (293, scancode
+#   744), Peacock KEYCODE_APP_4 (299, scancode 747), and Fire OS's key policy (OZ-DCS, FireTVKeyPolicyManager)
+#   takes them and opens that app, or its Appstore page (com.amazon.venezia/.pdi.AppLaunchActivity) when it is
+#   disabled. launcher/'s app_keys cannot remap them here, by keycode or scancode: InputKeyService saw no press.
+#   Fire OS logs each press first ("KeyPressReceiver: Remote button pressed. keyCode: 293"), which is what
+#   an app holding READ_LOGS can read to open another app instead.
 #
 # Kept on purpose: Live TV and the TV inputs, settings, the Appstore, Silk, OTA updates, the keyboard, remote and
 # Bluetooth services, casting (DIAL, Matter casting), AirPlay (personal choice: mirroring from an iPhone or a Mac),
@@ -64,7 +77,7 @@ com.amazon.hybridadidservice           # advertising ID
 com.amazon.kso.blackbird               # launcher ad sync / bidding
 com.amazon.media.recommendations       # sponsored and recommendation rows
 com.amazon.sneakpeek                   # autoplaying previews on Home
-com.amazon.providers.contentsupport    # content support provider
+# com.amazon.providers.contentsupport  # KEEP: with it off, the keyboard turns off voice input inside apps (see header)
 com.amazon.shoptv.client               # Shop on Fire TV
 com.amazon.tv.democontent.provider     # retail demo content
 com.amazon.tv.easyupgrade              # "upgrade your Fire TV" promos

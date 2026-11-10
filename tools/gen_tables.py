@@ -352,6 +352,9 @@ def publish(root, pages):
     try:
         for name, text in pages:
             target = Path(os.path.realpath(root / name))
+            if target.exists():
+                # Rename can replace a read-only file; check write access without truncating it.
+                os.close(os.open(target, os.O_WRONLY))
             folder = Path(tempfile.mkdtemp(prefix="." + target.name + "-", dir=target.parent))
             folders.append(folder)
             pending = folder / target.name
@@ -489,11 +492,16 @@ def read_inputs(root, patch):
     if patch is None:
         return None, None
     try:
-        return Path(patch).read_text(encoding="utf-8"), None
+        data = Path(patch).read_bytes()
+        # PowerShell 5.1 redirection writes UTF-16; its BOM identifies the byte order.
+        encoding = "utf-16" if data.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig"
+        return data.decode(encoding).replace("\r\n", "\n").replace("\r", "\n"), None
     except OSError as e:
         # A path that is a directory is OSError too (IsADirectoryError), so this covers a patch folder.
         # The path is quoted so an empty --adopt ('' or a stray pair of quotes) is visible in the line.
         return None, f"--adopt: cannot read '{patch}': {e.strerror}. Nothing was written."
+    except UnicodeDecodeError:
+        return None, f"--adopt: '{patch}' is not UTF-8 or UTF-16 text. Nothing was written."
 
 
 def redraw(root, font):

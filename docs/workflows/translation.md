@@ -42,13 +42,13 @@
 9. The language count moves with the folder. Five front pages state it in the card's alt text and in the
    `| **N languages** |` row - `README.md`, `README.nl.md`, `README.de.md`, `README.uk.md` and
    `README.tr.md` - and `tools/readme_stats.py`'s `STATS` carries it for the pictures, so a language added
-   without them leaves those pages and the card claiming the old number. Three more state it in that row
-   alone, in digits: `README.he.md`, `README.pt-BR.md` and `README.uz.md`. None of the three carries the
+   without them leaves those pages and the card claiming the old number. Four more state it in that row
+   alone, in digits: `README.he.md`, `README.pt-BR.md`, `README.uz.md` and `README.fr.md`. None of the four carries the
    generated brand block or the card, so `tools/gen_tables.py` does not write them at all, and nothing else
    read them: a language added without moving those rows left the Hebrew and Portuguese front pages
    offering one fewer language than the launcher ships, with the suite green, and the Uzbek page - whose row
    says `til`, not the Turkish `dil` that check already knew - was outside the check too.
-   `tests/test_readme_language_count.py` reads the row on all eight.
+   `tests/test_readme_language_count.py` reads the row on all nine.
    `tests/test_gen_tables_translated_counts.py` fails on the translated page in the meantime ('355 tv-modellen ·
    97 merken · 30 talen · ' != '… 29 talen · '). Run `python3 tools/gen_tables.py` after adding the folder: it
    moves the number in the pages it writes and in `STATS`, prints that `docs/stats.png` and `docs/card.jpg` have

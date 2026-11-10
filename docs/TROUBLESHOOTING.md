@@ -1154,6 +1154,14 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   player. They are not packages of their own, so only that package leaves with it. `pm enable com.youview.poa` brought
   them back. How each one launches, and how to give each a Home tile, is in
   [the Sony UK catch-up note](devices/sony-youview-uk-catchup.md).
+- **Channel Up/Down on the real remote lands two channels on**, showing the next channel's banner first
+  (Xiaomi MiTV-MOOQ0, Android TV 11, `RTM4.220307.164.8835`, Spain). Live TV tunes one channel on the key
+  press. On key release it hands the key to its HbbTV layer (`key is handled in hbbtv` in `logcat`), and about
+  1.5 s later the tuner retunes once more by itself (`doNotifyChannelRetuned`). An injected
+  `input keyevent KEYCODE_CHANNEL_UP` moves one channel only, so test with the real remote. Neither the
+  launcher, a key helper nor the debloat caused it, and a full rescan did not fix it. Switching HbbTV off in
+  Live TV's settings menu did. Details in
+  [the MOOQ0 note](devices/xiaomi-mitv-mooq0-android11.md#channel-updown-lands-two-channels-on-hbbtv-spanish-unit-build-8835).
 
 ## Accessibility helper enabled but the remote button does nothing
 
@@ -2275,6 +2283,38 @@ reboot, so it is something to re-apply, not to ship. Confirm with
 Three changes that did **nothing** here, so they are not worth an evening: decoding the backdrop at 720p,
 a hardware layer on a view that invalidates every frame (the layer is re-recorded each frame and costs
 more), and shortening a 1.5 s backdrop crossfade to 0.6 s.
+
+## Home is smooth after a reboot and stutters a few hours later, with nothing else changed
+
+**Seen on:** Xiaomi MiTV-MOEU0 (MediaTek MT9689, Mali-G52), Google TV 14, firmware
+`V816.0.26.3.19.002.ULBMIXM`, a 1920×1080 UI on a 3840×2160 panel at 60 Hz, with this launcher as Home.
+
+The same build, theme and D-pad moves (dock and grid) measured very differently through the day:
+
+| Uptime | `dumpsys gfxinfo` 50th percentile | Janky frames |
+|---|---|---|
+| 3 minutes | 8 ms | 0–0.4% |
+| 25 minutes | 36 ms | 18% |
+| 1 to 6 hours | 40–48 ms | about 45% |
+
+A reboot brought it back to 8 ms every time. **Compare numbers only at a similar uptime**, or a change
+looks better or worse than it is: two builds measured an hour apart can differ more than the change itself.
+
+Nothing on the app or memory side moved it, so these are not worth trying for this symptom: freeing memory
+(three idle apps force-stopped, `MemAvailable` 648 → 877 MB), pausing the audio that was playing,
+`setprop debug.hwui.render_dirty_regions true`, an RGB_565 wallpaper, another theme. `dumpsys thermalservice`
+reported status 0, the CPU stayed at its maximum 1.39 GHz, and SurfaceFlinger's buffers stayed at 23 MB.
+The load average of about 18 on this board is MediaTek driver threads sleeping in `D` state (`ps -A -o
+STAT,NAME | grep "^D"`), not CPU: `/proc/stat` showed the CPU about 93% idle.
+
+**A single frame stays fast; only a continuous animation slows down.** In the slow state a key press with
+`animations` on drew about 20 frames of 40 ms, and with `animations` off it drew one frame of 13–14 ms with
+no janky frames. That points to the GPU or memory clock dropping under sustained load, but the shell cannot
+confirm it: the Mali and DRAM frequency files under `/sys/devices/platform` are not readable.
+
+**The fix that holds all day** is `animations` off, in `config.xml` or a theme (`"animations": false`): the
+focus moves in one frame and there is nothing left to stutter. With animations on, `glow_snap` (true) removes
+the glow's dip-and-fade, the largest single run of full-screen frames per key press on this TV.
 
 ## The Back button stops responding in overlays, or the remote lags, while a third-party launcher's accessibility service is bound
 

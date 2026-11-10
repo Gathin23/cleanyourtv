@@ -2,11 +2,13 @@
 the file the front page displays.
 
 Run tools/readme_stats.py and tools/readme_featured.py first, then:
-python3 tools/readme_card.py Fredoka.ttf docs/card.jpg
-python3 tools/readme_card.py --halloween Fredoka.ttf docs/card-halloween.jpg   # the October variant
+
+    tools/venv/bin/python -I tools/readme_card.py Fredoka.ttf docs/card.jpg
+    tools/venv/bin/python -I tools/readme_card.py --halloween Fredoka.ttf docs/card-halloween.jpg   # the October variant
+
 The Halloween variant keeps the layout and the generated numbers: it shows docs/stats-halloween.png
-(python3 tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png: the same numbers in pumpkin
-orange), recolours the headings to orange, adds a thin dripping stripe and a few bats, and
+(tools/venv/bin/python -I tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png: the same
+numbers in pumpkin orange), recolours the headings to orange, adds a thin dripping stripe and a few bats, and
 shows docs/new-home-halloween.jpg as AFTER. docs/card.jpg is not touched, so the README goes back with one line.
 Fredoka is the variable TTF from Google Fonts, and its file is not in this repo: pass the path of the
 copy you downloaded. The four pictures it stacks are this checkout's own - docs/stock-home.jpg,

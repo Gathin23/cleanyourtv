@@ -97,6 +97,26 @@ class TheWriteThatCannotFinishTest(unittest.TestCase):
 
 
 class TheSetIsWrittenTogetherTest(unittest.TestCase):
+    @unittest.skipUnless(os.name == "posix", "needs POSIX file permission bits")
+    def test_a_readonly_page_refuses_the_entire_update(self):
+        if os.geteuid() == 0:
+            self.skipTest("root can write a read-only file")
+        for blocked_name in PAGES:
+            with self.subTest(page=blocked_name), tempfile.TemporaryDirectory() as tmp:
+                root = tree(tmp, [("tcl-a", tv("TCL A", "TCL"))])
+                before = contents(root)
+                blocked = root / blocked_name
+                blocked.chmod(0o444)
+                try:
+                    with self.assertRaises(gen_tables.Problem) as caught:
+                        gen_tables.publish(root, [(page, "new text\n") for page in PAGES])
+                    self.assertIn(blocked_name, str(caught.exception))
+                    self.assertEqual(before, contents(root))
+                    self.assertEqual(0o444, stat.S_IMODE(blocked.stat().st_mode))
+                    self.assertEqual([], list(root.rglob(".*")))
+                finally:
+                    blocked.chmod(0o644)
+
     def test_a_page_that_cannot_be_staged_stops_the_run_before_any_other_is_replaced(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = tree(tmp, [("tcl-a", tv("TCL A", "TCL"))])

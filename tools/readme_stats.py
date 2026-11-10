@@ -1,10 +1,10 @@
 """Renders the stat strip (docs/stats.png), the top part of the README card.
 
-Update STATS, then: python3 tools/readme_stats.py Fredoka.ttf docs/stats.png
+Update STATS, then: tools/venv/bin/python -I tools/readme_stats.py Fredoka.ttf docs/stats.png
 and rebuild the card with tools/readme_card.py.
-python3 tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png draws the October strip for
-tools/readme_card.py --halloween: the same STATS in pumpkin orange. Fredoka is the variable TTF from
-Google Fonts, and its file is not in this repo: download it and pass the path of the copy you saved.
+tools/venv/bin/python -I tools/readme_stats.py --halloween Fredoka.ttf docs/stats-halloween.png draws the
+October strip for tools/readme_card.py --halloween: the same STATS in pumpkin orange. Fredoka is the variable
+TTF from Google Fonts, and its file is not in this repo: download it and pass the path of the copy you saved.
 """
 import os
 import sys
@@ -84,7 +84,7 @@ try:
 except ImportError:
     sys.exit("readme_stats.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt")
 
-STATS = [("463", "TV MODELS"), ("124", "BRANDS"), ("31", "LANGUAGES"), ("572 KB", "LAUNCHER")]
+STATS = [("466", "TV MODELS"), ("126", "BRANDS"), ("31", "LANGUAGES"), ("572 KB", "LAUNCHER")]
 W, H = 1600, 240
 img = Image.new("RGB", (W, H), "#15181e"); d = ImageDraw.Draw(img)
 def f(size, wt):

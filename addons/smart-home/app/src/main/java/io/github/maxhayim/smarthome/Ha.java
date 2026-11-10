@@ -160,6 +160,17 @@ final class Ha {
      * or weather entities can't push the switches out.
      */
     static List<Entity> parse(String json, List<String> glanceIds) throws JSONException {
+        return parse(json, glanceIds, null, null, false);
+    }
+
+    /**
+     * The same, with the list rows filtered before the cap, so a row named in {@code show} is never lost behind 80
+     * others: {@code show} non-empty keeps only those ids, in that order within each section; {@code hide} drops ids
+     * or "prefix*" matches; {@code hideUnavailable} drops rows {@link Entity#available()} rejects. The glance header
+     * is not filtered.
+     */
+    static List<Entity> parse(String json, List<String> glanceIds, List<String> show, List<String> hide,
+                              boolean hideUnavailable) throws JSONException {
         JSONArray all = new JSONArray(json);
         List<Entity> out = new ArrayList<>();
         for (int i = 0; i < all.length(); i++) {
@@ -173,13 +184,31 @@ final class Ha {
         List<Entity> kept = new ArrayList<>();
         if (header.weather != null) kept.add(header.weather);
         kept.addAll(header.prices);
-        int rows = 0;
+        boolean only = show != null && !show.isEmpty();
+        List<Entity> rows = new ArrayList<>();
         for (Entity e : out) {
             if (!inList(e)) continue;
-            if (rows++ == MAX_ENTITIES) break;
-            kept.add(e);
+            if (only && !show.contains(e.id)) continue;
+            if (matches(hide, e.id)) continue;
+            if (hideUnavailable && !e.available()) continue;
+            rows.add(e);
         }
+        if (only) {
+            // Sections stay together; within a section, the order of show.
+            rows.sort((a, b) -> a.kind != b.kind ? a.kind.compareTo(b.kind)
+                    : Integer.compare(show.indexOf(a.id), show.indexOf(b.id)));
+        }
+        kept.addAll(rows.size() > MAX_ENTITIES ? rows.subList(0, MAX_ENTITIES) : rows);
         return kept;
+    }
+
+    /** Whether id equals an entry, or starts with an entry that ends in '*'. */
+    static boolean matches(List<String> patterns, String id) {
+        if (patterns == null) return false;
+        for (String p : patterns) {
+            if (p.endsWith("*") ? id.startsWith(p.substring(0, p.length() - 1)) : id.equals(p)) return true;
+        }
+        return false;
     }
 
     /**
@@ -324,10 +353,13 @@ final class Ha {
         if (e.kind == Kind.TOGGLE && e.domain().equals("light")) {
             return call("light", "turn_on", e.id, "\"brightness_step_pct\":" + (direction * 10));
         }
-        if (e.kind == Kind.CLIMATE && !Double.isNaN(e.target)) {
-            return call("climate", "set_temperature", e.id, "\"temperature\":" + number(e.target + direction * 0.5));
-        }
+        if (e.kind == Kind.CLIMATE && !Double.isNaN(e.target)) return temperature(e, e.target + direction * 0.5);
         return null;
+    }
+
+    /** A thermostat's new target, in degrees. */
+    static Call temperature(Entity e, double target) {
+        return call("climate", "set_temperature", e.id, "\"temperature\":" + number(target));
     }
 
     private static Call call(String domain, String service, String entity, String extra) {

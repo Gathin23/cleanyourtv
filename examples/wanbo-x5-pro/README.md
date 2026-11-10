@@ -145,7 +145,7 @@ It is a debug property and resets on reboot.
 
 ## Undo
 
-`tools/restore.sh examples/wanbo-x5-pro/debloat.txt com.google.android.apps.tv.launcherx` re-enables the
-list and the stock launcher. Two packages are disabled outside the list and are **not** in it:
+`TV_HOST=<tv ip> tools/restore.sh examples/wanbo-x5-pro/debloat.txt com.google.android.apps.tv.launcherx`
+re-enables the list and the stock launcher. Two packages are disabled outside the list and are **not** in it:
 `com.google.android.apps.tv.dreamx` (Ambient Mode) and `com.google.android.tv.axel` (disabled at the
 factory). Re-enable those by hand if you want them back.

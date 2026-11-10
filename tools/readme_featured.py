@@ -1,6 +1,6 @@
 """Renders the Featured in panel (docs/featured.png), the middle part of the README card.
 
-Update LOGOS / MORE, then: python3 tools/readme_featured.py Fredoka.ttf docs/featured.png
+Update LOGOS / MORE, then: tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png
 and rebuild the card with tools/readme_card.py. Logos come from docs/press/, at names relative to the
 repository root, so run it from there. Fredoka is the variable TTF from Google Fonts, and its file is not
 in this repo: pass the path of the copy you downloaded.
@@ -76,7 +76,7 @@ if OUT_PROBLEM:
 
 LOGOS = ["techcrunch", "techradar", "tomsguide", "mashable", "androidauthority", "xda", "flatpanelshd", "itsfoss",
          "phandroid", "gigazine", "xataka", "winfuture", "frandroid", "macitynet", "techaeris", "techpp"]
-MORE = "+396 more  ·  412 articles from 54 countries"
+MORE = "+518 more  ·  534 articles from 57 countries"
 
 
 def logo_problem():

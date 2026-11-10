@@ -1,0 +1,84 @@
+# Metz 43MUB8000 (Metz Blue, built by Skyworth: ro.product.model "SWTV", product SW3H_ATV_G, board SW3H,
+# MediaTek MT5886, 32-bit ARM, build flavor open_uhd_eu_h), Android TV 9 (API 28), build PTT1.181130.001,
+# security patch 2019-10-05. ~1.6 GB RAM. Same firmware build as examples/kodak-55ca0909 (SW3_ATV).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/metz-43mub8000/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/metz-43mub8000/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Applied on 2026-11-09 in three small batches with a screenshot after each, then the CleanYourTV launcher
+# (launcher/build-and-install.sh); one reboot afterwards came back to the new Home with every package below
+# still disabled. Same-day test, not a several-day one.
+#
+# Connecting: Developer options has USB debugging only (no Network debugging, no Wireless debugging), and
+# USB debugging alone never opened 5555, not even after a restart. A USB-C (computer) to USB-A (TV) cable
+# worked: the TV enumerates as "SWTV" (18d1:0d02), then `adb tcpip 5555` opens the network port until the
+# next reboot. Only one of the TV's USB ports answered.
+#
+# Clock: the set came up at 1 January 2000 with automatic time on, although the network time service had a
+# fresh NTP answer; the stock home showed a wrong time and the CleanYourTV launcher hides its clock until the
+# time is valid. `settings put global auto_time 0`, then `settings put global auto_time 1` applied it, and the
+# time stayed right across the reboot.
+#
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home). Other HOME claimants: only
+# com.android.tv.settings' FallbackHome; com.google.android.leanbacklauncher is installed but not Home.
+# setupwraith does not claim HOME, and the saved Wi-Fi network belonged to android.uid.system
+# (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so it was left alone.
+# Live TV app: com.smartdevice.livetv. Real input services (`pm query-services --components -a
+# android.media.tv.TvInputService`): com.mediatek.tvinput (HDMI 1-3, AV, tuners), com.smartdevice.livetv,
+# com.mediatek.agent, com.mediatek.partner.netflix. All stayed registered after every batch (dumpsys tv_input),
+# and the launcher's Inputs menu listed HDMI 1-3, AV and Live TV. Home, Input, Back, the Netflix and YouTube
+# buttons and casting from Chrome were checked on the real remote and a laptop afterwards.
+#
+# Kept on purpose: the input packages above, com.mediatek.tunerservice, com.mediatek.wwtv.setupwizard,
+# com.mediatek.network, mtktvapi.agent, com.smartdevice.factory and com.smartdevice.dtv.factorywritekey
+# (factory packages, never launched), com.heyzqt.wifimonitor (/system/app/MetzFirewall, Metz's own firewall,
+# not investigated further), com.google.android.inputmethod.latin, Play Store, Play Services.
+# Already disabled from the factory, so not listed (restore.sh would turn them ON): com.globo.globotv,
+# com.smartdevice.tvworkwithalexa.
+# Not installed on this unit, unlike the Kodak: tv.alphonso.alphonso_eula, com.smartdevice.acr.recommendation.
+
+# Telemetry and bug reports
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# Skyworth retail demo and manual
+com.smartdevice.demonow                      # retail store demo
+com.Smartdevice.emanual                      # on-screen e-manual
+
+# Partner hooks and the Leanback launcher, which is installed but never Home here
+android.autoinstalls.config.SW               # Play auto-install config for partner apps
+com.google.android.leanbacklauncher.partnercustomizer  # partner rows for the Leanback launcher
+com.google.android.leanbacklauncher.recommendations    # recommendations for the Leanback launcher
+com.google.android.leanbacklauncher          # restore.sh turns it back on as a stock launcher
+
+# Stock home extras
+com.google.android.backdrop                  # ambient screensaver; launcher/ has its own clock screensaver
+
+# Android leftovers a TV does not use; TV Settings still opened afterwards
+com.android.printspooler                     # printing
+com.google.android.onetimeinitializer        # first-setup initializer
+com.android.settings.intelligence            # Settings search suggestions
+com.google.android.syncadapters.calendar     # Google Calendar sync
+com.google.android.syncadapters.contacts     # Google Contacts sync
+
+# Stock home recommendation rows: disable after the new launcher owns Home. Disabled after the reboot check,
+# so not reboot-checked; Home and the new launcher were unaffected.
+com.google.android.tvrecommendations
+
+# Off by the owner's choice on this unit. Ask before disabling; uncomment only what is not used.
+# com.amazon.amazonvideo.livingroom          # Prime Video
+# com.google.android.youtube.tvkids          # YouTube Kids
+# com.disney.disneyplus                      # Disney+
+# tv.pluto.android                           # Pluto TV (registers a TV input of its own, no hardware)
+# com.haystack.android                       # Haystack News (registers a TV input of its own, no hardware)
+# com.google.android.katniss                 # Google Assistant / voice search (remote mic button)
+# com.google.android.speech.pumpkin          # offline voice actions, only used by the Assistant
+# com.google.android.tv.remote.service       # Android TV phone remote app support
+# com.google.android.videos                  # Google Play Movies & TV
+# com.google.android.play.games              # Google Play Games
+# com.google.android.music                   # Google Play Music, shut down in 2020
+# com.google.android.marvin.talkback         # TalkBack screen reader
+# com.google.android.tts                     # Google text-to-speech (the screen reader needs it)
+# com.google.android.tungsten.setupwraith
+# com.google.android.tvlauncher

@@ -268,7 +268,8 @@ def load_record(path):
         raise SystemExit(f"{path}: not a usable recovery record ({e}).\n"
                          "It is left where it is: move it aside deliberately, a retry must not "
                          "replace the state recorded before the first change.")
-    if record.get("version") != VERSION or not isinstance(record.get("packages"), dict):
+    if (not isinstance(record, dict) or record.get("version") != VERSION
+            or not isinstance(record.get("packages"), dict)):
         raise SystemExit(f"{path}: unknown recovery record format; move it aside deliberately.")
     # Records written before save() left the chooser out hold it as Home, and "android" among the
     # packages with it. Everything else in them is the TV before cleanup, and moving the file aside
