@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hebrew date under the date line: shown for a Hebrew locale when lunar_date is on,
+     in place of the lunisolar date. Only ever read on Hebrew (iw/he) devices. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hebrew_date_format">%1$s ב%2$s %3$s</string>
+</resources>
