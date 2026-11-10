@@ -2,7 +2,7 @@
 plains, desert, a snowy forest, jungle, ocean, a blossom grove, a cave and a lava cavern), as 1920x1080 PNG,
 from code, so the collection is this repo's own work and can be changed or extended here.
 
-    python3 tools/blocky_wallpapers.py <folder>     # writes 01-meadow-day.png ... 11-lava-cavern.png
+    tools/venv/bin/python -I tools/blocky_wallpapers.py <folder>   # writes 01-meadow-day.png ... 11-lava-cavern.png
 
 Needs Pillow (tools/requirements-perf.txt). Every block is 40 px with a 4x4 shaded texture. The sky things (sun,
 moon, clouds, stars) are drawn before the terrain, so hills and trees stand in front of them; nothing is drawn in

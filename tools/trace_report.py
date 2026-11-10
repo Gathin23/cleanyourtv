@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """The standard launcher numbers from traces recorded with tools/trace.py: per run, median and range.
 
-    tools/trace_report.py traces/before                       one set of runs
-    tools/trace_report.py traces/before --vs traces/after     before against after, with the change
-    tools/trace_report.py ... --markdown                      tables to paste into a pull request
+    tools/venv/bin/python -I tools/trace_report.py traces/before                       one set of runs
+    tools/venv/bin/python -I tools/trace_report.py traces/before --vs traces/after     before against after, with the change
+    tools/venv/bin/python -I tools/trace_report.py ... --markdown                      tables to paste into a pull request
 
 TRACES are .pftrace files or folders of them. Needs the optional `perfetto` package
 (tools/venv/bin/pip install -r tools/requirements-perf.txt). Its first run downloads Perfetto's query

@@ -1,6 +1,6 @@
 """Renders the Featured in panel (docs/featured.png), the middle part of the README card.
 
-Update LOGOS / MORE, then: python3 tools/readme_featured.py Fredoka.ttf docs/featured.png
+Update LOGOS / MORE, then: tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png
 and rebuild the card with tools/readme_card.py. Logos come from docs/press/, at names relative to the
 repository root, so run it from there. Fredoka is the variable TTF from Google Fonts, and its file is not
 in this repo: pass the path of the copy you downloaded.

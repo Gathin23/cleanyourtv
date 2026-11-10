@@ -5,7 +5,8 @@ One panel per trace, one lane per thread, every slice drawn on the same time sca
 visibly shorter. Slices whose name matches --highlight are drawn in magenta, and their time is summed
 (nested slices once), with the change against the first panel.
 
-    tools/flamechart.py traces/before traces/after --highlight '^(activityResume|RV OnBindView)$' \\
+    tools/venv/bin/python -I tools/flamechart.py traces/before traces/after \
+        --highlight '^(activityResume|RV OnBindView)$' \
         --title 'Back to Home: Home press to first frame' --out chart.png
 
 BEFORE and AFTER are .pftrace files or folders; for a folder the median run is drawn, by the first of
