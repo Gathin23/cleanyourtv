@@ -126,6 +126,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long idleClockMs;
     /** Back on Home opens ClockActivity (config.xml, back_opens_clock). */
     private boolean backOpensClock;
+    /** Back on Home opens the Live TV app (config.xml, back_opens_live_tv). */
+    private boolean backOpensLiveTv;
     private final Runnable showIdleClock = () -> startActivity(new Intent(this, ClockActivity.class));
     private String liveTvAction;
     private String liveTvInputId;
@@ -489,6 +491,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         homeIgnoreChannelKeys = cfg.homeIgnoreChannelKeys;
         idleClockMs = cfg.homeIdleClockMinutes * MINUTE_MS;
         backOpensClock = cfg.backOpensClock;
+        backOpensLiveTv = cfg.backOpensLiveTv;
         bootToLiveTv = cfg.bootToLiveTv;
         bootInputId = LaunchActions.inputId(cfg.launchActions.get(cfg.liveTvPackage));
         openOnStartChoice = cfg.openOnStartChoice;
@@ -1768,7 +1771,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
-        // Home screen: Back goes nowhere, unless back_opens_clock is on.
+        // Home screen: Back goes nowhere, unless back_opens_live_tv or back_opens_clock is on.
+        if (backOpensLiveTv) {
+            Intent tv = liveTvIntent();
+            if (tv != null) {
+                open(tv);
+                return;
+            }
+        }
         if (backOpensClock) startActivity(new Intent(this, ClockActivity.class));
     }
 

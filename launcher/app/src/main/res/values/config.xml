@@ -531,6 +531,10 @@
          home_idle_clock_minutes). Back keeps working as usual inside apps and Settings; only Home's own Back
          press changes. Off by default (Back does nothing on Home); a theme can set "back_opens_clock": true. -->
     <bool name="back_opens_clock">false</bool>
+    <!-- Back on the Home screen opens the Live TV app (live_tv_package), so Home then Back returns to the TV
+         (on TCL, com.tcl.tv resumes the last source). Back keeps working as usual inside apps and Settings.
+         Wins over back_opens_clock. Off by default; a theme can set "back_opens_live_tv": true. -->
+    <bool name="back_opens_live_tv">false</bool>
     <!-- The clock screensaver (Home idle clock and the system screensaver) over Home's wallpaper instead of black with
          a coloured glow. The clock still moves every minute. Can also be set with "clock_wallpaper" in a theme. -->
     <bool name="clock_wallpaper">false</bool>
