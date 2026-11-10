@@ -56,8 +56,12 @@ public final class HomeLineProvider extends ContentProvider {
         boolean same = key.equals(cache.getString("key", ""));
         long at = same ? cache.getLong("at", 0) : 0;
         long tried = cache.getLong("tried", 0);
-        if (now - at > Forecast.REFRESH_MS && now - tried > Forecast.RETRY_MS) fetch(ctx, lat, lon, key);
-        if (at == 0 || now - at > STALE_MS) return c;
+        // The TV's clock can jump back (a set that takes its time from the broadcast, or a late NTP sync): a reading
+        // or a try "in the future" counts as old, or the throttle would wait for the clock to catch up.
+        if (elapsedOver(now, at, Forecast.REFRESH_MS) && elapsedOver(now, tried, Forecast.RETRY_MS)) {
+            fetch(ctx, lat, lon, key);
+        }
+        if (at == 0 || Math.abs(now - at) > STALE_MS) return c;
 
         double temp = Double.longBitsToDouble(cache.getLong("temp", 0));
         int code = cache.getInt("code", 3);
@@ -68,9 +72,15 @@ public final class HomeLineProvider extends ContentProvider {
         String top = (name + " · " + sky).toUpperCase(Locale.getDefault());
         String headline = String.format(Locale.ROOT, "%d°   ↑%d°  ↓%d°",
                 Forecast.degrees(temp, false), Forecast.degrees(max, false), Forecast.degrees(min, false));
-        // start in the past and end when the reading goes stale: one steady turn that never counts down.
-        c.addRow(new Object[] {top, "", at, at + STALE_MS, COLOUR, "weather", 30, headline});
+        // Start in the past and end when the reading goes stale: one steady turn that never counts down. Pinned to
+        // now rather than to the reading's time, so a clock that moved back still has the turn running.
+        c.addRow(new Object[] {top, "", now - 1, now + STALE_MS - Math.abs(now - at), COLOUR, "weather", 30, headline});
         return c;
+    }
+
+    /** More than {@code limit} ms since {@code then}, or {@code then} is ahead of the clock. */
+    static boolean elapsedOver(long now, long then, long limit) {
+        return now < then || now - then > limit;
     }
 
     private void fetch(Context ctx, double lat, double lon, String key) {
