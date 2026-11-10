@@ -775,10 +775,25 @@ def main():
         for p in ("ro.product.model", "ro.product.device", "ro.build.version.release",
                   "ro.build.version.sdk", "ro.build.display.id", "ro.product.manufacturer",
                   "ro.adb.secure", "service.adb.tcp.port"):
-            print(f"{p} = {dev.shell(f'getprop {p}').strip()}")
+            try:
+                got = dev.shell(f'getprop {p}').strip()
+            except Exception as e:
+                why = lost_connection(e, f"getprop {p}")
+                if why is None:
+                    raise
+                print(why, file=sys.stderr)
+                return 1
+            print(f"{p} = {got}")
     elif args[0] == "--screenshot":
         local, keys, wait = screenshot_args(args[1:])
-        status = screenshot(dev, local, keys, wait)
+        try:
+            status = screenshot(dev, local, keys, wait)
+        except Exception as e:
+            why = lost_connection(e, " ".join(args))
+            if why is None:
+                raise
+            print(why, file=sys.stderr)
+            return 1
     elif args[0] == "--push" and len(args) == 3:
         status = push(dev, args[1], args[2])
     elif args[0] == "--pull" and len(args) == 3:
