@@ -281,6 +281,22 @@ class MainTest(MatchCase):
                 self.assertIn("Permission denied", err)
                 self.assertNotIn("Traceback", err)
 
+    def test_a_note_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        self.add_list("a", "cn.com.wasu.main  # 华数TV\n")
+        packages = self.write("p.txt", "package:cn.com.wasu.main\n")
+        raw = io.BytesIO()
+        out = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        err = io.StringIO()
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = out
+        with redirect_stderr(err):
+            code = match.main([str(packages), "--examples", str(self.examples)])
+        out.flush()
+        self.assertEqual(0, code, err.getvalue())
+        row = raw.getvalue().decode("cp1252").splitlines()[1]
+        self.assertEqual(["cn.com.wasu.main", "1", "0", "??TV"], row.split())
+
     def test_the_default_examples_folder_is_this_checkout(self):
         self.assertEqual(ROOT / "examples", match.EXAMPLES)
 
