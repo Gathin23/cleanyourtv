@@ -22,10 +22,17 @@ message says to.
 Two forms are left alone on purpose. `tools/bench.py` and `tools/trace.py` re-exec themselves under the
 venv's Python (`os.execv`), so `python tools/bench.py` and `python3 tools/trace.py` do run - bench.py keeps
 its line, and trace.py's bare `tools/trace.py` is fixed because a 100644 file cannot start at all.
-`tools/scenes_wallpapers.py` and `tools/wallpaper_prep.py` need nothing from the venv (scenes draws SVG with
-the standard library; wallpaper_prep tells the reader to install its own `python -m pip`), so `python3` is
-the right interpreter there. A synopsis such as `b64push.py <local file> <remote path>` names the program
-rather than a path in the checkout, and is not a command a reader copies.
+`tools/scenes_wallpapers.py` needs nothing from the venv (it draws SVG with the standard library), so
+`python3` is the right interpreter there. `tools/wallpaper_prep.py` was let through on the same reading,
+because its header told the reader to `python -m pip install` its own requirements - and that line does not
+run either: on a stock Ubuntu 24.04 there is no `python` command at all (`bash: python: command not found`,
+127), its python3 has no `pip` module (PEP 668 leaves the distro externally managed), and the Pillow the tool
+needs is installed by the venv's pip. Its usage block and its two missing-package messages now print
+`tools/venv/bin/python -I tools/wallpaper_prep.py` and `tools/venv/bin/pip install -r
+tools/requirements-photos.txt`, and this check reads a tool's own `python -m pip install` as well as the
+venv's, so a header cannot be excused by telling the reader to install somewhere the run cannot read.
+A synopsis such as `b64push.py <local file> <remote path>` names the program rather than a path in the
+checkout, and is not a command a reader copies.
 
 Needs no TV and no interpreter: git's modes and the files' own text are the whole check.
 
@@ -52,11 +59,17 @@ VIRTUAL_PYTHON_REGEX = re.compile(r"(?:\./)?tools/venv/bin/python")
 SCRIPT = re.compile(r"(?:\./)?tools[/\\]([A-Za-z0-9_.-]+)\.py")
 INTERPRETER = re.compile(r"(?:python(?:3(?:\.\d+)?)?|py)")
 # What a tool says to run when the package is missing. The venv's pip is the one the recipe installs into,
-# so a usage line that names another Python cannot import what this line installs.
-VENV_PIP = re.compile(r"tools/venv/bin/pip install -r tools/requirements")
+# so a usage line that names another Python cannot import what this line installs. A tool that prints its
+# own `python -m pip install -r tools/requirements...` is read the same way: that pip is not installed on a
+# stock Ubuntu 24.04 (PEP 668) and would not be the one the venv's Python reads anyway.
+VENV_PIP = re.compile(r"(?:tools/venv/bin/pip|python3?(?:\.\d+)? -m pip) install -r tools/requirements")
 # bench.py and trace.py start again under that venv instead of asking the reader to: a `python3` line is
 # then a command that runs.
 RE_EXEC = re.compile(r"\bos\.execv\(")
+# An install of the tools' requirements, as the tree prints it in a usage block or a message, and the venv's
+# pip as the one spelling a hint is allowed to use.
+INSTALL_HINT = re.compile(r"install -r tools/requirements[-\w.]*\.txt")
+VENV_PIP_PREFIX = "tools/venv/bin/pip install"
 
 
 def docstring(path):
@@ -146,10 +159,11 @@ def problems(name, text, mode, source):
             continue              # `python3 -m venv tools/venv`: a setup step, not this tool
         path = "tools/" + named.group(1) + ".py"
         if VENV_PIP.search(source) and not RE_EXEC.search(source):
-            found.append(f"{name}: the usage line starts `{program} {path}`, but the same file prints "
-                         f"`{VIRTUAL_PYTHON}'s pip install -r tools/requirements-*.txt` when its package is "
-                         f"missing: Pillow is installed where that Python cannot import it, so the run "
-                         f"answers with the message again. Write `{VIRTUAL_PYTHON} -I {path}`.")
+            found.append(f"{name}: the usage line starts `{program} {path}`, but the same file tells the "
+                         f"reader to install its requirements with a `pip install -r tools/requirements-*.txt` "
+                         f"for a Python that is not this one: the package lands where `{program}` cannot "
+                         f"import it, so the run answers with the message again. Write "
+                         f"`{VIRTUAL_PYTHON} -I {path}`.")
     return found
 
 
@@ -188,6 +202,24 @@ class ToolUsageTest(unittest.TestCase):
         self.assertGreaterEqual(len(read), 8, f"fewer usage blocks read than the tree has: {read}")
         for name in ("screendiff.py", "flamechart.py", "trace.py", "trace_report.py", "readme_card.py"):
             self.assertIn(name, read)
+
+    def test_every_install_hint_names_the_venv_pip(self):
+        """A tool that prints an install of tools/requirements names the venv's pip, not its own.
+
+        The judging rule above reads a tool's pip hint; this is the other direction, so a header that says
+        `python -m pip install -r tools/requirements-photos.txt` cannot be excused as "the tool tells the
+        reader to install it" - on a stock Ubuntu 24.04 that pip does not exist and the Pillow lands
+        somewhere the interpreter the tool prints cannot import from.
+        """
+        hints = []
+        for path in sorted(TOOLS.glob("*.py")):
+            for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                if INSTALL_HINT.search(line):
+                    hints.append((path.name, number, line.strip()))
+        self.assertGreaterEqual(len(hints), 5, f"fewer install hints read than the tree prints: {hints}")
+        wrong = [f"{name}:{number}: {line}" for name, number, line in hints
+                 if VENV_PIP_PREFIX not in line]
+        self.assertEqual([], wrong, "\n".join(wrong))
 
 
 class ReaderTest(unittest.TestCase):
@@ -228,6 +260,19 @@ class ReaderTest(unittest.TestCase):
         found = offenders(self.base, {"tools/readme_card.py": "100644"})
         self.assertIn("readme_card.py", found)
         self.assertIn("tools/venv/bin/python -I tools/readme_card.py", found["readme_card.py"][0])
+
+    def test_a_python_line_on_a_script_that_prints_its_own_pip_is_reported(self):
+        # The shape tools/wallpaper_prep.py had: the header told the reader to install with the same
+        # interpreter that had just failed to import Pillow, which on a stock Ubuntu 24.04 does not
+        # even exist as `python` and has no pip module under `python3`.
+        self.write("wallpaper_prep.py",
+                   "Turns photos into wallpapers.\n\n    python tools/wallpaper_prep.py ~/Pictures/trip out\n",
+                   body='import sys\n\ndef load():\n    try:\n        import PIL\n    except ImportError:\n'
+                        '        sys.exit("Pillow is missing: python -m pip install -r '
+                        'tools/requirements-photos.txt")\n')
+        found = offenders(self.base, {"tools/wallpaper_prep.py": "100644"})
+        self.assertIn("wallpaper_prep.py", found)
+        self.assertIn("tools/venv/bin/python -I tools/wallpaper_prep.py", found["wallpaper_prep.py"][0])
 
     def test_the_venv_form_is_quiet(self):
         self.write("readme_card.py",
