@@ -76,7 +76,7 @@ if OUT_PROBLEM:
 
 LOGOS = ["techcrunch", "techradar", "tomsguide", "mashable", "androidauthority", "xda", "flatpanelshd", "itsfoss",
          "phandroid", "gigazine", "xataka", "winfuture", "frandroid", "macitynet", "techaeris", "techpp"]
-MORE = "+517 more  ·  533 articles from 57 countries"
+MORE = "+518 more  ·  534 articles from 57 countries"
 
 
 def logo_problem():
