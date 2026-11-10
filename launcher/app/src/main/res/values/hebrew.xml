@@ -3,4 +3,8 @@
      in place of the lunisolar date. Only ever read on Hebrew (iw/he) devices. -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="hebrew_date_format">%1$s ב%2$s %3$s</string>
+    <!-- On Friday the date line also carries candle lighting (sunset - 18 min),
+         on Saturday havdalah (sunset + 42 min), when latitude/longitude are set. -->
+    <string name="hebrew_shabbat_in">%1$s · כניסת שבת %2$s</string>
+    <string name="hebrew_shabbat_out">%1$s · צאת שבת %2$s</string>
 </resources>

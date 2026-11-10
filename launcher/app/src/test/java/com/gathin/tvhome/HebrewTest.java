@@ -35,4 +35,11 @@ public class HebrewTest {
         assertEquals("0", Hebrew.numeral(0));
         assertEquals("1000", Hebrew.numeral(1000));
     }
+
+    @Test
+    public void minuteStringPadsZeroes() {
+        assertEquals("16:34", Hebrew.minuteString(994));
+        assertEquals("00:07", Hebrew.minuteString(7));
+        assertEquals("23:59", Hebrew.minuteString(1439));
+    }
 }

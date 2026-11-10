@@ -4,6 +4,9 @@ import android.content.res.Resources;
 
 import android.icu.util.HebrewCalendar;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -43,6 +46,41 @@ final class Hebrew {
         String month = MONTHS[m];
         if (m == 12 && c.getActualMaximum(HebrewCalendar.MONTH) == 13) month = "אדר א׳";
         return res.getString(R.string.hebrew_date_format, numeral(d), month, numeral(y % 1000));
+    }
+
+    /**
+     * The date line for Home and the clock screensaver: today(), and on Friday/Saturday also the
+     * day's shabbat time — candle lighting (sunset - 18 min) on Friday, havdalah (sunset + 42 min)
+     * on Saturday — when config.xml's latitude/longitude are set. Plain today() on other days
+     * or without coordinates.
+     */
+    static String line(Resources res) {
+        String date = today(res);
+        int sunset = sunsetToday(res);
+        if (sunset < 0) return date;
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        if (day == Calendar.FRIDAY)
+            return res.getString(R.string.hebrew_shabbat_in, date, minuteString(sunset - 18));
+        if (day == Calendar.SATURDAY)
+            return res.getString(R.string.hebrew_shabbat_out, date, minuteString(sunset + 42));
+        return date;
+    }
+
+    /** Local minutes of today's sunset at config.xml's coordinates, or -1 without them. */
+    static int sunsetToday(Resources res) {
+        try {
+            double lat = Double.parseDouble(res.getString(R.string.latitude));
+            double lon = Double.parseDouble(res.getString(R.string.longitude));
+            int[] riseSet = Sun.riseAndSet(LocalDate.now(), lat, lon, ZoneId.systemDefault());
+            return riseSet == null ? -1 : riseSet[1];
+        } catch (RuntimeException e) {
+            return -1;   // empty or unparsable coordinates
+        }
+    }
+
+    /** "16:34" from minutes of day. */
+    static String minuteString(int min) {
+        return String.format(java.util.Locale.ROOT, "%02d:%02d", min / 60, min % 60);
     }
 
     /** Gematria numeral: 30 → ל׳, 787 → תשפ״ז. The divine-name pairs יה/יו become טו/טז. */

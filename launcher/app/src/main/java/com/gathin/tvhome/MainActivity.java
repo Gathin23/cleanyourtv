@@ -2773,7 +2773,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (shamsi) shamsiDate.setText(Shamsi.today(getResources()));
         if (lunar) lunarDate.setText(Hebrew.isLocale()
-                ? Hebrew.today(getResources()) : Lunar.today(getResources(), lunarOffset));
+                ? Hebrew.line(getResources()) : Lunar.today(getResources(), lunarOffset));
     }
 
     // ---- race-weekend panel (a theme's race_calendar) -----------------------------------------------

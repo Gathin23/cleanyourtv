@@ -128,7 +128,7 @@ final class ClockScene {
         // lunar_date's second date line, the same one Home shows under its date: the Hebrew
         // calendar on an iw/he locale, the lunisolar one otherwise.
         if (cfg.lunarDate) {
-            lunarDate.setText(Hebrew.isLocale() ? Hebrew.today(ctx.getResources())
+            lunarDate.setText(Hebrew.isLocale() ? Hebrew.line(ctx.getResources())
                     : Lunar.today(ctx.getResources(),
                             Lunar.offsetFor(cfg.lunarUtcOffset, Locale.getDefault())));
             lunarDate.setVisibility(View.VISIBLE);
