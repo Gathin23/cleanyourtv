@@ -62,3 +62,21 @@ back, and a tap stayed one step. With the helper unbound (`enabled_accessibility
 value before the session), the ramp returned. The owner kept the ramp and opens Settings from the launcher's
 Settings pill. `com.jmgo.hippo`'s `JmgoKeyAccessibilityService` is declared, but it was not in
 `enabled_accessibility_services` before the session.
+
+## Android 11 firmware (RTMA.250416.195)
+
+A second S91A (`lonavla`) shipped with Google TV on Android 11 (SDK 30), firmware `RTMA.250416.195`, market
+region `us`. The same list applied, with these differences:
+
+- `com.android.tv.feedbackconsent` is not installed on this firmware.
+- After a reboot Wireless debugging was off, as above, but port 5555 stayed open while USB debugging was on.
+  Switch USB debugging off too; `tools/adb-closed.py` then reported 5555 closed.
+- setupwraith owned the saved Wi-Fi network here too (a phone hotspot). Forgetting and re-joining it moved it
+  to `com.android.tv.settings`, and disabling setupwraith kept Wi-Fi.
+- The gear button is the same `BTN_MISC`, scancode 256. With `settings_key_scancodes` 256,
+  `settings_key_panel` true and `HOME_KEY_SERVICE=1`, it opens the settings panel over any app, at the cost of
+  the held-volume ramp described above.
+- Colour temperature does not survive standby in the Movie picture mode: at every screen-on `com.jmgo.hippo`
+  re-applies the mode's own value (`JmGOTvSettingService: setPictureModeRelated mode:9, colorTemperature:2`,
+  Warm), so a User choice falls back to Warm. The firmware has no User picture mode to avoid it. This is the
+  firmware, not the debloat: hippo stays enabled.
