@@ -16,12 +16,14 @@ stub `content`. The theme.sh cases need bash, the theme.ps1 case also `pwsh`; ea
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import unittest
+import venv
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import test_theme_push_ownership as push  # noqa: E402  (its harness, not its tests)
@@ -118,6 +120,34 @@ class ThemeVerifyPushTest(unittest.TestCase):
                                  str(self.theme)], env=env, capture_output=True, text=True, timeout=300)
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn("neither the provider write nor the copy of config.json", result.stdout + result.stderr)
+
+    def test_theme_ps1_sends_shell_lines_on_stdin(self):
+        # Windows PowerShell 5.1 drops the double quotes from a native argument, which turned Put's
+        # `[ -n "$w" ]` into `[ -n $w ]`: always true when w is empty, so the arrival check never fired.
+        source = (push.TOOLS / "theme.ps1").read_text(encoding="utf-8")
+        self.assertIn("| & $py -I tv.py --batch", source)
+        self.assertNotIn("& $py -I tv.py (Put", source)
+
+    def test_theme_ps1_keeps_the_arrival_check_quotes_under_windows_powershell(self):
+        powershell = shutil.which("powershell.exe")
+        if not powershell or os.name != "nt":
+            self.skipTest("needs Windows PowerShell 5.1, the one that drops quotes from native arguments")
+        shutil.copy2(push.TOOLS / "theme.ps1", self.tools / "theme.ps1")
+        venv.create(self.tools / "venv", with_pip=False)
+        log = self.base / "argv.jsonl"
+        (self.tools / "tv.py").write_text(
+            "import json, os, sys\n"
+            "with open(os.environ['ARGV_LOG'], 'a') as f:\n"
+            "    f.write(json.dumps({'argv': sys.argv[1:], 'stdin': sys.stdin.read() if '--batch' in sys.argv else ''}) + '\\n')\n")
+        env = {k: v for k, v in os.environ.items() if k != "TV_HOST"}
+        env["ARGV_LOG"] = str(log)
+        result = subprocess.run([powershell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(self.tools / "theme.ps1"),
+                        "-TvHost", "192.0.2.10", str(self.theme)], env=env, capture_output=True, text=True, timeout=300)
+        self.assertTrue(log.exists(), result.stdout + result.stderr)
+        calls = [json.loads(line) for line in log.read_text().splitlines()]
+        batched = [c["stdin"] for c in calls if c["argv"] == ["--batch"]]
+        self.assertTrue(any('[ -n "$w" ]' in line for line in batched), calls)
+        self.assertFalse(any(c["argv"][:1] and 'content write' in " ".join(c["argv"]) for c in calls), calls)
 
 
 if __name__ == "__main__":

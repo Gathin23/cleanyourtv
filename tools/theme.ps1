@@ -50,7 +50,12 @@ $pkg = 'com.gathin.tvhome'
 # Runs tools\tv.py or b64push.py and stops on a non-zero exit: 'Stop' only covers cmdlets, so a failed
 # native call would otherwise fall through to "Theme ... is on the TV".
 function Invoke-Tv {
-    $out = & $py -I @args
+    # A shell line goes on stdin: Windows PowerShell 5.1 drops the double quotes from a native argument, and Put's guards need them.
+    if ($args.Count -eq 2 -and $args[0] -eq 'tv.py' -and "$($args[1])" -notlike '--*') {
+        $out = @($args[1] | & $py -I tv.py --batch | Where-Object { "$_" -notlike '$ *' })
+    } else {
+        $out = & $py -I @args
+    }
     if ($LASTEXITCODE -ne 0) { throw "$($args[0]) $($args[1]) failed (exit code $LASTEXITCODE); the theme was not fully applied" }
     # Put's last line when the TV took neither the provider write nor the copy (theme.sh's NOT_WRITTEN).
     $missing = @($out | Where-Object { $script:checkPut -and "$_".Trim() -match "^$notWritten (\S+)$" })
