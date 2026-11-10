@@ -1,0 +1,61 @@
+# Hitachi 32HAK4258 (32", Vestel-built, product Ata, device tokyo, MediaTek m5621), Android TV 11 (API 30),
+# firmware RTOC.250820.001, security patch 2025-06-01, ro.config.low_ram = true (908 MB). Italy.
+# Second unit of this folder: the same device and firmware as the Salora SMART24TV in debloat.txt, sold as a
+# Hitachi. This is the cautious list: the stock launcher and Chromecast stay, launcher/ is not installed, and
+# only telemetry and preloaded apps the owner does not use go.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/salora-smart24tv/debloat-keep-cast.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/salora-smart24tv/debloat-keep-cast.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: disabled in three batches on 2026-10-22, then rebooted. Checked on the real remote by the owner:
+# Live TV, Netflix, casting from a phone and the Input key all work. In daily use since, almost three weeks,
+# nothing re-enabled.
+#
+# KEEP, on top of what debloat.txt keeps:
+# - Chromecast: com.google.android.apps.mediashell, com.google.android.tungsten.setupwraith,
+#   com.google.android.gms, com.google.android.tv.remote.service.
+# - The stock launcher and its rows: com.google.android.tvlauncher, com.google.android.tvrecommendations,
+#   com.google.android.leanbacklauncher.partnercustomizer. debloat.txt disables the last two only after
+#   launcher/ has taken Home; here the stock launcher stays, so they stay with it.
+# - fusion.android.tv.demo: the remote's Input key, as in debloat.txt.
+# - com.vestel.tv.servicepatch and com.vestel.tv.rcupdater (updates), every com.mediatek.* and com.vestel.tv.*
+#   system package, the USB player.
+# - Netflix, YouTube, Prime Video, discovery+ (owner's choice).
+#
+# Differences from debloat.txt: com.cltv.fast is disabled here. On the Salora its activities ship disabled and it
+# was left alone; on this unit its process was still started from a broadcast after boot and killed again, and
+# disabling it broke nothing. YouTube Kids, YouTube Music, Smart Connect and the Assistant are off by the owner's
+# choice. The rest of debloat.txt (the Vestel cleaner, the MStar disclaimer, the auto-install config, the E-User
+# Manual, the calendar provider, Freeview Play) was not tried on this unit.
+#
+# Observed on this unit, not proven to be the cause:
+# Before this list, several times a week the set came up with a black picture and working sound, on Live TV and in
+# Netflix alike (Netflix's menus drew, its previews and video stayed black). It happened after hours without power
+# too, so it was not a quick-standby state. Logcat from minutes four to ten after one boot showed no decoder error,
+# but the low-RAM firmware kept starting preloaded apps from broadcasts and killing them again (YouTube Kids, Play
+# Movies, Smart Connect and the Vestel reporter among them, all in this list), with a load average around 70 while
+# the CPU sat mostly idle. In the almost three weeks since the list went on, the black picture has not come back
+# once. If a tokyo set shows the same fault, this list is a cheap, reversible thing to try first.
+#
+# Quirk: Developer options > Logger buffer size goes up to 1M on this firmware (the default is 64K), which
+# keeps about the first ten minutes after boot.
+
+# --- Batch 1: telemetry, no user interface ---
+com.vestel.vestelreporter                       # Vestel reporter/telemetry (about 70 MB of RAM when running)
+com.google.android.feedback                     # feedback and crash uploader to Google
+com.google.android.partnersetup                 # manufacturer attribution (RLZ) pings
+
+# --- Batch 2: preloaded apps the owner does not use (started in the background and killed, over and over) ---
+com.google.android.youtube.tvkids               # YouTube Kids
+com.google.android.youtube.tvmusic              # YouTube Music
+com.google.android.videos                       # Play Movies / Google TV storefront
+com.cltv.fast                                   # "FAST" streaming channels (see Differences above)
+com.google.android.play.games                   # Play Games
+com.google.android.syncadapters.calendar        # calendar sync, on a TV
+com.google.android.apps.nbu.smartconnect.tv     # Smart Connect (connectivity helper); casting does not need it
+
+# --- Batch 3: Google Assistant (owner's choice) ---
+# Search on the home screen, the remote's mic button and "Ok Google" stop working. Casting from a phone does not
+# depend on it.
+com.google.android.katniss                      # Assistant / voice search (about 40-50 MB in two processes)
