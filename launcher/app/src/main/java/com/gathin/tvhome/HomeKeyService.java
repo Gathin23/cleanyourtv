@@ -84,7 +84,7 @@ public class HomeKeyService extends AccessibilityService {
     private boolean powerOnAlways;
     /** power_on_home: re-arms after the screen turns on; null unless the key is on. */
     private BroadcastReceiver screenOnReceiver;
-    /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter, or before the unlock. */
+    /** Stops key filtering while a game controller is connected or after a volume change; null unless gamepad_passthrough or volume_pauses_filter, and key_filter, or before the unlock. */
     private GamepadPassthrough gamepads;
     /** Screen-off receiver while guard_off_in_standby is set; null otherwise. */
     private BroadcastReceiver standbyExit;
@@ -233,11 +233,8 @@ public class HomeKeyService extends AccessibilityService {
         armStandbyExit();
         holdAppKeys = RemoteKeys.parseHoldAppKeys(config.appKeys);
         holdAppScancodes = RemoteKeys.parseHoldAppScancodes(config.appKeys);
-        // gamepad_passthrough, off by default. Only with key_filter on: off, the service never filters keys.
-        if (config.gamepadPassthrough && config.keyFilter && gamepads == null) {
-            gamepads = new GamepadPassthrough(this);
-            gamepads.start();
-        }
+        // gamepad_passthrough and volume_pauses_filter, off by default.
+        if (gamepads == null) gamepads = GamepadPassthrough.start(this, config);
     }
 
     /** A tap's target: the "front:" entry while the button's own app is already in front, else the usual one. */

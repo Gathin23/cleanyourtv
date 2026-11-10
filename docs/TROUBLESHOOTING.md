@@ -1657,6 +1657,13 @@ handled go dead, the same trade without a `settings` write. Write back the exact
 printed; the empty list also unbinds TalkBack. Bisect, keycodes and limits:
 [the G09 note](devices/tcl-55p71b-g09-key-repeat.md).
 
+A pause keeps both at the price of the first step. On a Xiaomi MOEU0 (Google TV 14) the policy steps once per press
+while a helper filters, and no helper sees the volume keys, so `consume_volume_keys` cannot repeat them. The remote's
+Netflix (289), Prime Video (290) and YouTube (296), Apps and the gear are global keys that never reach a window:
+`mitv.service` starts Netflix and Prime Video by package, and its gear handler is empty. `"volume_pauses_filter":
+true` (the same bool in `config.xml`) makes every volume change stop the filtering for 4 s. The first press steps
+once, a press or hold within those 4 s repeats as usual, and the buttons work again when the pause ends.
+
 Where launcherx is what answers the buttons, keeping it enabled and redirecting its home screen keeps both. On a
 Sony BRAVIA VU3 (`BRAVIA_VU3_4K`, Google TV 14, `UKR1.240726.001`) the Netflix, YouTube, Prime Video and YouTube
 Music buttons are global keys (`BUTTON_4`, `BUTTON_14`, `BUTTON_2`, `BUTTON_15`) routed to
