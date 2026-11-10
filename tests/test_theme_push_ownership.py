@@ -388,7 +388,8 @@ class ThemePushTest(unittest.TestCase):
         self.assertIn("Unsupported operation", put, "Android 8/9 exit 0 without writing; cp has to run then")
         self.assertIn("Error while accessing provider", put, "so does a provider that throws, as in theme.sh")
         self.assertLess(put.index("mkdir -p"), put.index("cp $t $dir/$name"), "cp needs the folder: " + put)
-        clear = next(line for line in script.splitlines() if line.startswith("$clearWallpapers = "))
+        clear = next(line for line in script.splitlines()
+                     if line.strip().startswith("$script:clearWallpapers = "))
         self.assertNotIn("mkdir", clear, "a folder the shell makes is one the launcher cannot write into")
 
     def test_reset_clears_the_wallpaper_collection(self):
@@ -437,7 +438,8 @@ class ThemePushTest(unittest.TestCase):
         reset = next(line for line in script.splitlines() if line.strip().startswith("Invoke-Tv tv.py \"mkdir -p $dir"))
         self.assertIn("$(Drop 'wallpapers/captions.txt')", reset)
         self.assertIn("$clearWallpapers", reset, "one shared clear, as in theme.sh")
-        clear = next(line for line in script.splitlines() if line.startswith("$clearWallpapers = "))
+        clear = next(line for line in script.splitlines()
+                     if line.strip().startswith("$script:clearWallpapers = "))
         self.assertIn("rm -f $dir/wallpapers/*.[jJ][pP][gG]", clear)
         self.assertIn("content delete --uri $uri/wallpapers", clear)
         self.assertNotIn("captions", clear, "the captions file is dropped on its own line, as in theme.sh")
