@@ -81,3 +81,42 @@ button does nothing with Netflix off; the PatchWall button and the mic do nothin
 katniss off; held volume still repeats with no key helper enabled - the other side of the trade above.
 After power-on the TV lands on the last source rather than Home (#81); pressing Home brings the launcher
 back.
+
+## Channel Up/Down lands two channels on: HbbTV (Spanish unit, build `8835`)
+
+A Spanish retail MOOQ0 on `RTM4.220307.164.8835`, one session (2026-11), Bluetooth remote. One press of
+Channel Up on the real remote showed the next channel's info banner, with no picture, and about 1.5 s later
+the TV moved on to the channel after it. Channel Down did the same. The owner first noticed it after the
+reference launcher was installed, but it was not checked before, and the launcher was not the cause: Live TV
+is in front while zapping, and the launcher never sees the key.
+
+What `logcat` showed for one real press (`com.mediatek.wwtv.tvcenter`, activity `com.mitv.livetv.tv.MainActivity`):
+
+1. `ACTION_DOWN` of `KEYCODE_CHANNEL_UP` (`scanCode=402`, `flags=0x8`): Live TV's `TuneManager` tunes one
+   channel on (`tuneToChannel: tune to channel <id>`).
+2. `ACTION_UP`: `key is handled in hbbtv`, then `sending native key not handled msg`.
+3. About 1.5 s later the tuner service reports a retune it started itself,
+   `MtkTvInput(ChannelSelStatusThread)... doNotifyChannelRetuned,channelUri = content://android.media.tv/channel/<next id>`,
+   and Live TV follows it (`retune request received and sync is finished`): the second step.
+
+An injected `input keyevent KEYCODE_CHANNEL_UP` (`scanCode=0`) logged the same first two steps but no retune,
+and moved exactly one channel. So test with the real remote: an injected key does not reproduce this.
+
+These did not change it, tried in this order: turning the launcher's `InputKeyService` off
+(`enabled_accessibility_services` empty, `accessibility_enabled 0`), two full channel scans, and re-enabling
+`com.mitv.tvhome.mitvplus` (Mi TV+ adds a TV input of its own). Live TV also logs
+`mCurrentNode does not match mCurrentChannel, syncing` on a press, but it logs that for the injected key
+too, which stepped one channel only, so that line is not the cause.
+
+The fix: switch HbbTV off in Live TV's own settings menu. Afterwards Channel Up and Down moved one channel
+at a time on the real remote, and Mi TV+ went back off with no change. The cost is the broadcasters' HbbTV
+("red button") services. The broadcast channels, the guide and subtitles are not affected.
+
+Two more observations from the same unit:
+
+- The remote's Input button opened the input list with the launcher as Home and `InputKeyService` off
+  (`handle_view_inputs` true in `config.xml`), so this unit kept the held volume key and the Input button
+  without a key helper.
+- After a scan, the channels came out in the order the tuner found them (Cuatro on 1), with country set to
+  Spain (`persist.sys.country` decodes to `ESP`). Spanish terrestrial broadcasts rarely carry LCN, so the
+  list has to be sorted by hand in Live TV's channel editing, and a rescan does not fix the order.
