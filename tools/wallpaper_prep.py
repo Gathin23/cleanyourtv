@@ -144,6 +144,8 @@ def main(argv=None):
         parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
     if os.path.exists(args.target) and os.path.samefile(args.source, args.target):
         parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
+    if os.path.exists(args.target) and not os.path.isdir(args.target):
+        parser.error(f"{args.target} is a file, not a folder")
 
     try:
         import PIL  # noqa: F401
@@ -162,7 +164,10 @@ def main(argv=None):
     if clashes:
         sys.exit(f"{', '.join(clashes)} in {args.target} would overwrite your original photos "
                  "(a link or the same file); remove or rename them, or pick another target. Nothing was written.")
-    os.makedirs(args.target, exist_ok=True)
+    try:
+        os.makedirs(args.target, exist_ok=True)
+    except OSError as e:
+        sys.exit(f"cannot create the folder {args.target}: {e.strerror}. Nothing was written.")
 
     written = 0
     for number, path in enumerate(files, 1):

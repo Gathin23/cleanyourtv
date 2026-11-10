@@ -203,6 +203,30 @@ class PrepareTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 prep.main([d, d])
 
+    def test_a_target_that_is_a_file_is_refused_in_words(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d, "photos")
+            src.mkdir()
+            make_photo(src / "01.jpg", size=(320, 240))
+            target = Path(d, "out.txt")
+            target.write_text("keep")
+            with self.assertRaises(SystemExit) as caught, contextlib.redirect_stderr(io.StringIO()) as err:
+                prep.main([str(src), str(target)])
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn("is a file, not a folder", err.getvalue())
+            self.assertEqual(target.read_text(), "keep")
+
+    def test_a_target_under_a_file_is_named_not_a_traceback(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d, "photos")
+            src.mkdir()
+            make_photo(src / "01.jpg", size=(320, 240))
+            Path(d, "out.txt").write_text("keep")
+            with self.assertRaises(SystemExit) as caught:
+                prep.main([str(src), str(Path(d, "out.txt", "sub"))])
+            self.assertIn("cannot create the folder", str(caught.exception.code))
+            self.assertIn("Nothing was written", str(caught.exception.code))
+
     def test_target_reached_through_a_symlink_is_refused(self):
         with tempfile.TemporaryDirectory() as d:
             src = Path(d, "photos")
