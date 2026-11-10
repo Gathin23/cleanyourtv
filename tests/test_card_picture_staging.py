@@ -77,7 +77,7 @@ class StagedWriteTest(unittest.TestCase):
     def leftovers(self):
         return sorted(p.name for p in self.dir.iterdir() if p != self.out)
 
-    def test_the_picture_lands_and_the_options_reach_the_encoder(self):
+    def assert_staged_write(self):
         encoder = Encoder()
         picture_file.save(encoder, str(self.out), optimize=True)
         self.assertEqual(self.out.read_bytes(), encoder.data)
@@ -87,8 +87,20 @@ class StagedWriteTest(unittest.TestCase):
         # The encoder is handed a file beside the destination with the same name, so Pillow picks the
         # format from the same suffix it would have seen.
         self.assertEqual(Path(staged).name, "stats.png")
-        self.assertEqual(Path(staged).parent.parent, self.dir)
+        # Directory aliases (including macOS /var) need not have the same spelling.
+        self.assertTrue(Path(staged).parent.parent.samefile(self.dir))
         self.assertEqual(self.leftovers(), [], "the staging folder outlived a successful write")
+
+    def test_the_picture_lands_and_the_options_reach_the_encoder(self):
+        self.assert_staged_write()
+
+    def test_a_destination_directory_symlink_keeps_the_same_staging_checks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            alias = Path(tmp) / "pictures"
+            alias.symlink_to(self.dir, target_is_directory=True)
+            self.dir = alias
+            self.out = alias / "stats.png"
+            self.assert_staged_write()
 
     def test_a_failed_encode_leaves_the_picture_that_was_there(self):
         self.out.write_bytes(OLD)
