@@ -42,11 +42,11 @@ final class Hebrew {
         // Month 12 is the only Adar in a plain year but Adar I in a leap year (then 13 is Adar II).
         String month = MONTHS[m];
         if (m == 12 && c.getActualMaximum(HebrewCalendar.MONTH) == 13) month = "אדר א׳";
-        return res.getString(R.string.hebrew_date_format, g(d), month, g(y % 1000));
+        return res.getString(R.string.hebrew_date_format, numeral(d), month, numeral(y % 1000));
     }
 
     /** Gematria numeral: 30 → ל׳, 787 → תשפ״ז. The divine-name pairs יה/יו become טו/טז. */
-    private static String g(int n) {
+    static String numeral(int n) {
         if (n <= 0 || n >= 1000) return String.valueOf(n);
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < VALUES.length; i++) {
