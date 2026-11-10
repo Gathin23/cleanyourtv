@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: a pixel cactus on a ground line under a dotted jump arc, grey on black.
+     Drawn for this add-on (not from the game's sprites). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF000000" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFACACAC" android:pathData="M40,140h240v3h-240z" />
+    <path android:fillColor="#FFACACAC"
+        android:pathData="M154,80h12v60h-12z M140,96h8v20h-8z M140,112h14v6h-14z M172,90h8v18h-8z M166,104h14v6h-14z" />
+    <path android:fillColor="#88ACACAC"
+        android:pathData="M84,120h6v6h-6z M100,92h6v6h-6z M120,70h6v6h-6z M144,58h6v6h-6z M170,58h6v6h-6z M194,70h6v6h-6z M214,92h6v6h-6z M230,120h6v6h-6z" />
+</vector>

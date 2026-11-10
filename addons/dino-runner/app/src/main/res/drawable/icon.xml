@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app icon: the banner's cactus and ground line, square. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FF000000" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#FFACACAC" android:pathData="M14,84h80v3h-80z" />
+    <path android:fillColor="#FFACACAC"
+        android:pathData="M48,28h12v56h-12z M34,44h8v20h-8z M34,60h14v6h-14z M66,38h8v18h-8z M60,52h14v6h-14z" />
+</vector>
