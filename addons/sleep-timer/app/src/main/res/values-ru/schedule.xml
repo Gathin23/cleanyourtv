@@ -1,0 +1,33 @@
+<resources>
+    <string name="sched_0">Расписание телевизора</string>
+    <string name="sched_1">Время относится к выбранному дню. Исключения запрещают только автоматическое включение. Назад — выйти без сохранения.</string>
+    <string name="sched_2">Расписание: включено</string>
+    <string name="sched_3">Расписание: выключено</string>
+    <string name="sched_4">+ Добавить включение / сон</string>
+    <string name="sched_5">"Не включать: "</string>
+    <string name="sched_6">Период без автовключения</string>
+    <string name="sched_7">Изменить даты</string>
+    <string name="sched_8">Удалить</string>
+    <string name="sched_9">+ Добавить период</string>
+    <string name="sched_10">Сохранить</string>
+    <string name="sched_11">"Включение  "</string>
+    <string name="sched_12">"Сон  "</string>
+    <string name="sched_13">Добавить событие</string>
+    <string name="sched_14">Включение</string>
+    <string name="sched_15">Сон</string>
+    <string name="sched_16">Дни недели</string>
+    <string name="sched_17">Отмена</string>
+    <string name="sched_18">Время</string>
+    <string name="sched_19">Выберите хотя бы один день</string>
+    <string name="sched_20">Конец периода не может быть раньше начала</string>
+    <string name="sched_21">Последний день включительно</string>
+    <string name="sched_22">Первый день включительно</string>
+    <string name="sched_23">Понедельник</string>
+    <string name="sched_24">Вторник</string>
+    <string name="sched_25">Среда</string>
+    <string name="sched_26">Четверг</string>
+    <string name="sched_27">Пятница</string>
+    <string name="sched_28">Суббота</string>
+    <string name="sched_29">Воскресенье</string>
+    <string name="schedule_row">Расписание</string>
+</resources>

@@ -12,6 +12,24 @@
     <string name="aqi_line">Calidad del aire %1$d · %2$s</string>
     <string name="updated">Actualizado %1$s · Open-Meteo</string>
     <string name="change_city">Cambiar ciudad</string>
+    <string name="weather_settings">Ajustes del tiempo</string>
+    <string name="settings_done">Listo</string>
+    <string name="setting_units">Unidad de temperatura</string>
+    <string name="unit_c">Celsius (°C)</string>
+    <string name="unit_f">Fahrenheit (°F)</string>
+    <string name="setting_both_units">Mostrar ambas unidades</string>
+    <string name="setting_days">Días de pronóstico</string>
+    <plurals name="day_count">
+        <item quantity="one">%1$d día</item>
+        <item quantity="many">%1$d días</item>
+        <item quantity="other">%1$d días</item>
+    </plurals>
+    <string name="setting_humidity">Mostrar humedad</string>
+    <string name="setting_wind">Mostrar viento</string>
+    <string name="setting_reset">Restablecer ajustes del tiempo</string>
+    <string name="setting_value">%1$s · %2$s</string>
+    <string name="option_on">Sí</string>
+    <string name="option_off">No</string>
     <string name="loading">Cargando el tiempo…</string>
     <string name="offline">No se puede conectar con Open-Meteo. Revisa la conexión a internet de la TV; se reintenta en 5 minutos.</string>
 

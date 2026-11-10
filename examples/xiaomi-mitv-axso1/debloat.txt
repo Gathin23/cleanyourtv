@@ -14,11 +14,19 @@
 #   (KEYCODE_BUTTON_5, KEY_YELLOW on event4), which partnercustomizer's GlobalKeyReceiver answers by starting
 #   PatchWall. app_keys "192:home" with HOME_KEY_SERVICE=1 brought it back to Home, but with the helper bound
 #   a held volume key moved one step only, and consume_volume_keys true did not fix it (volume stopped
-#   responding to the remote). Left without the helper here; volume holds work again with it off.
+#   responding to the remote). Left without the helper here; volume holds work again with it off. A keyboard-layout
+#   overlay maps it to Home with no helper: docs/devices/xiaomi-mitv-axso1-mi-button.md.
 # - The TV's Settings opens as a side panel with a black left half over the new launcher; with the stock
 #   launcher the dimmed home screen showed there. Cosmetic only.
 # - Google sign-in goes through com.google.android.tvrecommendations: see the note in
 #   examples/xiaomi-mitv-axso2/debloat.txt if Play Store asks to authenticate.
+# - Power-on opens Live TV's setup screen when the saved input is a tuner with no channels: Xiaomi's set_auto_play
+#   (1 out of the box), as in examples/xiaomi-mitv-axso0/debloat.txt. With `settings put global set_auto_play 0` and
+#   `settings put global set_patchwall_default 0`, not tested apart, a restart came up on Home. Undo: set both to 1.
+#
+# Second unit (India, 2026-11-01), same build PI.6157: this list without com.mitv.videoplayer, kept for USB video;
+# com.mitv.tvhome.mitvplus is not installed there. Home and the disabled packages were unchanged after a restart
+# on 2026-11-04.
 #
 # Kept on purpose on this TV: Google Assistant and Chromecast (commented out below), firmware updates
 # (com.xiaomi.mitv.updateservice), Netflix, Prime Video, JioHotstar, YouTube, Play Store, and the camera,

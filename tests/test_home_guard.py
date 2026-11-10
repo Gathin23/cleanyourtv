@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import venv
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -98,6 +99,14 @@ def main():
             line = line.strip()
             if line and not line.startswith("#"):
                 state["commands"].append(line)
+                # As tools/tv.py --batch does: echo the command, then its answer. The input-driver
+                # check runs through --batch too (PowerShell 5.1 drops quotes from an argument), and
+                # its completion marker is part of that answer.
+                sys.stdout.write(f"$ {line}\n")
+                try:
+                    sys.stdout.write(answer(line))
+                except Fail:
+                    pass
         save()
         return 0
     try:
@@ -128,11 +137,16 @@ class HomeGuardTest(unittest.TestCase):
         # The scripts call the tools venv's Python. Run the real interpreter, which imports the fake
         # tv.py for the transport and the real recovery.py for the logic. disable.ps1 asks for the
         # Windows path, which PowerShell resolves to tools/venv/Scripts/python.exe here too.
-        for client in (self.tools / "venv" / "bin" / "python",
-                       self.tools / "venv" / "Scripts" / "python.exe"):
-            client.parent.mkdir(parents=True, exist_ok=True)
-            client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
-            client.chmod(0o755)
+        # Windows cannot start a #!/bin/sh file ("not a valid application for this OS platform"), so
+        # there the client is a real venv of this interpreter; the scripts only need the standard library.
+        if os.name == "nt":
+            venv.create(self.tools / "venv", with_pip=False)
+        else:
+            for client in (self.tools / "venv" / "bin" / "python",
+                           self.tools / "venv" / "Scripts" / "python.exe"):
+                client.parent.mkdir(parents=True, exist_ok=True)
+                client.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n')
+                client.chmod(0o755)
 
         self.home = self.base / "home"
         self.home.mkdir()
@@ -160,6 +174,9 @@ class HomeGuardTest(unittest.TestCase):
     def disable(self, entry, extra_env=None, list_path=None):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path), **(extra_env or {}))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         if entry == "sh":
             if os.name != "posix" or not shutil.which("bash"):
                 raise unittest.SkipTest("disable.sh is a POSIX script; it needs bash")
@@ -170,7 +187,11 @@ class HomeGuardTest(unittest.TestCase):
         result = subprocess.run(argv, cwd=self.repo, env=env, capture_output=True, text=True,
                                 timeout=180)
         with open(self.state_path) as f:
-            return result, json.load(f)["commands"]
+            # The input-driver check travels in a --batch of its own now, so the fake records it with
+            # the list's commands. These cases are about what the list disables: leave the check out.
+            sent = [c for c in json.load(f)["commands"]
+                    if not ("for p in " in c and "dumpsys package" in c)]
+            return result, sent
 
     def entries(self):
         return ("sh", "ps1") if PWSH else ("sh",)

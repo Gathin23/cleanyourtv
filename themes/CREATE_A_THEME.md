@@ -35,6 +35,12 @@ complete example.
   `themes/<name>/wallpapers/`.
 - Static: save one as `themes/<name>/wallpaper.jpg`.
 - Never commit a picture you do not have the right to share.
+- A picture you did not draw needs a `CREDITS.md` beside it, in the format
+  [`sweden/CREDITS.md`](sweden/CREDITS.md) uses: the file each picture came from, its photographer, and
+  the licence it is redistributed under. That file is where the credit is read from:
+  `tests/test_theme_picture_credits.py` holds every picture the folder ships to a line in it, and
+  `tests/test_theme_row_claims.py` reads the licence your row states (step 6) against it, so a row that
+  states a licence needs the file in the folder.
 
 ## 3. Write `themes/<name>/config.json`
 
@@ -108,12 +114,20 @@ Add one row to the table in [`themes/README.md`](README.md):
 | [`retro/`](retro/) | What it looks like in one line | <img src="retro/screenshot.jpg" width="320" alt="retro theme"> |
 ```
 
+Two sentences a row may carry are read back, so a row copied from a neighbour brings that neighbour's
+files with it: `tests/test_theme_row_claims.py` holds a rotation the row states ("a new one every 20
+minutes", "every hour") to that theme's `wallpaper_rotation_minutes` - a row that states one while the key
+is unset promises a rotation the launcher does not run, since a theme without the key rotates not at all -
+and a licence it states ("The photos are CC BY / CC BY-SA, not MIT") to that theme's `CREDITS.md`, which
+the folder then has to have. A row that states neither is quiet.
+
 Then bump the count in the Themes feature row of every front page that states it: `README.md` ("`N ship in
-themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md` and `README.tr.md` (in digits), each in its own
-words. The five are today's pages rather than the rule. `tests/test_readme_theme_count.py` counts the
-folders here that carry a `config.json` and fails on a page whose number is not that count, naming the page
-and the folders (`README.de.md says 14 themes and themes/ holds 15: aurora, ...`), so the page you leave
-behind is the one that stops the PR.
+themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md` (the last two
+in digits) and `README.he.md`, each in its own words. Those pages are the ones that state it today rather
+than the rule. `tests/test_readme_theme_count.py` counts the folders here that carry a `config.json` and
+fails on a page whose number is not that count, naming the page and the folders (`README.de.md says 14
+themes and themes/ holds 15: aurora, ...`), so the page you leave behind is the one that stops the PR - and
+a page that starts stating the count is one to add to that test's list.
 
 ## 7. Open the pull request
 

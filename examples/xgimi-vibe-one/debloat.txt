@@ -1,0 +1,80 @@
+# XGIMI Vibe One projector (model WM03H, device altai, product seal2, MediaTek m7332), Google TV / Android 11 (SDK 30),
+# build RTMA.250416.186.13970001, Canada. 2 GB RAM (1.7 GB usable).
+#
+# Apply:   TV_ADB_BINARY=<adb> TV_HOST=<serial or ip:port> tools/disable.sh examples/xgimi-vibe-one/debloat.txt
+# Undo:    TV_ADB_BINARY=<adb> TV_HOST=<serial or ip:port> tools/restore.sh examples/xgimi-vibe-one/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested for one session (a few hours) on 2026-11-04, including reboots, not the several days
+# CONTRIBUTING asks for. Every entry was applied and checked on the real unit; what has not been
+# proven is that nothing surfaces after days of use. See README.md in this folder.
+#
+# Same board (altai) as examples/xgimi-mogo-4 and examples/xgimi-mogo-3-pro, but on Android 11 like
+# examples/xgimi-horizon-s-pro, so the MoGo 4 hardware keep-list applies and the Horizon S Pro
+# telemetry/factory entries match. Inventory taken over USB ADB on 2026-11-04: 121 packages, none
+# disabled from the factory, 7 user-installed preloads (Canadian streaming bundle).
+#
+# Memory at inventory time (dumpsys meminfo, idle on the stock home): MemAvailable ~630 MB of 1.7 GB.
+# Largest resident process was com.quickplay.android.bellmediaplayer (Bell Fibe TV) at 153 MB, more
+# than system_server; it registers a boot receiver (com.netradar.appanalyzer.OnUpgradeOrBootBroadcastReceiver).
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (HOME priority 2), setup wizard RecoveryActivity
+# at priority 1. Both KEPT in this list. The new launcher (com.gathin.tvhome, HOME_KEY_SERVICE=1 and
+# stock_home_redirect in config.json) holds Home on this unit with launcherx still enabled, across
+# reboots and on a real Home press. See README.md in this folder.
+# setupwraith owns the saved Wi-Fi network in use (cname=com.google.android.tungsten.setupwraith
+# in `dumpsys wifi`), so disabling it would delete that network. Do not disable it on this unit.
+#
+# DO NOT DISABLE on this model (projector hardware, inputs, mirroring), per the altai notes:
+# com.xgimi.autokst                    # auto keystone correction
+# com.xgimi.windowsystem               # keystone/window service
+# com.xgimi.tof                        # ToF autofocus
+# com.xgimi.misckey                    # remote keys, focus/keystone shortcuts
+# com.xgimi.uiconfiguration            # global key receiver, power listener
+# com.xgimi.xrmservice                 # global remote keys, picture/sound adaptation
+# com.xgimi.xgimiservice               # core XGIMI system service
+# com.xgimi.autoinstall                # purpose unclear: kept
+# com.xgimi.overseas.xgimiatvbootwizard  # first-boot wizard
+# com.xgimi.ota.accessories            # remote/speaker firmware updater
+# com.mediatek.tvinput                 # HDMI input service
+# com.mediatek.tv.service              # TV service, Netflix key receiver
+# com.mediatek.wwtv.tvcenter           # MediaTek TV center (inputs)
+# com.dolby.android.audio.service      # Dolby audio
+# com.google.android.apps.mediashell   # Chromecast built-in
+# com.google.android.tungsten.setupwraith  # owns the Wi-Fi network, see above
+
+# Store demo, factory and test tools
+fusion.android.tv.demo                        # RetailDisplay store demo
+com.xgimi.atvwifiverify                       # factory Wi-Fi verification
+com.xgimi.minitvfactory                       # factory menu, file transfer and burn-in
+com.xgimi.yg.minitvfactory                    # second factory menu build
+
+# Telemetry, feedback and attribution
+com.xgimi.bugreportsender                     # XGIMI bug report uploader
+com.google.android.feedback                   # Google feedback
+com.mstar.android.tv.disclaimercustomization  # vendor disclaimer screen, first-run only
+com.google.android.partnersetup               # partner / RLZ install-attribution pings
+android.autoinstalls.config.google.gtvpai     # Play auto-install config for preloads
+
+# Google preloads
+com.google.android.play.games                 # Play Games
+com.google.android.youtube.tvmusic            # YouTube Music
+com.google.android.marvin.talkback            # TalkBack (accessibility), off by choice
+com.android.printspooler                      # print spooler, no use on a projector
+
+# Preinstalled streaming apps the owner does not use (they ship as user apps on this Canadian unit). Shared lists
+# keep streaming apps on, so they are comments: uncomment the ones you never open.
+# com.quickplay.android.bellmediaplayer         # Bell Fibe TV (153 MB resident, boot receiver); this set has it off
+# ca.bellmedia.cravetv                          # Crave; this set has it off
+# com.cbs.ca                                    # CTV / Paramount+ Canada; this set has it off
+# com.haystack.android                          # Haystack News; this set has it off
+# com.tubitv                                    # Tubi; this set has it off
+# com.apple.atve.androidtv.appletv              # Apple TV; this set has it off
+
+# Kept by choice on this unit: com.netflix.ninja, com.google.android.youtube.tv,
+# com.amazon.amazonvideo.livingroom, com.disney.disneyplus, com.google.android.katniss and
+# com.google.android.tv.assistant (voice search), com.google.android.tv.remote.service (phone remote),
+# com.xgimi.doubanfm (speaker mode), com.google.android.apps.tv.dreamx (ambient screensaver),
+# com.xgimi.gimiplayer (local player), com.google.android.apps.nbu.smartconnect.tv (phone setup),
+# com.google.android.tts, com.google.android.inputmethod.latin, Play Store / Play Services, Bluetooth.
+# The projector's own firmware updater was left enabled.

@@ -15,6 +15,8 @@
     <string name="quick_hint">◀ ▶ pick a time · OK close</string>
     <string name="service_description">Only puts the TV in standby when the Sleep Timer ends. It does not read the screen.</string>
 
+    <string name="schedule_row">Schedule</string>
+
     <style name="Warning" parent="android:Theme.DeviceDefault.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

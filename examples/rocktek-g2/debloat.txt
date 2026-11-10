@@ -1,0 +1,55 @@
+# RockTek G2 (RT-G2; SEI Robotics/NES, product SEI804RT, device YYJ, Amlogic S905X4), ~3.5 GB RAM
+# Android TV 14 (SDK 34), build UKG3.250803.001/7475, 32-bit (armeabi-v7a)
+#
+# Apply:   launcher/build-and-install.sh first (this list disables the stock launcher), then
+#          TV_HOST=<box ip> tools/disable.sh examples/rocktek-g2/debloat.txt
+# Undo:    TV_HOST=<box ip> tools/restore.sh examples/rocktek-g2/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+# Reboot-checked: every package stays disabled, Home lands on the new launcher, ADB answers.
+#
+# Same board and firmware build as examples/nokia-streaming-box-8010, which this list started from, and
+# `pm disable-user --user 0` works the same way. This box has no Hoppr package.
+#
+# Screensaver: backdrop is the default dream. Point it at another one before disabling it:
+#   settings put secure screensaver_components com.gathin.tvhome/.ClockDream
+#
+# Remote: the Netflix key (STEM_1) cannot be remapped. The firmware takes it before the launcher's
+# accessibility helper sees it, tested with the real remote while Netflix was disabled. YouTube, Prime
+# Video, Disney+, TV, Bookmark and INFO could be remapped with HOME_KEY_SERVICE=1.
+#
+# Kept on purpose (load-bearing or wanted):
+#   com.google.android.katniss             Assistant, the mic key
+#   com.google.android.apps.mediashell     Chromecast
+#   com.nes.blerc, com.nes.tvglobalkeyhandler, com.standard.irtvcontrol   remote, app keys, IR to the TV
+#   com.nes.coreservice, com.nes.remoteota.*, com.sei.hdmi.services, com.nes.recents, com.droidlogic.*,
+#   org.dtvkit.inputsource                 firmware services and updates, CEC, Amlogic
+# Already disabled when we started, not by this list: com.google.android.play.games,
+# com.google.android.youtube.tvmusic, com.android.healthconnect.controller, com.netflix.ninja,
+# com.nes.seilivetv, com.amazon.amazonvideo.livingroom.
+
+# Telemetry and ads
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup                 # Google partner attribution
+com.android.adservices.api                      # Privacy Sandbox ad services
+com.android.ondevicepersonalization.services    # ad personalisation
+com.android.federatedcompute.services           # federated ad/usage learning
+com.nes.bugreportsender                         # NES bug report sender
+
+# Preloads and promo rows
+android.autoinstalls.config.sei                 # Play auto-install of partner apps
+com.nes.leanbacklauncher.partnercustomizer      # Shop/Discover row config for the stock launcher
+
+# Unused services
+com.android.printspooler
+com.google.android.syncadapters.calendar
+com.google.android.marvin.talkback              # re-enable if you need the screen reader
+
+# Factory tests: disabled, never started
+com.utsmta.app
+com.nes.dvb.playtest
+
+# Stock launcher and what only it uses, replaced by launcher/
+com.google.android.tvlauncher                   # about 290 MB in the background, the largest process
+com.google.android.tvrecommendations            # recommendation rows, about 33 MB
+com.google.android.backdrop                     # ambient screensaver, about 76 MB, see the header

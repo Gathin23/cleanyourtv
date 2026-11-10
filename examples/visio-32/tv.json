@@ -1,0 +1,6 @@
+{
+  "tv": "VISIO 32\" (VISIO TV / Iris 2K TV, shinagawa, MediaTek m5621)",
+  "os": "Android TV 11",
+  "brand": "VISIO",
+  "notes": "Skyworth OEM (SW1 board, MediaTek MT5621, 1 GB RAM, 720p); OEM demos, customizer, emanual and feedback disabled; stock Android TV launcher replaced; wwtv.mediaplayer, wwtv.tvcenter and backlight adjust kept; screenshots quirk (adbd stdout wrapper); reboot-checked"
+}

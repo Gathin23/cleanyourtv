@@ -24,6 +24,7 @@ import json
 import math
 import os
 import re
+import stat
 import statistics
 import sys
 
@@ -175,6 +176,26 @@ def expand(items):
     return paths
 
 
+def unique_traces(paths):
+    """Keep the first path (and its sidecar) for each physical recording in one set."""
+    unique, seen = [], set()
+    for path in paths:
+        try:
+            info = os.stat(path)
+            if not stat.S_ISREG(info.st_mode):
+                raise ValueError(f"not a file: {path}")
+            # stat follows symlinks; device/inode identity also covers hardlinks.
+            # Some filesystems expose no inode, so fall back to the resolved path.
+            identity = ((info.st_dev, info.st_ino) if info.st_ino else
+                        os.path.normcase(os.path.realpath(path)))
+        except OSError as e:
+            raise ValueError(f"cannot identify trace {path}: {e}") from e
+        if identity not in seen:
+            seen.add(identity)
+            unique.append(path)
+    return unique
+
+
 def _run_order(path):
     m = re.search(r"-(\d+)\.pftrace$", path)
     return (re.sub(r"-\d+\.pftrace$", "", path), int(m.group(1)) if m else 0)
@@ -204,6 +225,10 @@ def engine_path(engine):
     if os.name == "posix" and not os.access(engine, os.X_OK):
         raise ValueError(f"--engine {engine} is not executable: run chmod +x on the trace_processor_shell "
                          "you downloaded (tools/trace.md)")
+    # Perfetto passes this to Popen: a bare POSIX filename searches PATH instead of running the file
+    # checked above. Keep paths containing / unchanged, including symlinks followed by .. .
+    if os.name == "posix" and not os.path.dirname(engine):
+        return os.path.join(".", engine)
     return engine
 
 
@@ -331,6 +356,10 @@ def main(argv=None):
         missing = [p for p in paths if not os.path.isfile(p)]
         if missing:
             sys.exit("not a file: " + ", ".join(missing))
+    try:
+        sets = [unique_traces(paths) for paths in sets]
+    except ValueError as e:
+        sys.exit(str(e))
     families = [{"nav" if scenario_of(p) == "nav" else "start" for p in paths} for paths in sets]
     if any(len(family) > 1 for family in families):
         sys.exit("cannot mix nav and start traces in one set; report them separately")

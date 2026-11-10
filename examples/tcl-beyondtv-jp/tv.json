@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 50P8S (BeyondTV), Japan (Realtek RTD2851, V8-R851T03-LF1V153)",
+  "os": "Android TV 9",
+  "brand": "TCL",
+  "notes": "Japan firmware (TCL-JP-RT2851-S1) with a smaller TCL set than the EU list; TCL BI analytics, TCL Channel, promos, stickers, e-warranty screen, TV Guard, Google feedback/partner setup and recommendation rows; Ambient Mode off; Japanese streaming apps and MagiConnect left on (commented out); broadcast TV, Chromecast, Assistant and the firmware updater kept; stock launcher has HOME priority 2, so it must be disabled; `power_on_home` works; reboot-checked"
+}

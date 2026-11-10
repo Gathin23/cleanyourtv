@@ -1,6 +1,9 @@
 # CHiQ "AI PONT" (Changhong, product GTVU65, device dangni), Google TV 14 (API 34),
 # firmware UKN2.241219.138.A1, security patch 2025-03-01, MediaTek mt5867.
 # 1 GB RAM (MemTotal about 930 MB). 1920x1080 panel, UI rendered at 1280x720 (wm size override), 213 dpi.
+# Second unit: CHiQ L32FM10V (32", same GTVU65 / dangni / mt5867), firmware UKN6.260116.139, Italy; its
+# differences (Wireless debugging only, setupwraith owning the Wi-Fi network, Canali TV as the Live TV app)
+# are in README.md.
 # Not the same firmware as examples/chiq-ai-pont (DVB93CQ, Android TV 11): this is the Google TV 14 build,
 # closer to examples/benq-e55-735 and examples/rca-ai-pont.
 #
@@ -45,6 +48,7 @@ android.autoinstalls.config.google.gtvpai   # Play partner auto-installs
 com.google.android.feedback
 com.android.tv.feedbackconsent
 com.android.adservices.api
+tv.anoki.acr.anokiacroptin                  # Anoki ACR opt-in (content recognition); on UKN6 only, see README.md
 
 # Changhong / Homwee store and help
 com.homwee.store

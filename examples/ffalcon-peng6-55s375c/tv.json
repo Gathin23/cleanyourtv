@@ -1,0 +1,6 @@
+{
+  "tv": "FFalcon (雷鸟) 鹏6 55S375C (China, 55\" 4K, tc8000_ay30a2, Amlogic ohm TC8000, 3 GB)",
+  "os": "Android 11",
+  "brand": "FFalcon",
+  "notes": "Same platform as tcl-tc8000-ay30a2 but the 3 GB version on an earlier build; `com.tcl.bootadservice` disabled, `com.tcl.bi` disabled and `com.tcl.logkit` disabled, the boot ad is gone; the stock launcher `com.tcl.cyberui` kept, as are the voice assistant, casting, the account and firmware updates; 7 days on a real unit"
+}

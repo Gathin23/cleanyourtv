@@ -4,6 +4,7 @@
 # Third unit: KD-65A8 (A8 OLED 2020, UK), same EU build, 2.3 GB RAM (#2717, @Nachiketin)
 # Fourth unit: XBR-55A8H (A8H OLED 2020, US, BRAVIA_UR3_UC, same build number), used as a display for an
 # Apple TV: its further-reaching list is debloat-display-only.txt (AirPlay/Vewd crash-loop warning there).
+# Fifth unit: KD-43XH8196 (XH81 2020, EU), same BRAVIA_UR3_EU build QTG3.200305.006.S97 662301.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur3/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur3/debloat.txt
@@ -36,6 +37,16 @@
 # screensaver is showing: the first install timed out at `am start -W` until it was woken.
 # Packages disabled seconds before `adb reboot` can come back on; wait about 90 s before rebooting.
 # Its extra packages are in the commented block at the end.
+# KD-43XH8196: applied on 2026-11-06 in six batches with a screenshot after each. Katniss, promos,
+# YouTube Music and Play Movies were already off on this set, so it confirms the other 14 lines below.
+# It also confirms usercontext and the Sony bug-report uploader from the KD-65A8 block, and it disabled
+# four more by choice, listed commented at the end. The reference launcher took Home through
+# launcher/build-and-install.sh, and every disabled package plus Home survived a reboot. The real remote
+# worked: Home, Input, gear, held volume, HDMI, the Prime Video button and power-on to Home.
+# About a minute after that reboot SystemUI crashed once ("IllegalStateException: Task already
+# scheduled or cancelled") and restarted by itself. It did not recur. With no reboot before the debloat
+# to compare, the crash is not attributed to the list.
+# Status: KD-43XH8196 in daily use since 2026-11-06 with no problems reported (two days when added).
 # Not yet lived with for weeks; if something breaks, re-enable with `pm enable <package>`
 # and please report it.
 
@@ -65,13 +76,21 @@ com.google.android.youtube.tvmusic
 com.google.android.play.games
 com.google.android.videos
 
-# KD-65A8 (#2717) only, disabled and reboot-checked there; one evening of use so far.
-# These are present on that unit; uncomment to use them.
-# com.sony.dtv.usercontext                     # user context providers
-# com.sony.dtv.sonybugreportsys                # Sony bug-report/log uploader
+# KD-65A8 (#2717), disabled and reboot-checked there; one evening of use so far. The first two were
+# also disabled and reboot-checked on the KD-43XH8196. Uncomment to use them.
+# com.sony.dtv.usercontext                     # user context providers; also KD-43XH8196
+# com.sony.dtv.sonybugreportsys                # Sony bug-report/log uploader; also KD-43XH8196
 # com.sony.dtv.b2b.hotelmode                   # hotel mode
 # com.sony.dtv.b2b.rs232csupport               # RS-232 control for hotel installs
 # com.sony.dtv.recservice                      # USB recording of broadcast TV (also a DLNA receiver for recordings)
 # com.google.android.backdrop                  # Ambient screensaver: point screensaver_components and
 #                                              # screensaver_default_component elsewhere first (on an OLED,
 #                                              # com.android.dreams.basic/.Colors rather than the static ClockDream)
+
+# KD-43XH8196 only, disabled by choice and reboot-checked there (its owner does not cast to the TV).
+# com.vewd.core.service stayed enabled: AirPlay crash-loops without it (see debloat-display-only.txt).
+# Uncomment to use them.
+# com.sony.dtv.videoframeserver                # reads Samba TV data and the EPG; INTERNET
+# com.google.android.apps.mediashell           # Chromecast built-in
+# com.sony.dtv.airplayapp                      # AirPlay receiver (persistent)
+# com.sony.dtv.homekit                         # HomeKit (persistent)

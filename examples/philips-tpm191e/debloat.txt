@@ -218,6 +218,29 @@
 # - All 46 disabled packages (the 17 found disabled, the 28 disabled on this unit, tvrecommendations included,
 #   and the stock launcher) stayed disabled through restarts (`pm list packages -d` compared before and after).
 # - Private DNS in hostname mode validated on this firmware, as on the sixth unit.
+# - Cold boot RTC & Private DNS: MediaTek MT5887 lacks an RTC battery backup. On complete power loss (cold boot),
+#   the clock reverts to Dec 2025. If Private DNS (DoT) is on, TLS certificate validation fails before NTP can
+#   sync, leading to a network deadlock. If DNS fails after a cold boot, set private_dns_mode=off.
+#
+# Tenth unit: Philips 70PUS8545/12 (LED), France, on Wi-Fi. Same firmware as the lead unit: STT2.230526.001,
+# fingerprint Philips/PH9M_EA_5599/PH9M_EA_5599:12/STT2.230526.001/4215:user/release-keys. Applied in five batches
+# on 24 Oct 2026 and lived with until 6 Nov 2026, through several restarts and at least one power cut.
+# - From the list below: all of batches 1 and 2; from batch 3 katniss, videos, youtube.tvmusic, play.games and
+#   playfi.softap, with Prime Video, TalkBack and dlna left enabled by choice and music left alone; batch 4 after
+#   the launcher took Home.
+# - Also disabled, none used here: org.droidtv.amazonalexa, org.droidtv.android.fitness, org.droidtv.sticker,
+#   tv.wuaki.apptv (Rakuten TV), fr.filmotv.philips.android.tv (FilmoTV), com.zeasn.whalelive (Whale Live),
+#   com.ted.android.tv (TED), com.boosteroidtv.streaming (Boosteroid), and the web-app tiles nettvapp4546
+#   (Megogo), 5326 (Toon Goggles), 5512 (Fishing TV) and 20004410 (Couchplay Games). Kept: Netflix, YouTube,
+#   Prime Video, Disney+, HBO Max, france.tv, Twitch, Apple TV, arte, Crunchyroll, Chromecast, both firmware
+#   updaters, org.droidtv.fastip (per the philips-75pus8505 note) and com.phorus.playfi.tv, which was enabled
+#   again after the first restart, as on the lead unit.
+# - The same cold-boot loop as the ninth unit: after a power cut the clock started at 9 December 2025 and, with
+#   Private DNS in hostname mode, no name resolved and no app connected. Android's auto_time is 0 from the
+#   factory here, and org.droidtv.icp, the time service, reaches pool.ntp.org by name. Setting the mode to
+#   opportunistic and restarting twice brought the clock and the network back.
+# - Not compared package by package after the restarts, so persistence is not confirmed for this unit beyond
+#   Play-Fi coming back.
 
 # Batch 1: telemetry and retail demo
 org.droidtv.candeebug                     # "DAC" analytics uploader
@@ -255,3 +278,14 @@ com.phorus.playfi.softap                  # DTS Play-Fi soft access point
 # (OPEN_NOTIFICATIONS_PANEL, TOGGLE_NOTIFICATION_HANDLER_PANEL) on this firmware: that panel goes too.
 com.google.android.tvrecommendations      # "Android TV Core Services": recommendation rows, notification panel
 #                                         # second unit: re-enabled by the firmware at the next boot
+
+# Batch 5: Broadcast / DVB tuner suite, for streaming-only sets with no aerial. Left as comments: uncomment
+# them only if you never watch broadcast TV; Live TV, channel scans and teletext stop working. The tester had them off.
+# Disabling this permanently eliminates the modal "No Signal" trap on power-on and when pressing
+# the remote's TV button (scancode 170 / KEY_ISO). Android rejects the activity instantly, Home/Back
+# remain 100% responsive, and no accessibility key-filter is required (avoiding the Volume Up/Down repeat lag).
+# HDMI input switching (org.droidtv.channels / SourcesDrawerActivity) remains 100% functional.
+# org.droidtv.playtv                        # Live TV / tuner front-end
+# org.droidtv.euinstallertc                 # DVB-T/C cable/terrestrial installer
+# org.droidtv.euinstallersat                # DVB-S satellite installer
+# org.droidtv.teletext                      # Teletext engine

@@ -13,7 +13,9 @@ Set TV_HOST to the TV's IP (or IP:port). Usage:
     tv.py --help                       this text; needs neither the venv nor a TV
 
 Exit status: 0 the command ran (the TV's own answer is in its output), 1 the screenshot came back
-empty or failed, or a command's answer was lost when the TV dropped the connection,
+empty or failed, a pull the TV did not send (the local file is left as it was), a push the TV refused
+(what it said, and that the file there may be incomplete), or a command's answer was lost when the TV
+dropped the connection,
 2 it was refused before anything ran on the TV - a flag it does not have, one of its own with the wrong
 number of words, a local path that cannot be used, a port it could not open, or a TV_HOST that is a URL
 or a path instead of the TV's address. A flag and its count are
@@ -25,6 +27,7 @@ Set TV_ADB_BINARY to the Google adb executable to use an already connected, pair
 import errno
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -269,8 +272,9 @@ class NativeAdbDevice:
     def _run(self, args, timeout=None):
         limit = self.timeout if timeout is None else float(timeout)
         try:
+            # Android shell text is UTF-8, including when the host uses a Windows code page.
             result = subprocess.run([self.binary, "-s", self.serial, *args],
-                                    capture_output=True, text=True, errors="replace", timeout=limit)
+                                    capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=limit)
         except subprocess.TimeoutExpired as e:
             raise NativeAdbError(f"Google ADB {args[0]} on {self.serial} timed out after {limit:g}s.") from e
         except OSError as e:
@@ -505,13 +509,36 @@ def screenshot_target(local):
     have been judged this way since #2039; this is the flag the pages hand out most.
 
     A folder that is not there is still made rather than refused: that is the one shape the command is
-    expected to fix for itself.
+    expected to fix for itself. Three words are not a file name and are refused here: one that is only
+    whitespace, which `--screenshot "$SHOT"` sends when SHOT holds a space (the pull wrote a file named
+    "   " and the run printed `screenshot     (N bytes)`, exit 0, while the path the reader meant was
+    never made), one that ends with a separator while that folder is not there yet - the check below
+    only answers a folder that exists, and os.path.abspath() drops the separator, so the folder was made
+    and `screencap` ran on the TV before the pull wrote to a name that is a folder - and one whose last
+    word is `.` or `..`, which names the folder itself or its parent (`--screenshot newshots/.`): the
+    folder is not there, isdir() answers no and abspath() drops the tail as well, so the pull's open() of
+    the destination was the first thing to fail.
     """
     if not local:
         usage_error("--screenshot needs the file to save to")
+    if not local.strip():
+        usage_error(f"--screenshot's file is blank ({local!r}): name the file to save to, such as "
+                    f"shots/01-home.png")
     if os.path.isdir(local):
         path_error(f"{local} is a folder, and --screenshot saves the PNG to a file: give a file name, such "
                    f"as {os.path.join(local, '01-home.png')}. Nothing was captured.")
+    if local.endswith(("/", os.sep)):
+        path_error(f"{local} ends with a separator, so it names a folder, and --screenshot saves the PNG "
+                   f"to a file: give a file name such as {os.path.join(local, '01-home.png')}. "
+                   f"Nothing was captured.")
+    if os.path.basename(local) in (".", ".."):
+        # `--screenshot newshots/.` names that folder itself (and `newshots/..` its parent), and the folder
+        # is not there yet: os.path.isdir() answers no, the check above sees a dot rather than a separator,
+        # and os.path.abspath() drops the tail, so the parent was made, `screencap` ran on the TV, and the
+        # pull's open() of the destination - a path with no such folder - was the first thing to fail.
+        path_error(f"{local} ends in {os.path.basename(local)!r}, which names a folder rather than a file, "
+                   f"and --screenshot saves the PNG to a file: give the file a name such as "
+                   f"{os.path.join(local, '01-home.png')}. Nothing was captured.")
     folder = os.path.dirname(os.path.abspath(local))
     if os.path.exists(folder) and not os.path.isdir(folder):
         path_error(f"{folder} is a file, not a folder: --screenshot cannot save {local} inside it. "
@@ -592,7 +619,10 @@ def screenshot(dev, local, keys=(), wait=0.0):
 
     `local` and the folder it needs are judged - and the folder made - by screenshot_target() before the
     TV is opened: agents pass shots/01-home.png before that folder exists (#364), and a destination that
-    cannot be written has to be answered before a capture is run for it."""
+    cannot be written has to be answered before a capture is run for it.
+
+    A picture the TV does not send is pull()'s failure, not an empty screenshot: it answers in words,
+    exit 1, and the file that was already there is left as it was."""
     for i, key in enumerate(keys):
         if i:
             time.sleep(KEY_GAP_S)
@@ -608,7 +638,19 @@ def screenshot(dev, local, keys=(), wait=0.0):
         dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
         print(f"screencap failed on the TV (exit status {rc}): {other or 'no output'}", file=sys.stderr)
         return 1
-    dev.pull(SHOT_REMOTE, local, transport_timeout_s=300.0, read_timeout_s=300.0)
+    # The pull is the other half of a capture, and it fails the way --pull's does: adb_shell opens the
+    # local path before it asks the TV, so a dropped connection emptied the picture that was already
+    # there - the one the reader was about to compare against - and ended in a traceback out of a
+    # command PROMPT.md, AGENTS.md and CONTRIBUTING.md all hand out. pull() answers that, and answers
+    # it before this run says anything about a picture it did not get.
+    if pull(dev, SHOT_REMOTE, local, announce=False) != 0:
+        # What usually failed is the transport, so the capture nobody will read is worth one attempt
+        # only, and that attempt cannot raise on top of the failure the pull just reported.
+        try:
+            dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)
+        except Exception:
+            pass
+        return 1
     dev.shell(f"rm -f {SHOT_REMOTE}", read_timeout_s=60.0)   # leave nothing behind on the TV
     size = os.path.getsize(local) if os.path.exists(local) else 0
     if size == 0:
@@ -633,6 +675,77 @@ def screenshot(dev, local, keys=(), wait=0.0):
                   "TV ended before the picture did; try again", file=sys.stderr)
             return 1
     print(f"screenshot {local} ({size} bytes)")
+    return 0
+
+
+def pull(dev, remote, local, announce=True):
+    """Pull `remote` into `local`, which is replaced only once the whole file has come back. Returns 0,
+    or 1 when the TV did not send the file.
+
+    adb_shell opens the local path for writing before it asks the TV for the file, so a path the TV does
+    not have, or a connection that dropped halfway, emptied the copy that was there (or left a 0-byte
+    file where there was none) and then ended in a traceback. The pull goes into a file of its own in
+    the same folder, so the os.replace() that puts it in place stays on one filesystem.
+
+    `announce=False` is for a caller that prints its own line about the file, as a capture does; a
+    failure is reported either way, because it is the run's answer rather than a note about it."""
+    folder, name = os.path.split(os.path.abspath(local))
+    part = os.path.join(folder, f".{name}.{os.getpid()}.part")
+    try:
+        dev.pull(remote, part, transport_timeout_s=300.0, read_timeout_s=300.0)
+        if os.path.exists(local):
+            shutil.copymode(local, part)
+        os.replace(part, local)
+    except Exception as e:
+        try:
+            os.remove(part)
+        except OSError:
+            pass
+        # Imported here, as lost_connection() does, so a stub adb_shell without exceptions still loads.
+        from adb_shell.exceptions import (AdbCommandFailureException, AdbConnectionError, AdbTimeoutError,
+                                          TcpTimeoutException)
+        if not isinstance(e, (OSError, NativeAdbError, AdbCommandFailureException, AdbConnectionError,
+                              AdbTimeoutError, TcpTimeoutException)):
+            raise
+        kept = "was left as it was" if os.path.exists(local) else "was not written"
+        print(f"could not pull {remote}: {type(e).__name__}: {e}\n{local} {kept}.", file=sys.stderr)
+        return 1
+    if announce:
+        print(f"pulled {remote} -> {local}")
+    return 0
+
+
+def push(dev, local, remote):
+    """Push `local` to `remote`, answering a transfer the TV refused. Returns 0, or 1 when it failed.
+
+    adb_shell's push() opens the local file, writes it to the TV and closes the sync session in one
+    call, so a push the TV would not take ended in a traceback out of main(): PushFailedError carrying
+    the TV's own words as bytes ("b'No such file or directory'") for a folder it cannot write - a
+    read-only mount, a path that is a folder, a name the shell user does not own - plus
+    AdbConnectionError, AdbTimeoutError and TcpTimeoutException for a transport that went, and
+    NativeAdbError from the Google ADB backend. Exit 1 was right (this client's code for a transfer
+    that failed) but nothing said which file, which path, or what the TV answered, and the reader had
+    to parse a stack trace to find out. --pull has answered its failures in words since #3191; --push
+    had no such sentence.
+    """
+    try:
+        dev.push(local, remote, transport_timeout_s=300.0, read_timeout_s=300.0)
+    except Exception as e:
+        # Imported here, as pull() does, so a stub adb_shell without exceptions still loads.
+        from adb_shell.exceptions import (AdbCommandFailureException, AdbConnectionError, AdbTimeoutError,
+                                          PushFailedError, TcpTimeoutException)
+        if not isinstance(e, (OSError, NativeAdbError, AdbCommandFailureException, AdbConnectionError,
+                              AdbTimeoutError, PushFailedError, TcpTimeoutException)):
+            raise
+        # PushFailedError's argument is the TV's answer as bytes; every other one reads as it is.
+        said = e.args[0].decode("utf-8", "replace") if e.args and isinstance(e.args[0], bytes) else str(e)
+        # Not "was not written": a push that stopped part-way can leave a cut-short file behind, so the
+        # sentence says what to look at rather than promising the TV still holds the old one.
+        print(f"could not push {local} to {remote}: {type(e).__name__}: {said}\n"
+              f"{remote} may be incomplete or missing: look at it on the TV before relying on it.",
+              file=sys.stderr)
+        return 1
+    print(f"pushed {local} -> {remote}")
     return 0
 
 
@@ -665,11 +778,9 @@ def main():
         local, keys, wait = screenshot_args(args[1:])
         status = screenshot(dev, local, keys, wait)
     elif args[0] == "--push" and len(args) == 3:
-        dev.push(args[1], args[2], transport_timeout_s=300.0, read_timeout_s=300.0)
-        print(f"pushed {args[1]} -> {args[2]}")
+        status = push(dev, args[1], args[2])
     elif args[0] == "--pull" and len(args) == 3:
-        dev.pull(args[1], args[2], transport_timeout_s=300.0, read_timeout_s=300.0)
-        print(f"pulled {args[1]} -> {args[2]}")
+        status = pull(dev, args[1], args[2])
     elif args[0] == "--batch":
         # one shell command per stdin line, each run separately on the same connection.
         # utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.

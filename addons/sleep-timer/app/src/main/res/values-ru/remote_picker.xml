@@ -1,0 +1,13 @@
+<resources>
+    <string name="remote_hours">"Часы"</string>
+    <string name="remote_minutes">"Минуты"</string>
+    <string name="remote_day">"День"</string>
+    <string name="remote_month">"Месяц"</string>
+    <string name="remote_year">"Год"</string>
+    <string name="remote_hint">"◀ ▶ поле · ▲ ▼ значение · ОК дальше · Назад — отмена"</string>
+    <string name="remote_page_hint">"Стрелками выберите строку и нажмите ОК. Изменения применятся после сохранения."</string>
+    <string name="remote_events">"СОБЫТИЯ ПО ДНЯМ НЕДЕЛИ"</string>
+    <string name="remote_exclusions">"ПЕРИОДЫ БЕЗ АВТОВКЛЮЧЕНИЯ"</string>
+    <string name="remote_wake_time">"Время включения"</string>
+    <string name="remote_sleep_time">"Время сна"</string>
+</resources>

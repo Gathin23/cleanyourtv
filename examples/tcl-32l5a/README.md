@@ -22,7 +22,7 @@ This directory contains the debloat configuration and documentation for the **TC
 - `com.tcl.waterfall.overseas` — TCL web-video feed / TCL Channel
 - `com.tcl.esticker` — Store demo sticker app
 - `com.tcl.copydatatotv` — Copy data promo utility
-- `com.tcl.t_solo` — TCL promotional service
+- `com.tcl.t_solo` — T-Solo "listen alone": TV sound to Bluetooth headphones
 - `com.internet.tvbrowser` — Preloaded browser
 - `com.tcl.browser` — TCL Browser
 - `com.google.android.feedback` — User feedback collector

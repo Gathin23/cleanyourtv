@@ -1,11 +1,15 @@
-# Durabrand DB Android TV 4K (`DURAT32ISDB`, dupont): a one-day owner report
+# Durabrand DB Android TV 4K (`DURAT32ISDB`, dupont): two owner reports
 
-Owner report from
+The tested list for this set is [`examples/durabrand-durat32isdb/`](../../examples/durabrand-durat32isdb/debloat.txt),
+from the second unit below, run for several days with a launcher swap. This note keeps what the
+list header has no room for: the first owner's report, the packages the firmware turns back on and
+the factory-menu trap.
+
+The first report came from
 [#470](https://github.com/Gathin23/cleanyourtv/issues/470): one session and one day of use, no
-launcher installed. It is **not** a tested list in the `examples/` sense - CONTRIBUTING asks for
-several days of living with a list before it goes there - so the packages and the two traps that
-came with them are recorded here instead, and this note can graduate to `examples/` once the owner
-has run it for longer.
+launcher installed. On its own it was **not** a tested list in the `examples/` sense - CONTRIBUTING
+asks for several days of living with a list before it goes there - so its packages and the two traps
+that came with them were recorded here first.
 
 ## Identify the firmware
 
@@ -105,3 +109,49 @@ is in [TROUBLESHOOTING.md](../TROUBLESHOOTING.md).
 - The package list is the owner's, reproduced here as reported; it was not re-read from the TV by
   this note's author, and no screenshot of `dumpsys package` accompanied it.
 - The RAM figures are the owner's, measured before and after in one session.
+
+## A second unit, with a launcher swap
+
+A second owner's set, the same product, device, board, firmware and security patch as above, read
+from the TV with `getprop`. It adds what the first report could not cover: the Home handover, the
+reboots after it, and a third package the firmware turns back on. Its list, after four days of use,
+is [`examples/durabrand-durat32isdb/`](../../examples/durabrand-durat32isdb/debloat.txt).
+
+Disabled with `tools/disable.ps1` in five small batches, each checked with `dumpsys package` first,
+then one reboot:
+
+- the nine from the first report other than the store disclaimer: `fusion.android.tv.demo`,
+  `com.haier.apps`, `com.haier.apps.evoSmart`, `com.google.android.feedback`,
+  `com.google.android.videos`, `com.google.android.play.games`,
+  `com.google.android.youtube.tvmusic`, `com.android.printspooler` and
+  `com.google.android.syncadapters.calendar`;
+- `com.haier.tvhousekeeper`, Haier's "TV Assistant" cleaner (`/product/app/TV_Assistant`), which
+  the Haier lists in `examples/` disable too;
+- `com.google.android.tvlauncher`, at the Home handover below.
+
+`com.mstar.android.tv.disclaimercustomization` was not in this unit's batches and is still enabled;
+nothing here says whether it is needed. Two apps installed under `/data/app` rather than shipped in the
+firmware were disabled as well and are not part of this note.
+
+What happened:
+
+- `com.google.android.katniss` (the Assistant) was disabled and was enabled again at the next boot,
+  like `tvrecommendations` and `haiermatrix` above. The cause was not traced on this unit; disabling
+  it again only lasts until the next restart, so it was left enabled.
+- The Home handover needed the stock home disabled: with the reference launcher holding the HOME
+  role, the Home button still opened `com.google.android.tvlauncher` until it was disabled, which is
+  what `launcher/build-and-install.sh` does by default. After a reboot Home came back to the new
+  launcher, and it has stayed there since. The launcher on this set is a fork of this repo's (the
+  [CleanYourTV Editorial](../../SHOWCASE.md) row), with the same package and Home handover.
+- The Input button kept opening the MediaTek panel after the swap, as described above.
+- Reinstalling only `base.apk` of an app that ships as four split APKs failed with
+  `INSTALL_FAILED_VERIFICATION_FAILURE`; installing all four together with `adb install-multiple`
+  succeeded with Play Protect left on. The failure was the incomplete install, not a block on
+  installing apps from ADB.
+- `com.google.android.tungsten.setupwraith`, `com.haier.tv.hmagicboard` and `com.cvte.tv.hkcfac`
+  were left alone and the factory menus were never opened.
+
+Validation scope for this unit: one owner, four days, two reboots (one after the
+cleanup, one after the launcher). The owner confirmed playback in YouTube, Stremio and an IPTV app,
+and the remote's Home, Back and volume keys after the swap. HDMI-CEC, a real Chromecast
+session and a firmware update were not tried.

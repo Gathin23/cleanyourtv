@@ -53,6 +53,18 @@ public class HaTest {
     }
 
     @Test
+    public void aSceneThatNeverRanCanRun() throws Exception {
+        // Home Assistant reports a scene as "unknown" until it has been activated once.
+        List<Ha.Entity> all = Ha.parse("[{\"entity_id\":\"scene.never\",\"state\":\"unknown\",\"attributes\":{}},"
+                + "{\"entity_id\":\"scene.gone\",\"state\":\"unavailable\",\"attributes\":{}}]");
+        Ha.Entity never = find(all, "scene.never");
+        assertTrue(never.available());
+        assertEquals("Run", never.value());
+        assertTrue(Ha.press(never) != null);
+        assertNull(Ha.press(find(all, "scene.gone")));
+    }
+
+    @Test
     public void values() throws Exception {
         List<Ha.Entity> all = Ha.parse(STATES);
         assertEquals("On · 60 %", find(all, "light.living_room").value());
@@ -65,7 +77,10 @@ public class HaTest {
         assertEquals("Unavailable", find(all, "light.garage").value());
         assertEquals("Run", find(all, "scene.good_night").value());
         assertEquals("21.3°", find(all, "weather.home").value());
-        assertEquals("1.7 €/L", find(all, "sensor.station_e10").value());
+        assertEquals("1.689 €/L", find(all, "sensor.station_e10").value());
+        assertEquals("2.10", Ha.price("2.1"));
+        assertEquals("2.00", Ha.price("2"));
+        assertEquals("unknown", Ha.price("unknown"));
     }
 
     @Test
@@ -75,7 +90,7 @@ public class HaTest {
         assertEquals("weather.home", g.weather.id);
         assertEquals("cloudy", g.icon);
         assertEquals(2, g.prices.size());
-        assertEquals("21.3° · Diesel 1.5 EUR/L · E10 1.7 €/L", g.text);
+        assertEquals("21.3° · Diesel 1.549 EUR/L · E10 1.689 €/L", g.text);
         assertFalse(g.empty());
     }
 

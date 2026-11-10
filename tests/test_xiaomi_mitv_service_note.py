@@ -15,10 +15,16 @@ tests keep the note a reader has to be able to act on - the device, the logcat s
 that put the service back, the two ways out and the trap - and keep every list that names the package in
 either direction pointing at it, so the line cannot be carried to a CN set without the warning.
 
+The walk reads every list a folder ships, not only its `debloat.txt`: eight folders here carry a second
+list (`debloat-keep-cast.txt` in two, `debloat-65u7esg.txt`, `debloat-32-inch.txt`, `debloat-extra.txt`,
+`debloat-display-only.txt` in two, `debloat-75t8c-eu.txt`), `tools/disable.sh` applies each like the
+first, and a `mitv.service` line moved into one would have been read by nothing.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
 from pathlib import Path
+import tempfile
 import unittest
 
 
@@ -68,8 +74,36 @@ def list_lines(path):
     return out
 
 
-def lists():
-    return sorted(EXAMPLES.glob("*/debloat.txt"))
+def lists(root=EXAMPLES):
+    """Every list under `examples`, not only each folder's debloat.txt.
+
+    Eight folders ship a second list beside it (debloat-keep-cast.txt in two, debloat-65u7esg.txt,
+    debloat-32-inch.txt, debloat-extra.txt, debloat-display-only.txt in two, debloat-75t8c-eu.txt),
+    and tools/disable.sh applies one like the first: a second list that disables `mitv.service` is the
+    same mistake as a `debloat.txt` that does, and one that says to leave it alone carries the same
+    duty to say why.
+    """
+    return sorted(Path(root).glob("*/debloat*.txt"))
+
+
+ANCHOR = "#" + slug(HEADING)
+
+
+def anchor_missing(paths):
+    """[(path, line number or None)] for the lists that need the note's anchor and do not carry it.
+
+    Two shapes: a line that disables `mitv.service`, and a list that carries the "do not touch it"
+    sentence. The number is the disabling line, or None for the sentence.
+    """
+    problems = []
+    for path in paths:
+        text = path.read_text(encoding="utf-8")
+        for number, package, _ in list_lines(path):
+            if package == PACKAGE and ANCHOR not in text:
+                problems.append((path, number))
+        if DO_NOT_TOUCH in text and ANCHOR not in text:
+            problems.append((path, None))
+    return problems
 
 
 def relative(path):
@@ -117,7 +151,6 @@ class TheNoteTest(unittest.TestCase):
 class EveryListThatNamesThePackageTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.anchor = "#" + slug(HEADING)
         cls.texts = {path: path.read_text(encoding="utf-8") for path in lists()}
 
     def test_the_sweep_reads_the_xiaomi_lists(self):
@@ -125,16 +158,9 @@ class EveryListThatNamesThePackageTest(unittest.TestCase):
         self.assertGreaterEqual(len(named), 15,
                                 "the sweep is meant to read the Xiaomi lists that name this package")
 
-    def test_only_one_list_disables_it_and_it_links_the_note(self):
-        disabling = []
-        for path, text in self.texts.items():
-            for number, package, _ in list_lines(path):
-                if package == PACKAGE:
-                    disabling.append((path, number))
-                    self.assertTrue(self.anchor in text,
-                                    f"{relative(path)}:{number} disables {PACKAGE}, which takes Xiaomi's "
-                                    f"Settings with it: point the line at docs/TROUBLESHOOTING.md"
-                                    f"{self.anchor}")
+    def test_only_one_list_disables_it(self):
+        disabling = [(path, number) for path in self.texts
+                     for number, package, _ in list_lines(path) if package == PACKAGE]
         self.assertEqual([relative(path) for path, _ in disabling], ["examples/xiaomi-mitv-aesp0/debloat.txt"],
                          "a second list disables it: that set needs a test on a CN-firmware TV first")
 
@@ -142,11 +168,30 @@ class EveryListThatNamesThePackageTest(unittest.TestCase):
         keeping = [path for path, text in self.texts.items() if DO_NOT_TOUCH in text]
         self.assertGreaterEqual(len(keeping), 3,
                                 "the China-market lists carry that sentence; the sweep found fewer")
-        for path in keeping:
-            with self.subTest(list=relative(path)):
-                self.assertTrue(self.anchor in self.texts[path],
-                                f"{relative(path)} says not to touch {PACKAGE} without saying what "
-                                f"disabling it costs: link docs/TROUBLESHOOTING.md{self.anchor}")
+
+    def test_every_list_that_names_it_points_at_the_note(self):
+        missing = anchor_missing(lists())
+        self.assertFalse(missing, "\n".join(
+            f"{relative(path)}{':' + str(number) if number else ''} names {PACKAGE} without saying what "
+            f"disabling it costs: link docs/TROUBLESHOOTING.md{ANCHOR}" for path, number in missing))
+
+    def test_the_sweep_reads_a_second_list(self):
+        # The rule is only as wide as the walk: a folder's second list is applied like its first, so a
+        # line carried there is the same mistake as one in debloat.txt.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "acme-tv").mkdir()
+            (root / "acme-tv" / "debloat.txt").write_text(f"{PACKAGE}   # see {ANCHOR}\n", encoding="utf-8")
+            extra = root / "acme-tv" / "debloat-extra.txt"
+            extra.write_text(f"{PACKAGE}   # core MiTV service\n", encoding="utf-8")
+            self.assertIn(extra, lists(root))
+            self.assertEqual([(path.name, number) for path, number in anchor_missing(lists(root))],
+                             [("debloat-extra.txt", 1)])
+            extra.write_text(f"# {DO_NOT_TOUCH}, see {ANCHOR}\n", encoding="utf-8")
+            self.assertEqual(anchor_missing(lists(root)), [])
+            extra.write_text(f"# {DO_NOT_TOUCH}\n", encoding="utf-8")
+            self.assertEqual([(path.name, number) for path, number in anchor_missing(lists(root))],
+                             [("debloat-extra.txt", None)])
 
 
 class ReaderTest(unittest.TestCase):

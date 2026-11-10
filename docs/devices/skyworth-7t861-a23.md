@@ -47,16 +47,18 @@ The packages in [`examples/skyworth-7t861-a23/debloat.txt`](../../examples/skywo
 >
 > Setting up CleanYourTV under native Office Mode produces an instant cold boot with **zero native loading screens** ("正在准备..."), while leaving all system packages fully intact (`pm list packages -d` remains empty), eliminating any risk of boot hangs.
 
-### Verified safe to disable (12 packages)
+### Verified safe to disable (16 packages)
 
 - **Telemetry & Diagnostics (4)**:
   `com.skyworth.performance.monitors`, `com.skyworth.testtime`, `com.skyworthdigital.stb.dataprovider`, `com.skyworth.device`
-- **Ads & Manufacturer Push (3)**:
-  `com.coocaa.tvmanager`, `com.coocaa.guide`, `com.tianci.de`
+- **Ads & Manufacturer Push (4)**:
+  `com.coocaa.tvmanager`, `com.coocaa.guide`, `com.tianci.de`, `com.tianci.ad`
 - **Preloaded Stores & Streaming (4)**:
   `com.coocaa.tvpitv`, `com.tianci.appstore`, `com.skyworth.skymarket`, `com.coocaa.app_browser`
-- **Factory & System (1)**:
-  `com.coocaa.factory`
+- **Voice Assistant & External Mic (2)**:
+  `com.skyworth.angel.voice` (remote voice button / XiaoWei AI assistant), `com.skyworth.microphone` (karaoke & external mic companion)
+- **Stock Themes & Factory (2)**:
+  `com.coocaa.theme_package_ccos_nine`, `com.coocaa.factory`
 
 ### Must stay enabled (Critical system lifelines)
 

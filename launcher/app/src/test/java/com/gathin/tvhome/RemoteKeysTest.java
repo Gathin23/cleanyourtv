@@ -36,6 +36,23 @@ public class RemoteKeysTest {
         assertFalse(RemoteKeys.inFront("input:com.vt.source.external/.HdmiInputService/HW2", "com.vt.source.external"));
     }
 
+    // Both helpers pick a tap's target here, so InputKeyService cannot open the usual app over a "front:" entry.
+    @Test public void tapPicksTheFrontEntryOnlyWhileTheButtonsAppIsInFront() {
+        String before = RemoteKeys.frontPackage;
+        try {
+            RemoteKeys.frontPackage = "com.vt.tv.tvcenter";
+            assertEquals("guide:com.vt.tv.tvcenter", RemoteKeys.tap("com.vt.tv.tvcenter", "guide:com.vt.tv.tvcenter"));
+            assertEquals("com.vt.tv.tvcenter", RemoteKeys.tap("com.vt.tv.tvcenter", null));
+            RemoteKeys.frontPackage = "com.gathin.tvhome";
+            assertEquals("com.vt.tv.tvcenter", RemoteKeys.tap("com.vt.tv.tvcenter", "guide:com.vt.tv.tvcenter"));
+            RemoteKeys.frontPackage = "";
+            assertEquals("com.vt.tv.tvcenter", RemoteKeys.tap("com.vt.tv.tvcenter", "guide:com.vt.tv.tvcenter"));
+            assertNull(RemoteKeys.tap(null, "guide:com.vt.tv.tvcenter"));
+        } finally {
+            RemoteKeys.frontPackage = before;
+        }
+    }
+
     @Test public void frontEntriesAreReadApartFromTheRest() {
         List<String> entries = Arrays.asList("172:com.vt.tv.tvcenter", "front:172:guide:com.vt.tv.tvcenter",
                 "front:scan:490:com.wbd.hbomax", "hold:172:a.b");
@@ -320,5 +337,12 @@ public class RemoteKeysTest {
         assertFalse(RemoteKeys.menuReleased(1, 0x20));
         assertFalse(RemoteKeys.menuReleased(1, 0x20 | 0x100 | 0x8));
         assertFalse(RemoteKeys.menuReleased(1, RemoteKeys.XIAOMI_SHORT_MENU_FLAGS & ~0x4000));
+    }
+
+    @Test public void channelKeysAreChannelUpAndDownOnly() {
+        assertTrue(RemoteKeys.isChannelKey(166));   // KEYCODE_CHANNEL_UP
+        assertTrue(RemoteKeys.isChannelKey(167));   // KEYCODE_CHANNEL_DOWN
+        assertFalse(RemoteKeys.isChannelKey(170));  // KEYCODE_TV
+        assertFalse(RemoteKeys.isChannelKey(24));   // KEYCODE_VOLUME_UP
     }
 }

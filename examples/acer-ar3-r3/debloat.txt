@@ -4,8 +4,8 @@
 # handover trap from that app. Same SCBC/Realtek platform family as examples/acer-ar55ar2851udpro
 # and docs/devices/acer-ar55ar2851udfl.md (Realtek rtd2851m there, rtd2841a here).
 #
-# Apply:   TV_HOST=<tv ip> tools/disable.ps1 examples/acer-ar3-r3/debloat.txt   (or tools/disable.sh)
-# Undo:    TV_HOST=<tv ip> tools/restore.ps1 examples/acer-ar3-r3/debloat.txt   (or tools/restore.sh)
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/acer-ar3-r3/debloat.txt   (Windows: $env:TV_HOST="<tv ip>"; tools\disable.ps1 examples\acer-ar3-r3\debloat.txt)
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/acer-ar3-r3/debloat.txt   (Windows: $env:TV_HOST="<tv ip>"; tools\restore.ps1 examples\acer-ar3-r3\debloat.txt)
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Stock launcher: com.google.android.tvlauncher (priority 2, isDefault=true). The only other HOME

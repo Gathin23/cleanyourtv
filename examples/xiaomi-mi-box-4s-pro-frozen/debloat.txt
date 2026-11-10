@@ -1,0 +1,40 @@
+# Xiaomi Mi Box 4S Pro (MiTV-AZFP0 / frozen, China), Android 9 / API 28, firmware 23.5.10.1035
+# Apply: TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mi-box-4s-pro-frozen/debloat.txt
+# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mi-box-4s-pro-frozen/debloat.txt com.mitv.tvhome
+# Run from the repository root. See README.md for evidence and limits.
+# Disabled for user 0, not uninstalled. Comment out any feature you want to keep.
+# Stock Home: com.mitv.tvhome/.MainActivityUserMode; kept enabled, no replacement required.
+# China-market Android firmware, not the global MIBOX4 / oneday or MIBOX3 / once lists.
+# Kept: Xiao AI, casting services, Xiaomi app store, OTA, Bluetooth, keyboard and playback apps.
+# Initial readback/reboot: 2026-10-30; owner reported two days of intensive use without issues on 2026-11-02.
+# Casting: owner reported successful testing on 2026-11-05; protocol coverage not recorded.
+# Standby/wake: owner reported successful testing on 2026-11-05.
+# Package states last read back after a reboot on 2026-10-30; later functional feedback through 2026-11-05.
+
+# Analytics: already disabled before the 2026-10-30 session; retained through reboot.
+com.miui.tv.analytics
+com.miui.analytics
+com.xiaomi.statistic
+
+# Quality reports and remote configuration; restore/reapply exercised on 2026-10-30.
+com.xiaomi.tvqs                       # Log uploads and resident performance.MitvPerfService
+com.mitv.cloudcontrol                 # Network/boot receivers and DownloadService
+
+# Shopping and promotional content.
+com.xiaomi.mitv.shop                  # TV shopping; already disabled before the session
+com.mitv.shoplugin                    # Taobao shopping plugin; observed version 6.8.24
+com.xm.webcontent                     # Promotional container, not Android WebView; screensaver-start receiver
+
+# Optional features this owner does not use. Comment out any feature you need.
+com.xiaomi.gamecenter.sdk.service.mibox # Game SDK
+com.xiaomi.screenrecorder              # Screen recording
+com.xiaomi.mitv.calendar               # Calendar
+com.mitv.gallery                      # Xiaomi gallery and its push service; photo data was not cleared
+
+# Explicitly kept enabled on the tested box.
+# com.mitv.tvhome                     # Stock Home
+# com.xiaomi.mitv.upgrade              # Firmware updater; OTA installation untested
+# com.xiaomi.mitv.smartshare            # Kept casting component; not independently tested
+# com.xiaomi.miplay                    # Kept casting component; not independently tested
+# com.duokan.airkan.tvbox              # Kept casting component; not independently tested
+# com.xiaomi.wfdsinkhelperservice       # Kept casting component; not independently tested

@@ -60,4 +60,7 @@ com.eltelon.zapping                            # Zapping, paid live TV for Chile
 # owns: check `dumpsys wifi | grep -o 'cname=[^ ]*'` first. On this set (on Wi-Fi) the network read
 # cname=android.uid.system, so it stayed; if it reads setupwraith, forget and re-join the network in Settings
 # first. On Google TV, casting is reported to stop without it; this set was not used for casting.
+# With it off, com.sony.dtv.sonysystemservice asks for its provider every 500 ms and logcat repeats "Failed to find
+# provider info for com.google.android.tungsten.setupwraith" (12,541 lines in 1 h 45 min here, all from that one
+# process, nothing wrong on screen), as on the A80L (VH22): harmless, see docs/TROUBLESHOOTING.md (#2853).
 com.google.android.tungsten.setupwraith

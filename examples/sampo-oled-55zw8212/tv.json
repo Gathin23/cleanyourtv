@@ -1,0 +1,6 @@
+{
+  "tv": "SAMPO OLED-55ZW8212 (SWTV-22TW-4K, Skyworth anaheim, MediaTek), Taiwan",
+  "os": "Google TV 11",
+  "brand": "SAMPO",
+  "notes": "Skyworth board: telemetry (recordactivation, aftersale), DailyPlay recommendations and launcher customizer, store demo, Smart Connect, CastPlay and Miracast off; setupwraith disabled (its RecoveryActivity kept Home, Wi-Fi owned by android.uid.system, Chromecast still works); gear (83), guide (172) and account (288) remapped through HomeKeyService"
+}

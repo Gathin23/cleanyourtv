@@ -1,8 +1,9 @@
 # AGENTS.md
 
-Instructions for coding agents (Claude Code, Codex, Gemini CLI, Cursor, Copilot and others) working in
-this repository. People should start with [README.md](README.md) and [CONTRIBUTING.md](CONTRIBUTING.md);
-this file repeats their rules in the form an agent needs, and links to them for the detail.
+Instructions for coding agents (Claude Code, Codex, Gemini CLI, Cursor, Copilot, DeepSeek Harness and
+others) working in this repository. People should start with [README.md](README.md) and
+[CONTRIBUTING.md](CONTRIBUTING.md); this file repeats their rules in the form an agent needs, and links
+to them for the detail.
 
 ## First: which job are you doing?
 
@@ -71,7 +72,7 @@ share their TV's list afterwards, follow [`docs/workflows/tv-list.md`](docs/work
 | Path | What it is |
 |---|---|
 | `PROMPT.md` | The prompt people paste into their agent. Brand-neutral; safety rules live here. |
-| `README.md` | Front page, with the brand grid (generated from `examples/*/tv.json` by `tools/gen_tables.py`) and the Tools table. Longer guides it links live in `docs/`: `launcher.md`, `restore.md`, `firmware-updates.md`, `privacy.md` and `faq.md`. `README.<lang>.md` are its translations (`zh-CN`, `zh-TW`, `vi`, `ja`, `it`, `nl`, `de`, `uk`, `tr`). |
+| `README.md` | Front page, with the brand grid (generated from `examples/*/tv.json` by `tools/gen_tables.py`) and the Tools table. Longer guides it links live in `docs/`: `launcher.md`, `restore.md`, `firmware-updates.md`, `privacy.md` and `faq.md`. `README.<lang>.md` are its translations (`zh-CN`, `zh-TW`, `vi`, `ja`, `it`, `nl`, `de`, `uk`, `tr`, `uz`). |
 | `CONTRIBUTING.md` | The contributor guide for people. "Where does my idea go?" is the routing table. |
 | `SECURITY.md` | Private vulnerability reporting. |
 | `SHOWCASE.md` | Projects built on this repo that live in their own repositories. |
@@ -117,6 +118,7 @@ use it and ends with the check to run.
 - [`showcase.md`](docs/workflows/showcase.md): list a project that lives in its own repository.
 - [`press.md`](docs/workflows/press.md): add an article and update the four press counts.
 - [`docs-notes.md`](docs/workflows/docs-notes.md): add a troubleshooting entry or a `PROMPT.md` fix, keeping pinned facts.
+- [`input-sources.md`](docs/workflows/input-sources.md): diagnose or change HDMI/AV input switching, with the checklist to run every time.
 - [`perf-ab.md`](docs/workflows/perf-ab.md): an optional check of a launcher change for performance regressions with
   `tools/bench.py`, and measure an improvement or a failed check with traces, a report and flame charts.
 

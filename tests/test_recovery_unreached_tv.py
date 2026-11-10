@@ -131,6 +131,9 @@ class Tree:
 
     def run(self, *args, python_args=(), host="192.168.1.50", port=None, cwd=None):
         env = dict(os.environ, HOME=str(self.home), FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         env.pop("TV_ADB_BINARY", None)
         env.pop("TV_PORT", None)
         if host is None:

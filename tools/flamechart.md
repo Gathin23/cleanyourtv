@@ -17,6 +17,8 @@ tools/venv/bin/python tools/flamechart.py traces/before traces/after \
 before the traces are opened, so a typo cannot read as a chart that failed. A `TRACE` path is checked the
 same way, before the trace engine is started: a path that is not there is `not a file: <path>`, the words
 `tools/trace_report.py` uses, and a folder with no `.pftrace` in it names the folder.
+An output that is the same file as any input trace (including symbolic and hard links) is refused
+with exit 2 before the engine starts, so drawing the chart cannot overwrite a recording.
 
 | Option | Default | Notes |
 |---|---|---|
@@ -43,5 +45,7 @@ A Home change usually needs two charts:
 - **Pass folders, not single runs.** The tool picks the median run. If you pass single traces, say why.
 - **Magenta is main and render thread time only.** Work moved to another thread or to the GPU isn't gone:
   add that thread as a lane, or use the `nav` GPU numbers.
+- **Unfinished slices have no measured end.** The `all` and `nav` axis covers completed slices with a
+  positive duration, as the lanes do. A process with none is refused instead of drawing an empty chart.
 
 The whole before/after method for a pull request is in [`docs/workflows/perf-ab.md`](../docs/workflows/perf-ab.md).

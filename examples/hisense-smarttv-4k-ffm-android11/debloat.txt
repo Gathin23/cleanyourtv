@@ -114,6 +114,65 @@
 #   AirPlay and the firmware updaters stayed on. Every package stayed disabled across both reboots.
 # - After "Revoke USB debugging authorizations", a detached `settings put global adb_enabled 0; reboot` started
 #   from the same ADB shell never ran (port 5555 stayed open); switching USB debugging off with the remote closed it.
+#
+# Eighth unit (Costa Rica; same device songshan, build RTT2.220118.001, security patch 2024-01-05, Android model
+# string "SmartTV 4K FFM"; retail model not checked). One session on 2026-11-05 with three reboots: this list plus
+# the commented partnersetup and feedback entries, applied in batches with a screenshot between them, then the
+# launcher. Nothing came disabled from the factory; storemode is installed, evservice and the VIDAA tab provider are
+# not. Notes from it:
+# - tools/disable.sh disabled gtvpai and disclaimercustomization without TVINPUT_ALLOW; every HDMI, AV and tuner
+#   input was still registered after the reboot.
+# - setupwraith owned a WPA3 copy of the SSID the TV was on; the active copy (WPA2) belonged to android.uid.system.
+#   FORCE_SETUPWRAITH=1 deleted only the WPA3 copy, and the TV stayed on Wi-Fi and ADB. Usage & diagnostics was
+#   switched off in Settings first.
+# - With launcherx still enabled, launcher/build-and-install.sh STOCK_LAUNCHER=none ran set-home-activity, which
+#   printed Success, and Home still resolved to launcherx: on this set the takeover needs launcherx disabled.
+# - A third-party app can claim HOME too: an old build of a cable operator's app (eu.motv.tv.MainActivity) listed
+#   itself under android.intent.category.HOME. Check cmd package query-activities before the takeover.
+# - With launcherx disabled and no key helper enabled, Home, Back, Input, the gear, Netflix and the Media button
+#   worked when pressed for real, and a held Volume Up ramped; YouTube, Prime Video, Disney+ and the Apps button
+#   (four squares) did nothing. logcat printed no interceptKeyTq line here, so the codes came from getevent -lt:
+#   YouTube KEY_FN_F4 (469), Prime Video KEY_FN_F3 (468), Disney+ KEY_ZOOMIN (418), Apps KEY_F18 (188), the gear
+#   KEY_NOTIFICATION. With HOME_KEY_SERVICE=1, app_keys scan:469:com.google.android.youtube.tv,
+#   scan:468:com.amazon.amazonvideo.livingroom, scan:418:com.disney.disneyplus and scan:188:library, and
+#   settings_key_keycodes 83 with settings_key_panel, all of them worked when pressed for real. HomeKeyService
+#   bound at once.
+# - Power-on goes FallbackHome, then the new launcher; the firmware does not put Live TV in front by itself.
+# - Private DNS (dns.adguard-dns.com) works; YouTube and the streaming apps still play.
+# - The owner also disabled iQIYI, Pluto TV, YouTube TV, Star+, Play Games, Google TV Movies, HiBrowser, TikTok,
+#   PBS and TED; voice, Chromecast, AirPlay, Miracast, DLNA and the firmware updaters stayed on.
+#
+# Ninth unit (US preloads; same device songshan, build RTT2.220118.001, incremental 00.00.00.53, security patch
+# 2025-06-01, Android model string "SmartTV 4K"; retail model not checked). Set up over 2026-11-06 and 2026-11-07,
+# in use since: this list plus the commented evservice, VIDAA tab provider, partnersetup and feedback entries, in four
+# batches with a reboot after each, then the launcher. Calendar provider, YouTube Music, HiBrowser and Play Games
+# came disabled from the factory; storemode is not installed. Notes from it:
+# - tools/disable.sh disabled gtvpai and disclaimercustomization without TVINPUT_ALLOW; the `dumpsys tv_input`
+#   ids (HDMI 1-4, composite, both tuners, AirPlay and the apps' inputs) were identical after the reboot.
+# - setupwraith owned an older saved copy of the network; the active one belonged to android.uid.system, so
+#   FORCE_SETUPWRAITH=1 deleted only that copy and the TV stayed on Wi-Fi and ADB. This Google TV Settings has no
+#   Device Preferences: Usage & Diagnostics is under Privacy, and `am start -a
+#   com.google.android.settings.USAGE_AND_DIAGNOSTICS_SETTING -p com.google.android.tungsten.setupwraith` opens it.
+# - With launcherx disabled and no key helper, Home, Back, Input and the Netflix, YouTube, Prime Video and Disney+
+#   buttons worked when pressed for real and a held volume ramped, but the gear did nothing, on Home or in an app
+#   (unlike the third and sixth to eighth units). Each press logs `TvNotificationPanel: Not launching notification
+#   handler activity ... TOGGLE_NOTIFICATION_HANDLER_PANEL`; `log.tag` is E here, so no interceptKeyTq line shows.
+# - The SmartRC is two input devices: volume comes from "SmartRC Keypad", the gear (KEY_NOTIFICATION), Back, Home
+#   and the D-pad from "SmartRC Consumer Control". `getevent -lt` shows one DOWN and one UP for a 6 s volume hold,
+#   no kernel repeat, so the ramp is Android's own key repeat.
+# - INPUT_KEY_SERVICE=1 with app_keys 83:com.android.tv.settings made the gear work everywhere, but a held volume
+#   then stepped once per press. consume_volume_keys did not bring the repeat back: `dumpsys audio` showed every
+#   adjustSuggestedStreamVolume from android/WindowManager and none from com.gathin.tvhome, so the helper never saw
+#   the volume key. key_filter false brought the ramp back and the gear went dead again.
+# - Standby with an app in front killed the launcher and its helper, but left the helper on the enabled list, under
+#   `Crashed services`, so restore_key_services saw nothing missing (docs/TROUBLESHOOTING.md, "Accessibility helper
+#   enabled but the remote button does nothing"). After a power cut, and again after a plain reboot, the helper
+#   stayed under `Binding services`, neither bound nor crashed, with no record in `dumpsys activity services`;
+#   rewriting the enabled list did not clear it, a reinstall did, and so did a force stop of the launcher
+#   followed by Home with restore_key_services on.
+# - The owner kept no key helper, to keep the held-volume ramp.
+# - The owner also disabled Google TV Movies and both VIDAA apps (net.vidaatv.*); streaming apps, voice,
+#   Chromecast, AirPlay, DLNA and the firmware updaters stayed on.
 
 # Retail / store demo
 com.hisense.storemode

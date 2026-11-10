@@ -18,6 +18,11 @@
 # Wireless debugging page with Activity Launcher), then `adb tcpip 5555` and Wireless debugging off. 5555
 # closes again at every reboot.
 #
+# Second unit (same firmware): Developer options showed only "USB debug" and "ADB debug", and toggling them gave
+# neither USB ADB nor usable network ADB; see the
+# [CleanYourTV discussion](https://github.com/Gathin23/cleanyourtv/discussions/2074#discussioncomment-19471670).
+# TLS ADB may need the stock `adb` via `TV_ADB_BINARY`; see [native ADB notes](../../tools/native-adb.md).
+#
 # Home: with the stock launcher left enabled (STOCK_LAUNCHER=none) the firmware opens com.htc.magcubicos at
 # every boot whatever the default Home, and stock_home_redirect does not help: something with the system uid
 # clears enabled_accessibility_services within seconds, so HomeKeyService never stays bound. Disabling the
@@ -47,7 +52,8 @@ com.android.bips
 
 # Kept on the tested unit, candidates for owners who don't use them:
 # com.mobisystems.office               # OfficeSuite (it also answers the TV passthrough URI)
-# com.hy.storeos                       # vendor app store
+# com.hy.storeos                       # vendor app store; on another unit it ran a persistent CheckUpdateService.
+#                                       # Optional candidate only; disabled in one session, not established as malware.
 # com.Hydraprimeonline                 # Hydra Prime
 # com.mphotool.airplay                 # AirPlay receiver (ScreenCast)
 # com.mphotool.dlna                    # DLNA receiver (ScreenCast)

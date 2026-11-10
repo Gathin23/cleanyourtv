@@ -355,8 +355,10 @@ class FontTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "repo").mkdir()
             root = tree(Path(tmp) / "repo", [("tcl-a", tv("TCL A", "TCL"))])
-            # The real script, whose counts this tree changes, so --font hands it the font.
+            # The real script, whose counts this tree changes, so --font hands it the font. It publishes
+            # through tools/picture_file.py, imported from beside it.
             shutil.copy(ROOT / "tools" / "readme_stats.py", root / "tools" / "readme_stats.py")
+            shutil.copy(ROOT / "tools" / "picture_file.py", root / "tools" / "picture_file.py")
             # A checkout has docs/, where the picture goes: the script names the folder it cannot find.
             (root / "docs").mkdir()
             caller = Path(tmp) / "caller"
@@ -421,11 +423,38 @@ diff --git a/examples/README.md b/examples/README.md
             patch.write_text(self.PATCH, encoding="utf-8")
             code, out = run(root, "--adopt", str(patch))
             self.assertEqual(code, 2)
-            self.assertIn("examples/tcl-a/tv.json: the row this PR edits has changed on main", out)
+            self.assertIn("examples/tcl-a/tv.json: the row this PR edits has changed on main since", out)
             self.assertEqual(json.loads((root / "examples/tcl-a/tv.json").read_text())["notes"],
                              "ads off; promos off, second unit")
             # The new folder in the same PR still gets its tv.json.
             self.assertTrue((root / "examples/tcl-55l8/tv.json").is_file())
+            # And the message says which files that was, above the row it did not apply: the run stops after
+            # writing, so a reader who took the whole block as "nothing happened" would leave them behind.
+            self.assertIn("These tv.json files are written and stay written:", out)
+            self.assertLess(out.index("examples/tcl-55l8/tv.json: new"), out.index("These rows were not applied:"))
+            self.assertLess(out.index("These rows were not applied:"),
+                            out.index("examples/tcl-a/tv.json: the row this PR edits has changed"))
+            # Nothing was regenerated from them: the tables still hold the rows they had, and --check says so.
+            self.assertNotIn("tcl-55l8", (root / "examples/README.md").read_text(encoding="utf-8"))
+            self.assertEqual(run(root, "--check")[0], 1)
+
+    def test_a_patch_it_could_not_apply_at_all_says_so(self):
+        # The patch's only row is one main has moved on, so there is nothing written to name - and the
+        # message says that instead of letting the reader assume a tv.json appeared somewhere.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = tree(tmp, [("tcl-a", tv("TCL A", "TCL", notes="ads off; promos off, second unit"))])
+            patch = root / "pr.diff"
+            patch.write_text("diff --git a/examples/README.md b/examples/README.md\n"
+                             "@@ -10,3 +10,4 @@\n"
+                             " | `tcl-a/` | TCL A | Android TV 11 | ads off |\n"
+                             "+| `tcl-a/` | TCL A | Android TV 11 | ads off; second unit, UK |\n", encoding="utf-8")
+            code, out = run(root, "--adopt", str(patch))
+            self.assertEqual(code, 2)
+            self.assertIn("No tv.json was written.", out)
+            self.assertNotIn("written and stay written", out)
+            self.assertIn("These rows were not applied:", out)
+            self.assertEqual(json.loads((root / "examples/tcl-a/tv.json").read_text())["notes"],
+                             "ads off; promos off, second unit")
 
 
 if __name__ == "__main__":

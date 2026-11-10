@@ -15,6 +15,7 @@ import json
 import os
 from pathlib import Path
 import sqlite3
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -297,6 +298,215 @@ class ReportTest(unittest.TestCase):
                 self.assertEqual(missed.split(" | ")[1:], ["–", "0", "0", "0–0 |"])
 
 
+def first_frame_trace(milliseconds):
+    """The existing SQLite trace fixture with a chosen start-to-first-frame time."""
+    q = fake_trace(frames=[16])
+    q("delete from slice where track_id in (10,20)")
+    for name in ("bindApplication", "activityStart", "performStart:fixture", "activityResume", "traversal"):
+        q(f"insert into slice(ts,dur,name,track_id) values (1000000000,0,'{name}',10)")
+    q(f"insert into slice(ts,dur,name,track_id) values (1000000000,{milliseconds * MS},'DrawFrame 1',20)")
+    return q
+
+
+class InputSetsTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.folder = Path(self.tmp.name)
+        self.before, self.after = self.folder / "before", self.folder / "after"
+        for number, value in ((10, 100), (1, 1000), (2, 10)):
+            self.trace(self.before, number, value)
+            self.trace(self.after, number, value * 2)
+        self.opened = []
+
+    def trace(self, folder, number, value):
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / f"home-{number}.pftrace"
+        path.write_text(str(value), encoding="utf-8")
+        return path
+
+    def open_trace(self, path):
+        self.opened.append(path)
+        q = first_frame_trace(int(Path(path).read_text(encoding="utf-8")))
+        return q, q.close
+
+    def run_report(self, args):
+        self.opened.clear()
+        out, code = io.StringIO(), None
+        with mock.patch.object(report, "opener", return_value=self.open_trace) as opener, \
+                contextlib.redirect_stdout(out):
+            try:
+                report.main([*map(str, args), "--markdown"])
+            except SystemExit as error:
+                code = error.code
+        return out.getvalue(), code, opener
+
+    def link(self, source, target, kind):
+        try:
+            (os.symlink if kind == "symlink" else os.link)(source, target)
+        except (OSError, NotImplementedError) as error:
+            self.skipTest(f"cannot create {kind}: {error}")
+        return target
+
+    def test_overlapping_inputs_keep_first_spelling_and_numeric_run_order(self):
+        first = self.before / "home-2.pftrace"
+        args = [first, self.before, self.before, self.before / "home-1.pftrace"]
+        text, code, _ = self.run_report(args)
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, list(map(str, [
+            first, self.before / "home-1.pftrace", self.before / "home-10.pftrace"])))
+        self.assertIn("Runs (3):", text)
+        self.assertIn("| start to first frame drawn (ms) | 10 | 1000* | 100 | 100 | 10\u20131000 |", text)
+
+    def test_repeated_file_and_path_aliases_count_once(self):
+        previous = os.getcwd()
+        os.chdir(self.folder)
+        self.addCleanup(os.chdir, previous)
+        (self.before / "spare").mkdir()
+        aliases = ["before/home-1.pftrace", str(self.before / "home-1.pftrace"),
+                   "before/./home-1.pftrace", "before/spare/../home-1.pftrace"]
+        ordered = [os.path.join("before", f"home-{n}.pftrace") for n in (1, 2, 10)]
+        for args, expected in (([aliases[0], aliases[0]], [aliases[0]]),
+                               (aliases, [aliases[0]]),
+                               (["before", str(self.before), "before/../before"], ordered)):
+            with self.subTest(args=args):
+                text, code, _ = self.run_report(args)
+                self.assertIsNone(code)
+                self.assertEqual(self.opened, expected)
+                self.assertIn(f"Runs ({len(expected)}):", text)
+
+    def test_symlink_alias_counts_once(self):
+        original = self.before / "home-1.pftrace"
+        alias = self.link(original, self.folder / "home-link.pftrace", "symlink")
+        text, code, _ = self.run_report([alias, original, alias])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(alias)])
+        self.assertIn("Runs (1):", text)
+
+    def test_hardlink_alias_counts_once(self):
+        original = self.before / "home-1.pftrace"
+        alias = self.link(original, self.folder / "home-link.pftrace", "hardlink")
+        text, code, _ = self.run_report([original, alias])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(original)])
+        self.assertIn("Runs (1):", text)
+
+    def test_independent_identical_files_are_separate_runs(self):
+        original = self.before / "home-1.pftrace"
+        other = self.trace(self.folder, "copy", 1000)
+        self.assertEqual(original.read_bytes(), other.read_bytes())
+        self.assertFalse(os.path.samefile(original, other))
+        text, code, _ = self.run_report([original, other])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, list(map(str, [original, other])))
+        self.assertIn("Runs (2):", text)
+
+    def test_overlap_on_either_comparison_side_preserves_medians_and_change(self):
+        for before_extra, after_extra in ((True, False), (False, True), (True, True)):
+            with self.subTest(before_extra=before_extra, after_extra=after_extra):
+                args = [self.before]
+                if before_extra:
+                    args.append(self.before / "home-1.pftrace")
+                args += ["--vs", self.after]
+                if after_extra:
+                    args.append(self.after / "home-1.pftrace")
+                text, code, _ = self.run_report(args)
+                self.assertIsNone(code)
+                self.assertEqual(self.opened, [str(folder / f"home-{n}.pftrace")
+                                              for folder in (self.before, self.after) for n in (1, 2, 10)])
+                self.assertIn("Before (3):", text)
+                self.assertIn("After (3):", text)
+                self.assertIn("| start to first frame drawn (ms) | 100 | 200 | +100% |", text)
+                self.assertIn("| 1000* | 10 | 100 | 100 | 10\u20131000 |", text)
+
+    def test_same_recording_is_kept_in_each_comparison_set(self):
+        path = self.before / "home-10.pftrace"
+        text, code, _ = self.run_report([path, path, "--vs", path, path])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, [str(path), str(path)])
+        self.assertIn("Before (1):", text)
+        self.assertIn("After (1):", text)
+        self.assertIn("| start to first frame drawn (ms) | 100 | 100 | +0% |", text)
+
+    def test_first_alias_sidecar_controls_the_retained_recording(self):
+        original = self.before / "home-1.pftrace"
+        alias = self.link(original, self.folder / "home-alias.pftrace", "hardlink")
+        original.with_suffix(".json").write_text('{"scenario":"home"}', encoding="utf-8")
+        alias.with_suffix(".json").write_text('{"scenario":"nav"}', encoding="utf-8")
+        for first, discarded, label in ((original, alias, "start to first frame drawn (ms)"),
+                                        (alias, original, "frame time, median (ms)")):
+            with self.subTest(first=first.name):
+                text, code, _ = self.run_report([first, discarded])
+                self.assertIsNone(code)
+                self.assertEqual(self.opened, [str(first)])
+                self.assertIn("Runs (1):", text)
+                self.assertIn("| " + label + " |", text)
+
+    def test_distinct_mixed_families_and_missing_inputs_still_refuse(self):
+        nav = self.trace(self.folder, "nav", 10)
+        nav.with_suffix(".json").write_text('{"scenario":"nav"}', encoding="utf-8")
+        original = self.before / "home-1.pftrace"
+        for other, message in ((nav, "cannot mix nav and start"),
+                               (self.folder / "missing.pftrace", "not a file:")):
+            with self.subTest(other=other.name):
+                text, code, opener = self.run_report([original, original, other])
+                self.assertIn(message, code)
+                self.assertEqual(text, "")
+                opener.assert_not_called()
+
+    def test_content_read_error_is_not_discarded(self):
+        path = self.before / "home-1.pftrace"
+        with mock.patch.object(Path, "read_text", side_effect=PermissionError("denied")), \
+                self.assertRaisesRegex(PermissionError, "denied"):
+            self.run_report([path, path])
+
+    def test_identity_errors_after_preflight_stop_before_engine_start(self):
+        path = str(self.before / "home-1.pftrace")
+        original_stat = os.stat
+        for error in (FileNotFoundError(2, "gone", path), PermissionError(13, "denied", path)):
+            def stat(value, *args, **kwargs):
+                if os.fspath(value) == path:
+                    raise error
+                return original_stat(value, *args, **kwargs)
+            with self.subTest(error=type(error).__name__), \
+                    mock.patch.object(report.os.path, "isfile", return_value=True), \
+                    mock.patch.object(report.os, "stat", side_effect=stat):
+                text, code, opener = self.run_report([path])
+                self.assertIsInstance(code, str)
+                self.assertIn(path, code)
+                self.assertEqual(text, "")
+                opener.assert_not_called()
+
+    def test_file_replaced_by_directory_after_preflight_stops_before_engine(self):
+        path = self.before / "home-1.pftrace"
+        directory_info = os.stat(self.folder)
+        original_stat = os.stat
+        def stat(value, *args, **kwargs):
+            return directory_info if os.fspath(value) == str(path) else original_stat(value, *args, **kwargs)
+        with mock.patch.object(report, "expand", return_value=[str(path)]), \
+                mock.patch.object(report.os.path, "isfile", return_value=True), \
+                mock.patch.object(report.os, "stat", side_effect=stat):
+            text, code, opener = self.run_report([path])
+        self.assertIsInstance(code, str)
+        self.assertIn("not a file:", code)
+        self.assertEqual(text, "")
+        opener.assert_not_called()
+
+    def test_unknown_inode_does_not_merge_independent_files(self):
+        original_stat = os.stat
+        def stat(value, *args, **kwargs):
+            info = original_stat(value, *args, **kwargs)
+            if os.fspath(value).endswith(".pftrace"):
+                return type("Stat", (), dict(st_mode=info.st_mode, st_dev=info.st_dev, st_ino=0))()
+            return info
+        first, second = (self.before / f"home-{n}.pftrace" for n in (1, 2))
+        with mock.patch.object(report.os, "stat", side_effect=stat):
+            text, code, _ = self.run_report([first, second, first])
+        self.assertIsNone(code)
+        self.assertEqual(self.opened, list(map(str, [first, second])))
+        self.assertIn("Runs (2):", text)
+
+
 class FilesTest(unittest.TestCase):
     def test_folders_expand_in_run_order(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -420,6 +630,52 @@ class EnginePathTest(unittest.TestCase):
                 contextlib.redirect_stderr(io.StringIO()) as err, self.assertRaises(SystemExit) as caught:
             report.opener(None)
         self.assertIn("requirements-perf.txt", str(caught.exception.code))
+
+    @unittest.skipUnless(os.name == "posix", "POSIX searches PATH for executable names without a slash")
+    def test_an_engine_filename_runs_the_selected_local_file_instead_of_searching_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            local, search = folder / "local", folder / "path"
+            local.mkdir()
+            search.mkdir()
+            name = "trace_processor_shell"
+            engine = local / name
+            engine.write_text("#!/bin/sh\nprintf 'local engine'\n", encoding="utf-8")
+            engine.chmod(0o755)
+            previous = os.getcwd()
+            try:
+                os.chdir(local)
+                for competitor in (False, True):
+                    with self.subTest(competitor_on_path=competitor):
+                        if competitor:
+                            other = search / name
+                            other.write_text("#!/bin/sh\nprintf 'PATH engine'\n", encoding="utf-8")
+                            other.chmod(0o755)
+                        checked = report.engine_path(name)
+                        result = subprocess.check_output([checked], env={**os.environ, "PATH": str(search)})
+                        self.assertEqual(result, b"local engine")
+            finally:
+                os.chdir(previous)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX engine paths follow symlinks before resolving ..")
+    def test_engine_paths_keep_symlink_parent_traversal(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            local, actual = folder / "local", folder / "actual"
+            local.mkdir()
+            (actual / "nested").mkdir(parents=True)
+            for directory, message in ((local, "wrong engine"), (actual, "selected engine")):
+                engine = directory / "trace_processor_shell"
+                engine.write_text(f"#!/bin/sh\nprintf '{message}'\n", encoding="utf-8")
+                engine.chmod(0o755)
+            (local / "alias").symlink_to(actual / "nested", target_is_directory=True)
+            previous = os.getcwd()
+            try:
+                os.chdir(local)
+                checked = report.engine_path("alias/../trace_processor_shell")
+                self.assertEqual(subprocess.check_output([checked]), b"selected engine")
+            finally:
+                os.chdir(previous)
 
     def test_the_report_answers_a_typo_before_it_reads_the_trace(self):
         with tempfile.TemporaryDirectory() as tmp:

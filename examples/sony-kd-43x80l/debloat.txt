@@ -21,6 +21,11 @@
 # below if you want to keep casting.
 # HDMI inputs (1-4, eARC), tuner TVX, remote control, and network streaming apps (Max, VLC, TIMVISION,
 # RaiPlay) verified working across reboots.
+#
+# Second unit: KD-55X80L, same product, device and build (BRAVIA_VH22_M_EU-user 12 STT2.230505.001.S136). All 34
+# packages were present and the list applied unchanged; Home held across a reboot with setupwraith off; casting was
+# not checked. Its userspace is 32-bit (ro.product.cpu.abilist is armeabi-v7a only), so a sideloaded APK there
+# needs the armeabi-v7a build.
 
 # ACR viewing tracker and telemetry
 tv.samba.ssm                                   # Samba TV fingerprints what is on screen (ACR)

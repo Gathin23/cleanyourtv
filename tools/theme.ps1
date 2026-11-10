@@ -38,9 +38,9 @@ $env:TV_HOST = $TvHost
 # record and a script line number, where theme.sh stops at "no config.json in <typed path>" - a message about
 # the folder the reader named, not about the cmdlet.
 if ($Theme -and (Test-Path -LiteralPath $Theme)) { $Theme = (Resolve-Path -LiteralPath $Theme).Path }
-Set-Location $PSScriptRoot
-$py = 'venv\Scripts\python.exe'
-if (-not (Test-Path $py)) {
+Set-Location -LiteralPath $PSScriptRoot
+$py = Join-Path $PSScriptRoot 'venv\Scripts\python.exe'
+if (-not (Test-Path -LiteralPath $py)) {
     # As in theme.sh: the venv is on this computer, so nothing was sent and this is a run that stopped before the
     # theme was up, not a push that ran and failed.
     [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
@@ -52,6 +52,9 @@ $pkg = 'com.gathin.tvhome'
 function Invoke-Tv {
     $out = & $py -I @args
     if ($LASTEXITCODE -ne 0) { throw "$($args[0]) $($args[1]) failed (exit code $LASTEXITCODE); the theme was not fully applied" }
+    # Put's last line when the TV took neither the provider write nor the copy (theme.sh's NOT_WRITTEN).
+    $missing = @($out | Where-Object { $script:checkPut -and "$_".Trim() -match "^$notWritten (\S+)$" })
+    if ($missing.Count -gt 0) { throw "the TV took neither the provider write nor the copy of $($missing[0].Trim().Split(' ')[1]); the theme was not fully applied" }
     $out
 }
 $dir = "/sdcard/Android/data/$pkg/files"
@@ -75,7 +78,12 @@ function Stage($name) { "$tmp-$($name -replace '/', '-')" }
 # A folder the shell makes is the shell's (drwxrws--- shell ext_data_rw), and the provider, which runs as the
 # launcher, then gets EACCES writing into it. Nothing makes wallpapers/ up front: the provider creates it with the
 # first picture, and only the cp fallback, where the shell does the writing, runs mkdir.
-function Put($name) { $t = Stage $name; $d = "$dir/$name" -replace '/[^/]*$', ''; "rm -f $dir/$name 2>/dev/null; { o=`$(content write --uri $uri/$name < $t 2>&1) && case `"`$o`" in *'Unsupported operation'*|*'Error while accessing provider'*) false ;; esac; } || { mkdir -p $d 2>/dev/null; cp $t $dir/$name 2>/dev/null; }; rm -f $t" }
+# Both writes can be refused, so the file is looked for afterwards, by the shell or through the provider, as in
+# theme.sh; Invoke-Tv stops the push on the line that says it is not there. It has to be the staged upload's size:
+# an empty file is a file, and an old copy that survived a refused rm is not the new one.
+$notWritten = 'cyt-theme-not-written'
+$checkPut = $false
+function Put($name) { $t = Stage $name; $d = "$dir/$name" -replace '/[^/]*$', ''; "rm -f $dir/$name 2>/dev/null; w=; { o=`$(content write --uri $uri/$name < $t 2>&1) && case `"`$o`" in *'Unsupported operation'*|*'Error while accessing provider'*) false ;; esac && w=1; } || { mkdir -p $d 2>/dev/null; cp $t $dir/$name 2>/dev/null && w=1; }; s=`$(wc -c 2>/dev/null < $t); rm -f $t; [ -n `"`$w`" ] && { { [ -e $dir/$name ] && [ `"`$(wc -c < $dir/$name)`" = `"`$s`" ]; } || [ `"`$(content read --uri $uri/$name 2>/dev/null | wc -c)`" = `"`$s`" ]; } || echo $notWritten $name" }
 function Drop($name) { "rm -f $dir/$name 2>/dev/null; content delete --uri $uri/$name 2>/dev/null" }
 
 # The collection a theme can push. A push empties it before writing the theme's own pictures, and -Reset has to
@@ -85,6 +93,7 @@ function Drop($name) { "rm -f $dir/$name 2>/dev/null; content delete --uri $uri/
 $clearWallpapers = "rm -f $dir/wallpapers/*.[jJ][pP][gG] $dir/wallpapers/*.[jJ][pP][eE][gG] $dir/wallpapers/*.[pP][nN][gG] $dir/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $uri/wallpapers 2>/dev/null"
 
 if ($Reset) {
+    $checkPut = $true
     Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; $(Drop 'config.json'); $(Drop 'wallpaper.jpg'); $(Drop 'wallpapers/captions.txt'); $clearWallpapers; printf '%s' '$revision' > $tmp-theme_revision; $(Put 'theme_revision')" | Out-Null
     & $py -I theme_restart.py
     if ($LASTEXITCODE) { throw 'Home restart recovery failed' }
@@ -99,7 +108,7 @@ if (-not (Test-Path -LiteralPath $config)) {
     [Console]::Error.WriteLine("no config.json in $Theme. Nothing was sent to the TV.")
     exit 2
 }
-try { $themeJson = Get-Content $config -Raw | ConvertFrom-Json }
+try { $themeJson = Get-Content -LiteralPath $config -Raw | ConvertFrom-Json }
 catch {
     [Console]::Error.WriteLine("$config is not valid JSON, so there is no theme to push (themes/README.md says what the file holds). Nothing was sent to the TV.")
     exit 2
@@ -115,8 +124,8 @@ if ($themeJson -isnot [System.Management.Automation.PSCustomObject]) {
 # through the push left the new config.json and part of the collection behind. b64push.py refuses '..' in a path.
 $wallpapers = Join-Path $Theme 'wallpapers'
 $images = @()
-if (Test-Path $wallpapers -PathType Container) {
-    $images = @(Get-ChildItem $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
+if (Test-Path -LiteralPath $wallpapers -PathType Container) {
+    $images = @(Get-ChildItem -LiteralPath $wallpapers -File | Where-Object { $_.Extension -match '^\.(jpg|jpeg|png|webp)$' })
     foreach ($image in $images) {
         if ($image.Name -notmatch '^[A-Za-z0-9_.-]+$' -or $image.Name.Contains('..')) {
             [Console]::Error.WriteLine("unsupported wallpaper filename: $($image.Name) (b64push.py takes letters, digits, '.', '_' and '-', with no '..' in the name). Nothing was sent to the TV.")
@@ -128,9 +137,10 @@ if (Test-Path $wallpapers -PathType Container) {
 # Tolerated, as in theme.sh: a TV that locks Android/data still takes the files through ThemeProvider.
 Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; true" | Out-Null
 Invoke-Tv tv.py --push $config "$tmp-config.json" | Out-Null
+$checkPut = $true
 Invoke-Tv tv.py (Put 'config.json')
 $wall = Join-Path $Theme 'wallpaper.jpg'
-if (Test-Path $wall) { Invoke-Tv b64push.py $wall "$tmp-wallpaper.jpg"; Invoke-Tv tv.py (Put 'wallpaper.jpg') } else { Invoke-Tv tv.py (Drop 'wallpaper.jpg') | Out-Null }
+if (Test-Path -LiteralPath $wall) { Invoke-Tv b64push.py $wall "$tmp-wallpaper.jpg"; Invoke-Tv tv.py (Put 'wallpaper.jpg') } else { Invoke-Tv tv.py (Drop 'wallpaper.jpg') | Out-Null }
 Invoke-Tv tv.py $clearWallpapers | Out-Null
 foreach ($image in $images) {
     Invoke-Tv b64push.py $image.FullName (Stage "wallpapers/$($image.Name)")
@@ -138,7 +148,7 @@ foreach ($image in $images) {
 }
 # The collection's names (wallpaper_captions); a theme without them leaves no stale names behind.
 $captions = Join-Path $Theme 'wallpapers\captions.txt'
-if (Test-Path $captions -PathType Leaf) {
+if (Test-Path -LiteralPath $captions -PathType Leaf) {
     Invoke-Tv b64push.py $captions (Stage 'wallpapers/captions.txt')
     Invoke-Tv tv.py (Put 'wallpapers/captions.txt') | Out-Null
 } else {

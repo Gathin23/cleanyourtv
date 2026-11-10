@@ -1,0 +1,82 @@
+# Tesla Smart TV Q55E655GUS (maker Expressluck, brand Tesla, product Tesla_4K_ATV5, device sepolia)
+# Google TV 14 (API 34), firmware UKN6.260116.046, security patch 2026-04-01,
+# MediaTek mt5896 (SoC model MT9676). About 1.8 GB RAM (MemTotal 1840784 kB).
+#
+# Apply:   TV_HOST=<tv ip>:<port> tools/disable.sh examples/tesla-q55e655gus/debloat.txt
+# Undo:    TV_HOST=<tv ip>:<port> tools/restore.sh examples/tesla-q55e655gus/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx
+# Live TV: com.mediatek.tv.oneworld.tvcenter (launcher/'s default, com.mediatek.wwtv.tvcenter, is not on this
+# firmware: set live_tv_package, and dock_apps if Live TV is in the dock, in config.xml before building)
+# Pass launcherx to restore.sh. Its default stock launcher is com.google.android.tvlauncher, which this
+# firmware does not have.
+#
+# Status: applied on 2026-10-31 in two batches, with the launcher from launcher/ as Home the same day, and in use
+# since (five days when this was written, including reboots). Tested on one set. Packages marked "already
+# disabled" shipped that way. The others were disabled in this session.
+#
+# Same board as examples/aipro4k (Expressluck, device sepolia), which runs Android TV 14 on UKN7 firmware. This
+# set is a Tesla on Google TV 14 and UKN6, and its list is shorter: the owner left com.google.android.feedback,
+# com.google.android.partnersetup, com.mediatek.tv.launcher.partner, com.android.ondevicepersonalization.services and
+# com.android.federatedcompute.services enabled. com.android.adservices.api shipped disabled.
+#
+# Disabled in the first batch and re-enabled because the owner uses them (not in the list below):
+# com.internet.tvbrowser (Browser), gr.antenna.ant1.screen (ANT1), com.ilv.vradio (VRadio).
+#
+# KEEP, even though some names look like bloat:
+# - com.cltv.hybrid, com.cltv.mal and the com.at.factory.*, com.ctv.factorytest, com.expressluck.factorymanager,
+#   com.mediatek.opapp and ISDB/ATSC tuner packages shipped disabled. Left as shipped, not touched, and no
+#   factory package was started.
+# - com.cvte.tv.at, com.caixun.facmenu: factory/test names. Left enabled and never opened.
+# - com.google.android.tv.dfuservice, com.mediatek.tv.systemupdater: firmware updates.
+# - com.google.android.katniss (voice assistant), com.google.android.apps.mediashell and
+#   com.mediatek.dialservice (Chromecast built-in): personal choice, kept by this owner.
+# - com.mediatek.tv.oneworld.tvcenter (Live TV), com.mediatek.wwtv.mediaplayer, com.mediatek.dtv.tvinput.dvbtuner,
+#   com.mediatek.tis, com.mediatek.tv.agent, com.google.android.tv.inputplayer (inputs and tuner).
+# - com.google.android.tv.remote.service, com.google.android.tv.googletvremotepairer, com.express.bt.autopair,
+#   com.mediatek.autopair: remote and Bluetooth pairing.
+# - com.google.android.gms, com.android.vending, and the streaming apps the owner uses (Netflix, YouTube,
+#   YouTube Music).
+#
+# Quirks on this firmware:
+# - Network ADB is Wireless debugging only. Port 5555 refuses connections. The port is random and changes
+#   whenever Wireless debugging restarts, the TV reboots or it rejoins Wi-Fi; scan the TV's own TCP ports and
+#   use the one that answers as a device (stale ones answer offline).
+# - The saved Wi-Fi network belongs to setupwraith (dumpsys wifi shows cname=...setupwraith), and Android
+#   deletes it when the wizard is disabled, which takes the TV off Wi-Fi and ADB. Forget the network and
+#   rejoin it in Settings first: afterwards dumpsys wifi shows android.uid.system:1000 as owner.
+#   tools/disable.sh refuses the list until then.
+# - cmd package set-home-activity prints Success and changes nothing here, also after a reboot. Disabling
+#   launcherx on its own sends Home to setupwraith/.RecoveryActivity. Disable setupwraith, then launcherx:
+#   Home then opens com.gathin.tvhome. The launcher package is commented out below so disable.sh does not remove
+#   Home first; launcher/build-and-install.sh disables it after the new home is installed.
+# - The stock screensaver is com.google.android.apps.tv.dreamx/.service.Backdrop. It was switched off with
+#   settings put secure screensaver_enabled 0 (and screensaver_activate_on_sleep, screensaver_activate_on_dock),
+#   rather than by disabling dreamx.
+
+# Content recognition (reports what is on screen)
+tv.anoki.acr.anokiacroptin
+
+# Retail demo
+com.mediatek.tv.retaildemo
+
+# Karaoke microphone service
+com.audiocn.karaoke.global.micmanager
+
+# Preloaded apps
+com.google.android.play.games
+com.tcl.browser                             # already disabled on the test set
+
+# Personal choice: Miracast screen mirroring, off on the tested set. Shared lists keep casting on: uncomment it
+# if you never mirror a phone.
+# com.mediatek.miracast
+
+# First-run wizard. Its RecoveryActivity takes Home once launcherx is gone. See the Wi-Fi quirk above.
+# Disabling setupwraith gives Home back but can break casting (Chromecast built-in) on Google TV; keep it if you cast.
+com.google.android.tungsten.setupwraith
+
+# Stock launcher, replaced by launcher/. Left to launcher/build-and-install.sh,
+# which disables it only after the new home is installed and set as default.
+# The Undo command above passes the package so restore.sh brings it back.
+# com.google.android.apps.tv.launcherx

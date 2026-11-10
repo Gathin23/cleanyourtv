@@ -7,7 +7,7 @@
 # Same board and build as the Brazilian 65C7K in examples/tcl-65c7k-google-tv, and this file is a
 # second unit for that folder, not a replacement: debloat.txt there is the Brazilian list, this one
 # is what the EU set needed. Read against each other — five active lines of the Brazilian list were
-# reproduced broken here (marked DO NOT DISABLE below) and nine more are off here than there.
+# reproduced broken here (marked DO NOT DISABLE below), and eight more packages are off here than there.
 #
 # Tested 2026-10-22 to 2026-11-01: every package below disabled, five days and one reboot with no
 # drift (tools/check.py), Home on Free My TV, the remote's Netflix/YouTube/Prime buttons mapped,

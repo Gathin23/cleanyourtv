@@ -31,7 +31,7 @@ class AnsweringTV:
     def package_of(self, component):
         return component.split("/", 1)[0]
 
-    def shell(self, command):
+    def shell(self, command, *, retry=False):
         return next((v for k, v in self.answers.items() if k in command), "")
 
 

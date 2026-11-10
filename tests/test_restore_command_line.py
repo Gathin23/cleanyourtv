@@ -1,4 +1,5 @@
-"""restore.sh reads its own command line before it moves: no list, a flag, a list that is not there, a third word.
+"""restore.sh reads its own command line before it moves: no list, a flag in either word, a list that is
+not there, a third word.
 
 The undo is the script an owner reaches for when the TV already looks wrong, and it read its first two
 words only:
@@ -22,9 +23,16 @@ words only:
   `--reset` copied over from theme.sh) was dropped without a word and the TV was restored anyway, while
   recovery.py refuses three words with its usage line and exit 2 when a caller hands them over.
   restore.ps1 refuses them on its own: PowerShell binds two positional arguments.
+- A dash-led word in the second place - `restore.sh <list> --reset`, the flag pasted from theme.sh where
+  the stock launcher goes - passed the first word's check because the list was fine, and recovery.py
+  answered `not a package name: '--reset'` with exit 1, the status this script keeps for a restore that
+  started and did not finish: no usage line, no "Nothing was sent to the TV", and a message about a
+  package name where the reader had typed a flag. restore.ps1 refuses it on its own - PowerShell reads a
+  dash-led word as a parameter name.
 
-All four now answer before anything is sent, in the script's own words with its usage line: no list and a
-dash-led word exit 2 (the command line is not one it can read, and the header says so), the folder that is
+All five now answer before anything is sent, in the script's own words with its usage line: no list and a
+dash-led word, in either of the two places the script reads (the list and the optional stock launcher),
+exit 2 (the command line is not one it can read, and the header says so), the folder that is
 not there keeps the path as typed so recovery.py's refusal is what the reader reads, and a word left over
 exits 2 saying it would not have been used. What the script does with the two words it takes is unchanged -
 the list is still resolved against the caller's directory in the `pwd -W` form Git Bash needs for the
@@ -93,6 +101,9 @@ class RestoreCommandLineTest(unittest.TestCase):
     def run_script(self, script, *args):
         env = dict(os.environ, TV_HOST="192.168.1.50", HOME=str(self.home),
                    FAKE_TV_STATE=str(self.state_path))
+        # Path.home() reads USERPROFILE on Windows, not HOME: without it the record lands in the real ~.
+        if os.name == "nt":
+            env["USERPROFILE"] = env["HOME"]
         if script.endswith(".sh"):
             if os.name != "posix" or not shutil.which("bash"):
                 raise unittest.SkipTest(f"{script} is a POSIX script; it needs bash")
@@ -165,6 +176,22 @@ class RestoreCommandLineTest(unittest.TestCase):
                 self.assertIn("usage: TV_HOST=<tv ip> tools/restore.sh", result.stderr)
                 self.assertNotIn("could not read " + word, output,
                                  "recovery.py read the flag as a list called " + word)
+                self.assertEqual(result.stdout, "")
+                self.assertEqual(self.sent(), [])
+
+    def test_a_dash_led_stock_launcher_word_is_a_flag_it_does_not_have(self):
+        # The second word is the stock launcher package, and theme.sh's `--reset` pasted there passed
+        # the first word's check: recovery.py answered "not a package name: '--reset'" with exit 1.
+        for word in ("--reset", "-h", "--help"):
+            with self.subTest(word):
+                self.state_path.write_text(json.dumps({"commands": []}))
+                result, output = self.run_script("restore.sh", str(self.list_path), word)
+                self.assertEqual(result.returncode, 2, output)
+                self.assertIn(word + " is a flag it does not have", result.stderr)
+                self.assertIn("usage: TV_HOST=<tv ip> tools/restore.sh", result.stderr)
+                self.assertIn("Nothing was sent to the TV", result.stderr)
+                self.assertNotIn("not a package name", output,
+                                 "recovery.py read the flag as a package name")
                 self.assertEqual(result.stdout, "")
                 self.assertEqual(self.sent(), [])
 

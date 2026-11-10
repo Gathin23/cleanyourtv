@@ -32,6 +32,7 @@ stdout away still shows.
 import os
 import re
 import sys
+import tempfile
 
 # Names from the TV end up inside commands run by its shell, so nothing that could carry shell syntax
 # goes through. Same rule as tools/recovery.py.
@@ -417,7 +418,7 @@ def target_problem(path):
         # it through is an IsADirectoryError after the whole audit.
         return (f"{path} is a folder, and --write takes a file name to create, "
                 f"e.g. {os.path.join(path, 'privacy.txt')}.")
-    if os.path.exists(path):
+    if os.path.lexists(path):
         # A second audit of the same TV may legitimately differ, but silently replacing a list the
         # owner is about to apply is how a hand edit disappears.
         return f"{path} already exists; move it aside or choose another name."
@@ -437,8 +438,29 @@ def write_list(path, result, include_low):
     lines = list_lines(result, include_low, os.path.basename(path) if os.path.isabs(path) else path)
     text = "\n".join(lines) + "\n"
     try:
-        with open(path, "w") as f:
-            f.write(text)
+        if os.name == "nt":
+            # A sibling inherits the destination folder's ACL. Windows rename refuses existing
+            # entries, including dangling symlinks which open("x") can follow on Windows.
+            staged = None
+            try:
+                with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", prefix=".privacy-",
+                                                 suffix=".tmp", dir=os.path.dirname(path) or ".",
+                                                 delete=False) as f:
+                    staged = f.name
+                    f.write(text)
+                os.rename(staged, path)
+                staged = None
+            finally:
+                if staged is not None:
+                    try:
+                        os.unlink(staged)
+                    except FileNotFoundError:
+                        pass
+        else:
+            # A failed write may leave this newly created file. Do not unlink a path another
+            # process could have replaced after creation.
+            with open(path, "x", encoding="utf-8") as f:
+                f.write(text)
     except OSError as error:
         # The audit is two shell calls for each package it probed, slow on old firmware: a file the
         # folder would not take should not cost the owner a second run of it. What was to be written

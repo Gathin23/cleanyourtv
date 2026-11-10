@@ -293,3 +293,123 @@ available nor tested on this generation. `TokenAuthSupport: true` is an API-decl
 remote-control session was opened, so no "Allow" prompt was triggered, no pairing grant exists from
 this session, and grant duration remains unmeasured on this set. The `/api/v2/` reply carried the
 DUID, the Wi-Fi MAC and the access point's MAC, which are left out of everything published here.
+
+## UA50MU7000: second-unit read, 7 Series 50", over Wi-Fi
+
+A third owner's read-only check of a Samsung UA50MU7000 (7 Series 50", 2017) on the same
+home network as a PC. Captured from `GET http://<tv>:8001/api/v2/` only, plus a photo of the
+"About This TV" screen. Nothing on the TV was changed, and no ports beyond 8001 were probed in this first read (the 8002 test follows below).
+Identifiers (serial, MAC, Smart Hub IDs, Netflix ESN, device UID) are omitted on purpose.
+
+| Field | Observed value |
+|---|---|
+| Model string (`/api/v2/`) | `17_KANTM_UHD_BASIC` |
+| Retail model | UA50MU7000 |
+| System | Tizen (Samsung Smart Hub) |
+| Software version (About screen) | `T-KTMUABC-1410.1` |
+| Sub-micom version | `T-KTMINTV-1012` |
+| e-Manual version | `KTMISDBL-3.2.1` |
+| `firmwareVersion` (API) | `Unknown` |
+| `developerMode` | `0` |
+| `TokenAuthSupport` | `true` |
+| `networkType` | wireless |
+| Country code (API) | `MA` |
+| Resolution (API) | 3840x2160 |
+
+What this unit answers: the 8001 HTTP API with model metadata, the remote websocket
+(`TokenAuthSupport: true`), and a Samsung SmartTV `type`. Developer Mode is off.
+
+What it rules out, as on the AU8000 above: no ADB on retail firmware, so no `pm disable-user`
+list is possible from outside. Remote-key settings or DNS blocking are the realistic routes; see
+[cleanyour.tv/not-android](https://cleanyour.tv/not-android).
+
+Not checked: a full port scan, 26101, Developer Mode, and whether the firmware can be read
+through `sdb`.
+
+### UA50MU7000: the remote socket paired, and blind navigation still failed
+
+The 8002 remote websocket was then tested on this unit, from Windows with Python's `websockets`
+and a self-signed certificate accepted for the local connection only.
+
+| Step | Result |
+|---|---|
+| `wss://<tv>:8002/api/v2/channels/samsung.remote.control?name=<base64>` | `ms.channel.connect`, after the owner accepted the on-screen prompt |
+| Token | Returned on first connect and reused on later connections with no second prompt |
+| `ms.remote.control` / `SendRemoteKey` clicks | Delivered; `KEY_MENU` opened the settings menu |
+
+So the key-press half of the "settings by remote keys plus DNS" idea above works on a 2017 set,
+and the grant survives reconnection. The other half is what fails.
+
+**Without a screen capture, a key sequence cannot be driven open-loop.** Two sequences were sent
+blind, each checked by asking the owner what the TV showed:
+
+- `KEY_MENU` then five `KEY_DOWN`: expected the bottom of the left column, landed inside Support
+  on Terms & Privacy.
+- Two `KEY_UP`, expecting Software Update one or two rows above: landed on a Live TV setup screen.
+
+The attempt was abandoned there with `KEY_RETURN` and `KEY_EXIT`, and the firmware update was done
+from the owner's remote instead. Nothing was confirmed with `KEY_ENTER` at any point, which is the
+only reason a wrong screen stayed harmless: the Support list on this model is two rows from a
+channel retune.
+
+The lesson for a Tizen port is not that the remote API is unusable, but that menu position is
+unknowable from outside. Row order differs by year, region and firmware, the highlight does not
+start in a fixed place, and `/api/v2/` reports no UI state. A port that walks menus needs either a
+person reading the screen at each step, which is what happened here, or a capture path this
+generation does not offer. Launching an app by id through
+`/api/v2/applications/<appId>` stays the one deterministic action.
+
+## CU7700 (2023, India): token reused, no app list, manual DNS not kept, checked on 2026-11-05
+
+An owner's check of a 2023 set in India (the year from the model string's `23_` prefix), reported in
+[#3326](https://github.com/Gathin23/cleanyourtv/issues/3326) by
+[@vishal-s22](https://github.com/vishal-s22), from a Mac on the same network. Developer Mode was off.
+The network side was read-only: `GET` requests, TCP connections, and two remote-control websocket
+connections in which no key was sent. The owner then changed privacy and network settings with the
+remote. One set, one firmware, one session. The `/api/v2/` reply carried the DUID, the Wi-Fi MAC, the
+access point's MAC and the IP address, which are left out here.
+
+| Field | Observed value |
+|---|---|
+| Retail model | UA65CU7700KLXL, 65" CU7700, India |
+| Model string (`/api/v2/`) | `23_KSUE_UV_T09` |
+| System | Tizen; the API returned `Unknown` for the firmware version |
+| API | `version` 2.0.25, `TokenAuthSupport: true`, `developerMode: 0`, `PowerState: on`, `countryCode: IN` |
+| Network | Wi-Fi |
+
+| Port | CU7700 result | Verification | Limits |
+|---|---|---|---|
+| 8001 | open | HTTP `GET /api/v2/` returned model metadata | |
+| 8002 | open | HTTPS `GET /api/v2/` returned the same values as 8001 in the fields compared; the remote websocket connected (below) | Self-signed TLS certificate verification was bypassed for this local connection only |
+| 8080 | open | HTTP `GET /` answered `403 Forbidden` | Service not identified |
+| 9197 | open | `GET /dmr` returned a UPnP description listing AVTransport, RenderingControl and ConnectionManager | |
+| 7678 | open | `GET /nservice/` returned a DIAL (`dial:1`) description whose `sec:ProductCap` includes `Tizen,Y2021` | |
+| 9080 | closed | No TCP connection | |
+| 5555 | closed | No TCP connection | No ADB on retail firmware |
+| 26101 | closed | No TCP connection | Developer Mode off; `sdb` not tested |
+| 1515 | closed | No TCP connection | Checked because the set has an IP Remote toggle in its network settings; the toggle was not changed |
+
+**Remote websocket.** `wss://<tv>:8002/api/v2/channels/samsung.remote.control?name=<base64>` raised
+the "Allow" prompt; the owner accepted it and the TV issued a token. A second connection with that
+token returned `ms.channel.connect` without the owner accepting a prompt again, as on the
+UA50MU7000. Whether the grant survives a TV reboot was not measured. The pairing was removed in
+Device Connection Manager afterwards.
+
+**App inventory.** `ed.installedApp.get`, sent over that socket in two attempts, got no reply; the
+second attempt waited 15 seconds. `GET /api/v2/applications/<appId>` on 8001 did answer per id, with
+the app's name, version and running state, and with `404` for ids not found on the set.
+
+**Privacy settings, with the remote.** The owner switched off Viewing Information Services and
+Interest-Based Advertisement. The advertising identifier is offered as **Reset PSID**, and the owner
+reset it. Terms & Privacy had no Voice Recognition Services entry.
+
+**DNS was not kept.** A manual DNS server (`94.140.14.14`) entered under Network Status → IP Settings
+was back on automatic when the owner checked again, both with IP Setting on automatic and after IP
+Setting was set to manual too. `samsungads.com`, which that resolver answers with `0.0.0.0`, still
+loaded in the TV's browser, consistent with the setting not being applied. DNS set on the router was
+not tried.
+
+What carries over unchanged: 5555 and 26101 give no TCP connection, so there is no ADB and no `sdb`
+to work with, as on the AU8000, NU7405 and Q67BA. This unit adds two data points: **9080** is closed
+on a 2023 set (open on the 2021 and 2022 units, closed on the 2018 and 2024 ones), and the TV did
+not keep a manual DNS server.

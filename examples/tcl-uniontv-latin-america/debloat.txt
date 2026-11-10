@@ -37,6 +37,24 @@
 # AV, Live TV) and D-pad edges checked. Tested the same day. It adds com.tcl.dashboard and
 # com.tcl.tv.tclhome_passive below, and two off-by-choice apps, commented out.
 #
+# Also confirmed 2026-11-08 on a TCL UnionTV with persist.tcl.client_type TCL-LA-RT41KB-S1 (as the 32S6500S and
+# L40S6500 above), the same build (builder.20201115), Wi-Fi only, in Argentina. Applied with tools/disable.ps1 in
+# four batches with screenshots between them; a reboot after the first three batches (21 packages) left every one
+# of them disabled, com.tcl.usercenter included. com.tcl.dashboard, com.tcl.tv.tclhome_passive,
+# com.tcl.waterfall.overseas, Red Bull TV and Twitch were not installed. The owner kept katniss, speech.pumpkin and
+# com.google.android.tts (Assistant wanted) and com.google.android.backdrop (Ambient Mode with Google Photos; the
+# Spanish screen-saver list names it "Fondo de pantalla"). launcher/ installed, Home confirmed with
+# mResumedActivity. Tested the same day. Two things seen on this unit:
+# - The remote's Apps button (TCL_RC802VEM) sends vendor keycode 4082, and the firmware answers it by starting
+#   com.google.android.tvlauncher/.appsview.AppsViewActivity from uid 1000. Once the stock launcher is disabled
+#   that start fails without a word, so the button does nothing. The key still reaches the focused window
+#   (WindowManager logs "Unhandled key ... keyCode=4082" on Home), so a launcher can handle it there; a
+#   personal build that opens the App library on 4082 worked, while an `app_keys` entry for it was not tried.
+#   Inside apps the button stays dead.
+# - /vendor/bin/tmmgr (libtmmgr_tm.so) crashes with SIGSEGV about every 5 seconds from boot (`logcat -b crash`,
+#   init.svc.tmmgr reads "restarting"). It kept crashing with every package in this list re-enabled, so the list
+#   does not cause it: a firmware bug, and nothing the shell can change.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-uniontv-latin-america/debloat.txt
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.

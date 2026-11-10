@@ -23,7 +23,7 @@ export TV_HOST=<tv ip>
 TV_HOST=<tv ip> tools/disable.sh examples/acer-ar3-r3/debloat.txt
 ```
 
-(Windows: `tools\disable.ps1 examples\acer-ar3-r3\debloat.txt`.) 26 packages disabled by default, none
+(Windows: `tools\disable.ps1 -TvHost <tv ip> examples\acer-ar3-r3\debloat.txt`.) 26 packages disabled by default, none
 uninstalled. The header of [`debloat.txt`](debloat.txt) says what each group is, what is kept on
 purpose, and a firmware quirk with the remote's YouTube button (below). Netflix, Prime Video,
 YouTube, YouTube Music and Play Games are commented out by default (personal choice: this set has

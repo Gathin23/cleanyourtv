@@ -1,0 +1,73 @@
+# AiPro4K (Expressluck, device sepolia), Android TV 14, firmware UKN7.260716.014
+# The 4K sibling of examples/aipro2k (same Changhong "AI PONT" family, Expressluck / CVTE vendor apps,
+# MediaTek). 1.8 GB RAM (MemTotal about 1.84 GB), panel 3840x2160, UI rendered at 1920x1080, 320 dpi.
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER)
+# Live TV app: com.mediatek.tv.oneworld.tvcenter (not com.mediatek.wwtv.tvcenter as on the AiPro2K; set it as
+# live_tv_package and add it to hidden_apps, or the Inputs menu offers a package that is not there).
+#
+# Status: applied 2026-10-26 in three batches (telemetry, apps, then setupwraith with the launcher handover)
+# and used daily since, with several cold reboots. Normal boot every time, nothing came back on, nothing
+# re-enabled. Working: the launcher in launcher/ as Home, HDMI inputs from the Inputs menu, Live TV, Netflix,
+# YouTube, TV360, Chromecast from a phone, the microphone button and the phone remote. Free RAM is about
+# 750 MB after a reboot and about 100 MB after a day; swap grows over days, so a weekly reboot keeps it quick.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/aipro4k/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/aipro4k/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Already disabled from the factory (do not re-enable them on restore): com.at.factory.androidtvaidlservice,
+# com.cltv.hybrid, com.cltv.mal, com.ctv.factorytest, com.expressluck.factorymanager,
+# com.mediatek.dtv.tvinput.atsctuner, com.mediatek.dtv.tvinput.isdbtuner, com.mediatek.opapp.
+#
+# Kept on purpose, do not disable:
+# - com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.autopair: remote control and HDMI.
+# - com.mediatek.tv.oneworld.tvcenter, com.mediatek.wwtv.setupwizard: Live TV and the Inputs menu.
+# - com.mediatek.wwtv.mediaplayer: USB media player (hide it with hidden_apps instead).
+# - com.google.android.apps.mediashell: Chromecast.
+# - com.google.android.katniss: microphone button and voice search.
+# - com.google.android.tv.remote.service: controlling the TV from the phone.
+# - com.google.android.youtube.tvmusic: the owner uses it; disable it if you do not.
+# - com.epl.hotkey and the factory packages (com.cvte.tv.at, com.at.factory.*, com.expressluck.*,
+#   mediatek.factorymenu.ui), as on the AiPro2K.
+#
+# Quirks on this firmware:
+# - With launcherx disabled, Home falls to com.google.android.tungsten.setupwraith/.RecoveryActivity, so
+#   launcher/build-and-install rolled back until setupwraith was disabled too. List both, last.
+# - setupwraith owns the saved Wi-Fi network on this set: disabling it forgot the network once, and it had to be
+#   joined again from Settings. Chromecast kept working without it here (this is Android TV, not Google TV).
+# - The remote's gear (Settings) button sends KEYCODE_BUTTON_14 (201) and opened the stock launcher's panel;
+#   with launcherx off it does nothing. An accessibility service that filters keys brings it back
+#   (settings_key_keycodes), but on this firmware any key-filtering service also kills key auto-repeat, so
+#   holding Volume moves one step only. Left off.
+# - animator_duration_scale is reset to 1.0 on every boot; window_animation_scale and
+#   transition_animation_scale stick.
+
+# Telemetry and ad services
+tv.anoki.acr.anokiacroptin                  # automatic content recognition
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup
+com.mediatek.tv.launcher.partner            # partner content rows for the stock launcher
+
+# Content rows
+com.google.android.syncadapters.calendar
+
+# Preloaded apps and demos
+com.google.android.play.games
+com.mediatek.tv.retaildemo                  # retail demo mode
+com.google.android.apps.tv.dreamx           # Google screensaver; the new launcher has a Clock screensaver
+# com.iqiyi.i18n.tv                           # iQIYI; off on the tested set by the owner's choice; uncomment if you don't use it
+# com.wbd.stream                              # HBO Max; off on the tested set by the owner's choice; uncomment if you don't use it
+com.internet.tvbrowser                      # web browser
+com.tcl.browser                             # second web browser
+de.stefanpledl.localcast                    # LocalCast
+com.instantbits.cast.receiver               # Web Video Cast receiver
+com.alphainventor.filemanager               # File Manager; re-enable to browse USB drives
+
+# Stock launcher and its first-run wizard. Do this LAST, after the new launcher is installed and set as
+# Home. With launcherx disabled, Home otherwise falls to setupwraith/.RecoveryActivity, so both go together.
+com.google.android.tungsten.setupwraith     # its RecoveryActivity otherwise takes over Home; can own the saved Wi-Fi (see above)
+com.google.android.apps.tv.launcherx

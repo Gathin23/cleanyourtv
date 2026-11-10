@@ -1,0 +1,92 @@
+# Chihi HX P30 projector (Allwinner H713 / h713m_tuna_p3 / sun50iw12p1), Android 11 (SDK 30)
+# oem.product.model=P30_H713_V1.1_CHIHI, fingerprint Allwinner/h713m_tuna_p3/.../hxws10071505:userdebug/test-keys,
+# firmware H713M-android11-v1.0, 1 GB RAM, 32-bit (armeabi-v7a). The firmware reports a fake Google
+# "mainline" / "generic" product identity; match on the bootimage fingerprint or oem.product.model.
+# Stock Home is com.chihihx.launcher; leave it enabled (projector/Wi-Fi UI), take Home with
+# set-home-activity on launcher/. Settings are com.android.tv.settings.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/chihi-hx-p30/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/chihi-hx-p30/debloat.txt com.chihihx.launcher
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Status: applied 2026-11-05, reboot-checked twice; Home stayed on com.gathin.tvhome. YouTube and
+# Uzbek streaming apps kept. OTA left enabled. Never start the factory packages below.
+#
+# Kept on purpose:
+# - com.chihihx.launcher (stock Home; Wi-Fi / projector UI)
+# - com.softwinner.vis (HDMI / CVBS TV input)
+# - com.softwinner.tcorrection (keystone)
+# - com.softwinner.tvvolume, awmanager, awsource, guardservice
+# - USB media: com.softwinner.TvdVideo, com.softwinner.TvdFileManager
+# - OTA: com.hx.update, com.softwinner.update
+# - YouTube, Play Store/Services, Uzbek TV apps (Telecom / Yangi / iTV / Kinopoisk / …)
+
+# Ads, cleaners, vendor junk
+com.example.testad
+com.dd.bugreport
+com.hx.appcleaner
+com.hx.httpspeedtest
+com.hx.usermanual
+com.hx.devicemonitor
+com.hx.httpvideotest
+com.hx.videotest
+com.hx.apkbridge
+com.chihihx.store
+# this set has these off; enable for others only if you don't use them
+# com.chihihx.launcher.upgrade
+
+# Factory / burn-in (disable only; do not launch)
+com.hx.projectortest
+com.hxdevicetest
+com.softwinner.tv.factorymenu
+com.softwinner.dragonbox
+com.softwinner.dragonatt
+com.softwinner.agingdragonbox
+
+# Owner declined: Netflix, Assistant, cast/mirror, Chrome, MX Player, Aptoide
+# com.netflix.mediaclient
+# com.netflix.ninja
+com.google.android.katniss
+com.softwinner.miracastReceiver
+com.apowersoft.mirror.tv
+com.allwinnertech.platinum.media
+com.android.chrome
+com.mxtech.videoplayer.ad
+cm.aptoidetv.pt
+
+# Softwinner extras (no tuner; themes/logs/screenshot)
+# com.softwinner.awlivetv
+com.softwinner.awlogsettings
+com.softwinner.screenshot
+com.softwinner.theme.color
+com.softwinner.theme.icon
+com.softwinner.ImageParser
+com.softwinner.settingsassist
+# com.softwinner.settingssetup  # leave; needed before factory reset
+# com.softwinner.provision      # leave; needed before factory reset
+
+# Google / AOSP leftovers
+com.google.android.partnersetup
+com.google.android.apps.searchlite.overlay
+com.google.android.onetimeinitializer
+com.android.onetimeinitializer
+com.android.music
+com.android.musicfx
+com.android.egg
+com.android.htmlviewer
+com.android.printspooler
+com.android.bips
+com.android.printservice.recommendation
+com.android.dreams.basic
+com.android.dreams.web
+com.android.wallpaperbackup
+com.android.wallpapercropper
+com.android.soundpicker
+com.android.calculator2
+com.android.camera2
+com.android.gallery3d
+com.android.cellbroadcastreceiver
+com.android.cellbroadcastservice
+com.android.providers.userdictionary
+com.android.providers.blockednumber
+com.android.simappdialog

@@ -38,7 +38,9 @@
 
     <!-- Open the Live TV app above the first time Home comes up after the TV is switched on, for sets that are
          mostly used for broadcast TV. Once per boot: Home after that stays Home. Can also be set with
-         "boot_to_live_tv": true in a theme's config.json. -->
+         "boot_to_live_tv": true in a theme's config.json. When launch_actions below gives live_tv_package an
+         "input:<id>" target, that input opens instead, as the tile does: for a Live TV app that starts on the
+         empty tuner at every boot ("please scan channels") while the set is used on an HDMI input. -->
     <bool name="boot_to_live_tv">false</bool>
 
     <!-- An "Open on start" row in Launcher settings: pick any app on the TV, and the first time Home comes up
@@ -141,6 +143,12 @@
          the helper's own. Leave it off where a tap is one step. A theme can set it ("consume_volume_keys"). -->
     <bool name="consume_volume_keys">false</bool>
 
+    <!-- true: Channel Up/Down do nothing while Home is in front. Unhandled, they open the TV's Live TV app (Sony
+         BRAVIA, Android 9: com.sony.dtv.tvx), which is a stray press on a set nobody watches broadcast on. Inside any
+         other app the keys go on as before, and no key helper is needed. A theme can set it
+         ("home_ignore_channel_keys"). -->
+    <bool name="home_ignore_channel_keys">false</bool>
+
     <!-- Vendor source numbers for the Inputs menu, "HW<n>=<number>" by the framework input id's last part
          (`tools/tv.py 'dumpsys tv_input'` lists them). A mapped input opens by sending input_action with the
          number as the int extra "input"; "HW<n>=-" leaves a port the board reports but the set does not have
@@ -171,6 +179,11 @@
          with TV settings, Display, Network, Apps (re-enable an app) and Launcher settings, over whatever is on screen.
          Both keys can also be set from a theme's config.json ("settings_key_keycodes": [83]). -->
     <bool name="settings_key_panel">false</bool>
+    <!-- true: those Settings buttons clear the TV Settings task before opening Settings (with settings_key_panel off).
+         On some MediaTek boards KEYCODE_SETTINGS is also a global key: com.mediatek.tv.service opens Display & Sound in
+         the same task before the helper sees the press, so Settings stacked on it and Back landed there (Skyworth
+         2K NSTV, Google TV 14). Also "settings_key_clear_task" in a theme's config.json. -->
+    <bool name="settings_key_clear_task">false</bool>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in

@@ -19,13 +19,11 @@
 # - The voice assistant (katniss) does not stay disabled: at every boot the package manager rescans it
 #   as an updated system app ("Expecting better updated system app for com.google.android.katniss"
 #   in logcat -b events) and it comes back enabled, bound as voice_interaction_service. Disabling it is
-#   all this list does. Beyond what this repo does, and your own call: removing it for user 0 and
-#   clearing the voice services held across reboots here
+#   all this list does, and all its Undo line can put back: a removal for user 0 is outside what this repo
+#   does, so this list hands out no uninstall for it. The bindings it holds are cleared with
 #     settings put secure voice_interaction_service ''
 #     settings put secure voice_recognition_service ''
-#     pm uninstall --user 0 com.google.android.katniss
-#   and is undone with
-#     cmd package install-existing com.google.android.katniss
+#   and undone with
 #     settings put secure voice_interaction_service com.google.android.katniss/.search.serviceapi.KatnissVoiceInteractionService
 #     settings put secure voice_recognition_service com.google.android.katniss/com.google.android.apps.tvsearch.voice.recognition.KatnissRecognitionService
 # - Left alone on purpose: com.mediatek.wwtv.tvcenter / tvinput* (HDMI + tuner), mitv.service,
@@ -62,11 +60,19 @@
 #   batches with a screenshot after each, two reboots, HDMI, Live TV and the real remote checked the same day;
 #   updated 2026-11-02 after five days of daily use with no problems and nothing re-enabled. What it disables
 #   and keeps, where it differs from this list, and the remote-button results are in README.md in this folder.
+# - Older Android 9 firmware PI.3591 (ro.build.display.id "PI.3591 release-keys", security patch 2020-01-05,
+#   1.8 GB set), India, Wi-Fi. Status: applied 2026-11-05, no reboot or multi-day follow-up reported yet, so treat its notes
+#   as provisional until the owner reports back. Like PI.4663, com.mitv.tvhome.michannel and com.mitv.dream
+#   are absent and com.google.android.leanbacklauncher(.recommendations) are present; adds Indian retail
+#   Sensara EPG packages (co.sensara.tv.mitv, co.sensara.tv.mitv.res), com.mitv.tvhome.mitvplus,
+#   com.google.android.tv.bugreportsender and factory-enabled com.google.android.music. Full list and
+#   regional partner preloads are in README.md in this folder.
 
 # Xiaomi + Google telemetry
 com.miui.tv.analytics
 com.xiaomi.statistic
 com.google.android.feedback
+com.google.android.tv.bugreportsender
 
 # PatchWall, content rows, sponsored rows
 com.mitv.tvhome.atv                         # PatchWall

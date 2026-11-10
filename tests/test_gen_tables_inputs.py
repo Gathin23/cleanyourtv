@@ -6,22 +6,28 @@ there, both ended in a FileNotFoundError traceback - exit 1 - before, which is t
 gives. The script's own docstring names 2 for "what it was given cannot be read", and `--font` on a path that is
 not there already exits 2 through ap.error, so this is one rule applied to its other two paths.
 
-Every test runs the real script in a subprocess, since the exit status and the line on stderr are what a
-maintainer sees; the trees come from tests/test_gen_tables.py, so a valid checkout is built the same way there.
+Path checks run the real script in a subprocess, since the exit status and the line on stderr are what a
+maintainer sees. Metadata read failures are injected at the file read so they work across platforms; the trees
+come from tests/test_gen_tables.py, so a valid checkout is built the same way there.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
+import contextlib
+import errno
+import io
 import json
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tests"))
 sys.path.insert(0, str(ROOT / "tools"))
 from test_gen_tables import add, tree, tv  # noqa: E402  (the small checkout the other gen_tables tests use)
+import gen_tables  # noqa: E402
 
 SCRIPT = ROOT / "tools" / "gen_tables.py"
 
@@ -125,7 +131,8 @@ class AdoptTest(unittest.TestCase):
             root = valid(tmp)
             code, out, err = run("--root", str(root), "--adopt", tmp)
             self.assertEqual(code, 2, err)
-            self.assertIn("Is a directory", err)
+            # Windows refuses to open a folder with "Permission denied" where POSIX says "Is a directory".
+            self.assertIn("Permission denied" if sys.platform == "win32" else "Is a directory", err)
             self.assertIn("Nothing was written", err)
             self.assertEqual(out, "")
 
@@ -198,6 +205,54 @@ class CheckAdoptTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = valid(tmp)
             self.assert_conflict(*run("--root", str(root), "--check", "--adopt", "", cwd=root))
+
+
+class MetadataReadTest(unittest.TestCase):
+    def assert_unreadable_metadata(self, mode):
+        for error in (PermissionError(errno.EACCES, "metadata access denied"),
+                      OSError(errno.EIO, "metadata read failed")):
+            with self.subTest(mode=mode, error=error.errno), tempfile.TemporaryDirectory() as tmp:
+                root = valid(tmp)
+                metadata = root / "examples" / "tcl-a" / "tv.json"
+                patch = Path(tmp) / "pr.diff"
+                patch.write_text("| `tcl-d/` | TCL D | Android TV 11 | ads off |\n", encoding="utf-8")
+                add(root, "tcl-d", None if mode == "adopt" else tv("TCL D", "TCL"))
+                # A normal rewrite would change the stale tables, and --adopt would create this tv.json.
+                before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                read_text = Path.read_text
+
+                def read(path, *args, **kwargs):
+                    if path == metadata:
+                        raise error
+                    return read_text(path, *args, **kwargs)
+
+                argv = ["--root", str(root)]
+                if mode == "adopt":
+                    argv += ["--adopt", str(patch)]
+                elif mode == "check":
+                    argv += ["--check"]
+                with mock.patch.object(Path, "read_text", read), \
+                        contextlib.redirect_stdout(io.StringIO()) as out, \
+                        contextlib.redirect_stderr(io.StringIO()) as err:
+                    code = gen_tables.main(argv)
+                self.assertEqual(code, 2, err.getvalue())
+                self.assertEqual(out.getvalue(), "")
+                self.assertIn("examples/tcl-a/tv.json", err.getvalue())
+                self.assertIn(error.strerror, err.getvalue())
+                self.assertNotIn("not valid JSON", err.getvalue())
+                self.assertNotIn("Traceback", err.getvalue())
+                self.assertEqual({p: p.read_bytes() for p in root.rglob("*") if p.is_file()}, before)
+                if mode == "adopt":
+                    self.assertFalse((root / "examples" / "tcl-d" / "tv.json").exists())
+
+    def test_check_refuses_unreadable_metadata_without_reporting_stale_tables(self):
+        self.assert_unreadable_metadata("check")
+
+    def test_adopt_refuses_unreadable_metadata_before_creating_any(self):
+        self.assert_unreadable_metadata("adopt")
+
+    def test_rewrite_refuses_unreadable_metadata_before_changing_tables(self):
+        self.assert_unreadable_metadata("rewrite")
 
 
 class UnchangedTest(unittest.TestCase):

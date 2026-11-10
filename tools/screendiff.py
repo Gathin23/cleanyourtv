@@ -148,7 +148,8 @@ def pair(a, b, blurs, labels, scale):
     for region in blurs:
         redact(a, region)
         redact(b, region)
-    w, h = int(a.size[0] * scale), int(a.size[1] * scale)
+    # A positive scale can round a dimension to zero; Pillow needs at least one pixel.
+    w, h = max(1, int(a.size[0] * scale)), max(1, int(a.size[1] * scale))
     a, b = a.resize((w, h), Image.LANCZOS), b.resize((w, h), Image.LANCZOS)
     out = Image.new("RGB", (2 * w + 30, h + 60), "white")
     out.paste(a, (0, 60))

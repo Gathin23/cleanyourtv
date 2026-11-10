@@ -22,6 +22,7 @@ import argparse
 import colorsys
 import hashlib
 import os
+from pathlib import Path
 import re
 import sys
 
@@ -40,8 +41,12 @@ def window(q, package, spec, nav):
     if main is None:
         raise ValueError(f"no {package} process in the trace")
     if spec == "all" or nav:
+        # lanes() draws only completed, positive-duration slices. An unfinished
+        # slice has dur=-1, so ts+dur is not an end time for the chart's axis.
         row = q(f"select min(s.ts) as t0, max(s.ts + s.dur) as t1 from slice s join thread_track tt on s.track_id = tt.id "
-                f"join thread t using(utid) where t.upid = {upid}")[0]
+                f"join thread t using(utid) where t.upid = {upid} and s.dur > 0")[0]
+        if row["t0"] is None or row["t1"] is None:
+            raise ValueError(f"no completed slices to draw for {package} in the trace")
         return row["t0"], row["t1"]
     anchor, end = trace_report.start_window(q, package)
     if anchor is None:
@@ -63,7 +68,8 @@ def lanes(q, package, names, t0, t1):
         elif name == "RenderThread":
             utid = render
         else:
-            rows = q(f"select utid from thread where upid = {upid} and name = '{name}' order by utid limit 1")
+            sql_name = name.replace("'", "''")
+            rows = q(f"select utid from thread where upid = {upid} and name = '{sql_name}' order by utid limit 1")
             utid = rows[0]["utid"] if rows else None
         if utid is None:
             out.append((name, []))
@@ -188,7 +194,10 @@ def draw(panels, rx, title, subtitle, out, width=1600):
                     d.text((x0 + 3, yy + 1), text, fill="white" if s["id"] in hit else "#222", font=small)
             y += h + 26
         y += 10
-    im.save(out)
+    try:
+        im.save(out)
+    except OSError as e:
+        sys.exit(f"cannot write {out}: {e.strerror or e}")
     return im.size
 
 
@@ -248,7 +257,7 @@ def parse(argv):
     except re.error as e:
         p.error(f"--highlight is not a regex: {e}")
     names = [n.strip() for n in args.threads.split(",") if n.strip()]
-    if not names or not all(re.fullmatch(r"[A-Za-z0-9 _.:#-]+", n) for n in names):
+    if not names or not all(n.isprintable() and ";" not in n for n in names):
         p.error("--threads takes thread names such as main,RenderThread")
     args.thread_names = names
     return args
@@ -268,6 +277,22 @@ def main(argv=None):
         missing = [path for path in paths if not os.path.isfile(path)]
         if missing:
             sys.exit("not a file: " + ", ".join(missing))
+    # A .png name may alias a trace through a symlink or hardlink. Refuse before
+    # starting the engine, including every run a folder could choose as its median.
+    try:
+        target = Path(args.out)
+        for paths in sets:
+            for path in paths:
+                source = Path(path)
+                if target.resolve() == source.resolve() or (target.exists() and target.samefile(source)):
+                    raise ValueError(f"--out {args.out} is the same file as trace {path}")
+    except (OSError, RuntimeError, ValueError) as e:
+        print(f"{e}. No trace was read or written.", file=sys.stderr)
+        return 2
+    try:
+        sets = [trace_report.unique_traces(paths) for paths in sets]
+    except ValueError as e:
+        sys.exit(str(e))
     try:
         import PIL  # noqa: F401
     except ImportError:
@@ -297,4 +322,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

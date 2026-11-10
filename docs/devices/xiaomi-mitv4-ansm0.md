@@ -132,3 +132,98 @@ What sticks on this build:
   and its installer allowlist stay enabled.
 - Xiaomi's own apps show a mixed Chinese/English UI: the CN apps ship only Chinese and partial English, and
   untranslated strings fall back to Chinese regardless of `persist.sys.locale`.
+
+
+## MiTV4 / pulpfiction (Android 6.0.1, build 9.1.8.2318)
+
+From [@hankzty's report in #2646](https://github.com/Gathin23/cleanyourtv/issues/2646):
+China-market Xiaomi MiTV4, device and board `pulpfiction`, Amlogic, Android 6.0.1
+(API 23), firmware `9.1.8.2318`. This is a different platform from `xmen` above.
+The CleanYourTV launcher was not tested; this repo's launcher requires API 26.
+
+### Refusal and scope
+
+`adb shell pm disable-user --user 0 com.miui.systemAdSolution` returned:
+
+```text
+java.lang.SecurityException:
+Permission Denial: attempt to change component state
+from uid=2000
+```
+
+The owner instead backed up each APK to the PC and used `pm uninstall --user 0`.
+**This is a reported workaround on this Android 6 Xiaomi firmware, outside the
+project's normal disable-only workflow.** It is not a supported debloat list or a
+change to the tools. Stop the normal flow when disabling is refused; do not feed
+these commands into `tools/disable.sh` or expect `tools/restore.sh` to undo them.
+The maintainer requested this historical procedure and recovery note in #2646.
+
+### Backup before removal (reported procedure)
+
+Work on one explicitly identified package at a time. Keep the keyboard, settings,
+SystemUI, package installer, TV/input and playback services, remote/Bluetooth,
+casting, stock Home and firmware updater. In this report, stock Home
+(`com.mitv.tvhome`), Mi Home (`com.xiaomi.smarthome.tv`), remote service
+(`com.xiaomi.mitv.remotecontroller.service`) and installer allowlist/push service
+(`com.xiaomi.mitv.tvpush.tvpushservice`) were deliberately retained.
+
+The example below uses the ad SDK actually reported in #2646. Run each command
+separately from the PC; replace the APK path with the exact path returned by
+`pm path` (omit its `package:` prefix). The path placeholder is not a literal path.
+
+```sh
+adb shell pm path com.miui.systemAdSolution
+adb shell cp "<apk-path-from-pm-path>" /sdcard/Download/com.miui.systemAdSolution.apk
+adb pull /sdcard/Download/com.miui.systemAdSolution.apk ./com.miui.systemAdSolution.apk
+```
+
+Before any removal, confirm that copying and pulling succeeded and that the local
+APK is nonempty and readable; retain the package name, original path and version
+privately. If `pm path` returns multiple APKs, keep all of them; this single-APK
+example is insufficient. Do not proceed with missing or unreadable backups, or
+without an understood recovery route. An APK backup contains code, **not app data,
+accounts or settings**. Removal can lose those even when reinstalling succeeds.
+
+Only after the backup, the owner ran:
+
+```sh
+adb shell pm uninstall --user 0 com.miui.systemAdSolution
+```
+
+Some reported packages were under `/data/app`, others under
+`/system/vendor/app`. Do not assume removal leaves a reinstallable copy behind
+for every package. The successful removals in #2646 are observations on one set,
+not a general safe-to-remove list.
+
+### Putting a package back
+
+**Recovery was not demonstrated in #2646.** Do not read these recovery options as
+an on-device verification or a guarantee of reversibility. Reinstalling code does
+not restore deleted user data.
+
+For a single APK backed up from this same TV, the recovery command to try is:
+
+```sh
+adb install -r --user 0 ./com.miui.systemAdSolution.apk
+adb shell pm list packages --user 0 com.miui.systemAdSolution
+adb shell pm path com.miui.systemAdSolution
+```
+
+Use the matching local backup for the package being restored. For split APKs a
+complete matching set and `adb install-multiple -r --user 0` are needed instead.
+Require an installation `Success`, confirm the exact package is present for user 0,
+then test the affected feature and check it again after reboot.
+
+Do not rely on modern `cmd package install-existing` instructions: this Android 6
+generation lacks the `cmd` binary, and `pm install-existing` must not be assumed
+available. `pm enable` alone does not reinstall a removed package.
+If installation fails (signature/version conflict, firmware verification or a
+missing backup), stop and preserve the error; do not uninstall more packages,
+delete system files, use root, downgrade blindly or bypass installer protection.
+A factory reset can erase user data and cannot be relied on to recover apps that
+existed only in `/data/app`.
+
+Keep APKs, backup logs and device identifiers private; do not attach them to a PR.
+After checks, turn off debugging and verify network ADB is closed as described in
+the project's normal safety procedure.
+

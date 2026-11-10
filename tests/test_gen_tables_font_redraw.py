@@ -49,6 +49,8 @@ def checkout(tmp, lists=(("tcl-a", None),)):
                        for name, data in lists])
     for name in ("readme_stats.py", "readme_card.py"):
         shutil.copy(ROOT / "tools" / name, root / "tools" / name)
+    # The two publish through tools/picture_file.py, which is imported from beside them.
+    shutil.copy(ROOT / "tools" / "picture_file.py", root / "tools" / "picture_file.py")
     (root / "docs").mkdir()
     return root
 

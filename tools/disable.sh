@@ -4,6 +4,10 @@
 #
 # Usage: TV_HOST=192.168.1.50 tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
 set -euo pipefail
+# The name checks below use ASCII ranges such as [A-Za-z]. In a Turkish locale GNU grep and sed leave
+# i and I out of those ranges (dotted and dotless i), so every name with an i was refused and the
+# Live TV and Settings handler lookups matched nothing (#3286). Match bytes, not the user's alphabet.
+export LC_ALL=C
 LIST="${1:?usage: disable.sh <debloat list>}"
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
@@ -38,7 +42,7 @@ export MSYS_NO_PATHCONV=1
 # so a list whose entries are all commented out (what CONTRIBUTING asks for while one is untested)
 # read exactly like a run that died halfway.
 PKGS=$(LC_ALL=C awk 'NR==1{sub(/^\357\273\277/,"")} {sub(/\r$/,""); print}' "$LIST" \
-  | grep -vE '^\s*(#|$)' | sed -E 's/[[:space:]]+#.*$//' | awk '{print $1}' || true)
+  | grep -vE '^\s*(#|$)' | sed -E 's/#.*$//' | awk '{print $1}' || true)
 BAD=$(printf '%s\n' "$PKGS" | grep -vE '^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$' || true)
 if [ -n "$BAD" ]; then
   { echo "refusing $LIST: not a package name:"; printf '%s\n' "$BAD" | sed 's/^/  /'; } >&2

@@ -8,10 +8,27 @@ seventy while the page said 71.
 
 These tests read the number out of the page rather than copying it into the test, count the project
 rows the way the page lays them out (a table row whose first cell is a project link), and fail when
-the two disagree, naming both numbers. The README's spelled form is read through a word parser, so a
-row reworded around the number still counts. No other prose is matched.
+the two disagree, naming both numbers. The spelled forms are read through word parsers, so a row
+reworded around the number still counts. No other prose is matched.
 
-Adding a project therefore means bumping both numbers, which is what the failure message says.
+README.pt-BR.md carries the same row in Portuguese ("que já reúne cento e noventa e três projetos"),
+and nothing read it: it was translated when SHOWCASE.md held 193 rows, stood at 193 while the page
+moved to 218, and the suite stayed green - so a reader of the Portuguese front page was offered 25
+projects fewer than the showcase holds. Every page in COUNT_PAGES is read now, with the parser for
+its own language, so a translation that states the number is a page this test judges rather than one
+it silently skips.
+
+Four more translated front pages carried the row and were read by nothing, because they write the
+number another way: README.nl.md in digits ("al 121 projecten"), README.de.md in one German compound
+("hundertvierundvierzig Projekte"), README.uk.md in Ukrainian words ("сто шістдесят три проєкти") and
+README.uz.md in Uzbek words with the -ta classifier ("ikki yuz oʻn ikkita loyiha"). The showcase held
+228 by then, so those readers were offered 121, 144, 163 and 212 projects. German compounds and the
+Uzbek classifier are not words a table like this one can hold (the same reason README.uz.md's theme
+count moved to digits), so those four pages write the number in digits and are read with
+digits_number() - language-neutral, and the classifier may sit between the number and its noun.
+
+Adding a project therefore means bumping every page in COUNT_PAGES, which is what the failure
+message says.
 """
 
 import re
@@ -62,11 +79,12 @@ def spelled_number(word):
     text = word.lower().replace("-", " ").strip()
     parts = [p for p in text.split() if p != "and"]
     # The page passed a hundred rows in Round W: "a hundred", "one hundred and four", "a hundred and twenty".
-    if len(parts) >= 2 and parts[0] in ("a", "one") and parts[1] == "hundred":
+    if len(parts) >= 2 and parts[0] in ("a", "one", "two") and parts[1] == "hundred":
+        base = 200 if parts[0] == "two" else 100
         if len(parts) == 2:
-            return 100
+            return base
         rest = spelled_number(" ".join(parts[2:]))
-        return None if rest is None else 100 + rest
+        return None if rest is None else base + rest
     if not parts or len(parts) > 2:
         return None
     if len(parts) == 1:
@@ -76,22 +94,107 @@ def spelled_number(word):
     return None
 
 
-def readme_spelled(lines):
-    """(number, the words it was read from) for README's "<words> projects" phrase, or (None, None).
+# Portuguese number words, for the front page that spells the count in Portuguese. English needs
+# "two hundred and four"; Portuguese is additive ("duzentos e dezoito") and "cento" is the hundred
+# that takes a tail ("cento e noventa e três"), so a sum is the whole grammar these pages use.
+PT_ONES = {
+    "um": 1, "uma": 1, "dois": 2, "duas": 2, "três": 3, "quatro": 4, "cinco": 5, "seis": 6,
+    "sete": 7, "oito": 8, "nove": 9, "dez": 10, "onze": 11, "doze": 12, "treze": 13, "catorze": 14,
+    "quatorze": 14, "quinze": 15, "dezesseis": 16, "dezasseis": 16, "dezessete": 17,
+    "dezassete": 17, "dezoito": 18, "dezenove": 19,
+}
+PT_TENS = {
+    "vinte": 20, "trinta": 30, "quarenta": 40, "cinquenta": 50, "sessenta": 60, "setenta": 70,
+    "oitenta": 80, "noventa": 90,
+}
+PT_HUNDREDS = {
+    "cem": 100, "cento": 100, "duzentos": 200, "duzentas": 200, "trezentos": 300,
+    "trezentas": 300, "quatrocentos": 400, "quatrocentas": 400, "quinhentos": 500,
+    "quinhentas": 500, "seiscentos": 600, "seiscentas": 600, "setecentos": 700,
+    "setecentas": 700, "oitocentos": 800, "oitocentas": 800, "novecentos": 900,
+    "novecentas": 900,
+}
 
-    The words directly before "projects" are tried two at a time and then one at a time ("twenty
-    one" needs both, "seventy-five" is one), so the sentence around the number can be reworded.
+
+def spelled_number_pt(text):
+    """"cento e noventa e três" -> 193, "duzentos e dezoito" -> 218, anything else -> None.
+
+    No "mil": a count past 999 is a parser to extend, and an unreadable number fails loudly where a
+    guessed one would silently agree with nothing.
+    """
+    total = 0
+    for word in text.lower().replace("-", " ").split():
+        if word == "e":
+            continue
+        if word in PT_HUNDREDS:
+            total += PT_HUNDREDS[word]
+        elif word in PT_TENS:
+            total += PT_TENS[word]
+        elif word in PT_ONES:
+            total += PT_ONES[word]
+        else:
+            return None
+    return total or None
+
+
+def digits_number(text):
+    """"228" -> 228, "228 ta" -> 228 (the Uzbek classifier sits between the number and its noun),
+    anything else -> None.
+
+    The pages that write the count in digits are read with this: a German compound
+    ("hundertvierundvierzig") or an Uzbek classified numeral is not a word a table can hold, and a
+    number in digits is the same in every language. `\\d{1,4}` keeps a thousands separator out, so
+    "1.4" or "1,228" is not read as a count; a count past 9999 is a parser to widen, and an
+    unreadable one fails at the page's own test rather than agreeing with nothing.
+    """
+    match = re.fullmatch(r"(\d{1,4})(?:\s+[^\W\d_]+)?", text.strip())
+    return int(match.group(1)) if match else None
+
+
+def spelled_count(lines, word, reader, most=6):
+    """(number, the phrase it was read from) for a page's "<number> <word>" phrase, or (None, None).
+
+    The words directly before the word are tried longest first and then shorter, so "twenty one"
+    needs both, "seventy-five" is one, "cento e noventa e três" is five, and the sentence around the
+    number can be reworded. `[^\\W_]+` is every letter or digit, accented ones and numerals included,
+    and a hyphen keeps the words it joins together, so each page can spell the number in its own
+    language and a page that writes it in digits hands "228" to its reader as one word.
     """
     for line in lines:
-        for match in re.finditer(r"projects\b", line):
-            words = re.findall(r"[A-Za-z-]+", line[: match.start()].rstrip())
-            for take in (5, 4, 3, 2, 1):
+        for match in re.finditer(rf"{word}\b", line):
+            words = re.findall(r"[^\W_]+(?:-[^\W_]+)*", line[: match.start()].rstrip())
+            for take in range(most, 0, -1):
                 if len(words) >= take:
                     candidate = " ".join(words[-take:])
-                    number = spelled_number(candidate)
+                    number = reader(candidate)
                     if number is not None:
                         return number, candidate
     return None, None
+
+
+def readme_spelled(lines):
+    """README.md's "<words> projects", read with the English parser."""
+    return spelled_count(lines, "projects", spelled_number)
+
+
+def pt_spelled(lines):
+    """README.pt-BR.md's "<words> projetos", read with the Portuguese parser."""
+    return spelled_count(lines, "projetos", spelled_number_pt)
+
+
+# The pages that state the count, and the word each states it before. SHOWCASE.md's own
+# "N projects so far." line is the number the rows are counted from; every page here must agree with
+# it, and adding a project means bumping all of them. A page that spells the number is read with its
+# language's parser; a page that writes it in digits (which is what a classifier or a compound would
+# otherwise sit in the way of) is read with digits_number().
+COUNT_PAGES = {
+    "README.md": ("projects", spelled_number),
+    "README.pt-BR.md": ("projetos", spelled_number_pt),
+    "README.de.md": ("Projekte", digits_number),
+    "README.nl.md": ("projecten", digits_number),
+    "README.uk.md": ("проєктів", digits_number),
+    "README.uz.md": ("loyiha", digits_number),
+}
 
 
 def audit(showcase_lines):
@@ -131,15 +234,25 @@ class ShowcaseProjectCount(unittest.TestCase):
         self.assertEqual(len(counted_at), 1, "expected exactly one 'N projects so far.' line")
         self.assertLess(counted_at[0], headings[0], "the count line belongs above the first section")
 
-    def test_readme_spells_the_same_number(self):
-        number, word = readme_spelled(self.readme)
-        self.assertIsNotNone(number, "README.md's 'Built something on top?' row lost its spelled count")
+    def test_every_page_that_states_the_count_agrees_with_the_rows(self):
         counted = len(project_rows(self.showcase))
-        self.assertEqual(
-            number,
-            counted,
-            f"README.md says '{word} projects' and SHOWCASE.md holds {counted} rows",
+        self.assertGreaterEqual(
+            len(COUNT_PAGES), 6,
+            "fewer pages are read than the six front pages that state the count: a page dropped from "
+            "COUNT_PAGES stops being judged, and its number is free to drift again",
         )
+        for page, (word, reader) in COUNT_PAGES.items():
+            with self.subTest(page=page):
+                lines = (ROOT / page).read_text(encoding="utf-8").splitlines()
+                number, phrase = spelled_count(lines, word, reader)
+                self.assertIsNotNone(
+                    number, f"{page} states the project count and none was read"
+                )
+                self.assertEqual(
+                    number,
+                    counted,
+                    f"{page} says '{phrase} {word}' and SHOWCASE.md holds {counted} rows",
+                )
 
 
 class TheCheckerItself(unittest.TestCase):
@@ -195,6 +308,44 @@ class TheCheckerItself(unittest.TestCase):
         self.assertEqual(readme_spelled(["where a hundred and four projects already live"]), (104, "a hundred and four"))
         self.assertEqual(readme_spelled(["where one hundred and twenty-one projects live"]), (121, "one hundred and twenty-one"))
         self.assertEqual(readme_spelled(["a row with no count at all"]), (None, None))
+
+    def test_portuguese_words_are_read(self):
+        self.assertEqual(spelled_number_pt("cento e noventa e três"), 193)
+        self.assertEqual(spelled_number_pt("Duzentos e dezoito"), 218)
+        self.assertEqual(spelled_number_pt("duzentos e trinta e um"), 231)
+        self.assertEqual(spelled_number_pt("cem"), 100)
+        self.assertIsNone(spelled_number_pt("reúne"))
+        self.assertIsNone(spelled_number_pt("cento e many"))
+
+    def test_the_portuguese_row_is_read_and_a_number_before_the_word_is_not(self):
+        row = "que já reúne cento e noventa e três projetos organizados em telas iniciais"
+        self.assertEqual(pt_spelled([row]), (193, "cento e noventa e três"))
+        self.assertEqual(pt_spelled(["um tema com três projetos"]), (3, "três"))
+        self.assertEqual(pt_spelled(["Esses aplicativos são projetos independentes"]), (None, None))
+        # A number that does not touch "projetos" is not the count.
+        self.assertEqual(pt_spelled(["193 telas, e os projetos vêm depois"]), (None, None))
+
+    def test_a_count_in_digits_is_read(self):
+        self.assertEqual(digits_number("228"), 228)
+        self.assertEqual(digits_number(" 121 "), 121)
+        # The Uzbek -ta classifier sits between the number and its noun: "228 ta loyiha".
+        self.assertEqual(digits_number("228 ta"), 228)
+        self.assertIsNone(digits_number("hundertvierundvierzig"),
+                          "a spelled number read as a digit count")
+        self.assertIsNone(digits_number("1.4"), "a number with a separator read as a count")
+        self.assertIsNone(digits_number(""))
+
+    def test_a_row_in_digits_is_read_and_the_same_row_in_words_is_not(self):
+        nl = "| **Iets gebouwd?** | Daar staan al 228 projecten, ingedeeld in startschermen |"
+        self.assertEqual(spelled_count([nl], "projecten", digits_number), (228, "228"))
+        uz = "| **Ustiga?** | TV brendi boʻyicha indekslangan 228 ta loyiha allaqachon yashaydi. |"
+        self.assertEqual(spelled_count([uz], "loyiha", digits_number), (228, "228 ta"))
+        # Why the four pages write digits: the Ukrainian row the digits reader cannot see is the
+        # shape that offered a reader 163 projects while SHOWCASE.md held 228.
+        self.assertEqual(
+            spelled_count(["де вже живуть сто шістдесят три проєктів"], "проєктів", digits_number),
+            (None, None),
+        )
 
 
 if __name__ == "__main__":
