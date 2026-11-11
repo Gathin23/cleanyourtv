@@ -256,6 +256,50 @@ class PrepareTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 prep.main([d, str(Path(d, "out"))])
 
+    def test_case_aliased_descendants_are_refused_without_changing_the_source_tree(self):
+        with tempfile.TemporaryDirectory() as d:
+            src, alias = Path(d, "photos"), Path(d, "PHOTOS")
+            src.mkdir()
+            if not alias.is_dir():
+                self.skipTest("this filesystem is case-sensitive")
+            make_photo(src / "a.png", size=(32, 18))
+
+            def snapshot():
+                return {str(p.relative_to(src)): None if p.is_dir() else p.read_bytes()
+                        for p in src.rglob("*")}
+
+            for reversed_case in (False, True):
+                for existing in (False, True):
+                    with self.subTest(reversed_case=reversed_case, existing=existing):
+                        source, target_root = (alias, src) if reversed_case else (src, alias)
+                        target = target_root / f"album-{reversed_case}-{existing}" / "output"
+                        if existing:
+                            target.mkdir(parents=True)
+                            make_photo(target / "01.jpg", size=(32, 18), colour=(10, 20, 30))
+                        before = snapshot()
+                        with mock.patch.object(prep, "prepare", wraps=prep.prepare) as convert, \
+                                contextlib.redirect_stderr(io.StringIO()), \
+                                contextlib.redirect_stdout(io.StringIO()), \
+                                self.assertRaises(SystemExit) as caught:
+                            prep.main([str(source), str(target), "--size", "32x18"])
+                        self.assertEqual(caught.exception.code, 2)
+                        convert.assert_not_called()
+                        self.assertEqual(snapshot(), before)
+
+    def test_a_separate_prefix_sibling_or_missing_external_tree_still_converts(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d, "photos")
+            src.mkdir()
+            make_photo(src / "a.png", size=(32, 18))
+            original = (src / "a.png").read_bytes()
+            for target in (Path(d, "PHOTOS-output"), Path(d, "elsewhere", "nested", "output")):
+                with self.subTest(target=target):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        self.assertEqual(prep.main([str(src), str(target), "--size", "32x18"]), 0)
+                    with Image.open(target / "01.jpg") as image:
+                        self.assertEqual((image.format, image.size), ("JPEG", (32, 18)))
+                    self.assertEqual((src / "a.png").read_bytes(), original)
+
     def test_main_numbers_the_outputs_and_skips_a_corrupt_file(self):
         with tempfile.TemporaryDirectory() as d:
             src, out = Path(d, "src"), Path(d, "out")
