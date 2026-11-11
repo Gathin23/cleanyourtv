@@ -183,7 +183,7 @@ tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt        # l'annuler, launch
 tools/venv/bin/python -I tools/check.py examples/xiaomi-mi-tv-4a/debloat.txt   # ce qu'une mise à jour du firmware a défait
 launcher/build-and-install.sh                                # compiler le launcher et en faire l'accueil (nécessite l'export TV_HOST ci-dessus)
 tools/theme.sh themes/aurora                                 # envoyer un thème ; --reset le retire
-python3 tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers   # vos photos, dimensionnées et assombries pour le téléviseur
+tools/venv/bin/python -I tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers   # vos photos, dimensionnées et assombries pour le téléviseur
 ```
 
 | Outil | Ce qu'il fait |
@@ -310,11 +310,13 @@ avec le dépôt : vous apportez les vôtres, et c'est à vous de vous assurer qu
 2. **Préparez les photos.** Une photo lumineuse de 12 Mpx est lourde pour un téléviseur de 1 à 2 Go et noie
    l'horloge et les vignettes. `tools/wallpaper_prep.py` recadre au centre en 16:9, enregistre des JPEG 1280×720 de
    moins de 300 Ko, et assombrit l'image elle-même, si bien que `wallpaper_dim` peut rester à 0. Les photos HEIC des
-   téléphones fonctionnent. Vos originaux ne sont jamais modifiés.
+   téléphones fonctionnent. Vos originaux ne sont jamais modifiés. Pillow s'installe dans le `tools/venv`
+   créé par le démarrage rapide, et non dans un Python système : celui-ci n'a pas le paquet, et sous
+   Ubuntu son pip n'a pas le droit de l'installer.
 
    ```bash
-   python3 -m pip install -r tools/requirements-photos.txt
-   python3 tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers
+   tools/venv/bin/pip install -r tools/requirements-photos.txt
+   tools/venv/bin/python -I tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers
    ```
 
    Options : `--brightness 0.25` (de 0.1 à 1.0), `--gradient 0.6` (davantage de noir vers le dock), `--size 1280x720`,
