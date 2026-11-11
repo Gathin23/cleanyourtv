@@ -57,4 +57,27 @@ public class HomeKeyServiceTest {
         assertTrue(HomeKeyService.stillArmed(SOON, SOON + HomeKeyService.SCREEN_ON_WINDOW_MS));
         assertFalse(HomeKeyService.stillArmed(SOON, 0));
     }
+
+    private static final String HOME = "com.gathin.tvhome.MainActivity";
+    private static final String SETTINGS = HomeKeyService.TV_SETTINGS;
+    private static final String MAIN = HomeKeyService.TV_SETTINGS_MAIN;
+
+    @Test public void settingsTheFirmwareOpensOverHomeBecomesFull() {
+        assertTrue(HomeKeyService.fullSettingsRedirect(HOME, SETTINGS, MAIN, SOON, 0));
+    }
+
+    @Test public void settingsHomeOpenedItselfIsLeftAlone() {
+        assertFalse(HomeKeyService.fullSettingsRedirect(HOME, SETTINGS, MAIN, SOON, SOON - 500));
+    }
+
+    @Test public void settingsOverAnotherAppIsLeftAlone() {
+        assertFalse(HomeKeyService.fullSettingsRedirect("com.netflix.ninja.MainActivity", SETTINGS, MAIN, SOON, 0));
+        assertFalse(HomeKeyService.fullSettingsRedirect(MAIN, SETTINGS, MAIN, SOON, 0));
+        assertFalse(HomeKeyService.fullSettingsRedirect("", SETTINGS, MAIN, SOON, 0));
+    }
+
+    @Test public void otherSettingsScreensAreLeftAlone() {
+        assertFalse(HomeKeyService.fullSettingsRedirect(HOME, SETTINGS, "com.android.tv.settings.connectivity.NetworkActivity", SOON, 0));
+        assertFalse(HomeKeyService.fullSettingsRedirect(HOME, "com.netflix.ninja", MAIN, SOON, 0));
+    }
 }

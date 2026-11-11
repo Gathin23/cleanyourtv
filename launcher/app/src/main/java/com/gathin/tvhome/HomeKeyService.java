@@ -82,6 +82,10 @@ public class HomeKeyService extends AccessibilityService {
     private Map<Integer, String> frontAppScancodes = Collections.emptyMap();
     /** power_on_home_always: Home at every power-on, not only over Live TV. */
     private boolean powerOnAlways;
+    /** menu_full_settings: Settings the firmware opens over Home is reopened as the full Settings. */
+    private boolean menuFullSettings;
+    /** menu_full_settings: the activity last in front, by class name. */
+    private String frontActivity = "";
     /** power_on_home: re-arms after the screen turns on; null unless the key is on. */
     private BroadcastReceiver screenOnReceiver;
     /** Stops key filtering while a game controller is connected; null unless gamepad_passthrough and key_filter, or before the unlock. */
@@ -201,6 +205,7 @@ public class HomeKeyService extends AccessibilityService {
         frontAppKeys = RemoteKeys.parseFrontAppKeys(config.appKeys);
         frontAppScancodes = RemoteKeys.parseFrontAppScancodes(config.appKeys);
         boolean watchFront = !frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty();
+        menuFullSettings = config.menuFullSettings;
         stockHome.clear();
         stockHomePackage = config.stockHomeRedirect;
         if (!config.stockHomeRedirect.isEmpty()) {
@@ -225,7 +230,7 @@ public class HomeKeyService extends AccessibilityService {
         }
         // home_key_service.xml subscribes to no events, so the redirects ask for window changes only when one is on.
         AccessibilityServiceInfo info = getServiceInfo();
-        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront)) {
+        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront || menuFullSettings)) {
             info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
             setServiceInfo(info);
         }
@@ -331,6 +336,20 @@ public class HomeKeyService extends AccessibilityService {
                 // a dialog, panel or overlay: the app under it is still in front
             }
         }
+        // menu_full_settings: Settings came up over Home and Home did not open it (the remote's Menu on Philips).
+        if (menuFullSettings && event.getPackageName() != null && event.getClassName() != null) {
+            if (fullSettingsRedirect(frontActivity, event.getPackageName(), event.getClassName(),
+                    SystemClock.uptimeMillis(), MainActivity.lastStartAt)) {
+                openFullSettings();
+            }
+            ComponentName window = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
+            try {
+                getPackageManager().getActivityInfo(window, 0);
+                frontActivity = window.getClassName();
+            } catch (PackageManager.NameNotFoundException notAnActivity) {
+                // a dialog, panel or overlay: the activity under it is still in front
+            }
+        }
         // power_on_home: the firmware opened Live TV by itself at power-on, before anyone pressed a key.
         if (powerOnRedirect(powerOnLiveTv, event.getPackageName(), SystemClock.elapsedRealtime(), powerOnUntil)) {
             openHome();
@@ -339,6 +358,31 @@ public class HomeKeyService extends AccessibilityService {
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
         CharSequence cls = event.getClassName();
         if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+    }
+
+    /** menu_full_settings: a Settings start this soon after Home started something is Home's own. */
+    static final long OWN_START_MS = 3000L;
+
+    /** menu_full_settings: the TV Settings main screen, which the firmware opens on its Picture and Sound page. */
+    static final String TV_SETTINGS = "com.android.tv.settings";
+    static final String TV_SETTINGS_MAIN = "com.android.tv.settings.MainSettings";
+
+    /** menu_full_settings: the TV's Settings main screen came up over Home, and not from Home itself. */
+    static boolean fullSettingsRedirect(String frontActivity, CharSequence pkg, CharSequence cls, long now, long homeStartedAt) {
+        return MainActivity.class.getName().equals(frontActivity)
+                && TV_SETTINGS.contentEquals(pkg) && TV_SETTINGS_MAIN.contentEquals(cls)
+                && now - homeStartedAt > OWN_START_MS;
+    }
+
+    /** menu_full_settings: the full Settings in place of the page the firmware opened (one task, so Back goes Home). */
+    private void openFullSettings() {
+        Intent full = SystemSettings.intent(this, Settings.ACTION_SETTINGS)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        try {
+            startActivity(full);
+        } catch (ActivityNotFoundException | SecurityException unavailable) {
+            // the firmware's page stays
+        }
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */

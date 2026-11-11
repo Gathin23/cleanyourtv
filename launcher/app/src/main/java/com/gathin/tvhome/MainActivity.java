@@ -3308,6 +3308,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
+    /** When Home last started an activity, so HomeKeyService (menu_full_settings) can tell Settings opened from Home
+     *  from Settings the firmware opens over it. Every startActivity goes through startActivityForResult. */
+    static volatile long lastStartAt;
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
+        lastStartAt = SystemClock.uptimeMillis();
+        super.startActivityForResult(intent, requestCode, options);
+    }
+
     private void open(Intent i) {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {

@@ -184,6 +184,12 @@
          the same task before the helper sees the press, so Settings stacked on it and Back landed there (Skyworth
          2K NSTV, Google TV 14). Also "settings_key_clear_task" in a theme's config.json. -->
     <bool name="settings_key_clear_task">false</bool>
+    <!-- With HOME_KEY_SERVICE=1: when the TV's Settings opens over Home without the launcher asking for it, open the
+         full Settings instead. Philips / TP Vision MediaTek sets (PH0M_EA_T32): the remote's Menu button opens the
+         full Settings only over com.google.android.tvlauncher, and over any other Home only the app's Picture and
+         Sound page; the firmware takes the key, so no keycode reaches the launcher. Works with key_filter false.
+         Off by default; a theme can set "menu_full_settings": true. -->
+    <bool name="menu_full_settings">false</bool>
 
     <!-- A force stop of the launcher (Settings, a cleaner app, am force-stop) takes HomeKeyService and InputKeyService
          off the enabled list. true: Home puts the helpers that were running back when it starts; one turned off in
