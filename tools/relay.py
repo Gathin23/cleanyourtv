@@ -148,7 +148,12 @@ def main():
         p.error("that is the relay itself: give the TV's IP address")
 
     srv = socket.socket()
-    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    # On Windows SO_REUSEADDR lets a second socket bind a port that is in use; POSIX needs it for a quick restart.
+    if os.name == "nt":
+        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            srv.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+    else:
+        srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
         srv.bind((LISTEN, args.port))
     except OSError as e:

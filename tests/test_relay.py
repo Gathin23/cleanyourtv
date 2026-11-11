@@ -149,6 +149,13 @@ class RelayTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Is a relay already running?", result.stderr)
 
+    def test_a_second_relay_on_the_same_port_is_refused(self):
+        # Windows let a second relay bind a port another relay held (SO_REUSEADDR), so both started.
+        _, port, _ = self.launch("192.0.2.1", "--port", "0", env=env_with())
+        result = self.run_relay("192.0.2.1", "--port", str(port))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Is a relay already running?", result.stderr)
+
     def test_pointing_the_relay_at_itself_is_refused(self):
         result = subprocess.run([sys.executable, str(ROOT / "tools" / "relay.py"), "127.0.0.1",
                                  "--tv-port", "15555", "--port", "15555"], capture_output=True, text=True, timeout=30)
