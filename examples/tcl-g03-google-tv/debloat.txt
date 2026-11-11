@@ -244,7 +244,7 @@ com.google.android.onetimeinitializer       # one-time setup leftovers
 
 # ---- 3. Background services and preloaded extras ----
 com.tcl.guard                               # TCL online support
-com.tcl.usercenter                          # TCL account sign-in nags
+com.tcl.usercenter                          # TCL account sign-in nags; the 43C641 on this same G03_4K_GB / R51MT05 board reboots on waking from standby with it off (#3533), so re-enable it if this set does
 com.tcl.ocean.instructions                  # e-manual
 com.tcl.android.webview                     # TCL WebView; com.google.android.webview stays the provider
 org.chromium.webview_shell                  # WebView test shell
