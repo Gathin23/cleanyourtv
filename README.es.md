@@ -376,7 +376,7 @@ Compílalo con el script de una sola línea indicado en [Hacerlo manualmente](#h
 
 El 17 de octubre de 2026 publiqué [una comparativa de antes y después](https://x.com/gathint/status/2111379569030939102) del televisor de mis padres, optimizado con Claude Code a través de Wi-Fi. La publicación alcanzó 8,6 millones de visualizaciones, otros usuarios comenzaron a realizar lo mismo en sus propios televisores y sus respuestas dieron origen a las listas de este repositorio: más de 170 modelos de televisor, aportados por más de 200 colaboradores, en los primeros cuatro días. Hasta el 19 de octubre el repositorio se denominó tv-vibehack; los enlaces antiguos continúan redirigiendo correctamente.
 
-Dos semanas más tarde, el proyecto se convirtió en el repositorio n.º 1 en tendencias en GitHub durante la semana del 19 al 25 de octubre, sumando más de 46 000 estrellas y 5 700 forks, así como 1,4 millones de visualizaciones y 260 000 clones en 14 días. Las listas ahora abarcan 466 modelos de TV de 126 marcas. La repercusión: 534 artículos de 57 países y 663 vídeos en YouTube y Bilibili, todos recopilados en [docs/PRESS.md](docs/PRESS.md) (datos del 9 de noviembre de 2026).
+Dos semanas más tarde, el proyecto se convirtió en el repositorio n.º 1 en tendencias en GitHub durante la semana del 19 al 25 de octubre, sumando más de 46 000 estrellas y 5 700 forks, así como 1,4 millones de visualizaciones y 260 000 clones en 14 días. Las listas ahora abarcan 468 modelos de TV de 126 marcas. La repercusión: 534 artículos de 57 países y 663 vídeos en YouTube y Bilibili, todos recopilados en [docs/PRESS.md](docs/PRESS.md) (datos del 9 de noviembre de 2026).
 
 ## Cómo contribuir
 
@@ -386,7 +386,7 @@ La contribución más valiosa es la lista de limpieza de aplicaciones de tu tele
 |---|---|
 | **Lista de limpieza de tu televisor** | Es la colaboración más útil: la próxima persona con ese modelo se ahorrará toda la etapa de identificación. |
 | **Launcher y prompt** | Las mejoras en el launcher y los refinamientos para que el prompt resulte más claro son igualmente bienvenidos. |
-| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 234 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
+| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 239 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
 
 Las personas cuyo trabajo forma parte de este repositorio:
 

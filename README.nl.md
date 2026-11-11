@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="466 tv-modellen · 126 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 518 media: 534 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 tv-modellen · 126 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 518 media: 534 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -40,7 +40,7 @@
 Op 17 oktober 2026 plaatste ik voor-en-na-beelden van de tv van mijn ouders, die ik via wifi met Claude Code had opgeschoond.
 Het bericht kreeg 8,6 miljoen weergaven. Mensen gingen hetzelfde doen met hun eigen tv's en hun reacties vormden de basis voor de lijsten hier: meer dan 170 tv-modellen, aangeleverd door ruim 200 bijdragers in de eerste vier dagen. Tot en met de 19e heette deze repository tv-vibehack; oude links werken nog.
 
-Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. De lijsten tellen nu 466 tv-modellen van 126 merken. De berichtgeving: 534 artikelen uit 57 landen en 663 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 9 november 2026).
+Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. De lijsten tellen nu 468 tv-modellen van 126 merken. De berichtgeving: 534 artikelen uit 57 landen en 663 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 9 november 2026).
 
 **Thema's, schakelaars en uitbreidingen:** [cleanyour.tv/addons](https://cleanyour.tv/addons)
 
@@ -129,7 +129,7 @@ Tested lists from contributors, one folder per model in [`examples/`](examples/)
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 84 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 50 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 43 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 85 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 50 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 44 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 |
 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 |
@@ -330,7 +330,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | Panasonic TH-40HS550K (Skyworth-built, GS655 shibuya, MediaTek) | Android TV 11 |
 | PANAVOX Google TV (dongnae) | Google TV 14 |
 | PEAQ PTV 43AQU-5023C (Changhong, reports OK. AI PONT, dundas, MediaTek m7332) | Android TV 11 |
-| Philco Smart TV (Skyworth-built, sunnyvale, MediaTek), Brazil | Android TV 14 |
+| Philco Smart TV (Skyworth-built, sunnyvale, MediaTek; also sold as the Britania Smart TV), Brazil | Android TV 14 |
 | Philips 49PUS6561/12 / 55PUS6581/12 (TP Vision QM163E, QM16XE_U, MediaTek MT5890), Europe and Turkey | Android TV 8.0 |
 | Philips 50PUD7406/43 (TPV, PH0M_EA_T32, MStar/MediaTek), Chile; 55PUS7906/12, Lithuania; 50PUS7906/12, Germany; 43PUS7406/12, Italy; 50PUD7406/77, Latin America; 50PUS8107/12, EU; 65PUS7956, EU | Android TV 11 and 14 |
 | Philips 50PUF7099/T3 (TPV EBONY_V560, Hisilicon), China | Android TV 9 |
@@ -500,6 +500,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | TCL 55Q10G Pro (China, tcl_mt5879_cn, MediaTek MT9952) | Android TV 11 |
 | TCL 55Q6CX1 (Smart TV Pro, G08, G08_4K_GB, MediaTek) | Google TV 12 |
 | TCL 55Q7D Pro (Smart TV Pro, G08, G08_4K_GB, MediaTek tcl9618), EU Google TV build | Google TV 14 |
+| TCL 55S450G (G03_4K_US_NF_DB, BeyondTV4, AR24), US | Google TV 11 |
 | TCL 55S470G (G10, G10_4K_US_NF, Realtek), US; also TCL 65S450G-CA, Canada (same build) | Google TV 12 |
 | TCL 55S546 (5-Series, G03_4K_US, BeyondTV4, GTV93), US | Google TV 11 |
 | TCL 58S571F (TCL Fire TV, AFTDEC012E, ginza, MediaTek mt5896), US | Fire OS 8 / Android 11 |
@@ -604,6 +605,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | Xiaomi MiTV-AXSO1 (dangalFHD, India) | Android TV 9 |
 | Xiaomi MiTV-AXSO2 (dangalUHD, India, 2 GB) | Android TV 9 |
 | Xiaomi MiTV-MFTR0 (freeguy, MediaTek mt9653), China firmware OS2.0.23.0.RFTMATV (HyperOS TV 2) | Android 11 (HyperOS TV 2, CN build) |
+| Xiaomi MiTV-MFTR0 (freeguy, MediaTek mt9653), China firmware OS3.0.101.0.UFTMATV (HyperOS TV 3) | Android 14 (HyperOS TV 3, CN build) |
 | Xiaomi MiTV-MOOR0 (venom, MediaTek) | Google TV 11 |
 | Xiaomi MiTV-MOOR2 / MOOR4 / MOOR6 (venom, MediaTek) | Google TV 11 |
 | Xiaomi MiTV-MOSR1 (hermano) | Android TV 11 |
@@ -1010,7 +1012,7 @@ De nuttigste bijdrage is de opschoonlijst voor jouw tv, zodat de volgende gebrui
 |---|---|
 | **De opschoonlijst voor jouw tv** | De nuttigste bijdrage: de volgende gebruiker met dat model hoeft de software niet opnieuw te inventariseren. |
 | **Launcher en prompt** | Verbeteringen aan de launcher en duidelijkere promptteksten zijn ook welkom. |
-| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 235 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
+| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 239 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
 
 De volgende mensen hebben bijgedragen aan deze repository:
 

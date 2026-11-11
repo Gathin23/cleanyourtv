@@ -25,7 +25,7 @@ them, since the launcher answers any other value with its own default. A colour 
 to the shape its own parser reads - six hex digits, and no background alpha, which Config.color() overwrites - so
 a malformed colour is refused rather than written as one the theme already had. A list of app_keys is read one entry at a
 time the way the launcher reads it: a key that is a keycode or a KEYCODE_ name and a target that is a package, an
-an activity, an action word, input:, guide: or inputs, since RemoteKeys skips an entry it cannot read without a word
+activity, an action word, input:, guide: or inputs, since RemoteKeys skips an entry it cannot read without a word
 and that button would open nothing. A list of `"package=value"` entries (`app_labels`, `app_banners`,
 `launch_actions`) is read one entry at a time too: Config.packageMap() keeps only an entry with a package before
 the '=' and a value after it, so an entry without both halves is refused rather than written as one the tile never

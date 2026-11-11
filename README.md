@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="466 TV models · 126 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 518 more: 534 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 TV models · 126 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 518 more: 534 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher." width="800"></a>
 </p>
 
 ## Start here
@@ -131,7 +131,7 @@ most lists, each linked to its models on the website:
 
 | | | | | | |
 |---|---|---|---|---|---|
-| [TCL](https://cleanyour.tv/tvs?q=TCL) · 84 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 50 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 43 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
+| [TCL](https://cleanyour.tv/tvs?q=TCL) · 85 | [Sony](https://cleanyour.tv/tvs?q=Sony) · 50 | [Xiaomi](https://cleanyour.tv/tvs?q=Xiaomi) · 44 | [Philips](https://cleanyour.tv/tvs?q=Philips) · 23 | [Skyworth](https://cleanyour.tv/tvs?q=Skyworth) · 17 | [Hisense](https://cleanyour.tv/tvs?q=Hisense) · 16 |
 | [SHARP](https://cleanyour.tv/tvs?q=SHARP) · 10 | [Amazon Fire TV](https://cleanyour.tv/tvs?q=Amazon%20Fire%20TV) · 9 | [Panasonic](https://cleanyour.tv/tvs?q=Panasonic) · 8 | [Haier](https://cleanyour.tv/tvs?q=Haier) · 7 | [BenQ](https://cleanyour.tv/tvs?q=BenQ) · 6 | [JVC](https://cleanyour.tv/tvs?q=JVC) · 6 |
 | [Toshiba](https://cleanyour.tv/tvs?q=Toshiba) · 6 | [Acer](https://cleanyour.tv/tvs?q=Acer) · 4 | [Formovie](https://cleanyour.tv/tvs?q=Formovie) · 4 | [Nokia](https://cleanyour.tv/tvs?q=Nokia) · 4 | [OnePlus](https://cleanyour.tv/tvs?q=OnePlus) · 4 | [Thomson](https://cleanyour.tv/tvs?q=Thomson) · 4 |
 | [Artel](https://cleanyour.tv/tvs?q=Artel) · 3 | [FFalcon](https://cleanyour.tv/tvs?q=FFalcon) · 3 | [Google](https://cleanyour.tv/tvs?q=Google) · 3 | [Grundig](https://cleanyour.tv/tvs?q=Grundig) · 3 | [Motorola](https://cleanyour.tv/tvs?q=Motorola) · 3 | [Noblex](https://cleanyour.tv/tvs?q=Noblex) · 3 |
@@ -536,7 +536,7 @@ their own TVs, and their replies turned into the lists here: 170+ TV models from
 first four days. The repo was called tv-vibehack until the 19th; old links work.
 
 Two weeks on, it was the #1 trending repository on GitHub for the week of 19–25 October, with over 46K stars
-and 5.7K forks, and 1.4M views and 260K clones in 14 days. The lists now cover 466 TV models from 126 brands.
+and 5.7K forks, and 1.4M views and 260K clones in 14 days. The lists now cover 468 TV models from 126 brands.
 The coverage: 534 articles from 57 countries and 663 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
 (numbers as of 9 November 2026).
 
@@ -550,7 +550,7 @@ Contributing through a coding agent? [AGENTS.md](AGENTS.md) gives it the same ru
 |---|---|
 | **Your TV's debloat list** | The most useful one: the next person with that model skips the discovery. |
 | **Launcher and prompt** | Launcher improvements and sharper prompt wording are welcome too. |
-| **Built something on top?** | A launcher, a port, a theme: add it to [SHOWCASE.md](SHOWCASE.md), where two hundred and thirty-five projects already live, sorted into home screens, forks, add-ons, tools and other platforms, with an index by TV brand. |
+| **Built something on top?** | A launcher, a port, a theme: add it to [SHOWCASE.md](SHOWCASE.md), where two hundred and thirty-nine projects already live, sorted into home screens, forks, add-ons, tools and other platforms, with an index by TV brand. |
 
 The people whose work is in this repo:
 

@@ -201,6 +201,7 @@ COUNT_PAGES = {
     "README.pt-BR.md": ("projetos", spelled_number_pt),
     "README.de.md": ("Projekte", digits_number),
     "README.nl.md": ("projecten", digits_number),
+    "README.es.md": ("proyectos", digits_number),
     "README.uk.md": ("проєктів", digits_number),
     "README.uz.md": ("loyiha", digits_number),
 }
