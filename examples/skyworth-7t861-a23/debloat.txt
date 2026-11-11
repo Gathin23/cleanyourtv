@@ -47,6 +47,9 @@ com.coocaa.theme_package_ccos_nine  # Stock Coocaa OS theme package (GoldenFaith
 # com.skyworth.testtime               # Factory testing timer
 # com.skyworthdigital.stb.dataprovider # STB diagnostics data provider
 
+# Firmware updater (kept enabled by default; uncomment to disable OTA updates)
+# com.coocaa.os.upgrade               # CooCaa OS system OTA updater
+
 # Preloaded content and stores (optional to disable)
 # com.coocaa.tvpitv                   # CooCaa Live TV preloaded streaming
 # com.tianci.appstore                 # Tianci app store
