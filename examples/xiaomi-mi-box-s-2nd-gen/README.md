@@ -48,3 +48,52 @@ rules as in the file header).
 ### Still working after soak (683)
 
 Wi‑Fi, Chromecast, Google Assistant, SmartTube, scancode shortcuts with partnercustomizer disabled.
+
+## RTT0.211222.001.767 (additional unit)
+
+Tested on Xiaomi TV Box S (2nd Gen), **MiTV-AFKR0 / jaws**, **Android 11 (SDK 30)**,
+build **`RTT0.211222.001.767 release-keys`**, from Windows 11. Initial setup was tested on
+2026-10-24, with physical remote shortcut checks on 2026-11-11. See [compatibility report #1459](https://github.com/Gathin23/cleanyourtv/discussions/1459).
+This report does not validate every optional package in the shared debloat list.
+
+### Home and saved Wi-Fi
+
+The new launcher owned Home only after both `com.google.android.apps.tv.launcherx` and
+`com.google.android.tungsten.setupwraith` were disabled. Before disabling the wizard, an older saved
+network owned by setupwraith was forgotten; the active network was owned by Settings/system and
+remained available. Check **all** saved networks, not just the active one, and keep the setup-wizard
+guard. Home, Wi-Fi and the applied disabled-package state survived the initial reboot test.
+
+### Dedicated remote buttons
+
+After a later reboot, Home still worked but the four dedicated app shortcuts did not. Xiaomi's
+GlobalKey log received Netflix and Prime presses, then reported `startAppByLauncherX()` could not
+handle the target. The stock launcher was disabled.
+
+| Button | Observed Android keycode or Linux scancode | Tested handling |
+| --- | --- | --- |
+| Netflix | Keycode 193 (`BUTTON_6`) | Direct app launch with `app_keys` |
+| Prime Video | Keycode 194 (`BUTTON_7`) | Direct app launch with `app_keys` |
+| YouTube | Scancode 425 (`KEY_PRESENTATION`) | Direct app launch with `app_keys` |
+| All Apps | Scancode 216 (`KEY_CHAT`, mapped to `ALL_APPS` in the device key layout) | Opened the local customized launcher's app library |
+
+Only **InputKeyService** was enabled for this test; HomeKeyService was not needed. The Xiaomi
+partnercustomizer package stayed enabled. All four buttons were confirmed with the physical remote.
+For the first three buttons, use the existing `app_keys` package mappings, with `scan:425:<target-package>`
+for YouTube. Confirm the codes on the actual unit before copying them.
+
+The All Apps destination was implemented in a **local customization**. This report does not claim
+that upstream accepts that custom action or that a package-only mapping opens upstream's app library.
+Keep the key helper enabled in Accessibility, check that it is bound, and re-test the real buttons
+after reboot or launcher updates. A force-stop can disable the launcher's accessibility helper.
+Check held-key repeat too when enabling a filtering service on another unit.
+
+### USB Ethernet
+
+Enabling USB debugging made the USB Ethernet adapter unavailable on this unit, so setup used Wi-Fi
+with the adapter unplugged. After disabling debugging, rebooting and reconnecting the adapter,
+Ethernet playback worked with Wi-Fi disabled. Verify Ethernet again after maintenance and close
+network ADB as described in the main prompt.
+
+Streaming playback and voice search were confirmed. Chromecast was kept enabled during initial
+setup but was **not tested** on this unit.
