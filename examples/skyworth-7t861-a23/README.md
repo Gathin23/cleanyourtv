@@ -23,9 +23,9 @@ The [debloat list](debloat.txt) disables 5 packages by default:
 - **`com.coocaa.tvmanager`**: Coocaa TV Manager running background app and storage/USB scanner receivers. Re-enable it if USB drives stop showing up.
 - **`com.coocaa.theme_package_ccos_nine`**: Stock Coocaa OS theme package (GoldenFaith); unneeded when using CleanYourTV.
 
-11 other optional packages (voice assistant, karaoke mic, EPG guide, preloaded stores, and diagnostic tools) remain commented out in `debloat.txt` for selective debloating:
+12 other optional packages (voice assistant, karaoke mic, EPG guide, system updater, preloaded stores, and diagnostic tools) remain commented out in `debloat.txt` for selective debloating:
 - **Voice assistant & karaoke mic**: `com.skyworth.angel.voice` (remote voice button / XiaoWei AI assistant), `com.skyworth.microphone` (karaoke & external mic companion service; `com.loostone.tuning` must remain enabled for system audio).
-- **EPG guide & preloaded stores**: `com.coocaa.guide`, `com.coocaa.tvpitv`, `com.tianci.appstore`, `com.skyworth.skymarket`, `com.coocaa.app_browser`.
+- **EPG guide, updater & preloaded stores**: `com.coocaa.guide`, `com.coocaa.os.upgrade` (OTA firmware updater; keep enabled if you want system updates), `com.coocaa.tvpitv`, `com.tianci.appstore`, `com.skyworth.skymarket`, `com.coocaa.app_browser`.
 - **Diagnostics & factory tools**: `com.skyworth.performance.monitors`, `com.skyworth.testtime`, `com.skyworthdigital.stb.dataprovider`, `com.coocaa.factory`.
 
 ## Applying the debloat list (Optional)
