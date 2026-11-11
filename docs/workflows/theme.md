@@ -19,7 +19,7 @@
    against its `CREDITS.md`, which the folder then has to ship.
 5. Bump the count in the Themes feature row of every front page that states it: today `README.md` ("`N ship
    in themes/`"), `README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`,
-   `README.he.md`, `README.uz.md` and `README.fr.md` (the last five in digits), each in its own words; the nine are
+   `README.he.md`, `README.uz.md`, `README.fr.md` and `README.es.md` (the last six in digits), each in its own words; the ten are
    today's pages rather than the rule.
    `tests/test_readme_theme_count.py` counts the folders that carry a `config.json` and fails on a page
    whose number is not that count, naming the page and the folders (`README.nl.md says 10 themes and

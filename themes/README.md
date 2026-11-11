@@ -298,8 +298,8 @@ Open a PR with a new folder here containing:
 
 Then add a row to the table above with the screenshot, the same way as the others, and bump the count in
 the Themes feature row of every front page that states it: `README.md` (the `N ship in themes/` sentence),
-`README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`, `README.he.md`, `README.uz.md` and
-`README.fr.md` (the last five in digits), each in its own words. Those nine pages are the ones that state
+`README.de.md`, `README.nl.md`, `README.uk.md`, `README.tr.md`, `README.pt-BR.md`, `README.he.md`, `README.uz.md`,
+`README.fr.md` and `README.es.md` (the last six in digits), each in its own words. Those ten pages are the ones that state
 it today rather than the rule: `tests/test_readme_theme_count.py` counts the folders here that carry a
 `config.json` and fails on a page whose number is not that count, naming the page, so its list is the one
 a page that starts stating the count joins.
