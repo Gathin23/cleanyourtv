@@ -105,5 +105,38 @@ class Ps1BracketPathsTest(unittest.TestCase):
                         pushed)
 
 
+class DockerBuildBracketPathTest(unittest.TestCase):
+    """docker-build.ps1 run from a checkout whose path has brackets gets as far as docker."""
+
+    def test_docker_build_runs_from_a_checkout_with_brackets(self):
+        shell = PWSH or (shutil.which("powershell") if os.name == "nt" else None)
+        if not shell:
+            self.skipTest("docker-build.ps1 needs pwsh on PATH (or powershell on Windows)")
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            repo = base / "repo [x]"
+            (repo / "tools").mkdir(parents=True)
+            (repo / "launcher").mkdir()
+            shutil.copy2(ROOT / "tools" / "docker-build.ps1", repo / "tools" / "docker-build.ps1")
+            (repo / "launcher" / "settings.gradle").write_text("")
+            bin_dir = base / "bin"
+            bin_dir.mkdir()
+            log = base / "docker.log"
+            if os.name == "nt":
+                (bin_dir / "docker.cmd").write_text(f'@echo %*>>"{log}"\r\n@exit /b 0\r\n')
+            else:
+                fake = bin_dir / "docker"
+                fake.write_text(f'#!/bin/sh\necho "$@" >> "{log}"\nexit 0\n')
+                fake.chmod(0o755)
+            env = dict(os.environ, PATH=str(bin_dir) + os.pathsep + os.environ["PATH"])
+            result = subprocess.run([shell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+                                     str(repo / "tools" / "docker-build.ps1"), "-Project", "launcher"],
+                                    cwd=base, env=env, capture_output=True, text=True, timeout=180)
+            output = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 0, output)
+            self.assertNotIn("null", output)
+            self.assertTrue(log.exists() and "run" in log.read_text(), output)
+
+
 if __name__ == "__main__":
     unittest.main()

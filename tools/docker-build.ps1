@@ -11,15 +11,15 @@ param(
     [string[]]$Tasks = @('assembleRelease')
 )
 $ErrorActionPreference = 'Stop'
-$Root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$Root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $Project = $Project.TrimEnd('\', '/') -replace '\\', '/'
 $Image = if ($env:IMAGE) { $env:IMAGE } else { 'cleanyourtv-android-build' }
 $Volume = if ($env:GRADLE_VOLUME) { $env:GRADLE_VOLUME } else { 'cleanyourtv-gradle' }
 # Where the debug signing key lives inside the container; see tools/docker-build.md.
 $KeyDir = if ($env:KEY_DIR) { $env:KEY_DIR } else { '/gradle/.android' }
 
-if (-not (Test-Path (Join-Path $Root "$Project/settings.gradle")) -and
-    -not (Test-Path (Join-Path $Root "$Project/settings.gradle.kts"))) {
+if (-not (Test-Path -LiteralPath (Join-Path $Root "$Project/settings.gradle")) -and
+    -not (Test-Path -LiteralPath (Join-Path $Root "$Project/settings.gradle.kts"))) {
     throw "$Project is not a Gradle project in this repository (try launcher or addons/<name>)."
 }
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw 'docker is not installed or not on PATH.' }
@@ -61,5 +61,5 @@ docker run --rm --platform $Platform @keyArgs -v "${Root}:/repo" -v "${Volume}:/
     -e "ANDROID_USER_HOME=$KeyDir" $Image sh ./gradlew --no-daemon --console=plain @Tasks
 if ($LASTEXITCODE -ne 0) { throw 'gradle failed in the container' }
 
-Get-ChildItem (Join-Path $Root "$Project/app/build/outputs/apk") -Recurse -Filter *.apk -ErrorAction SilentlyContinue |
+Get-ChildItem -LiteralPath (Join-Path $Root "$Project/app/build/outputs/apk") -Recurse -Filter *.apk -ErrorAction SilentlyContinue |
     ForEach-Object { Write-Host "APK: $($_.FullName.Substring($Root.Length + 1)) ($($_.Length) B)" }
