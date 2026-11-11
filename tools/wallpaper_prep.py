@@ -142,7 +142,10 @@ def main(argv=None):
         parser.error(f"{args.source} is not a folder")
     source_real = os.path.realpath(args.source)
     target_real = os.path.realpath(args.target)
-    if target_real == source_real or target_real.startswith(source_real.rstrip(os.sep) + os.sep):
+    # A case alias can spell an ancestor differently while naming the source directory itself.
+    if (target_real == source_real or target_real.startswith(source_real.rstrip(os.sep) + os.sep)
+            or any(parent.is_dir() and os.path.samefile(source_real, parent)
+                   for parent in Path(target_real).parents)):
         parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
     if os.path.exists(args.target) and os.path.samefile(args.source, args.target):
         parser.error("the target must be a different folder, and not inside the source: the originals are never overwritten")
