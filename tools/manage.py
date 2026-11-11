@@ -758,12 +758,17 @@ def cmd_status():
     if config.strip():
         try:
             pushed = json.loads(config)
-            for t in themes():
-                f = ROOT / "themes" / t["id"] / "config.json"
-                if f.is_file() and json.loads(f.read_text(encoding="utf-8")) == pushed:
-                    match = t["id"]
         except ValueError:
             pass
+        else:
+            for t in themes():
+                f = ROOT / "themes" / t["id"] / "config.json"
+                try:
+                    matches = f.is_file() and json.loads(f.read_text(encoding="utf-8")) == pushed
+                except (OSError, ValueError):
+                    continue
+                if matches:
+                    match = t["id"]
     print(f"theme: {match or ('your own' if config.strip() else 'none (the built-in config.xml)')}")
     return 0
 
