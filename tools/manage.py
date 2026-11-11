@@ -25,8 +25,13 @@ them, since the launcher answers any other value with its own default. A colour 
 to the shape its own parser reads - six hex digits, and no background alpha, which Config.color() overwrites - so
 a malformed colour is refused rather than written as one the theme already had. A list of app_keys is read one entry at a
 time the way the launcher reads it: a key that is a keycode or a KEYCODE_ name and a target that is a package, an
-activity, an action word, input:, guide: or inputs, since RemoteKeys skips an entry it cannot read without a word
-and that button would open nothing. A theme's config.json is hand-edited, so one
+an activity, an action word, input:, guide: or inputs, since RemoteKeys skips an entry it cannot read without a word
+and that button would open nothing. A list of `"package=value"` entries (`app_labels`, `app_banners`,
+`launch_actions`) is read one entry at a time too: Config.packageMap() keeps only an entry with a package before
+the '=' and a value after it, so an entry without both halves is refused rather than written as one the tile never
+reads, and so is an `app_banners` name the launcher cannot draw: AppAdapter.bundledBanner() answers null for anything
+but a `banner_*` drawable this checkout ships, so `com.netflix.ninja=magenta` is a banner the theme says is set and
+the tile never shows. A theme's config.json is hand-edited, so one
 that cannot be read, is not JSON, or is not a JSON object is named before the key is written, and a write it cannot
 make says so instead of ending in a traceback.
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
@@ -368,6 +373,97 @@ def app_keys_problem(values):
     return None
 
 
+# The three Keys-table rows whose entries are `package=value` pairs (`app_labels`, `app_banners`,
+# `launch_actions`). Config.stringList() keeps such an entry, and Config.packageMap() then reads it:
+#
+#     int eq = entry.indexOf('=');
+#     if (eq <= 0) continue;
+#     String pkg = entry.substring(0, eq).trim(), value = entry.substring(eq + 1).trim();
+#     if (!pkg.isEmpty() && !value.isEmpty()) out.put(pkg, value);
+#
+# so an entry with no '=', with nothing before it or with nothing after it is skipped without a word, and the
+# tile keeps the name, banner or action it had - while set has reported the list as written and the theme as
+# pushed. The left half is looked up against installed package names (`appLabels.containsKey(pkg)`), so a
+# name that is not a package name finds nothing either. Both halves are trimmed, as packageMap() trims them.
+PAIR_CELLS = ('list of "package=',)
+
+
+def package_pair_problem(values):
+    """The first entry Config.packageMap() would skip, or None.
+
+    packageMap() reads one entry at a time and keeps only one with both halves: no '=' at all, the '=' first
+    (`=banner_tv`), nothing after it (`com.netflix.ninja=`), and the entry is gone without a word. The left half
+    is the key looked up against the installed app's package name, so `TV=MagentaTV` - a label written as though
+    the app's name were the key - is kept by the map and never read.
+    """
+    for entry in values:
+        if not isinstance(entry, str):
+            return f"{entry!r} is not a string, so stringList() drops it"
+        text = entry.strip()
+        if not text:
+            return "an empty entry, which stringList() drops"
+        package, equals, value = text.partition("=")
+        if not equals:
+            return f"{entry!r} has no '=' in it, so packageMap() skips it"
+        if not package.strip():
+            return f"{entry!r} names no package before the '=', so packageMap() skips it"
+        if not value.strip():
+            return f"{entry!r} names a package but nothing to set for it, so packageMap() skips it"
+        if not PACKAGE_NAME.fullmatch(package.strip()):
+            return (f"{entry!r}: {package.strip()!r} is not a package name, so the entry is looked up as one "
+                    f"and no app answers it")
+    return None
+
+
+# The banner_* drawables the launcher bundles. AppAdapter.bundledBanner() is
+#     if (name == null || !name.startsWith("banner_")) return null;
+#     int id = ctx.getResources().getIdentifier(name, "drawable", ctx.getPackageName());
+#     return id != 0 ? ctx.getDrawable(id) : null;
+# and a null banner leaves the tile with the app's own art, so the other half of an app_banners entry is not
+# free text: `com.netflix.ninja=magenta` - the app's colour where a bundled banner's name goes - is a banner
+# the theme reports as set and the TV never draws, and `banner_tv2` is the same. The names are read out of this
+# checkout's res/ rather than listed here, because the launcher a theme is pushed to is built from this tree.
+LAUNCHER_RES = ROOT / "launcher" / "app" / "src" / "main" / "res"
+BANNER_SUFFIXES = (".xml", ".png", ".webp", ".jpg")
+
+
+def bundled_banners(root=ROOT):
+    """The banner_* drawable names this checkout's launcher ships, in a stable order."""
+    names = set()
+    for folder in (Path(root) / LAUNCHER_RES.relative_to(ROOT)).glob("drawable*"):
+        if not folder.is_dir():
+            continue
+        for path in folder.iterdir():
+            if path.name.startswith("banner_") and path.suffix.lower() in BANNER_SUFFIXES:
+                names.add(path.stem)
+    return sorted(names)
+
+
+def banner_problem(values, root=ROOT):
+    """The first app_banners entry whose banner name the launcher cannot draw, or None.
+
+    A pair package_pair_problem() has already refused is not read here: an entry with no '=' or an empty half
+    never reaches the map, so nothing of its value is drawn either way.
+    """
+    have = bundled_banners(root)
+    for entry in values:
+        if not isinstance(entry, str):
+            continue
+        text = entry.strip()
+        if "=" not in text:
+            continue
+        name = text.partition("=")[2].strip()
+        if not name:
+            continue
+        if not name.startswith("banner_"):
+            return (f"{entry!r} names {name!r}, and bundledBanner() answers null for a name that does not "
+                    f"start with `banner_`, so the tile keeps the art it had")
+        if name not in have:
+            return (f"{entry!r} names {name!r}, which is not a drawable the launcher ships "
+                    f"({', '.join(have) if have else 'none'}), so the tile keeps the art it had")
+    return None
+
+
 # The string keys a Keys-table row names the values of, with the one the launcher answers instead and whether its
 # reader ignores case. Config.glowStyle() is `GLOW_HORIZON.equalsIgnoreCase(value.trim()) ? GLOW_HORIZON :
 # GLOW_RADIAL` and glassStyle() answers glass to anything else; WallpaperRotation.validOrder() is
@@ -485,6 +581,23 @@ def value_as(key, item, text):
                      f"{problem}. RemoteKeys drops such an entry without a word, so that button would open "
                      f"nothing while the theme says it is set. Nothing was written or pushed.")
         # stringList() trims every entry it keeps, so the file holds what the TV reads.
+        return [entry.strip() for entry in parsed or []]
+    cell = (item.get("type") or "").strip()
+    if cell.startswith(PAIR_CELLS):
+        problem = package_pair_problem(parsed)
+        if problem:
+            sys.exit(f"{key} takes {cell}, and this list has an entry the launcher would skip: {problem}. "
+                     f"Config.packageMap() keeps only an entry with a package before the '=' and a value after "
+                     f"it, so that tile would keep what it had while the theme says it is set. Nothing was "
+                     f"written or pushed.")
+        # packageMap() trims both halves, so the file holds the pair the map keeps.
+        if key == "app_banners":
+            # The right half is a bundled drawable's name, not free text: bundledBanner() draws only a
+            # banner_* name this checkout ships, and a null banner leaves the tile with the app's own art.
+            problem = banner_problem(parsed)
+            if problem:
+                sys.exit(f"{key} takes {cell}, and this list has an entry the launcher cannot draw: {problem}. "
+                         f"Nothing was written or pushed.")
         return [entry.strip() for entry in parsed or []]
     return parsed
 
