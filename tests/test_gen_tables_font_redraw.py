@@ -14,6 +14,17 @@ The redraw now reads each script's exit status: the table run finishes and says 
 script that stopped, and the command to draw it with. Exit 0 still means the tables and both pictures were
 written (or nothing had moved); exit 1 means a picture is not redrawn, said on stderr.
 
+The interpreter that draws them is the checkout's own tools/venv/bin/python when that venv has Pillow, and
+the one that ran gen_tables.py otherwise. It was always the second, and the two differ: the invocation every
+message in the script recommends, and the one CI and docs/workflows/tv-list.md use, is
+`python3 tools/gen_tables.py`, while docs/workflows/press.md installs Pillow into tools/venv - the
+interpreter both card scripts' own usage lines name. So a maintainer who had set the checkout up exactly as
+the recipe says, run `python3 tools/gen_tables.py --font Fredoka.ttf`, and been told
+"readme_stats.py needs Pillow: tools/venv/bin/pip install -r tools/requirements-perf.txt", was then handed
+`python3 tools/readme_stats.py ...` as the way to draw it: the system Python on a stock Ubuntu 24.04 has no
+Pillow and cannot pip install one (PEP 668), so the remedy answered with the same line, twice, with a venv
+that could draw both pictures sitting beside the list. The remedy now names the interpreter that ran.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
@@ -68,6 +79,35 @@ def run(root, font, cwd=None, env=None):
                           cwd=str(cwd or root.parent), env=env, capture_output=True, text=True)
 
 
+def venv_python(root, body):
+    """The checkout's tools/venv/bin/python, executable, from a shell-script body.
+
+    The interpreter gen_tables.py hands the two card scripts is probed with `-I -c "import PIL"` and then
+    used for the script itself, so one stub answers both: the body decides which by looking at its arguments.
+    """
+    path = root / "tools" / "venv" / "bin" / "python"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("#!/bin/sh\n" + body, encoding="utf-8")
+    path.chmod(0o755)
+    return path
+
+
+# A venv Python that has Pillow: the probe answers 0, the script call is logged where it can be read.
+VENV_HAS_PILLOW = """case "$*" in *"import PIL"*) exit 0 ;; esac
+printf '%s\\n' "$*" >> "$(dirname "$0")/calls"
+exit 0
+"""
+# A venv Python that does not: the probe answers 1 and nothing that runs under it counts.
+VENV_NO_PILLOW = """case "$*" in *"import PIL"*) exit 1 ;; esac
+printf '%s\\n' "$*" >> "$(dirname "$0")/calls"
+exit 0
+"""
+# A venv Python that has Pillow and fails the script anyway (a font it cannot use), so the remedy is reached.
+VENV_SCRIPT_FAILS = """case "$*" in *"import PIL"*) exit 0 ;; esac
+exit 1
+"""
+
+
 class RedrawFailureTest(unittest.TestCase):
     def test_a_font_that_is_not_fredoka_names_the_picture_and_how_to_draw_it(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -85,6 +125,10 @@ class RedrawFailureTest(unittest.TestCase):
         self.assertIn("docs/stats.png was not redrawn", done.stderr, done.stderr)
         self.assertIn("tools/readme_stats.py exited 1", done.stderr, done.stderr)
         self.assertIn("docs/stats.png", done.stderr, "the remedy does not name the file to write")
+        # And the interpreter the retry has to use: this checkout has no venv, so it is the one that ran the
+        # script. A bare `python3` is the interpreter that just answered "needs Pillow" on a stock machine.
+        self.assertIn(f"{sys.executable} tools/readme_stats.py", done.stderr,
+                      f"the remedy names an interpreter that did not run: {done.stderr!r}")
         self.assertNotIn("Traceback", done.stderr, "the failure still ends in a CalledProcessError")
         # The tables are written: saying "nothing was drawn" would be wrong, and so would hiding it.
         self.assertIn("TCL A", readme, "the tables were not written before the redraw")
@@ -169,6 +213,57 @@ class RedrawSuccessTest(unittest.TestCase):
         self.assertTrue(LAUNCHER_FONT.is_file(), "the launcher's font is gone")
         self.assertNotIn("cannot use the font", done.stderr, done.stderr)
         self.assertTrue(written > 1000, f"docs/stats.png is {written} B with a variable font")
+
+
+class RedrawInterpreterTest(unittest.TestCase):
+    """Which Python the two card scripts are handed: the checkout's venv when that venv has Pillow."""
+
+    def test_the_venvs_python_draws_the_pictures(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = stub_checkout(tmp)
+            venv_python(root, VENV_HAS_PILLOW)
+            font = Path(tmp) / "Fredoka.ttf"
+            font.write_bytes(b"any font path that exists: the stubs never read it")
+            done = run(root, font)
+            calls = root / "tools" / "venv" / "bin" / "calls"
+            logged = calls.read_text(encoding="utf-8") if calls.exists() else ""
+            drawn = [p.name for p in (root / "docs" / "stats.png", root / "docs" / "card.jpg") if p.exists()]
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("tools/readme_stats.py", logged,
+                      f"the venv Python was not handed the first script: {logged!r}")
+        self.assertIn("tools/readme_card.py", logged,
+                      f"the venv Python was not handed the second script: {logged!r}")
+        # The picture names travel with them, so a first run is not mistaken for the probe.
+        self.assertIn("docs/stats.png", logged, logged)
+        self.assertEqual(drawn, [], "the card scripts ran under the Python that ran gen_tables.py")
+
+    def test_a_venv_without_pillow_leaves_this_python_to_draw(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = stub_checkout(tmp)
+            venv_python(root, VENV_NO_PILLOW)
+            font = Path(tmp) / "Fredoka.ttf"
+            font.write_bytes(b"any font path that exists: the stubs never read it")
+            done = run(root, font)
+            calls = root / "tools" / "venv" / "bin" / "calls"
+            stats = (root / "docs" / "stats.png").read_bytes() if (root / "docs" / "stats.png").exists() else b""
+            card = (root / "docs" / "card.jpg").read_bytes() if (root / "docs" / "card.jpg").exists() else b""
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual((stats, card), (b"stats", b"card"),
+                         "a venv that cannot import Pillow was used instead of the Python that ran the script")
+        self.assertFalse(calls.exists(), "a venv whose Pillow probe answered 1 was still used")
+
+    def test_the_remedy_names_the_venv_python_that_ran_the_scripts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = checkout(tmp)
+            venv_python(root, VENV_SCRIPT_FAILS)
+            font = Path(tmp) / "Fredoka.ttf"
+            font.write_bytes(b"any font path that exists: the stub never reads it")
+            done = run(root, font)
+        self.assertEqual(done.returncode, 1, f"a redraw the venv answered with 1 exited {done.returncode}")
+        self.assertIn("tools/venv/bin/python tools/readme_stats.py <Fredoka.ttf> docs/stats.png", done.stderr,
+                      f"the remedy names another interpreter: {done.stderr!r}")
+        self.assertNotIn("python3 tools/readme_stats.py", done.stderr,
+                         "the remedy still hands the reader the interpreter that lacks Pillow")
 
 
 class OrderTest(unittest.TestCase):

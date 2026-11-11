@@ -33,8 +33,11 @@ gets the short table there too. Everything outside the markers is hand-written.
 The counts are the card's alt text ("N TV models · B brands · L languages · "), the "| **L languages** |"
 feature row and STATS in tools/readme_stats.py. Exit codes: 0 up to date (or written), 1 out of date
 (--check), or a count moved and --font could not draw one of the pictures (the tables are written; the
-picture is not - redraw it before committing), 2 what it was given cannot be read: a tv.json, a marker, or
-the path in --root or --adopt (nothing is written then), or a page or a tv.json it cannot write: the pages
+picture is not - redraw it before committing). --font draws with the checkout's tools/venv/bin/python when
+that venv has Pillow, the interpreter docs/workflows/press.md installs it into and the one the two card
+scripts' own usage lines name; a checkout with no such venv uses the Python that ran this script.
+2 what it was given cannot be read: a tv.json, a marker, or the path in --root or --adopt (nothing is written
+then), or a page or a tv.json it cannot write: the pages
 are written beside themselves and replaced only once all of them are, so such a run leaves every page with
 the text it had and names the one that stopped it (the tv.json files an --adopt run already wrote stay
 written), or an --adopt row main has changed since the PR was written: the tv.json files the patch did
@@ -504,6 +507,29 @@ def read_inputs(root, patch):
         return None, f"--adopt: '{patch}' is not UTF-8 or UTF-16 text. Nothing was written."
 
 
+def card_python(root):
+    """The interpreter the two card scripts are run with, as a path: the checkout's venv when it has Pillow.
+
+    The scripts need Pillow, and requirements.txt has none: docs/workflows/press.md installs
+    requirements-perf.txt into tools/venv, which is the interpreter both scripts' own usage lines name
+    (`tools/venv/bin/python -I tools/readme_stats.py ...`). sys.executable is whatever ran this script, and
+    the run this script asks for in its own messages - and CI's, and docs/workflows/tv-list.md's - is
+    `python3 tools/gen_tables.py`, i.e. the system Python: on a stock Ubuntu 24.04 that is
+    /usr/bin/python3, which has no Pillow and cannot pip install one (PEP 668, EXTERNALLY-MANAGED). So a
+    maintainer who installed Pillow exactly as PRESS.md says, and ran the command this script prints, got
+    "docs/stats.png was not redrawn ... python3 tools/readme_stats.py" twice over, with a venv that could
+    have drawn it sitting beside the list. A checkout with no venv - a contributor's own virtualenv, CI's
+    setup-python - keeps sys.executable, which is how every existing run works.
+    """
+    venv = root / "tools" / "venv" / "bin" / "python"
+    if venv.is_file() and os.access(venv, os.X_OK):
+        # `-I` so a PYTHON* variable in the caller's shell cannot shadow the venv's own site-packages.
+        probe = subprocess.run([str(venv), "-I", "-c", "import PIL"], capture_output=True)
+        if probe.returncode == 0:
+            return str(venv)
+    return sys.executable
+
+
 def redraw(root, font):
     """Draw docs/stats.png then docs/card.jpg through the two card scripts; a line saying what stopped, or None.
 
@@ -513,14 +539,20 @@ def redraw(root, font):
     its own line and exit 1. With check=True that line was then followed by a CalledProcessError traceback
     that named the font path as a command, after the tables had already been rewritten: a run that read like
     "nothing was drawn" had changed two files, and the pictures it promised were not there.
+
+    The interpreter is card_python()'s - the checkout's venv when it has Pillow, else this one - and the
+    remedy names it, since a `python3` that lacks Pillow answers the retry with the same line: the command
+    the reader copies has to be one that can draw.
     """
+    python = card_python(root)
+    shown = os.path.relpath(python, root) if python != sys.executable else python
     for script, out in (("tools/readme_stats.py", "docs/stats.png"),
                         ("tools/readme_card.py", "docs/card.jpg")):
-        done = subprocess.run([sys.executable, script, font, out], cwd=root)
+        done = subprocess.run([python, script, font, out], cwd=root)
         if done.returncode:
             return (f"{out} was not redrawn: {script} exited {done.returncode} and its line above says why. "
                     f"The tables are written; redraw the picture once that is fixed, with "
-                    f"python3 {script} <Fredoka.ttf> {out}, and commit it with the tables.")
+                    f"{shown} {script} <Fredoka.ttf> {out}, and commit it with the tables.")
     return None
 
 
