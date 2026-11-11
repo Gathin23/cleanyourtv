@@ -195,6 +195,24 @@ class TvBatchConnectionTest(unittest.TestCase):
         self.assertEqual("", out)
         self.assertEqual(["pm disable-user --user 0 com.nvidia.shieldbeta"], sent)
 
+    def test_a_probe_names_the_property_it_dropped_on(self):
+        status, out, err, sent = self.run_tv(["--probe"], drop_at=2)
+        self.assertEqual(1, status)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("the connection to the TV dropped while running", err)
+        self.assertIn('"getprop ro.product.device"', err)
+        self.assertIn("ro.product.model = ", out, "the answer that did come back is still printed")
+        self.assertEqual(2, len(sent))
+
+    def test_a_screenshot_names_itself_when_the_connection_drops(self):
+        shot = Path(self._tmp.name) / "shot.png"
+        status, out, err, sent = self.run_tv(["--screenshot", str(shot), "HOME"], drop_at=1)
+        self.assertEqual(1, status)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("the connection to the TV dropped while running", err)
+        self.assertIn("--screenshot", err)
+        self.assertEqual(1, len(sent))
+
     def test_an_error_a_lost_connection_does_not_explain_keeps_its_traceback(self):
         # Only a dropped connection is answered in words: anything else is a bug, and a traceback is
         # where it shows.
