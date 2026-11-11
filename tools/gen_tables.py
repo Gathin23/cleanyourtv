@@ -566,10 +566,10 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.check and a.adopt is not None:
         ap.error("--check and --adopt cannot be used together")
-    if a.font and not Path(a.font).is_file():
+    if a.font is not None and not Path(a.font).is_file():
         # The scripts this hands the font to exit with their own line, but subprocess.run(check=True) would
         # then turn that into a CalledProcessError traceback, which names neither the file nor where it is.
-        ap.error(f"cannot open the font at {a.font}: Fredoka (variable TTF, Google Fonts) is not in this repo")
+        ap.error(f"cannot open the font at {a.font!r}: Fredoka (variable TTF, Google Fonts) is not in this repo")
     root = Path(a.root)
     patch, problem = read_inputs(root, a.adopt)
     if problem:

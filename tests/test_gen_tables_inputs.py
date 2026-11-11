@@ -43,6 +43,33 @@ def valid(tmp):
     return tree(tmp, [("tcl-a", tv("TCL A", "TCL")), ("sony-b", tv("Sony B", "Sony"))])
 
 
+class FontTest(unittest.TestCase):
+    def test_an_empty_font_is_refused_before_writing_tables_or_adopting_metadata(self):
+        # An unset shell variable in --font "$FONT" is an explicit unusable path, not an omitted option.
+        for mode in ("rewrite", "check", "adopt"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as tmp:
+                root = valid(tmp)
+                args = ["--root", str(root), "--font", ""]
+                if mode == "adopt":
+                    add(root, "tcl-d", None)
+                    patch = root / "pr.diff"
+                    patch.write_text("| `tcl-d/` | TCL D | Android TV 11 | ads off |\n", encoding="utf-8")
+                    args += ["--adopt", str(patch)]
+                else:
+                    add(root, "tcl-c", tv("TCL C", "TCL"))
+                    if mode == "check":
+                        args += ["--check"]
+                before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                code, out, err = run(*args, cwd=root)
+                after = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                self.assertEqual(after, before, "a refused font must not publish tables or metadata")
+                self.assertEqual(code, 2, err)
+                self.assertEqual(out, "")
+                self.assertIn("font", err)
+                self.assertIn("''", err)
+                self.assertNotIn("Traceback", err)
+
+
 class RootTest(unittest.TestCase):
     def test_a_root_that_is_not_a_folder_exits_2(self):
         with tempfile.TemporaryDirectory() as tmp:
