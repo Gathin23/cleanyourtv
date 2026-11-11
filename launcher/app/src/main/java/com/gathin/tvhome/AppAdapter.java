@@ -9,16 +9,19 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +37,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -218,6 +223,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Map<String, String> appLabels, appBanners;
     /** Every app tile is its icon on a card tinted from that icon, never its banner (config.xml, uniform_tiles). */
     private final boolean uniformTiles;
+    /** App banners decoded in RGB_565 instead of ARGB_8888 (config.xml banner_565): half the native heap. */
+    private final boolean banner565;
+    /** Cap for the density a banner decodes at, 0 keeps the default (config.xml banner_density). */
+    private final int bannerMaxDensity;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     private final List<Entry> items = new ArrayList<>();
@@ -248,6 +257,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.appLabels = cfg.appLabels;
         this.appBanners = cfg.appBanners;
         this.uniformTiles = cfg.uniformTiles;
+        this.banner565 = cfg.banner565;
+        this.bannerMaxDensity = cfg.bannerMaxDensity;
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -370,15 +381,42 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (id != 0) {
             try {
                 Resources resources = pm.getResourcesForApplication(ri.activityInfo.applicationInfo);
-                // Keep at least xhdpi detail rather than downsampling artwork before the focus zoom.
+                // Keep at least xhdpi detail rather than downsampling artwork before the focus zoom;
+                // banner_density caps that for lean-memory themes, banner_565 halves the pixels (config.xml).
                 int density = Math.max(DisplayMetrics.DENSITY_XHIGH, ctx.getResources().getDisplayMetrics().densityDpi);
-                banner = resources.getDrawableForDensity(id, density, null);
+                if (bannerMaxDensity > 0) density = Math.min(density, bannerMaxDensity);
+                banner = decodeBanner(resources, id, density);
             } catch (PackageManager.NameNotFoundException | Resources.NotFoundException ignored) {
             }
         }
         if (banner == null) banner = ri.activityInfo.loadBanner(pm);
         // A square "banner" counts as none: the tile shows the app's icon and name instead of a blur.
         return banner != null && isBannerShaped(banner.getIntrinsicWidth(), banner.getIntrinsicHeight()) ? banner : null;
+    }
+
+    /**
+     * The banner's bitmap decoded with the theme's memory budget (config.xml banner_565 and banner_density):
+     * RGB_565 when the theme asks, scaled to the theme's density cap, and never upscaled from the file.
+     * null keeps the upstream path (getDrawableForDensity at xhdpi-or-panel density, ARGB_8888).
+     */
+    private Drawable decodeBanner(Resources resources, int id, int density) {
+        if (!banner565 && bannerMaxDensity <= 0) return null;
+        try {
+            TypedValue value = new TypedValue();
+            InputStream in = resources.openRawResource(id, value);
+            Bitmap bitmap;
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = banner565 ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
+                options.inTargetDensity = density;
+                bitmap = BitmapFactory.decodeResourceStream(resources, value, in, null, options);
+            } finally {
+                in.close();
+            }
+            return bitmap != null ? new BitmapDrawable(resources, bitmap) : null;
+        } catch (IOException | Resources.NotFoundException ignored) {
+            return null;
+        }
     }
 
     /**

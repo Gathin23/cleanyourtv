@@ -433,6 +433,14 @@
     <!-- Every app tile is its icon on a card tinted from that icon, name only under the focused tile,
          instead of each app's own banner. Off by default; a theme can set "uniform_tiles": true. -->
     <bool name="uniform_tiles">false</bool>
+    <!-- App banners decoded in RGB_565 instead of ARGB_8888: the same artwork, half the native heap
+         (measured: the banner pipeline holds ~10 MB on a 1080p unit; see the fork's audit). Off by
+         default; a theme can set "banner_565": true. -->
+    <bool name="banner_565">false</bool>
+    <!-- Cap for the density a banner decodes at, or 0 to keep the default (xhdpi or the panel's, whichever
+         is finer; see AppAdapter#loadBanner). 240 keeps the focus zoom usable on a lean-memory theme and
+         quarters the pixels against a 320-cap decode. A theme can set "banner_density": 240. -->
+    <integer name="banner_density">0</integer>
     <!-- Optional direct Home picker in the app library: OK toggles the checkmark, checked apps first.
          Off by default; a theme can set "app_library_selection": true (also needs app_library). -->
     <bool name="app_library_selection">false</bool>
