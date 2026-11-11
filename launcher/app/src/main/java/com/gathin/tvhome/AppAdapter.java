@@ -386,6 +386,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 int density = Math.max(DisplayMetrics.DENSITY_XHIGH, ctx.getResources().getDisplayMetrics().densityDpi);
                 if (bannerMaxDensity > 0) density = Math.min(density, bannerMaxDensity);
                 banner = decodeBanner(resources, id, density);
+                // Both keys off (or an undecodable/non-bitmap resource) keeps the #131 route:
+                // the explicit xhdpi-or-panel density request, not the PackageManager fallback.
+                if (banner == null) banner = resources.getDrawableForDensity(id, density, null);
             } catch (PackageManager.NameNotFoundException | Resources.NotFoundException ignored) {
             }
         }
