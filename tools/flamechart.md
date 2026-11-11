@@ -25,7 +25,7 @@ with exit 2 before the engine starts, so drawing the chart cannot overwrite a re
 | `TRACE ...` | | Before, then after (up to 4). A folder draws its median run, by the first of time to first frame, median frame time and median RenderThread draw that every run has; the panel names the run and the measure. A folder with none of them in every run is refused. |
 | `--highlight REGEX` | `^(activityResume\|RV OnBindView)$` | Slice names to draw magenta and total. Children of a match count once. |
 | `--window` | `first-frame` | `first-frame`: launcher start to first frame drawn. `start:MS`: a fixed span from the start. `all`: the whole recording (always for `nav`). |
-| `--threads` | `main,RenderThread` | Lanes, by thread name in the launcher's process. |
+| `--threads` | `main,RenderThread` | Lanes, by thread name in the launcher's process. Repeated names or aliases of the same thread keep only the first lane, so its highlighted work is counted once. |
 | `--package` | `com.gathin.tvhome` | The launcher's package. A fork built under another one - [SHOWCASE.md](../SHOWCASE.md) lists several - draws nothing without it: the lanes are that package's threads, so the run stops at `no <package> process in the trace`. |
 | `--out` | | The PNG to write; required. |
 | `--labels` | `Before,After` | The panels' labels, comma-separated and in the order of the traces; a panel past the last one is named `Run 3`, `Run 4`. |
