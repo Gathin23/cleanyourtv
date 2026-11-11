@@ -119,8 +119,10 @@ INPUT_KEY_SERVICE=1 HOME_KEY_SERVICE=1 ./launcher/build-and-install.sh
 
 `settings_key_scancodes` is read by `HomeKeyService`, hence `HOME_KEY_SERVICE=1`, and only from
 `config.xml`: the theme can set `settings_key_keycodes`, not scancodes. Read the scancode with
-`tools/tv.py 'getevent -lt'` while pressing the real button - an injected `input keyevent` never
-reaches an accessibility service, so it cannot be used to test this.
+`tools/tv.py 'getevent -t'` while pressing the real button - an injected `input keyevent` never
+reaches an accessibility service, so it cannot be used to test this. `-t` rather than `-lt` because
+`-l` prints the key's name in place of the number, and the entry takes the hex that line prints in
+decimal: `00f0` is 240.
 
 `HomeKeyService` bound on its own here, with no `OP_AUTO_START` denial in `logcat`, so the TCL-style
 auto-start block does not apply to this firmware.

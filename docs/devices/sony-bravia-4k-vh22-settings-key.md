@@ -46,7 +46,10 @@ map key usage 0x000c0586 CALENDAR
 ```
 
 Scancode 646 and HID usage `0x000c0586` are the Settings key on this remote;
-check yours with `getevent -l` before copying them.
+check yours with `getevent -t` before copying them: the code is the hex after
+`0001` on the press's line, in decimal (`0286` is 646), and the usage is the
+value on the `0004` (`MSC_SCAN`) line above it. `-l` would print the key's name
+in place of that code, which no `.kcm` line takes.
 
 The provider app needs two components and no permissions:
 

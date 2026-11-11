@@ -1254,7 +1254,9 @@ turned off in Settings stays off.
   `INPUT_KEY_SERVICE=1` and press the real button.
   A press that `logcat` reports as `KEY_UNKNOWN` or `KEY_PROGRAM` cannot be matched by keycode at all,
   because every unmapped button shares those codes: use the Linux scancode from
-  `tools/tv.py 'getevent -lt'` in `settings_key_scancodes` and install with `HOME_KEY_SERVICE=1`
+  `tools/tv.py 'getevent -t'` in `settings_key_scancodes` - the hex number after `0001` on the press's
+  line, in decimal (`00f0` is 240), since `-l` prints the key's name in place of that number - and
+  install with `HOME_KEY_SERVICE=1`
   (an RC-36 remote sends its gear on scancode 240 and its notifications button on 362 that way; see
   [the FPD CG50-C3 note](devices/fpd-cg50-c3.md)).
   Not every set answers those two routes, though ([#853](https://github.com/Gathin23/cleanyourtv/issues/853),
@@ -1279,7 +1281,7 @@ turned off in Settings stays off.
   from the shell, so nothing there said which keycode it becomes. `139` in `settings_key_keycodes` did nothing (the report
   took it for `KEYCODE_F8`, which is `138`; `138` was not tried); `66`, the `input-event-codes.h` number for `KEY_F8`, in
   `settings_key_scancodes` opened the launcher's panel with `settings_key_panel`. So read both numbers
-  off one `getevent -lt` press and try the `EV_KEY` one when the `MSC_SCAN` one matches nothing. That
+  off one `getevent -t` press and try the `EV_KEY` one when the `MSC_SCAN` one matches nothing. That
   board also brings the stock launcher back within minutes of `pm disable-user` (the
   `com.xgimi.xrmservice` bullet above), and while it is on, the gear and Home open Google TV.
 - **All vendor buttons die at once** and `logcat` says `GLOBAL_BUTTON ... process is bad`: the
@@ -1290,8 +1292,8 @@ turned off in Settings stays off.
   button makes OEM broadcast receivers (such as Xiaomi's `com.xiaomi.android.tvsetup.partnercustomizer/.GlobalKeyReceiver`)
   launch a market intent to install the missing package, or crash repeatedly.
   To remap it cleanly, put its hardware scancode in `app_keys`: `"scan:<scancode>:<package>"` (e.g.
-  `"scan:399:org.smarttube.stable"` on the Xiaomi Mi Box S, read from `getevent -lt`) and rebuild with
-  `INPUT_KEY_SERVICE=1`.
+  `"scan:399:org.smarttube.stable"` on the Xiaomi Mi Box S, the hex number after `0001` on a
+  `getevent -t` press in decimal: `018f` is 399) and rebuild with `INPUT_KEY_SERVICE=1`.
   **Use the scancode form (`scan:<scancode>`) rather than a raw keycode (`191`):** generic button keycodes
   like `KEYCODE_BUTTON_4` (191) may be shared with other buttons on some remotes/key layouts, so mapping by keycode
   can unintentionally hijack other buttons.
@@ -1310,8 +1312,8 @@ turned off in Settings stays off.
   entry should put it back (read from the launcher's code, not yet tried on a set), because a `scan:` entry is
   answered before the settings branch in
   `HomeKeyService.onKeyEvent`: `"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"` in
-  `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -lt` while pressing the button,
-  as the `scan:` bullet above does for a Sony remote). A keycode entry, `"176:..."` (`KEYCODE_SETTINGS`), is
+  `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -t` while pressing the button,
+  in decimal, as the `scan:` bullet above says). A keycode entry, `"176:..."` (`KEYCODE_SETTINGS`), is
   also answered before the settings branch, when it has a tap target: a `hold:176:...` entry alone leaves the tap
   to Settings, and a button listed in `settings_key_scancodes` stays Settings (read from the launcher's code, not
   yet tried on a set).
