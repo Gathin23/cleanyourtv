@@ -16,6 +16,14 @@
 # message says which). 1 is a run that reached the push, so a theme this script cannot read before it sends
 # anything is not one: it answers 2 with the sentence every one of those refusals ends with.
 set -euo pipefail
+# The wallpaper-name check further down matches with an ASCII range, `^[A-Za-z0-9_.-]+$`, and in a Turkish
+# locale bash leaves i and I out of [A-Za-z] (glibc's collation, the same reason disable.sh pinned it in #3414
+# and restore.sh in #3690). A shipped picture with an i in its name was refused - themes/aerial's
+# 01-northern-europe-sunrise.jpg answered "unsupported wallpaper filename ... b64push.py takes letters, digits,
+# '.', '_' and '-'", which names a rule the name does not break - so the theme never reached the TV, whatever
+# the reader typed. Match names by bytes. theme.ps1 compares with PowerShell's own regex, whose ranges are code
+# points, and needs nothing.
+export LC_ALL=C
 THEME_ARG="${1:-}"
 # A theme folder or --reset, and nothing else. The first word alone decided everything the script did, so
 # `theme.sh --reset themes/aurora` matched the reset branch on that word and threw the folder away: the theme
