@@ -190,7 +190,7 @@ tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt        # undo it, stock la
 tools/venv/bin/python -I tools/check.py examples/xiaomi-mi-tv-4a/debloat.txt   # what a firmware update undid
 launcher/build-and-install.sh                                # build the launcher and make it Home (needs the TV_HOST export above)
 tools/theme.sh themes/aurora                                 # push a theme; --reset removes it
-python3 tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers   # your photos, sized and darkened for the TV
+tools/venv/bin/python -I tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers   # your photos, sized and darkened for the TV
 ```
 
 | Tool | What it does |
@@ -312,10 +312,12 @@ your own, and you decide you have the right to show them.
 2. **Prepare the photos.** A bright 12 MP photo is heavy for a 1 to 2 GB TV and drowns the clock and tiles.
    `tools/wallpaper_prep.py` centre-crops to 16:9, saves 1280×720 JPEGs under 300 KB, and darkens the picture
    itself, so `wallpaper_dim` can stay at 0. HEIC phone photos work. Your originals are never touched.
+   Pillow goes into the `tools/venv` the quick start creates, not into a system Python, which has neither
+   the package nor (on Ubuntu) a pip that may install it.
 
    ```bash
-   python3 -m pip install -r tools/requirements-photos.txt
-   python3 tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers
+   tools/venv/bin/pip install -r tools/requirements-photos.txt
+   tools/venv/bin/python -I tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers
    ```
 
    Options: `--brightness 0.25` (0.1 to 1.0), `--gradient 0.6` (extra black toward the dock), `--size 1280x720`,
