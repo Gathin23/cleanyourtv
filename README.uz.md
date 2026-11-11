@@ -493,7 +493,7 @@ Kodlash agenti orqali hissa qoʻshyapsizmi? [AGENTS.md](AGENTS.md) unga xuddi sh
 |---|---|
 | **Televizoringizning tozalash roʻyxati** | Eng foydalisi: shu modelga ega keyingi kishi kashfiyotni oʻtkazib yuboradi. |
 | **Launcher va prompt** | Launcher yaxshilanishlari va promptning aniqroq ifodalanishi ham mamnuniyat bilan qabul qilinadi. |
-| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 234 ta loyiha allaqachon yashaydi. |
+| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 235 ta loyiha allaqachon yashaydi. |
 
 Ishlari bu omborda joylashgan odamlar:
 
