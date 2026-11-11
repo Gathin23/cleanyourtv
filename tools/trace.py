@@ -26,7 +26,8 @@ file or passes through one, an empty --out, a --package or --app that is not one
 and a TV that cannot be reached - tools/tv.py's own sentence is printed, whether it refused the target as
 it was imported (no TV_HOST, a TV_PORT that is not a port number) or connect_error() worded the failure -
 both judged before anything is recorded, so nothing was written and --out was not made; 1 a recording that
-started and then failed.
+started and then failed. A recording still running after 60 completion checks is not pulled or published;
+any previous local trace is kept, and the remote recording is left alone.
 
 Scenarios (setup runs before the recording starts, so it stays out of the trace):
     cold     another app in front, the launcher force-stopped, then started with `am start -W`
@@ -199,6 +200,8 @@ def record_one(dev, setup, steps, package, out_path, run_shell=None):
         if run_shell(alive).strip() != "running":
             break
         time.sleep(1)
+    else:
+        raise RuntimeError("perfetto is still running after the completion wait; no trace was pulled")
     # A failed or empty pull must not truncate an earlier recording. Stage on the same filesystem so
     # the completed trace replaces it only after the download and remote cleanup both succeed.
     folder, name = os.path.split(os.path.abspath(out_path))
