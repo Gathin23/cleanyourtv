@@ -27,6 +27,14 @@ Uzbek classifier are not words a table like this one can hold (the same reason R
 count moved to digits), so those four pages write the number in digits and are read with
 digits_number() - language-neutral, and the classifier may sit between the number and its noun.
 
+README.fr.md is the seventh, and it landed the day after this table was written: the French front
+page arrived with the row already in digits ("234 projets"), the shape the four pages above write, so
+it needed no parser - only a line in COUNT_PAGES, which it did not get. The fold-in that followed
+bumped its row from 230 to 234 by hand while nothing was reading it, so the page agrees today and is
+free to drift on the next project: the six pages in the table bumped, this one left at 234, and a
+French reader offered the old number with the suite green. The row is read now, and the floor below
+counts seven pages rather than six.
+
 Adding a project therefore means bumping every page in COUNT_PAGES, which is what the failure
 message says.
 """
@@ -189,6 +197,7 @@ def pt_spelled(lines):
 # otherwise sit in the way of) is read with digits_number().
 COUNT_PAGES = {
     "README.md": ("projects", spelled_number),
+    "README.fr.md": ("projets", digits_number),
     "README.pt-BR.md": ("projetos", spelled_number_pt),
     "README.de.md": ("Projekte", digits_number),
     "README.nl.md": ("projecten", digits_number),
@@ -237,8 +246,8 @@ class ShowcaseProjectCount(unittest.TestCase):
     def test_every_page_that_states_the_count_agrees_with_the_rows(self):
         counted = len(project_rows(self.showcase))
         self.assertGreaterEqual(
-            len(COUNT_PAGES), 6,
-            "fewer pages are read than the six front pages that state the count: a page dropped from "
+            len(COUNT_PAGES), 7,
+            "fewer pages are read than the seven front pages that state the count: a page dropped from "
             "COUNT_PAGES stops being judged, and its number is free to drift again",
         )
         for page, (word, reader) in COUNT_PAGES.items():
@@ -344,6 +353,17 @@ class TheCheckerItself(unittest.TestCase):
         # shape that offered a reader 163 projects while SHOWCASE.md held 228.
         self.assertEqual(
             spelled_count(["де вже живуть сто шістдесят три проєктів"], "проєктів", digits_number),
+            (None, None),
+        )
+
+    def test_the_french_row_is_read(self):
+        """README.fr.md's row as the page writes it: the count in digits, before "projets"."""
+        row = ("| **Vous avez construit quelque chose par-dessus ?** | Ajoutez-le à "
+               "[SHOWCASE.md](SHOWCASE.md), qui rassemble déjà 234 projets, classés en écrans |")
+        self.assertEqual(spelled_count([row], "projets", digits_number), (234, "234"))
+        # The other sentence on that page that names "projets" states no number, so it is not a claim.
+        self.assertEqual(
+            spelled_count(["Ces applications sont des projets indépendants"], "projets", digits_number),
             (None, None),
         )
 
