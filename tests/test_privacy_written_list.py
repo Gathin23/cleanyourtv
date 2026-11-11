@@ -147,6 +147,52 @@ class PrivacyWrittenListTest(unittest.TestCase):
         self.assertEqual(recovery.read_list(target),
                          ["com.google.android.katniss", "tv.inscape.tvclient.inscapeacr"])
 
+    def check_suggested_commands(self, target, result):
+        # These replace the real tools entirely: copied commands can only print their arguments.
+        for name in ("disable.sh", "restore.sh"):
+            script = self.repo / "tools" / name
+            script.write_text('#!/bin/sh\n[ "$#" -eq 1 ] || exit 64\nprintf \'%s\' "$1"\n')
+            script.chmod(0o755)
+        text = (self.repo / target).read_text()
+        header = [line[4:].replace("TV_HOST=<tv ip>", f"TV_HOST={HOST}")
+                  for line in text.splitlines() if line.startswith("#   TV_HOST=")]
+        terminal = [line.split(":", 1)[1].strip() for line in result.stdout.splitlines()
+                    if line.startswith(("apply:", "undo:"))]
+        self.assertEqual(len(header), 2)
+        self.assertEqual(len(terminal), 2)
+        target_name = os.fspath(target)
+        expected_header = os.path.basename(target_name) if os.path.isabs(target_name) else target_name
+        for group, commands, expected in (("header", header, expected_header),
+                                           ("terminal", terminal, target_name)):
+            for command in commands:
+                with self.subTest(group=group, command=command):
+                    run = subprocess.run(["/bin/sh", "-c", command], cwd=self.repo,
+                                         capture_output=True, text=True, timeout=10)
+                    self.assertEqual(run.returncode, 0, run.stderr)
+                    self.assertEqual(run.stdout, expected)
+        return text
+
+    @unittest.skipUnless(os.name == "posix", "execute the printed POSIX shell commands")
+    def test_relative_commands_pass_the_entire_list_path_as_one_argument(self):
+        (self.repo / "lists").mkdir()
+        for name in ("audit.txt", "family audit.txt", "family's audit.txt"):
+            with self.subTest(name=name):
+                target = "lists/" + name
+                result = self.write(target)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                text = self.check_suggested_commands(target, result)
+                self.assertNotIn(HOST, text)
+
+    @unittest.skipUnless(os.name == "posix", "execute the printed POSIX shell commands")
+    def test_absolute_commands_keep_the_full_path_and_the_header_keeps_only_the_basename(self):
+        target = self.base / "private folder" / "family's audit.txt"
+        target.parent.mkdir()
+        result = self.write(target)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = self.check_suggested_commands(target, result)
+        self.assertNotIn(str(target.parent), text)
+        self.assertNotIn(HOST, text)
+
 
 if __name__ == "__main__":
     unittest.main()

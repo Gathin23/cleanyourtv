@@ -20,6 +20,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import stat
 import subprocess
 import sys
@@ -348,8 +349,10 @@ class PrivacyWriteTargetTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stderr, "")
         self.assertIn(f"wrote 1 packages to {target}", result.stdout)
-        self.assertIn(f"tools/disable.sh {target}", result.stdout)
-        self.assertIn(f"tools/restore.sh {target}", result.stdout)
+        for label, script in (("apply:", "tools/disable.sh"), ("undo:", "tools/restore.sh")):
+            command = next(line.split(":", 1)[1] for line in result.stdout.splitlines()
+                           if line.startswith(label))
+            self.assertEqual(shlex.split(command)[1:], [script, str(target)])
         self.assertEqual(target.read_bytes(), normal.read_bytes())
         self.assertEqual(recovery.read_list(target), [KATNISS])
         ordinary = folder / "ordinary.txt"

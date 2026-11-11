@@ -31,6 +31,7 @@ stdout away still shows.
 """
 import os
 import re
+import shlex
 import sys
 import tempfile
 
@@ -380,6 +381,7 @@ def list_lines(result, include_low, name):
                          "on the TV. Run the audit again to read them.")
     # The file outlives this run and may be shared (docs/workflows/tv-list.md), so the header uses
     # the placeholder every list uses rather than the TV's address.
+    name = shlex.quote(os.fspath(name))
     lines = [
         "# Privacy audit written by tools/privacy.py.",
         "# Voice, ACR and telemetry candidates this TV answered for. Everything is DISABLED, not",
@@ -475,8 +477,9 @@ def write_list(path, result, include_low):
         print(f"{result['skipped']} more name matches were not probed (the audit stops at "
               f"{MAX_PROBES}), so the list leaves them out; check them by hand with "
               "`dumpsys package <name>`.")
-    print(f"apply:   TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/disable.sh {path}")
-    print(f"undo:    TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/restore.sh {path}")
+    quoted_path = shlex.quote(os.fspath(path))
+    print(f"apply:   TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/disable.sh {quoted_path}")
+    print(f"undo:    TV_HOST={os.environ.get('TV_HOST', '<tv ip>')} tools/restore.sh {quoted_path}")
     print("read it first: the comments say what each one takes with it.")
 
 
