@@ -21,21 +21,24 @@
    sentence and the test says the paragraph no longer carries them. That sentence dates the numbers as
    well, in a parenthetical just after the press link ("(numbers as of 31 October 2026)", "(Stand: 31.
    Oktober 2026)", "(stand 31 oktober 2026)", "(станом на 31 жовтня 2026 року)", "(rakamlar 31 Ekim 2026
-   itibarıyla)", "(dados de 31 de outubro de 2026)"), so the day moves with the sweep: it may not name a
-   day earlier than the newest article row in `docs/PRESS.md`, the rule step 3 already applies to "views
-   as of", because a count read on the 30th cannot hold an article published on the 31st.
+   itibarıyla)", "(dados de 31 de outubro de 2026)", "(chiffres au 9 novembre 2026)"), so the day moves
+   with the sweep: it may not name a day earlier than the newest article row in `docs/PRESS.md`, the rule
+   step 3 already applies to "views as of", because a count read on the 30th cannot hold an article
+   published on the 31st.
    `tests/test_press_as_of_date.py` reads that parenthetical in each page's own words, off every page whose
    story paragraph carries the link, and a page that writes none is not judged: `README.he.md` dates the
    stars it had in the sentence before, and its coverage sentence ends at the link. That paragraph is also
-   read on the three front pages that have it without the card:
-   `README.pt-BR.md`, the Hebrew `README.he.md` and the Uzbek `README.uz.md` show no `docs/card.jpg`, so their
-   numbers are held to `README.md`'s alt text and to `docs/PRESS.md` on their own, and their coverage clause
-   has to open with a colon like the others ("A repercussão: 412 artigos ...", "סיקור בתקשורת: 412 כתבות
-   ...", "Matbuotdagi aks: 412 maqola ..."), since that colon is what the reader cuts the three numbers at.
+   read on the four front pages that have it without the card:
+   `README.pt-BR.md`, the Hebrew `README.he.md`, the Uzbek `README.uz.md` and the French `README.fr.md` show
+   no `docs/card.jpg`, so their numbers are held to `README.md`'s alt text and to `docs/PRESS.md` on their
+   own, and their coverage clause has to open with a colon like the others ("A repercussão: 412 artigos
+   ...", "סיקור בתקשורת: 412 כתבות ...", "Matbuotdagi aks: 412 maqola ...", "La couverture médiatique :
+   534 articles ..."), since that colon is what the reader cuts the three numbers at.
    The Uzbek page dates them too ("(raqamlar 2026-yil 31-oktabr holatiga)"), the year before the day and the
-   month in its own language, and the date check reads that shape like the other six. A page counts as one
+   month in its own language, and the date check reads that shape like the other seven. A page counts as one
    of them by its paragraph, so a translation that copies the story without the picture is read without the
-   test being edited.
+   test being edited - the French page, which landed last, needed its month names in the check's table and
+   its name in the pins beside it.
    Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the performance requirements install:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
    `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and

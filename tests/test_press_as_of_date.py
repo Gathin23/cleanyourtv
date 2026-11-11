@@ -33,6 +33,12 @@ the only place the year was looked for. So the seventh page sat outside a rule t
 and a sweep that moved the six and left this one would have stayed green. The month table gains the Uzbek
 names and the year is read on either side of the month; the pin and the reader test name the page.
 
+README.fr.md, added with the French translation (d5b8068f), closes the same sentence with "(chiffres au 9
+novembre 2026)" and was read the same way - as dating nothing. French writes the month as "novembre", a name
+the table did not carry, so the ninth page sat outside the rule: a press sweep that moved the eight and left
+this one stayed green, which is what the Uzbek paragraph above describes for the seventh. The month table
+gains the French names; the pin and the reader tests name the page.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
@@ -55,7 +61,7 @@ ARTICLE_MONTHS = {name: number for number, name in enumerate(
 
 # The month names a page in each language can date the numbers with, spelled the way a date spells them:
 # German "31. Oktober", Ukrainian "31 жовтня" (genitive), Turkish "31 Ekim", Portuguese "31 de outubro",
-# Uzbek "31-oktabr" (README.uz.md writes the day and the month joined by a hyphen).
+# Uzbek "31-oktabr" (README.uz.md writes the day and the month joined by a hyphen), French "9 novembre".
 MONTHS = (
     ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
      "November", "December"),
@@ -71,11 +77,13 @@ MONTHS = (
      "novembro", "dezembro"),
     ("yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr",
      "dekabr"),
+    ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
+     "novembre", "décembre"),
 )
 
 
 def month_numbers():
-    """{month name, casefolded: its number}, the seven languages the front pages are written in."""
+    """{month name, casefolded: its number}, the eight languages the front pages are written in."""
     out = {}
     for names in MONTHS:
         for number, name in enumerate(names, 1):
@@ -188,7 +196,7 @@ def stale_pages(root=ROOT, press=None):
 
 
 class TreeTest(unittest.TestCase):
-    """The seven pages on main today, and the day their numbers were counted."""
+    """The eight pages on main today, and the day their numbers were counted."""
 
     def test_no_page_dates_the_press_numbers_before_the_newest_article(self):
         behind = stale_pages()
@@ -200,8 +208,8 @@ class TreeTest(unittest.TestCase):
 
     def test_the_pages_that_date_the_numbers_today(self):
         self.assertEqual(
-            {"README.md", "README.de.md", "README.nl.md", "README.pt-BR.md", "README.tr.md", "README.uk.md",
-             "README.uz.md"},
+            {"README.md", "README.de.md", "README.fr.md", "README.nl.md", "README.pt-BR.md", "README.tr.md",
+             "README.uk.md", "README.uz.md"},
             {name for name, _ in dated_pages()},
             "the front pages that close the coverage sentence with a date; a translation that copies the "
             "clause is read without being added here, and one that stops dating its numbers is a change")
@@ -222,6 +230,7 @@ class ReaderTest(unittest.TestCase):
         expected = {
             "README.md": (2026, 11, 9),
             "README.de.md": (2026, 11, 9),
+            "README.fr.md": (2026, 11, 9),
             "README.nl.md": (2026, 11, 9),
             "README.uk.md": (2026, 11, 9),
             "README.tr.md": (2026, 11, 9),
@@ -241,6 +250,7 @@ class ReaderTest(unittest.TestCase):
             ("rakamlar 31 Ekim 2026 itibarıyla", (2026, 10, 31)),
             ("dados de 31 de outubro de 2026", (2026, 10, 31)),
             ("raqamlar 2026-yil 31-oktabr holatiga", (2026, 10, 31)),
+            ("chiffres au 31 octobre 2026", (2026, 10, 31)),
         ):
             self.assertEqual(date, clause_date(clause), clause)
 
