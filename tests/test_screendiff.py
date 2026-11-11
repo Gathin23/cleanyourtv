@@ -226,7 +226,7 @@ class CompareTest(unittest.TestCase):
         with self.Image.open(diff) as mask:
             self.assertIsNone(mask.getbbox())
 
-    def test_a_write_that_cannot_start_is_named_not_a_difference(self):
+    def test_a_special_output_is_named_not_a_difference(self):
         if not os.path.exists("/dev/full"):
             self.skipTest("needs /dev/full, a file whose writes fail with ENOSPC")
         a, b = self.shot("a.png"), self.shot("b.png")
@@ -235,7 +235,8 @@ class CompareTest(unittest.TestCase):
         code, text = self.run_tool([a, b, "--out", out])
         self.assertEqual(code, 2, "a failed write must not read as 'the screenshots differ'")
         self.assertIn(f"cannot write {out}", text)
-        self.assertIn("No space left on device", text)
+        self.assertIn("not a regular file", text)
+        self.assertTrue(os.path.islink(out))
         self.assertNotIn("Traceback", text)
         self.assertNotIn("identical", text)
         self.assertNotIn("pixels differ", text)
