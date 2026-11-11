@@ -308,6 +308,7 @@
                             android:textSize="52sp"
                             android:fontFamily="@string/font_light"
                             android:letterSpacing="-0.04"
+                            android:fontFeatureSettings="tnum"
                             android:includeFontPadding="false" />
                     </LinearLayout>
 
