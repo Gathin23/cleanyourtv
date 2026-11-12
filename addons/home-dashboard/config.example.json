@@ -1,0 +1,16 @@
+{
+  "haUrl": "https://ha.example.test",
+  "haToken": "HOME_ASSISTANT_ACCESS_TOKEN",
+  "batteryEntity": "sensor.battery_soc",
+  "solarEntity": "sensor.pv_power",
+  "loadEntity": "sensor.house_load",
+  "frigateUrl": "https://frigate.example.test",
+  "frigateUser": "viewer",
+  "frigatePassword": "FRIGATE_VIEWER_PASSWORD",
+  "cameras": [],
+  "cameraSeconds": 15,
+  "activityFirst": false,
+  "mqttUrl": "",
+  "mqttTopicPrefix": "frigate",
+  "feeds": []
+}

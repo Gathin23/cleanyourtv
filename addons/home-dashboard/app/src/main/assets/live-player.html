@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; media-src blob:; connect-src __CONNECT_ORIGIN__">
+<style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111b28}video{width:100%;height:100%;object-fit:contain}</style></head>
+<body><video muted autoplay playsinline></video><script>
+'use strict';
+// One authenticated MSE stream. No external scripts, audio, DOM data or native bridge.
+const video=document.querySelector('video');
+let socket,media,buffer,queue=[],queued=0,dead=false,lastTime=-1,lastProgress=Date.now(),started=Date.now();
+window.playerState='connecting';
+function end(){if(dead)return;dead=true;window.playerState='failed';if(socket)socket.close();video.pause();queue=[];queued=0;}
+function append(){
+  if(dead||!buffer||buffer.updating||!queue.length)return;
+  try{
+    if(buffer.buffered.length&&buffer.buffered.end(0)-buffer.buffered.start(0)>12){buffer.remove(buffer.buffered.start(0),buffer.buffered.end(0)-5);return;}
+    let data=queue.shift();queued-=data.byteLength;buffer.appendBuffer(data);
+  }catch(e){end();}
+}
+function receive(event){
+  if(dead)return;
+  if(typeof event.data==='string'){
+    try{const message=JSON.parse(event.data);
+      if(message.type==='error'){end();return;}
+      if(message.type==='mse'){
+        if(buffer||!MediaSource.isTypeSupported(message.value)){end();return;}
+        buffer=media.addSourceBuffer(message.value);buffer.mode='segments';
+        buffer.addEventListener('updateend',()=>{try{if(buffer.buffered.length){let edge=buffer.buffered.end(0);if(edge-video.currentTime>1.8)video.currentTime=Math.max(buffer.buffered.start(0),edge-.6);}}catch(e){}append();});
+        buffer.addEventListener('error',end);append();
+      }
+    }catch(e){end();}
+  }else{queued+=event.data.byteLength;if(queued>4*1024*1024){end();return;}queue.push(event.data);append();}
+}
+window.health=function(){
+  if(dead)return 'failed';
+  if(video.currentTime!==lastTime&&video.readyState>=2){lastTime=video.currentTime;lastProgress=Date.now();window.playerState='playing';}
+  if((window.playerState==='playing'&&Date.now()-lastProgress>7000)||(window.playerState!=='playing'&&Date.now()-started>12000))end();
+  return window.playerState;
+};
+video.addEventListener('error',end);
+window.addEventListener('pagehide',end);
+try{
+  if(!window.MediaSource)throw Error();
+  media=new MediaSource();video.src=URL.createObjectURL(media);
+  media.addEventListener('sourceopen',()=>{
+    socket=new WebSocket(__STREAM_URL__);socket.binaryType='arraybuffer';
+    socket.onopen=()=>socket.send(JSON.stringify({type:'mse',value:'avc1.640029,avc1.64002A,avc1.640033'}));
+    socket.onmessage=receive;socket.onerror=end;socket.onclose=end;
+  },{once:true});
+  video.play().catch(end);
+}catch(e){end();}
+</script></body></html>

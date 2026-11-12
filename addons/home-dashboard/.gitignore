@@ -1,0 +1,5 @@
+# Local build output and your own feed list stay out of git.
+.gradle/
+build/
+local.properties
+/feeds.txt
