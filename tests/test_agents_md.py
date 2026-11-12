@@ -167,6 +167,73 @@ class AgentsNumbersTest(unittest.TestCase):
                 self.assertIn(command, text(), "AGENTS.md no longer gives the command CI runs")
 
 
+SUITE_COMMAND = "tools/venv/bin/python -m unittest discover -s tests"
+
+
+def closing_test_line(body):
+    """The paragraph a recipe closes with: AGENTS.md's Workflows section promises each one a check to run."""
+    return " ".join(line for line in body.split("\n") if line.startswith("Then run the tests"))
+
+
+def suite_command_problem(line):
+    """Why a recipe's closing line is not the check AGENTS.md names, or None.
+
+    An empty line is no line: two of the recipes (input-sources, perf-ab) end with their own check.
+    """
+    if not line:
+        return None
+    if "unittest discover -s tests" not in line:
+        return "the closing line no longer runs the suite"
+    if SUITE_COMMAND in line:
+        return None
+    if re.search(r"(?<![\w/.-])python3?\b", line):
+        return ("the closing line runs the suite with an interpreter outside the checkout's venv; the suite "
+                "imports adb_shell and Pillow, which tools/requirements.txt puts in that venv, so under the "
+                f"system python3 those checks skip and the run still answers OK. Write `{SUITE_COMMAND} -v`")
+    return f"the closing line does not name `{SUITE_COMMAND}`"
+
+
+class WorkflowSuiteCommandTest(unittest.TestCase):
+    """Each recipe ends with the check to run, and it has to be the one AGENTS.md's row names.
+
+    5865347d moved AGENTS.md's recipes into docs/workflows/ word for word, closing line included. #1800
+    then took the suite off the runner's python3 in ci.yml and in AGENTS.md's "Tests, as CI runs them" row,
+    because that interpreter has no adb_shell: the commit says test_tv_reboot only reached its tests
+    through the child-rerun workaround. The recipes kept the old line, and they are what a contributor
+    reads before opening a PR. The suite imports adb_shell and Pillow, which tools/requirements.txt puts in
+    tools/venv, so under a system python3 the checks that need them skip, the run still answers OK, and
+    nothing in the output says the run was the poorer one.
+    """
+
+    def closing_lines(self):
+        found = {}
+        for workflow in sorted(WORKFLOWS.glob("*.md")):
+            line = closing_test_line(workflow.read_text(encoding="utf-8"))
+            if line:
+                found[workflow.name] = line
+        return found
+
+    def test_every_recipe_ends_with_the_suite_agents_md_names(self):
+        found = self.closing_lines()
+        self.assertGreaterEqual(len(found), 8, "the recipes' closing test line is gone, not fixed")
+        for name, line in found.items():
+            with self.subTest(workflow=name):
+                problem = suite_command_problem(line)
+                self.assertIsNone(problem, f"{name}: {problem}")
+
+    def test_it_reads_the_line_the_recipes_carried(self):
+        # A reader quiet about this shape would have passed all eight pages as they stood.
+        problem = suite_command_problem("Then run the tests: `python3 -m unittest discover -s tests -v`.")
+        if problem is None:
+            self.fail("the reader passed the eight pages as they stood")
+        self.assertIn(SUITE_COMMAND, problem)
+        for quiet in ("Then run the tests with the checkout's venv: `" + SUITE_COMMAND + " -v`.",
+                      "Then run the tests: `" + SUITE_COMMAND + " -v`.",
+                      ""):
+            with self.subTest(line=quiet):
+                self.assertIsNone(suite_command_problem(quiet))
+
+
 class AgentsEntryPointsTest(unittest.TestCase):
     def test_claude_and_gemini_import_agents_md(self):
         for name in ("CLAUDE.md", "GEMINI.md"):
