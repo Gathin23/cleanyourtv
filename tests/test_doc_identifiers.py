@@ -31,19 +31,28 @@ may name. A Kotlin or Groovy label (`this@ChannelsScreen`, `return@forEach`) is 
 rather than an address, and is left alone so a page quoting add-on code stays green.
 
 The pages read are the ones `tests/test_doc_addresses.py` reads - this repository's front pages,
-`tools/*.md`, and everything under `examples/`, `docs/` and `themes/` - so the two guards look at the
-same reading a contributor can paste a command from.
+`tools/*.md`, and everything under `examples/`, `docs/` and `themes/` - plus `addons/`. The address
+guard leaves the add-ons out on purpose: the address one of those pages shows is the reader's own
+server (a Pi-hole, a Home Assistant), given as an example. That reason says nothing about a MAC
+address or an account email, and an add-on page is exactly where a pasted log lands: `addons/tv-inspector/`
+tells a reader to copy its own logcat lines (`tools/tv.py 'logcat -d -s TvInspector'`) into a `tv.json`,
+a `docs/devices/` note or an issue, and those lines name the input devices a set reports. A set's MAC
+address or the account it is signed in with would have gone in green.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
+import tempfile
 from pathlib import Path
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-# Lists and TV pages, the guides and the themes; the top-level pages and tools/*.md are read too.
-FOLDERS = ("examples", "docs", "themes")
+# Lists and TV pages, the guides, the themes and the add-ons; the top-level pages and tools/*.md are
+# read too. The add-ons are read here and not by tests/test_doc_addresses.py: the address those pages
+# show is the reader's own server, given as an example, which says nothing about a MAC address or an
+# account email a pasted log carries.
+FOLDERS = ("examples", "docs", "themes", "addons")
 SUFFIXES = (".md", ".txt", ".json", ".sh", ".ps1")
 # The Wi-Fi MAC two TCL 50DP660 files record as the symptom of a disable: the same on every set that
 # hits it, so it names no unit.
@@ -163,6 +172,32 @@ class DocIdentifiersTest(unittest.TestCase):
                      "examples/tcl-50dp660/debloat.txt", "docs/devices/tcl-50dp660.txt"):
             self.assertIn(page, read)
         self.assertIn(".sh", SUFFIXES, "a folder's own scripts are read too")
+        # The add-ons: a page here hands out the command that pastes a log into the tree, and the
+        # scripts beside it carry the TV's address in the commands a reader copies.
+        for page in ("addons/tv-inspector/README.md", "addons/wake-app/build-and-install.sh"):
+            self.assertIn(page, read)
+        self.assertGreaterEqual(len([page for page in read if page.startswith("addons/")]), 30,
+                                "every add-on folder's pages and scripts")
+
+    def test_an_add_on_page_is_held_to_the_same_rule(self):
+        # A stand-in tree: the guard has to reach into addons/, which it did not read before.
+        with tempfile.TemporaryDirectory() as folder:
+            addon = Path(folder) / "addons" / "tv-inspector"
+            addon.mkdir(parents=True)
+            (addon / "README.md").write_text(
+                "| Wi-Fi MAC | a4:2b:8c:11:22:33 |\n"
+                "The unit was signed in with someone@gmail.com during setup.\n", encoding="utf-8")
+            self.assertEqual(
+                ["addons/tv-inspector/README.md:1: a4:2b:8c:11:22:33",
+                 "addons/tv-inspector/README.md:2: someone@gmail.com"],
+                problems(folder, lambda line: mac_addresses(line) + emails(line)))
+            # The example address an add-on page shows is the reader's own server, and the project's
+            # contact is the address a page may print: neither is this guard's business.
+            (addon / "README.md").write_text(
+                "Point it at 192.168.1.50 and reach TV_HOST=<tv ip>.\n"
+                "Write to hello@itsgathin.com for a private report.\n", encoding="utf-8")
+            self.assertEqual([], problems(folder, lambda line: mac_addresses(line) + android_ids(line)
+                                          + emails(line)))
 
     def test_no_page_gives_a_mac_address(self):
         self.assertEqual([], problems(ROOT, mac_addresses),
