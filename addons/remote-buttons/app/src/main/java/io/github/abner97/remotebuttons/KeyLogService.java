@@ -16,8 +16,13 @@ import java.io.InputStreamReader;
  * Opens an app for a remote button without filtering keys. Some firmware (Hisense, TCL Google TV) stops a held
  * volume key from repeating once any accessibility service filters keys; this service filters nothing. It reads
  * the window manager's key log instead (READ_LOGS, granted over ADB) and acts on the presses in the button map.
+ *
+ * <p>It is an accessibility service only so Android keeps it running and binds it again after a reboot; it asks
+ * for no key events and no window content ({@code res/xml/accessibility.xml}). The log is read on one background
+ * thread, which starts when the service is bound and stops when it is destroyed.
  */
 public class KeyLogService extends AccessibilityService {
+    /** Logcat tag for this add-on's own lines: {@code logcat -s RemoteButtons}. */
     private static final String TAG = "RemoteButtons";
     /** The window manager's key lines only; -T 1 starts at the newest line instead of replaying the buffer. */
     private static final String[] LOGCAT_COMMAND = {"logcat", "-v", "brief", "-T", "1", "-s", "WindowManager:D"};
@@ -29,12 +34,23 @@ public class KeyLogService extends AccessibilityService {
     /** The last button handled, for the card's screen. Same process, so a field is enough. */
     static volatile String lastHandledButton = "";
 
+    /** Set while the service is bound; the reader thread stops once it turns false. */
     private volatile boolean running;
+    /** The logcat being read, so {@link #onDestroy()} can end it and unblock the reader thread. */
     private volatile Process logcatProcess;
+    /** The button map; used only on the reader thread. */
     private KeysFile keysFile;
+    /** The keycode of the last mapped press, for {@link #isEchoOfPreviousPress(int)}. */
     private int previousKeyCode;
+    /** When that press happened, in {@link SystemClock#uptimeMillis()}. */
     private long previousPressUptimeMs;
 
+    /** Created by Android when the service is switched on; nothing runs until {@link #onServiceConnected()}. */
+    public KeyLogService() {
+        super();
+    }
+
+    /** Android bound the service: start reading the key log on a background thread. */
     @Override
     protected void onServiceConnected() {
         keysFile = new KeysFile(this);
@@ -42,6 +58,7 @@ public class KeyLogService extends AccessibilityService {
         new Thread(this::readLogWhileRunning, "remote-buttons").start();
     }
 
+    /** The service was turned off or the app replaced: stop the reader thread and its logcat. */
     @Override
     public void onDestroy() {
         running = false;
@@ -50,6 +67,10 @@ public class KeyLogService extends AccessibilityService {
         super.onDestroy();
     }
 
+    /**
+     * The reader thread's body. logcat can end on its own (a log buffer reset, low memory), so it is started
+     * again after {@link #LOGCAT_RESTART_DELAY_MS} for as long as the service is running.
+     */
     private void readLogWhileRunning() {
         while (running) {
             try {
@@ -61,6 +82,11 @@ public class KeyLogService extends AccessibilityService {
         }
     }
 
+    /**
+     * Starts one logcat and handles each button press it prints, until logcat ends or the service stops.
+     *
+     * @throws IOException when logcat cannot be started or its output cannot be read
+     */
     private void readLogUntilStopped() throws IOException {
         logcatProcess = new ProcessBuilder(LOGCAT_COMMAND).redirectErrorStream(true).start();
         BufferedReader logReader = new BufferedReader(new InputStreamReader(logcatProcess.getInputStream()));
@@ -72,6 +98,12 @@ public class KeyLogService extends AccessibilityService {
         }
     }
 
+    /**
+     * Opens the target mapped to a pressed button. Unmapped buttons and echoes of the same press are ignored,
+     * and a target whose app is missing or disabled is logged rather than opened.
+     *
+     * @param keyCode the Android keycode the window manager logged for the press
+     */
     private void onButtonPressed(int keyCode) {
         String target = keysFile.targetsByKeyCode().get(keyCode);
         if (target == null || isEchoOfPreviousPress(keyCode)) return;
@@ -90,7 +122,12 @@ public class KeyLogService extends AccessibilityService {
         }
     }
 
-    /** True for a second log line of the same press. */
+    /**
+     * Tells a second log line of one press from a new press, and records this press for the next call.
+     *
+     * @param keyCode the keycode just pressed
+     * @return true when the same button was logged less than {@link #ECHO_WINDOW_MS} ago
+     */
     private boolean isEchoOfPreviousPress(int keyCode) {
         long nowUptimeMs = SystemClock.uptimeMillis();
         boolean isEcho = keyCode == previousKeyCode && nowUptimeMs - previousPressUptimeMs < ECHO_WINDOW_MS;
@@ -99,7 +136,12 @@ public class KeyLogService extends AccessibilityService {
         return isEcho;
     }
 
-    /** The intent that opens a target, or null when its app is missing or disabled. */
+    /**
+     * Builds the intent that opens a target. For an app, its TV (leanback) entry is preferred over a phone one.
+     *
+     * @param target a package name, {@link KeyMap#SETTINGS_TARGET} or {@link KeyMap#HOME_TARGET}
+     * @return the intent to start, or null when the target's app is missing or disabled
+     */
     private Intent intentFor(String target) {
         if (target.equals(KeyMap.SETTINGS_TARGET)) return new Intent(Settings.ACTION_SETTINGS);
         if (target.equals(KeyMap.HOME_TARGET)) {
@@ -110,6 +152,9 @@ public class KeyLogService extends AccessibilityService {
         return tvLaunchIntent != null ? tvLaunchIntent : packageManager.getLaunchIntentForPackage(target);
     }
 
+    /** Unused: the service subscribes to no events it needs; it exists to stay bound. */
     @Override public void onAccessibilityEvent(AccessibilityEvent event) { }
+
+    /** Unused: the service gives no spoken or other feedback that could be interrupted. */
     @Override public void onInterrupt() { }
 }

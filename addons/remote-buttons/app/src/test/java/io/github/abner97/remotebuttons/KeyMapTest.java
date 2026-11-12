@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 import org.junit.Test;
 
+/** {@link KeyMap} against real log lines from the TV and hand-written keys.txt content. */
 public class KeyMapTest {
     // Lines captured on a Hisense SmartTV 4K FFM (lushan), Google TV 12, while the remote's buttons were pressed.
     private static final String YOUTUBE_PRESSED =
@@ -22,6 +23,7 @@ public class KeyMapTest {
     private static final String KEY_CODE_TOO_LONG_FOR_AN_INT =
             "D/WindowManager(  818): interceptKeyTi keyCode=99999999999 down=true repeatCount=0 x";
 
+    /** A press counts once: not its release, not a held key's repeats, not the queueing line, not bad input. */
     @Test public void countsOnlyTheFirstDownOfAPress() {
         assertEquals(190, KeyMap.keyCodeOfPress(YOUTUBE_PRESSED));
         assertEquals(KeyMap.NO_PRESS, KeyMap.keyCodeOfPress(YOUTUBE_RELEASED));
@@ -31,6 +33,7 @@ public class KeyMapTest {
         assertEquals(KeyMap.NO_PRESS, KeyMap.keyCodeOfPress(KEY_CODE_TOO_LONG_FOR_AN_INT));
     }
 
+    /** The built-in map parses in full and covers every button measured on the Hisense remote. */
     @Test public void defaultMapCoversTheHisenseButtons() {
         Map<Integer, String> targetsByKeyCode = KeyMap.parseButtonMap(KeyMap.HISENSE_DEFAULT_MAP);
         assertEquals("settings", targetsByKeyCode.get(83));
@@ -42,6 +45,7 @@ public class KeyMapTest {
         assertEquals(6, targetsByKeyCode.size());
     }
 
+    /** Comments, spacing and CRLF are tolerated; each malformed line is dropped on its own. */
     @Test public void badLinesAreSkippedNotFatal() {
         Map<Integer, String> targetsByKeyCode = KeyMap.parseButtonMap(
                 "# my remote\n\n190 = com.example.tube   # spaces and a comment\n"
@@ -51,6 +55,7 @@ public class KeyMapTest {
         assertEquals(2, targetsByKeyCode.size());
     }
 
+    /** Nothing but a package name or a named target can become an intent. */
     @Test public void acceptsOnlyPackageNamesSettingsAndHome() {
         assertTrue(KeyMap.isValidTarget("settings"));
         assertTrue(KeyMap.isValidTarget("home"));

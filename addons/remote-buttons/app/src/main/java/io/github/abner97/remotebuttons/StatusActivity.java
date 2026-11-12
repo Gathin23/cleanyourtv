@@ -13,14 +13,29 @@ import android.widget.TextView;
 
 import java.util.Map;
 
-/** The card's screen: is it on, can it read the key log, and which button opens what. */
+/**
+ * The card's screen: is it on, can it read the key log, and which button opens what.
+ *
+ * <p>Opened by the launcher's module card (DOCK_CARD) and by the app's own tile. Read-only: it changes nothing,
+ * so fixing a problem it reports means running install.sh again or using the TV's Accessibility settings.
+ */
 public class StatusActivity extends Activity {
+    /** Large enough to read from the sofa. */
     private static final float TEXT_SIZE_SP = 22;
+    /** Extra space between lines, so the button list stays readable at a distance. */
     private static final float LINE_SPACING_MULTIPLIER = 1.3f;
+    /** Margin around the text, inside the TV's overscan-safe area. */
     private static final int PADDING_DP = 48;
 
+    /** The one view on screen; its text is rebuilt on every resume. */
     private TextView statusView;
 
+    /** Created by Android when the card or the app's tile is opened; the screen is built in {@link #onCreate}. */
+    public StatusActivity() {
+        super();
+    }
+
+    /** Builds the screen: a scrolling white-on-black text view, filled in {@link #onResume()}. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +52,19 @@ public class StatusActivity extends Activity {
         setContentView(scrollView);
     }
 
+    /** Refreshes the text on every return, since the owner may have just turned the service on in Settings. */
     @Override
     protected void onResume() {
         super.onResume();
-        statusView.setText(statusText()); // again on every return: the owner may have just changed a setting
+        statusView.setText(statusText());
     }
 
+    /**
+     * The full status: service on or off, log access, where the map comes from, each button with what it opens,
+     * and the last button handled in this process.
+     *
+     * @return the text for {@link #statusView}
+     */
     private CharSequence statusText() {
         StringBuilder status = new StringBuilder(getString(R.string.app_name)).append("\n\n");
         status.append(getString(isServiceOn() ? R.string.status_on : R.string.status_off)).append('\n');
@@ -60,17 +82,33 @@ public class StatusActivity extends Activity {
         return status;
     }
 
+    /**
+     * Whether {@link KeyLogService} is switched on in the TV's accessibility settings.
+     *
+     * @return true when this app's service is in {@code enabled_accessibility_services}
+     */
     private boolean isServiceOn() {
         String enabledServices =
                 Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
         return enabledServices != null && enabledServices.contains(getPackageName() + "/");
     }
 
+    /**
+     * Whether READ_LOGS has been granted. Without it logcat shows this app only its own lines, so no button
+     * press is ever seen.
+     *
+     * @return true once {@code pm grant ... READ_LOGS} has run (install.sh does it)
+     */
     private boolean hasLogAccess() {
         return checkSelfPermission(Manifest.permission.READ_LOGS) == PackageManager.PERMISSION_GRANTED;
     }
 
-    /** A target as the owner reads it: the app's name, or what "settings" and "home" mean. */
+    /**
+     * A target as the owner reads it.
+     *
+     * @param target a package name, {@link KeyMap#SETTINGS_TARGET} or {@link KeyMap#HOME_TARGET}
+     * @return the app's name (marked when disabled or not installed), or what the named target opens
+     */
     private String describeTarget(String target) {
         if (target.equals(KeyMap.SETTINGS_TARGET)) return getString(R.string.target_settings);
         if (target.equals(KeyMap.HOME_TARGET)) return getString(R.string.target_home);
