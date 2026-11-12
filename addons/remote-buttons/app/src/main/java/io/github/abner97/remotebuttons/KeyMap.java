@@ -1,14 +1,21 @@
 package io.github.abner97.remotebuttons;
 
+import android.view.KeyEvent;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Which remote button opens what, and how a button press looks in the window manager's log.
  *
- * <p>Plain Java with no Android types, so it is covered by JVM unit tests ({@code KeyMapTest}) without a device.
+ * <p>Plain Java with no Android runtime calls (the {@link KeyEvent} keycodes are compile-time constants), so it is
+ * covered by JVM unit tests ({@code KeyMapTest}) without a device.
  */
 final class KeyMap {
     /** Static helpers only; not instantiated. */
@@ -30,6 +37,22 @@ final class KeyMap {
     static final String SETTINGS_TARGET = "settings";
     /** Target that brings up the Home screen, whichever launcher owns it. */
     static final String HOME_TARGET = "home";
+
+    /**
+     * Keys that keep their normal job and can never be assigned: the D-pad and OK, Back, Home, volume and mute,
+     * power and menu. Assigning one would take over how the TV itself is used, and Back has to stay free to cancel
+     * the "press a button" screen.
+     */
+    private static final Set<Integer> RESERVED_KEY_CODES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+            KeyEvent.KEYCODE_HOME, KeyEvent.KEYCODE_BACK,
+            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_CENTER,
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_ESCAPE,
+            KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE,
+            KeyEvent.KEYCODE_POWER, KeyEvent.KEYCODE_SLEEP, KeyEvent.KEYCODE_WAKEUP, KeyEvent.KEYCODE_MENU)));
+
+    /** First line of a keys.txt written by the card, so a reader knows where the file came from. */
+    private static final String WRITTEN_BY_CARD_HEADER = "# keycode=target, written by the Remote buttons card\n";
 
     /** A keycode in keys.txt: one to four digits, which covers every Android keycode. */
     private static final Pattern KEY_CODE_TEXT = Pattern.compile("\\d{1,4}");
@@ -92,5 +115,58 @@ final class KeyMap {
         return target.equals(SETTINGS_TARGET)
                 || target.equals(HOME_TARGET)
                 || PACKAGE_NAME.matcher(target).matches();
+    }
+
+    /**
+     * Whether a pressed key may be given a target from the card's "press a button" screen.
+     *
+     * @param keyCode the keycode of the press
+     * @return false for navigation, Back, Home, volume, power and menu keys, which keep their normal job
+     */
+    static boolean isAssignable(int keyCode) {
+        return !RESERVED_KEY_CODES.contains(keyCode);
+    }
+
+    /**
+     * Writes a button map in the keys.txt format, so {@link #parseButtonMap} reads back the same map.
+     *
+     * @param targetsByKeyCode keycode → target
+     * @return the file's text: a header comment, then one {@code keycode=target} line per button
+     */
+    static String formatButtonMap(Map<Integer, String> targetsByKeyCode) {
+        StringBuilder mapText = new StringBuilder(WRITTEN_BY_CARD_HEADER);
+        for (Map.Entry<Integer, String> button : targetsByKeyCode.entrySet()) {
+            mapText.append(button.getKey()).append('=').append(button.getValue()).append('\n');
+        }
+        return mapText.toString();
+    }
+
+    /**
+     * A copy of the map with one button given a target, replacing whatever it opened before.
+     *
+     * @param targetsByKeyCode the current map; not changed
+     * @param keyCode the button to assign
+     * @param target what it should open; must pass {@link #isValidTarget}
+     * @return the new map
+     * @throws IllegalArgumentException when the target is not a package name, "settings" or "home"
+     */
+    static Map<Integer, String> withButton(Map<Integer, String> targetsByKeyCode, int keyCode, String target) {
+        if (!isValidTarget(target)) throw new IllegalArgumentException("not a target: " + target);
+        Map<Integer, String> updatedMap = new LinkedHashMap<>(targetsByKeyCode);
+        updatedMap.put(keyCode, target);
+        return updatedMap;
+    }
+
+    /**
+     * A copy of the map without one button.
+     *
+     * @param targetsByKeyCode the current map; not changed
+     * @param keyCode the button to forget
+     * @return the new map; the same buttons as before when this one was not in it
+     */
+    static Map<Integer, String> withoutButton(Map<Integer, String> targetsByKeyCode, int keyCode) {
+        Map<Integer, String> updatedMap = new LinkedHashMap<>(targetsByKeyCode);
+        updatedMap.remove(keyCode);
+        return updatedMap;
     }
 }

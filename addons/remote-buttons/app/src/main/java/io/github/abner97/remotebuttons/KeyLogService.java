@@ -40,7 +40,7 @@ public class KeyLogService extends AccessibilityService {
     private volatile Process logcatProcess;
     /** The button map; used only on the reader thread. */
     private KeysFile keysFile;
-    /** The keycode of the last mapped press, for {@link #isEchoOfPreviousPress(int)}. */
+    /** The keycode of the last press seen, for {@link #isEchoOfPreviousPress(int)}. */
     private int previousKeyCode;
     /** When that press happened, in {@link SystemClock#uptimeMillis()}. */
     private long previousPressUptimeMs;
@@ -99,14 +99,20 @@ public class KeyLogService extends AccessibilityService {
     }
 
     /**
-     * Opens the target mapped to a pressed button. Unmapped buttons and echoes of the same press are ignored,
-     * and a target whose app is missing or disabled is logged rather than opened.
+     * Handles one pressed button. While the card's screen waits for a button to assign, an assignable press goes
+     * to it instead ({@link ButtonCapture}); otherwise the mapped target is opened. Echoes of the same press and
+     * unmapped buttons are ignored, and a target whose app is missing or disabled is logged rather than opened.
      *
      * @param keyCode the Android keycode the window manager logged for the press
      */
     private void onButtonPressed(int keyCode) {
+        // The echo check comes first: otherwise the second line of a press just captured for the card would
+        // open the app it was assigned to a moment later.
+        if (isEchoOfPreviousPress(keyCode)) return;
+        if (KeyMap.isAssignable(keyCode) && ButtonCapture.offerPress(keyCode)) return;
+
         String target = keysFile.targetsByKeyCode().get(keyCode);
-        if (target == null || isEchoOfPreviousPress(keyCode)) return;
+        if (target == null) return;
 
         Intent openTarget = intentFor(target);
         if (openTarget == null) {

@@ -2,15 +2,38 @@
 <resources>
     <string name="app_name">Remote buttons</string>
     <string name="service_description">Opens apps for the remote\'s app and gear buttons. It reads the TV\'s key log and filters no keys, so a held volume key keeps repeating.</string>
+
+    <!-- Status -->
     <string name="status_on">✓ On (Settings › Accessibility › Remote buttons)</string>
     <string name="status_off">✗ Off: run install.sh again, or turn on Remote buttons in Settings › Accessibility</string>
     <string name="logs_ok">✓ Can read the key log</string>
     <string name="logs_missing">✗ Cannot read the key log: run install.sh (it grants READ_LOGS over ADB)</string>
-    <string name="map_default">Buttons (built-in Hisense remote map):</string>
-    <string name="map_file">Buttons (from keys.txt):</string>
+    <string name="last">Last button: %1$s</string>
+
+    <!-- Button list -->
+    <string name="map_default">Buttons (the built-in Hisense map). Select one to remove it:</string>
+    <string name="map_file">Your buttons. Select one to remove it:</string>
+    <string name="button_row">Button %1$d  →  %2$s</string>
     <string name="target_settings">TV Settings</string>
     <string name="target_home">Home</string>
     <string name="disabled"> (disabled)</string>
     <string name="not_installed"> (not installed)</string>
-    <string name="last">Last button: %1$s</string>
+
+    <!-- Assigning a button -->
+    <string name="assign_button">＋ Assign a button</string>
+    <string name="choose_target">What should the button open?</string>
+    <string name="press_button">Press the remote button that should open %1$s.\n\nThe arrows, OK, Back, Home, volume and power keep their normal job and are not taken.</string>
+    <string name="assigned">Button %1$d now opens %2$s</string>
+    <string name="not_ready">Remote buttons is not ready yet: it needs to be on and able to read the key log. Run install.sh again from a computer.</string>
+    <string name="no_press_seen">No button press arrived.\n\nIf you pressed one, this TV does not report button presses in its log, so Remote buttons cannot work on it.</string>
+    <string name="save_failed">Could not save: %1$s</string>
+    <string name="taken_while_waiting">Another screen opened while waiting for the button, so that button already does something on this TV.\n\nNothing was assigned. Pick a button the TV leaves unused, or change that button in the TV\'s own settings.</string>
+    <string name="taken_by_tv">Button %1$d already does something on this TV: it just opened another screen.\n\nIt was not assigned, so it keeps only its own job. Pick a button the TV leaves unused, or change that button in the TV\'s own settings.</string>
+
+    <!-- Removing and resetting -->
+    <string name="remove_question">Make button %1$d stop opening %2$s?</string>
+    <string name="remove">Remove</string>
+    <string name="reset_buttons">Reset to the built-in buttons</string>
+    <string name="reset_question">Forget your buttons and go back to the built-in Hisense map?</string>
+    <string name="reset">Reset</string>
 </resources>

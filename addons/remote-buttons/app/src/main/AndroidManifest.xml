@@ -27,7 +27,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
 
-        <activity android:name=".StatusActivity" android:exported="true">
+        <activity android:name=".RemoteButtonsActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 /**
@@ -60,6 +61,64 @@ final class KeysFile {
             cachedLastModified = lastModified;
         }
         return cachedTargetsByKeyCode;
+    }
+
+    /**
+     * Makes a button open a target, keeping every other button as it is. Starts from the built-in map when there
+     * is no keys.txt yet, so assigning one button does not drop the others.
+     *
+     * @param keyCode the button, as the window manager logged it
+     * @param target a package name, {@link KeyMap#SETTINGS_TARGET} or {@link KeyMap#HOME_TARGET}
+     * @throws IOException when keys.txt cannot be written
+     */
+    void assign(int keyCode, String target) throws IOException {
+        write(KeyMap.withButton(targetsByKeyCode(), keyCode, target));
+    }
+
+    /**
+     * Makes a button do nothing again, keeping every other button as it is.
+     *
+     * @param keyCode the button to forget
+     * @throws IOException when keys.txt cannot be written
+     */
+    void remove(int keyCode) throws IOException {
+        write(KeyMap.withoutButton(targetsByKeyCode(), keyCode));
+    }
+
+    /**
+     * Replaces the whole map, e.g. to put back the map from before an assignment that had to be undone.
+     *
+     * @param targetsByKeyCode the complete map to keep from now on
+     * @throws IOException when keys.txt cannot be written
+     */
+    void replaceWith(Map<Integer, String> targetsByKeyCode) throws IOException {
+        write(targetsByKeyCode);
+    }
+
+    /**
+     * Deletes keys.txt, so the built-in Hisense map applies again.
+     *
+     * @throws IOException when the file exists but cannot be deleted
+     */
+    void resetToDefaults() throws IOException {
+        Files.deleteIfExists(keysFile.toPath());
+        cachedTargetsByKeyCode = null;
+    }
+
+    /**
+     * Replaces keys.txt with this map. It is written to a temporary file first and then renamed over keys.txt, so
+     * {@link KeyLogService}, which may read the file at any moment, never sees half of it.
+     *
+     * @param targetsByKeyCode the complete new map
+     * @throws IOException when the temporary file cannot be written or renamed
+     */
+    private void write(Map<Integer, String> targetsByKeyCode) throws IOException {
+        File temporaryFile = new File(keysFile.getParentFile(), FILE_NAME + ".tmp");
+        byte[] fileBytes = KeyMap.formatButtonMap(targetsByKeyCode).getBytes(StandardCharsets.UTF_8);
+        Files.write(temporaryFile.toPath(), fileBytes);
+        Files.move(temporaryFile.toPath(), keysFile.toPath(),
+                StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        cachedTargetsByKeyCode = null;
     }
 
     /**

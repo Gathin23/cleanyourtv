@@ -55,6 +55,47 @@ public class KeyMapTest {
         assertEquals(2, targetsByKeyCode.size());
     }
 
+    /** What the card writes is read back as the same map, in the same order. */
+    @Test public void formattedMapParsesBackUnchanged() {
+        Map<Integer, String> targetsByKeyCode = KeyMap.parseButtonMap(KeyMap.HISENSE_DEFAULT_MAP);
+        String mapText = KeyMap.formatButtonMap(targetsByKeyCode);
+        assertTrue(mapText.startsWith("#"));
+        assertEquals(targetsByKeyCode, KeyMap.parseButtonMap(mapText));
+    }
+
+    /** Assigning replaces or adds one button and leaves the original map alone; removing drops just that one. */
+    @Test public void assignAndRemoveWorkOnACopy() {
+        Map<Integer, String> original = KeyMap.parseButtonMap("190=com.example.tube\n83=settings\n");
+
+        Map<Integer, String> reassigned = KeyMap.withButton(original, 190, "com.example.other");
+        assertEquals("com.example.other", reassigned.get(190));
+        assertEquals("com.example.tube", original.get(190));
+
+        Map<Integer, String> added = KeyMap.withButton(original, 606, "home");
+        assertEquals(3, added.size());
+
+        Map<Integer, String> removed = KeyMap.withoutButton(original, 83);
+        assertEquals(1, removed.size());
+        assertEquals(2, original.size());
+        assertEquals(original, KeyMap.withoutButton(original, 999));
+    }
+
+    /** A target that could not have come from keys.txt is refused, not saved. */
+    @Test(expected = IllegalArgumentException.class)
+    public void assigningAnInvalidTargetIsRefused() {
+        KeyMap.withButton(KeyMap.parseButtonMap(""), 190, "com.example; reboot");
+    }
+
+    /** App buttons can be assigned; navigation, Back, Home, volume and power cannot. */
+    @Test public void onlyNonNavigationKeysAreAssignable() {
+        assertTrue(KeyMap.isAssignable(190));   // YouTube
+        assertTrue(KeyMap.isAssignable(172));   // Live TV
+        assertFalse(KeyMap.isAssignable(4));    // Back
+        assertFalse(KeyMap.isAssignable(23));   // OK
+        assertFalse(KeyMap.isAssignable(24));   // Volume up
+        assertFalse(KeyMap.isAssignable(3));    // Home
+    }
+
     /** Nothing but a package name or a named target can become an intent. */
     @Test public void acceptsOnlyPackageNamesSettingsAndHome() {
         assertTrue(KeyMap.isValidTarget("settings"));
