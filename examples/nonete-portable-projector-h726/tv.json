@@ -1,0 +1,6 @@
+{
+  "tv": "Nonete portable projector (Allwinner H726, h726_p2, reports ADT-3), 1 GB, 720p",
+  "os": "Android 14",
+  "brand": "Nonete",
+  "notes": "First Nonete list and the HTC-launcher firmware on the H726 board: factory test, Office, HTC store, screensavers and the four cast receivers off (9 packages); firmware updaters, HDMI (`com.softwinner.vis`), autofocus (`com.hysd.vafocus`) and the power menu (`com.htc.closedialog`) kept; a second group applied 2026-11-12 is commented until lived with, the cast hub `com.android.toofifi` among them (seven LAN ports close with it off); Settings needs a `settings_fallback_components` entry and the phone Netflix a `library_apps` entry, both in the list header"
+}
