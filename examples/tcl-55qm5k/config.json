@@ -1,0 +1,22 @@
+{
+  "columns": 4,
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.stremio.one",
+    "com.esaba.downloader",
+    "com.android.vending"
+  ],
+  "hidden_apps": [
+    "com.tcl.tv"
+  ],
+  "live_tv_package": "com.tcl.tv",
+  "app_keys": [
+    "scan:245:com.google.android.youtube.tv",
+    "scan:242:com.stremio.one",
+    "scan:752:com.amazon.amazonvideo.livingroom",
+    "scan:365:com.tcl.tv",
+    "scan:652:ignore",
+    "scan:345:ignore",
+    "scan:762:ignore"
+  ]
+}

@@ -1,0 +1,87 @@
+# TCL 55QM5K (device G10, product G10_4K_US_NF, Realtek RTD2875), Google TV 12 (Android 12, SDK 31),
+# firmware STT2.230203.001, incremental AS50. Baseline: examples/tcl-g10-google-tv/debloat.txt.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55qm5k/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55qm5k/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Owner choices: keep the firmware updater (com.tcl.ttvs hosts TCL's versionUpdateApp here, checked with
+# dumpsys package), keep Chromecast, AirPlay, the main YouTube app, and the sideload pair
+# com.esaba.downloader + com.stremio.one; voice assistant and the other streaming apps off.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx. Live TV app: com.tcl.tv.
+# Keep com.tcl.tv, com.tcl.tvinput, com.tcl.dashboard, com.tcl.suspension, com.tcl.autopair,
+# com.tcl.systemserver, com.tcl.providers.config, com.tcl.initsetup, com.tcl.factory.view,
+# com.tcl.globalkeyoverlay, com.tcl.airplay2, com.realtek.airplay2, com.google.android.apps.mediashell,
+# com.google.android.youtube.tv, com.esaba.downloader, com.stremio.one, com.tcl.android.webview,
+# com.google.android.tts and all com.realtek.* overlays.
+#
+# The saved Wi-Fi network belongs to setupwraith on this firmware (dumpsys wifi, cname=...setupwraith):
+# forget and re-join the network in TV Settings BEFORE disabling it, or Wi-Fi and ADB drop.
+# The two launcher-handover packages below are applied before the launcher handover (setupwraith
+# first, launcherx by launcher/build-and-install.sh); restore.sh brings both back.
+#
+# Casting from a phone still works with setupwraith disabled on this unit (checked), unlike the
+# #3446 report on the older G10 build.
+#
+# The remote is a Bluetooth BT_RC923A whose app and gear buttons send Linux scancodes, not keycodes;
+# the map lives in config.json (app_keys) and, for the gear, in the README (settings_key_scancodes is
+# a config.xml-only key).
+
+# TCL tracking and analytics
+tv.samba.ssm.ui                          # Samba TV ACR viewing tracking; opt out in Settings > Privacy too
+com.tcl.logkit                           # log capture and upload
+com.tcl.usercenter                       # TCL account sign-in nags
+com.tcl.guard                            # TGuard memory cleaner
+
+# TCL content, ads and promos
+com.tcl.tv.plus                          # TCL TV+ content app
+com.tcl.channelplus                      # TCL Live FAST channels (no antenna here; Live TV opens the channel scan without it)
+com.tcl.tv.tclhome_passive               # pushes TCL content to the home screen at boot
+com.tcl.partnercustomizer                # TCL tweaks to Google TV home rows
+com.tcl.interactive                      # TCL TIAS background service
+com.tcl.smartlink.core                   # bundles a silent app installer (CustomInstallService)
+com.tcl.messagebox                       # TCL push messages
+
+# Retail demo / hotel mode
+com.tcl.exhibit
+com.tcl.esticker
+com.tcl.hotelmenu
+
+# Preloaded apps and services
+com.tcl.ocean.instructions               # e-manual
+com.tcl.repairguide
+com.tcl.gamebar                          # re-enable for the console game-mode overlay
+com.tcl.ui_mediaCenter                   # re-enable to play media from USB drives
+com.tcl.UpdatePeripheral                 # re-enable to update a TCL soundbar
+com.tcl.useragreement                    # TCL EULA screen, only needed during setup
+com.roku.web.trc                         # Roku ad-engagement SDK left on this TCL
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.marvin.talkback
+com.google.android.apps.tv.dreamx        # ambient mode screensaver, shows promos; replaced by the launcher's clock
+com.google.android.tv.remote.service     # phone-app remote and the remote mic's bridge (not used here)
+com.google.android.katniss               # Google Assistant
+com.tcl.smartalexa                       # Alexa integration
+
+# Streaming apps (owner's choice; kept Peacock, Paramount+ and Prime Video, see below)
+com.netflix.ninja
+com.netflix.tokenmanager
+# com.amazon.amazonvideo.livingroom      # Prime Video: was disabled, re-enabled by owner request
+com.disney.disneyplus
+com.hulu.livingroomplus
+# com.peacocktv.peacockandroid           # was disabled, re-enabled by owner request
+# com.cbs.ott                            # Paramount+: was disabled, re-enabled by owner request
+com.tubitv
+tv.pluto.android
+com.spotify.tv.android
+com.wbd.stream                           # Max
+com.fox.foxone                           # FOX ONE
+com.google.android.youtube.tvmusic
+com.google.android.youtube.tvunplugged   # YouTube TV, the live service
+com.google.android.videos                # Google TV / Play Movies storefront
+com.google.android.play.games
+
+# Launcher handover: setupwraith first (it claims HOME once launcherx is off), launcherx by the handover script
+com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith
