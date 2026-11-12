@@ -15,50 +15,71 @@ import java.util.Map;
 
 /** The card's screen: is it on, can it read the key log, and which button opens what. */
 public class StatusActivity extends Activity {
-    private TextView text;
+    private static final float TEXT_SIZE_SP = 22;
+    private static final float LINE_SPACING_MULTIPLIER = 1.3f;
+    private static final int PADDING_DP = 48;
+
+    private TextView statusView;
 
     @Override
-    protected void onCreate(Bundle state) {
-        super.onCreate(state);
-        text = new TextView(this);
-        text.setTextColor(Color.WHITE);
-        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-        text.setLineSpacing(0, 1.3f);
-        int pad = (int) (48 * getResources().getDisplayMetrics().density);
-        text.setPadding(pad, pad, pad, pad);
-        ScrollView scroll = new ScrollView(this);
-        scroll.setBackgroundColor(Color.BLACK);
-        scroll.addView(text);
-        setContentView(scroll);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        statusView = new TextView(this);
+        statusView.setTextColor(Color.WHITE);
+        statusView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE_SP);
+        statusView.setLineSpacing(0, LINE_SPACING_MULTIPLIER);
+        int paddingPx = (int) (PADDING_DP * getResources().getDisplayMetrics().density);
+        statusView.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
+
+        ScrollView scrollView = new ScrollView(this);
+        scrollView.setBackgroundColor(Color.BLACK);
+        scrollView.addView(statusView);
+        setContentView(scrollView);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        String services = Settings.Secure.getString(getContentResolver(), "enabled_accessibility_services");
-        boolean on = services != null && services.contains(getPackageName() + "/");
-        boolean logs = checkSelfPermission(Manifest.permission.READ_LOGS) == PackageManager.PERMISSION_GRANTED;
-
-        StringBuilder s = new StringBuilder(getString(R.string.app_name)).append("\n\n");
-        s.append(getString(on ? R.string.status_on : R.string.status_off)).append('\n');
-        s.append(getString(logs ? R.string.logs_ok : R.string.logs_missing)).append("\n\n");
-        s.append(getString(KeyLogService.keysFile(this).isFile() ? R.string.map_file : R.string.map_default))
-                .append('\n');
-        for (Map.Entry<Integer, String> e : KeyLogService.load(this).entrySet()) {
-            s.append("   ").append(e.getKey()).append("  →  ").append(describe(e.getValue())).append('\n');
-        }
-        String last = KeyLogService.lastHandled;
-        if (!last.isEmpty()) s.append('\n').append(getString(R.string.last, last));
-        text.setText(s);
+        statusView.setText(statusText()); // again on every return: the owner may have just changed a setting
     }
 
-    private String describe(String target) {
-        if (target.equals(KeyMap.SETTINGS)) return getString(R.string.target_settings);
-        if (target.equals(KeyMap.HOME)) return getString(R.string.target_home);
+    private CharSequence statusText() {
+        StringBuilder status = new StringBuilder(getString(R.string.app_name)).append("\n\n");
+        status.append(getString(isServiceOn() ? R.string.status_on : R.string.status_off)).append('\n');
+        status.append(getString(hasLogAccess() ? R.string.logs_ok : R.string.logs_missing)).append("\n\n");
+
+        KeysFile keysFile = new KeysFile(this);
+        status.append(getString(keysFile.exists() ? R.string.map_file : R.string.map_default)).append('\n');
+        for (Map.Entry<Integer, String> button : keysFile.targetsByKeyCode().entrySet()) {
+            status.append("   ").append(button.getKey())
+                    .append("  →  ").append(describeTarget(button.getValue())).append('\n');
+        }
+
+        String lastButton = KeyLogService.lastHandledButton;
+        if (!lastButton.isEmpty()) status.append('\n').append(getString(R.string.last, lastButton));
+        return status;
+    }
+
+    private boolean isServiceOn() {
+        String enabledServices =
+                Settings.Secure.getString(getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+        return enabledServices != null && enabledServices.contains(getPackageName() + "/");
+    }
+
+    private boolean hasLogAccess() {
+        return checkSelfPermission(Manifest.permission.READ_LOGS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /** A target as the owner reads it: the app's name, or what "settings" and "home" mean. */
+    private String describeTarget(String target) {
+        if (target.equals(KeyMap.SETTINGS_TARGET)) return getString(R.string.target_settings);
+        if (target.equals(KeyMap.HOME_TARGET)) return getString(R.string.target_home);
+        PackageManager packageManager = getPackageManager();
         try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(target, 0);
-            return getPackageManager().getApplicationLabel(ai) + (ai.enabled ? "" : getString(R.string.disabled));
-        } catch (PackageManager.NameNotFoundException e) {
+            ApplicationInfo appInfo = packageManager.getApplicationInfo(target, 0);
+            String appName = packageManager.getApplicationLabel(appInfo).toString();
+            return appInfo.enabled ? appName : appName + getString(R.string.disabled);
+        } catch (PackageManager.NameNotFoundException notInstalled) {
             return target + getString(R.string.not_installed);
         }
     }
