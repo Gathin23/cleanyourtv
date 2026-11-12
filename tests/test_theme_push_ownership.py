@@ -12,6 +12,7 @@ and a stub `content` command standing in for the provider, so the command order 
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -374,8 +375,17 @@ class ThemePushTest(unittest.TestCase):
 
     def test_both_windows_paths_check_the_shared_helper_exit_code(self):
         script = (TOOLS / "theme.ps1").read_text(encoding="utf-8")
-        self.assertEqual(script.count("& $py -I theme_restart.py"), 2)
-        self.assertEqual(script.count("if ($LASTEXITCODE) { throw 'Home restart recovery failed' }"), 2)
+        # The call and its exit check live in Restart-Home, which both paths use: the id has to be set around
+        # the helper call only (the session is put back afterwards), so the check travels with the call.
+        helper = re.search(r"^function Restart-Home \{\n(.*?)^\}$", script, re.S | re.M)
+        if helper is None:
+            self.fail("theme.ps1 has no Restart-Home function")
+        self.assertEqual(script.count("& $py -I theme_restart.py"), 1)
+        self.assertIn("& $py -I theme_restart.py", helper.group(1))
+        self.assertEqual(script.count("if ($LASTEXITCODE) { throw 'Home restart recovery failed' }"), 1)
+        self.assertIn("if ($LASTEXITCODE) { throw 'Home restart recovery failed' }", helper.group(1))
+        self.assertEqual(len(re.findall(r"^\s*Restart-Home\s*$", script, re.M)), 2,
+                         "the reset and the push both have to restart Home through it")
         self.assertNotIn("$restart =", script)
 
     def test_the_windows_script_puts_files_the_same_way(self):

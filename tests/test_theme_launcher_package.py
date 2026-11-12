@@ -19,10 +19,16 @@ The shell half runs the real `tools/theme.sh` against a stub `tools/tv.py`, so a
 is visible in the log rather than in an assertion about a string. The helper half calls `theme_restart.restart`
 on a fake device that answers like the one in tests/test_theme_restart.py.
 
+The Windows twin hands the same id to `theme_restart.py` in `LAUNCHER_PACKAGE`, and `$env:` there belongs to
+the PowerShell process: `tools\theme.ps1` runs inside the reader's session, so an id set for good is the answer
+the next push to another TV takes without asking it. It is set around that one call and put back as the session
+had it (`Restart-Home`), which the text of the script is held to here - CI runs no PowerShell.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -33,10 +39,23 @@ from unittest.mock import patch
 from tools import theme_restart as restart
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools"
+SCRIPT = TOOLS / "theme.ps1"
 DEFAULT = "com.gathin.tvhome"
 RENAMED = "com.ts.launcher"
 STOCK = "com.mitv.tvhome/.MainActivityUserMode"
 OURS = RENAMED + "/com.gathin.tvhome.MainActivity"
+
+
+def function_body(text, name):
+    """A PowerShell function's body, from its `function <name> {` to the `}` that closes it at column 0.
+
+    theme.ps1 keeps every function at column 0 and indents what is inside it, so the first `^}$` after the
+    opening line is the function's own close.
+    """
+    match = re.search(rf"^function {re.escape(name)} \{{\n(.*?)^\}}$", text, re.S | re.M)
+    if match is None:
+        raise AssertionError(f"theme.ps1 has no {name} function")
+    return match.group(1)
 
 # Every call theme.sh makes reaches this file, and so does the id it exported, so a test can tell which package
 # the run named without a TV. The claim query is the only call that answers.
@@ -220,6 +239,41 @@ class RestartSideTest(unittest.TestCase):
     def test_without_a_caller_the_default_is_restarted(self):
         calls = "\n".join(self.restart_with())
         self.assertIn("am force-stop --user 0 " + DEFAULT, calls)
+
+
+class PowerShellSessionTest(unittest.TestCase):
+    """The Windows twin sets the id for the restart call and puts the session back as it was.
+
+    `$env:` is the PowerShell process, and `tools\\theme.ps1` runs in the reader's session, so an id left set
+    there is what the next push to another TV answers with instead of asking it. Read as text: there is no
+    PowerShell on the machines this suite runs on, and the shape is what the review asked for.
+    """
+
+    def setUp(self):
+        self.text = SCRIPT.read_text(encoding="utf-8")
+
+    def test_the_id_is_set_for_the_restart_call_only(self):
+        writes = [line.strip() for line in self.text.splitlines()
+                  if re.match(r"\s*\$env:LAUNCHER_PACKAGE\s*=(?!=)", line)]
+        self.assertEqual(1, len(writes), f"theme.ps1 sets the session variable in {len(writes)} places: {writes}")
+        self.assertIn(writes[0], function_body(self.text, "Restart-Home"),
+                      "the only write has to be the one around theme_restart.py")
+
+    def test_the_function_puts_the_session_back(self):
+        body = function_body(self.text, "Restart-Home")
+        self.assertIn("$before = $env:LAUNCHER_PACKAGE", body, "the value the session had has to be kept")
+        self.assertIn("finally", body, "a restart that fails leaves the session set too")
+        self.assertIn("$env:LAUNCHER_PACKAGE = $before", body)
+        self.assertIn("Remove-Item Env:\\LAUNCHER_PACKAGE", body,
+                      "a variable the session did not have is removed rather than set to empty")
+
+    def test_every_restart_goes_through_it(self):
+        inside = {line.strip() for line in function_body(self.text, "Restart-Home").splitlines()}
+        bare = [line.strip() for line in self.text.splitlines()
+                if "& $py -I theme_restart.py" in line and line.strip() not in inside]
+        self.assertEqual([], bare, "a bare theme_restart.py call would leave the variable set")
+        self.assertEqual(2, len(re.findall(r"^\s*Restart-Home\s*$", self.text, re.M)),
+                         "the reset and the push both restart Home")
 
 
 if __name__ == "__main__":

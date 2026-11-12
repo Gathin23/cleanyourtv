@@ -57,7 +57,8 @@ if (-not (Test-Path -LiteralPath $py)) {
 # <applicationId>/com.gathin.tvhome.MainActivity - so the TV is asked which package wears it, as theme.sh does
 # with the same query. $env:LAUNCHER_PACKAGE names the id for a set that cannot answer (an Android 8 firmware
 # without `cmd package query-activities`), and com.gathin.tvhome stays the answer for a TV that says nothing:
-# that is the build almost every reader has.
+# that is the build almost every reader has. The id this run reads goes back into LAUNCHER_PACKAGE for the
+# restart call only (Restart-Home), so a second push in the same PowerShell session asks its own TV.
 $launcherActivity = 'com.gathin.tvhome.MainActivity'
 $claimQuery = 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 # An id by hand is still an id: anything else would become a directory name and a `content://` authority.
@@ -137,16 +138,29 @@ function Set-Launcher {
     # pictures is read back from it, so a reset that left the pictures behind still shows the theme it just
     # removed. Both paths use this one string (the same one theme.sh has), and it carries the launcher's id.
     $script:clearWallpapers = "rm -f $dir/wallpapers/*.[jJ][pP][gG] $dir/wallpapers/*.[jJ][pP][eE][gG] $dir/wallpapers/*.[pP][nN][gG] $dir/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $uri/wallpapers 2>/dev/null"
-    # theme_restart.py restarts Home and knows the launcher from its key helpers, so it restarts this id.
+}
+
+# theme_restart.py restarts Home and knows the launcher from its key helpers, so it is given the id this run
+# read - in LAUNCHER_PACKAGE, and only around that call. `$env:` belongs to the PowerShell process, and
+# `tools\theme.ps1` runs inside the reader's session, so an id left set there is the answer the next push to
+# another TV takes without asking it: pushed to a com.ts.launcher set, the session answered a default-build set
+# with com.ts.launcher and the theme landed in a directory no launcher reads. So the variable is put back as the
+# session had it, even when the restart fails.
+function Restart-Home {
+    $had = Test-Path Env:\LAUNCHER_PACKAGE
+    $before = $env:LAUNCHER_PACKAGE
     $env:LAUNCHER_PACKAGE = $script:pkg
+    try { & $py -I theme_restart.py } finally {
+        if ($had) { $env:LAUNCHER_PACKAGE = $before } else { Remove-Item Env:\LAUNCHER_PACKAGE -ErrorAction SilentlyContinue }
+    }
+    if ($LASTEXITCODE) { throw 'Home restart recovery failed' }
 }
 
 if ($Reset) {
     Set-Launcher
     $checkPut = $true
     Invoke-Tv tv.py "mkdir -p $dir 2>/dev/null; $(Drop 'config.json'); $(Drop 'wallpaper.jpg'); $(Drop 'wallpapers/captions.txt'); $clearWallpapers; printf '%s' '$revision' > $tmp-theme_revision; $(Put 'theme_revision')" | Out-Null
-    & $py -I theme_restart.py
-    if ($LASTEXITCODE) { throw 'Home restart recovery failed' }
+    Restart-Home
     Write-Host 'reset'
     exit 0
 }
@@ -208,7 +222,6 @@ if (Test-Path -LiteralPath $captions -PathType Leaf) {
     Invoke-Tv tv.py (Drop 'wallpapers/captions.txt') | Out-Null
 }
 Invoke-Tv tv.py "printf '%s' '$revision' > $tmp-theme_revision; $(Put 'theme_revision')" | Out-Null
-& $py -I theme_restart.py
-if ($LASTEXITCODE) { throw 'Home restart recovery failed' }
+Restart-Home
 Write-Host 'applied'
 Write-Host "Theme $(Split-Path $Theme -Leaf) is on the TV. Undo with: tools\theme.ps1 -TvHost $TvHost -Reset"
