@@ -49,14 +49,14 @@ if (-not (Test-Path -LiteralPath $record)) {
     }
     [IO.File]::WriteAllText($record,($before | ConvertTo-Json),(New-Object Text.UTF8Encoding $false))
 }
-Invoke-DashboardTv --push "$PSScriptRoot/app/build/outputs/apk/release/app-release.apk" /data/local/tmp/home-dashboard.apk
+Invoke-DashboardTv --push "$PSScriptRoot/app/build/outputs/apk/release/app-release.apk" /data/local/tmp/cleantv-dashy.apk
 try {
-    $installed = Invoke-DashboardTv 'pm install -r /data/local/tmp/home-dashboard.apk'
+    $installed = Invoke-DashboardTv 'pm install -r /data/local/tmp/cleantv-dashy.apk'
     if (($installed -join '') -notmatch 'Success') { throw 'Install refused; nothing changed in the screensaver selection' }
-} finally { Invoke-DashboardTv 'rm -f /data/local/tmp/home-dashboard.apk' }
+} finally { Invoke-DashboardTv 'rm -f /data/local/tmp/cleantv-dashy.apk' }
 Invoke-DashboardTv 'am force-stop com.gathin.homedashboard'
-Invoke-DashboardTv --push $configPath /data/local/tmp/home-dashboard-config.json
-try { Invoke-DashboardTv 'content write --uri content://com.gathin.homedashboard.config/config.json < /data/local/tmp/home-dashboard-config.json' }
-finally { Invoke-DashboardTv 'rm -f /data/local/tmp/home-dashboard-config.json' }
+Invoke-DashboardTv --push $configPath /data/local/tmp/cleantv-dashy-config.json
+try { Invoke-DashboardTv 'content write --uri content://com.gathin.homedashboard.config/config.json < /data/local/tmp/cleantv-dashy-config.json' }
+finally { Invoke-DashboardTv 'rm -f /data/local/tmp/cleantv-dashy-config.json' }
 Invoke-DashboardTv 'am start -W -n com.gathin.homedashboard/.SettingsActivity'
 Write-Output 'Installed. Check Open dashboard, choose cameras and add feeds. Screensaver selection is unchanged until verified.'

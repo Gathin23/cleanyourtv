@@ -15,6 +15,8 @@ final class Config {
     final List<String> cameras = new ArrayList<>(), feeds = new ArrayList<>();
     final int cameraSeconds;
     final boolean activityFirst;
+    final boolean activityGlow;
+    final String activityGlowColor;
     final String mqttUrl,topicPrefix;
     Config(JSONObject o) {
         haUrl = base(o.optString("haUrl"));
@@ -28,6 +30,7 @@ final class Config {
         frigatePassword = o.optString("frigatePassword");
         cameraSeconds = Math.max(5, Math.min(300, o.optInt("cameraSeconds", 15)));
         activityFirst=o.optBoolean("activityFirst",false);
+        activityGlow=o.optBoolean("activityGlow",true);activityGlowColor=glowColor(o.optString("activityGlowColor","#FF3B30"));
         mqttUrl=o.optString("mqttUrl").trim();topicPrefix=o.optString("mqttTopicPrefix","frigate");
         if(!topicPrefix.matches("[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*"))throw new IllegalArgumentException("Invalid MQTT topic prefix");
         if(!mqttUrl.isEmpty()){
@@ -52,6 +55,10 @@ final class Config {
         if (!s.matches("sensor\\.[a-z0-9_]+")) throw new IllegalArgumentException("Sensor entity ID required");
         return s;
     }
+    static String glowColor(String value){
+        if(!value.matches("#[A-Fa-f0-9]{6}"))throw new IllegalArgumentException("Use a six-digit hex colour");
+        return value.toUpperCase(java.util.Locale.ROOT);
+    }
     private static void read(JSONArray a, List<String> into, int limit) {
         if (a == null) return;
         for (int i = 0; i < Math.min(a.length(), limit); i++) {
@@ -68,6 +75,8 @@ final class Config {
         }
         if (prefs.contains("cameraSeconds")) json.put("cameraSeconds", prefs.getInt("cameraSeconds", 15));
         if (prefs.contains("activityFirst")) json.put("activityFirst",prefs.getBoolean("activityFirst",false));
+        if (prefs.contains("activityGlow")) json.put("activityGlow",prefs.getBoolean("activityGlow",true));
+        if (prefs.contains("activityGlowColor")) json.put("activityGlowColor",prefs.getString("activityGlowColor","#FF3B30"));
         return new Config(json);
     }
 }

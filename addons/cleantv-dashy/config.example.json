@@ -10,6 +10,8 @@
   "cameras": [],
   "cameraSeconds": 15,
   "activityFirst": false,
+  "activityGlow": true,
+  "activityGlowColor": "#FF3B30",
   "mqttUrl": "",
   "mqttTopicPrefix": "frigate",
   "feeds": []

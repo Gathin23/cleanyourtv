@@ -39,6 +39,7 @@ final class Scene {
     private final ProgressBar charge;
     private final ImageView picture;
     private final LiveView live;
+    private final CameraGlow cameraGlow;
     private volatile boolean livePlaying;
     private String requestedCamera="";
     private long lastSnapshot,lastLiveAttempt;
@@ -62,7 +63,7 @@ final class Scene {
         root = column(); root.setBackgroundColor(Color.rgb(7,12,19)); root.setPadding(dp(16),dp(16),dp(16),dp(16));
         LinearLayout bar = row(); bar.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout title = column();
-        title.addView(text("HOME DASHBOARD" + (demo ? "  /  DEMO" : ""), 14, "#70D8B0"));
+        title.addView(text("cleantv-dashy" + (demo ? "  /  DEMO" : ""), 14, "#70D8B0"));
         date = text("", 14, "#90A5BA"); title.addView(date);
         bar.addView(title, new LinearLayout.LayoutParams(0,-2,1));
         clock = text("", 26, "#F2F6FA"); bar.addView(clock);
@@ -83,7 +84,8 @@ final class Scene {
         if(live!=null)videoBox.addView(live.view,new FrameLayout.LayoutParams(-1,-1));
         picture.bringToFront();
         cam.addView(videoBox,new LinearLayout.LayoutParams(-1,0,1));cam.addView(cameraStatus);
-        left.addView(cam,new LinearLayout.LayoutParams(-1,0,1));
+        cameraGlow=new CameraGlow(context);cameraGlow.addView(cam,new FrameLayout.LayoutParams(-1,-1));
+        left.addView(cameraGlow,new LinearLayout.LayoutParams(-1,0,1));
         LinearLayout energy=row();
         LinearLayout bat=panel();bat.setPadding(dp(12),dp(8),dp(12),dp(8));bat.addView(text("BATTERY SOC",12,"#90A5BA"));
         battery=text("—",32,"#70D8B0");battery.setMaxLines(1);battery.setIncludeFontPadding(false);bat.addView(battery);
@@ -132,6 +134,9 @@ final class Scene {
         active=true; int epoch=++generation; started=SystemClock.elapsedRealtime();
         main.post(tick);
         if (demo) {
+            int colour=Color.parseColor("#FF3B30");boolean enabled=true;
+            try{Config sampleConfig=Config.load(context);colour=Color.parseColor(sampleConfig.activityGlowColor);enabled=sampleConfig.activityGlow;}catch(Exception ignored){}
+            cameraGlow.highlight(enabled,colour);
             cameraStatus.setVisibility(View.GONE);
             picture.setImageResource(R.drawable.banner);
             battery.setText("74 %"); charge.setProgress(74); batteryStatus.setText("Illustrative reading");
@@ -143,7 +148,7 @@ final class Scene {
             for(TextView publisher:newsPublishers){publisher.setText("SAMPLE NEWS");publisher.setVisibility(View.VISIBLE);}return;
         }
         try { config=Config.load(context); api=new Api(config); }
-        catch(Exception e) { footer.setText("Setup needed · Open Home Dashboard for instructions");footer.setVisibility(View.VISIBLE); cameraStatus.setText("No valid configuration"); return; }
+        catch(Exception e) { footer.setText("Setup needed · Open cleantv-dashy for instructions");footer.setVisibility(View.VISIBLE); cameraStatus.setText("No valid configuration"); return; }
         loadPanel.setVisibility(config.load.isEmpty()?View.GONE:View.VISIBLE);
         workers=Executors.newScheduledThreadPool(3);
         workers.scheduleWithFixedDelay(()->camera(epoch),0,1,TimeUnit.SECONDS);
@@ -179,6 +184,7 @@ final class Scene {
             int index=(int)((SystemClock.elapsedRealtime()-started)/(config.cameraSeconds*1000L))%cameras.size();
             long now=SystemClock.elapsedRealtime();String focused=config.activityFirst?personFocus.choose(cameras,now):null;
             String name=focused==null?cameras.get(index):focused;
+            post(epoch,()->cameraGlow.highlight(config.activityGlow&&focused!=null,Color.parseColor(config.activityGlowColor)));
             boolean changed=!name.equals(requestedCamera);
             if(changed||(!livePlaying&&now-lastLiveAttempt>30000)){
                 requestedCamera=name;lastLiveAttempt=now;lastSnapshot=0;livePlaying=false;

@@ -23,7 +23,7 @@ final class Api {
         HttpURLConnection c = (HttpURLConnection)new URL(url).openConnection();
         c.setConnectTimeout(6000); c.setReadTimeout(8000);
         c.setInstanceFollowRedirects(false); c.setUseCaches(false);
-        c.setRequestProperty("User-Agent", "cleanyourtv-home-dashboard/1.0");
+        c.setRequestProperty("User-Agent", "cleantv-dashy/1.0");
         return c;
     }
     private byte[] read(HttpURLConnection c, int limit) throws IOException {

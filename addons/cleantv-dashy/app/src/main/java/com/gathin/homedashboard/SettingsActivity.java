@@ -26,7 +26,7 @@ public class SettingsActivity extends Activity {
     private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
     private void build(){
         list=new LinearLayout(this);list.setOrientation(LinearLayout.VERTICAL);list.setPadding(dp(48),dp(28),dp(48),dp(28));list.setBackgroundColor(0xff070c13);
-        TextView title=new TextView(this);title.setText("Home Dashboard");title.setTextSize(30);title.setTextColor(0xfff2f6fa);list.addView(title);
+        TextView title=new TextView(this);title.setText("cleantv-dashy");title.setTextSize(30);title.setTextColor(0xfff2f6fa);list.addView(title);
         TextView intro=new TextView(this);intro.setText("Cameras · Battery SOC · Solar and load power · RSS news");intro.setTextColor(0xff90a5ba);intro.setTextSize(16);list.addView(intro);
         try{
             Config c=Config.load(this);
@@ -38,6 +38,7 @@ public class SettingsActivity extends Activity {
                 if(!c.activityFirst&&c.mqttUrl.isEmpty()){toast("Configure the MQTT broker in your private setup file first");return;}
                 getSharedPreferences("choices",MODE_PRIVATE).edit().putBoolean("activityFirst",!c.activityFirst).apply();build();
             });
+            button("Activity glow: "+(c.activityGlow?c.activityGlowColor:"Off"),()->chooseGlow());
             TextView hint=new TextView(this);hint.setText("In screensaver mode, any remote key returns to the previous app. The dashboard only reads your sensors and cameras. Server connections are configured from your private setup file.");hint.setTextColor(0xff90a5ba);hint.setTextSize(15);list.addView(hint);
         }catch(Exception e){TextView hint=new TextView(this);hint.setText("Connect your private configuration with setup.ps1 first. No credentials are shown or entered here.");hint.setTextColor(0xff90a5ba);list.addView(hint);}
         button("Show demonstration (sample values)",()->startActivity(new Intent(this,DashboardActivity.class).putExtra("demo",true)));
@@ -84,6 +85,17 @@ public class SettingsActivity extends Activity {
         }));dialog.show();
     }
     private void save(String key,JSONArray a){getSharedPreferences("choices",Context.MODE_PRIVATE).edit().putString(key,a.toString()).apply();}
+    private void chooseGlow(){
+        String[] colours={"#FF3B30","#FF9500","#34C759","#32D7E6","#0A84FF","#BF5AF2","#FFFFFF"};
+        new AlertDialog.Builder(this).setTitle("Person activity glow").setItems(new String[]{"Red","Orange","Green","Cyan","Blue","Purple","White","Custom hex colour…","Off"},(d,i)->{
+            if(i<colours.length){saveGlow(colours[i]);return;}
+            if(i==8){getSharedPreferences("choices",MODE_PRIVATE).edit().putBoolean("activityGlow",false).apply();build();return;}
+            EditText input=new EditText(this);input.setSingleLine(true);input.setHint("#FF3B30");
+            AlertDialog dialog=new AlertDialog.Builder(this).setTitle("Hex colour").setView(input).setNegativeButton("Cancel",null).setPositiveButton("Save",null).create();
+            dialog.setOnShowListener(v->dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(b->{try{saveGlow(Config.glowColor(input.getText().toString().trim()));dialog.dismiss();}catch(Exception e){input.setError("Use # followed by six hex digits");}}));dialog.show();
+        }).setNegativeButton("Cancel",null).show();
+    }
+    private void saveGlow(String colour){getSharedPreferences("choices",MODE_PRIVATE).edit().putBoolean("activityGlow",true).putString("activityGlowColor",colour).apply();build();}
     private void toast(String text){if(!isFinishing()&&!isDestroyed())Toast.makeText(this,text,Toast.LENGTH_LONG).show();}
     @Override public void onDestroy(){worker.shutdownNow();super.onDestroy();}
 }

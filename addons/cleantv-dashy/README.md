@@ -1,15 +1,18 @@
-# Home Dashboard
+# cleantv-dashy
 
 A separate Android TV screensaver and module card: rotating live Frigate cameras,
 Home Assistant battery SOC, solar and load power, three RSS/Atom news titles, clock and date.
 Its app entry opens settings with a dashboard preview, camera chooser and feed editor.
 The launcher is unchanged.
 
+The Android package remains `com.gathin.homedashboard` so existing installations
+keep their settings when updating to this name.
+
 The camera occupies the upper left, with compact battery, solar and load cards beneath it.
 Three news titles separated by thin lines fill the right column below the clock,
 with each publisher shown beneath its title.
 
-![Home Dashboard, demonstration mode on a real Chromecast HD](screenshot.jpg)
+![cleantv-dashy, demonstration mode on a real Chromecast HD](screenshot.jpg)
 
 ## Setup
 
@@ -21,10 +24,10 @@ are refused to keep credentials on their configured server. No token appears in 
 
 ```powershell
 $env:TV_ADB_BINARY = 'C:/path/to/adb.exe' # paired Wireless debugging, when needed
-./addons/home-dashboard/setup.ps1 -TvHost '<TV IP:port>' -Config backup/dashboard.json
+./addons/cleantv-dashy/setup.ps1 -TvHost '<TV IP:port>' -Config backup/dashboard.json
 ```
 
-Open **Home Dashboard** in the apps grid. **Cameras** fetches Frigate's enabled
+Open **cleantv-dashy** in the apps grid. **Cameras** fetches Frigate's enabled
 cameras; select one or more and Save, or **All (automatic)** to include future cameras.
 **RSS feeds** adds, edits and removes up to ten HTTPS RSS or Atom URLs. No feeds
 are fetched until you add them. Camera rotation can be 10, 15, 30 or 60 seconds.
@@ -35,6 +38,11 @@ seconds. Frigate's existing alert/zone rules decide which reviews qualify. Cars 
 ordinary motion do not take focus. Several alerts or zones on the same camera use
 one slot. Rotation resumes as soon as all qualifying reviews end. This follows
 Frigate's alert lifecycle, rather than estimating physical presence from a picture.
+Cameras with no required alert zones can qualify anywhere in their view; the
+dashboard does not add zone restrictions that the Frigate server has not configured.
+While person focus is active, a soft halo surrounds the camera card. **Activity glow**
+offers colour presets, a custom `#RRGGBB` colour and Off. It defaults to red and clears
+when normal rotation resumes. The demo illustrates the chosen glow with sample data.
 
 This option is off by default. Configure `mqttUrl` and `mqttTopicPrefix` in the private
 file, then enable it on the TV (or set `activityFirst` to true in that file).
@@ -56,11 +64,11 @@ After verifying the preview, select the system screensaver (Google TV hides the 
 `setup.ps1` records the original selection before installation. Restore it with:
 
 ```powershell
-./addons/home-dashboard/setup.ps1 -TvHost '<TV IP:port>' -Restore
+./addons/cleantv-dashy/setup.ps1 -TvHost '<TV IP:port>' -Restore
 ```
 
 The existing idle timer stays unchanged. Any key ends the system screensaver.
-Home Dashboard declares its module card on the same settings activity as its
+cleantv-dashy declares its module card on the same settings activity as its
 `LEANBACK_LAUNCHER` intent; approve **Show card** if desired. Module-card spec 1.
 
 ## Data and limits
@@ -141,5 +149,7 @@ decoder release were checked with the live version. The existing idle timer was 
 Overlay suppression was verified with a Frigate Glance test card: hidden during
 the real dream and visible again on Home after waking. DreamService requires an
 explicit window-manager layout update for this window attribute to take effect.
+Person-alert focus and return to normal rotation were confirmed on this TV. Red
+and blue glow presets were selected with the remote UI and verified in the demo.
 The screenshot is demonstration mode captured on that TV, with sample values and
 no private camera image. No performance claim is made.
