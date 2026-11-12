@@ -177,6 +177,15 @@ with `HomeKeyService` bound, but it kept launcherx enabled and went through `sto
 build one bound helper is enough to cost the ramp once launcherx is gone. The empty-list control was not run
 here either.
 
+A TCL 55QM8B on the same build (`G08_4K_GB`, `UTT2.250416.001 AU02`, Germany, the third unit in
+[`examples/tcl-c89b-google-tv`](../../examples/tcl-c89b-google-tv/README.md)), launcherx and setupwraith
+disabled, measured the same: the owner held volume up before `HomeKeyService` was bound and it ramped, then with
+it bound alone and it moved one step per press. `consume_volume_keys` changed nothing, as on the 75Q7C above.
+`volume_pauses_filter` brought part of it back: a cold hold still moved one step, but a tap followed by a hold
+within the 4 s pause ramped at the firmware's own speed, and the gear (`settings_key_keycodes` 83) and the
+Netflix, Prime Video and YouTube buttons in `app_keys` kept working once the pause ended. The owner kept that
+setup. One session, on Wi-Fi with no soundbar; the empty-list control was not run.
+
 ## The path in the Android 12 source, and a Philips set measured both ways
 
 The Hisense reading above holds line by line in AOSP `android12-release`, and a fourth vendor measures the
@@ -330,6 +339,12 @@ you do.
   result, where the helpers did not seem to receive the volume key and the switch had nothing to repeat, so
   hold volume after setting it rather than assume. Not checked: a reboot after the switch, or a soundbar or
   HDMI eARC setup. Not tried on the AS23 unit the bisect comes from.
+
+- **Keep the buttons and a ramp after a tap with `volume_pauses_filter`.** Where `consume_volume_keys` has
+  nothing to repeat, a volume change can pause the helpers' key filtering for 4 s instead: the first press
+  steps once, and a press or hold inside the pause repeats as usual. On the TCL 55QM8B (G08, Google TV 14)
+  above, a tap followed by a hold ramped and the mapped buttons kept working; a hold with no tap first is
+  still one step. Not tried on a G09.
 
 The first two are a toggle, not a fix: two one-line `settings` writes switch between the two behaviours
 whenever you want, but never both at once.
