@@ -60,7 +60,9 @@ final class Scene {
 
     Scene(Context context, boolean demo) {
         this.context=context; this.demo=demo;
-        root = column(); root.setBackgroundColor(Color.rgb(7,12,19)); root.setPadding(dp(16),dp(16),dp(16),dp(16));
+        CameraGlow.Backdrop backdrop=new CameraGlow.Backdrop(context);
+        backdrop.setOrientation(LinearLayout.VERTICAL);root=backdrop;
+        root.setBackgroundColor(Color.rgb(7,12,19)); root.setPadding(dp(16),dp(16),dp(16),dp(16));
         LinearLayout bar = row(); bar.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout title = column();
         title.addView(text("cleantv-dashy" + (demo ? "  /  DEMO" : ""), 14, "#70D8B0"));
@@ -86,6 +88,7 @@ final class Scene {
         cam.addView(videoBox,new LinearLayout.LayoutParams(-1,0,1));cam.addView(cameraStatus);
         cameraGlow=new CameraGlow(context);cameraGlow.addView(cam,new FrameLayout.LayoutParams(-1,-1));
         left.addView(cameraGlow,new LinearLayout.LayoutParams(-1,0,1));
+        backdrop.attach(cameraGlow);
         LinearLayout energy=row();
         LinearLayout bat=panel();bat.setPadding(dp(12),dp(8),dp(12),dp(8));bat.addView(text("BATTERY SOC",12,"#90A5BA"));
         battery=text("—",32,"#70D8B0");battery.setMaxLines(1);battery.setIncludeFontPadding(false);bat.addView(battery);

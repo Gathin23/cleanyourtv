@@ -40,7 +40,9 @@ one slot. Rotation resumes as soon as all qualifying reviews end. This follows
 Frigate's alert lifecycle, rather than estimating physical presence from a picture.
 Cameras with no required alert zones can qualify anywhere in their view; the
 dashboard does not add zone restrictions that the Frigate server has not configured.
-While person focus is active, a soft halo surrounds the camera card. **Activity glow**
+While person focus is active, a wide halo spreads behind the camera card, fading
+gradually into the dashboard background over 96 dp. It is drawn behind the cards
+without blurring the video or changing panel sizes. **Activity glow**
 offers colour presets, a custom `#RRGGBB` colour and Off. It defaults to red and clears
 when normal rotation resumes. The demo illustrates the chosen glow with sample data.
 
