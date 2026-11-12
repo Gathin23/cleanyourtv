@@ -1,0 +1,57 @@
+# Continental Edison CELED50SAV222B6 (Expressluck, device guandu, MediaTek m7632), France,
+# Android TV 14, firmware UKNV.260425.001. About 1.8 GB RAM, UI 1920x1080 on a 4K panel.
+# Stock launcher: com.google.android.tvlauncher (classic Android TV home, no launcherx).
+# Live TV: com.mediatek.wwtv.tvcenter.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/continental-edison-celed50sav222b6/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/continental-edison-celed50sav222b6/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Status: applied 2026-11-05 from Windows over Wi-Fi in two batches (telemetry, then apps) with a Home
+# screenshot after each, then launcher/ installed (it disabled tvlauncher and took Home) and one reboot: Home
+# came back on the new launcher and every package below stayed disabled. The owner then checked the remote's
+# app and Input buttons and casting from a phone: all work. Used daily on that set until 2026-11-12 (7 days)
+# with nothing re-enabled and no problem reported.
+#
+# Already disabled from the factory (left alone by undo): Netflix, Prime Video, YouTube Music, Play Games
+# and the uk.co.freeview.* apps.
+#
+# Board notes:
+# - Same Expressluck family as examples/aipro2k, but classic Android TV: setupwraith does not claim HOME on
+#   this firmware, and the saved Wi-Fi belongs to GMS (uid shared with gsf), not setupwraith, so it stays on.
+# - com.cvte.tv.at is present, yet there is no com.cvte.tv.launcher.* package, and the handover from
+#   tvlauncher to the new launcher held across a reboot.
+#
+# Kept on purpose, do not disable:
+# - com.mediatek.tv.service, com.mediatek.tvinput, com.mediatek.autopair, com.express.bt.autopair: remote and HDMI.
+# - com.mediatek.wwtv.tvcenter, com.mediatek.wwtv.setupwizard: Live TV and the Inputs menu.
+# - com.cltv.fast: iWedia TV app with its own TvActivity; not tested without it.
+# - com.mediatek.hotkey.dispatcher: remote's app buttons (runs with INJECT_EVENTS).
+# - com.google.android.apps.mediashell (Chromecast), com.google.android.tv.remote.service (phone remote).
+# - com.mediatek.wwtv.mediaplayer: MMP, USB media player.
+# - Factory packages (com.cvte.tv.at, com.cvte.tv.fac.aging, com.at.factory.*, com.express.at.factory.factorymanager,
+#   com.express.fac.test, com.expressluck.facmenu, mediatek.factorymenu.ui).
+
+# Telemetry and ad services
+tv.anoki.acr.anokiacroptin                  # automatic content recognition (ACR)
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.partnersetup
+
+# Content rows and partner tweaks on the stock home
+com.mediatek.android.leanbacklauncher.partnercustomizer
+com.google.android.tvrecommendations
+
+# Preloaded apps, demos and unused services
+fusion.android.tv.demo                      # retail demo mode
+com.mediatek.androidbox                     # WFDSinkTest, Wi-Fi Display test app
+com.expressluck.tvhelpmanual                # on-screen manual
+com.mstar.android.tv.disclaimercustomization # vendor disclaimer screen
+com.google.android.syncadapters.calendar    # calendar sync, no calendar app on a TV
+
+# Optional, by choice: disabled on the tested set because the owner does not use voice; it turns off the
+# microphone button and voice search.
+# com.google.android.katniss
