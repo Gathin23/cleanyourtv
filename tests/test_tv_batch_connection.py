@@ -263,6 +263,37 @@ class TvBatchConnectionTest(unittest.TestCase):
         self.assertEqual(0, status, err)
         self.assertEqual(["pm list packages -d", "getprop ro.product.model"], sent)
 
+    def test_a_nul_in_a_utf8_batch_is_refused_before_anything_is_sent(self):
+        for ending in ("\n", "\r\n", "\r"):
+            for bom in ("", "\ufeff"):
+                with self.subTest(ending=ending, bom=bool(bom)):
+                    data = (bom + ending.join(["getprop ro.product.model", "# comment",
+                                              "getprop ro.product.device\0bad", ""])).encode("utf-8")
+                    status, out, err, sent = self.run_tv(["--batch"], stdin_bytes=data)
+                    self.assertEqual(2, status, err)
+                    self.assertEqual([], sent)
+                    self.assertEqual("", out)
+                    self.assertIn("NUL", err)
+                    self.assertIn("line 3 ", err)
+                    self.assertNotIn("Traceback", err)
+
+    def test_a_bomless_utf16_batch_with_nuls_is_refused(self):
+        for encoding in ("utf-16-le", "utf-16-be"):
+            with self.subTest(encoding=encoding):
+                data = "getprop ro.product.model\ngetprop ro.product.device\n".encode(encoding)
+                status, out, err, sent = self.run_tv(["--batch"], stdin_bytes=data)
+                self.assertEqual(2, status, err)
+                self.assertEqual([], sent)
+                self.assertEqual("", out)
+                self.assertIn("NUL", err)
+                self.assertIn("line 1 ", err)
+
+    def test_backslash_zero_in_a_shell_command_is_not_a_nul_byte(self):
+        commands = [r"printf '\0'", "getprop ro.product.model"]
+        status, _, err, sent = self.run_batch(commands)
+        self.assertEqual(0, status, err)
+        self.assertEqual(commands, sent)
+
 
 if __name__ == "__main__":
     unittest.main()

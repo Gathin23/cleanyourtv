@@ -117,6 +117,17 @@ elif operation == 'pull':
     def calls(self):
         return [json.loads(line) for line in self.log.read_text().splitlines()]
 
+    def test_batch_nul_is_refused_before_the_first_native_adb_process(self):
+        data = b"getprop ro.product.model\ngetprop ro.product.device\0bad\n"
+        with mock.patch.object(sys, "argv", ["tv.py", "--batch"]), \
+                mock.patch.object(sys, "stdin", types.SimpleNamespace(buffer=io.BytesIO(data))), \
+                contextlib.redirect_stdout(io.StringIO()) as out, \
+                contextlib.redirect_stderr(io.StringIO()) as err:
+            self.assertEqual(self.tv.main(), 2)
+        self.assertFalse(self.log.exists(), "not even get-state should reach the native ADB stand-in")
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("NUL", err.getvalue())
+
     def test_shell_does_not_execute_local_shell_syntax_and_keeps_remote_stderr(self):
         marker = self.dir / "must-not-exist"
         command = f"printf hello; touch '{marker}'"
