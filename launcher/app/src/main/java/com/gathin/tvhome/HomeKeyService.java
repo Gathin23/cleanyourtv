@@ -72,6 +72,8 @@ public class HomeKeyService extends AccessibilityService {
     private final Set<String> stockHome = new HashSet<>();
     /** stock_home_redirect, the stock launcher's package. */
     private String stockHomePackage = "";
+    /** The last window-state package, to tell a Home press on Home from one in an app. */
+    private String frontPackage = "";
     /** power_on_home: the Live TV package to send back to Home, empty when off; armed until this uptime or a key. */
     private String powerOnLiveTv = "";
     private long powerOnUntil;
@@ -225,7 +227,7 @@ public class HomeKeyService extends AccessibilityService {
         }
         // home_key_service.xml subscribes to no events, so the redirects ask for window changes only when one is on.
         AccessibilityServiceInfo info = getServiceInfo();
-        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront)) {
+        if (info != null && (!stockHome.isEmpty() || !powerOnLiveTv.isEmpty() || watchFront || homeLongPressHome)) {
             info.eventTypes |= AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
             setServiceInfo(info);
         }
@@ -294,7 +296,7 @@ public class HomeKeyService extends AccessibilityService {
         }
         // home_long_press_home: Android never sees the Home key, so a held press cannot turn into ALL_APPS.
         if (homeLongPressHome && event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
-            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome();
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome(frontPackage);
             return true;
         }
         if (event.getKeyCode() == KeyEvent.KEYCODE_HOME && !stockHome.isEmpty()) {
@@ -302,7 +304,7 @@ public class HomeKeyService extends AccessibilityService {
             return false;
         }
         if (event.getKeyCode() != KeyEvent.KEYCODE_ALL_APPS) return false;
-        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome();
+        if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) openHome(frontPackage);
         return true;
     }
 
@@ -317,25 +319,26 @@ public class HomeKeyService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return;
-        // app_keys "front:" entries: only activities count, so a toast or the volume bar doesn't change the app in front.
-        if ((!frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty())
-                && event.getPackageName() != null && event.getClassName() != null) {
+        String previousPackage = frontPackage;
+        // Only activities count, so a toast or the volume bar doesn't change the app in front.
+        if (event.getPackageName() != null && event.getClassName() != null) {
             try {
                 ComponentName window = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
                 getPackageManager().getActivityInfo(window, 0);
-                RemoteKeys.frontPackage = window.getPackageName();
+                if (!frontAppKeys.isEmpty() || !frontAppScancodes.isEmpty()) RemoteKeys.frontPackage = window.getPackageName();
+                frontPackage = window.getPackageName();
             } catch (PackageManager.NameNotFoundException notAnActivity) {
                 // a dialog, panel or overlay: the app under it is still in front
             }
         }
         // power_on_home: the firmware opened Live TV by itself at power-on, before anyone pressed a key.
         if (powerOnRedirect(powerOnLiveTv, event.getPackageName(), SystemClock.elapsedRealtime(), powerOnUntil)) {
-            openHome();
+            openHome("");
             return;
         }
         // stock_home_redirect: the firmware turned the stock launcher back on and its home screen came up.
         CharSequence cls = event.getClassName();
-        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome();
+        if (!stockHome.isEmpty() && cls != null && stockHome.contains(cls.toString())) openHome(previousPackage);
     }
 
     /** How long power_on_home stays armed after the screen turns on without a reboot. */
@@ -363,7 +366,7 @@ public class HomeKeyService extends AccessibilityService {
 
     /** power_on_home_always: Home, unless a key was pressed since the screen came on (the user has the TV). */
     private void homeAtPowerOn() {
-        if (stillArmed(SystemClock.elapsedRealtime(), powerOnUntil)) openHome();
+        if (stillArmed(SystemClock.elapsedRealtime(), powerOnUntil)) openHome("");
     }
 
     static boolean stillArmed(long now, long armedUntil) {
@@ -420,7 +423,8 @@ public class HomeKeyService extends AccessibilityService {
     private void redirectHomeKey(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()
                 && isShortPress(event.getDownTime(), event.getEventTime(), ViewConfiguration.getLongPressTimeout())) {
-            handler.postDelayed(this::openHome, HOME_KEY_DELAY_MS);
+            String focusPackage = frontPackage;
+            handler.postDelayed(() -> openHome(focusPackage), HOME_KEY_DELAY_MS);
         }
     }
 
@@ -428,9 +432,17 @@ public class HomeKeyService extends AccessibilityService {
         return upTime - downTime < longPressTimeout;
     }
 
-    private void openHome() {
+    /** Set when the Home key was pressed with this launcher already in front: MainActivity rewinds to the first tile. */
+    static final String EXTRA_HOME_AGAIN = "com.gathin.tvhome.HOME_AGAIN";
+    /** The app in front when Home was pressed, so MainActivity can focus its tile even if it was opened elsewhere. */
+    static final String EXTRA_FOCUS_PACKAGE = "com.gathin.tvhome.FOCUS_PACKAGE";
+
+    private void openHome(String frontPackage) {
         Intent open = stockHomeStays() ? new Intent(this, MainActivity.class)
                 : new Intent(Intent.ACTION_MAIN).setPackage(getPackageName());
+        boolean homeInFront = getPackageName().equals(frontPackage) || stockHomePackage.equals(frontPackage);
+        if (homeInFront) open.putExtra(EXTRA_HOME_AGAIN, true);
+        else if (!frontPackage.isEmpty()) open.putExtra(EXTRA_FOCUS_PACKAGE, frontPackage);
         startActivity(open.addCategory(Intent.CATEGORY_HOME)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
     }
@@ -439,7 +451,7 @@ public class HomeKeyService extends AccessibilityService {
      *  one). A Home intent would then put this launcher in the home task and make it the home process, and from
      *  Android 10 the stock launcher, no longer exempt from the limits on background activity starts, can't open
      *  apps for the remote's YouTube and Netflix buttons (#1274). openHome starts it like an app instead:
-     *  CATEGORY_HOME without ACTION_MAIN is not a Home intent, but still sends MainActivity back to the first tile.
+     *  CATEGORY_HOME without ACTION_MAIN is not a Home intent, and still brings MainActivity forward from an app.
      *  A MainActivity already in the home task, as the install scripts' first start leaves it, is reused as it is
      *  until that task goes (a restart or a reinstall). With this launcher or Android's chooser as Home, openHome
      *  keeps the Home intent. */
