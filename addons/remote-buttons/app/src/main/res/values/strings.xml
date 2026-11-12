@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Remote buttons</string>
+    <string name="service_description">Opens apps for the remote\'s app and gear buttons. It reads the TV\'s key log and filters no keys, so a held volume key keeps repeating.</string>
+    <string name="status_on">✓ On (Settings › Accessibility › Remote buttons)</string>
+    <string name="status_off">✗ Off: run install.sh again, or turn on Remote buttons in Settings › Accessibility</string>
+    <string name="logs_ok">✓ Can read the key log</string>
+    <string name="logs_missing">✗ Cannot read the key log: run install.sh (it grants READ_LOGS over ADB)</string>
+    <string name="map_default">Buttons (built-in Hisense remote map):</string>
+    <string name="map_file">Buttons (from keys.txt):</string>
+    <string name="target_settings">TV Settings</string>
+    <string name="target_home">Home</string>
+    <string name="disabled"> (disabled)</string>
+    <string name="not_installed"> (not installed)</string>
+    <string name="last">Last button: %1$s</string>
+</resources>

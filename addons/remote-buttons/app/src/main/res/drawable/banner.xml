@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner for the Android TV app row: the same remote, on the card's accent. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp" android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#2A1F3D" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#ECEAF2" android:pathData="M146,30h28a10,10 0,0 1,10 10v100a10,10 0,0 1,-10 10h-28a10,10 0,0 1,-10 -10v-100a10,10 0,0 1,10 -10z" />
+    <path android:fillColor="#7E57C2" android:pathData="M160,54m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0" />
+    <path android:fillColor="#ECEAF2" android:pathData="M160,54m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0" />
+    <path android:fillColor="#7E57C2" android:pathData="M145,84h13v9h-13z M162,84h13v9h-13z" />
+    <path android:fillColor="#B9B3C9" android:pathData="M148,106h24v5h-24z M148,118h24v5h-24z" />
+</vector>
