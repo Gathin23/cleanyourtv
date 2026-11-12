@@ -90,7 +90,7 @@ To test wake from standby using the protected ADB test receiver:
 
 ```sh
 # Set a one-off screen wake in 60 seconds, then put the TV in standby with its remote.
-python tools/tv.py 'am broadcast -a io.github.luyzfernando08.sleeptimer.TEST -n io.github.luyzfernando08.sleeptimer/.AlarmReceiver --ez wake true --ei seconds 60'
+tools/venv/bin/python -I tools/tv.py 'am broadcast -a io.github.luyzfernando08.sleeptimer.TEST -n io.github.luyzfernando08.sleeptimer/.AlarmReceiver --ez wake true --ei seconds 60'
 ```
 
 This test leaves the saved weekly schedule unchanged.
