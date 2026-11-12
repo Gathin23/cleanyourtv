@@ -40,10 +40,15 @@ final class Api {
             }
         } finally { c.disconnect(); }
     }
-    Metric sensor(String id, boolean battery) throws Exception {
-        HttpURLConnection c = open(config.haUrl + "/api/states/" + id);
+    Metric sensor(SensorCard card) throws Exception {
+        HttpURLConnection c = open(config.haUrl + "/api/states/" + Config.entity(card.entity));
         c.setRequestProperty("Authorization", "Bearer " + config.token);
-        return Metric.parse(new JSONObject(new String(read(c, 256 * 1024), StandardCharsets.UTF_8)), battery);
+        return Metric.parse(new JSONObject(new String(read(c, 256 * 1024), StandardCharsets.UTF_8)), card);
+    }
+    List<EntityOption> entities() throws Exception {
+        HttpURLConnection c=open(config.haUrl+"/api/states");
+        c.setRequestProperty("Authorization","Bearer "+config.token);
+        return EntityOption.parse(new org.json.JSONArray(new String(read(c,8*1024*1024),StandardCharsets.UTF_8)));
     }
     private void login() throws Exception {
         HttpURLConnection c = open(config.frigateUrl + "/api/login");

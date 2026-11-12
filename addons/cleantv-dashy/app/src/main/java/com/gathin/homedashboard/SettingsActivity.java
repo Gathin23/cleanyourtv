@@ -27,10 +27,12 @@ public class SettingsActivity extends Activity {
     private void build(){
         list=new LinearLayout(this);list.setOrientation(LinearLayout.VERTICAL);list.setPadding(dp(48),dp(28),dp(48),dp(28));list.setBackgroundColor(0xff070c13);
         TextView title=new TextView(this);title.setText("cleantv-dashy");title.setTextSize(30);title.setTextColor(0xfff2f6fa);list.addView(title);
-        TextView intro=new TextView(this);intro.setText("Cameras · Battery SOC · Solar and load power · RSS news");intro.setTextColor(0xff90a5ba);intro.setTextSize(16);list.addView(intro);
+        TextView intro=new TextView(this);intro.setText("Cameras · Editable Home Assistant cards · RSS news");intro.setTextColor(0xff90a5ba);intro.setTextSize(16);list.addView(intro);
         try{
             Config c=Config.load(this);
             button("Open dashboard",()->startActivity(new Intent(this,DashboardActivity.class)));
+            int cardCount=0;for(SensorCard card:c.cards)if(card.enabled)cardCount++;
+            button("Sensor cards: "+cardCount+" shown · edit entities and labels",()->new CardEditor(this,c,worker,this::build).show());
             button(c.cameras.isEmpty()?"Cameras: all Frigate cameras (automatic)":"Cameras: "+c.cameras.size()+" selected",()->chooseCameras(c));
             button("Camera rotation: "+c.cameraSeconds+" seconds",()->new AlertDialog.Builder(this).setTitle("Seconds per camera").setItems(new String[]{"10 seconds","15 seconds","30 seconds","60 seconds"},(d,i)->{getSharedPreferences("choices",MODE_PRIVATE).edit().putInt("cameraSeconds",new int[]{10,15,30,60}[i]).apply();build();}).show());
             button("RSS feeds: "+c.feeds.size()+" configured",()->feeds(c));

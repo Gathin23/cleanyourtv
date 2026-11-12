@@ -31,7 +31,7 @@ if (-not $Config) { throw 'Pass -Config <private config.json>' }
 $configPath = (Resolve-Path -LiteralPath $Config).Path
 try {
     $c = Get-Content -Raw -LiteralPath $configPath | ConvertFrom-Json
-    foreach ($key in @('haUrl','haToken','batteryEntity','solarEntity','frigateUrl')) {
+    foreach ($key in @('haUrl','haToken','frigateUrl')) {
         if (-not $c.$key) { throw 'Missing field' }
     }
 } catch { throw 'Private configuration is invalid; check required fields. Contents were not printed.' }

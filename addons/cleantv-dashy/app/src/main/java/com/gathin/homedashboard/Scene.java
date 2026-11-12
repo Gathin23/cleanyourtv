@@ -32,11 +32,11 @@ final class Scene {
     private final Context context;
     private final boolean demo;
     private final Handler main = new Handler(Looper.getMainLooper());
-    private final TextView clock, date, cameraStatus, battery, batteryStatus, solar, solarStatus, loadPower, loadStatus, newsSource, footer;
-    private final LinearLayout loadPanel;
+    private final TextView clock, date, cameraStatus, newsSource, footer;
+    private final LinearLayout sensorRow;
+    private final SensorTile[] sensorTiles=new SensorTile[3];
     private final TextView[] newsTitles = new TextView[3];
     private final TextView[] newsPublishers = new TextView[3];
-    private final ProgressBar charge;
     private final ImageView picture;
     private final LiveView live;
     private final CameraGlow cameraGlow;
@@ -89,22 +89,13 @@ final class Scene {
         cameraGlow=new CameraGlow(context);cameraGlow.addView(cam,new FrameLayout.LayoutParams(-1,-1));
         left.addView(cameraGlow,new LinearLayout.LayoutParams(-1,0,1));
         backdrop.attach(cameraGlow);
-        LinearLayout energy=row();
-        LinearLayout bat=panel();bat.setPadding(dp(12),dp(8),dp(12),dp(8));bat.addView(text("BATTERY SOC",12,"#90A5BA"));
-        battery=text("—",32,"#70D8B0");battery.setMaxLines(1);battery.setIncludeFontPadding(false);bat.addView(battery);
-        charge=new ProgressBar(context,null,android.R.attr.progressBarStyleHorizontal); charge.setMax(100);
-        charge.setProgressTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#70D8B0"))); bat.addView(charge,new LinearLayout.LayoutParams(-1,dp(5)));
-        batteryStatus=text("Waiting for sensor",10,"#90A5BA");batteryStatus.setIncludeFontPadding(false);batteryStatus.setMaxLines(1);bat.addView(batteryStatus);
-        energy.addView(bat,new LinearLayout.LayoutParams(0,-1,1));
-        LinearLayout pv=panel();pv.setPadding(dp(12),dp(8),dp(12),dp(8));pv.addView(text("SOLAR NOW",12,"#90A5BA"));
-        solar=text("—",31,"#FFD580");solar.setMaxLines(1);solar.setIncludeFontPadding(false);pv.addView(solar);
-        solarStatus=text("Waiting for sensor",10,"#90A5BA");solarStatus.setIncludeFontPadding(false);solarStatus.setMaxLines(1);pv.addView(solarStatus);
-        LinearLayout.LayoutParams sp=new LinearLayout.LayoutParams(0,-1,1); sp.leftMargin=dp(12); energy.addView(pv,sp);
-        loadPanel=panel();loadPanel.setPadding(dp(12),dp(8),dp(12),dp(8));loadPanel.addView(text("LOAD NOW",12,"#90A5BA"));
-        loadPower=text("—",31,"#AED0FF");loadPower.setMaxLines(1);loadPower.setIncludeFontPadding(false);loadPanel.addView(loadPower);
-        loadStatus=text("Waiting for sensor",10,"#90A5BA");loadStatus.setIncludeFontPadding(false);loadStatus.setMaxLines(1);loadPanel.addView(loadStatus);
-        LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,-1,1);lp.leftMargin=dp(12);energy.addView(loadPanel,lp);
-        LinearLayout.LayoutParams ep=new LinearLayout.LayoutParams(-1,dp(88));ep.topMargin=dp(12);left.addView(energy,ep);
+        sensorRow=row();
+        for(int i=0;i<sensorTiles.length;i++){
+            sensorTiles[i]=new SensorTile();
+            LinearLayout.LayoutParams tileParams=new LinearLayout.LayoutParams(0,-1,1);
+            if(i>0)tileParams.leftMargin=dp(12);sensorRow.addView(sensorTiles[i].panel,tileParams);
+        }
+        LinearLayout.LayoutParams ep=new LinearLayout.LayoutParams(-1,dp(88));ep.topMargin=dp(12);left.addView(sensorRow,ep);
         LinearLayout news=panel();
         newsSource=text("NEWS",10,"#70D8B0"); news.addView(newsSource);newsSource.setVisibility(View.GONE);
         for(int i=0;i<newsTitles.length;i++){
@@ -132,6 +123,43 @@ final class Scene {
     private TextView text(String s,float size,String color) {
         TextView t=new TextView(context); t.setText(s); t.setTextSize(size); t.setTextColor(Color.parseColor(color)); t.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL)); return t;
     }
+    private final class SensorTile {
+        final LinearLayout panel=panel();
+        final TextView label=text("",12,"#90A5BA"),value=text("—",32,"#70D8B0"),status=text("Waiting for entity",10,"#90A5BA");
+        final ProgressBar percent=new ProgressBar(context,null,android.R.attr.progressBarStyleHorizontal);
+        SensorTile(){
+            panel.setPadding(dp(12),dp(8),dp(12),dp(8));
+            label.setMaxLines(1);label.setEllipsize(android.text.TextUtils.TruncateAt.END);panel.addView(label);
+            value.setMaxLines(1);value.setIncludeFontPadding(false);value.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            value.setAutoSizeTextTypeUniformWithConfiguration(14,32,1,android.util.TypedValue.COMPLEX_UNIT_SP);
+            panel.addView(value,new LinearLayout.LayoutParams(-1,dp(38)));
+            percent.setMax(100);panel.addView(percent,new LinearLayout.LayoutParams(-1,dp(5)));
+            status.setIncludeFontPadding(false);status.setMaxLines(1);status.setEllipsize(android.text.TextUtils.TruncateAt.END);panel.addView(status);
+        }
+        void bind(SensorCard card){
+            panel.setVisibility(card.enabled?View.VISIBLE:View.GONE);label.setText(card.label);
+            value.setTextColor(Color.parseColor(card.colour));
+            percent.setProgressTintList(android.content.res.ColorStateList.valueOf(Color.parseColor(card.colour)));
+            percent.setVisibility(card.mode.equals("percentage")?View.INVISIBLE:View.GONE);
+        }
+        void show(SensorCard card,Metric metric,String stamp){
+            value.setText(metric.text);status.setText(stamp);
+            if(card.mode.equals("percentage")){
+                percent.setVisibility(Double.isNaN(metric.value)?View.INVISIBLE:View.VISIBLE);
+                if(!Double.isNaN(metric.value))percent.setProgress((int)Math.round(metric.value));
+            }
+        }
+    }
+    private void bindCards(List<SensorCard> cards){
+        int shown=0;
+        for(int i=0;i<sensorTiles.length;i++){
+            SensorCard card=cards.get(i);SensorTile tile=sensorTiles[i];tile.bind(card);
+            LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)tile.panel.getLayoutParams();
+            params.leftMargin=card.enabled&&shown>0?dp(12):0;tile.panel.setLayoutParams(params);
+            if(card.enabled)shown++;
+        }
+        sensorRow.setVisibility(shown==0?View.GONE:View.VISIBLE);
+    }
     void start() {
         if (active) return;
         active=true; int epoch=++generation; started=SystemClock.elapsedRealtime();
@@ -142,17 +170,24 @@ final class Scene {
             cameraGlow.highlight(enabled,colour);
             cameraStatus.setVisibility(View.GONE);
             picture.setImageResource(R.drawable.banner);
-            battery.setText("74 %"); charge.setProgress(74); batteryStatus.setText("Illustrative reading");
-            solar.setText("2.40 kW"); solarStatus.setText("Illustrative reading");
-            loadPower.setText("0.86 kW");loadStatus.setText("Illustrative reading");
-            newsTitles[0].setText("Your cameras and solar readings at a glance");
+            try{
+                List<SensorCard> samples=SensorCard.read(new org.json.JSONObject().put("sensorCards",new JSONArray()
+                    .put(new org.json.JSONObject().put("label","LIVING ROOM").put("entity","sensor.example_temperature").put("decimals",1))
+                    .put(new org.json.JSONObject().put("label","HUMIDITY").put("entity","sensor.example_humidity").put("mode","percentage").put("decimals",0))
+                    .put(new org.json.JSONObject().put("label","FRONT DOOR").put("entity","binary_sensor.example_door"))));
+                bindCards(samples);
+                sensorTiles[0].show(samples.get(0),new Metric("22.4 °C","",22.4),"Illustrative reading");
+                sensorTiles[1].show(samples.get(1),new Metric("46 %","",46),"Illustrative reading");
+                sensorTiles[2].show(samples.get(2),new Metric("Off","",Double.NaN),"Illustrative reading");
+            }catch(org.json.JSONException e){throw new IllegalStateException(e);}
+            newsTitles[0].setText("Your cameras and Home Assistant entities at a glance");
             newsTitles[1].setText("Three latest news titles appear together");
             newsTitles[2].setText("Choose cameras and RSS feeds from your remote");
             for(TextView publisher:newsPublishers){publisher.setText("SAMPLE NEWS");publisher.setVisibility(View.VISIBLE);}return;
         }
         try { config=Config.load(context); api=new Api(config); }
         catch(Exception e) { footer.setText("Setup needed · Open cleantv-dashy for instructions");footer.setVisibility(View.VISIBLE); cameraStatus.setText("No valid configuration"); return; }
-        loadPanel.setVisibility(config.load.isEmpty()?View.GONE:View.VISIBLE);
+        bindCards(config.cards);
         workers=Executors.newScheduledThreadPool(3);
         workers.scheduleWithFixedDelay(()->camera(epoch),0,1,TimeUnit.SECONDS);
         workers.scheduleWithFixedDelay(()->sensors(epoch),0,15,TimeUnit.SECONDS);
@@ -207,15 +242,13 @@ final class Scene {
         }catch(Exception e){post(epoch,()->{if(!livePlaying){picture.setAlpha(.5f);cameraStatus.setText("Camera unavailable · retrying");cameraStatus.setVisibility(View.VISIBLE);}});}
     }
     private void sensors(int epoch) {
-        readSensor(epoch,config.battery,true,battery,batteryStatus,32);
-        readSensor(epoch,config.solar,false,solar,solarStatus,31);
-        if(!config.load.isEmpty())readSensor(epoch,config.load,false,loadPower,loadStatus,31);
+        for(int i=0;i<sensorTiles.length;i++)if(config.cards.get(i).enabled)readSensor(epoch,config.cards.get(i),sensorTiles[i]);
     }
-    private void readSensor(int epoch,String entity,boolean isBattery,TextView value,TextView status,int size){
+    private void readSensor(int epoch,SensorCard card,SensorTile tile){
         try{
-            Metric m=api.sensor(entity,isBattery);String stamp=sourceTime(m.reported);
-            post(epoch,()->{value.setTextSize(Double.isNaN(m.value)?18:size);value.setText(m.text);status.setText(stamp);if(isBattery)charge.setProgress(Double.isNaN(m.value)?0:(int)Math.round(m.value));});
-        }catch(Exception e){post(epoch,()->status.setText("Refresh failed · last value retained"));}
+            Metric m=api.sensor(card);String stamp=sourceTime(m.reported);
+            post(epoch,()->tile.show(card,m,stamp));
+        }catch(Exception e){post(epoch,()->tile.status.setText("Refresh failed · last value retained"));}
     }
     private static String sourceTime(String stamp) {
         try {

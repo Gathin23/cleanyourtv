@@ -13,6 +13,7 @@ import java.util.List;
 final class Config {
     final String haUrl, token, battery, solar, load, frigateUrl, frigateUser, frigatePassword;
     final List<String> cameras = new ArrayList<>(), feeds = new ArrayList<>();
+    final List<SensorCard> cards;
     final int cameraSeconds;
     final boolean activityFirst;
     final boolean activityGlow;
@@ -21,10 +22,11 @@ final class Config {
     Config(JSONObject o) {
         haUrl = base(o.optString("haUrl"));
         token = o.optString("haToken").trim();
-        battery = entity(o.optString("batteryEntity"));
-        solar = entity(o.optString("solarEntity"));
+        battery = optionalEntity(o.optString("batteryEntity"));
+        solar = optionalEntity(o.optString("solarEntity"));
         String loadId=o.optString("loadEntity").trim();
         load=loadId.isEmpty()?"":entity(loadId);
+        cards=SensorCard.read(o);
         frigateUrl = base(o.optString("frigateUrl"));
         frigateUser = o.optString("frigateUser");
         frigatePassword = o.optString("frigatePassword");
@@ -52,9 +54,10 @@ final class Config {
         } catch (java.net.URISyntaxException e) { throw new IllegalArgumentException("Invalid address"); }
     }
     static String entity(String s) {
-        if (!s.matches("sensor\\.[a-z0-9_]+")) throw new IllegalArgumentException("Sensor entity ID required");
+        if (s.length()>255||!s.matches("[a-z][a-z0-9_]*\\.[a-z0-9_]+")) throw new IllegalArgumentException("Use an entity ID such as sensor.room_temperature");
         return s;
     }
+    private static String optionalEntity(String s){return s.trim().isEmpty()?"":entity(s.trim());}
     static String glowColor(String value){
         if(!value.matches("#[A-Fa-f0-9]{6}"))throw new IllegalArgumentException("Use a six-digit hex colour");
         return value.toUpperCase(java.util.Locale.ROOT);
@@ -70,7 +73,7 @@ final class Config {
     static Config load(Context c) throws Exception {
         JSONObject json = new JSONObject(new String(Files.readAllBytes(file(c).toPath()), StandardCharsets.UTF_8));
         android.content.SharedPreferences prefs = c.getSharedPreferences("choices", Context.MODE_PRIVATE);
-        for (String key : new String[]{"cameras", "feeds"}) {
+        for (String key : new String[]{"cameras", "feeds", "sensorCards"}) {
             if (prefs.contains(key)) json.put(key, new JSONArray(prefs.getString(key, "[]")));
         }
         if (prefs.contains("cameraSeconds")) json.put("cameraSeconds", prefs.getInt("cameraSeconds", 15));

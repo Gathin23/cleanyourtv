@@ -1,14 +1,14 @@
 # cleantv-dashy
 
 A separate Android TV screensaver and module card: rotating live Frigate cameras,
-Home Assistant battery SOC, solar and load power, three RSS/Atom news titles, clock and date.
-Its app entry opens settings with a dashboard preview, camera chooser and feed editor.
+three editable Home Assistant entity cards, three RSS/Atom news titles, clock and date.
+Its app entry opens settings with a dashboard preview, card editor, camera chooser and feed editor.
 The launcher is unchanged.
 
 The Android package remains `com.gathin.homedashboard` so existing installations
 keep their settings when updating to this name.
 
-The camera occupies the upper left, with compact battery, solar and load cards beneath it.
+The camera occupies the upper left, with up to three compact entity cards beneath it.
 Three news titles separated by thin lines fill the right column below the clock,
 with each publisher shown beneath its title.
 
@@ -32,6 +32,25 @@ cameras; select one or more and Save, or **All (automatic)** to include future c
 **RSS feeds** adds, edits and removes up to ten HTTPS RSS or Atom URLs. No feeds
 are fetched until you add them. Camera rotation can be 10, 15, 30 or 60 seconds.
 These choices stay on the TV and take precedence over a subsequent config push.
+**Sensor cards** edits each of the three slots: choose an entity from the searchable
+Home Assistant list or enter its ID, set its label, value colour and 0–3 decimal
+places, and choose a display mode. **Auto** displays the entity state with its own
+unit, including temperature, energy, humidity, counts or text/on/off states.
+**Percentage** requires `%` within 0–100 and adds a progress bar. **Power** accepts
+`W` or `kW` and displays kW. These are read-only cards, including for switches and
+other entity domains; they never call services or control devices. Entity attributes
+such as a climate entity's target temperature are not separate card values; use a
+sensor/helper entity exposing the value as its state.
+
+Turn off **Show this card** to hide a slot; the others expand to share the row.
+Hiding all three removes the row. Saved card edits stay on the TV and override the
+private file's `sensorCards`. **Use setup defaults** clears only these card edits.
+The example configuration uses temperature, humidity and a binary sensor; no solar
+setup is required. An empty `sensorCards` array starts with all slots hidden for
+configuration on the TV. Existing files using `batteryEntity`, `solarEntity` and
+optional `loadEntity` retain their labels, formatting, colours and bindings until
+edited. The legacy keys are optional when using `sensorCards`.
+
 **Person alert focus** holds the camera while one qualifying person alert is active;
 when multiple selected cameras have person alerts, it cycles among them every eight
 seconds. Frigate's existing alert/zone rules decide which reviews qualify. Cars and
@@ -52,7 +71,6 @@ The supported broker scheme is `mqtt://`; use a trusted LAN because this connect
 is not encrypted. The client only subscribes to reviews and availability; it never
 publishes camera controls. It reconnects with backoff, seeds ongoing alerts from
 Frigate's API, clears focus on broker loss, and closes when the dashboard ends.
-`loadEntity` is optional; omit it to hide the load-power card.
 **Open dashboard** previews real data; the Menu button returns to settings.
 **Show demonstration** uses clearly labelled sample values without network access.
 
@@ -89,9 +107,11 @@ are omitted from the compact card, as are connection progress messages. An empty
 discovered each time the dashboard opens. A selected camera that no longer exists
 is skipped. Camera rotation is independent of the news card.
 
-The HA sensors refresh every 15 seconds. Battery requires `%` and 0–100; solar and load
-requires `W` or `kW`, displayed as kW. Daily energy (`kWh`) is rejected. Unavailable
-or nonnumeric values are shown as unavailable. Source report times remain visible;
+The HA cards refresh every 15 seconds. Auto uses the entity's reported unit and does
+not convert W or kWh. Numeric states are rounded to the chosen precision; Auto drops
+trailing zeros. Text states remain text, with on/off shown as On/Off. Only Percentage
+requires a numeric 0–100% reading, and only Power converts W to kW (rejecting kWh).
+Unavailable or unknown values are shown as unavailable. Source report times remain visible;
 network failures retain the last good value with an explicit refresh warning.
 
 Feeds refresh every 15 minutes, with up to 20 items per feed and 60 distinct stories
@@ -114,7 +134,7 @@ Android 8–11 do not support this window setting.
 
 - `HIDE_OVERLAY_WINDOWS`: on Android 12+, keep app pop-ups off the system screensaver
   window. This does not revoke another app's overlay permission or stop its service.
-- `INTERNET`: read the HA sensor states, Frigate configuration/snapshots and the
+- `INTERNET`: read HA entity states and discover entity IDs/names on request, Frigate configuration/snapshots and the
   feeds the owner adds, play a live camera over authenticated WSS, and optionally
   subscribe to Frigate's MQTT reviews while visible. No analytics,
   ads, telemetry, background service, boot receiver
@@ -153,5 +173,9 @@ the real dream and visible again on Home after waking. DreamService requires an
 explicit window-manager layout update for this window attribute to take effect.
 Person-alert focus and return to normal rotation were confirmed on this TV. Red
 and blue glow presets were selected with the remote UI and verified in the demo.
+Entity discovery/search and editing a card's label, entity and display mode were
+verified on the same TV: a former load-power card displayed a live temperature in
+°C, persisted after restarting the app, and could be hidden while the other two
+cards expanded. Use setup defaults restored the original three solar-system cards.
 The screenshot is demonstration mode captured on that TV, with sample values and
 no private camera image. No performance claim is made.

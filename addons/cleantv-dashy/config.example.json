@@ -1,9 +1,11 @@
 {
   "haUrl": "https://ha.example.test",
   "haToken": "HOME_ASSISTANT_ACCESS_TOKEN",
-  "batteryEntity": "sensor.battery_soc",
-  "solarEntity": "sensor.pv_power",
-  "loadEntity": "sensor.house_load",
+  "sensorCards": [
+    {"label": "LIVING ROOM", "entity": "sensor.room_temperature", "mode": "auto", "decimals": 1, "colour": "#70D8B0", "enabled": true},
+    {"label": "HUMIDITY", "entity": "sensor.room_humidity", "mode": "percentage", "decimals": 0, "colour": "#FFD580", "enabled": true},
+    {"label": "FRONT DOOR", "entity": "binary_sensor.front_door", "mode": "auto", "decimals": 2, "colour": "#AED0FF", "enabled": true}
+  ],
   "frigateUrl": "https://frigate.example.test",
   "frigateUser": "viewer",
   "frigatePassword": "FRIGATE_VIEWER_PASSWORD",
