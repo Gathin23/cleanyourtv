@@ -20,8 +20,14 @@ Pillow is not on that Python's path. Both halves now print the form the pages an
 message says to.
 
 Two forms are left alone on purpose. `tools/bench.py` and `tools/trace.py` re-exec themselves under the
-venv's Python (`os.execv`), so `python tools/bench.py` and `python3 tools/trace.py` do run - bench.py keeps
-its line, and trace.py's bare `tools/trace.py` is fixed because a 100644 file cannot start at all.
+venv's Python (`os.execv`), so a `python3` line on either runs - and trace.py's bare `tools/trace.py` was
+fixed because a 100644 file cannot start at all. A re-exec rescues the packages, not the name of the
+interpreter: `python` on its own is a command neither a stock Ubuntu 24.04 (its python3 is `/usr/bin/
+python3`; `bash: python: command not found`, 127) nor macOS has, so bench.py's three usage lines -
+`TV_HOST=... python tools/bench.py ...` - were the one command in the tree that no reader on those
+systems could run, and the exemption above read them as fine. They now name the venv's Python like the
+others, as docs/workflows/perf-ab.md already did, and a bare `python` in a usage block is refused here
+whatever the file does with `os.execv`.
 `tools/scenes_wallpapers.py` needs nothing from the venv (it draws SVG with the standard library), so
 `python3` is the right interpreter there. `tools/wallpaper_prep.py` was let through on the same reading,
 because its header told the reader to `python -m pip install` its own requirements - and that line does not
@@ -63,6 +69,11 @@ INTERPRETER = re.compile(r"(?:python(?:3(?:\.\d+)?)?|py)")
 # own `python -m pip install -r tools/requirements...` is read the same way: that pip is not installed on a
 # stock Ubuntu 24.04 (PEP 668) and would not be the one the venv's Python reads anyway.
 VENV_PIP = re.compile(r"(?:tools/venv/bin/pip|python3?(?:\.\d+)? -m pip) install -r tools/requirements")
+# `python` alone is not a command on a stock Ubuntu 24.04 (no /usr/bin/python - the interpreter is
+# /usr/bin/python3) or on macOS: the shell answers `python: command not found`, exit 127, before the
+# script is read. A file that re-execs under the venv rescues the packages, not the name, so a bare
+# `python` usage line is refused whatever the file does with os.execv.
+BARE_PYTHON = re.compile(r"python|py")
 # bench.py and trace.py start again under that venv instead of asking the reader to: a `python3` line is
 # then a command that runs.
 RE_EXEC = re.compile(r"\bos\.execv\(")
@@ -158,6 +169,13 @@ def problems(name, text, mode, source):
         if not named:
             continue              # `python3 -m venv tools/venv`: a setup step, not this tool
         path = "tools/" + named.group(1) + ".py"
+        if BARE_PYTHON.fullmatch(program):
+            found.append(f"{name}: the usage line starts `{program} {path}`, and `{program}` is not a "
+                         f"command a stock Ubuntu 24.04 or macOS has - the shell answers `command not "
+                         f"found` (exit 127) before the script is read, and running the file again under "
+                         f"tools/venv's Python cannot help with a name the shell never resolves. Write "
+                         f"`{VIRTUAL_PYTHON} -I {path}`.")
+            continue
         if VENV_PIP.search(source) and not RE_EXEC.search(source):
             found.append(f"{name}: the usage line starts `{program} {path}`, but the same file tells the "
                          f"reader to install its requirements with a `pip install -r tools/requirements-*.txt` "
@@ -292,12 +310,24 @@ class ReaderTest(unittest.TestCase):
         found = offenders(self.base, {"tools/readme_card.py": "100644"})
         self.assertIn("readme_card.py", found)
 
-    def test_a_script_that_starts_again_under_the_venv_is_quiet(self):
+    def test_a_python3_line_on_a_script_that_starts_again_under_the_venv_is_quiet(self):
+        self.write("bench.py",
+                   "Measures the launcher.\n\n    TV_HOST=192.168.1.50 python3 tools/bench.py --keys 36 --series 3\n",
+                   body='import os\n\ndef again():\n    os.execv("/venv/bin/python", ["python"])\n'
+                        'MSG = "needs adb_shell: tools/venv/bin/pip install -r tools/requirements.txt"\n')
+        self.assertEqual({}, offenders(self.base, {"tools/bench.py": "100644"}))
+
+    def test_a_python_line_is_reported_even_when_the_script_starts_again(self):
+        # bench.py's shape at b9538048, and what a re-exec cannot fix: /usr/bin has python3 and no
+        # python on the CI runner, so the line its header printed answered the shell, not the script.
         self.write("bench.py",
                    "Measures the launcher.\n\n    TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3\n",
                    body='import os\n\ndef again():\n    os.execv("/venv/bin/python", ["python"])\n'
                         'MSG = "needs adb_shell: tools/venv/bin/pip install -r tools/requirements.txt"\n')
-        self.assertEqual({}, offenders(self.base, {"tools/bench.py": "100644"}))
+        found = offenders(self.base, {"tools/bench.py": "100644"})
+        self.assertIn("bench.py", found)
+        self.assertIn("command not found", found["bench.py"][0])
+        self.assertIn("tools/venv/bin/python -I tools/bench.py", found["bench.py"][0])
 
     def test_a_prose_line_that_names_a_tool_is_not_a_command(self):
         self.write("b64push.py", "The TV is reached through tools/tv.py, the client this project ships.\n"

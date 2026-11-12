@@ -16,9 +16,16 @@ TCP with the adb_shell library, so no adb binary is needed. That matters on macO
 platform tools are not installed by default.
 
 Usage:
-    TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3
-    TV_HOST=192.168.1.50 python tools/bench.py --keys 36 --series 3 --out-dir my-results
-    TV_HOST=192.168.1.50 python tools/bench.py --app org.videolan.vlc/.StartActivity
+    TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/bench.py --keys 36 --series 3
+    TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/bench.py --keys 36 --series 3 --out-dir my-results
+    TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/bench.py --app org.videolan.vlc/.StartActivity
+
+The venv's Python is the one tools/requirements.txt installs adb_shell into, and the lines above name
+it rather than a bare `python`. Started with another Python this script runs again under the venv's
+one, which rescues the packages but not the name of the interpreter - `python` on its own is a command
+neither a stock Ubuntu 24.04 nor macOS has, so the line it used to print answered `command not found`
+(exit 127) before anything was read. docs/workflows/perf-ab.md and the other tools' headers already
+name the venv this way.
 
 --app names the app the cold start and the return to Home leave Home for. Without it, the TV's
 Settings, else the first leanback app that is not the launcher.
