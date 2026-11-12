@@ -36,6 +36,25 @@
 # Or set "handle_view_inputs": true (config.xml or a theme): the launcher then answers VIEW_INPUTS and
 # the Input button opens its Inputs menu, with no key helper. Checked on the real remote, second unit.
 #
+# Third A4 unit (status checked 2026-11-11; same Android TV 11 firmware
+# RTT2.221108.001 / 00.00.00.18): 32-bit armeabi-v7a, 1920x1080.
+# CleanYourTV 3.4 resolves as HOME (com.gathin.tvhome/.MainActivity).
+# This unit's original inventory ALREADY had both com.google.android.tvlauncher
+# and com.hisense.tv.customerlauncher disabled. The latter remains in the
+# keep list below: its state here is not advice to disable it on other sets.
+# Other packages still disabled for user 0 on 2026-11-11:
+# com.google.android.onetimeinitializer, com.android.printspooler,
+# com.jamdeo.tv.mediacenter, com.mstar.android.tv.disclaimercustomization,
+# com.hisense.service.message, com.hisense.evservice (eight in total).
+# com.hisense.tv.b2b was briefly disabled and the TV booted; it was
+# re-enabled and is enabled in the current check.
+# With both stock launchers off, the physical Input key did nothing from
+# Home or another app; VIEW_INPUTS did not resolve to an activity. Setting
+# "handle_view_inputs": true in the installed theme's config.json made the
+# physical remote Input key open CleanYourTV's Inputs menu from Home.
+# Replacing config.json and restarting Home also reset this unit's on-TV
+# wallpaper and layout choices; these had to be selected again on the TV.
+#
 # Do NOT disable: com.hisense.tv.smartsense, com.vt.tv.smartsense.ui (the smartsense family sent the
 # Hisense FFM set to Android Recovery), com.mediatek.* (wwtv.tvcenter is Live TV and HDMI; autopair,
 # hotkey.dispatcher, tv.agent), com.hisense.tv.hitvinput (HDMI/AV/tuner inputs), com.hisense.kpad and
