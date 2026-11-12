@@ -75,5 +75,5 @@ TV_HOST=<tv ip> tools/restore.sh examples/tcl-55qm5k/debloat.txt com.google.andr
 TV_HOST=<tv ip> tools/tv.py 'settings delete secure screensaver_components'
 ```
 
-Private DNS to an ad-blocking resolver works on this TV (it does not block YouTube ads); undo with
-`settings put global private_dns_mode opportunistic`.
+Private DNS to an ad-blocking resolver works on this TV (it does not block YouTube ads); the main
+README's optional DNS extra has the setup and its undo.
