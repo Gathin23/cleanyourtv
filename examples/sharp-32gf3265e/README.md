@@ -1,5 +1,7 @@
 # Sharp 32GF3265E
 
+This takes the TV from a sluggish, cluttered interface to a speedy, responsive one. Difference of day and night and day and night!
+
 Tested on one Sharp 32GF3265E ("SHARP 2K Smart TV", device umeda, Skyworth board), Google TV on Android 11
 (SDK 30), firmware RTM9.241015.004, over several days in November 2026.
 
