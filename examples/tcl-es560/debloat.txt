@@ -1,0 +1,92 @@
+# TCL ES560 (ES56 Series), Android TV 9 (API 28), build PPR2.180905.006.A1 (builder.20201115.105034),
+# TCL software V8-R41KT01-LF1V325.
+#
+# Read from this unit over ADB (tools/tv.py --probe, getprop):
+#   ro.product.model UnionTV (TCL), persist.tcl.client_type TCL-EU-RT2841-S1, Realtek RTD284x (RT2841),
+#   32-bit (armeabi-v7a), ro.config.low_ram=true, security patch 2020-09-05, ro.product.first_api_level 26
+#   (shipped with Android 8.0, now on 9), Wi-Fi only.
+#   Fingerprint: TCL/UnionTV/UnionTV:9/PPR2.180905.006.A1/builder.20201115.105034:user/release-keys
+#   Size: sys.socpath names /tclconfig/soc/soc_32_6o8w.ini, which points at the 32-inch 32ES560. The type
+#   plate was not read (wall mount), so the exact retail model and any suffix are not confirmed.
+# From TCL's public pages, not read from this unit: TCL sells the ES560 as its "ES56 Series" HDR TV powered
+#   by Android TV, as 32ES560 and 40ES560, with Google Assistant, Chromecast built-in and Dolby Audio. Those
+#   pages give no Android version, processor, RAM or storage, and offer no manual or datasheet download.
+#
+# Same platform and build as examples/tcl-uniontv-latin-america and examples/thomson-32he5800; this is the
+# TCL-branded EU firmware line (Thomson's units are THOM-EU-RT2841-S1).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-es560/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-es560/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested: applied 2026-11-13 with tools/disable.sh in seven batches, a screenshot after each, then two
+# reboots. Every package below stayed disabled across both reboots except com.tcl.usercenter, which the
+# firmware turned back on by itself between the first and the second reboot and kept on after it; left in
+# the list, it stays idle. launcher/ installed with the default build-and-install.sh, Home confirmed with
+# mResumedActivity after a reboot. With the owner on the real remote: Home, Back, Input, Settings and the
+# app buttons work, and holding Volume Up still ramps (no key helper enabled). The Inputs menu lists
+# HDMI 1, HDMI 2, AV and Live TV; switching to a CEC device on HDMI 1 worked. Not tested: the tuner
+# (antenna/cable/satellite), HDMI 2 and AV.
+#
+# Stock launcher: com.google.android.tvlauncher (restore.sh / build-and-install.sh defaults work). Other HOME
+# claimants are only the two FallbackHome activities (com.tcl.keycustomfunctionservice,
+# com.android.tv.settings); setupwraith is installed but does not claim HOME and does not own the saved
+# Wi-Fi network on this unit. com.google.android.leanbacklauncher is installed and stays enabled.
+# Live TV app: com.tcl.tv (keep it, it owns tuner/HDMI playback; it opens the last input at every boot).
+# HDMI comes in through com.tcl.tvpassthrough; keep it, com.tcl.tvinput and com.tcl.sourcemananger.
+# launcher/ config used on this unit: live_tv_package com.tcl.tv, com.tcl.tv added to hidden_apps, and
+# inputs_cec_state_only true (docs/TROUBLESHOOTING.md, "The Inputs list shows the empty HDMI 1 as connected").
+# com.google.android.videos and com.google.android.play.games were already disabled when this unit
+# arrived, so they are not in the list.
+#
+# Deliberately NOT disabled: com.tcl.versionUpdateApp and com.tcl.rc.ota (firmware updates),
+# com.google.android.tv.remote.service (phone remote), com.tcl.keycustomfunctionservice and com.tcl.keyhelp
+# (remote keys), com.tcl.autopair and com.tcl.tcl_bt_rcu_service (remote pairing), com.tcl.settings,
+# com.tcl.initsetup, com.tcl.framework.custom, com.tcl.systemuioverlay, com.tcl.appstatecontroller,
+# com.realtek.netflix.setting, the TCL media players (com.tcl.audioplayer, imageplayer, videoplayer) and
+# com.tcl.factory.view (a factory package: left exactly as found, never started).
+
+# Telemetry and feedback
+com.tcl.bi                              # TCL analytics / telemetry service
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+
+# Content rows, promos and auto-installs
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations   # disabled cleanly here, no TVINPUT_ALLOW needed
+com.tcl.partnercustomizer               # TCL promo rows / T-key content
+com.tcl.partnercustomizer.resource
+com.google.android.leanbacklauncher.partnerwidget
+com.google.android.leanbacklauncher.partnercustomizer
+android.autoinstalls.config.tcl.device  # Play auto-installs of partner apps; disabled cleanly here
+com.tcl.esticker                        # retail demo stickers
+com.tcl.cyberui                         # "TCL Channel" content app; was enabled on this unit
+
+# TCL extras
+com.tcl.appmarket2                      # TCL app store (Google Play Store stays)
+com.tcl.tvweishi                        # "cleaner" service
+com.tcl.usercenter                      # TCL account; the firmware turns it back on (see header)
+com.tcl.copydatatotv                    # phone-to-TV copy helper, starts at boot
+com.tcl.common.terminalmanagerplus      # TCL device-management service, watches package installs
+com.tcl.useragreement                   # one-time terms screen
+
+# Preloaded apps
+com.google.android.music                # Play Music, discontinued
+com.android.printspooler
+com.android.gallery3d                   # old AOSP gallery
+com.android.wallpaper.livepicker
+
+# Screensaver and speech. The launcher's Clock screensaver replaces Ambient Mode:
+#   tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.ClockDream'
+com.google.android.backdrop             # Ambient Mode screensaver
+com.android.dreams.basic
+com.google.android.tts                  # Google text-to-speech; re-enable if someone needs it
+com.google.android.marvin.talkback      # screen reader; re-enable if someone needs it
+
+# Off by choice on this unit, kept for everyone else. Uncomment what you don't use:
+# com.google.android.katniss              # Google Assistant / voice search
+# com.google.android.speech.pumpkin       # offline hotword, unused once katniss is off
+# com.google.android.apps.mediashell      # Chromecast receiver
+# com.tcl.browser                         # TCL T-Browser
+# com.tcl.ui_mediaCenter                  # TCL Media Center (USB photos/videos/music)
+# com.tiktok.tv                           # TikTok, installed on this unit
