@@ -49,6 +49,9 @@ than the shell, and `TestCardReceiver` shows a test card over whatever is playin
    TV_HOST=<tv ip> addons/frigate-glance/install.sh backup/frigate-glance-config.json
    ```
 
+   With no JDK or Android SDK on this computer, build it in Docker first and skip the build step:
+   `tools/docker-build.sh addons/frigate-glance`, then the same command with `SKIP_BUILD=1` in front.
+
    It builds the add-on, installs it, grants the overlay and auto-start, pushes the config, turns on the key
    service next to any the launcher uses, and prints `Config: read by the app`, `MQTT: ok` and `Frigate: ok`
    (or what went wrong), then shows a test card. The pushed file is deleted on the TV once the add-on has read it.
