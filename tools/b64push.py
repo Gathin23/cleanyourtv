@@ -2,17 +2,18 @@
 """Fallback file transfer: send a file to the TV as base64 chunks through plain shell commands.
 
 Usage: b64push.py <local file> <remote path>
+       b64push.py --help          this text; needs no TV
 
 The file is assembled under a temporary name next to the target and checked with md5sum; only a
 matching copy is moved over the target, so a failed or corrupted transfer leaves the old file alone.
 Where the TV refuses that move (some firmware refuses rename(2) in /data/local/tmp, #1588), the
 verified file is copied over the target and checked again. That copy is not atomic.
 
-Exit status: 0 the copy is on the TV, 1 a transfer failed (the target is as it was, unless that
-copy failed or was interrupted, which the message says), 2 nothing was sent: the arguments were
-refused, the local file could not be read, the packages in tools/requirements.txt are not installed,
-a TV_HOST or a TV_PORT that tools/tv.py refuses at import time (its own words are printed), or the
-connection failed in one of the ways tv.py explains (a refused port, a Wireless
+Exit status: 0 the copy is on the TV, or --help printed this text; 1 a transfer failed (the target is
+as it was, unless that copy failed or was interrupted, which the message says), 2 nothing was sent: the
+arguments were refused, the local file could not be read, the packages in tools/requirements.txt are
+not installed, a TV_HOST or a TV_PORT that tools/tv.py refuses at import time (its own words are
+printed), or the connection failed in one of the ways tv.py explains (a refused port, a Wireless
 debugging port, a handshake that timed out, a TV that cannot be reached). Why it stopped goes to
 stderr, which the scripts that throw the progress on stdout away still show.
 """
@@ -42,6 +43,16 @@ def q(path):
 
 def main():
     args = sys.argv[1:]
+    # -h/--help is a reader asking for this note, not an argument the run cannot use: tv.py, check.py,
+    # theme_restart.py, blocky_wallpapers.py and scenes_wallpapers.py answer it at 0 with the note on
+    # stdout. This one answered it with the two-line usage on stderr and 2, the status its own
+    # docstring gives to "the arguments were refused", so `tools/b64push.py --help | less` showed
+    # nothing and the md5sum and rename fallback the note explains were never printed by the command
+    # that asks for the note. (adb-closed.py answers 2 as well; tests/test_adb_closed_address_words.py
+    # pins that, since its help is read before the address is judged.)
+    if args[:1] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        return 0
     if len(args) != 2:
         sys.stderr.write(USAGE)
         return 2

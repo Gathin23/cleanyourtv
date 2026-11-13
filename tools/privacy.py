@@ -5,6 +5,7 @@
     privacy.py --write <file>       write the candidates as a debloat list for tools/disable.sh
     privacy.py --write <file> --include-low
                                     also the packages that only matched by name
+    privacy.py --help               this text; needs no TV
 
 `--include-low` is read by the list `--write` writes and by nothing else, so on its own it is refused
 with this usage rather than accepted and ignored: the report prints the name matches either way, and a
@@ -20,14 +21,14 @@ package is listening.
 Disabling is left to `tools/disable.sh`, so the undo path is the one every list already uses: the
 record written before the first change, replayed by `tools/restore.sh`.
 
-Exit status: 0 the audit ran (the report printed, or the list written), 1 it reached the TV and then
-failed (the list could not be written, nothing was identified to write, a file that appeared while
-the audit ran), 2 the run never got as far as the TV: an argument was refused, the `--write` target
-cannot be written, `tools/tv.py` could not be loaded, `TV_HOST` is not set or `TV_PORT` is not a port
-number (tv.py judges those at import and says so in its own words), or the connection failed in one of
-the ways tv.py explains (a refused port, a Wireless debugging port, a handshake that timed out, a TV
-that cannot be reached). Why it stopped goes to stderr, which a wrapper that throws the report on
-stdout away still shows.
+Exit status: 0 the audit ran (the report printed, or the list written), or --help printed this text;
+1 it reached the TV and then failed (the list could not be written, nothing was identified to write, a
+file that appeared while the audit ran), 2 the run never got as far as the TV: an argument was
+refused, the `--write` target cannot be written, `tools/tv.py` could not be loaded, `TV_HOST` is not
+set or `TV_PORT` is not a port number (tv.py judges those at import and says so in its own words), or
+the connection failed in one of the ways tv.py explains (a refused port, a Wireless debugging port, a
+handshake that timed out, a TV that cannot be reached). Why it stopped goes to stderr, which a wrapper
+that throws the report on stdout away still shows.
 """
 import os
 import re
@@ -485,6 +486,16 @@ def write_list(path, result, include_low):
 
 def main():
     args = sys.argv[1:]
+    # -h/--help is a reader asking for this note, not an argument the run cannot use: the other tools
+    # in tools/ answer it at 0 with the note on stdout (adb-closed.py is the exception, pinned by
+    # tests/test_adb_closed_address_words.py). This one printed the three usage lines on stderr and
+    # returned 2, the status its docstring gives to "the run never got as far as the TV: an argument
+    # was refused", so `tools/privacy.py --help | less` showed nothing and the report's four groups -
+    # the sentence that says the audit never claims a package is listening - were never printed by the
+    # command that asks what the tool does.
+    if args[:1] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        return 0
     include_low = "--include-low" in args
     args = [a for a in args if a != "--include-low"]
     # --include-low is only read by the list --write makes (list_lines), so `privacy.py --include-low`
