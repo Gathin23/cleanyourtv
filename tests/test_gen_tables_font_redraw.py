@@ -25,6 +25,15 @@ the recipe says, run `python3 tools/gen_tables.py --font Fredoka.ttf`, and been 
 Pillow and cannot pip install one (PEP 668), so the remedy answered with the same line, twice, with a venv
 that could draw both pictures sitting beside the list. The remedy now names the interpreter that ran.
 
+Both calls into that interpreter can also fail to start it. `is_file()` and the execute bit pass for a
+`bin/python` this machine cannot run - a venv copied from another platform, a symlink to an interpreter that
+was removed, a shebang naming a path that is not here - and the two calls then raise OSError, which is a
+traceback in a run whose tables publish() had already written: exit 1, the code that says the generated
+files are stale. The probe's OSError is answered like the venv that has no Pillow (the Python that ran this
+script draws instead); the draw's is answered like the script that exited non-zero (the picture is named,
+the tables are known to be written, and the remedy names an interpreter that runs). Two tests below pin
+each half.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
@@ -105,6 +114,14 @@ exit 0
 # A venv Python that has Pillow and fails the script anyway (a font it cannot use), so the remedy is reached.
 VENV_SCRIPT_FAILS = """case "$*" in *"import PIL"*) exit 0 ;; esac
 exit 1
+"""
+# A venv Python that answers the probe and then removes itself: the script call cannot start it.
+VENV_VANISHES = """case "$*" in *"import PIL"*) rm -f "$0"; exit 0 ;; esac
+exit 0
+"""
+# A venv Python that is there, is executable, and is nothing this machine can run: execve answers ENOENT for
+# a shebang naming a path that does not exist, which is how a venv copied from another machine looks.
+VENV_CANNOT_START = """#!/nonexistent/interpreter
 """
 
 
@@ -236,6 +253,51 @@ class RedrawInterpreterTest(unittest.TestCase):
         # The picture names travel with them, so a first run is not mistaken for the probe.
         self.assertIn("docs/stats.png", logged, logged)
         self.assertEqual(drawn, [], "the card scripts ran under the Python that ran gen_tables.py")
+
+    def test_a_venv_python_that_cannot_start_leaves_this_python_to_draw(self):
+        # bin/python is there and executable, and it is not something this machine can run. That is one more
+        # unusable venv, answered like the venv without Pillow - not a traceback with the tables written.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = stub_checkout(tmp)
+            venv = root / "tools" / "venv" / "bin" / "python"
+            venv.parent.mkdir(parents=True)
+            venv.write_text(VENV_CANNOT_START, encoding="utf-8")
+            venv.chmod(0o755)
+            font = Path(tmp) / "Fredoka.ttf"
+            font.write_bytes(b"any font path that exists: the stubs never read it")
+            done = run(root, font)
+            stats = (root / "docs" / "stats.png").read_bytes() if (root / "docs" / "stats.png").exists() else b""
+            card = (root / "docs" / "card.jpg").read_bytes() if (root / "docs" / "card.jpg").exists() else b""
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertNotIn("Traceback", done.stderr, "an interpreter that cannot start ends in a traceback")
+        self.assertEqual((stats, card), (b"stats", b"card"),
+                         "an interpreter that cannot start stopped the pictures being drawn")
+        self.assertIn("Updated:", done.stdout, done.stdout)
+
+    def test_a_venv_python_that_disappears_before_the_draw_is_named(self):
+        # The probe answered (so the venv looked usable) and the interpreter was gone for the picture: the
+        # same run as a script that exited non-zero, not a traceback after the tables were written.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = stub_checkout(tmp)
+            venv_python(root, VENV_VANISHES)
+            font = Path(tmp) / "Fredoka.ttf"
+            font.write_bytes(b"any font path that exists: the stubs never read it")
+            done = run(root, font)
+            readme = (root / "README.md").read_text(encoding="utf-8")
+            pictures = [root / "docs" / "stats.png", root / "docs" / "card.jpg"]
+        self.assertEqual(done.returncode, 1, f"a draw that could not start exited {done.returncode}")
+        self.assertIn("docs/stats.png was not redrawn", done.stderr, done.stderr)
+        self.assertIn("cannot start tools/venv/bin/python", done.stderr,
+                      f"the interpreter that could not be started is not named: {done.stderr!r}")
+        self.assertIn("The tables are written", done.stderr, done.stderr)
+        # The remedy is one the reader can run: the interpreter that just failed to start is not it.
+        self.assertIn(f"{sys.executable} tools/readme_stats.py", done.stderr,
+                      f"the remedy names an interpreter that cannot start: {done.stderr!r}")
+        self.assertNotIn("python3 tools/readme_stats.py", done.stderr, "the remedy hands back a bare python3")
+        self.assertNotIn("Traceback", done.stderr, "a draw that could not start still ends in a traceback")
+        self.assertIn("TCL A", readme, "the tables were not written before the redraw")
+        for picture in pictures:
+            self.assertFalse(picture.exists(), f"{picture.name} was reported as drawn by a missing interpreter")
 
     def test_a_venv_without_pillow_leaves_this_python_to_draw(self):
         with tempfile.TemporaryDirectory() as tmp:
