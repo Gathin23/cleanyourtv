@@ -88,13 +88,21 @@ public class KeyLogService extends AccessibilityService {
      * @throws IOException when logcat cannot be started or its output cannot be read
      */
     private void readLogUntilStopped() throws IOException {
-        logcatProcess = new ProcessBuilder(LOGCAT_COMMAND).redirectErrorStream(true).start();
-        BufferedReader logReader = new BufferedReader(new InputStreamReader(logcatProcess.getInputStream()));
-        logReader.readLine(); // the one line from before -T 1: never act on an old press
-        String logLine;
-        while (running && (logLine = logReader.readLine()) != null) {
-            int keyCode = KeyMap.keyCodeOfPress(logLine);
-            if (keyCode != KeyMap.NO_PRESS) onButtonPressed(keyCode);
+        Process logcat = new ProcessBuilder(LOGCAT_COMMAND).redirectErrorStream(true).start();
+        // Publish before checking running: onDestroy() clears running and then destroys the published process,
+        // so whichever side runs second sees the other's write and this logcat is never left behind.
+        logcatProcess = logcat;
+        try (BufferedReader logReader = new BufferedReader(new InputStreamReader(logcat.getInputStream()))) {
+            if (!running) return; // stopped while logcat was starting
+            logReader.readLine(); // the one line from before -T 1: never act on an old press
+            String logLine;
+            while (running && (logLine = logReader.readLine()) != null) {
+                int keyCode = KeyMap.keyCodeOfPress(logLine);
+                if (keyCode != KeyMap.NO_PRESS) onButtonPressed(keyCode);
+            }
+        } finally {
+            logcat.destroy(); // on EOF, a read error or shutdown alike, so a retry never orphans this child
+            if (logcatProcess == logcat) logcatProcess = null;
         }
     }
 
