@@ -119,3 +119,97 @@ after a reboot is what this repo wants anyway: switch network debugging on by ha
 Leave `com.xiaomi.mitv.shop` enabled if the set's own app store is wanted: the list in
 `examples/xiaomi-mitv-astr0/debloat.txt` disables it, and without a store the only ways to
 install apps are `adb install` and a USB stick.
+
+## Firmware `OS4.0.1.0.USTAATV`: the volume keys crash SystemUI, and how the home guard survives standby
+
+Same board after an OTA to HyperOS 4, `UD2A.240505.001.W1.OS4.0.1.0.USTAATV`, Android 14 (SDK 34),
+security patch 2025-06-05. The allowlist trampoline still works and Home is still Xiaomi's to hand out, but
+two behaviours cost a long evening and are worth writing down.
+
+### The volume keys blank the screen once PatchWall is disabled
+
+With `com.mitv.tvhome` disabled and a third-party launcher as Home, every press of a volume key on the
+physical remote blanks the screen for a few seconds. It is not the panel: `logcat -b crash` shows SystemUI
+itself dying.
+
+```
+FATAL EXCEPTION: main
+Process: com.android.systemui
+java.lang.NullPointerException: Attempt to invoke virtual method
+  'void android.widget.ImageView.setImageResource(int)' on a null object reference
+  at com.xiaomi.mitv.systemui.statusbar.StatusbarManager.updateMuteState
+  at com.xiaomi.mitv.systemui.volume.VolumeUIMananger.onVolumeChange
+  at com.android.systemui.volume.VolumeDialogControllerImpl$$ExternalSyntheticLambda0.run
+```
+
+`com.android.systemui` here is Xiaomi's own `/system_ext/priv-app/MiTvSystemUI/MiTvSystemUI.apk`, so the
+`com.xiaomi.mitv.systemui.*` frames are vendor code inside the SystemUI process. Its mute icon is null while
+the PatchWall package is disabled; the volume OSD throws, SystemUI dies, Android restarts it, the next volume
+press crashes the restarted process too, and after a few of those
+`ActivityManager: Process com.android.systemui has crashed too many times, killing!` keeps the loop going.
+Injected keys (`input keyevent KEYCODE_VOLUME_UP`) reach the same code, so they reproduce it as well.
+
+The one-line check: while it is broken, `pm enable --user 0 com.mitv.tvhome`. The next volume press works on
+the SystemUI process that is already running (`[VolumeUIMananger]---show value:` in `logcat`, no NPE), and
+disabling it again brings the crash straight back. Nothing else mattered: the same package list with
+PatchWall disabled and enabled decided it, and so did re-enabling every other disabled package.
+
+**So on this build PatchWall has to stay enabled.** No debloat entry removes this dependency.
+
+### The home guard: PatchWall stays Home, and the launcher is bounced forward
+
+With PatchWall enabled, Home cannot be handed to the launcher by any of the usual routes:
+`cmd package set-home-activity` prints `Success` but HOME resolves to the launcher chooser or back to
+PatchWall; `cmd package role add-role-holder android.app.role.HOME ...` is recorded and ignored; and a
+`priority="1000"` on the launcher's HOME intent filter survives in the APK (`aapt2 dump xmltree` shows it)
+while `cmd package query-activities` still reports `priority=0`, so the vendor clamps it. Pinning the launcher
+while PatchWall is disabled and re-enabling PatchWall afterwards drops the preference again.
+
+The working setup is the launcher's guard: `stock_home_redirect = "com.mitv.tvhome"` in `config.xml`, the
+launcher's `HomeKeyService` on `enabled_accessibility_services`, and
+`cmd notification allow_listener com.ts.launcher/com.gathin.tvhome.GuardRevival`. PatchWall keeps the HOME
+role and the volume OSD; the guard sends the TV back to the launcher whenever PatchWall's home screen comes
+up, so the Home key, a cold boot and a wake from standby all land on it.
+
+### The guard dies on standby unless `guard_off_in_standby` is on, and its broadcast is dropped
+
+This is the part that took the longest. The guard works, then one standby/wake leaves PatchWall as Home
+again: `settings get secure enabled_accessibility_services` reads `null`, `logcat` shows the launcher process
+recycled (`Force removing ActivityRecord{...}: app died, no saved state`), and Android does not put a killed
+accessibility service back by itself.
+
+The launcher's repair path is `GuardKeep.ensureHomeKey`, which `GuardRevival` calls each time the system binds
+it again, and it returns immediately unless the standby opt-in is set:
+
+```java
+static void ensureHomeKey(Context context) {
+    HomeKeyService.applyStandbyOptIn();
+    if (!offInStandby(context)) return;   // no repair at all until this is on
+```
+
+That opt-in is a broadcast (`com.gathin.tvhome.GUARD` with the boolean extra `guard_off_in_standby`), and on
+this build the broadcast never reaches the receiver:
+
+```
+reason: skipped by policy at enqueue: Background execution not allowed:
+  receiving Intent { act=com.gathin.tvhome.GUARD } to com.ts.launcher/...GuardConfig
+```
+
+Bringing the launcher to the foreground and carrying `FLAG_RECEIVER_INCLUDE_BACKGROUND` delivers it:
+
+```sh
+am start -W -n com.ts.launcher/com.gathin.tvhome.MainActivity
+am broadcast -a com.gathin.tvhome.GUARD -f 0x01000000 --ez guard_off_in_standby true
+# Broadcast completed: result=0, data="guard_off_in_standby=true"
+```
+
+With the opt-in on, `HomeKeyService` steps off the enabled list on `ACTION_SCREEN_OFF` by itself (so the
+system does not mark it as a crashed service), and `ensureHomeKey` puts it back on `ACTION_SCREEN_ON`, or when
+`GuardRevival` is bound again after the process was killed. Verified on this set: standby for 12 seconds and
+wake, then `enabled_accessibility_services` is back, Home lands on the launcher, and a volume key raises no
+NPE; a cold boot behaves the same.
+
+To recover a set where the guard is off: `pm enable --user 0 com.mitv.tvhome`,
+`cmd package set-home-activity --user 0 com.mitv.tvhome/.MainActivityUserMode`, then the two commands above.
+Disabling PatchWall again is what brings the blank screen back, so it is the wrong fix for a Home problem on
+this firmware.
