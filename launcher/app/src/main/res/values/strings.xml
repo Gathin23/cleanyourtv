@@ -47,6 +47,7 @@
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN off</string>
     <string name="home_settings">Choose default home</string>
+    <string name="home_settings_current">Default Home: %1$s</string>
     <string name="home_settings_help">Select your original home to stop using CleanYourTV as Home, or CleanYourTV to switch back. The original launcher must be enabled and your TV must provide a home picker; use the restore script first if it was disabled.</string>
     <string name="launcher_settings">Launcher settings</string>
     <string name="native_settings">Native settings</string>
@@ -158,4 +159,40 @@
     <string name="clock_format_system">System</string>
     <string name="clock_format_12">12-hour</string>
     <string name="clock_format_24">24-hour</string>
+    <string name="repair_home">Repair Home button</string>
+    <string name="wallpaper_delete">Delete a wallpaper</string>
+    <string name="wallpaper_delete_confirm">Delete “%1$s” from the gallery?</string>
+    <string name="wallpaper_delete_failed">Could not delete this wallpaper.</string>
+    <string name="reload_home">Reload Home</string>
+    <string name="profile_save">Save profile</string>
+    <string name="profile_restore">Restore profile</string>
+    <string name="profile_save_confirm">Save the profile on this TV and replace any previous backup?</string>
+    <string name="profile_restore_confirm">Replace current settings and wallpapers with the backup from %1$s?</string>
+    <string name="profile_missing">No saved profile.</string>
+    <string name="profile_done">Operation completed.</string>
+    <string name="profile_failed">Could not complete the operation.</string>
+    <string name="reset_launcher_confirm">Reset your current settings to the theme defaults?</string>
+    <string name="wallpaper_import">Import an image (USB drive)</string>
+    <string name="wallpaper_import_failed">Choose a JPEG, PNG or WebP image up to 20 MB.</string>
+    <string name="settings_section_display">Appearance</string>
+    <string name="settings_section_system">System</string>
+    <string name="settings_section_profiles">Profiles</string>
+    <string name="profile_description">Description (optional)</string>
+    <string name="profile_summary">Dock: %1$d slots · Rows: %2$d\nWallpaper: %3$s · Animations: %4$s</string>
+    <string name="profile_on">On</string>
+    <string name="profile_off">Off</string>
+    <string name="profile_dock_order">Dock order: %1$s</string>
+    <string name="settings_group_motion">Motion</string>
+    <string name="settings_group_dock">Dock</string>
+    <string name="effect_strength">Effect intensity</string>
+    <string-array name="effect_levels">
+        <item>Subtle</item>
+        <item>Moderate</item>
+        <item>Pronounced</item>
+        <item>Strong</item>
+    </string-array>
+    <string name="language_title">Launcher language</string>
+    <string name="language_current">Launcher language: %1$s</string>
+    <string name="language_tv">TV language</string>
+    <string name="store_badge">Play Store update badge</string>
 </resources>

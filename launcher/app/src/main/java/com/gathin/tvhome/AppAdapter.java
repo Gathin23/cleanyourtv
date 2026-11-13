@@ -172,6 +172,22 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     static final float MIN_HEIGHT_FIT = 0.85f;
 
     private final Context ctx;
+    private final android.content.SharedPreferences.OnSharedPreferenceChangeListener storeBadgeChanged =
+            (prefs, key) -> {
+                for (int index = 0; index < appCount(); index++) {
+                    if (StoreUpdateListener.STORE.equals(packageAt(index))) notifyItemChanged(index);
+                }
+            };
+
+    @Override public void onAttachedToRecyclerView(@NonNull RecyclerView view) {
+        super.onAttachedToRecyclerView(view);
+        StoreUpdateListener.state(ctx).registerOnSharedPreferenceChangeListener(storeBadgeChanged);
+    }
+
+    @Override public void onDetachedFromRecyclerView(@NonNull RecyclerView view) {
+        StoreUpdateListener.state(ctx).unregisterOnSharedPreferenceChangeListener(storeBadgeChanged);
+        super.onDetachedFromRecyclerView(view);
+    }
     private final int rowsBelowDock;
     private final boolean dockTitle;
     /** The owner's saved order (reorder button, Order): key -> rank. Empty when there is none or it no longer applies. */
@@ -202,6 +218,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Set<String> libraryPreload;
     private final boolean animations;
     private final boolean advancedEffects;
+    private final int effectStrength;
     private final boolean showLibrary;
     /** Packages with a leanback entry at the last reload(): their tiles launch with the leanback category. */
     private Set<String> leanbackPackages = new HashSet<>();
@@ -232,6 +249,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.libraryPreload = new HashSet<>(cfg.libraryApps);
         this.animations = cfg.animations;
         this.advancedEffects = cfg.animations && cfg.advancedEffects;
+        effectStrength = effectStrength(ctx.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE));
         this.showHomeSettings = cfg.showHomeSettingsShortcut;
         this.showLibrary = LibraryApps.showPill(cfg.appLibrary, cfg.libraryButton, cfg.showLibraryPill);
         this.reducedMotion = cfg.reducedMotion;
@@ -264,6 +282,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         List<ResolveInfo> found = new ArrayList<>(leanback);
         Set<String> tvPackages = new HashSet<>();
         for (ResolveInfo ri : found) if (ri.activityInfo != null) tvPackages.add(ri.activityInfo.packageName);
+        if (!tvPackages.contains("com.android.vending")) {
+            Intent store = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+                    .setPackage("com.android.vending");
+            ResolveInfo entry = pm.resolveActivity(store, 0);
+            if (entry != null && entry.activityInfo != null
+                    && "com.android.vending".equals(entry.activityInfo.packageName) && entry.activityInfo.exported) {
+                found.add(entry);
+                tvPackages.add(entry.activityInfo.packageName);
+            }
+        }
         leanbackPackages = tvPackages;
         // Copy before merging: LibraryApps.load() may return an immutable empty set (#419).
         Set<String> added = new HashSet<>(LibraryApps.load(ctx));
@@ -452,7 +480,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot, effectStrength);
     }
 
     @Override
@@ -460,6 +488,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLibraryAt(position)) return;
         Holder h = (Holder) holder;
+        android.app.NotificationManager notifications = ctx.getSystemService(android.app.NotificationManager.class);
+        boolean storeUpdate = StoreUpdateListener.STORE.equals(packageAt(position))
+                && notifications != null && notifications.isNotificationListenerAccessGranted(
+                        new ComponentName(ctx, StoreUpdateListener.class))
+                && StoreUpdateListener.state(ctx).getBoolean(StoreUpdateListener.AVAILABLE, false);
+        h.card.findViewById(R.id.storeBadge).setVisibility(storeUpdate ? View.VISIBLE : View.GONE);
         Entry e = items.get(position);
         if (e.kind == Entry.EMPTY) {
             // A free dock slot keeps its place in the row and the band, but shows nothing and takes no focus.
@@ -484,10 +518,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         h.name.setAlpha(focused ? 1f : restNameAlpha);
         h.card.setScaleX(focused && animations ? focusScale() : 1f);
         h.card.setScaleY(focused && animations ? focusScale() : 1f);
-        h.card.setTranslationY(focused && advancedEffects && !dockKind ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
-        h.card.setTranslationZ(focused && advancedEffects ? 8f * ctx.getResources().getDisplayMetrics().density : 0f);
-        h.banner.setScaleX(focused && advancedEffects ? 1.035f : 1f);
-        h.banner.setScaleY(focused && advancedEffects ? 1.035f : 1f);
+        h.card.setTranslationY(focused && advancedEffects && !dockKind ? -focusLift() * ctx.getResources().getDisplayMetrics().density : 0f);
+        h.card.setTranslationZ(focused && advancedEffects ? (8f + 3f * effectStrength) * ctx.getResources().getDisplayMetrics().density : 0f);
+        h.banner.setScaleX(focused && advancedEffects ? 1.035f + 0.015f * effectStrength : 1f);
+        h.banner.setScaleY(focused && advancedEffects ? 1.035f + 0.015f * effectStrength : 1f);
         // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
@@ -676,8 +710,18 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return e.banner != null ? e.banner : e.icon;
     }
 
+    static final String EFFECT_STRENGTH_KEY = "effect_strength";
+
+    static int effectStrength(android.content.SharedPreferences choices) {
+        return Math.max(0, Math.min(3, choices.getInt(EFFECT_STRENGTH_KEY, 0)));
+    }
+
+    float focusLift() {
+        return 4f + 2f * effectStrength;
+    }
+
     float focusScale() {
-        return !animations ? 1f : advancedEffects ? 1.12f : 1.10f;
+        return !animations ? 1f : advancedEffects ? 1.12f + effectStrength * 0.02f : 1.10f;
     }
 
     /** A vivid colour sampled from the app's banner (or icon), cached per entry; a card's accent when it set one. */
@@ -918,7 +962,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         boolean inDock;
 
         Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
-               boolean reducedMotion, float restNameAlpha, boolean overshoot) {
+               boolean reducedMotion, float restNameAlpha, boolean overshoot, int strength) {
             super(v);
             card = v.findViewById(R.id.card);
             cardBackground = card.getBackground();
@@ -954,7 +998,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 view.animate().cancel();
                 banner.animate().cancel();
                 name.animate().cancel();
-                float scale = !animations ? 1f : advancedEffects ? 1.12f : 1.10f;
+                float scale = !animations ? 1f : advancedEffects ? 1.12f + strength * 0.02f : 1.10f;
                 float s = focused ? scale : 1f;
                 if (!animations) {
                     view.setScaleX(1f);
@@ -969,8 +1013,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     // A short zoom with no hardware layer: building a layer for so short an animation costs more
                     // frames than it saves. The name just appears instead of fading.
                     view.animate().scaleX(s).scaleY(s)
-                            .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
-                            .translationZ(focused && advancedEffects ? 8f * density : 0f)
+                            .translationY(focused && advancedEffects && !inDock ? -(4f + 2f * strength) * density : 0f)
+                            .translationZ(focused && advancedEffects ? (8f + 3f * strength) * density : 0f)
                             .setDuration(focused ? Motion.REDUCED_MS : 60)
                             .setInterpolator(new DecelerateInterpolator())
                             .start();
@@ -981,14 +1025,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     if (focused) name.setTranslationY(density * 4f);
                 } else {
                     view.animate().scaleX(s).scaleY(s)
-                            .translationY(focused && advancedEffects && !inDock ? -4f * density : 0f)
-                            .translationZ(focused && advancedEffects ? 8f * density : 0f)
+                            .translationY(focused && advancedEffects && !inDock ? -(4f + 2f * strength) * density : 0f)
+                            .translationZ(focused && advancedEffects ? (8f + 3f * strength) * density : 0f)
                             .setDuration(advancedEffects ? (focused ? 220 : 170) : (focused ? 260 : 180))
                             .setInterpolator(focused && !overshoot ? new DecelerateInterpolator(1.5f)
                                     : new OvershootInterpolator(focused ? (advancedEffects ? 0.7f : 1.6f) : 0f))
                             .withLayer().start();
                     if (advancedEffects) {
-                        banner.animate().scaleX(focused ? 1.035f : 1f).scaleY(focused ? 1.035f : 1f)
+                        banner.animate().scaleX(focused ? 1.035f + 0.015f * strength : 1f).scaleY(focused ? 1.035f + 0.015f * strength : 1f)
                                 .setDuration(280).start();
                     }
                     name.animate().alpha(focused ? 1f : restNameAlpha)

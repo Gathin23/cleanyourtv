@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Accueil</string>
+    <string name="app_name">CleanYourTV</string>
     <string name="inputs">Sources</string>
     <string name="wifi">Wi-Fi</string>
     <string name="settings">Paramètres</string>
@@ -27,6 +27,7 @@
     <string name="vpn">VPN</string>
     <string name="vpn_off">VPN désactivé</string>
     <string name="home_settings">Accueil par défaut</string>
+    <string name="home_settings_current">Accueil Défaut : %1$s</string>
     <string name="home_settings_help">Choisissez un écran d\'accueil dans les paramètres système, puis appuyez sur Accueil.</string>
     <string name="input_key_service_description">Le bouton Source de la télécommande ouvre le choix des sources.</string>
     <string name="home_key_name">Bouton Accueil</string>
@@ -98,4 +99,46 @@
     <string name="clock_format_system">Système</string>
     <string name="clock_format_12">12 heures</string>
     <string name="clock_format_24">24 heures</string>
+    <string name="repair_home">Réparer le bouton Accueil</string>
+    <string name="wallpaper_delete">Supprimer un fond</string>
+    <string name="wallpaper_delete_confirm">Supprimer « %1$s » de la galerie ?</string>
+    <string name="wallpaper_delete_failed">Impossible de supprimer ce fond.</string>
+    <string name="reload_home">Recharger l’accueil</string>
+    <string name="profile_save">Sauvegarder le profil</string>
+    <string name="profile_restore">Restaurer le profil</string>
+    <string name="profile_save_confirm">Enregistrer le profil sur la TV et remplacer toute sauvegarde précédente ?</string>
+    <string name="profile_restore_confirm">Remplacer les réglages et les fonds actuels par la sauvegarde du %1$s ?</string>
+    <string name="profile_missing">Aucun profil sauvegardé.</string>
+    <string name="profile_done">Opération terminée.</string>
+    <string name="profile_failed">Impossible de terminer cette opération.</string>
+    <string name="reset_launcher_confirm">Rétablir les réglages du thème et remplacer tes réglages actuels ?</string>
+    <string name="wallpaper_import">Importer une image (clé USB)</string>
+    <string name="wallpaper_import_failed">Choisis une image JPEG, PNG ou WebP de 20 Mo maximum.</string>
+    <string name="settings_section_display">Apparence</string>
+    <string name="settings_section_system">Système</string>
+    <string name="settings_section_profiles">Profils</string>
+    <string name="profile_description">Description (facultative)</string>
+    <string name="profile_summary">Dock : %1$d places · Rangées : %2$d\nFond : %3$s · Animations : %4$s</string>
+    <string name="profile_on">Activées</string>
+    <string name="profile_off">Désactivées</string>
+    <string name="profile_dock_order">Ordre du dock : %1$s</string>
+    <string name="wallpaper_label">Fond d\&apos;écran</string>
+    <string name="settings_group_dock">Dock</string>
+    <string name="wallpaper_applied">Fond modifié</string>
+    <string name="rows_below_dock_label">Rangées visibles sous le dock</string>
+    <string name="wallpaper_state">Fond d\&apos;écran : %1$s</string>
+    <string name="wallpaper_none">Aucun</string>
+    <string name="wallpaper_theme_default">Fond du thème</string>
+    <string name="settings_group_motion">Animations et effets</string>
+    <string name="effect_strength">Intensité des effets</string>
+    <string-array name="effect_levels">
+        <item>Discrète</item>
+        <item>Modérée</item>
+        <item>Marquée</item>
+        <item>Forte</item>
+    </string-array>
+    <string name="language_title">Langue du lanceur</string>
+    <string name="language_current">Langue du lanceur : %1$s</string>
+    <string name="language_tv">Langue de la TV</string>
+    <string name="store_badge">Pastille de mise à jour Play Store</string>
 </resources>

@@ -14,6 +14,8 @@ final class LauncherLocale {
     // Subtags after the language, so "sr-Latn" and "ar-EG-u-nu-latn" (Arabic with Western digits) pass too.
     private static final Pattern TAG = Pattern.compile("[a-z]{2,3}(-[A-Za-z0-9]{1,8})*");
 
+    static final String LANGUAGE_KEY = "launcher_language";
+
     private LauncherLocale() {
     }
 
@@ -25,8 +27,13 @@ final class LauncherLocale {
 
     /** base with the configured language, or base itself when locale is off. */
     static Context wrap(Context base) {
-        Locale locale = parse(Config.load(base).locale);
-        if (locale == null) return base;
+        String choice = base.getSharedPreferences(Config.SETTINGS_NAME, Context.MODE_PRIVATE)
+                .getString(LANGUAGE_KEY, "");
+        Locale locale = parse(choice);
+        if (locale == null) {
+            Locale.setDefault(base.getResources().getConfiguration().getLocales().get(0));
+            return base;
+        }
         // Formatters that take no Context (the clock's date, the lunar line) follow the default locale.
         Locale.setDefault(locale);
         Configuration c = new Configuration(base.getResources().getConfiguration());
