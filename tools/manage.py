@@ -89,49 +89,10 @@ LAUNCHER_ID = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$")
 
 
 # ---------------------------------------------------------------- reading the repo
+# The README tables are read back through tools/tables.py, the one Markdown-table reader in the
+# repo (gen_tables.py writes them; this reads them; the schema is documented there).
 
-def table_rows(text, header_start):
-    """Rows of the first Markdown table whose header starts with header_start, as lists of cell strings."""
-    rows, inside = [], False
-    for line in text.splitlines():
-        if line.startswith(header_start):
-            inside = True
-            continue
-        if inside:
-            if not line.startswith("|"):
-                if rows:
-                    break
-                continue
-            if re.match(r"^\|[\s:|-]+\|$", line):
-                continue
-            rows.append([c.strip() for c in line.strip().strip("|").split(" | ")])
-    return rows
-
-
-def img_src(cell):
-    m = re.search(r'<img src="([^"]+)"', cell or "")
-    return m.group(1) if m else None
-
-
-def img_srcs(cell):
-    """Every <img src> in a cell, in the order the page draws them.
-
-    docs/switches.md lets one row show more than one picture - `vpn_pill` carries the pill up and the pill at
-    rest - and tests/test_switches.py already reads every one of them. A reader that stops at the first `<img
-    src>` reports half of what the page gives the key, which is what `show` did while the page grew a second
-    picture per row. A picture with no src keeps its place as an empty string, as that page's own reader has it.
-    """
-    out = []
-    for tag in re.findall(r"<img\b[^>]*>", cell or ""):
-        m = re.search(r'\bsrc="([^"]*)"', tag)
-        out.append(m.group(1) if m else "")
-    return out
-
-
-def plain(cell):
-    """A Markdown cell as text: links to their words, code marks dropped."""
-    s = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", cell or "")
-    return s.replace("`", "").strip()
+from tables import img_src, img_srcs, plain, table_rows  # noqa: E402
 
 
 def addons(root=ROOT):

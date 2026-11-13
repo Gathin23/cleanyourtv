@@ -17,6 +17,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import manage  # noqa: E402
+import tables  # noqa: E402  the one Markdown-table reader in the repo, which manage.py imports
 
 
 def keys_table_types():
@@ -24,9 +25,9 @@ def keys_table_types():
     text = (ROOT / "themes" / "README.md").read_text(encoding="utf-8")
     part = text[text.index("## Keys"):]
     out = {}
-    for row in manage.table_rows(part, "| Key |"):
+    for row in tables.table_rows(part, "| Key |"):
         for key in re.findall(r"`([a-z_]+)`", row[0]):
-            out[key] = manage.plain(row[1]) if len(row) > 1 else ""
+            out[key] = tables.plain(row[1]) if len(row) > 1 else ""
     return out
 
 
