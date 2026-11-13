@@ -7,7 +7,7 @@
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-mftr0-android14/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-mftr0-android14/debloat.txt com.mitv.tvhome
-# After a firmware update: TV_HOST=<tv ip> python3 tools/check.py --fix <this list> com.ts.launcher
+# After a firmware update: TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py --fix examples/xiaomi-mitv-mftr0-android14/debloat.txt com.ts.launcher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Notes from this firmware:

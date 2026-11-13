@@ -25,10 +25,30 @@ folder and its references, never at whether the file says how to apply it.
 The rule is about the header, not the file: a comment halfway down that happens to name a script is
 usually a quirk about that package ("disable.sh still refused setupwraith because of the old network"),
 not the way to apply the list.
+
+Naming a command is not the same as naming one that runs, which is the second half here: a header
+that hands out `tools/check.py` as a command has to name the venv's Python in front of it. git has
+`tools/check.py` as 100644 (only `tools/tv.py` and `tools/adb-closed.py` are 100755), so
+`tools/check.py <list>` answers `Permission denied` (exit 126), and the system `python3` answers
+`cannot load tools/tv.py` and exit 2, because the tools read the TV through `adb_shell` in
+`tools/venv`. Two headers handed out a check command neither way would run, against the four that
+spell it the way `docs/firmware-updates.md` does, and `tests/test_documented_tool_commands.py` reads
+the pages but not these files - a list header is plain text, not a code span.
+
+Two xgimi-horizon-20 details are worth keeping: its check line also named `com.gathin.tvhome` where
+`docs/firmware-updates.md` wants the launcher Home stays on, which on a `stock_home_redirect` set is
+the stock launcher (the header says Home still resolves to `com.google.android.apps.tv.launcherx`,
+and its own Undo line names that package), so every run would report Home as drift and `--fix` would
+move Home where that set does not keep it.
 """
+import re
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_documented_tool_commands import tool_modes  # noqa: E402  (git's modes, which a clone gets)
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "examples"
@@ -37,6 +57,19 @@ EXAMPLES = ROOT / "examples"
 # which a list that expects the TV to undo an update itself sends the owner to.
 COMMANDS = ("disable.sh", "disable.ps1", "restore.sh", "restore.ps1", "check.py")
 POINTER = "README.md"
+
+# The Python a header names in front of a tools/*.py has to be the venv's: the tools read the TV
+# through `adb_shell`, which the pages install into tools/venv (`docs/firmware-updates.md` hands out
+# `tools/venv/bin/python -I tools/check.py <list>`), and git has `tools/check.py` as 100644, so a bare
+# `tools/check.py <list>` answers `Permission denied` (exit 126) before it reads anything.
+VENV = ("tools/venv", "tools\\venv")
+TOOL = re.compile(r"(?:\./)?tools[/\\]([A-Za-z0-9_.-]+)\.py")
+# A line that hands out a command starts with the label the repo puts in front of one - `Apply:`,
+# `Undo:`, `Check:`, `After a firmware update:` - where prose that mentions a script does not.
+LABEL = re.compile(r"^#\s*[A-Z][A-Za-z ]{0,28}:\s*(\S.*)$")
+# The command begins after a `VAR=value` in front of it (`TV_HOST=<tv ip> ...`) or with a Python.
+# Without either, the script is inside a sentence: "the commands in README.md here, NOT tools/disable.sh".
+ASSIGNMENT = re.compile(r"^(?:[A-Za-z_][A-Za-z0-9_]*=\S*\s+)+")
 
 
 def header(text):
@@ -75,6 +108,46 @@ def lists(root=None):
     return [(path.parent.name, path) for path in sorted(tree.glob("*/debloat*.txt")) if path.is_file()]
 
 
+def commands(text):
+    """(line number, the text in front of the script, the script) for each tool a header runs."""
+    found = []
+    for number, line in enumerate(header(text).splitlines(), 1):
+        match = LABEL.match(line.strip())
+        if not match:
+            continue
+        body = match.group(1)
+        for script in TOOL.finditer(body):
+            if not body[script.end():][:1].isspace():
+                continue      # the path alone, or one with punctuation after it: a mention, not a command
+            prefix = body[:script.start()]
+            if not (ASSIGNMENT.match(prefix) or "python" in prefix.lower()):
+                continue      # the script sits inside a sentence, which is a mention too
+            found.append((number, prefix, "tools/" + script.group(1) + ".py"))
+    return found
+
+
+def unrunnable(text, modes):
+    """Why the tool commands this header hands out would not run as typed; [] when they all would."""
+    problems = []
+    for number, prefix, script in commands(text):
+        if "python" in prefix.lower():
+            if any(one in prefix for one in VENV):
+                continue      # tools/venv/bin/python -I tools/check.py ..., or the Windows path
+            problems.append(f"line {number}: `{prefix.strip()} {script}` runs on a Python outside tools/venv, "
+                            f"where the pages install adb_shell; a tool that needs it answers `cannot load "
+                            f"tools/tv.py` and exit 2. Name the venv's Python, as docs/firmware-updates.md does: "
+                            f"tools/venv/bin/python -I {script} ...")
+            continue
+        mode = modes.get(script)
+        if mode == "100755":
+            continue          # git carries it executable, which is what a bare command needs
+        problems.append(f"line {number}: `{script}` is started bare and git has it as "
+                        f"{mode or 'a file it does not hold'}: the shell answers `Permission denied` "
+                        f"(exit 126). Name the venv's Python, as docs/firmware-updates.md does: "
+                        f"tools/venv/bin/python -I {script} ...")
+    return problems
+
+
 class TreeTest(unittest.TestCase):
     def test_every_list_header_names_a_command_or_a_readme(self):
         found = lists()
@@ -91,6 +164,26 @@ class TreeTest(unittest.TestCase):
         self.assertIn("debloat-extra.txt", names,
                       "a folder's second list is a file an owner applies, so it is read too")
         self.assertGreater(len(names), 1)
+
+    def test_no_list_hands_out_a_command_that_cannot_run(self):
+        modes = tool_modes()
+        if modes is None:
+            self.skipTest("git is not installed, so the modes a clone gets cannot be read")
+        bad = []
+        for folder, path in lists():
+            for why in unrunnable(path.read_text(encoding="utf-8"), modes):
+                bad.append(f"examples/{folder}/{path.name}: {why}")
+        self.assertEqual([], bad, "\n".join(bad))
+
+    def test_the_sweep_reads_the_commands_it_was_written_for(self):
+        # The rule only has teeth if it sees the commands: a header that names check.py the documented
+        # way is what it reads, and the tree has five of those lines today.
+        seen = ["%s:%d %s" % (path.relative_to(ROOT), number, script)
+                for _, path in lists()
+                for number, _, script in commands(path.read_text(encoding="utf-8"))]
+        self.assertGreaterEqual(len(seen), 5, "the sweep read %d tool commands:\n%s" % (len(seen), "\n".join(seen)))
+        self.assertTrue(any(one.endswith(" tools/check.py") for one in seen),
+                        "the sweep reads no check.py command:\n%s" % "\n".join(seen))
 
 
 class TheWalk(unittest.TestCase):
@@ -197,6 +290,61 @@ class TheReader(unittest.TestCase):
                 "# the wallpapers came from tools/scenes_wallpapers.py\n"
                 "com.example.bloat\n")
         self.assertIsNotNone(problem(text), "only the five commands that send or undo a list count")
+
+
+class TheCommandAHeaderHandsOut(unittest.TestCase):
+    """unrunnable() over headers written here, so the rule is pinned rather than the tree's wording."""
+
+    MODES = {"tools/check.py": "100644", "tools/tv.py": "100755", "tools/disable.sh": "100755"}
+
+    def test_a_bare_script_git_does_not_carry_executable_is_reported(self):
+        text = ("# Some TV\n"
+                "# Check:  TV_HOST=<projector ip> tools/check.py examples/x/debloat.txt\n"
+                "com.example.bloat\n")
+        why = unrunnable(text, self.MODES)
+        self.assertEqual(1, len(why), why)
+        self.assertIn("Permission denied", why[0])
+        self.assertIn("tools/venv/bin/python -I tools/check.py", why[0])
+
+    def test_a_python_outside_the_venv_is_reported(self):
+        text = ("# Some TV\n"
+                "# After a firmware update: TV_HOST=<tv ip> python3 tools/check.py --fix examples/x/debloat.txt\n"
+                "com.example.bloat\n")
+        why = unrunnable(text, self.MODES)
+        self.assertEqual(1, len(why), why)
+        self.assertIn("cannot load tools/tv.py", why[0])
+
+    def test_the_venv_python_passes_on_both_platforms(self):
+        text = ("# Some TV\n"
+                "# Check:   TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py examples/x/debloat.txt\n"
+                "# Reboot:  & tools\\venv\\Scripts\\python.exe -I tools\\tv.py 'reboot'\n"
+                "com.example.bloat\n")
+        self.assertEqual([], unrunnable(text, self.MODES))
+
+    def test_a_script_git_carries_executable_may_be_started_bare(self):
+        text = ("# Some TV\n"
+                "# Check before disabling: tools/tv.py 'dumpsys wifi'\n"
+                "com.example.bloat\n")
+        self.assertEqual([], unrunnable(text, self.MODES))
+
+    def test_a_prose_mention_of_a_script_is_not_a_command(self):
+        # "tools/check.py reported no drift" is a record of a run, not a command to paste; the label
+        # alone does not make it one, so nothing is judged unless a `VAR=value` or a Python leads.
+        text = ("# Some TV\n"
+                "# Check: tools/check.py reported no drift after the reboot\n"
+                "# Checked twice; tools/check.py stayed quiet\n"
+                "# Apply: the commands in README.md here, NOT tools/check.py (this firmware refuses it)\n"
+                "com.example.bloat\n")
+        self.assertEqual([], unrunnable(text, self.MODES))
+
+    def test_the_apply_line_names_a_shell_script_the_rule_leaves_alone(self):
+        # Apply and Undo name tools/*.sh, which git carries 100755 and a shell reads whatever its mode:
+        # this rule is about the Python in front of a tools/*.py, so those lines are not its business.
+        text = ("# Some TV\n"
+                "# Apply: TV_HOST=<tv ip> tools/disable.sh examples/x/debloat.txt\n"
+                "# Undo:  TV_HOST=<tv ip> tools/restore.sh examples/x/debloat.txt\n"
+                "com.example.bloat\n")
+        self.assertEqual([], unrunnable(text, self.MODES))
 
 
 if __name__ == "__main__":

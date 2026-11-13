@@ -3,7 +3,7 @@
 #
 # Apply:  TV_HOST=<projector ip> tools/disable.sh examples/xgimi-horizon-20/debloat.txt
 # Undo:   TV_HOST=<projector ip> tools/restore.sh examples/xgimi-horizon-20/debloat.txt com.google.android.apps.tv.launcherx
-# Check:  TV_HOST=<projector ip> tools/check.py examples/xgimi-horizon-20/debloat.txt com.gathin.tvhome
+# Check:  TV_HOST=<projector ip> tools/venv/bin/python -I tools/check.py examples/xgimi-horizon-20/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is disabled, never uninstalled. Comment out any line you still use.
 #
 # Not the MoGo lists. Those projectors are device altai. Do not copy their package lines here.
