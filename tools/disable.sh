@@ -3,17 +3,71 @@
 # Packages are disabled for user 0, never uninstalled. Undo with tools/restore.sh <same file>.
 #
 # Usage: TV_HOST=192.168.1.50 tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt
+#
+# One argument, the list: a second word is refused rather than dropped (see below). Exit status: 0 the list
+# went through; 1 the run reached the TV and the list did not go through (a batch that stopped, a package the
+# firmware left enabled, a list that cannot be read); 2 the command line is not one debloat list, so nothing
+# was read, written or sent.
 set -euo pipefail
 # The name checks below use ASCII ranges such as [A-Za-z]. In a Turkish locale GNU grep and sed leave
 # i and I out of those ranges (dotted and dotless i), so every name with an i was refused and the
 # Live TV and Settings handler lookups matched nothing (#3286). Match bytes, not the user's alphabet.
 export LC_ALL=C
-LIST="${1:?usage: disable.sh <debloat list>}"
+# The command line is judged here, before a path is resolved, before the venv is looked for and before
+# anything is sent: a word this script cannot read must not reach a TV, and every answer below is in the
+# script's own words rather than a tool's. What the four cases used to do:
+#   - no word at all reached bash's `${1:?...}`, so the only output was "tools/disable.sh: line 11: 1: usage:
+#     disable.sh <debloat list>" - a line number and a `1:` where the usage belongs, and status 1, which is
+#     what a run that started keeps for "the list did not go through";
+#   - `--help` (or `-h`, or `--reset` copied over from theme.sh, whose undo hint people paste) was resolved as
+#     a folder: `dirname` printed its own --help help text inside a `cd: $'...'` line, 844 bytes of coreutils
+#     for a reader asking this script what it takes;
+#   - a list path one folder short died in that same `cd` with this script's line number, naming a folder where
+#     the reader had typed a list, so the "cannot read the list: <path>" sentence written for exactly that (see
+#     below) was never reached;
+#   - a word appended after the list - a second path, a package someone expected this script to take - was
+#     dropped without a word, and the whole list went through anyway. On the one script that changes a TV that
+#     is the worst of the four: the reader believes something was disabled, or that one thing was.
+# restore.sh and theme.sh answer all of these with status 2 and a usage line, and `recovery.py` answers the same
+# words the same way when a caller hands them to it. disable.ps1 refuses them on its own: PowerShell binds one
+# positional argument, `-h` and `--help` are parameter names it does not have, and $List is Mandatory. So this
+# is the twin that had to say it.
+LIST="${1:-}"
+USAGE="usage: TV_HOST=<tv ip> tools/disable.sh <debloat list>"
+if [ -z "$LIST" ]; then
+  echo "disable.sh takes a debloat list: the file to run, as in examples/<your tv>/debloat.txt, or one" >&2
+  echo "tools/privacy.py --write made. Nothing was sent to the TV." >&2
+  echo "$USAGE" >&2
+  exit 2
+fi
+# A word that starts with a dash is an option to the reader who types it, and this script has none. No folder a
+# list lives in starts with a dash.
+case "$LIST" in
+  -*) echo "disable.sh takes one debloat list, and $LIST is a flag it does not have (it takes no options at" >&2
+      echo "all, -h and --help included). Nothing was sent to the TV." >&2
+      echo "$USAGE" >&2
+      exit 2 ;;
+esac
+# The same word one place later. Only the first word was read, so a command line with a package name, a second
+# list or a flag appended to it ran the list and threw that word away in silence; a reader who added a package
+# name expecting it to be disabled read a clean run as done. Say it instead, and send nothing.
+if [ "$#" -gt 1 ]; then
+  shift
+  echo "disable.sh takes one debloat list: $* would not have been used, so this is not a command line it can" >&2
+  echo "read. To disable one package by hand, run tools/tv.py 'pm disable-user --user 0 <package>'; to change a" >&2
+  echo "list, edit it and run it again. Nothing was sent to the TV." >&2
+  echo "$USAGE" >&2
+  exit 2
+fi
 # Resolve the list against the caller's directory before moving into the repo. Git Bash's pwd says
 # /c/Users/..., which the Windows Python cannot open with MSYS_NO_PATHCONV=1 set; pwd -W gives
 # C:/Users/..., the same path (and so the same record) as the PowerShell scripts.
-LIST_DIR="$(cd "$(dirname "$LIST")" && { pwd -W 2>/dev/null || pwd; })"
-LIST="$LIST_DIR/$(basename "$LIST")"
+# A folder that is not there keeps the path as typed, so the reader gets the sentence below about the list they
+# named instead of a `cd:` line from this script; pwd -W is still used when the folder is there, which is what
+# keeps the record's key the same. The PowerShell twin's Resolve-Path already names the list.
+if LIST_DIR="$(cd "$(dirname "$LIST")" 2>/dev/null && { pwd -W 2>/dev/null || pwd; })"; then
+  LIST="$LIST_DIR/$(basename "$LIST")"
+fi
 cd "$(dirname "$0")/.."
 # The safety overrides are read from the environment. `FORCE_HOME=1 tools/disable.sh ...` lasts one
 # command, but an exported value stays set for the shell and reaches child processes (check.py --fix).
@@ -31,9 +85,10 @@ export MSYS_NO_PATHCONV=1
 [ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt"; exit 1; }
 # Lists come from contributors, and the package name is pasted into a shell command on the TV.
 # Refuse the whole list unless every entry is a bare package name (#165).
-# A list read from a directory that is not there dies in the `cd` above; one whose file is not
-# readable only made awk complain, so say it in the script's own words, next to the empty-list
-# message below rather than as a stray awk line.
+# A list read from a directory that is not there used to die in the `cd` above with this script's line
+# number; the path is now kept as typed and named here, and one whose file is not readable only made awk
+# complain, so say it in the script's own words, next to the empty-list message below rather than as a
+# stray awk line.
 [ -r "$LIST" ] || { echo "cannot read the list: $LIST" >&2; exit 1; }
 # Normalise first: Notepad on Windows saves a BOM and CRLF, and without this the first "# TV" line
 # arrives as a package name and every entry keeps a trailing \r (#208).
