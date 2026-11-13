@@ -553,6 +553,7 @@ final class Config {
         boolean applied = false;
 
         File dir = dir(ctx);
+        seedDefaultTheme(ctx, dir);
         File file = dir != null ? new File(dir, FILE_NAME) : null;
         boolean mounted = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
         JSONObject json = readOverlay(ctx, file, mounted);
@@ -766,8 +767,7 @@ final class Config {
     }
 
     private static void syncThemeChoices(SharedPreferences choices, File dir, File config) {
-        File revision = dir == null ? null : new File(dir, THEME_REVISION_NAME);
-        String token = revisionToken(revision);
+        String token = revisionToken(dir == null ? null : new File(dir, THEME_REVISION_NAME));
         String signature = fileStamp(config) + ":" + token;
         String seen = choices.getString(THEME_SIGNATURE_KEY, null);
         if (seen == null) {
@@ -783,6 +783,12 @@ final class Config {
                     .remove(ROWS_BELOW_DOCK_KEY).remove(WALLPAPER_CHOICE_KEY).remove(DOCK_OPACITY_KEY)
                     .remove(CLOCK_FORMAT_KEY).putString(THEME_SIGNATURE_KEY, signature).commit();
         }
+    }
+
+    static void markRestoredTheme(SharedPreferences.Editor editor, File dir) {
+        File config = new File(dir, FILE_NAME);
+        File revision = new File(dir, THEME_REVISION_NAME);
+        editor.putString(THEME_SIGNATURE_KEY, fileStamp(config) + ":" + revisionToken(revision));
     }
 
     /** The dock band opacity chosen in Launcher settings, or the theme's when none (or an out-of-range one) is saved. */
@@ -811,6 +817,35 @@ final class Config {
      * start before the card is mounted (seen at every boot on a Xiaomi MiTV-MTEQ0), and without the copy it comes
      * up with the built-in dock order. A missing file on mounted storage still means no overlay.
      */
+    private static synchronized void seedDefaultTheme(Context context, File dir) {
+        if (dir == null) return;
+        File marker = new File(context.getFilesDir(), "default-theme-initialized");
+        if (marker.isFile()) return;
+        try {
+            if (!new File(dir, FILE_NAME).exists()
+                    && !new File(dir, WALLPAPER_NAME).exists()
+                    && !new File(dir, ThemeFiles.WALLPAPERS).exists()
+                    && context.getSharedPreferences(SETTINGS_NAME, Context.MODE_PRIVATE).getAll().isEmpty()) {
+                copyDefaultAsset(context, "config.json", dir);
+                copyDefaultAsset(context, WALLPAPER_NAME, dir);
+                File gallery = new File(dir, ThemeFiles.WALLPAPERS);
+                java.nio.file.Files.createDirectories(gallery.toPath());
+                for (String name : context.getAssets().list("default-theme/wallpapers")) {
+                    copyDefaultAsset(context, "wallpapers/" + name, dir);
+                }
+            }
+            marker.createNewFile();
+        } catch (java.io.IOException failure) {
+            android.util.Log.w("CleanYourTV", "Could not initialize the default theme", failure);
+        }
+    }
+
+    private static void copyDefaultAsset(Context context, String path, File dir) throws java.io.IOException {
+        try (InputStream source = context.getAssets().open("default-theme/" + path)) {
+            java.nio.file.Files.copy(source, new File(dir, path).toPath());
+        }
+    }
+
     private static JSONObject readOverlay(Context ctx, File file, boolean mounted) {
         File copy = new File(ctx.getFilesDir(), FILE_NAME);
         if (!mounted) return read(copy);

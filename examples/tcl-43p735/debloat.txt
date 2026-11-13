@@ -1,0 +1,7 @@
+# TCL 43P735 (BeyondTV4), Google TV / Android TV 11, V8-R51MT05-LF1V620.021315
+# Apply: TV_HOST=<tv-ip> tools/disable.sh examples/tcl-43p735/debloat.txt
+# Undo: TV_HOST=<tv-ip> tools/restore.sh examples/tcl-43p735/debloat.txt com.google.android.apps.tv.launcherx
+# Keep Google TV Home, the setup wizard, updates, TV inputs, and remote services enabled.
+# Verified after reboot on one set. See README.md for setup and test limits.
+com.tcl.bi
+com.tcl.overseasappshow

@@ -47,6 +47,14 @@
             android:textSize="13sp"
             android:fontFamily="@string/font_body"
             android:visibility="gone" />
+        <View android:id="@+id/storeBadge"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/store_update_dot"
+            android:visibility="gone"
+            android:importantForAccessibility="no" />
     </FrameLayout>
 
     <TextView

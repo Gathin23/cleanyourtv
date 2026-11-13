@@ -717,7 +717,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             // Keep the hero below the header when the library is enabled on a short screen,
             // even when the theme requests an extra visible row below the dock.
             int shelfClearance = cfg.appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
-            int want = Math.max(shelfClearance, h - dockRow - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
+            int want = Math.max(shelfClearance, h - dockRow - gridRows - (rowsBelowDock == 0 && !singleRow ? 0 : (int) (AppAdapter.BOTTOM_ROOM_DP * density)));
             // Where the rows cannot fit even at the smallest tile (3 rows with the title on), the title keeps its
             // room above the dock and the last rows run off the bottom instead of the title drawing over the clock.
             if (MainActivity.this.dockRow && cfg.dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
@@ -835,9 +835,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         btnSettings.setOnClickListener(v -> {
             if (launcherSettingsButton) startActivityForResult(
-                    new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
+                    launcherSettingsIntent(), LAUNCHER_SETTINGS_REQUEST);
             else open(systemIntent(Settings.ACTION_SETTINGS));
         });
+        TextView tvSettings = null;
+        if (launcherSettingsButton && !cfg.topMenu) {
+            ViewGroup bar = findViewById(R.id.topButtons);
+            tvSettings = (TextView) getLayoutInflater().inflate(R.layout.top_app_button, bar, false);
+            tvSettings.setId(View.generateViewId());
+            tvSettings.setContentDescription(getText(R.string.settings));
+            tvSettings.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_settings, 0, 0, 0);
+            tvSettings.setOnClickListener(v -> open(systemIntent(Settings.ACTION_SETTINGS)));
+            int anchor = bar.indexOfChild(btnSettings);
+            bar.addView(tvSettings, anchor + 1);
+            topAppButtons.add(tvSettings);
+        }
         btnReorder = findViewById(R.id.btnReorder);
         btnReorder.setOnClickListener(v -> toggleReorder());
         btnReorder.setVisibility(cfg.reorderButton ? View.VISIBLE : View.GONE);
@@ -900,6 +912,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
         boolean rtlMenuBar = getResources().getBoolean(R.bool.rtl_menu_bar);
+        int settingsEdge = tvSettings == null ? R.id.btnSettings : tvSettings.getId();
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
@@ -909,8 +922,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 return true;
             }
             int firstButton = btnInputs.getVisibility() == View.VISIBLE ? R.id.btnInputs : firstTopButton().getId();
-            int leftButton = rtlMenuBar ? R.id.btnSettings : firstButton;
-            int rightButton = rtlMenuBar ? firstButton : R.id.btnSettings;
+            int leftButton = rtlMenuBar ? settingsEdge : firstButton;
+            int rightButton = rtlMenuBar ? firstButton : settingsEdge;
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) return v.getId() == leftButton;
             return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == rightButton;
         };
@@ -1040,10 +1053,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         return true;
     }
 
+    private Intent launcherSettingsIntent() {
+        ArrayList<String> dock = new ArrayList<>();
+        if (dockRow && adapter != null) {
+            for (int index = 0; index < COLUMNS; index++) {
+                dock.add(adapter.labelAt(index));
+            }
+        }
+        return new Intent(this, LauncherSettingsActivity.class)
+                .putStringArrayListExtra(LauncherSettingsActivity.EXTRA_DOCK_LABELS, dock);
+    }
+
     private boolean openLauncherSettingsIfAsked(Intent intent) {
         if (intent == null || !ACTION_LAUNCHER_SETTINGS.equals(intent.getAction())) return false;
         setIntent(new Intent(Intent.ACTION_MAIN));
-        startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST);
+        startActivityForResult(launcherSettingsIntent(), LAUNCHER_SETTINGS_REQUEST);
         return true;
     }
 
@@ -1777,7 +1801,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
-        // Home screen: Back goes nowhere, unless back_opens_clock is on.
+        if (dockRow && !singleRow && grid.hasFocus() && lastFocused >= COLUMNS) {
+            focusTile(lastFocused % COLUMNS);
+            return;
+        }
+        // On the dock, keep the configured Back action.
         if (backOpensClock) startActivity(new Intent(this, ClockActivity.class));
     }
 
@@ -1837,7 +1865,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         float x = r.exactCenterX() - w / 2f;
         // advanced_effects lifts a focused grid tile by 4dp and the glass follows it; dock tiles stay put (#2135).
         boolean lifted = advancedEffects && !DockSlots.inDockRow(dockRow, singleRow, position, COLUMNS);
-        float y = r.exactCenterY() - h / 2f - (lifted ? 4f * density : 0f);
+        float y = r.exactCenterY() - h / 2f - (lifted ? adapter.focusLift() * density : 0f);
 
         ViewGroup.LayoutParams lp = glass.getLayoutParams();
         if (lp.width != (int) w || lp.height != (int) h || card.getWidth() != glassCardW) {
@@ -3158,23 +3186,35 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     /** vpn_app's launch intent, or null when none is set or it is not installed. */
     private Intent vpnAppIntent() {
-        if (vpnApp.isEmpty()) return null;
-        Intent i = getPackageManager().getLeanbackLaunchIntentForPackage(vpnApp);
-        return i != null ? i : getPackageManager().getLaunchIntentForPackage(vpnApp);
+        if (!vpnApp.isEmpty()) {
+            Intent configured = vpnLaunchIntent(vpnApp);
+            if (configured != null) return configured;
+        }
+        Intent candidate = null;
+        String candidatePackage = null;
+        for (ResolveInfo service : getPackageManager().queryIntentServices(
+                new Intent(android.net.VpnService.SERVICE_INTERFACE), 0)) {
+            if (service.serviceInfo == null
+                    || !"android.permission.BIND_VPN_SERVICE".equals(service.serviceInfo.permission)) continue;
+            String pkg = service.serviceInfo.packageName;
+            if (pkg.equals(candidatePackage)) continue;
+            Intent launch = vpnLaunchIntent(pkg);
+            if (launch == null) continue;
+            if (candidate != null) return systemIntent(Settings.ACTION_VPN_SETTINGS);
+            candidate = launch;
+            candidatePackage = pkg;
+        }
+        return candidate;
     }
 
-    /**
-     * vpn_pill: the VPN app, where it is switched on and off. Without one installed, the App library to pick from, or
-     * Android's VPN settings when the theme turned the library off.
-     */
+    private Intent vpnLaunchIntent(String pkg) {
+        Intent intent = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
+        return intent != null ? intent : getPackageManager().getLaunchIntentForPackage(pkg);
+    }
+
     private void openVpnPill() {
-        Intent i = vpnAppIntent();
-        if (i != null || !appLibraryEnabled) {
-            open(i != null ? i : systemIntent(Settings.ACTION_VPN_SETTINGS));
-            return;
-        }
-        onLibraryRequested();
-        libraryFromVpnPill = true;
+        Intent intent = vpnAppIntent();
+        open(intent != null ? intent : systemIntent(Settings.ACTION_VPN_SETTINGS));
     }
 
     /** vpn_pill: the pill outlined in green with a lock while a VPN is up, outlined in red "VPN off" while it is not;
@@ -3707,7 +3747,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         addInputRow(rows, popup, R.drawable.ic_swap_vert, getString(R.string.reorder), -1, this::toggleReorder);
         if (launcherSettingsButton) {
             addInputRow(rows, popup, R.drawable.ic_home_settings_pill, getString(R.string.launcher_settings), -1,
-                    () -> startActivityForResult(new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+                    () -> startActivityForResult(launcherSettingsIntent(), LAUNCHER_SETTINGS_REQUEST));
         } else {
             addInputRow(rows, popup, R.drawable.ic_settings, getString(R.string.settings), -1,
                     () -> open(systemIntent(Settings.ACTION_SETTINGS)));
@@ -3725,7 +3765,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         LinearLayout rows = panel.findViewById(R.id.rows);
         PopupWindow popup = glassPopup(panel, (int) (200 * density));
         if (!launcherSettingsButton) addSettingsMenuRow(rows, popup, R.string.launcher_settings, () -> startActivityForResult(
-                new Intent(this, LauncherSettingsActivity.class), LAUNCHER_SETTINGS_REQUEST));
+                launcherSettingsIntent(), LAUNCHER_SETTINGS_REQUEST));
         // Firmware that ships its own settings app next to the AOSP one (Xiaomi China is one): the
         // vendor app holds pages the AOSP settings has no row for, such as Account & Security with
         // the ADB switch. Offered here only while one of them is installed.
