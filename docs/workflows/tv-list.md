@@ -121,4 +121,6 @@ why in the header; keeping it enabled is preferred. `pm hide` or `pm block` need
 Edits to someone else's list are judgement calls, so say in the PR which TV you tested on and for how long. If the
 row should say something new, change the folder's `tv.json`, not the tables.
 
-Then run the tests: `python3 -m unittest discover -s tests -v`.
+Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
+[`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
+`adb_shell` and Pillow the suite imports - under the system `python3` those checks skip and the run still says OK.

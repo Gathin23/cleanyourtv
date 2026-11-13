@@ -31,4 +31,6 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
 Anything TV-specific goes in `config.xml` or a theme, not in code. A bug fix that corrects wrong behaviour needs
 no switch. No new dependencies in `launcher/app/build.gradle` without an issue first.
 
-Then run the tests: `python3 -m unittest discover -s tests -v`.
+Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
+[`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
+`adb_shell` and Pillow the suite imports - under the system `python3` those checks skip and the run still says OK.

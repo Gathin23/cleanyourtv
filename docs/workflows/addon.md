@@ -26,4 +26,6 @@
 7. No APKs in the repo. `tests/test_addons.py` checks all of this; `.github/workflows/addons.yml` builds the
    add-ons that changed with `./gradlew --no-daemon assembleRelease`.
 
-Then run the tests: `python3 -m unittest discover -s tests -v`.
+Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
+[`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
+`adb_shell` and Pillow the suite imports - under the system `python3` those checks skip and the run still says OK.
