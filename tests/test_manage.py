@@ -79,7 +79,9 @@ class ManageTest(unittest.TestCase):
             ([("", 1, "failed to connect")], 1, "failed to connect"),
             ([("package:com.a\n", 1, "")], 1, "package:com.a"),
             ([("", 255, "")], 1, "tv.py exited with status 255"),
-            ([("", 0, ""), ("", 1, "unauthorized")], 1, "unauthorized"),
+            # `status` asks which package answers HOME before it reads that launcher's config.json; a firmware
+            # that cannot answer that query is not a failure (the default id is used), but a failed read is.
+            ([("", 0, ""), ("", 0, ""), ("", 1, "unauthorized")], 1, "unauthorized"),
             ([("", 2, "127.0.0.1:1 refused the connection")], 2, "refused the connection"),
         ]:
             with self.subTest(code=code, message=message):
@@ -90,14 +92,15 @@ class ManageTest(unittest.TestCase):
                 self.assertIn(message, err.getvalue())
 
     def test_status_reads_an_empty_tv(self):
-        code, out = self.status(("", 0, ""), ("", 0, ""))
+        code, out = self.status(("", 0, ""), ("", 0, ""), ("", 0, ""))
         self.assertEqual(code, 0)
         self.assertIn("launcher: not installed", out)
         self.assertIn("theme: none", out)
 
     def test_status_finds_the_launcher_and_a_theme(self):
         theme = ROOT / "themes" / manage.themes()[0]["id"] / "config.json"
-        code, out = self.status(("package:" + manage.LAUNCHER_PKG + "\n", 0, ""), (theme.read_text(encoding="utf-8"), 0, ""))
+        code, out = self.status(("package:" + manage.LAUNCHER_PKG + "\n", 0, ""), ("", 0, ""),
+                                (theme.read_text(encoding="utf-8"), 0, ""))
         self.assertEqual(code, 0)
         self.assertIn("launcher: installed", out)
         self.assertIn("theme: " + manage.themes()[0]["id"], out)

@@ -13,7 +13,10 @@ build-and-install.sh, or the steps in addons/README.md; tools/theme.sh or theme.
 
 install on an installed add-on updates it (pm install -r). show prints every picture a switch's row carries in
 docs/switches.md, since a few keys have two (the pill up and at rest for `vpn_pill`), and a reader who copies
-only the first path would see half of what the page documents. set writes the key into a theme folder of your own and
+only the first path would see half of what the page documents. status asks the TV which package answers HOME
+with the launcher's own MainActivity, because a build made with -PlauncherApplicationId (some firmware only lets
+an allowlisted name be Home) keeps the class and moves the id: that is the package it reports, and the
+`/sdcard/Android/data/<id>/files/config.json` it reads the pushed theme from. set writes the key into a theme folder of your own and
 pushes it with the platform's theme script, as themes/README.md describes; it never edits a folder in this checkout, so pointing
 --theme at the project's themes/ or examples/ is refused before anything is written. set reads the value the way
 the key's own type in the Keys table needs - true or false for a bool, a JSON list, object or number where the
@@ -72,6 +75,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS = ROOT / "tools"
 LAUNCHER_PKG = "com.gathin.tvhome"
+# The launcher does not always run under its default id: some firmware only lets a package name it allowlists be
+# Home, so launcher/app/build.gradle takes -PlauncherApplicationId and the device notes send people there
+# (docs/devices/xiaomi-mitv-mftr0-debloat-home.md wants com.ts.launcher on a China Xiaomi set, and
+# docs/devices/skyworth-7t861-a23.md com.coocaa.tvhome on a Coocaa one). The activity class does not move with
+# the id - it is always <applicationId>/com.gathin.tvhome.MainActivity - so the TV is asked which package wears
+# it, with the same HOME query tools/disable.sh reads its claimants with. status read the default id and its
+# directory, so on such a set it answered "launcher: not installed" about an installed launcher and "theme: none
+# (the built-in config.xml)" about a theme it had just pushed (#3703).
+LAUNCHER_ACTIVITY = "com.gathin.tvhome.MainActivity"
+CLAIM_QUERY = "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME"
+LAUNCHER_ID = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$")
 
 
 # ---------------------------------------------------------------- reading the repo
@@ -811,7 +825,7 @@ def tv_python():
     raise SystemExit(2)
 
 
-def tv(command):
+def tv(command, quiet=False):
     if not os.environ.get("TV_HOST"):
         # The same two lines tools/tv.py prints for this, and the status check.py answers it with: without
         # TV_HOST there is no TV to ask anything, which is not the same as a command that failed on one.
@@ -823,6 +837,10 @@ def tv(command):
         sys.stderr.write("Nothing was asked of the TV.\n")
         raise SystemExit(2)
     r = subprocess.run([tv_python(), "-I", str(TOOLS / "tv.py"), command], capture_output=True, text=True)
+    # An answer this run can do without: `cmd package query-activities` is missing on some Android 8 firmware, and
+    # that is not a reason to stop a status that can still read the launcher's config.json.
+    if quiet:
+        return r.stdout if not r.returncode else ""
     # A failed read is unknown, not empty: never report "not installed" for a TV that didn't answer.
     if r.returncode:
         sys.stderr.write((r.stderr.strip() or r.stdout.strip()
@@ -835,6 +853,23 @@ def tv(command):
         # asked of it" cannot look like "the TV refused it".
         raise SystemExit(2 if r.returncode == 2 else 1)
     return r.stdout
+
+
+def launcher_package():
+    """The package the TV answers HOME with, when it wears this launcher's MainActivity, else the default id.
+
+    `com.gathin.tvhome` stays the answer for a TV that says nothing: it is the build almost every reader has, and a
+    set that cannot answer the query (an Android 8 firmware without `cmd package query-activities`) still gets the
+    directory that build writes.
+    """
+    for line in tv(CLAIM_QUERY, quiet=True).splitlines():
+        line = line.strip()
+        if not line.endswith("/" + LAUNCHER_ACTIVITY):
+            continue
+        candidate = line[: -len("/" + LAUNCHER_ACTIVITY)]
+        if LAUNCHER_ID.match(candidate):
+            return candidate
+    return LAUNCHER_PKG
 
 
 def installed_packages():
@@ -966,12 +1001,16 @@ def cmd_show(name):
 
 def cmd_status():
     have = installed_packages()
-    print(f"launcher: {'installed' if LAUNCHER_PKG in have else 'not installed'}")
+    launcher = launcher_package()
+    # The id is named only when it is not the default one: a reader on the default build has nothing to check, and
+    # an owner who built under another id is looking for exactly this name.
+    print(f"launcher: {'installed' if launcher in have else 'not installed'}"
+          + (f" ({launcher})" if launcher != LAUNCHER_PKG else ""))
     print("add-ons on the TV:")
     for item in addons():
         if item["package"] in have:
             print(f"  {item['id']}")
-    config = tv(f"cat /sdcard/Android/data/{LAUNCHER_PKG}/files/config.json 2>/dev/null")
+    config = tv(f"cat /sdcard/Android/data/{launcher}/files/config.json 2>/dev/null")
     match = None
     if config.strip():
         try:

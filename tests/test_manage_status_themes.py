@@ -28,15 +28,19 @@ class StatusThemesTest(unittest.TestCase):
         self.broken.write_text("{", encoding="utf-8")
 
     def status(self, config):
+        def fake_tv(command, quiet=False):
+            # `status` asks the TV which package answers HOME first, then reads that launcher's config.json.
+            return "" if command.startswith("cmd package query-activities") else config
+
         out = io.StringIO()
         with mock.patch.object(manage, "ROOT", self.root), \
                 mock.patch.object(manage, "installed_packages", return_value={manage.LAUNCHER_PKG}), \
                 mock.patch.object(manage, "addons", return_value=[]), \
                 mock.patch.object(manage, "themes", return_value=[{"id": "broken"}, {"id": "working"}]), \
-                mock.patch.object(manage, "tv", return_value=config) as tv, \
+                mock.patch.object(manage, "tv", side_effect=fake_tv) as tv, \
                 contextlib.redirect_stdout(out):
             code = manage.cmd_status()
-        tv.assert_called_once_with(f"cat /sdcard/Android/data/{manage.LAUNCHER_PKG}/files/config.json 2>/dev/null")
+        tv.assert_any_call(f"cat /sdcard/Android/data/{manage.LAUNCHER_PKG}/files/config.json 2>/dev/null")
         self.assertIn("launcher: installed", out.getvalue())
         return code, out.getvalue()
 
