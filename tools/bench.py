@@ -535,7 +535,8 @@ def idle_cpu(tv, package, seconds):
         for line in lines:
             if line.startswith("cpu "):
                 fields = [int(x) for x in line.split()[1:]]
-                return (sum(fields), fields[3] + fields[4])
+                # guest and guest_nice are already included in user and nice.
+                return (sum(fields[:8]), fields[3] + fields[4])
         return None
 
     def process_ticks(lines, pid):
