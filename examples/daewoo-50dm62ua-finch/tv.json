@@ -2,5 +2,5 @@
   "tv": "Daewoo 50DM62UA (Vestel finch)",
   "os": "Android TV 14",
   "brand": "Daewoo",
-  "notes": "Vestel telemetry, SmartCenter, SpeedUp, eIB manual; stock TV launcher and Google ad services disabled; TDT LiveTV kept: [list](daewoo-50dm62ua-finch/debloat.txt)"
+  "notes": "Vestel telemetry, SmartCenter, SpeedUp, eIB manual; Google ad services disabled; TDT LiveTV kept: [list](daewoo-50dm62ua-finch/debloat.txt)"
 }
