@@ -31,6 +31,16 @@ command. PROMPT.md and .github/maintainer/MAINTAINER.md run `tools/relay.py` and
 bare too and are the maintainer's files (AGENTS.md, "Safety rules ... CI and workflows"), so they are not
 in the sweep.
 
+"A Python" counted the name `python` itself, and that name is not a command: a stock Ubuntu 24.04 has
+/usr/bin/python3 and no /usr/bin/python, and macOS ships no `python` without the developer tools, so a
+page that writes `python tools/tv.py 'pm enable ...'` hands the reader `command not found`, exit 127,
+before the script is read - and a script that starts itself again under the venv rescues the packages, not
+a name the shell never resolves. Three commands on two pages opened that way, and the sweep could not see
+them because `python` was the interpreter it was looking for: examples/tcl-32l5a/README.md's two
+powershell blocks, on a page whose Windows siblings print the venv's `tools\venv\Scripts\python.exe`, and
+addons/sleep-timer/README.md's sh block. The bare name is refused now; `python3`, a command both systems
+have, is left to the mode rule.
+
 The four shell scripts are the other half, and they were unread: the pattern above ended at `.py`, though
 `tools/disable.sh`, `restore.sh`, `theme.sh` and `docker-build.sh` are what 301 commands on these pages
 run - the debloat, the undo and the theme push, all of them bare, as `TV_HOST=<tv ip> tools/disable.sh
@@ -65,6 +75,12 @@ SHELL = re.compile(r"(?:^|[\s;&|/])(?:bash|sh|dash|zsh|ksh)(?:\s+-[A-Za-z]+)*\s*
 # A shell assignment of an interpreter, and a variable used as one: PY=tools/venv/bin/python, "$PY" -I ...
 ASSIGNMENT = re.compile(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(\S+)")
 VARIABLE = re.compile(r"\$(?:\{([A-Za-z_][A-Za-z0-9_]*)\}|([A-Za-z_][A-Za-z0-9_]*))")
+# The interpreter names a stock Ubuntu or macOS does not have: Ubuntu 24.04's is /usr/bin/python3, and macOS
+# ships no `python` without the developer tools, so `python tools/x.py` is `command not found` (exit 127)
+# before the script is read. A path, or a variable the page sets, is judged by the rule below; `python3` is
+# a command on both, so it is not in here.
+BARE_PYTHON = re.compile(r"(?:python|python2|py)")
+VIRTUAL_PYTHON = "tools/venv/bin/python"
 
 
 def tool_modes(root=ROOT):
@@ -122,6 +138,15 @@ def assignments(text):
     return found
 
 
+def bare_python(prefix):
+    """The Python name in front of the script when neither Ubuntu nor macOS answers to it; None otherwise."""
+    for word in prefix.split():
+        name = word.strip("\"'")
+        if BARE_PYTHON.fullmatch(name):
+            return name
+    return None
+
+
 def refusals(text, modes, page=""):
     """Why the commands PAGE gives would not run as typed; [] when every one of them would."""
     variables = assignments(text)
@@ -134,6 +159,15 @@ def refusals(text, modes, page=""):
             if SHELL.search(prefix):
                 continue      # `bash tools/disable.sh <list>`: the shell reads the file whatever its mode
         else:
+            bare = bare_python(prefix)
+            if bare:
+                windows = script.replace("/", "\\")
+                problems.append(f"{where}: `{command}` starts `{bare}`, which a stock Ubuntu 24.04 and "
+                                f"macOS do not have (their interpreter is python3): the shell answers "
+                                f"`command not found` (exit 127) before the script is read. Write "
+                                f"`{VIRTUAL_PYTHON} -I {script}` (on Windows `tools\\venv\\Scripts"
+                                f"\\python.exe -I {windows}`)")
+                continue
             if "python" in prefix.lower():
                 continue      # `tools/venv/bin/python -I tools/x.py ...`
             named = [one or two for one, two in VARIABLE.findall(prefix)]
@@ -253,6 +287,28 @@ class ReaderTest(unittest.TestCase):
 
     def test_an_executable_tool_may_be_given_bare(self):
         self.assertEqual([], refusals("`tools/tv.py --probe` prints them.", self.MODES, "page.md"))
+
+    def test_a_page_that_starts_a_tool_with_python_is_refused(self):
+        problems = refusals("`python tools/tv.py 'pm enable com.tcl.usercenter'`", self.MODES, "page.md")
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("page.md:1", problems[0])
+        self.assertIn("starts `python`", problems[0])
+        self.assertIn("command not found", problems[0])
+        self.assertIn("exit 127", problems[0])
+        self.assertIn("tools/venv/bin/python -I tools/tv.py", problems[0])
+
+    def test_the_bare_interpreter_is_refused_behind_an_environment_prefix_too(self):
+        problems = refusals("```sh\nTV_HOST=<tv ip> python tools/tv.py --probe\n```", self.MODES, "page.md")
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("starts `python`", problems[0])
+
+    def test_the_names_a_reader_can_run_are_left_alone(self):
+        # python3 is a command on both systems, and a path or a variable naming one is what the rule asks
+        # for; only the name a shell cannot resolve is refused.
+        for text in ("`python3 tools/check.py --fix list.txt`",
+                     "`tools/venv/bin/python -I tools/tv.py --probe`",
+                     "```powershell\ntools\\venv\\Scripts\\python.exe -I tools\\tv.py 'pm enable x'\n```"):
+            self.assertEqual([], refusals(text, self.MODES, "page.md"), text)
 
     def test_a_mention_without_an_argument_is_not_a_command(self):
         for text in ("`tools/gen_tables.py`, which a maintainer runs after merging.",
