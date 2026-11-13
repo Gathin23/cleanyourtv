@@ -1,5 +1,5 @@
-# DAEWOO 50DM62UA (Vestel finch, MediaTek m7332), Android TV 14 (API 34)
-# ro.product.manufacturer = vestel, ro.product.brand = My, ro.product.device = finch
+# DAEWOO 50DM62UA (Vestel finch, MediaTek m7332), Android TV 14 (API 34), Build: UKNV.260428.001
+# ro.product.manufacturer = vestel, ro.product.brand = My, ro.product.device = finch, ro.build.display.id = UKNV.260428.001
 # Stock launcher: com.google.android.tvlauncher | Live TV app: com.mediatek.wwtv.tvcenter (kept for TDT/HDMI)
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/daewoo-50dm62ua-finch/debloat.txt
