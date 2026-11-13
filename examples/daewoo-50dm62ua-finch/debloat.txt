@@ -35,9 +35,11 @@ com.android.backupconfirm
 com.android.se
 
 # Unused apps (user preference)
-com.netflix.ninja
-com.amazon.amazonvideo.livingroom
-com.google.android.youtube.tv
-com.google.android.youtube.tvmusic
 com.google.android.katniss
 com.google.android.play.games
+
+# This set has these off; uncomment if you don't use them
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom
+# com.google.android.youtube.tv
+# com.google.android.youtube.tvmusic
