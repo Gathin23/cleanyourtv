@@ -1,9 +1,9 @@
 """The one reader for the README tables: rows of a Markdown table, and its cells as text.
 
-The repo's pages double as its database: tools/gen_tables.py writes the TV tables from
-examples/*/tv.json, and tools/manage.py reads them back with the parser below. README.md's Tools
-table, docs/switches.md's Key table, addons/README.md's Add-on table and themes/README.md's Theme
-table are all read the same way, so a malformed table has to fail in one place, not one per reader.
+The repo's pages double as its database: one script writes the TV tables from examples/*/tv.json,
+the others read them back with this parser. README.md's Tools table, docs/switches.md's Key table,
+addons/README.md's Add-on table and themes/README.md's Theme table are all read the same way,
+so a malformed table has to fail in one place, not one per reader.
 
 What `table_rows` answers, exactly (the schema every caller relies on):
 
