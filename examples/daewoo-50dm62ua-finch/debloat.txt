@@ -11,7 +11,6 @@ com.vestel.vestelreporter
 com.vestel.smartlogger
 com.vestel.tv.speedup
 com.vestel.tv.eib
-com.vestel.smartcenter
 android.autoinstalls.config.vestel.malin
 
 # Google ads, personalisation and feedback
@@ -35,10 +34,11 @@ com.android.backupconfirm
 com.android.se
 
 # Unused apps (user preference)
-com.google.android.katniss
 com.google.android.play.games
 
 # This set has these off; uncomment if you don't use them
+# com.vestel.smartcenter
+# com.google.android.katniss
 # com.netflix.ninja
 # com.amazon.amazonvideo.livingroom
 # com.google.android.youtube.tv
