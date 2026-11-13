@@ -58,13 +58,15 @@ com.android.tv.feedbackconsent      # feedback consent
 com.google.android.syncadapters.calendar  # calendar sync adapter, not needed on a TV
 
 # --- Preloaded apps this set's owner does not use ---
-com.google.android.youtube.tvmusic  # YouTube Music
+# This set has YouTube Music, Kick and MHEG off; shared lists keep TV middleware and streaming apps on, so uncomment
+# them if you want them off too.
+# com.google.android.youtube.tvmusic  # YouTube Music
 com.google.android.play.games       # Play Games
-com.kick.mobile                     # Kick
+# com.kick.mobile                   # Kick
 com.audiocn.karaoke.global.micmanager   # karaoke mic manager
 
 # --- Region middleware and misc preloads ---
-org.obs.mhegservice                 # MHEG-5 (UK Freeview) — not used in LatAm
+# org.obs.mhegservice               # MHEG-5 (UK Freeview) — not used in LatAm
 com.esaba.downloader                # SABA URL downloader preload
 
 # --- Google TV setup wizard (see the Wi-Fi and casting note above) ---

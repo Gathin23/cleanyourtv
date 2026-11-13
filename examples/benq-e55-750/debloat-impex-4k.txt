@@ -21,6 +21,7 @@
 # - USB debugging alone opens port 5555; there is no separate Wireless debugging toggle.
 # - HOME candidates: setupwraith at priority 1 above launcherx at priority 2, so setupwraith is
 #   disabled first and the launcher installed after it.
+#   Disabling setupwraith gives Home back but costs casting (Chromecast built-in); keep it enabled if you cast to this TV.
 # - The saved Wi-Fi network was owned by android.uid.system, not setupwraith
 #   (`dumpsys wifi | grep -o 'cname=[^ ]*'`), so disabling setupwraith left the network in place. That
 #   is not true of every DVB96 unit: examples/tuvio-td43ufbcv5 found setupwraith owning it and had to

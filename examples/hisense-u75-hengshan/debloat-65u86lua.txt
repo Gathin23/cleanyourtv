@@ -50,15 +50,16 @@ com.vt.tv.customerlauncher                   # OEMConfig: the tvlauncher.config/
 
 # Broadcast interactivity. Ginga is ISDB-Tb (Brazil). com.vt.tv.interactive is the ATSC one, which a US antenna
 # could use: no antenna is connected to this unit, so what it costs there was not tested.
-tv.mopa.ginga
-com.vt.tv.interactive
+# This set has these off; kept on in the shared list
+# tv.mopa.ginga
+# com.vt.tv.interactive
 
 # Off by choice (comment out any you use)
 com.vt.alexa                                 # HiAlexa
 com.vt.tv.dlna                               # DLNA renderer
 com.vt.tv.mobiledeviceconnectiontips         # Miracast ("Screen Casting")
 com.vt.tv.mediacenter                        # USB media player
-com.tubitv                                   # Tubi; its remote button then does nothing
+# com.tubitv                                 # Tubi; its remote button then does nothing
 com.google.android.play.games                # Google Play Games
 com.google.android.videos                    # Google Play Movies & TV stub
 

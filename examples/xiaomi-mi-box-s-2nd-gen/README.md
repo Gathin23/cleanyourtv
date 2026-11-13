@@ -75,7 +75,7 @@ handle the target. The stock launcher was disabled.
 | Netflix | Keycode 193 (`BUTTON_6`) | Direct app launch with `app_keys` |
 | Prime Video | Keycode 194 (`BUTTON_7`) | Direct app launch with `app_keys` |
 | YouTube | Scancode 425 (`KEY_PRESENTATION`) | Direct app launch with `app_keys` |
-| All Apps | Scancode 216 (`KEY_CHAT`, mapped to `ALL_APPS` in the device key layout) | Opened the local customized launcher's app library |
+| All Apps | Scancode 216 (`KEY_CHAT`, mapped to `ALL_APPS` in the device key layout) | Not mapped in upstream CleanYourTV (tested only with a local launcher build) |
 
 Only **InputKeyService** was enabled for this test; HomeKeyService was not needed. The Xiaomi
 partnercustomizer package stayed enabled. All four buttons were confirmed with the physical remote.

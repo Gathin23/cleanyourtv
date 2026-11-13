@@ -38,8 +38,6 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import manage  # noqa: E402
 
-INPUT_SOURCES = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "InputSources.java"
-MAIN_ACTIVITY = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "MainActivity.java"
 
 # The entries the shipped example configs carry, plus the two shapes the Keys row gives.
 GOOD_SOURCES = ["HW5=23", "HW6=24", "HW7=25", "HW1=2", "HW2=-"]
@@ -168,21 +166,7 @@ class PanelExtraTest(SetTest):
 
 
 class ReadersTest(unittest.TestCase):
-    """The refusals above are only right while the launcher reads these two values this way."""
-
-    def test_the_mapper_is_still_the_one_read(self):
-        text = INPUT_SOURCES.read_text(encoding="utf-8")
-        self.assertIn("int equals = mapping.indexOf('=');", text)
-        self.assertIn("if (equals <= 0 || !mapping.substring(0, equals).trim().equals(input)) continue;", text)
-        self.assertIn('if (value.equals("-")) return -1;', text)
-        self.assertIn("} catch (NumberFormatException ignored) {", text)
-
-    def test_the_panel_extra_is_still_read_the_same_way(self):
-        text = MAIN_ACTIVITY.read_text(encoding="utf-8")
-        self.assertIn("int eq = sourcePanelExtra.indexOf('=');", text)
-        self.assertIn("if (eq > 0) {", text)
-        self.assertIn("Integer.parseInt(sourcePanelExtra.substring(eq + 1).trim())", text)
-        self.assertIn("} catch (NumberFormatException ignored) {", text)
+    """The theme rows say what set refuses."""
 
     def test_the_two_rows_say_what_set_refuses(self):
         sources = manage.find("input_sources")

@@ -114,6 +114,6 @@ com.google.android.backdrop                    # ambient screensaver, replaced b
 # resolved the issue.
 # Live TV, EPG, HbbTV and HDMI-CEC were checked after reboot and remained working.
 # Chromecast, Google Assistant, ambient screensaver and Sony TV services were retained.
-# This is a conservative alternative to the full package list below.
+# This is a conservative alternative to the full package list above.
 # Do not apply the entire list if the goal is to reproduce this setup.
 #
