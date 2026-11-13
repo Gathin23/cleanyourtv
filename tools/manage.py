@@ -31,7 +31,10 @@ and that button would open nothing. A list of `"package=value"` entries (`app_la
 the '=' and a value after it, so an entry without both halves is refused rather than written as one the tile never
 reads, and so is an `app_banners` name the launcher cannot draw: AppAdapter.bundledBanner() answers null for anything
 but a `banner_*` drawable this checkout ships, so `com.netflix.ninja=magenta` is a banner the theme says is set and
-the tile never shows. A theme's config.json is hand-edited, so one
+the tile never shows. The two keys the Inputs menu reads a vendor number out of are read the same way:
+`input_sources` entries one at a time, since InputSources.mapped() skips an entry it cannot match to an input id,
+and `source_panel_extra` as the `"name=value"` pair openSourcePanel() sends, since a value without a name or a
+whole number before the '=' sends no extra at all. A theme's config.json is hand-edited, so one
 that cannot be read, is not JSON, or is not a JSON object is named before the key is written, and a write it cannot
 make says so instead of ending in a traceback.
 set's own arguments are read first: a switch without a value, a --theme without the folder behind it, and a word
@@ -464,6 +467,93 @@ def banner_problem(values, root=ROOT):
     return None
 
 
+# The half of a value both Inputs-menu readers hand to Integer.parseInt(), after the '='. Java's parse takes an
+# optional sign and digits only, and throws on anything outside an int, which is caught and answered with "no
+# number": openSourcePanel() swallows the NumberFormatException, and mapped() answers null, "not mapped".
+INT_MIN, INT_MAX = -2 ** 31, 2 ** 31 - 1
+
+
+def whole_number(text):
+    """True when Integer.parseInt() reads the whole of text as an int."""
+    if not re.fullmatch(r"[+-]?\d+", text):
+        return False
+    return INT_MIN <= int(text) <= INT_MAX
+
+
+def input_source_problem(values):
+    """The first input_sources entry InputSources.mapped() cannot read, or None.
+
+    mapped() reads one entry at a time:
+
+        int equals = mapping.indexOf('=');
+        if (equals <= 0 || !mapping.substring(0, equals).trim().equals(input)) continue;
+        String value = mapping.substring(equals + 1).trim();
+        if (value.equals("-")) return -1;
+        try { return Integer.parseInt(value); } catch (NumberFormatException ignored) { return null; }
+
+    where `input` is the input id's last part (`HW5` out of `.../.hdmi.HDMIInputService/HW5`). So an entry with no
+    '=', with the '=' first, or with a '/' in its left half matches no input at all, and one whose right half is
+    neither '-' nor a whole number answers null - the row is not mapped - while the theme says the number is set.
+    The loop returns on the first entry naming an input, so a second entry for the same one is never read either.
+    """
+    seen = {}
+    for entry in values:
+        if not isinstance(entry, str):
+            return f"{entry!r} is not a string, and stringList() keeps only strings"
+        text = entry.strip()
+        equals = text.find("=")
+        if equals < 0:
+            return f"{entry!r} has no '=', so mapped() skips it and the row is not mapped"
+        left = text[:equals].strip()
+        right = text[equals + 1:].strip()
+        if not left:
+            return f"{entry!r} has nothing before its '=', so mapped() skips it and the row is not mapped"
+        if "/" in left:
+            return (f"{entry!r} names {left!r}, and mapped() compares that half with an input id's last part - "
+                    f"the text after its '/', such as `HW5` - so this entry matches no input")
+        if right != "-" and not whole_number(right):
+            return (f"{entry!r} gives {right!r} after the '=', which is neither `-` (hide the input) nor a whole "
+                    f"number mapped() can send, so it answers null and the row is not mapped")
+        if left in seen:
+            return (f"{entry!r} names {left!r} a second time, and mapped() returns on the first entry for an "
+                    f"input, so this one is never read")
+        seen[left] = text
+    return None
+
+
+def panel_extra_problem(text):
+    """The source_panel_extra value openSourcePanel() sends no extra for, or None.
+
+    openSourcePanel() reads
+
+        int eq = sourcePanelExtra.indexOf('=');
+        if (eq > 0) {
+            i.putExtra(sourcePanelExtra.substring(0, eq).trim(),
+                       Integer.parseInt(sourcePanelExtra.substring(eq + 1).trim()));
+        } catch (NumberFormatException ignored) {}
+
+    so a value with no '=', with nothing before it, or with a half that is not a whole number sends no extra at
+    all: the panel opens without the command the theme names (Coocaa OS's `control_center_command=100`). The
+    built-in default is the empty string, which is kept.
+    """
+    value = text.strip()
+    if not value:
+        return None
+    equals = value.find("=")
+    if equals <= 0:
+        return (f"{text!r} has no name before a '=', and openSourcePanel() sends an extra only when there is "
+                f"one, so the panel opens without it")
+    name = value[:equals].strip()
+    number = value[equals + 1:].strip()
+    if not name:
+        return (f"{text!r} has no name before its '=', and openSourcePanel() sends an extra only when there is "
+                f"one, so the panel opens without it")
+    if not whole_number(number):
+        return (f"{text!r} gives {number!r} after the '=', and openSourcePanel() catches the NumberFormatException "
+                f"a half that is not a whole number throws, so it sends no extra at all")
+    return None
+
+
 # The string keys a Keys-table row names the values of, with the one the launcher answers instead and whether its
 # reader ignores case. Config.glowStyle() is `GLOW_HORIZON.equalsIgnoreCase(value.trim()) ? GLOW_HORIZON :
 # GLOW_RADIAL` and glassStyle() answers glass to anything else; WallpaperRotation.validOrder() is
@@ -554,9 +644,15 @@ def value_as(key, item, text):
         try:
             parsed = json.loads(text)
         except ValueError:
-            return enum_value(key, text)
-        # A string key is read as a String only, so `set greeting_name 42` means the text 42, not a number.
-        return enum_value(key, parsed if isinstance(parsed, str) else text)
+            value = enum_value(key, text)
+        else:
+            # A string key is read as a String only, so `set greeting_name 42` means the text 42, not a number.
+            value = enum_value(key, parsed if isinstance(parsed, str) else text)
+        if key == "source_panel_extra":
+            problem = panel_extra_problem(value)
+            if problem:
+                sys.exit(f"{key} takes {item.get('type')}, and {problem}. Nothing was written or pushed.")
+        return value
     try:
         parsed = json.loads(text)
     except ValueError:
@@ -598,6 +694,15 @@ def value_as(key, item, text):
             if problem:
                 sys.exit(f"{key} takes {cell}, and this list has an entry the launcher cannot draw: {problem}. "
                          f"Nothing was written or pushed.")
+        return [entry.strip() for entry in parsed or []]
+    if key == "input_sources":
+        # InputSources.mapped() reads one entry at a time and answers null for one it cannot match to an input
+        # id, or cannot turn into a number: the row falls back to the standard path with no word on the TV.
+        problem = input_source_problem(parsed)
+        if problem:
+            sys.exit(f"{key} takes {cell}, and this list has an entry the Inputs menu would not map: {problem}. "
+                     f"Nothing was written or pushed.")
+        # mapped() trims both halves, so the file holds the mapping the launcher reads.
         return [entry.strip() for entry in parsed or []]
     return parsed
 
