@@ -18,8 +18,18 @@
 # hearing test, so their lines below are comments. Its personal theme and optional add-ons are not part of
 # this shared list.
 #
+# Third unit: TCL 55QM8B, Germany (Smart TV Pro, G08, G08_4K_GB, Google TV 14, UTT2.250416.001 AU02), on Wi-Fi.
+# Tested 2026-11-12 in one session: every active line below, applied in five batches with screenshots between
+# them, plus the hearing test, Miracast and the USB media player and gallery (the owner does not use them);
+# Game Bar kept. The disabled set was identical after two reboots. setupwraith owned the saved Wi-Fi network
+# here: forget the network and join it again in Settings before the launcher lines, or disable.sh skips it.
+# Checked: Home, the Inputs menu (HDMI 1, Live TV), Settings, and the gear, Netflix, Prime Video and YouTube
+# buttons with this folder's keycodes on the real remote; HomeKeyService bound again on its own after a reboot.
+# With HomeKeyService bound, a held volume key moved one step per press. consume_volume_keys did not change
+# that; volume_pauses_filter did in part: tap volume once, then a hold within 4 s ramps (README.md).
+#
 # Connection: USB debugging alone opens port 5555 on Ethernet. Wireless debugging switches itself back off
-# there: Android only enables it on Wi-Fi.
+# there: Android only enables it on Wi-Fi. On the 55QM8B, on Wi-Fi, USB debugging alone opened 5555 as well.
 #
 # Launcher, in this order: launcher/build-and-install.sh with STOCK_LAUNCHER=none (installs it, then stops
 # with an error because Home stays on launcherx), then this list (setupwraith is listed before launcherx, so the wizard never gets Home;
