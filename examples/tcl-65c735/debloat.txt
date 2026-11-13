@@ -68,6 +68,26 @@
 #   "A third-party screensaver never shows"). After a theme push only one of the two helpers was bound at a time; a
 #   reboot binds the enabled ones again.
 #
+# Also used on a TCL 55C735, France (same product G05_4K_GB, build AR2101, incremental AR28, software
+# V8-T615T03-LF1V620, security patch 2025-05-05, MediaTek mt5889, Wi-Fi, 32-bit armeabi-v7a), with these notes:
+# - TESTING, honestly: applied in five batches in one session on 2026-11-13, with a screenshot after each, then
+#   two reboots. That is shorter than CONTRIBUTING.md asks. Checked: Home is the launcher after both reboots
+#   (mFocusedApp) and the set boots to Home, not Live TV; the Inputs menu lists HDMI 1-4, AV and Live TV, and
+#   switching to HDMI 3 showed the source; Wi-Fi survived every batch and reboot. Not tested: streaming playback.
+# - com.tcl.ttvs kept (updater), as on the 55C728 and 65C935. It turned com.tcl.usercenter,
+#   com.tcl.notereminder and com.tcl.smartalexa back on at both reboots; com.tcl.esticker stayed off in that time.
+# - Also disabled on this unit: the lines marked "55C735" below (commented out, so this list is unchanged), plus
+#   Prime Video by choice. Kept by choice: the Google Assistant packages, com.tcl.assistant, both AirPlay
+#   packages, Chromecast, Miracast and T-Cast; of batch 4 only Alexa went.
+# - setupwraith owned a hidden SSID saved during setup, not the network in use (that one belonged to
+#   android.uid.system). `cmd wifi forget-network <id>` removed it, then setupwraith was disabled before the
+#   launcher went in, so build-and-install.sh did not roll Home back. It stayed disabled across both reboots.
+# - Remote: gear 4077, Netflix 4062 and YouTube 4065 as on the 55C728; Input and the mic work with no helper.
+#   config.json applies unchanged. After build-and-install.sh with HOME_KEY_SERVICE=1, HomeKeyService sat in
+#   "Binding services" (dumpsys accessibility) and toggling accessibility off and on did not bind it; a reboot
+#   did. With it bound, all three buttons worked on the real remote and a held Volume+ still ramped, one step
+#   per short press (no double step here, unlike the 65C745).
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-65c735/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-65c735/debloat.txt com.google.android.apps.tv.launcherx
 # Windows: $env:TV_HOST="<tv ip>"; tools\disable.ps1 examples\tcl-65c735\debloat.txt
@@ -102,7 +122,7 @@ com.tcl.ttvs                           # TCL BI/awareness/identifier services; o
 com.tcl.guard                          # TGuard: device-use tracking, "health info", memory cleaner
 com.google.android.feedback            # "send feedback"
 com.google.android.partnersetup        # partner-app attribution
-# com.tcl.logkit                       # 55C728, 65C935, 65C745: TCL diagnostics/log collector
+# com.tcl.logkit                       # 55C728, 65C935, 65C745, 55C735: TCL diagnostics/log collector
 
 # Batch 2 - TCL content, ads and promos
 com.tcl.waterfall.overseas             # TCL content recommendations
@@ -112,9 +132,9 @@ com.tcl.usercenter                     # TCL account
 com.tcl.dashboard                      # "TCL Home" panel, gift box and promos
 com.tcl.tv.tclhome_passive             # pushes TCL content at boot
 com.tcl.esticker                       # retail demo stickers
-# com.tcl.channelplus                  # 55C728, 65C935, 65C745: TCL's free ad-supported channels
-# com.tcl.useragreement                # 55C728, 65C935, 65C745: agreement screen shown once during setup
-# android.autoinstalls.config.google.gtvpai # 55C728, 65C935, 65C745: partner app auto-installer
+# com.tcl.channelplus                  # 55C728, 65C935, 65C745, 55C735: TCL's free ad-supported channels
+# com.tcl.useragreement                # 55C728, 65C935, 65C745, 55C735: agreement screen shown once during setup
+# android.autoinstalls.config.google.gtvpai # 55C728, 65C935, 65C745, 55C735: partner app auto-installer
 
 # Batch 3 - preloaded apps and services not used
 # au.com.stan.and                      # Stan (AU): disabled by the firmware on arrival, shell may not touch it
@@ -129,8 +149,8 @@ com.tcl.hearaid                        # hearing test / volume adaptation
 com.google.android.marvin.talkback     # screen reader
 com.google.android.syncadapters.calendar
 com.google.android.onetimeinitializer
-# com.tcl.ocean.instructions           # 55C728, 65C935, 65C745: e-manual
-# com.tcl.browser                      # 55C728, 65C935, 65C745: TCL browser
+# com.tcl.ocean.instructions           # 55C728, 65C935, 65C745, 55C735: e-manual
+# com.tcl.browser                      # 55C728, 65C935, 65C745, 55C735: TCL browser
 # com.tcl.android.webview              # 55C728, 65C745: TCL's WebView (the active one is com.google.android.webview)
 # com.tcl.t_solo                       # 55C728, 65C745: Bluetooth "listen alone"
 
