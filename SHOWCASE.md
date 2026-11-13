@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-239 projects so far.
+240 projects so far.
 
 ## Home screens built as their own app
 
@@ -223,6 +223,7 @@ Small apps and scripts that run next to the launcher (or any launcher) and do on
 
 | Project | What it is | Built on | By |
 |---|---|---|---|
+| [cleantv-dashy](https://github.com/midnextlevel/cleantv-dashy) ([screenshot](https://raw.githubusercontent.com/midnextlevel/cleantv-dashy/38860fef55e6f4214e69bdd7f9f3570a0a66a978/screenshot.jpg), [issues](https://github.com/midnextlevel/cleantv-dashy/issues)) | An independent screensaver with rotating live Frigate cameras, person-alert focus and a configurable halo, three editable Home Assistant entity cards and RSS/Atom titles. Network: configured HA/Frigate servers, feeds and optional MQTT; Android 12+ hides app overlays only during the screensaver. No telemetry | Chromecast with Google TV HD (boreal), Android 14 | [midnextlevel](https://github.com/midnextlevel) |
 | [TV schedule + Shizuku standby](https://github.com/TeenKode/cleanyourtv/tree/feature/tv-schedule-shizuku-full) ([screenshot](https://raw.githubusercontent.com/TeenKode/cleanyourtv/ecc834f6de1f7a36900ee2097d15a6a0d8ba0af6/addons/sleep-timer/screenshot.jpg)) | Sleep Timer with D-pad weekly schedules and exclusion dates, plus optional Shizuku power control and a CVTE standby observer for Open on wake; no network; restart Shizuku after each reboot | DEXP 43UCY1 (CVTE / YaOS, Android 11) | [TeenKode](https://github.com/TeenKode) |
 | [DVD Video screensaver for Android TV](https://github.com/TheWombRaider/dvd-tv) ([screenshot](https://github.com/TheWombRaider/dvd-tv/blob/main/docs/preview.jpg)) | The bouncing DVD VIDEO logo as an offline native screensaver and launcher preview, measured against reference video; no internet, audio or analytics | TCL Smart TV Pro (G08), Google TV 14; preview tested | [TheWombRaider](https://github.com/TheWombRaider) |
 | [AirPlay receiver installer](https://github.com/nguyenduchoai/tv-vibehack/tree/feat/airplay-receiver) | A script that builds and installs an open-source AirPlay receiver next to the launcher, for iPhone mirroring | Xiaomi MiTV-AESP0, Android TV 9 | [nguyenduchoai](https://github.com/nguyenduchoai) |
@@ -323,7 +324,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **BenQ:** [Navigation sounds](https://github.com/rocavence/tv-vibehack/tree/nav-sounds)
 - **Bettdow:** [Glass home with this week's trending series](https://github.com/viniciustheodoro/newdesignforyourTV)
 - **Changhong:** [Daily Wallpaper](https://github.com/qureshiayaz29/cleanyourtv/tree/addon-daily-wallpaper/addons/daily-wallpaper), [Glance line and crimson glass on a Changhong](https://github.com/bayhaqy/cleanyourtv/blob/main/my-tv/README.md)
-- **Chromecast with Google TV:** [Cast Fix](https://github.com/thayford/castfix), [Chromecast glass fork](https://github.com/NewPlayer0213/cleanyourtv/blob/showcase/FORK.md), [Chromecast Home: Up next and Now playing controls](https://github.com/DKRC/cleanyourtv/blob/chromecast-home/FORK.md), [Seasonal looks and a sleep timer](https://github.com/Belseck/cleanyourtv), [Weather Clock](https://github.com/matyivagyok/weatherclock-tv)
+- **Chromecast with Google TV:** [Cast Fix](https://github.com/thayford/castfix), [Chromecast glass fork](https://github.com/NewPlayer0213/cleanyourtv/blob/showcase/FORK.md), [Chromecast Home: Up next and Now playing controls](https://github.com/DKRC/cleanyourtv/blob/chromecast-home/FORK.md), [Seasonal looks and a sleep timer](https://github.com/Belseck/cleanyourtv), [Weather Clock](https://github.com/matyivagyok/weatherclock-tv), [cleantv-dashy](https://github.com/midnextlevel/cleantv-dashy)
 - **DEXP:** [TV schedule + Shizuku standby](https://github.com/TeenKode/cleanyourtv/tree/feature/tv-schedule-shizuku-full)
 - **Durabrand:** [CleanYourTV Editorial](https://github.com/kevscec/cleanyourtv/blob/durabrand-editorial/FORK.md)
 - **Formovie:** [CleanTV by VGS](https://github.com/vgscity/vgs-cleantv), [Homelab companion](https://github.com/epochcoder/cleanyourtv/tree/main/companion)
