@@ -1,6 +1,0 @@
-{
-  "tv": "TCL 55QM5K (G10, Realtek RTD2875)",
-  "os": "Google TV 12",
-  "brand": "TCL",
-  "notes": "43 packages including the stock launcher and setupwraith; the saved Wi-Fi belongs to setupwraith (re-join first); `com.tcl.ttvs` kept (it hosts TCL's firmware updater); casting still works with the wizard off; remote app buttons mapped by scancode in [config.json](tcl-55qm5k/config.json) and the gear in the [README](tcl-55qm5k/README.md)"
-}
