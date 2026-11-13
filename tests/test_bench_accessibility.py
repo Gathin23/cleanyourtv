@@ -11,6 +11,11 @@ Two problems, both found on a TCL BeyondTV2 (Android TV 9) while measuring the l
 2. It restored the list *before* the cold-start measurement. Writing that setting makes the system
    bind the service, which starts the launcher's process — so the "cold start" measured a warm one.
 
+3. A service that is back on the list is not thereby bound. On a TCL 43C645 (Smart TV Pro, G03_4K_GB,
+   Android 11) the force-stop takes HomeKeyService off the list, writing it back does not make the
+   system bind it, and neither does a service left listed: Android binds when the list changes. After
+   a run the remote's app buttons did nothing until the theme was pushed again.
+
 The TV is a dict here: the point is the commands the tool would send.
 
 Run from the repository root:
@@ -61,7 +66,8 @@ class RestoreAccessibilityTest(unittest.TestCase):
         tv = FakeTV(OURS)
         bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
         self.assertEqual(tv.setting, OURS)
-        self.assertEqual(len(tv.commands), 1, "nothing to write means no command at all")
+        self.assertEqual([c for c in tv.commands if c.startswith("settings put ")], [],
+                         "nothing to write means nothing written")
 
     def test_short_and_long_component_forms_are_the_same_component(self):
         """The TV rewrites `pkg/pkg.Classe` as `pkg/.Classe`; restoring must not duplicate it."""
@@ -73,6 +79,97 @@ class RestoreAccessibilityTest(unittest.TestCase):
         tv = FakeTV("null")
         bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
         self.assertEqual(tv.setting, OURS)
+
+
+def services_dump(component, bound):
+    """`dumpsys activity services <package>` for one service, as AOSP prints it on Android 8/11/14."""
+    return f'''  * ServiceRecord{{a1 u0 {component}}}
+    intent={{cmp={component}}}
+    app=ProcessRecord{{b2 1234:com.gathin.tvhome/u0a101}}
+    * IntentBindRecord{{c3 CREATE}}:
+      intent={{cmp={component}}}
+      binder={'android.os.BinderProxy@d4' if bound else 'null'}
+      requested=true received={'true' if bound else 'false'} hasBound=true doRebind=false
+      * Client AppBindRecord{{e5 ProcessRecord{{f6 222:system/1000}}}}
+'''
+
+
+class ListedTV(FakeTV):
+    """A TV whose force-stop keeps the service in the list: what is left to tell is whether it is bound."""
+
+    def __init__(self, setting, bound, flag="1"):
+        super().__init__(setting)
+        self.bound = bound
+        self.flag = flag
+
+    def shell(self, command, read_timeout_s=None, *, retry=False):
+        if command.startswith("settings get secure accessibility_enabled"):
+            self.commands.append(command)
+            return self.flag
+        if command.startswith("am get-current-user"):
+            self.commands.append(command)
+            return "0"
+        if command.startswith("dumpsys activity services "):
+            self.commands.append(command)
+            return services_dump(OURS, self.bound)
+        return super().shell(command, read_timeout_s, retry=retry)
+
+
+class ListedButUnboundTest(unittest.TestCase):
+    def writes(self, tv):
+        return [c for c in tv.commands if "settings put secure" in c]
+
+    def test_a_listed_helper_that_is_not_bound_is_bound_again(self):
+        tv = ListedTV(f"{OTHER}:{OURS}", bound=False)
+        bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        writes = self.writes(tv)
+        self.assertEqual(len(writes), 1, tv.commands)
+        cycle = writes[0]
+        # The list has to change for Android to bind: emptied first, then written back whole.
+        self.assertIn(f"cyt_restore() {{ settings put secure enabled_accessibility_services {OTHER}:{OURS}; "
+                      "settings put secure accessibility_enabled 1; }", cycle)
+        emptied = cycle.index("settings put secure enabled_accessibility_services '';")
+        restored = cycle.index("; cyt_restore;", emptied)
+        self.assertIn("sleep 2", cycle[emptied:restored])
+        self.assertTrue(cycle.rstrip().endswith("trap - EXIT HUP INT TERM"), cycle)
+
+    def test_the_tv_puts_the_list_back_by_itself_if_the_connection_drops(self):
+        tv = ListedTV(f"{OTHER}:{OURS}", bound=False)
+        bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        cycle = self.writes(tv)[0]
+        self.assertLess(cycle.index("trap cyt_restore EXIT HUP INT TERM"),
+                        cycle.index("enabled_accessibility_services ''"), cycle)
+
+    def test_a_helper_put_back_on_the_list_and_still_unbound_is_bound_again(self):
+        """What the 43C645 does: the stop empties the list, the write puts it back, nothing binds."""
+        tv = ListedTV(OTHER, bound=False)
+        with mock.patch.object(bench.time, "sleep"):
+            bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        writes = self.writes(tv)
+        self.assertEqual(writes[0], f"settings put secure enabled_accessibility_services {OTHER}:{OURS}")
+        self.assertEqual(len([w for w in writes if w.startswith("cyt_restore()")]), 1, writes)
+
+    def test_a_helper_bound_after_it_is_put_back_needs_nothing_more(self):
+        tv = ListedTV(OTHER, bound=True)
+        with mock.patch.object(bench.time, "sleep"):
+            bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        self.assertFalse([w for w in self.writes(tv) if w.startswith("cyt_restore()")], tv.commands)
+
+    def test_a_bound_helper_is_left_alone(self):
+        tv = ListedTV(OURS, bound=True)
+        bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        self.assertEqual(self.writes(tv), [], tv.commands)
+
+    def test_accessibility_switched_off_stays_off(self):
+        tv = ListedTV(OURS, bound=False, flag="0")
+        bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        self.assertEqual(self.writes(tv), [], tv.commands)
+        self.assertFalse([c for c in tv.commands if c.startswith("dumpsys")], tv.commands)
+
+    def test_the_long_component_form_counts_as_the_same_helper(self):
+        tv = ListedTV("com.gathin.tvhome/com.gathin.tvhome.KeyRemapService", bound=True)
+        bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
+        self.assertEqual(self.writes(tv), [], tv.commands)
 
 
 class ColdStartOrderTest(unittest.TestCase):
