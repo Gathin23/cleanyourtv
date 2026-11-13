@@ -35,7 +35,9 @@ feature row and STATS in tools/readme_stats.py. Exit codes: 0 up to date (or wri
 (--check), or a count moved and --font could not draw one of the pictures (the tables are written; the
 picture is not - redraw it before committing). --font draws with the checkout's tools/venv/bin/python when
 that venv has Pillow, the interpreter docs/workflows/press.md installs it into and the one the two card
-scripts' own usage lines name; a checkout with no such venv uses the Python that ran this script.
+scripts' own usage lines name; a checkout with no such venv - or one whose bin/python cannot be started at
+all - uses the Python that ran this script, and an interpreter that starts for the Pillow probe but not for
+the picture is reported as a picture that was not drawn, not as a traceback.
 2 what it was given cannot be read: a tv.json, a marker, or the path in --root or --adopt (nothing is written
 then), or a page or a tv.json it cannot write: the pages
 are written beside themselves and replaced only once all of them are, so such a run leaves every page with
@@ -519,12 +521,24 @@ def card_python(root):
     maintainer who installed Pillow exactly as PRESS.md says, and ran the command this script prints, got
     "docs/stats.png was not redrawn ... python3 tools/readme_stats.py" twice over, with a venv that could
     have drawn it sitting beside the list. A checkout with no venv - a contributor's own virtualenv, CI's
-    setup-python - keeps sys.executable, which is how every existing run works.
+    setup-python - keeps sys.executable, which is how every existing run works. So does a checkout whose
+    bin/python is there and executable but cannot be started: an optional interpreter this machine cannot
+    run is an optional interpreter it does not have.
     """
     venv = root / "tools" / "venv" / "bin" / "python"
     if venv.is_file() and os.access(venv, os.X_OK):
         # `-I` so a PYTHON* variable in the caller's shell cannot shadow the venv's own site-packages.
-        probe = subprocess.run([str(venv), "-I", "-c", "import PIL"], capture_output=True)
+        try:
+            probe = subprocess.run([str(venv), "-I", "-c", "import PIL"], capture_output=True)
+        except OSError:
+            # A file that is there and executable can still be one this machine cannot start: a venv copied
+            # from another platform, a `bin/python` symlink to an interpreter that was since removed, a
+            # shebang naming a path that does not exist here. That is one more way the optional venv is
+            # unusable, and the answer to an unusable venv is the one below it - the Python that ran this
+            # script. Letting the OSError out would end the run in a traceback after publish() has already
+            # written the tables, so the one run that should have said "drawn with this Python instead"
+            # reads as exit 1, which is the code that means the generated files are stale.
+            return sys.executable
         if probe.returncode == 0:
             return str(venv)
     return sys.executable
@@ -538,7 +552,10 @@ def redraw(root, font):
     without Pillow (requirements.txt has none; docs/workflows/press.md installs requirements-perf.txt) with
     its own line and exit 1. With check=True that line was then followed by a CalledProcessError traceback
     that named the font path as a command, after the tables had already been rewritten: a run that read like
-    "nothing was drawn" had changed two files, and the pictures it promised were not there.
+    "nothing was drawn" had changed two files, and the pictures it promised were not there. An interpreter
+    that cannot be started at all is the same answer for the same reason: an OSError raised here would be a
+    traceback with the tables already written, and exit 1 from a traceback is what --check answers when the
+    generated files are stale.
 
     The interpreter is card_python()'s - the checkout's venv when it has Pillow, else this one - and the
     remedy names it, since a `python3` that lacks Pillow answers the retry with the same line: the command
@@ -548,7 +565,17 @@ def redraw(root, font):
     shown = os.path.relpath(python, root) if python != sys.executable else python
     for script, out in (("tools/readme_stats.py", "docs/stats.png"),
                         ("tools/readme_card.py", "docs/card.jpg")):
-        done = subprocess.run([python, script, font, out], cwd=root)
+        try:
+            done = subprocess.run([python, script, font, out], cwd=root)
+        except OSError as e:
+            # The interpreter answered the Pillow probe and could not be started for the script itself: the
+            # venv's Python removed or replaced between the two calls, a mount that stopped answering. main()
+            # has written the tables by now, so this is the same answer as a script that exited non-zero -
+            # name the picture, say the tables are written, and hand over a command that can draw it (the
+            # interpreter that failed is not one, so the remedy names the Python that ran this script).
+            return (f"{out} was not redrawn: cannot start {shown} ({e.strerror}). The tables are written; "
+                    f"draw the picture with an interpreter that runs, then commit it with the tables: "
+                    f"{sys.executable} {script} <Fredoka.ttf> {out}")
         if done.returncode:
             return (f"{out} was not redrawn: {script} exited {done.returncode} and its line above says why. "
                     f"The tables are written; redraw the picture once that is fixed, with "
