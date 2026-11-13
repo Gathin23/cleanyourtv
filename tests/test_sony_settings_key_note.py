@@ -89,7 +89,7 @@ class SonySettingsKeyNoteTest(unittest.TestCase):
         # reader is left with the am start and no way to put the ribbon back on the button.
         self.assertIn("app_keys", self.note)
         self.assertIn('"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"', self.note)
-        self.assertIn("getevent -lt", self.note)
+        self.assertIn("getevent -t", self.note)
         self.assertNotIn("cannot be put back on the", self.note)
 
     def test_bullet_keeps_the_settings_keys_ending_in_the_standard_action(self):
