@@ -46,7 +46,8 @@ final class OpenOnStart {
 
     /** Android has reached the internet through the active network (ACCESS_NETWORK_STATE). */
     static boolean online(Context ctx) {
-        ConnectivityManager cm = ctx.getSystemService(ConnectivityManager.class);
+        // The application's: one made from an activity would keep that activity (see MainActivity.onCreate).
+        ConnectivityManager cm = ctx.getApplicationContext().getSystemService(ConnectivityManager.class);
         Network n = cm != null ? cm.getActiveNetwork() : null;
         NetworkCapabilities caps = n != null ? cm.getNetworkCapabilities(n) : null;
         return caps != null && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
