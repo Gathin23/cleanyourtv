@@ -2,6 +2,8 @@
     <string name="previous">पिछला</string>
     <string name="today">आज</string>
     <string name="next">अगला</string>
+    <string name="month">महीना</string>
+    <string name="day">दिन</string>
     <string name="city">शहर</string>
     <string name="region">क्षेत्र</string>
     <string name="screensaver">स्क्रीनसेवर</string>
@@ -19,5 +21,7 @@
     <string name="no_sun">इस अक्षांश पर आज सूर्योदय या सूर्यास्त नहीं है।</string>
     <string name="sun_times">सूर्योदय %1$s · सूर्यास्त %2$s</string>
     <string name="place">%1$s · %2$s</string>
+    <string name="month_range">%1$s – %2$s</string>
+    <string name="month_day">%1$s · %2$s · %3$s · %4$s</string>
     <string name="heading">%1$s · %2$s %3$s</string>
 </resources>

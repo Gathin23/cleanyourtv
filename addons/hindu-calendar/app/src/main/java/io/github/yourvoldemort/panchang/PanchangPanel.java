@@ -167,6 +167,16 @@ final class PanchangPanel extends LinearLayout {
         refresh();
     }
 
+    /** The day on screen: the chosen one, or today while the screen follows the date. */
+    LocalDate date() { return selected == null ? LocalDate.now(city.zone) : selected; }
+
+    /** Shows a particular day, as the month grid asks. */
+    void show(LocalDate date) {
+        selected = date;
+        shown = "";
+        refresh();
+    }
+
     private void refresh() {
         ZonedDateTime now = ZonedDateTime.now(city.zone);
         LocalDate date = selected == null ? now.toLocalDate() : selected;

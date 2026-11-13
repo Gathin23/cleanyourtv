@@ -15,11 +15,13 @@ import android.view.KeyEvent;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import java.time.LocalDate;
 
 /** A standalone module card; it never writes the launcher's configuration. */
 public final class PanchangActivity extends Activity {
     static final String PREFS = "panchang";
     static final String KEY_CITY = "city", KEY_REGION = "region";
+    private static final int REQUEST_MONTH = 1;
     private PanchangPanel panel;
 
     @Override public void onCreate(Bundle state) {
@@ -36,6 +38,7 @@ public final class PanchangActivity extends Activity {
         Button today = button(actions, R.string.today);
         today.setOnClickListener(v -> panel.showDay(0));
         button(actions, R.string.next).setOnClickListener(v -> panel.showDay(1));
+        button(actions, R.string.month).setOnClickListener(v -> openMonth());
         button(actions, R.string.city).setOnClickListener(v -> chooseCity());
         button(actions, R.string.region).setOnClickListener(v -> chooseRegion());
         // Google TV has no screensaver picker for other apps' dreams: offer the button only where one exists.
@@ -51,6 +54,20 @@ public final class PanchangActivity extends Activity {
         panel.addActions(actions);
         setContentView(panel);
         today.requestFocus();
+    }
+
+    private void openMonth() {
+        startActivityForResult(new Intent(this, MonthActivity.class)
+                .putExtra(MonthActivity.EXTRA_CITY, panel.city().name)
+                .putExtra(MonthActivity.EXTRA_REGION, panel.region().name())
+                .putExtra(MonthActivity.EXTRA_DATE, panel.date().toString()), REQUEST_MONTH);
+    }
+
+    @Override protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request == REQUEST_MONTH && result == RESULT_OK && data != null) {
+            panel.show(LocalDate.parse(data.getStringExtra(MonthActivity.EXTRA_DATE)));
+        }
     }
 
     private void chooseCity() {

@@ -9,6 +9,7 @@
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="com.gathin.tvhome.category.DOCK_CARD" /></intent-filter>
             <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
         </activity>
+        <activity android:name=".MonthActivity" android:exported="false" />
         <service android:name=".PanchangDream" android:exported="true" android:permission="android.permission.BIND_DREAM_SERVICE">
             <intent-filter><action android:name="android.service.dreams.DreamService" /></intent-filter>
         </service>

@@ -42,6 +42,14 @@ final class MonthSpan {
         return region.purnimanta ? purnimanta(jd, city, region, amanta) : amanta;
     }
 
+    /** The month holding that civil date, read at its sunrise as the day screen reads it. */
+    static MonthSpan of(LocalDate date, City city, Region region) {
+        long[] riseSet = Astro.sunriseSunset(date, city);
+        long millis = riseSet != null ? riseSet[0]
+                : date.atTime(12, 0).atZone(city.zone).toInstant().toEpochMilli();
+        return of(millis, city, region);
+    }
+
     /** New moon to new moon, the month the Moon's cycle gives on its own. */
     private static MonthSpan amanta(double jd, City city, Region region) {
         double newMoon = Astro.previousCrossing(jd, 0, Astro::elongation);

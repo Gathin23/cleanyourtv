@@ -85,6 +85,11 @@ final class Panchang {
         return (int) Math.floor(Astro.elongation(Astro.julianDay(millis)) / 12) + 1;
     }
 
+    /** The nakshatra running at an instant, 1 (Ashwini) to 27 (Revati). */
+    static int nakshatraAt(long millis) {
+        return (int) Math.floor(Astro.siderealMoon(Astro.julianDay(millis)) / NAKSHATRA_ARC) + 1;
+    }
+
     static boolean krishna(int tithi) { return tithi > 15; }
 
     static int lunarDay(int tithi) { return tithi <= 15 ? tithi : tithi - 15; }
