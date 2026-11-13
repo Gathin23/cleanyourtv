@@ -1,0 +1,111 @@
+# Nonete portable projector (Amazon ASIN B0DX78NKRL, no model name on the unit; Allwinner H726, h726_p2, sun50iw15p1), Android 14 (SDK 34)
+# Firmware Projector_20250902.123926, 1 GB RAM, 1280x720 panel at density 240, 32-bit.
+# The firmware reports the generic Allwinner "ADT-3" / "adt3" identity (manufacturer askey), so match
+# on the build string rather than ro.product.model. Same board as examples/lyncast-x3aq, another
+# firmware: the stock Home here is com.htc.htclauncherhighenglishd08, not LuminaOS.
+#
+# Apply:   TV_HOST=<projector ip> tools/disable.sh examples/nonete-portable-projector-h726/debloat.txt
+# Undo:    TV_HOST=<projector ip> tools/restore.sh examples/nonete-portable-projector-h726/debloat.txt com.htc.htclauncherhighenglishd08
+# Everything is DISABLED, not uninstalled. Comment out anything you use.
+#
+# Status: the nine active lines were applied 2026-11-08 and lived with since; the commented groups
+# below were applied 2026-11-12 in eight batches with a Home screenshot after each and two reboots,
+# and stay commented until they have been lived with. After both reboots the disabled list was
+# unchanged (the firmware re-enables nothing), Home, Settings, the Inputs list (HDMI1-3, CVBS1-2),
+# YouTube and the keystone values were as before.
+#
+# Kept on purpose:
+# - Inputs: com.softwinner.vis (HdmiInputService, CvbsInputService), com.softwinner.awtvinputservice,
+#   com.softwinner.awsource, com.softwinner.awlivetv.
+# - Remote and Bluetooth: com.htc.htcbluetoothremotecontrol, com.htc.htcsetup_wizard_d55 (its only
+#   activity is the Bluetooth pairing screen), com.htc.closedialog (the power menu).
+# - Projector: com.hysd.vafocus (autofocus), com.htc.htcsettings (settings, keystone),
+#   com.softwinner.tv.factorymenu (never opened).
+# - com.softwinner.theme.color: an enabled overlay here ([x] in `cmd overlay list`).
+# - com.softwinner.provision, com.softwinner.settingssetup: used by a factory reset.
+# - Firmware updaters: com.htc.htcotaupdate, com.softwinner.update, android.rockchip.update.service
+#   and com.softwinner.settingsassist (the OTA screen). They were off from 2026-11-08 to 2026-11-12
+#   with no side effect and are enabled again.
+#
+# Disabled from the factory, not in this list: com.mphotool.usbcastserver, com.toofifi.lineserver.
+#
+# Firmware notes:
+# - Port 5555 is Wireless debugging (TLS) and this firmware shows no pairing screen for it; the first
+#   connection was made over a USB cable (the A port, USB VID 1f3a).
+# - The firmware answers no android.settings.SETTINGS intent. With launcher/, add
+#   com.htc.htcsettings/com.htc.activity.HomeActivity to settings_fallback_components in
+#   launcher/app/src/main/res/values/config.xml, and com.htc.htcsettings to the <queries> in
+#   launcher/app/src/main/AndroidManifest.xml (a <package> line), as examples/portronics-beem-470 does.
+# - The only Netflix that signs in here is the phone app (com.netflix.mediaclient), which declares no
+#   leanback entry: name it in library_apps in config.xml and it shows on Home and can sit in the dock.
+#   Netflix for TV (com.netflix.ninja) installs but refuses the device at sign-in.
+# - launcher/build-and-install.sh does not know this stock launcher: run it with STOCK_LAUNCHER=none,
+#   and set-home-activity takes Home. With five columns the date is cut beside the clock at this
+#   density; date_below_clock in config.xml fixes it.
+# - com.softwinner.tv.factorymenu shows up as a launcher tile: add it to hidden_apps.
+
+# Factory test, preloads and the HTC store
+com.htc.hyk_test                       # factory test app
+com.mobisystems.office                 # preloaded Office suite
+com.htc.storeos                        # HTC app store; it only offers phone builds of the streaming apps
+
+# Screensavers (screensaver_enabled was also set to 0)
+com.htc.screensaver                    # stock screensaver
+com.google.android.backdrop            # ambient screensaver
+
+# Cast receivers; re-enable the one you cast with
+com.mphotool.dlna                      # DLNA receiver
+com.mphotool.airplay                   # AirPlay receiver
+com.softwinner.miracastReceiver        # Miracast
+com.htc.samescreen                     # htc_cast mirroring
+
+# --- Applied 2026-11-12, not lived with yet: uncomment to try ---
+
+# Privacy Sandbox ad services
+# com.android.adservices.api
+# com.android.ondevicepersonalization.services
+# com.android.federatedcompute.services
+
+# Setup leftovers, Health Connect, nearby pop-ups
+# com.google.android.onetimeinitializer
+# com.android.healthconnect.controller
+# com.android.health.connect.backuprestore
+# com.android.nearby.halfsheet
+
+# AOSP apps and services with no use on a projector
+# com.android.dreams.basic
+# com.android.wallpaperbackup
+# com.android.wallpapercropper
+# com.android.bips
+# com.android.bluetoothmidiservice
+# com.android.hotspot2.osulogin
+# com.android.backupconfirm
+# com.android.sharedstoragebackup
+# com.android.localtransport
+# com.android.managedprovisioning
+# com.android.dynsystem
+# com.android.music
+# com.android.musicfx
+# com.android.soundpicker
+
+# Vendor leftovers
+# com.softwinner.screenshot            # Quick Settings screenshot tile
+# com.android.nfx                      # vendor NfxAccessibilityService v1.0.82, not the NFC stack; not enabled as a service here
+# com.google.android.apps.searchlite.overlay
+
+# Stock USB media apps; this unit plays nothing from USB
+# com.softwinner.TvdVideo              # USB video player
+# com.softwinner.imageParser           # image viewer
+# com.hisilicon.explorer               # file manager with its USB mount and Samba services
+
+# Voice search, off by the owner's choice
+# com.google.android.katniss
+
+# Cast and phone-remote hub (/system/app/HanYingH713TVApp_HY). This set has it off: it kept seven TCP
+# ports listening on the LAN (62110, 10012, 10013, 7889, 7890, 10008, 8890), all closed once it was
+# disabled, and with its com.huawei.connection process it held about 160 MB.
+# com.android.toofifi
+
+# Stock Home, disabled here after com.gathin.tvhome was confirmed as Home (mFocusedApp, two reboots).
+# persist.sys.homePackage still names it; the remote's Home key follows the default Home activity.
+# com.htc.htclauncherhighenglishd08
