@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-MSSP2 (volver, MediaTek), Android 11 firmware RTT2.211214.001.933, low-RAM",
+  "os": "Android TV 11",
+  "brand": "Xiaomi",
+  "notes": "Same model after its Android 11 update: PatchWall, Mi Channel, Mi TV+, Mi analytics, TV Manager, partner auto-installs, preloads; the Xiaomi updater re-enables PatchWall and Mi TV+ when it updates them (`check.py --fix`); updater, Assistant, Chromecast and Netflix button kept"
+}
