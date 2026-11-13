@@ -4,7 +4,7 @@
 
 <p align="center">
   Leia em: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · Português · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Estrelas"></a>
@@ -284,7 +284,7 @@ explicado em [Solução de problemas](docs/TROUBLESHOOTING.md).
 | **Configuração** | Ordem do dock, aplicativos ocultos, aplicativo de TV ao vivo, de 4 a 7 blocos por linha e animações reduzidas. Tudo em [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Configurações na TV** | Mantenha OK pressionado em Configurações para abrir as configurações do launcher. Opcionalmente, `launcher_settings_button` faz com que um clique normal as abra diretamente; as configurações da TV continuam disponíveis na página de configurações e no bloco do aplicativo correspondente. |
 | **Temas** | Plano de fundo, papel de parede e layout definidos em um `config.json` enviado pelo Wi-Fi, sem recompilação. 29 temas estão incluídos em [`themes/`](themes/), incluindo o `default/` integrado. |
-| **31 idiomas** | Segue o idioma da TV, com layout totalmente espelhado da direita para a esquerda em hebraico. |
+| **32 idiomas** | Segue o idioma da TV, com layout totalmente espelhado da direita para a esquerda em hebraico. |
 | **Biblioteca de aplicativos** | Opcional: permite navegar por todos os aplicativos instalados e adicionar ou remover atalhos da tela inicial. Consulte [o guia da biblioteca de aplicativos](docs/app-library.md). |
 | **Menu dos blocos** | Ativado por padrão (`tile_menu`): mantenha OK pressionado em um bloco para acessar Mover, Remover da tela inicial e Informações do app. Se estiver desativado, manter OK pressionado abre Informações do app. |
 | **Cartões de módulos** | Qualquer aplicativo de TV pode oferecer seu próprio bloco; você aprova cada um apenas uma vez. Consulte [`docs/modules.md`](docs/modules.md). |

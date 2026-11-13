@@ -4,7 +4,7 @@
 
 <p align="center">
   Leer en: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · Español
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Estrellas"></a>
@@ -220,7 +220,7 @@ Una pantalla de inicio nativa y muy ligera para Android TV: **unos 572 KB**, pro
 | **Configuración** | Orden del dock, aplicaciones ocultas, app de TV en directo, de 4 a 7 elementos por fila y animaciones reducidas. Todo definido en [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Ajustes en el televisor** | Mantén OK pulsado en Ajustes para acceder a las opciones del launcher. Opcionalmente, `launcher_settings_button` permite que una pulsación simple las abra directamente; la configuración del televisor continúa accesible desde la propia página de ajustes y mediante el icono correspondiente. |
 | **Temas** | Fondo, fondo de pantalla y diseño definidos en un `config.json` enviado por Wi-Fi, sin recompilar. 29 temas están incluidos en [`themes/`](themes/), incluyendo el `default/` integrado. |
-| **31 idiomas** | Sigue el idioma del televisor, con un diseño totalmente reflejado de derecha a izquierda en hebreo. |
+| **32 idiomas** | Sigue el idioma del televisor, con un diseño totalmente reflejado de derecha a izquierda en hebreo. |
 | **Biblioteca de aplicaciones** | Opcional: permite explorar todas las aplicaciones instaladas y agregar o retirar accesos directos de la pantalla de inicio. Consulta [la guía de la biblioteca de aplicaciones](docs/app-library.md). |
 | **Menú contextual de elementos** | Habilitado por defecto (`tile_menu`): mantén OK pulsado sobre un elemento para acceder a Mover, Quitar de la pantalla de inicio e Información de la app. Si se desactiva, mantener OK pulsado abre Información de la app directamente. |
 | **Tarjetas de módulos** | Cualquier aplicación de TV puede incorporar su propio bloque informativo; autorizas cada una una sola vez. Consulta [`docs/modules.md`](docs/modules.md). |

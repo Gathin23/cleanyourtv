@@ -4,7 +4,7 @@
 
 <p align="center">
   Okuyun: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · Türkçe · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Yıldızlar"></a>
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 TV modeli · 126 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 518 yayın daha: 57 ülkeden 534 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 TV modeli · 126 marka · 32 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 518 yayın daha: 57 ülkeden 534 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı." width="800"></a>
 </p>
 
 ## Buradan başlayın
@@ -284,7 +284,7 @@ bir cihazda neyin kaldığı [Sorun giderme](docs/TROUBLESHOOTING.md) belgesinde
 | **Yapılandırma** | Dock sırası, gizli uygulamalar, Canlı TV uygulaması, satır başına 4 ile 7 arası kutucuk, azaltılmış hareket. Hepsi [`config.xml`](launcher/app/src/main/res/values/config.xml) içinde |
 | **TV'deki ayarlar** | Başlatıcı ayarları için Ayarlar üzerinde OK'u basılı tutun. İsteğe bağlı `launcher_settings_button`, normal bir tıklamanın onları doğrudan açmasını sağlar; TV ayarları ayarlar sayfasında ve kendi uygulama kutucuğunda kalır. |
 | **Temalar** | Wi-Fi üzerinden gönderilen bir `config.json` ile arka plan, duvar kâğıdı ve düzen, yeniden derleme yok. Yerleşik `default/` dahil 29 tema [`themes/`](themes/) içinde gelir |
-| **31 dil** | TV'nin diline uyar; İbranice için tamamen aynalanmış, sağdan sola bir düzen sunar |
+| **32 dil** | TV'nin diline uyar; İbranice için tamamen aynalanmış, sağdan sola bir düzen sunar |
 | **Uygulama kitaplığı** | İsteğe bağlı: yüklü tüm uygulamalara göz atın ve Ana ekran kısayolları ekleyin veya kaldırın. Bkz. [uygulama kitaplığı kılavuzu](docs/app-library.md) |
 | **Kutucuk menüsü** | Varsayılan olarak açık (`tile_menu`): Taşı ve Uygulama bilgisi için bir kutucukta OK'u basılı tutun; uygulama kitaplığı açıksa Ana ekrandan kaldır da çıkar. Kapalıyken OK'u basılı tutmak Uygulama bilgisini açar |
 | **Modül kartları** | Herhangi bir TV uygulaması kendi kutucuğunu sunabilir; her birini bir kez onaylarsınız. Bkz. [`docs/modules.md`](docs/modules.md) |

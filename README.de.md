@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · Deutsch · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Sterne"></a>
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 TV-Modelle · 126 Marken · 31 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 518 weitere: 534 Artikel aus 57 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 TV-Modelle · 126 Marken · 32 Sprachen · Launcher mit 572 KB. Erwähnt in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP und 518 weitere: 534 Artikel aus 57 Ländern. Vorher: der Google-TV-Startbildschirm mit einer bezahlten Anzeige. Nachher: der Clean-Your-TV-Launcher." width="800"></a>
 </p>
 
 ## Einstieg
@@ -262,7 +262,7 @@ Gerät übrig bleibt, steht in der [Fehlerbehebung](docs/TROUBLESHOOTING.md).
 | **Einrichten** | Dock-Reihenfolge, versteckte Apps, Live-TV-App, 4 bis 7 Kacheln je Zeile, reduzierte Bewegung. Alles in [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Einstellungen am Fernseher** | OK auf Einstellungen halten für die Launcher-Einstellungen. Ein optionales `launcher_settings_button` lässt einen normalen Klick sie direkt öffnen; die TV-Einstellungen bleiben auf der Einstellungsseite und ihrer App-Kachel. |
 | **Themes** | Hintergrund, Wallpaper und Layout aus einer `config.json`, über WLAN aufgespielt, ohne neuen Build. Neunundzwanzig liegen in [`themes/`](themes/), das eingebaute `default/` mitgerechnet |
-| **31 Sprachen** | Folgt der Sprache des Fernsehers, mit vollständig gespiegeltem Layout von rechts nach links für Hebräisch |
+| **32 Sprachen** | Folgt der Sprache des Fernsehers, mit vollständig gespiegeltem Layout von rechts nach links für Hebräisch |
 | **App-Bibliothek** | Optional: jede installierte App durchsehen und Home-Verknüpfungen hinzufügen oder entfernen. Siehe [die Anleitung zur App-Bibliothek](docs/app-library.md) |
 | **Kachelmenü** | Standardmäßig an (`tile_menu`): OK auf einer Kachel halten für Verschieben und App-Info, mit eingeschalteter App-Bibliothek auch Von Home entfernen. Aus: OK halten öffnet App-Info |
 | **Modul-Karten** | Jede TV-App kann eine eigene Kachel anbieten; du stimmst jeder einmal zu. Siehe [`docs/modules.md`](docs/modules.md) |

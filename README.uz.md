@@ -4,7 +4,7 @@
 
 <p align="center">
   Oʻqing: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · Oʻzbekcha · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Yulduzlar"></a>
@@ -278,7 +278,7 @@ Eskiroq qurilmada nima qolgani [Nosozliklarni bartaraf etish](docs/TROUBLESHOOTI
 | **Sozlash** | Dock tartibi, yashirin ilovalar, Jonli TV ilovasi, qatoriga 4 dan 7 gacha katakcha, kamaytirilgan harakat. Hammasi [`config.xml`](launcher/app/src/main/res/values/config.xml) da |
 | **Televizordagi sozlamalar** | Launcher sozlamalari uchun Sozlamalar ustida OK ni bosib turing. Ixtiyoriy `launcher_settings_button` oddiy bosish ularni toʻgʻridan-toʻgʻri ochishini taʼminlaydi; televizor sozlamalari sozlamalar sahifasida va oʻz ilova katakchasida qoladi. |
 | **Mavzular** | Wi-Fi orqali yuborilgan `config.json` bilan fon, fon rasmi va joylashuv, qayta yigʻish yoʻq. Ichki `default/` bilan birga 29 ta mavzu [`themes/`](themes/) da keladi |
-| **31 til** | Televizor tiliga ergashadi; ivrit uchun toʻliq oynalashtirilgan, oʻngdan chapga joylashuv |
+| **32 til** | Televizor tiliga ergashadi; ivrit uchun toʻliq oynalashtirilgan, oʻngdan chapga joylashuv |
 | **Ilovalar kutubxonasi** | Ixtiyoriy: oʻrnatilgan barcha ilovalarni koʻrib chiqing va Home yorliqlarini qoʻshing yoki olib tashlang. Qarang: [ilovalar kutubxonasi qoʻllanmasi](docs/app-library.md) |
 | **Katakcha menyusi** | Standart boʻyicha yoqilgan (`tile_menu`): Koʻchirish va Ilova maʼlumoti uchun katakchada OK ni bosib turing; ilovalar kutubxonasi yoqilganda Home dan olib tashlash ham chiqadi. Oʻchiqda OK ni bosib turish Ilova maʼlumotini ochadi |
 | **Modul kartochkalari** | Har qanday TV ilovasi oʻz katakchasini taklif qilishi mumkin; har birini bir marta tasdiqlaysiz. Qarang: [`docs/modules.md`](docs/modules.md) |

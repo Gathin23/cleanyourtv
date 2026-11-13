@@ -16,7 +16,7 @@
   <a href="README.uz.md"><img src="https://img.shields.io/badge/README-O%CA%BBzbekcha-cfffcf?style=flat&labelColor=15181e" alt="Oʻzbekcha"></a>
   <a href="README.fr.md"><img src="https://img.shields.io/badge/README-Fran%C3%A7ais-cfffcf?style=flat&labelColor=15181e" alt="Français"></a>
   <a href="README.es.md"><img src="https://img.shields.io/badge/README-Espa%C3%B1ol-cfffcf?style=flat&labelColor=15181e" alt="Español"></a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Stars"></a>
@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 tv-modellen · 126 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 518 media: 534 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 tv-modellen · 126 merken · 32 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 518 media: 534 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -728,7 +728,7 @@ De **tv** moet Android 8.0 (API 26) of nieuwer gebruiken. `minSdk` stelt de mini
 | **Configuratie** | Volgorde van het dock, verborgen apps, Live-tv-app, 4 tot 7 tegels per rij en minder beweging. Alles staat in [`config.xml`](launcher/app/src/main/res/values/config.xml). |
 | **Instellingen op de tv** | Houd OK ingedrukt op Instellingen om de launcherinstellingen te openen. Met de optionele instelling `launcher_settings_button` opent een gewone klik ze direct; de tv-instellingen blijven beschikbaar via de instellingenpagina en de tegel van die app. |
 | **Thema's** | Achtergrond, wallpaper en indeling komen uit een via wifi verzonden `config.json`; opnieuw bouwen is niet nodig. In [`themes/`](themes/) staan negenentwintig thema's, inclusief het ingebouwde `default/`. |
-| **31 talen** | Volgt de taal van de tv, met een volledig gespiegeld rechts-naar-links ontwerp voor Hebreeuws. |
+| **32 talen** | Volgt de taal van de tv, met een volledig gespiegeld rechts-naar-links ontwerp voor Hebreeuws. |
 | **Appbibliotheek** | Optioneel: bekijk alle geïnstalleerde apps en voeg snelkoppelingen op het startscherm toe of verwijder ze. Zie [de handleiding voor de appbibliotheek](docs/app-library.md). |
 | **Tegelmenu** | Standaard aan (`tile_menu`): houd OK ingedrukt op een tegel voor Verplaatsen en App-info, en met de appbibliotheek aan ook Verwijderen van startscherm. Staat dit uit, dan opent lang indrukken de app-info. |
 | **Modulekaarten** | Elke tv-app kan een eigen tegel aanbieden; je keurt elke app één keer goed. Zie [`docs/modules.md`](docs/modules.md). |

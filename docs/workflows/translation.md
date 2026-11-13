@@ -10,7 +10,7 @@
 2. A language may also need one of the other files `values/` carries. Add it only when `values/` has the
    same file, and only the names that file defines: `tests/test_translation_recipe_files.py` holds both.
    - `bools.xml`: `date_single_line` false when the language's weekday and month names do not fit on one
-     line (`values-de`, `values-es`, `values-b+es+419`, `values-ast`, `values-pt`, `values-ru` and
+     line (`values-de`, `values-el`, `values-es`, `values-b+es+419`, `values-ast`, `values-pt`, `values-ru` and
      `values-uk` set it), and `rtl_app_grid`/`rtl_menu_bar` true for a right-to-left language
      (`values-iw`).
    - `fonts.xml`: point `font_body`, `font_regular` and the other `font_*` at the system families when the

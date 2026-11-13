@@ -4,7 +4,7 @@
 
 <p align="center">
   Читати: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · Українська · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Зірочки"></a>
@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 моделей телевізорів · 126 брендів · 31 мова · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 518 видань: 534 статті з 57 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="468 моделей телевізорів · 126 брендів · 32 мови · лончер на 572 КБ. Про нас писали TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP та ще 518 видань: 534 статті з 57 країн. Було: стандартний головний екран Google TV зі спонсорською рекламою. Стало: лончер Clean Your TV." width="800"></a>
 </p>
 
 ## З чого почати
@@ -285,7 +285,7 @@ Xiaomi (PatchWall). Передайте `STOCK_LAUNCHER=<package>` (`-StockLaunch
 | **Налаштування** | Порядок дока, приховані застосунки, застосунок ефірного ТБ, від 4 до 7 плиток у рядку, зменшений рух. Усе в [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Налаштування на телевізорі** | Утримайте OK на «Налаштуваннях», щоб відкрити налаштування лончера. Необов'язковий `launcher_settings_button` робить так, що звичайне натискання відкриває їх одразу; налаштування телевізора лишаються на сторінці налаштувань і на своїй плитці |
 | **Теми** | Тло, шпалери й розкладка з `config.json`, надісланого через Wi-Fi, без перезбирання. У [`themes/`](themes/) постачається двадцять дев'ять, включно з вбудованою `default/` |
-| **31 мова** | Дотримується мови телевізора, з повністю дзеркальним розкладом справа наліво для івриту |
+| **32 мови** | Дотримується мови телевізора, з повністю дзеркальним розкладом справа наліво для івриту |
 | **Бібліотека застосунків** | Необов'язково: перегляд усіх встановлених застосунків і додавання чи прибирання ярликів із головного екрана. Дивіться [посібник із бібліотеки застосунків](docs/app-library.md) |
 | **Меню плитки** | Увімкнено за замовчуванням (`tile_menu`): утримайте OK на плитці для «Перемістити» та «Про застосунок», а з увімкненою бібліотекою застосунків — ще й «Прибрати з головного». Вимкнено — утримання OK відкриває «Про застосунок» |
 | **Картки-модулі** | Будь-який застосунок на телевізорі може запропонувати власну плитку; ви схвалюєте кожну один раз. Дивіться [`docs/modules.md`](docs/modules.md) |

@@ -4,7 +4,7 @@
 
 <p align="center">
   Lire en : <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · Français · <a href="README.es.md">Español</a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Étoiles"></a>
@@ -285,7 +285,7 @@ décrit dans le [dépannage](docs/TROUBLESHOOTING.md).
 | **Configuration** | Ordre du dock, applications masquées, application de TV en direct, de 4 à 7 vignettes par rangée, animations réduites. Tout se trouve dans [`config.xml`](launcher/app/src/main/res/values/config.xml) |
 | **Réglages sur le téléviseur** | Maintenez OK sur Paramètres pour ouvrir les réglages du launcher. L'option `launcher_settings_button` permet de les ouvrir directement d'un simple clic ; les réglages du téléviseur restent accessibles depuis la page des réglages et leur vignette d'application. |
 | **Thèmes** | Arrière-plan, fond d'écran et disposition à partir d'un `config.json` envoyé par Wi-Fi, sans recompilation. 29 thèmes sont fournis dans [`themes/`](themes/), y compris le `default/` intégré |
-| **31 langues** | Suit la langue du téléviseur, avec une disposition de droite à gauche entièrement inversée pour l'hébreu |
+| **32 langues** | Suit la langue du téléviseur, avec une disposition de droite à gauche entièrement inversée pour l'hébreu |
 | **Bibliothèque d'applications** | Facultative : parcourez toutes les applications installées et ajoutez ou retirez des raccourcis sur l'accueil. Voir [le guide de la bibliothèque d'applications](docs/app-library.md) |
 | **Menu des vignettes** | Activé par défaut (`tile_menu`) : maintenez OK sur une vignette pour Déplacer et Infos sur l'appli, plus Retirer de l'accueil lorsque la bibliothèque d'applications est activée. Désactivé, maintenir OK ouvre Infos sur l'appli |
 | **Cartes de modules** | N'importe quelle application TV peut proposer sa propre vignette ; vous approuvez chacune une seule fois. Voir [`docs/modules.md`](docs/modules.md) |

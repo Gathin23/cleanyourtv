@@ -54,7 +54,7 @@ LANG_ROW = {
     "README.nl.md": "talen",
     "README.pt-BR.md": "idiomas",
     "README.tr.md": "dil",
-    "README.uk.md": "мова",
+    "README.uk.md": ("мова", "мови", "мов"),
     "README.uz.md": "til",
 }
 
@@ -75,8 +75,9 @@ def rows(text):
 
 def claimed(text, word):
     """The number the page states in its `<word>` row, or None when it states none."""
+    words = {word} if isinstance(word, str) else set(word)
     for number, label in rows(text):
-        if label == word:
+        if label in words:
             return number
     return None
 
@@ -114,14 +115,16 @@ class LanguageCountTest(unittest.TestCase):
         writes the count in a word this file does not carry (a new translation's own, as README.uz.md's
         `til` was beside the Turkish `dil`) is out of its reach, and that word is the line to add here.
         """
-        words = set(LANG_ROW.values())
+        words = {word for value in LANG_ROW.values()
+                 for word in ({value} if isinstance(value, str) else value)}
         for page in front_pages():
             for number, label in rows(page.read_text(encoding="utf-8")):
                 if label not in words:
                     continue
                 with self.subTest(page=page.name, word=label):
-                    self.assertEqual(
-                        LANG_ROW.get(page.name), label,
+                    self.assertTrue(
+                        label in ({LANG_ROW[page.name]} if isinstance(LANG_ROW.get(page.name), str)
+                                  else set(LANG_ROW.get(page.name, ()))),
                         f"{page.name} states the language count as `{label}` and is not in this "
                         f"file's table, so nothing reads its {number}")
 

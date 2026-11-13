@@ -2,7 +2,7 @@
 
 <p align="center"><a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV — מסך בית נקי מפרסומות לטלוויזיה" width="800"></a></p>
 
-<p align="center" dir="ltr"><a href="README.md">English</a> · <strong lang="he" dir="rtl">עברית</strong> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a></p>
+<p align="center" dir="ltr"><a href="README.md">English</a> · <strong lang="he" dir="rtl">עברית</strong> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="כוכבים ב־GitHub"></a>
@@ -239,7 +239,7 @@ TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py
 | **התאמה אישית** | סדר המועדפים, אפליקציות מוסתרות, אפליקציית שידור חי, 4 עד 7 אריחים בשורה והפחתת תנועה. ההגדרות נמצאות ב־[config.xml](launcher/app/src/main/res/values/config.xml). |
 | **הגדרות בטלוויזיה** | לחיצה ארוכה על OK בכפתור ההגדרות פותחת את הגדרות מסך הבית. עם <code dir="ltr">launcher_settings_button</code> מספיקה לחיצה רגילה. הגדרות הטלוויזיה זמינות גם מדף ההגדרות ומאריח האפליקציה. |
 | **ערכות עיצוב** | רקע, תמונה ופריסה מקובץ <code dir="ltr">config.json</code> שנשלח דרך הרשת. יש 29 ערכות ב־[themes](themes/), כולל ברירת המחדל. |
-| **31 שפות** | השפה נקבעת לפי הטלוויזיה. בעברית הפריסה מוצגת מימין לשמאל. |
+| **32 שפות** | השפה נקבעת לפי הטלוויזיה. בעברית הפריסה מוצגת מימין לשמאל. |
 | **ספריית אפליקציות** | אפשר לדפדף בכל האפליקציות המותקנות ולהוסיף או להסיר קיצורי דרך ממסך הבית. [מדריך](docs/app-library.md) |
 | **תפריט אריח** | <code dir="ltr">tile_menu</code> מופעל כברירת מחדל. לחיצה ארוכה על OK מאפשרת להזיז אריח ולפתוח פרטי אפליקציה. כשספריית האפליקציות מופעלת אפשר גם להסיר את האריח מהבית. כשהתפריט כבוי, לחיצה ארוכה פותחת את פרטי האפליקציה. |
 | **כרטיסי תוספים** | אפליקציות יכולות להציע אריח שמוצג לאחר אישור חד־פעמי. [מפרט הכרטיסים](docs/modules.md) |
