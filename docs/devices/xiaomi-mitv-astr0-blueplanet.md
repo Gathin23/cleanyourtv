@@ -171,6 +171,19 @@ launcher's `HomeKeyService` on `enabled_accessibility_services`, and
 role and the volume OSD; the guard sends the TV back to the launcher whenever PatchWall's home screen comes
 up, so the Home key, a cold boot and a wake from standby all land on it.
 
+### A cold boot shows the stock home first, for a second or two
+
+The guard can only correct after the fact. PatchWall is the registered HOME, so Android starts it and it draws
+its window before the accessibility service is bound; on this set a cold boot shows PatchWall for about 1-2 s
+and then the launcher. A wake from standby is quicker, because the guard is already bound and only has to put
+its service back. `docs/devices/skyworth-9r52-g6.md` records the same 1-2 s for the Home key on another set
+that uses this guard.
+
+Opening the launcher directly when the service first binds after boot, instead of waiting for the
+`ProbeActivity` window event, shortens it but cannot remove it: the stock home is the one Android starts. Only
+taking the HOME role away from PatchWall would remove it, and that is exactly what brings the volume crash
+back.
+
 ### The guard dies on standby unless `guard_off_in_standby` is on, and its broadcast is dropped
 
 This is the part that took the longest. The guard works, then one standby/wake leaves PatchWall as Home
