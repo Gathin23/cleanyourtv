@@ -1,0 +1,43 @@
+# DAEWOO 50DM62UA (Vestel finch, MediaTek m7332), Android TV 14 (API 34)
+# ro.product.manufacturer = vestel, ro.product.brand = My, ro.product.device = finch
+# Stock launcher: com.google.android.tvlauncher | Live TV app: com.mediatek.wwtv.tvcenter (kept for TDT/HDMI)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/daewoo-50dm62ua-finch/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/daewoo-50dm62ua-finch/debloat.txt
+# Everything is DISABLED with pm disable-user, never uninstalled. Comment out any line you want to keep.
+
+# Vestel telemetry, logging, cleaner and user manual
+com.vestel.vestelreporter
+com.vestel.smartlogger
+com.vestel.tv.speedup
+com.vestel.tv.eib
+com.vestel.smartcenter
+android.autoinstalls.config.vestel.malin
+
+# Google ads, personalisation and feedback
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Dead weight on TV
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.managedprovisioning
+com.android.dynsystem
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.google.android.syncadapters.calendar
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.se
+
+# Unused apps (user preference)
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
+com.google.android.katniss
+com.google.android.play.games
