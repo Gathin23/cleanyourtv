@@ -176,6 +176,26 @@
 #   TV key sends Philips keycode 779 (KEYCODE_RAKUTEN_TV) and does nothing with no Rakuten app on the set;
 #   `app_keys` 779:org.smarttube.stable with HOME_KEY_SERVICE=1 opens SmartTube instead. Checked on the
 #   real remote: Home, SOURCES, Settings, TV guide, Rakuten -> SmartTube, and holding Volume + still ramps.
+#
+# SIXTH UNIT: Philips 70PUS8506/12 (Germany), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029, security patch 2025-10-01), so this list applies.
+# Applied on 22 October 2026 in small batches with tools/disable.sh, a screenshot after each, then in daily
+# use for three weeks with nothing missed.
+# - Disabled from this list: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   demome, m7opapp, partnersetup, onetimeinitializer, feedback, sss.authbridge, syncadapters.calendar,
+#   videos, Netflix, Prime Video and Apple TV, then tvlauncher once the new launcher was Home. Nothing came
+#   back after a reboot, checked with `pm list packages -d`.
+# - Disabled there beyond this list: org.droidtv.nettvapps (the gallery's preload installer), as on the
+#   fifth unit.
+# - Kept there (owner's choice): katniss, amazonalexa, stock YouTube, YouTube Music, play.games, dlna,
+#   ipcontrol, Play-Fi, mediashell and the firmware updaters; eum, fastip and nettvbrowser stay as above.
+# - disable.sh's TV-input guard held back usagelogger and demome. `pm query-services --components -a
+#   android.media.tv.TvInputService` names neither, so both were disabled with TVINPUT_ALLOW=1, as on the
+#   third unit; HDMI was checked after each.
+# - aurora was off from the factory here too (enabled=2 before the list).
+# - Launcher: Live TV package org.droidtv.playtv, hidden from the grid with hidden_apps;
+#   build-and-install.sh ran through on its own. The Inputs menu lists HDMI 1-4, Component, Composite,
+#   SCART, VGA and Live TV, and a console on HDMI 1 works.
 
 # TP Vision telemetry. org.droidtv.gel runs inside the candeebug process
 # (android:process="org.droidtv.candeebug"), so disabling candeebug alone leaves a process with
