@@ -1,0 +1,79 @@
+# XGIMI Z9X projector (ro.product.model=XGIMI TV, product Product_raptor, device snake_deep, factory G0074), China, Android 12 / SDK 31, firmware v6.13.113
+# Fingerprint XGIMI/Product_raptor/snake_deep:12/SP1A.210812.016/v6.13.113:user/dev-keys, board huanglong (HiSilicon Hi3751V660), GMUI 6.0, abi armeabi-v7a
+# Mainland-China counterpart of the international Elfin Flip 4K.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xgimi-z9x-china/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xgimi-z9x-china/debloat.txt com.xgimi.home
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.xgimi.home (com.xgimi.module.cellview.home.ui.HomeActivity). It is disabled by
+# launcher/build-and-install.sh, not by this list; the Undo above re-enables it. Install with
+# HOME_KEY_SERVICE=1 RESTORE_KEY_SERVICES=1 STOCK_LAUNCHER=com.xgimi.home and set
+# stock_home_redirect=com.xgimi.home. Leaving the stock launcher enabled is not enough:
+# cmd package set-home-activity prints Success but writes a preferred activity with mAlways=false,
+# HOME opens com.xgimi.xgimiframeworkui/.resolver.ResolverActivity, and 始终 in that chooser does
+# not stick. See README.md.
+#
+# Live TV: none (no tuner). HDMI inputs are com.xgimi.tvinput and com.xgimi.xhplayer; config.json sets
+# input_action=com.xgimi.action.hdmiPlayer.
+#
+# ADB: this GMUI 6 build has no working ADB switch in Developer options. Network ADB was opened with
+# the open-source code-ant/z7x-adb app (package local.z7x.adb), installed from USB after renaming the
+# file to .apk1. Do not launch the factory packages (com.xgimi.minitvfactory, com.xgimi.remote) to
+# look for a switch; the repository's rules forbid starting factory/test packages. The firmware
+# reports ro.adb.secure=0: while adbd runs, any device on the LAN has a shell. Deep standby drops
+# the TCP connection after about 70 seconds; adb connect again.
+#
+# XGIMI Settings is a service window, not an Activity: android.settings.SETTINGS resolves to nothing.
+# The Settings UI is com.android.newsettings / com.xgimi.newsettings.SettingService, action
+# com.xgimi.settings.SETTINGS. The launcher's Settings pill needs
+# com.android.newsettings/com.xgimi.newsettings.mock.MockActivity in settings_fallback_components
+# (config.xml only; see README.md) and a <queries> entry for com.android.newsettings.
+#
+# Voice and OTA are commented out below, so the default list keeps 极米语音 / Google Assistant and
+# firmware updates. The author's unit disables them by choice; uncomment the lines to do the same.
+#
+# Kept on purpose: hardware and input (com.xgimi.autokst, tof, tvinput, xhplayer, xrmservice,
+# bluetoothservice, windowsystem, xgimiservice), casting (wirelessscreen, smartconnect,
+# com.google.android.apps.mediashell), the XGIMI app store (com.xgimi.newappmarket),
+# com.google.android.tvrecommendations, filemanager, and Bilibili (com.xiaodianshi.tv.yst), which
+# was disabled once and re-enabled. The account/VIP/payment packages are disabled by the owner's
+# choice below, not because they are unsafe.
+#
+# Status: applied 2026-11-11 in batches with a Home screenshot after each, then the launcher
+# handover the same evening, then two days of everyday use (to 2026-11-13) with no problems,
+# including a reboot (the new Home came back) and a live HDMI source.
+
+# Telemetry, ads, help
+com.xgimi.adservice                         # XGIMI ad service
+com.xgimi.datareporter                      # usage/telemetry reporter
+com.xgimi.bugreportsender                   # bug report uploader
+com.xgimi.msgcenter                         # push message/notification center
+com.xgimi.instruction30                      # help/instruction content
+
+# XGIMI extras
+com.xgimi.doubanfm                          # 豆瓣FM / XGIMI music radio
+com.xgimi.stream.video                      # XGIMI video/VIP content app
+com.xgimi.atmosphere                        # dynamic/ambient screensaver
+
+# Preloaded China streaming and music (Bilibili was disabled, then re-enabled at the owner's request; leave it out)
+com.ktcp.tvvideo                            # 云视听极光
+com.netease.cloudmusic.tv                   # 网易云音乐
+com.tencent.qqmusictv                       # QQ 音乐
+com.gitvjimi.video                          # GITV / 极米视频内容
+com.cibn.tv                                 # CIBN
+
+# XGIMI account / VIP / payment
+com.xgimi.account                           # account stub
+com.xgimi.user                              # account/VIP/backup UI and provider
+com.xgimi.payview                           # VIP/payment UI
+
+# Optional: voice. Uncomment to disable 极米语音 and Google Assistant. duertts is the only
+# accessibility service on this firmware; on this unit, remote keys, keystone and Settings kept
+# working after it was disabled, and HDMI input worked with a live source (xrmservice is the
+# key handler).
+# com.xgimi.duertts                          # 极米语音 (MonitorService accessibility / TTS)
+# com.google.android.katniss                 # Google TV Assistant / voice search
+
+# Optional: firmware updater. Uncomment to disable OTA.
+# com.xgimi.upgrade                          # OTA updater; kept enabled by default
