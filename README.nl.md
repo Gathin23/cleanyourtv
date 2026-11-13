@@ -16,7 +16,7 @@
   <a href="README.uz.md"><img src="https://img.shields.io/badge/README-O%CA%BBzbekcha-cfffcf?style=flat&labelColor=15181e" alt="Oʻzbekcha"></a>
   <a href="README.fr.md"><img src="https://img.shields.io/badge/README-Fran%C3%A7ais-cfffcf?style=flat&labelColor=15181e" alt="Français"></a>
   <a href="README.es.md"><img src="https://img.shields.io/badge/README-Espa%C3%B1ol-cfffcf?style=flat&labelColor=15181e" alt="Español"></a>
-</p>
+ · <a href="README.el.md">Ελληνικά</a></p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="Stars"></a>
