@@ -4,6 +4,8 @@ Notes for the `hengshan` board, firmware `STT2.230310.002`. The first list came 
 75U75N notes are from a US unit (one owner, from 2026-10-22); a 55U7N report of 2026-10-24 (#1326) confirms the
 board, the build and the volume trade below. A 65U7ESG from Colombia (2026-10-25) has its own list,
 `debloat-65u7esg.txt`, and [a way to keep both the app buttons and the volume ramp](#65u7esg-the-app-buttons-and-the-volume-ramp-together).
+A 65U86LUA from the US (2026-11-09) has `debloat-65u86lua.txt` and
+[notes on reading the picture and sound settings from the log](#65u86lua-picture-and-sound-settings-read-from-the-log).
 
 ## Live TV and inputs
 
@@ -99,3 +101,96 @@ Other notes from that unit:
   played.
 - Store mode was already off on this ex-display unit (`persist.sys.vt.storemode=false`); disabling
   `com.vt.storemode` changed nothing visible.
+
+## 65U86LUA: picture and sound settings, read from the log
+
+A fifth unit: a Hisense 65U86LUA from the US, on the same device and build (incremental `00.00.00.166`, security
+patch 2026-02-05), with a Dolby Digital soundbar on HDMI 1 (ARC). It applied `debloat-65u86lua.txt` on 2026-11-09
+and keeps Google TV's own home screen: no other launcher is installed. Everything below is from that one evening.
+
+### How this was tested
+
+- **Settings and properties, before and after.** `settings list` for all three namespaces and `getprop` were saved,
+  the owner changed one picture option with the remote, and the two copies were compared.
+- **The log.** `logcat -d -t '<time>'` from just before each step, read for what the Settings app sent and what the
+  TV's middleware applied.
+- **Playback of each signal type.** A YouTube video for SDR, an HDR video on YouTube for HDR10, and a Dolby Vision
+  film on Disney+, each started over ADB and left playing for about 30 seconds before the log was read. No HDMI
+  source and no antenna were connected, so those inputs were not tested.
+- **Package changes one at a time,** each followed by a check of Home, the `com.vt.tv.smartsense` process, the
+  saved Wi-Fi network and the log for crashes, then a restart and the same checks again. A second restart
+  followed the one package that was enabled again.
+
+### Where the picture settings live
+
+Not in Android's settings. Changing Motion Enhancement from Off to Smooth to Film changed no setting and no
+property. The Settings app called Hisense's middleware instead, and the log shows the call and its value:
+
+```
+setMemc.vt_hs_av_service D.Buffer(8 bytes): { 04 00 00 00 01 00 00 00}     <- Smooth
+setMemc.vt_hs_av_service D.Buffer(8 bytes): { 04 00 00 00 02 00 00 00}     <- Film
+HISMW@videoctrl: [UpdateMemcMode:9904] [video ctrl] update memc value: 2, ret = 0.
+```
+
+So 0 is Off, 1 Smooth and 2 Film, and nothing run from `adb shell` was found that sets it: the remote is the
+way to change it. Reading it is another matter. Each time a stream starts, the middleware logs every picture item it
+applies, so the value in force for what is playing can be checked without looking at the screen:
+
+```
+HISMW@PqBunchCtrl: [DumpPqBunch:269] [12/22] pqItem: '8:MEMC', size: 4, value = 0.
+HuiVout : [_HUI_VOutProcessPqBunch:7302]: PqBunch MJC_Effect: id = [8] PqData = [0]
+TvRenderServiceCallback: HdrType = HDR10
+```
+
+The same dump lists `6:NR`, `7:MPEG_NR`, `23:AIPQ`, `25:SUPER_RES`, `5:SHARPNESS`, `11:DYN_CONTRAT`,
+`26:DECONTOUR` and the rest. The values are kept per source, per HDR type and per picture mode, so one reading
+covers one combination: on this unit SDR, HDR10 and Dolby Vision in the streaming apps each read `MEMC` 0. The
+factory defaults for every combination are in `tv_picture_setting_default_values.json` under
+`/vendor/tvconfig/config/app/`, readable from the shell: `MJC_Effect` (motion smoothing) is `Middle` in seven of
+the fifteen picture-mode slots for SDR, which is why a set that looks right in one app can smooth in another.
+
+### What `com.vt.tv.aipq` does
+
+Read from its APK with jadx. It watches the foreground app and switches "AIPQ scene detection" on for apps on a
+name list it downloads from Hisense, and it acts only while two global settings are both 1:
+`picture_aipq_kill_switch` (default 1, rewritten from the downloaded list) and `picture_aipq_smart_scene`
+(default 0). Neither was set on this unit, and only its `.EmptyService` was running. In Dolby Vision the
+middleware turns AI picture off by itself (`ai pq locked off due to dolby vision picture mode`).
+
+### Sound to a soundbar that takes Dolby Digital only
+
+With Digital Audio Output on pass-through, a Disney+ film in Dolby Digital Plus reached the soundbar as PCM:
+the soundbar does not accept Plus, so there was nothing to pass. The log names all three parts:
+
+```
+Input format(0x2,EAC3), user output setting(Bypass).
+AVR cap: LPCM(ch:0) DD(1) DDP(0) DDP_ATMOS(0,byte3:0x0) ...
+DigitalOutputFormat Spdif(1,PCM), ARC(1,PCM), eARC(0,Not Connected)
+```
+
+With Settings > Sound > Digital Audio Output on Dolby Digital the same film went out as
+`ARC(2,DD), Enc(2,DD)`. That setting encodes everything: a YouTube video (Opus, decoded to PCM) also left as
+Dolby Digital, so stereo sources are compressed once more on the way. The `AVR cap` line is the quickest way to
+see what a soundbar on this board accepts.
+
+### Driving the apps over ADB
+
+Netflix gives 0-byte screenshots, menus included, and a `http://www.netflix.com/watch/<id>` intent opened the app
+without starting the title, so it cannot be steered blind. Disney+ menus screenshot normally (only the video is
+black) and can be walked with `tools/tv.py --screenshot shots/01.png DPAD_DOWN`. A restart brought ADB on port
+5555 back by itself.
+
+### Other notes from that unit
+
+- The owner disabled `com.vt.tv.customerlauncher` (`OEMConfig`) and cleared the data of
+  `com.google.android.apps.tv.launcherx`; the "Hisense" tab at the top of the home screen went away. A "Sponsored"
+  row under Continue watching was gone that evening as well. Which step removed it was not established: the home
+  page is built from a server response, and no switch for that row was found in the strings of the launcher's APK.
+- `com.vt.tv.aipq`, `com.vt.tv.smartservice` and `com.vt.tv.ai_sense` were disabled one at a time and the restart
+  after them was normal: Home, Wi-Fi, ARC and playback came back, and the log had one
+  `Unable to start service ... com.vt.tv.smartservice/...SmartService ... not found` and no crash. `debloat.txt`
+  keeps the first two and warns against the third, and one boot does not answer that, so the list leaves all three
+  commented out. `com.vt.tv.ai_sense` was enabled again the same evening, and the restart after that was normal
+  as well.
+- `tools/tv.py --pull` did not fetch files under `/vendor/tvconfig/` or `/product/overlay/` on this unit, while
+  `tools/tv.py "cat <file>"` read the ones under `/vendor/tvconfig/`.

@@ -11,6 +11,9 @@
 # Fourth unit: Hisense 65U7ESG, Colombia, same device and build (00.00.00.135), applied 2026-10-25. Its own
 # list is debloat-65u7esg.txt (no VIDAA packages there; casting and ambient mode off, HiAlexa kept), and
 # README.md has how it keeps both the remote's app buttons and the volume ramp.
+# Fifth unit: Hisense 65U86LUA, US, same device and build (00.00.00.166), applied 2026-11-09. Its own list is
+# debloat-65u86lua.txt (Google TV's home screen kept, the "Hisense" tab removed), and README.md has how its
+# picture and sound settings were read from the log.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/hisense-u75-hengshan/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/hisense-u75-hengshan/debloat.txt com.google.android.apps.tv.launcherx
