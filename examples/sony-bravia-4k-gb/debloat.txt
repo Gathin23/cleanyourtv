@@ -101,3 +101,19 @@ com.google.android.backdrop                    # ambient screensaver, replaced b
 # com.sony.dtv.tuningconfirmation_dvbt         # DVB-T tuning prompt
 # com.sony.dtv.tuningconfirmation_dvbs         # DVB-S tuning prompt
 # com.sony.dtv.tvxlauncher.titlelist           # Recorded Title List tile
+
+#
+# Also confirmed on a Sony KD-55XE9005 (Italy, BRAVIA_ATV2_EU), Android TV 9,
+# build PTT1.190515.001.S54 / 672201.
+# Conservative debloat: only com.sony.dtv.promos, tv.samba.ssm and
+# com.sony.dtv.sonyselect were disabled initially.
+# com.google.android.tvlauncher was disabled only after installing and
+# verifying CleanYourTV Aurora as the replacement Home launcher.
+# Setting HOME via set-home-activity alone did not make the remote Home key
+# consistently open the replacement launcher; disabling the stock launcher
+# resolved the issue.
+# Live TV, EPG, HbbTV and HDMI-CEC were checked after reboot and remained working.
+# Chromecast, Google Assistant, ambient screensaver and Sony TV services were retained.
+# This is a conservative alternative to the full package list below.
+# Do not apply the entire list if the goal is to reproduce this setup.
+#
