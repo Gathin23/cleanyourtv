@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stagno di koi</string>
+    <string name="breathe_in">Inspira</string>
+    <string name="breathe_out">Espira</string>
+    <string name="hint">OK  respira   ·   Frecce  lascia cadere un sasso   ·   Indietro  esci</string>
+</resources>
