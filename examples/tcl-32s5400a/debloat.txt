@@ -21,8 +21,10 @@
 # HDMI, Live TV, Settings, Wi-Fi and Chromecast were checked and worked.
 # Assistant/voice packages were disabled together; microphone/voice search is
 # intentionally not required. com.tcl.usercenter re-enabled itself after reboot.
-# This was an after-reboot check, not a multi-day soak test. This unit also had katniss, tv.assistant,
-# micmanager, tvrecommendations and com.tcl.copydatatv off by the owner's choice.
+# This was an after-reboot check, not a multi-day soak test. The owner also turned off the voice and
+# recommendation packages - com.google.android.katniss, com.google.android.tv.assistant,
+# com.tcl.micmanager and com.google.android.tvrecommendations, whose lines are commented out under
+# "Second unit" below - and com.tcl.copydatatotv, which is in the list above.
 #
 # Apply:  TV_HOST=<tv ip> tools/disable.sh examples/tcl-32s5400a/debloat.txt
 # Undo:   TV_HOST=<tv ip> tools/restore.sh examples/tcl-32s5400a/debloat.txt
