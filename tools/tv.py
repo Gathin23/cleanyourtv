@@ -20,6 +20,7 @@ dropped the connection,
 number of words, a local path that cannot be used, a port it could not open, or a TV_HOST that is a URL
 or a path instead of the TV's address. A flag and its count are
 judged before TV_HOST is read, so a typo names the usage instead of the TV's address.
+Batch input must be UTF-8 without NUL bytes; the whole list is checked before connecting.
 
 Set TV_ADB_BINARY to the Google adb executable to use an already connected, paired transport
 (including encrypted Wireless debugging). See tools/native-adb.md.
@@ -761,7 +762,7 @@ def main():
         # stopping it half way. utf-8-sig drops the BOM Windows PowerShell may prepend to piped stdin.
         raw = sys.stdin.buffer.read()
         try:
-            batch_lines = io.StringIO(raw.decode("utf-8-sig"), newline=None)
+            text = raw.decode("utf-8-sig")
         except UnicodeDecodeError as e:
             # e.start counts from after a BOM; a lone CR ends a line too, as it does in the loop below.
             head = raw[:e.start + (3 if raw.startswith(b"\xef\xbb\xbf") else 0)]
@@ -769,6 +770,15 @@ def main():
             print(f"--batch: line {bad_line} of the list is not UTF-8; nothing was sent to the TV. "
                   f"Save the file as UTF-8 and run it again.", file=sys.stderr)
             return 2
+        # NUL is valid UTF-8 but cannot be passed as a command argument to native ADB. In particular,
+        # BOM-less UTF-16 made from ASCII commands decodes as UTF-8 with NULs between the letters.
+        if "\0" in text:
+            head = text.split("\0", 1)[0]
+            bad_line = head.replace("\r\n", "\n").replace("\r", "\n").count("\n") + 1
+            print(f"--batch: line {bad_line} of the list contains a NUL byte; nothing was sent to the TV. "
+                  "Check the file encoding and save it as UTF-8 without NUL bytes.", file=sys.stderr)
+            return 2
+        batch_lines = io.StringIO(text, newline=None)
     try:
         dev = connect()
     except Exception as e:
