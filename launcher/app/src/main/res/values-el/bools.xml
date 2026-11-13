@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Greek weekday and month names need two lines on the Home screen. -->
+    <bool name="date_single_line">false</bool>
+</resources>

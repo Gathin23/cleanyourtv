@@ -6,6 +6,7 @@
     <locale android:name="en" />
     <locale android:name="nb" />
     <locale android:name="de" />
+    <locale android:name="el" />
     <locale android:name="ca" />
     <locale android:name="es" />
     <!-- Latin American Spanish (values-b+es+419). -->
