@@ -1,5 +1,7 @@
 package io.github.yourvoldemort.panchang;
 
+import java.util.Locale;
+
 /**
  * The regional calendars this add-on can show. Months, the New Year and even the era differ across
  * India on the same day, so the owner picks one; the astronomy behind them is the same.
@@ -96,5 +98,24 @@ enum Region {
     static Region named(String name) {
         for (Region region : values()) if (region.name().equals(name)) return region;
         return NORTH;
+    }
+
+    /**
+     * The calendar the TV's own language suggests, so a Tamil, Bengali, Gujarati or Marathi set
+     * opens on the right one before the owner touches the picker. Every other language starts on
+     * the north Indian calendar, as Hindi and English do; a saved choice always wins.
+     */
+    static Region forLocale() {
+        return forLocale(Locale.getDefault());
+    }
+
+    static Region forLocale(Locale locale) {
+        switch (locale.getLanguage()) {
+            case "ta": return TAMIL;
+            case "bn": return BENGALI;
+            case "gu": return GUJARATI;
+            case "mr": return MARATHI;
+            default: return NORTH;
+        }
     }
 }

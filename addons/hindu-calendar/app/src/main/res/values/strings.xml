@@ -12,6 +12,11 @@
     <string name="yoga">Yoga</string>
     <string name="karana">Karana</string>
     <string name="till">till %1$s</string>
+    <string name="rahu_kala">Rahu Kala</string>
+    <string name="yamaganda">Yamaganda</string>
+    <string name="gulika">Gulika</string>
+    <string name="abhijit">Abhijit</string>
+    <string name="range">%1$s – %2$s</string>
     <string name="no_sun">No sunrise or sunset at this latitude today.</string>
     <string name="sun_times">Sunrise %1$s · Sunset %2$s</string>
     <string name="place">%1$s · %2$s</string>

@@ -1,10 +1,11 @@
 # Panchang
 
 An optional, standalone module card with today's Hindu panchang: tithi, nakshatra, yoga and karana
-read at sunrise, the moment each one ends, sunrise and sunset, and today's month and day number in
-one of five regional calendars. It works out the astronomy itself, so it needs no network and no
-location permission. It also offers an optional system screensaver. Installing it never changes the
-launcher's header, date line, settings or theme; it uses only the existing module-card contract.
+read at sunrise, the moment each one ends, sunrise and sunset, the day's Rahu Kala, Yamaganda,
+Gulika and Abhijit, and today's month and day number in one of five regional calendars. It works
+out the astronomy itself, so it needs no network and no location permission. It also offers an
+optional system screensaver. Installing it never changes the launcher's header, date line, settings
+or theme; it uses only the existing module-card contract.
 
 ## Setup
 
@@ -21,13 +22,17 @@ panchang's own screen; it cannot put a live reading into the launcher header or 
 The screen shows the calendar and era with the year ("North Indian · Vikram Samvat 2083"), today's
 month and day in the script and in Latin letters, the Gregorian date in the TV's language, the four
 limbs with the time each ends ("till 04:12", "+1" when it falls after midnight), sunrise and sunset,
-and the city the reading is for. **Previous**, **Today** and **Next** page by whole days, as do
-Channel Up/Down, Page Up/Down and Rewind/Fast forward. **City** and **Region** open one-choice lists;
-the choice is remembered. Left alone on Today, the screen follows the date by itself.
+the day's Rahu Kala, Yamaganda, Gulika and Abhijit as two columns of two, and the city the reading
+is for. Purnima, Amavasya and Ekadashi are named in gold beside the Gregorian date. **Previous**,
+**Today** and **Next** page by whole days, as do Channel Up/Down, Page Up/Down and
+Rewind/Fast forward. **City** and **Region** open one-choice lists; the choice is remembered. Left
+alone on Today, the screen follows the date by itself.
 
-The first city is the one the TV's time zone suggests, which is Delhi for `Asia/Kolkata` (or
-`Asia/Calcutta`) and otherwise the first listed city in that zone. The list holds 44 cities, the
-usual Indian ones plus the larger diaspora cities; pick one and sunrise follows it.
+The first region is the one the TV's language suggests: Tamil, Bengali, Gujarati or Marathi when the
+set is in that language, otherwise the north Indian calendar. The first city is the one the TV's time
+zone suggests, which is Delhi for `Asia/Kolkata` (or `Asia/Calcutta`) and otherwise the first listed
+city in that zone. The list holds 44 cities, the usual Indian ones plus the larger diaspora cities;
+pick one and sunrise follows it.
 
 ## The five limbs
 
@@ -44,7 +49,32 @@ A panchang is read at sunrise, and this one reads it at the sunrise of the chose
 The limb names stay in Latin letters, as the panchang's technical terms, while the month, the paksha
 and the day number are written in the region's own script and digits (Tamil keeps Latin digits,
 which every TV font can draw). Tithi numbering follows the printed convention: 1 to 15 Shukla, 16 to
-30 Krishna, with 15 Purnima and 30 Amavasya.
+30 Krishna. Purnima (15) and Amavasya (30) stand alone, the other tithis carry their paksha, and
+Purnima, Amavasya and Ekadashi (tithis 11 and 26) are also named in gold beside the date.
+
+## Muhurta
+
+The daylight from sunrise to sunset is split into eight equal parts. Each weekday gives one part to
+Rahu Kala, one to Yamaganda and one to Gulika, in the tables printed panchangs use:
+
+| Weekday | Rahu Kala | Yamaganda | Gulika |
+|---|---|---|---|
+| Sunday | 8th | 5th | 7th |
+| Monday | 2nd | 4th | 6th |
+| Tuesday | 7th | 3rd | 5th |
+| Wednesday | 5th | 2nd | 4th |
+| Thursday | 6th | 1st | 3rd |
+| Friday | 4th | 7th | 2nd |
+| Saturday | 3rd | 6th | 1st |
+
+Abhijit is the eighth of the day's fifteen muhurtas, so it is centred on solar noon: about 48
+minutes around midday on a twelve-hour day, longer in summer. Since every window comes from the
+chosen city's sunrise and sunset, the clocks move with the city and the season.
+
+Traditions differ at the edges: some panchangs take Abhijit as a fixed 48 minutes from noon, and a
+few use another weekday table for Gulika. This add-on uses the daylight division above and writes
+the times to the minute. The rows are the day's windows, not a search for an auspicious time for a
+ceremony.
 
 ## Regions
 
@@ -90,9 +120,10 @@ and region are the only things stored, in the app's own preferences.
 ## Data and validation
 
 The positions come from truncated Meeus series for the Sun and Moon, the Lahiri ayanamsa, and a NOAA
-sunrise/sunset, all in plain Java: about a minute of arc of error, which is enough for the limbs but
-not for a muhurta to the minute. Nothing is tabulated, so the add-on works for any year the
-Gregorian calendar reaches; it is not tied to a printed panchang's edition.
+sunrise/sunset, all in plain Java: about a minute of arc of error, which is enough for the limbs.
+The muhurta windows inherit the sunrise and sunset, which are good to the minute. Nothing is
+tabulated, so the add-on works for any year the Gregorian calendar reaches; it is not tied to a
+printed panchang's edition.
 
 The readings were checked against `python-ephem` for five cities (Delhi, London, Chennai, Kolkata,
 Sydney) across 2024–2026, 5,480 city-days: three disagreed, each by one on a limb on a day the limb
@@ -102,12 +133,14 @@ kshaya-tithi skip and a tithi that lasts more than one sunrise.
 
 Unit tests cover Diwali 2024 (Kartik Amavasya), Holi 2025 (Phalgun Purnima), Janmashtami 2024
 (Bhadrapad Krishna Ashtami), sunrise and sunset in Delhi and London, the karana cycle's eight names,
-the 2023 and 2026 adhika months, the Gujarati new year after Diwali, the Tamil and Bengali Mesha
-rules, the 2083/2086 samvat turning, the adhika Chaitra of 2029 where the Mesha sankranti falls
-minutes after the new moon, and that months follow one another without a gap in all five calendars.
+the weekday tables for Rahu Kala, Yamaganda and Gulika, Abhijit centred on noon, the marked tithis,
+the region the TV's language suggests, the 2023 and 2026 adhika months, the Gujarati new year after
+Diwali, the Tamil and Bengali Mesha rules, the 2083/2086 samvat turning, the adhika Chaitra of 2029
+where the Mesha sankranti falls minutes after the new moon, and that months follow one another
+without a gap in all five calendars.
 
-This is a reading of the five limbs, not a festival or muhurta calendar: it does not list festivals,
-vratas, shubha muhurtas or government holidays.
+This is a reading of the day, not a festival calendar: it does not list festivals, vratas,
+electional muhurtas for a ceremony, or government holidays.
 
 ## Optional screensaver
 
@@ -122,9 +155,10 @@ launcher's own idle-clock activity.
 
 Noble Skiodo NS 2K SmartTV (Skyworth sunnyvale), Android TV 14, with the CleanYourTV launcher. On the
 set: the screen, Channel Up/Down paging, D-pad Left/Right across the button row, the City and Region
-pickers, and the North Indian and Tamil readings were checked. The launcher's new-card prompt
-appeared when the add-on was installed; it was answered **Keep hidden** so the set's Home was left as
-it was. The **Screensaver** button is hidden there because the TV has no activity for
+pickers, the Rahu Kala, Yamaganda, Gulika and Abhijit rows, and the north Indian, Tamil, Gujarati,
+Marathi and Bengali readings with their own scripts and digits were checked. The launcher's new-card
+prompt appeared when the add-on was installed; it was answered **Keep hidden** so the set's Home was
+left as it was. The **Screensaver** button is hidden there because the TV has no activity for
 `android.settings.DREAM_SETTINGS`.
 
 ![Panchang on a real TV](screenshot.jpg)

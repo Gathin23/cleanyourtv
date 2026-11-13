@@ -97,6 +97,23 @@ final class Panchang {
 
     static String paksha(int tithi) { return krishna(tithi) ? "Krishna" : "Shukla"; }
 
+    /** The tithi row's reading: Purnima and Amavasya stand alone, the rest carry their paksha. */
+    static String tithiLabel(int tithi) {
+        return tithi == 15 || tithi == 30 ? tithiName(tithi) : paksha(tithi) + " " + tithiName(tithi);
+    }
+
+    /**
+     * The name a panchang gives the day itself when its sunrise tithi is one of the marked ones,
+     * otherwise null. It repeats the tithi row on purpose: Purnima, Amavasya and Ekadashi are the
+     * days people look for first, so the date line names them too.
+     */
+    static String specialDay(int tithi) {
+        if (tithi == 15) return "Purnima";
+        if (tithi == 30) return "Amavasya";
+        if (tithi == 11 || tithi == 26) return "Ekadashi";
+        return null;
+    }
+
     static String karanaName(int index) {
         if (index == 0) return KARANA[7];
         if (index <= 56) return KARANA[(index - 1) % 7];

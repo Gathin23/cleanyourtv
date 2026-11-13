@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -21,6 +24,9 @@ final class PanchangPanel extends LinearLayout {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final boolean dream;
     private final TextView era, nativeDate, latinDate, gregorian, sun, note;
+    /** Rahu Kala, Yamaganda, Gulika and Abhijit, in the order the two columns read. */
+    private final LinearLayout muhurtas;
+    private final TextView[] windows = new TextView[4];
     /** Tithi, nakshatra, yoga, karana: the value at sunrise and the moment it ends. */
     private final TextView[] values = new TextView[4];
     private final TextView[] ends = new TextView[4];
@@ -75,6 +81,35 @@ final class PanchangPanel extends LinearLayout {
         addView(table, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         sun = line(dream ? 22 : 17, SOFT);
         sun.setPadding(0, dp(10), 0, 0);
+
+        // Two columns of two, so four windows cost two lines rather than four on a 720p screen.
+        muhurtas = new LinearLayout(context);
+        muhurtas.setOrientation(HORIZONTAL);
+        muhurtas.setGravity(Gravity.CENTER);
+        muhurtas.setPadding(0, dp(8), 0, 0);
+        int[] names = {R.string.rahu_kala, R.string.yamaganda, R.string.gulika, R.string.abhijit};
+        for (int column = 0; column < 2; column++) {
+            LinearLayout stack = new LinearLayout(context);
+            stack.setOrientation(VERTICAL);
+            for (int row = 0; row < 2; row++) {
+                int index = column * 2 + row;
+                LinearLayout entry = new LinearLayout(context);
+                entry.setGravity(Gravity.CENTER_VERTICAL);
+                TextView name = text(size - 4, DIM);
+                name.setText(names[index]);
+                name.setSingleLine(true);
+                name.setPadding(0, dp(2), dp(10), dp(2));
+                entry.addView(name, new LayoutParams(dp(dream ? 150 : 115), LayoutParams.WRAP_CONTENT));
+                windows[index] = text(size - 2, SOFT);
+                windows[index].setSingleLine(true);
+                windows[index].setPadding(0, dp(2), dp(column == 0 ? 28 : 0), dp(2));
+                entry.addView(windows[index]);
+                stack.addView(entry);
+            }
+            muhurtas.addView(stack);
+        }
+        addView(muhurtas, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
         note = line(dream ? 17 : 14, DIM);
     }
 
@@ -154,13 +189,22 @@ final class PanchangPanel extends LinearLayout {
         nativeDate.setText(own);
         latinDate.setText(region.solar
                 ? region.monthLatin(span) + " " + day
-                : region.monthLatin(span) + " " + (krishna ? "Krishna " : "Shukla ") + Panchang.tithiName(p.tithi));
+                : region.monthLatin(span) + " " + Panchang.tithiLabel(p.tithi));
 
         Locale locale = Locale.getDefault();
         String pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMMyyyy");
-        gregorian.setText(DateTimeFormatter.ofPattern(pattern, locale).format(date));
+        String gregorianText = DateTimeFormatter.ofPattern(pattern, locale).format(date);
+        String special = Panchang.specialDay(p.tithi);
+        if (special == null) {
+            gregorian.setText(gregorianText);
+        } else {
+            SpannableString marked = new SpannableString(gregorianText + " · " + special);
+            marked.setSpan(new ForegroundColorSpan(ACCENT), gregorianText.length(), marked.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            gregorian.setText(marked);
+        }
 
-        String tithi = (krishna ? "Krishna " : "Shukla ") + Panchang.tithiName(p.tithi);
+        String tithi = Panchang.tithiLabel(p.tithi);
         values[0].setText(tithi);
         values[1].setText(Panchang.NAKSHATRA[p.nakshatra - 1]);
         values[2].setText(Panchang.YOGA[p.yoga - 1]);
@@ -173,6 +217,14 @@ final class PanchangPanel extends LinearLayout {
         sun.setText(p.hasSunrise
                 ? getContext().getString(R.string.sun_times, clock(p.sunrise), clock(p.sunset))
                 : getContext().getString(R.string.no_sun));
+        Muhurta muhurta = Muhurta.of(date, p);
+        muhurtas.setVisibility(muhurta == null ? GONE : VISIBLE);
+        if (muhurta != null) {
+            windows[0].setText(range(muhurta.rahuStart, muhurta.rahuEnd));
+            windows[1].setText(range(muhurta.yamagandaStart, muhurta.yamagandaEnd));
+            windows[2].setText(range(muhurta.gulikaStart, muhurta.gulikaEnd));
+            windows[3].setText(range(muhurta.abhijitStart, muhurta.abhijitEnd));
+        }
         note.setText(getContext().getString(R.string.place, city.name, city.coordinates()));
         // Drift in a padded area, keeping all content inside the full-screen panel.
         if (dream) setTranslationY(((now.getMinute() % 5) - 2) * dp(8));
@@ -184,6 +236,10 @@ final class PanchangPanel extends LinearLayout {
         long days = end.toLocalDate().toEpochDay() - date.toEpochDay();
         String suffix = days == 1 ? " +1" : days > 1 ? " +" + days : "";
         return getContext().getString(R.string.till, clock(millis) + suffix);
+    }
+
+    private String range(long start, long end) {
+        return getContext().getString(R.string.range, clock(start), clock(end));
     }
 
     private String clock(long millis) {

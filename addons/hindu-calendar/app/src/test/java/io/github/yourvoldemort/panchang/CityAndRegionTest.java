@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Test;
@@ -68,6 +69,17 @@ public class CityAndRegionTest {
         assertEquals(Region.BENGALI, Region.named("BENGALI"));
         assertEquals("an unknown name falls back to the north Indian calendar",
                 Region.NORTH, Region.named("MARS"));
+    }
+
+    @Test
+    public void theRegionFollowsTheTvsLanguage() {
+        assertEquals(Region.TAMIL, Region.forLocale(Locale.forLanguageTag("ta-IN")));
+        assertEquals(Region.BENGALI, Region.forLocale(Locale.forLanguageTag("bn-BD")));
+        assertEquals(Region.GUJARATI, Region.forLocale(Locale.forLanguageTag("gu")));
+        assertEquals(Region.MARATHI, Region.forLocale(Locale.forLanguageTag("mr-IN")));
+        assertEquals("Hindi starts on the north Indian calendar",
+                Region.NORTH, Region.forLocale(Locale.forLanguageTag("hi-IN")));
+        assertEquals(Region.NORTH, Region.forLocale(Locale.US));
     }
 
     @Test

@@ -27,7 +27,7 @@ public final class PanchangActivity extends Activity {
         panel = new PanchangPanel(this, false);
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         panel.setCity(City.cityNamed(prefs.getString(KEY_CITY, City.forTimeZone().name)));
-        panel.setRegion(Region.named(prefs.getString(KEY_REGION, Region.NORTH.name())));
+        panel.setRegion(Region.named(prefs.getString(KEY_REGION, Region.forLocale().name())));
 
         LinearLayout actions = new LinearLayout(this);
         actions.setGravity(Gravity.CENTER);

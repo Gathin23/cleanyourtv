@@ -2,6 +2,7 @@ package io.github.yourvoldemort.panchang;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
@@ -120,5 +121,20 @@ public class PanchangTest {
         assertTrue(Panchang.krishna(16));
         assertEquals("Shukla", Panchang.paksha(1));
         assertEquals("Krishna", Panchang.paksha(22));
+    }
+
+    @Test
+    public void theMarkedTithisAreNamed() {
+        assertEquals("Shukla Ekadashi", Panchang.tithiLabel(11));
+        assertEquals("Krishna Ekadashi", Panchang.tithiLabel(26));
+        assertEquals("Purnima", Panchang.tithiLabel(15));
+        assertEquals("Amavasya", Panchang.tithiLabel(30));
+        assertEquals("Krishna Ashtami", Panchang.tithiLabel(23));
+        assertEquals("Purnima", Panchang.specialDay(15));
+        assertEquals("Amavasya", Panchang.specialDay(30));
+        assertEquals("Ekadashi", Panchang.specialDay(11));
+        assertEquals("Ekadashi", Panchang.specialDay(26));
+        assertNull(Panchang.specialDay(12));
+        assertNull(Panchang.specialDay(27));
     }
 }

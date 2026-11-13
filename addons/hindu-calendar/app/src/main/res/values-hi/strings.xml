@@ -11,6 +11,11 @@
     <string name="yoga">योग</string>
     <string name="karana">करण</string>
     <string name="till">%1$s तक</string>
+    <string name="rahu_kala">राहु काल</string>
+    <string name="yamaganda">यमगंड</string>
+    <string name="gulika">गुलिक</string>
+    <string name="abhijit">अभिजित</string>
+    <string name="range">%1$s – %2$s</string>
     <string name="no_sun">इस अक्षांश पर आज सूर्योदय या सूर्यास्त नहीं है।</string>
     <string name="sun_times">सूर्योदय %1$s · सूर्यास्त %2$s</string>
     <string name="place">%1$s · %2$s</string>

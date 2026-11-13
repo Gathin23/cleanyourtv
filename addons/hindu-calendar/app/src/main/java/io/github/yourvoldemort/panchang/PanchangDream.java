@@ -14,7 +14,7 @@ public final class PanchangDream extends DreamService {
         panel = new PanchangPanel(this, true);
         SharedPreferences prefs = getSharedPreferences(PanchangActivity.PREFS, MODE_PRIVATE);
         panel.setCity(City.cityNamed(prefs.getString(PanchangActivity.KEY_CITY, City.forTimeZone().name)));
-        panel.setRegion(Region.named(prefs.getString(PanchangActivity.KEY_REGION, Region.NORTH.name())));
+        panel.setRegion(Region.named(prefs.getString(PanchangActivity.KEY_REGION, Region.forLocale().name())));
         setContentView(panel);
     }
     @Override public void onDreamingStarted() { super.onDreamingStarted(); panel.start(); }
