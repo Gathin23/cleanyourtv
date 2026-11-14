@@ -5,7 +5,8 @@
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/master-g-2k-smart-tv-jordanfarias/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/master-g-2k-smart-tv-jordanfarias/debloat.txt com.google.android.apps.tv.launcherx
-# Windows: tools\disable.ps1 -TvHost <tv ip> examples\master-g-2k-smart-tv-jordanfarias\debloat.txt (restore.ps1 -TvHost <tv ip> examples\master-g-2k-smart-tv-jordanfarias\debloat.txt -Stock com.google.android.apps.tv.launcherx to undo)
+# Windows: tools\disable.ps1 -TvHost <tv ip> examples\master-g-2k-smart-tv-jordanfarias\debloat.txt
+# Undo Win: tools\restore.ps1 -TvHost <tv ip> examples\master-g-2k-smart-tv-jordanfarias\debloat.txt -Stock com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
 #
 # Note on setupwraith & Wi-Fi: disabling com.google.android.tungsten.setupwraith gives Home back
