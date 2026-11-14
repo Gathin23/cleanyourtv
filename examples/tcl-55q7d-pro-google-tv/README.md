@@ -3,7 +3,8 @@
 55" Q7D Pro, model string "Smart TV Pro": product `G08_4K_GB`, client type `TCL-EU-MT9653-S1`, firmware
 `UTT2.250416.001 AU02`, board G08 / MediaTek `tcl9618`, remote `BT_RC833A_B5` (Bluetooth). The same board as
 the US `G08_4K_US` list and the C755 / QM6K / 85RM7L Google TV lists, on the EU build, which ships
-fewer preloads than the US one.
+fewer preloads than the US one. A second unit, a 50QM8B from Germany on the same firmware, is in the
+section at the end.
 
 `debloat.txt` is the list: 33 packages, disabled with `tools/disable.sh` in batches, reboot-checked. Undo:
 
@@ -62,3 +63,34 @@ button back, from any app:
   Cast, TTS, AirPlay/Miracast, the Play Store and the streaming apps.
 - Held volume steps once per press instead of ramping while `InputKeyService` is bound; that is the cost of
   the YouTube and TV-icon buttons on this firmware.
+
+## Second unit: TCL 50QM8B (Germany)
+
+50" 50QM8B, model "Smart TV Pro", product `G08_4K_GB`, fingerprint
+`TCL/G08_4K_GB/G08:14/UTT2.250416.001/AU02:user/release-keys`, security patch 2025-12-05, about 2.4 GB RAM,
+remote `BT_RC833_U1` (Bluetooth LE). The same firmware as the list above, so the same list applies; this owner
+started from the QM6K list instead and compared the two afterwards.
+
+- **What was applied:** the 21 packages of `examples/tcl-qm6k-google-tv/debloat.txt` that exist on this build
+  (`com.tcl.tv.plus`, `com.tcl.smartlink.core`, `com.tcl.hotelmenu` and `com.tcl.browser` do not), on
+  20 October 2026 with `tools/disable.sh`. Sixteen are on this list. `pm list packages -d` on 13 November showed them
+  all still disabled, after a reboot and several standby cycles.
+- **`com.tcl.ttvs` was off for those 24 days, and it is TCL's updater.** `dumpsys package com.tcl.ttvs` lists
+  `versionUpdateApp` activities (`SystemUpdateActivity`, `NetworkUpdateActivity`, `CheckoutVersionActivity`) on this
+  build, which agrees with the header above. Firmware and security patch did not change in that time; that does not
+  show whether TCL had an update, only that none arrived. It was switched on again on 13 November
+  (`pm enable --user 0 com.tcl.ttvs`). Keep it, as this list does.
+- **`com.tcl.channelplus` was off too.** Its "Live TV" input (`com.tcl.iptv.service.InputService`) is then missing from
+  `dumpsys tv_input`; the HDMI inputs and the tuner input of `com.tcl.tvinput` are there. Broadcast TV was not tried,
+  so keep it unless you only use HDMI and apps.
+- **`com.tcl.smartalexa` and `com.tcl.ui_mediaCenter`** (Alexa, and TCL's player for USB drives) were off for the 24 days
+  without a loss, because this owner uses neither. They are optional, commented lines at the end of `debloat.txt`.
+- **`com.google.android.tungsten.setupwraith`** could be disabled without the TV losing Wi-Fi: its saved network did not
+  belong to the wizard here, so `tools/disable.sh` did not hold it back.
+- **The Assistant** (`com.google.android.katniss`, kept) answered the remote's microphone key with "not available in this
+  profile" on the first days. Switching `launcherx` and `setupwraith` back on for a few minutes did not change that, and
+  the key worked later with no package change, so it was not the list. The cause was not found.
+- **ADB:** this set offers Wireless debugging only. Pair with the code (`adb pair <ip>:<port>`); a plain port 5555 shows up
+  after pairing, and the connect port changes after a reboot or a Wi-Fi drop. On macOS the stock `adb` lost its route
+  to the TV after the Mac slept ("No route to host", `kill-server` fixed it); `tools/tv.py` kept working.
+
