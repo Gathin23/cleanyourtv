@@ -121,9 +121,13 @@ Debloat
   once and compare `pm list packages -d` with what you disabled: some
   firmware re-enables packages at every boot from its own list (TCL Android 9 does this for its user
   center). Note those in the list header instead of disabling them again after each boot. If
-  setupwraith or the stock launcher came back and Home is black, check `logcat | grep
-  RecoveryActivity` and re-enable the stock launcher before anything else
-  (`docs/devices/acer-r4g.md`).
+  setupwraith or the stock launcher came back and Home is black, check `logcat -d | grep
+  RecoveryActivity` and re-enable the stock launcher before anything else. Read the crash buffer too:
+  when `logcat -d -b crash` shows `FATAL EXCEPTION IN SYSTEM PROCESS` with `positionChildAt ... is
+  not a child of container` in `Task.moveToBack`, RecoveryActivity is starting a new HOME task every
+  ~50 ms and taking `system_server` down with it - a bootloop, not just a black screen. Re-enable the
+  stock launcher, wait until `dumpsys activity activities | grep -c RecoveryActivity` stops growing,
+  then reboot (`docs/devices/acer-r4g.md`).
 - Offer me ad-blocking DNS as an optional extra: on Android 9 and newer, Private DNS set to an
   ad-blocking resolver (`settings put global private_dns_specifier dns.adguard-dns.com`, then
   `settings put global private_dns_mode hostname`). Tell me it doesn't block YouTube ads, check an app
@@ -158,7 +162,11 @@ Launcher
   takeover worked.
 - Before disabling the stock launcher, check which other apps claim HOME: on Google TV the setup wizard
   (`com.google.android.tungsten.setupwraith`) takes over even after the stock launcher is disabled, and
-  the matching `examples/` header says what to do. Before disabling setupwraith, run
+  the matching `examples/` header says what to do. Where that header says to keep both enabled (MOKA
+  Realtek sets: `R3_GTV`, `R4_GTV`, `rtd2841a`, `rtd2851m`), keep both and take Home with
+  `HOME_KEY_SERVICE=1` and `stock_home_redirect=<stock launcher>`: the firmware turns setupwraith back
+  on at every cold boot, and with the stock launcher disabled that is the RecoveryActivity bootloop
+  above. Before disabling setupwraith, run
   `dumpsys wifi | grep -o 'cname=[^ ]*'`: a Wi-Fi network saved during first setup belongs to it, and
   Android deletes that network the moment it is disabled, which takes the TV off Wi-Fi and ADB. If it
   does, ask me to forget the network and re-join it in Settings first.

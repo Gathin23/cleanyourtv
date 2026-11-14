@@ -89,6 +89,51 @@ is refused (`Shell cannot change component state`).
 The owner went further than this project's disable-only rule to keep their own launcher as Home.
 Those steps are not documented here.
 
+## A second set on the same firmware (`R3_GTV`): the loop can bootloop the TV
+
+An Acer R3G - the `R3G` model of
+[`examples/acer-ar32hdigu2841at`](../../examples/acer-ar32hdigu2841at/README.md), `R3_GTV`,
+`rtd2841a`, Google TV 14 on `UKR1.260612` (incremental `2624`) - had `launcherx` and `setupwraith`
+disabled the same way and did not stop at a black Home. It bootlooped: `system_server` died every
+one to two minutes and the TV restarted itself. `logcat -d -b crash` had
+
+```
+FATAL EXCEPTION IN SYSTEM PROCESS: android.display
+java.lang.IllegalArgumentException: positionChildAt: container=Task=... is not a child of container=Task=...
+    at com.android.server.wm.Task.moveToBack(Task.java:4765)
+```
+
+and `logcat -d | grep RecoveryActivity` had
+
+```
+E SetupWraith|RecoveryActivity: LauncherX HomeActivity not found on device. Skipping enable.
+```
+
+about 20 times a second, with dozens of `type=home` tasks under the home root. The `START` storm is
+what crashed `system_server` there: `Task.moveToBack` reached a container it had already detached,
+and threw `positionChildAt` on the display thread. ADB stayed reachable throughout, so the way out is
+still the one below: enable the stock launcher, watch the count stop growing, then reboot.
+
+Tried on this set before the stock launcher went back on, none of which moved Home:
+
+- `cmd package set-home-activity --user 0 <new launcher>` printed `Success` and
+  `cmd role get-role-holders android.app.role.HOME` named it, while `dumpsys activity activities`
+  still resumed `com.google.android.apps.tv.launcherx/.home.HomeActivity`. launcherx's preferred
+  record (`dumpsys package preferred-activities`, `mAlways=true`) outranked the role.
+- `pm disable-user --user 0 com.google.android.apps.tv.launcherx/.home.HomeActivity` is refused:
+  `java.lang.SecurityException: Shell cannot change component state ...`, as above.
+- `pm disable-user --user 0 com.google.android.tungsten.setupwraith` reported `disabled-user`, and
+  was back on after the next cold boot (the `SetPmodServiceJob` above).
+
+The configuration this project supports on the platform is the one its folder already gives: keep
+`launcherx` and `setupwraith` enabled, and take Home with `HOME_KEY_SERVICE=1` and
+`stock_home_redirect=com.google.android.apps.tv.launcherx`. One owner accepted losing the wizard
+(and the cast credentials that live in it, [TROUBLESHOOTING](../TROUBLESHOOTING.md)) and used
+`pm uninstall -k --user 0 com.google.android.tungsten.setupwraith`; that held across one cold boot
+where `pm disable-user` did not. It is outside this project's disable-only rule and one boot is not a
+list, so it is a report here, not a recommendation - and the saved Wi-Fi network belongs to the
+wizard, so the warning in [PROMPT.md](../../PROMPT.md) applies before either step.
+
 ## If Home is already black after a reboot
 
 Check that it is this: `tools/tv.py 'logcat -d | grep RecoveryActivity'`. Then re-enable the stock
