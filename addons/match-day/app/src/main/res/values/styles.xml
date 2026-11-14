@@ -1,0 +1,9 @@
+<resources>
+    <style name="MatchDayTheme" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:windowBackground">#101319</item>
+        <item name="android:colorAccent">#48D7A0</item>
+        <item name="android:navigationBarColor">#101319</item>
+        <item name="android:statusBarColor">#101319</item>
+    </style>
+</resources>
