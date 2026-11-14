@@ -85,12 +85,41 @@ PY=venv/bin/python
 [ -x "$PY" ] || { echo "run: python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt." \
   "Nothing was sent to the TV." >&2; exit 2; }
 export MSYS_NO_PATHCONV=1
+tv() { "$PY" -I tv.py "$@"; }
+# Which package the launcher is installed as. The reference build is com.gathin.tvhome, but firmware with a
+# package-name HOME allowlist needs another applicationId - Xiaomi China com.ts.launcher, ColorOS TV
+# com.oneplus.tv.launcher2 - and `launcherApplicationId` in launcher/app/build.gradle is how that build is made
+# (docs/devices/xiaomi-mitv-mftr0-debloat-home.md, docs/devices/oppo-k9-55-oppocnm632.md). The activity class does not
+# change with the id, so the HOME resolver names the package that the files directory, the provider authority and
+# the restart below all address: assuming the default put the files in a directory the launcher never reads and
+# the restart answered "TV refused the command" (#3703).
+# LAUNCHER_PKG=<package> answers without asking the TV, for a set where the launcher is installed but not Home yet.
+launcher_pkg() {
+  if [ -n "${LAUNCHER_PKG:-}" ]; then printf '%s' "$LAUNCHER_PKG"; return 0; fi
+  local home
+  home=$(tv 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME' 2>/dev/null || true)
+  printf '%s\n' "$home" \
+    | sed -n 's|^[[:space:]]*\([A-Za-z0-9_.]*\)/com\.gathin\.tvhome\.MainActivity[[:space:]]*$|\1|p' \
+    | head -n 1
+}
+# The reference identity until choose_launcher_pkg runs. A run that stops on its command line or its theme folder
+# asks the TV nothing - that is what exit 2 ("nothing was sent") promises - so the question is asked past every
+# check that can still end the run, at the first write.
 PKG=com.gathin.tvhome
 DIR=/sdcard/Android/data/$PKG/files
+choose_launcher_pkg() {
+  local found
+  found=$(launcher_pkg)
+  [ -n "$found" ] || return 0
+  PKG=$found
+  DIR=/sdcard/Android/data/$PKG/files
+  URI=content://$PKG.theme
+  # theme_restart.py restarts the same package, so it is told rather than asking a second time.
+  export LAUNCHER_PKG="$PKG"
+}
 # A unique marker lets the launcher clear on-TV layout/motion choices after every theme push,
 # including a push of identical config.json bytes and --reset.
 REVISION="$("$PY" -I -c 'import uuid; print(uuid.uuid4().hex)')"
-tv() { "$PY" -I tv.py "$@"; }
 # One shared recovery path verifies the helpers after Home restarts.
 
 
@@ -124,7 +153,10 @@ del() { echo "rm -f $DIR/$1 2>/dev/null; content delete --uri $URI/$1 2>/dev/nul
 # empty it too: the launcher's wallpaper picker (LauncherSettingsActivity.showWallpaperPicker) lists that folder
 # itself, and an on-TV pick of one of its pictures is read back from it (WallpaperRotation.chosen), so a reset
 # that left the pictures behind still shows the theme it just removed. Both paths use this one string.
-CLEAR_WALLPAPERS="rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP][eE][gG] $DIR/wallpapers/*.[pP][nN][gG] $DIR/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null"
+# Built where it is used, so it carries the package choose_launcher_pkg settled on.
+clear_wallpapers() {
+  echo "rm -f $DIR/wallpapers/*.[jJ][pP][gG] $DIR/wallpapers/*.[jJ][pP][eE][gG] $DIR/wallpapers/*.[pP][nN][gG] $DIR/wallpapers/*.[wW][eE][bB][pP] 2>/dev/null; content delete --uri $URI/wallpapers 2>/dev/null"
+}
 
 # Both paths end with the same restart, and both are past the point where the TV was written to. The helper's
 # own 2 ("the TV did not answer, so nothing was asked of it") describes the restart alone: on this side of the
@@ -160,7 +192,8 @@ put_on() {   # put $1, after the optional command $2 in the same shell call
   fi
 }
 if [ "${1:-}" = --reset ]; then
-  tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $CLEAR_WALLPAPERS" >/dev/null
+  choose_launcher_pkg
+  tv "mkdir -p $DIR 2>/dev/null; $(del config.json); $(del wallpaper.jpg); $(del wallpapers/captions.txt); $(clear_wallpapers)" >/dev/null
   put_on theme_revision "printf '%s' '$REVISION' > $TMP-theme_revision"
   restart_home "the theme was removed"
   echo reset
@@ -216,6 +249,8 @@ if [ -d "$THEME/wallpapers" ]; then
   done
 fi
 
+# Past every check that can still stop the run, so a folder that was refused never reached the TV.
+choose_launcher_pkg
 tv "mkdir -p $DIR" >/dev/null 2>&1 || true
 tv --push "$THEME/config.json" "$TMP-config.json" >/dev/null
 put_on config.json
@@ -225,7 +260,7 @@ if [ -f "$THEME/wallpaper.jpg" ]; then
 else
   tv "$(del wallpaper.jpg)" >/dev/null || stopped "removing wallpaper.jpg"
 fi
-tv "$CLEAR_WALLPAPERS" >/dev/null || stopped "clearing wallpapers/"
+tv "$(clear_wallpapers)" >/dev/null || stopped "clearing wallpapers/"
 for NAME in $NAMES; do
   "$PY" -I b64push.py "$THEME/wallpapers/$NAME" "$(stage "wallpapers/$NAME")" || stopped "wallpapers/$NAME"
   put_on "wallpapers/$NAME"

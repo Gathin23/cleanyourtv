@@ -46,7 +46,22 @@ if (-not (Test-Path -LiteralPath $py)) {
     [Console]::Error.WriteLine('run: python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt. Nothing was sent to the TV.')
     exit 2
 }
-$pkg = 'com.gathin.tvhome'
+# Which package the launcher is installed as - the answer theme.sh reads out of the HOME resolver, for the same
+# reason (#3703): firmware with a package-name HOME allowlist needs another applicationId (Xiaomi China
+# com.ts.launcher, ColorOS TV com.oneplus.tv.launcher2), the activity class keeps the default namespace, and the
+# files directory, the provider authority and the restart all address the launcher by its package.
+# $env:LAUNCHER_PKG answers without asking the TV, for a set where the launcher is installed but not Home yet.
+function Get-LauncherPackage {
+    if ($env:LAUNCHER_PKG) { return $env:LAUNCHER_PKG }
+    # $HOME is read-only in PowerShell, so the answer is not called $home.
+    $answer = @(& $py -I tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME' 2>$null)
+    foreach ($line in $answer) {
+        if ("$line".Trim() -match '^([A-Za-z0-9_.]+)/com\.gathin\.tvhome\.MainActivity$') { return $Matches[1] }
+    }
+    return 'com.gathin.tvhome'
+}
+$pkg = Get-LauncherPackage
+$env:LAUNCHER_PKG = $pkg
 # Runs tools\tv.py or b64push.py and stops on a non-zero exit: 'Stop' only covers cmdlets, so a failed
 # native call would otherwise fall through to "Theme ... is on the TV".
 function Invoke-Tv {

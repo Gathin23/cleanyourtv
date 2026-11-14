@@ -17,9 +17,32 @@ import sys
 import time
 
 PACKAGE = "com.gathin.tvhome"
+# The activity inside the launcher. Its class keeps the default namespace when the app is built under another
+# applicationId (`-PlauncherApplicationId=com.ts.launcher` on firmware with a package-name HOME allowlist), so the
+# component reads com.ts.launcher/com.gathin.tvhome.MainActivity and the package is the part before the slash.
+MAIN_ACTIVITY = "com.gathin.tvhome.MainActivity"
 SERVICES = "enabled_accessibility_services"
 FLAG = "accessibility_enabled"
 ACTION = "android.accessibilityservice.AccessibilityService"
+
+
+def launcher_package(home):
+    """The package the launcher is installed as: LAUNCHER_PKG, else the one the HOME resolution names.
+
+    theme.sh exports LAUNCHER_PKG once it has resolved the package, so this asks nothing a second time. Run on its
+    own it reads the same component out of `cmd package resolve-activity ... HOME`. Anything else - a stock
+    launcher still on Home, an empty answer - keeps the reference package.
+    """
+    named = os.environ.get("LAUNCHER_PKG", "").strip()
+    if named:
+        return named
+    # Any component in the answer, not only the last one: a launcher that is installed but not the default is
+    # listed too, and it is installed under the same package either way.
+    for line in reversed(home.splitlines()):
+        package, _, activity = line.strip().partition("/")
+        if package and activity in (MAIN_ACTIVITY, ".MainActivity"):
+            return package
+    return PACKAGE
 
 
 def shell(dev, command):
@@ -106,18 +129,23 @@ def restart(dev, pause=time.sleep):
     enabled = get(FLAG)
     if enabled not in ("0", "1", "null"):
         raise RuntimeError("Could not read the accessibility enabled flag")
-    helpers = {component for component in saved if component.split("/", 1)[0] == PACKAGE}
     home = shell(dev, "cmd package resolve-activity --brief --user " + str(user)
                  + " -a android.intent.action.MAIN -c android.intent.category.HOME")
+    package = launcher_package(home)
+    helpers = {component for component in saved if component.split("/", 1)[0] == package}
     def write(services, flag):
         shell(dev, settings_command(user, services, flag))
 
     try:
-        shell(dev, f"am force-stop --user {user} {PACKAGE}")
-        if home.splitlines()[-1:] and home.splitlines()[-1].startswith(PACKAGE + "/"):
+        shell(dev, f"am force-stop --user {user} {package}")
+        if home.splitlines()[-1:] and home.splitlines()[-1].startswith(package + "/"):
             start = "-a android.intent.action.MAIN -c android.intent.category.HOME"
+        elif package == PACKAGE:
+            start = "-n " + package + "/.MainActivity"
         else:
-            start = "-n " + PACKAGE + "/.MainActivity"
+            # The class keeps the reference namespace under another applicationId, so the shorthand
+            # (`com.ts.launcher/.MainActivity`) would name an activity that does not exist.
+            start = "-n " + package + "/" + MAIN_ACTIVITY
         shell(dev, f"am start --user {user} {start}")
         if not helpers:
             return
@@ -141,7 +169,7 @@ def restart(dev, pause=time.sleep):
                 current = components(get(SERVICES))
                 saved.update(current)
                 flag = get(FLAG)
-                bound = bound_services(shell(dev, f"dumpsys activity services {PACKAGE}"), user)
+                bound = bound_services(shell(dev, f"dumpsys activity services {package}"), user)
                 stable = stable + 1 if saved.keys() <= current.keys() and flag == "1" and helpers <= bound else 0
                 # Three readings span two seconds; a first successful bind alone does
                 # not catch the later removal reported on Chromecast (#994).
