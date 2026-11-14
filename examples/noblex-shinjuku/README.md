@@ -23,14 +23,16 @@ With speakers or a DAC on the optical output, the remote's volume keys change no
 | Source | Path | Can an app change its level? |
 |---|---|---|
 | Netflix, YouTube | `AudioOut_D` mixer thread, PCM | Yes |
+| Disney+ (5.1 E-AC3) | `OFFLOAD` thread, `DIRECT\|COMPRESS_OFFLOAD`, format `0x0A000001`: decoded on the chip | No |
 | HDMI, AV, Live TV | `AudioPatch device:hdmi-in -> device:speaker`, "No software bridge" | No: a hardware patch |
 
-`dumpsys media.audio_policy` lists `hw_av_sync` and offload outputs, but neither was used by Netflix or YouTube here.
+Setting the surround sound formats to None (`settings put global encoded_surround_output 1`) did not move Disney+
+off the offload output; it was put back to Auto.
 
 ## A workaround for apps
 
 [Digital Volume](https://github.com/JPabloLazo/android-tv-digital-volume) is a small separate app built on this TV.
-It puts a `DynamicsProcessing` gain on the global output mix (session 0), reads each volume key press from the
+It puts a `DynamicsProcessing` gain on the global output mix (session 0), which reaches apps that play PCM, reads each volume key press from the
 system's volume broadcasts and puts `STREAM_MUSIC` straight back to 0. In apps the remote then controls the optical
 output and the TV speakers stay silent; on HDMI, AV and Live TV it either hands the keys back to the TV or leaves
 the TV speakers off. It uses an accessibility service (window events only) and has no internet permission.
