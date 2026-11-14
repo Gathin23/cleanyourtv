@@ -469,6 +469,9 @@ def unbound_helpers(tv, package, services):
             if not theme_restart.components(_norm_component(service)).keys() <= bound]
 
 
+REBIND_DONE = "__CYT_REBIND_DONE__"
+
+
 def rebind_accessibility(tv, merged):
     """Make the system bind the listed services again: empty the list, wait, write it back.
 
@@ -477,13 +480,26 @@ def rebind_accessibility(tv, merged):
     two-second gap a TCL G05 needs (#994). It is one command with a trap, so the TV puts the list
     back on its own if the connection drops in the gap: a host-side sleep could leave every
     accessibility service on the set switched off.
+
+    The two writes that put things back are chained with `&&`, the trap is only cleared once both
+    went through, and the command ends by printing REBIND_DONE: `tv.shell()` hands back the output
+    and not the TV shell's exit status, as theme_restart.py's own marker works around. Without the
+    marker the restore did not finish (the trap tries once more on its way out), so this raises
+    rather than letting a run end with the key helpers off the list.
     """
     put = "settings put secure"
-    restore = (f"{put} enabled_accessibility_services {shlex.quote(':'.join(merged))}; "
+    restore = (f"{put} enabled_accessibility_services {shlex.quote(':'.join(merged))} && "
                f"{put} accessibility_enabled 1")
-    tv.shell(f"cyt_restore() {{ {restore}; }}; trap cyt_restore EXIT HUP INT TERM; "
-             f"{put} enabled_accessibility_services ''; {put} accessibility_enabled 0; sleep 2; "
-             "cyt_restore; trap - EXIT HUP INT TERM")
+    out = tv.shell(f"cyt_restore() {{ {restore}; }}; trap cyt_restore EXIT; "
+                   "trap 'cyt_restore; exit 1' HUP INT TERM; "
+                   f"{put} enabled_accessibility_services ''; {put} accessibility_enabled 0; sleep 2; "
+                   f"cyt_restore && trap - EXIT HUP INT TERM && echo {REBIND_DONE}")
+    if REBIND_DONE not in out.split():
+        raise RuntimeError(
+            "The key helpers could not be put back on the accessibility list after the cold start "
+            "(the TV refused the write, or its answer was lost). The remote's app buttons may do "
+            "nothing until the theme is pushed again with tools/theme.sh, or the helpers are "
+            "switched on in Settings > Accessibility.")
 
 
 def cold_start(tv, component, repeats):

@@ -112,6 +112,9 @@ class ListedTV(FakeTV):
         if command.startswith("dumpsys activity services "):
             self.commands.append(command)
             return services_dump(OURS, self.bound)
+        if command.startswith("cyt_restore() "):
+            self.commands.append(command)
+            return bench.REBIND_DONE + "\n"
         return super().shell(command, read_timeout_s, retry=retry)
 
 
@@ -126,19 +129,33 @@ class ListedButUnboundTest(unittest.TestCase):
         self.assertEqual(len(writes), 1, tv.commands)
         cycle = writes[0]
         # The list has to change for Android to bind: emptied first, then written back whole.
-        self.assertIn(f"cyt_restore() {{ settings put secure enabled_accessibility_services {OTHER}:{OURS}; "
+        self.assertIn(f"cyt_restore() {{ settings put secure enabled_accessibility_services {OTHER}:{OURS} && "
                       "settings put secure accessibility_enabled 1; }", cycle)
         emptied = cycle.index("settings put secure enabled_accessibility_services '';")
-        restored = cycle.index("; cyt_restore;", emptied)
+        restored = cycle.index("; cyt_restore &&", emptied)
         self.assertIn("sleep 2", cycle[emptied:restored])
-        self.assertTrue(cycle.rstrip().endswith("trap - EXIT HUP INT TERM"), cycle)
+        # The trap goes only once the restore went through, and the marker says it did.
+        self.assertTrue(cycle.rstrip().endswith(
+            f"cyt_restore && trap - EXIT HUP INT TERM && echo {bench.REBIND_DONE}"), cycle)
 
     def test_the_tv_puts_the_list_back_by_itself_if_the_connection_drops(self):
         tv = ListedTV(f"{OTHER}:{OURS}", bound=False)
         bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
         cycle = self.writes(tv)[0]
-        self.assertLess(cycle.index("trap cyt_restore EXIT HUP INT TERM"),
+        self.assertLess(cycle.index("trap cyt_restore EXIT;"),
                         cycle.index("enabled_accessibility_services ''"), cycle)
+        self.assertLess(cycle.index("trap 'cyt_restore; exit 1' HUP INT TERM;"),
+                        cycle.index("enabled_accessibility_services ''"), cycle)
+
+    def test_no_marker_means_the_restore_did_not_finish(self):
+        tv = ListedTV(f"{OTHER}:{OURS}", bound=False)
+        original = tv.shell
+        def refused(command, read_timeout_s=None, *, retry=False):
+            out = original(command, read_timeout_s, retry=retry)
+            return "" if command.startswith("cyt_restore() ") else out
+        tv.shell = refused
+        with self.assertRaisesRegex(RuntimeError, "could not be put back"):
+            bench.restore_accessibility(tv, "com.gathin.tvhome", [OURS])
 
     def test_a_helper_put_back_on_the_list_and_still_unbound_is_bound_again(self):
         """What the 43C645 does: the stop empties the list, the write puts it back, nothing binds."""
