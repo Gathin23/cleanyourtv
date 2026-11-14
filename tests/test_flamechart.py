@@ -301,8 +301,30 @@ class WriteFailureTest(unittest.TestCase):
         self.assertEqual("", output.getvalue())
         stray = [l for l in error.getvalue().splitlines() if "ResourceWarning" not in l and not l.startswith("  ")]
         self.assertEqual([], stray)   # a GC ResourceWarning from another test may land here; nothing else may
-        image.save.assert_called_once_with(str(out))
+        image.save.assert_called_once()
+        self.assertNotEqual(str(out), image.save.call_args.args[0])
         close.assert_called_once_with()
+
+    def test_a_failed_save_keeps_the_chart_already_there(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp, "nav-1.pftrace")
+            trace.write_bytes(b"")
+            out = Path(tmp, "chart.png")
+            out.write_bytes(b"old chart")
+            pil, image = fake_pillow()
+
+            def truncate_then_fail(path, **options):
+                Path(path).write_bytes(b"half")
+                raise OSError(28, "No space left on device")
+            image.save.side_effect = truncate_then_fail
+            with mock.patch.dict(sys.modules, {"PIL": pil}), \
+                    mock.patch.object(flamechart.trace_report, "opener",
+                                      return_value=lambda path: (fake_trace(), mock.Mock())), \
+                    contextlib.redirect_stdout(io.StringIO()), \
+                    contextlib.redirect_stderr(io.StringIO()), \
+                    self.assertRaises(SystemExit):
+                flamechart.main([str(trace), "--out", str(out)])
+            self.assertEqual(b"old chart", out.read_bytes())
 
     def test_a_font_load_failure_is_not_called_an_output_write_failure(self):
         with tempfile.TemporaryDirectory() as tmp:

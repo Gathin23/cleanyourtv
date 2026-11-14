@@ -28,6 +28,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import picture_file  # noqa: E402
 import trace_report  # noqa: E402  the same trace queries the report uses
 
 MAGENTA = (214, 51, 132)
@@ -199,7 +200,7 @@ def draw(panels, rx, title, subtitle, out, width=1600):
             y += h + 26
         y += 10
     try:
-        im.save(out)
+        picture_file.save(im, out)
     except OSError as e:
         sys.exit(f"cannot write {out}: {e.strerror or e}")
     return im.size
