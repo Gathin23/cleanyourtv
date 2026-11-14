@@ -44,14 +44,16 @@ public final class MatchDayActivity extends Activity {
     private static final int TEXT = Color.rgb(246, 247, 249);
     private static final int MUTED = Color.rgb(157, 165, 177);
     private final Handler main = new Handler(Looper.getMainLooper());
-    private final ExecutorService apiExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService coordinatorExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService apiExecutor = Executors.newFixedThreadPool(Competition.values().length);
     private final ExecutorService crestExecutor = Executors.newFixedThreadPool(3);
     private final MatchRepository repository = new MatchRepository();
     private CrestLoader crestLoader;
 
     private ZoneId zone;
     private LocalDate selectedDate;
-    private long requestSerial;
+    private MatchLoadState activeLoad;
+    private MatchLoadState manualLoad;
     private int crestSerial;
     private int crestsPending;
     private int crestsFailed;
@@ -100,6 +102,7 @@ public final class MatchDayActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
+        coordinatorExecutor.shutdownNow();
         apiExecutor.shutdownNow();
         crestExecutor.shutdownNow();
         super.onDestroy();
@@ -182,7 +185,9 @@ public final class MatchDayActivity extends Activity {
         setContentView(root);
 
         updateDateControls();
-        if (!currentResults.isEmpty()) displayResults(currentResults, false);
+        if (!currentResults.isEmpty()) {
+            displayResults(currentResults, false, activeLoad != null && !activeLoad.isComplete());
+        }
         else showEmptyMessage("Loading saved schedules…");
     }
 
@@ -253,7 +258,7 @@ public final class MatchDayActivity extends Activity {
         actionsParams.topMargin = dp(22);
         root.addView(actions, actionsParams);
 
-        TextView source = text("Included: Premier League, Champions League, La Liga, Serie A, Bundesliga and Ligue 1. Free scores are delayed; 10 API calls per minute.",
+        TextView source = text("Included: Premier League, Champions League, La Liga, Serie A, Bundesliga and Ligue 1. Free scores are delayed; refresh is limited to one batch per minute.",
                 14, MUTED, false);
         source.setMaxLines(2);
         LinearLayout.LayoutParams sourceParams = new LinearLayout.LayoutParams(dp(800), dp(48));
@@ -278,6 +283,7 @@ public final class MatchDayActivity extends Activity {
         baseFooter = "Scores may be delayed · football-data.org";
         baseFooterDetail = "";
         updateDateControls();
+        if (matchScroll != null) matchScroll.scrollTo(0, 0);
         showEmptyMessage("Loading schedules…");
         updateFooter();
         requestMatches(false, true);
@@ -289,47 +295,81 @@ public final class MatchDayActivity extends Activity {
 
     private void requestMatches(boolean manualRefresh, boolean resetScroll) {
         if (manualRefresh && manualRefreshInFlight) return;
+        final LocalDate requestedDate = selectedDate;
+        final MatchLoadState load = new MatchLoadState(requestedDate);
+        activeLoad = load;
+        if (resetScroll && matchScroll != null) matchScroll.scrollTo(0, 0);
         if (manualRefresh) {
             manualRefreshInFlight = true;
+            manualLoad = load;
             if (refreshButton != null) refreshButton.setText("Refreshing…");
         }
-        final LocalDate requestedDate = selectedDate;
         final String key = getPreferences(Context.MODE_PRIVATE).getString("api_key", "");
-        final long serial = ++requestSerial;
         if (currentResults.isEmpty() || matchList == null) {
             showEmptyMessage(manualRefresh ? "Refreshing league schedules…" : "Loading schedules…");
         }
         if (footerText != null && currentResults.isEmpty()) {
             footerText.setText(manualRefresh ? "Refreshing schedules…" : "Loading league schedules…");
         }
-        apiExecutor.execute(() -> {
-            EnumMap<Competition, MatchRepository.Result> results = new EnumMap<>(Competition.class);
-            for (Competition competition : Competition.values()) {
-                if (!manualRefresh) {
-                    MatchRepository.Result saved = repository.readCached(this, requestedDate, zone, competition);
-                    if (saved != null) {
-                        results.put(competition, saved);
-                        continue;
-                    }
-                }
-                results.put(competition,
-                        repository.refresh(this, key, requestedDate, zone, competition));
+        coordinatorExecutor.execute(() -> loadSchedules(load, key, manualRefresh));
+    }
+
+    private void loadSchedules(MatchLoadState load, String key, boolean manualRefresh) {
+        EnumMap<Competition, MatchRepository.Result> cached = new EnumMap<>(Competition.class);
+        List<Competition> fetch = new ArrayList<>();
+        for (Competition competition : Competition.values()) {
+            MatchRepository.Result saved = repository.readCached(this, load.date, zone, competition);
+            cached.put(competition, saved);
+            if (manualRefresh || saved == null) {
+                fetch.add(competition);
+            } else {
+                postResult(load, competition, saved);
             }
-            main.post(() -> {
-                if (manualRefresh) {
-                    manualRefreshInFlight = false;
-                    if (refreshButton != null) refreshButton.setText("Refresh");
-                }
-                if (isFinishing() || serial != requestSerial || !requestedDate.equals(selectedDate)
-                        || settingsOpen) return;
-                currentResults.clear();
-                currentResults.putAll(results);
-                displayResults(results, resetScroll);
-            });
+        }
+
+        if (fetch.isEmpty()) return;
+        if (key == null || key.trim().isEmpty()) {
+            for (Competition competition : fetch) {
+                postResult(load, competition,
+                        repository.refresh(this, key, load.date, zone, competition));
+            }
+            return;
+        }
+        if (!repository.tryStartNetworkBatch(this)) {
+            long remaining = repository.networkCooldownRemaining(this);
+            String message = "Wait " + Math.max(1L, (remaining + 999L) / 1000L)
+                    + "s before the next refresh.";
+            for (Competition competition : fetch) {
+                MatchRepository.Result saved = cached.get(competition);
+                postResult(load, competition, saved == null
+                        ? MatchRepository.Result.failure(message) : saved.withError(message));
+            }
+            return;
+        }
+        for (Competition competition : fetch) {
+            apiExecutor.execute(() -> postResult(load, competition,
+                    repository.refresh(this, key, load.date, zone, competition)));
+        }
+    }
+
+    private void postResult(MatchLoadState load, Competition competition,
+                            MatchRepository.Result result) {
+        main.post(() -> {
+            boolean visible = load == activeLoad;
+            boolean accepted = load.accept(selectedDate, competition, result);
+            if (load == manualLoad && load.isComplete()) {
+                manualLoad = null;
+                manualRefreshInFlight = false;
+                if (refreshButton != null) refreshButton.setText("Refresh");
+            }
+            if (!accepted || !visible || isFinishing() || settingsOpen) return;
+            currentResults.put(competition, result);
+            updateCompetitionResult(competition, result, !load.isComplete());
         });
     }
 
-    private void displayResults(Map<Competition, MatchRepository.Result> results, boolean resetScroll) {
+    private void displayResults(Map<Competition, MatchRepository.Result> results,
+                               boolean resetScroll, boolean pending) {
         if (matchList == null) return;
         int scrollY = resetScroll || matchScroll == null ? 0 : matchScroll.getScrollY();
         matchList.removeAllViews();
@@ -344,17 +384,58 @@ public final class MatchDayActivity extends Activity {
             LinearLayout.LayoutParams sectionParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             sectionParams.bottomMargin = dp(16);
-            matchList.addView(competitionCard(competition, result.matches), sectionParams);
+            View card = competitionCard(competition, result.matches);
+            card.setTag(competition);
+            matchList.addView(card, sectionParams);
         }
         if (matchCount == 0) {
-            showEmptyMessage(hasErrors(results)
-                    ? "No saved fixtures are available. Check the API key or choose Refresh."
-                    : "No matches on this day.");
+            showEmptyMessage(pending ? "Loading league schedules…" : emptyMessage(results));
         } else emptyText = null;
         if (matchScroll != null) matchScroll.post(() -> matchScroll.scrollTo(0, scrollY));
         baseFooter = footerFor(results);
         baseFooterDetail = footerDetailFor(results);
         updateFooter();
+    }
+
+    private void updateCompetitionResult(Competition competition, MatchRepository.Result result,
+                                         boolean pending) {
+        if (matchList == null) return;
+        for (int i = matchList.getChildCount() - 1; i >= 0; i--) {
+            View child = matchList.getChildAt(i);
+            if (child.getTag() == competition) matchList.removeViewAt(i);
+        }
+        if (emptyText != null) {
+            matchList.removeView(emptyText);
+            emptyText = null;
+        }
+        if (!result.matches.isEmpty()) {
+            View card = competitionCard(competition, result.matches);
+            card.setTag(competition);
+            int index = 0;
+            while (index < matchList.getChildCount()) {
+                Object tag = matchList.getChildAt(index).getTag();
+                if (tag instanceof Competition && ((Competition) tag).ordinal() > competition.ordinal()) break;
+                index++;
+            }
+            LinearLayout.LayoutParams sectionParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            sectionParams.bottomMargin = dp(16);
+            matchList.addView(card, index, sectionParams);
+        }
+        int matchCount = 0;
+        for (MatchRepository.Result value : currentResults.values()) matchCount += value.matches.size();
+        if (matchCount == 0) {
+            showEmptyMessage(pending ? "Loading league schedules…" : emptyMessage(currentResults));
+        }
+        baseFooter = footerFor(currentResults);
+        baseFooterDetail = footerDetailFor(currentResults);
+        updateFooter();
+    }
+
+    private String emptyMessage(Map<Competition, MatchRepository.Result> results) {
+        return hasErrors(results)
+                ? "No saved fixtures are available. Check the API key or choose Refresh."
+                : "No matches on this day.";
     }
 
     private View competitionCard(Competition competition, List<Match> matches) {

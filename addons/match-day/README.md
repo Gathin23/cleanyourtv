@@ -10,9 +10,10 @@ them accordingly and shows when the schedule was last updated.
 
 Open **Settings**, enter your own football-data.org API key, and choose **Save key**. All six competitions appear
 together, grouped by league. The app reads saved schedules when opened or when the date changes. It fetches a
-competition only when that date has no saved schedule, or when you choose **Refresh**. Manual refresh checks all
-six competitions sequentially, within the free plan's 10 API calls per minute. It has no background refresh or
-service. Left and Right date arrows move one day; **Today** returns to the TV's current date. Scroll through the
+competition only when that date has no saved schedule, or when you choose **Refresh**. It fetches up to six
+competitions concurrently and shows each league as its response arrives. Uncached requests run in batches no more
+than once per minute; saved schedules are shown during the cooldown. It has no background refresh or service.
+Left and Right date arrows move one day; **Today** returns to the TV's current date. Scroll through the
 league cards with Up and Down. Match rows do not open a details screen.
 
 The key stays in Match Day's private app storage. The app requests matches from
@@ -46,10 +47,9 @@ On Home, the launcher asks once whether to show the **Match Day** card. The modu
 
 ## Tested on
 
-Xiaomi Mi TV MOOQ1, Android TV 10: APK installation succeeded. Screen, remote, API-key, match and crest checks
-are pending; the TV's ADB connection went offline before the display could be verified.
+Xiaomi Mi TV MOOQ1, Android TV 10, build QTG3.200305.006.5028: candidate update preserved the saved API key.
+Date navigation, November 7, 2026 scores, all returned league cards and team crests were verified on the TV.
 
 ## Screenshot
 
-A screenshot from the verified TV scoreboard will be added after the API key is entered on the TV and its
-matches and crests can be checked.
+[`screenshot.jpg`](screenshot.jpg) is a 16:9 capture from the verified TV scoreboard.

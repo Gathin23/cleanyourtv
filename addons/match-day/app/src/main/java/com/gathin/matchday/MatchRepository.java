@@ -23,6 +23,10 @@ import java.util.List;
 final class MatchRepository {
     private static final int CONNECT_TIMEOUT_MS = 12000;
     private static final int MAX_RESPONSE_BYTES = 4 * 1024 * 1024;
+    static final int CACHE_VERSION = 2;
+    private static final String COOLDOWN_PREFS = "matchday_network";
+    private static final String NEXT_BATCH_ALLOWED_AT = "next_batch_allowed_at";
+    private static final Object BATCH_LOCK = new Object();
 
     Result readCached(Context context, LocalDate day, ZoneId zone, Competition competition) {
         return readCache(cacheFile(context, day, competition), day, zone);
@@ -64,6 +68,26 @@ final class MatchRepository {
         }
     }
 
+    boolean tryStartNetworkBatch(Context context) {
+        synchronized (BATCH_LOCK) {
+            long now = System.currentTimeMillis();
+            android.content.SharedPreferences preferences = context.getSharedPreferences(
+                    COOLDOWN_PREFS, Context.MODE_PRIVATE);
+            long nextAllowedAt = preferences.getLong(NEXT_BATCH_ALLOWED_AT, 0L);
+            if (RequestCooldown.isCoolingDown(now, nextAllowedAt)) return false;
+            return preferences.edit()
+                    .putLong(NEXT_BATCH_ALLOWED_AT, RequestCooldown.nextAllowedAt(now))
+                    .commit();
+        }
+    }
+
+    long networkCooldownRemaining(Context context) {
+        android.content.SharedPreferences preferences = context.getSharedPreferences(
+                COOLDOWN_PREFS, Context.MODE_PRIVATE);
+        return RequestCooldown.remainingMillis(System.currentTimeMillis(),
+                preferences.getLong(NEXT_BATCH_ALLOWED_AT, 0L));
+    }
+
     private static Result withCacheOrError(File file, LocalDate day, ZoneId zone, String error) {
         Result saved = readCache(file, day, zone);
         return saved == null ? Result.failure(error) : saved.withError(error);
@@ -81,18 +105,24 @@ final class MatchRepository {
         if (!file.isFile()) return null;
         try (FileInputStream input = new FileInputStream(file)) {
             byte[] bytes = readLimited(input);
-            JSONObject wrapper = new JSONObject(new String(bytes, StandardCharsets.UTF_8));
-            String payload = wrapper.getJSONObject("payload").toString();
-            return new Result(MatchParser.parse(payload, day, zone), wrapper.optLong("savedAt"), true, null);
+            return parseCache(new String(bytes, StandardCharsets.UTF_8), day, zone);
         } catch (IOException | JSONException | RuntimeException ignored) {
             return null;
         }
     }
 
+    static Result parseCache(String json, LocalDate day, ZoneId zone) throws JSONException {
+        JSONObject wrapper = new JSONObject(json);
+        if (wrapper.optInt("version", 0) != CACHE_VERSION) return null;
+        String payload = wrapper.getJSONObject("payload").toString();
+        return new Result(MatchParser.parse(payload, day, zone), wrapper.optLong("savedAt"), true, null);
+    }
+
     private static void writeCache(File file, String payload, long savedAt) {
         File temporary = new File(file.getPath() + ".tmp");
         try {
-            JSONObject wrapper = new JSONObject().put("savedAt", savedAt).put("payload", new JSONObject(payload));
+            JSONObject wrapper = new JSONObject().put("version", CACHE_VERSION).put("savedAt", savedAt)
+                    .put("payload", new JSONObject(payload));
             try (FileOutputStream output = new FileOutputStream(temporary)) {
                 output.write(wrapper.toString().getBytes(StandardCharsets.UTF_8));
                 output.flush();

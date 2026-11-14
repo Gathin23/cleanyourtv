@@ -7,11 +7,9 @@ import org.json.JSONObject;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 final class MatchParser {
     private MatchParser() { }
@@ -40,17 +38,18 @@ final class MatchParser {
 
     static String[] utcDateRange(LocalDate localDate, ZoneId zone) {
         Instant start = localDate.atStartOfDay(zone).toInstant();
-        Instant end = localDate.plusDays(1).atStartOfDay(zone).toInstant().minusSeconds(1);
-        DateTimeFormatter utcDate = DateTimeFormatter.ofPattern("uuuu-MM-dd", Locale.ROOT)
-                .withZone(ZoneId.of("UTC"));
-        return new String[] { utcDate.format(start), utcDate.format(end) };
+        Instant lastIncluded = localDate.plusDays(1).atStartOfDay(zone).toInstant().minusNanos(1);
+        LocalDate firstUtcDate = start.atZone(ZoneId.of("UTC")).toLocalDate();
+        LocalDate lastUtcDate = lastIncluded.atZone(ZoneId.of("UTC")).toLocalDate();
+        // football-data excludes dateTo, so advance past the last UTC date touched by this local day.
+        return new String[] { firstUtcDate.toString(), lastUtcDate.plusDays(1).toString() };
     }
 
     static String httpError(int statusCode) {
         switch (statusCode) {
             case 401: return "The API key was rejected. Check it in Settings.";
             case 403: return "This key cannot access match data. Check your football-data.org plan.";
-            case 429: return "The API rate limit was reached. Try again shortly.";
+            case 429: return "The API rate limit was reached. Wait before refreshing.";
             default: return "football-data.org returned HTTP " + statusCode + ".";
         }
     }
