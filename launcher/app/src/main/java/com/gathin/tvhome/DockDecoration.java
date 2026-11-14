@@ -34,6 +34,8 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     private final boolean singleRow;
     /** dock_band_all: in a single row, the band runs behind every app instead of the dock apps only. */
     private final boolean bandAll;
+    /** Corner radius of app tiles in dp (config.xml tile_corner_radius). */
+    private final int tileCornerRadius;
 
     /**
      * @param translucent the cinematic shelf's band: the artwork and the glow show through it.
@@ -45,9 +47,16 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
      * @param singleRow   every app sits in the dock's row (single_row); the band covers the dock apps only, unless bandAll.
      * @param bandAll     with singleRow, the band runs behind every app in the row (dock_band_all).
      */
+
     DockDecoration(int dockSize, float density, boolean translucent, boolean names, int opacity, boolean lightGlass,
                    boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll) {
+        this(dockSize, density, translucent, names, opacity, lightGlass, evenPadding, bandVisible, singleRow, bandAll, 16);
+    }
+
+    DockDecoration(int dockSize, float density, boolean translucent, boolean names, int opacity, boolean lightGlass,
+                   boolean evenPadding, boolean bandVisible, boolean singleRow, boolean bandAll, int tileCornerRadius) {
         this.dockSize = dockSize;
+        this.tileCornerRadius = tileCornerRadius;
         this.singleRow = singleRow;
         this.bandAll = singleRow && bandAll;
         this.density = density;
@@ -118,7 +127,7 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         // outwards and still keeps about the band's top margin from its rounded end.
         float sidePad = 22 * density;
         float side = Math.max(0f, Math.min(sidePad, Math.min(rect.left, parent.getWidth() - rect.right) - density));
-        float radius = AppAdapter.cornerRadius(cardWidth, density);
+        float radius = AppAdapter.cornerRadius(cardWidth, density, tileCornerRadius);
         if (evenPadding) {
             // The same padding on all four sides, so the band's corners are concentric with the tiles' everywhere.
             int inner = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
