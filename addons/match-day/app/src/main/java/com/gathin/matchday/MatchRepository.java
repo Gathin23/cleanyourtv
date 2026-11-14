@@ -29,11 +29,21 @@ final class MatchRepository {
     private static final Object BATCH_LOCK = new Object();
 
     Result readCached(Context context, LocalDate day, ZoneId zone, Competition competition) {
-        return readCache(cacheFile(context, day, competition), day, zone);
+        return readCached(context, day, zone, competition, DataProvider.FOOTBALL_DATA);
+    }
+
+    Result readCached(Context context, LocalDate day, ZoneId zone, Competition competition, DataProvider provider) {
+        return readCache(cacheFile(context, day, competition, provider), day, zone, provider);
     }
 
     Result refresh(Context context, String apiKey, LocalDate day, ZoneId zone, Competition competition) {
-        File cache = cacheFile(context, day, competition);
+        return refresh(context, apiKey, day, zone, competition, DataProvider.FOOTBALL_DATA);
+    }
+
+    Result refresh(Context context, String apiKey, LocalDate day, ZoneId zone, Competition competition,
+                   DataProvider provider) {
+        File cache = cacheFile(context, day, competition, provider);
+        if (provider == DataProvider.SPORT_SCORE) return refreshSportScore(cache, day, zone, competition);
         String token = apiKey == null ? "" : apiKey.trim();
         if (token.isEmpty()) {
             Result saved = readCache(cache, day, zone);
@@ -68,6 +78,44 @@ final class MatchRepository {
         }
     }
 
+    private Result refreshSportScore(File cache, LocalDate day, ZoneId zone, Competition competition) {
+        HttpURLConnection connection = null;
+        org.json.JSONArray combined = new org.json.JSONArray();
+        try {
+            for (String utcDate : MatchParser.utcCalendarDates(day, zone)) {
+                String address = "https://sportscore.com/api/v1/fixtures/?sport=football&date=" + utcDate
+                        + "&competition=" + competition.sportScoreSlug + "&limit=200";
+                connection = (HttpURLConnection) new URL(address).openConnection();
+                connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
+                connection.setReadTimeout(CONNECT_TIMEOUT_MS);
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Accept", "application/json");
+                int code = connection.getResponseCode();
+                if (code < 200 || code >= 300) {
+                    return withCacheOrError(cache, day, zone, DataProvider.SPORT_SCORE,
+                            MatchParser.sportScoreHttpError(code));
+                }
+                String payload = new String(readLimited(connection.getInputStream()), StandardCharsets.UTF_8);
+                JSONObject response = new JSONObject(payload);
+                org.json.JSONArray fixtures = response.optJSONArray("matches");
+                if (fixtures == null) throw new JSONException("Missing matches array");
+                for (int i = 0; i < fixtures.length(); i++) combined.put(fixtures.get(i));
+                connection.disconnect();
+                connection = null;
+            }
+            JSONObject payload = new JSONObject().put("matches", combined);
+            List<Match> matches = MatchParser.parseSportScore(payload.toString(), day, zone);
+            long fetchedAt = System.currentTimeMillis();
+            writeCache(cache, payload.toString(), fetchedAt);
+            return new Result(matches, fetchedAt, false, null);
+        } catch (IOException | JSONException | RuntimeException exception) {
+            return withCacheOrError(cache, day, zone, DataProvider.SPORT_SCORE,
+                    "Could not reach or read SportScore.");
+        } finally {
+            if (connection != null) connection.disconnect();
+        }
+    }
+
     boolean tryStartNetworkBatch(Context context) {
         synchronized (BATCH_LOCK) {
             long now = System.currentTimeMillis();
@@ -89,33 +137,52 @@ final class MatchRepository {
     }
 
     private static Result withCacheOrError(File file, LocalDate day, ZoneId zone, String error) {
-        Result saved = readCache(file, day, zone);
+        return withCacheOrError(file, day, zone, DataProvider.FOOTBALL_DATA, error);
+    }
+
+    private static Result withCacheOrError(File file, LocalDate day, ZoneId zone, DataProvider provider, String error) {
+        Result saved = readCache(file, day, zone, provider);
         return saved == null ? Result.failure(error) : saved.withError(error);
     }
 
-    private static File cacheFile(Context context, LocalDate day, Competition competition) {
+    private static File cacheFile(Context context, LocalDate day, Competition competition, DataProvider provider) {
         File directory = new File(context.getFilesDir(), "match-cache");
         if (!directory.exists()) directory.mkdirs();
+        return new File(directory, cacheFileName(day, competition, provider));
+    }
+
+    static String cacheFileName(LocalDate day, Competition competition, DataProvider provider) {
         // Keep the original Premier League cache name so existing saved results remain usable.
         String prefix = competition == Competition.PREMIER_LEAGUE ? "" : competition.code + "-";
-        return new File(directory, prefix + day + ".json");
+        if (provider == DataProvider.SPORT_SCORE) prefix = "sportscore-" + prefix;
+        return prefix + day + ".json";
     }
 
     private static Result readCache(File file, LocalDate day, ZoneId zone) {
+        return readCache(file, day, zone, DataProvider.FOOTBALL_DATA);
+    }
+
+    private static Result readCache(File file, LocalDate day, ZoneId zone, DataProvider provider) {
         if (!file.isFile()) return null;
         try (FileInputStream input = new FileInputStream(file)) {
             byte[] bytes = readLimited(input);
-            return parseCache(new String(bytes, StandardCharsets.UTF_8), day, zone);
+            return parseCache(new String(bytes, StandardCharsets.UTF_8), day, zone, provider);
         } catch (IOException | JSONException | RuntimeException ignored) {
             return null;
         }
     }
 
     static Result parseCache(String json, LocalDate day, ZoneId zone) throws JSONException {
+        return parseCache(json, day, zone, DataProvider.FOOTBALL_DATA);
+    }
+
+    static Result parseCache(String json, LocalDate day, ZoneId zone, DataProvider provider) throws JSONException {
         JSONObject wrapper = new JSONObject(json);
         if (wrapper.optInt("version", 0) != CACHE_VERSION) return null;
         String payload = wrapper.getJSONObject("payload").toString();
-        return new Result(MatchParser.parse(payload, day, zone), wrapper.optLong("savedAt"), true, null);
+        List<Match> matches = provider == DataProvider.SPORT_SCORE
+                ? MatchParser.parseSportScore(payload, day, zone) : MatchParser.parse(payload, day, zone);
+        return new Result(matches, wrapper.optLong("savedAt"), true, null);
     }
 
     private static void writeCache(File file, String payload, long savedAt) {
