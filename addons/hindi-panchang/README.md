@@ -17,7 +17,7 @@ A modern, sacred-themed Hindu Lunar Panchang and Vikram Samvat calendar module-c
    - Minimal circular icon buttons (`✕` Close, `↻` Refresh) keeping UI clean and clutter-free.
    - Modals open as frosted glass overlays with D-pad focus locked inside the active card.
 4. **Offline Location Selection:**
-   - Bundled list of 70+ Indian and international cities (with offline search/filter) plus manual latitude and longitude entry (using the TV's system timezone) for accurate local sunrise, sunset, and Tithi timings.
+   - Categorized city picker with 55 Indian cities, 20 major US cities, and 9 international hubs (plus offline search/filter) and manual latitude, longitude, and custom city label entry (using the TV's system timezone) for accurate local sunrise, sunset, and Tithi timings.
 5. **Optional Ambient Screensaver:**
    - Leanback `DreamService` (`PanchangDream`) drifting the Hindu date, Vikram Samvat year, and sacred quotes during TV standby.
 

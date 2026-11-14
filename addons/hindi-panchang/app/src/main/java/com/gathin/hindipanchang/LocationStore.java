@@ -11,9 +11,9 @@ import java.util.Locale;
 /**
  * Manages the user's selected city, coordinates, timezone, and language preference completely offline.
  * Supports:
- * 1. A comprehensive bundled list of Indian & international cities for accurate sunrise/sunset.
- * 2. Offline search filtering across the bundled city list.
- * 3. Manual latitude, longitude, and custom label entry.
+ * 1. Bundled Indian cities (55), major US cities (20), and international hubs (9).
+ * 2. Offline search filtering across all bundled cities.
+ * 3. Manual latitude, longitude, and custom city label entry.
  */
 final class LocationStore {
     private static final String PREFS = "panchang_prefs";
@@ -49,8 +49,7 @@ final class LocationStore {
         }
     }
 
-    static final Place[] PRESETS = new Place[]{
-        // Major Indian Cities & Sacred Panchang Centers
+    static final Place[] INDIA_PRESETS = new Place[]{
         new Place("New Delhi", "Delhi, India", 28.6139, 77.2090, "Asia/Kolkata"),
         new Place("Varanasi (काशी)", "Uttar Pradesh, India", 25.3176, 82.9739, "Asia/Kolkata"),
         new Place("Ujjain (उज्जैन)", "Madhya Pradesh, India", 23.1765, 75.7885, "Asia/Kolkata"),
@@ -105,25 +104,56 @@ final class LocationStore {
         new Place("Coimbatore", "Tamil Nadu, India", 11.0168, 76.9558, "Asia/Kolkata"),
         new Place("Kochi", "Kerala, India", 9.9312, 76.2673, "Asia/Kolkata"),
         new Place("Thiruvananthapuram", "Kerala, India", 8.5241, 76.9366, "Asia/Kolkata"),
-        new Place("Panaji", "Goa, India", 15.4909, 73.8278, "Asia/Kolkata"),
-        // International Cities
+        new Place("Panaji", "Goa, India", 15.4909, 73.8278, "Asia/Kolkata")
+    };
+
+    static final Place[] US_PRESETS = new Place[]{
+        new Place("New York", "New York, USA", 40.7128, -74.0060, "America/New_York"),
+        new Place("Los Angeles", "California, USA", 34.0522, -118.2437, "America/Los_Angeles"),
+        new Place("Chicago", "Illinois, USA", 41.8781, -87.6298, "America/Chicago"),
+        new Place("Houston", "Texas, USA", 29.7604, -95.3698, "America/Chicago"),
+        new Place("Dallas", "Texas, USA", 32.7767, -96.7970, "America/Chicago"),
+        new Place("Austin", "Texas, USA", 30.2672, -97.7431, "America/Chicago"),
+        new Place("San Francisco", "California, USA", 37.7749, -122.4194, "America/Los_Angeles"),
+        new Place("San Jose", "California, USA", 37.3382, -121.8863, "America/Los_Angeles"),
+        new Place("San Diego", "California, USA", 32.7157, -117.1611, "America/Los_Angeles"),
+        new Place("Seattle", "Washington, USA", 47.6062, -122.3321, "America/Los_Angeles"),
+        new Place("Atlanta", "Georgia, USA", 33.7490, -84.3880, "America/New_York"),
+        new Place("Boston", "Massachusetts, USA", 42.3601, -71.0589, "America/New_York"),
+        new Place("Washington, DC", "District of Columbia, USA", 38.9072, -77.0369, "America/New_York"),
+        new Place("Philadelphia", "Pennsylvania, USA", 39.9526, -75.1652, "America/New_York"),
+        new Place("Miami", "Florida, USA", 25.7617, -80.1918, "America/New_York"),
+        new Place("Orlando", "Florida, USA", 28.5383, -81.3792, "America/New_York"),
+        new Place("Phoenix", "Arizona, USA", 33.4484, -112.0740, "America/Phoenix"),
+        new Place("Denver", "Colorado, USA", 39.7392, -104.9903, "America/Denver"),
+        new Place("Detroit", "Michigan, USA", 42.3314, -83.0458, "America/Detroit"),
+        new Place("Minneapolis", "Minnesota, USA", 44.9778, -93.2650, "America/Chicago")
+    };
+
+    static final Place[] OTHER_PRESETS = new Place[]{
         new Place("Kathmandu", "Nepal", 27.7172, 85.3240, "Asia/Kathmandu"),
         new Place("Dubai", "UAE", 25.2048, 55.2708, "Asia/Dubai"),
         new Place("Singapore", "Singapore", 1.3521, 103.8198, "Asia/Singapore"),
         new Place("London", "United Kingdom", 51.5074, -0.1278, "Europe/London"),
-        new Place("New York", "New York, USA", 40.7128, -74.0060, "America/New_York"),
-        new Place("Chicago", "Illinois, USA", 41.8781, -87.6298, "America/Chicago"),
-        new Place("Dallas", "Texas, USA", 32.7767, -96.7970, "America/Chicago"),
-        new Place("Houston", "Texas, USA", 29.7604, -95.3698, "America/Chicago"),
-        new Place("Atlanta", "Georgia, USA", 33.7490, -84.3880, "America/New_York"),
-        new Place("San Francisco", "California, USA", 37.7749, -122.4194, "America/Los_Angeles"),
-        new Place("Seattle", "Washington, USA", 47.6062, -122.3321, "America/Los_Angeles"),
         new Place("Toronto", "Ontario, Canada", 43.6532, -79.3832, "America/Toronto"),
         new Place("Vancouver", "BC, Canada", 49.2827, -123.1207, "America/Vancouver"),
         new Place("Sydney", "NSW, Australia", -33.8688, 151.2093, "Australia/Sydney"),
         new Place("Melbourne", "VIC, Australia", -37.8136, 144.9631, "Australia/Melbourne"),
         new Place("Auckland", "New Zealand", -36.8485, 174.7633, "Pacific/Auckland")
     };
+
+    static final Place[] PRESETS = buildAllPresets();
+
+    private static Place[] buildAllPresets() {
+        Place[] all = new Place[INDIA_PRESETS.length + US_PRESETS.length + OTHER_PRESETS.length];
+        int pos = 0;
+        System.arraycopy(INDIA_PRESETS, 0, all, pos, INDIA_PRESETS.length);
+        pos += INDIA_PRESETS.length;
+        System.arraycopy(US_PRESETS, 0, all, pos, US_PRESETS.length);
+        pos += US_PRESETS.length;
+        System.arraycopy(OTHER_PRESETS, 0, all, pos, OTHER_PRESETS.length);
+        return all;
+    }
 
     private LocationStore() { }
 
@@ -177,7 +207,7 @@ final class LocationStore {
         return next;
     }
 
-    /** Filters bundled cities offline by matching city name or region/state/country. */
+    /** Filters all bundled cities offline by matching city name or region/state/country. */
     static List<Place> searchOffline(String query) {
         String q = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         List<Place> out = new ArrayList<>();

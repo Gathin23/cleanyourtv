@@ -18,7 +18,7 @@ import java.util.Locale;
  * Full-screen TV Activity for Hindi Panchang (विक्रम संवत).
  * Handles:
  * - Back navigation from Detail Views back to the Centered Calendar Home View
- * - Offline City Picker Dialog (Bundled Indian & International Cities, Offline Search, Manual Lat/Lon)
+ * - Offline City Picker Dialog (India Cities, US Cities, Other World Cities, Search, Manual Lat/Lon)
  * - Remote shortcut keys (CH+/CH- for month navigation, MENU/INFO for city picker).
  */
 public final class PanchangActivity extends Activity {
@@ -72,35 +72,53 @@ public final class PanchangActivity extends Activity {
     }
 
     private void showCityPickerMenu() {
-        LocationStore.Place[] presets = LocationStore.PRESETS;
-        CharSequence[] items = new CharSequence[presets.length + 2];
-        items[0] = "🔍 शहर खोजें (Filter Bundled Cities...)";
-        items[1] = "🧭 अक्षांश / देशांतर दर्ज करें (Enter Latitude & Longitude...)";
-        for (int i = 0; i < presets.length; i++) {
-            items[i + 2] = "📍 " + presets[i].name + " — " + presets[i].detail;
-        }
+        CharSequence[] categories = new CharSequence[]{
+                "🇮🇳 भारत के शहर (India — " + LocationStore.INDIA_PRESETS.length + " Cities)",
+                "🇺🇸 अमेरिका के शहर (United States — " + LocationStore.US_PRESETS.length + " Cities)",
+                "🌍 अन्य अंतर्राष्ट्रीय शहर (Other World Cities)",
+                "🔍 शहर खोजें (Search All Bundled Cities...)",
+                "🧭 अन्य स्थान: अक्षांश / देशांतर दर्ज करें (Custom City Label + Lat/Lon...)"
+        };
 
         new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle("शहर / स्थान चुनें (Select City for Accurate Sunrise & Muhurat)")
-                .setItems(items, (d, which) -> {
+                .setItems(categories, (d, which) -> {
                     if (which == 0) {
-                        showSearchCityInput();
+                        showPlaceList("🇮🇳 भारत के शहर (India)", LocationStore.INDIA_PRESETS);
                     } else if (which == 1) {
-                        showManualCoordinatesInput();
+                        showPlaceList("🇺🇸 अमेरिका के शहर (United States)", LocationStore.US_PRESETS);
+                    } else if (which == 2) {
+                        showPlaceList("🌍 अन्य अंतर्राष्ट्रीय शहर (World)", LocationStore.OTHER_PRESETS);
+                    } else if (which == 3) {
+                        showSearchCityInput();
                     } else {
-                        LocationStore.Place chosen = presets[which - 2];
-                        LocationStore.save(this, chosen);
-                        panel.updatePlace(chosen);
-                        Toast.makeText(this, "स्थान सेट किया गया: " + chosen.displayLabel(), Toast.LENGTH_SHORT).show();
+                        showManualCoordinatesInput();
                     }
                 })
+                .show();
+    }
+
+    private void showPlaceList(String title, LocationStore.Place[] places) {
+        CharSequence[] items = new CharSequence[places.length];
+        for (int i = 0; i < places.length; i++) {
+            items[i] = "📍 " + places[i].name + " — " + places[i].detail;
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle(title)
+                .setItems(items, (d, which) -> {
+                    LocationStore.Place chosen = places[which];
+                    LocationStore.save(this, chosen);
+                    panel.updatePlace(chosen);
+                    Toast.makeText(this, "स्थान सेट किया गया: " + chosen.displayLabel(), Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("वापस (Back)", (d, w) -> showCityPickerMenu())
                 .show();
     }
 
     private void showSearchCityInput() {
         EditText input = new EditText(this);
         input.setSingleLine(true);
-        input.setHint("शहर या राज्य लिखें (e.g. Varanasi, Jaipur, Kerala, London)");
+        input.setHint("शहर या राज्य लिखें (e.g. Varanasi, Chicago, Texas, London)");
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         input.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
@@ -157,7 +175,7 @@ public final class PanchangActivity extends Activity {
 
         EditText nameInput = new EditText(this);
         nameInput.setSingleLine(true);
-        nameInput.setHint("स्थान का नाम (Optional Name, e.g. My City)");
+        nameInput.setHint("शहर / स्थान का नाम (Custom City Label, e.g. My City)");
         nameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 
         EditText latInput = new EditText(this);
@@ -188,7 +206,7 @@ public final class PanchangActivity extends Activity {
         box.addView(lonInput, lp);
 
         new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle("🧭 अक्षांश / देशांतर दर्ज करें (Manual Coordinates)")
+                .setTitle("🧭 अन्य स्थान (Custom City Label + Lat/Lon)")
                 .setView(box)
                 .setPositiveButton("सहेजें (Save)", (d, w) -> {
                     double lat;
@@ -223,6 +241,6 @@ public final class PanchangActivity extends Activity {
                 })
                 .setNegativeButton("रद्द करें (Cancel)", null)
                 .show();
-        latInput.requestFocus();
+        nameInput.requestFocus();
     }
 }
