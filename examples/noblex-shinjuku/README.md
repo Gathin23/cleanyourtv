@@ -28,7 +28,8 @@ With speakers or a DAC on the optical output, the remote's volume keys change no
 
 Setting the surround sound formats to None (`settings put global encoded_surround_output 1`) did not move Disney+
 off the offload output; it was put back to Auto. Holding the direct and offload outputs busy from another app only made
-Disney+ stop with `AudioTrack init failed` for `audio/eac3`: it does not fall back to PCM. Its stereo extras play
+Disney+ stop with `AudioTrack init failed` for `audio/eac3`: it does not fall back to PCM. Turning Dolby Atmos off in its
+settings does not change the track. Its stereo extras play
 through the mixer.
 
 ## A workaround for apps
