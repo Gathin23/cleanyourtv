@@ -1,0 +1,41 @@
+# Noblex NoblexTV (shinjuku): optical output and volume
+
+Notes from a second NoblexTV (Skyworth, codename `shinjuku`, MediaTek m5621, Android TV 11, build
+`RTO9.230812.001`), debloated with [`debloat.txt`](debloat.txt) and with `launcher/` as Home. They are about sound
+through the optical (S/PDIF) output, measured over ADB on 2026-11-13.
+
+## The optical output ignores the TV volume
+
+With speakers or a DAC on the optical output, the remote's volume keys change nothing there:
+
+- Android sees a single output device, `speaker`. The volume keys only move `STREAM_MUSIC`, and the audio HAL applies
+  it to the TV speakers alone; S/PDIF leaves at a fixed level (`dumpsys media.audio_flinger` shows master volume
+  1.0 and no attenuation on the mix).
+- In the Sound settings, **Speakers: External audio system** only sets that volume to 0. The next Vol+ brings the
+  TV speakers back. The only other choice is TV speakers.
+- **Digital output** must be **PCM** for any of the below: an encoded (passthrough) stream cannot be attenuated on
+  the TV.
+- The volume keys never reach apps or an accessibility key filter: `adjustStreamVolume() - always send ... to CEC`
+  in logcat, the system routes them straight to AudioService.
+
+## What reaches Android's mix
+
+| Source | Path | Can an app change its level? |
+|---|---|---|
+| Netflix, YouTube | `AudioOut_D` mixer thread, PCM | Yes |
+| Disney+ (5.1 E-AC3) | `OFFLOAD` thread, `DIRECT\|COMPRESS_OFFLOAD`, format `0x0A000001`: decoded on the chip | Not as it starts; see below |
+| HDMI, AV, Live TV | `AudioPatch device:hdmi-in -> device:speaker`, "No software bridge" | No: a hardware patch |
+
+Setting the surround sound formats to None (`settings put global encoded_surround_output 1`) or turning Dolby Atmos
+off in Disney+ did not move it off the offload output, and holding the direct outputs busy from another app only made
+it stop with `AudioTrack init failed`. What works: enabling a non-offloadable effect on the output mix while the track
+plays. Android invalidates the offloaded track (`AudioTrack write failed: -6` in the app) and media3 recovers by
+reopening it as PCM 5.1 on the `AudioOut_D` mixer thread, after a short buffering pause.
+
+## Other notes
+
+- This set came with `com.google.android.tungsten.setupwraith` installed, but it does not claim Home: once
+  `launcher/` was installed only `com.android.tv.settings/.system.FallbackHome` was left besides it. The saved Wi-Fi
+  network belongs to the shared Google uid, not to setupwraith.
+- The UI runs at 1280x720 (`wm size` with no override); video from apps, HDMI and Live TV is drawn on the separate
+  video plane.
