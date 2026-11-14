@@ -139,6 +139,12 @@ class RefusedBeforeTheTVTest(unittest.TestCase):
             with self.subTest(idle=value):
                 self.refused(["--idle", value], "--idle", value)
 
+    def test_an_idle_above_a_day_is_refused(self):
+        # time.sleep() answers 10**10 with OverflowError, after the same full run.
+        for value in ("86401", "10000000000"):
+            with self.subTest(idle=value):
+                self.refused(["--idle", value], "--idle", value)
+
     def test_each_count_below_one_is_refused(self):
         # A zero count measured nothing in that section and still exited 0 with a result of nulls.
         for option in ("keys", "series", "cold", "returns"):

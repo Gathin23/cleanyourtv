@@ -772,6 +772,8 @@ def main():
             parser.error(f"--{option} is the number of {unit}: pass at least 1, not {getattr(args, option)}")
     if args.idle < 1:
         parser.error(f"--idle is the number of idle seconds: pass at least 1, not {args.idle}")
+    if args.idle > 86400:
+        parser.error(f"--idle is the number of idle seconds: pass at most 86400, not {args.idle}")
     if not args.host:
         # Nothing has been measured: a run with no address is the 2 the docstring gives a run that never
         # got as far as the TV, not the 1 a run keeps when its numbers exist and result.json could not be
