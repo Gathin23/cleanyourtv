@@ -3,6 +3,8 @@
 # Same firmware family as examples/tcl-g10-google-tv.
 # Also tested on a TCL 55V6C, Colombia (product G09_4K_GB_NF), firmware STT2.230203.001 AS24.
 # Also used on a TCL Smart TV Pro, India (G09), firmware STT2.230203.001.AS24, with ZEE5 kept.
+# Also used on a TCL 50C6KS and a TCL 50P7L, Chile (board TC8000, products G09_4K_GB and G09_4K_GB_32BIT),
+# firmware STT2.230203.001.AS24, with part of this list: see the README for what they kept.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g09-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g09-google-tv/debloat.txt com.google.android.apps.tv.launcherx
