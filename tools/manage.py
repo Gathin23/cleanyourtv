@@ -53,7 +53,8 @@ On Windows, theme install and set use PowerShell (pwsh, or powershell when pwsh 
 profiles or changing execution policy. Add-ons with their own shell installer still need Bash; an install whose bash
 or Gradle wrapper cannot start says which and what to install, and exits 1 before anything is built or pushed. A theme install
 takes only its name; script arguments belong to add-ons. If set saves the local file but the push fails, it
-reports that separately: the TV may have received only part of the theme.
+reports that separately: exit 2 means nothing was sent to the TV, any other code means the TV may have
+received only part of the theme.
 
 Exit status: 0 the command ran, 1 a command on the TV or a script this checkout runs failed, 2 the command line
 asked for something this script does not do - a command it does not have, or a word the command would drop - which
@@ -1099,7 +1100,10 @@ def cmd_set(key, value, theme_folder):
                          f"The temporary folder may remain at {staging}. Continuing with the theme push.\n")
     print(f"{key} = {json.dumps(parsed)} in {f}")
     code = push_theme(command)
-    if code:
+    if code == 2:
+        sys.stderr.write(f"Saved {f} locally, but the theme push failed (exit 2): nothing was sent to the TV. "
+                         "The local edit was kept.\n")
+    elif code:
         sys.stderr.write(f"Saved {f} locally, but the theme push failed (exit {code}). "
                          "The TV may be only partly updated; the local edit was kept.\n")
     return code
