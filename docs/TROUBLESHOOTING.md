@@ -1822,7 +1822,10 @@ first two writes are what make the opt-in survive, so read why:
   and an install without it takes the grant back, the one made by hand above included, so once the opt-in is
   on, pass it on every reinstall.
 - `GuardRevival` is the listener the system re-binds once the process is gone, and firmware that kills
-  third-party apps in standby takes the screen-on watch with it. The rebind is what re-arms it.
+  third-party apps in standby takes the screen-on watch with it. The rebind is what re-arms it. With
+  `restore_key_services` on, the rebind also repairs the recorded helpers as Home's start does, with or without
+  this opt-in. While another app is Home the rebind repairs nothing, and the opt-in does not put `HomeKeyService`
+  back once you switch it off in Accessibility settings.
 
 While the opt-in is on, `dumpsys accessibility` naming no `com.gathin.tvhome/.HomeKeyService` during
 standby is the opt-in working, not a fault: wake the TV and read it again. Only that helper stands down;
