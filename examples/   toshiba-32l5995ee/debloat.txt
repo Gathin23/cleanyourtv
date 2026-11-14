@@ -1,0 +1,12 @@
+# Toshiba 32L5995EE
+# Android: <גרסה>
+# Firmware build: <מספר build>
+# Live TV package: <שם החבילה, אם שונה מהרגיל>
+# Stock launcher package: <שם החבילה, אם שונה מהרגיל>
+
+# --- קבוצה 1: מה היא (למשל אפליקציות פרסום) ---
+com.example.package1
+com.example.package2   # הערה אם משהו לא ברור
+
+# --- קבוצה 2: ... ---
+com.example.package3
