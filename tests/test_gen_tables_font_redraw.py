@@ -232,8 +232,16 @@ class RedrawSuccessTest(unittest.TestCase):
         self.assertTrue(written > 1000, f"docs/stats.png is {written} B with a variable font")
 
 
+@unittest.skipIf(os.name == "nt", "the venv interpreter these cases fake is a #!/bin/sh script, and a venv made "
+                                   "on Windows has an .exe at tools/venv/Scripts/python.exe, which no text file "
+                                   "can stand in for; tests/test_gen_tables_venv_python.py reads both paths")
 class RedrawInterpreterTest(unittest.TestCase):
-    """Which Python the two card scripts are handed: the checkout's venv when that venv has Pillow."""
+    """Which Python the two card scripts are handed: the checkout's venv when that venv has Pillow.
+
+    The venv these cases build is the POSIX one, tools/venv/bin/python. A Windows checkout's venv has
+    tools/venv/Scripts/python.exe instead, which this fixture cannot stand in for, so the end-to-end cases
+    here skip there; the two paths gen_tables.py asks for are read by tests/test_gen_tables_venv_python.py.
+    """
 
     def test_the_venvs_python_draws_the_pictures(self):
         with tempfile.TemporaryDirectory() as tmp:
