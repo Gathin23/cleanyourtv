@@ -564,6 +564,21 @@ class RecordPreservationTest(unittest.TestCase):
                 self.assertEqual(output.getvalue(), "")
                 self.assertEqual(self.snapshot(path.parent), before)
 
+    def test_main_keeps_the_old_sidecar_when_writing_the_new_one_fails(self):
+        with self.files() as (path, before):
+            device = self.device()
+
+            def half(value, stream, **kwargs):
+                stream.write('{"scenario": "ho')
+                raise OSError(28, "No space left on device")
+
+            with self.main_modules(device), mock.patch.object(trace.time, "sleep"),                  mock.patch.object(trace.json, "dump", side_effect=half),                  contextlib.redirect_stdout(io.StringIO()), self.assertRaises(OSError):
+                self.main(path)
+            self.assertTrue(device.closed)
+            self.assertEqual(path.with_suffix(".json").read_bytes(), self.SIDECAR)
+            before[path.name] = hashlib.sha256(b"trace").hexdigest()
+            self.assertEqual(self.snapshot(path.parent), before)
+
     def test_main_writes_metadata_after_successful_replacement_and_reports_size(self):
         with self.files() as (path, before):
             device = self.device()
