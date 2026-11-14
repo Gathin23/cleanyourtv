@@ -39,6 +39,7 @@ from unittest.mock import patch
 from tools import theme_restart as restart
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools"
+ROOT = TOOLS.parent
 SCRIPT = TOOLS / "theme.ps1"
 DEFAULT = "com.gathin.tvhome"
 RENAMED = "com.ts.launcher"
@@ -228,8 +229,35 @@ class RestartSideTest(unittest.TestCase):
     def test_the_restart_names_that_id(self):
         calls = "\n".join(self.restart_with(package=RENAMED))
         self.assertIn("am force-stop --user 0 " + RENAMED, calls)
-        self.assertIn("am start --user 0 -n " + RENAMED + "/.MainActivity", calls)
-        self.assertNotIn(DEFAULT, calls, "no command may name the build this set does not have")
+        # The class, not "<id>/.MainActivity": the shorthand is expanded against the package part, so this line
+        # named com.ts.launcher.MainActivity, which no build declares (#3713 review).
+        self.assertIn("am start --user 0 -n " + RENAMED + "/com.gathin.tvhome.MainActivity", calls)
+        self.assertNotIn(RENAMED + "/.MainActivity", calls)
+        self.assertNotIn("am force-stop --user 0 " + DEFAULT, calls,
+                         "no command may name the build this set does not have")
+        self.assertNotIn(" " + DEFAULT + "/", calls, "and no component may start at its package")
+
+    def test_the_start_names_the_class_the_apk_declares(self):
+        """The class in the start command is the manifest's, under the namespace build.gradle declares.
+
+        -PlauncherApplicationId changes the application id, not the Java package, so the activity stays
+        com.gathin.tvhome.MainActivity on every build: the two launcher builds differ in the component's package
+        half only. Read from the two launcher files rather than pinned as a string here, because the shorthand
+        this replaced was right for the default build and wrong for the id the fix exists for.
+        """
+        gradle = (ROOT / "launcher" / "app" / "build.gradle").read_text(encoding="utf-8")
+        found = re.search(r"^\s*namespace\s+'([^']+)'", gradle, re.M)
+        if found is None:
+            self.fail("build.gradle has no namespace for the activity's class to hang off")
+        namespace = found[1]
+        manifest = (ROOT / "launcher" / "app" / "src" / "main" / "AndroidManifest.xml").read_text(encoding="utf-8")
+        self.assertIn(f'android:name=".{restart.ACTIVITY.split(".")[-1]}"', manifest,
+                      "the manifest declares the activity under the namespace, so the class moves with it")
+        self.assertEqual(namespace + ".MainActivity", restart.ACTIVITY)
+        # The two shell twins already carry the same string; a rename has to reach all three.
+        self.assertIn(f"LAUNCHER_ACTIVITY={restart.ACTIVITY}", (TOOLS / "theme.sh").read_text(encoding="utf-8"))
+        self.assertIn("'com.gathin.tvhome.MainActivity'", SCRIPT.read_text(encoding="utf-8"),
+                      "theme.ps1 hands the same class to the helper")
 
     def test_a_launcher_that_is_home_is_started_with_the_intent(self):
         calls = "\n".join(self.restart_with(package=RENAMED,
