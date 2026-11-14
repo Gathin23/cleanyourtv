@@ -3,8 +3,6 @@ package com.gathin.hindipanchang;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
@@ -12,20 +10,18 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.time.ZoneId;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Locale;
 
 /**
  * Full-screen TV Activity for Hindi Panchang (विक्रम संवत).
  * Handles:
  * - Back navigation from Detail Views back to the Centered Calendar Home View
- * - City Picker Dialog (Auto-Detect IP location, Online Geocoding Search, and Offline Presets)
+ * - Offline City Picker Dialog (Bundled Indian & International Cities, Offline Search, Manual Lat/Lon)
  * - Remote shortcut keys (CH+/CH- for month navigation, MENU/INFO for city picker).
  */
 public final class PanchangActivity extends Activity {
-    private final ExecutorService io = Executors.newSingleThreadExecutor();
-    private final Handler main = new Handler(Looper.getMainLooper());
     private PanchangPanel panel;
 
     @Override
@@ -34,11 +30,6 @@ public final class PanchangActivity extends Activity {
         panel = new PanchangPanel(this, false);
         panel.setHostCallbacks(this::showCityPickerMenu);
         setContentView(panel);
-
-        // If the user hasn't picked a city yet, silently auto-detect their location in the background
-        if (!LocationStore.hasSavedPlace(this)) {
-            autoDetectLocation(false);
-        }
     }
 
     @Override
@@ -51,12 +42,6 @@ public final class PanchangActivity extends Activity {
     protected void onStop() {
         panel.stop();
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        io.shutdownNow();
     }
 
     @Override
@@ -89,8 +74,8 @@ public final class PanchangActivity extends Activity {
     private void showCityPickerMenu() {
         LocationStore.Place[] presets = LocationStore.PRESETS;
         CharSequence[] items = new CharSequence[presets.length + 2];
-        items[0] = "📡 वर्तमान स्थान स्वतः खोजें (Auto-Detect Current Location)";
-        items[1] = "🔍 शहर का नाम टाइप करके खोजें (Search Any City Online...)";
+        items[0] = "🔍 शहर खोजें (Filter Bundled Cities...)";
+        items[1] = "🧭 अक्षांश / देशांतर दर्ज करें (Enter Latitude & Longitude...)";
         for (int i = 0; i < presets.length; i++) {
             items[i + 2] = "📍 " + presets[i].name + " — " + presets[i].detail;
         }
@@ -99,9 +84,9 @@ public final class PanchangActivity extends Activity {
                 .setTitle("शहर / स्थान चुनें (Select City for Accurate Sunrise & Muhurat)")
                 .setItems(items, (d, which) -> {
                     if (which == 0) {
-                        autoDetectLocation(true);
-                    } else if (which == 1) {
                         showSearchCityInput();
+                    } else if (which == 1) {
+                        showManualCoordinatesInput();
                     } else {
                         LocationStore.Place chosen = presets[which - 2];
                         LocationStore.save(this, chosen);
@@ -115,7 +100,7 @@ public final class PanchangActivity extends Activity {
     private void showSearchCityInput() {
         EditText input = new EditText(this);
         input.setSingleLine(true);
-        input.setHint("शहर का नाम लिखें (e.g. Varanasi, Jaipur, Chicago, London)");
+        input.setHint("शहर या राज्य लिखें (e.g. Varanasi, Jaipur, Kerala, London)");
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         input.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
@@ -127,84 +112,117 @@ public final class PanchangActivity extends Activity {
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
         AlertDialog dialog = new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle("🔍 शहर खोजें (Search City)")
+                .setTitle("🔍 शहर खोजें (Filter Bundled Cities)")
                 .setView(box)
-                .setPositiveButton("खोजें (Search)", (d, w) -> runCitySearch(input.getText().toString()))
+                .setPositiveButton("खोजें (Filter)", (d, w) -> runOfflineCitySearch(input.getText().toString()))
                 .setNegativeButton("रद्द करें (Cancel)", null)
                 .create();
 
         input.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId != EditorInfo.IME_ACTION_SEARCH) return false;
             dialog.dismiss();
-            runCitySearch(input.getText().toString());
+            runOfflineCitySearch(input.getText().toString());
             return true;
         });
         dialog.show();
         input.requestFocus();
     }
 
-    private void runCitySearch(String query) {
+    private void runOfflineCitySearch(String query) {
         String q = query == null ? "" : query.trim();
         if (q.isEmpty()) return;
-        Toast.makeText(this, "खोज रहे हैं: " + q + "...", Toast.LENGTH_SHORT).show();
-        io.execute(() -> {
-            List<LocationStore.Place> found;
-            try {
-                found = LocationStore.searchOnline(q);
-            } catch (Exception e) {
-                found = null;
-            }
-            List<LocationStore.Place> results = found;
-            main.post(() -> {
-                if (isDestroyed()) return;
-                if (results == null) {
-                    Toast.makeText(this, "इंटरनेट उपलब्ध नहीं है — कृपया सूची से शहर चुनें (Offline)", Toast.LENGTH_LONG).show();
-                } else if (results.isEmpty()) {
-                    Toast.makeText(this, "कोई शहर नहीं मिला: " + q, Toast.LENGTH_LONG).show();
-                } else {
-                    CharSequence[] rows = new CharSequence[results.size()];
-                    for (int i = 0; i < rows.length; i++) {
-                        LocationStore.Place p = results.get(i);
-                        rows[i] = p.displayLabel() + " (" + p.timezone + ")";
-                    }
-                    new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-                            .setTitle("शहर चुनें (Select Match)")
-                            .setItems(rows, (d, which) -> {
-                                LocationStore.Place p = results.get(which);
-                                LocationStore.save(this, p);
-                                panel.updatePlace(p);
-                                Toast.makeText(this, "स्थान सेट किया गया: " + p.displayLabel(), Toast.LENGTH_SHORT).show();
-                            })
-                            .show();
-                }
-            });
-        });
+        List<LocationStore.Place> results = LocationStore.searchOffline(q);
+        if (results.isEmpty()) {
+            Toast.makeText(this, "सूची में नहीं मिला: " + q + " — अक्षांश/देशांतर का उपयोग करें", Toast.LENGTH_LONG).show();
+            return;
+        }
+        CharSequence[] rows = new CharSequence[results.size()];
+        for (int i = 0; i < rows.length; i++) {
+            LocationStore.Place p = results.get(i);
+            rows[i] = p.displayLabel() + " (" + p.timezone + ")";
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle("शहर चुनें (Select Match)")
+                .setItems(rows, (d, which) -> {
+                    LocationStore.Place p = results.get(which);
+                    LocationStore.save(this, p);
+                    panel.updatePlace(p);
+                    Toast.makeText(this, "स्थान सेट किया गया: " + p.displayLabel(), Toast.LENGTH_SHORT).show();
+                })
+                .show();
     }
 
-    private void autoDetectLocation(boolean showToast) {
-        if (showToast) {
-            Toast.makeText(this, "वर्तमान स्थान खोजा जा रहा है (Detecting location)...", Toast.LENGTH_SHORT).show();
-        }
-        io.execute(() -> {
-            LocationStore.Place detected;
-            try {
-                detected = LocationStore.autoDetectOnline();
-            } catch (Exception e) {
-                detected = null;
-            }
-            LocationStore.Place result = detected;
-            main.post(() -> {
-                if (isDestroyed()) return;
-                if (result != null) {
-                    LocationStore.save(this, result);
-                    panel.updatePlace(result);
-                    if (showToast) {
-                        Toast.makeText(this, "स्थान मिला: " + result.displayLabel(), Toast.LENGTH_SHORT).show();
+    private void showManualCoordinatesInput() {
+        LocationStore.Place current = LocationStore.load(this);
+
+        EditText nameInput = new EditText(this);
+        nameInput.setSingleLine(true);
+        nameInput.setHint("स्थान का नाम (Optional Name, e.g. My City)");
+        nameInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+
+        EditText latInput = new EditText(this);
+        latInput.setSingleLine(true);
+        latInput.setHint("अक्षांश / Latitude (-90 to 90, e.g. 25.3176)");
+        latInput.setInputType(InputType.TYPE_CLASS_NUMBER
+                | InputType.TYPE_NUMBER_FLAG_DECIMAL
+                | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        latInput.setText(String.format(Locale.US, "%.4f", current.latitude));
+
+        EditText lonInput = new EditText(this);
+        lonInput.setSingleLine(true);
+        lonInput.setHint("देशांतर / Longitude (-180 to 180, e.g. 82.9739)");
+        lonInput.setInputType(InputType.TYPE_CLASS_NUMBER
+                | InputType.TYPE_NUMBER_FLAG_DECIMAL
+                | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        lonInput.setText(String.format(Locale.US, "%.4f", current.longitude));
+
+        int pad = Math.round(24 * getResources().getDisplayMetrics().density);
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(pad, pad / 2, pad, 0);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        box.addView(nameInput, lp);
+        box.addView(latInput, lp);
+        box.addView(lonInput, lp);
+
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle("🧭 अक्षांश / देशांतर दर्ज करें (Manual Coordinates)")
+                .setView(box)
+                .setPositiveButton("सहेजें (Save)", (d, w) -> {
+                    double lat;
+                    double lon;
+                    try {
+                        lat = Double.parseDouble(latInput.getText().toString().trim());
+                        lon = Double.parseDouble(lonInput.getText().toString().trim());
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(this, "अमान्य संख्या — कृपया सही अक्षांश/देशांतर लिखें", Toast.LENGTH_LONG).show();
+                        return;
                     }
-                } else if (showToast) {
-                    Toast.makeText(this, "स्वतः स्थान नहीं मिल सका — कृपया शहर चुनें", Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+                    if (Double.isNaN(lat) || Double.isNaN(lon)
+                            || lat < -90.0 || lat > 90.0 || lon < -180.0 || lon > 180.0) {
+                        Toast.makeText(this, "अक्षांश (-90..90) और देशांतर (-180..180) के भीतर होना चाहिए", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    String customName = nameInput.getText().toString().trim();
+                    if (customName.isEmpty()) {
+                        customName = String.format(Locale.US, "%.2f°, %.2f°", lat, lon);
+                    }
+                    String tz = ZoneId.systemDefault().getId();
+                    LocationStore.Place custom = new LocationStore.Place(
+                            customName,
+                            String.format(Locale.US, "%.4f, %.4f", lat, lon),
+                            lat,
+                            lon,
+                            tz
+                    );
+                    LocationStore.save(this, custom);
+                    panel.updatePlace(custom);
+                    Toast.makeText(this, "स्थान सेट किया गया: " + custom.displayLabel(), Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("रद्द करें (Cancel)", null)
+                .show();
+        latInput.requestFocus();
     }
 }

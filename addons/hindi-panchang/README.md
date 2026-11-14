@@ -16,7 +16,9 @@ A modern, sacred-themed Hindu Lunar Panchang and Vikram Samvat calendar module-c
    - Three circular dock icons below the calendar: **`सुविचार`** (Daily Thought), **`पंचांग`** (Full Panchang: Tithi, Nakshatra, Yoga, Karana, Rahu Kaal), and **`व्रत/पर्व`** (Monthly Fasting & Festivals).
    - Minimal circular icon buttons (`✕` Close, `↻` Refresh) keeping UI clean and clutter-free.
    - Modals open as frosted glass overlays with D-pad focus locked inside the active card.
-4. **Optional Ambient Screensaver:**
+4. **Offline Location Selection:**
+   - Bundled list of 70+ Indian and international cities (with offline search/filter) plus manual latitude and longitude entry (using the TV's system timezone) for accurate local sunrise, sunset, and Tithi timings.
+5. **Optional Ambient Screensaver:**
    - Leanback `DreamService` (`PanchangDream`) drifting the Hindu date, Vikram Samvat year, and sacred quotes during TV standby.
 
 ## Setup
@@ -37,11 +39,7 @@ On Home, approve **Hindi Panchang** when the launcher prompts about its card, or
 
 ## Permissions
 
-| Permission | Why |
-|---|---|
-| `INTERNET` | Optional IP-based city detection (`ipwho.is`) and Open-Meteo geocoding search for accurate sunrise, sunset, and solar Tithi calculations. No telemetry, ads, or background polling. |
-
-The optional screensaver requires Android's `BIND_DREAM_SERVICE` binding restriction, which is not an app-granted permission.
+None requested. Runs completely offline on TV without any network access, background services, analytics, or user tracking. The optional screensaver requires Android's `BIND_DREAM_SERVICE` binding restriction, which is not an app-granted permission.
 
 ## Artwork and licence
 

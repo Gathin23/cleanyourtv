@@ -3,32 +3,20 @@ package com.gathin.hindipanchang;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * Manages the user's selected city, coordinates, timezone, and language preference.
+ * Manages the user's selected city, coordinates, timezone, and language preference completely offline.
  * Supports:
- * 1. Offline preset cities (India & world) so the calendar always works without internet.
- * 2. Live city search via Open-Meteo's free no-key Geocoding API (same as the Weather add-on).
- * 3. Automatic IP-based location detection via ipwho.is.
+ * 1. A comprehensive bundled list of Indian & international cities for accurate sunrise/sunset.
+ * 2. Offline search filtering across the bundled city list.
+ * 3. Manual latitude, longitude, and custom label entry.
  */
 final class LocationStore {
     private static final String PREFS = "panchang_prefs";
-    private static final int TIMEOUT_MS = 6_000;
 
     static final int LANG_BILINGUAL = 0; // हिन्दी + English
     static final int LANG_HINDI = 1;     // हिन्दी (संस्कृत)
@@ -62,31 +50,79 @@ final class LocationStore {
     }
 
     static final Place[] PRESETS = new Place[]{
+        // Major Indian Cities & Sacred Panchang Centers
         new Place("New Delhi", "Delhi, India", 28.6139, 77.2090, "Asia/Kolkata"),
         new Place("Varanasi (काशी)", "Uttar Pradesh, India", 25.3176, 82.9739, "Asia/Kolkata"),
         new Place("Ujjain (उज्जैन)", "Madhya Pradesh, India", 23.1765, 75.7885, "Asia/Kolkata"),
         new Place("Ayodhya (अयोध्या)", "Uttar Pradesh, India", 26.7922, 82.1998, "Asia/Kolkata"),
         new Place("Prayagraj (प्रयागराज)", "Uttar Pradesh, India", 25.4358, 81.8463, "Asia/Kolkata"),
         new Place("Haridwar (हरिद्वार)", "Uttarakhand, India", 29.9457, 78.1642, "Asia/Kolkata"),
+        new Place("Rishikesh (ऋषिकेश)", "Uttarakhand, India", 30.0869, 78.2676, "Asia/Kolkata"),
+        new Place("Mathura (मथुरा)", "Uttar Pradesh, India", 27.4924, 77.6737, "Asia/Kolkata"),
+        new Place("Puri (पुरी)", "Odisha, India", 19.8135, 85.8312, "Asia/Kolkata"),
+        new Place("Tirupati (तिरुपति)", "Andhra Pradesh, India", 13.6288, 79.4192, "Asia/Kolkata"),
+        new Place("Dwarka (द्वारका)", "Gujarat, India", 22.2442, 68.9685, "Asia/Kolkata"),
+        new Place("Nashik (नाशिक)", "Maharashtra, India", 19.9975, 73.7898, "Asia/Kolkata"),
+        new Place("Madurai (मदुरै)", "Tamil Nadu, India", 9.9252, 78.1198, "Asia/Kolkata"),
+        new Place("Amritsar (अमृतसर)", "Punjab, India", 31.6340, 74.8723, "Asia/Kolkata"),
         new Place("Mumbai", "Maharashtra, India", 19.0760, 72.8777, "Asia/Kolkata"),
-        new Place("Jaipur", "Rajasthan, India", 26.9124, 75.7873, "Asia/Kolkata"),
-        new Place("Ahmedabad", "Gujarat, India", 23.0225, 72.5714, "Asia/Kolkata"),
-        new Place("Lucknow", "Uttar Pradesh, India", 26.8467, 80.9462, "Asia/Kolkata"),
-        new Place("Patna", "Bihar, India", 25.5941, 85.1376, "Asia/Kolkata"),
-        new Place("Kolkata", "West Bengal, India", 22.5726, 88.3639, "Asia/Kolkata"),
         new Place("Bengaluru", "Karnataka, India", 12.9716, 77.5946, "Asia/Kolkata"),
         new Place("Hyderabad", "Telangana, India", 17.3850, 78.4867, "Asia/Kolkata"),
         new Place("Chennai", "Tamil Nadu, India", 13.0827, 80.2707, "Asia/Kolkata"),
+        new Place("Kolkata", "West Bengal, India", 22.5726, 88.3639, "Asia/Kolkata"),
         new Place("Pune", "Maharashtra, India", 18.5204, 73.8567, "Asia/Kolkata"),
+        new Place("Ahmedabad", "Gujarat, India", 23.0225, 72.5714, "Asia/Kolkata"),
+        new Place("Jaipur", "Rajasthan, India", 26.9124, 75.7873, "Asia/Kolkata"),
+        new Place("Lucknow", "Uttar Pradesh, India", 26.8467, 80.9462, "Asia/Kolkata"),
+        new Place("Kanpur", "Uttar Pradesh, India", 26.4499, 80.3319, "Asia/Kolkata"),
+        new Place("Agra", "Uttar Pradesh, India", 27.1767, 78.0081, "Asia/Kolkata"),
+        new Place("Patna", "Bihar, India", 25.5941, 85.1376, "Asia/Kolkata"),
+        new Place("Gaya", "Bihar, India", 24.7914, 85.0002, "Asia/Kolkata"),
         new Place("Bhopal", "Madhya Pradesh, India", 23.2599, 77.4126, "Asia/Kolkata"),
         new Place("Indore", "Madhya Pradesh, India", 22.7196, 75.8577, "Asia/Kolkata"),
-        new Place("Chandigarh", "India", 30.7333, 76.7794, "Asia/Kolkata"),
+        new Place("Jabalpur", "Madhya Pradesh, India", 23.1815, 79.9864, "Asia/Kolkata"),
+        new Place("Nagpur", "Maharashtra, India", 21.1458, 79.0882, "Asia/Kolkata"),
+        new Place("Surat", "Gujarat, India", 21.1702, 72.8311, "Asia/Kolkata"),
+        new Place("Vadodara", "Gujarat, India", 22.3072, 73.1812, "Asia/Kolkata"),
+        new Place("Rajkot", "Gujarat, India", 22.3039, 70.8022, "Asia/Kolkata"),
+        new Place("Jodhpur", "Rajasthan, India", 26.2389, 73.0243, "Asia/Kolkata"),
+        new Place("Udaipur", "Rajasthan, India", 24.5854, 73.7125, "Asia/Kolkata"),
+        new Place("Chandigarh", "Chandigarh, India", 30.7333, 76.7794, "Asia/Kolkata"),
+        new Place("Ludhiana", "Punjab, India", 30.9010, 75.8573, "Asia/Kolkata"),
+        new Place("Dehradun", "Uttarakhand, India", 30.3165, 78.0322, "Asia/Kolkata"),
+        new Place("Shimla", "Himachal Pradesh, India", 31.1048, 77.1734, "Asia/Kolkata"),
+        new Place("Jammu", "Jammu & Kashmir, India", 32.7266, 74.8570, "Asia/Kolkata"),
+        new Place("Srinagar", "Jammu & Kashmir, India", 34.0837, 74.7973, "Asia/Kolkata"),
+        new Place("Ranchi", "Jharkhand, India", 23.3441, 85.3096, "Asia/Kolkata"),
+        new Place("Bhubaneswar", "Odisha, India", 20.2961, 85.8245, "Asia/Kolkata"),
+        new Place("Raipur", "Chhattisgarh, India", 21.2514, 81.6296, "Asia/Kolkata"),
+        new Place("Guwahati", "Assam, India", 26.1445, 91.7362, "Asia/Kolkata"),
+        new Place("Siliguri", "West Bengal, India", 26.7271, 88.3953, "Asia/Kolkata"),
+        new Place("Visakhapatnam", "Andhra Pradesh, India", 17.6868, 83.2185, "Asia/Kolkata"),
+        new Place("Vijayawada", "Andhra Pradesh, India", 16.5062, 80.6480, "Asia/Kolkata"),
+        new Place("Mysuru", "Karnataka, India", 12.2958, 76.6394, "Asia/Kolkata"),
+        new Place("Mangaluru", "Karnataka, India", 12.9141, 74.8560, "Asia/Kolkata"),
+        new Place("Coimbatore", "Tamil Nadu, India", 11.0168, 76.9558, "Asia/Kolkata"),
+        new Place("Kochi", "Kerala, India", 9.9312, 76.2673, "Asia/Kolkata"),
+        new Place("Thiruvananthapuram", "Kerala, India", 8.5241, 76.9366, "Asia/Kolkata"),
+        new Place("Panaji", "Goa, India", 15.4909, 73.8278, "Asia/Kolkata"),
+        // International Cities
+        new Place("Kathmandu", "Nepal", 27.7172, 85.3240, "Asia/Kathmandu"),
+        new Place("Dubai", "UAE", 25.2048, 55.2708, "Asia/Dubai"),
+        new Place("Singapore", "Singapore", 1.3521, 103.8198, "Asia/Singapore"),
+        new Place("London", "United Kingdom", 51.5074, -0.1278, "Europe/London"),
+        new Place("New York", "New York, USA", 40.7128, -74.0060, "America/New_York"),
         new Place("Chicago", "Illinois, USA", 41.8781, -87.6298, "America/Chicago"),
         new Place("Dallas", "Texas, USA", 32.7767, -96.7970, "America/Chicago"),
-        new Place("New York", "New York, USA", 40.7128, -74.0060, "America/New_York"),
+        new Place("Houston", "Texas, USA", 29.7604, -95.3698, "America/Chicago"),
+        new Place("Atlanta", "Georgia, USA", 33.7490, -84.3880, "America/New_York"),
         new Place("San Francisco", "California, USA", 37.7749, -122.4194, "America/Los_Angeles"),
-        new Place("London", "United Kingdom", 51.5074, -0.1278, "Europe/London"),
-        new Place("Toronto", "Ontario, Canada", 43.6532, -79.3832, "America/Toronto")
+        new Place("Seattle", "Washington, USA", 47.6062, -122.3321, "America/Los_Angeles"),
+        new Place("Toronto", "Ontario, Canada", 43.6532, -79.3832, "America/Toronto"),
+        new Place("Vancouver", "BC, Canada", 49.2827, -123.1207, "America/Vancouver"),
+        new Place("Sydney", "NSW, Australia", -33.8688, 151.2093, "Australia/Sydney"),
+        new Place("Melbourne", "VIC, Australia", -37.8136, 144.9631, "Australia/Melbourne"),
+        new Place("Auckland", "New Zealand", -36.8485, 174.7633, "Pacific/Auckland")
     };
 
     private LocationStore() { }
@@ -109,14 +145,14 @@ final class LocationStore {
             String tz = sp.getString("tz", ZoneId.systemDefault().getId());
             return new Place(name, detail, lat, lon, tz);
         }
-        // Smart default based on device timezone before auto-detect completes
+        // Smart default based on device timezone
         String sysTz = ZoneId.systemDefault().getId();
         if (sysTz.contains("Chicago") || sysTz.contains("Central")) {
-            return new Place("Central Time (Auto)", "USA", 38.0, -90.0, sysTz);
+            return new Place("Central Time", "USA", 38.0, -90.0, sysTz);
         } else if (sysTz.contains("New_York") || sysTz.contains("Eastern")) {
-            return new Place("Eastern Time (Auto)", "USA", 40.7128, -74.0060, sysTz);
+            return new Place("Eastern Time", "USA", 40.7128, -74.0060, sysTz);
         } else if (sysTz.contains("Los_Angeles") || sysTz.contains("Pacific")) {
-            return new Place("Pacific Time (Auto)", "USA", 37.7749, -122.4194, sysTz);
+            return new Place("Pacific Time", "USA", 37.7749, -122.4194, sysTz);
         }
         return PRESETS[0]; // New Delhi default
     }
@@ -141,63 +177,17 @@ final class LocationStore {
         return next;
     }
 
-    /** Searches Open-Meteo geocoding API for up to 6 matching cities. */
-    static List<Place> searchOnline(String query) throws IOException, JSONException {
-        String url = "https://geocoding-api.open-meteo.com/v1/search?count=6&format=json&name="
-                + URLEncoder.encode(query.trim(), "UTF-8") + "&language=en";
-        JSONObject reply = getJson(url);
+    /** Filters bundled cities offline by matching city name or region/state/country. */
+    static List<Place> searchOffline(String query) {
+        String q = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         List<Place> out = new ArrayList<>();
-        JSONArray results = reply.optJSONArray("results");
-        if (results == null) return out;
-        for (int i = 0; i < results.length(); i++) {
-            JSONObject r = results.getJSONObject(i);
-            StringBuilder detail = new StringBuilder(r.optString("admin1"));
-            String country = r.optString("country");
-            if (!country.isEmpty()) detail.append(detail.length() > 0 ? ", " : "").append(country);
-            String tz = r.optString("timezone", ZoneId.systemDefault().getId());
-            out.add(new Place(
-                    r.getString("name"),
-                    detail.toString(),
-                    r.getDouble("latitude"),
-                    r.getDouble("longitude"),
-                    tz
-            ));
+        if (q.isEmpty()) return out;
+        for (Place p : PRESETS) {
+            if (p.name.toLowerCase(Locale.ROOT).contains(q)
+                    || (p.detail != null && p.detail.toLowerCase(Locale.ROOT).contains(q))) {
+                out.add(p);
+            }
         }
         return out;
     }
-
-    /** Auto-detects current city, coordinates, and timezone from IP (ipwho.is). */
-    static Place autoDetectOnline() throws IOException, JSONException {
-        JSONObject r = getJson("https://ipwho.is/");
-        if (!r.optBoolean("success", true)) return null;
-        String city = r.optString("city", "");
-        if (city.isEmpty()) return null;
-        String region = r.optString("region", "");
-        String country = r.optString("country", "");
-        StringBuilder detail = new StringBuilder(region);
-        if (!country.isEmpty()) detail.append(detail.length() > 0 ? ", " : "").append(country);
-        double lat = r.getDouble("latitude");
-        double lon = r.getDouble("longitude");
-        String tz = ZoneId.systemDefault().getId();
-        JSONObject tzObj = r.optJSONObject("timezone");
-        if (tzObj != null && !tzObj.optString("id").isEmpty()) {
-            tz = tzObj.optString("id");
-        }
-        return new Place(city, detail.toString(), lat, lon, tz);
-    }
-
-    private static JSONObject getJson(String urlStr) throws IOException, JSONException {
-        HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
-        conn.setConnectTimeout(TIMEOUT_MS);
-        conn.setReadTimeout(TIMEOUT_MS);
-        try (InputStream in = conn.getInputStream()) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[4096];
-            for (int n; (n = in.read(buf)) != -1; ) out.write(buf, 0, n);
-            return new JSONObject(new String(out.toByteArray(), StandardCharsets.UTF_8));
-        } finally {
-            conn.disconnect();
-        }
-    }
 }
-
