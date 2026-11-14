@@ -1,0 +1,6 @@
+{
+  "tv": "realme Smart TV (SW4H_FF, Skyworth board, MediaTek m7332)",
+  "os": "Android TV 11",
+  "brand": "realme",
+  "notes": "Skyworth daily play, ACR, e-POP player, shop customizer, QJY browser, speedchannels, partner apps; Google feedback, recommendation rows, calendar leftovers; streaming apps, Assistant, Chromecast, USB player kept; `com.mediatek.partner.netflix` kept for remote hotkeys (`KEYCODE_YOUTUBE`, `KEYCODE_PRIMEVIDEO`); Live TV is `com.smartdevice.livetv`"
+}

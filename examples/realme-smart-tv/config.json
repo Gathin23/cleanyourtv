@@ -1,0 +1,15 @@
+{
+  "columns": 4,
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "in.startv.hotstar"
+  ],
+  "hidden_apps": [
+    "com.smartdevice.livetv",
+    "com.mediatek.wwtv.tvcenter",
+    "com.mitv.gallery"
+  ],
+  "live_tv_package": "com.smartdevice.livetv"
+}
