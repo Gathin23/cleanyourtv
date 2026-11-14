@@ -122,6 +122,12 @@ def prepare(path, out_path, size, brightness, gradient, quality, max_kb):
 
 
 def main(argv=None):
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     parser = argparse.ArgumentParser(description="Resize and darken photos for the launcher's wallpaper folder.")
     parser.add_argument("source", help="folder with your photos")
     parser.add_argument("target", help="folder to write 01.jpg, 02.jpg, ... into (created if missing)")
