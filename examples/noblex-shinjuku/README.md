@@ -32,14 +32,6 @@ it stop with `AudioTrack init failed`. What works: enabling a non-offloadable ef
 plays. Android invalidates the offloaded track (`AudioTrack write failed: -6` in the app) and media3 recovers by
 reopening it as PCM 5.1 on the `AudioOut_D` mixer thread, after a short buffering pause.
 
-## A workaround for apps
-
-[Digital Volume](https://github.com/JPabloLazo/android-tv-digital-volume) is a small separate app built on this TV.
-It puts a `DynamicsProcessing` gain on the global output mix (session 0), which reaches apps that play PCM, moves offloaded Disney+ tracks onto the mixer as above, reads each volume key press from the
-system's volume broadcasts and puts `STREAM_MUSIC` straight back to 0. In apps the remote then controls the optical
-output and the TV speakers stay silent; on HDMI, AV and Live TV it either hands the keys back to the TV or leaves
-the TV speakers off. It uses an accessibility service (window events only) and has no internet permission.
-
 ## Other notes
 
 - This set came with `com.google.android.tungsten.setupwraith` installed, but it does not claim Home: once
