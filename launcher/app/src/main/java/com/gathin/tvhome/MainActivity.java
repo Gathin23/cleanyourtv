@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -3362,16 +3363,25 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                (sources & InputDevice.SOURCE_GAMEPAD) != 0;
     }
 
+    /** isExternal() is public from Android 10 and hidden before it. Below 10 it is read by reflection, or an
+     *  Android 9 box's built-in cec_input and aml_keypad count as a remote and the prompt never comes. If the
+     *  read fails, the device counts as external: a missed prompt, never a wrong one. */
+    @SuppressLint({"NewApi", "DiscouragedPrivateApi", "SoonBlockedPrivateApi"})
+    private static boolean isExternal(InputDevice dev) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return dev.isExternal();
+        try {
+            return (Boolean) InputDevice.class.getMethod("isExternal").invoke(dev);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return true;
+        }
+    }
+
     static boolean hasConnectedRemoteOrKeyboard() {
         int[] ids = InputDevice.getDeviceIds();
         for (int id : ids) {
             InputDevice dev = InputDevice.getDevice(id);
             if (dev == null) continue;
-            boolean isExternal = true;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                isExternal = dev.isExternal();
-            }
-            if (isRemoteOrKeyboard(dev.getSources(), isExternal, dev.isVirtual())) {
+            if (isRemoteOrKeyboard(dev.getSources(), isExternal(dev), dev.isVirtual())) {
                 return true;
             }
         }
