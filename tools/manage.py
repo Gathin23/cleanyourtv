@@ -278,6 +278,7 @@ def number_in_range(key, item, parsed, text):
 # The Keys-table cell of a list the launcher reads with intArray() - `[83, 176]` for the remote buttons those
 # keys add. A list with anything else in it is answered with the built-in default, not the list.
 KEYCODES = "list of keycodes"
+JAVA_INT_MAX = 2147483647
 
 
 def keycode_problem(values):
@@ -297,6 +298,10 @@ def keycode_problem(values):
             return f"{entry} is not a whole number (the launcher reads it as {int(entry)})"
         if int(entry) < 1:
             return f"{int(entry)} is below 1"
+        if int(entry) > JAVA_INT_MAX:
+            # intValue() keeps the low 32 bits: 4294967297 becomes keycode 1, 4294967296 becomes 0.
+            wrapped = (int(entry) + 2**31) % 2**32 - 2**31
+            return f"{int(entry)} is above {JAVA_INT_MAX}, the largest the launcher reads; it would read {wrapped}"
     return None
 
 
@@ -681,9 +686,9 @@ def value_as(key, item, text):
     if (item.get("type") or "").strip() == KEYCODES:
         problem = keycode_problem(parsed)
         if problem:
-            sys.exit(f"{key} takes {KEYCODES}, so every entry has to be a whole number of at least 1: {problem}, "
-                     f"and the launcher ignores the whole list when one entry is not, so those remote buttons "
-                     f"would do nothing. Nothing was written or pushed.")
+            sys.exit(f"{key} takes {KEYCODES}, so every entry has to be a whole number from 1 to {JAVA_INT_MAX}: "
+                     f"{problem}, and the launcher ignores the whole list when one entry is below 1, or maps another "
+                     f"button, so those remote buttons would not do what you set. Nothing was written or pushed.")
     if (item.get("type") or "").strip() == APP_KEYS:
         problem = app_keys_problem(parsed)
         if problem:

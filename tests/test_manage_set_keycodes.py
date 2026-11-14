@@ -68,6 +68,18 @@ class KeycodeListTest(unittest.TestCase):
         self.assertIsNone(self.written(), "a refused list must not touch the theme")
         self.push.assert_not_called()
 
+    def test_an_entry_above_the_launcher_int_range_is_refused(self):
+        # intValue() wraps: 4294967297 would be read as keycode 1, a different key.
+        for entry, read in (("2147483648", "-2147483648"), ("4294967296", "0"), ("4294967297", "1")):
+            with self.subTest(entry=entry):
+                refusal = self.set_key("settings_key_keycodes", f"[83, {entry}]")
+                self.assertIsNotNone(refusal, f"{entry} was written, and intValue() wraps it")
+                self.assertIn(f"{entry} is above 2147483647", refusal)
+                self.assertIn(f"it would read {read},", refusal)
+                self.assertIsNone(self.written())
+                self.push.assert_not_called()
+        self.assertIsNone(self.set_key("settings_key_keycodes", "[2147483647]"))
+
     def test_a_list_of_words_is_refused(self):
         # The key is a list of keycodes, not of the constants' names: intArray() has no answer for a String.
         refusal = self.set_key("input_key_keycodes", '["KEYCODE_TV"]')
