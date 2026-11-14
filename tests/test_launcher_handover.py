@@ -48,6 +48,18 @@ state = load()
 
 
 def run(command):
+    # The stock_home_redirect probe. True is this launcher installed with its HomeKeyService on, False not
+    # installed, and "no-helper" installed with the helper off; "lost" is a client that fails on this one
+    # read, "empty" a reply with nothing in it, and "probe-failed" a read on the TV that failed.
+    if "pm list packages com.gathin.tvhome" in command and "enabled_accessibility_services" in command:
+        answer = state["redirect"]
+        if answer == "lost":
+            raise LinkLost()
+        if answer == "empty":
+            return ""
+        if answer in ("probe-failed", "no-helper"):
+            return answer + "\n"
+        return "redirect\n" if answer else "not-installed\n"
     if "pm install" in command:
         return "Success\n"
     # A TV that never held WRITE_SECURE_SETTINGS: the revoke step finds it denied. The step itself is run
@@ -141,7 +153,7 @@ class HandoverTest(unittest.TestCase):
         self.home = self.base / "home"
         self.home.mkdir()
 
-    def handover(self, **overrides):
+    def handover(self, stock_launcher=None, home_key_service=None, **overrides):
         state = {
             "stock_home": STOCK_HOME,
             "home": STOCK_HOME,
@@ -152,6 +164,7 @@ class HandoverTest(unittest.TestCase):
             "enable_fails": False,
             "drop_after_handover": False,
             "link_lost": False,
+            "redirect": False,
             "commands": [],
         }
         state.update(overrides)
@@ -161,6 +174,10 @@ class HandoverTest(unittest.TestCase):
         env.update(TV_HOST="192.168.1.50", FAKE_TV_STATE=str(self.state_path),
                    HOME=str(self.home), JAVA_HOME=str(self.base / "java"),
                    ANDROID_HOME=str(self.base / "android-sdk"))
+        if stock_launcher is not None:
+            env["STOCK_LAUNCHER"] = stock_launcher
+        if home_key_service is not None:
+            env["HOME_KEY_SERVICE"] = home_key_service
         if os.name != "posix" or not shutil.which("bash"):
             raise unittest.SkipTest("build-and-install.sh is a POSIX script; it needs bash")
         result = subprocess.run(
@@ -222,6 +239,86 @@ class HandoverTest(unittest.TestCase):
         self.assertIn("recovery is incomplete", result.stderr)
         self.assertTrue(any("pm enable --user 0" in c for c in state["commands"]))
         self.assertIsNotNone(self.record())
+
+    def test_upgrade_over_stock_home_redirect_leaves_stock_launcher_enabled(self):
+        # The stock launcher owns Home and this launcher's HomeKeyService is on: a rerun to upgrade the
+        # launcher on a stock_home_redirect TV, where disabling the stock launcher breaks the redirect.
+        # set_home_fails: as on the sabrina (Google TV 14), where set-home-activity answers Success and the
+        # stock launcher keeps Home. The script must not count that as a failed handover and stop before
+        # HomeKeyService is turned back on, which a run there did.
+        result, state = self.handover(redirect=True, set_home_fails=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("stock_home_redirect", result.stdout)
+        self.assertIn("Stock launcher: none", result.stdout)
+        self.assertIn("Home still resolves to " + STOCK_HOME, result.stdout)
+        self.assertFalse(any("set-home-activity" in c for c in state["commands"]),
+                         "Home is not handed over on a redirect TV")
+        self.assertEqual(state["home"], STOCK_HOME)
+        self.assertFalse(any("pm disable-user" in c for c in state["commands"]))
+        self.assertFalse(state["stock_disabled"])
+        # The reinstall drops the helper, and on this setup the helper is the redirect.
+        self.assertTrue(any("echo HomeKeyService enabled" in c for c in state["commands"]),
+                        "HomeKeyService is put back after the reinstall")
+
+    def test_redirect_tv_with_home_key_service_0_leaves_the_helper_off(self):
+        result, state = self.handover(redirect=True, home_key_service="0", set_home_fails=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(state["stock_disabled"])
+        self.assertFalse(any("echo HomeKeyService enabled" in c for c in state["commands"]))
+
+    def test_stock_launcher_named_on_a_redirect_tv_is_still_disabled(self):
+        result, state = self.handover(stock_launcher="com.google.android.tvlauncher", redirect=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(state["stock_disabled"])
+        self.assertFalse(any("enabled_accessibility_services" in c and "pm list packages" in c
+                             for c in state["commands"]), "a STOCK_LAUNCHER given is not second-guessed")
+
+    def test_installed_launcher_with_its_helper_off_stops_before_the_install(self):
+        # A redirect TV whose helper an earlier upgrade dropped: the old probe said no-redirect here, and the
+        # script then disabled the stock launcher the redirect needs.
+        result, state = self.handover(redirect="no-helper")
+        self.assert_stopped_before_install(result, state)
+        self.assertIn("STOCK_LAUNCHER=none HOME_KEY_SERVICE=1", result.stderr)
+
+    def test_stock_launcher_none_by_hand_on_a_redirect_tv_keeps_home_and_the_helper(self):
+        # STOCK_LAUNCHER=none as debloat-keep-cast.txt says to pass it: the same outcome as the detected case.
+        result, state = self.handover(stock_launcher="none", redirect=True, set_home_fails=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Home still resolves to " + STOCK_HOME, result.stdout)
+        self.assertFalse(any("set-home-activity" in c for c in state["commands"]))
+        self.assertTrue(any("echo HomeKeyService enabled" in c for c in state["commands"]))
+        self.assertFalse(state["stock_disabled"])
+
+    def test_stock_launcher_none_by_hand_elsewhere_still_hands_home_over(self):
+        # A list that keeps its stock launcher enabled but wants this launcher as Home (the Xiaomi CN lists).
+        result, state = self.handover(stock_launcher="none")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(any("set-home-activity" in c and "resolve-activity" not in c
+                            for c in state["commands"]))
+        self.assertEqual(state["home"], NEW_HOME)
+        self.assertFalse(state["stock_disabled"])
+        self.assertFalse(any("echo HomeKeyService enabled" in c for c in state["commands"]))
+
+    def assert_stopped_before_install(self, result, state):
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Nothing was installed or disabled", result.stderr)
+        self.assertFalse(any("pm install" in c for c in state["commands"]))
+        self.assertFalse(any("pm disable-user" in c for c in state["commands"]))
+        self.assertFalse(state["stock_disabled"])
+
+    def test_redirect_probe_that_fails_stops_before_the_install(self):
+        # A failed read is not evidence of a TV without the redirect: guessing so would disable the stock
+        # launcher on exactly the TVs this check protects.
+        result, state = self.handover(redirect="lost")
+        self.assert_stopped_before_install(result, state)
+
+    def test_empty_redirect_reply_stops_before_the_install(self):
+        result, state = self.handover(redirect="empty")
+        self.assert_stopped_before_install(result, state)
+
+    def test_redirect_read_that_fails_on_the_tv_stops_before_the_install(self):
+        result, state = self.handover(redirect="probe-failed")
+        self.assert_stopped_before_install(result, state)
 
 
 if __name__ == "__main__":
