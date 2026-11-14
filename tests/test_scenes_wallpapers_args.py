@@ -184,6 +184,19 @@ class ScenesWallpapersArgumentsTest(unittest.TestCase):
             self.assertIn('width="1280"', head, f"{name} is not 1280 px wide")
 
 
+    def test_an_output_folder_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        out_dir = self.cwd / ("sc_" + chr(0x5199) + chr(0x771f))
+        raw = io.BytesIO()
+        console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = console
+        scenes_wallpapers.write(str(out_dir))
+        console.flush()
+        self.assertEqual(len(caption_names()), len(list(out_dir.glob("*.svg"))))
+        self.assertIn("scenes written to", raw.getvalue().decode("cp1252"))
+        self.assertIn("sc_??", raw.getvalue().decode("cp1252"))
+
     def test_render_failure_preserves_an_existing_or_missing_scene(self):
         name = caption_names()[0] + ".svg"
         original = b'<svg xmlns="http://www.w3.org/2000/svg"><title>Saved scene</title></svg>'
