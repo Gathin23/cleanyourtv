@@ -1,0 +1,18 @@
+<resources>
+    <string name="previous">पिछला</string>
+    <string name="today">आज</string>
+    <string name="next">अगला</string>
+    <string name="city">शहर</string>
+    <string name="region">क्षेत्र</string>
+    <string name="screensaver">स्क्रीनसेवर</string>
+    <string name="screensaver_missing">इस टीवी पर स्क्रीनसेवर की सेटिंग उपलब्ध नहीं है।</string>
+    <string name="tithi">तिथि</string>
+    <string name="nakshatra">नक्षत्र</string>
+    <string name="yoga">योग</string>
+    <string name="karana">करण</string>
+    <string name="till">%1$s तक</string>
+    <string name="no_sun">इस अक्षांश पर आज सूर्योदय या सूर्यास्त नहीं है।</string>
+    <string name="sun_times">सूर्योदय %1$s · सूर्यास्त %2$s</string>
+    <string name="place">%1$s · %2$s</string>
+    <string name="heading">%1$s · %2$s %3$s</string>
+</resources>
