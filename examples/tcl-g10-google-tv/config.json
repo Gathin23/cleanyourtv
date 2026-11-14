@@ -1,0 +1,12 @@
+{
+  "live_tv_package": "com.tcl.tv",
+  "app_keys": [
+    "scan:242:com.netflix.ninja",
+    "scan:245:com.google.android.youtube.tv",
+    "scan:752:com.amazon.amazonvideo.livingroom",
+    "scan:365:com.tcl.tv",
+    "scan:652:ignore",
+    "scan:345:ignore",
+    "scan:762:ignore"
+  ]
+}
