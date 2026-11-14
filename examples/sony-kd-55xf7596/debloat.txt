@@ -43,6 +43,16 @@
 # Rebooted twice: everything stayed disabled, MemAvailable up from about 230 MB to about 770 MB after boot.
 # A Projectivy Launcher the owner had installed also answered HOME and was disabled before the launcher went
 # in. Same day only, not lived with for days.
+# Fourth unit, 2026-11-05: 43-inch KD-43XF7596BAEP (EU, same fingerprint, MediaTek mt5891, 2 GB RAM).
+# Tested HOME priority resolution: Android 9 PackageParser clamps non-system priority to 0, so
+# com.gathin.tvhome in /data/app cannot override com.google.android.tvlauncher (priority 2).
+# Disabling the stock launcher via tools/disable.sh (or 'pm disable-user --user 0 com.google.android.tvlauncher')
+# before 'cmd package set-home-activity com.gathin.tvhome/.MainActivity' is required for the physical
+# remote HOME button to resolve to CleanYourTV without accessibility services. Verified via
+# 'cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'.
+# Also verified safe debloat of com.google.android.videos, com.google.android.youtube.tvmusic,
+# com.google.android.tvrecommendations, and com.google.android.play.games for user 0, with YouTube,
+# Chromecast and Live TV (tvx) remaining fully functional.
 # Notes from this firmware:
 # - Android 9 has no topResumedActivity line: check apps and inputs with
 #   `dumpsys activity activities | grep mResumedActivity`, and the input with

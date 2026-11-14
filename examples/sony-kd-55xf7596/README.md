@@ -63,6 +63,30 @@ on its built-in Ethernet. Nothing was disabled before the run and `com.google.an
   restarted, `tools/adb-closed.py` reported 5555 closed.
 - Tested over one evening, not lived with for days.
 
+  ## Fourth unit (43-inch KD-43XF7596BAEP, EU, 2026-11-05)
+
+Same identity, fingerprint and firmware build (`BRAVIA 4K GB ATV3`, device `BRAVIA_ATV3_4K`, product
+`BRAVIA_ATV3_4K_EU`, firmware `PTT1.190515.001.S54 672201`, security patch 2022-01-05) on the 43-inch
+chassis (`KD-43XF7596BAEP`). Board is MediaTek mt5891 (`armeabi-v7a`, 2 GB RAM).
+
+- **HOME Button Priority & Resolution:** On this Android TV 9 (API 28) firmware, running
+  `cmd package set-home-activity com.gathin.tvhome/.MainActivity` returns `Success`, but pressing the physical
+  remote HOME button previously continued opening Google TV Launcher. AOSP's `PackageParser.java` hard-clamps
+  non-system app priorities to `0`, while stock `com.google.android.tvlauncher` declares `priority 2`.
+  Disabling the stock launcher via `tools/disable.sh` (or `pm disable-user --user 0 com.google.android.tvlauncher`)
+  removes the priority 2 candidate from the resolver, allowing `cmd package set-home-activity` to take effect so
+  the physical HOME button opens CleanYourTV with zero latency and without accessibility services.
+- **Verification on Android 9:** Android 9 has no `cmd package get-home-activity` (added in Android 11+).
+  Native verification is done with `cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME`
+  (returns `isDefault=true com.gathin.tvhome/.MainActivity`), and window focus verified with
+  `dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'`.
+- **Debloat & Reboot Check:** Verified safe disabling of `com.google.android.videos`, `com.google.android.youtube.tvmusic`,
+  `com.google.android.tvrecommendations`, and `com.google.android.play.games` for user 0, freeing background RAM
+  on the 2 GB MT5891 while leaving stock YouTube (`com.google.android.youtube.tv`), Chromecast built-in
+  (`com.google.android.apps.mediashell`), Play Store and Play Services untouched. Reboot checked: all disabled
+  packages remained disabled and CleanYourTV resumed cleanly at boot.
+- Live TV tuner (`com.sony.dtv.tvx`), inputs switching, and Kodi 21.3 Omega tested and running cleanly.
+
 ## Kept on purpose
 
 Chromecast, screen mirroring, DLNA, the phone remote, Sony IP control (`webapi.core`, `remoteaccess`) and
