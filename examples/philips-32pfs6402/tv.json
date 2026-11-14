@@ -1,0 +1,6 @@
+{
+  "tv": "Philips 32PFS6402/12 (TP Vision QM164E, QM16XE_F, MediaTek MT5861), France",
+  "os": "Android TV 7.1.2",
+  "brand": "Philips",
+  "notes": "2016 platform left on Android 7.1.2: debloat only, the launcher needs Android 8 (minSdk 26); DAC/GEL analytics, usage and framework loggers, the NetTV ad service, demo, Top Picks, stickers, NetTV store and 13 web apps, TeamViewer QuickSupport; Assistant and Playcast off by choice; Chromecast and updates kept; two packages need `TVINPUT_ALLOW=1`; screenshots come back empty; port 5555 stays open with debugging off, see [notes](philips-32pfs6402/README.md)"
+}
