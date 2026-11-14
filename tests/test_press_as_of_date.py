@@ -236,15 +236,15 @@ class ReaderTest(unittest.TestCase):
 
     def test_each_page_s_clause_parses_to_its_own_day(self):
         expected = {
-            "README.md": (2026, 11, 9),
-            "README.de.md": (2026, 11, 9),
-            "README.es.md": (2026, 11, 9),
-            "README.fr.md": (2026, 11, 9),
-            "README.nl.md": (2026, 11, 9),
-            "README.uk.md": (2026, 11, 9),
-            "README.tr.md": (2026, 11, 9),
-            "README.pt-BR.md": (2026, 11, 9),
-            "README.uz.md": (2026, 11, 9),
+            "README.md": (2026, 11, 14),
+            "README.de.md": (2026, 11, 14),
+            "README.es.md": (2026, 11, 14),
+            "README.fr.md": (2026, 11, 14),
+            "README.nl.md": (2026, 11, 14),
+            "README.uk.md": (2026, 11, 14),
+            "README.tr.md": (2026, 11, 14),
+            "README.pt-BR.md": (2026, 11, 14),
+            "README.uz.md": (2026, 11, 14),
         }
         for name, date in expected.items():
             text = (ROOT / name).read_text(encoding="utf-8")
