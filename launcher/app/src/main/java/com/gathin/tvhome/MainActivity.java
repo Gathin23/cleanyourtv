@@ -2,6 +2,7 @@ package com.gathin.tvhome;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -54,6 +55,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.SoundEffectConstants;
@@ -306,6 +308,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             openStartAppOnWake();
         }
     };
+    /** prompt_remote_pairing: prompt to pair a remote if no external input device is connected. */
+    private boolean promptRemotePairing;
+    private int remotePairingCheckBoot = -1;
+    private final Runnable remotePairingCheck = this::runRemotePairingCheck;
     /** hidden_apps as the adapter sees them (config.xml or a theme's config.json): a hidden app gets no card either. */
     private Set<String> hiddenApps = Collections.emptySet();
     /** library_excluded_apps: packages the App library catalogue never offers. */
@@ -498,6 +504,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         liveTvInputId = cfg.liveTvInputId;
         appLibraryEnabled = cfg.appLibrary;
         tileMenuEnabled = cfg.tileMenu;
+        promptRemotePairing = cfg.promptRemotePairing;
         inputAction = cfg.inputAction;
         inputSources = cfg.inputSources;
         inputUriScheme = cfg.inputUriScheme;
@@ -1120,6 +1127,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 break;
         }
         if (openLiveTvAfterBoot()) return;
+        checkRemotePairingPrompt();
         updateGreeting();
         updatePanel();
         // Back from an app opened from its tile, focus is still on that tile, so the cinematic "Last opened" line kept
@@ -1312,6 +1320,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         RemoteKeys.release(this);
         cancelHoldOk();
         root.removeCallbacks(showIdleClock);
+        handler.removeCallbacks(remotePairingCheck);
         endReorder();   // Home or another app while reordering keeps the order so far
         wallpaperPlayer.stop();
         stopAmbientAnimation();
@@ -3293,6 +3302,121 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (i != null || liveTvAction.isEmpty()) return i;
         Intent byAction = new Intent(liveTvAction).setPackage(liveTvPkg);
         return getPackageManager().resolveActivity(byAction, 0) != null ? byAction : null;
+    }
+
+    /**
+     * Wait for input devices to settle on the first Home of each boot. The result is saved by boot count,
+     * so an activity/process restart cannot turn a temporary startup gap into another pairing prompt.
+     */
+    private void checkRemotePairingPrompt() {
+        if (!promptRemotePairing) return;
+        int boot = OpenOnStart.boot(this);
+        SharedPreferences prefs = getSharedPreferences(OpenOnStart.BOOT_PREFS, MODE_PRIVATE);
+        if (!RemotePairingPrompt.due(boot, prefs.getInt(RemotePairingPrompt.CHECKED_BOOT_KEY, -1))) return;
+        if (hasConnectedRemoteOrKeyboard()) {
+            markRemotePairingChecked(prefs, boot);
+            return;
+        }
+
+        int startedBoot = prefs.getInt(RemotePairingPrompt.STARTED_BOOT_KEY, -1);
+        long startedAt = prefs.getLong(RemotePairingPrompt.STARTED_UPTIME_KEY, -1L);
+        if (startedBoot != boot || startedAt < 0L) {
+            startedAt = SystemClock.elapsedRealtime();
+            if (!prefs.edit()
+                    .putInt(RemotePairingPrompt.STARTED_BOOT_KEY, boot)
+                    .putLong(RemotePairingPrompt.STARTED_UPTIME_KEY, startedAt)
+                    .commit()) {
+                return;
+            }
+        }
+
+        remotePairingCheckBoot = boot;
+        handler.removeCallbacks(remotePairingCheck);
+        handler.postDelayed(remotePairingCheck,
+                RemotePairingPrompt.remainingDelay(startedAt, SystemClock.elapsedRealtime()));
+    }
+
+    private void runRemotePairingCheck() {
+        int boot = OpenOnStart.boot(this);
+        if (boot != remotePairingCheckBoot) return;
+        SharedPreferences prefs = getSharedPreferences(OpenOnStart.BOOT_PREFS, MODE_PRIVATE);
+        if (!RemotePairingPrompt.due(boot, prefs.getInt(RemotePairingPrompt.CHECKED_BOOT_KEY, -1))) return;
+        if (hasConnectedRemoteOrKeyboard()) {
+            markRemotePairingChecked(prefs, boot);
+            return;
+        }
+        if (markRemotePairingChecked(prefs, boot)) launchRemotePairingWizard();
+    }
+
+    private boolean markRemotePairingChecked(SharedPreferences prefs, int boot) {
+        return prefs.edit()
+                .putInt(RemotePairingPrompt.CHECKED_BOOT_KEY, boot)
+                .remove(RemotePairingPrompt.STARTED_BOOT_KEY)
+                .remove(RemotePairingPrompt.STARTED_UPTIME_KEY)
+                .commit();
+    }
+
+    static boolean isRemoteOrKeyboard(int sources, boolean isExternal, boolean isVirtual) {
+        if (isVirtual || !isExternal) return false;
+        return (sources & InputDevice.SOURCE_DPAD) != 0 ||
+               (sources & InputDevice.SOURCE_KEYBOARD) != 0 ||
+               (sources & InputDevice.SOURCE_GAMEPAD) != 0;
+    }
+
+    /** isExternal() is public from Android 10 and hidden before it. Below 10 it is read by reflection, or an
+     *  Android 9 box's built-in cec_input and aml_keypad count as a remote and the prompt never comes. If the
+     *  read fails, the device counts as external: a missed prompt, never a wrong one. */
+    @SuppressLint({"NewApi", "DiscouragedPrivateApi", "SoonBlockedPrivateApi"})
+    private static boolean isExternal(InputDevice dev) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return dev.isExternal();
+        try {
+            return (Boolean) InputDevice.class.getMethod("isExternal").invoke(dev);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return true;
+        }
+    }
+
+    static boolean hasConnectedRemoteOrKeyboard() {
+        int[] ids = InputDevice.getDeviceIds();
+        for (int id : ids) {
+            InputDevice dev = InputDevice.getDevice(id);
+            if (dev == null) continue;
+            if (isRemoteOrKeyboard(dev.getSources(), isExternal(dev), dev.isVirtual())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean launchRemotePairingWizard() {
+        // 1. Xiaomi / Google TV pairing activity (shows animated remote pairing instructions)
+        Intent repair = new Intent("com.google.android.tvsetup.app.REPAIR_REMOTE")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (getPackageManager().resolveActivity(repair, 0) != null) {
+            try {
+                startActivity(repair);
+                return true;
+            } catch (ActivityNotFoundException ignored) {}
+        }
+        // 2. Standard Android TV accessory pairing
+        Intent connect = new Intent("com.google.android.intent.action.CONNECT_INPUT")
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (getPackageManager().resolveActivity(connect, 0) != null) {
+            try {
+                startActivity(connect);
+                return true;
+            } catch (ActivityNotFoundException ignored) {}
+        }
+        // 3. Fallback Bluetooth settings
+        Intent bt = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (getPackageManager().resolveActivity(bt, 0) != null) {
+            try {
+                startActivity(bt);
+                return true;
+            } catch (ActivityNotFoundException ignored) {}
+        }
+        return false;
     }
 
     /** The TV's own source-selection panel, for TVs that have no TvInputManager (TCL Android TV 9): a

@@ -557,8 +557,12 @@
          faint outer glow), rim (the crisp rim alone, no sheen, fill or glow, for a quiet focus over a wallpaper) or
          halo (the rim with a lighter outer glow). Can also be set with "glass_style": "rim" in a theme's config.json. -->
     <string name="glass_style" translatable="false">glass</string>
-
     <!-- Tiles drawn from the app's icon and name instead of its banner (for banners that crop badly). -->
     <string-array name="icon_tiles" translatable="false">
     </string-array>
+    <!-- When true, if no external physical remote, keyboard or gamepad is detected on the first Home of a boot,
+         wait 30 seconds and check again before starting the device pairing wizard (REPAIR_REMOTE or CONNECT_INPUT).
+         The result is remembered for that boot to avoid repeat prompts after activity restarts. Off by default.
+         A theme can also set "prompt_remote_pairing": true in config.json. -->
+    <bool name="prompt_remote_pairing">false</bool>
 </resources>
