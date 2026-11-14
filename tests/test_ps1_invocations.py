@@ -39,9 +39,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Directories the other repository-wide walkers skip: build output, the CI venv, and a person's own
-# backups, screenshots and traces, which are gitignored.
-SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "traces"}
+# Directories the repository-wide walkers skip: build output, the CI venv, and a person's own backups,
+# screenshots, notes, traces and bench results, plus their ADB key - the folders .gitignore keeps out of
+# a checkout. tests/test_walks_skip_ignored_folders.py holds every walker to that list.
+SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
+             "traces", "bench-results", "adbkey"}
 
 SCRIPT_RE = re.compile(r"([A-Za-z0-9_.\\/-]+\.ps1)\b")
 # `-TvHost`, not the second half of `--fix`: a parameter is written with one dash and a letter.

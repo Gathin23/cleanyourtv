@@ -24,8 +24,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# The same directories tests/test_ps1_invocations.py skips: build output, the venv, a person's own files.
-SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "traces"}
+# The walkers' usual skip list: build output, the CI venv, and the folders .gitignore keeps out of a
+# checkout - a person's backups, screenshots, notes, traces, bench results and ADB key.
+SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
+             "traces", "bench-results", "adbkey"}
 
 # `powershell` or `pwsh`, then within the same command `-Command` (or `-c`) and a double-quoted argument.
 COMMAND_RE = re.compile(r"\b(?:powershell|pwsh)(?:\.exe)?\b[^;|&\n]*?\s-(?:command|c)\s+\"([^\"\n]*)\"",
