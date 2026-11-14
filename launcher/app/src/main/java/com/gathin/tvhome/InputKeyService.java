@@ -2,7 +2,11 @@ package com.gathin.tvhome;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.UserManager;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import java.util.Collections;
@@ -36,11 +40,42 @@ public class InputKeyService extends AccessibilityService {
     private GamepadPassthrough gamepads;
     /** The bound helper, for global actions Home's own key path asks for (RemoteKeys). */
     static InputKeyService running;
+    /** Waits for the user to unlock when Android binds this service at boot; null once the config is read. */
+    private BroadcastReceiver unlockReceiver;
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
         running = this;
+        // directBootAware, as HomeKeyService is and for the same reason: Android 11 skips a service that is not
+        // while the user is still locked at boot. Config.load reads credential-protected storage: wait for the unlock.
+        UserManager users = getSystemService(UserManager.class);
+        if (users.isUserUnlocked()) {
+            loadConfig();
+            return;
+        }
+        unlockReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                stopWaitingForUnlock();
+                loadConfig();
+            }
+        };
+        registerReceiver(unlockReceiver, new IntentFilter(Intent.ACTION_USER_UNLOCKED));
+        // The unlock may have happened between the check and the registration.
+        if (users.isUserUnlocked()) {
+            stopWaitingForUnlock();
+            loadConfig();
+        }
+    }
+
+    private void stopWaitingForUnlock() {
+        if (unlockReceiver == null) return;
+        unregisterReceiver(unlockReceiver);
+        unlockReceiver = null;
+    }
+
+    private void loadConfig() {
         // From config.xml or a theme's config.json; theme.sh rebinds this service after a push.
         Config config = Config.load(this);
         // restore_key_services: note that this helper runs, so Home can put it back after a force stop.
@@ -97,6 +132,7 @@ public class InputKeyService extends AccessibilityService {
     public void onDestroy() {
         if (running == this) running = null;
         RemoteKeys.release(this);
+        stopWaitingForUnlock();
         if (gamepads != null) gamepads.stop();
         if (consumeVolumeKeys) VolumeKeys.stop();
         super.onDestroy();
