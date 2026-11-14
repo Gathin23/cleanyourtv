@@ -651,6 +651,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return -1;
     }
 
+    /** Position of the first tile for this package, or -1 when the package has no tile. */
+    int positionOfPackage(String pkg) {
+        if (pkg == null) return -1;
+        for (int i = 0; i < items.size(); i++) {
+            if (pkg.equals(items.get(i).pkg)) return i;
+        }
+        return -1;
+    }
+
     /** Dock slots that hold an app: the whole dock unless some slots are empty. */
     int dockFilled() {
         return emptySlots > 0 ? docked : dockSize;
