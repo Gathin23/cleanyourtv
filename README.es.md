@@ -386,7 +386,7 @@ La contribución más valiosa es la lista de limpieza de aplicaciones de tu tele
 |---|---|
 | **Lista de limpieza de tu televisor** | Es la colaboración más útil: la próxima persona con ese modelo se ahorrará toda la etapa de identificación. |
 | **Launcher y prompt** | Las mejoras en el launcher y los refinamientos para que el prompt resulte más claro son igualmente bienvenidos. |
-| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 243 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
+| **¿Has creado algo a partir de este proyecto?** | Un launcher, una adaptación o un tema: añádelo a [SHOWCASE.md](SHOWCASE.md), que ya reúne 244 proyectos organizados en pantallas de inicio, forks, complementos, herramientas y otras plataformas, con un índice por marca de televisor. |
 
 Las personas cuyo trabajo forma parte de este repositorio:
 
