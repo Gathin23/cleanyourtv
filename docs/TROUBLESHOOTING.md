@@ -626,6 +626,14 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   middleware: `com.cltv.mal`, `com.mediatek.tis`, `com.mediatek.tv.service` and
   `com.mediatek.tv.agent` (the bullet below). The three tools say "core Android or TV middleware
   packages" in that message, so a run that refuses one of the four reads the same way as this one.
+  Android's sdk sandbox is one package that reads like bloat and is not: an AOSP build ships
+  `com.android.sdksandbox`, a Google GMS image `com.google.android.sdksandbox` (`SdkSandboxGoogle.apk`).
+  Android will not finish booting without exactly one of them and says so in logcat —
+  `java.lang.RuntimeException: There should exactly one sdk sandbox package; found 0` from
+  `PackageManagerService.getRequiredSdkSandboxPackageName` — so a list that disables either name leaves
+  the set on the boot animation, with nothing on screen saying why
+  ([#3881](https://github.com/Gathin23/cleanyourtv/issues/3881), on the Android TV 16 / API 36 emulator
+  image). Read a list for both names before applying it.
   If a set is already stuck and still answers ADB, `pm enable` each of those packages and reboot;
   if ADB is gone too, a factory reset from the recovery menu is usually the only way back.
 - **The TV restarts in a loop after a debloat**, seen once, on a Haier H50H5F (Google TV 14,
