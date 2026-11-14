@@ -15,6 +15,19 @@ Nothing is copied in here. The phrase the page's count line must carry is read o
 stated_number(), and the two numbers are proved by running that check over pages written in the test, so a
 checker that stops counting fails this pair instead of leaving the recipe stale.
 
+The step also names the pages that state the number, and that list is what a bump follows. It said "six
+translated front pages" and named seven files - `README.md`, `README.pt-BR.md`, `README.de.md`,
+`README.nl.md`, `README.uk.md`, `README.uz.md` and `README.fr.md` - while the check reads eight: the Spanish
+front page landed with its row already at the count, and the fold-in that bumped it to 243 added
+`README.es.md` to COUNT_PAGES without touching this step. A project added the way the step reads therefore
+left a red suite:
+
+    AssertionError: 243 != 244 : README.es.md says '243 proyectos' and SHOWCASE.md holds 244 rows
+
+so the page-name set is judged against COUNT_PAGES here rather than trusted. The pages are read out of the
+step's own words and the table is imported from the check, so a page added to either side alone fails this
+pair instead of being invisible on both.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import importlib.util
@@ -66,6 +79,15 @@ def count_line_phrase():
     return match.group(0) if match else None
 
 
+def pages_named(text):
+    """Every front page the text names, e.g. {"README.md", "README.es.md"}.
+
+    `README.md` is the shortest shape, a translation adds one tag before `.md`, and a name written as a
+    glob (`README*.md`) names no single page a bump can miss, so it is not read as one.
+    """
+    return set(re.findall(r"README(?:\.[A-Za-z][A-Za-z-]*)?\.md", text))
+
+
 def page(stated, rows):
     """A SHOWCASE.md holding `rows` project rows and stating `stated`, laid out as the page is."""
     return [f"{stated} projects so far.", "", "## Forks of the launcher", "",
@@ -88,6 +110,23 @@ class ShowcaseRecipeCountTest(unittest.TestCase):
     def test_the_step_names_the_check_that_refuses_it(self):
         self.assertIn("tests/test_showcase_project_count.py", the_count_step()[0],
                       "the step should name the check, so a contributor knows why the numbers are not optional")
+
+    def test_the_step_names_every_page_the_check_reads(self):
+        """The step is the bump's checklist: a page the check reads and it does not name is left behind."""
+        named = pages_named(the_count_step()[0])
+        held = set(count.COUNT_PAGES)
+        missing = sorted(held - named)
+        self.assertFalse(
+            missing,
+            f"the step does not name {missing}, which `tests/test_showcase_project_count.py` reads: a "
+            "project added by following the step leaves those pages at the old number and the suite red",
+        )
+        extra = sorted(named - held)
+        self.assertFalse(
+            extra,
+            f"the step names {extra}, which `tests/test_showcase_project_count.py` does not read: a bump "
+            "would move a page no check holds",
+        )
 
 
 class TheCheckStillAsksTest(unittest.TestCase):
@@ -112,6 +151,14 @@ class TheCheckStillAsksTest(unittest.TestCase):
         self.assertEqual(count.readme_spelled(["add your project to SHOWCASE.md"]), (None, None),
                          "a line without a spelled number read as one")
 
+    def test_the_table_still_holds_the_front_pages_that_state_the_count(self):
+        """A table trimmed to the pages this file happens to name would let the rest drift again."""
+        self.assertGreaterEqual(
+            len(count.COUNT_PAGES), 8,
+            "fewer front pages are read than the eight that state the count: a page dropped from "
+            "COUNT_PAGES stops being judged, and the step stops being held to it",
+        )
+
 
 class StepReaderTest(unittest.TestCase):
     """The reader above decides what counts as a step; a silent change there would hide a missing one."""
@@ -135,6 +182,21 @@ class StepReaderTest(unittest.TestCase):
         self.assertTrue(all(text.strip() for _, text in steps()), "a step came out empty")
         self.assertFalse(any("Then run the tests" in text for _, text in steps()),
                          "the closing sentence was read as a step, so a mention outside the steps counts")
+
+    def test_the_front_pages_are_read_out_of_a_wrapped_step(self):
+        """The step wraps by hand, so a page named on a continuation line is still a page it names."""
+        body = ("1. Bump the count: `README.md`, `README.pt-BR.md`,\n"
+                "   `README.es.md` and the rest.\n2. Second step names `README.de.md`.\n")
+        self.assertEqual(
+            pages_named(dict(steps(body))[1]),
+            {"README.md", "README.pt-BR.md", "README.es.md"},
+            "a page on a continuation line was read as no page, or a later step's page was read into this one",
+        )
+
+    def test_a_glob_and_a_bare_name_are_not_pages(self):
+        text = "every front page (`README*.md`), the folder `README` and `README.es.md`"
+        self.assertEqual(pages_named(text), {"README.es.md"},
+                         "a glob or a folder name was read as the page a bump has to move")
 
 
 if __name__ == "__main__":
