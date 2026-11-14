@@ -63,17 +63,14 @@ TV_HOST=<player-ip> tools/theme.sh --reset   # back to plain black
 ## Ad-blocking DNS (off, on purpose)
 
 AdGuard's public DNS blocks `pixel.spotify.com`, which the Spotify TV app needs to start, and that broke
-the Spotify login. Android's Private DNS takes one server for the whole box, with no per-app exceptions.
-For ad blocking with Spotify, create a free personal profile at NextDNS or AdGuard DNS, allowlist
-`pixel.spotify.com`, then:
+the Spotify login. Android's Private DNS takes one server for the whole box, with no per-app exceptions,
+so the ad blocking that keeps Spotify working is a personal profile at NextDNS or AdGuard DNS with
+`pixel.spotify.com` allowlisted - the notes in `debloat.txt` record how that went on this set, which was
+left on automatic DNS.
 
-```bash
-TV_HOST=<player-ip> tools/venv/bin/python -I tools/tv.py 'settings put global private_dns_specifier <your-id>.dns.nextdns.io'
-TV_HOST=<player-ip> tools/venv/bin/python -I tools/tv.py 'settings put global private_dns_mode hostname'
-```
-
-To undo: `settings put global private_dns_mode opportunistic`. It doesn't block YouTube ads. If Spotify
-then shows "Vérifiez votre connexion réseau", switch DNS back and log in to Spotify again.
+The optional DNS extra, with the two commands and the way back, is in
+[docs/faq.md](../../docs/faq.md#can-it-block-ads-inside-apps-too); it does not block YouTube ads. If
+Spotify shows "Vérifiez votre connexion réseau" after it, switch DNS back and log in to Spotify again.
 
 ## When you're done: close ADB
 
