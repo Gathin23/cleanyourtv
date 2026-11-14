@@ -219,10 +219,11 @@ class ReadmeThemeCountTest(unittest.TestCase):
         # classifier attached, which this file reads as no claim at all. README.fr.md is the ninth,
         # stating its count in digits ("28 thèmes"), like README.tr.md and README.pt-BR.md.
         # README.es.md is the tenth, stating its count in digits ("29 temas").
+        # README.ckb.md is the eleventh, stating its count in digits ("29 بابەت").
         self.assertEqual(sorted(set(stating)),
-                         ["README.de.md", "README.es.md", "README.fr.md", "README.he.md", "README.md", "README.nl.md",
-                          "README.pt-BR.md", "README.tr.md", "README.uk.md", "README.uz.md"],
-                         "the front pages that state the theme count are not the ten that did: "
+                         ["README.ckb.md", "README.de.md", "README.es.md", "README.fr.md", "README.he.md", "README.md",
+                          "README.nl.md", "README.pt-BR.md", "README.tr.md", "README.uk.md", "README.uz.md"],
+                         "the front pages that state the theme count are not the eleven that did: "
                          f"{sorted(set(stating))}")
 
 
