@@ -25,6 +25,14 @@ import time
 # pushed and did restart Home was reported as "TV refused the command" (#3703). Both callers read the id off the
 # TV and name it here (tools/theme.sh, tools/theme.ps1); a run of this file by hand keeps the default build.
 DEFAULT_PACKAGE = "com.gathin.tvhome"
+# The activity keeps its class under another application id: -PlauncherApplicationId replaces the id only, and the
+# manifest's ".MainActivity" resolves against the namespace com.gathin.tvhome (launcher/app/build.gradle). The
+# explicit start below is the "a launcher the set has not made Home yet" path, and it used the component shorthand
+# "<id>/.MainActivity", which is expanded against the package part: on a com.ts.launcher build that named
+# com.ts.launcher.MainActivity, a class no build has, so the start failed with "Activity class does not exist" and
+# the key helpers after it were never put back. theme.sh and theme.ps1 carry the same string as LAUNCHER_ACTIVITY
+# and $launcherActivity; tests/test_theme_launcher_package.py holds all three to the namespace in build.gradle.
+ACTIVITY = "com.gathin.tvhome.MainActivity"
 SERVICES = "enabled_accessibility_services"
 FLAG = "accessibility_enabled"
 ACTION = "android.accessibilityservice.AccessibilityService"
@@ -136,7 +144,7 @@ def restart(dev, pause=time.sleep):
         if home.splitlines()[-1:] and home.splitlines()[-1].startswith(launcher + "/"):
             start = "-a android.intent.action.MAIN -c android.intent.category.HOME"
         else:
-            start = "-n " + launcher + "/.MainActivity"
+            start = "-n " + launcher + "/" + ACTIVITY
         shell(dev, f"am start --user {user} {start}")
         if not helpers:
             return
