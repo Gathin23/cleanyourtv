@@ -72,6 +72,19 @@ class CommandWordsTest(unittest.TestCase):
         for group in GROUPS:
             self.assertIn(f"{group} (", out)
 
+    def test_a_name_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        raw = io.BytesIO()
+        out = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = out
+        for argv in (["list"], ["list", "addons"], ["list", "themes"], ["show", "lich-van-nien"]):
+            with self.subTest(argv=argv), mock.patch("sys.stderr", io.StringIO()) as err:
+                status = manage.main(list(argv))
+                out.flush()
+                self.assertEqual(status, 0, err.getvalue())
+        self.assertIn(b"?", raw.getvalue())
+
     def test_status_takes_no_words(self):
         self.assertRefused(["status", "--json"], "'--json'", "status takes no words")
 

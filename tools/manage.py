@@ -1195,6 +1195,12 @@ def set_args(args):
 
 
 def main(argv):
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     if not argv or argv[0] in ("-h", "--help", "help"):
         print(platform_usage(__doc__))
         return 0
