@@ -105,6 +105,12 @@ class AppKeysRefusalTest(unittest.TestCase):
         # `if (code > 0) keys.put(...)`: 0 is KEYCODE_UNKNOWN, and the entry is dropped.
         self.refused('["0:com.netflix.ninja"]', "keycode 0 is not a button")
 
+    def test_keycode_unknown_is_refused(self):
+        # KEYCODE_UNKNOWN resolves to 0, so `code > 0` drops the entry.
+        for entry in ("KEYCODE_UNKNOWN:home", "hold:KEYCODE_UNKNOWN:home", "front:KEYCODE_UNKNOWN:home"):
+            with self.subTest(entry=entry):
+                self.refused(json.dumps([entry]), "keycode 0 is not a button")
+
     def test_a_scancode_that_is_not_a_number_is_refused(self):
         self.refused('["scan:abc:com.netflix.ninja"]', "'abc' is not a scancode")
         self.refused('["scan:0:com.netflix.ninja"]', "scancode 0 is not a button")
