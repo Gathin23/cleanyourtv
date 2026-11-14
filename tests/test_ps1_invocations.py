@@ -34,6 +34,7 @@ parameter fails the pages that still pass the old one instead of letting them go
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -245,18 +246,24 @@ def importable_files():
         yield path
 
 
-def resolve_in_repo(token):
+def resolve_in_repo(token, root=None):
     """The script sources a documented path could name, from the repository root.
 
     A path with a directory in it is taken as written (backslashes are Windows). A bare file name is
     looked up by name, since `build-and-install.ps1` is how the pages refer to the launcher's, the
     add-ons' and the tools' own scripts.
+
+    The skip list is read against the path inside the checkout, not against the absolute path: CI
+    checks the repository out under `/home/runner/work/...`, where an ancestor folder is called `work`
+    and every file would otherwise be pruned as a person's own note.
     """
+    root = ROOT if root is None else root
     cleaned = token.replace("\\", "/").lstrip("./")
     if "/" in cleaned:
-        path = ROOT / cleaned
+        path = root / cleaned
         return [path.read_text(encoding="utf-8-sig", errors="replace")] if path.is_file() else []
-    found = [p for p in ROOT.rglob(cleaned) if p.is_file() and not SKIP_DIRS & set(p.parts)]
+    found = [p for p in root.rglob(cleaned)
+             if p.is_file() and not SKIP_DIRS & set(p.relative_to(root).parts)]
     return [p.read_text(encoding="utf-8-sig", errors="replace") for p in found]
 
 
@@ -393,6 +400,23 @@ class ProblemReaderTest(unittest.TestCase):
     def test_a_script_with_no_tv_parameter_is_quiet(self):
         self.assertEqual([], self.host_reader(r"tools\docker-build.ps1 -Project launcher"))
         self.assertFalse(needs_tv(param_block_of(self.SCRIPTS["tools/docker-build.ps1"])))
+
+    def test_a_bare_name_resolves_below_a_folder_named_like_a_skipped_one(self):
+        """CI checks the repository out under `/home/runner/work/...`, and `work` is a folder we skip.
+
+        The skip is about the checkout's own layout (`AGENTS.md`'s notes folder), so it has to be read
+        against the path inside the root: read against the absolute path, every file under `/home/
+        runner/work/` was pruned and every page naming a script by its bare name was reported as a
+        script the repository does not ship - which is what CI answered before this test existed.
+        """
+        with tempfile.TemporaryDirectory() as parent:
+            root = Path(parent) / "work" / "cleanyourtv"
+            (root / "tools").mkdir(parents=True)
+            (root / "tools" / "disable.ps1").write_text("param([string]$List)\n", encoding="utf-8")
+            (root / "work" / "notes").mkdir(parents=True)
+            (root / "work" / "notes" / "disable.ps1").write_text("# a note, not the script\n", encoding="utf-8")
+            self.assertEqual(1, len(resolve_in_repo("disable.ps1", root=root)))
+            self.assertEqual([], resolve_in_repo("no-such-script.ps1", root=root))
 
 
 if __name__ == "__main__":
