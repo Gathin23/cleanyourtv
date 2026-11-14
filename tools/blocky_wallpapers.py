@@ -311,6 +311,12 @@ def write(out):
     redrawn. Nothing is published until a complete file is ready, and a renamed file keeps the mode an earlier
     one had.
     """
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     try:
         import PIL  # noqa: F401
     except ImportError:
