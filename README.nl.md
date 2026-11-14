@@ -16,6 +16,7 @@
   <a href="README.uz.md"><img src="https://img.shields.io/badge/README-O%CA%BBzbekcha-cfffcf?style=flat&labelColor=15181e" alt="Oʻzbekcha"></a>
   <a href="README.fr.md"><img src="https://img.shields.io/badge/README-Fran%C3%A7ais-cfffcf?style=flat&labelColor=15181e" alt="Français"></a>
   <a href="README.es.md"><img src="https://img.shields.io/badge/README-Espa%C3%B1ol-cfffcf?style=flat&labelColor=15181e" alt="Español"></a>
+  <a href="README.ckb.md" lang="ckb" dir="rtl"><img src="https://img.shields.io/badge/README-%DA%A9%D9%88%D8%B1%D8%AF%DB%8C%20%D8%B3%DB%86%D8%B1%D8%A7%D9%86%DB%8C-cfffcf?style=flat&labelColor=15181e" alt="کوردی سۆرانی"></a>
 </p>
 
 <p align="center">
