@@ -138,6 +138,26 @@ class SetEnumTest(unittest.TestCase):
                 self.assertIsNone(self.set_key(key, value), f"{key} is free text, so {value!r} is fine")
                 self.assertEqual(self.written()[key], value)
 
+    def test_a_festival_name_over_40_characters_is_refused(self):
+        # Festival.parse() answers NONE for a trimmed name longer than 40, which turns the skin off.
+        for key in ("festival", "seasonal_skin"):
+            with self.subTest(key=key):
+                self.assertIsNone(self.set_key(key, "a" * 40))
+                self.assertIsNone(self.set_key(key, "  " + "a" * 40 + "  "))
+                self.config.unlink()
+                refusal = self.set_key(key, "a" * 41)
+                self.assertIsNotNone(refusal, "a 41-character name was written, and the launcher drops the skin")
+                self.assertIn(key, refusal)
+                self.assertIn("40", refusal)
+                self.assertIn("Nothing was written or pushed", refusal)
+                self.assertIsNone(self.written())
+                # Java counts UTF-16 units: 20 emoji are 40 units, 21 are 42.
+                self.assertIsNone(self.set_key(key, "\U0001f389" * 20))
+                self.config.unlink()
+                self.assertIsNotNone(self.set_key(key, "\U0001f389" * 21))
+                # Java trim() keeps a no-break space, so it counts toward the 40.
+                self.assertIsNotNone(self.set_key(key, " " + "a" * 40))
+
     def test_a_number_key_is_unaffected(self):
         self.assertIsNone(self.set_key("columns", "4"))
         self.assertEqual(self.written()["columns"], 4)

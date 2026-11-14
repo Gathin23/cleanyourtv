@@ -662,6 +662,12 @@ def value_as(key, item, text):
         else:
             # A string key is read as a String only, so `set greeting_name 42` means the text 42, not a number.
             value = enum_value(key, parsed if isinstance(parsed, str) else text)
+        # Festival.parse(): Java trim() (characters up to U+0020), lowercase, then length() in UTF-16 units.
+        if key in ("festival", "seasonal_skin") and len(
+                value.strip("".join(map(chr, range(33)))).lower().encode("utf-16-le")) // 2 > 40:
+            sys.exit(f"{key} takes a name of at most 40 characters, and {value!r} is longer. Festival.parse() "
+                     f"returns no skin for a longer name, so the festival would be off. Nothing was written or "
+                     f"pushed.")
         if key == "source_panel_extra":
             problem = panel_extra_problem(value)
             if problem:
