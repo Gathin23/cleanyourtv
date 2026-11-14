@@ -76,7 +76,8 @@ COLOUR = re.compile(r"#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?")
 SENTINEL_FLOOR = {"lunar_utc_offset": -1}
 
 sys.path.insert(0, str(ROOT / "tools"))
-import manage  # noqa: E402  the same table reader tools/manage.py set judges a value against
+import manage  # noqa: E402
+import tables  # noqa: E402  the one Markdown-table reader in the repo, which manage.py imports
 
 
 def readers(java_text):
@@ -157,17 +158,18 @@ def config_files(root=None):
 def table_ranges(text=None):
     """key -> (low, high) for every Keys-table row whose type cell is a range, such as '0 to 300'.
 
-    Read the way tools/manage.py set reads it - manage.table_rows over the section, manage.plain to
-    drop the code marks, manage.declared_range for the cell - so a cell this test understands and set
-    does not (or the other way round) cannot happen either. A row's first cell can name two keys, and
-    one of them may also be named in the Meaning column: only the first cell is a definition.
+    Read the way tools/manage.py set reads it - tools/tables.table_rows over the section,
+    tools/tables.plain to drop the code marks, manage.declared_range for the cell - so a cell this
+    test understands and set does not (or the other way round) cannot happen either. A row's first
+    cell can name two keys, and one of them may also be named in the Meaning column: only the first
+    cell is a definition.
     """
     text = KEYS_TABLE.read_text(encoding="utf-8") if text is None else text
     if "## Keys" not in text:
         raise AssertionError("themes/README.md has no ## Keys section")
     out = {}
-    for row in manage.table_rows(text[text.index("## Keys"):], "| Key |"):
-        low, high = manage.declared_range(manage.plain(row[1]) if len(row) > 1 else "")
+    for row in tables.table_rows(text[text.index("## Keys"):], "| Key |"):
+        low, high = manage.declared_range(tables.plain(row[1]) if len(row) > 1 else "")
         if low is None:
             continue
         for key in re.findall(r"`([a-z_]+)`", row[0]):
