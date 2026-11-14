@@ -75,6 +75,19 @@ sys.exit(0)
 '''
 
 
+def stub_python(python=None):
+    """The interpreter the stand-in's shebang can name.
+
+    A shebang is split at its first space, so a Python whose path holds one - a venv under "Application
+    Support", a checkout in "My Projects" - cannot be named there: exec runs the truncated path, the kernel
+    answers ENOENT, and every case that runs the stand-in stops at status 127 with "cannot execute: required
+    file not found" before it has tested anything. The stand-in imports the standard library only, so
+    /usr/bin/env is enough. tests/test_native_adb.py carries the same guard for its fake adb.
+    """
+    python = python or sys.executable
+    return python if not any(c in python for c in " \t") else "/usr/bin/env python3"
+
+
 def redirected_native_calls(text):
     """[(line number, line)] for each line of the script that redirects a call's output."""
     out = []
@@ -100,7 +113,7 @@ def run_with_stub(script, interpreter, state="absent", build="0"):
     work = Path(tempfile.mkdtemp())
     (work / "bin").mkdir()
     stub = work / "bin" / "docker"
-    stub.write_text(STUB.format(python=sys.executable), encoding="utf-8")
+    stub.write_text(STUB.format(python=stub_python()), encoding="utf-8")
     stub.chmod(0o755)
     log = work / "calls.jsonl"
     log.write_text("", encoding="utf-8")
@@ -206,6 +219,20 @@ class PlatformPinTest(unittest.TestCase):
         self.assertIn("$Platform = 'linux/amd64'", text)
         self.assertIn("docker build --platform $Platform -t $Image", text)
         self.assertIn("docker run --rm --platform $Platform", text)
+
+
+class StubInterpreterTest(unittest.TestCase):
+    """The stand-in's shebang, held here because the checkout cannot be moved to a folder with a space."""
+
+    def test_a_python_path_with_a_space_is_reached_through_env(self):
+        self.assertEqual("/usr/bin/env python3",
+                         stub_python("/home/john/My Projects/cleanyourtv/tools/venv/bin/python"))
+
+    def test_a_python_path_with_a_tab_is_not_named_either(self):
+        self.assertEqual("/usr/bin/env python3", stub_python("/Users/j/Library/Application\tSupport/python3"))
+
+    def test_a_python_path_without_a_space_is_named_itself(self):
+        self.assertEqual("/usr/bin/python3", stub_python("/usr/bin/python3"))
 
 
 if __name__ == "__main__":
