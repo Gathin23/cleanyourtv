@@ -47,6 +47,7 @@ RECIPE = ROOT / "docs" / "workflows" / "translation.md"
 # so the cover test below - which reads a row written in one of these words - passed over it.
 LANG_ROW = {
     "README.md": "languages",
+    "README.ckb.md": "زمان",
     "README.de.md": "Sprachen",
     "README.es.md": "idiomas",
     "README.fr.md": "langues",
