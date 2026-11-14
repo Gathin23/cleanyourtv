@@ -1,0 +1,6 @@
+{
+  "tv": "Sharp 32GF3265E (umeda, Skyworth board)",
+  "os": "Google TV 11",
+  "brand": "SHARP",
+  "notes": "Retail demo, telemetry and Assistant off; stock Google TV home replaced by the repo launcher; gear button opens the quick-settings panel (keycode 83); [notes](sharp-32gf3265e/README.md)"
+}

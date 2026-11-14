@@ -1,0 +1,58 @@
+# Sharp 32GF3265E ("SHARP 2K Smart TV", device umeda, Skyworth board), Google TV on Android 11 (SDK 30), firmware RTM9.241015.004
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sharp-32gf3265e/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sharp-32gf3265e/debloat.txt com.google.android.apps.tv.launcherx
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (pass it as STOCK_LAUNCHER; launcher/build-and-install.sh
+# disables it once the new launcher owns Home). Live TV and inputs: com.mediatek.wwtv.tvcenter.
+#
+# Kept on purpose: the HDMI/tuner stack (com.mediatek.tvinput, com.mediatek.tv.service, com.mediatek.wwtv.*),
+# remote pairing (com.smartdevice.bleconnectservice), com.smartdevice.global.service, com.smartdevice.dailyshortcut,
+# com.skyworth.backligthadjust, com.dolby.android.audio.service (HDMI-CEC/ARC audio), com.tianci.localmedia (USB media),
+# the on-screen keyboard, the TV remote service, Play Store and Play Services, Chromecast
+# (com.google.android.apps.mediashell), Miracast (com.smartdevice.dtv.icast), and the factory test packages
+# (kept enabled, never launch them).
+# com.phlox.tvwebbrowser was disabled during testing and re-enabled at the owner's request - kept off this list.
+# This firmware re-enabled com.google.android.katniss once at a power-on; disable it again if the mic button returns.
+# setupwraith owns no saved Wi-Fi on this unit (the network is owned by android.uid.system), so disabling it does
+# not drop the connection - but only disable it after the new launcher is Home.
+
+# Google TV telemetry, feedback, activation and partner services
+com.google.android.feedback
+com.google.android.partnersetup
+com.android.settings.intelligence
+com.smartdevice.recordactivation
+com.smartdevice.aftersale
+
+# Preinstalled streaming, video and game hubs (already off on the test unit)
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.play.games
+com.smartdevice.recommendation
+
+# Voice assistant (owner's choice)
+com.google.android.katniss
+
+# Skyworth/Coocaa retail demo, cleaner, app manager, e-manual
+com.coocaa.demonow.lightining
+fusion.android.tv.demo
+com.smartdevice.dailymanage
+com.smartdevice.myapp
+com.Smartdevice.emanual
+
+# Background services and unused utilities
+com.google.android.apps.nbu.smartconnect.tv
+com.google.android.apps.tv.dreamx
+com.esaba.downloader
+
+# Accessibility talkback (already off on the test unit)
+com.google.android.marvin.talkback
+
+# Google TV setup wizard - disable only after the new launcher is Home
+com.google.android.tungsten.setupwraith
+
+# Stock Google TV launcher, disabled by launcher/build-and-install.sh once com.gathin.tvhome owns Home
+com.google.android.apps.tv.launcherx
