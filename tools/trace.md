@@ -57,6 +57,27 @@ Nothing was recorded, so nothing is half-written: `tools/bench.py`, `tools/check
   `flamechart.py` alike: with the wrong name the report prints `–` for every step instead of saying the
   package was not in the trace, and the chart stops at `no <package> process in the trace`.
 
+## When a recording fails
+
+Each message below stops the run where it failed, with exit 1: the runs already recorded stay in
+`--out`, the failed one is not written there, and an earlier `<scenario>-<n>.pftrace` at that path is
+kept - a pull is staged in a temporary folder beside it and only a trace with something in it replaces
+the file. Each message is the last line of the run's traceback.
+
+- **`perfetto did not start on the TV (it ships with Android 9 and later): <the TV's answer>`** - the
+  launch came back with `not found`, `inaccessible` or an error, quoted after the colon. Android 8 and
+  older have no perfetto, and on 9 and 10 the TV's tracing services are off until they are enabled
+  ([Setup](#setup)); the tool does not change that setting.
+- **`perfetto is still running after the completion wait; no trace was pulled`** - the trace config's
+  own duration ends the recording, and it had not 60 s after the last step. Nothing was pulled, the file
+  at that path is an earlier run's or none, and the recording on the TV is left alone.
+- **`perfetto wrote an empty trace; run with --runs 1 and see tools/trace.md`** - perfetto started (its
+  answer is read first) and the file it wrote held no data, so the pull was discarded, the file at that
+  path kept and the TV's copy removed. `--runs 1` records a single trace, so the failure is that one
+  run's and not one of a set. Two things to check: the tracing services on Android 9 and 10
+  ([Setup](#setup)), and the length of the recording, which is 3 s before the first step, the `sleep`s
+  in the step list and 2 s after it - so a `custom` run whose steps hold no `sleep` records for about 5 s.
+
 ## Report
 
 Keep `nav` traces separate from start traces (`home`, `cold`, `coldsys`, `custom`), since their frame
