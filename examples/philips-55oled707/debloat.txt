@@ -147,6 +147,49 @@
 #   GitHub release APK carries armeabi-v7a code, installed with `pm install`, and played from an iPhone. It
 #   holds a PARTIAL_WAKE_LOCK 'airplay:server' for as long as it runs (`dumpsys power`).
 #
+# Sixth unit: Philips 55OLED806/12 (55" OLED with Ambilight), Italy, on Ethernet, no antenna, a console on HDMI 1.
+# Same board and the same RTT2.211108.001 build 21029 as the first unit (fingerprint byte-identical), security
+# patch 2025-10-01; the Philips version string is TPM211EA_R.101.001.005.115. Applied 2026-10-23 in six batches
+# with tools/disable.sh, the launcher from launcher/ before the fourth; lived with for three weeks since, with
+# restarts at the wall. Nothing below changes the list.
+# - Disabled there from this file: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   nettvapps, ARTE's gallery copy (nettvapp1814; the Play Store tv.arte.plus7 stays), demome, amazonalexa,
+#   feedback, setupwraith, katniss, videos, and tvrecommendations after the replacement launcher was Home. On top
+#   of it (owner's choice): partnersetup, onetimeinitializer, sss.authbridge, syncadapters.calendar, m7opapp,
+#   Live Channels (com.google.android.tv), Google Meet (com.google.android.apps.tachyon) and Stadia. The last
+#   three are user apps on this unit and are no longer installed on it. Kept: Play-Fi, DLNA, IP control,
+#   Chromecast, the firmware updaters, Netflix, Prime Video, YouTube (hidden from the launcher, not disabled).
+#   Out of the box aurora, freeviewplayers and 15 uk.co.freeview.* apps were already disabled, as on the second
+#   and fourth units.
+# - disable.sh's TV-input guard held back usagelogger; it serves no TvInputService, so it went with
+#   TVINPUT_ALLOW=1, as on the third and fifth units. HDMI 1 kept its picture.
+# - After three weeks, the last two without a restart, `pm list packages -d` still held every package disabled
+#   here; nothing re-enabled itself.
+# - Video in a small box in the middle of the screen, in every app (SmartTube, ARTE, RaiPlay), smaller the lower
+#   the video's resolution, and a restart at the wall changed nothing. The cause was the Philips picture format
+#   set to "Unscaled" (`VIDMGR_VIEWMODE_*_UNSCALED` in the firmware; "Non scalato" in Italian): on a 4K panel a
+#   1080p video shown pixel for pixel fills a quarter of it. Android was not at fault: SurfaceFlinger had RaiPlay's
+#   video layer at 1600x900 into 0,0,1920,1080. The setting applies to apps too, but there the "Picture format"
+#   entry is greyed out (logcat: `PictureFormat: isControllable() false`), and it is greyed out as well with a 4K
+#   source on HDMI. What unlocked it was an HDMI source below the panel's resolution (a laptop at 1920x1080):
+#   Quick menu > Picture format > Fill screen. The value stayed after unplugging and fixed every app. It is in
+#   the Philips settings, not in Android's, so there is no `settings put` for it.
+# - Power-on back on HDMI 1 ("no signal") instead of Home. org.droidtv.tvpowermanagerservice remembers the app on
+#   screen at standby in `persist.sys.power_lastapp` only when it is com.google.android.tvlauncher, Netflix,
+#   YouTube or Google TV; for anything else, the replacement launcher included, PlayTv reopens the last source at
+#   power-on. Read from the service's code; with the stock launcher the TV came back to Home. That is likely why
+#   power_on_home_always was needed on this board (third and fifth units).
+# - "Storage almost full" popup, back every 15 minutes while the TV is on. /data is 4.9 GB here.
+#   TVStorageMonitorService (org.droidtv.tv.tptvservice) checks it every 15 minutes and under 15% free (logcat:
+#   `TV memory under_15% = 791474931`, bytes) sends org.droidtv.action.CLEANUP_APPS and trims every app's cache;
+#   org.droidtv.eum's SpaceOptimizeIntentReciever answers with OptimizeFlashWarningActivity. Android's own low
+#   threshold here is far lower (`dumpsys devicestoragemonitor`: lowBytes=263956889). Free space is what stops it:
+#   about 790 MB, which the apps installed after the cleanup had eaten (F-Droid alone was 316 MB, 271 of them data).
+# - Clock: after a power cut the TV came back on 3 Dec 2025 and lost Private DNS, as in the FAQ. With no antenna
+#   the clock has no other source: `settings put global ntp_server <an NTP server's IP>` plus `auto_time 1` fixed
+#   it for good. An address, not a name, because names do not resolve while the clock is wrong.
+# - The Cast receiver's picture comes out in `tools/tv.py --screenshot`, unlike Live TV and HDMI.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/philips-55oled707/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/philips-55oled707/debloat.txt com.google.android.tvlauncher
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
