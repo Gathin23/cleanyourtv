@@ -1,0 +1,79 @@
+# onn. 2K TV Stick (Walmart; device stephen, Askey/SDMC, Amlogic), Android TV 10 (SDK 29), build QTT8.210427.001.20240627
+# Security patch 2024-04-05. Sold in the US. 1 GB RAM (ro.config.low_ram=true), 720p panel at density 213,
+# 32-bit armeabi-v7a, 4.1 GB /data. The Android model string is "Onn 2k TV stick".
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/onn-2k-tv-stick/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/onn-2k-tv-stick/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher. No HDMI inputs and no tuner (it is a stick): leave
+# live_tv_package empty and show_inputs_pill off in config.xml. launcher/build-and-install.sh disables
+# the stock launcher once this launcher owns Home; tools/restore.sh with its record puts it back.
+#
+# Applied in two batches with a screenshot between them, then rebooted once: every package below stayed
+# disabled, Home came back to the new launcher and Wi-Fi reconnected. Fresh on this set, not yet lived
+# with for days.
+#
+# What the list does not touch, and why:
+# - com.google.android.tungsten.setupwraith: the saved Wi-Fi network is owned by android.uid.system:1000
+#   (dumpsys wifi cname=), so it would survive, but the Cast receiver takes its device credentials from
+#   it on some Google TV builds; left enabled with Chromecast kept. Not tested disabled on this stick.
+# - com.google.android.apps.mediashell (Cast receiver), com.google.android.tv.remote.service (phone
+#   remote and the Bluetooth remote mic), com.google.android.tv.dfuservice (remote firmware updates),
+#   com.google.android.backdrop and com.android.dreams.basic (ambient mode kept by the owner).
+# - Every com.sdmc.* hardware service: com.sdmc.GlobalKey carries the remote's app buttons (it holds
+#   com.netflix.ninja.permission.NETFLIX_KEY, so the Netflix button does nothing once that app is off),
+#   com.sdmc.bluetoothconnect the Bluetooth pairing, com.sdmc.standbyserver standby.
+# - com.droidlogic.* (Amlogic TV middleware), Play Store, Play Services, Gboard, com.android.tv.settings.
+# - Pluto TV registers a TV input (tv.pluto.android/com.paramount.android.pplus.feature.tif.impl.service
+#   .TifService), so with the Inputs pill on it lists there; nothing else registers one on a stick.
+#
+# Remote: USB debugging opens port 5555 directly, no Wireless debugging pairing; ro.adb.secure=1, so the
+# TV asks "Allow USB debugging?" on the first connect.
+# 1 GB of RAM and a low-RAM build: 4 columns in config.xml keep the tiles large and the GPU idle.
+# Assistant (com.google.android.katniss), TalkBack and the preloaded streaming apps below were off by
+# the owner's choice, not because the firmware needs them off.
+
+# Google telemetry and clutter
+com.google.android.feedback
+com.google.android.tvrecommendations
+com.google.android.tv.bugreportsender
+com.google.android.tv.setup.customizationsample
+
+# SDMC: partner auto-installs and the support log tool
+android.autoinstalls.config.sdmc
+com.sdmc.leakbackcustomer
+
+# Vendor demo and filler apps
+com.ctc
+com.amlogic.multimediaplayer
+com.android.printspooler
+com.android.camera2
+com.android.gallery3d
+com.google.android.onetimeinitializer
+
+# Calendar and contacts: nothing on a TV box uses them
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.google.android.syncadapters.contacts
+com.android.providers.contacts
+com.android.providers.userdictionary
+
+# Google extras the owner does not use
+com.google.android.katniss
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.play.games
+com.google.android.marvin.talkback
+
+# Cast/add-on preloads the owner does not use
+com.rma.speedtesttv
+com.instantbits.cast.receiver
+
+# Preloaded streaming apps the owner does not use
+com.netflix.ninja
+com.disney.disneyplus
+com.amco.clarovideo_atv
+com.bloomberg.btva
+com.wbd.stream
+com.otty.androidtv
