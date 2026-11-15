@@ -1,6 +1,0 @@
-{
-  "tv": "Amazon Fire TV Stick HD, 1st gen (AFTSS, sheldon)",
-  "os": "Fire OS 7.7.1.7 / Android 9",
-  "brand": "Amazon Fire TV",
-  "notes": "Build PS7717.5746N: Amazon telemetry, ACR, ad/recommendation feeders, Live tab, Shopping, Kids, Photos, dummy placeholders, whole-home audio, Alexa extras; voice search/TTS and Spotify-for-Alexa commented out; `com.amazon.tv.launcher` kept, `com.amazon.firebat` kept, OTA kept"
-}
