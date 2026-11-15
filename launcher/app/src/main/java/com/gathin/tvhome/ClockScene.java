@@ -48,8 +48,10 @@ final class ClockScene {
     private final GradientDrawable glow;
     private int colorIndex;
     private int glowColor;
-    /** clock_wallpaper or clock_glow false: something else (a picture, or plain black) replaced the coloured glow. */
+    /** clock_wallpaper: a picture replaced the coloured glow. */
     private boolean wallpaperShown;
+    /** clock_glow false: plain black behind the clock, whether or not a picture shows. */
+    private boolean glowOff;
     /** clock_wallpaper: the picture start() decodes, its darkening, and the resources to draw it with. */
     private File wallpaperFile;
     private int wallpaperShade;
@@ -111,7 +113,7 @@ final class ClockScene {
      * clock_wallpaper: put the picture Home is showing behind the clock, darkened by clock_wallpaper_dim, in
      * place of the glow, and carry a collection's rotation on while the screensaver is up. Decoded off the main
      * thread at screen size in RGB_565 (4 MB at 1080p), like Home's own; until then, or if it cannot be read,
-     * the glow stays.
+     * the glow stays, unless clock_glow is false.
      * Call before start(), which starts the decode (again after a stop() that dropped an unfinished one).
      */
     void useHomeWallpaper(Context ctx) {
@@ -121,14 +123,10 @@ final class ClockScene {
         } catch (RuntimeException e) {
             return;
         }
-        if (!cfg.clockWallpaper) {
-            // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
-            if (!cfg.clockGlow) {
-                wallpaperShown = true;   // also stops the glow's colour cycle
-                ambient.setBackground(null);
-            }
-            return;
-        }
+        // clock_glow false: plain black behind the clock (OLED); the clock itself still moves every minute.
+        glowOff = !cfg.clockGlow;
+        if (glowOff) ambient.setBackground(null);
+        if (!cfg.clockWallpaper) return;
         // What Home plays, and Config puts the single wallpaper in it when a theme has no collection.
         // Reading cfg.wallpaper first held the screensaver on wallpaper.jpg while Home rotated.
         if (cfg.wallpapers.isEmpty()) {
@@ -250,7 +248,7 @@ final class ClockScene {
     }
 
     private void shiftGlow() {
-        if (wallpaperShown) return;
+        if (wallpaperShown || glowOff) return;
         int from = glowColor;
         colorIndex = (colorIndex + 1) % PALETTE.length;
         int to = PALETTE[colorIndex];
