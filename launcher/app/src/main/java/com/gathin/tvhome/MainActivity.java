@@ -454,7 +454,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     /** clock_format, for the race panel's session times (the TextClocks take it in onCreate). */
     private String clockFormat = "system";
     private java.util.Map<Integer, String> homeHoldAppKeys = java.util.Collections.emptyMap();
-    private boolean storageUnmounted;
+    private boolean themeReadPending;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -463,7 +463,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
-        storageUnmounted = cfg.storageUnmounted;
+        themeReadPending = cfg.themeReadPending;
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
         clockFormat = cfg.clockFormat;
         ClockFormat.apply(getWindow().getDecorView(), clockFormat);
@@ -1105,10 +1105,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             recreate();
             return;
         }
-        if (storageUnmounted && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            storageUnmounted = false;
-            Config check = Config.load(this);
-            if (check.wallpaper != null || !check.wallpapers.isEmpty() || check.overlayApplied) {
+        if (themeReadPending && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            if (Config.themeReady(this)) {
+                themeReadPending = false;
                 recreate();
                 return;
             }

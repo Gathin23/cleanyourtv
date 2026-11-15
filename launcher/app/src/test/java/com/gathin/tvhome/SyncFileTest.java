@@ -73,7 +73,14 @@ public class SyncFileTest {
     }
 
     @Test
-    public void cleansStagingFileOnFailure() {
+    public void cleansStagingFileOnFailure() throws IOException {
+        File src = folder.newFile("src.jpg");
+        try (FileOutputStream out = new FileOutputStream(src)) {
+            out.write("payload".getBytes(StandardCharsets.UTF_8));
+        }
+        File dst = folder.newFolder("dst.jpg");
+        Config.syncFile(src, dst);
+
         File staging = new File(folder.getRoot(), "dst.jpg.tmp");
         assertFalse(staging.exists());
     }
