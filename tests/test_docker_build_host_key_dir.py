@@ -41,11 +41,13 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-from tests.test_docker_build_first_run import stub_python  # the stand-in's shebang, judged in one place
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_docker_build_first_run import stub_python  # noqa: E402  the stand-in's shebang, judged in one place
 
 ROOT = Path(__file__).resolve().parents[1]
 SH = ROOT / "tools" / "docker-build.sh"

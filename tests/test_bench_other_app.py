@@ -10,12 +10,15 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import os
 import re
+import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
-from tools import bench
-from tests.test_bench_counts import FakeTV, run
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_bench_counts import FakeTV, run  # noqa: E402
+from tools import bench  # noqa: E402
 
 
 class AnsweringTV:

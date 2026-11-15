@@ -12,7 +12,8 @@ import types
 import unittest
 from unittest import mock
 
-from tests.test_native_adb import load_tv
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_native_adb import load_tv  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("b64push_payload", ROOT / "tools" / "b64push.py")
