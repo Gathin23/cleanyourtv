@@ -1,0 +1,18 @@
+Artel Android TV
+Android version: 10
+Firmware: QTG3.200617.002
+Hardware model: to be confirmed
+Packages are added only after individual testing.
+All packages must be disabled, never uninstalled.
+Advertising and recommendations
+TODO: verify and test
+Optional applications
+TODO: verify and test
+Already tested and safe to disable:
+None yet.
+Packages intentionally kept:
+com.smartdevice.livetv - Live TV
+com.google.android.tvlauncher - stock launcher
+com.mediatek.tvinput - TV input
+com.netflix.ninja - Netflix
+com.google.android.gms - Google Play services
