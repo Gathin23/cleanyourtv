@@ -148,6 +148,7 @@ class TheSetIsWrittenTogetherTest(unittest.TestCase):
             self.assertIn("Updated: README.md, examples/README.md, tools/readme_stats.py", out)
 
 
+@unittest.skipUnless(os.name == "posix", "the mode and the symlink it keeps are POSIX ideas")
 class TheReplacedPageTest(unittest.TestCase):
     def test_an_existing_page_keeps_the_mode_it_had(self):
         with tempfile.TemporaryDirectory() as tmp:

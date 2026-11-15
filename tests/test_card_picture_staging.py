@@ -17,6 +17,13 @@ and to the two shapes a fresh file takes (the mode `open()` left, and a staging 
 removed after the rename being a warning rather than "nothing was written"). They need no Pillow: the
 "encoder" is a stand-in whose `save()` writes what a real one writes before it fails.
 
+Five of the cases below read a mode bit or follow a symlink and skip themselves where those are absent:
+Windows keeps no mode bits for a rename to carry (`os.chmod` there only toggles the read-only attribute)
+and a symlink needs a privilege it does not grant by default. A sixth is half POSIX - a FIFO has no
+Windows equivalent, a folder does - so only that half is guarded. `os.geteuid()` is asked only where there
+is one (it is not defined on Windows) because evaluating it while this module was being imported made the
+whole file a loader error there, and none of its thirteen tests ran (#3896).
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import errno
@@ -47,6 +54,13 @@ LAUNCHER_FONT = ROOT / "launcher" / "app" / "src" / "main" / "res" / "font" / "o
 HAVE_PIL = importlib.util.find_spec("PIL") is not None
 
 OLD = b"\x89PNG\r\n\x1a\nOLD PICTURE, ALREADY IN THE REPOSITORY"
+
+POSIX = os.name == "posix"
+# The four cases below that read a mode bit or follow a symlink, and the FIFO half of a fifth, are POSIX
+# ideas: Windows keeps no mode for a rename to carry and needs a privilege to make a link. Their decorators
+# ask for an euid only where there is one (os.geteuid is not defined on Windows) because asking while this
+# module was imported made the whole file a loader error there, and none of its cases ran (#3896).
+IS_ROOT = POSIX and getattr(os, "geteuid", None) is not None and os.geteuid() == 0
 
 
 class Encoder:
@@ -94,6 +108,7 @@ class StagedWriteTest(unittest.TestCase):
     def test_the_picture_lands_and_the_options_reach_the_encoder(self):
         self.assert_staged_write()
 
+    @unittest.skipUnless(POSIX, "a directory symlink needs a privilege Windows does not grant")
     def test_a_destination_directory_symlink_keeps_the_same_staging_checks(self):
         with tempfile.TemporaryDirectory() as tmp:
             alias = Path(tmp) / "pictures"
@@ -110,12 +125,14 @@ class StagedWriteTest(unittest.TestCase):
         self.assertEqual(self.out.read_bytes(), OLD, "a failed encode cut the old picture short")
         self.assertEqual(self.leftovers(), [], "a failed encode left its staging folder behind")
 
+    @unittest.skipUnless(POSIX, "file modes are a POSIX idea")
     def test_an_existing_file_keeps_its_mode(self):
         self.out.write_bytes(OLD)
         os.chmod(self.out, 0o640)
         picture_file.save(Encoder(), str(self.out))
         self.assertEqual(stat.S_IMODE(os.stat(self.out).st_mode), 0o640)
 
+    @unittest.skipUnless(POSIX, "file modes are a POSIX idea")
     def test_a_fresh_file_keeps_the_mode_open_left(self):
         umask = os.umask(0o022)
         os.umask(umask)
@@ -123,6 +140,7 @@ class StagedWriteTest(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(os.stat(self.out).st_mode), 0o666 & ~umask,
                          "a fresh picture should keep the mode open() left, not a staging file's")
 
+    @unittest.skipUnless(POSIX, "a symlink needs a privilege Windows does not grant")
     def test_a_symlink_keeps_its_link_and_its_target_is_replaced(self):
         target = self.dir / "elsewhere.png"
         target.write_bytes(OLD)
@@ -144,19 +162,23 @@ class StagedWriteTest(unittest.TestCase):
         self.assertEqual(other.read_bytes(), OLD)
 
     def test_a_destination_that_is_not_a_regular_file_is_refused(self):
-        fifo = self.dir / "a-pipe.png"
-        os.mkfifo(fifo)
-        with self.assertRaises(OSError) as caught:
-            picture_file.save(Encoder(), str(fifo))
-        self.assertIn("not a regular file", str(caught.exception))
-        self.assertTrue(stat.S_ISFIFO(os.stat(fifo).st_mode))
+        # A FIFO is a POSIX idea (os.mkfifo is not defined on Windows); a folder is not, and both are
+        # answered by the same check.
+        if POSIX:
+            fifo = self.dir / "a-pipe.png"
+            os.mkfifo(fifo)
+            with self.assertRaises(OSError) as caught:
+                picture_file.save(Encoder(), str(fifo))
+            self.assertIn("not a regular file", str(caught.exception))
+            self.assertTrue(stat.S_ISFIFO(os.stat(fifo).st_mode))
         folder = self.dir / "a-folder.png"
         folder.mkdir()
         with self.assertRaises(OSError) as caught:
             picture_file.save(Encoder(), str(folder))
         self.assertIn("not a regular file", str(caught.exception))
 
-    @unittest.skipIf(os.geteuid() == 0, "root may write a file whose mode says otherwise")
+    @unittest.skipIf(IS_ROOT, "root may write a file whose mode says otherwise")
+    @unittest.skipUnless(POSIX, "read-only is a mode Windows does not keep")
     def test_a_read_only_file_is_refused_without_being_truncated(self):
         self.out.write_bytes(OLD)
         os.chmod(self.out, 0o444)
@@ -213,8 +235,9 @@ class RealRedrawTest(unittest.TestCase):
                     self.assertEqual(done.returncode, 0, f"{name} failed on a path it should write: {done.stderr}")
                     self.assertNotEqual(out.read_bytes()[:16], OLD[:16], f"{name} left the old picture in place")
                     self.assertGreater(out.stat().st_size, 1000, f"{name} wrote an empty picture")
-                    self.assertEqual(stat.S_IMODE(os.stat(out).st_mode), 0o640,
-                                     f"{name} dropped the mode the picture had")
+                    if POSIX:                   # Windows has no mode for the redraw to carry
+                        self.assertEqual(stat.S_IMODE(os.stat(out).st_mode), 0o640,
+                                         f"{name} dropped the mode the picture had")
 
     def test_a_hard_linked_destination_is_refused_and_left_alone(self):
         for name, picture in CARD_SCRIPTS.items():
@@ -232,6 +255,28 @@ class RealRedrawTest(unittest.TestCase):
                     self.assertNotIn("Traceback", done.stderr)
                     self.assertEqual(out.read_bytes(), OLD)
                     self.assertEqual(other.read_bytes(), OLD)
+
+
+class WindowsPlatformTest(unittest.TestCase):
+    """A platform without os.geteuid() must still be able to import this file (#3896)."""
+
+    def test_the_file_imports_where_os_has_no_geteuid(self):
+        # The euid's skip decorator was evaluated while this module was being imported, so on Windows - where
+        # os has no geteuid to ask - the whole file was one loader error and none of its thirteen cases ran.
+        # Deleting the attribute here is what that platform looks like: os.name stays posix, so the guard
+        # short-circuits, and the old decorator called it and raised.
+        program = "\n".join([
+            "import importlib.util, os, sys",
+            "del os.geteuid",
+            f"spec = importlib.util.spec_from_file_location('staging', {str(Path(__file__).resolve())!r})",
+            "module = importlib.util.module_from_spec(spec)",
+            "spec.loader.exec_module(module)",
+            "print(len([n for n in dir(module.StagedWriteTest) if n.startswith('test_')]))",
+        ])
+        done = subprocess.run([sys.executable, "-c", program], capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(done.stdout.strip(), "10", "the file imported but lost its cases")
+        self.assertNotIn("Traceback", done.stderr)
 
 
 if __name__ == "__main__":
