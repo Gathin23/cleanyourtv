@@ -1,1 +1,6 @@
-
+{
+  "tv": "Xiaomi TV F Pro 32 (2026) (L32MB-FPEU, AFTMA2857F, shine)",
+  "os": "Fire OS 7.7.1.7 / Android 9",
+  "brand": "Xiaomi",
+  "notes": "Spanish ES unit on `AFTMA2857F` / `shine`: Amazon ACR, metrics and telemetry uploads, Xiaomi analytics (`com.miui.tv.analytics` disabled), ad ID and sponsored rows, Shopping, retail demo, tutorials and unused stubs disabled; Alexa voice helpers, Kids, Photos, Luna, profiles, screensaver, printing, NFC and forced-OTA promoter optional (commented out); `com.amazon.tv.launcher` kept (protected), `com.amazon.tv.livetv` kept, `com.amazon.livedeviceservice` kept, `com.amazon.franktvinput` kept, `com.amazon.cloud9` kept, tuner/HDMI, casting, OTA and streaming apps kept; debloat only, reboot-checked; [list](xiaomi-tv-f-pro-32-l32mb-fpeu/debloat.txt)"
+}
