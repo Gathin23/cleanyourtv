@@ -21,6 +21,8 @@ public class InputKeyService extends AccessibilityService {
     private static final String ACTION_VIEW_INPUTS = "com.android.tv.action.VIEW_INPUTS";
 
     private int[] inputKeycodes = new int[0];
+    /** settings_key_scancodes: with HomeKeyService bound, these buttons open Settings there, not an app_keys keycode app. */
+    private int[] settingsScancodes = new int[0];
     private Map<Integer, String> appKeys = Collections.emptyMap();
     private Map<Integer, String> appScancodes = Collections.emptyMap();
     private Map<Integer, String> holdAppKeys = Collections.emptyMap();
@@ -47,6 +49,7 @@ public class InputKeyService extends AccessibilityService {
         repairRecord = config.restoreKeyServices;
         if (repairRecord) ServiceRepair.connected(this, getClass());
         inputKeycodes = config.inputKeycodes;
+        settingsScancodes = getResources().getIntArray(R.array.settings_key_scancodes);
         consumeVolumeKeys = config.consumeVolumeKeys;
         appKeys = RemoteKeys.parseAppKeys(config.appKeys);
         appScancodes = RemoteKeys.parseAppScancodes(config.appKeys);
@@ -65,6 +68,13 @@ public class InputKeyService extends AccessibilityService {
         return false;
     }
 
+    /** HomeKeyService is bound and answers this settings_key_scancodes button with Settings, so no keycode app opens too. */
+    private boolean homeKeysOwnScancode(int scanCode) {
+        if (HomeKeyService.running == null) return false;
+        for (int code : settingsScancodes) if (scanCode == code) return true;
+        return false;
+    }
+
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
         if (consumeVolumeKeys && VolumeKeys.handle(this, event)) return true;
@@ -72,6 +82,11 @@ public class InputKeyService extends AccessibilityService {
         if (RemoteKeys.handle(this, event, RemoteKeys.tap(appScancodes.get(event.getScanCode()),
                 frontAppScancodes.get(event.getScanCode())),
                 holdAppScancodes.get(event.getScanCode()))) return true;
+        if (homeKeysOwnScancode(event.getScanCode())) {
+            // HomeKeyService opens Settings: no tap and no Inputs picker here, but a hold entry stays shared.
+            RemoteKeys.handle(this, event, null, holdAppKeys.get(event.getKeyCode()));
+            return true;
+        }
         if (RemoteKeys.handle(this, event, RemoteKeys.tap(appKeys.get(event.getKeyCode()),
                 frontAppKeys.get(event.getKeyCode())),
                 holdAppKeys.get(event.getKeyCode()))) return true;

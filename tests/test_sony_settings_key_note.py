@@ -27,6 +27,7 @@ SYSTEM_SETTINGS = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / 
 KEYS_PAGE = ROOT / "themes" / "README.md"
 CONFIG_XML = ROOT / "launcher" / "app" / "src" / "main" / "res" / "values" / "config.xml"
 CONFIG_JAVA = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "Config.java"
+INPUT_KEYS = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "InputKeyService.java"
 REMOTE_KEYS = ROOT / "launcher" / "app" / "src" / "main" / "java" / "com" / "gathin" / "tvhome" / "RemoteKeys.java"
 
 SECTION = "## Accessibility helper enabled but the remote button does nothing"
@@ -116,6 +117,20 @@ class SonySettingsKeyNoteTest(unittest.TestCase):
         # settings_key_scancodes stays Settings even when its keycode has an app_keys entry.
         on_key = self.home_keys.index("protected boolean onKeyEvent(KeyEvent event)")
         self.assertIn("(!settingsKey || (tap != null && !isSettingsScancode(event)))", self.home_keys[on_key:])
+
+    def test_input_key_service_skips_the_keycode_tap_of_a_settings_scancode_while_home_keys_is_bound(self):
+        # Both helpers see the press; RemoteKeys records none for the Settings branch, so InputKeyService must
+        # not start the keycode app itself, but only while HomeKeyService is there to open Settings.
+        text = INPUT_KEYS.read_text(encoding="utf-8")
+        self.assertIn("getResources().getIntArray(R.array.settings_key_scancodes)", text)
+        self.assertIn("if (HomeKeyService.running == null) return false;", text)
+        on_key = text.index("protected boolean onKeyEvent(KeyEvent event)")
+        guard = text.index("if (homeKeysOwnScancode(event.getScanCode())) {", on_key)
+        branch = text[guard:text.index("return true;", guard) + len("return true;")]
+        # The hold entry stays shared (no tap), and the key is consumed before the Inputs picker fallback.
+        self.assertIn("RemoteKeys.handle(this, event, null, holdAppKeys.get(event.getKeyCode()));", branch)
+        self.assertLess(guard, text.index("appKeys.get(event.getKeyCode())", on_key))
+        self.assertLess(guard, text.index("isInputKey(event.getKeyCode())", on_key))
 
     def test_the_quoted_entry_is_one_remote_keys_reads_and_opens(self):
         # Both halves of "scan:<scancode>:package/.Activity", in RemoteKeys: parseAppScancodes() reads
