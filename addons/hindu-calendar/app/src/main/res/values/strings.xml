@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name" translatable="false">Panchang</string>
+    <string name="previous">Previous</string>
+    <string name="today">Today</string>
+    <string name="next">Next</string>
+    <string name="month">Month</string>
+    <string name="day">Day</string>
+    <string name="city">City</string>
+    <string name="region">Region</string>
+    <string name="screensaver">Screensaver</string>
+    <string name="screensaver_missing">Screensaver settings are unavailable on this TV.</string>
+    <string name="tithi">Tithi</string>
+    <string name="nakshatra">Nakshatra</string>
+    <string name="yoga">Yoga</string>
+    <string name="karana">Karana</string>
+    <string name="till">till %1$s</string>
+    <string name="rahu_kala">Rahu Kala</string>
+    <string name="yamaganda">Yamaganda</string>
+    <string name="gulika">Gulika</string>
+    <string name="abhijit">Abhijit</string>
+    <string name="range">%1$s – %2$s</string>
+    <string name="no_sun">No sunrise or sunset at this latitude today.</string>
+    <string name="sun_times">Sunrise %1$s · Sunset %2$s</string>
+    <string name="place">%1$s · %2$s</string>
+    <string name="month_range">%1$s – %2$s</string>
+    <string name="month_day">%1$s · %2$s · %3$s · %4$s</string>
+    <string name="heading">%1$s · %2$s %3$s</string>
+</resources>
