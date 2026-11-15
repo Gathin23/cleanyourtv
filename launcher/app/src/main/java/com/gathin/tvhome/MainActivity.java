@@ -1665,9 +1665,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (movingKey != null) {
             return pos != RecyclerView.NO_POSITION && movingKey.equals(adapter.keyAt(pos)) ? 1f : 0.45f;
         }
-        if (dockEditSlot >= 0 && pos >= 0 && pos < COLUMNS && pos != dockEditSlot) return 0.45f;
-        if (reordering) return 0.45f;
-        return 1f;
+        return GridNavigation.idleAlpha(pos, COLUMNS, dockEditing, dockEditSlot, reordering);
     }
 
     /** Ends the mode and saves the order if it changed since the mode started. */
