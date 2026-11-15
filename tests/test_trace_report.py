@@ -529,6 +529,16 @@ class FilesTest(unittest.TestCase):
             self.assertEqual([os.path.basename(p) for p in report.expand([tmp])],
                              ["home-1.pftrace", "home-2.pftrace", "home-10.pftrace"])
 
+    def test_a_folder_name_with_glob_characters_is_read_as_itself(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "tr[1]").mkdir()
+            Path(tmp, "tr[1]", "home-1.pftrace").write_bytes(b"")
+            folder = os.path.join(tmp, "tr[1]")
+            self.assertEqual([folder], [os.path.dirname(p) for p in report.expand([folder])])
+            Path(tmp, "tr1").mkdir()
+            Path(tmp, "tr1", "other-1.pftrace").write_bytes(b"")
+            self.assertEqual([os.path.join(folder, "home-1.pftrace")], report.expand([folder]))
+
     def test_scenario_comes_from_the_sidecar_then_the_name(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp, "run-1.pftrace")

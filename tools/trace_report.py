@@ -170,7 +170,7 @@ def expand(items):
     paths = []
     for item in items:
         if os.path.isdir(item):
-            paths += sorted(glob.glob(os.path.join(item, "*.pftrace")), key=_run_order)
+            paths += sorted(glob.glob(os.path.join(glob.escape(item), "*.pftrace")), key=_run_order)
         else:
             paths.append(item)
     return paths
