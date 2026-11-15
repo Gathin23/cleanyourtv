@@ -9,6 +9,14 @@
 # 33 were still disabled afterwards. Home, Live TV, the input list, Play Store and the streaming apps still
 # worked. That is one evening of use, not weeks.
 #
+# Second unit: TCL 50QM8B (50", model "Smart TV Pro", G08_4K_GB, MediaTek tcl9618, about 2.4 GB RAM), Germany, the same
+# firmware UTT2.250416.001 AU02 (security patch 2025-12-05), remote BT_RC833_U1 (Bluetooth LE). That owner took the
+# 21 packages of examples/tcl-qm6k-google-tv that exist on this build with tools/disable.sh, in one batch, on
+# 20 October 2026; 16 of them are on this list. On 13 November, 24 days and a reboot later, all of them were still
+# disabled, and the owner had noticed no loss. README.md has the rest, including the five that are not on this list:
+# com.tcl.ttvs and com.tcl.channelplus (kept on purpose here, see the notes below), com.tcl.smartalexa and
+# com.tcl.ui_mediaCenter (optional lines at the end), and com.google.android.youtube.tvmusic, which was already off.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-55q7d-pro-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-55q7d-pro-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -75,3 +83,7 @@ com.android.printspooler
 # Replaced or superseded by the custom launcher. Uncomment launcherx to get Google TV's Home back.
 com.google.android.apps.tv.launcherx
 com.google.android.tungsten.setupwraith  # setup wizard; its RecoveryActivity takes Home when launcherx is off
+
+# Optional, tested on the second unit only (24 days, 50QM8B, Germany). Uncomment what you do not use.
+# com.tcl.smartalexa                    # TCL's Alexa; the owner uses neither Alexa nor TCL's voice layer, Katniss kept
+# com.tcl.ui_mediaCenter                # TCL's media player for USB drives; the owner plays nothing from USB
