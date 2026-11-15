@@ -1,0 +1,57 @@
+# TCL 43S434 (Device BeyondTV, board Realtek RTD2851, 2 GB RAM)
+# Android TV 11 (SDK 30), build RP1A.200622.001 / incremental AR05 (V8-R851T02-LF1V728)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-43s434/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-43s434/debloat.txt
+#
+# Everything is DISABLED, not uninstalled. Comment out any line you wish to keep.
+#
+# HARDWARE / INPUT NOTES:
+# DO NOT DISABLE: com.tcl.tv, com.tcl.tvinput, com.tcl.settings, com.tcl.systemserver,
+# com.tcl.gallery, com.tcl.ui_mediaCenter.
+# On RTD2851 / AR05, com.tcl.gallery and ui_mediaCenter are wired to the TV_INPUT_HARDWARE
+# layer; disabling them causes black screens on HDMI inputs.
+#
+# VOICE & REMOTE NOTES:
+# Voice search using the remote mic is preserved via com.google.android.katniss.
+# To prevent Katniss's background hotword listener from using 25-50% CPU listening for "Hey Google":
+#   cmd appops set com.google.android.katniss RUN_IN_BACKGROUND ignore
+#   cmd appops set com.google.android.katniss RUN_ANY_IN_BACKGROUND ignore
+#
+# CHROMACAST:
+# Kept active via com.google.android.apps.mediashell.
+#
+# STREAMING PERFORMANCE TUNING:
+# 1. Limit background processes to 1 on 2GB RAM sets:
+#    settings put global standard_background_process_limit 1
+# 2. Ahead-of-time compile heavy streaming apps:
+#    cmd package compile -m speed -f com.sling
+
+# ---- 1. TCL & Google Telemetry ----
+com.tcl.bi                                  # TCL BI analytics & tracking
+com.tcl.xian.StartandroidService            # Background telemetry beacon
+com.google.android.feedback                 # Crash and error reporting
+
+# ---- 2. TCL & Google Content, Ads, Promos ----
+android.autoinstalls.config.tcl.device      # TCL partner auto-install config
+com.google.android.partnersetup             # Google partner setup
+com.google.android.onetimeinitializer       # One-time setup wizard hooks
+com.tcl.esticker                            # Retail demo mode popups & sticker
+com.tcl.messagebox                          # Promotional popups & message box
+com.tcl.waterfall.overseas                  # TCL recommendation waterfall service
+com.tcl.tv.tclhome_passive                  # TCL Home passive service
+com.tcl.tv.tclhome_master                   # TCL Home master service
+com.tcl.overseasappshow                     # Featured promo apps showcase
+com.google.android.tvrecommendations        # Google recommendations row scraper
+
+# ---- 3. Unneeded Background Services ----
+com.google.android.syncadapters.calendar    # Calendar sync on a TV
+com.tcl.usercenter                          # TCL account login / sync
+com.tcl.guard                               # TCL memory cleaning utility (redundant with lmkd)
+com.tcl.smartalexa                          # Duplicate Alexa assistant service
+com.tcl.assistant                           # Duplicate TCL voice assistant
+com.tcl.miracast                            # Duplicate Miracast receiver (Chromecast used instead)
+com.tcl.versionUpdateApp                    # TCL OTA updater (can be re-enabled if manual update needed)
+
+# ---- 4. First-Run Wizard ----
+com.google.android.tungsten.setupwraith     # Setup wizard (safe to disable after Wi-Fi is configured)

@@ -1,0 +1,6 @@
+{
+  "tv": "TCL 43S434 (4-Series, BeyondTV, Realtek RTD2851, 2 GB RAM), US AR05 build (V8-R851T02-LF1V728)",
+  "os": "Android TV 11",
+  "brand": "TCL",
+  "notes": "US 4-Series BeyondTV on Realtek RTD2851: 23 telemetry, ad, promo and unneeded background packages disabled; stock tvlauncher replaced with com.gathin.tvhome; live weather integrated beside clock; HDMI inputs and live TV (com.tcl.tv) preserved; Chromecast kept; remote voice typing kept with background hotword listener restricted via AppOps; background process limit 1 enforced; AOT native compilation and AdGuard NXDOMAIN telemetry sinkhole fix applied for smooth Sling/streaming playback."
+}

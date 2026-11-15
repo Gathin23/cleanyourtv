@@ -1,0 +1,6 @@
+{
+  "tv": "onn 4K Pro Streaming Device (Gen 1, Walmart; jarvis/SNA, Amlogic S905X4, 3 GB RAM), US",
+  "os": "Google TV 14",
+  "brand": "onn",
+  "notes": "Walmart Onn 4K Pro (Gen 1, Amlogic S905X4, 3GB RAM) on Google TV 14 (Build URO4.260304.092): Dolby MS12 software loop killed by setting Surround Sound to None (drops audio service from 32% down to 5.8% CPU); always-on mic kept with AOT speed compilation; background process limit 1 prevents minimized streaming apps (Sling) from burning 100%+ CPU; AdGuard Home NXDOMAIN and allowlist rules prevent telemetry retry freezes."
+}

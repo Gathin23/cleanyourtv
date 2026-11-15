@@ -1,0 +1,15 @@
+{
+  "dock_apps": [
+    "com.sling",
+    "com.nuvio.tv",
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "hidden_apps": [
+    "com.tcl.tv",
+    "com.tcl.partnercustomizer"
+  ],
+  "live_tv_package": "com.tcl.tv",
+  "columns": 5
+}

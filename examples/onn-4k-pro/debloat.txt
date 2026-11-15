@@ -1,0 +1,51 @@
+# onn 4K Pro Streaming Device (Gen 1, Walmart; device jarvis/SNA, Amlogic S905X4, 3 GB RAM), US
+# Google TV 14 (SDK 34), build URO4.260304.092.16202347, 32-bit userspace (armeabi-v7a)
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/onn-4k-pro/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/onn-4k-pro/debloat.txt com.google.android.apps.tv.launcherx
+#
+# Stock launcher: com.google.android.apps.tv.launcherx (Google TV Home).
+#
+# HARDWARE & AUDIO TUNING NOTES:
+# 1. DOLBY MS12 CPU DRAIN (Cuts ~25% CPU):
+#    In Settings -> Display & Sound -> Advanced sound settings -> Surround sound:
+#    Change from "Automatic" to "None" (if using TV speakers) or "Manual" (if using soundbar/AVR).
+#    This drops android.hardware.audio.service-droidlogic from ~32% CPU down to 5.8% CPU by
+#    disabling continuous software audio transcoding.
+# 2. ALWAYS-ON MIC (SODA ENGINE):
+#    com.google.android.katniss:interactor runs Google's SODA on-device speech engine (~25% CPU).
+#    Precompile it with ahead-of-time (AOT) machine code for optimal performance:
+#    cmd package compile -m speed -f com.google.android.katniss
+# 3. BACKGROUND STREAMING CAP:
+#    In Android 14, minimized apps like Sling continue decoding at 100%+ CPU in background.
+#    Enforce background process limit and AppOps restriction:
+#    settings put global standard_background_process_limit 1
+#    cmd appops set com.sling RUN_IN_BACKGROUND ignore
+#    cmd appops set com.sling RUN_ANY_IN_BACKGROUND ignore
+# 4. ASR / AI SUPER RESOLUTION:
+#    The Amlogic S905X4 VPU hardware handles all upscaling to 4K 60Hz automatically in silicon.
+#    The AI-PQ/AI-SR setting in DroidTvSettings is grayed out on Android 14 because S905X4 lacks
+#    the dedicated NPU of the newer S905X5 generation.
+# 5. ADGUARD HOME / NETWORK AD-BLOCKER EXCEPTIONS:
+#    Add these rules to stop Conviva, MoveTV, and Dynatrace infinite retry loops:
+#    @@||cws.conviva.com^$client=<TV_IP>
+#    @@||movetv.com^$client=<TV_IP>
+#    @@||bf.dynatrace.com^$client=<TV_IP>
+
+# Telemetry and feedback
+com.google.android.feedback
+com.android.tv.feedbackconsent
+
+# Privacy Sandbox / on-device ad & federated learning services (Android 14 APEX)
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+
+# Preloaded Google apps and unneeded background services
+com.google.android.play.games
+com.android.printspooler
+com.google.android.marvin.talkback
+com.android.providers.calendar
+com.android.providers.contacts
+com.android.providers.userdictionary
+com.google.android.syncadapters.calendar

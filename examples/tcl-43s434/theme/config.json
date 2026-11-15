@@ -1,0 +1,32 @@
+{
+  "dock_apps": [
+    "com.sling",
+    "com.nuvio.tv",
+    "com.google.android.youtube.tv",
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "columns": 5,
+  "background_color": "#000000",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 2,
+  "wallpaper_order": "shuffle",
+  "wallpaper_captions": true,
+  "rows_below_dock": 0,
+  "dock_title": true,
+  "dock_glass": true,
+  "dock_opacity": 38,
+  "dock_even_padding": true,
+  "wallpaper_dim": 15,
+  "fade_rows": true,
+  "ambient_glow": true,
+  "app_glow": true,
+  "glow_style": "horizon",
+  "cinematic_home": true,
+  "icon_only_buttons": true,
+  "icon_only_inputs": true,
+  "home_idle_clock_minutes": 3,
+  "back_opens_clock": true,
+  "clock_wallpaper": true,
+  "clock_wallpaper_dim": 25
+}
