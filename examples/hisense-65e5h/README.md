@@ -1,7 +1,9 @@
 # Hisense 65E5H: ADB through the factory menu, and what this list changes
 
 Owner report for a China-market Hisense 65E5H running JuUI 9 on Android 9. The tested list is
-[debloat.txt](debloat.txt); it keeps the stock Home and Live TV, so it is debloat only.
+[debloat.txt](debloat.txt); it keeps the stock Home and Live TV, so it is debloat only. A second unit
+on the same board and build, a China Hisense 85U7G PRO, is [below](#second-unit-hisense-85u7g-pro).
+Its list is [debloat-85u7g-pro.txt](debloat-85u7g-pro.txt).
 
 | Item | Value |
 |---|---|
@@ -20,6 +22,7 @@ Owner report for a China-market Hisense 65E5H running JuUI 9 on Android 9. The t
 | File | Contents |
 |---|---|
 | `debloat.txt` | The 29 packages that were disabled, grouped and commented |
+| `debloat-85u7g-pro.txt` | The 26 packages disabled on the 85U7G PRO |
 
 ## Enabling ADB
 
@@ -75,3 +78,47 @@ Applied in six batches with a cold reboot after each: 29 packages stay disabled,
 reconnects, the input/source panel and the Bluetooth pairing service keep running, and the crash
 buffer stays empty. The sponsored rows on the JuUI home are fetched by `com.jamdeo.tv.vod` itself, so
 they remain - only a launcher swap removes them, and that was not attempted on this firmware.
+
+## Second unit: Hisense 85U7G PRO
+
+China retail 85U7G PRO, probed 2026-11-14. Same board and the same firmware as the 65E5H:
+`VIDAA_TV` / `MTK9652` / `hisense_m7642_cn`, Android 9 (API 28),
+`U7G_PRO-user 9 PPR2.180905.006.A1 02.02.60.01 release-keys`. ABIs `armeabi-v7a` and `armeabi`.
+127 packages installed and none disabled beforehand. Stock Home and Live TV are the same packages,
+and both stay enabled.
+
+USB debugging was already on. `ro.adb.secure` is `1` and `service.adb.tcp.port` is `5555`, as on the
+65E5H. The factory-menu steps above are that set's route and were not used here, so this page does
+not claim they open debugging on an 85U7G PRO.
+
+[debloat-85u7g-pro.txt](debloat-85u7g-pro.txt) is the 65E5H list minus the three packages this unit
+does not install: `com.hisense.platformreport`, `com.hisense.tv.weather` and `com.hisense.tv.fitmirror`.
+`fusion.android.tv.demo` is installed and was left alone. The karaoke microphone manager stays
+enabled. The `settings put secure screensaver_enabled 0` line in the 65E5H header was not run here.
+
+```
+TV_HOST=<tv ip> tools/disable.sh examples/hisense-65e5h/debloat-85u7g-pro.txt
+TV_HOST=<tv ip> tools/restore.sh examples/hisense-65e5h/debloat-85u7g-pro.txt
+```
+
+The 26 packages were disabled in one pass. A reboot about a minute later left all 26 disabled, and
+stock Home still started. Rebooting sooner than about a minute dropped a disable on the 65E5H, and
+the same wait was used here. This is one session on one day, not several days of use.
+
+Do not add `com.jamdeo.tv.vod`. Disabling that package, then waiting long enough for the disable to
+stick, left a reboot with no Home: nothing held focus, HOME resolved to no activity, and another
+launcher could not be started until `com.jamdeo.tv.vod` was enabled again. The shell is also refused
+when it tries to disable only `com.ju.main.launcher.LauncherActivity`.
+
+The reference launcher can sit beside JuUI with the stock launcher left enabled. After
+`cmd package set-home-activity` the Home key opens `com.gathin.tvhome`. A cold boot still starts
+`com.jamdeo.tv.vod`. Pointing `stock_home_redirect` at that package and enabling the launcher's
+accessibility service did not move the picture off JuUI within about a minute, and the service was
+not bound, so this unit does not show an automatic handover.
+
+The clip before the desktop is not one of these packages. `mstar.hardware.bootvideo` plays files
+from `/bootad/local/misc/` (`ro.his.ad.adpath`; the `bootad` partition is `mmcblk0p27`). On this unit
+those files were `third_party_bootvideo.mp4` and `third_party_fast_bootvideo.mp4`, and
+`persist.sys.video_advert_time` was 16143. Disabling `com.hisense.service.ad` does not stop a clip
+that is already there. Removing the two files stopped the third-party clip; the JuUI splash still
+plays. The ad service was already disabled, and the directory was still empty after the next reboot.

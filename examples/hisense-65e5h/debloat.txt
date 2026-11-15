@@ -4,6 +4,10 @@
 # nothing disabled at the factory. Stock Home is com.jamdeo.tv.vod (com.ju.main.launcher.LauncherActivity)
 # and Live TV is com.jamdeo.tv.livetv; both are left enabled, so this is a debloat-only list.
 #
+# Second unit, same board and the same incremental 02.02.60.01: Hisense 85U7G PRO, China
+# (ro.build.description U7G_PRO-user 9 PPR2.180905.006.A1 02.02.60.01 release-keys). Its list is
+# debloat-85u7g-pro.txt. README.md has what that unit showed about Home and the boot clip.
+#
 # ro.adb.secure=1 on this firmware: the TV asks "Allow USB debugging?" for the computer once and keeps
 # the key. service.adb.tcp.port=5555, so USB debugging alone opens the port over Wi-Fi, no cable and
 # no separate network-debugging toggle. Reaching USB debugging needs the factory menu on this set
