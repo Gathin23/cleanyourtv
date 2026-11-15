@@ -612,6 +612,26 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   test app does not count as something else: on a Xiaomi Mi TV 4A
   `com.duokan.factorytest/.FactoryLauncher` answers HOME, so the guard leaves it out, along with any
   package named `*factorytest*`, `*factory_test*` or `*factorymode*`.
+- **The install stops at `Home currently resolves to '<package>', which is not a stock launcher this
+  script knows`**, seen on an Allwinner-based "Z1 4K" (Android 11,
+  [#3471](https://github.com/Gathin23/cleanyourtv/issues/3471)). `launcher/build-and-install.sh` asks
+  the TV which app owns Home and turns off only one of the four it recognises (README, "How the
+  scripts protect Home"), because the answer can also be Android's chooser, a setup wizard, or
+  another launcher, and none of those should be disabled by accident. Two answers turn up in
+  practice: a vendor setup stub that still owns Home, `com.softwinner.provision` on that box, and
+  Google TV's `com.google.android.tungsten.setupwraith`, which the script's own message names and
+  which answers HOME ahead of a launcher that is not Home yet. Finish or skip the TV's own setup so
+  the stub stops answering HOME, list the candidates with
+  `tools/tv.py 'cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME'`,
+  then run the installer again naming the package it should turn off:
+  `STOCK_LAUNCHER=com.google.android.tvlauncher launcher/build-and-install.sh` (`-StockLauncher` with
+  the `.ps1`), or `STOCK_LAUNCHER=none` to leave every launcher on, which keeps the stock launcher as
+  Home (`stock_home_redirect`). A wrong guess is recoverable: after the install the script reads where
+  Home ended up and enables the package it was told to disable when the new launcher is not Home,
+  leaving those commands in a `cleanyourtv-handover-<address>.txt` when it cannot confirm the handover
+  came back. Nothing here needs the wizard disabled: the install only needs Home answered by a
+  launcher, and a list that carries a `setupwraith` line is applied with that line skipped while the
+  saved Wi-Fi network belongs to it (`FORCE_SETUPWRAITH=1` overrides on Ethernet).
 - **The TV no longer boots after a list that disabled Android's core packages** (original Mi TV
   Stick, [#884](https://github.com/Gathin23/cleanyourtv/issues/884)). An agent's list took
   `com.google.android.permissioncontroller`, `com.google.android.packageinstaller`,
