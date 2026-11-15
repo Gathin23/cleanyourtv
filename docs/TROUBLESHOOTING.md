@@ -136,7 +136,10 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   ping-discovery probe fail outright ("Network is down", SO_ERROR 50) before it scans anything;
   `nmap -sT -Pn` (a plain TCP connect scan, no ping, no raw sockets) or the Python loop above still
   works there. Every script here honours `TV_PORT`, and
-  the closing check is `tools/adb-closed.py <tv ip> <port>`.
+  the closing check is `tools/adb-closed.py <tv ip> <port>`. Not every port that answers is ADB: a
+  Philips keeps its JointSpace API open on 1926, and 1925 on older sets, whatever the debugging toggles
+  say (`tools/philips-api.py` reads the API there), so `tools/adb-closed.py <tv ip> 1925` reports that
+  port as open, not as network ADB - the tool says which port it checked, and 5555 is the one to close.
 - **Close port 5555 when you're done**: plaintext, and a shell for anyone on the LAN when `ro.adb.secure=0`, or when it is unset on a debug build or Android 4.4 (`tools/disable.sh` warns about both). Steps in the README FAQ.
 - **The TV sits on a separate VLAN or IoT network** and `tools/tv.py` times out although debugging
   is on: the router keeps the computer from reaching it. Add a temporary firewall rule from your

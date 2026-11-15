@@ -18,6 +18,14 @@ says so and gives the way to grant it (tools/tv.py names the same permission at 
 A TV_PORT exported with TV_HOST=127.0.0.1, or set to relay.py's 15555, is a relay's (tools/relay.md), so
 it is not used for a TV's own IP. 127.0.0.1 is this computer: a relay answers there for itself, not for
 the TV, so a refusal there is not the TV's.
+
+An open port other than 5555 is reported as the port it is, not as ADB. Port 5555 is the ADB port, and
+another port may be the Wireless debugging port (`adb mdns services` lists it as
+`_adb-tls-connect._tcp`) or one this firmware runs adbd on (5877 on the Wanbo T6R Max) - but a TV also
+keeps services of its own open whatever the debugging toggles say, the JointSpace API on a Philips
+(1926, or 1925 on older sets), casting and a web page among them. For those an open port says nothing
+about ADB, so the message names the port it checked and, to finish the step, the command that checks
+5555 itself.
 """
 import errno
 import ipaddress
@@ -27,6 +35,7 @@ import sys
 
 TIMEOUT_S = 3.0
 RELAY_PORT = 15555   # relay.py's default --port, the TV_PORT it tells the tools to use
+ADB_PORT = 5555      # where adbd listens by default: an open one of these is network ADB
 
 
 def this_computer(host):
@@ -99,6 +108,22 @@ def address_problem(word):
         return ("that is a path, not the TV's address: give the IP (or IP:port) alone, without a / or the "
                 "page it opens, e.g.  tools/adb-closed.py <tv ip>")
     return None
+
+
+def open_port_message(host, port, relay):
+    """What an open port means: ADB for 5555 (and a relay's for a relay), the port itself for any other."""
+    if port == ADB_PORT:
+        return (f"{host}:{port} is still open: network ADB is on. On the TV, turn USB debugging,\n"
+                "Network/ADB debugging and Wireless debugging off and check again, then reboot it\n"
+                "and check once more.\n" + relay)
+    return (f"{host}:{port} is still open: something answers there. 5555 is the ADB port, so an open one\n"
+            "of those is network ADB. The port you gave may be the Wireless debugging port, which\n"
+            "`adb mdns services` lists as `_adb-tls-connect._tcp`, or one this firmware runs adbd on.\n"
+            "For those, turn USB debugging, Network/ADB debugging and Wireless debugging off, check\n"
+            "again, then check 5555 after the reboot. A TV also keeps services of its own open whatever\n"
+            "those toggles say - the JointSpace API on a Philips (1926, or 1925 on older sets),\n"
+            "casting, a web page - and an open port like that says nothing about ADB. Check the ADB\n"
+            "port with  tools/adb-closed.py " + host + " 5555\n" + relay)
 
 
 def main():
@@ -199,13 +224,14 @@ def main():
                     "learned about the port.\n")
         sys.stderr.write(f"could not check {host}:{port} ({e}). Is the TV on and on this network?\n" + note)
         return 2
-    # Wireless debugging has a port of its own and stays open when USB debugging goes off, so the advice
-    # names it too. The second check comes before the reboot: if this is the Wireless debugging port, a
-    # reboot leaves Wireless debugging off or starts it on a new port, and this number reads closed
-    # afterwards either way. Port 5555 is the one worth checking again after the reboot.
-    sys.stderr.write(f"{host}:{port} is still open: network ADB is on. On the TV, turn USB debugging,\n"
-                     "Network/ADB debugging and Wireless debugging off and check again, then reboot it\n"
-                     "and check once more.\n" + relay)
+    # An open port is judged by which port it is. 5555 is where adbd listens by default, so an open one of
+    # those is network ADB; a port handed in is the owner's choice - Wireless debugging's own (which stays
+    # open when USB debugging goes off, so the advice names it too, and the check comes before the reboot
+    # because a reboot leaves it off or on a new port), or one this firmware runs adbd on. Any other port
+    # belongs to a service the toggles do not touch: a Philips keeps its JointSpace API open on 1926 and
+    # 1925 whatever they say (tools/philips-api.py reads it there), so saying "network ADB is on" for it
+    # sent the owner of a 58PUS7304 hunting a setting that was already off (#3890).
+    sys.stderr.write(open_port_message(host, port, relay))
     return 1
 
 
