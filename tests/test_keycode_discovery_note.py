@@ -122,6 +122,12 @@ class KeycodeDiscoveryNoteTest(unittest.TestCase):
         self.assertIn("MSC_SCAN", self.scancodes_comment)
         self.assertIn("scanCode", self.scancodes_comment)
 
+    def test_config_xml_scancodes_comment_reads_the_number_in_decimal(self):
+        # -l prints a key's name in place of its number, and the array takes decimal.
+        self.assertIn("getevent -t", self.scancodes_comment)
+        self.assertNotIn("getevent -l", self.scancodes_comment)
+        self.assertIn("decimal", self.scancodes_comment)
+
     def test_comment_before_finds_the_comment_it_was_asked_for(self):
         # The two comments are adjacent and nearly identical in shape; a helper that returned the
         # first one it saw would make both comment tests pass on the wrong text.
