@@ -184,6 +184,17 @@ def address_problem(host):
 
 
 def main(argv):
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of
+    # stopping. The report is printed as the set's own API answers it, and `name` is what the owner called the
+    # TV in its settings: a Chinese or Japanese name ended the run in a UnicodeEncodeError traceback after the
+    # four requests had already been answered, and every line after it - the version, the ambilight features and
+    # the endpoints - was lost. The tools that talk to a TV over ADB inherit this from tools/tv.py, which sets
+    # the same two streams when it is imported; this one speaks HTTP and never loads it.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     args = argv[1:]
     # -h/--help is a reader asking what the tool does, not an address it cannot use: the other tools
     # in tools/ answer it at 0 with the note on stdout (adb-closed.py is the exception, pinned by

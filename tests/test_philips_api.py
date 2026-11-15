@@ -30,6 +30,7 @@ import io
 import json
 import socket
 import ssl
+import sys
 import unittest
 import urllib.error
 from pathlib import Path
@@ -309,6 +310,57 @@ class Answered(unittest.TestCase):
 
     def test_an_answer_is_not_a_failure(self):
         self.assertFalse(philips_api.answered(None))
+
+
+class ANameTheConsoleCannotPrint(unittest.TestCase):
+    """The report is printed as the set's own API answers it, and `name` is the owner's label for the TV.
+
+    A name written in Chinese or Japanese therefore ended the run in a UnicodeEncodeError traceback: the
+    four requests had been answered, the line naming the API had been printed, and everything after the
+    name - the version, the pairing type, the ambilight features and the endpoint list - was lost, with
+    exit 1, which this file gives "a port answered and it is not the API". cp1252 is the window a Windows
+    console hands a script that does not ask for UTF-8.
+    """
+
+    def run_tool(self, answers):
+        asked = []
+
+        def fake_get(url, timeout=8):
+            asked.append(url)
+            return answers.get(url, (None, "timed out", TIMEOUT))
+
+        raw = io.BytesIO()
+        console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = console
+        with mock.patch.object(philips_api, "get", fake_get), \
+                contextlib.redirect_stderr(io.StringIO()) as err:
+            code = philips_api.main(["philips-api.py", "192.168.1.50"])
+        console.flush()
+        return code, raw.getvalue().decode("cp1252"), err.getvalue()
+
+    def test_a_chinese_name_keeps_the_rest_of_the_report(self):
+        system = json.dumps({
+            "name": "客厅电视",
+            "api_version": {"Major": 6, "Minor": 1, "Patch": 0},
+            "featuring": {"systemfeatures": {"pairing_type": "digest_auth_pairing"},
+                          "jsonfeatures": {"ambilight": ["LoungeLight", "Hue"]}},
+        })
+        base = "https://192.168.1.50:1926/6/"
+        answers = {base + "system": (200, system, None)}
+        answers.update({base + p: (401, "", None) for p in philips_api.PROBE})
+        code, out, err = self.run_tool(answers)
+        self.assertEqual(code, 0, err)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("API on https://192.168.1.50:1926", out)
+        self.assertIn("name           ????", out)
+        self.assertIn("6.1.0", out)
+        self.assertIn("digest_auth_pairing", out)
+        self.assertIn("LoungeLight", out)
+        self.assertIn("endpoints (401 = there, waiting for pairing):", out)
+        # The last line of the report, which a traceback on the name never reached.
+        self.assertIn(f"  {philips_api.PROBE[-1]:32s} there", out)
 
 
 if __name__ == "__main__":

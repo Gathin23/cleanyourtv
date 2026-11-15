@@ -130,6 +130,17 @@ def refuse(message):
 
 
 def main():
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    # The theme folder is the argument the reader types, and it is on the last line of a run that has already
+    # written config.json: a folder named with a character the console cannot encode ended that run in a
+    # UnicodeEncodeError traceback and the exit status 1 this file's docstring gives "the season has no race left
+    # to show" - the theme was updated and the run said otherwise. tools/tv.py, match.py and the picture scripts
+    # set the same two streams for their own output; this tool's last line is the one name nothing else covers.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     parser = argparse.ArgumentParser(description="Put this season's F1 calendar into a theme.")
     parser.add_argument("theme", help="theme folder that already exists; its config.json is created if "
                                      "missing")
