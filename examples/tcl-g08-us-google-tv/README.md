@@ -126,3 +126,30 @@ wizard disabled for a custom Home app. Seen 22 and 23 October 2026.
 - **Reinstalling the Home app can switch the TV to an input.** While Home restarts, TCL's player `com.tcl.tv` is next
   in the back stack: it resumes, re-tunes its last input (here the AirPlay input) and stays in front.
   `am force-stop com.tcl.tv` before `pm install -r` avoids it.
+
+## Fifth unit: a 98-inch set on AU14
+
+A 98-inch `G08_4K_US` set, model "Smart TV Pro", client type `TCL-NA-MT9653-S1`, firmware `UTT2.250416.001 AU14`
+(older than the AU16 above), on Wi-Fi, with a soundbar on HDMI eARC. Its firmware reports `ro.odm.tcl.panel_size`
+55, so that property says nothing about the real size. Set up on 13 November 2026 with this list less AirPlay and
+Prime Video (kept by the owner), plus `com.tcl.ttvs` and `com.tcl.UpdatePeripheral`, which the owner wanted off
+(no firmware or soundbar updates); then launcherx and the setup wizard for the reference launcher. Two days of use,
+several reboots.
+
+- **`com.tcl.ttvs` turned off cleanly.** `dumpsys package` shows what it carries: TCL's firmware updater
+  (`versionUpdateApp`, the System update screens), BI telemetry, the Samba TV ACR service (`SambaVideoService`),
+  T-Cast and Alexa hooks. With it disabled, Home, the Input menu, Live TV, HDMI switching from an app, Settings,
+  Cast and AirPlay all kept working. The cost: Settings > System > About > System update needs it, so the TV takes
+  no firmware updates until it is enabled again.
+- **AirPlay never showed up, and the debloat was not why.** `logcat` repeated
+  `FAIRPLAY_CA: ... Failed to call MTTZ_MFI_CopyCertFromTEE()` and `FairplayKey status = false`: the set had no Apple
+  AirPlay key installed. Re-enabling every package from this list and rebooting changed nothing. Opening Settings >
+  System > AirPlay and HomeKit Settings > Apple AirPlay and HomeKit made `com.tcl.airplay2` download the key from TCL
+  and write it into the TEE (SELinux denials on `/dev/tee0` are logged during the write, but it succeeds). The TV
+  then advertised `_airplay._tcp`, and the key stayed through reboots with `com.tcl.ttvs` disabled. Details in
+  [TROUBLESHOOTING](../../docs/TROUBLESHOOTING.md#working-on-the-tv).
+- **Energy Modes > Increased ("Always connected") leaves Low Power Standby on.** `low_power_standby_enabled` stays
+  1 and the firmware sets it back to 1 at every boot, so apps lose the network while the TV sleeps
+  (`blocked=LOW_POWER_STANDBY` in `dumpsys netpolicy`). Only the system and the shell can write that setting.
+- **Wireless debugging came back as "unavailable" after a reboot** when something switched it on before Wi-Fi was
+  up. Switching it off and on once Wi-Fi is connected brought the address back every time.

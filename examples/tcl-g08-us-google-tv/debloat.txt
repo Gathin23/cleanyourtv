@@ -28,6 +28,8 @@
 # Also left enabled, not tried: com.tcl.ttvs (analytics; the C755 list disables it as Samba TV ACR, and on
 # some TCL sets it is also the firmware updater), com.tcl.partnercustomizer, com.tcl.interactive,
 # com.tcl.smartlink.core, com.tcl.UpdatePeripheral, com.google.android.partnersetup.
+# Fifth unit (98-inch, AU14) disabled com.tcl.ttvs and com.tcl.UpdatePeripheral as well, at the owner's choice,
+# with nothing missed but firmware and soundbar updates (README.md, fifth unit).
 #
 # Differences from the C755 list: com.tcl.dashboard, com.tcl.hearaid and com.tcl.t_solo are disabled here
 # (the C755 list keeps them); everything under "Streaming preloads" is the US set's own.
