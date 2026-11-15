@@ -4,7 +4,9 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.AsyncQueryHandler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,6 +19,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.ChangedPackages;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -202,6 +205,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView raceKicker, raceHeadline, raceSessions;
     /** game_day: each team's next game from an add-on, rotating in the race panel; null when the key is off. */
     private GameDay gameDay;
+    /** header_weather: the add-on's line under the date; weatherUri is null when the key is off. */
+    private TextView weatherLine;
+    private Uri weatherUri;
+    private int weatherTicks;
     private View raceBar;
     private LinearLayout racePager;
     private long rotationStart;
@@ -441,6 +448,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updatePanel();
+            // Nothing tells Home the weather changed: ask the add-on every 10 minutes (it fetches at most every 30).
+            if (++weatherTicks % 10 == 0) readWeather();
             // The pill follows the network callbacks and each return to Home; only the festive light follows the
             // signal level, so only it needs this minute's binder calls (about 7 ms on the UI thread).
             if (festive) updateWifiLabel();
@@ -550,7 +559,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         if (!cfg.showGreeting) greeting.setVisibility(View.GONE);
         // Keep the other header layouts as designed: their extra lines change the block's centre.
         if (!cfg.showGreeting && !cfg.dateBelowClock && !cfg.shamsiDate && !cfg.lunarDate
-                && !cfg.topMenu && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
+                && cfg.headerWeather.isEmpty() && !cfg.topMenu && !getResources().getBoolean(R.bool.rtl_menu_bar)) {
             centerCompactHeader();
         }
         if (cfg.headerWhite) {
@@ -585,6 +594,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         raceBar = findViewById(R.id.raceBar);
         racePager = findViewById(R.id.racePager);
         gameDay = GameDay.create(this, cfg.gameDay, handler, this::updatePanel);
+        weatherLine = findViewById(R.id.weatherLine);
+        String weather = GameDay.authority(this, cfg.headerWeather, "com.gathin.tvhome.glance");
+        weatherUri = weather == null ? null : Uri.parse("content://" + weather + "/now");
         // The rotation runs on the clock that never jumps: setting the TV's time must not stall or stretch a turn.
         rotationStart = SystemClock.elapsedRealtime();
         showStats = cfg.showStats;
@@ -1138,6 +1150,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        readWeather();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -2785,6 +2798,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (shamsi) shamsiDate.setText(Shamsi.today(getResources()));
         if (lunar) lunarDate.setText(Lunar.today(getResources(), lunarOffset));
+    }
+
+    /** header_weather: the add-on's line under the date, asked off the main thread; no line without one. */
+    @SuppressLint("HandlerLeak") // one query that ends in seconds; the Activity is held no longer
+    private void readWeather() {
+        if (weatherUri == null) return;
+        new AsyncQueryHandler(getContentResolver()) {
+            @Override
+            protected void onQueryComplete(int token, Object cookie, Cursor c) {
+                String line = null;
+                if (c != null) {
+                    try {
+                        if (c.moveToFirst()) line = c.getString(0);
+                    } catch (RuntimeException noColumn) {
+                        // An answer without the line: no line.
+                    }
+                    c.close();
+                }
+                weatherLine.setText(line);
+                weatherLine.setVisibility(TextUtils.isEmpty(line) ? View.GONE : View.VISIBLE);
+            }
+        }.startQuery(0, null, weatherUri, new String[] {"line"}, null, null, null);
     }
 
     // ---- race-weekend panel (a theme's race_calendar) -----------------------------------------------

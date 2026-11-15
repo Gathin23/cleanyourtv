@@ -41,6 +41,13 @@ Saved choices override these defaults. With no saved choices the page is as abov
 
 ![A week, with humidity and wind](https://raw.githubusercontent.com/majnioui/cleanyourtv-contrib/pr-assets/addon-weather-week/weather-options.png)
 
+## On Home
+
+The launcher can show the reading on a line under the date ("25° Clear · AQI 158"): set its `header_weather` key to
+`io.github.sumyabazar1.weather`. The launcher stays offline and asks a read-only provider here, which fetches only
+when asked and its reading is over 30 minutes old. The provider is exported without a permission, so it serves only
+that line, never the place name.
+
 ## Permissions
 
 | Permission | Why |

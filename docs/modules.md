@@ -148,3 +148,13 @@ the `game_day` key (`config.xml` or a theme); there is no card prompt for it.
    pressed on Home, right after a row ends, and on each change, and watches only while Home is on screen.
 
 The [Game Day](../addons/README.md) add-on implements this from calendar links the person adds.
+
+## The weather under the date (header_weather)
+
+An app can hand Home one short line, shown under the date. The owner names the app's package in the `header_weather`
+key. Name a read-only provider in a `com.gathin.tvhome.glance` meta-data, as for game_day, and answer
+`content://<authority>/now` with one row whose `line` column is the text ("25° Clear · AQI 158"); no row hides the
+line. The launcher asks off its main thread when Home comes back and every 10 minutes while Home is on screen, so the
+provider may fetch before it answers. It is exported without a permission: hold only the line, no place name.
+
+The [Weather](../addons/weather/README.md) add-on implements this.

@@ -57,17 +57,26 @@ final class GameDay {
      * {@value #META} meta-data. Naming the package is the owner's opt-in.
      */
     static GameDay create(Context ctx, String pkg, Handler main, Runnable onChange) {
+        String authority = authority(ctx, pkg, META);
+        if (authority == null) return null;
+        Uri uri = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority).appendPath("turns").build();
+        return new GameDay(ctx, uri, main, onChange);
+    }
+
+    /**
+     * The authority {@code pkg} names in its {@code meta} meta-data, or null when the key is empty, the package is not
+     * installed, or the provider is another app's. Also used by header_weather.
+     */
+    static String authority(Context ctx, String pkg, String meta) {
         if (pkg == null || pkg.trim().isEmpty()) return null;
         try {
             PackageManager pm = ctx.getPackageManager();
             ApplicationInfo info = pm.getApplicationInfo(pkg.trim(), PackageManager.GET_META_DATA);
-            String authority = info.metaData == null ? null : info.metaData.getString(META);
+            String authority = info.metaData == null ? null : info.metaData.getString(meta);
             if (authority == null || authority.trim().isEmpty()) return null;
             // The provider must be the named package's own, not another app's that claims the authority.
             ProviderInfo provider = pm.resolveContentProvider(authority.trim(), 0);
-            if (provider == null || !pkg.trim().equals(provider.packageName)) return null;
-            Uri uri = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority.trim()).appendPath("turns").build();
-            return new GameDay(ctx, uri, main, onChange);
+            return provider == null || !pkg.trim().equals(provider.packageName) ? null : authority.trim();
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }

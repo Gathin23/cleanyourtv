@@ -484,6 +484,10 @@
          Empty = off: nothing is read or watched. The launcher only reads what the add-on publishes and never goes
          online. A theme can set "game_day". -->
     <string name="game_day" translatable="false"></string>
+    <!-- One line of weather under the date ("25° Clear · AQI 158"): the package of an add-on that serves it (the Weather
+         add-on: io.github.sumyabazar1.weather; contract in docs/modules.md). Empty = off: nothing is read. The launcher
+         only reads and never goes online. A theme can set "header_weather". -->
+    <string name="header_weather" translatable="false"></string>
 
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100

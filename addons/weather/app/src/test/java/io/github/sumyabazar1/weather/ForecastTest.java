@@ -79,4 +79,13 @@ public class ForecastTest {
         assertEquals(10, Forecast.mph(16));
         assertEquals(62, Forecast.mph(100));
     }
+
+    @Test
+    public void glanceLineAndAge() {
+        assertEquals("25° Clear · AQI 158", GlanceProvider.line(25, "Clear", 158));
+        assertEquals("-3° Snow", GlanceProvider.line(-3, "Snow", -1));
+        assertEquals(true, GlanceProvider.elapsedOver(100_000, 0, 60_000));
+        assertEquals(false, GlanceProvider.elapsedOver(30_000, 0, 60_000));
+        assertEquals(true, GlanceProvider.elapsedOver(0, 30_000, 60_000));   // a clock that moved back counts as old
+    }
 }
