@@ -6,7 +6,6 @@
 # FIRE OS: DEBLOAT ONLY. com.amazon.tv.launcher is a protected package and keeps Home; launcher/ does not apply.
 #
 # Apply:   TV_HOST=<stick ip> tools/disable.sh examples/amazon-fire-tv-stick-lite-2020/debloat.txt
-#          (pass HANDLERS_ALLOW=1 TVINPUT_ALLOW=1 if tools/disable.sh holds back a Live TV/handler package you want off)
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/amazon-fire-tv-stick-lite-2020/debloat.txt com.amazon.tv.launcher
 # Everything is DISABLED for user 0, never uninstalled. Comment out any line you want to keep.
 # ADB on Fire OS 7: Settings > My Fire TV > Developer Options > ADB Debugging. Port 5555, accept the prompt on the TV.
