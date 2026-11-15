@@ -1228,7 +1228,7 @@ these outputs, not the raw dump, as the auto-start note at the end of this secti
 | Helper | Component in the enabled-services list | Key it filters |
 | --- | --- | --- |
 | Home button | `com.gathin.tvhome/.HomeKeyService` | `KEYCODE_ALL_APPS` (an ordinary `KEYCODE_HOME` only with `home_long_press_home`, `config.xml` or a theme) and `KEYCODE_SETTINGS`, plus the keys in `settings_key_keycodes` and `app_keys` (`config.xml` or a theme) and in `settings_key_scancodes` (`config.xml` only) |
-| Input button | `com.gathin.tvhome/.InputKeyService` | `KEYCODE_TV`, `KEYCODE_TV_INPUT`, plus the keycodes in `input_key_keycodes` and `app_keys` (`config.xml` or a theme) |
+| Input button | `com.gathin.tvhome/.InputKeyService` | `KEYCODE_TV`, `KEYCODE_TV_INPUT`, plus the keycodes in `input_key_keycodes` and `app_keys` (`config.xml` or a theme), and, while the Home button helper is on, the buttons in `settings_key_scancodes` (`config.xml` only), so that only Settings opens for them |
 
 A force stop of the launcher (Settings > Apps, a cleaner app, `am force-stop`) takes both helpers off
 that list. With `restore_key_services` on (`config.xml` or a theme) and `WRITE_SECURE_SETTINGS` granted
