@@ -1,8 +1,12 @@
 package com.gathin.addons.youtubetimer;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +23,6 @@ public class SettingsActivity extends Activity {
     private UsageGraphView usageGraph;
     private Button btnLimit;
     private Button btnPin;
-
-    private static final int[] PRESET_MINUTES = {15, 30, 45, 60, 90, 120};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,22 +73,68 @@ public class SettingsActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CHANGE_LIMIT) {
-                int current = prefs.getLimitMinutes();
-                int next = 60;
-                for (int i = 0; i < PRESET_MINUTES.length; i++) {
-                    if (PRESET_MINUTES[i] == current) {
-                        next = PRESET_MINUTES[(i + 1) % PRESET_MINUTES.length];
-                        break;
-                    }
-                }
-                prefs.setLimitMinutes(next);
-                updateUi();
-                Toast.makeText(this, "Daily limit set to " + next + " minutes", Toast.LENGTH_SHORT).show();
+                showLimitSelectionDialog();
             } else if (requestCode == REQUEST_RESET_TIME) {
                 prefs.resetToday();
                 updateUi();
                 Toast.makeText(this, "Today's watch time reset to 0 min", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void showLimitSelectionDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_select_limit);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        int currentLimit = prefs.getLimitMinutes();
+
+        int[][] options = {
+            {R.id.btn_opt_15, 15},
+            {R.id.btn_opt_30, 30},
+            {R.id.btn_opt_45, 45},
+            {R.id.btn_opt_60, 60},
+            {R.id.btn_opt_90, 90},
+            {R.id.btn_opt_120, 120},
+            {R.id.btn_opt_180, 180},
+            {R.id.btn_opt_240, 240}
+        };
+
+        Button initialFocusButton = null;
+
+        for (int[] opt : options) {
+            int viewId = opt[0];
+            int minutes = opt[1];
+            Button btn = dialog.findViewById(viewId);
+            if (btn != null) {
+                if (minutes == currentLimit) {
+                    btn.setText("✓ " + btn.getText());
+                    initialFocusButton = btn;
+                }
+                btn.setOnClickListener(v -> {
+                    prefs.setLimitMinutes(minutes);
+                    updateUi();
+                    Toast.makeText(this, "Daily limit set to " + minutes + " minutes", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                });
+            }
+        }
+
+        Button btnCancel = dialog.findViewById(R.id.btn_cancel_limit);
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
+
+        if (initialFocusButton != null) {
+            initialFocusButton.requestFocus();
+        } else if (btnCancel != null) {
+            btnCancel.requestFocus();
         }
     }
 

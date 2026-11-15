@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="680dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@drawable/dialog_bg"
+    android:padding="28dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose Daily Limit"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="6dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select the maximum YouTube watch time per day"
+        android:textColor="#8B949E"
+        android:textSize="15sp"
+        android:layout_marginBottom="24dp" />
+
+    <!-- 2-column Grid of Limit Options -->
+    <!-- Row 1: 15 min & 30 min -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/btn_opt_15"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="15 Minutes" />
+
+        <Button
+            android:id="@+id/btn_opt_30"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="30 Minutes" />
+    </LinearLayout>
+
+    <!-- Row 2: 45 min & 60 min (1 hr) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/btn_opt_45"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="45 Minutes" />
+
+        <Button
+            android:id="@+id/btn_opt_60"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="60 Minutes (1 hr)" />
+    </LinearLayout>
+
+    <!-- Row 3: 90 min (1.5 hr) & 120 min (2 hr) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/btn_opt_90"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="90 Minutes (1.5 hr)" />
+
+        <Button
+            android:id="@+id/btn_opt_120"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="120 Minutes (2 hr)" />
+    </LinearLayout>
+
+    <!-- Row 4: 180 min (3 hr) & 240 min (4 hr) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <Button
+            android:id="@+id/btn_opt_180"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="180 Minutes (3 hr)" />
+
+        <Button
+            android:id="@+id/btn_opt_240"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="16sp"
+            android:text="240 Minutes (4 hr)" />
+    </LinearLayout>
+
+    <!-- Cancel Button -->
+    <Button
+        android:id="@+id/btn_cancel_limit"
+        style="@android:style/Widget.Button"
+        android:layout_width="240dp"
+        android:layout_height="48dp"
+        android:background="@drawable/key_bg"
+        android:textColor="@color/key_text_color"
+        android:textSize="15sp"
+        android:text="Cancel" />
+
+</LinearLayout>
