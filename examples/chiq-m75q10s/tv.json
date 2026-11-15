@@ -1,0 +1,6 @@
+{
+  "tv": "CHiQ M75Q10S 75\" 4K (Changhong \"AI PONT MAX FF\", G4FFDVB87, ventura, MediaTek mt5889)",
+  "os": "Google TV 14",
+  "brand": "CHiQ",
+  "notes": "Homwee vendor layer on CVTE/MediaTek mt5889, same UKNV firmware family as sharp-aquos-tve23a: Anoki ACR, ad services, Homwee store/help, partnercustomizer and partnersetup, calendar/health/dynsystem/wallpaperbackup/tts; setupwraith must go with launcherx (RecoveryActivity); 19 packages; [same-day notes: Wi-Fi owned by the system user, gear and app keys die with launcherx, nothing re-enabled at boot](chiq-m75q10s/README.md)"
+}
