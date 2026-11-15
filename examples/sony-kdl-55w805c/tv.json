@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KDL-55W805C (2015, \"BRAVIA 2015\", SVP-DTV15, MediaTek), EU firmware",
+  "os": "Android TV 7.0",
+  "brand": "Sony",
+  "notes": "Sony/Qterics device agents, Discover/BIVL, the Featured apps row (`sonyshelf`) and the recommendation services, Sony Select, retail demo, help apps, B2B extras; mirroring, DLNA, the USB players and the Netflix button left as comments (off on this set by choice); `b2b.hotelmode` and `tvx` kept; a week of use, reboot-checked; [README](sony-kdl-55w805c/README.md): a minSdk 24 launcher build as Home, Album and the Inputs row, HbbTV off over ADB, a USB soundbar, AirPlay"
+}
