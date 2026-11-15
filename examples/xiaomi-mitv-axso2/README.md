@@ -37,3 +37,27 @@ The Sound panel (`com.droidlogic.tv.soundeffectsettings`, kept) stores its value
 their defaults on a unit nobody had tuned: mode 0, treble, bass and balance 50, surround, AGC and dialog
 clarity off. How a mode picked
 in the panel maps onto those keys was not worked out here.
+
+## Android 11 firmware (`RTT0.211201.001.1150`)
+
+A third unit, a 43" Mi TV 4X sold in India (`L43M4-4AIN`), runs Android 11 (SDK 30, 2 GB RAM, about 4.4 GB
+`/data`) instead of the Android 9 firmware above. Tried for three days.
+
+- **The list applies as it is.** Entries the build does not have (the Sensara guide, Play Music, the Android
+  camera and gallery, the TCL browser, an old Zee5 copy and the Xiaomi auto-install config) are skipped by
+  `tools/disable.sh`; the rest disabled cleanly and stayed disabled after a reboot.
+- **Live TV is `com.android.tv`**, as the header says: set `live_tv_package` to it and hide it in
+  `launcher/app/src/main/res/values/config.xml`.
+- **Home handover was clean.** `com.google.android.tvlauncher` was Home; `launcher/build-and-install.sh`
+  disabled it after the new launcher was confirmed, with no override. The saved Wi-Fi network is owned by the
+  system here, not by setupwraith, so nothing was lost.
+- **Unlike the Android 9 unit, the Home key helper costs hold-to-repeat.** With `HOME_KEY_SERVICE=1` (needed for
+  the Apps button and `power_on_home`) holding Volume Up stepped once per press instead of ramping. Without
+  the helper the Home, Netflix, Prime Video, JioHotstar, source and Google buttons all worked; only the Apps
+  button did nothing.
+- **A restart opened the last HDMI input.** The firmware starts Live TV on the remembered input
+  (`tv_current_inputid` in the `system` settings). Changing the TV's own power-on / input setting fixed it,
+  with no helper and no ADB.
+- **RAM is tight:** about 150 MB free with JioHotstar open. One launch from the remote and the launcher bounced
+  back to Home once and could not be reproduced; the app's process is killed in the background and starts cold,
+  which takes about 5 s to draw.
