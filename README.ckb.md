@@ -1,192 +1,179 @@
 <div dir="rtl" lang="ckb">
 
 <p align="center">
-  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. تەلەڤیزیۆنەکەت، بەبێ ڕێکلام. ئەپە زیادەکان لە هەر Android TV یان Google TV ێک لە ڕێگەی Wi-Fi لادەبەیت و شاشەی سەرەکی پڕ لە ڕێکلام بە لانچەرێکی خاوێن دەگۆڕیت کە لە Apple TV دەچێت. بێ ڕووت، بێ کەیبڵ، هیچ ناسڕدرێتەوە، و گەڕاندنەوە بە یەک دێڕ." width="800"></a>
+  <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. تەلەڤیزیۆنەکەت، بێ ڕێکلام. لەسەر هەر تەلەڤیزیۆنێکی Android TV یان Google TV، ئەپە نەویستراوەکان لە ڕێگەی Wi-Fi لابەرە، و شاشەی سەرەکیی پڕ لە ڕێکلام بگۆڕە بۆ لانچەرێکی پاک کە وەک Apple TV دەچێت. بێ root، بێ کەیبڵ، هیچ شتێک لانابرێت، و گەڕاندنەوە بە یەک دێڕە." width="800"></a>
 </p>
 
 <p align="center" dir="ltr">
-  بخوێنەرەوە بە: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <strong lang="ckb" dir="rtl">کوردی سۆرانی</strong>
+  بە زمانەکانی تر بخوێنەوە: <a href="README.md">English</a> · <a href="README.he.md" lang="he" dir="rtl">עברית</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.zh-TW.md">正體中文</a> · <a href="README.vi.md">Tiếng Việt</a> · <a href="README.ja.md">日本語</a> · <a href="README.it.md">Italiano</a> · <a href="README.pt-BR.md">Português</a> · <a href="README.nl.md">Nederlands</a> · <a href="README.de.md">Deutsch</a> · <a href="README.uk.md">Українська</a> · <a href="README.tr.md">Türkçe</a> · <a href="README.uz.md">Oʻzbekcha</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <strong lang="ckb" dir="rtl">کوردی سۆرانی</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/Gathin23/cleanyourtv/stargazers"><img src="https://img.shields.io/github/stars/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="ئەستێرەکان"></a>
-  <a href="https://github.com/Gathin23/cleanyourtv/pulls?q=is%3Amerged"><img src="https://img.shields.io/github/issues-search?query=repo%3AGathin23%2Fcleanyourtv%20is%3Apr%20is%3Amerged&style=flat&cacheSeconds=1800&label=merged%20PRs&color=cfffcf&labelColor=15181e" alt="داواکارییە تێکەڵکراوەکان"></a>
+  <a href="https://github.com/Gathin23/cleanyourtv/pulls?q=is%3Amerged"><img src="https://img.shields.io/github/issues-search?query=repo%3AGathin23%2Fcleanyourtv%20is%3Apr%20is%3Amerged&style=flat&cacheSeconds=1800&label=merged%20PRs&color=cfffcf&labelColor=15181e" alt="PR ی تێکەڵکراو"></a>
   <a href="https://github.com/Gathin23/cleanyourtv/network/members"><img src="https://img.shields.io/github/forks/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="فۆرکەکان"></a>
   <a href="https://github.com/Gathin23/cleanyourtv/graphs/contributors"><img src="https://img.shields.io/github/contributors/Gathin23/cleanyourtv?style=flat&cacheSeconds=1800&color=cfffcf&labelColor=15181e" alt="بەشداربووان"></a>
-  <a href="https://buymeacoffee.com/gathint"><img src="https://img.shields.io/badge/support-%E2%9D%A4-ff5e8a?style=flat&labelColor=15181e" alt="پشتیوانی، قاوەیەکم بۆ بکڕە"></a>
-  <a href="https://www.producthunt.com/products/cleanyourtv"><img src="https://img.shields.io/badge/Product%20Hunt-upvote%20%E2%96%B2-da552f?style=flat&logo=producthunt&logoColor=white&labelColor=15181e" alt="CleanYourTV لە Product Hunt"></a>
+  <a href="https://buymeacoffee.com/gathint"><img src="https://img.shields.io/badge/support-%E2%9D%A4-ff5e8a?style=flat&labelColor=15181e" alt="پشتگیریم بکە: قاوەیەکم بۆ بکڕە"></a>
+  <a href="https://www.producthunt.com/products/cleanyourtv"><img src="https://img.shields.io/badge/Product%20Hunt-upvote%20%E2%96%B2-da552f?style=flat&logo=producthunt&logoColor=white&labelColor=15181e" alt="CleanYourTV لەسەر Product Hunt"></a>
 </p>
 
 <p align="center">
-  <a href="https://trendshift.io/repositories/310225"><img src="docs/trending-badge.png" alt="کۆگای ژمارە یەکی هەفتە، ١٩ تا ٢٥ی تشرینی یەکەمی ٢٠٢٦، لە ڕێگەی trendshift.io" width="360"></a>
+  <a href="https://trendshift.io/repositories/310225"><img src="docs/trending-badge.png" alt="یەکەم کۆگای ترێندی هەفتە، 19 تا 25ی تشرینی یەکەمی 2026، لە ڕێگەی trendshift.io" width="360"></a>
 </p>
 
 # CleanYourTV: ڕێنمایی بە کوردیی سۆرانی
 
-لە ڕێگەی Wi-Fiی ماڵەوە بە Android TV یان Google TV دەبەسترێیتەوە. ئەو ئەپانە ناچالاک دەکەیت کە لەگەڵ ئامێرەکە دانراون و بەکاریان ناهێنیت: ڕێکلام و خزمەتگوزاریی کۆکردنەوەی زانیاری. پاشان لەسەر ئەو تەلەڤیزیۆنانەی پشتگیری دەکەن لانچەرێکی خاوێن دادەنێیت.
-
-پێویستت بە ڕووت نییە، نە بە دامەزراندنەوەی فێرموایر، نە بە کەیبڵی USB. ئەپەکانی سیستەم تەنها **ناچالاک** دەکرێن و هەرگیز ناسڕدرێنەوە. سکریپتێک هەیە کە بە یەک دێڕ هەمووی دەگەڕێنێتەوە.
-
-ئەم پەڕەیە تایبەتمەندییە سەرەکییەکان و بەکارهێنانی گشتی دەڵێت. هەر مۆدێل، ناوچە و وەشانێکی فێرموایر لیستی ئەپ و وردەکاریی خۆی هەیە. سەرەتا تێبینیی تایبەت بە تەلەڤیزیۆنەکەت بخوێنەرەوە.
-
-ئەگەر جیاوازی هەبوو، [READMEی ئینگلیزی](README.md) پەسەندە. تێبینیی هەر مۆدێلێک لە [لیستی تەلەڤیزیۆنە پشتگیریکراوەکان](examples/README.md)ە.
-
-> [!WARNING]
-> **تەلەڤیزیۆنەکەت Samsung یان LG یان Roku یە، یان براندێکی ترە کە Android نییە؟**
-> <br>CleanYourTV لەسەر ئەو ئامێرانە کار ناکات، بەڵام هێشتا دەتوانیت بە دوگمەکانی ڕیمۆت بە تەنها شوێنپێهەڵگرتن بکوژێنیتەوە: [cleanyour.tv/not-android](https://cleanyour.tv/not-android).
-
-![بەراوردی شاشەی سەرەکیی Google TV و لانچەری CleanYourTV](docs/stock-vs-new-side.jpg)
-
 ## لێرەوە دەست پێ بکە
 
 | چیت هەیە | بڕۆ بۆ |
-|---:|---:|
-| **Android TV یان Google TV** | [دەستپێکی خێرا](#دەستپێکی-خێرا): یاریدەدەری کۆد کارەکە لە نزیکەی پازدە خولەکدا دەکات. |
-| **تەلەڤیزیۆنی Samsung یان LG یان Roku یان Vizio یان Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV لێرە کار ناکات، بەڵام دەتوانیت شوێنپێهەڵگرتن بە ڕیمۆت بکوژێنیتەوە. |
-| **مۆبایل یان لاپتۆپ، بەبێ یاریدەدەری کۆد** | یەکێک لە [ئەپەکانی کۆمەڵگە](https://cleanyour.tv/app) بۆ مۆبایلی Android و Mac و Windows، لەلایەن گەشەپێدەری سەربەخۆ. |
-| **دەتەوێت سەرەتا بیبینیت** | [ئەوەی دەستت دەکەوێت](#ئەوەی-دەستت-دەکەوێت): وێنەی شاشەی سەرەکیی نوێ. |
+|---|---|
+| **تەلەڤیزیۆنی Android TV یان Google TV** | [دەستپێکی خێرا](#دەستپێکی-خێرا): یاریدەدەرێکی کۆدنووسین لە نزیکەی پازدە خولەکدا کارەکە ئەنجام دەدات. |
+| **تەلەڤیزیۆنی Samsung، LG، Roku، Vizio یان Hisense VIDAA** | [cleanyour.tv/not-android](https://cleanyour.tv/not-android): CleanYourTV لەوێ ناتوانێت کار بکات، بەڵام بە ڕیمۆتەکەت دەتوانیت شوێنپێهەڵگرتنی تەلەڤیزیۆنەکە ناچالاک بکەیت. |
+| **مۆبایل یان لاپتۆپ، بەبێ یاریدەدەری کۆدنووسین** | یەکێک لە [ئەپەکانی کۆمەڵگە](https://cleanyour.tv/app) بۆ مۆبایلی Android، Mac و Windows، کە گەشەپێدەرانی سەربەخۆ دروستیان کردووە. |
+| **دەتەوێت سەرەتا ببینیت** | [ئەوەی دەستت دەکەوێت](#ئەوەی-دەستت-دەکەوێت): وێنەی شاشەی سەرەکیی نوێ. |
 
-**بەستەری فەرمی:** [cleanyour.tv](https://cleanyour.tv) و ئەم کۆگایە. دۆمەینی تر کە هەمان ناو بەکاردەهێنن، وەک cleanyourtv.com، هی ئەم پڕۆژەیە نین ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)). CleanYourTV هیچ ئەپێک لە هیچ فرۆشگایەک بڵاو ناکاتەوە، و clean-your-tv.net هی ئێمە نییە.
+**بەستەرە فەرمییەکان:** [cleanyour.tv](https://cleanyour.tv) و ئەم کۆگایە. دۆمەینەکانی تر کە هەمان ناو بەکاردەهێنن، وەک cleanyourtv.com، لەلایەن ئەم پرۆژەیەوە بەڕێوە نابرێن ([#1004](https://github.com/Gathin23/cleanyourtv/issues/1004)). CleanYourTV هیچ ئەپێک لە هیچ فرۆشگایەکی ئەپدا بڵاو ناکاتەوە، و clean-your-tv.net هەروەها هی ئێمە نییە.
 
-[چۆن کار دەکات](#چۆن-کار-دەکات) · [دەستپێکی خێرا](#دەستپێکی-خێرا) · [ئەوەی دەستت دەکەوێت](#ئەوەی-دەستت-دەکەوێت) · [تەلەڤیزیۆنە پشتگیریکراوەکان](#تەلەڤیزیۆنە-پشتگیریکراوەکان) · [بە دەستی خۆت](#بە-دەستی-خۆت) · [لانچەر](#لانچەر) · [گەڕاندنەوە](#گەڕاندنەوەی-تەلەڤیزیۆن) · [نوێکردنەوەی فێرموایر](#دوای-نوێکردنەوەی-فێرموایر) · [پرسیارە باوەکان](#پرسیارە-باوەکان) · [بەشداری](#چۆن-بەشداری-بکەیت)
+[چۆن کار دەکات](#چۆن-کار-دەکات) · [دەستپێکی خێرا](#دەستپێکی-خێرا) · [ئەوەی دەستت دەکەوێت](#ئەوەی-دەستت-دەکەوێت) · [تەلەڤیزیۆنە پشتگیریکراوەکان](#تەلەڤیزیۆنە-پشتگیریکراوەکان) · [بە دەستی خۆت](#بە-دەستی-خۆت) · [لانچەر](#لانچەر) · [گەڕاندنەوەی تەلەڤیزیۆن](#گەڕاندنەوەی-تەلەڤیزیۆن) · [نوێکردنەوەی فێرموایر](#دوای-نوێکردنەوەی-فێرموایر) · [پرسیارە باوەکان](#پرسیارە-باوەکان) · [بەشداری](#چۆن-بەشداری-بکەیت)
 
 ## چۆن کار دەکات
 
-تەلەڤیزیۆنە Androidەکان هەمان پردی هەڵەدۆزیانیان هەیە کە مۆبایلە Androidەکان هەیانە. هەڵەدۆزی USB لە هەڵبژاردەکانی گەشەپێدەر دابگیرسێنە، کۆمپیوتەرەکەت یەک جار ڕێگە پێ بدە، و ئەوەی دەمێنێتەوە ئامرازی ئاسایی Androidە:
+تەلەڤیزیۆنەکانی Android هەمان ADB (Android Debug Bridge) بەکاردەهێنن کە مۆبایلەکانیش بەکاری دەهێنن. **USB debugging** لە هەڵبژاردەکانی گەشەپێدەری تەلەڤیزیۆنەکەدا چالاک بکە، کۆمپیوتەرەکەت یەک جار ڕێگە پێ بدە، و ئیتر هەموو کارەکە بە ئامرازە ئاساییەکانی Android ئەنجام دەدرێت:
 
 | هەنگاو | چی ڕوودەدات |
-|---:|---:|
+|---|---|
 | **پاشەکەوت** | لیستی پاکێجە دامەزراوەکان و ڕێکخستنەکان. |
-| **ناچالاککردن** | تەلەمەتری دروستکەر، خزمەتگوزاریی ڕێکلام، ڕیزی ناوەڕۆک و ئەپە زیادەکان بە <code dir="ltr">pm disable-user</code>. هیچ ناسڕدرێتەوە، بۆیە سکریپتی گەڕاندنەوە دەتوانێت هەر هەنگاوێک بگەڕێنێتەوە. |
-| **دامەزراندن** | لانچەرێکی بچووکی ناوخۆیی دادەنرێت و دەکرێت بە شاشەی سەرەکیی بنەڕەت. |
+| **ناچالاککردن** | تێلیمێتریی دروستکەر، خزمەتگوزارییەکانی ڕێکلام، ڕیزەکانی ناوەڕۆک و ئەپە پێشدامەزراوە بێکەڵکەکان، بە <code dir="ltr">pm disable-user</code>. هیچ شتێک لانابرێت، بۆیە سکریپتی گەڕاندنەوە دەتوانێت هەر هەنگاوێک هەڵبوەشێنێتەوە. |
+| **دامەزراندن** | لانچەرێکی بچووکی ناتیڤ دادەمەزرێت و دەکرێت بە شاشەی سەرەکیی بنەڕەتی. |
 
-**بێ ڕووت، بێ کەیبڵ، هیچ ناسڕدرێتەوە، و گەڕاندنەوە بە یەک دێڕ ئەگەر بیرت کردەوە.**
+**بێ root، بێ کەیبڵ، هیچ شتێک لانابرێت، و ئەگەر بیرت گۆڕی بە یەک دێڕ دەتوانیت بیگەڕێنیتەوە.**
 
-ئەپە زیادەکان بەپێی براند دەگۆڕێن. بۆیە داواکارییەکە وای لێ دەکات یاریدەدەرەکەت لەسەر تەلەڤیزیۆنەکەت بدۆزێتەوە و پێش دەستلێدان لەوەی بەکاری دەهێنیت پرسیارت لێ بکات.
+ئەپە نەویستراوەکان لە براندێکەوە بۆ براندێکی تر جیاوازن. بۆیە پرۆمپتەکە وا دەکات یاریدەدەری کۆدنووسینەکەت لەسەر تەلەڤیزیۆنەکەت بیاندۆزێتەوە، و پێش ئەوەی دەست لە هەر شتێک بدات کە ڕەنگە تۆ بەکاری بهێنیت، لێت بپرسێت.
 
 ## دەستپێکی خێرا
 
-| چیت هەیە | چی بکە |
-|---:|---:|
-| **کۆمپیوتەر** | داواکارییەکە لەگەڵ یاریدەدەری کۆد بەکاربهێنە: سێ هەنگاوەکەی خوارەوە. |
-| **کۆمپیوتەر، بەبێ یاریدەدەری کۆد** | سێ هەنگاوەکە خۆت ڕابکە: فەرمانەکان لە [بە دەستی خۆت](#بە-دەستی-خۆت)دان. |
-| **مۆبایل یان لاپتۆپ، بەبێ یاریدەدەری کۆد** | یەکێک لە [ئەپەکانی کۆمەڵگە](https://cleanyour.tv/app) هەڵبژێرە: ئەپی خۆڕایی و سەرچاوەکراوە، لەسەر ئەم لیستانە، لەلایەن گەشەپێدەری سەربەخۆ. |
+| چیت هەیە | ئەمە بکە |
+|---|---|
+| **کۆمپیوتەر** | پرۆمپتەکە بەکاربهێنە لەگەڵ یاریدەدەرێکی کۆدنووسین: سێ هەنگاوەکەی خوارەوە. |
+| **کۆمپیوتەر، بەبێ یاریدەدەری کۆدنووسین** | سێ هەنگاوەکە خۆت ئەنجام بدە؛ فەرمانەکان لە [بە دەستی خۆت](#بە-دەستی-خۆت) دان. |
+| **مۆبایل یان لاپتۆپ، بەبێ یاریدەدەری کۆدنووسین** | یەکێک لە [ئەپەکانی کۆمەڵگە](https://cleanyour.tv/app) هەڵبژێرە: ئەپی بەخۆڕایی و سەرچاوەی کراوە (open-source) کە گەشەپێدەرانی سەربەخۆ لەسەر بنەمای ئەم لیستانە دروستیان کردووە. |
 
-سێ هەنگاوەکەی خوارەوە بۆ یاریدەدەری کۆد نووسراون. کۆمپیوتەرەکە دەبێت لە هەمان Wi-Fiی تەلەڤیزیۆن بێت، لەگەڵ شێڵ، Python 3، JDK لە <span dir="ltr">17</span> تا <span dir="ltr">22</span>، و Android SDK platform 34 لەگەڵ build-tools 34 (یاریدەدەرەکە لانچەرەکە لەوێ دروست دەکات). بەبێ یاریدەدەر، [بە دەستی خۆت](#بە-دەستی-خۆت) هەمان کارە، تۆ ڕایدەکەیت، و فەرمانی دامەزراندنی تێدایە.
+سێ هەنگاوەکەی خوارەوە بۆ یاریدەدەری کۆدنووسین نووسراون: کۆمپیوتەرەکە پێویستە لەسەر هەمان Wi-Fi بێت وەک تەلەڤیزیۆنەکە، تێرمینالێکی تێدا بێت، و هەروەها Python 3، JDK لە 17 تا 22، و Android SDK platform 34 لەگەڵ build-tools 34 (یاریدەدەرەکە لەوێ لانچەرەکە دروست دەکات). ئەگەر یاریدەدەرت نییە، [بە دەستی خۆت](#بە-دەستی-خۆت) هەمان کارە، بەڵام تۆ خۆت ئەنجامی دەدەیت، و فەرمانی دامەزراندنەکانی تێدایە.
 
-هەر کام لەمانە دەبێت: Claude Code (لە [0G Private Computer](https://pc.0g.ai/?utm_source=cleanyourtv&utm_medium=github&utm_campaign=readme) یان [پلانی Anthropic](https://claude.com/pricing))، [Codex](https://github.com/openai/codex)، [Gemini CLI](https://github.com/google-gemini/gemini-cli)، [Antigravity CLI](https://antigravity.google/product/antigravity-cli) یان [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
+هەر یەکێک لەمانە کار دەکات: Claude Code (لەسەر [0G Private Computer](https://pc.0g.ai/?utm_source=cleanyourtv&utm_medium=github&utm_campaign=readme) یان بە [پلانی Anthropic](https://claude.com/pricing))، [Codex](https://github.com/openai/codex)، [Gemini CLI](https://github.com/google-gemini/gemini-cli)، [Antigravity CLI](https://antigravity.google/product/antigravity-cli) یان [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
 
-| لە کوێ | چی بکە |
-|---:|---:|
-| **1. لەسەر تەلەڤیزیۆن** | ڕێکخستن → هەڵبژاردەی ئامێر → دەربارە → حەوت جار OK لەسەر **Build** → گەڕانەوە → هەڵبژاردەکانی گەشەپێدەر → **هەڵەدۆزی USB** دابگیرسێنە. ئەگەر هەڵەدۆزی تۆڕ یان ADB دەبینیت، ئەوەش دابگیرسێنە. تەلەڤیزیۆنەکە داگیرسێنراو بهێڵەرەوە. |
-| **2. لەسەر کۆمپیوتەر** | کۆگاکە کلۆن بکە و ئەو فۆڵدەرە لە یاریدەدەرەکەت بکەرەوە (<code dir="ltr">git clone https://github.com/Gathin23/cleanyourtv</code>)، پاشان [PROMPT.md](PROMPT.md) بلکێنە و مۆدێلی تەلەڤیزیۆنەکە بنووسە. |
-| **3. لەگەڵیدا بڕۆ** | «ڕێگە بە هەڵەدۆزی USB بدەیت؟» لەسەر تەلەڤیزیۆن قبوڵ بکە، پاشان وەڵامی لیستەکە بدەرەوە: کام ئەپ بەکاردەهێنیت، قەبارەی دۆک و ڕیزی ئەپەکان، و ئایا یاریدەدەری دەنگ و Chromecast و نوێکردنەوەکان بهێڵیتەوە. |
+| کوێ | چی بکە |
+|---|---|
+| **1. لەسەر تەلەڤیزیۆنەکە** | Settings → Device Preferences → About → هەوت جار دوگمەی OK لە **Build** بدە → گەڕانەوە → Developer options → **USB debugging** چالاک بکە. ئەگەر دوگمەی Network یان ADB debugging دەبینیت، ئەویشی چالاک بکە. تەلەڤیزیۆنەکە کراوە بهێڵەوە. |
+| **2. لەسەر کۆمپیوتەرەکەت** | کۆگاکە کلۆن بکە و ئەو فۆڵدەرە لە یاریدەدەرەکەتدا بکەرەوە (<code dir="ltr">git clone https://github.com/Gathin23/cleanyourtv</code>)، پاشان [PROMPT.md](PROMPT.md) بیلکێنە و مۆدێلی تەلەڤیزیۆنەکەت بنووسە. |
+| **3. بەردەوام بە** | لەسەر تەلەڤیزیۆنەکە «Allow USB debugging?» قبوڵ بکە، پاشان وەڵامی لیستی پرسیارەکان بدەرەوە: کام ئەپانە بەکاردەهێنیت، قەبارەی دۆک و ڕیزبەندی ئەپەکان، ئایا یاریدەدەری دەنگ و Chromecast و نوێکردنەوەکان بهێڵیتەوە. |
 
-کلۆنکردنی کۆگاکە گرنگە: یاریدەدەرەکە <code dir="ltr">tools/disable.sh</code> و <code dir="ltr">launcher/build-and-install.sh</code>ی ئەم پڕۆژەیە دووبارە بەکاردەهێنێت، لە جیاتی ئەوەی هی خۆی بنووسێت. پاشەکەوت، پاراستنی شاشەی سەرەکی و تۆماری گەڕاندنەوە لەو سکریپتانەدان.
+کلۆنکردن گرنگە: یاریدەدەرەکە <code dir="ltr">tools/disable.sh</code> و <code dir="ltr">launcher/build-and-install.sh</code> ی ئەم کۆگایە بەکاردەهێنێت و سکریپتی خۆی نانووسێت. پاشەکەوت، پاراستنی شاشەی سەرەکی و تۆماری گەڕاندنەوە لەو دوو سکریپتەدان.
 
-یاریدەدەرەکە پاشەکەوت دەکات، ئەپە زیادەکان ناچالاک دەکات، لانچەرەکە دروست دەکات و دادەنێت، و هەر هەنگاوێک بە وێنەی شاشە لە خودی تەلەڤیزیۆن دەپشکنێت. کاتێک ئەم کۆگایە کۆنتێکستی بێت، کارەکە نزیکەی پازدە خولەک دەخایەنێت.
+یاریدەدەرەکە پاشەکەوت دەکات، پاکسازی دەکات، لانچەر دروست و دامەزرێنێت، و هەر هەنگاوێک بە وێنەی شاشە کە لە تەلەڤیزیۆنەوە وەردەگیرێت دەپشکنێت. ئەگەر یاریدەدەرەکە ئەم کۆگایە لەبەردەستدا بێت، نزیکەی پازدە خولەک دەخایەنێت.
 
 ## ئەوەی دەستت دەکەوێت
 
-شاشەیەکی سەرەکی خێرا و بێ سەرقاڵی، لە شێوەی Apple TV:
+شاشەیەکی سەرەکی کە وەک Apple TV دەچێت و ڕێگە لە کارەکانت ناگرێت:
 
-| بەش | چۆنە |
-|---:|---:|
-| **شاشەیەکی سەرەکیی ڕەش** | دۆکێک بە چوار ئەپی دڵخوازت لە شریتێکی خڕ، وەک Apple TV. |
-| **ناوچەیەکی دیار لە سەرەوە** | ناوی ئەپی هەڵبژێردراو بە پیتی گەورە، لەگەڵ درەوشانەوەیەک بە ڕەنگی وێنۆچکەکە. |
-| **ئەپەکانی تر لە تۆڕێکدا** | کاتێک لە ڕیمۆتەکە خوارەوە دەگریت، بەرەو سەرەوە دەجوڵێن. |
-| **یەک فۆکەسی شوشەیی** | بە نەرمی لە دانەیەکەوە بۆ دانەیەکی تر دەڕوات. وێنۆچکەی هەڵبژێردراو بەرز دەبێتەوە و ناوەکەی پیشان دەدات. |
-| **سێ دوگمەی شوشەی مات** | سەرچاوەکان (دەرچەی HDMI بەو ناوانەی لە ڕێکخستنی تەلەڤیزیۆن دانراون، AV و تەلەڤیزیۆنی ڕاستەوخۆ)، Wi-Fi یان Ethernet بە ناوی تۆڕ، و ڕێکخستن. |
-| **سڵاو، کاتژمێرێکی باریک و بەروار** | بە فۆنتی [Outfit](https://fonts.google.com/specimen/Outfit)، لەگەڵ شاشەپارێزێکی کاتژمێر بە هەمان شێوە. <code dir="ltr">show_stats</code> لە ڕێکخستن یان بابەتێکدا هێڵێک لەژێر کاتژمێر پیشان دەدات: CPU، RAMی بەتاڵ و بیرگەی بەتاڵ. تا خۆت نەیکەیتەوە ناچالاک دەمێنێتەوە و تەنها کاتێک نوێ دەبێتەوە کە شاشەی سەرەکی دیار بێت. |
-| **بابەت و کارتی مۆدیول** | بابەتەکان ڕەنگ و وێنەی دیوار و دۆک و ستوون دەگۆڕن بەبێ دووبارە دروستکردن. کارتی مۆدیول ڕێگە دەدات ئەپێکی تر بلۆکێک زیاد بکات، هەمیشە بە ڕەزامەندیی ئاشکرای تۆ. |
+| بەش | چۆن دەردەکەوێت |
+|---|---|
+| **شاشەی سەرەکیی ڕەشی تەواو** | دۆکێک لە چوار ئەپی دڵخوازت لە شریتێکی گۆشە-نەرمدا، لەو شوێنەی Apple TV دایدەنێت. |
+| **شریتی سەرەوە** | ناوی ئەپی هەڵبژێردراو بە نووسینێکی گەورە پیشان دەدات، لەگەڵ ڕووناکییەکی دەوروبەر کە ڕەنگەکەی لە وێنەی ئەپەکە وەرگیراوە. |
+| **ئەپەکانی تر لە گرید** | بەرەو سەرەوە دەلغزێت کاتێک دوگمەی Down دەدەیت. |
+| **هایلایتێکی شووشەیی و ڕەوان** | لە خانەیەکەوە بۆ خانەیەکی تر باز دەدات. خانەی هەڵبژێردراو بەرز دەبێتەوە و ناوەکەی پیشان دەدات. |
+| **سێ دوگمەی تەماوی** | Inputs (پۆرتەکانی HDMI بە ناوەکانی کە لە ڕێکخستنەکانی تەلەڤیزیۆنەکەدا داتناون، AV، Live TV)، Wi-Fi یان Ethernet لەگەڵ ناوی تۆڕەکە، و Settings. |
+| **پیرۆزباییەک، کاتژمێرێکی باریک و بەروار** | بە فۆنتی [Outfit](https://fonts.google.com/specimen/Outfit)، و شاشەپارێزی کاتژمێری هاوتا. ئەگەر `show_stats` لە config یان لە تێمێکدا دابنێیت، یەک دێڕ لە ژێر کاتژمێرەکە نیشان دەدرێت: CPU، بیرگەی بەتاڵ و شوێنی بەتاڵی هەڵگرتن. بە کوژاوەیی دەمێنێتەوە مەگەر تۆ چالاکی بکەیت، و تەنها کاتێک نوێ دەبێتەوە کە شاشەی سەرەکی دەردەکەوێت. |
+| **تێمەکان و کارتی مۆدیوڵەکان** | تێمەکان ڕەنگ، وێنەی پاشبنەما، دۆک و ستوونەکان دەگۆڕن بەبێ دووبارە دروستکردنەوە، و کارتی مۆدیوڵەکانیش ڕێگە بە ئەپەکانی تر دەدەن خانەیەک بخەنە ناو لانچەرەکە، تەنها بە ڕەزامەندیی تۆ. |
 
-و تەلەڤیزیۆنێک کە وازت لێ دەهێنێت: بێ ڕیزی سپۆنسەرکراو، بێ پێشنیاری «بدۆزەرەوە»، بێ تەلەمەتری بۆ سێرڤەری دەرەوە، و بێ ئەو ئەپانەی هەرگیز داوات نەکردوون.
+تەلەڤیزیۆنێک کە دژی تۆ کار ناکات: ڕیزی ئەپی ڕێکلامکراو نییە، ئاگاداریی بێزارکەری «Discover» نییە، شیکاری (analytics) نییە کە داتا بنێرێتەوە، و هیچ ئەپێک دانامەزرێت کە تۆ داوای نەکردبێت.
 
 | | |
-|---:|---:|
-| ![ناوچەی دیار ئەپی فۆکەس پیشان دەدات لەسەر درەوشانەوەی هەمان ڕەنگ](docs/focus-2-up-netflix.png) | ![مێنیوی سەرچاوەکان: HDMI لەگەڵ دۆخی پەیوەندی، AV و تەلەڤیزیۆنی ڕاستەوخۆ](docs/inputs-menu.jpg) |
-| *ناوچەی دیار و درەوشانەوە* | *سەرچاوەکان: HDMI لەگەڵ دۆخی پەیوەندی، AV و تەلەڤیزیۆنی ڕاستەوخۆ* |
-| ![تۆڕەکە لەگەڵ فۆکەسی شوشە و ناوەکە لەژێریدا](docs/focus-1-fancode.png) | ![شاشەپارێزی کاتژمێر: کاتژمێرێکی باریک لەسەر درەوشانەوە](docs/clock-screensaver.png) |
-| *تۆڕەکە، فۆکەسی شوشە و ناوی دانەکە* | *شاشەپارێزی کاتژمێر، بە جوڵە بۆ ئەوەی نەخش لەسەر شاشە نەمێنێت* |
-| ![بابەتی aurora: وێنەی دیوار و دوگمەی تایبەت، بەبێ دووبارە دروستکردن](themes/aurora/screenshot.jpg) | ![شەش ستوون و دۆکێک بە شەش ئەپ لە config.jsonی بابەتەکە](themes/six-columns/screenshot.jpg) |
-| *بابەتی Aurora، بە <code dir="ltr">tools/theme.sh</code>* | *شەش ستوون و دۆکی شەش ئەپ، لە هەمان لانچەر* |
-| ![گواستنەوەی دانەیەک: OK ڕابگرە، گواستنەوە هەڵبژێرە، وێنۆچکەکە هەڵدەگیرێت و ئەوانی تر کاڵ دەبن](docs/tile-move.jpg) | ![کتێبخانەی ئەپ: ئەپە دامەزراوەکان، یەک دەستلێدان ئەپێک دەگەڕێنێتەوە بۆ شاشەی سەرەکی](docs/app-library.jpg) |
-| *OK لەسەر دانەیەک ڕابگرە و گواستنەوە هەڵبژێرە: تیرەکان دەیگوازنەوە و گەڕانەوە دەیخاتەوە* | *کتێبخانەی ئەپ: یەک دەستلێدان ئەپێکی لابراو دەگەڕێنێتەوە* |
+|---|---|
+| ![ڕیزی سەرەوە ناوی ئەپی هەڵبژێردراو نیشان دەدات لەسەر ڕووناکییەکی دەوروبەر بە ڕەنگی ئەپەکە](docs/focus-2-up-netflix.png) | ![پۆپئەپی Inputs: پۆرتەکانی HDMI لەگەڵ ئەوەی پەیوەستە، AV و Live TV](docs/inputs-menu.jpg) |
+| *شریتی سەرەوە و ڕووناکیی دەوروبەر* | *Inputs: HDMI بە دۆخی پەیوەندی، AV، Live TV* |
+| ![گرید لەگەڵ هایلایتی شووشەیی لەسەر خانەیەک و ناوەکەی لە ژێرەوە](docs/focus-1-fancode.png) | ![شاشەپارێزی کاتژمێر: کاتژمێرێکی باریک کە بەسەر ڕووناکییەکەدا دەجووڵێت](docs/clock-screensaver.png) |
+| *گرید، هایلایتی شووشەیی، ناوی خانە* | *شاشەپارێزی کاتژمێر، دەجووڵێت تا هیچ شتێک لەسەر شاشە نەسوتێت* |
+| ![تێمی Aurora: وێنەی پاشبنەما و قەڵەمی ڕەنگاوڕەنگ، بەبێ دووبارە دروستکردنەوە بار کراوە](themes/aurora/screenshot.jpg) | ![شەش ستوون و دۆکی شەش ئەپ لە config.json ی تێمێکەوە](themes/six-columns/screenshot.jpg) |
+| *تێمی Aurora، بە `tools/theme.sh` بار کراوە* | *شەش ستوون و دۆکی شەش ئەپ، هەمان لانچەر* |
+| ![گواستنەوەی خانە: OK ڕاگیراوە، Move هەڵبژێردراوە، خانەکە هەڵگیراوە و ئەوانی تر کاڵ بوونەتەوە](docs/tile-move.jpg) | ![کتێبخانەی ئەپ: ئەپە دامەزراوەکان، یەک دوگمە ئەپێکی لابراو دەگەڕێنێتەوە بۆ Home](docs/app-library.jpg) |
+| *OK لەسەر خانەیەک ڕابگرە و Move هەڵبژێرە: تیرەکان دەیگوێزنەوە، Back دایدەنێتەوە* | *کتێبخانەی ئەپ: یەک دوگمە ئەپێکی لابراو دەگەڕێنێتەوە بۆ Home* |
 
 ## تەلەڤیزیۆنە پشتگیریکراوەکان
 
-هەر تەلەڤیزیۆنێک کە **Android TV** یان **Google TV** بێت.
+هەر تەلەڤیزیۆنێک کە **Android TV** یان **Google TV** کار دەکات.
 
-| پلاتفۆرم | چی کار دەکات |
-|---:|---:|
-| **Android TV، Google TV** | ناچالاککردنی ئەپە زیادەکان و لانچەرەکە. |
-| **Fire TV** | تەنها ناچالاککردنی ئەپە زیادەکان، چونکە Fire OS ڕێگە نادات لانچەری کەسی سێیەم ببێت بە شاشەی سەرەکی. لە Fire TV Boxی ساڵی 2015 (Fire OS 5) تەنانەت ئەوەش نا: هەموو فەرمانەکانی <code dir="ltr">pm</code> ڕەت دەکرێنەوە. |
-| **هەندێک مۆدێلی TCL کە لە چین دەفرۆشرێن** | ڕێگە نادەن هیچ لانچەرێک دابنرێت. فایلی ئەو مۆدێلانە لە سەرەوەی لیستەکەدا ئەوە دەڵێن. |
-| **Samsung (Tizen)، LG (webOS)، Roku، Vizio، Hisense VIDAA** | پشتگیری ناکرێن (ADBیان نییە). لە جیاتی ئەوە شوێنپێهەڵگرتن بە دەست بکوژێنەرەوە: [cleanyour.tv/not-android](https://cleanyour.tv/not-android). [SHOWCASE.md](SHOWCASE.md#other-platforms-fire-tv-and-lg-webos) چوار گونجاندن بۆ webOS پیشان دەدات، و [docs/devices/samsung-tizen.md](docs/devices/samsung-tizen.md) دەڵێت تەلەڤیزیۆنی Samsungی ساڵی 2021 لە ڕێگەی Wi-Fi چی وەڵام دەداتەوە (بێ ADB، کەواتە بێ <code dir="ltr">pm disable-user</code>) ئەگەر گونجاندنێک بۆ Tizen لەبەرچاو بگریت. |
+| پلاتفۆرم | ئەوەی کار دەکات |
+|---|---|
+| **Android TV، Google TV** | پاککردنەوە و لانچەر. |
+| **Fire TV** | تەنها بەشی پاککردنەوە، چونکە Fire OS ڕێگە نادات Home بدرێتە لانچەرێکی تر. لەسەر Fire TV Box ی 2015 (Fire OS 5) تەنانەت ئەو بەشەش سەرناکەوێت: هەموو ڕێگاکانی `pm` ڕەت دەکرێنەوە. |
+| **چەند تەلەڤیزیۆنی TCL بازاڕی چین** | ڕێگە نادەن هیچ لانچەرێک دابمەزرێت؛ لیستەکانیان ئەمە لە سەرەتاکەیاندا دەڵێن. |
+| **Samsung (Tizen)، LG (webOS)، Roku، Vizio، Hisense VIDAA** | پشتگیری ناکرێت (ADB نییە). لە جیاتی ئەوە شوێنپێهەڵگرتن ناچالاک بکە: [cleanyour.tv/not-android](https://cleanyour.tv/not-android). بۆ چوار پۆرتکردنی webOS بڕوانە [SHOWCASE.md](SHOWCASE.md#other-platforms-fire-tv-and-lg-webos)، و ئەگەر بیر لە پۆرتکردنی Tizen دەکەیتەوە، [docs/devices/samsung-tizen.md](docs/devices/samsung-tizen.md) ببینە بۆ ئەوەی بزانیت یەک تەلەڤیزیۆنی Samsung ی 2021 لەسەر Wi-Fi چی وەڵام دەداتەوە (ADB نییە، بۆیە `pm disable-user` نییە). بۆ تەلەڤیزیۆنی LG webOS 26، [docs/devices/lg-webos.md](docs/devices/lg-webos.md) ڕێکخستنەکان و فلتەرکردنی DNS باس دەکات، لەگەڵ یاسایەکی فایەرواڵ بەرامبەر بە DNS ی تر. |
 
-لیستە تاقیکراوەکان کە کۆمەڵگە ناردوویەتی، بە فۆڵدەری مۆدێل لە [examples](examples/).
+لیستی تاقیکراو لە بەشداربووانەوە، بۆ هەر مۆدێلێک فۆڵدەرێکی تایبەت لە [`examples/`](examples/) دا هەیە.
 
-**تەلەڤیزیۆنەکەت بدۆزەرەوە:** لە [cleanyour.tv/tvs](https://cleanyour.tv/tvs) بگەڕێ، یان خشتەی تەواو لە [examples/README.md](examples/README.md) ببینە.
+**پەیدا کردنی تەلەڤیزیۆنەکەت:** لە [cleanyour.tv/tvs](https://cleanyour.tv/tvs) بگەڕێ، یان خشتەی تەواو لە [examples/README.md](examples/README.md) ببینە.
 
-تەلەڤیزیۆنەکەت لە لیستەکەدا نییە؟ داواکارییەکە خۆی ئەپە زیادەکان دەناسێتەوە. پاشان لیستەکەت زیاد بکە بۆ ئەوەی کەسی داهاتوو بە هەمان مۆدێل دووبارەی نەکاتەوە: [CONTRIBUTING.md](CONTRIBUTING.md).
+ئەگەر تەلەڤیزیۆنەکەت لێرە نییە؟ پرۆمپتەکە خۆی ئەپە نەویستراوەکان دەدۆزێتەوە. دواتر لیستەکەت زیاد بکە، کەسی داهاتوو کە هەمان مۆدێلی هەیە ئەو هەنگاوە دەپەڕێنێت: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## بە دەستی خۆت
 
-هەرچی یاریدەدەرەکە دەیکات، خۆت دەتوانیت ڕای بکەیت. پێش ئەوە دوو شت لەسەر کۆمپیوتەرەکەت دابنێ:
+هەموو ئەو کارانەی یاریدەدەرەکە دەیکات، خۆت دەتوانیت ئەنجامی بدەیت. پێشتر دوو شت دەبێت لەسەر کۆمپیوتەرەکە هەبن:
 
-| پێویستە | بۆچی |
-|---:|---:|
-| **Python 3** (هەر وەشانێکی 3.x) | بۆ ئامرازەکان. فەرمانی ژینگەی تایبەت پاشبەستەکان خۆی دادەنێت. |
-| **JDK 17 تا 22** (JDKی تەواو، لەگەڵ <code dir="ltr">jlink</code>) و **Android SDK platform 34** لەگەڵ **build-tools 34.0.0 یان هەر 34.xێکی نوێتر** | بۆ دروستکردنی لانچەر. JDK 23 و دواتر Gradle 8.9 ڕادەگرن. پلاتفۆرمی 34 ئەوەیە کە دروستکردن داوای دەکات. وەشانی دواتر جێگەی ناگرێتەوە. لە macOS ئەگەر هیچت نییە: <code dir="ltr">brew install openjdk@17 android-commandlinetools</code> و پاشان <code dir="ltr">sdkmanager "platforms;android-34" "build-tools;34.0.0"</code>. لە Linux سکریپتی دامەزراندن SDK لە <code dir="ltr">~/Android/Sdk</code> و <code dir="ltr">java</code> لە PATHدا دەدۆزێتەوە. |
+| پێویستت پێیەتی | بۆ |
+|---|---|
+| **Python 3** (هەر وەشانێکی 3.x) | ئامرازەکان. فەرمانی venv ی خوارەوە ئەو شتانە دادەمەزرێنێت کە ئامرازەکان هاوردەیان دەکەن. |
+| **JDK لە 17 تا 22** (JDK ی تەواو، لەگەڵ `jlink`) و **Android SDK platform 34** لەگەڵ **build-tools 34.0.0 یان هەر وەشانێکی نوێتری 34.x** | دروستکردنی لانچەر. JDK 23 و نوێتر وا دەکەن Gradle 8.9 کار نەکات. بیناکە platform 34 دەخوێنێتەوە؛ platform ی نوێتر جێی ناگرێتەوە. لەسەر macOS، کاتێک هیچیان دانەمەزراوە: `brew install openjdk@17 android-commandlinetools`، پاشان `sdkmanager "platforms;android-34" "build-tools;34.0.0"`. لەسەر Linux، سکریپتی دامەزراندن لە `~/Android/Sdk` و بۆ `java` لە PATH دەگەڕێت. |
 
-<code dir="ltr">tools/tv.py</code> لە ڕێگەی ADBی تۆڕ لە پۆرتی 5555 قسە لەگەڵ تەلەڤیزیۆن دەکات. ئەگەر ئەو پۆرتە داخرا بێت و تەلەڤیزیۆن هەڵەدۆزی بێتەل بە کۆدی جووتکردن پێشکەش بکات (وەک Chromecast لەگەڵ Google TV و Google TV Streamer)، یەک جار بە <code dir="ltr">adb</code>ی ئاسایی جووتی بکە. پاشان دەتوانیت <code dir="ltr">adb tcpip 5555</code> ڕابکەیت بۆ کردنەوەی پۆرتەکە، کە زۆربەی کات تەنها تا ڕیستارت دەمێنێتەوە، یان داخراوی بهێڵیتەوە: <code dir="ltr">TV_ADB_BINARY</code> بۆ هەمان <code dir="ltr">adb</code> و <code dir="ltr">TV_HOST</code> بۆ ئەو پۆرتەی لەسەر شاشەی هەڵەدۆزی بێتەل دیارە. ئامرازەکان لە ڕێگەی کەناڵی کۆدکراو دەبەسترێنەوە و هیچ شتێک لە پۆرتی 5555 گوێ ناگرێت ([tools/native-adb.md](tools/native-adb.md)). [چارەسەری کێشە](docs/TROUBLESHOOTING.md#connecting) هەردوو ڕێگە و هەنگاوەکانی جووتکردن دەڵێت.
+`tools/tv.py` بە ADB ی تۆڕ لەسەر پۆرتی 5555 قسە دەکات. ئەگەر ئەو پۆرتە داخراو بمێنێتەوە و تەلەڤیزیۆنەکە Wireless debugging لەگەڵ کۆدی جووتکردن پێشکەش بکات (Chromecast with Google TV و Google TV Streamer وایە)، یەک جار بە `adb` ی ئاسایی جووتی بکە. پاشان، یان فەرمانی `adb tcpip 5555` بەکاربهێنە بۆ کردنەوەی پۆرتەکە، کە زۆرجار تەنها تا دووبارە دەستپێکردنەوەی تەلەڤیزیۆنەکە دەمێنێتەوە، یان داخراوی بهێڵەرەوە: `TV_ADB_BINARY` ئاماژە بکە بۆ هەمان `adb`، و `TV_HOST` بۆ ئەو پۆرتەی کە شاشەی Wireless debugging پیشان دەدات. ئیتر ئامرازەکان لە ڕێگەی ئەو پەیوەندییە جووتکراوەوە دەگەنە تەلەڤیزیۆنەکە، بەبێ ئەوەی هیچ شتێک لەسەر 5555 گوێ بگرێت ([tools/native-adb.md](tools/native-adb.md)). [چارەسەرکردنی کێشەکان](docs/TROUBLESHOOTING.md#connecting) هەردووکیان تێدایە، لەگەڵ هەنگاوەکانی جووتکردن.
 
 <div dir="ltr" align="left">
 
 ```bash
 python3 -m venv tools/venv && tools/venv/bin/pip install -r tools/requirements.txt
-export TV_HOST=192.168.1.50                                   # ناونیشانی IPی تەلەڤیزیۆنەکەت
+export TV_HOST=192.168.1.50                                   # your TV's IP address
 
-tools/venv/bin/python -I tools/tv.py --probe                 # مۆدێل، وەشانی Android و فێرموایر
-tools/venv/bin/python -I tools/tv.py 'pm list packages'      # فەرمانێک لەسەر تەلەڤیزیۆن ڕادەکات
-tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt        # لیستی پاککردنەوە جێبەجێ دەکات
-tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt        # گۆڕانکارییەکان دەگەڕێنێتەوە و لانچەری ئەسڵی دەگەڕێنێت
-tools/venv/bin/python -I tools/check.py examples/xiaomi-mi-tv-4a/debloat.txt   # دەپشکنێت نوێکردنەوە چی گەڕاندووەتەوە
-TV_HOST=192.168.1.50 launcher/build-and-install.sh           # لانچەر دروست دەکات و دەیکات بە شاشەی سەرەکی
-tools/theme.sh themes/aurora                                 # بابەتێک جێبەجێ دەکات؛ --reset لای دەبات
+tools/venv/bin/python -I tools/tv.py --probe                 # model, Android version, firmware
+tools/venv/bin/python -I tools/tv.py 'pm list packages'      # one shell command on the TV
+tools/disable.sh examples/xiaomi-mi-tv-4a/debloat.txt        # apply a debloat list
+tools/restore.sh examples/xiaomi-mi-tv-4a/debloat.txt        # undo it, stock launcher back
+tools/venv/bin/python -I tools/check.py examples/xiaomi-mi-tv-4a/debloat.txt   # what a firmware update undid
+launcher/build-and-install.sh                                # build the launcher and make it Home (needs the TV_HOST export above)
+tools/theme.sh themes/aurora                                 # push a theme; --reset removes it
+tools/venv/bin/python -I tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers   # your photos, sized and darkened for the TV
 ```
 
 </div>
 
-| ئامراز | چی دەکات |
-|---:|---:|
-| [<code dir="ltr">tools/tv.py</code>](tools/tv.py) | کلایەنتی ADB بە Python: شێڵ، کار بە کۆمەڵ، ناردن و داگرتنی فایل، ڕیستارت و وێنەی شاشە، لەگەڵ توانای گرتنی دوگمەی ڕیمۆت پێش ئەوە. کاتێکیش کار دەکات کە <code dir="ltr">adb</code>ی سیستەم قوفڵ بێت. هەروەها [پاشەکەوتی Google ADB بە جووتکردن](tools/native-adb.md)ی هەیە، ئارەزوومەندانە، بۆ هەڵەدۆزی بێتەلی کۆدکراو. |
-| [<code dir="ltr">tools/docker-build.sh</code>](tools/docker-build.sh) | لانچەر یان زیادکراوێک لەناو Docker دروست دەکات (JDK 17، Android SDK 34)، بەبێ ئامرازی تر لەسەر ئەم کۆمپیوتەرە جیا لە Docker. ئەنجامەکە بە <code dir="ltr">SKIP_BUILD=1</code> دادەنرێت. [ڕێنمایی](tools/docker-build.md). |
-| [<code dir="ltr">tools/b64push.py</code>](tools/b64push.py) | فایلی گەورە، وەک APK، بە پارچەی base64 دەنێرێت و کۆی پشکنین دەپشکنێت. |
-| [<code dir="ltr">tools/relay.py</code>](tools/relay.py) | پۆرتێکی ناوخۆیی دەگوازێتەوە بۆ پۆرتی ADBی تەلەڤیزیۆن، بۆ یاریدەدەرێک کە ژینگەکەی ناتوانێت بگاتە تۆڕی ناوخۆیی. تەنها لەسەر ئەم ئامێرە گوێ دەگرێت. [ڕێنمایی](tools/relay.md). |
-| [<code dir="ltr">tools/disable.sh</code>](tools/disable.sh)، [<code dir="ltr">restore.sh</code>](tools/restore.sh) | لیستی پاککردنەوە جێبەجێ دەکەن یان دەیگەڕێننەوە. گەڕاندنەوە ئەو دۆخە بەکاردەهێنێت کە پێش گۆڕانکاری تۆمار کراوە. |
-| [<code dir="ltr">tools/recovery.py</code>](tools/recovery.py) | ئەو تۆمارە دروست دەکات کە <code dir="ltr">disable.sh</code> پێویستیەتی بۆ گەڕاندنەوەی گۆڕانکارییەکانی خۆی، و فەرمانەکانی گەڕاندنەوە بە کۆمەڵ پیشان دەدات. |
-| [<code dir="ltr">tools/check.py</code>](tools/check.py) | دۆخی تەلەڤیزیۆن لەگەڵ لیستی جێبەجێکراو دەپشکنێت بۆ ئەوەی بزانێت نوێکردنەوەی فێرموایر چی گەڕاندووەتەوە. <code dir="ltr">--fix</code> گۆڕانکارییەکان دووبارە جێبەجێ دەکات. |
-| [<code dir="ltr">tools/adb-closed.py</code>](tools/adb-closed.py) | دەپشکنێت پۆرتی ADBی تۆڕ دوای کوژاندنەوەی هەڵەدۆزی داخراوە یان نا: 0 کاتێک تەلەڤیزیۆن پەیوەندی ڕەت دەکاتەوە، 1 تا کراوە بێت، و 2 کاتێک وەڵام نییە یان پشکنینەکە ڕاناچێت. پێویستی بە <code dir="ltr">nc</code> نییە. |
-| [<code dir="ltr">tools/philips-api.py</code>](tools/philips-api.py) | تەنها بۆ Philips: دەپشکنێت APIی کۆنترۆڵی JointSpace، کە Home Assistant بەکاری دەهێنێت، پێش و دوای پاککردنەوە هێشتا وەڵام دەداتەوە (<code dir="ltr">tools/venv/bin/python -I tools/philips-api.py &lt;tv ip&gt;</code>). سەرەتا پۆرتی 1926 بە HTTPS، پاشان 1925. تەنها ئەوە دەخوێنێتەوە کە وەڵام دەداتەوە، بەبێ جووتکردن. |
-| [<code dir="ltr">tools/privacy.py</code>](tools/privacy.py) | تەلەڤیزیۆن دەپشکنێت بۆ ئەپ و پاکێجی پەیوەست بە دەنگ و ACR و تەلەمەتری، و بەڵگەی هەر یەکێک پیشان دەدات. بە <code dir="ltr">--write</code> ئەنجامەکان دەکات بە لیستێک کە <code dir="ltr">disable.sh</code> و <code dir="ltr">restore.sh</code> دەیخوێننەوە. |
-| [<code dir="ltr">tools/theme.sh</code>](tools/theme.sh)، [<code dir="ltr">theme_restart.py</code>](tools/theme_restart.py) | فۆڵدەرێک لە [themes](themes/) دەنێرن بۆ لانچەر و شاشەی سەرەکی دەستپێدەکەنەوە. |
-| [<code dir="ltr">tools/manage.py</code>](tools/manage.py) | هەموو زیادکراو و بابەت و هەڵبژاردنەکان لەگەڵ وێنەی شاشە پیشان دەدات. دەڵێت چی لەسەر تەلەڤیزیۆن دانراوە و ڕێگە دەدات هەر دانەیەک دابمەزرێت، نوێ بکرێتەوە یان لاببرێت بە سکریپتی خاوەنەکەی. |
-| [<code dir="ltr">tools/bench.py</code>](tools/bench.py) | کارایی ئەو لانچەرە دەپێوێت کە دوگمەی HOME وەڵام دەداتەوە: دواکەوتنی دوگمە، مەودای فۆکەس، دابەزینی فرێم، دەستپێکردنی سارد، گەڕانەوە بۆ سەرەکی، و CPU و بیرگەی PSS لە پشوودا. هیچ لەسەر تەلەڤیزیۆن ناگۆڕێت و داتای خاو بە JSON دەهێڵێتەوە. |
-| [<code dir="ltr">tools/trace.py</code>](tools/trace.py)، [<code dir="ltr">trace_report.py</code>](tools/trace_report.py) | تراکی Perfettoی لانچەر دەگرن (گەڕانەوە بۆ سەرەکی، دەستپێکردنی سارد و گەشت بە دوگمەکان) و دەڵێن کات لە کوێ دەڕوات، بۆ هەر جارێک و بەراوردی پێش و دوای. ئارەزوومەندانەیە: پێویستی بە [<code dir="ltr">requirements-perf.txt</code>](tools/requirements-perf.txt) هەیە. [ڕێنمایی](tools/trace.md). |
-| [<code dir="ltr">tools/flamechart.py</code>](tools/flamechart.py) | flame chartێک دروست دەکات کە تراکی پێش و دوای دەبەستێتەوە، بۆ داواکاریی تێکەڵکردن: ڕێڕەوێک بۆ هەر threadێک لە هەمان پێوەری کات، کارە شیکراوەکە بە ڕەنگی مەجێنتا و کاتی کۆی. ئارەزوومەندانەیە، وەک ئامرازەکانی تراک. [ڕێنمایی](tools/flamechart.md). |
-| [<code dir="ltr">tools/screendiff.py</code>](tools/screendiff.py) | وێنەی پێش و دوای پیکسەڵ بە پیکسەڵ دەبەستێتەوە، کاتژمێر یان هەر ناوچەیەک کە دیاری بکەیت فەرامۆش دەکات. جووتە وێنەکەش دەهێڵێتەوە بە ناوی تۆڕی Wi-Fi کاڵکراو. ئارەزوومەندانەیە. [ڕێنمایی](tools/screendiff.md). |
-| [<code dir="ltr">tools/race_calendar.py</code>](tools/race_calendar.py) | ڕۆژژمێری وەرزی ئێستای F1 دەخاتە ناو بابەتێک بۆ دۆخی کۆتایی هەفتەی پێشبڕکێ، لە ڕێگەی APIی خۆڕایی Jolpica. |
-| [<code dir="ltr">launcher/build-and-install.sh</code>](launcher/build-and-install.sh) | وەشانێکی بەرهەمهێنان دروست دەکات (نزیکەی 572 KB)، دادەنێت، دەیکات بە شاشەی سەرەکی، و ئەگەر لانچەرەکە کۆنترۆڵی نەگرتەوە دەیگەڕێنێتەوە. |
+| ئامراز | ئەوەی دەیکات |
+|---|---|
+| [`tools/tv.py`](tools/tv.py) | کلاینتی ADB بە تەنها Python: shell، batch، push، pull، reboot و وێنەی شاشە، بەدڵخوازیش دوگمەی ڕیمۆت پێش ئەوە دەدات. لەو شوێنانە کار دەکات کە `adb` ی ئاسایی بلۆک کراوە. [کلاینتی Google ADB ی جووتکراو](tools/native-adb.md) بۆ Wireless debugging ی شیفرەکراو هەڵبژاردەیە. |
+| [`tools/docker-build.sh`](tools/docker-build.sh) | لانچەر یان add-on لە Docker دروست دەکات (JDK 17، Android SDK 34)، بۆیە ئەم کۆمپیوتەرە تەنها Docker پێویستی پێیەتی. ئەنجامەکە بە `SKIP_BUILD=1` دابمەزرێنە. [ڕێنمای](tools/docker-build.md). |
+| [`tools/b64push.py`](tools/b64push.py) | فایلە گەورەکان وەک APK بە پارچەی base64 بار دەکات و checksum دەپشکنێت. |
+| [`tools/relay.py`](tools/relay.py) | پۆرتێکی ناوخۆیی ئاراستەی پۆرتی ADB ی تەلەڤیزیۆن دەکات، بۆ ئەو یاریدەدەرانەی سەندباکسەکەیان ناتوانێت بگاتە تۆڕەکەت. تەنها لەسەر ئەم کۆمپیوتەرە گوێ دەگرێت. [ڕێنمای](tools/relay.md). |
+| [`tools/disable.sh`](tools/disable.sh)، [`restore.sh`](tools/restore.sh) | لیستی پاککردنەوە جێبەجێ یان هەڵدەوەشێنێتەوە، بە گەڕانەوە بۆ ئەو دۆخەی پێش گۆڕانکارییەکە تۆمارکراوە. |
+| [`tools/recovery.py`](tools/recovery.py) | ئەو تۆمارە دەنووسێت کە `disable.sh` پێویستی پێیەتی بۆ هەڵوەشاندنەوەی خۆی، و ڕیزی فەرمانی گەڕاندنەوە چاپ دەکات. |
+| [`tools/check.py`](tools/check.py) | تەلەڤیزیۆنەکە بەراورد دەکات لەگەڵ ئەو لیستەی کە جێبەجێ کراوە، بۆ ئەوەی بزانیت نوێکردنەوەی فێرموایر چی هەڵوەشاندەوە؛ `--fix` دەیگەڕێنێتەوە. |
+| [`tools/match.py`](tools/match.py) | `pm list packages` ی پاشەکەوتکراو دەخوێنێتەوە و بۆ هەر پاکێجێک دەڵێت چەند لیست لە `examples/` ناچالاکی دەکەن، چەندیان بە کۆمێنت هێشتوونەتەوە، و باوترین تێبینییان چییە. پاکێجە بنەڕەتییەکانی Android وەک `never` پیشان دەدرێن. ئۆفلاینە و هیچ ناگۆڕێت (`tools/venv/bin/python -I tools/match.py packages.txt`). |
+| [`tools/adb-closed.py`](tools/adb-closed.py) | دەپشکنێت کە پۆرتی ADB ی تۆڕی تەلەڤیزیۆن داخراوە کاتێک debugging داخراوە: کۆدی دەرچوون 0 دەگەڕێنێتەوە کاتێک تەلەڤیزیۆن پەیوەندییەکە ڕەت دەکاتەوە، 1 لەکاتێکدا هێشتا کراوەیە، و 2 کاتێک هیچ وەڵامێک نەبێت یان خودی پشکنینەکە نەتوانرێت ئەنجام بدرێت. پێویست بە `nc` نییە. |
+| [`tools/philips-api.py`](tools/philips-api.py) | تەنها بۆ Philips: دەپشکنێت کە API ی کۆنترۆڵی JointSpace کە Home Assistant بەکاری دەهێنێت هێشتا وەڵام دەداتەوە، پێش و پاش پاککردنەوە (`tools/venv/bin/python -I tools/philips-api.py <tv ip>`). سەرەتا پۆرتی 1926 لەسەر HTTPS، پاشان 1925؛ تەنها ئەوە دەخوێنێتەوە کە بەبێ جووتکردن وەڵام دەداتەوە. |
+| [`tools/privacy.py`](tools/privacy.py) | پشکنین دەکات بۆ شتە گومانلێکراوەکان: دەنگ، ACR و تێلیمێتری، و بەڵگەی هەریەکەیان پیشان دەدات؛ `--write` ئەوانە دەکات بە لیستێک کە `disable.sh` و `restore.sh` لێی تێدەگەن. |
+| [`tools/theme.sh`](tools/theme.sh)، [`theme_restart.py`](tools/theme_restart.py) | فۆڵدەرێک لە [`themes/`](themes/) دەنێرێت بۆ لانچەر و شاشەی سەرەکی دووبارە دەست پێدەکاتەوە. |
+| [`tools/wallpaper_prep.py`](tools/wallpaper_prep.py) | فۆڵدەرێکی وێنەکانی خۆت (JPEG، PNG، WebP، HEIC) دەگۆڕێت بۆ JPEG ی 1280×720 ی تاریککراو کە لە ژێر 300 KB دایە، بۆ فۆڵدەری `wallpapers/` ی تێمێک. پێویستی بە Pillow هەیە، و بۆ HEIC پێویستە pillow-heif هەبێت (`tools/requirements-photos.txt`). هەرگیز دەست لە ڕەسەنەکان نادات. [چۆنیەتی بەکارهێنان](#لانچەر). |
+| [`tools/manage.py`](tools/manage.py) | هەموو add-on، تێم و سویچەکان بە وێنەی شاشەکانیانەوە نیشان دەدات، ئەوەی لەسەر تەلەڤیزیۆنەکەیە پیشان دەدات، و هەریەکێک دەدات بە دامەزراندن، نوێکردنەوە یان لابردن بە ڕاکردنی سکریپتی دروستکەرەکەی خۆی. |
+| [`tools/bench.py`](tools/bench.py) | ئەو لانچەرەی وەڵامی HOME دەداتەوە پێوانە دەکات: ماوەی وەڵامدانەوەی دوگمە، چەندە جەختەکە (focus) گواستراوەتەوە، فریمە لەرزۆکەکان، دەستپێکردنی سارد، گەڕانەوە بۆ Home، و CPU ی بێکار و PSS ی کە خەرجی دەکات. هیچ ناگۆڕێت لەسەر تەلەڤیزیۆنەکە و داتای خاوی هەر دوگمەیەک بە JSON دەنووسێت؛ هیچ دامەزراندنێکی زیاتری ناوێت. |
+| [`tools/trace.py`](tools/trace.py)، [`trace_report.py`](tools/trace_report.py) | Perfetto trace ی لانچەر تۆمار دەکات (گەڕانەوە بۆ Home، دەستپێکردنی سارد، D-pad) و ڕادەگەیەنێت کاتەکەی لە کوێ خەرج دەبێت، بۆ هەر ڕاکردنێک و بەراورد لە پێش و دوای. بەدڵخوازە: پێویستی بە [requirements-perf.txt](tools/requirements-perf.txt) هەیە. [ڕێنمای](tools/trace.md). |
+| [`tools/flamechart.py`](tools/flamechart.py) | ڕەسمی flame chart ی پێش و دوای لەو trace انە دەکێشێت، بۆ داواکاری pull: هێڵێک بۆ هەر thread لەسەر تەوەرەیەکی کاتی هاوبەش، و ئەو کارەی گۆڕانکارییەکە ئامانجی کردووە بە magenta لەگەڵ کۆی کاتەکەی. بەدڵخوازە، وەک ئامرازەکانی trace. [ڕێنمای](tools/flamechart.md). |
+| [`tools/screendiff.py`](tools/screendiff.py) | وێنەی پێش و دوای بە پیکسڵ بەراورد دەکات، کاتژمێر یان هەر شتێکی تۆ ماسک بکەیت لادەبات، و جووتەکە دەنووسێتەوە کە ناوی تۆڕەکەت بە blur دەشارێتەوە. بەدڵخوازە، وەک ئامرازەکانی trace. [ڕێنمای](tools/screendiff.md). |
+| [`tools/race_calendar.py`](tools/race_calendar.py) | کالێندەری ئەم وەرزەی F1 دەنووسێت بۆ ناو تێمێک بۆ دۆخی ڕۆژی پێشبڕکێ، لە API ی بەخۆڕایی Jolpica. |
+| [`launcher/build-and-install.sh`](launcher/build-and-install.sh) | ڤێرژنی release ی بچووککراو دروست دەکات (نزیکەی 572 KB)، دایدەمەزرێنێت، Home دەگۆڕێت، و ئەگەر Home لەسەری نەچووبێت دەگەڕێتەوە بۆ پێشوو. |
 
-سکریپتەکان هەرگیز تەلەڤیزیۆن بەبێ ئەپی سەرەکی ناهێڵنەوە: تەنها لانچەرێکی ئەسڵی ناچالاک دەکەن کە دەیناسن، و ئەو ئەپە لە لیستەکە دەپەڕێنن تا لانچەرێکی تر دوگمەی HOME وەڵام بداتەوە. لیستی خۆت دەتوانێت لە دەرەوەی کۆگاکە بێت: ڕێچکەکان بەرامبەر ئەو بوخچەیەن کە فەرمانەکەی لێوە ڕادەکەیت، و ڕێچکەی ڕەهاش دروستە.
+سکریپتەکان هەرگیز تەلەڤیزیۆنەکە بەبێ ئەپی Home بەجێ ناهێڵن: تەنها لانچەری کارخانەیی ناچالاک دەکەن کە دەیناسنەوە، و ئەپی Home لە لیستێکدا دەپەڕێنن تا لانچەرێکی تر وەڵامی HOME بداتەوە. لیستی خۆتیش دەتوانیت لە دەرەوەی کۆگاکە هەبێت: ڕێگەی لیستەکان لەسەر بنەمای ئەو فۆڵدەرەی کە فەرمانەکەی لێ دەدەیت دیاری دەکرێن، و ڕێگەی ڕەهاش (absolute) کار دەکات.
 
 <details>
 <summary><b>Windows (PowerShell)</b></summary>
 
-هەر سکریپتێک هاوتای PowerShellی لە تەنیشتی خۆی هەیە. Python 3 و JDK لە 17 تا 22 دابنێ، و لە SDK Manager پلاتفۆرمی 34 و build-tools 34 زیاد بکە (34.0.0 یان هەر 34.xێکی نوێتر). سکریپتەکە <code dir="ltr">JAVA_HOME</code> بەکاردەهێنێت کاتێک ئاماژە بە JDKێک دەکات لەو مەودایە. ئەگەر نا، دەچێتە سەر JDKی ناو Android Studio ئەگەر مەرجەکە جێبەجێ بکات:
-
-<div dir="ltr" align="left">
+هەر سکریپتێک هاوتای PowerShell ی لە تەنیشتەوەیە. Python 3 و JDK لە 17 تا 22 دابمەزرێنە، و لە SDK Manager دا platform 34 و build-tools 34 زیاد بکە (34.0.0 یان هەر وەشانێکی نوێتری 34.x). سکریپتەکە `JAVA_HOME` بەکاردەهێنێت ئەگەر لەو ڕێزەدا JDK یەک نیشان بدات، و ئەگەر نا JDK ی ناوەکیی Android Studio، ئەگەر ئەویش لەو ڕێزەدا بێت:
 
 ```powershell
 python -m venv tools\venv; tools\venv\Scripts\python.exe -m pip install -r tools\requirements.txt
@@ -196,242 +183,282 @@ powershell -ExecutionPolicy Bypass -File tools\restore.ps1 -TvHost 192.168.1.50 
 powershell -ExecutionPolicy Bypass -File tools\theme.ps1 -TvHost 192.168.1.50 themes\aurora
 ```
 
-</div>
-
-دوو دێڕەکەی کۆتایی گەڕاندنەوە و جێبەجێکردنی بابەتن، هاوتای <code dir="ltr">tools/restore.sh</code> و <code dir="ltr">tools/theme.sh</code> لە سەرەوە. لە Google TV گەڕاندنەوە لانچەری ئەسڵیش دەگەڕێنێتەوە: <code dir="ltr">-Stock com.google.android.apps.tv.launcherx</code>.
+دوو فەرمانی کۆتایی گەڕاندنەوە و ناردنی تێم، هاوتای ئەو دێڕانەی `tools/restore.sh` و `tools/theme.sh` کە لە بەشەکانی سەرەوەدا بە bash دراون. لەسەر Google TV، گەڕاندنەوەش لانچەری کارخانەیی دەگەڕێنێتەوە، بە ئاماژەی `-Stock com.google.android.apps.tv.launcherx`.
 
 </details>
 
 <details>
-<summary><b>چۆن سکریپتەکان شاشەی سەرەکی دەپارێزن</b></summary>
+<summary><b>How the scripts protect Home</b></summary>
 
-سکریپتەکانی دامەزراندن لە تەلەڤیزیۆن دەپرسن کام لانچەر شاشەی سەرەکی بەڕێوە دەبات، و تەنها ئەوە ناچالاک دەکەن کە دەیناسن. چوار لانچەری ئەسڵی لە <code dir="ltr">KNOWN_STOCK_LAUNCHERS</code>: <code dir="ltr">com.google.android.tvlauncher</code>، <code dir="ltr">com.google.android.apps.tv.launcherx</code>، <code dir="ltr">com.google.android.leanbacklauncher</code> و <code dir="ltr">com.mitv.tvhome</code>ی Xiaomi (PatchWall). <code dir="ltr">STOCK_LAUNCHER=&lt;package&gt;</code> (<code dir="ltr">-StockLauncher</code>) ئەم نرخە دەگۆڕێت، یان <code dir="ltr">none</code> بۆ ئەوەی هیچ لانچەرێک ناچالاک نەکرێت.
+سکریپتەکانی دامەزراندن لە تەلەڤیزیۆنەکە دەپرسن کام لانچەر خاوەنی Home ە، و تەنها ئەوەیان ناچالاک دەکەن کە دەیناسنەوە، کە ئەو چوارەن لە `KNOWN_STOCK_LAUNCHERS`: `com.google.android.tvlauncher`، `com.google.android.apps.tv.launcherx`، `com.google.android.leanbacklauncher` و `com.mitv.tvhome` ی شاومی (PatchWall). بۆ دیاریکردنی لانچەرێکی تر، `STOCK_LAUNCHER=<package>` (`-StockLauncher`) بنووسە، یان `none` بۆ ئەوەی هیچ نەگۆڕدرێت.
 
-<code dir="ltr">tools/disable.sh</code> (<code dir="ltr">disable.ps1</code>) هەمان پاراستن بەکاردەهێنێت پێش ناچالاککردنی هەر ئەپێک:
+`tools/disable.sh` (`disable.ps1`) هەمان یاسا جێبەجێ دەکات پێش ئەوەی هیچ ناچالاک بکات:
 
-- ئەگەر لیستەکە ئەو ئەپەی تێدابێت کە شاشەی سەرەکی بەڕێوە دەبات و هیچ ئەپێکی تر دوگمەی HOME وەڵام نەداتەوە، ئەو دانەیە دەپەڕێنێت، هۆکارەکە دەڵێت، و بەردەوام دەبێت لەگەڵ باقی لیستەکە. بەم شێوەیە لیستێک کە پێش گۆڕینی لانچەر جێبەجێ بکرێت تەلەڤیزیۆن بەبێ ڕووکار ناهێڵێتەوە.
-- یاریدەدەری ڕێکخستنی سەرەتایی، ڕێکخستنی سیستەم، <code dir="ltr">FallbackHome</code>ی دروستکەر و ئەپی تاقیکردنەوەی کارگە (وەک <code dir="ltr">com.duokan.factorytest</code>ی Xiaomi) هەروەها دوگمەی HOME وەڵام دەدەنەوە و بە ئەنقەست لەو ژماردنە دەرکراون.
-- لە Google TV سکریپتەکە لانچەری ئەسڵی چالاک دەهێڵێتەوە تا <code dir="ltr">setupwraith</code> دوگمەی HOME وەڵام بداتەوە و چالاک بێت (چونکە لە لیستەکەدا نییە، یان هێڵدراوەتەوە بۆ هێشتنەوەی Wi-Fi). <code dir="ltr">setupwraith</code> پێش لانچەرێکی نوێ دێت کە هێشتا وەک شاشەی سەرەکی هەڵنەبژێردراوە، و بەبێ ئەم پاراستنە کۆنترۆڵ دەگرێت.
+- ئەگەر لیستەکە ئەو ئەپەی تێدا بێت کە خاوەنی Home ە، و هیچ ئەپێکی تری تەلەڤیزیۆنەکە وەڵامی HOME نەداتەوە، ئەو بڕگەیە دەپەڕێنێت و هۆکارەکەی دەڵێت، و بەشی ماوەی لیستەکە ناچالاک دەکات. بۆیە لیستێک کە پێش گواستنەوەی Home جێبەجێ دەکرێت ناتوانێت تەلەڤیزیۆنەکە بێ هیچ لانچەرێکی وەڵامدەر بەجێ بهێڵێت.
+- ڕێنمای دامەزراندن، ئەپەکانی ڕێکخستن، `FallbackHome` ی فرۆشیار و ئەپە تاقیکردنەوەکانی کارخانە (`com.duokan.factorytest` ی شاومی) وەڵامی HOME دەدەنەوە، بەڵام ناژمێردرێن.
+- لەسەر Google TV، سکریپتەکە خاوەنی ئێستا (لانچەری کارخانەیی) دەهێڵێتەوە هەتا setupwraith وەڵام دەداتەوە و چالاکە (لە لیستدا نییە، یان بۆ تۆڕی Wi-Fi هێشتراوەتەوە): setupwraith پێش لانچەرێکی دامەزراو کە هێشتا Home نییە وەڵام دەداتەوە، بۆیە Home دەگرێتەوە.
 
-هەمان لیست دووبارە ڕابکە دوای ئەوەی <code dir="ltr">launcher/build-and-install.sh</code> لانچەری نوێ دەکات بە شاشەی سەرەکی، بۆ ئەوەی ئەو دانەیەش جێبەجێ بکرێت. <code dir="ltr">FORCE_HOME=1</code> (<code dir="ltr">$env:FORCE_HOME</code>) ناچالاککردن لە هەموو بارێکدا دەسەپێنێت.
+دووبارە هەمان لیست بەڕێوە ببە دوای ئەوەی `launcher/build-and-install.sh` لانچەری نوێی کرد بە Home و بڕگەکە جێبەجێ کرا؛ `FORCE_HOME=1` (`$env:FORCE_HOME`) بە هەر حاڵ ناچالاکی دەکات.
 
 </details>
 
-## مایک و ئەوەی دەتوانرێت لەسەری بوترێت
+## مایک، و ئەوەی دەربارەیەوە دەتوانرێت بوترێت
 
-پرسیاری «کام لەم پاکێجانە گوێ دەگرن؟» وەڵامێکی ڕاستگۆی یەک ڕستەیی نییە. پشکنینی مۆڵەت پەنجا پاکێجی سیستەم دەردەخات بە <code dir="ltr">RECORD_AUDIO</code> کە هیچ تۆمار ناکەن، لە کاتێکدا مۆدیولی ACR دەتوانێت شاشە شیکار بکات بەبێ مۆڵەتی دەنگ. [<code dir="ltr">tools/privacy.py</code>](tools/privacy.py) ئەوە پیشان دەدات کە تەلەڤیزیۆن بەڕاستی ڕایدەگەیەنێت، لەگەڵ بەڵگە بۆ هەر ئەرکێکی دەنگ و ACR و تەلەمەتری: <code dir="ltr">TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py</code>. <code dir="ltr">--write</code> دۆزینەوەکان دەکات بە لیستی ئاسایی ناچالاککردن. ئەوەی ئەم پشکنینە ناتوانێت دیاری بکات مەبەستی پشت هەر ئەرکێکە: [docs/privacy.md](docs/privacy.md) هۆکارەکان دەڵێت.
+«کام لەم پاکێجانە گوێ دەگرێت؟» وەڵامێکی ڕاستگۆیانەی یەک دێڕی نییە: پشکنینی مۆڵەتەکان پەنجا پاکێجی سیستەم پیشان دەدات کە `RECORD_AUDIO` یان هەیە و هیچ تۆمار ناکەن، و کلاینتەکانی ACR شاشە دەبینن بەبێ هیچ مۆڵەتی دەنگێک. [`tools/privacy.py`](tools/privacy.py) ڕادەگەیەنێت تەلەڤیزیۆنەکە ڕاستەقینە چی دەڵێت، لەگەڵ بەڵگەی هەریەکەی دەنگ، ACR و تێلیمێتریی گومانلێکراو: `TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/privacy.py`، و `--write` ئەوانە دەکات بە لیستێکی ئاسایی پاککردنەوە. ئەوەی پشکنینەکە ناتوانێت مەبەست بسەلمێنێت، [docs/privacy.md](docs/privacy.md) ڕوونی دەکاتەوە بۆچی.
 
 ## لانچەر
 
-شاشەیەکی سەرەکیی ناوخۆیی و زۆر سووک بۆ Android TV: **نزیکەی 572 KB**، بە Javaی سادە، بۆ تەلەڤیزیۆن بە 1 GB بیرگە. بێ لێڵی قورس، بێ ڤیدیۆی پاشبنەما، بێ مۆڵەتی تۆڕ، و بێ خزمەتگوزاریی پاشبنەما. **تەلەڤیزیۆن** پێویستی بە Android 8.0 (API 26) یان نوێتر هەیە، بەپێی <code dir="ltr">minSdk</code> لە [<code dir="ltr">launcher/app/build.gradle</code>](launcher/app/build.gradle). بۆ ئەوەی لە وەشانی کۆنتر چی دەمێنێتەوە، [چارەسەری کێشە](docs/TROUBLESHOOTING.md) ببینە.
+شاشەی سەرەکیی بچووکی ناتیڤ بۆ Android TV: **نزیکەی 572 KB**، Java ی سادە، بۆ تەلەڤیزیۆن بە 1 GB ڕام دروستکراوە. بڵۆر نییە، ڤیدیۆ نییە، مۆڵەتی تۆڕ نییە، خزمەتگوزاریی پاشبنەما نییە. **تەلەڤیزیۆنەکە** پێویستە Android 8.0 (API 26) یان نوێتر بێت، واتە `minSdk` لە [`launcher/app/build.gradle`](launcher/app/build.gradle)؛ ئەوەی لەسەر تەلەڤیزیۆنی کۆنتر دەمێنێتەوە لە [چارەسەرکردنی کێشەکان](docs/TROUBLESHOOTING.md) دایە.
 
-| تایبەتمەندی | چۆن کار دەکات |
-|---:|---:|
-| **ڕێکخستن** | ڕیزی دۆک، ئەپی شاراوە، ئەپی تەلەڤیزیۆنی ڕاستەوخۆ، 4 تا 7 دانە لە هەر ڕیزێک، و جوڵەی کەم. هەمووی لە [<code dir="ltr">config.xml</code>](launcher/app/src/main/res/values/config.xml). |
-| **ڕێکخستن لەسەر تەلەڤیزیۆن** | OK لەسەر ڕێکخستن ڕابگرە بۆ هەڵبژاردەکانی لانچەر. بە ئارەزوو <code dir="ltr">launcher_settings_button</code> وای لێ دەکات یەک داگرتن ڕاستەوخۆ بیکاتەوە. ڕێکخستنی تەلەڤیزیۆن لە خودی پەڕەی ڕێکخستن و لە وێنۆچکەکە دەمێنێتەوە. |
-| **بابەتەکان** | پاشبنەما و وێنەی دیوار و ڕیزبەند لە <code dir="ltr">config.json</code>، بە Wi-Fi دەنێردرێت، بەبێ دووبارە دروستکردن. 29 بابەت لە [themes](themes/) دان، لەگەڵ <code dir="ltr">default/</code>ی ناوخۆیی. |
-| **31 زمان** | شوێنی زمانی تەلەڤیزیۆن دەکەوێت. بۆ عیبری ڕیزبەندەکە لە ڕاستەوە بۆ چەپ دەڕوات. |
-| **کتێبخانەی ئەپ** | ئارەزوومەندانە: هەموو ئەپە دامەزراوەکان بگەڕێ و شۆرتکەت لە شاشەی سەرەکی زیاد بکە یان لای ببە. [ڕێنمایی کتێبخانەی ئەپ](docs/app-library.md). |
-| **مێنیوی دانە** | بە بنەڕەت چالاکە (<code dir="ltr">tile_menu</code>): OK لەسەر دانەیەک ڕابگرە بۆ گواستنەوە، لابردن لە شاشەی سەرەکی، و زانیاریی ئەپ. ئەگەر بکوژێتەوە، ڕاگرتنی OK ڕاستەوخۆ زانیاریی ئەپ دەکاتەوە. |
-| **کارتی مۆدیول** | هەر ئەپێکی تەلەڤیزیۆن دەتوانێت بلۆکی زانیاریی خۆی بهێنێت. هەر یەکەیان یەک جار ڕێگە پێ دەدەیت. [<code dir="ltr">docs/modules.md</code>](docs/modules.md). |
-| **زیادکراوەکان** | ئەپی ئارەزوومەندانە کە وەک کارتی مۆدیول دەبەسترێنەوە، لە [addons](addons/)، و هەرگیز لەناو لانچەر نانرێن. |
-| **شاشەپارێزی کاتژمێر** | کاتژمێرێک بەردەوام دەجوڵێت لەسەر درەوشانەوە، بۆ ئەوەی نەخش لەسەر OLED و LCD نەمێنێت. |
-| **دوگمەکانی ڕیمۆت** | دوگمەی سەرچاوەکان و YouTube و ڕێکخستن کارا دەهێڵێتەوە تەنانەت دوای ناچالاککردنی لانچەری ئەسڵی. |
+| شت | چۆن کار دەکات |
+|---|---|
+| **ڕێکخستن** | ڕیزبەندی دۆک، ئەپە شاراوەکان، ئەپی Live TV، 4 تا 7 خانە بۆ هەر ڕیزێک، جووڵەی کەمکراوە. هەموو لە [`config.xml`](launcher/app/src/main/res/values/config.xml) دایە |
+| **ڕێکخستنەکان لەسەر تەلەڤیزیۆن** | OK لەسەر Settings ڕابگرە بۆ ڕێکخستنەکانی لانچەر. ئەگەر `launcher_settings_button` ت چالاک کردبێت، کلیکی ئاسایی ڕاستەوخۆ ڕێکخستنەکانی لانچەر دەکاتەوە؛ ڕێکخستنەکانی تەلەڤیزیۆن لەسەر پەڕەی ڕێکخستنەکان و خانەی ئەپەکەی خۆیان دەمێننەوە. |
+| **تێمەکان** | پاشبنەما، وێنەی پاشبنەما و ڕیزبەندی لە `config.json` بە Wi-Fi دەنێردرێن، بەبێ دووبارە دروستکردنەوە. 29 بابەت لە [themes](themes/) دان، `default/` ی ناوەکیشی تێدایە. |
+| **31 زمان** | بە پێی زمانی تەلەڤیزیۆنەکە خۆی دەگۆڕێت، و بۆ هیبرۆ ڕووکارەکە بە تەواوی ڕاست-بۆ-چەپ ئاوێنە دەکرێت. |
+| **کتێبخانەی ئەپ** | هەڵبژاردەیی: هەموو ئەپێکی دامەزراو ببینە و کورتەڕێگەی Home زیاد یان لابدە. بڕوانە [ڕێنمای کتێبخانەی ئەپ](docs/app-library.md). |
+| **مێنیوی خانە** | بە بنەڕەتی چالاکە (`tile_menu`): OK لەسەر خانەیەک ڕابگرە بۆ Move و App info، لەگەڵ Remove from Home کاتێک کتێبخانەی ئەپ چالاکە. کاتێک کوژاوەیە، ڕاگرتنی OK App info دەکاتەوە. |
+| **کارتی مۆدیوڵ** | هەر ئەپێکی تەلەڤیزیۆن دەتوانێت خانەی تایبەتی خۆی پێشکەش بکات؛ هەر یەکێکیان یەک جار پەسەند دەکەیت. بڕوانە [docs/modules.md](docs/modules.md). |
+| **Add-on** | ئەپی هەڵبژاردەیی کە وەک کارتی مۆدیوڵ دەچنە ناو لانچەرەوە، لە [`addons/`](addons/) دا هەڵگیراون و هەرگیز ناکرێنە بەشێک لە خودی لانچەرەکە. |
+| **شاشەپارێزی کاتژمێر** | کاتژمێرێکی جووڵاو بەسەر ڕووناکییەکەدا، بۆ ئەوەی هیچ شتێک نەسوتێت. |
+| **دوگمەکانی ڕیمۆت** | دوگمەی Input و YouTube و دوگمەی چەرخ کار دەکەن دوای ئەوەی لانچەری کارخانەیی ناچالاککرا. |
 
-بابەت و هەڵبژاردن و زیادکراو، هەموویان لەگەڵ وێنەی شاشە: [cleanyour.tv/addons](https://cleanyour.tv/addons).
+تێمەکان، سویچەکان و زیادکراوەکان (add-ons) پێکەوە، لەگەڵ وێنەی شاشەکانیان: [cleanyour.tv/addons](https://cleanyour.tv/addons).
 
-**زیاتر بزانە:** [docs/launcher.md](docs/launcher.md) هەر پارامێترێکی پەڕەی ڕێکخستنی لانچەر دەڵێت، چۆن لانچەری بنەڕەت بگۆڕیت، زمانەکان، دوگمەکانی ڕیمۆت، شاشەپارێزی کاتژمێر، گەشتکردن، و چۆن پڕۆژەکە خۆت دروست بکەیت.
+**زیاتر:** [docs/launcher.md](docs/launcher.md) پەڕەی ڕێکخستنەکانی لانچەر ڕیز بە ڕیز دەخاتە ڕوو، و هەروەها گۆڕینی شاشەی سەرەکیی بنەڕەتی، زمانەکان، دوگمەکانی ڕیمۆت، شاشەپارێزی کاتژمێر، ڕێنوێنیی ئاراستەکان و دروستکردنی لانچەرەکە بە دەستی خۆت.
+
+<details>
+<summary><b>وێنەکانی خۆت وەک پاشبنەما</b></summary>
+
+تێم دەتوانێت فۆڵدەرێک وێنە لە پشتی شاشەی سەرەکییەوە بسووڕێنێت، بەبێ دووبارە دروستکردنەوە. هیچ وێنەیەک لەگەڵ کۆگاکەدا نایەت: وێنەی خۆت دەهێنیت، و خۆت بڕیار دەدەیت کە مافی ئەوەت هەیە پیشانیان بدەیت.
+
+1. **فۆڵدەرێکی تێم دەست پێ بکە.** تێمێکی دڵخواز لە [فۆڵدەری themes](themes/) کۆپی بکە، وەک `themes/aurora`، بۆ فۆڵدەرێکی نوێ وەک `mytheme/`، یان بە فایلێکی بەتاڵی `config.json` دەست پێ بکە.
+2. **وێنەکان ئامادە بکە.** وێنەیەکی ڕووناکی 12 MP بۆ تەلەڤیزیۆنێکی 1 تا 2 GB قورسە و کاتژمێر و خانەکان دادەپۆشێت. `tools/wallpaper_prep.py` بە ناوەڕاست 16:9 دەبڕێت، JPEG ی 1280×720 ی لە ژێر 300 KB پاشەکەوت دەکات، و خودی وێنەکە تاریک دەکات، بۆیە `wallpaper_dim` دەتوانێت لەسەر 0 بمێنێتەوە. وێنەی مۆبایلی HEIC کار دەکات. ڕەسەنەکانت هەرگیز دەست لێ نادرێن. Pillow دەچێتە ناو `tools/venv` ی دەستپێکردنی خێرا کە دروستی دەکات، نەک بۆ Python ی سیستەم، کە نە پاکێجەکەی تێدایە و نە (لەسەر Ubuntu) pip یەک هەیە کە بتوانێت دایبمەزرێنێت.
+
+   ```bash
+   tools/venv/bin/pip install -r tools/requirements-photos.txt
+   tools/venv/bin/python -I tools/wallpaper_prep.py ~/Pictures/trip mytheme/wallpapers
+   ```
+
+   هەڵبژاردەکان: `--brightness 0.25` (0.1 تا 1.0)، `--gradient 0.6` (ڕەشی زیاتر بەرەو دۆک)، `--size 1280x720`، `--max-kb 300`.
+3. **سووڕانەوە دابنێ** لە `mytheme/config.json`:
+
+   ```json
+   { "wallpaper": true, "wallpaper_rotation_minutes": 1, "wallpaper_order": "shuffle", "wallpaper_dim": 0 }
+   ```
+
+   | کلیل | تێبینی |
+   |---|---|
+   | `wallpaper_rotation_minutes` | خولەکی تەواو، 0 تا 1440. **1 خێراترینە.** `0` بەو مانایەیە سووڕانەوە نییە، و ژمارەی کەسری وەک `0.25` دەبێتە `0`، و بەمەش سووڕانەوە دەوەستێت. |
+   | `wallpaper_order` | `shuffle` هەمان وێنە بەدوای یەکدا نیشان نادات؛ `sequential` بەپێی ناوی فایلەکان دەڕوات. |
+   | `wallpaper_dim` | ڕووپۆشی ڕەش بە ڕێژەی سەدی. لەسەر 0 بهێڵەرەوە کاتێک وێنەکان پێشتر تاریک کراون. |
+   | `dock_glass`، `dock_opacity` | شریتی دۆکی شووشەیی تەماوی (30 تا 100%)، بۆ ئەوەی وێنەکە لە پشت خانەکانەوە دیار بێت. |
+   | `greeting_name` | ناوێک لە دوای پیرۆزباییەکە: «ئێوارەت باش، Sam». |
+   | `show_stats`، `app_library`، `reduced_motion` | یەک دێڕی ئامار لە ژێر کاتژمێر، دوگمەی کتێبخانەی ئەپ، جووڵەی ئارامتر بۆ GPU ی لاواز. |
+
+4. **بۆ تەلەڤیزیۆنەکە بینێرە** (ئەمە Home یەک جار دووبارە دەست پێدەکاتەوە، و یاریدەدەری دوگمەی Home بەردەوام کار دەکات):
+
+   ```bash
+   tools/theme.sh mytheme            # Windows: tools\theme.ps1 -TvHost 192.168.1.50 mytheme
+   ```
+
+   لە **Launcher settings → Wallpaper** یەک وێنە، **None** یان **Theme default** هەڵدەبژێریت، کە دووبارە دەسووڕێتەوە.
+5. **لایبە** بە `tools/theme.sh --reset`.
+
+ئەوەی ناتوانێت بیکات: crossfade نییە (وێنەکە بە پچڕان دەگۆڕێت)، سووڕانەوەیەک خێراتر لە خولەکێک نییە، و شاشەپارێزی کاتژمێر تەنها کات و بەروار نیشان دەدات، هەرگیز وێنە. ئەگەر فۆڵدەری `wallpapers/` نەبێت، تێمەکە هەر کار دەکات و Home ڕەنگی سادەی خۆی دەهێڵێتەوە. وێنەیەک لە کاتی نیشاندانی Home لە بیرگەدا دەکرێتەوە: نزیکەی 4 MB لە 1080p بە ڕەنگی 16-bit ی بنەڕەتی، 8 MB بە `wallpaper_true_color` (بڕوانە [themes/README.md](themes/README.md))، بۆیە وێنەکان بچووک بهێڵەرەوە لەسەر تەلەڤیزیۆنی 1 GB.
+
+</details>
 
 ## گەڕاندنەوەی تەلەڤیزیۆن
 
-ئەو لیستە بپارێزە کە جێبەجێت کردووە. یەک دێڕ تەلەڤیزیۆن دەگەڕێنێتەوە بۆ دۆخی ئەسڵی:
+لیستی جێبەجێکراوەکەت بپارێزە. یەک دێڕ تەلەڤیزیۆنەکە دەگەڕێنێتەوە بۆ ئەو دۆخەی پێشتر بوو:
 
 <div dir="ltr" align="left">
 
 ```bash
-TV_HOST=192.168.1.50 tools/restore.sh examples/<your-tv>/debloat.txt                                    # Android TV
-TV_HOST=192.168.1.50 tools/restore.sh examples/<your-tv>/debloat.txt com.google.android.apps.tv.launcherx  # Google TV
+TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt                                    # Android TV
+TV_HOST=192.168.1.50 tools/restore.sh examples/<your tv>/debloat.txt com.google.android.apps.tv.launcherx  # Google TV
 ```
 
 </div>
 
-| بەش | چۆن کار دەکات |
-|---:|---:|
-| **تۆمارەکە سەرەتا دروست دەبێت** | پێش ئەوەی <code dir="ltr">tools/disable.sh</code> هیچ بگۆڕێت، دۆخی پێشووی تەلەڤیزیۆن لە <code dir="ltr">~/.cleanyourtv/</code> دەهێڵێتەوە. |
-| **گەڕاندنەوە ئەو دۆخە دەگەڕێنێتەوە** | پاکێجێک کە پێشتر خۆت ناچالاکت کردبێت ناچالاک دەمێنێتەوە، و شاشەی سەرەکی دەگەڕێتەوە بۆ ئەو پێکهاتەیەی پێشتر بەڕێوەی دەبرد. |
-| **لانچەرەکە دانراو دەمێنێتەوە** | ئەگەر دەتەوێت بە تەواوی لای ببەیت، لە ڕێکخستن → ئەپەکان لەسەر خودی تەلەڤیزیۆن دەتوانیت. |
-| **کۆمپیوتەر لەبەردەست نییە؟** | ئەگەر ناتوانیت ببەسترێیتەوە، مێنیوی ڕێکخستن → ئەپەکانی خودی سیستەم ڕێگە دەدات پاکێجەکان بە دەست چالاک بکەیتەوە. |
+| چی | چۆن |
+|---|---|
+| **تۆمار یەکەم دێت** | پێش ئەوەی `tools/disable.sh` هیچ بگۆڕێت، ئەوە تۆمار دەکات کە تەلەڤیزیۆنەکە چۆن بوو، لە `~/.cleanyourtv/`. |
+| **گەڕاندنەوە تۆمارەکە دووبارە جێبەجێ دەکاتەوە** | پاکێجێک کە تۆ خۆت ناچالاکت کردبوو، ناچالاک دەمێنێتەوە، و Home دەگەڕێتەوە بۆ ئەو پێکهاتەیەی کە خاوەنی بوو. |
+| **لانچەرەکە دامەزراو دەمێنێتەوە** | ئەگەر دەتەوێت نەمێنێت، لە Settings → Apps ی تەلەڤیزیۆنەکە لایبە. |
+| **کۆمپیوتەرت نییە؟** | ئەگەر پەیوەندی بە تەلەڤیزیۆنەکەوە نەکرا، پەڕەی Settings → Apps ی خودی تەلەڤیزیۆنەکە دەتوانێت پاکێجەکان دووبارە چالاک بکاتەوە. |
 
-**زیاتر:** [docs/restore.md](docs/restore.md) دەڵێت تۆماری گەڕاندنەوە چی تێدایە، کەی پێویستە لانچەری ئەسڵی دیاری بکەیت، و چۆن هەڵسوکەوت بکەیت ئەگەر ئەو تۆمارە نەبێت.
+**زیاتر:** [docs/restore.md](docs/restore.md) ئەوەی تۆمارەکە تێیدایە، کەی ئارگیومێنتی لانچەری کارخانەیی کاریگەرە، و ئەوەی ڕوو دەدات ئەگەر تۆمار نەبێت، ڕوون دەکاتەوە.
 
 ## دوای نوێکردنەوەی فێرموایر
 
-نوێکردنەوەیەکی فەرمی لەسەر سیستەمی ڕێکخراو دادەنرێت: پاکێجی ناچالاک دەکرێت چالاک ببنەوە، شاشەی سەرەکی دەگەڕێتەوە ژێر لانچەری ئەسڵی، و ئەپی نوێ دەردەکەون کە لە لیستەکەدا نین. ADB دووبارە دابگیرسێنە، وەک هەنگاوی 1ی [دەستپێکی خێرا](#دەستپێکی-خێرا)، و دۆخی تەلەڤیزیۆن لەگەڵ لیستە جێبەجێکراوەکەت ببەستەوە. <code dir="ltr">--fix</code> گۆڕانکارییەکان دەگەڕێنێتەوە:
+نوێکردنەوە لەسەر سیستەمە پاککراوەکە دادەمەزرێت: پاکێجە لیستکراوەکان دەگەڕێنەوە، Home دەچێتە سەر لانچەری کارخانەیی، و ئەپی پێشدامەزراوی نوێ دەردەکەون کە هیچ لیستێک ناویان نەهێناوە. ADB دووبارە چالاک بکە وەک لە [دەستپێکی خێرا](#دەستپێکی-خێرا) هەنگاوی 1، پاشان تەلەڤیزیۆنەکە بەراورد بکە لەگەڵ ئەو لیستەی جێبەجێت کردووە؛ `--fix` دەیگەڕێنێتەوە:
 
 <div dir="ltr" align="left">
 
 ```bash
-TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your-tv>/debloat.txt
+TV_HOST=192.168.1.50 tools/venv/bin/python -I tools/check.py examples/<your tv>/debloat.txt
 ```
 
 </div>
 
-**زیاتر:** [docs/firmware-updates.md](docs/firmware-updates.md) کۆدی دەرچوون، چۆن پشکنینێکی خولی دابنێیت، <code dir="ltr">--fix</code> چی دەگۆڕێت، کام براند لانچەری ئەسڵی دەهێڵێتەوە، و کامە نوێکەرەوەی سیستەم ناچالاک دەکات.
+**زیاتر:** [docs/firmware-updates.md](docs/firmware-updates.md) کۆدەکانی دەرچوون، پشکنینی هەفتانە، ئەوەی `--fix` دەیگۆڕێت، تەلەڤیزیۆنەکان کە لانچەری کارخانەیی وەک Home دەهێڵنەوە، و لیستەکان کە نوێکەرەوە ناچالاک دەکەن، ڕوون دەکاتەوە.
 
-## کاتێک شتێک هەڵە دەچێت
+## کاتێک کێشە ڕوو دەدات
 
-کۆکردنەوەی تەواوی کێشە و چارەسەر لە [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)ە. ئەم سێ خاڵە بنەڕەتن:
+لیستی تەواوی ئەو کێشانەی کە تووشی ئێمە بوون لە [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) دایە. ئەو سێیانەی گرنگترینن:
 
-- **macOS <code dir="ltr">adb connect</code> دەگرێت** («No route to host») بەهۆی مۆڵەتی تایبەتمەندیی تۆڕی ناوخۆیی. <code dir="ltr">tools/tv.py</code> ئەم کێشەیە چارەسەر دەکات بەبێ باینەری سیستەم.
-- **لانچەری ئەسڵی تەنها کاتێک ناچالاک بکە کە نوێیەکە دانرابێت و کار بکات**، ئەگەر نا شاشەی سەرەکی دەکرێت ئەپی تاقیکردنەوەی کارگە بکاتەوە. سکریپتی دامەزراندن ڕیزەکە خۆی ڕادەگرێت.
-- **لە Google TV، یاریدەدەری ڕێکخستنی سەرەتایی** (<code dir="ltr">com.google.android.tungsten.setupwraith</code>) دەتوانێت کۆنترۆڵی شاشەی سەرەکی بگرێت و دوای ناچالاککردنی لانچەری ئەسڵی دەورێکی داخستنی بەزۆر دروست بکات. ئەویش ناچالاک بکە و بیخە ناو <code dir="ltr">debloat.txt</code> بۆ ئەوەی سکریپتی گەڕاندنەوە بتوانێت چالاکی بکاتەوە ئەگەر پێویست بوو.
-  - بەڵام پێش ئەوە <code dir="ltr">dumpsys wifi | grep -o 'cname=[^ ]*'</code> بپشکنە: ئەگەر پەیوەندیی Wi-Fi لە کاتی ڕێکخستنی سەرەتایی پاشەکەوت کرابێت، هی <code dir="ltr">setupwraith</code>ە، و ناچالاککردنی تۆڕە پاشەکەوتکراوەکە دەسڕێتەوە. پێش بەردەوامبوون دووبارە لە ڕێکخستن ببەسترەوە. <code dir="ltr">tools/disable.sh</code> <code dir="ltr">setupwraith</code> دەپەڕێنێت تا ئەو هەنگاوە بکەیت.
-  - لە Chromecast لەگەڵ Google TV و Google TV Streamer ئەمە هەروەها ناردن لە مۆبایلەوە دەگرێت. [چارەسەری کێشە](docs/TROUBLESHOOTING.md) ببینە.
-  - لەو دۆخە گیرت؟ ئەمە ڕابکە: <code dir="ltr">tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'</code>.
+- 🍎 **macOS دەڵێت "No route to host" هەرچەندە پۆرتەکە کراوەیە**: تایبەتمەندیی Local Network ئەپی تێرمینال لە تۆڕی ناوخۆیی دوور دەخاتەوە، و مۆڵەتەکە هی ئەو ئەپەیە نەک کلاینتەکە، بۆیە `adb` ی ئاسایی و `tools/tv.py` بە هەمان شێوە شکست دەهێنن (لە macOS 26 بینراوە). Terminal، iTerm2 یان VS Code لە System Settings → Privacy & Security → Local Network ڕێگە پێ بدە، پاشان دایخە و دووبارەی بکەرەوە ([چارەسەرکردنی کێشەکان](docs/TROUBLESHOOTING.md#connecting)).
+- ⚠️ **لانچەری کارخانەیی تەنها دوای ئەوە ناچالاک بکە کە لانچەری نوێ دامەزراوە و کار دەکات**، وەگەرنە Home دەچێتە سەر ئەپێکی تاقیکردنەوەی کارخانە. سکریپتی دامەزراندن ئەم ڕیزبەندییە بۆ تۆ ڕێک دەخات.
+- 🔁 **لەسەر Google TV ڕێنمای دامەزراندن** (`com.google.android.tungsten.setupwraith`) دەتوانێت Home بگرێتە دەست و سیستەم بخاتە کراشی بەردەوام دوای ناچالاککردنی لانچەری کارخانەیی. ئەویشی ناچالاک بکە، و لە لیستەکەتی `debloat.txt` دا زیادی بکە، بۆ ئەوەی گەڕاندنەوە بیگەڕێنێتەوە.
+  - بەڵام پێش ئەوە `dumpsys wifi | grep -o 'cname=[^ ]*'` بپشکنە: ئەگەر تۆڕی Wi-Fi لە کاتی ڕێکخستندا پاشەکەوت کرابێت، ئەوە setupwraith خاوەنیەتی، و ناچالاککردنی setupwraith تۆڕەکە دەسڕێتەوە (یەکەمجار لە Settings دووبارە بچۆرە سەر تۆڕەکە؛ `tools/disable.sh` تا ئەو کاتە setupwraith دەپەڕێنێت).
+  - هەروەها لەسەر Chromecast with Google TV و Google TV Streamer، ڕەوانەکردن لە مۆبایلەوە (phone casting) لەدەست دەدەیت. بڕوانە [چارەسەرکردنی کێشەکان](docs/TROUBLESHOOTING.md).
+  - ئێستا گیرت کردووە؟ `tools/tv.py 'pm enable --user 0 com.google.android.apps.tv.launcherx'`. ئەم فەرمانە لەسەر هەندێک تەلەڤیزیۆن (لە TCL Smart TV Pro، Android 14 بینراوە) یەکلایەنەیە: بۆ گەڕانەوە بۆ ئەم لانچەرە پێویستت بە ADB دەبێت، یان launcherx چالاک بهێڵەرەوە و `stock_home_redirect` بەکاربهێنە. بڕوانە [چارەسەرکردنی کێشەکان](docs/TROUBLESHOOTING.md#working-on-the-tv).
 
 ## پرسیارە باوەکان
 
 <details>
-<summary><b>ناتوانم کۆد بنووسم و لاپتۆپم نییە. هێشتا دەتوانم بەکاری بهێنم؟</b></summary>
+<summary><b>من کۆد نانووسم و لاپتۆپم نییە. ئایا هێشتا دەتوانم ئەمە بکەم؟</b></summary>
 
-بەڵێ. گەشەپێدەری سەربەخۆ ئەپی خۆڕایی و سەرچاوەکراوەیان لەسەر لیستەکانی تەلەڤیزیۆنی CleanYourTV دروست کردووە. پاککردنەوە لە ڕێگەی Wi-Fi دەکەن بەبێ یاریدەدەری کۆد. هەر ئەپێک سەرەتا پلانێکی گۆڕانکاری پیشان دەدات، تەنها ئەپ ناچالاک دەکات، و ڕێگە دەدات هەموو سیستەم بگەڕێنیتەوە:
+بەڵێ. گەشەپێدەرانی سەربەخۆ ئەپی بەخۆڕایی و سەرچاوەی کراوەیان دروست کردووە لەسەر لیستی تەلەڤیزیۆنەکانی CleanYourTV کە لە ڕێگەی Wi-Fi پاکیان دەکەنەوە، بەبێ یاریدەدەری کۆدنووسین. هەریەکەیان سەرەتا پلانێک پیشان دەدات، تەنها ئەپەکان ناچالاک دەکات، و دەتوانێت هەموو شتێک بگەڕێنێتەوە:
 
-| ئەپ | پلاتفۆرم | دروستکەر |
-|---:|---:|---:|
+| ئەپ | بۆ | لەلایەن |
+|---|---|---|
 | [Clean Your TV app](https://github.com/udhaykumarbala/cleanyourtv-app) | مۆبایلی Android | [@udhaykumarbala](https://github.com/udhaykumarbala) |
 | [Tellyscope](https://github.com/man15h/tellyscope) | مۆبایلی Android | [@man15h](https://github.com/man15h) |
 | [TidyTV](https://github.com/jolan94/tidytv) | مۆبایلی Android، Google Play | [@jolan94](https://github.com/jolan94) |
 | [CleanMyTV](https://github.com/wingedpanther/cleanmytv) | Mac و Windows | [@wingedpanther](https://github.com/wingedpanther) |
 
-ئەم ئەپانە کاری سەربەخۆن، بەبێ پەیوەندیی فەرمی یان پشتیوانی لە CleanYourTV یان چاودێرەکەی. هەر یەکەیان بەو دۆخەی هەیە لەژێر مۆڵەتی خۆی پێشکەش دەکرێت. کێشە لە کۆگای خۆیان ڕابگەیەنە. زیاتر لە [cleanyour.tv/app](https://cleanyour.tv/app).
+ئەم ئەپانە پرۆژەی سەربەخۆن، پەیوەندییان بە CleanYourTV و بەڕێوەبەرەکەیەوە نییە، و لەلایەن ئەوانەوە پشتگیری ناکرێن. هەریەکەیان وەک خۆی پێشکەش دەکرێت، لەژێر مۆڵەتی تایبەتی خۆیدا. کێشەی هەر ئەپێک لە کۆگای ئەو ئەپە ڕاپۆرت بکە. زیاتر لە [cleanyour.tv/app](https://cleanyour.tv/app).
 
 </details>
 
 <details>
-<summary><b>سەلامەتە؟ دەتوانم تەلەڤیزیۆنەکەم بەکارنەهاتوو بکەم؟</b></summary>
+<summary><b>ئایا ئەمە پارێزراوە؟ ئایا دەتوانێت تەلەڤیزیۆنەکە لە کار بخات؟</b></summary>
 
-هیچ لە بیرگەی فێرموایر نانووسرێت، ڕووت بەکارناهێنرێت، و هیچ فایلێک ناسڕدرێتەوە. پاکێجەکان تەنها بۆ پرۆفایلی بەکارهێنەر ناچالاک دەکرێن. مەترسییەکە لە ناچالاککردنی پێکهاتەیەکە کە تەلەڤیزیۆن پشتی پێ دەبەستێت. بۆیە لیستەکان بە پارچەی بچووک جێبەجێ دەکرێن و سکریپتی گەڕاندنەوە دەبێت ئامادە بێت. خودی شاشەی ڕێکخستن → ئەپەکان ڕێگە دەدات پاکێج چالاک بکەیتەوە، تەنانەت بەبێ ئامرازی دەرەکی. ئەگەر تەلەڤیزیۆن ئەوەندە هەڵنەستا کە بگەیتە ئەوێ، زۆربەی کات دەتوانیت لە مێنیوی recovery بگەڕێیتەوە بۆ دۆخی کارگە.
+هیچ شتێک فلاش ناکرێت، root ناکرێت، و هیچ شتێک نەسڕدرێتەوە؛ پاکێجەکان لە پرۆفایلی بەکارهێنەردا ناچالاک دەکرێن. مەترسییەکە ئەوەیە شتێک ناچالاک بکەیت کە تەلەڤیزیۆنەکە پشتی پێ دەبەستێت، بۆیە لیستەکان بە بەشی بچووک جێبەجێ دەکرێن و سکریپتی گەڕاندنەوە ئامادەیە. پەڕەی Settings → Apps ی خودی تەلەڤیزیۆنەکە دەتوانێت پاکێجەکان دووبارە چالاک بکاتەوە، تەنانەت بەبێ ئامرازەکان. ئەگەر تەلەڤیزیۆنەکە ئیتر ئەوەندە دەست پێ ناکاتەوە کە ئەو پەڕەیە بکاتەوە، ڕیسێتی کارخانە لە مینیوی ڕیکاڤەری (recovery) زۆرجار ڕێگای گەڕانەوەیە.
 
 زیاتر: [docs/faq.md](docs/faq.md#is-this-safe-can-it-brick-the-tv)
 
 </details>
 
 <details>
-<summary><b>نوێکردنەوەی فێرموایر چی لێ دێت؟</b></summary>
+<summary><b>ئەی نوێکردنەوەی فێرموایر چی؟</b></summary>
 
-نوێکەرەوەی سیستەم لە زۆربەی لیستەکان چالاک دەمێنێتەوە، بۆیە نوێکردنەوەی فێرموایر وەک خۆی دەگات. هەندێک لیست خودی نوێکەرەوەی تەلەڤیزیۆن ناچالاک دەکەن. لەو بارەدا نوێکردنەوە دانانرێت تا دووبارە چالاکی بکەیتەوە. کاتێک نوێکردنەوەیەک دادەنرێت، بەشێک لە سیستەمی ڕێکخراو دەنووسێتەوە و هەندێک پاکێج دەردەکەونەوە. ئەو کاتە سکریپتەکە دووبارە ڕابکە: [دوای نوێکردنەوەی فێرموایر](#دوای-نوێکردنەوەی-فێرموایر).
-
-</details>
-
-<details>
-<summary><b>ئەپەکانم لە کار دەکەون؟</b></summary>
-
-ئەپەکانی پەخشکردن نوێکردنەوەکانیان لە Google Play Store وەردەگرن، کە دەستیان لێ نادرێت. لانچەرەکە تەنها ئەپە دامەزراوەکان دەژمێرێت و بە intentی ئاسایی Android دەیانکاتەوە، کە زیاتر لە دە ساڵە جێگیرن.
+نوێکەر لە زۆربەی لیستەکاندا چالاک دەهێڵرێتەوە، بۆیە نوێکردنەوەی فێرموایر وەک ئاسایی دێت. هەندێک لیست نوێکەری خودی تەلەڤیزیۆنەکە ناچالاک دەکەن، و لەسەر ئەوانە نوێکردنەوەی فێرموایر تەنها کاتێک دێت کە دووبارە چالاکی بکەیتەوە. کاتێک نوێکردنەوەیەک دێت، لەسەر سیستەمی پاککراوە دادەمەزرێت، بۆیە پاکێجێک دەگەڕێتەوە و تۆ سکریپتەکە دووبارە دەکەیتەوە: بڕوانە [دوای نوێکردنەوەی فێرموایر](#دوای-نوێکردنەوەی-فێرموایر).
 
 </details>
 
 <details>
-<summary><b>چۆن ئەپەکانم ڕیز بکەمەوە؟</b></summary>
+<summary><b>ئەپەکان تێک ناچن؟</b></summary>
 
-OK لەسەر **ڕێکخستن** ڕابگرە (گۆشەی سەرەوەی ڕاست) و **ڕیزکردنەوەی ئەپەکان** هەڵبژێرە. OK بگرە بۆ هەڵگرتنی ئەپێک، تیرەکان بۆ گواستنەوە، گەڕانەوە بۆ دانانی شوێنی نوێ، و گەڕانەوەیەکی تر بۆ تەواوبوون. ڕاگرتنی OK لەسەر دانەیەک هەروەها **گواستنەوە** پێشکەش دەکات (<code dir="ltr">tile_menu</code>، بە بنەڕەت چالاک)، کە ئەپەکە دەستبەجێ هەڵدەگرێت. زیاتر: [docs/launcher.md](docs/launcher.md#launcher-settings-and-the-default-home)
-
-</details>
-
-<details>
-<summary><b>دەتوانم لە ماڵی کەسێکی تر بیکەم؟</b></summary>
-
-بەڵێ، بە پەیوەندییەکی تایبەت لە ڕێگەی [Tailscale](https://tailscale.com)، لە جیاتی ئەوەی هەمان Wi-Fiی ناوخۆیی هاوبەش بکەیت. دەتوانیت Tailscale لەسەر تەلەڤیزیۆنی کەسەکە دابنێیت و دەستگەیشتن لەگەڵ هەژمارەکەت هاوبەش بکەیت، یان کۆمپیوتەر یان Apple TV لە ماڵەکەیان بەکاربهێنیت بۆ گواستنەوەی پەیوەندی. هەرگیز ئەم کارە مەکە بە کردنەوەی پۆرتی ADB ڕاستەوخۆ لەسەر ڕاوتەری ماڵەکەیان. ڕێکارەکە لە [docs/REMOTE.md](docs/REMOTE.md)ە.
+ئەپە ستریمینگەکان هێشتا لە ڕێگەی Play Store نوێ دەبنەوە، و Play Store دەست لێ نادرێت. لانچەرەکە تەنها ئەوە لیست دەکات کە دامەزراوە، و بە intents ی کە دە ساڵە جێگیرن دەیکاتەوە.
 
 </details>
 
 <details>
-<summary><b>دەستگەیشتنی ADB کونێکی ئاسایش نییە؟</b></summary>
+<summary><b>چۆن ئەپەکانم ڕێک دەخەمەوە؟</b></summary>
 
-پێویستە یەک جار «هەمیشە لەم کۆمپیوتەرە ڕێگە بدە» لەسەر شاشەی تەلەڤیزیۆن بگریت، وەک کاتی گەشەپێدانی ئەپێکی Android. ADBی تۆڕ داتا بەبێ کۆدکردن لە پۆرتی 5555 دەنێرێت، و لە هەندێک فێرموایر هەر ئامێرێک لە تۆڕی ناوخۆیی دەتوانێت شێڵێک بکاتەوە. بۆیە کاتێک تەواو بوویت ئەو پۆرتە دابخە:
-
-1. لەسەر تەلەڤیزیۆن: هەڵبژاردەکانی گەشەپێدەر → **هەڵەدۆزی USB**، **هەڵەدۆزی تۆڕ/ADB** و **هەڵەدۆزی بێتەل** بکوژێنەرەوە، بەپێی ئەوەی مۆدێلەکەت کامەیان هەیە، و ڕێگەپێدانەکانی هەڵەدۆزی USB هەڵبوەشێنەرەوە.
-2. تەلەڤیزیۆن ڕیستارت بکە و لەسەر کۆمپیوتەر دڵنیا بە کە پۆرتەکە داخراوە: <code dir="ltr">python3 tools/adb-closed.py &lt;tv ip&gt;</code> دەبێت بڵێت پۆرتەکە داخراوە.
-
-لانچەرەکە بە تەواوی کار دەکات دوای ئەوەی هەڵەدۆزی چیتر چالاک نەبێت. وردەکاریی زیاتر، لەگەڵ چۆن پۆرتی تایبەتی هەڵەدۆزی بێتەل بپشکنیت: [docs/faq.md](docs/faq.md#isnt-adb-access-a-security-hole)
+OK لەسەر **Settings** (لە سەرەوەی ڕاستدا) ڕابگرە و **Reorder apps** هەڵبژێرە. OK ئەپێک هەڵدەگرێت، تیرەکان دەیجووڵێنن، دوگمەی Back دایدەنێت، و دوگمەی Back دووبارە کارەکە تەواو دەکات. هەروەها ڕاگرتنی OK لەسەر خانەیەک **Move** پێشکەش دەکات (`tile_menu`، بە بنەڕەتی چالاکە)، کە ئەو ئەپە ڕاستەوخۆ هەڵدەگرێت. زیاتر: [docs/launcher.md](docs/launcher.md#launcher-settings-and-the-default-home)
 
 </details>
 
 <details>
-<summary><b>ڕێکلامی ناو ئەپەکانیش دەگرێت؟</b></summary>
+<summary><b>ئەمە بۆ کەسێک لە ماڵێکی تر بکەم؟</b></summary>
 
-بەشێکی، لە ڕێگەی DNSی تایبەتی Android (Android 9 یان نوێتر). سێرڤەرێکی DNS دابنێ کە ڕێکلام فلتەر بکات، وەک [AdGuard DNS](https://adguard-dns.io)، و دۆمەینی ڕێکلام و شوێنپێهەڵگر لە هەموو ئەپەکان چیتر شیکار نابن، تەنانەت دوای ڕیستارت. بەرامبەرەکەی: ئەو دابینکەرە پرسیارەکانی DNSی تەلەڤیزیۆن وەردەگرێت، و ئەمە ڕێکلامی ناو ڤیدیۆی YouTube لاناچێت.
-
-زیاتر، لەگەڵ دوو فەرمانە پێویستەکە و ڕێنمایی گەڕاندنەوە بۆ نرخی ئەسڵی: [docs/faq.md](docs/faq.md#can-it-block-ads-inside-apps-too)
+بەڵێ، بە بەستەرێکی تایبەتی [Tailscale](https://tailscale.com)، لەجیاتی هەمان Wi-Fi: یان Tailscale لەسەر تەلەڤیزیۆنەکەی ئەو کە لەگەڵ تۆ هاوبەش کراوە، یان کۆمپیوتەرێک یان Apple TV لە ماڵەکەی ئەو کە ڕێگای ڕاستەوخۆ بۆ تەلەڤیزیۆنەکە دەکاتەوە. هەرگز پۆرتی ADB لە ڕۆتەرەکەی ئەودا مەکەرەوە. هەنگاو بە هەنگاو لە [docs/REMOTE.md](docs/REMOTE.md).
 
 </details>
 
 <details>
-<summary><b>هەڵبژاردن لە خودی ڕێکخستنی تەلەڤیزیۆن هەیە کە باشە بکوژێنرێتەوە؟</b></summary>
+<summary><b>ئایا دەستگەیشتنی ADB کونێکی ئاسایشی نییە؟</b></summary>
 
-بەڵێ، چەند دانەیەک، و هیچیان پێویستیان بە ADB نییە: ناسنامەی ڕێکلام، شوێن، بەکارهێنان و دەستنیشانکردن، و گەڕان بەدوای تۆڕ هەمیشە، لەگەڵ دۆخی تەنها ئەپ ئەگەر لانچەری ئەسڵی بهێڵیتەوە. بەکارهێنان و دەستنیشانکردن پێش پاککردنەوەی ئەپەکان بکوژێنەرەوە. لە هەندێک مۆدێل پەڕەی ئەو هەڵبژاردنە لە کاتی کارەکەدا لادەبرێت.
+تەنها یەک تاپی ڕوون لەسەر تەلەڤیزیۆنەکە هەیە بۆ «ڕێگە بدە بەم کۆمپیوتەرە»، وەک گەشەپێدانی ئەپێکی Android. ADB ی تۆڕ بە دەقی ساف (plaintext) ە لەسەر پۆرتی 5555، و لەسەر هەندێک فێرموایر هەر ئامێرێک لەسەر LAN دەتوانێت shell بەدەست بهێنێت، بۆیە کاتێک کارەکەت تەواو کرد، داخەی:
 
-زیاتر، لەگەڵ ڕێچکەی ورد بۆ Google TV و Android TV و Fire OS: [docs/faq.md](docs/faq.md#are-there-switches-in-the-tvs-own-settings-worth-flipping-too)
+1. لەسەر تەلەڤیزیۆنەکە: Developer options → **USB debugging**، **Network/ADB debugging** و **Wireless debugging** ناچالاک بکە، هەرکامێکیان تەلەڤیزیۆنەکە هەیەتی، و مۆڵەتە پەسەندکراوەکانی USB debugging هەڵبوەشێنەوە.
+2. تەلەڤیزیۆنەکە دووبارە دەست پێ بکەرەوە، پاشان لە کۆمپیوتەرەکەت دڵنیابەوە کە پۆرتەکە نەماوە: `python3 tools/adb-closed.py <tv ip>` دەبێت بڵێت کە پۆرتەکە داخراوە.
+
+لانچەرەکە بەبێ هەڵەدۆزینەوە هەر کار دەکات. زیاتر، لەگەڵ پشکنینی پۆرتی تایبەتی Wireless debugging: [docs/faq.md](docs/faq.md#isnt-adb-access-a-security-hole)
+
+</details>
+
+<details>
+<summary><b>ئایا ڕێکلامی ناو ئەپەکانیش ڕێگری لێ دەکات؟</b></summary>
+
+بەشێک، بە Private DNS ی Android (Android 9 و نوێتر). ڕێنمایی بکە بۆ سێرڤەرێکی DNS ی بلۆککەری ڕێکلام، وەک [AdGuard DNS](https://adguard-dns.io)، بۆیە دۆمەینەکانی ڕێکلام و شوێنپێهەڵگرەکانی هەموو ئەپێک لەسەر کۆی سیستەم چارەسەر ناکرێن، و لە دوای دووبارە دەستپێکردنەوەشەوە هەر وا دەمێننەوە. کەموکوڕییەکەی ئەوەیە کە ئەو سێرڤەرە هەموو داواکارییەکی DNS ی تەلەڤیزیۆنەکە دەبینێت، و ڕێکلامی YouTube لا نابات.
+
+زیاتر، لەگەڵ دوو فەرمانەکە و چۆنیەتی گەڕانەوە: [docs/faq.md](docs/faq.md#can-it-block-ads-inside-apps-too)
+
+</details>
+
+<details>
+<summary><b>ئایا لە Settings ی خودی تەلەڤیزیۆنەکەدا سویچی شایانی گۆڕین هەیە؟</b></summary>
+
+چەند شتێک، و پێویستیان بە ADB نییە: ناسنامەی ڕێکلام، Location، Usage & diagnostics و Scanning always available، لەگەڵ دۆخی Apps only کە لانچەری کارخانەیی تێیدا دەمێنێتەوە. پێش پاککردنەوە Usage & diagnostics بگۆڕە؛ لەسەر هەندێک تەلەڤیزیۆن، پاککردنەوەکە پەڕەکەش لەگەڵ خۆیدا دەبات.
+
+زیاتر، لەگەڵ ڕێگەکانی Google TV و Android TV و Fire OS: [docs/faq.md](docs/faq.md#are-there-switches-in-the-tvs-own-settings-worth-flipping-too)
 
 </details>
 
 <details>
 <summary><b>AirPlay؟</b></summary>
 
-نا، ڕاستەوخۆ لەم کۆگایەوە. Chromecastی ناوخۆیی بۆ ئامێری Android کارا دەمێنێتەوە. بۆ iPhone چارەسەری کۆمەڵگە [jqssun/android-airplay-server](https://github.com/jqssun/android-airplay-server) باش کار دەکات. سکریپتی دامەزراندن لە [PR #84](https://github.com/Gathin23/cleanyourtv/pull/84) هەیە.
+لەم کۆگایەدا نییە. Chromecast built-in بۆ مۆبایلەکانی Android دەمێنێتەوە. بۆ iPhone، [jqssun/android-airplay-server](https://github.com/jqssun/android-airplay-server) کار دەکات؛ سکریپتێکی دامەزراندنی بۆی لە [PR #84](https://github.com/Gathin23/cleanyourtv/pull/84) دایە.
 
 </details>
 
 <details>
-<summary><b>دەتوانم تەنها APK دابگرم؟</b></summary>
+<summary><b>ئایا دەتوانم تەنها APK دابەزێنم؟</b></summary>
 
-بەو سکریپتە یەک دێڕەیەی [بە دەستی خۆت](#بە-دەستی-خۆت) دروستی بکە. نزیکەی یەک خولەک دەخایەنێت و کۆنترۆڵی تەواوت دەداتێ لەسەر ئەو نەرمەکاڵایەی لە تەلەڤیزیۆن دادەنرێت. JDK و Android SDK کە لەو بەشەدا باس کران پێویستن. باینەری پێشوەختە بڵاو ناکرێتەوە.
+بە سکریپتی یەک دێڕ دروستی بکە کە لە [بە دەستی خۆت](#بە-دەستی-خۆت) هەیە؛ یەک خولەک دەخایەنێت و تۆ کۆنترۆڵی ئەوە دەکەیت کە چی دەچێتە سەر تەلەڤیزیۆنەکەت. ئەمەش پێویستی بە JDK و Android SDK یە کە لەوێ ناویان هاتوون. لەم کۆگایەدا هیچ فایلێکی binary ی ئامادەکراو نییە.
 
 </details>
 
 ## چیرۆکەکە
 
-لە 17ی تشرینی یەکەمی 2026 [بەراوردێکی پێش و دوای](https://x.com/gathint/status/2111379569030939102)م بڵاوکردەوە لە تەلەڤیزیۆنی دایک و باوکم، پاککراوە بە Claude Code لە ڕێگەی Wi-Fi. بڵاوکراوەکە گەیشتە 8.6 ملیۆن بینین. کەسانی تر هەمان کارەیان لەسەر تەلەڤیزیۆنی خۆیان کرد، و وەڵامەکانیان بوون بە لیستەکانی ئەم کۆگایە: زیاتر لە 170 مۆدێل، لە زیاتر لە 200 بەشداربوو، لە چوار ڕۆژی یەکەمدا. تا 19ی تشرینی یەکەم کۆگاکە ناوی tv-vibehack بوو. بەستەرە کۆنەکان هێشتا ڕاستەوخۆ دەگوازنەوە.
+لە 17ی تشرینی یەکەمی 2026 [وێنەی پێش و دوای تەلەڤیزیۆنی دایک و باوکم](https://x.com/gathint/status/2111379569030939102) بڵاوم کردەوە، کە Claude Code لە ڕێگەی Wi-Fi پاکی کردبووەوە. گەیشتە 8.6M بینین، خەڵک دەستیان کرد بە هەمان کار لەسەر تەلەڤیزیۆنەکانی خۆیان، و وەڵامەکانیان بوون بە ئەو لیستانەی لێرەدان: لە چوار ڕۆژی یەکەمدا 170+ مۆدێلی تەلەڤیزیۆن لەلایەن 200+ بەشداربووەوە. کۆگاکە تا ڕۆژی 19 ناوی tv-vibehack بوو؛ بەستەرە کۆنەکان کار دەکەن.
 
-دوو هەفتە دواتر پڕۆژەکە بوو بە کۆگای ژمارە یەکی هەفتە لە GitHub، لە هەفتەی 19 تا 25ی تشرینی یەکەم، بە زیاتر لە 46000 ئەستێرە و 5700 فۆرک، و 1.4 ملیۆن بینین و 260000 کلۆن لە 14 ڕۆژدا. تا 14ی تشرینی دووەم 57000 ئەستێرە و 7400 فۆرکی هەیە. لیستەکان ئێستا 472 مۆدێلی تەلەڤیزیۆن لە 129 براند دەگرنەوە. ڕووماڵ: 546 وتار لە 57 وڵات و 673 ڤیدیۆ لە YouTube و Bilibili، هەموویان لە [docs/PRESS.md](docs/PRESS.md) (ژمارەکان لە 14ی تشرینی دووەم 2026).
+دوو هەفتە دواتر، بوو بە یەکەم کۆگای ترێندی GitHub بۆ هەفتەی 19 تا 25ی تشرینی یەکەم، لەگەڵ زیاتر لە 46K ئەستێرە و 5.7K فۆرک، و 1.4M بینین و 260K کلۆن لە ماوەی 14 ڕۆژدا. تا 14ی تشرینی دووەم 57K ئەستێرە و 7.4K فۆرکی هەبوو. ئێستا لیستەکان 472 مۆدێلی تەلەڤیزیۆن لە 129 براند دەگرنەوە. ڕاپۆرتەکانی ڕۆژنامەوانی: 546 وتار لە 57 وڵات و 673 ڤیدیۆ لە YouTube و Bilibili، هەموویان لە [docs/PRESS.md](docs/PRESS.md) دان (ژمارەکان لە 14ی تشرینی دووەم 2026).
 
 ## چۆن بەشداری بکەیت
 
-بەنرخترین بەشداری لیستی پاککردنەوەی تەلەڤیزیۆنەکەتە. بەو شێوەیە کەسی داهاتوو بە هەمان مۆدێل پێویست ناکات هەموو شت لە سفر بدۆزێتەوە. [CONTRIBUTING.md](CONTRIBUTING.md) فۆرمات و پشکنینە پێویستەکان دەڵێت. ئەگەر بە یاریدەدەری کۆد بەشداری دەکەیت، [AGENTS.md](AGENTS.md) هەمان ڕێنمایی بۆ ئەو دەڵێت.
+گرنگترین بەشداری لیستی پاککردنەوەی تەلەڤیزیۆنەکەتە، بۆ ئەوەی کەسی داهاتوو کە هەمان مۆدێلی هەیە، پێویست نەکات هەمان شت دووبارە بدۆزێتەوە. [CONTRIBUTING.md](CONTRIBUTING.md) فۆرمات و ئەو تاقیکردنەوانەی داوامان لێدەکەین لە خۆ دەگرێت. بەشداری لە ڕێگەی یاریدەدەرێکی کۆدنووسینەوە؟ [AGENTS.md](AGENTS.md) هەمان یاساکانی پێدەدات.
 
-| چۆن یارمەتی بدەیت | ماناکەی |
-|---:|---:|
-| **لیستی پاککردنەوەی تەلەڤیزیۆنەکەت** | بەسوودترین بەشدارییە: کەسی داهاتوو بەو مۆدێلە هەنگاوی ناسینەوەی نامێنێت. |
-| **لانچەر و داواکاری** | باشترکردنی لانچەر و ڕوونکردنەوەی داواکارییەکە هەروەها بەخێرهاتوون. |
-| **شتێکت لەسەر ئەم پڕۆژەیە دروست کردووە؟** | لانچەرێک، گونجاندنێک یان بابەتێک: زیادی بکە بۆ [SHOWCASE.md](SHOWCASE.md)، کە ئێستا 243 پڕۆژە کۆدەکاتەوە لە شاشەی سەرەکی و فۆرک و زیادکراو و ئامراز و پلاتفۆرمی تر، لەگەڵ پێڕستێک بەپێی براندی تەلەڤیزیۆن. |
+| چۆن یارمەتی بدەیت | مانای چییە |
+|---|---|
+| **لیستی پاککردنەوەی تەلەڤیزیۆنەکەت** | گرنگترینە: کەسی داهاتوو کە ئەو مۆدێلەی هەیە، دۆزینەوەکە پێویست ناکات. |
+| **لانچەر و پرۆمپت** | باشترکردنی لانچەر و ڕوونتر کردنەوەی دەقی پرۆمپتیش بەخێرهاتنە. |
+| **شتێکت لەسەری دروست کردووە؟** | لانچەر، پۆرت یان تێم: زیادی بکە بۆ [SHOWCASE.md](SHOWCASE.md)، کە ئێستا 243 پڕۆژە تێیدایە، دابەشکراون بەسەر شاشەی سەرەکی، فۆرک، add-on، ئامراز و پلاتفۆرمەکانی تردا، لەگەڵ ئیندێکسێک بە پێی براندی تەلەڤیزیۆن. |
 
-ئەو کەسانەی کارەکەیان بەشێکە لەم کۆگایە:
+ئەو کەسانەی کارەکەیان لەم کۆگایەدایە:
 
 <a href="https://github.com/Gathin23/cleanyourtv/graphs/contributors"><img src="https://contrib.rocks/image?repo=Gathin23/cleanyourtv&columns=16&max=400" alt="بەشداربووان"></a>
 
 <details>
 <summary><strong>مێژووی ئەستێرەکان</strong></summary>
 
-<a href="https://star-history.com/#Gathin23/cleanyourtv&Date"><img src="https://api.star-history.com/svg?repos=Gathin23/cleanyourtv&type=Date" alt="هێڵکاریی مێژووی ئەستێرەکان" width="640"></a>
+<a href="https://star-history.com/#Gathin23/cleanyourtv&Date"><img src="https://api.star-history.com/svg?repos=Gathin23/cleanyourtv&type=Date" alt="چارتی مێژووی ئەستێرەکان" width="640"></a>
 
 </details>
 
 ## پەیوەندی
 
-| هۆکار | لە کوێ |
-|---:|---:|
+| بۆ | کوێ |
+|---|---|
 | **پرسیار دەربارەی تەلەڤیزیۆنەکەت** | [GitHub Discussions](https://github.com/Gathin23/cleanyourtv/discussions) |
-| **ڕۆژنامەوانی و پرسیاری گشتی** | [hello@itsgathin.com](mailto:hello@itsgathin.com) |
-| **کێشەی ئاسایش** | بە نهێنی لە ڕێگەی تابی [Security](https://github.com/Gathin23/cleanyourtv/security) ڕایبگەیەنە. هەروەها [<code dir="ltr">SECURITY.md</code>](SECURITY.md) ببینە. |
+| **ڕۆژنامەوانی و پرسیار** | [hello@itsgathin.com](mailto:hello@itsgathin.com) |
+| **کێشەی ئاسایش** | بە شێوەیەکی تایبەت ڕاپۆرتی بکە لە ڕێگەی [Security tab](https://github.com/Gathin23/cleanyourtv/security)، بڕوانە [`SECURITY.md`](SECURITY.md) |
 
 ## یاسایی
 
-- CleanYourTV پڕۆژەیەکی سەرچاوەکراوەی سەربەخۆیە. پەیوەندی، پشتیوانی یان سپۆنسەری هیچ دروستکەری تەلەڤیزیۆن یان پلاتفۆرمێک نییە. ناوی بازرگانی و مۆدێل تەنها بۆ ئاماژەدان بەو ئامێرانە بەکاردەهێنرێن کە لیستێک لەسەریان تاقی کراوەتەوە، و هێشتا نیشانەی بازرگانی خاوەنەکانیانن.
-- پڕۆژەکە تەنها ئەو ڕێکخستنانە بەکاردەهێنێت کە خودی تەلەڤیزیۆن دەیانخاتە بەردەم خاوەنەکەی: هەڵبژاردەکانی گەشەپێدەر، هەڵەدۆزی ADB، و فەرمانی <code dir="ltr">pm disable-user</code>ی Android، کە هاوتای هەڵبژاردنی ناچالاککردنە لە ڕێکخستن > ئەپەکان. ڕووت ناکات، فێرموایر نانوسێت، و قوفڵ و DRM و پاراستنی کۆپی تێناپەڕێنێت. کۆگاکە نەرمەکاڵا و فێرموایر و APKی دروستکەری تێدا نییە.
-- هیچ ناسڕدرێتەوە، و <code dir="ltr">tools/restore.sh</code> هەموو گۆڕانکارییەکان دەگەڕێنێتەوە. کارەکە لەسەر تەلەڤیزیۆنێک دەکەیت کە هی خۆتە، بە بەرپرسیارێتی خۆت. گۆڕینی نەرمەکاڵای تەلەڤیزیۆن دەکرێت کاریگەری لەسەر گەرەنتی یان خزمەتگوزاریی فەرمی هەبێت.
-- هەموو ناوەڕۆک «بەو دۆخەی هەیە» پێشکەش دەکرێت، بەبێ هیچ گەرەنتییەک، لەژێر مۆڵەتی MIT کە لە خوارەوە ئاماژەی پێ کراوە.
+- CleanYourTV پرۆژەیەکی سەربەخۆی سەرچاوەی کراوەیە. هیچ پەیوەندییەکی بە هیچ دروستکەرێکی تەلەڤیزیۆن یان پلاتفۆرمێکەوە نییە، و هیچیان پشتگیری ناکەن یان سپۆنسەری ناکەن. ناوی براند و مۆدێل تەنها بۆ ئەوە بەکاردێن کە بڵێن لیستەکە لەسەر کام تەلەڤیزیۆن تاقی کراوەتەوە، و هەر تراکمارکی خاوەنەکانیانن.
+- تەنها لە ڕێگەی ئەو ڕێکخستنانەوە کار دەکات کە خودی تەلەڤیزیۆنەکە بە خاوەنەکەی دەدات: Developer options، هەڵەدۆزینەوەی ADB و `pm disable-user` ی خودی Android، کە هەمان سویچە وەک Settings > Apps > Disable. root ناکات، firmware فلاش ناکات، و هیچ قوفڵ، DRM یان پاراستنی کۆپی ناپەڕێنێت، و کۆگاکە هیچ نەرمەواڵەی سازکەر، firmware یان APK ی تێدا نییە.
+- هیچ شتێک لانابرێت، و `tools/restore.sh` هەموو شتێک دەگەڕێنێتەوە. تۆ لەسەر تەلەڤیزیۆنێک بەکاری دەهێنیت کە خۆت خاوەنیەتی، بە مەترسیی خۆت، و گۆڕینی نەرمەواڵەی تەلەڤیزیۆن ڕەنگە کاریگەری لەسەر گەرەنتی یان پشتگیریەکەی هەبێت.
+- هەموو ئەمانە وەک خۆیان پێشکەش دەکرێن، بەبێ هیچ گەرەنتییەک، لەژێر مۆڵەتی MIT ی خوارەوە.
 
 ## مۆڵەت
 
-MIT. [<code dir="ltr">LICENSE</code>](LICENSE) ببینە. فۆنتی Outfit لەژێر مۆڵەتی SIL Open Font License بڵاو دەکرێتەوە. <code dir="ltr">launcher/FONT-LICENSE-OFL.txt</code> ببینە.
+MIT، بڕوانە [`LICENSE`](LICENSE). فۆنتی Outfit لەژێر SIL Open Font License دایە، بڕوانە `launcher/FONT-LICENSE-OFL.txt`.
 
 </div>
