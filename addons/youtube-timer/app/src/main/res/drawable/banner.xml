@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a timer clock with a lock badge in red/dark glass style. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#0D1117" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#161B22" android:pathData="M24,24h272v132h-272z" />
+    <!-- Clock circle -->
+    <path android:strokeColor="#E52D27" android:strokeWidth="6" android:fillColor="#00000000"
+        android:pathData="M160,90m-42,0a42,42 0 1,1 84,0a42,42 0 1,1 -84,0" />
+    <!-- Clock hands -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:strokeLineCap="round"
+        android:pathData="M160,90v-24M160,90l18,12" />
+    <!-- Lock badge -->
+    <path android:fillColor="#E52D27"
+        android:pathData="M190,105h18v14h-18z" />
+    <path android:strokeColor="#E52D27" android:strokeWidth="3" android:fillColor="#00000000"
+        android:pathData="M194,105v-5a5,5 0 0,1 10,0v5" />
+</vector>
+

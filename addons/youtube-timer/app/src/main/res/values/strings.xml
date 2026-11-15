@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YouTube Timer</string>
+    <string name="service_name">YouTube Limit Guard</string>
+    <string name="service_desc">Enforces daily time limit and PIN lock for YouTube on Android TV.</string>
+</resources>
+

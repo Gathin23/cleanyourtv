@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#0D1117"
+    android:padding="28dp">
+
+    <!-- Header Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="YouTube Timer"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/tv_stats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Today's Watch Time: 0 min / 60 min"
+        android:textColor="#E52D27"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 30-Minute Usage Graph -->
+    <com.gathin.addons.youtubetimer.UsageGraphView
+        android:id="@+id/usage_graph"
+        android:layout_width="740dp"
+        android:layout_height="180dp"
+        android:focusable="true"
+        android:nextFocusDown="@+id/btn_limit"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Control Buttons Row 1 -->
+    <LinearLayout
+        android:layout_width="740dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <Button
+            android:id="@+id/btn_limit"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="17sp"
+            android:nextFocusUp="@+id/usage_graph"
+            android:nextFocusRight="@+id/btn_change_pin"
+            android:nextFocusDown="@+id/btn_reset_today"
+            android:text="Daily Limit: 60 Minutes" />
+
+        <Button
+            android:id="@+id/btn_change_pin"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="17sp"
+            android:nextFocusUp="@+id/usage_graph"
+            android:nextFocusLeft="@+id/btn_limit"
+            android:nextFocusDown="@+id/btn_test_lock"
+            android:text="Change 4-Digit PIN" />
+    </LinearLayout>
+
+    <!-- Control Buttons Row 2 -->
+    <LinearLayout
+        android:layout_width="740dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_reset_today"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="17sp"
+            android:nextFocusUp="@+id/btn_limit"
+            android:nextFocusRight="@+id/btn_test_lock"
+            android:text="Reset Today's Time" />
+
+        <Button
+            android:id="@+id/btn_test_lock"
+            style="@android:style/Widget.Button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/key_bg"
+            android:textColor="@color/key_text_color"
+            android:textSize="17sp"
+            android:nextFocusUp="@+id/btn_change_pin"
+            android:nextFocusLeft="@+id/btn_reset_today"
+            android:text="Test Lock Screen" />
+    </LinearLayout>
+
+</LinearLayout>

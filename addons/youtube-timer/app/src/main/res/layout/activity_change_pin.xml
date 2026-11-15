@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#F2080B10"
+    android:padding="32dp">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/pin_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change 4-Digit PIN"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/pin_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter current PIN"
+        android:textColor="#B0B8C4"
+        android:textSize="18sp"
+        android:layout_marginBottom="24dp" />
+
+    <!-- PIN circles -->
+    <LinearLayout
+        android:id="@+id/pin_dots_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <ImageView
+            android:id="@+id/dot_0"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/pin_circle_empty" />
+
+        <ImageView
+            android:id="@+id/dot_1"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/pin_circle_empty" />
+
+        <ImageView
+            android:id="@+id/dot_2"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/pin_circle_empty" />
+
+        <ImageView
+            android:id="@+id/dot_3"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/pin_circle_empty" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pin_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Incorrect current PIN"
+        android:textColor="#FF5555"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Keypad Container -->
+    <LinearLayout
+        android:id="@+id/keypad_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Row 1 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button android:id="@+id/key_1" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="1" />
+            <Button android:id="@+id/key_2" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="2" />
+            <Button android:id="@+id/key_3" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="3" />
+        </LinearLayout>
+
+        <!-- Row 2 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button android:id="@+id/key_4" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="4" />
+            <Button android:id="@+id/key_5" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="5" />
+            <Button android:id="@+id/key_6" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="6" />
+        </LinearLayout>
+
+        <!-- Row 3 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button android:id="@+id/key_7" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="7" />
+            <Button android:id="@+id/key_8" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="8" />
+            <Button android:id="@+id/key_9" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="9" />
+        </LinearLayout>
+
+        <!-- Row 4 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button android:id="@+id/key_del" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="20sp" android:text="&#x232B;" />
+            <Button android:id="@+id/key_0" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="22sp" android:text="0" />
+            <Button android:id="@+id/key_cancel" style="@android:style/Widget.Button"
+                android:layout_width="72dp" android:layout_height="60dp" android:layout_margin="6dp"
+                android:background="@drawable/key_bg" android:textColor="@color/key_text_color" android:textSize="16sp" android:text="Cancel" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
+
