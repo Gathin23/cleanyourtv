@@ -67,8 +67,10 @@ com.google.android.music                          # Google Play Music (service d
 com.google.android.katniss                        # Google Assistant / voice search
 org.droidtv.amazonalexa                           # Alexa
 
-# Streaming apps, off by choice (this owner uses Plex, Jellyfin, ZDF and the ARD web app)
-com.netflix.ninja                                 # Netflix
-com.amazon.amazonvideo.livingroom                 # Prime Video
-com.google.android.youtube.tv                     # YouTube
-com.google.android.videos                         # Google Play Movies & TV
+# Streaming apps: all four are off on this unit by the owner's choice (they use Plex, Jellyfin, ZDF and the
+# ARD web app). Left commented out here, since which streaming apps go is each owner's call: uncomment the
+# ones you do not use.
+# com.netflix.ninja                               # Netflix
+# com.amazon.amazonvideo.livingroom               # Prime Video
+# com.google.android.youtube.tv                   # YouTube
+# com.google.android.videos                       # Google Play Movies & TV
