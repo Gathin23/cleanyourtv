@@ -30,6 +30,17 @@ activity the launcher queries and the card would never appear - with every test 
 now reads each add-on's `AndroidManifest.xml` beside its card and holds the declaration to those rules,
 so a folder whose manifest and card disagree is named before a TV owner finds it.
 
+One card the tree ships was still outside the walk, because the walk knew a file NAME. `docs/modules.md`
+tells an author to create `res/xml/module_card.xml`, but the card contract never reads a file name: the
+manifest's `meta-data android:resource` names the file, and `Cards.read()` loads that resource. So the
+name was the how-to's convenience, not a rule - and `addons/lich-van-nien` ships three cards under other
+names (`card_start.xml`, `card_good.xml`, `card_bad.xml`, one behind each of its tile aliases and exactly
+one of them enabled by its `DayUpdater`), so this file read 35 of the tree's 38 cards. Proven with the
+failure this file was written for: changing `card_good.xml`'s caption to "Hoang / dao" on 50d5efab left
+all 31 tests green, and on a TV that caption drops the tile. `every_card_file()` below finds a card by
+the `meta-data` its own manifest points at, so the day a card's caption, label or accent goes wrong in a
+file nobody named `module_card.xml`, this file says so.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import re
@@ -60,6 +71,44 @@ ACTIVITY_TAGS = ("activity", "activity-alias")
 def card_files(root=ADDONS):
     """Every module card the add-ons in `root` ship, newest path order."""
     return sorted(Path(root).glob("*/app/src/main/res/xml/module_card.xml"))
+
+
+def declared_card_files(folder):
+    """Every card one add-on at `folder` ships, found by the `meta-data` its manifest points at.
+
+    `docs/modules.md` calls the file `module_card.xml`, so a folder that ships that name is read even
+    when its manifest names nothing - the declaration tests below are what say why a card with no
+    `meta-data` is never shown. Every OTHER name counts only when the manifest points at it, which is
+    the only thing `Cards.read()` goes by: `addons/lich-van-nien` keeps its three cards in
+    `card_start.xml`, `card_good.xml` and `card_bad.xml`, and each of its thirteen aliases names one.
+    """
+    folder = Path(folder)
+    xml_folder = folder / "app" / "src" / "main" / "res" / "xml"
+    named = set()
+    manifest = folder / "app" / "src" / "main" / "AndroidManifest.xml"
+    if manifest.is_file():
+        try:
+            root = ET.parse(str(manifest)).getroot()
+        except ET.ParseError:
+            root = None   # a manifest this bad is the declaration tests' to name, not a crash here
+        for meta in (root.iter("meta-data") if root is not None else ()):
+            if meta.get(MANIFEST_ANDROID + "name") != CARD_META_DATA:
+                continue
+            resource = meta.get(MANIFEST_ANDROID + "resource") or ""
+            if resource.startswith("@xml/"):
+                named.add(resource[len("@xml/"):])
+    found = {path for path in xml_folder.glob("*.xml") if path.stem in named}
+    found |= set(xml_folder.glob("module_card.xml"))
+    return sorted(found)
+
+
+def every_card_file(root=ADDONS):
+    """Every card the add-ons in `root` ship, whatever the file is called."""
+    found = []
+    for folder in sorted(Path(root).iterdir()):
+        if folder.is_dir():
+            found.extend(declared_card_files(folder))
+    return found
 
 
 def java_constants(path=CARDS_JAVA):
@@ -235,6 +284,98 @@ class ShippedCardsTest(unittest.TestCase):
                 self.assertEqual(reasons, [])
                 self.assertIsNotNone(root)
                 self.assertTrue((root.attrib.get("label") or "").strip())
+
+
+class EveryCardFileTest(unittest.TestCase):
+    """The cards an add-on ships under a name other than the how-to's `module_card.xml`.
+
+    `Cards.read()` loads whatever `@xml/...` the card `meta-data` names, so the file name is not part
+    of the contract - and the walk above, which asks for `module_card.xml`, read 35 of the tree's 38
+    cards. These cases hold the wider walk to the manifest and to the same alphabet, so a card in a
+    file nobody called `module_card.xml` is judged rather than skipped.
+    """
+
+    CARD = '<card spec="1" label="Demo" caption="A good day" accent="%s" />'
+    MANIFEST = ('<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application>'
+                '<activity android:name=".Main" android:exported="true">'
+                '<intent-filter><action android:name="android.intent.action.MAIN" />'
+                '<category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent-filter>'
+                '<intent-filter><action android:name="android.intent.action.MAIN" />'
+                '<category android:name="com.gathin.tvhome.category.DOCK_CARD" /></intent-filter>'
+                '%s</activity></application></manifest>')
+    META = ('<meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/%s" />')
+
+    def addon(self, tmp, card="card_good", root_named="card", manifest=None, extra_xml=None):
+        """An add-on folder with one card under `card`, and the manifest that points at it."""
+        folder = Path(tmp) / "demo"
+        xml_folder = folder / "app/src/main/res/xml"
+        xml_folder.mkdir(parents=True)
+        (xml_folder / (card + ".xml")).write_text(
+            self.CARD % "#E8C77D" if root_named == "card"
+            else '<%s spec="1" label="Demo" />' % root_named, encoding="utf-8")
+        for name, body in (extra_xml or {}).items():
+            (xml_folder / name).write_text(body, encoding="utf-8")
+        manifest = self.MANIFEST % self.META % card if manifest is None else manifest
+        (folder / "app/src/main/AndroidManifest.xml").write_text(manifest, encoding="utf-8")
+        return folder
+
+    def test_the_tree_ships_more_cards_than_the_file_name_finds(self):
+        every = every_card_file()
+        by_name = card_files()
+        self.assertGreaterEqual(len(every), 38, "the add-ons ship fewer cards than this file knows about")
+        self.assertIn("lich-van-nien", {path.parents[5].name for path in every},
+                      "every_card_file() no longer reaches the add-on with three card files")
+        self.assertGreater(len(every), len(by_name),
+                           "the walk by file name reads as many cards as the tree ships, so this test "
+                           "is no longer measuring the cards a manifest names")
+
+    def test_every_card_the_add_ons_ship_is_one_the_launcher_accepts(self):
+        limits = java_constants()
+        lengths = spec_lengths()
+        labels = {}
+        judged = 0
+        for path in every_card_file():
+            judged += 1
+            with self.subTest(card=str(path.relative_to(ROOT))):
+                self.assertEqual(problems(path, limits, lengths, labels), [])
+        self.assertGreaterEqual(judged, 38, "the walk judged fewer cards than the add-ons ship")
+
+    def test_a_card_the_manifest_names_under_another_name_is_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.addon(tmp)
+            self.assertEqual([p.name for p in declared_card_files(folder)], ["card_good.xml"])
+            self.assertEqual(problems(folder / "app/src/main/res/xml/card_good.xml"), [])
+
+    def test_a_caption_a_card_file_cannot_carry_is_named_under_any_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.addon(tmp)
+            card = folder / "app/src/main/res/xml/card_good.xml"
+            card.write_text('<card spec="1" label="Demo" caption="Hoang / dao" />', encoding="utf-8")
+            reasons = problems(card)
+            self.assertEqual(len(reasons), 1, reasons)
+            self.assertIn("outside A-Z a-z 0-9 space", reasons[0])
+
+    def test_an_xml_file_no_card_meta_data_names_is_not_a_card(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.addon(tmp, extra_xml={"network.xml": "<network-security-config />"})
+            names = {p.name for p in declared_card_files(folder)}
+            self.assertIn("card_good.xml", names)
+            self.assertNotIn("network.xml", names)
+
+    def test_a_module_card_the_manifest_never_names_is_still_read(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = self.MANIFEST % ""
+            folder = self.addon(tmp, card="module_card", manifest=manifest)
+            self.assertEqual([p.name for p in declared_card_files(folder)], ["module_card.xml"],
+                             "a folder that ships the how-to's name but forgets the meta-data is the "
+                             "declaration tests' to name, and skipping it here would hide the card")
+
+    def test_a_named_file_whose_root_is_not_card_is_read_so_the_root_is_named(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = self.addon(tmp, root_named="module")
+            reasons = problems(folder / "app/src/main/res/xml/card_good.xml")
+            self.assertEqual(len(reasons), 1, reasons)
+            self.assertIn("the root element is <module>", reasons[0])
 
 
 class CardReaderTest(unittest.TestCase):
