@@ -425,6 +425,12 @@ def write(out):
     refusals here use, before anything else is written; the second says how much did land, so a
     half-filled folder cannot be mistaken for the 14 the script promises.
     """
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     try:
         os.makedirs(out, exist_ok=True)
     except OSError as e:
