@@ -26,7 +26,7 @@ With speakers or a DAC on the optical output, the remote's volume keys change no
 | Disney+ (5.1 E-AC3) | `OFFLOAD` thread, `DIRECT\|COMPRESS_OFFLOAD`, format `0x0A000001`: decoded on the chip | Not as it starts; see below |
 | HDMI, AV, Live TV | `AudioPatch device:hdmi-in -> device:speaker`, "No software bridge" | No: a hardware patch |
 
-Setting the surround sound formats to None (`settings put global encoded_surround_output 1`) or turning Dolby Atmos
+Setting the surround sound formats to None (`settings put global encoded_surround_output 1`; `settings put global encoded_surround_output 0` puts it back to Auto) or turning Dolby Atmos
 off in Disney+ did not move it off the offload output, and holding the direct outputs busy from another app only made
 it stop with `AudioTrack init failed`. What works: enabling a non-offloadable effect on the output mix while the track
 plays. Android invalidates the offloaded track (`AudioTrack write failed: -6` in the app) and media3 recovers by

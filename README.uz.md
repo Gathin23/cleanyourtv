@@ -479,7 +479,7 @@ birinchi toʻrt kunda 200 dan ortiq hissa qoʻshuvchidan 170 dan ortiq TV modeli
 deb ataldi; eski havolalar ishlaydi.
 
 Ikki hafta oʻtib, 19–25 oktabr haftasida GitHub ning 1-oʻrindagi trend ombori boʻldi; 46 mingdan ortiq yulduz,
-5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. 14-noyabr holatiga 57 ming yulduz va 7,4 ming fork. Roʻyxatlar endi 472 TV modelini va 129 brendni
+5,7 ming fork, 14 kunda 1,4 million koʻrish va 260 ming klon. 14-noyabr holatiga 57 ming yulduz va 7,4 ming fork. Roʻyxatlar endi 481 TV modelini va 131 brendni
 qamrab oladi. Matbuotdagi aks: 546 maqola (57 mamlakatdan) va YouTube hamda Bilibili da 674 video, hammasi
 [docs/PRESS.md](docs/PRESS.md) da (raqamlar 2026-yil 14-noyabr holatiga).
 
@@ -493,9 +493,7 @@ Kodlash agenti orqali hissa qoʻshyapsizmi? [AGENTS.md](AGENTS.md) unga xuddi sh
 |---|---|
 | **Televizoringizning tozalash roʻyxati** | Eng foydalisi: shu modelga ega keyingi kishi kashfiyotni oʻtkazib yuboradi. |
 | **Launcher va prompt** | Launcher yaxshilanishlari va promptning aniqroq ifodalanishi ham mamnuniyat bilan qabul qilinadi. |
-| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 243 ta loyiha allaqachon yashaydi. |
-| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 240 ta loyiha allaqachon yashaydi. |
-| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 244 ta loyiha allaqachon yashaydi. |
+| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 248 ta loyiha allaqachon yashaydi. |
 
 Ishlari bu omborda joylashgan odamlar:
 

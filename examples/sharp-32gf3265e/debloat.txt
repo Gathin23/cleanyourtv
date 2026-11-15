@@ -17,6 +17,7 @@
 # This firmware re-enabled com.google.android.katniss once at a power-on; disable it again if the mic button returns.
 # setupwraith owns no saved Wi-Fi on this unit (the network is owned by android.uid.system), so disabling it does
 # not drop the connection - but only disable it after the new launcher is Home.
+# Disabling setupwraith gives Home back but costs casting (Chromecast) on Google TV.
 
 # Google TV telemetry, feedback, activation and partner services
 com.google.android.feedback
@@ -26,15 +27,16 @@ com.smartdevice.recordactivation
 com.smartdevice.aftersale
 
 # Preinstalled streaming, video and game hubs (already off on the test unit)
-com.amazon.amazonvideo.livingroom
-com.google.android.youtube.tv
-com.google.android.youtube.tvmusic
-com.google.android.videos
-com.google.android.play.games
-com.smartdevice.recommendation
+# This set has these off (owner's choice); uncomment to opt in.
+# com.amazon.amazonvideo.livingroom
+# com.google.android.youtube.tv
+# com.google.android.youtube.tvmusic
+# com.google.android.videos
+# com.google.android.play.games
+# com.smartdevice.recommendation
 
-# Voice assistant (owner's choice)
-com.google.android.katniss
+# Voice assistant: this set has it off (owner's choice); uncomment to opt in.
+# com.google.android.katniss
 
 # Skyworth/Coocaa retail demo, cleaner, app manager, e-manual
 com.coocaa.demonow.lightining
@@ -46,7 +48,7 @@ com.Smartdevice.emanual
 # Background services and unused utilities
 com.google.android.apps.nbu.smartconnect.tv
 com.google.android.apps.tv.dreamx
-com.esaba.downloader
+# com.esaba.downloader  # a sideloaded app on this set (owner's choice)
 
 # Accessibility talkback (already off on the test unit)
 com.google.android.marvin.talkback

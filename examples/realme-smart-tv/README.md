@@ -10,7 +10,7 @@ Wi-Fi trap applies (Wi-Fi is owned by `com.google.android.gms`).
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 22 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 20 packages to disable, grouped and commented |
 | `config.json` | 4 columns, dock apps, hidden internal apps, Live TV package |
 | `tv.json` | Model, OS version, and notes for the TV tables |
 
@@ -21,7 +21,7 @@ export TV_HOST=<tv ip>
 ```
 
 Turn on Network debugging / Wireless debugging in Developer Options and confirm the authorization
-prompt on the TV.
+prompt on the TV. Turn network/wireless debugging off again when you are done.
 
 ## Debloat
 
@@ -31,7 +31,7 @@ TV_HOST=<tv ip> tools/disable.sh examples/realme-smart-tv/debloat.txt
 
 (Windows: `tools\disable.ps1 -TvHost <tv ip> examples\realme-smart-tv\debloat.txt`.)
 
-The debloat list disables 22 packages: Skyworth daily play, ACR recommendations, e-POP player,
+The debloat list disables 20 packages: Skyworth daily play, ACR recommendations, e-POP player,
 shop customizer, QJY browser, speedchannels, partner recommendations, and unused Google feedback
 and calendar sync adapters. Everything is disabled via `pm disable-user --user 0`, never uninstalled.
 

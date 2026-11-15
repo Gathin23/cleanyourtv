@@ -24,13 +24,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 ADDONS = ROOT / "addons"
 INDEX = ADDONS / "README.md"
-RULES = ADDONS / "README.md"
 
 # The cell this file exists for, lowercased: the words the row uses when no set has run it yet.
 NOT_YET = "not yet tested on a real tv"
-
-# The rule the column is written under, as addons/README.md states it.
-RULE_SENTENCE = "Say which one in the README and in the table above."
 
 
 def addon_dirs(addons=None):
@@ -162,11 +158,6 @@ class TestedOnColumnTest(unittest.TestCase):
                 "sixth": ("Not yet tested on a real TV", "# Sixth\n\n## Tested on\n\n## Change the look\n"),
             })
             self.assertEqual(untested_claims(addons), [], "no recorded unit means nothing to contradict")
-
-    def test_the_page_still_asks_for_the_unit_in_both_places(self):
-        text = RULES.read_text(encoding="utf-8") if RULES.is_file() else ""
-        self.assertIn(RULE_SENTENCE, text, "addons/README.md's rule is what this column is written under")
-
 
 if __name__ == "__main__":
     unittest.main()

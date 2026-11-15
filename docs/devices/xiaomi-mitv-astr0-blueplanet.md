@@ -167,7 +167,7 @@ while PatchWall is disabled and re-enabling PatchWall afterwards drops the prefe
 
 The working setup is the launcher's guard: `stock_home_redirect = "com.mitv.tvhome"` in `config.xml`, the
 launcher's `HomeKeyService` on `enabled_accessibility_services`, and
-`cmd notification allow_listener com.ts.launcher/com.gathin.tvhome.GuardRevival`. PatchWall keeps the HOME
+`cmd notification allow_listener com.gathin.tvhome/com.gathin.tvhome.GuardRevival`. PatchWall keeps the HOME
 role and the volume OSD; the guard sends the TV back to the launcher whenever PatchWall's home screen comes
 up, so the Home key, a cold boot and a wake from standby all land on it.
 
@@ -205,13 +205,13 @@ this build the broadcast never reaches the receiver:
 
 ```
 reason: skipped by policy at enqueue: Background execution not allowed:
-  receiving Intent { act=com.gathin.tvhome.GUARD } to com.ts.launcher/...GuardConfig
+  receiving Intent { act=com.gathin.tvhome.GUARD } to com.gathin.tvhome/...GuardConfig
 ```
 
 Bringing the launcher to the foreground and carrying `FLAG_RECEIVER_INCLUDE_BACKGROUND` delivers it:
 
 ```sh
-am start -W -n com.ts.launcher/com.gathin.tvhome.MainActivity
+am start -W -n com.gathin.tvhome/com.gathin.tvhome.MainActivity
 am broadcast -a com.gathin.tvhome.GUARD -f 0x01000000 --ez guard_off_in_standby true
 # Broadcast completed: result=0, data="guard_off_in_standby=true"
 ```

@@ -49,8 +49,10 @@ com.google.android.play.games
 com.google.android.syncadapters.calendar
 com.google.android.onetimeinitializer
 com.mediatek.wwtv.setupwizard
-com.onnet.systems.iptv.skypro
+# IPTV app, this set has it off; keep it if you use it
+# com.onnet.systems.iptv.skypro
 
 # Stock Launcher (disabled once com.gathin.tvhome owns Home)
-com.spocky.projengmenu
+# user-installed launcher (Projectivy) on this set, not stock
+# com.spocky.projengmenu
 com.google.android.tvlauncher

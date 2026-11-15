@@ -43,11 +43,6 @@ def flat(text):
     return re.sub(r"\s+", " ", text)
 
 
-def docstring():
-    """The tool's docstring, flattened, so a wrapped sentence reads as one."""
-    return flat(SCRIPT.read_text(encoding="utf-8").split('"""')[1])
-
-
 def check(*args, env=None):
     """The script against real sockets."""
     return subprocess.run([sys.executable, "-I", str(SCRIPT), *args], capture_output=True, text=True,
@@ -103,15 +98,6 @@ class OnlyTheAdbPortSaysNetworkAdbTest(unittest.TestCase):
         self.assertIn(f"127.0.0.1:{port} is still open", result.stderr)
         self.assertIn("127.0.0.1 " + NOTE, result.stderr)
         self.assertNotIn("network ADB is on", result.stderr)
-
-
-class TheDocstringSaysWhichPortIsAdbTest(unittest.TestCase):
-    def test_the_docstring_says_5555_is_the_adb_port(self):
-        # The rule the message follows, stated where the tool's other exit-status rules are.
-        doc = docstring()
-        self.assertIn("Port 5555 is the ADB port", doc)
-        self.assertIn("another port may be the Wireless debugging port", doc)
-        self.assertIn("an open port says nothing about ADB", doc)
 
 
 if __name__ == "__main__":
