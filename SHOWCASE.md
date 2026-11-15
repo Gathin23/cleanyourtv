@@ -23,7 +23,7 @@ of these projects ask for far more than the reference launcher does:
 
 **Jump to:** [Home screens built as their own app](#home-screens-built-as-their-own-app) · [Forks of the launcher](#forks-of-the-launcher) · [Screensavers and add-ons](#screensavers-and-add-ons) · [Tools and companion apps](#tools-and-companion-apps) · [Other platforms: Fire TV and LG webOS](#other-platforms-fire-tv-and-lg-webos) · [Add-ons in this repo](addons/README.md) · [Guides and write-ups](#guides-and-write-ups) · [Find a project by TV brand](#find-a-project-by-tv-brand) · [Add yours](#add-yours)
 
-248 projects so far.
+249 projects so far.
 
 ## Home screens built as their own app
 
@@ -276,6 +276,7 @@ Ways to run the cleanup or control the TV from a phone or a computer, without an
 | [CleanYourTV Studio](https://github.com/dazdenii/cleanyourtv-studio) ([screenshot](https://raw.githubusercontent.com/dazdenii/cleanyourtv-studio/main/docs/studio-screenshot.png)) | A local macOS and Linux web studio (Python standard library, `127.0.0.1` only) for v2.7 theme presets, every `config.json` switch (Cinematic Home, glass dock, sky gradient, glow, F1 countdown), dock and hidden-app ordering, a live TV screen preview with D-pad remote, `check.py` health checks, and a one-click HDMI-CEC handshake reset | Android TV 9+ / Google TV (macOS & Linux) | [dazdenii](https://github.com/dazdenii) |
 | [Standby Light](https://github.com/maxhayim/standby-light) ([APK](https://github.com/maxhayim/standby-light/releases/latest), [screenshot](https://github.com/maxhayim/standby-light/blob/main/docs/app.jpg)) | Keeps the standby light of Realtek-based TVs off in every state (on, standby, low-power standby, blinking), and switches it off again after every restart and power cut. Realtek's LED service answers only the ADB shell, so the app signs in to the TV's own ADB at 127.0.0.1 with a key you allow once on the TV, and sends one fixed command. Needs `com.realtek.power.ILedManager/default` and network debugging left on. No network beyond the TV itself | MOKA R8G, Android 14 | [maxhayim](https://github.com/maxhayim) |
 | [AppleTV Wake for Android TV](https://github.com/Gauthier-Huguenin/appletv-wake-android-tv) ([APK](https://github.com/Gauthier-Huguenin/appletv-wake-android-tv/releases/latest), [issues](https://github.com/Gauthier-Huguenin/appletv-wake-android-tv/issues)) | Turns the TV on when the Apple TV wakes up, for sets that ignore HDMI-CEC power-on from standby, and switches between the Apple TV and a second HDMI device on a double press of mute on the Apple TV remote; it can also replace the stock launcher so Home always goes to the Apple TV. Set up from a computer with a script (adb, one-time pairing through pyatv). Network: only the Apple TV on the home network (its Companion protocol); an accessibility service that reads no screen content and filters no keys | TCL Smart TV Pro (G05_4K_GB), Google TV 11, with an Apple TV 4K and a PS5 | [Gauthier-Huguenin](https://github.com/Gauthier-Huguenin) |
+| [Web Remote](https://github.com/UjjwalKaul/webremote) ([screenshot](https://raw.githubusercontent.com/UjjwalKaul/webremote/main/docs/screenshot.jpg)) | A zero-install tactile web remote and TV keyboard served over local Wi-Fi by QR code, with D-pad, media controls, app shelf and text input; no internet permission | Lumio Arc 5, Google TV 14 | [UjjwalKaul](https://github.com/UjjwalKaul) |
 
 ## Other platforms: Fire TV and LG webOS
 
@@ -348,6 +349,7 @@ By the TV each project was built and tested on. Most of them run on other Androi
 - **Kenwood:** [Agenda TV](https://github.com/ADOCR/tv-agenda)
 - **Kogan:** [Quay](https://github.com/checkmate-automate/Quay-DebloatedAndroidLauncher)
 - **LG:** [Clean Your TV — LG webOS](https://github.com/Razdva122/clean-your-tv-lg-webos), [CleanYourTV for LG webOS](https://github.com/lasharor/cleanyourtv-WebOS), [CleanYourTV webOS edition](https://github.com/SamuelSHernandez/cleanyourtv-webOS/tree/main/webos), [webOS launcher](https://github.com/OmkarK97/webos-vibehack)
+- **Lumio:** [Web Remote](https://github.com/UjjwalKaul/webremote)
 - **Magcubic:** [Magcubic HY320 Pro Launcher](https://github.com/KeyErrorFinn/cleanyourtv-magcubic-hy320pro-launcher)
 - **Magyar Telekom (SDMC box):** [CleanYourTV Blocky Cabin](https://github.com/CsPS0/cleanyourtv-blocky)
 - **MOKA:** [Corner Player](https://github.com/maxhayim/corner-player), [Webmote](https://github.com/maxhayim/webmote), [Kids Mode](https://github.com/maxhayim/kids-mode), [Standby Light](https://github.com/maxhayim/standby-light), [Workplace Home](https://github.com/maxhayim/cleanyourtv/tree/workplace-options), [Retro Launchers](https://github.com/maxhayim/cleanyourtv/blob/retro-launchers/RETRO_LAUNCHERS.md)
