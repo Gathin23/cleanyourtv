@@ -1,0 +1,94 @@
+# Xiaomi MiTV-AXSO2 (codename dangalUHD, Amlogic txlx), Android TV 11 (SDK 30), firmware RTT0.211201.001.1150. India unit.
+# ro.build.fingerprint Xiaomi/dangalUHD/dangalUHD:11/RTT0.211201.001/1150:user/release-keys, security patch 2024-02-05.
+# The same model on its Android 11 firmware: the Android 9 list (PI.6432) is examples/xiaomi-mitv-axso2.
+# Live TV app: com.android.tv (set it as live_tv_package and hide it in launcher config.xml).
+# Stock launcher: com.google.android.tvlauncher (the default, disabled by build-and-install.sh).
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mitv-axso2-android11/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mitv-axso2-android11/debloat.txt
+# After a firmware update: TV_HOST=<tv ip> tools/venv/bin/python -I tools/check.py --fix examples/xiaomi-mitv-axso2-android11/debloat.txt com.gathin.tvhome
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Tested on one unit, 15 November 2026: applied with tools/disable.sh in four batches, 32 packages in all, counting
+# the owner's choices commented out at the end of this list; nothing was disabled before. All 32 stayed disabled
+# across reboots. Afterwards the new Home, HDMI 1-3, AV and the tuner (com.droidlogic.tvinput), Chromecast and the
+# Android TV phone remote app (com.google.android.tv.remote.service) all worked, and so did the Home, Back, Netflix
+# and Prime Video buttons on the real remote. Same-day test, not yet lived with for days.
+#
+# Notes from this firmware:
+# - Eight entries of the Android 9 list are not on this build: Google's tv.bugreportsender,
+#   leanbacklauncher.recommendations and music, com.android.camera2, gallery3d and smspush, com.tcl.browser and
+#   com.zee5.xiaomiTV. YouTube Music, which that list disables, was kept here (commented out below).
+# - USB debugging alone opens network ADB on port 5555.
+# - The firmware opens Live TV (com.android.tv) at every power-on, over the new Home. power_on_home true with
+#   HOME_KEY_SERVICE=1 sent it back to Home within about 2 s; a key pressed first wins. But with any key-filtering
+#   helper bound, a held volume button moves one step, as in docs/devices/tcl-55p71b-g09-key-repeat.md;
+#   volume_pauses_filter true brings the ramp back as tap once, then hold, checked on the real remote. This set
+#   runs with both true in config.xml. With no helper a hold ramps as usual and power-on stays on Live TV.
+# - Not tried on this build: set_auto_play is 1 out of the box here too, and `settings put global set_auto_play 0`
+#   made the Android 9 AXSO0 start on Home with no helper (examples/xiaomi-mitv-axso0/debloat.txt). Undo:
+#   `settings put global set_auto_play 1`.
+# - com.xiaomi.tvqs.overseas has no activities: UPLOAD, LOG and DROPBOX receivers, and it asks for READ_LOGS,
+#   DUMP and PACKAGE_USAGE_STATS. A log and crash uploader.
+# - com.google.android.videos registers two TV inputs, previews for the stock launcher, not HDMI; disable.sh's
+#   input guard lets it through.
+# - Google sign-in goes through com.google.android.tvrecommendations: see the note in
+#   examples/xiaomi-mitv-axso2/debloat.txt if Play Store asks to authenticate.
+# - Screenshots: the stock launcher's first frame after a package change can come back partly white, in
+#   128-pixel tiles, until a D-pad press; YouTube always captures blank. That is the capture, not damage.
+# - Kept on purpose: firmware updates (com.xiaomi.mitv.updateservice), Live TV and the inputs (com.android.tv,
+#   com.droidlogic.tvinput), Chromecast (com.google.android.apps.mediashell), the phone remote
+#   (com.google.android.tv.remote.service), USB media (com.xiaomi.mitv.mediaexplorer, com.mitv.videoplayer),
+#   the remote and Bluetooth (com.mi.bluetooth), Gboard, Play Store, Play Services, Ambient mode
+#   (com.google.android.backdrop), the Mi screensaver (com.mitv.dream, the active one) and the streaming apps.
+
+# Xiaomi + Google telemetry
+com.miui.tv.analytics                       # TV usage statistics
+com.xiaomi.statistic                        # statistics upload
+com.google.android.feedback                 # Google feedback reporter
+com.xiaomi.tvqs.overseas                    # "TV Quality Service" log and crash uploader, see the notes
+
+# PatchWall, content rows, sponsored rows, partner auto-installs
+com.mitv.tvhome.atv                         # PatchWall; the remote's PatchWall button does nothing once it is off
+com.mitv.tvhome.michannel                   # Mi Channel rows
+com.mitv.tvhome.mitvplus                    # Mi TV+ ad-funded channels
+com.xm.webcontent                           # webview container for promotions
+com.xiaomi.floatingframe                    # floating promo overlay
+co.sensara.tv.mitv                          # Sensara partner TV guide (sponsored show recommendations)
+com.google.android.tvrecommendations        # stock launcher rows; also feeds its notification panel, see the sign-in note
+android.autoinstalls.config.xiaomi.amelie   # Play auto-install of partner apps
+android.autoinstalls.config.xioami.dangal   # Play auto-install of partner apps (sic, "xioami")
+com.google.android.partnersetup             # Google partner setup: partner-app attribution
+
+# Xiaomi extras and preloads
+com.xiaomi.mitv.tvmanager                   # "TV Manager" cleaner
+com.xiaomi.mitv.handbook                    # user handbook
+com.xiaomo.tv.milegal                       # static legal / privacy text screens
+com.xiaomi.mimusic2                         # Mi Music
+com.mitv.gallery                            # Mi Gallery
+com.google.android.videos                   # Play Movies & TV; its two TV inputs are stock-launcher previews, not HDMI
+com.google.android.play.games               # Play Games
+com.xiaomitv.sonyliv                        # old SonyLIV partner copy PatchWall pushed in 2021; the Play Store app com.sonyliv stays
+com.android.printspooler                    # printing
+com.android.dreams.basic                    # basic screensaver; the Mi screensaver (com.mitv.dream) is the active one
+com.google.android.marvin.talkback          # screen reader: keep it if anyone in the house uses it
+
+# Personal choice: Google Assistant. Disabled on this set by the owner's choice; uncomment to disable.
+# com.google.android.katniss                # Assistant and voice search; the remote's mic button does nothing once it is off
+
+# Personal choice: screen mirroring. Disabled on this set by the owner's choice; uncomment to disable.
+# Chromecast (com.google.android.apps.mediashell) is separate and still worked with all three off.
+# com.xiaomi.wfdsinkhelperservice           # Miracast sink helper
+# com.mitv.milinkservice                    # Mi Cast (MiLink)
+# com.xiaomi.mitv.smartshare                # Miracast and MiPlay receiver (WfdActivity)
+
+# Personal choice: Aha and MX Player. Disabled on this set by the owner's choice; uncomment to disable.
+# com.aha.mitv                              # Aha, which PatchWall pushed in 2021
+# com.mxtech.videoplayer.ad                 # MX Player
+# com.mxtech.videoplayer.television         # MX Player TV, which the firmware updater installed in February 2025
+
+# Kept on this set: YouTube Music, which the Android 9 list disables. Uncomment to disable.
+# com.google.android.youtube.tvmusic
+
+# Kept: firmware updates. Better left enabled; after an update, run the check.py line in the header.
+# com.xiaomi.mitv.updateservice             # Xiaomi firmware updater

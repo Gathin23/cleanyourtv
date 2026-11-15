@@ -1,0 +1,6 @@
+{
+  "tv": "Xiaomi MiTV-AXSO2 (dangalUHD, Amlogic, India), Android 11 firmware RTT0.211201.001.1150",
+  "os": "Android TV 11",
+  "brand": "Xiaomi",
+  "notes": "Same model after its Android 11 update: PatchWall, Mi Channel, Mi TV+, Sensara, Mi analytics and the TV Quality Service log uploader, TV Manager, partner auto-installs, preloads; Assistant, screen mirroring, Aha and MX Player commented out (off on this set by choice); updater, Chromecast, phone remote and USB media kept; the firmware opens Live TV at every power-on, and the key helper that sends it back to Home turns a held volume into tap, then hold"
+}
