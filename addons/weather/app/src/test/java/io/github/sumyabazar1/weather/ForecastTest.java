@@ -50,6 +50,17 @@ public class ForecastTest {
     }
 
     @Test
+    public void symbolsFollowTheSky() {
+        assertEquals("\u2600", Forecast.symbol(0, true));
+        assertEquals("\u263E", Forecast.symbol(1, false));
+        assertEquals("\u26C5", Forecast.symbol(2, true));
+        assertEquals("\u2601", Forecast.symbol(45, true));
+        assertEquals("\u2744", Forecast.symbol(73, true));
+        assertEquals("\u26A1", Forecast.symbol(95, true));
+        assertEquals("\u2602", Forecast.symbol(63, true));
+    }
+
+    @Test
     public void forecastDaysStayBetweenThreeAndSeven() {
         assertEquals(3, Forecast.forecastDays(3));
         assertEquals(7, Forecast.forecastDays(7));

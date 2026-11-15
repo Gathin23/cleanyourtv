@@ -30,5 +30,12 @@
             </intent-filter>
             <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
         </activity>
+
+        <!-- The weather for other apps, read-only (NowProvider): the launcher's weather_line, and the week ahead.
+             Only the reading goes out, never the city or where it is. -->
+        <provider
+            android:name=".NowProvider"
+            android:authorities="io.github.sumyabazar1.weather.now"
+            android:exported="true" />
     </application>
 </manifest>

@@ -41,6 +41,21 @@ Saved choices override these defaults. With no saved choices the page is as abov
 
 ![A week, with humidity and wind](https://raw.githubusercontent.com/majnioui/cleanyourtv-contrib/pr-assets/addon-weather-week/weather-options.png)
 
+## For other apps
+
+The app shares its last reading with other apps on the TV through a read-only `NowProvider`
+(`content://io.github.sumyabazar1.weather.now`), in the unit chosen in Weather settings:
+
+- **One line**, for the [Clean Your TV](../../README.md) launcher's `weather_line` under the clock:
+  "48°  ☁  Cloudy  ·  H 55°  L 38°", with its parts (`temp`, `symbol`, `sky`) and when it was read (`updated`).
+- **The week ahead** at `…/days`: one row per day from today, with `date`, `symbol`, `sky`, `max` and `min`, for a
+  calendar's day cards or the like.
+
+There is still no background service: a query finds the last reading, and fetches first when it is more than 30
+minutes old (one request for the whole week; at most every 5 minutes while the TV is offline), so the launcher and
+other apps never go online themselves. Opening the page refreshes it too. Nothing comes back before a city is
+chosen, or when the last reading is more than three hours old.
+
 ## Permissions
 
 | Permission | Why |
@@ -48,7 +63,8 @@ Saved choices override these defaults. With no saved choices the page is as abov
 | `INTERNET` | Open-Meteo: the place search, the weather and the air quality. |
 
 That is all. What is sent: the city name you type in the search, then that place's latitude and longitude. No
-account, no telemetry, no ads, no background service, no location permission. The chosen city stays in the
+account, no telemetry, no ads, no background service, no location permission. `NowProvider` gives other apps the
+reading only (temperature, sky, highs and lows), never the city or where it is. The chosen city stays in the
 app's own storage (backups are off).
 
 ## Build and install
