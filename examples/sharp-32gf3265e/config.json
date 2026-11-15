@@ -1,0 +1,11 @@
+{
+  "dock_apps": ["com.netflix.ninja", "org.smarttube.stable", "com.stremio.one", "org.jellyfin.androidtv"],
+  "rows_below_dock": 2,
+  "dock_glass": true,
+  "dock_even_padding": true,
+  "key_filter": true,
+  "settings_key_keycodes": [83],
+  "settings_key_panel": true,
+  "power_on_home": true,
+  "power_on_home_always": true
+}
