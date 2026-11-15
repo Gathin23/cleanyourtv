@@ -295,6 +295,23 @@ class BlockyWrites(unittest.TestCase):
         finally:
             destination.chmod(0o600)
 
+    def test_an_output_folder_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        folder = self.root / ("sc_" + chr(0x5199) + chr(0x771f))
+        scenes = [(name, lambda cv: None) for name, _ in blocky_wallpapers.SCENES]
+        raw = io.BytesIO()
+        console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = console
+        with mock.patch.object(blocky_wallpapers, "SCENES", scenes), \
+                mock.patch.object(blocky_wallpapers, "Canvas", stub_canvas(StubPicture())), \
+                mock.patch.dict(sys.modules, {"PIL": types.ModuleType("PIL")}):
+            blocky_wallpapers.write(str(folder))
+        console.flush()
+        self.assertEqual(sorted(self.names), sorted(p.name for p in folder.iterdir()))
+        self.assertIn("scenes written to", raw.getvalue().decode("cp1252"))
+        self.assertIn("sc_??", raw.getvalue().decode("cp1252"))
+
     @unittest.skipIf(Image is None, "Pillow is not installed (tools/requirements-perf.txt)")
     def test_the_command_line_failing_midway_keeps_every_picture_on_disk(self):
         """The run that produced the defect: the real encoder stops partway through one picture."""
