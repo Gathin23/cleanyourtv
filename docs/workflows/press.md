@@ -29,9 +29,9 @@
    `tests/test_press_as_of_date.py` reads that parenthetical in each page's own words, off every page whose
    story paragraph carries the link, and a page that writes none is not judged: `README.he.md` dates the
    stars it had in the sentence before, and its coverage sentence ends at the link. That paragraph is also
-   read on the five front pages that have it without the card:
-   `README.pt-BR.md`, the Hebrew `README.he.md`, the Uzbek `README.uz.md`, the French `README.fr.md` and the
-   Spanish `README.es.md` show no `docs/card.jpg`, so their numbers are held to `README.md`'s alt text and to
+   read on the six front pages that have it without the card:
+   `README.pt-BR.md`, the Hebrew `README.he.md`, the Uzbek `README.uz.md`, the French `README.fr.md`, the
+   Spanish `README.es.md` and the Sorani `README.ckb.md` show no `docs/card.jpg`, so their numbers are held to `README.md`'s alt text and to
    `docs/PRESS.md` on their own, and their coverage clause has to open with a colon like the others ("A
    repercussão: 412 artigos ...", "סיקור בתקשורת: 412 כתבות ...", "Matbuotdagi aks: 412 maqola ...", "La
    couverture médiatique : 534 articles ..."), since that colon is what the reader cuts the three numbers at.
@@ -39,7 +39,8 @@
    month in its own language, and the date check reads that shape like the other eight. A page counts as one
    of them by its paragraph, so a translation that copies the story without the picture is read without the
    test being edited - the French and Spanish pages, which landed last, needed their month names in the
-   check's table and their names in the pins beside it.
+   check's table and their names in the pins beside it. The Sorani page dates the same sentence with
+   تشرینی دووەم for November, so that name is in the table too.
    Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the performance requirements install:
    `tools/venv/bin/pip install -r tools/requirements-perf.txt`, then
    `tools/venv/bin/python -I tools/readme_featured.py Fredoka.ttf docs/featured.png` and

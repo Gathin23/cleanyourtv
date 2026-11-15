@@ -68,6 +68,7 @@ ARTICLE_MONTHS = {name: number for number, name in enumerate(
 # German "31. Oktober", Ukrainian "31 жовтня" (genitive), Turkish "31 Ekim", Portuguese "31 de outubro",
 # Uzbek "31-oktabr" (README.uz.md writes the day and the month joined by a hyphen), French "9 novembre",
 # Spanish "9 de noviembre" (README.es.md, which is not the Portuguese "novembro").
+# Sorani "14ی تشرینی دووەم" (README.ckb.md): November is تشرینی دووەم, a two-word name.
 MONTHS = (
     ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
      "November", "December"),
@@ -87,11 +88,13 @@ MONTHS = (
      "novembre", "décembre"),
     ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
      "noviembre", "diciembre"),
+    ("کانوونی دووەم", "شوبات", "ئازار", "نیسان", "ئایار", "حوزەیران", "تەممووز", "ئاب", "ئەیلوول",
+     "تشرینی یەکەم", "تشرینی دووەم", "کانوونی یەکەم"),
 )
 
 
 def month_numbers():
-    """{month name, casefolded: its number}, the nine languages the front pages are written in."""
+    """{month name, casefolded: its number}, the languages the front pages are written in."""
     out = {}
     for names in MONTHS:
         for number, name in enumerate(names, 1):
@@ -216,8 +219,8 @@ class TreeTest(unittest.TestCase):
 
     def test_the_pages_that_date_the_numbers_today(self):
         self.assertEqual(
-            {"README.md", "README.de.md", "README.es.md", "README.fr.md", "README.nl.md", "README.pt-BR.md",
-             "README.tr.md", "README.uk.md", "README.uz.md"},
+            {"README.md", "README.ckb.md", "README.de.md", "README.es.md", "README.fr.md", "README.nl.md",
+             "README.pt-BR.md", "README.tr.md", "README.uk.md", "README.uz.md"},
             {name for name, _ in dated_pages()},
             "the front pages that close the coverage sentence with a date; a translation that copies the "
             "clause is read without being added here, and one that stops dating its numbers is a change")
@@ -238,6 +241,7 @@ class ReaderTest(unittest.TestCase):
         expected = {
             "README.md": (2026, 11, 14),
             "README.de.md": (2026, 11, 14),
+            "README.ckb.md": (2026, 11, 14),
             "README.es.md": (2026, 11, 14),
             "README.fr.md": (2026, 11, 14),
             "README.nl.md": (2026, 11, 14),
@@ -261,6 +265,7 @@ class ReaderTest(unittest.TestCase):
             ("raqamlar 2026-yil 31-oktabr holatiga", (2026, 10, 31)),
             ("chiffres au 31 octobre 2026", (2026, 10, 31)),
             ("datos del 31 de octubre de 2026", (2026, 10, 31)),
+            ("ژمارەکان لە 14ی تشرینی دووەم 2026", (2026, 11, 14)),
         ):
             self.assertEqual(date, clause_date(clause), clause)
 
