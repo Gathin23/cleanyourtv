@@ -86,6 +86,24 @@
 # it being measured here. Power-on lands on the new Home by itself (no power_on_home needed).
 # AdGuard Private DNS worked there.
 #
+# A second TCL 55Q6CS, India (product G10_4K_GB, software V8-R75PT01-LF1V500, same build STT2.230203.001,
+# incremental AS50, Realtek rtd6748). Tested on 2026-11-15 for one day with one reboot check, not yet lived with
+# for several days. As on the first 55Q6CS, Samba TV ACR, logkit and ttvs shipped enabled; all three were disabled.
+# tv.plus and smartlink.core are not installed. Every other active line was disabled except three the owner kept:
+# channelplus (TCL Live), ui_mediaCenter (USB media) and gtvpai (left enabled, as advised above). From the optional
+# lines: guard, messagebox, usercenter, t_solo, smartalexa, hearaid, browser, magiconnectfree, both AirPlay lines,
+# tv.remote.service, katniss, videos, play.games and youtube.tvmusic; waterfall.overseas was disabled and then
+# re-enabled, as the owner watches TCL Channel. Also disabled there: com.tcl.miracast and the India preloads
+# com.discoveryplus.tv.android, com.indiatv.androidtv.livetv, com.spotify.tv.android, com.mxtech.videoplayer.ad and
+# com.vectorunit.purple.googleplay. All of it stayed off after the reboot. setupwraith owned a second, hidden
+# saved network but not the one the set was on; forgetting that one with `cmd wifi forget-network <id>` let
+# disable.sh's guard through, and Wi-Fi and ADB stayed up.
+# Unlike the first 55Q6CS, with launcherx disabled and NO key helper bound, the owner's real remote still opened
+# Netflix, YouTube and Prime Video from their buttons, and Input, gear and Dashboard all did something; held
+# volume ramped. Key helpers were left off. Only the outcome was checked, not which firmware service answers
+# (TclShortCutKeyManager does on the 55P6K above). Power-on lands on the new Home by itself.
+# AdGuard Private DNS worked there.
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g10-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g10-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
