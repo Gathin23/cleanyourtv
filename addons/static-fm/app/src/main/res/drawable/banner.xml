@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The TV banner: an ASCII equaliser, three bars of dots rising left to right on a dark tile. Drawn for this add-on. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#FF16171B" android:pathData="M0,0h320v180h-320z" />
+    <!-- left bar: two dots -->
+    <path android:fillColor="#FF6A9C98" android:pathData="M123,112h10v10h-10zM123,94h10v10h-10z" />
+    <!-- middle bar: four dots -->
+    <path android:fillColor="#FFC88A74" android:pathData="M155,112h10v10h-10zM155,94h10v10h-10zM155,76h10v10h-10zM155,58h10v10h-10z" />
+    <!-- right bar: three dots -->
+    <path android:fillColor="#FFB8AA84" android:pathData="M187,112h10v10h-10zM187,94h10v10h-10zM187,76h10v10h-10z" />
+    <!-- the ground line, in dashes -->
+    <path android:fillColor="#FF4A4B52" android:pathData="M111,134h14v3h-14zM131,134h14v3h-14zM151,134h14v3h-14zM171,134h14v3h-14zM191,134h14v3h-14z" />
+</vector>

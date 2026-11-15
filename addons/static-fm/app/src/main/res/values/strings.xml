@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Static FM</string>
+    <!-- Order matches Painter's style numbers. -->
+    <string-array name="styles">
+        <item>Tide lines</item>
+        <item>Dust</item>
+        <item>Dusk</item>
+        <item>Blots</item>
+        <item>Moon</item>
+        <item>Deep sea</item>
+        <item>Ocean Drive</item>
+    </string-array>
+    <string-array name="reactions">
+        <item>Calm</item>
+        <item>Normal</item>
+        <item>Lively</item>
+    </string-array>
+    <string name="palette_teal_coral">Teal and coral</string>
+    <string name="palette_ochre_slate">Ochre and slate</string>
+    <string name="palette_sage_plum">Sage and plum</string>
+    <string name="palette_mono">Mono</string>
+</resources>
