@@ -19,9 +19,16 @@ flag failed the flag walk. A clone has no `work/` folder, so CI never saw any of
 The folders are read out of .gitignore here rather than copied in, so a folder it learns about fails this
 check until every walk skips it too, and the message names the file to edit.
 
+`work` is one of those folders, and CI checks this repository out under `/home/runner/work/cleanyourtv`.
+A walk that matched the skip list against the absolute path therefore pruned the whole checkout there and
+read nothing, which every check starting from what the walk found then passed. The walks match
+`relative_to(root)` (or prune by directory name) for that reason, and `WalkBelowASkippedParentTest` holds
+them to it: the same small checkout read from an ordinary folder and from below a folder named `work`.
+
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 from pathlib import Path
+import tempfile
 import types
 import unittest
 
@@ -69,6 +76,37 @@ def missing(skip, folders):
 
 
 FOLDERS = ignored_folders(GITIGNORE.read_text(encoding="utf-8"))
+
+# The walks, called with the root they read, and the file each is expected to find in a small checkout.
+# CI checks this repository out under `/home/runner/work/cleanyourtv/cleanyourtv`, so a walk that pruned
+# with the absolute path would read nothing there - and a walk that finds nothing passes every check that
+# starts from what it found. These five were named in the review of this file; `test_ps1_invocations.py`
+# and `test_tv_py_flags_in_docs.py` read `relative_to(root)` too, and the first holds its own case for it.
+WALKERS = {
+    "tests/test_agents_md.py": (test_agents_md.file_names, "disable.ps1"),
+    "tests/test_image_files.py": (test_image_files.image_files, "screenshot.jpg"),
+    "tests/test_markdown_links.py": (test_markdown_links.markdown_files, "README.md"),
+    "tests/test_powershell_command_quotes.py": (test_powershell_command_quotes.pages, "README.md"),
+    "tests/test_sh_commands_name_the_tv.py": (test_sh_commands_name_the_tv.files, "README.md"),
+}
+
+
+def fixture_checkout(root):
+    """A small checkout at `root`: one file each walk reads, and two of the person's own under work/."""
+    bodies = {"README.md": b"# a page\n", "tools/disable.ps1": b"param([string]$List)\n",
+              "themes/demo/screenshot.jpg": b"\xff\xd8\xff a picture",
+              "work/notes.md": b"# the owner's own note\n",
+              "work/photos/demo.jpg": b"\xff\xd8\xff the owner's own photo"}
+    for name, body in bodies.items():
+        path = Path(root) / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body)
+    return Path(root)
+
+
+def walked(walk, root):
+    """The names a walk reads below `root`, whether it yields paths or names."""
+    return {Path(entry).name for entry in walk(root)}
 
 
 def walk_problems(walks=None, folders=None):
@@ -131,6 +169,68 @@ class WalkScopeTest(unittest.TestCase):
         self.assertEqual(1, len(problems), problems)
         self.assertIn("work, bench-results", problems[0])
         self.assertIn("tests/test_written_here.py", problems[0])
+
+
+class WalkBelowASkippedParentTest(unittest.TestCase):
+    """The same checkout read from an ordinary folder and from below a folder named `work`.
+
+    CI checks this repository out under `/home/runner/work/cleanyourtv/cleanyourtv`, and `work` is one of
+    the folders .gitignore keeps out of a checkout. A walk that matched its skip list against absolute
+    parts pruned the whole checkout there and read nothing - and a check that starts from what the walk
+    found passes on the empty set, so those seven reports would each have said "nothing to judge". So
+    both directions are held: below such a parent the walk reads what it reads in an ordinary folder, and
+    inside the checkout the person's own files are still the ones skipped.
+    """
+
+    def checkouts(self, scratch):
+        """The same fixture checkout in an ordinary folder and below one named `work`."""
+        return (fixture_checkout(Path(scratch) / "cleanyourtv"),
+                fixture_checkout(Path(scratch) / "work" / "cleanyourtv"))
+
+    def test_a_checkout_below_a_folder_named_work_reads_the_same_files(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            plain, below = self.checkouts(scratch)
+            for name, (walk, expected) in WALKERS.items():
+                with self.subTest(walk=name):
+                    here = walked(walk, plain)
+                    self.assertEqual(
+                        sorted(here), sorted(walked(walk, below)),
+                        f"{name} reads {sorted(walked(walk, below))} below a folder named work and "
+                        f"{sorted(here)} in an ordinary folder")
+                    # A floor of its own: a walk that read nothing would match itself in both places.
+                    self.assertIn(expected, here, f"{name} did not find {expected} in an ordinary folder")
+                    self.assertIn(expected, walked(walk, below),
+                                  f"{name} did not find {expected} below a folder named work")
+
+    def test_the_persons_own_files_are_skipped_in_both_places(self):
+        with tempfile.TemporaryDirectory() as scratch:
+            for where in self.checkouts(scratch):
+                for name, (walk, _) in WALKERS.items():
+                    with self.subTest(walk=name, where=where.name):
+                        names = walked(walk, where)
+                        self.assertNotIn("notes.md", names,
+                                         f"{name} read work/notes.md as the project's own in {where}")
+                        # A picture under work/ is the case test_image_files.py has to prune by folder.
+                        self.assertNotIn("demo.jpg", names,
+                                         f"{name} read work/photos/demo.jpg as the project's own in {where}")
+
+    def test_the_shape_this_case_was_written_for_is_caught(self):
+        """A walk pruning absolute parts reads nothing below `work`, which is what this case pins."""
+        def absolute_parts_walk(root):
+            names = set()
+            for path in Path(root).rglob("*"):
+                if not {"work"}.intersection(path.parts):
+                    names.add(path.name)
+            return names
+
+        with tempfile.TemporaryDirectory() as scratch:
+            plain, below = self.checkouts(scratch)
+            self.assertIn("README.md", walked(absolute_parts_walk, plain))
+            self.assertEqual(set(), walked(absolute_parts_walk, below),
+                             f"the fixture does not sit below a folder named work: {below}")
+            self.assertNotEqual(
+                sorted(walked(absolute_parts_walk, plain)), sorted(walked(absolute_parts_walk, below)),
+                "the comparison above cannot tell the two checkouts apart, so it would pass any walk")
 
 
 if __name__ == "__main__":

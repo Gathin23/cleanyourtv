@@ -51,11 +51,12 @@ def problems(text):
     return found
 
 
-def pages():
-    for path in sorted(ROOT.rglob("*")):
+def pages(root=None):
+    root = ROOT if root is None else root
+    for path in sorted(root.rglob("*")):
         if path.suffix not in {".md", ".txt"} or not path.is_file():
             continue
-        if SKIP_DIRS & set(path.relative_to(ROOT).parts):
+        if SKIP_DIRS & set(path.relative_to(root).parts):
             continue
         yield path
 

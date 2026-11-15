@@ -57,10 +57,11 @@ def ignored_prefixes():
     return folders
 
 
-def file_names():
+def file_names(root=None):
+    root = ROOT if root is None else root
     names = set()
-    for path in ROOT.rglob("*"):
-        if not SKIP_DIRS.intersection(path.relative_to(ROOT).parts):
+    for path in root.rglob("*"):
+        if not SKIP_DIRS.intersection(path.relative_to(root).parts):
             names.add(path.name)
     return names
 
