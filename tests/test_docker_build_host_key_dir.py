@@ -41,10 +41,11 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+from tests.test_docker_build_first_run import stub_python  # the stand-in's shebang, judged in one place
 
 ROOT = Path(__file__).resolve().parents[1]
 SH = ROOT / "tools" / "docker-build.sh"
@@ -74,7 +75,7 @@ class Repository:
         self.bin.mkdir()
         self.log = self.folder / "docker.log"
         stub = self.bin / "docker"
-        stub.write_text(STUB.format(python=sys.executable), encoding="utf-8")
+        stub.write_text(STUB.format(python=stub_python()), encoding="utf-8")
         stub.chmod(0o755)
 
     def run(self, **env):
