@@ -12,6 +12,7 @@
     <string-array name="settings_fallback_components" translatable="false">
         <item>com.xiaomi.mitv.settings/com.xiaomi.mitv.settings.entry.MainActivity</item>
         <item>com.tcl.settings/com.tcl.settings.ui.MainActivity</item>
+        <item>com.tcl.settings/com.tcl.settings.MainActivity</item>
         <item>com.amazon.tv.launcher/com.amazon.tv.launcher.ui.MainSettingsActivity</item>
     </string-array>
 
