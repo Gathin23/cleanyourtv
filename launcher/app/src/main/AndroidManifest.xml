@@ -68,6 +68,8 @@
         <!-- Coocaa OS sources for the Inputs menu (coocaa_sources); see CoocaaSources. -->
         <provider android:authorities="com.skyworth.tv.provider" />
         <provider android:authorities="com.skyworth.tv.sdk.provider" />
+        <!-- weather_line: the Weather add-on's one-line reading (WeatherLine). -->
+        <provider android:authorities="io.github.sumyabazar1.weather.now" />
     </queries>
 
     <application

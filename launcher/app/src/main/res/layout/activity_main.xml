@@ -322,6 +322,25 @@
                 android:focusable="false"
                 android:visibility="gone" />
 
+            <!-- Shown only when weather_line is on and the Weather add-on has a reading. Under the stats line, or
+                 under the clock when that is gone. -->
+            <TextView
+                android:id="@+id/weather"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/stats"
+                android:layout_alignStart="@id/leftBlock"
+                android:gravity="left"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#E6FFFFFF"
+                android:textSize="17sp"
+                android:fontFamily="@string/font_medium"
+                android:letterSpacing="0.02"
+                android:focusable="false"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"

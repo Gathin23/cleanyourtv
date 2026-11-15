@@ -337,6 +337,26 @@
                 android:focusable="false"
                 android:visibility="gone" />
 
+            <!-- Shown only when weather_line is on and the Weather add-on has a reading. -->
+            <TextView
+                android:id="@+id/weather"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/stats"
+                android:layout_alignStart="@id/leftBlock"
+                android:layout_alignEnd="@id/leftBlock"
+                android:gravity="right"
+                android:textDirection="rtl"
+                android:layout_marginEnd="6dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#E6FFFFFF"
+                android:textSize="17sp"
+                android:fontFamily="@string/font_medium"
+                android:focusable="false"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/topButtons"
                 android:layout_width="wrap_content"

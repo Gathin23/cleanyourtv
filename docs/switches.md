@@ -67,6 +67,7 @@ rule sit on its wanted list until a screenshot arrives.
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
 | `inputs_cec_state_only` | <img src="switches/inputs_cec_state_only.jpg" width="320" alt="inputs_cec_state_only: Steam Deck · HDMI 1 Connected, the bare HDMI 2 with no state, on a TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |
+| `weather_line` | <img src="switches/weather_line.jpg" width="320" alt="weather_line: 31°, partly cloudy, high 56° and low 31° under the clock on a TV"> |
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
 | `clock_format` | <img src="switches/clock_format.jpg" width="320" alt="clock_format on a TV"> |
 | `glow_snap` | <img src="switches/glow_snap.jpg" width="320" alt="glow_snap on a TV: the glow in Netflix red behind the dock"> |

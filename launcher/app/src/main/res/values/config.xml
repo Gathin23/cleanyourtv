@@ -485,6 +485,12 @@
          online. A theme can set "game_day". -->
     <string name="game_day" translatable="false"></string>
 
+    <!-- One line of weather under the clock ("48°  ☁  Cloudy  ·  H 55°  L 38°"), read from the Weather add-on
+         when Home comes back and every five minutes while it is on screen. The launcher itself
+         never goes online: the add-on fetches. Off by default; a theme can set "weather_line": true. Without
+         the add-on, or before a city is chosen in it, the line stays hidden. -->
+    <bool name="weather_line">false</bool>
+
     <!-- Time-of-day backdrop behind everything: a dark gradient that follows the clock, with a warm
          horizon glow around sunrise and sunset. 0 keeps the plain background (the default); 1 to 100
          sets its opacity. Around 60 reads clearly without hiding a wallpaper. Can also be set with

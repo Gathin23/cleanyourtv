@@ -197,6 +197,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean lunar;
     private int lunarOffset;
     private TextView stats;
+    /** config.xml weather_line: null when off. */
+    private WeatherLine weatherLine;
     private List<RaceWeekend.Race> raceCalendar;
     private View racePanel;
     private TextView raceKicker, raceHeadline, raceSessions;
@@ -590,6 +592,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         showStats = cfg.showStats;
         inputsConnectedOnly = cfg.inputsConnectedOnly;
         inputsCecStateOnly = cfg.inputsCecStateOnly;
+        if (cfg.weatherLine) weatherLine = new WeatherLine(this, findViewById(R.id.weather), this::refitGlassAfterLayout);
         shamsi = cfg.shamsiDate;
         lunarDate = findViewById(R.id.lunarDate);
         lunar = cfg.lunarDate;
@@ -1138,6 +1141,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         if (showStats) startStats();
         if (gameDay != null) gameDay.start();
+        if (weatherLine != null) weatherLine.start();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1323,6 +1327,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         startPending = null;   // leaving Home before the network came back: the boot's app stays closed
         stopStats();
         if (gameDay != null) gameDay.stop();
+        if (weatherLine != null) weatherLine.stop();
         handler.removeCallbacks(turnTick);
         if (lamp != null) lamp.stop();
         cancelPendingFocusScroll();
@@ -1812,6 +1817,20 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }, libraryExcludedApps);
         openPopup = appLibrary.popup;
         appLibrary.show();
+    }
+
+    /**
+     * The weather line appeared or went, so the grid moved: once it is laid out again, the glass and the top shelf
+     * follow the focused tile to its new place.
+     */
+    private void refitGlassAfterLayout() {
+        grid.post(() -> {
+            if (isDestroyed() || adapter.appCount() == 0) return;
+            int pos = Math.max(0, Math.min(lastFocused, adapter.appCount() - 1));
+            RecyclerView.ViewHolder vh = grid.findViewHolderForAdapterPosition(pos);
+            View card = vh == null ? null : vh.itemView.findViewById(R.id.card);
+            if (card != null && card.isFocused()) onTileFocused(pos, card);
+        });
     }
 
     @Override
