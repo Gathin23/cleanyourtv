@@ -40,6 +40,8 @@ CORE = [
     "com.google.android.modulemetadata", "com.android.modulemetadata",
     "com.google.android.overlay.modules.ext.services", "com.google.android.overlay.modules.permissioncontroller",
     "com.android.sdksandbox",
+    # The GMS build names the same sandbox this way; PackageManager crashed at boot without it (#3881).
+    "com.google.android.sdksandbox",
     # A TCL 43S5400A boot-looped into recovery with this one off (#2803).
     "com.android.location.fused",
     "com.android.systemui", "com.android.shell", "com.android.phone",
@@ -64,7 +66,7 @@ NOT_CORE = [
     # Only the exact SDK sandbox is protected for #2557; the other reported modules stay allowed.
     "com.android.adservices.api", "com.android.ondevicepersonalization.services",
     "com.android.federatedcompute.services", "com.android.sdksandbox.overlay",
-    "com.android.sdksandbox2", "com.example.sdksandbox",
+    "com.android.sdksandbox2", "com.example.sdksandbox", "com.google.android.sdksandbox.overlay",
     # Only the exact fused location package is protected for #2803.
     "com.android.location.fused.overlay", "com.google.android.location.fused",
 ]
