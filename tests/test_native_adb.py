@@ -98,8 +98,13 @@ if operation == 'get-state':
     print(os.environ.get('FAKE_ADB_STATE', 'device'))
 elif operation == 'shell':
     if os.environ.get('FAKE_ADB_RUN_SHELL'):
-        result = subprocess.run(args[-1], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        sys.stdout.buffer.write(result.stdout)
+        # The TV's own folder is a folder on this machine, and its shell only knows the TV's paths,
+        # so both the command and the words it prints are translated: see test_b64push_atomic's
+        # note on why a stand-in cannot simply be handed the temp path.
+        command = args[-1].replace(os.environ['FAKE_ADB_TV_DIR'], os.environ['FAKE_ADB_TV_ROOT'])
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        sys.stdout.buffer.write(result.stdout.replace(os.environ['FAKE_ADB_TV_ROOT'].encode(),
+                                                      os.environ['FAKE_ADB_TV_DIR'].encode()))
     else:
         print('remote output\nremote stderr')
 elif operation == 'pull':
@@ -162,22 +167,26 @@ elif operation == 'pull':
         # checksums and rename through the fake ADB executable against temporary files.
         with tempfile.TemporaryDirectory(prefix="native-b64-") as folder:
             source = Path(folder) / "source.apk"
-            target = Path(folder) / "target.apk"
+            copied = Path(folder) / "target.apk"
+            target = "/data/local/tmp/target.apk"
             data = bytes(range(256)) * 40
             source.write_bytes(data)
-            target.write_bytes(b"old content")
+            copied.write_bytes(b"old content")
             spec = importlib.util.spec_from_file_location("native_b64_test", ROOT / "tools" / "b64push.py")
             uploader = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(uploader)
             with mock.patch.dict(sys.modules, {"tv": self.tv}), \
-                    mock.patch.dict(os.environ, {"FAKE_ADB_RUN_SHELL": "1"}), \
-                    mock.patch.object(sys, "argv", ["b64push.py", str(source), str(target)]), \
+                    mock.patch.dict(os.environ, {"FAKE_ADB_RUN_SHELL": "1",
+                                                 "FAKE_ADB_TV_DIR": "/data/local/tmp",
+                                                 "FAKE_ADB_TV_ROOT": folder}), \
+                    mock.patch.object(sys, "argv", ["b64push.py", str(source), target]), \
                     mock.patch.object(sys, "path", list(sys.path)), \
                     contextlib.redirect_stdout(io.StringIO()) as output:
                 self.assertEqual(uploader.main(), 0)
-            self.assertEqual(target.read_bytes(), data)
+            self.assertEqual(copied.read_bytes(), data)
             self.assertIn("MATCH", output.getvalue())
-            self.assertFalse(Path(str(target) + ".part").exists())
+            self.assertEqual(sorted(p.name for p in Path(folder).iterdir()), ["source.apk", "target.apk"],
+                             "the staging names are cleaned up")
             chunks = [c for c in self.calls() if c[2] == "shell" and "&& echo ok" in c[-1]]
             self.assertGreater(len(chunks), 1)
             self.assertTrue(all(len(c[-1]) < 8192 for c in chunks))

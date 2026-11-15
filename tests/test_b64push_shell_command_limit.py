@@ -33,16 +33,24 @@ SPEC.loader.exec_module(push)
 # 49,200 bytes went through, 57,000 did not.
 NEGOTIATED_PAYLOAD = 65536
 COMMAND_CEILING = 50000
+# The folder the TV's side names. tools/b64push.py refuses a remote path outside [A-Za-z0-9._/-] (it is
+# pasted into the TV's shell), so the stand-in below cannot be handed the test's temp path: TMPDIR may
+# name a folder with a space or a character outside that set, and then every case here went red for a
+# reason about the temp folder and not about the tool. The stand-in maps the TV's folder onto the temp
+# one instead, which is also the shape a real target has.
+TV_DIR = "/data/local/tmp"
 
 
 class CommandLimitedDevice:
     """A TV whose adbd stops answering a shell command over `command_ceiling` bytes.
 
     `max_shell_command_size` is left out unless a test states it, the way adb_shell's device object
-    carries no such attribute and the native adapter does.
+    carries no such attribute and the native adapter does. `root` is the folder standing in for the
+    TV's own, and the commands it runs write there.
     """
 
     command_ceiling = COMMAND_CEILING
+    root: Path | None = None
 
     def __init__(self, max_chunk_size=NEGOTIATED_PAYLOAD, max_shell_command_size=None):
         self.max_chunk_size = max_chunk_size
@@ -59,7 +67,11 @@ class CommandLimitedDevice:
             # the 60.0 seconds the chunk sends with.
             raise TimeoutError(f"Reading from <tv ip>:5555 timed out ({read_timeout_s} seconds); "
                                f"the command was {length} bytes")
-        return subprocess.run(["/bin/sh", "-c", command], capture_output=True, text=True).stdout
+        assert self.root is not None, "a case must say which folder stands in for the TV's"
+        on_this_machine = command.replace(TV_DIR, str(self.root))
+        out = subprocess.run(["/bin/sh", "-c", on_this_machine], capture_output=True, text=True).stdout
+        # The TV's shell only knows the TV's paths, so its own words name those.
+        return out.replace(str(self.root), TV_DIR)
 
     def close(self):
         self.closed = True
@@ -72,13 +84,14 @@ class ShellCommandBudgetTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             local = Path(tmp) / "source.bin"
             local.write_bytes(data)
-            remote = str(Path(tmp) / remote) if not remote.startswith("/") else remote
+            device.root = Path(tmp)
+            remote = remote if remote.startswith("/") else f"{TV_DIR}/{remote}"
             with mock.patch.object(sys, "argv", ["b64push.py", str(local), remote]), \
                     mock.patch.dict(sys.modules, {"tv": types.SimpleNamespace(connect=lambda: device)}), \
                     contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
                 code = push.main()
             try:
-                copied = Path(remote).read_bytes() if Path(remote).is_file() else None
+                copied = Path(remote.replace(TV_DIR, str(Path(tmp)))).read_bytes()
             except OSError:
                 # A path long enough to be refused as an argument is also long enough for the OS to
                 # refuse to stat it, and a refusal is the case where nothing was written.
