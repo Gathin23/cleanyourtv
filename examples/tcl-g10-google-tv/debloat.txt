@@ -86,6 +86,29 @@
 # it being measured here. Power-on lands on the new Home by itself (no power_on_home needed).
 # AdGuard Private DNS worked there.
 #
+# Also used on a TCL 55QM5K, US (product G10_4K_US_NF, build STT2.230203.001, incremental AS50,
+# like the C6KS). Tested on 2026-11-12 for one session with one reboot check, not yet lived with
+# for several days. Every package of this list is installed on it (nothing to skip), and it also
+# ships the extras in the last optional block below: com.tcl.hotelmenu, com.roku.web.trc and US
+# streaming preloads (Hulu, Disney+, Peacock, Paramount+, Max, Tubi, Pluto TV, Spotify, FOX ONE,
+# YouTube TV). As on the 43P69K, Samba TV ACR and logkit shipped enabled and were disabled; ttvs
+# was kept: on this firmware it hosts TCL's firmware updater (versionUpdateApp, checked with
+# `dumpsys package com.tcl.ttvs`), so it is not "just analytics" on every unit. The saved setup
+# Wi-Fi belonged to setupwraith: forgotten and re-joined in Settings first, after which disabling
+# setupwraith kept Wi-Fi. Phone casting still worked with the wizard off on this unit (unlike the
+# #3446 report above), and AirPlay was verified too. Its remote is a Bluetooth BT_RC923A whose
+# app and gear buttons send Linux scancodes, not keycodes: gear 233, Netflix 242, YouTube 245,
+# Prime Video 752, Live TV 365, plus Apple TV 652, TCL TV 345 and Disney+ 762. All dead once
+# launcherx is off; this folder's config.json maps them with app_keys "scan:..." entries (read it
+# with tools/theme.sh). One key does not go through a config.json: the gear's scancode array
+# settings_key_scancodes is config.xml-only, so put <item>233</item> into
+# launcher/app/src/main/res/values/config.xml before building. With INPUT_KEY_SERVICE=1 and
+# HOME_KEY_SERVICE=1 the mapped buttons worked from the real remote, and held volume stepped once
+# per press (see the 55Q6CS note); the owner accepted the trade. TclAppBoot needs APP_AUTO_START
+# for the key services (appops set com.gathin.tvhome APP_AUTO_START allow, then
+# appops write-settings); it held across the reboot. Power-on lands on the new Home by itself
+# (no power_on_home needed).
+#
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-g10-google-tv/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/tcl-g10-google-tv/debloat.txt com.google.android.apps.tv.launcherx
 # Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
@@ -206,3 +229,18 @@ com.google.android.apps.tv.dreamx      # ambient mode screensaver, see quirks ab
 # fr.tf1.mytf1                           # TF1+
 # fr.m6.m6replay                         # M6+
 # tv.wuaki.apptv                         # Rakuten TV
+
+# Extras the US 55QM5K ships, off on that unit (uncomment what you don't use; its owner also
+# disabled the optional streaming lines above, then re-enabled Peacock, Paramount+ and Prime Video):
+# com.tcl.hotelmenu                      # hotel-mode portal
+# com.roku.web.trc                       # Roku ad-engagement SDK left on this TCL
+# com.hulu.livingroomplus                # Hulu
+# com.disney.disneyplus                  # Disney+
+# com.peacocktv.peacockandroid           # Peacock
+# com.cbs.ott                            # Paramount+
+# com.wbd.stream                         # Max
+# com.tubitv                             # Tubi
+# tv.pluto.android                       # Pluto TV
+# com.spotify.tv.android                 # Spotify
+# com.fox.foxone                         # FOX ONE
+# com.google.android.youtube.tvunplugged # YouTube TV, the live service
