@@ -3,6 +3,7 @@ import importlib.util
 import contextlib
 import io
 import os
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -333,6 +334,22 @@ class PrepareTest(unittest.TestCase):
             make_photo(src / "c.png", colour=(10, 20, 30))
             self.assertEqual(prep.main([str(src), str(out)]), 0)
             self.assertEqual(sorted(os.listdir(out)), ["01.jpg", "03.jpg"])
+
+    def test_a_photo_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        with tempfile.TemporaryDirectory() as d:
+            src, out = Path(d, "src"), Path(d, "out")
+            src.mkdir()
+            make_photo(src / "a.png")
+            make_photo(src / "b-\u5199\u771f.png")
+            raw = io.BytesIO()
+            console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+            real_stdout = sys.stdout
+            self.addCleanup(setattr, sys, "stdout", real_stdout)
+            sys.stdout = console
+            self.assertEqual(prep.main([str(src), str(out), "--size", "32x18"]), 0)
+            console.flush()
+            self.assertEqual(sorted(os.listdir(out)), ["01.jpg", "02.jpg"])
+            self.assertIn("02.jpg  <- b-??.png", raw.getvalue().decode("cp1252"))
 
     def test_empty_folder_exits_with_a_message(self):
         with tempfile.TemporaryDirectory() as d:
