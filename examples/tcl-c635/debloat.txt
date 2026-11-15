@@ -1,5 +1,6 @@
 # TCL C635 (reports as "Smart TV Pro", device BeyondTV4, product BeyondTV6, board rtd288o),
 # Android TV 11 (API 30), sold in Brazil. Same platform family as the TCL 43P725 / 50C725K.
+# Second unit: TCL 55C635i, build RP1A.200622.001 release-keys / AR11 (BeyondTV4-user 11).
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/tcl-c635/debloat.txt
 #          (or on Windows: tools\disable.ps1 -TvHost <tv ip> examples\tcl-c635\debloat.txt)
@@ -19,17 +20,60 @@
 #   arrived pre-disabled at factory.
 # - Reboot-checked: the disabled set persists across restart.
 #
+# Second unit (TCL 55C635i, build RP1A.200622.001 / AR11):
+# - Verified Home persistence: cmd package set-home-activity persists across reboots on this
+#   build once com.google.android.tungsten.setupwraith is disabled alongside launcherx (both
+#   commented out below; uncomment once this repo's launcher is installed).
+# - Disabling voice assistants (katniss, assistant) is safe if you don't use voice search
+#   (commented out below as optional choices).
+# - 12 additional candidate packages tested on this unit are commented out at the bottom
+#   (ttvs is the updater on some TCL sets, so left commented out for second-unit users).
+#
 # --- The critical entry: TCL re-enables promo packages on reboot
 com.tcl.overseasappshow                 # factory promo/app-show service, re-enables partner packages
+
+# --- TCL telemetry, analytics, and background services
 com.tcl.bi                              # TCL analytics & telemetry (BI service)
 com.tcl.logkit                          # TCL log collection
+
+# --- Promo feeds and partner attribution
 com.tcl.waterfall.overseas              # TCL recommendation waterfall feed
 com.tcl.channelplus                     # TCL FAST streaming channels
 com.tcl.partnercustomizer               # partner customization/attribution
 com.google.android.partnersetup         # partner app attribution
+
+# --- Stock apps and retail demo overlays
 com.tcl.browser                         # stock TCL web browser
 com.tcl.gallery                         # stock TCL gallery/media
 com.tcl.esticker                        # retail demo energy-label overlay
 com.tcl.ocean.instructions              # first-run instructions overlay
 com.tcl.useragreement                   # user agreement onboarding screen
 com.tcl.factory.view                    # factory test/demo shortcut
+
+# --- Second unit candidates (tested on TCL 55C635i, uncomment to apply)
+# Note: com.tcl.ttvs is the firmware/TV service updater on some TCL sets; keep enabled if you want OTA.
+#com.tcl.ttvs                            # TCL TV service & remote key BI logging (firmware updater on some sets)
+#com.tcl.dashboard                       # TCL dashboard overlay
+#com.tcl.messagebox                      # TCL notification/message box popup service
+#com.tcl.guard                           # TCL safety guard / system manager
+#com.tcl.smartalexa                      # TCL Alexa integration service
+#com.tcl.hearaid                         # TCL hearing aid service
+#com.tcl.usercenter                      # TCL user center / account service
+#com.google.android.apps.nbu.smartconnect.tv # Google Next Billion Users Smart Connect
+#com.google.android.feedback             # Google crash and feedback reporting
+#com.google.android.onetimeinitializer   # Google one-time initialization
+#com.google.android.syncadapters.calendar # Google Calendar sync adapter
+#com.google.android.marvin.talkback      # TalkBack screen reader
+
+# --- Stock Google TV Home and Setup Wizard
+# Second unit: disabling setupwraith alongside launcherx allows set-home-activity to persist across reboots.
+# Commented out by default to leave stock launcher as fallback; uncomment once this repo's launcher is installed:
+#com.google.android.apps.tv.launcherx    # stock Google TV launcher
+#com.google.android.tungsten.setupwraith # Google TV setup wizard
+
+# --- Voice assistants
+# Commented out by default; uncomment if you do not use voice search:
+#com.google.android.katniss              # Google Assistant voice search
+#com.tcl.assistant                       # TCL voice assistant service
+#com.tcl.micmanager                      # TCL remote microphone manager
+#com.google.android.tv.assistant         # Google Assistant TV wrapper
