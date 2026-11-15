@@ -282,6 +282,21 @@ class CompareTest(unittest.TestCase):
                 self.assertNotIn("Traceback", err.getvalue())
                 self.assertEqual(out.getvalue(), "")
 
+    def test_an_out_name_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        a, b = self.shot("a.png"), self.shot("b.png")
+        out = Path(self.tmp.name) / ("sd_" + chr(0x5199) + ".png")
+        raw = io.BytesIO()
+        console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+        real_stdout = sys.stdout
+        self.addCleanup(setattr, sys, "stdout", real_stdout)
+        sys.stdout = console
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            code = screendiff.main([a, b, "--out", str(out)])
+        console.flush()
+        self.assertEqual(code, 0, err.getvalue())
+        self.assertTrue(out.is_file())
+        self.assertIn("sd_?.png: written", raw.getvalue().decode("cp1252"))
+
     def test_a_pair_that_reads_is_still_compared(self):
         """The decode is not allowed to swallow the comparison it guards."""
         a, b = self.shot("a.png", "12:00"), self.shot("b.png", "12:01")

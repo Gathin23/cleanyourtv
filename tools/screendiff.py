@@ -190,6 +190,12 @@ def parse(argv):
 
 
 def main(argv=None):
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     args = parse(sys.argv[1:] if argv is None else argv)
     used = [("the before screenshot", Path(args.before)), ("the after screenshot", Path(args.after))]
     for option, path in (("--out", args.out), ("--diff", args.diff)):
