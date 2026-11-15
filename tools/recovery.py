@@ -4,6 +4,7 @@
     recovery.py --save <debloat list>                read the TV and write the record
     recovery.py --commands <list> [stock launcher]   print a batch for tools/tv.py --batch that puts
                                                      the recorded states back
+    recovery.py --help                               this text; needs no TV
 
 Both read the record for this TV and list, and the record is one file per TV and list named after
 the address the TV was reached at, so both need TV_HOST. `--commands` asks the TV nothing: it needs
@@ -25,9 +26,9 @@ record a package that was absent then and is installed and enabled now as enable
 
 Exit codes: 2 is a run that never asked the TV anything - no TV_HOST, a checkout without tools/venv,
 or a TV that was not reached - and it prints tv.py's own sentence before it stops; 0 the record was
-written, or kept as it was; 1 anything else that stopped the run, such as a save that read the TV and
-then failed, or a list or stock launcher name --commands refuses. disable.sh stops on any non-zero:
-no record, nothing disabled.
+written, or kept as it was, or --help printed this text; 1 anything else that stopped the run, such
+as a save that read the TV and then failed, or a list or stock launcher name --commands refuses.
+disable.sh stops on any non-zero: no record, nothing disabled.
 """
 import hashlib
 import ipaddress
@@ -679,6 +680,16 @@ NO_ADDRESS = ("The record is one file per TV and list, named after the address t
 
 def main():
     args = sys.argv[1:]
+    # -h/--help is a reader asking what the tool does, not a command line it cannot use: the other
+    # tools in tools/ answer it at 0 with the note on stdout (adb-closed.py is the exception, and
+    # tests/test_adb_closed_address_words.py pins why). This one printed the two usage lines on
+    # stderr and returned 2 - the status above is "a run that never asked the TV anything" - so
+    # `tools/recovery.py --help | less` showed nothing, and the paragraph on why the record is one
+    # file per address, which is what makes a restore put back what was there, was never printed by
+    # the command a reader asks.
+    if args[:1] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        return 0
     host = os.environ.get("TV_HOST", "")
     if len(args) == 2 and args[0] == "--save":
         return save(args[1], host)

@@ -2,10 +2,12 @@
 """Check that a Philips TV's JointSpace control API still answers, before and after a debloat.
 
     philips-api.py [tv ip]      the IP defaults to TV_HOST
+    philips-api.py --help       this text; needs no TV
 
-Exits 0 when the API answers; 1 when a port answered and it is not the JointSpace API (the package to
-check is named); and 2 when this run could not tell - nothing answered on either port, so the TV may be
-off, asleep, at another address or out of reach from here - or the command line was not one address:
+Exits 0 when the API answers, or when --help printed this text; 1 when a port answered and it is not
+the JointSpace API (the package to check is named); and 2 when this run could not tell - nothing
+answered on either port, so the TV may be off, asleep, at another address or out of reach from here -
+or the command line was not one address:
 a URL; an address carrying a port of its own; one whose colon has nothing after it, or something that
 is not a port number; or an IPv6 written without its brackets. The two ports this asks are the ones
 below, and they go after an address and nothing else.
@@ -183,6 +185,15 @@ def address_problem(host):
 
 def main(argv):
     args = argv[1:]
+    # -h/--help is a reader asking what the tool does, not an address it cannot use: the other tools
+    # in tools/ answer it at 0 with the note on stdout (adb-closed.py is the exception, pinned by
+    # tests/test_adb_closed_address_words.py). This one read `--help` as a host, found a leading dash
+    # and printed the second paragraph of this note on stderr with 2 - the status above for "this run
+    # could not tell" - so `tools/philips-api.py --help | less` showed nothing, and neither the exit
+    # codes nor the 1926-versus-1925 paragraph reached the reader who asked.
+    if args[:1] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        return 0
     host = args[0] if args else os.environ.get("TV_HOST", "")
     if len(args) > 1 or not host or host.startswith("-"):
         print(__doc__.split("\n\n")[1], file=sys.stderr)
