@@ -13,7 +13,10 @@ R3 Ultra (Android 11), a CVTE SMART_TV (Android 12) and a MIBOX4 list both, inst
 The TV middleware is guarded the same way: com.cltv.mal (MediaTek's MAL), com.mediatek.tis, tv.service and
 tv.agent. A Haier H50H5F restarted in a loop after a debloat with com.cltv.mal off (#1578).
 
-The PowerShell case needs `pwsh` on PATH and skips without it; CI's Ubuntu runner has it.
+The PowerShell case needs `pwsh` on PATH and skips without it; CI's Ubuntu runner has it. It reads the
+refusal past the error view `throw` is rendered as - colour, and a `|` gutter on each wrapped line - with
+`packed()`, because where that wrap falls follows the length of the path in the message rather than
+anything the script did.
 """
 import os
 from pathlib import Path
@@ -65,6 +68,25 @@ NOT_CORE = [
     # Only the exact fused location package is protected for #2803.
     "com.android.location.fused.overlay", "com.google.android.location.fused",
 ]
+
+
+# PowerShell renders a `throw` as an error view rather than as a plain line: ANSI colour on a terminal,
+# and the message wrapped at the console width with a `|` gutter down its continuation lines.
+ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+
+
+def packed(text):
+    """A PowerShell refusal as one line of words, so an assertion reads what the script said.
+
+    Taking out the whitespace alone joins a wrapped message only while no escape sequence and no gutter
+    sits across the break, so whether "android.ext.services, android.ext.shared" reads as one string
+    depends on where the wrap falls - and that follows the length of the path inside the message, i.e.
+    of the temp directory. Temp directories 26 to 47 characters long in this checkout put the second
+    name on the next line and failed the case while `disable.ps1` was refusing exactly as it should; a
+    short `/tmp`, which is what CI has, kept both on one line and went green. The escapes and the gutter
+    go first here, so the words are all that is left to compare.
+    """
+    return re.sub(r"\s+|[|│]", "", ANSI.sub("", text))
 
 
 def script_pattern(path, regex):
@@ -155,10 +177,11 @@ class CorePackagesTest(unittest.TestCase):
             output = result.stdout + result.stderr
             self.assertNotEqual(0, result.returncode, output)
             # PowerShell's error view can wrap a long message at the console width, so the names are
-            # looked for with every whitespace taken out.
-            packed = re.sub(r"\s+", "", output)
-            self.assertIn("#884", packed)
-            self.assertIn("android.ext.services,android.ext.shared", packed)
+            # looked for with every whitespace taken out - and with the colour and the gutter the wrap
+            # adds taken out first, since those sit across the break when the wrap falls there.
+            refusal = packed(output)
+            self.assertIn("#884", refusal)
+            self.assertIn("android.ext.services,android.ext.shared", refusal)
             self.assertFalse(touched.exists(), "the TV was contacted before the refusal")
 
     def test_check_py_refuses_the_bare_names_before_connecting(self):
@@ -234,7 +257,7 @@ class CorePackagesTest(unittest.TestCase):
             else:
                 self.assertNotEqual(result.returncode, 0, output)
             self.assertIn("refusing", output)
-            self.assertIn("com.android.sdksandbox", re.sub(r"\s+", "", output))
+            self.assertIn("com.android.sdksandbox", packed(output))
             self.assertFalse(touched.exists(), "the core guard must run before the transport")
 
     def test_sdk_sandbox_disable_sh_refuses_with_all_overrides(self):
@@ -248,6 +271,29 @@ class CorePackagesTest(unittest.TestCase):
 
     def test_sdk_sandbox_check_fix_refuses_before_connecting(self):
         self.assert_sdk_sandbox_preflight("check.py", fix=True)
+
+
+class TheErrorViewTest(unittest.TestCase):
+    """packed() reads a refusal the way pwsh renders it, so a wrap is not read as a different message."""
+
+    def test_a_coloured_refusal_wrapped_between_the_names_still_reads_as_one_string(self):
+        rendered = ("\x1b[31;1mException: \x1b[0mtools/disable.ps1:69\x1b[0m\n"
+                    "\x1b[36;1m     | \x1b[0mrefusing debloat.txt: it disables core Android packages\n"
+                    "\x1b[36;1m     | \x1b[0mboot again (#884, #1578): android.ext.services,\x1b[0m\n"
+                    "\x1b[36;1m     | \x1b[0m\x1b[31;1mandroid.ext.shared\x1b[0m. Take these lines out\n")
+        self.assertIn("android.ext.services,android.ext.shared", packed(rendered))
+        self.assertIn("#884", packed(rendered))
+
+    def test_the_gutter_alone_is_taken_out_like_the_colour_was(self):
+        wrapped = ("refusing debloat.txt: (#884): android.ext.services,\n"
+                   "     | android.ext.shared. Take these lines out of the list\n")
+        self.assertIn("android.ext.services,android.ext.shared", packed(wrapped))
+
+    def test_the_words_keep_their_own_punctuation(self):
+        # Only the rendering goes: a name that loses its dots would join the next word instead.
+        self.assertEqual("refusingdebloat.txt:(#884,#1578):android.ext.services,android.ext.shared.",
+                         packed("refusing debloat.txt: (#884, #1578): android.ext.services, "
+                                "android.ext.shared.\n"))
 
 
 if __name__ == "__main__":
