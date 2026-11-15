@@ -1,0 +1,6 @@
+{
+  "tv": "Master-G 2K Smart TV (KTC mountbaker, KTC_MASTER_G_2K_SA_22GV1), Chile",
+  "os": "Google TV (Android 14, SDK 34)",
+  "brand": "Master-G",
+  "notes": "Contributed by JordanFarias. Realtek rtd2841a board (fingerprint MASTER-G/KTC_MASTER_G_2K_SA_22GV1/mountbaker:14/UKR9.250818.041/14285169:user/release-keys). Disabled stock launcherx, setupwraith, Android 14 ad/ML services, electronic manual, Play Games and YouTube Music. Clock screensaver configured via com.gathin.tvhome/.ClockDream with sleep_timeout=0."
+}
