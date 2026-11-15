@@ -1,0 +1,56 @@
+# realme Smart TV (India, Skyworth-built SW4H, product SW4H_FF_realme, device SW4H_FF, MediaTek m7332),
+# Android TV 11 (API 30), firmware RTM5.220609.106, security patch 2023-10-06.
+# ro.product.model "realme Smart TV", manufacturer skyworth. armeabi-v7a, 1.7 GB RAM, 1920x1080 @ 320 dpi.
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/realme-smart-tv/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/realme-smart-tv/debloat.txt com.google.android.tvlauncher
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher:  com.google.android.tvlauncher (classic Android TV home, not Google TV launcherx)
+# Live TV app:     com.smartdevice.livetv (Skyworth Live TV / input OSD); inputs in com.mediatek.tvinput.
+# HOME claimants:  tvlauncher, com.google.android.tungsten.setupwraith (priority 4), Settings' FallbackHome.
+#                  setupwraith does NOT own the saved Wi-Fi network here (com.google.android.gms), but
+#                  it is kept anyway: nothing on this list needs it gone.
+# Updates:         no separate firmware-update package; updates live in Settings.
+#
+# Disabled at the factory, so not listed (restore.sh would turn them ON):
+# com.sky.market, com.smartdevice.dtv.icast, com.smartdevice.tvworkwithalexa.
+#
+# KEEP, even though the names look like bloat (checked on this TV with dumpsys package):
+# - com.mediatek.partner.netflix: KEEP ENABLED. Despite the name, this package handles remote hotkeys
+#   (KEYCODE_YOUTUBE, KEYCODE_PRIMEVIDEO, KEYCODE_APPS) via android.intent.action.GLOBAL_BUTTON.
+# - com.google.android.sss.authbridge and com.google.android.partnersetup: KEEP ENABLED. Required for
+#   Google Account token exchange when casting private media (e.g. Google Photos albums).
+# - com.google.android.tv.frameworkpackagestubs: kept enabled for TV framework stability.
+# - com.smartdevice.firewall, com.tianci.localmedia (USB media), com.google.android.backdrop,
+#   com.google.android.katniss (Assistant), com.google.android.apps.mediashell (Chromecast),
+#   com.google.android.tv.remote.service: kept.
+# - Every streaming / user app is kept and shows in the launcher grid.
+#
+# Ads, Recommendations & Preloads
+com.smartdevice.epopplayer
+fusion.android.tv.demo
+com.smartdevice.speedchannels
+com.smartdevice.acr.recommendation
+com.smartdevice.leanbacklauncher.customizer
+com.google.android.leanbacklauncher.partnercustomizer
+com.mediatek.wwtv.tvrecommendation
+com.google.android.tvrecommendations
+com.mstar.android.tv.disclaimercustomization
+com.google.android.boot.appsplashscreen
+
+# Telemetry & Unneeded System Extras
+com.google.android.feedback
+android.autoinstalls.config.SW
+com.homwee.howtocast
+com.qjy.browser
+com.google.android.videos
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.google.android.onetimeinitializer
+com.mediatek.wwtv.setupwizard
+com.onnet.systems.iptv.skypro
+
+# Stock Launcher (disabled once com.gathin.tvhome owns Home)
+com.spocky.projengmenu
+com.google.android.tvlauncher
