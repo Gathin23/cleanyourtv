@@ -495,6 +495,7 @@ Kodlash agenti orqali hissa qoʻshyapsizmi? [AGENTS.md](AGENTS.md) unga xuddi sh
 | **Launcher va prompt** | Launcher yaxshilanishlari va promptning aniqroq ifodalanishi ham mamnuniyat bilan qabul qilinadi. |
 | **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 243 ta loyiha allaqachon yashaydi. |
 | **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 240 ta loyiha allaqachon yashaydi. |
+| **Ustiga biror narsa qildingizmi?** | Launcher, port, mavzu: [SHOWCASE.md](SHOWCASE.md) ga qoʻshing; u yerda bosh ekranlar, fork lar, qoʻshimchalar, vositalar va boshqa platformalar boʻyicha tartiblangan, TV brendi boʻyicha indekslangan 244 ta loyiha allaqachon yashaydi. |
 
 Ishlari bu omborda joylashgan odamlar:
 

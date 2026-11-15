@@ -562,6 +562,7 @@ demandons. Vous contribuez par l'intermédiaire d'un agent de code ? [AGENTS.md]
 | **Launcher et prompt** | Les améliorations du launcher et une formulation plus précise du prompt sont aussi les bienvenues. |
 | **Vous avez construit quelque chose par-dessus ?** | Un launcher, un portage, un thème : ajoutez-le à [SHOWCASE.md](SHOWCASE.md), qui rassemble déjà 243 projets, classés en écrans d'accueil, forks, add-ons, outils et autres plateformes, avec un index par marque de téléviseur. |
 | **Vous avez construit quelque chose par-dessus ?** | Un launcher, un portage, un thème : ajoutez-le à [SHOWCASE.md](SHOWCASE.md), qui rassemble déjà 240 projets, classés en écrans d'accueil, forks, add-ons, outils et autres plateformes, avec un index par marque de téléviseur. |
+| **Vous avez construit quelque chose par-dessus ?** | Un launcher, un portage, un thème : ajoutez-le à [SHOWCASE.md](SHOWCASE.md), qui rassemble déjà 244 projets, classés en écrans d'accueil, forks, add-ons, outils et autres plateformes, avec un index par marque de téléviseur. |
 
 Les personnes dont le travail figure dans ce dépôt :
 
