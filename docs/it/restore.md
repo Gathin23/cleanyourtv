@@ -58,8 +58,15 @@ viene riattivato soltanto se lo era:
 
 ## Senza un record
 
-Senza un record (un'esecuzione più vecchia, oppure un record che hai cancellato) lo script lo dice e ripiega
-sulla riattivazione dell'intero elenco e sul ripristino delle velocità a `1.0`, che è ciò che faceva prima.
+Senza un record (un'esecuzione più vecchia, un record che hai cancellato, oppure una TV raggiunta a un nuovo
+indirizzo: un record è archiviato con l'indirizzo a cui è stato preso) lo script lo dice e ripiega sulla
+riattivazione dell'intero elenco e sul ripristino delle velocità a `1.0`, che è ciò che faceva prima.
+
+Un record per lo stesso elenco sotto un altro indirizzo viene nominato, con il suo file, prima che quel gruppo
+parta, perché è il caso in cui il ripiego riattiva pacchetti che avevi disattivato prima della pulizia: esegui
+invece il ripristino a quell'indirizzo, oppure sposta il record al nome che l'esecuzione stampa. Se l'altro
+indirizzo è una seconda TV che hai pulito con lo stesso elenco, i due record sono entrambi giusti e non c'è nulla
+di sbagliato.
 
 ## Cosa il ripristino lascia stare
 

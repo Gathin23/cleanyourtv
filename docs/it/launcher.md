@@ -125,8 +125,8 @@ tools/tv.py 'settings put secure screensaver_components com.gathin.tvhome/.Clock
 - Un prefisso `hold:` su una voce di `app_keys` dà a quel tasto una seconda app: una pressione normale apre l'app senza
   prefisso, tenendolo premuto mezzo secondo si apre quella con `hold:` (per codice del tasto o `hold:scan:...`). Una voce
   può nominare un'attività (`pacchetto/.Attivita`), come la barra rapida di un add-on, invece della voce di avvio
-  dell'app. Un prefisso `front:` stabilisce cosa apre un tocco mentre l'app di quel tasto è già in primo piano
-  (solo `HomeKeyService`).
+  dell'app. Un prefisso `front:` stabilisce cosa apre un tocco mentre l'app di quel tasto è già in primo piano.
+  Richiede `HomeKeyService` collegato (`HOME_KEY_SERVICE=1`); `InputKeyService` lo segue allora.
 - Al posto di un'app, una voce di `app_keys` può nominare un'azione: `back`, `home`, `recents`, `mute`, `sleep`
   (standby, Android 9 e successivi), `screensaver`, `settings`, `wifi`, `library` (Home con la libreria app aperta, per
   il tasto App di un telecomando; richiede `app_library`) oppure `ignore` (il tasto non fa nulla), così un tasto colorato
