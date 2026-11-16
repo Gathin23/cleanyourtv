@@ -599,3 +599,4 @@ Notes for models that have no tested list yet live in [`docs/devices/`](../docs/
 
 To add your TV, see [CONTRIBUTING.md](../CONTRIBUTING.md). The quickest way to get a list is to
 run the prompt in [PROMPT.md](../PROMPT.md) and copy the packages your assistant disabled.
+- [TCL 65P735 (Brazil), LF1V620](../docs/devices/tcl-65p735-br-lf1v620.md) (BeyondTV4, Android TV 11): Home override ignored and accessibility redirect tested on a local launcher derivative; stock Home still observed after reboot; no debloat list.
