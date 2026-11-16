@@ -1980,6 +1980,52 @@ two messages from colliding, the Switch 2's option to turn the TV on can be swit
 its own remote first. That avoidance comes from one capture, and no TAB5305 firmware fix was found. Not checked:
 other soundbars and consoles, and other TV boards.
 
+## Starting a Shield or a console does not turn the TV on (TCL)
+
+The TV stays off when a device on HDMI starts, even with T-Link (HDMI-CEC) on and the device set to turn the TV
+on. Once the TV is on, it still switches to that device's input. Seen on a TCL G08 ("Smart TV Pro", Google TV 14,
+`UTT2.250416.001`) with an NVIDIA Shield on HDMI 1 and a Steam Machine on HDMI 2, before and after the debloat.
+The TV hears the request and refuses it. `<Feature Abort>` here is the TV answering "refused", and
+`tv_wake_on_one_touch_play` reads `0`, which is this firmware's default:
+
+```sh
+tools/tv.py 'dumpsys hdmi_control' | grep -E "tv_wake_on_one_touch_play|Text View On|Image View On|Feature Abort" | tail -10
+#   tv_wake_on_one_touch_play (int): 0 (default: 0) [modifiable]
+#   [R] ... message=<Text View On> 40:0D
+#   [S] ... message=<Feature Abort> 04:00:0D:04 (ACK)
+```
+
+Turning it on is one setting, and it survives a restart:
+
+```sh
+tools/tv.py 'cmd hdmi_control cec_setting set tv_wake_on_one_touch_play 1'
+```
+
+This writes Android's own setting, `hdmi_control_auto_wakeup_enabled`. TCL also keeps a global setting of its own
+with the same name, `tv_wake_on_one_touch_play`, which still reads `0` afterwards. The T-Link menu shows every
+option, TV auto power on included, as on both before and after the change, so the menu does not reveal this
+setting. Nothing CEC-related was disabled; CEC on this set runs in `system_server` (`TclHdmiControlService`).
+To undo it, set it back to `0`. Three things came up on the same set once the TV was allowed to wake:
+
+- **The TV turns off, and every device sleeps, the moment the Shield is woken with its remote while the TV is
+  already on.** The Shield remote's IR control sends the TV's IR power code whenever a button press wakes the
+  Shield, Back included. The TV is already on, so the code toggles it off, and the TV then sends `<Standby>` to
+  everything. The log shows `powerPress ... Going to sleep due to power_button` half a second before the Shield's
+  `<Text View On>`. `getevent -lt` shows `KEY_POWER` arriving on `MTK Smart TV IR Receiver`, not on the TCL
+  Bluetooth remote. To fix it, turn off IR control in the Shield's remote settings. CEC turns the TV on and switches
+  the input without it.
+- **A console that wakes itself a few seconds after going to sleep now turns the TV back on each time.** The CEC
+  history shows the console sending `<Standby>`, then 5 to 30 seconds later announcing itself again with
+  `<Image View On>`, with no message from the TV in between. Before the change the TV refused that message, so
+  the loop went unnoticed. On the Steam Machine it was a SteamOS bug, fixed by an update. It is not a TV setting.
+- **`tv_send_standby_on_sleep 0` is not a way to stop the TV sleeping its devices.** On this firmware it also
+  makes the TV refuse an incoming `<Standby>` (`<Feature Abort> 08:00:36:00`), so the device going to sleep no
+  longer turns the TV off. Leave it at `1`.
+
+With these in place, a device that starts while another is on screen takes over the input, and the TV sends the
+first device `<Standby>` itself. Not checked: other TCL boards, and whether the Shield turns the TV off when it
+sleeps.
+
 ## Moonlight: two controllers both drive player 1, or a DualSense button opens the exit prompt
 
 With `HomeKeyService` bound (`HOME_KEY_SERVICE=1`) and filtering keys, Moonlight streaming from Sunshine on a
