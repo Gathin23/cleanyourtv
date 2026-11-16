@@ -24,6 +24,13 @@ USAGE = ("usage: readme_card.py [--halloween] <font.ttf> <out.jpg>\n"
          "  Fredoka, the variable TTF from Google Fonts, is not in this repo: download it and pass the\n"
          "  path of the file you saved.")
 
+# A reader asking what the script does, answered the way the rest of tools/ answers it (tv.py, privacy.py,
+# blocky_wallpapers.py): this file's own note on stdout and 0. Without this branch the word was read as the
+# font - the usage line went to stderr and the run returned 1, the status this file gives a run that wrote
+# nothing - so `tools/readme_card.py --help | less` showed nothing, and `--help && ...` looked like a
+# failed run.
+HELP = ("-h", "--help")
+
 
 def font_and_out(argv):
     """The font and the picture, or a usage line that says where the font comes from.
@@ -33,6 +40,9 @@ def font_and_out(argv):
     it wanted nor where to get it.
     """
     argv = [a for a in argv if a != "--halloween"]
+    if any(word in HELP for word in argv[1:]):
+        print((__doc__ or USAGE).strip())
+        sys.exit(0)
     if len(argv) != 3:
         sys.exit(USAGE)
     font, out = argv[1], argv[2]
