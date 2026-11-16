@@ -18,9 +18,9 @@ publishing needs that case (and its two strings) there too, and tests/test_race_
 until both sides name the same sessions.
 
 Exit status: 0 the calendar is in the theme, 1 the season has no race left to show, 2 this run could not do
-its job - the folder is not there (or was left empty), its config.json is not the JSON object a theme has (or
-cannot be read or written), --season is not a year, or the fetch failed - and says why on stderr. Nothing is
-written on 1 or 2: the theme stays as it was.
+its job - the folder is not there (or was left empty, or the filesystem cannot be asked about it at all),
+its config.json is not the JSON object a theme has (or cannot be read or written), --season is not a year,
+or the fetch failed - and says why on stderr. Nothing is written on 1 or 2: the theme stays as it was.
 """
 import argparse
 import datetime
@@ -162,7 +162,19 @@ def main():
     # that folder and put a calendar in it: the author then pushed, or debugged, a theme that is not the
     # one they meant. The config.json inside is still created for a folder that does exist.
     folder = Path(args.theme)
-    if not folder.is_dir():
+    # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a theme path whose name
+    # is longer than NAME_MAX, or one under a folder this user may not traverse, went straight past
+    # this check as a traceback with exit 1 - the code this script keeps for "no race left this
+    # season". Both are a run that could not do its job, which the docstring's 2 covers, and the
+    # sentence says the theme was left alone.
+    try:
+        is_folder = folder.is_dir()
+    except OSError as e:
+        return refuse(f"could not look at {args.theme} ({e.strerror or e}). Nothing was written: a "
+                      f"theme is a folder of its own under themes/, so check the path you passed - a "
+                      f"name too long for this filesystem, or a folder your user cannot open, is what "
+                      f"this run cannot read.")
+    if not is_folder:
         return refuse(f"there is no theme folder at {args.theme}. Nothing was written: a theme is a "
                       f"folder of its own under themes/, so check the name you passed - this run will not "
                       f"create one for you.")
