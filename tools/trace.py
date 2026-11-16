@@ -281,6 +281,12 @@ def client_python_or_exit():
 
 
 def main(argv=None):
+    # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     args = parse(sys.argv[1:] if argv is None else argv)
     # Imported only now, so --help and argument errors work without TV_HOST set.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
