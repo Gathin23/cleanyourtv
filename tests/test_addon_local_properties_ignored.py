@@ -23,13 +23,20 @@ ignore files differ in shape (`/local.properties`, `/**/build/`, a comment above
 spelling that keeps the file out is fine. The other half is the opposite mistake - a folder that
 ignores what it ships, which would leave a broken add-on in a fresh clone.
 
-Needs no TV, no Gradle and no Android SDK: the paths are judged by git and the folders are read.
+Needs no TV, no Gradle and no Android SDK: the paths are judged by git and the folders are read. It does
+need a git checkout: in a source tarball, or a tree exported with `git archive`, there is no index and no
+ignore rules to ask about, and the cases that read them skip with the reason rather than failing once per
+add-on and path.
 
 Run from the repository root: python3 -m unittest discover -s tests -v
 """
 from functools import lru_cache
+import os
 from pathlib import Path
+import shutil
 import subprocess
+import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,12 +48,39 @@ PROJECT_MARKERS = ("settings.gradle", "settings.gradle.kts", "gradlew")
 LOCAL_PROPERTIES = "local.properties"
 
 
-def git(*args):
-    """git's answer, or None when git is not installed (a source tarball has no .git)."""
+def git(*args, root=ROOT):
+    """git's answer for this checkout, or None when git is not installed at all.
+
+    A tree that is not a repository is a different case: git is there and answers 128, so callers that
+    cannot use the answer ask git_work_tree() first.
+    """
     try:
-        return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True)
+        return subprocess.run(["git", *args], cwd=str(root), capture_output=True, text=True)
     except (OSError, subprocess.SubprocessError):
         return None
+
+
+@lru_cache(maxsize=None)
+def git_work_tree(root=ROOT):
+    """True for a checkout git can answer for; SkipTest, with the reason, when it cannot.
+
+    `git check-ignore` exits 128 both for a tree git cannot read at all and for a pathspec it does not
+    understand, and this module wants the second to fail rather than pass. So the first is told apart
+    once, by asking git whether it is in a work tree: a source tarball, or a tree exported with
+    `git archive`, carries the add-ons' .gitignore files but has no index and no work tree, and nothing
+    can be asked about what git would ignore there. The other modules that read git's answer return None
+    for the tree and skip (tests/test_no_prebuilt_binaries.py's tracked(), test_tool_usage_commands.py's
+    tool_modes()); this one answered 128 with a failure for every add-on and every path - 297 of them in
+    an exported tree, which reads as a broken suite rather than as a checkout nothing can be asked about.
+    """
+    run = git("rev-parse", "--is-inside-work-tree", root=root)
+    if run is None:
+        raise unittest.SkipTest("git is not installed, so a folder's ignore rules cannot be read")
+    if run.returncode != 0 or run.stdout.strip() != "true":
+        raise unittest.SkipTest(
+            "this checkout is not a git repository, so the add-ons' ignore rules and the tracked files "
+            f"cannot be read (git said: {run.stderr.strip() or 'no answer'})")
+    return True
 
 
 def projects():
@@ -78,6 +112,7 @@ def ignore_lines(folder):
 
 class EveryAddonKeepsLocalPropertiesOut(unittest.TestCase):
     def test_every_addon_project_ignores_local_properties(self):
+        git_work_tree()
         missed = []
         for folder in projects():
             if not ignored(folder.name, LOCAL_PROPERTIES):
@@ -89,9 +124,9 @@ class EveryAddonKeepsLocalPropertiesOut(unittest.TestCase):
                                      "(the other add-ons keep it out): " + "; ".join(missed))
 
     def test_no_addon_has_a_local_properties_committed(self):
+        git_work_tree()
         run = git("ls-files", "--", "addons")
-        if run is None:
-            self.skipTest("git is not installed, so the tracked files cannot be listed")
+        self.assertIsNotNone(run, "git_work_tree() skips when git is not installed")
         self.assertEqual(0, run.returncode, run.stderr)
         committed = [line for line in run.stdout.splitlines()
                      if line.rsplit("/", 1)[-1] == LOCAL_PROPERTIES]
@@ -101,6 +136,7 @@ class EveryAddonKeepsLocalPropertiesOut(unittest.TestCase):
     def test_the_build_output_is_kept_out_too(self):
         # flock's .gitignore has no `app/build/` line and this still holds: `build/` matches at any
         # depth. The behaviour is what matters, not one spelling of it.
+        git_work_tree()
         for folder in projects():
             for relpath in (".gradle/file", "build/file", "app/build/outputs/apk/release/app-release.apk"):
                 with self.subTest(folder=folder.name, path=relpath):
@@ -109,6 +145,7 @@ class EveryAddonKeepsLocalPropertiesOut(unittest.TestCase):
 
     def test_a_project_does_not_ignore_what_it_ships(self):
         # The opposite mistake: a folder that ignores its own files is missing from a fresh clone.
+        git_work_tree()
         for folder in projects():
             shipped = ["README.md", "screenshot.jpg", "gradlew", "settings.gradle"]
             shipped += [p.name for p in (folder / "app").glob("build.gradle*")] if (folder / "app").is_dir() else []
@@ -131,6 +168,60 @@ class EveryAddonKeepsLocalPropertiesOut(unittest.TestCase):
                                                       "runs inside it)")
         self.assertIn("flock", [f.name for f in found])
         self.assertIn("tv-static", [f.name for f in found])
+
+
+class AnExportedTreeTest(unittest.TestCase):
+    """This module's cases in a tree git cannot answer for: they skip, and say what is missing.
+
+    A source tarball and a `git archive` export both carry the add-ons' .gitignore files and no index, so
+    the question this module asks git has no answer there. Answered as an error it was 297 failures from
+    three cases - one per add-on and per path - which reads as a broken suite rather than as a checkout
+    nothing can be asked about. The fixture is a tree of this module's own, so the run judges it and not
+    this checkout: 22 add-ons, enough for the sweep's own floor, with no .git anywhere above them.
+    """
+
+    def exported_tree(self):
+        root = Path(tempfile.mkdtemp(prefix="no-git-"))
+        self.addCleanup(shutil.rmtree, root, ignore_errors=True)
+        # A temporary folder can itself sit inside a checkout (TMPDIR set to one), and then git does have
+        # an answer for the fixture. Say so instead of asserting on a shape this machine cannot make.
+        probe = subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], cwd=str(root),
+                               capture_output=True, text=True)
+        if probe.returncode == 0 and probe.stdout.strip() == "true":
+            self.skipTest(f"{root} is inside a git checkout, so a tree git cannot answer for cannot be "
+                          "built here")
+        for name in ["flock", "tv-static"] + ["addon-%02d" % i for i in range(20)]:
+            addon = root / "addons" / name
+            addon.mkdir(parents=True)
+            (addon / "settings.gradle").write_text("", encoding="utf-8")
+            (addon / ".gitignore").write_text("local.properties\n.gradle/\nbuild/\n", encoding="utf-8")
+            (addon / "README.md").write_text("", encoding="utf-8")
+        (root / "tests").mkdir()
+        shutil.copy2(Path(__file__), root / "tests" / Path(__file__).name)
+        return root
+
+    def run_module(self, root):
+        # Only the class that reads git, so the fixture run does not collect this one: it builds a fixture
+        # of its own, and a fixture inside a fixture would nest for as long as the runs are allowed to.
+        target = f"tests.{Path(__file__).stem}.{EveryAddonKeepsLocalPropertiesOut.__name__}"
+        env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH", "TV_HOST")}
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
+        return subprocess.run([sys.executable, "-m", "unittest", "-v", target],
+                              cwd=str(root), capture_output=True, text=True, timeout=120, env=env)
+
+    def test_the_cases_that_read_git_skip_and_say_why(self):
+        run = self.run_module(self.exported_tree())
+        output = run.stdout + run.stderr
+        self.assertEqual(run.returncode, 0, output)
+        self.assertNotIn("FAILED", output)
+        # The four cases that ask git: two of the three ignore-rule sweeps, the tracked-file case and the
+        # counterpart sweep. The sweep floor reads only the folders, so it still runs and passes.
+        self.assertEqual(4, output.count("this checkout is not a git repository"), output)
+        self.assertIn("skipped=4", output, output)
+
+    def test_a_checkout_git_can_answer_for_is_not_skipped(self):
+        # The other side: this checkout is a repository, and the cases read git's answer here.
+        self.assertTrue(git_work_tree())
 
 
 if __name__ == "__main__":
