@@ -1,0 +1,6 @@
+{
+  "tv": "Hisense 65U75K (hengshan, MediaTek), US",
+  "os": "Google TV 14",
+  "brand": "Hisense",
+  "notes": "Same hengshan board as [U75 GTV12](hisense-u75-hengshan/); ACR, VIDAA, HiAlexa, AirPlay stack, unused streaming; `com.google.android.apps.mediashell` kept for Photos Ambient; `com.google.android.apps.tv.launcherx` kept behind `stock_home_redirect` for volume ramp; setupwraith after Wi-Fi rejoin; [notes](hisense-u75-hengshan-android14/README.md)"
+}
