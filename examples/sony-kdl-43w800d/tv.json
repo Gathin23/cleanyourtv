@@ -1,0 +1,6 @@
+{
+  "tv": "Sony BRAVIA KDL-43W800D (2015, \"BRAVIA 2015\", SVP-DTV15, MediaTek), India/Pan-Asia firmware",
+  "os": "Android TV 8.0",
+  "brand": "Sony",
+  "notes": "Qterics/Sony device agents, Discover/BIVL, Sony Select and its overlay, the India Meta recommendation feed, partner auto-install, retail demo and help apps; every streaming app, voice search, Chromecast, mirroring and updates kept; launcher installed and took Home (API 26 = minSdk 26); reboot-checked. The com.sony.dtv.b2b.* hotel packages must NOT be disabled on this platform: Sony's Settings reads their hotel_mode content provider while building its UI, and without it Settings opens and closes again without ever taking focus"
+}
