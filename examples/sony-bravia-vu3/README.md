@@ -65,3 +65,23 @@ that unbinds the helper until Home next starts, and `restore_key_services` puts 
   5555 opened only with USB debugging on.
 - setupwraith did not own the Wi-Fi network (`cname=android.uid.system`), so disabling it kept the TV online.
 - Disabling setupwraith costs phone casting after the next reboot, as the list's comment says.
+
+## 2K variant: KD-32W830K (inventory only)
+
+A 32-inch KD-32W830K reports device `BRAVIA_VU3_2K` on the same product and build (`UKR1.240726.001` /
+`386-60842`). Android names it `BRAVIA VU3` like the 55-inch set; the device name is what tells them apart. It was
+read over ADB with read-only commands in one session on 13 November 2026. **Nothing was disabled and no launcher
+was installed**, so none of this says how the list behaves on this set.
+
+- Realtek `RTD2873A` (`rtd2885m`), 1.5 GB of RAM (`MemTotal` 1572864 kB) and a 900 MB zram swap. The panel is
+  1920x1080 with an override of 1280x720 out of the box.
+- All 21 packages of `debloat.txt` and every package its header says to keep are installed. Only
+  `com.sony.dtv.b2b.vendorprotocol` was disabled from the factory, as on the second unit.
+- Home candidates and global-key routing match the 55-inch set: launcherx at priority 2, setupwraith's
+  `RecoveryActivity` at 1. `HELP` goes to `com.sony.dtv.smarthelp` and `BUTTON_6` / `BUTTON_12` to
+  `com.sony.dtv.multiscreendemo`, both on the list; which buttons send those keys was not checked.
+- Port 5555 answered `adb connect` with USB debugging on and Wireless debugging off. Not checked after a reboot.
+- About 15 minutes after boot, around 500 MB sat in zram swap. The largest optional resident was
+  `com.google.android.tts` (72 MB average PSS over 24 hours), which the `sony-bravia-vu31` list disables and this
+  list does not name. Of this list's packages, only `com.sony.dtv.sonyselect` and `com.sony.dtv.multiscreendemo`
+  had a process running.
