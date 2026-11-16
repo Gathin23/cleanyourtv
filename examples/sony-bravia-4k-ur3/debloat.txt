@@ -5,6 +5,7 @@
 # Fourth unit: XBR-55A8H (A8H OLED 2020, US, BRAVIA_UR3_UC, same build number), used as a display for an
 # Apple TV: its further-reaching list is debloat-display-only.txt (AirPlay/Vewd crash-loop warning there).
 # Fifth unit: KD-43XH8196 (XH81 2020, EU), same BRAVIA_UR3_EU build QTG3.200305.006.S97 662301.
+# Sixth unit: KD-65XH8096 (XH80 2020, EU), same BRAVIA_UR3_EU build, 2.2 GB RAM, remote RMF-TX500E.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-bravia-4k-ur3/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-bravia-4k-ur3/debloat.txt
@@ -47,6 +48,32 @@
 # scheduled or cancelled") and restarted by itself. It did not recur. With no reboot before the debloat
 # to compare, the crash is not attributed to the list.
 # Status: KD-43XH8196 in daily use since 2026-11-06 with no problems reported (two days when added).
+# KD-65XH8096: applied on 2026-11-15 in five batches with a screenshot after each, then the reference launcher
+# through launcher/build-and-install.ps1. It confirms the 13 lines below its owner did not keep (the assistant
+# three and YouTube Music stayed on by choice, Play Games was left on), usercontext, the Sony bug-report uploader,
+# hotel mode and RS-232 support from the KD-65A8 block, AirPlay/HomeKit and videoframeserver from the KD-43XH8196
+# block, and a commented block of its own at the end. Every disabled package stayed disabled across three reboots
+# and Home stayed on the launcher; HDMI switching from its Inputs menu worked with a console on HDMI 1 and a
+# soundbar on HDMI 3 (ARC). FallbackHome is again the only other HOME claimant: setupwraith is installed, claims
+# no HOME, and the saved Wi-Fi belonged to android.uid.system. Two packages of debloat-display-only.txt stay on
+# here: tools/disable.sh holds back smarthomesettings because it asks for TV_INPUT_HARDWARE (only
+# tvinput.external and tvinput.tuner serve TvInputService, so a false positive), and interactivetvutil, disabled
+# for a while, was enabled again because it serves a TokenProvider other Sony apps may read (the VH21-EU list
+# keeps it) and this owner uses Google Assistant.
+# The SystemUI crash above happens here at every boot ("Task already scheduled or cancelled" in
+# com.sony.dtv.systemui.infoboard.InfoBoard.startUpdateClockTimer) and SystemUI restarts within a second. A
+# SystemUI crash was also in the log from the boot before ADB was first connected, before any change, so it is
+# the firmware's and not the list's.
+# Remote (RMF-TX500E over IR): the Netflix button arrives as scancode 490 and the Google Play button as 494, which
+# sonyvendorservice's own partner-key table (res/raw/partner_keys.json, keycode 196) gives to Prime Video
+# (AMAZON_BUTTON) and to YouTube's music page; Sony's Netflix path is keycode 191 (KEYCODE_BUTTON_4), which opens
+# Netflix when injected. No package in the list is on that path. Paired over Bluetooth ("SONY TV VRC 001"),
+# voice worked but the Netflix and Input buttons produced no input event on any device, so the owner went back
+# to IR. The launcher's app_keys "scan:490:com.netflix.ninja" with INPUT_KEY_SERVICE=1 makes the button open
+# Netflix, across a reboot; "KEYCODE_TV:com.sony.dtv.tvx" keeps the TV button on Live TV, since InputKeyService
+# answers KEYCODE_TV otherwise; Input, gear and Home are unchanged. The cost, as on the VH22, AE2 and VU3: held
+# volume steps once per press while the helper is bound (volume_pauses_filter was not tried).
+# Status: KD-65XH8096 one day so far (2026-11-15).
 # Not yet lived with for weeks; if something breaks, re-enable with `pm enable <package>`
 # and please report it.
 
@@ -77,20 +104,31 @@ com.google.android.play.games
 com.google.android.videos
 
 # KD-65A8 (#2717), disabled and reboot-checked there; one evening of use so far. The first two were
-# also disabled and reboot-checked on the KD-43XH8196. Uncomment to use them.
-# com.sony.dtv.usercontext                     # user context providers; also KD-43XH8196
-# com.sony.dtv.sonybugreportsys                # Sony bug-report/log uploader; also KD-43XH8196
-# com.sony.dtv.b2b.hotelmode                   # hotel mode
-# com.sony.dtv.b2b.rs232csupport               # RS-232 control for hotel installs
+# also disabled and reboot-checked on the KD-43XH8196, and the first four on the KD-65XH8096. Uncomment to use them.
+# com.sony.dtv.usercontext                     # user context providers; also KD-43XH8196, KD-65XH8096
+# com.sony.dtv.sonybugreportsys                # Sony bug-report/log uploader; also KD-43XH8196, KD-65XH8096
+# com.sony.dtv.b2b.hotelmode                   # hotel mode; also KD-65XH8096
+# com.sony.dtv.b2b.rs232csupport               # RS-232 control for hotel installs; also KD-65XH8096
 # com.sony.dtv.recservice                      # USB recording of broadcast TV (also a DLNA receiver for recordings)
 # com.google.android.backdrop                  # Ambient screensaver: point screensaver_components and
 #                                              # screensaver_default_component elsewhere first (on an OLED,
 #                                              # com.android.dreams.basic/.Colors rather than the static ClockDream)
 
-# KD-43XH8196 only, disabled by choice and reboot-checked there (its owner does not cast to the TV).
+# KD-43XH8196, disabled by choice and reboot-checked there (its owner does not cast to the TV); all but
+# Chromecast also on the KD-65XH8096, whose owner casts.
 # com.vewd.core.service stayed enabled: AirPlay crash-loops without it (see debloat-display-only.txt).
 # Uncomment to use them.
-# com.sony.dtv.videoframeserver                # reads Samba TV data and the EPG; INTERNET
+# com.sony.dtv.videoframeserver                # reads Samba TV data and the EPG; INTERNET; also KD-65XH8096
 # com.google.android.apps.mediashell           # Chromecast built-in
-# com.sony.dtv.airplayapp                      # AirPlay receiver (persistent)
-# com.sony.dtv.homekit                         # HomeKit (persistent)
+# com.sony.dtv.airplayapp                      # AirPlay receiver (persistent); also KD-65XH8096
+# com.sony.dtv.homekit                         # HomeKit (persistent); also KD-65XH8096
+
+# KD-65XH8096 only, disabled by choice and reboot-checked there (one day so far). All but the Apple TV app are
+# active lines of debloat-display-only.txt. Uncomment to use them.
+# com.sony.dtv.bivlinfo                        # Discover feeds
+# android.autoinstalls.config.sony.bravia      # Play auto-install of partner apps
+# com.sony.dtv.tvlaunchercustomizer            # stock launcher rows and app order; the remote's app buttons do not use it
+# com.sony.dtv.seeds.iot                       # "TV Control with Smart Speakers" (Alexa / Google Home), INTERNET
+# com.sony.dtv.seeds.iot.remotestart
+# com.sony.dtv.seeds.auth                      # Sony "seeds" account link for the two above
+# com.apple.atve.sony.appletv                  # Apple TV app, unused there
