@@ -24,12 +24,14 @@ or the fetch failed - and says why on stderr. Nothing is written on 1 or 2: the 
 """
 import argparse
 import datetime
+import errno
 import http.client
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import sys
 import tempfile
 import urllib.error
@@ -129,6 +131,26 @@ def refuse(message):
     return 2
 
 
+def stat_folder(path):
+    """(it is a folder, why the filesystem would not look at it or None) for one path.
+
+    The four errnos here are the answers `Path.is_dir()` itself gave before Python 3.14: ENOENT and
+    ENOTDIR, the two ordinary ways a path is not a folder, and ELOOP and EBADF, which it also read as
+    "no". Every other refusal to look - ENAMETOOLONG for a name over NAME_MAX, EACCES under a folder
+    this user may not traverse, EINVAL, EIO - came out of is_dir() as an OSError, and main() names it.
+    On 3.14 is_dir() answers False for those too (it swallows every OSError), so asking it alone would
+    put "there is no theme folder at" - the sentence for a typo - over a theme that is there and could
+    not be read, and the refusal this file grew for that case (#4032) would not be printed at all.
+    """
+    try:
+        info = path.stat()
+    except OSError as e:
+        if e.errno in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            return False, None
+        return False, (e.strerror or e)
+    return stat.S_ISDIR(info.st_mode), None
+
+
 def main():
     # A console code page such as cp1252 cannot print every name; print a replacement character instead of stopping.
     # The theme folder is the argument the reader types, and it is on the last line of a run that has already
@@ -162,15 +184,14 @@ def main():
     # that folder and put a calendar in it: the author then pushed, or debugged, a theme that is not the
     # one they meant. The config.json inside is still created for a folder that does exist.
     folder = Path(args.theme)
-    # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a theme path whose name
-    # is longer than NAME_MAX, or one under a folder this user may not traverse, went straight past
-    # this check as a traceback with exit 1 - the code this script keeps for "no race left this
-    # season". Both are a run that could not do its job, which the docstring's 2 covers, and the
-    # sentence says the theme was left alone.
-    try:
-        is_folder = folder.is_dir()
-    except OSError as e:
-        return refuse(f"could not look at {args.theme} ({e.strerror or e}). Nothing was written: a "
+    # A theme path whose name is longer than NAME_MAX, or one under a folder this user may not
+    # traverse, went straight past this check as a traceback with exit 1 - the code this script keeps
+    # for "no race left this season". Both are a run that could not do its job, which the docstring's 2
+    # covers, and the sentence says the theme was left alone. stat_folder() asks the filesystem rather
+    # than `Path.is_dir()`, which stopped raising for those on Python 3.14 (see its docstring).
+    is_folder, refused = stat_folder(folder)
+    if refused:
+        return refuse(f"could not look at {args.theme} ({refused}). Nothing was written: a "
                       f"theme is a folder of its own under themes/, so check the path you passed - a "
                       f"name too long for this filesystem, or a folder your user cannot open, is what "
                       f"this run cannot read.")

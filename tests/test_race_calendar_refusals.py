@@ -519,10 +519,11 @@ with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io
         self.urlopen.assert_not_called()
 
     def test_a_theme_path_the_filesystem_refuses_to_stat_is_named(self):
-        # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a theme path whose name
-        # is longer than NAME_MAX - or one under a folder this user may not traverse - ended the run in
-        # that OSError as a traceback, exit 1: the code this script keeps for "no race left this
-        # season", over a path it never looked at.
+        # A theme path whose name is longer than NAME_MAX - or one under a folder this user may not
+        # traverse - used to end the run in an OSError as a traceback, exit 1: the code this script
+        # keeps for "no race left this season", over a path it never looked at. It is a stat this run
+        # asks for itself (stat_folder), not `Path.is_dir()`, which on Python 3.14 answers False for
+        # this name instead of raising: the case holds on every version.
         self.stub()
         word = str(Path(self.tmp.name) / ("t" * 300))
         try:
@@ -538,10 +539,11 @@ with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io
 
     def test_a_theme_path_this_user_may_not_look_at_is_the_same_refusal(self):
         # The same branch on any platform, in-process: a folder the run may not open (another user's
-        # home, a mount that denies) answers PermissionError out of is_dir(), which is not one of the
-        # two errors pathlib swallows.
+        # home, a mount that denies) answers PermissionError out of the stat this run asks, which is
+        # what stat_folder() does rather than `Path.is_dir()` - that one answers False for it on
+        # Python 3.14, which would read as a theme folder that is not there.
         self.stub()
-        with mock.patch.object(Path, "is_dir", side_effect=PermissionError(errno.EACCES, "Permission denied")):
+        with mock.patch.object(Path, "stat", side_effect=PermissionError(errno.EACCES, "Permission denied")):
             status, stderr = self.run_main(str(self.theme), "--season", "2026")
         self.assert_refused(status, stderr, "could not look at", "Permission denied")
         self.assertEqual(self.out.getvalue(), "")
