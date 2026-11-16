@@ -32,5 +32,6 @@ Undo: TV_HOST=<tv ip> tools/restore.sh examples/sharp-32gf3265e/debloat.txt com.
   if wanted: screen off after 10 min (system screen_off_timeout 600000) and full suspend after 1 h
   (secure sleep_timeout 3600000).
 - The factory test packages stay enabled and must never be launched.
-- The firmware re-enabled the Assistant (com.google.android.katniss) once at a power-on; if the mic button
-  works again, disable it again from the list.
+- The firmware re-enabled the Assistant (com.google.android.katniss) once at a power-on. Its line stays
+  commented, so applying this list leaves the Assistant on (this set has it off by the owner's choice);
+  uncomment it to turn the Assistant off again, mic button included.

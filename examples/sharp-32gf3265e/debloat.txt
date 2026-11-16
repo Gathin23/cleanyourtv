@@ -14,7 +14,9 @@
 # (com.google.android.apps.mediashell), Miracast (com.smartdevice.dtv.icast), and the factory test packages
 # (kept enabled, never launch them).
 # com.phlox.tvwebbrowser was disabled during testing and re-enabled at the owner's request - kept off this list.
-# This firmware re-enabled com.google.android.katniss once at a power-on; disable it again if the mic button returns.
+# This firmware re-enabled com.google.android.katniss once at a power-on. The Voice assistant line stays
+# commented, so applying this list leaves the Assistant on (this set has it off by the owner's choice):
+# uncomment it to turn the Assistant off and the mic button with it.
 # setupwraith owns no saved Wi-Fi on this unit (the network is owned by android.uid.system), so disabling it does
 # not drop the connection - but only disable it after the new launcher is Home.
 # Disabling setupwraith gives Home back but costs casting (Chromecast) on Google TV.
