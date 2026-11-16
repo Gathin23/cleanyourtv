@@ -169,9 +169,11 @@
     <!-- Remote buttons that open Settings, by Linux scancode (HOME_KEY_SERVICE=1 build-and-install.sh). Remotes
          that send KEYCODE_SETTINGS need no entry. Some send a code Android does not map: the Xiaomi/Fengmi
          projector remote's gear button is scancode 384 (KEY_TAPE). Find yours with
-         `tools/tv.py 'getevent -lt'` while pressing the button - but a HID consumer-control usage prints an
-         evdev MSC_SCAN there, which is not always the scanCode the framework reports, so a number that takes
-         nothing is no proof the press never arrived. Leave empty to omit. -->
+         `tools/tv.py 'getevent -t'` while pressing the button: the hex number after 0001 on the press's line,
+         written in decimal (0180 is 384), since -l prints the key's name in place of that number. A HID
+         consumer-control usage also prints an evdev MSC_SCAN (a 0004 0004 line), which is not always the scanCode
+         the framework reports, so a number that takes nothing is no proof the press never arrived. Leave empty
+         to omit. -->
     <integer-array name="settings_key_scancodes">
     </integer-array>
     <!-- The same by Android keycode, for buttons whose scancode is shared. TCL Google TV remotes send their
