@@ -18,7 +18,7 @@ None of this proves anything on a TV; the rest of this page does.
 ## Demo sources
 
 ```bash
-python3 tools/make_fixtures.py <this computer's LAN IP>
+python3 tools/make_fixtures.py 192.168.1.20        # this computer's LAN address
 python3 -m http.server --directory fixtures/out 8000
 ```
 
