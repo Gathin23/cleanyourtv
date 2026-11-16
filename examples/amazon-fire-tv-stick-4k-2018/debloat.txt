@@ -1,4 +1,5 @@
 # Amazon Fire TV Stick 4K, 1st gen 2018 (AFTMM, codename mantis), Fire OS 6.7.1.1 (NS6711/5908), Android 7.1.2 (SDK 25)
+# Additional unit's conservative subset, SDK 25 compatibility and ADB session notes: see README.md in this folder.
 # Also a fair start for other Fire OS 6 sticks and boxes (Fire TV Stick 4K / Cube 1st gen). Fire OS 7 sets differ:
 # see insignia-ns55f301na25/ and toshiba-fire-tv-aftha004/.
 #
