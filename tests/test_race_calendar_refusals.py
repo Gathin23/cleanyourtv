@@ -678,6 +678,24 @@ with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io
         status, stderr = self.run_main(str(self.theme), "--season", "2026")
         self.assert_refused(status, stderr, "Jolpica answered 503 Service Unavailable")
 
+    def test_the_answer_it_refuses_is_closed(self):
+        # urllib raises the 503 with the response inside it, body and all, so the connection belongs to
+        # whoever caught it. Refusing without close() leaves it to the collector, and Python 3.14's
+        # addbase then prints `ResourceWarning: Implicitly cleaning up <HTTPError 503: ...>` after the
+        # refusal; 3.12 prints nothing, which is why the case reads a close rather than a warning.
+        class Answer(urllib.error.HTTPError):
+            was_closed = False
+
+            def close(self):
+                type(self).was_closed = True
+                super().close()
+
+        self.stub(raises=Answer(race_calendar.API.format(season="2026"), 503, "Service Unavailable",
+                                {}, io.BytesIO(b"unavailable")))
+        status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        self.assert_refused(status, stderr, "Jolpica answered 503 Service Unavailable")
+        self.assertTrue(Answer.was_closed, "the 503 the script refused was left open")
+
     def test_a_body_that_is_not_json_is_named_as_such(self):
         self.stub(body=b"<html><body>502 Bad Gateway</body></html>")
         status, stderr = self.run_main(str(self.theme), "--season", "2026")

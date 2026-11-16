@@ -93,7 +93,13 @@ def get(url, timeout=8):
         with urllib.request.urlopen(url, timeout=timeout, context=ctx) as r:
             return r.status, r.read().decode("utf-8", "replace"), None
     except urllib.error.HTTPError as e:
-        return e.code, "", None
+        # The error *is* the answer: urllib hands back the response - status line, headers and body -
+        # as the exception. Returning the code without closing it leaves the connection to the garbage
+        # collector, and Python 3.14's addbase then prints `ResourceWarning: Implicitly cleaning up
+        # <HTTPError 404: ...>` at exit, next to the report this tool printed (3.12 says nothing).
+        status = e.code
+        e.close()
+        return status, "", None
     except Exception as failure:
         return None, str(failure), failure
 

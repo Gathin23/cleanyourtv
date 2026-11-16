@@ -213,7 +213,13 @@ def main():
         with urllib.request.urlopen(request, timeout=30) as response:
             payload = json.load(response)
     except urllib.error.HTTPError as e:
-        return refuse(f"Jolpica answered {e.code} {e.reason} for {endpoint}. Nothing was written: try "
+        # The error is the answer itself, body still attached: refusing without closing it leaves the
+        # connection to the garbage collector, and Python 3.14's addbase then prints `ResourceWarning:
+        # Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>` right after this refusal
+        # (3.12 prints nothing, which is why this is not a status the docstring changes).
+        code, reason = e.code, e.reason
+        e.close()
+        return refuse(f"Jolpica answered {code} {reason} for {endpoint}. Nothing was written: try "
                       f"again later, or pass --season with a year it serves.")
     except (urllib.error.URLError, TimeoutError) as e:
         return refuse(f"could not reach Jolpica at {endpoint} ({getattr(e, 'reason', e)}). Nothing was "
