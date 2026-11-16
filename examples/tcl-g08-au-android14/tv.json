@@ -1,0 +1,6 @@
+{
+  "tv": "TCL Smart TV Pro (G08, G08_4K_GB, MediaTek), Australian firmware",
+  "os": "Google TV 14",
+  "brand": "TCL",
+  "notes": "The same model as the [Android 12 AU set](tcl-g08-au-android12/), after TCL's Android 14 update (UTT2.250416.001 AU02): adds Android's ad services, Alexa, a TCL account and Home push to the list; voice assistant, Google Cast, AirPlay, TCL Live and TCL Channel kept. Launcher as Home with no key helper: the app and Settings buttons still work with launcherx off, and volume repeat stays. Saved Wi-Fi belonged to setupwraith, moved to Settings first"
+}
