@@ -21,7 +21,8 @@ import unittest
 import warnings
 from unittest import mock
 
-from tests.test_trace_report import first_frame_trace
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_trace_report import first_frame_trace  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))

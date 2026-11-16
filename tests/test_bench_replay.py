@@ -12,9 +12,10 @@ import types
 import unittest
 from unittest import mock
 
-from tests import test_bench_framestats as frames
-from tests import test_bench_home as home
-from tools import bench
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import test_bench_framestats as frames  # noqa: E402
+import test_bench_home as home  # noqa: E402
+from tools import bench  # noqa: E402
 
 PACKAGE = 'com.gathin.tvhome'
 COMPONENT = PACKAGE + '/.MainActivity'

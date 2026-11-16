@@ -1,10 +1,13 @@
 """Merge per-window framestats by completion time; all frames and TV answers are synthetic."""
 import itertools
+import sys
 import unittest
+from pathlib import Path
 from unittest import mock
 
-from tests.test_bench_framestats import HEADERS, frame, profile
-from tools import bench
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from test_bench_framestats import HEADERS, frame, profile  # noqa: E402
+from tools import bench  # noqa: E402
 
 
 class FrameOrderTest(unittest.TestCase):
