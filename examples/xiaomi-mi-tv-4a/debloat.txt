@@ -11,8 +11,8 @@
 # (docs/TROUBLESHOOTING.md, "No on-screen keyboard").
 #
 # Second Android TV 10 unit: MiTV-MOOQ1, firmware QTG3.200305.006.6148, ADB over Wi-Fi. Applied in one session in
-# seven batches with a screenshot after each and reboot-checked three times; not yet lived with for days, and the
-# remote's buttons were not yet checked on the real remote.
+# seven batches with a screenshot after each and reboot-checked three times; not yet lived with for days. The
+# remote's buttons worked on the real remote afterwards, with no key helper (owner's report).
 # - com.xiaomi.floatingframe holds TV_INPUT_HARDWARE on this build, so tools/disable.sh keeps it: it stayed on.
 # - com.duokan.factorytest/.FactoryLauncher also answers HOME here, at priority 0. It was disabled, never
 #   launched, before the stock launcher went (same quirk as examples/xiaomi-mitv-mooq0/debloat.txt).
