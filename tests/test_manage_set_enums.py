@@ -138,6 +138,23 @@ class SetEnumTest(unittest.TestCase):
                 self.assertIsNone(self.set_key(key, value), f"{key} is free text, so {value!r} is fine")
                 self.assertEqual(self.written()[key], value)
 
+    def test_festival_until_refuses_a_date_the_launcher_cannot_read(self):
+        # Festival.parse() drops the whole skin for a date LocalDate.parse() rejects.
+        for value in ("tomorrow", "2026-11-31", "20261130", "2026-W48-1", "2026-1-5", "26-11-30", "2026-11-30T10:00",
+                      " 2026-11-30"):
+            with self.subTest(value=value):
+                refusal = self.set_key("festival_until", value)
+                self.assertIsNotNone(refusal, f"{value!r} was written, and the launcher turns the skin off for it")
+                self.assertIn("festival_until", refusal)
+                self.assertIn("Nothing was written or pushed", refusal)
+                self.assertIsNone(self.written())
+
+    def test_festival_until_takes_a_real_date_or_nothing(self):
+        for value in ("2026-11-30", " 2026-11-30 ", "\t2026-11-30\n", "2028-02-29", ""):
+            with self.subTest(value=value):
+                self.assertIsNone(self.set_key("festival_until", value))
+                self.assertEqual(self.written()["festival_until"], value)
+
     def test_a_number_key_is_unaffected(self):
         self.assertIsNone(self.set_key("columns", "4"))
         self.assertEqual(self.written()["columns"], 4)

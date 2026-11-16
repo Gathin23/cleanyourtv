@@ -62,6 +62,7 @@ the TV: no TV_HOST, a checkout with no tools/venv, and a TV tools/tv.py answered
 (a refused port, a Wireless debugging port that answers TLS, an address with no route to it). check.py answers the
 first two of those with 2 as well, and b64push.py the second.
 """
+import datetime
 import json
 import math
 import os
@@ -643,6 +644,22 @@ def colour_value(key, text):
     return value
 
 
+def festival_until_problem(value):
+    """Why Festival.parse() would turn the skin off for this end date, or None."""
+    # Java's trim() drops only characters up to U+0020, so a no-break space stays and fails the parse.
+    text = value.strip("".join(map(chr, range(33))))
+    if not text:
+        return None
+    # fromisoformat() alone also takes 20261130 and 2026-W48-1, which LocalDate.parse() rejects.
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text, re.ASCII):
+        return f"{value!r} is not a date written like 2026-11-30"
+    try:
+        datetime.date.fromisoformat(text)
+    except ValueError:
+        return f"{value!r} is not a day on the calendar"
+    return None
+
+
 def value_as(key, item, text):
     """The argument read the way the key's type needs, or a refusal naming what the key takes."""
     kind = declared_kind(item)
@@ -662,6 +679,11 @@ def value_as(key, item, text):
         else:
             # A string key is read as a String only, so `set greeting_name 42` means the text 42, not a number.
             value = enum_value(key, parsed if isinstance(parsed, str) else text)
+        if key == "festival_until":
+            problem = festival_until_problem(value)
+            if problem:
+                sys.exit(f"{key} takes YYYY-MM-DD or nothing, and {problem}. Festival.parse() turns the whole "
+                         f"festival skin off for a date it cannot read. Nothing was written or pushed.")
         if key == "source_panel_extra":
             problem = panel_extra_problem(value)
             if problem:
