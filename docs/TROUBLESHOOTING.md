@@ -786,6 +786,31 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   MOKA `R4_GTV`, Google TV 14): the firmware re-enables setupwraith at every cold boot and its
   `.RecoveryActivity` takes Home. `logcat | grep RecoveryActivity` shows it starting several times a
   second. Re-enable launcherx as above. [Notes](devices/acer-r4g.md).
+- **The TV comes back on the setup wizard, then goes black after the language choice**, seen on a
+  TCL 55DC760 (product "Percee TV", `tcl_eu`, `mt5891`, Android TV 8.0,
+  `V8-T658T01-LF1V602` / `OTT1.180130.001`, the same platform as
+  [`tcl-50dp660`](../examples/tcl-50dp660/debloat.txt),
+  [#4071](https://github.com/Gathin23/cleanyourtv/issues/4071)). A list based on that folder's had
+  run for a week and through one control reboot, with `com.google.android.tvlauncher`,
+  `com.tcl.partnercustomizer`, `android.autoinstalls.config.tcl.device` and two of the three
+  PERSISTENT packages disabled and `com.gathin.tvhome` Home, when a spontaneous reboot landed on
+  the first-run wizard: the language choice works, and then the screen is black with only power
+  working, on every power cycle, and 5555 refuses. Nothing is bricked. With the stock launcher
+  disabled the wizard has no Home to hand over to, so it finishes into nothing, and
+  `tools/restore.sh` cannot run because `adb_enabled` is 0 again. The reading that fits all three
+  symptoms is Android's RescueParty, whose escalation resets saved settings to their defaults
+  before it offers a wipe: `user_setup_complete` and `adb_enabled` back to 0, the disabled packages
+  untouched. No log survived the recovery, so the cause is unproven, but this build carries
+  RescueParty (`getprop sys.rescue_boot_count` answered 1 on the reflashed set). No command reaches
+  a set in that state: the recovery menu's factory data reset turns every disabled package back on,
+  and on this platform the full firmware over USB does the same and re-provisions the vendor data
+  (step 3 of the NVM-reset sequence in [its notes](devices/tcl-50dp660.txt)). To avoid it on this
+  board, keep the stock launcher: the same unit rebuilt the list with
+  `com.google.android.tvlauncher`, `com.tcl.partnercustomizer`,
+  `android.autoinstalls.config.tcl.device` and all three PERSISTENT packages left enabled, reached
+  Home through `stock_home_redirect` with the key helper filtering Home presses and
+  `home_long_press_home`, and has come through three control reboots with `user_setup_complete`
+  and `adb_enabled` still 1.
 - **Black screen at every boot after the launcher change, LED on, remote dead** (Vision
   2024VISION43STV, CVTE, Android 13: [its list](../examples/vision-2024vision43stv/debloat.txt) has the
   details). With file-based encryption (`getprop ro.crypto.type` says `file`) Android starts Home before
