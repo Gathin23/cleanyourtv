@@ -518,6 +518,35 @@ with mock.patch.object(urllib.request, 'urlopen', side_effect=lambda *a, **k: io
         self.assert_refused(status, stderr, "there is no theme folder at", str(picture))
         self.urlopen.assert_not_called()
 
+    def test_a_theme_path_the_filesystem_refuses_to_stat_is_named(self):
+        # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a theme path whose name
+        # is longer than NAME_MAX - or one under a folder this user may not traverse - ended the run in
+        # that OSError as a traceback, exit 1: the code this script keeps for "no race left this
+        # season", over a path it never looked at.
+        self.stub()
+        word = str(Path(self.tmp.name) / ("t" * 300))
+        try:
+            os.stat(word)
+        except OSError:
+            pass
+        else:
+            self.skipTest("this filesystem stats a 300-character name")
+        status, stderr = self.run_main(word, "--season", "2026")
+        self.assert_refused(status, stderr, "could not look at", "File name too long")
+        self.assertEqual(self.out.getvalue(), "")
+        self.urlopen.assert_not_called()
+
+    def test_a_theme_path_this_user_may_not_look_at_is_the_same_refusal(self):
+        # The same branch on any platform, in-process: a folder the run may not open (another user's
+        # home, a mount that denies) answers PermissionError out of is_dir(), which is not one of the
+        # two errors pathlib swallows.
+        self.stub()
+        with mock.patch.object(Path, "is_dir", side_effect=PermissionError(errno.EACCES, "Permission denied")):
+            status, stderr = self.run_main(str(self.theme), "--season", "2026")
+        self.assert_refused(status, stderr, "could not look at", "Permission denied")
+        self.assertEqual(self.out.getvalue(), "")
+        self.urlopen.assert_not_called()
+
     def test_an_empty_theme_name_is_not_the_directory_it_is_run_from(self):
         # `race_calendar.py "$THEME"` with THEME unset passes the empty word, and Path("") is Path("."):
         # a folder that is always there, so the folder check let it through, the run wrote a config.json

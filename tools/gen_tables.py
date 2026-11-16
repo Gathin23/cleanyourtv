@@ -487,7 +487,17 @@ def read_inputs(root, patch):
     not there both ended in a FileNotFoundError traceback before, which is exit 1 - the one answer that
     says the generated files are stale when in fact nothing was read at all.
     """
-    if not root.is_dir():
+    # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a `--root` the
+    # filesystem refuses to stat - a name longer than NAME_MAX, or a path under a folder this user
+    # may not traverse - ended the run in that OSError as a traceback, exit 1: the answer this
+    # docstring keeps for tables that are out of date, over a run that read nothing. Both are the
+    # "cannot be read" case the exit paragraph names, and the sentence quotes the path either way.
+    try:
+        is_folder = root.is_dir()
+    except OSError as e:
+        return None, (f"--root '{root}': cannot be looked at ({e.strerror or e}). "
+                      f"Nothing was read or written.")
+    if not is_folder:
         return None, f"--root '{root}': not a folder. Nothing was read or written."
     # examples/ is what it reads; the three OWNED files are the parts of the checkout it writes.
     needs = ["examples"] + list(OWNED)
