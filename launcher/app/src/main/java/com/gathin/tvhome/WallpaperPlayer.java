@@ -48,6 +48,9 @@ final class WallpaperPlayer {
     private final int dimColor;
     /** The picture on screen, released once the next one has been drawn. */
     private Bitmap current;
+    /** wallpaper_crossfade, and the view the outgoing picture fades out on, made at the first change. */
+    private final boolean crossfade;
+    private ImageView fading;
     private boolean active;
     private boolean closed;
     private boolean loading;
@@ -68,6 +71,7 @@ final class WallpaperPlayer {
         files = new ArrayList<>(config.wallpapers);
         interval = config.wallpaperRotationMinutes * 60_000L;
         bitmapConfig = config.wallpaperTrueColor ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+        crossfade = config.wallpaperCrossfade;
         // The dim is painted into the picture (decode), so no full-screen shade layer is drawn on every frame.
         dimColor = config.wallpaperDim > 0 ? (config.wallpaperDim * 255 / 100) << 24 : 0;
         order = config.wallpaperOrder;
@@ -266,7 +270,28 @@ final class WallpaperPlayer {
         // The wallpaper covers the whole root; avoid drawing the fallback colour under it.
         root.setBackground(null);
         image.setImageBitmap(bitmap);
-        if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
+        if (old == null || old == bitmap) return;
+        if (!crossfade) {
+            image.postDelayed(old::recycle, 500);
+            return;
+        }
+        // wallpaper_crossfade: the old picture stays on a second view right above the new one and fades out over a
+        // second. A fade cut short by the next change leaves its picture to the garbage collector.
+        if (fading == null) {
+            fading = new ImageView(image.getContext());
+            fading.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            fading.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            root.addView(fading, root.indexOfChild(image) + 1, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+        ImageView over = fading;
+        over.animate().cancel();
+        over.setImageBitmap(old);
+        over.setAlpha(1f);
+        over.animate().alpha(0f).setDuration(1000).withEndAction(() -> {
+            over.setImageDrawable(null);
+            over.postDelayed(old::recycle, 500);
+        }).start();
     }
 
     private Bitmap decode(File file) {
