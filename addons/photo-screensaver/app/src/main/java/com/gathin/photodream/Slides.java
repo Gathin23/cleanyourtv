@@ -31,9 +31,10 @@ import java.util.concurrent.Executors;
 
 /**
  * Full-screen mode: loops through the pictures sync.sh put in the app's pictures/ folder, in filename order,
- * each slowly zooming and drifting (Ken Burns) and crossfading into the next after seconds.txt (20 s by
- * default). Two screen-sized pictures at most, held as GPU bitmaps. MP4 clips play once, muted and cropped to
- * fill the screen, on the hardware decoder (one player at a time), then the loop moves on.
+ * each zooming and drifting (Ken Burns) or displayed statically, based on animation setting, and crossfading
+ * into the next after the configured interval. Two screen-sized pictures at most, held as GPU bitmaps.
+ * MP4 clips play once, muted and cropped to fill the screen, on the hardware decoder (one player at a time),
+ * then the loop moves on.
  */
 final class Slides {
 
@@ -60,6 +61,7 @@ final class Slides {
     private final List<File> images;
     private final SharedPreferences preferences;
     private final long interval;
+    private final boolean animationEnabled;
     private final int width;
     private final int height;
     private boolean running;
@@ -97,7 +99,9 @@ final class Slides {
         height = metrics.heightPixels;
         preferences = context.getSharedPreferences("photo_dream", Context.MODE_PRIVATE);
         File dir = context.getExternalFilesDir(null);
-        interval = Media.seconds(Photos.read(dir == null ? null : new File(dir, Media.SECONDS))) * 1000L;
+        Options options = Options.load(context);
+        interval = (long) options.minutesPerPicture * 60 * 1000L;
+        animationEnabled = options.animation;
         images = dir == null ? new ArrayList<>() : Media.list(new File(dir, Media.PICTURES));
         if (caption != null) caption.setAlpha(0f);
     }
@@ -193,25 +197,32 @@ final class Slides {
         incoming.setImageBitmap(bitmap);
         incoming.setTag(bitmap);
         incoming.bringToFront();
-        // Start zoomed in or out at random and drift toward a random spot, over the whole slide.
-        boolean zoomIn = random.nextBoolean();
-        float from = zoomIn ? 1f : ZOOM;
-        float to = zoomIn ? ZOOM : 1f;
-        float dx = (random.nextFloat() - 0.5f) * width * (ZOOM - 1f);
-        float dy = (random.nextFloat() - 0.5f) * height * (ZOOM - 1f);
         incoming.setAlpha(0f);
         ObjectAnimator fade = ObjectAnimator.ofFloat(incoming, View.ALPHA, 0f, 1f).setDuration(FADE_MS);
-        ObjectAnimator drift = ObjectAnimator.ofPropertyValuesHolder(incoming,
-                PropertyValuesHolder.ofFloat(View.SCALE_X, from, to),
-                PropertyValuesHolder.ofFloat(View.SCALE_Y, from, to),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_X, zoomIn ? 0f : dx, zoomIn ? dx : 0f),
-                PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, zoomIn ? 0f : dy, zoomIn ? dy : 0f))
-                .setDuration(interval + 2 * FADE_MS);
-        drift.setInterpolator(new LinearInterpolator());
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(fade, drift);
-        incoming.setTag(R.id.animation, set);
-        set.start();
+        
+        if (animationEnabled) {
+            // Ken Burns effect: zoom and drift
+            boolean zoomIn = random.nextBoolean();
+            float from = zoomIn ? 1f : ZOOM;
+            float to = zoomIn ? ZOOM : 1f;
+            float dx = (random.nextFloat() - 0.5f) * width * (ZOOM - 1f);
+            float dy = (random.nextFloat() - 0.5f) * height * (ZOOM - 1f);
+            ObjectAnimator drift = ObjectAnimator.ofPropertyValuesHolder(incoming,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, from, to),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, from, to),
+                    PropertyValuesHolder.ofFloat(View.TRANSLATION_X, zoomIn ? 0f : dx, zoomIn ? dx : 0f),
+                    PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, zoomIn ? 0f : dy, zoomIn ? dy : 0f))
+                    .setDuration(interval + 2 * FADE_MS);
+            drift.setInterpolator(new LinearInterpolator());
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(fade, drift);
+            incoming.setTag(R.id.animation, set);
+            set.start();
+        } else {
+            incoming.setTag(R.id.animation, fade);
+            fade.start();
+        }
+        
         boolean afterClip = player != null;
         handler.postDelayed(() -> {
             cancel(outgoing);

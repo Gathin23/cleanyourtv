@@ -85,5 +85,6 @@ Tv "printf '%s' $Seconds > $tmp-seconds.txt; content write --uri content://$pkg.
 Tv "[ -f $before ] || { settings get secure screensaver_components; settings get secure screensaver_enabled; } > $before; settings put secure screensaver_components $dream; settings put secure screensaver_enabled 1" | Out-Null
 if ($IdleMinutes -gt 0) { Tv "settings put system screen_off_timeout $($IdleMinutes * 60000)" | Out-Null }
 $count = (Tv "ls $dir 2>/dev/null | wc -l").Trim()
-Write-Host "Screensaver: Photos with $count file(s) on the TV, $Seconds s each ($sent sent). Undo with: addons\photo-screensaver\sync.ps1 -TvHost $TvHost -Off"
+$minutes = [math]::Ceiling($Seconds / 60)
+Write-Host "Screensaver: Photos with $count file(s) on the TV, $minutes min each ($sent sent). Undo with: addons\photo-screensaver\sync.ps1 -TvHost $TvHost -Off"
 if ($Start) { Tv 'am start -n com.android.systemui/.Somnambulator >/dev/null; sleep 3; dumpsys dreams | grep mCurrentDreamName' }
