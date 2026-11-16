@@ -26,7 +26,10 @@ EXTENSION = re.compile(r"\.(md|py|sh|ps1|yml|yaml|gradle|xml|json|txt|jpg|png|ja
 TEMPLATE = re.compile(r"[<>*{}$=%]")
 LINK = re.compile(r"\]\(([^)\s]+)\)")
 CODE = re.compile(r"(`+)(.+?)\1")
-SKIP_DIRS = {".git", "venv", "build", ".gradle", "__pycache__"}
+# The walkers' usual skip list: build output, the CI venv, and the folders .gitignore keeps out of a
+# checkout - a person's backups, screenshots, notes, traces, bench results and ADB key.
+SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
+             "traces", "bench-results", "adbkey"}
 WRITTEN = {"result.json"}  # files a tool writes on a contributor's machine (tools/bench.py), not in a clone
 
 
@@ -54,10 +57,11 @@ def ignored_prefixes():
     return folders
 
 
-def file_names():
+def file_names(root=None):
+    root = ROOT if root is None else root
     names = set()
-    for path in ROOT.rglob("*"):
-        if not SKIP_DIRS.intersection(path.relative_to(ROOT).parts):
+    for path in root.rglob("*"):
+        if not SKIP_DIRS.intersection(path.relative_to(root).parts):
             names.add(path.name)
     return names
 

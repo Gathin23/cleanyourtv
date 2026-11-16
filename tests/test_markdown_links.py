@@ -43,8 +43,11 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 
 # Not part of the documentation: the checkout's git data, the tools venv CI builds before this job
-# runs (site-packages ships its own .md files), Gradle's output and a theme's node_modules.
-SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__"}
+# runs (site-packages ships its own .md files), Gradle's output, a theme's node_modules, and the folders
+# .gitignore keeps out of a checkout - a person's backups, screenshots, notes, traces and bench results,
+# whose links are their own.
+SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
+        "traces", "bench-results", "adbkey"}
 
 MARKDOWN_LINK = re.compile(r"\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 REFERENCE_DEF = re.compile(r"^\[[^\]]+\]:\s*(\S+)", re.M)

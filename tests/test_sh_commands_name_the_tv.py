@@ -30,9 +30,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# The walkers' usual skip list: build output, the CI venv, and a person's own backups, screenshots
-# and traces, which are gitignored.
-SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "traces"}
+# The walkers' usual skip list: build output, the CI venv, and the folders .gitignore keeps out of a
+# checkout - a person's backups, screenshots, notes, traces, bench results and ADB key.
+SKIP_DIRS = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
+             "traces", "bench-results", "adbkey"}
 
 # The scripts that read TV_HOST. tools/docker-build.sh builds an image and sends nothing to a TV.
 SCRIPT_RE = re.compile(r"(?:^|[\s`'\"(])(tools/(?:disable|restore|theme)\.sh)\b")
@@ -53,12 +54,13 @@ def trim(word):
     return word.strip(TRIM)
 
 
-def files():
+def files(root=None):
     """Every page and list in the tree, the same sweep the other documentation walks read."""
-    for path in sorted(ROOT.rglob("*")):
+    root = ROOT if root is None else root
+    for path in sorted(root.rglob("*")):
         if path.suffix not in {".md", ".txt"} or not path.is_file():
             continue
-        if SKIP_DIRS & set(path.relative_to(ROOT).parts):
+        if SKIP_DIRS & set(path.relative_to(root).parts):
             continue
         yield path
 

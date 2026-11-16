@@ -25,7 +25,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__"}
+# The walkers' usual skip list: build output, the CI venv, and the folders .gitignore keeps out of a
+# checkout - a person's backups, screenshots, notes, traces, bench results and ADB key.
+SKIP = {".git", "venv", "node_modules", "build", ".gradle", "__pycache__", "shots", "backup", "work",
+        "traces", "bench-results", "adbkey"}
 
 # What the file's first bytes have to be. A GIF has two accepted headers; WebP is RIFF....WEBP.
 MAGIC = {
