@@ -687,6 +687,12 @@ def value_as(key, item, text):
             if problem:
                 sys.exit(f"{key} takes YYYY-MM-DD or nothing, and {problem}. Festival.parse() turns the whole "
                          f"festival skin off for a date it cannot read. Nothing was written or pushed.")
+        # Festival.parse(): Java trim() (characters up to U+0020), lowercase, then length() in UTF-16 units.
+        if key in ("festival", "seasonal_skin") and len(
+                value.strip("".join(map(chr, range(33)))).lower().encode("utf-16-le")) // 2 > 40:
+            sys.exit(f"{key} takes a name of at most 40 characters, and {value!r} is longer. Festival.parse() "
+                     f"returns no skin for a longer name, so the festival would be off. Nothing was written or "
+                     f"pushed.")
         if key == "source_panel_extra":
             problem = panel_extra_problem(value)
             if problem:
