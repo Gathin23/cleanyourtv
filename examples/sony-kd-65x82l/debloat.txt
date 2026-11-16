@@ -43,6 +43,24 @@
 # keyboard-layout overlay in docs/devices/sony-bravia-4k-vh22-settings-key.md, not HomeKeyService (#1680).
 # Applied on 2026-10-30 with tools/disable.sh, reboot-checked twice, lived with since; the remote's app
 # buttons stayed alive through sonyvendorservice, and Home was checked from Netflix and after a reboot.
+# Also Sony BRAVIA KD-75X82L (2023, BRAVIA_VH22, MediaTek MT5835; ro.boot.product.hardware.sku KD-75X82L,
+# the TV names itself "BRAVIA 4K VH22"), India retail, the same BRAVIA_VH22_M_PA build: every package below
+# exists on it except com.amazon.minitv.androidtv.app and com.jio.media.jiotvplus, and com.sony.dtv.kenhchonloc
+# ships disabled. Applied on 2026-11-16 with tools/disable.sh in four batches, a screenshot and crash-log check
+# after each: batch 1; batch 2 with the two commented-out apps there (Google TV movies, BRAVIA CORE) and
+# without com.sony.dtv.livingfit; the 13-package B2B suite; then batch 3. Living Decor is this unit's
+# screensaver (settings get secure screensaver_components answers com.sony.dtv.livingfit/.MainDreamService,
+# not dreamx's Backdrop as on the Australian unit), so read that setting before disabling livingfit: here it
+# was disabled, noticed and re-enabled in the same minute. com.jio.media.stb.ondemand is installed and was
+# kept by the owner's choice, like Prime Video, Apple TV, the Assistant stack, Chromecast, AirPlay and
+# firmware updates. The TV was on 5 GHz Wi-Fi and setupwraith owned that network. The owner's first re-join
+# kept the old ID and owner, as the KD-55X82L note above warns; after Forget network and a re-join it had a
+# new ID and belonged to com.android.tv.settings, so batch 3 ran without FORCE_SETUPWRAITH and Wi-Fi stayed up.
+# Launcher with SKIP_BUILD=1 launcher/build-and-install.sh on the first try, no key helper enabled. Private DNS
+# works on this unit. Reboot-checked (tools/check.py: nothing drifted, Home on the launcher, power-on lands on
+# Home). The owner then pressed Home, Input, gear, the app buttons, the mic button and held volume on the real
+# remote and reported all of them working, the gear button included, with no helper and no overlay; that is the
+# owner's report, and no key log was read during the presses. Same-day test, not lived with for days yet.
 #
 # Apply:   TV_HOST=<tv ip> tools/disable.sh examples/sony-kd-65x82l/debloat.txt
 # Undo:    TV_HOST=<tv ip> tools/restore.sh examples/sony-kd-65x82l/debloat.txt com.google.android.apps.tv.launcherx
