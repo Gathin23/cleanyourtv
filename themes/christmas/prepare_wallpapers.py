@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
 """Builds wallpapers/ from six Christmas photos on Wikimedia Commons (credited in CREDITS.md and in captions.txt).
 
-Each original is fetched from Commons (or read from ORIGINALS if it is already there), checked against the SHA-256
-below, cropped to 16:9 with the box given, resized to 1920x1080, darkened toward the bottom (the dock), the top-left
-corner (the clock) and a little under the top-right buttons, and saved as a JPEG with no EXIF or other metadata.
+Each original is fetched from Commons (or read from ORIGINALS if it is already there, under its Commons name),
+checked against the SHA-256 below, converted to sRGB if it carries another colour profile (two are Adobe RGB and
+one Display P3; read as sRGB they come out dull), cropped to 16:9 with the box given, resized to 1920x1080,
+darkened toward the bottom (the dock), the top-left corner (the clock) and a little under the top-right buttons,
+and saved as a JPEG with no EXIF or other metadata.
 The first picture, 01-sleigh-night.jpg, is our own CC0 illustration, drawn by make_wallpaper.py beside this file.
 
 Usage: python3 prepare_wallpapers.py ORIGINALS   (needs Pillow; ORIGINALS is a folder for the downloads)
 """
 import hashlib
+import io
 import os
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageCms, ImageDraw, ImageFilter
 
 W, H = 1920, 1080
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wallpapers")
@@ -39,8 +43,9 @@ SOURCES = [
 ]
 
 
-def fetch(folder, out, path, sha):
-    name = os.path.join(folder, out)
+def fetch(folder, path, sha):
+    # kept under its Commons name, so ORIGINALS can never be mistaken for wallpapers/ and its built files
+    name = os.path.join(folder, urllib.parse.unquote(path.rsplit("/", 1)[1]))
     if not os.path.exists(name):
         req = urllib.request.Request(COMMONS + path, headers={"User-Agent": "CleanYourTV-themes (github.com/Gathin23/cleanyourtv)"})
         for attempt in range(5):  # Commons answers 429 to quick runs of downloads; wait and try again
@@ -60,6 +65,20 @@ def fetch(folder, out, path, sha):
     if hashlib.sha256(data).hexdigest() != sha:
         sys.exit(f"{name} is not the file this theme was made from (SHA-256 differs)")
     return name
+
+
+def icc_profile(name):
+    """The colour profile a JPEG carries, or None. Pillow stops looking at the frame header, and one original
+    (the Tallinn market) keeps its Adobe RGB profile after it, so the segments are read here up to the scan."""
+    data = open(name, "rb").read()
+    chunks, i = {}, 2
+    while i + 4 <= len(data) and data[i] == 0xFF and data[i + 1] != 0xDA:
+        size = int.from_bytes(data[i + 2:i + 4], "big")
+        body = data[i + 4:i + 2 + size]
+        if data[i + 1] == 0xE2 and body[:12] == b"ICC_PROFILE\0":
+            chunks[body[12]] = body[14:]
+        i += 2 + size
+    return b"".join(chunks[n] for n in sorted(chunks)) or None
 
 
 def shade(img):
@@ -83,8 +102,13 @@ def main(folder):
         x0, y0, x1, y1 = box
         if abs((x1 - x0) * 9 - (y1 - y0) * 16) > 16:
             sys.exit(f"{out}: crop box is not 16:9")
-        src = Image.open(fetch(folder, out, path, sha))
+        name = fetch(folder, path, sha)
+        src = Image.open(name)
         src.load()
+        icc = icc_profile(name)
+        if icc:  # convert("RGB") alone would keep Adobe RGB or Display P3 values and the TV would read them as sRGB
+            src = ImageCms.profileToProfile(src, ImageCms.ImageCmsProfile(io.BytesIO(icc)),
+                                            ImageCms.createProfile("sRGB"), outputMode="RGB")
         img = src.convert("RGB").crop(box).resize((W, H), Image.LANCZOS)
         # a new image with only the pixels: no EXIF, ICC or XMP from the original is carried over
         clean = Image.new("RGB", (W, H))
@@ -94,6 +118,8 @@ def main(folder):
             clean.save(dest, quality=quality, optimize=True, progressive=True)
             if os.path.getsize(dest) <= 300 * 1024:
                 break
+        else:
+            sys.exit(f"{out}: still over 300 KB at quality 50")
         print("wrote", os.path.join("wallpapers", out), os.path.getsize(dest))
 
 
