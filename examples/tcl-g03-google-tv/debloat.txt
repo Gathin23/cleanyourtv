@@ -230,8 +230,8 @@
 #   disabling setupwraith a second run took Home with no RecoveryActivity.
 # - gtvpai was disabled by tools/disable.sh here (not skipped as on the units above).
 # - With suspension, gallery and t_solo off, HDMI 1-3, AV and the tuner stayed in `dumpsys tv_input` and in the
-#   launcher's Inputs menu, and the remote's Input key still opened a source list (owner's report). Playback over
-#   HDMI was not checked: nothing was switched on at an HDMI port.
+#   launcher's Inputs menu, the remote's Input key still opened a source list, and a game console on HDMI played
+#   picture and sound (owner's report).
 # - With launcherx off and no key helper, the owner reported Home, the Netflix, Prime Video and YouTube buttons,
 #   Input, the gear, the mic and a held volume button all working on the real remote.
 # - usercenter off and a standby (`input keyevent SLEEP`, then the remote's power button) did not reboot this unit
