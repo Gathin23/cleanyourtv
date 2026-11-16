@@ -4,6 +4,11 @@
 #   TV_HOST=<tv ip> addons/startup-branding/push-image.sh logo.png [more.jpg ...]
 #   TV_HOST=<tv ip> addons/startup-branding/push-image.sh --delete logo.png
 set -euo pipefail
+# The `--delete` name check below matches with an ASCII range, `^[A-Za-z0-9._-]+\.(png|…)$`, and in a
+# Turkish locale bash leaves i and I out of [A-Za-z] (glibc's collation, the same reason tools/disable.sh
+# pins it, #3286), so `--delete image.png` was refused as "not a picture name" - a rule its name does not
+# break. Match names by bytes.
+export LC_ALL=C
 : "${TV_HOST:?set TV_HOST to the TV IP address}"
 [ $# -ge 1 ] || { sed -n 2,5p "$0" >&2; exit 1; }
 HERE="$(pwd -W 2>/dev/null || pwd)"
