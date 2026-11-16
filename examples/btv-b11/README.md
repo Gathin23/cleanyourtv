@@ -23,7 +23,7 @@ closes again once USB debugging is off.
 - SELinux is **permissive** out of the box (`getenforce`), and the build is signed with test keys.
 - `com.android.icore` is not an Android package despite its name: it sits in `/data/app` with obfuscated
   classes and can install and remove apps. The list disables it.
-- `com.bb.ota` and `com.bb.otaback` run as the system uid from `/data/app`; the list disables both (see the
+- `com.bb.ota` and `com.bb.otaback` run as the system uid from `/data/app`; the owner disabled both; the list leaves them as comments (see the
   header of `debloat.txt`).
 - The Wi-Fi is 2.4 GHz only: the box sees no 5 GHz network at all, and links at 72 Mbps. On a crowded
   channel, live streams dropped frames (`/sys/class/video/fps_info` showed up to 18 of 30 frames dropped)

@@ -49,7 +49,7 @@ com.tcl.guard                        # TCL Guard
 com.tcl.hearaid                      # hearing test
 com.tcl.t_solo                       # "listen alone" headphones feature
 com.tcl.smartalexa                   # Alexa
-com.tcl.magiconnectfree              # MagiConnect phone remote
+# com.tcl.magiconnectfree            # MagiConnect phone remote: this set has it off; uncomment if you don't use it
 # com.tcl.gamebar                    # game bar: disabled, then re-enabled for a console on HDMI 2. Disable it if you have none.
 com.google.android.play.games
 com.android.printspooler
@@ -61,6 +61,7 @@ com.mediatek.backgrounddetection
 # forgotten and joined again from Settings before this ran; disable.sh skips setupwraith by itself when it owns
 # the network.
 com.google.android.apps.tv.launcherx     # stock Google TV home
+# Disabling setupwraith gives Home back but costs casting (Cast to this TV may stop working).
 com.google.android.tungsten.setupwraith  # setup wizard; claims Home once launcherx is off
 
 # DO NOT DISABLE - same as examples/tcl-g08-au-android12:

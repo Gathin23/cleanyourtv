@@ -70,7 +70,7 @@ com.sony.dtv.demosystemsupport
 com.sony.dtv.multiscreendemo
 com.sony.dtv.gestureapp
 com.sony.dtv.distancealert
-com.sony.dtv.sensingcamera.fwupdate
+# com.sony.dtv.sensingcamera.fwupdate  # camera firmware updater, kept on
 com.sony.dtv.sensingcamera.settings
 #
 # --- Redundant casting stacks (乐播投屏 already provides AirPlay on this set) ---------

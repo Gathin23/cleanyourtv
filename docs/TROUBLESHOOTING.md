@@ -1227,25 +1227,7 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
 - **Wireless debugging shows "IP address & port: unavailable" after a reboot** (same set; the Q7C notes in
   `examples/tcl-q7c-google-tv` saw it too). It happens when Wireless debugging is switched on before Wi-Fi is up,
   as at boot: the TLS server never binds and `adb mdns services` lists no `_adb-tls-connect._tcp`. Switching it
-  off and on once Wi-Fi is connected brings the address back.
-- **An app on the TV cannot use the TV's own Android TV Remote service** (same set). Pairing on `127.0.0.1:6467`
-  works, but `6466` drops every connection that comes from the TV itself before the TLS handshake ends (from
-  `127.0.0.1`, `::1` and the TV's own LAN address alike), while the same client from another machine connects.
-  An app that wants to press D-pad keys on this firmware needs an accessibility service
-  (`performGlobalAction(GLOBAL_ACTION_DPAD_*)`, Android 13 and later) instead.
-- **Volume set from an app does nothing with a soundbar on ARC/eARC** (same set, soundbar on eARC). With
-  `mSystemAudioActivated: true` in `dumpsys hdmi_control`, the music stream is a full-volume device
-  (`mFullVolumeDevices` lists `0x40000,0x40001`), so `AudioManager.setStreamVolume` changes nothing you can hear.
-  `adjustStreamVolume` with `ADJUST_RAISE`, `ADJUST_LOWER` or `ADJUST_TOGGLE_MUTE` works: the TV sends each as an
-  HDMI-CEC `<User Control Pressed>` to the bar (`CECDEBUG sendCecCommand` in `logcat`). Mute state lags: the bar
-  answers with `<Report Audio Status>` about 200 ms later, so `isStreamMute` read straight after the press gives the
-  old state.
-- **A green dot stays in the top-right corner after Google Assistant was opened by an app** (same set). The dot is
-  Android's microphone indicator. Started with `Intent.ACTION_ASSIST`, Assistant (`com.google.android.katniss`)
-  keeps recording after its panel times out on its own: `dumpsys appops --package com.google.android.katniss`
-  shows `RECORD_AUDIO` with a `Running start` that never ends. Closed with Back while the panel is still on
-  screen, it lets the microphone go. An app that opens Assistant can reopen the panel after it times out and send
-  Back to close it.
+  off and on once Wi-Fi is connected brings the address back. Switch Wireless debugging off again when you are done.
 
 ## Accessibility helper enabled but the remote button does nothing
 

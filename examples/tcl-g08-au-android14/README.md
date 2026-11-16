@@ -7,7 +7,7 @@ account, and Google's voice assistant and Cast.
 
 | File | What it is |
 |---|---|
-| `debloat.txt` | The 27 packages that were disabled, grouped and commented |
+| `debloat.txt` | The 26 packages to disable (MagiConnect is a comment), grouped and commented |
 
 **How much testing is behind it:** one set, from 30 October 2026, lived with for two weeks with nothing broken
 and nothing re-enabled. The list was applied with `tools/disable.sh` in four batches with a screenshot after each,

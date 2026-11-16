@@ -32,7 +32,7 @@ cd addons/hindi-panchang && ./gradlew --no-daemon assembleRelease
 Install via ADB:
 
 ```sh
-adb install -r app/build/outputs/apk/release/app-release-unsigned.apk
+adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
 On Home, approve **Hindi Panchang** when the launcher prompts about its card, or enable it under Settings → Module cards.
@@ -43,7 +43,7 @@ None requested. Runs completely offline on TV without any network access, backgr
 
 ## Artwork and licence
 
-The 12 monthly artworks (`bg_month_0.jpg` through `bg_month_11.jpg`) and Suvichar manuscript parchment (`bg_suvichar.jpg`) were generated specifically for this add-on using Google Imagen and are dedicated to the public domain under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/), released under the repository's MIT licence.
+The 12 monthly artworks (`bg_month_0.jpg` through `bg_month_11.jpg`) and Suvichar manuscript parchment (`bg_suvichar.jpg`) are AI-made: generated for this add-on with Google Imagen, and released under [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/).
 
 ## Tested on
 

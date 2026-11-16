@@ -151,8 +151,6 @@ several reboots.
 - **Energy Modes > Increased ("Always connected") leaves Low Power Standby on.** `low_power_standby_enabled` stays
   1 and the firmware sets it back to 1 at every boot, so apps lose the network while the TV sleeps
   (`blocked=LOW_POWER_STANDBY` in `dumpsys netpolicy`). Only the system and the shell can write that setting.
-- **Wireless debugging came back as "unavailable" after a reboot** when something switched it on before Wi-Fi was
-  up. Switching it off and on once Wi-Fi is connected brought the address back every time.
 ## Fifth unit: TCL 55Q77K with Google TV's home kept
 TCL 55Q77K, model "Smart TV Pro", product `G08_4K_US`, the same firmware `UTT2.250416.001 AU16`, on Wi-Fi with
 the TV speakers, remote `BT_RC923A_B1`, a Google account signed in. Set up on 14 November 2026 with

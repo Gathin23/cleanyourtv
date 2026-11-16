@@ -45,8 +45,9 @@ com.vt.fte                               # first-time experience
 com.vt.alexa                             # HiAlexa
 
 # Broadcast interactive (unused without tuner use)
-tv.mopa.ginga
-com.vt.tv.interactive
+# TV middleware: kept on in this list; uncomment to disable
+# tv.mopa.ginga
+# com.vt.tv.interactive
 
 # Cleaners / calibration extras
 com.vt.tv.protector                      # DeviceAssistant cleaner
@@ -75,15 +76,16 @@ com.mediatek.airplaydaemon
 com.mediatek.partner.airplay_sys         # sticky system_ext priv-app; may partially respawn after reboot
 
 # Unused preloaded streaming (owner choice)
-com.netflix.ninja
-com.google.android.youtube.tvunplugged
-com.google.android.youtube.tvmusic
-com.tubitv
-tv.pluto.android
-com.instagram.airwave
-com.haystack.android
+# This set has these off; uncomment what you do not use.
+# com.netflix.ninja
+# com.google.android.youtube.tvunplugged
+# com.google.android.youtube.tvmusic
+# com.tubitv
+# tv.pluto.android
+# com.instagram.airwave
+# com.haystack.android
 com.google.android.play.games
-com.google.android.youtube.tv            # off here for SmartTube; comment out to keep stock YouTube
+# com.google.android.youtube.tv            # off here for SmartTube; comment out to keep stock YouTube
 
 # Launcher phase: after Wi-Fi rejoin. Leaves HOME claim; keep launcherx enabled for volume ramp.
 com.google.android.tungsten.setupwraith

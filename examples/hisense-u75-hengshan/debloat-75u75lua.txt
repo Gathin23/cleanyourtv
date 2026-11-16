@@ -56,11 +56,12 @@ com.android.providers.contacts
 
 # Owner's choices, all reversible: apps this unit's owner does not use
 com.hisense.odinbrowser                     # Hisense web browser
-com.google.android.youtube.tvmusic          # YouTube Music
-com.google.android.videos                   # Google TV / Play Movies
-com.cbs.ca                                  # Paramount+
-com.tubitv                                  # Tubi (the remote's Tubi button then does nothing; left unmapped)
-com.mercadolibre.android.mplay_tv           # Mercado Play
+# This set has these off; uncomment only the apps you do not use.
+# com.google.android.youtube.tvmusic          # YouTube Music
+# com.google.android.videos                   # Google TV / Play Movies
+# com.cbs.ca                                  # Paramount+
+# com.tubitv                                  # Tubi (the remote's Tubi button then does nothing; left unmapped)
+# com.mercadolibre.android.mplay_tv           # Mercado Play
 
 # Launcher phase only. Google TV's setup wizard claims HOME (RecoveryActivity, priority 1) and takes Home from a
 # third-party launcher once launcherx is disabled. Here it owned the Wi-Fi network the TV was on (dumpsys wifi |

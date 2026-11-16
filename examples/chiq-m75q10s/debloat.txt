@@ -78,6 +78,7 @@ com.google.android.tts                       # Google Text-to-Speech; voice typi
 # --- Stock Google TV home and setup wizard ---
 # Disable only after installing and verifying the new launcher! tools/disable.sh skips both while
 # nothing else on the TV answers HOME (the Home guard):
+# Disabling setupwraith gives Home back but costs casting (Chromecast/Cast to this TV); re-enable it if you cast.
 com.google.android.tungsten.setupwraith      # first-run wizard; claims HOME with .RecoveryActivity
 com.google.android.apps.tv.launcherx         # stock Google TV home
 

@@ -47,20 +47,7 @@ TV_HOST=<tv ip> python3 tools/tv.py 'pm enable --user 0 com.amazon.client.metric
 Substitute only the package being restored. Wait at least 10 seconds after an
 enable/disable before any separately agreed reboot.
 
-## Launcher compatibility and remote checks
-
-This repository's reference launcher requires SDK 26 and cannot run on this
-SDK 25 stick. Do not lower its minimum SDK or bypass installation checks.
-The owner's [Mantis Home source](https://github.com/huaban28/mantis-home) is
-a separate GPL-3.0 FLauncher fork, not a build of this repository's launcher.
-
-On this unit, Launcher Manager Mini V2 targeting Mantis Home, using the
-**ActivityManager** trigger with **Launch on Boot** enabled, returned to Mantis
-after one physical Home press and after switching the television to another
-HDMI source and back. The owner verified both on the real remote. Amazon Home
-remained enabled. This is one setup's result, not a guarantee for other firmware
-or future updates. Third-party helper setup and permissions are outside this
-debloat list; see the separate project's documentation. No helper APK is included.
+This repository's launcher needs SDK 26 and does not install on this SDK 25 stick; do not lower its minSdk.
 
 ## ADB connection failures
 
@@ -75,13 +62,3 @@ healthy. Screenshot requests were omitted during diagnosis, but screenshots
 were not proven to cause the failures. UI hierarchy inspection and physical
 remote checks were used instead. No OS update or protection bypass was needed.
 Stop if permissions or device compatibility refuse an operation.
-
-## App inventory versus home categories
-
-An Appstore cloud/download listing does not necessarily mean the app is installed.
-After the owner installed YouTube and Netflix from Appstore, both were found
-and opened from Mantis Home. Settings > Applications is the global installed-app
-inventory; its TV tab is not a home category. Long OK > **Move to category**
-changes home membership; **Add to category** can leave an app in multiple
-categories, while **Hide everywhere** is global. Long OK and Reorder were
-verified with the physical remote.

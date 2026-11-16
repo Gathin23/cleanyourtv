@@ -35,7 +35,7 @@
 # settingsprovider, netflixmanager, mtktvapi.agent, com.mediatek.*.
 # Already disabled at the factory: amazon.aiv.us, crackle, kenhchonloc, notifybravia - not in this
 # list, so restore.sh leaves them off.
-# Reboot-checked: all 16 held after a cold boot (pm list packages -d unchanged).
+# Reboot-checked: all 17 held after a cold boot (pm list packages -d unchanged).
 #
 # Applied 2026-11-15.
 # Telemetry, remote support, bug reports

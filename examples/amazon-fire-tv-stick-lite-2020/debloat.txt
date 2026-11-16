@@ -53,10 +53,11 @@ com.amazon.livedeviceservice
 com.amazon.privacypassservice              # privacy pass token service
 com.amazon.wifilocker                      # uploads Wi-Fi passwords to Amazon
 com.amazon.tv.acr                          # Automatic Content Recognition
-com.amazon.neodelegate                     # Neo telemetry delegate (HD / PS7717.5746N, Spain)
-com.amazon.neopactservice                  # Neo telemetry pact service (HD / PS7717.5746N, Spain)
-com.amazon.device_remote_config_sync_service # remote config sync (HD / PS7717.5746N, Spain)
-com.amazon.dpcclient                       # device policy/provisioning client (HD / PS7717.5746N, Spain)
+# HD / PS7717.5746N unit has these off; uncomment to opt in
+# com.amazon.neodelegate                     # Neo telemetry delegate (HD / PS7717.5746N, Spain)
+# com.amazon.neopactservice                  # Neo telemetry pact service (HD / PS7717.5746N, Spain)
+# com.amazon.device_remote_config_sync_service # remote config sync (HD / PS7717.5746N, Spain)
+# com.amazon.dpcclient                       # device policy/provisioning client (HD / PS7717.5746N, Spain)
 
 # Ads, sponsored rows, recommendations, promos, shopping
 com.amazon.kso.blackbird                   # launcher ad sync / bidding
@@ -74,7 +75,8 @@ com.amazon.gamehub                         # games hub / Luna cards
 com.amazon.systemnotices
 com.amazon.tv.releasenotes                 # "what's new" release notes
 com.amazon.uxnotification                  # UX notification popups
-com.amazon.tv.notificationcenter           # notification center UI (HD / PS7717.5746N, Spain)
+# HD / PS7717.5746N unit has these off; uncomment to opt in
+# com.amazon.tv.notificationcenter           # notification center UI (HD / PS7717.5746N, Spain)
 
 # Preloaded Amazon apps and setup helpers (personal choice)
 com.amazon.tahoe                           # Amazon Kids (FreeTime)
@@ -89,21 +91,22 @@ com.amazon.whisperjoin.middleware.np       # frustration-free setup of other Ama
 com.amazon.tv.ffsprovisioneeclient
 com.amazon.ods.kindleconnect               # "show on Fire TV" from Echo / Fire tablet
 com.amazon.tv.mattercohost                 # Matter smart-home controller
-com.amazon.fireos.cirruscloud              # Cirrus cloud sync (HD / PS7717.5746N, Spain)
-com.amazon.sync.provider.ipc               # account sync IPC provider (HD / PS7717.5746N, Spain)
-com.amazon.alta.h2clientservice            # Alta HTTP/2 client service (HD / PS7717.5746N, Spain)
-com.amazon.communication.discovery       # device communication discovery (HD / PS7717.5746N, Spain)
-com.amazon.csm.htmlruntime                 # CSM HTML runtime (HD / PS7717.5746N, Spain)
-com.amazon.recess                          # idle/recess helper (HD / PS7717.5746N, Spain)
-com.amazon.rtcsessioncontroller            # RTC session controller (HD / PS7717.5746N, Spain)
-com.amazon.spiderpork                      # Amazon device helper (HD / PS7717.5746N, Spain)
-com.amazon.dummy.alarmclock                # unused dummy placeholder (HD / PS7717.5746N, Spain)
-com.amazon.dummy.calendar                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
-com.amazon.dummy.contacts                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
-com.amazon.dummy.gallery                   # unused dummy placeholder (HD / PS7717.5746N, Spain)
-com.amazon.dummy.music                     # unused dummy placeholder (HD / PS7717.5746N, Spain)
-com.amazon.dummy.settings                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
-com.android.printspooler                   # Android print spooler, unused on a stick (HD / PS7717.5746N, Spain)
+# HD / PS7717.5746N unit has these off; uncomment to opt in
+# com.amazon.fireos.cirruscloud              # Cirrus cloud sync (HD / PS7717.5746N, Spain)
+# com.amazon.sync.provider.ipc               # account sync IPC provider (HD / PS7717.5746N, Spain)
+# com.amazon.alta.h2clientservice            # Alta HTTP/2 client service (HD / PS7717.5746N, Spain)
+# com.amazon.communication.discovery       # device communication discovery (HD / PS7717.5746N, Spain)
+# com.amazon.csm.htmlruntime                 # CSM HTML runtime (HD / PS7717.5746N, Spain)
+# com.amazon.recess                          # idle/recess helper (HD / PS7717.5746N, Spain)
+# com.amazon.rtcsessioncontroller            # RTC session controller (HD / PS7717.5746N, Spain)
+# com.amazon.spiderpork                      # Amazon device helper (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.alarmclock                # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.calendar                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.contacts                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.gallery                   # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.music                     # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.amazon.dummy.settings                  # unused dummy placeholder (HD / PS7717.5746N, Spain)
+# com.android.printspooler                   # Android print spooler, unused on a stick (HD / PS7717.5746N, Spain)
 
 # Alexa extras (voice search on the remote mic keeps working with all of these off)
 com.amazon.tv.alexaalerts                  # alarms, timers, reminders

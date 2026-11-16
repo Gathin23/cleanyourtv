@@ -9,7 +9,7 @@ do not match it row for row: [KD-65X80J](../sony-kd-65x80j/debloat.txt) was test
 Google TV / Android 10 firmware and [KD-55X8000C](../sony-kd-55x8000c/debloat.txt)
 on Android TV 7.0.
 
-- The [debloat list](debloat.txt) disables 29 packages. Every entry is a package this
+- The [debloat list](debloat.txt) disables 28 packages. Every entry is a package this
   set has, and every one of them was disabled on it on 2026-11-01.
 - That run was reboot-checked the same day: Home stayed on the new launcher and the
   disabled state survived the reboot. The set was restored to its factory state
