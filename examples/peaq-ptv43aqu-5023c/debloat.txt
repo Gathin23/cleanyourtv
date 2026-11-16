@@ -26,8 +26,8 @@
 # Android TV 11 (API 30), firmware RTM7.230903.112, ADB over Wi-Fi. The saved Wi-Fi network belongs to setupwraith
 # here too, and only tvlauncher and FallbackHome answer HOME. tv.anoki.acr.controller is not installed on this
 # build. Applied in one session in three batches with a screenshot after each, and reboot-checked:
-# `pm list packages -d` was identical before and after. Not yet lived with for days, and the remote's buttons were
-# not yet checked on the real remote.
+# `pm list packages -d` was identical before and after. Not yet lived with for days. The remote's buttons worked on
+# the real remote without tvlauncher and with no key helper (owner's report).
 # - Applied from this list: batch 1 (tv.anoki.acr.controller absent), batch 2 (Play Games and YouTube Music
 #   shipped disabled), Backdrop from batch 3 and the Media Player from batch 4. The Assistant and Prime Video
 #   stayed on by choice, as did Netflix, YouTube, Vodafone TV and TVI Player. Google Partner Setup was off too.
