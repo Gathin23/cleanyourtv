@@ -2999,6 +2999,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         } catch (Exception ignored) {
         }
+        portalPending = online && !validated;
         // With a VPN app configured, a VPN that is down matters too: show a red "VPN off" capsule then.
         boolean vpnDown = !vpn && online && !vpnApp.isEmpty();
         if (vpnPill) updateVpnPill(vpn);
@@ -3065,6 +3066,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private ColorStateList wifiOnlineTint, wifiPlainTint;
     /** wifi_status_warnings (with wifi_status_color): orange without internet, red offline; null while off. */
     private ColorStateList wifiNoInternetTint, wifiOfflineTint;
+    /** Connected but not validated, as updateWifiLabel last saw it: the orange pill, a captive portal's login waiting. */
+    private boolean portalPending;
     /** The app library button in the top bar (library_button). */
     private View btnLibraryTop;
     /** The open library came from that button: closing it returns there instead of scrolling to the grid's end. */
@@ -3164,6 +3167,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * vpn_pill the VPN app has its own pill, so this one always opens Wi-Fi settings.
      */
     private void openNetworkPill() {
+        // wifi_status_warnings: the orange pill opens the captive portal's login page (PortalLogin); its long
+        // press still opens Wi-Fi settings.
+        if (wifiNoInternetTint != null && portalPending) {
+            Intent login = PortalLogin.intent(this);
+            if (login != null) {
+                open(login);
+                return;
+            }
+        }
         Intent i = vpnPill ? null : vpnAppIntent();
         open(i != null ? i : systemIntent(Settings.ACTION_WIFI_SETTINGS));
     }

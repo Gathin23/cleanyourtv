@@ -356,7 +356,9 @@
     <bool name="wifi_status_color">false</bool>
     <!-- With wifi_status_color: the icon orange while the TV is connected but Android has not reached the internet
          through it (a hotel or holiday-park Wi-Fi waiting for its login page) and red while it is offline, instead
-         of white for both. Can also be set with "wifi_status_warnings": true in a theme's config.json. -->
+         of white for both. While it is orange, OK on the pill opens the login page in a browser, where one is
+         installed (long press still opens Wi-Fi settings). Can also be set with "wifi_status_warnings": true in a
+         theme's config.json. -->
     <bool name="wifi_status_warnings">false</bool>
     <!-- The app library as a round button in the top bar, beside Settings (app_library must be on too). -->
     <bool name="library_button">false</bool>
