@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Draws wallpaper.jpg: a snowy Christmas night, our own illustration, released CC0 1.0.
+"""Draws wallpapers/01-sleigh-night.jpg: a snowy Christmas night, our own illustration, released CC0 1.0.
 
-Usage: python3 make_wallpaper.py   (needs Pillow; writes wallpaper.jpg next to this file)
+Usage: python3 make_wallpaper.py   (needs Pillow; writes wallpapers/01-sleigh-night.jpg next to this file)
 """
 import math
 import os
@@ -190,4 +190,4 @@ for _ in range(220):  # falling snow
     x, y, r = rnd.uniform(0, W), rnd.uniform(0, 1000), rnd.choice([1, 1.5, 2, 2, 3])
     d.ellipse([x - r, y - r, x + r, y + r], fill=(240, 246, 255, rnd.randint(110, 220)))
 
-img.save(os.path.join(os.path.dirname(os.path.abspath(__file__)), "wallpaper.jpg"), quality=84, optimize=True)
+img.save(os.path.join(os.path.dirname(os.path.abspath(__file__)), "wallpapers", "01-sleigh-night.jpg"), quality=84, optimize=True)
