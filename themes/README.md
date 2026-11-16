@@ -135,6 +135,7 @@ A new key needs one there in the same pull request.
 | `greeting_name` | string | A name after the greeting, e.g. `"Mr. Trịnh"` for GOOD MORNING, MR. TRỊNH; empty for the greeting alone |
 | `show_greeting` | bool | The greeting above the clock (`true` by default); `false` hides it |
 | `header_white` | bool | The date and the line between the clock and the date in the clock's full white instead of dimmed (`false` by default) |
+| `header_shadow` | bool | The greeting, the clock and the date with the same soft shadow as a wallpaper's caption, so they stay readable on a light picture (`false` by default) |
 | `module_cards` | bool | Look for module cards and ask about them (`true`); `false` turns the feature off |
 | `reduced_motion` | bool | Calmer motion for weak GPUs: the highlight slides without bouncing and settles within 5 frames, every animation lasts 90 ms or less, names, the top shelf, the glow and the highlight appear instead of fading, and there is no tile entrance (`false` by default) |
 | `boot_to_live_tv` | bool | Open the Live TV app (`live_tv_package`) on the first Home after the TV starts, once per boot. When `launch_actions` gives that package an `input:` target, it switches to that input instead, the way its tile does (a set whose Live TV app always starts on the empty tuner: Vu `hamamatsucho`); `open_on_start_network_wait` does not apply to an input |

@@ -292,6 +292,9 @@
     <!-- The date and the line between the clock and the date in the clock's full white instead of dimmed. Can also be
          set with "header_white" in a theme. -->
     <bool name="header_white">false</bool>
+    <!-- The greeting, the clock and the date drawn with the soft shadow a wallpaper's caption has, so they stay readable
+         on a light picture. Can also be set with "header_shadow" in a theme. -->
+    <bool name="header_shadow">false</bool>
     <!-- Optional VPN app the network pill opens (hold the pill for Wi-Fi settings), e.g. the package of the
          VPN you use. Empty: the pill opens Wi-Fi settings. The green VPN badge shows for any VPN either way;
          with an app set here, a red "VPN off" badge also shows while no VPN is up. -->

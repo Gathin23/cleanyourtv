@@ -558,6 +558,19 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             ((TextView) findViewById(R.id.date)).setTextColor(Color.WHITE);
             findViewById(R.id.clockDivider).setBackgroundColor(Color.WHITE);
         }
+        if (cfg.headerShadow) {
+            // The soft shadow under a wallpaper's caption (WallpaperPlayer), on every line of the header. The rows
+            // between a line and the header's outer layout (which already lets children draw past their edges)
+            // would cut the shadow off at the line's own edges, leaving a hard-edged dark box under it.
+            android.view.ViewParent outer = clockBlock.getParent();
+            for (int id : new int[]{R.id.greeting, R.id.clock, R.id.ampm, R.id.shamsiDate, R.id.date, R.id.lunarDate}) {
+                TextView line = findViewById(id);
+                line.setShadowLayer(6 * density, 0, density, 0xCC000000);
+                for (android.view.ViewParent p = line.getParent(); p instanceof ViewGroup && p != outer; p = p.getParent()) {
+                    ((ViewGroup) p).setClipChildren(false);
+                }
+            }
+        }
         if (getResources().getBoolean(R.bool.rtl_menu_bar)) {
             // Center Hebrew greetings over the numeric time, independent of a visible AM/PM label. The clock's row
             // is watched too: date_below_clock can move the whole row right under a wider date.
