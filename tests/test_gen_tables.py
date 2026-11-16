@@ -323,6 +323,10 @@ class GeneratorTest(unittest.TestCase):
                  (tv("X", "X", colour="red"), "unknown key"),
                  (tv("X", "X", notes="a | b"), "split the table cell"),
                  (tv("X\n", "X"), "one line"),
+                 # A bare CR is a line ending to a Markdown reader, and the tables are read back with
+                 # universal newlines, so it comes back as the LF a re-run compares against: refused,
+                 # rather than written into a row `--check` never agrees with (the test below).
+                 (tv("X\rGoogle TV", "X"), "one line"),
                  (tv("X", "X", notes="[note](../docs/devices/none.md)"), "leads nowhere"),
                  # Not a string: refused by name, where the link check used to end in a TypeError (exit 1).
                  (tv("X", "X", notes=["a", "b"]), '"notes" must be'),
@@ -335,6 +339,20 @@ class GeneratorTest(unittest.TestCase):
                 self.assertIn("examples/x-1/tv.json", str(caught.exception))
                 self.assertIn(message, str(caught.exception))
                 self.assertEqual(run(root, "--check")[0], 2)
+
+    def test_a_carriage_return_is_refused_instead_of_written_and_never_agreed_with(self):
+        """A cell with a bare CR is not one line, and a run that wrote it would never agree with itself.
+
+        The tables are read back with universal newlines, so the CR comes back as the LF the re-render
+        compares against: `gen_tables.py` wrote the row, `--check` answered "out of date" from then on,
+        and no run could clear it - the "README tables" job red on a row that looks right. Refusing the
+        value at load means the tables are never written, so a contributor sees the line they can fix.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = tree(tmp, [("x-1", tv("X\rGoogle TV", "X"))])
+            before = (root / "README.md").read_text(encoding="utf-8")
+            self.assertEqual(run(root)[0], 2)
+            self.assertEqual((root / "README.md").read_text(encoding="utf-8"), before)
 
     def test_an_escaped_pipe_and_a_working_link_are_fine(self):
         with tempfile.TemporaryDirectory() as tmp:

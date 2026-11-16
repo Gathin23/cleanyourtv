@@ -85,7 +85,10 @@ def check_cell(where, key, value):
     if not isinstance(value, str) or not value.strip():
         return [f"{where}: \"{key}\" must be a non-empty string"]
     out = []
-    if value != value.strip() or "\n" in value:
+    # A CR is a line ending to a Markdown reader, and `read_text` reads the table back with universal
+    # newlines, so a written CR would come back as an LF and `--check` would never agree with the run
+    # that had just written it. Both line endings are refused; a CRLF already carries the LF.
+    if value != value.strip() or "\n" in value or "\r" in value:
         out.append(f"{where}: \"{key}\" must be one line with no space at either end")
     if re.search(r"(?<!\\)\|", value):
         out.append(f"{where}: \"{key}\" has a | that would split the table cell; write \\| instead")
