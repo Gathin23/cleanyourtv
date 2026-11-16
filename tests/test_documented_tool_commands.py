@@ -37,7 +37,7 @@ page that writes `python tools/tv.py 'pm enable ...'` hands the reader `command 
 before the script is read - and a script that starts itself again under the venv rescues the packages, not
 a name the shell never resolves. Three commands on two pages opened that way, and the sweep could not see
 them because `python` was the interpreter it was looking for: examples/tcl-32l5a/README.md's two
-powershell blocks, on a page whose Windows siblings print the venv's `tools\venv\Scripts\python.exe`, and
+powershell blocks, on a page whose Windows siblings print the venv's `tools\\venv\\Scripts\\python.exe`, and
 addons/sleep-timer/README.md's sh block. The bare name is refused now; `python3`, a command both systems
 have, is left to the mode rule.
 
