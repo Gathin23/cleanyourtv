@@ -74,34 +74,34 @@ public class SettingsActivity extends Activity {
         secondsLabel.setPadding(dp(8), 0, 0, dp(8));
         updateSecondsLabel();
         list.addView(secondsLabel);
-        int currentMinutes = preferences.getInt(Options.MINUTES_PER_PICTURE, Options.DEFAULT_MINUTES_PER_PICTURE);
-        EditText minutesInput = new EditText(this);
-        minutesInput.setText(String.valueOf(currentMinutes));
-        minutesInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        minutesInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        int currentSeconds = preferences.getInt(Options.SECONDS_PER_PICTURE, Options.DEFAULT_SECONDS_PER_PICTURE);
+        EditText secondsInput = new EditText(this);
+        secondsInput.setText(String.valueOf(currentSeconds));
+        secondsInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        secondsInput.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         LinearLayout.LayoutParams inputLp2 = new LinearLayout.LayoutParams(
                 dp(100), LinearLayout.LayoutParams.WRAP_CONTENT);
         inputLp2.topMargin = dp(8);
         inputLp2.bottomMargin = dp(8);
         inputLp2.leftMargin = dp(8);
-        minutesInput.setLayoutParams(inputLp2);
-        minutesInput.setOnFocusChangeListener((v, hasFocus) -> {
+        secondsInput.setLayoutParams(inputLp2);
+        secondsInput.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
-                String text = minutesInput.getText().toString();
+                String text = secondsInput.getText().toString();
                 if (!text.isEmpty()) {
                     try {
-                        int minutes = Integer.parseInt(text);
-                        minutes = Math.max(1, Math.min(120, minutes));
-                        preferences.edit().putInt(Options.MINUTES_PER_PICTURE, minutes).apply();
-                        minutesInput.setText(String.valueOf(minutes));
+                        int seconds = Integer.parseInt(text);
+                        seconds = Math.max(5, Math.min(3600, seconds));
+                        preferences.edit().putInt(Options.SECONDS_PER_PICTURE, seconds).apply();
+                        secondsInput.setText(String.valueOf(seconds));
                         updateSecondsLabel();
                     } catch (NumberFormatException e) {
-                        minutesInput.setText(String.valueOf(currentMinutes));
+                        secondsInput.setText(String.valueOf(currentSeconds));
                     }
                 }
             }
         });
-        list.addView(minutesInput);
+        list.addView(secondsInput);
 
         list.addView(createSpacer(dp(16)));
 
@@ -165,8 +165,8 @@ public class SettingsActivity extends Activity {
     }
 
     private void updateSecondsLabel() {
-        int minutes = preferences.getInt(Options.MINUTES_PER_PICTURE, Options.DEFAULT_MINUTES_PER_PICTURE);
-        secondsLabel.setText(String.format(getString(R.string.minutes_per_picture), minutes));
+        int seconds = preferences.getInt(Options.SECONDS_PER_PICTURE, Options.DEFAULT_SECONDS_PER_PICTURE);
+        secondsLabel.setText(String.format(getString(R.string.seconds_per_picture), seconds));
     }
 
     private void weatherChanged(boolean on) {

@@ -18,6 +18,6 @@
     <string name="weather_ok">La posizione è attiva. Il meteo si aggiorna ogni 30 minuti.</string>
     <string name="open_location_settings">Apri le impostazioni della posizione</string>
     <string name="preview">Anteprima</string>
-    <string name="minutes_per_picture">Tempo per foto: %d minuti</string>
+    <string name="seconds_per_picture">Tempo per foto: %d secondi</string>
     <string name="idle_minutes">Avvia screensaver dopo: %d minuti</string>
 </resources>

@@ -86,6 +86,5 @@ tv "printf '%s' $SECONDS_PER_PICTURE > $TMP-seconds.txt; content write --uri con
 tv "[ -f $BEFORE ] || { settings get secure screensaver_components; settings get secure screensaver_enabled; } > $BEFORE; settings put secure screensaver_components $DREAM; settings put secure screensaver_enabled 1" >/dev/null
 [ "$IDLE_MINUTES" -eq 0 ] || tv "settings put system screen_off_timeout $((IDLE_MINUTES * 60000))" >/dev/null
 COUNT=$(tv "ls $DIR 2>/dev/null | wc -l" | tr -d '\r ')
-MINUTES=$(( (SECONDS_PER_PICTURE + 59) / 60 ))
-echo "Screensaver: Photos with $COUNT file(s) on the TV, $MINUTES min each ($SENT sent). Undo with: addons/photo-screensaver/sync.sh --off"
+echo "Screensaver: Photos with $COUNT file(s) on the TV, $SECONDS_PER_PICTURE s each ($SENT sent). Undo with: addons/photo-screensaver/sync.sh --off"
 [ -z "${START:-}" ] || tv "am start -n com.android.systemui/.Somnambulator >/dev/null; sleep 3; dumpsys dreams | grep mCurrentDreamName"

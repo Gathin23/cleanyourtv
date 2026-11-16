@@ -18,6 +18,6 @@
     <string name="weather_ok">Locatie staat aan. Het weer wordt elke 30 minuten bijgewerkt.</string>
     <string name="open_location_settings">Locatie-instellingen openen</string>
     <string name="preview">Voorbeeld</string>
-    <string name="minutes_per_picture">Tijd per foto: %d minuten</string>
+    <string name="seconds_per_picture">Tijd per foto: %d seconden</string>
     <string name="idle_minutes">Screensaver starten na: %d minuten</string>
 </resources>
