@@ -196,6 +196,30 @@
 # - Launcher: Live TV package org.droidtv.playtv, hidden from the grid with hidden_apps;
 #   build-and-install.sh ran through on its own. The Inputs menu lists HDMI 1-4, Component, Composite,
 #   SCART, VGA and Live TV, and a console on HDMI 1 works.
+#
+# SEVENTH UNIT: Philips 58PUS8506/12 (Denmark), same board and build (ro.product.model "2021/22 Philips UHD
+# Android TV", PH1M_EA_9970A, RTT2.211108.001/21029, security patch 2025-10-01), so this list applies.
+# Applied on 15 November 2026 in five batches with tools/disable.sh, a screenshot after each, with several
+# reboots that day; not yet lived with for days, so nothing below changes the list.
+# - Disabled from this list: candeebug, gel, usagelogger, nettvrecommender, recommendation, nettv.market,
+#   nettvapp1814, demome, m7opapp, the five Google telemetry/setup entries, katniss, amazonalexa, play.games,
+#   videos, youtube.tvmusic, Prime Video and Apple TV, then tvlauncher once the new launcher was Home. All
+#   still disabled after each reboot, checked with `pm list packages -d`.
+# - Kept there (owner's choice): Netflix, Disney+, stock YouTube, dlna, ipcontrol, talkback, mediashell
+#   (quirk 4) and the firmware updaters. Not installed on that unit: the other nettvapp* web apps, Fitness
+#   Buddy, WhaleLive, Boosteroid, Vodafone TV, Sweet TV and Rakuten. Disabled from the factory:
+#   tvrecommendations, org.droidtv.aurora, org.droidtv.freeviewplayers and 15 uk.co.freeview.* apps.
+# - disable.sh's TV-input guard held back usagelogger and demome. `pm query-services --components -a
+#   android.media.tv.TvInputService` names neither, so both were disabled with TVINPUT_ALLOW=1, as on the
+#   third and sixth units. SOURCES and the Inputs menu switch inputs; nothing was plugged in, so a picture
+#   on HDMI or the tuner was not checked.
+# - Idle log after the last batch (quirk 5's method): no handleConnectAurora or connectCotextService loop.
+# - Launcher: Live TV package org.droidtv.playtv, hidden from the grid with hidden_apps. The firmware opens
+#   org.droidtv.playtv at every power-on; power_on_home with HOME_KEY_SERVICE=1 sent it to Home about 10 s
+#   after boot. Unlike the second, third and fifth units, holding Volume + then moved one step only: the
+#   key filter dropped the repeats. consume_volume_keys did not change that; volume_pauses_filter true gave
+#   the ramp back after one tap (tap Volume, then hold). Checked on the real remote: Home, SOURCES,
+#   Settings and the app keys.
 
 # TP Vision telemetry. org.droidtv.gel runs inside the candeebug process
 # (android:process="org.droidtv.candeebug"), so disabling candeebug alone leaves a process with
