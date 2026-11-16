@@ -123,6 +123,31 @@ class PhilipsApi(unittest.TestCase):
         self.assertEqual(asked, [])
 
 
+class AnHttpAnswerIsClosed(unittest.TestCase):
+    """get() reads a 404 or an unauthorized answer as a status, and closes it on the way out.
+
+    urllib raises HTTPError with the response inside it - status line, headers and body - so the
+    connection belongs to whoever caught it. The tool returned the code and left the rest to the
+    collector: on Python 3.14 that prints `ResourceWarning: Implicitly cleaning up <HTTPError 404:
+    ...>` after the report, and on every version the socket is held until a collection runs. The stub
+    records the close, so this case says the same thing on 3.11 and 3.12, where nothing is printed.
+    """
+
+    def test_a_404_answer_is_closed_before_its_code_is_reported(self):
+        class Answer(urllib.error.HTTPError):
+            was_closed = False
+
+            def close(self):
+                type(self).was_closed = True
+                super().close()
+
+        answer = Answer("https://192.168.1.50:1926/6/system", 404, "Not Found", {}, io.BytesIO(b"no"))
+        with mock.patch.object(philips_api.urllib.request, "urlopen", side_effect=answer):
+            status, body, failure = philips_api.get("https://192.168.1.50:1926/6/system")
+        self.assertEqual((status, body, failure), (404, "", None))
+        self.assertTrue(Answer.was_closed, "the 404 answer was left open")
+
+
 class ASilentTVIsNotADisabledPackage(unittest.TestCase):
     """Nothing answered on either port: the run learned nothing, so it must not send the owner to the
     package list - the shape a set that is asleep, at another address or behind a VPN produces."""
