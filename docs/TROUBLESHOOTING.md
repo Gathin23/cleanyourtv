@@ -93,6 +93,22 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   listens for ADB there`, a set that cannot be reached prints `could not reach`, and
   `tools/adb-closed.py <tv ip>` answers it in its exit status - 0 the TV itself refused, 1 the port is
   open, 2 it could not tell.
+- **Debugging is off, so the closing check should say "closed", but it answers 2 again and again: the
+  set drops packets to closed ports instead of refusing them.** Seen on a [Philips 58PUS7304/12,
+  TPM191E (`PH9M_EA_5599`), Android TV 12,
+  `STT2.230526.001`](https://github.com/Gathin23/cleanyourtv/issues/3890) on Ethernet: USB debugging
+  off, authorisations revoked, `adb_wifi_enabled` 0, and that firmware has no Network or Wireless
+  debugging entry either. `tools/adb-closed.py <tv ip>` answered `could not check <tv ip>:5555: it did
+  not answer in 3 s` before and after a reboot and from an ordinary terminal, and ports 1 and 5556
+  timed out the same way, while 1925 accepted a connection in the same second - so the TV was awake
+  and reachable, and the silence was the set's own behaviour, not the network, the router or a VPN.
+  `adb connect <tv ip>:5555` gave `WSAETIMEDOUT` (10060) as well, and 5555 had accepted at once while
+  debugging was still on. On a board like this the closing step cannot reach "closed" by the letter of
+  the rule, and a timeout says nothing either way, so read it as unproven rather than as still open:
+  say that when you hand the TV back instead of reporting the port as confirmed closed, leave
+  debugging off, and check once more after the reboot. The one thing worth reading in that state is a
+  port that is known to be open on that board answering while 5555 does not - on a Philips that is 1925
+  (or 1926), the JointSpace API `tools/philips-api.py` reads.
 - **A cable to the computer gives no device in `adb devices`**: a TV's USB-A ports are usually host
   ports, for a drive, a keyboard or an Ethernet adapter, and the cable route in the bullet above needs
   one that carries ADB device mode instead - the exception, as on the Xiaomi boxes below. On the GX655
