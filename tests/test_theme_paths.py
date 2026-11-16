@@ -21,6 +21,25 @@ class ThemePathsTest(unittest.TestCase):
             with self.subTest(path_kind=path_kind):
                 self.check_theme_path(path_kind)
 
+    def test_a_folder_with_a_space_reaches_python_as_one_argument(self):
+        """A theme in "my themes/living room": the stand-in has to hand the path over whole.
+
+        The readable call log joins the words with spaces, so reading the path out of it cut this one at
+        the space and answered "/.../my" for a folder theme.sh had passed on correctly.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            tools = self.prepare(base / "repo")
+            theme = base / "my themes" / "living room"
+            theme.mkdir(parents=True)
+            config = theme / "config.json"
+            config.write_text(json.dumps({"columns": 4}))
+            result, capture = self.run_theme(tools, self.bash_path(theme), cwd=base)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            pushed = self.pushed_argument(capture)
+            self.assertEqual(Path(pushed).resolve(), config.resolve(), pushed)
+            self.assertEqual(Path(f"{capture}.push").read_bytes(), config.read_bytes())
+
     def test_missing_folder_names_the_path_given(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)
@@ -46,9 +65,7 @@ class ThemePathsTest(unittest.TestCase):
                     config.write_bytes(data)
                     result, capture = self.run_theme(tools, self.bash_path(theme), cwd=base)
                     self.assertEqual(result.returncode, 0, result.stderr)
-                    push = next(line for line in capture.read_text().splitlines()
-                                if line.startswith("tv.py --push "))
-                    self.assertEqual(Path(push.split()[2]).resolve(), config.resolve())
+                    self.assertEqual(Path(self.pushed_argument(capture)).resolve(), config.resolve())
                     self.assertEqual(Path(str(capture) + ".push").read_bytes(), data)
                     self.assertEqual(config.read_bytes(), data)
 
@@ -64,6 +81,7 @@ class ThemePathsTest(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn("not valid JSON", result.stderr)
                 self.assertFalse(capture.exists(), "invalid JSON must not reach the TV transport")
+                self.assertFalse(Path(f"{capture}.argv").exists(), "nothing may be recorded as sent")
 
     def prepare(self, repo):
         """Copy theme.sh and stand in for tools/venv/bin/python.
@@ -71,24 +89,38 @@ class ThemePathsTest(unittest.TestCase):
         The JSON check and the revision marker are plain `-c` snippets, so they go to the real Python
         and the check is the one theme.sh really runs. tv.py and b64push.py would need a TV: the fake
         records their arguments instead.
+
+        It records two files, because the readable one joins the words with spaces and a theme folder
+        can hold one ("my themes/living room", or a temp dir under a folder with a space): `$CAPTURE`
+        is the line a person reads, and `$CAPTURE.argv` is one JSON array per call, which is what a
+        test takes a path out of.
         """
         tools = repo / "tools"
         tools.mkdir(parents=True)
         shutil.copy2(ROOT / "tools" / "theme.sh", tools / "theme.sh")
         client = tools / "venv" / "bin" / "python"
         client.parent.mkdir(parents=True)
+        python = Path(sys.executable).as_posix()
+        record = 'import json,sys;open(sys.argv[1],"a").write(json.dumps(sys.argv[2:])+"\\n")'
         client.write_text(
             '#!/bin/sh\n'
             'if [ "$1" = "-I" ] && [ "$2" = "-c" ]; then\n'
-            f'  exec "{Path(sys.executable).as_posix()}" "$@"\n'
+            f'  exec "{python}" "$@"\n'
             'fi\n'
             'shift\n'
             'if [ "$1" = "tv.py" ] && [ "$2" = "--push" ]; then cp "$3" "$CAPTURE.push"; fi\n'
             'printf "%s\\n" "$*" >> "$CAPTURE"\n'
+            f'"{python}" -c \'{record}\' "$CAPTURE.argv" "$@"\n'
             'echo applied\n'
         )
         client.chmod(0o755)
         return tools
+
+    def pushed_argument(self, capture):
+        """The path handed to `tv.py --push`, as the one word it was: `$*` cannot be split back."""
+        calls = [json.loads(line) for line in Path(f"{capture}.argv").read_text().splitlines()]
+        push = next(call for call in calls if call[:2] == ["tv.py", "--push"])
+        return push[2]
 
     def bash_path(self, path):
         """The path as bash spells it: /tmp/... on Linux and macOS, /c/Users/... under Git Bash."""
@@ -121,10 +153,8 @@ class ThemePathsTest(unittest.TestCase):
             result, capture = self.run_theme(tools, argument, cwd=base / "caller")
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertNotIn("not valid JSON", result.stderr)
-            calls = capture.read_text()
-            push = next(line for line in calls.splitlines() if line.startswith("tv.py --push "))
-            pushed = push.split()[2]
-            self.assertTrue(pushed.endswith("mytheme/config.json"), push)
+            pushed = self.pushed_argument(capture)
+            self.assertTrue(pushed.endswith("mytheme/config.json"), pushed)
             # The path handed to Python must be one Python can open (C:/... rather than /c/... on Windows).
             self.assertTrue(Path(pushed).is_file(), f"Python cannot open {pushed}")
 
