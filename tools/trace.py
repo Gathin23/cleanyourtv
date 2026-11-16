@@ -348,10 +348,16 @@ def main(argv=None):
             for run in range(1, args.runs + 1):
                 path = os.path.join(args.out, f"{args.scenario}-{run}.pftrace")
                 size = record_one(dev, setup, steps, args.package, path, shell)
-                with open(path[:-len(".pftrace")] + ".json", "w") as f:
-                    json.dump({"scenario": args.scenario, "run": run, "package": args.package,
-                               "launcher": launcher, "other_app": other, "setup": setup, "steps": steps,
-                               "tv": about, "recorded": time.strftime("%Y-%m-%dT%H:%M:%S")}, f, indent=1)
+                sidecar = path[:-len(".pftrace")] + ".json"
+                with tempfile.TemporaryDirectory(prefix=".trace-", dir=os.path.dirname(path)) as staging:
+                    part = os.path.join(staging, os.path.basename(sidecar))
+                    with open(part, "w") as f:
+                        json.dump({"scenario": args.scenario, "run": run, "package": args.package,
+                                   "launcher": launcher, "other_app": other, "setup": setup, "steps": steps,
+                                   "tv": about, "recorded": time.strftime("%Y-%m-%dT%H:%M:%S")}, f, indent=1)
+                    if os.path.isfile(sidecar):
+                        shutil.copymode(sidecar, part)
+                    os.replace(part, sidecar)
                 print(f"{path}: {size} bytes")
         finally:
             if helpers:
