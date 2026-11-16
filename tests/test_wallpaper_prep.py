@@ -198,6 +198,56 @@ class PrepareTest(unittest.TestCase):
             self.assertLessEqual(quality, 50)
             self.assertGreater(kb, 5, "it reports the size it could reach instead of looping forever")
 
+    def test_a_picture_just_over_the_limit_is_reported_at_its_real_size(self):
+        # prepare() rounds the size it returns, so 40.23 KB came back as 40: the over-limit note compared
+        # that rounded number and said nothing, and a wallpaper over its budget printed as exactly at it -
+        # the one thing themes/README.md's "under 300 KB" is about. The file's own size is what is judged.
+        with tempfile.TemporaryDirectory() as d:
+            src, out = Path(d, "photos"), Path(d, "out")
+            src.mkdir()
+            make_photo(src / "a.png")
+
+            def write_over(path, out_path, *rest):
+                Path(out_path).write_bytes(b"x" * 41_200)  # 40.23 KB, over a 40 KB limit
+                return 40, 48  # what round() of that size says
+
+            output = io.StringIO()
+            with mock.patch.object(prep, "prepare", write_over), contextlib.redirect_stdout(output):
+                self.assertEqual(prep.main([str(src), str(out), "--max-kb", "40"]), 0)
+            self.assertIn("40.2 KB, quality 48  (over 40 KB even at quality 48)", output.getvalue())
+
+    def test_a_picture_under_the_limit_keeps_the_plain_size_and_no_note(self):
+        with tempfile.TemporaryDirectory() as d:
+            src, out = Path(d, "photos"), Path(d, "out")
+            src.mkdir()
+            make_photo(src / "a.png")
+
+            def write_under(path, out_path, *rest):
+                Path(out_path).write_bytes(b"x" * 20_480)  # 20 KB
+                return 20, 84
+
+            output = io.StringIO()
+            with mock.patch.object(prep, "prepare", write_under), contextlib.redirect_stdout(output):
+                self.assertEqual(prep.main([str(src), str(out), "--max-kb", "40"]), 0)
+            self.assertIn("20 KB, quality 84\n", output.getvalue())
+            self.assertNotIn("over 40 KB", output.getvalue())
+
+    def test_a_limit_no_picture_can_meet_is_refused_before_anything_is_read(self):
+        # Every picture is written over a limit of 0 or less and the run still exited 0, so `--max-kb 0` -
+        # what a script meaning "no limit" passes - read as a clean run whose pictures are all over budget.
+        with tempfile.TemporaryDirectory() as d:
+            src, out = Path(d, "photos"), Path(d, "out")
+            src.mkdir()
+            make_photo(src / "a.png")
+            for limit in ("0", "-40"):
+                with self.subTest(limit=limit):
+                    err = io.StringIO()
+                    with contextlib.redirect_stderr(err), self.assertRaises(SystemExit) as caught:
+                        prep.main([str(src), str(out), "--max-kb", limit])
+                    self.assertEqual(caught.exception.code, 2)
+                    self.assertIn("--max-kb must be at least 1 KB", err.getvalue())
+                    self.assertFalse(out.exists(), "nothing is created for a limit that is refused")
+
     def test_originals_are_never_overwritten_and_target_must_differ(self):
         with tempfile.TemporaryDirectory() as d:
             make_photo(Path(d, "a.png"))

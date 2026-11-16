@@ -7,7 +7,9 @@ Every JPEG, PNG, WebP and (with pillow-heif) HEIC file in the first folder is ce
 second folder. The originals are never touched: a target that is the source folder (by any spelling or
 link), or an 01.jpg there that is a symlink or hard link to one of your photos, stops the run before
 anything is written. Each picture is kept under --max-kb (300 by default, what
-themes/README.md asks for) by lowering the JPEG quality a step at a time.
+themes/README.md asks for) by lowering the JPEG quality a step at a time, and a picture that cannot be
+brought under the limit at the quality floor is printed as over it, at the size the file really is. A
+limit no picture can meet - 0 or less - is refused before anything is read.
 Each output is replaced only after a complete JPEG is ready; a failed conversion leaves any earlier
 wallpaper at that name intact.
 
@@ -144,6 +146,12 @@ def main(argv=None):
         parser.error("--gradient must be between 0 and 0.9")
     if not 30 <= args.quality <= 95:
         parser.error("--quality must be between 30 and 95")
+    # A limit of 0 or less is the one value the size search can never reach: every picture is written
+    # over it and the run still exits 0, so `--max-kb 0` - what a script meaning "no limit" passes -
+    # read as a clean run whose pictures are all over the budget it stated.
+    if args.max_kb < 1:
+        parser.error(f"--max-kb must be at least 1 KB, and {args.max_kb} is a limit no picture can meet: "
+                     "every picture would be written over it")
     if not os.path.isdir(args.source):
         parser.error(f"{args.source} is not a folder")
     source_real = os.path.realpath(args.source)
@@ -188,13 +196,20 @@ def main(argv=None):
             continue
         out_path = os.path.join(args.target, "%02d.jpg" % number)
         try:
-            kb, quality = prepare(path, out_path, args.size, args.brightness, args.gradient, args.quality, args.max_kb)
+            _, quality = prepare(path, out_path, args.size, args.brightness, args.gradient, args.quality, args.max_kb)
         except Exception as error:  # a corrupt picture must not stop the rest
             print(f"skipped {name}: {error}")
             continue
         written += 1
-        note = "" if kb <= args.max_kb else f"  (over {args.max_kb} KB even at quality {quality})"
-        print(f"{os.path.basename(out_path)}  <- {name}  {kb} KB, quality {quality}{note}")
+        # Judged on the file's own size, not the rounded number prepare() returns: rounding 40.23 KB to
+        # 40 puts it exactly on a 40 KB limit, so a picture over its budget read as "40 KB" with no note
+        # - the one thing themes/README.md's "under 300 KB" is about. An over-limit picture is printed to
+        # a tenth of a KB, so the line and its note cannot contradict each other.
+        size_kb = os.path.getsize(out_path) / 1024
+        over = size_kb > args.max_kb
+        note = f"  (over {args.max_kb} KB even at quality {quality})" if over else ""
+        shown = f"{size_kb:.1f}" if over else f"{round(size_kb)}"
+        print(f"{os.path.basename(out_path)}  <- {name}  {shown} KB, quality {quality}{note}")
     print(f"{written} of {len(files)} pictures written to {args.target}")
     return 0 if written else 1
 
