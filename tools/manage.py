@@ -348,6 +348,8 @@ def app_key_problem(entry):
         if not APP_KEY_NAME.fullmatch(code):
             return (f"{entry!r}: {code!r} is not a key the launcher reads, which is a keycode (190) or a "
                     f"KEYCODE_ name (KEYCODE_BUTTON_3)")
+        if code == "KEYCODE_UNKNOWN":
+            return f"{entry!r}: {label} 0 is not a button the launcher reads, which keeps only a key above 0"
     elif int(code) < 1:
         return f"{entry!r}: {label} 0 is not a button the launcher reads, which keeps only a key above 0"
     return app_key_target_problem(entry, target)
