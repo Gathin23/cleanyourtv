@@ -1,0 +1,16 @@
+{
+  "columns": 6,
+  "dock_apps": [
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom",
+    "com.apple.atve.androidtv.appletv",
+    "com.wbd.stream",
+    "com.netflix.ninja",
+    "com.disney.disneyplus"
+  ],
+  "live_tv_package": "com.vivensis.launcher",
+  "live_tv_action": "android.intent.action.VIEW",
+  "stock_home_redirect": "com.vivensis.launcher",
+  "home_long_press_home": true,
+  "restore_key_services": true
+}
