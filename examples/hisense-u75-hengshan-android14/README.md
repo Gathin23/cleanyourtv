@@ -54,8 +54,9 @@ port — not with Wi‑Fi score. Reseating the ARC cable fixed it on this unit. 
 ## SmartTube (optional)
 
 This unit sideloaded SmartTube stable (`org.smarttube.stable`) and disabled stock
-`com.google.android.youtube.tv`. Comment that line out of `debloat.txt` if you keep stock YouTube.
-`config.json` docks SmartTube and hides stock YouTube; edit to taste.
+`com.google.android.youtube.tv`. That line is a comment in `debloat.txt`, beside the other unused
+streaming apps: uncomment it to turn stock YouTube off as this unit did. `config.json` docks SmartTube
+and hides stock YouTube; edit to taste.
 
 ## Apply / undo
 

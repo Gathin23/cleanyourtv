@@ -85,7 +85,7 @@ com.mediatek.partner.airplay_sys         # sticky system_ext priv-app; may parti
 # com.instagram.airwave
 # com.haystack.android
 com.google.android.play.games
-# com.google.android.youtube.tv            # off here for SmartTube; comment out to keep stock YouTube
+# com.google.android.youtube.tv            # off on that unit for SmartTube; uncomment to disable it
 
 # Launcher phase: after Wi-Fi rejoin. Leaves HOME claim; keep launcherx enabled for volume ramp.
 com.google.android.tungsten.setupwraith
