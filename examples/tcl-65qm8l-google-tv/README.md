@@ -66,7 +66,30 @@ Apply in small batches, with a screenshot between them (`tools/tv.py --screensho
 On this remote the Settings, TV-guide and app-shortcut buttons send distinct keycodes, mapped in
 [config.json](config.json) `app_keys`: Settings 83, TV guide 4001 (Live TV), Netflix 4062, Prime Video 4099,
 YouTube 190. These worked on the real remote. **Trade-off:** the key helper stops hold-to-ramp volume (one step per
-press). It is all-or-nothing: leave the helper off to keep it, at the cost of the remapped buttons.
+press). Add `"volume_pauses_filter": true` to the config to soften it: after one press of Volume, a hold within 4
+seconds ramps again (checked on a 75QM8L). Or leave the helper off to keep the plain ramp, at the cost of the
+remapped buttons.
+
+## Second unit: TCL 75QM8L
+
+Same product (`G17_4K_US`) and firmware (AU27), cleaned on 14 November 2026 and lived with for two days across two
+reboots. It also disabled the optional groups commented out at the end of [debloat.txt](debloat.txt): TCLtv+, the
+game bar, the USB media player, the TCL browser, Play Games, T-Solo, nine streaming apps and the Assistant. Uncomment
+the ones you don't use.
+
+- **The star button** sends `KEYCODE_MACRO_1` (313), a global key that goes to the disabled launcherx, so it does
+  nothing until `app_keys` maps it, e.g. `"313:org.jellyfin.androidtv"` with the key helper on.
+- **The TV button** is the 4001 above. TCL's firmware hands it to Live TV's `GlobalKeyService`, which does nothing
+  with it while Live TV is closed (its log says `isTvActivityOnStarted = false`); with no antenna it did nothing at
+  all. `"4001:com.tcl.tv"` opens Live TV on its last input instead.
+- **The gear in every app**: `"83:com.gathin.tvhome/.QuickSettingsActivity"` opens the launcher's small settings
+  panel over any app, rather than the TV's Settings. Without the key helper, `"settings_key_keycodes": [83]` with
+  `"settings_key_panel": true` makes the gear work on Home only, and held Volume keeps its ramp.
+- **TCL tv+ in the Input panel**: the panel's Apps row had a TCL tv+ shortcut. Open the panel, go right to **+**,
+  untick it and choose **Done**.
+- **After a config push** Home restarts, and if Live TV was last on AirPlay, AirPlay's waiting screen can come to
+  the front. Press Home.
+- **No screensaver** starts while Developer options' **Stay awake** is on.
 
 ## HDMI input names
 
