@@ -11,6 +11,12 @@
 #   TCL 55C645 (product G03_4K_GB, device BeyondTV4), Realtek rtd288o / RTD2851M, security patch 2024-12-05,
 #   Ethernet. Groups 1, 1b, 2 except webview/keyhelp, 4, 5, plus launcherx, tested 2026-10-29. Remote
 #   buttons worked without the launcher's key helpers on this unit (README.md).
+#   TCL 43C645, second unit (product G03_4K_GB, device BeyondTV4), Realtek rtd288o / RTD2851M, 2 GB, security
+#   patch 2024-12-05, Italy, Wi-Fi, infrared remote. Group 1 except com.tcl.partnercustomizer, 1b, 2 except
+#   com.tcl.useragreement, com.tcl.android.webview and com.tcl.keyhelp, com.tcl.miracast from 3, 4 except
+#   com.tcl.ttvs, hearaid, smartconnect, talkback, gallery, browser and ui_mediaCenter, all of 5, plus
+#   launcherx and dreamx, tested 2026-11-13 and used for two days with nothing re-enabled. The four commented
+#   lines at the end of group 4 were off on this unit only (README.md).
 # List derived from examples/tcl-65c725 (same Android 11 TCL platform), checked against both units' packages.
 #
 # 43C645: applied in three batches with a screenshot after each: Ethernet stayed up, Home and the D-pad, the
@@ -85,6 +91,10 @@ com.google.android.play.games
 com.tcl.gallery
 com.tcl.browser
 com.tcl.ui_mediaCenter                      # USB media player, re-enable for USB drives
+# com.tcl.gamebar                           # game mode / VRR overlay for consoles; off on the second 43C645 by choice
+# com.tcl.magiconnectfree                   # TCL phone sharing app; off on the second 43C645 by choice
+# org.chromium.webview_shell                # WebView test shell; off on the second 43C645
+# android.autoinstalls.config.google.gtvpai # silently installs partner apps; off on the second 43C645
 
 # 5. Voice assistant (off by choice on the 60C635; the 43C645 kept it, comment these out to keep voice)
 com.google.android.katniss

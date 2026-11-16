@@ -11,9 +11,10 @@ One list for TCL's G03 / BeyondTV4 firmware `V8-R51MT05-LF1V652` (`AR11`), the s
 | TCL 55C645 (`G03_4K_GB`) | 2026-10-29 | Realtek `rtd288o` / RTD2851M | Ethernet | 1, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, 5, 1b after the first handover, plus launcherx via `build-and-install.sh` |
 | TCL 50C635 (`G03_4K_GB`, Spain) | 2026-10-24 | Realtek `rtd288o`, 2 GB | Ethernet | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, plus launcherx via `build-and-install.sh` |
 | TCL 60C635 (`G03_4K_GB`, Spain) | 2026-10-20 | Realtek `rtd288o`, 2 GB | Wi-Fi | 1, 1b, 2 except `com.tcl.android.webview` and `com.tcl.keyhelp`, 4, 5, plus launcherx via `build-and-install.sh` |
+| TCL 43C645, second unit (`G03_4K_GB`, Italy) | 2026-11-13 | Realtek `rtd288o` / RTD2851M, 2 GB | Wi-Fi | 1 except `com.tcl.partnercustomizer`, 1b, 2 except `com.tcl.useragreement`, `com.tcl.android.webview` and `com.tcl.keyhelp`, `com.tcl.miracast` from 3, 4 except `com.tcl.ttvs`, `com.tcl.hearaid`, smartconnect, TalkBack, `com.tcl.gallery`, `com.tcl.browser` and `com.tcl.ui_mediaCenter`, 5, plus launcherx via `build-and-install.sh` and dreamx |
 
-Groups 4 and 5 have not been run on a 43C645 yet (they have on a 55C645), nor group 3, webview or keyhelp
-on a 60C635 or 55C645.
+The first 43C645 ran groups 1-3 and the second most of 4 and all of 5 (table above). Group 3's firmware
+updater, webview and keyhelp have been run only on the first 43C645, not on a 60C635 or 55C645.
 If you try them, say how it went in an issue.
 
 60C635 details: Android 11 / SDK 30, security patch 2024-12-05, remote `TCL_RC902V_U1` (Bluetooth,
@@ -89,6 +90,17 @@ YouTube, Prime Video, TCL and gear all did their job, and a held Volume Up still
 without the helpers first and enable them only for a button that does nothing. Netflix was not checked
 (disabled on that TV).
 
+Second 43C645 (Italy): its remote is infrared, read as `mtkinp` with `/system/usr/keylayout/mtkinp.kl` (no
+Bluetooth remote in `dumpsys input`). `getevent -lt` scancodes: Netflix 758 (printed as `02f6`), YouTube 569
+(`KEY_YOUTUBE`), Prime Video 752 (`KEY_PRIMEVIDEO`); `mtkinp.kl` maps them to `TCL_NETFLIX`, `TCL_YOUTUBE` and
+`TCL_PRIMEVIDEO`. The gear prints `KEY_SET`, Input `KEY_TV_INPUT`. With launcherx off the three app buttons and
+the gear did nothing. `HOME_KEY_SERVICE=1` with `"scan:758:com.netflix.ninja"`,
+`"scan:569:com.google.android.youtube.tv"` and `"scan:752:com.amazon.amazonvideo.livingroom"` in `app_keys`,
+4077 in `settings_key_keycodes` and `"settings_key_panel": true` brought all four back on the real remote, also
+after cold starts over two days; this folder's keycode entries were not tried there. Input and Home worked
+without help. `"consume_volume_keys": true` was set from the start, as on the TCL G03 lists (#1100), and not
+tried without: one tap moves one step and a held button keeps ramping.
+
 ## Quirks on this firmware (60C635)
 
 - **Accessibility services after a reinstall**: Android unbinds them on reinstall and binds them again only
@@ -104,6 +116,24 @@ without the helpers first and enable them only for a button that does nothing. N
 - Live TV and HDMI screenshots are 0 bytes; HDMI rows open `com.tcl.tv/.TVActivity`.
 - Saved Wi-Fi networks belonged to `android.uid.system` / `com.android.tv.settings`, so disabling setupwraith
   kept the TV on Wi-Fi.
+
+## Second 43C645 (Italy)
+
+- **setupwraith and Wi-Fi**: it owned a saved network that was not in use, while the network in use belonged to
+  `android.uid.system`. `tools/disable.sh` still skipped it; `FORCE_SETUPWRAITH=1` disabled it, Wi-Fi and ADB
+  stayed up, and only the unused network was deleted.
+- **TV input permission**: `com.tcl.gallery`, `com.tcl.ui_mediaCenter` and `com.tcl.t_solo` hold
+  `TV_INPUT_HARDWARE` (granted) on this unit, so they stayed on. HDMI was not tried with them off.
+- **Voice**: at idle, the `AudioInputProcessor` thread of `com.google.android.katniss:interactor` (the hotword)
+  used 29-45% of one of the four cores, also a few minutes after a reboot. Group 5 stopped it.
+- **Memory**: used RAM on the stock Home was 1,402 MB with 599 MB of swap after 56 days without a reboot; a
+  reboot alone brought it to 1,078 MB and 235 MB, and the list, launcherx and dreamx off and the new launcher
+  to 870 MB and 30 MB (one reading each, a few minutes after boot, with the Play Store busy in the last one).
+  The launcher used 39 MB against launcherx's 114 MB.
+- **Fast TV start off** (Settings > System > Power & energy; "Avvio rapido TV" on an Italian menu): the power
+  button then shuts the set down. Every package stayed disabled across cold starts, and Home was on screen
+  about 38 s after power-on (one measurement).
+- `tools/bench.py`'s cold start left `HomeKeyService` listed but unbound on this unit until #3851.
 
 ## Verified
 
@@ -125,7 +155,14 @@ the remote buttons above. After a reboot all 35 packages were still disabled and
 not Live TV. Saved Wi-Fi belonged to `android.uid.system` here as well. Port 5555 refused connections once USB
 debugging was off and the TV restarted.
 
-Not tested: casting, Miracast, firmware update, several-day stability.
+43C645, second unit (Wi-Fi, Italy, Android 11, `V8-R51MT05-LF1V652`, security patch 2024-12-05): five
+batches with a screenshot after each; Wi-Fi, Home, Settings and the TV input list stayed, with no crash in the
+log. After a reboot every package was still disabled. After the handover: Home and Input on the real remote,
+the Inputs dropdown (HDMI 1-3, AV), the remote buttons above, YouTube in 4K HDR, Netflix, audio, an HDMI
+device, Bluetooth and the Play Store. Two days of use with nothing re-enabled. Port 5555 refused connections
+once USB debugging was off and the TV restarted.
+
+Not tested: casting, Miracast, firmware update, more than two days of use.
 
 ## When you are done
 
