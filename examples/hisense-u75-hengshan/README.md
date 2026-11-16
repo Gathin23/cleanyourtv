@@ -6,6 +6,8 @@ board, the build and the volume trade below. A 65U7ESG from Colombia (2026-10-25
 `debloat-65u7esg.txt`, and [a way to keep both the app buttons and the volume ramp](#65u7esg-the-app-buttons-and-the-volume-ramp-together).
 A 65U86LUA from the US (2026-11-09) has `debloat-65u86lua.txt` and
 [notes on reading the picture and sound settings from the log](#65u86lua-picture-and-sound-settings-read-from-the-log).
+A 75U75LUA from Latin America (2026-11-15) has `debloat-75u75lua.txt` and
+[the remote's buttons with a held volume that still ramps](#75u75lua-the-remotes-buttons-with-volume_pauses_filter).
 
 ## Live TV and inputs
 
@@ -194,3 +196,76 @@ black) and can be walked with `tools/tv.py --screenshot shots/01.png DPAD_DOWN`.
   as well.
 - `tools/tv.py --pull` did not fetch files under `/vendor/tvconfig/` or `/product/overlay/` on this unit, while
   `tools/tv.py "cat <file>"` read the ones under `/vendor/tvconfig/`.
+
+## 75U75LUA: the remote's buttons with `volume_pauses_filter`
+
+A sixth unit: a Hisense 75U75LUA from Latin America, on the same device and build (incremental `00.00.00.132`),
+on Wi-Fi with an infrared remote only (`MTK Smart TV IR Receiver`, no Bluetooth remote). It applied
+`debloat-75u75lua.txt` on 2026-11-15, with launcherx and setupwraith disabled and this launcher as Home.
+
+### The buttons
+
+Read with `getevent -lt` on the IR receiver's node while the owner pressed each button on the real remote:
+
+| Button | evdev key (scancode) | Keycode | With launcherx disabled |
+|---|---|---|---|
+| YouTube | `KEY_FN_F4` | 190 | nothing |
+| Prime Video | `KEY_FN_F3` | 295 | nothing |
+| Disney+ | `KEY_ZOOMIN` | 607 | nothing |
+| Tubi | `KEY_ZOOMOUT` | 606 | nothing (Tubi is disabled on this unit) |
+| Input | `KEY_F14` (184) | not read | nothing |
+| Gear | `KEY_NOTIFICATION` | 83 | nothing |
+| Netflix | `KEY_FN_F5` | 265 | works |
+
+The keycodes are the ones in [the table above](#the-remote): the evdev names match it. The Prime Video press
+was followed 0.6 s later by a `KEY_F20` line that no other button produced; it was not looked into.
+`dumpsys window policy` routes `KEYCODE_BUTTON_3` (YouTube) and `KEYCODE_NOTIFICATION` (gear) to launcherx's
+`GlobalKeyListener_Receiver`, so nothing else receives them once it is disabled.
+
+Unlike the 65U7ESG, Input did nothing here with no helper. `com.android.tv.action.VIEW_INPUTS` is answered by
+Hisense's own input menu (`com.vt.tv.input/.view.activity.MainActivity`), so `handle_view_inputs` would only add
+a chooser. Mapping the button by its scancode to that activity brings the menu back.
+
+### What was set
+
+In `launcher/app/src/main/res/values/config.xml` (every key here can go in a theme's `config.json` instead):
+
+```json
+{
+  "app_keys": [
+    "190:com.google.android.youtube.tv",
+    "295:com.amazon.amazonvideo.livingroom",
+    "607:com.disney.disneyplus",
+    "scan:184:com.vt.tv.input/.view.activity.MainActivity"
+  ],
+  "settings_key_keycodes": [83],
+  "settings_key_panel": true,
+  "volume_pauses_filter": true
+}
+```
+
+installed with `HOME_KEY_SERVICE=1 launcher/build-and-install.sh` (`-HomeKeyService` on Windows).
+
+### The volume ramp
+
+Before the helper, a held Volume Up ramped. With `HomeKeyService` bound and `volume_pauses_filter` on, the owner
+pressed every mapped button on the real remote and each one worked (YouTube, Prime Video and Disney+ opened, Input
+opened Hisense's input menu, the gear the launcher's settings panel), and a tap on Volume Up followed by a hold
+ramped. That is the first time the switch was run on this board: the other units here chose between the buttons
+and the ramp, or kept launcherx enabled behind `stock_home_redirect`, which shows the Google TV home for a moment
+on each Home press. The owner turned that down for this reason.
+
+Not checked: a hold with no tap first (the switch's notes expect one step), a soundbar or HDMI-CEC volume, and the
+buttons after a reboot with the helper on.
+
+### Other notes from that unit
+
+- setupwraith owned the Wi-Fi network the TV was on. The owner forgot the network in Settings and joined it
+  again; `dumpsys wifi` then showed it created by `com.android.tv.settings`, and disabling setupwraith left Wi-Fi
+  and ADB up. Casting was not tried afterwards.
+- Two Deezer apps were installed from Play Store: `deezer.android.tv` (version 4.4.2, the old TV app, which no
+  longer worked for the owner) and `deezer.android.app` (the current one). The dock takes the second.
+- Closing ADB: with the debugging authorisations revoked and USB debugging switched off, then a restart,
+  `tools/adb-closed.py` still found port 5555 open, and USB debugging showed as on again in Developer options.
+  Switched off a second time and restarted, the port refused the connection.
+- Private DNS works on this set: with `dns.adguard-dns.com` the TV validated it and YouTube loaded.
