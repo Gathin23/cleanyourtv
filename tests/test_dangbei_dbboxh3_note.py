@@ -33,6 +33,21 @@ PACKAGE = "com.dangbei.dbdownloadrefs"
 HEADING = "Notes for models that have no tested list yet"
 CLOSING = "To add your TV"
 
+# The board, not the brand. Dangbei ships several sets whose notes sit beside this one
+# (`docs/devices/dangbei-dbox02.md`), and a list folder for one of those is a row for that set, not this
+# box: `examples/dangbei-atom`, the Atom in #4001, is the case that showed the brand alone is too broad.
+BOARD = "DBBOXH3"
+
+
+def folders_for_the_board(names):
+    """The `examples/` folder names that claim the board this note is about, matched on its model code.
+
+    The index half of the check below reads the same claim out of every `tv.json`; this half covers a
+    folder whose own name says which set it was tested on. Matching the brand instead reads the Atom, the
+    DBBOXH3's sibling in `docs/devices/`, as this board and fails a list that follows the recipe.
+    """
+    return sorted(name for name in names if BOARD.lower() in name.lower())
+
 # What the set is, as #2286 records it.
 DEVICE = ["DBBOXH3", "当贝盒子 H3", "rk356x_box", "Rockchip", "Android 11", "API 30",
           "RD2A.211001.002", "com.dangbei.leard.leradlauncher"]
@@ -188,8 +203,8 @@ class TheIndex(unittest.TestCase):
                          "the note, so nothing leads a reader to it")
 
     def test_the_note_is_not_a_list_row(self):
-        folders = sorted(p.name for p in (ROOT / "examples").iterdir() if p.is_dir())
-        self.assertEqual([], [name for name in folders if "dangbei" in name],
+        names = [p.name for p in (ROOT / "examples").iterdir() if p.is_dir()]
+        self.assertEqual([], folders_for_the_board(names),
                          "an examples/ folder now exists for this board: the note belongs in its row")
         cells = []
         for path in sorted((ROOT / "examples").glob("*/tv.json")):
@@ -226,6 +241,18 @@ class TheReadersBehindTheseTests(unittest.TestCase):
         self.assertEqual(["../docs/devices/dangbei-dbboxh3.md"],
                          linked(markdown, "docs/devices/dangbei-dbboxh3.md"))
         self.assertEqual([], linked(markdown, "docs/devices/other.md"))
+
+    def test_another_dangbei_set_is_not_this_board(self):
+        # The brand is shared and the model code is not: a list for the Atom or the DBOX02 is its own row.
+        self.assertEqual([], folders_for_the_board(["dangbei-atom", "dangbei-dbox02"]),
+                         "a folder for another Dangbei set was read as a row for this board")
+
+    def test_a_folder_for_this_board_is_read(self):
+        self.assertEqual(["dangbei-dbboxh3"], folders_for_the_board(["dangbei-dbboxh3"]))
+        self.assertEqual(["Dangbei-DBBOXH3-debloat"], folders_for_the_board(["Dangbei-DBBOXH3-debloat"]),
+                         "the model code is not matched whatever its case")
+        self.assertGreaterEqual(len(folders_for_the_board(["dangbei-dbboxh3", "sony-kd-55x80j"])), 1,
+                                "the walk over the names found nothing, so the check above proves nothing")
 
 
 if __name__ == "__main__":
