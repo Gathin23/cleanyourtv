@@ -30,7 +30,11 @@ import warnings
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# What the compiler says around the sequence it cannot read; the words have not changed since 3.6.
+# The half of the compiler's sentence that has held across versions: 3.12 and 3.13 say
+# "invalid escape sequence '\S'", 3.14 rewords it to '"\S" is an invalid escape sequence. Such sequences
+# will not work in the future...', and all three carry this phrase around the sequence they cannot read.
+# The walk filters on it and nothing in this file pins the rest of the sentence (3.14 is what that costs
+# if it ever stops carrying it: TheReaderTest fails rather than the walk quietly reading nothing).
 WARNING = "invalid escape sequence"
 # The folders a contributor's checkout fills in: the venv has site-packages full of other people's escapes,
 # and a build folder holds generated copies of the tree.
@@ -83,8 +87,15 @@ class TheReaderTest(unittest.TestCase):
     """The rule itself, on sources written here: what is reported, at which line, and what is not."""
 
     def test_an_unknown_escape_is_named(self):
-        self.assertEqual([(1, "invalid escape sequence '\\S'")],
-                         escapes_in('print("a\\Sb")'))
+        # The line and the sequence, not the sentence around them: 3.12 writes "invalid escape sequence
+        # '\S'" and 3.14 '"\S" is an invalid escape sequence ...', and a case that pinned either one would
+        # be asserting an interpreter's wording rather than what this file is for. What it still holds:
+        # the compiler says something about an invalid escape at line 1, and what it names is `\S`.
+        found = escapes_in('print("a\\Sb")')
+        self.assertEqual(1, len(found), found)
+        self.assertEqual(1, found[0][0])
+        self.assertIn(WARNING, found[0][1])
+        self.assertIn("\\S", found[0][1])
 
     def test_an_unknown_escape_in_a_docstring_is_named(self):
         # The shape the tree had: a docstring on line 1 quoting a Windows path.
