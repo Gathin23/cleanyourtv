@@ -12,6 +12,7 @@ Run from the repository root: python3 -m unittest discover -s tests -v
 """
 import base64
 import contextlib
+import errno
 import hashlib
 import importlib.util
 import io
@@ -146,6 +147,32 @@ class ArgumentTest(unittest.TestCase):
             self.assertIn("passes through the file", err)
         self.assertIn("--out is empty", self.parse_error(["home", "--out", ""]))
 
+    def test_an_out_the_filesystem_will_not_look_at_is_the_argument_error(self):
+        # Path.exists() re-raises every OSError except ENOENT and ENOTDIR, so a --out whose own name is
+        # longer than NAME_MAX - or one under a folder this user may not open - came out of argparse's
+        # type call as an OSError traceback with exit 1, the status this file keeps for a recording that
+        # started and then failed. The docstring promises exit 2 for a --out the run cannot use, before
+        # the TV is asked anything, and four interpreters (3.11 to 3.14) all answered the traceback.
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / ("a" * 300)
+            try:
+                os.stat(out)
+            except OSError:
+                pass
+            else:
+                self.skipTest("this filesystem stats a 300-character name")
+            err = self.parse_error(["nav", "--out", str(out)])
+            self.assertIn(str(out), err)
+            self.assertIn("cannot be looked at", err)
+            self.assertIn("nothing was recorded and the TV was not asked", err)
+            self.assertNotIn("Traceback", err)
+            # The same name one level up, the shape a reader reaches by appending a run's folder: the
+            # parent is judged before makedirs() is asked to create the child under it.
+            err = self.parse_error(["nav", "--out", str(out / "before")])
+            self.assertIn(str(out), err)
+            self.assertIn("cannot be looked at", err)
+            self.assertIn("File name too long", err)
+
     def test_a_folder_or_a_new_folder_is_still_accepted(self):
         with tempfile.TemporaryDirectory() as tmp:
             existing = Path(tmp) / "before"
@@ -172,6 +199,37 @@ class ArgumentTest(unittest.TestCase):
             self.assertEqual(caught.exception.code, 2)
             self.assertEqual(connects, [], "the TV was never opened")
             self.assertIn("is a file", err.getvalue())
+
+
+class OutLookedAtTest(unittest.TestCase):
+    """The four shapes a --out path is, without a filesystem that refuses one to hand.
+
+    A permission refusal and a device error take the same branch as the over-long name, and this is the
+    half that runs on a filesystem whose NAME_MAX is generous, or as a root user who may traverse
+    everything; the platform-shaped case next door needs the real refusal.
+    """
+
+    def test_a_path_that_is_not_there_is_the_new_folder_case(self):
+        # What Path.exists() answered False for before, so a --out a reader means as "make this" stays one.
+        for kind in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            with self.subTest(errno=errno.errorcode[kind]), \
+                 mock.patch.object(os, "stat", side_effect=OSError(kind, os.strerror(kind))):
+                self.assertEqual(trace.looked_at(Path("/traces")), ("missing", None))
+
+    def test_any_other_refusal_keeps_the_reason_the_filesystem_gave(self):
+        for kind in (errno.ENAMETOOLONG, errno.EACCES, errno.EIO):
+            with self.subTest(errno=errno.errorcode[kind]), \
+                 mock.patch.object(os, "stat", side_effect=OSError(kind, os.strerror(kind))):
+                self.assertEqual(trace.looked_at(Path("/traces")), ("refused", os.strerror(kind)))
+
+    def test_a_folder_and_a_file_are_told_apart_by_the_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "traces"
+            folder.mkdir()
+            self.assertEqual(trace.looked_at(folder), ("folder", None))
+            target = Path(tmp) / "traces.txt"
+            target.write_text("not a folder")
+            self.assertEqual(trace.looked_at(target), ("other", None))
 
 
 class ReachTest(unittest.TestCase):

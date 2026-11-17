@@ -16,13 +16,14 @@ and later. Set TV_HOST to the TV's IP (and TV_PORT if it is not 5555). Usage:
                                          --step 'input keyevent KEYCODE_DPAD_RIGHT' --step 'sleep 1' --out DIR
 
 --out DIR is the folder the traces go into; it is created if it is not there. A file where the folder
-goes, a path through a file, and an empty --out are refused as argument errors (exit 2) before the TV is
-asked anything, so a typo cannot read as a recording that failed. Started with a Python that lacks the
-packages, it runs again under tools/venv's Python, or says how to make that venv, the way tools/bench.py
-does.
+goes, a path through a file, an empty --out, and a name the filesystem will not look at are refused as
+argument errors (exit 2) before the TV is asked anything, so a typo cannot read as a recording that
+failed. Started with a Python that lacks the packages, it runs again under tools/venv's Python, or says
+how to make that venv, the way tools/bench.py does.
 
 Exit status: 0 every run is recorded and written; 2 an argument this run cannot use (an --out that is a
-file or passes through one, an empty --out, a --package or --app that is not one, --runs outside 1 to 50)
+file or passes through one, an empty --out, a name the filesystem will not look at, a --package or --app
+that is not one, --runs outside 1 to 50)
 and a TV that cannot be reached - tools/tv.py's own sentence is printed, whether it refused the target as
 it was imported (no TV_HOST, a TV_PORT that is not a port number) or connect_error() worded the failure -
 both judged before anything is recorded, so nothing was written and --out was not made; 1 a recording that
@@ -38,12 +39,14 @@ Scenarios (setup runs before the recording starts, so it stays out of the trace)
 """
 import argparse
 import base64
+import errno
 import importlib.util
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import sys
 import tempfile
 import time
@@ -131,6 +134,27 @@ def scenario(name, launcher_component, other_component, setup=(), steps=()):
     return list(setup), list(steps)
 
 
+def looked_at(path):
+    """Which of four things a path the reader typed is, and why the filesystem would not say.
+
+    ('folder' | 'other' | 'missing', None), or ('refused', why). Path.exists() and .is_dir() re-raise the
+    OSError for a name the filesystem will not stat - a name over NAME_MAX, a folder this user may not
+    traverse - so --out of that shape came out of argparse's type call as a traceback with exit 1, the status
+    this file keeps for a recording that started and then failed, on 3.11, 3.12, 3.13 and 3.14 alike. Judged
+    once, with the reason, both shapes below become the argument error they were meant to be.
+    """
+    try:
+        info = os.stat(path)
+    except OSError as error:
+        # What Path.exists() answers with False for: nothing is there, or nothing that is a folder.
+        if error.errno in (errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EBADF):
+            return "missing", None
+        return "refused", (error.strerror or str(error))
+    except ValueError:      # a NUL in the name, which os.stat refuses before the filesystem sees it
+        return "missing", None
+    return ("folder" if stat.S_ISDIR(info.st_mode) else "other"), None
+
+
 def traces_folder(value):
     """--out as the folder the traces go into, judged before anything is asked of the TV.
 
@@ -139,16 +163,27 @@ def traces_folder(value):
     thrown from main() after the TV has answered the Home query and the model was read, so the reader
     cannot tell their argument from a recording that failed. Refusing here makes it an argument error
     like --runs or --app, with the run never reaching the TV. A folder that does not exist yet is fine:
-    makedirs() creates it, as the default traces/ always has.
+    makedirs() creates it, as the default traces/ always has. A name the filesystem will not look at - the
+    fourth shape, seen on a 280-character folder and on one this user may not traverse - is refused here
+    too, since exists()/is_dir() re-raise that OSError from argparse's own type call.
     """
     if not value:
         raise argparse.ArgumentTypeError("--out is empty: name the folder for the traces, e.g. --out traces/before")
     path = Path(value)
-    if path.exists() and not path.is_dir():
+    answer, why = looked_at(path)
+    if why:
+        raise argparse.ArgumentTypeError(f"{value} cannot be looked at ({why}), and --out is the folder the "
+                                         f"traces go into: nothing was recorded and the TV was not asked")
+    if answer == "other":
         raise argparse.ArgumentTypeError(f"{value} is a file, and --out is the folder the traces go into: "
                                          f"nothing could be recorded into it")
     for parent in path.parents:
-        if parent.exists() and not parent.is_dir():
+        answer, why = looked_at(parent)
+        if why:
+            raise argparse.ArgumentTypeError(f"{value} cannot be looked at: {parent} is a folder the filesystem "
+                                             f"will not look at ({why}), so the folder the traces go into cannot "
+                                             f"be made")
+        if answer == "other":
             raise argparse.ArgumentTypeError(f"{value} passes through the file {parent}, so the folder the "
                                              f"traces go into cannot be made")
     return value
