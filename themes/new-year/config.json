@@ -1,0 +1,18 @@
+{
+  "background_color": "#05060F",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 20,
+  "wallpaper_order": "sequential",
+  "wallpaper_captions": true,
+  "wallpaper_dim": 10,
+  "rows_below_dock": 0,
+  "dock_title": false,
+  "dock_glass": true,
+  "dock_opacity": 40,
+  "dock_even_padding": true,
+  "ambient_glow": false,
+  "fade_rows": true,
+  "icon_only_buttons": true,
+  "clock_wallpaper": true,
+  "clock_wallpaper_dim": 40
+}
