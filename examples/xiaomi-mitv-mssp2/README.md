@@ -1,5 +1,38 @@
 # Xiaomi MiTV-MSSP2 (volver) notes
 
+## Initial Android TV 9 / PI.6305 verification
+
+An additional MiTV-MSSP2 (`volver`, Xiaomi), Android TV 9 / SDK 28, firmware
+`PI.6305 release-keys`, was tested during one setup session on 2026-11-17, over Wi-Fi with
+no USB devices or USB Ethernet adapter. These are initial observations, not several days of
+normal-use validation. Cleanup used small device-specific batches rather than applying
+this folder's `debloat.txt` unchanged, so this report does not validate every entry in that list.
+
+- The stock Home was `com.google.android.tvlauncher/.MainActivity`.
+  The reference launcher 3.5 built from source, installed successfully and became Home.
+  After reboot, both the resolved Home component and the focused window were
+  `com.gathin.tvhome/.MainActivity`.
+- Disabled-package state was read back after reboot. Wi-Fi and the remote continued working.
+  The launcher showed the selected dock apps, navigated between the dock and app grid,
+  opened the HDMI/AV/Live TV input dropdown, opened TV Settings and returned Home.
+  Actual HDMI playback, tuner channel controls and each dedicated remote app button were
+  not individually verified in this session.
+- Assistant (`com.google.android.katniss`), Chromecast (`com.google.android.apps.mediashell`),
+  the firmware updater (`com.xiaomi.mitv.updateservice`), Play Store and Play Games were left
+  enabled, and their enabled states were checked. This is not a separate functional test of
+  each feature.
+- PatchWall (`com.mitv.tvhome.atv`) became enabled again following an app update during the
+  session. It was disabled once more, using the original recovery record, and remained
+  disabled through the next reboot. The firmware updater was kept enabled; this observation
+  does not establish which updater initiated the change, or that every reboot re-enables it.
+- The built-in `show_stats` theme option displayed used/total RAM and free storage on Home
+  with the ambient-glass theme. It did not require a live Capacity Stats module card.
+
+Later cosmetic testing used a personal launcher build with darker header buttons and a hidden
+lower-row preview. Those source changes are not part of this report or evidence that the
+unmodified reference launcher has that appearance. Longer-term stability and recovery by
+actually running a full restore remain unverified.
+
 ## Live TV: channel buttons only work on a tuner picked in Xiaomi's source menu
 
 Seen on a second unit, Android TV 11, firmware `RTT2.211214.001.933`, Italy, with the real remote. That unit
