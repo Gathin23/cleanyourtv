@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Remote</string>
+    <string name="sdp_description">टीवी के लिए फ़ोन को ब्लूटूथ रिमोट बनाता है</string>
+    <string name="status_starting">शुरू हो रहा है…</string>
+    <string name="status_ready">तैयार। जोड़ने के लिए नीचे से अपना टीवी चुनें।</string>
+    <string name="status_connected">%1$s से जुड़ा हुआ है</string>
+    <string name="status_no_bluetooth">इस फ़ोन में ब्लूटूथ नहीं है।</string>
+    <string name="status_bluetooth_off">ब्लूटूथ बंद है। इसे चालू करके ऐप फिर से खोलें।</string>
+    <string name="status_no_hid">यह फ़ोन ब्लूटूथ कीबोर्ड की तरह काम नहीं कर सकता (HID डिवाइस प्रोफ़ाइल नहीं है)।</string>
+    <string name="status_need_permission">ब्लूटूथ की अनुमति चाहिए। फ़ोन की ऐप सेटिंग में इसे दें।</string>
+    <string name="make_visible">फ़ोन को दिखाई देने दें (2 मिनट)</string>
+    <string name="paired_devices">जुड़े हुए डिवाइस</string>
+    <string name="no_paired">अभी कोई जुड़ा डिवाइस नहीं है। नीचे दिए चरण देखें।</string>
+    <string name="connect_to">%1$s से जोड़ें</string>
+    <string name="disconnect_from">%1$s से अलग करें</string>
+    <string name="back">वापस</string>
+    <string name="home">होम</string>
+    <string name="mute">म्यूट</string>
+    <string name="type_hint">टीवी के लिए टेक्स्ट लिखें</string>
+    <string name="send_text">टेक्स्ट भेजें</string>
+    <string name="toast_register_failed">रिमोट शुरू नहीं हो सका। ऐप बंद करके फिर खोलें।</string>
+    <string name="toast_connect_failed">जुड़ नहीं सका। पहले टीवी को पेयर करें, फिर कोशिश करें।</string>
+    <string name="toast_not_connected">टीवी से जुड़ा नहीं है।</string>
+    <string name="toast_skipped">कुछ अक्षर टाइप नहीं हो सकते, उन्हें छोड़ दिया गया।</string>
+    <string name="help_steps">1. “फ़ोन को दिखाई देने दें” दबाएँ।\n2. टीवी पर Settings, Remote and accessories, Add accessory खोलें। इस फ़ोन को चुनें और दोनों स्क्रीन पर कोड मिलाकर पुष्टि करें।\n3. यहाँ वापस आकर जुड़े हुए डिवाइस में अपना टीवी दबाएँ।\n4. पैड इस्तेमाल करें। किसी बटन को दबाए रखने पर वह टीवी पर भी दबा रहता है।\n\nअगर टीवी फ़ोन को नहीं दिखाता, या फ़ोन जुड़ नहीं पाता, तो दोनों तरफ़ पुरानी पेयरिंग हटाकर फिर शुरू करें। कुछ फ़ोन ब्लूटूथ कीबोर्ड प्रोफ़ाइल की अनुमति नहीं देते।</string>
+</resources>

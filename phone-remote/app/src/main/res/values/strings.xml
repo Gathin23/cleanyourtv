@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TV Remote</string>
+    <string name="sdp_description">Phone as a Bluetooth remote for the TV</string>
+    <string name="status_starting">Starting…</string>
+    <string name="status_ready">Ready. Pick your TV below to connect.</string>
+    <string name="status_connected">Connected to %1$s</string>
+    <string name="status_no_bluetooth">This phone has no Bluetooth.</string>
+    <string name="status_bluetooth_off">Bluetooth is off. Turn it on and open the app again.</string>
+    <string name="status_no_hid">This phone cannot act as a Bluetooth keyboard (the HID device profile is missing).</string>
+    <string name="status_need_permission">Bluetooth permission is needed. Allow it in the phone\'s app settings.</string>
+    <string name="make_visible">Make phone visible (2 minutes)</string>
+    <string name="paired_devices">Paired devices</string>
+    <string name="no_paired">No paired devices yet. Follow the steps at the bottom.</string>
+    <string name="connect_to">Connect to %1$s</string>
+    <string name="disconnect_from">Disconnect from %1$s</string>
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="mute">Mute</string>
+    <string name="type_hint">Type text for the TV</string>
+    <string name="send_text">Send text</string>
+    <string name="toast_register_failed">Could not start the remote. Close the app and open it again.</string>
+    <string name="toast_connect_failed">Could not connect. Pair the TV first, then try again.</string>
+    <string name="toast_not_connected">Not connected to the TV.</string>
+    <string name="toast_skipped">Some characters cannot be typed and were skipped.</string>
+    <string name="help_steps">1. Tap “Make phone visible”.\n2. On the TV open Settings, Remote and accessories, Add accessory. Choose this phone and confirm the code on both screens.\n3. Back here, tap your TV under Paired devices to connect.\n4. Use the pad. Hold a key down to hold it on the TV.\n\nIf the TV does not list the phone, or the phone cannot connect, remove the old pairing on both sides and start again. Some phones do not allow the Bluetooth keyboard profile.</string>
+</resources>
