@@ -21,6 +21,22 @@
 # com.homwee.chtvmanager, com.homwee.factory, com.mediatek.* (Live TV, inputs, remote pairing, picture),
 # com.google.android.apps.mediashell (Chromecast) and com.homwee.multiscreenshare / mmp.screenshare
 # (mirroring), both used on this set.
+#
+# Second unit, a re-badge: TD Systems Android TV (Changhong, reports model "TD SYSTEMS Android TV", device dundas),
+# Android TV 11 (API 30), firmware RTM7.230903.112, ADB over Wi-Fi. The saved Wi-Fi network belongs to setupwraith
+# here too, and only tvlauncher and FallbackHome answer HOME. tv.anoki.acr.controller is not installed on this
+# build. Applied in one session in three batches with a screenshot after each, and reboot-checked:
+# `pm list packages -d` was identical before and after. Not yet lived with for days. The remote's buttons worked on
+# the real remote without tvlauncher and with no key helper (owner's report).
+# - Applied from this list: batch 1 (tv.anoki.acr.controller absent), batch 2 (Play Games and YouTube Music
+#   shipped disabled), Backdrop from batch 3 and the Media Player from batch 4. The Assistant and Prime Video
+#   stayed on by choice, as did Netflix, YouTube, Vodafone TV and TVI Player. Google Partner Setup was off too.
+# - Also off on that unit by the owner's choice: Chromecast (com.google.android.apps.mediashell), Multi-Screen
+#   Share (com.homwee.multiscreenshare, com.homwee.mmp.screenshare) and the Media Player.
+# - Left on: com.homwee.chinstallapk (APK install screen) and com.homwee.mmp.imageplayer (system UID, with a
+#   TV-partner start receiver); both are absent from this list, and the reference launcher hid the TV Manager
+#   tile with hidden_apps rather than disabling it.
+# - The new Home opened Live TV at power-on with boot_to_live_tv; Inputs lists HDMI 1-3, AV and Live TV.
 
 # Batch 1: telemetry, ads and recommendation rows
 tv.anoki.acr.controller                 # Anoki automatic content recognition
