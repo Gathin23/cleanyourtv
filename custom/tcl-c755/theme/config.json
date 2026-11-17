@@ -1,0 +1,26 @@
+{
+  "wallpaper": true,
+  "sky_intensity": 20,
+  "advanced_effects": true,
+  "dock_glass": true,
+  "columns": 6,
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.amazon.amazonvideo.livingroom",
+    "com.google.android.youtube.tv",
+    "com.release.aryzaptv",
+    "org.videolan.vlc"
+  ],
+  "background_color": "#000000",
+  "wallpaper_rotation_minutes": 20,
+  "wallpaper_order": "shuffle",
+  "wallpaper_captions": true,
+  "dock_opacity": 50,
+  "home_idle_clock_minutes": 3,
+  "back_opens_clock": true,
+  "clock_wallpaper": true,
+  "clock_wallpaper_dim": 25,
+  "wallpaper_true_color": true,
+  "show_inputs_pill": false,
+  "show_network_pill": false
+}

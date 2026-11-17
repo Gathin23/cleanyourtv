@@ -1,0 +1,6 @@
+com.tcl.channelplus
+com.tcl.tv.tclhome_passive
+com.tcl.partnercustomizer
+com.tcl.interactive
+com.tcl.messagebox
+com.tcl.waterfall.overseas

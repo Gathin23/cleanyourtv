@@ -1,0 +1,9 @@
+com.tcl.ocean.instructions
+com.tcl.repairguide
+com.tcl.smartalexa
+com.tcl.guard
+android.autoinstalls.config.google.gtvpai
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.play.games
