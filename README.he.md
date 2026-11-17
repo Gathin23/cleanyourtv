@@ -107,9 +107,9 @@
 
 <div dir="ltr" align="left">
 
-**RockTek** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 ·
-**Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 ·
-**Vidda** 2 ·
+**RockTek** 3 · **Vidda** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 ·
+**Síragon** 2 · **TIM** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · BTV · Caxium · Cecotec · Compac ·
 Continental Edison · Daewoo · Dcolor · Dialog · Durabrand · DYON · ENGY · Essentiel b · Freebox · HAAM · Hikeen ·
 Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
@@ -378,7 +378,7 @@ ADB ברשת ביציאה 5555 אינו מוצפן. בחלק מהטלוויזי�
 
 ב־17 באוקטובר 2026 פרסם יוצר הפרויקט [תמונות לפני ואחרי](https://x.com/gathint/status/2111379569030939102) של הטלוויזיה של הוריו, אחרי ניקוי באמצעות Claude Code דרך Wi-Fi. הפרסום הגיע ל־8.6 מיליון צפיות. בתוך ארבעה ימים הקהילה תרמה רשימות ליותר מ־170 דגמים, בעזרת יותר מ־200 תורמים. עד 19 באוקטובר המאגר נקרא tv-vibehack, והקישורים הישנים עדיין עובדים.
 
-בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־14 בנובמבר יש לו 57 אלף כוכבים ו־7,400 פיצולים. הרשימות כיסו 488 דגמים מ־132 מותגים. סיקור בתקשורת: 546 כתבות מ־57 מדינות ו־674 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־14 בנובמבר 2026)
+בשבוע של 19–25 באוקטובר המאגר הגיע למקום הראשון ברשימת המאגרים הטרנדיים ב־GitHub. נכון ל־30 באוקטובר 2026 הוא צבר יותר מ־46 אלף כוכבים ו־5,700 פיצולים, ו־1.4 מיליון צפיות ו־260 אלף שכפולים בתוך 14 ימים. נכון ל־14 בנובמבר יש לו 57 אלף כוכבים ו־7,400 פיצולים. הרשימות כיסו 489 דגמים מ־132 מותגים. סיקור בתקשורת: 546 כתבות מ־57 מדינות ו־674 סרטונים ב־YouTube וב־Bilibili. [docs/PRESS.md](docs/PRESS.md) (המספרים נכון ל־14 בנובמבר 2026)
 
 ## תרומה לפרויקט
 

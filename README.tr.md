@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="488 TV modeli · 132 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 530 yayın daha: 57 ülkeden 546 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="489 TV modeli · 132 marka · 31 dil · 572 KB başlatıcı. Yer aldığı yayınlar: TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP ve 530 yayın daha: 57 ülkeden 546 makale. Önce: sponsorlu reklam içeren standart Google TV ana ekranı. Sonra: Clean Your TV başlatıcısı. Haftanın 1 numaralı trend deposu, 19–25 Ekim 2026, trendshift.io'ya göre." width="800"></a>
 </p>
 
 ## Buradan başlayın
@@ -138,9 +138,9 @@ içindedir. En çok listesi olan markalar, her biri web sitesindeki modellerine 
 <details>
 <summary>+87 more brands and 15 projector brands</summary>
 
-**RockTek** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 ·
-**Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 ·
-**Vidda** 2 ·
+**RockTek** 3 · **Vidda** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 ·
+**Síragon** 2 · **TIM** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · BTV · Caxium · Cecotec · Compac ·
 Continental Edison · Daewoo · Dcolor · Dialog · Durabrand · DYON · ENGY · Essentiel b · Freebox · HAAM · Hikeen ·
 Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
@@ -478,7 +478,7 @@ ulaştı, insanlar aynısını kendi TV'lerine yapmaya başladı ve yanıtları 
 bağlantılar çalışır.
 
 İki hafta sonra, 19–25 Ekim haftasında GitHub'ın 1 numaralı trend deposu oldu; 46 binden fazla yıldız, 5,7 bin
-fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 14 Kasım itibarıyla 57 bin yıldız ve 7,4 bin fork. Listeler artık 488 TV modelini ve 132 markayı kapsıyor.
+fork, 14 günde 1,4 milyon görüntülenme ve 260 bin klon. 14 Kasım itibarıyla 57 bin yıldız ve 7,4 bin fork. Listeler artık 489 TV modelini ve 132 markayı kapsıyor.
 Basındaki karşılığı: 546 makale (57 ülkeden) ve YouTube ile Bilibili'de 674 video, hepsi [docs/PRESS.md](docs/PRESS.md)
 içinde (rakamlar 14 Kasım 2026 itibarıyla).
 

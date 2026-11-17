@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="488 TV models · 132 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 530 more: 546 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher. #1 trending repo of the week, Oct 19–25 2026, via trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="489 TV models · 132 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 530 more: 546 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher. #1 trending repo of the week, Oct 19–25 2026, via trendshift.io." width="800"></a>
 </p>
 
 ## Start here
@@ -136,9 +136,9 @@ most lists, each linked to its models on the website:
 <details>
 <summary>+87 more brands and 15 projector brands</summary>
 
-**RockTek** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 ·
-**Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 ·
-**Vidda** 2 ·
+**RockTek** 3 · **Vidda** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 ·
+**Síragon** 2 · **TIM** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · BTV · Caxium · Cecotec · Compac ·
 Continental Edison · Daewoo · Dcolor · Dialog · Durabrand · DYON · ENGY · Essentiel b · Freebox · HAAM · Hikeen ·
 Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
@@ -532,7 +532,7 @@ their own TVs, and their replies turned into the lists here: 170+ TV models from
 first four days. The repo was called tv-vibehack until the 19th; old links work.
 
 Two weeks on, it was the #1 trending repository on GitHub for the week of 19–25 October, with over 46K stars
-and 5.7K forks, and 1.4M views and 260K clones in 14 days. By 14 November it had 57K stars and 7.4K forks. The lists now cover 488 TV models from 132 brands.
+and 5.7K forks, and 1.4M views and 260K clones in 14 days. By 14 November it had 57K stars and 7.4K forks. The lists now cover 489 TV models from 132 brands.
 The coverage: 546 articles from 57 countries and 674 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
 (numbers as of 14 November 2026).
 
@@ -546,7 +546,7 @@ Contributing through a coding agent? [AGENTS.md](AGENTS.md) gives it the same ru
 |---|---|
 | **Your TV's debloat list** | The most useful one: the next person with that model skips the discovery. |
 | **Launcher and prompt** | Launcher improvements and sharper prompt wording are welcome too. |
-| **Built something on top?** | A launcher, a port, a theme: add it to [SHOWCASE.md](SHOWCASE.md), where two hundred and sixty-one projects already live, sorted into home screens, forks, add-ons, tools and other platforms, with an index by TV brand. |
+| **Built something on top?** | A launcher, a port, a theme: add it to [SHOWCASE.md](SHOWCASE.md), where two hundred and sixty-two projects already live, sorted into home screens, forks, add-ons, tools and other platforms, with an index by TV brand. |
 
 The people whose work is in this repo:
 

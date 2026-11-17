@@ -69,7 +69,7 @@ com.tcl.factory.view                    # factory test/demo shortcut
 # Second unit: disabling setupwraith alongside launcherx allows set-home-activity to persist across reboots.
 # Commented out by default to leave stock launcher as fallback; uncomment once this repo's launcher is installed:
 #com.google.android.apps.tv.launcherx    # stock Google TV launcher
-#com.google.android.tungsten.setupwraith # Google TV setup wizard
+#com.google.android.tungsten.setupwraith # Google TV setup wizard; disabling it gives Home back but costs casting
 
 # --- Voice assistants
 # Commented out by default; uncomment if you do not use voice search:

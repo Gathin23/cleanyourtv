@@ -29,7 +29,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="488 tv-modellen · 132 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 530 media: 546 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher. #1 trending repository van de week, 19–25 oktober 2026, via trendshift.io." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="489 tv-modellen · 132 merken · 31 talen · launcher van 572 KB. Genoemd in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP en nog 530 media: 546 artikelen uit 57 landen. Voorheen: het standaard Google TV-startscherm met een gesponsorde advertentie. Daarna: de Clean Your TV-launcher. #1 trending repository van de week, 19–25 oktober 2026, via trendshift.io." width="800"></a>
 </p>
 
 **De virale tweet:** [x.com/gathint/status/2111379569030939102](https://x.com/gathint/status/2111379569030939102)
@@ -37,7 +37,7 @@
 Op 17 oktober 2026 plaatste ik voor-en-na-beelden van de tv van mijn ouders, die ik via wifi met Claude Code had opgeschoond.
 Het bericht kreeg 8,6 miljoen weergaven. Mensen gingen hetzelfde doen met hun eigen tv's en hun reacties vormden de basis voor de lijsten hier: meer dan 170 tv-modellen, aangeleverd door ruim 200 bijdragers in de eerste vier dagen. Tot en met de 19e heette deze repository tv-vibehack; oude links werken nog.
 
-Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. Op 14 november waren het 57.000 sterren en 7.400 forks. De lijsten tellen nu 488 tv-modellen van 132 merken. De berichtgeving: 546 artikelen uit 57 landen en 674 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 14 november 2026).
+Twee weken later was het de #1 trending repository op GitHub in de week van 19 tot 25 oktober, met ruim 46.000 sterren en 5.700 forks, en 1,4 miljoen weergaven en 260.000 clones in 14 dagen. Op 14 november waren het 57.000 sterren en 7.400 forks. De lijsten tellen nu 489 tv-modellen van 132 merken. De berichtgeving: 546 artikelen uit 57 landen en 674 video's op YouTube en Bilibili, allemaal in [docs/PRESS.md](docs/PRESS.md) (stand 14 november 2026).
 
 **Thema's, schakelaars en uitbreidingen:** [cleanyour.tv/addons](https://cleanyour.tv/addons)
 
@@ -135,9 +135,9 @@ Tested lists from contributors, one folder per model in [`examples/`](examples/)
 <details>
 <summary>+87 more brands and 15 projector brands</summary>
 
-**RockTek** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 · **Insignia Fire TV** 2 ·
-**Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 · **Síragon** 2 · **TIM** 2 ·
-**Vidda** 2 ·
+**RockTek** 3 · **Vidda** 3 · **Vu** 3 · **Challenger** 2 · **DEXP** 2 · **EKO** 2 · **Hitachi** 2 ·
+**Insignia Fire TV** 2 · **Kalley** 2 · **Kogan** 2 · **Lumio** 2 · **PRISM+** 2 · **Sankey** 2 · **Sber** 2 ·
+**Síragon** 2 · **TIM** 2 ·
 AiPro2K · AiPro4K · AIWA · AQUA · ASUS · Beko · Bell Canada · BGH · BTV · Caxium · Cecotec · Compac ·
 Continental Edison · Daewoo · Dcolor · Dialog · Durabrand · DYON · ENGY · Essentiel b · Freebox · HAAM · Hikeen ·
 Home+ · Impex · INCLO · Indurama · Jio · Karbonn · Kodak · Koryo · KTC · KUNFT · Liberton · LYNCAST · Magyar Telekom ·
@@ -582,6 +582,7 @@ Alwtniet, Anker Nebula, BYINTEK, Chihi, Epson, Gadnic, HOTACK, HY320, JMGO, Magc
 | Verizon Stream TV, 1st gen (WNC JS8V, Amlogic), US | Android 12 |
 | Vidda C1S and C1 4K laser projectors (VIDAA_TV, device MT9669, board m7642), China JuUI | Android 9 |
 | Vidda VIDAA_TV (Hisense sub-brand; device MT9653, board mt5879), China JuUI | Android TV 11 |
+| Vidda VL7R-PRO 4K Laser Projector (MediaTek MT9655, board mt5877), China JuUI | Android 14 (VIDAA) |
 | VISIO 32" (VISIO TV / Iris 2K TV, shinagawa, MediaTek m5621) | Android TV 11 |
 | Vision 2024VISION43STV (CVTE TP.T950D4T.PB751, Amlogic T950D4, 1 GB), Europe | Android 13 |
 | Vityas Hi TV 50 (KTC/KGZN build, board m7332) | Android TV 11 |
@@ -1029,7 +1030,7 @@ De nuttigste bijdrage is de opschoonlijst voor jouw tv, zodat de volgende gebrui
 |---|---|
 | **De opschoonlijst voor jouw tv** | De nuttigste bijdrage: de volgende gebruiker met dat model hoeft de software niet opnieuw te inventariseren. |
 | **Launcher en prompt** | Verbeteringen aan de launcher en duidelijkere promptteksten zijn ook welkom. |
-| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 261 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
+| **Iets gebouwd op dit project?** | Voeg een launcher, port of thema toe aan [SHOWCASE.md](SHOWCASE.md). Daar staan al 262 projecten, ingedeeld in startschermen, forks, uitbreidingen, hulpmiddelen en andere platforms, met een index per tv-merk. |
 
 De volgende mensen hebben bijgedragen aan deze repository:
 
