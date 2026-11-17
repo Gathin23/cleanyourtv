@@ -13,7 +13,10 @@ The core takes a switch only if it changes nothing until a theme or `config.xml`
    `tests/test_switches.py` refuses a Keys row without one, so the two go in the same pull request and the
    site's Switches tab picks it up from there.
 4. If it adds a row to Launcher settings, put its strings in `launcher/app/src/main/res/values/strings.xml`
-   and every `values-*` folder.
+   and every `values-*` folder, and name the row in `docs/launcher.md`'s list of the rows the page shows
+   (under **Launcher settings and the default home**), as the label the TV shows it with:
+   `tests/test_launcher_settings_rows.py` reads the layout and the strings, so a row it cannot find in
+   that list fails with `[('demoSwitch', 'Demo switch')] != []`.
 5. With the key off, nothing new runs: no receiver, no service, no write, no permission grant in the install
    script. The bot checks this in the diff, not in the description.
 6. Add a JVM unit test under `launcher/app/src/test/java/com/gathin/tvhome/` for any logic that can be tested
