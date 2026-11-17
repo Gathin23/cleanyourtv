@@ -105,6 +105,20 @@ if [ -z "${STOCK_LAUNCHER:-}" ]; then
   esac
 fi
 echo "Stock launcher: $STOCK_LAUNCHER"
+# Skyworth/Coocaa Google TV boards ship a persistent key service that, once a second Android user exists,
+# queries launcherx's content provider on every app button. With launcherx disabled that throws until
+# RescueParty resets settings (#2973, docs/TROUBLESHOOTING.md), so stop before anything is pushed.
+if [ "$STOCK_LAUNCHER" = com.google.android.apps.tv.launcherx ]; then
+  KEY_SERVICE=$("$PY" -I ../tools/tv.py 'pm path com.smartdevice.global.service' 2>/dev/null | tr -d '\r' || true)
+  USERS=$("$PY" -I ../tools/tv.py 'pm list users' 2>/dev/null | grep -c 'UserInfo{' || true)
+  if printf '%s\n' "$KEY_SERVICE" | grep -q '^package:' && [ "${USERS:-0}" -gt 1 ]; then
+    echo "ERROR: this TV has $USERS Android users and com.smartdevice.global.service, which crashes on the remote's" >&2
+    echo "app buttons once launcherx is disabled, until RescueParty resets settings (#2973). Nothing was pushed or disabled." >&2
+    echo "Keep launcherx and run again with STOCK_LAUNCHER=none (stock_home_redirect), or remove a profile nobody uses" >&2
+    echo "with 'pm remove-user <id>' first; docs/TROUBLESHOOTING.md has both." >&2
+    exit 1
+  fi
+fi
 HOME_QUERY='cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME'
 if [ "$STOCK_LAUNCHER" = none ]; then DISABLE_STOCK="echo stock launcher left alone"
 else DISABLE_STOCK="pm disable-user --user 0 $STOCK_LAUNCHER"; fi

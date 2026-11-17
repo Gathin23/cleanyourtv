@@ -162,6 +162,11 @@ Launcher
   `dumpsys wifi | grep -o 'cname=[^ ]*'`: a Wi-Fi network saved during first setup belongs to it, and
   Android deletes that network the moment it is disabled, which takes the TV off Wi-Fi and ADB. If it
   does, ask me to forget the network and re-join it in Settings first.
+- Before disabling `com.google.android.apps.tv.launcherx`, run `pm list users` and `pm path
+  com.smartdevice.global.service`. If that service is installed and there is more than one user, stop:
+  with launcherx disabled it crashes on the remote's app buttons until RescueParty resets settings
+  (`docs/TROUBLESHOOTING.md`). Keep launcherx and use `stock_home_redirect` instead, or ask me whether the
+  extra profile can be removed.
 - On a CVTE board (any `com.cvte.*` package), leave its stock launcher (`com.cvte.tv.launcher.*`) enabled
   unless the `examples/` folder for that exact board disables it: make your launcher Home with
   `set-home-activity`, reboot once, and confirm Home and ADB come back before anything else. Don't enable a
