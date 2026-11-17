@@ -34,3 +34,12 @@ stay, as long as they are visible.
 
 Keys: `input_action`, `input_sources` and `app_keys` entries of the form `input:<input id>` are described in
 [`themes/README.md`](../../themes/README.md).
+
+Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
+[`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
+`adb_shell` the suite imports - under the system `python3` those checks skip and the run still says OK.
+
+An `input_sources` entry is held by `tests/test_manage_set_input_sources.py`: `tools/manage.py`'s `set` refuses
+one the launcher would skip (`InputSources.mapped()`: no `=`, the `=` first, a `/` in the left half, a right half
+that is neither `-` nor a whole number, or a second entry for an input already mapped), so a mapping that would
+change nothing on the TV is reported before the theme is pushed.
