@@ -1,6 +1,6 @@
 {
-  "tv": "Sony BRAVIA 4K AE2 (BRAVIA_AE2, MediaTek MT5897), North America",
+  "tv": "Sony BRAVIA 4K AE2 (BRAVIA_AE2, MediaTek MT5897), North America and Europe",
   "os": "Google TV 14",
   "brand": "Sony",
-  "notes": "Samba TV, Sony agents/promos/Select, demo mode, ATSC tuner unused outside NA; launcherx + setupwraith; wireless-debugging pairing, screensaver note"
+  "notes": "Samba TV, Sony agents/promos/Select, demo mode, ATSC tuner unused outside NA; launcherx + setupwraith; wireless-debugging pairing, screensaver note. A second unit, `debloat-k55xr50-eu.txt`, is a K-55XR50 (BRAVIA 5) on the EU build 602080: no ATSC group, Assistant, TalkBack, USB media and DLNA off too; Debugging over Wi-Fi needs Wi-Fi, casting works with setupwraith disabled, the gear needs a key helper"
 }
