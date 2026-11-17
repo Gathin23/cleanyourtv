@@ -1,10 +1,11 @@
 # Xiaomi TV Stick 4K (model MiTV-AYFR0, codename soul, Amlogic), Android TV 11 (SDK 30),
 # firmware RTT0.211222.001.1546, security patch 2025-08-01.
 #
-# Second tested firmware variant for this folder. The 20 packages below were disabled for user 0,
-# used daily with the replacement Home and streaming apps, and checked again after a reboot. Two
-# PatchWall packages were re-enabled by later package updates, then disabled again; recheck them
-# after an OTA before relying on this list.
+# Second tested firmware variant for this folder. The 19 active packages below were disabled for user 0,
+# used daily with the replacement Home and streaming apps, and checked again after a reboot. The tested
+# owner also disabled the phone remote, left as a comment below for the shared list. Two PatchWall
+# packages were re-enabled by later package updates, then disabled again; recheck them after an OTA
+# before relying on this list.
 #
 # Apply:   TV_HOST=<stick ip> tools/disable.sh examples/xiaomi-mitv-ayfr0/debloat-android11.txt
 # Undo:    TV_HOST=<stick ip> tools/restore.sh examples/xiaomi-mitv-ayfr0/debloat-android11.txt
@@ -33,7 +34,7 @@ com.google.android.apps.mediashell
 com.xiaomi.mitv.smartshare
 com.xiaomi.wfdsinkhelperservice
 com.google.android.katniss
-com.google.android.tv.remote.service
+# com.google.android.tv.remote.service      # off on the tested unit; shared lists keep the phone remote on
 
 # Unused media, accessibility and utility apps
 com.google.android.youtube.tvmusic
