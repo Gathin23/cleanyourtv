@@ -460,6 +460,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
+        // prefer_high_refresh_rate (config.xml): ask for the display's fastest mode at its current resolution.
+        if (getResources().getBoolean(R.bool.prefer_high_refresh_rate)) RefreshRate.apply(this);
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
         Config cfg = Config.load(this);
         homeAppKeys = RemoteKeys.parseAppKeys(cfg.appKeys);
