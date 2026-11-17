@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A screen with a green power dot inside the adaptive icon's safe zone. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#FFFFFF" android:pathData="M30,34h48v34h-48z" />
+    <path android:fillColor="#101418" android:pathData="M34,38h40v26h-40z" />
+    <path android:fillColor="#4ADE80" android:pathData="M54,43a8,8 0 1 0 0.01,0z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M44,72h20v4h-20z" />
+</vector>

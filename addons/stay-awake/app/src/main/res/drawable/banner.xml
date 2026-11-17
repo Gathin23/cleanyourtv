@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a TV that stays lit, with a green "on" dot and a stand. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#101418" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#2B3540" android:pathData="M72,28h176v100h-176z" />
+    <path android:fillColor="#3A4654" android:pathData="M80,36h160v84h-160z" />
+    <path android:fillColor="#4ADE80" android:pathData="M160,56a22,22 0 1 0 0.01,0z" />
+    <path android:fillColor="#101418" android:pathData="M156,48h8v22h-8z" />
+    <path android:fillColor="#2B3540" android:pathData="M140,128h40v14h-40z" />
+    <path android:fillColor="#2B3540" android:pathData="M116,142h88v8h-88z" />
+</vector>

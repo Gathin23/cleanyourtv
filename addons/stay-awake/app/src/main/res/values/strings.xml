@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stay Awake</string>
+    <string name="hint_keys">Press OK on a row to change it.</string>
+    <string name="row_timeout">Screen timeout: %1$s</string>
+    <string name="row_awake">Stay awake while plugged in: %1$s</string>
+    <string name="never">Never</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="minutes">%1$d min</string>
+    <string name="hours">%1$d h</string>
+    <string name="help_write">To change the screen timeout, allow this app to modify system settings. On a computer, with the TV connected over ADB, run:</string>
+    <string name="help_secure">To use Stay awake while plugged in, give this app one more permission. On a computer, run:</string>
+    <string name="help_ready">Both permissions are granted. The settings stay after a restart.</string>
+    <string name="help_vendor">Some TVs also switch themselves off with their own timer, for example after no signal or at auto standby. This app cannot change that; look in the TV\'s own Power settings.</string>
+    <string name="toast_refused">The TV did not accept the change.</string>
+    <string name="toast_need_adb">Give the permission shown below first.</string>
+    <string name="toast_no_screen">This TV has no screen for that. Use the ADB command shown below.</string>
+</resources>

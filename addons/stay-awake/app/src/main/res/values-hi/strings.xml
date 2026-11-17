@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Stay Awake</string>
+    <string name="hint_keys">बदलने के लिए किसी पंक्ति पर OK दबाएँ।</string>
+    <string name="row_timeout">स्क्रीन टाइमआउट: %1$s</string>
+    <string name="row_awake">प्लग लगे रहने पर चालू रखें: %1$s</string>
+    <string name="never">कभी नहीं</string>
+    <string name="on">चालू</string>
+    <string name="off">बंद</string>
+    <string name="minutes">%1$d मिनट</string>
+    <string name="hours">%1$d घंटे</string>
+    <string name="help_write">स्क्रीन टाइमआउट बदलने के लिए इस ऐप को सिस्टम सेटिंग बदलने की अनुमति दें। कंप्यूटर पर, टीवी ADB से जुड़ा हो, तब यह चलाएँ:</string>
+    <string name="help_secure">प्लग लगे रहने पर चालू रखने के लिए इस ऐप को एक और अनुमति दें। कंप्यूटर पर यह चलाएँ:</string>
+    <string name="help_ready">दोनों अनुमतियाँ मिल चुकी हैं। रीस्टार्ट के बाद भी सेटिंग बनी रहती हैं।</string>
+    <string name="help_vendor">कुछ टीवी अपने अलग टाइमर से भी बंद हो जाते हैं, जैसे सिग्नल न मिलने पर या ऑटो स्टैंडबाय पर। यह ऐप उसे नहीं बदल सकता; टीवी की अपनी पावर सेटिंग देखें।</string>
+    <string name="toast_refused">टीवी ने बदलाव स्वीकार नहीं किया।</string>
+    <string name="toast_need_adb">पहले नीचे दिखाई गई अनुमति दें।</string>
+    <string name="toast_no_screen">इस टीवी में इसके लिए स्क्रीन नहीं है। नीचे दिखाया गया ADB कमांड इस्तेमाल करें।</string>
+</resources>

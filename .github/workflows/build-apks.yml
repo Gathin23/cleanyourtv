@@ -1,0 +1,47 @@
+name: Build APKs
+
+# For this fork only: builds the launcher and the add-ons from source on GitHub's own runner (which has the
+# Android SDK) and attaches the installable APKs to the run, so they can be downloaded and copied to a pendrive.
+# Run it from the Actions tab (Run workflow) or push to main or a feature/ branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "feature/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platforms;android-34 build-tools;34.0.0
+      - name: Build every project, run its unit tests, collect the APKs
+        run: |
+          mkdir -p dist
+          build() {
+            dir="$1"; name="$2"
+            [ -d "$dir" ] || { echo "skip $dir (not present)"; return 0; }
+            echo "::group::$dir"
+            (cd "$dir" && chmod +x gradlew && ./gradlew --no-daemon testReleaseUnitTest assembleRelease)
+            cp "$dir"/app/build/outputs/apk/release/app-release.apk "dist/$name.apk"
+            echo "::endgroup::"
+          }
+          build launcher cleanyourtv-launcher
+          build addons/stay-awake stay-awake
+          build phone-remote phone-remote
+          ls -l dist
+          for f in dist/*.apk; do sha256sum "$f"; done | tee dist/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apks
+          path: dist/
+          if-no-files-found: error
