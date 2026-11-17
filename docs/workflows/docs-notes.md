@@ -28,6 +28,14 @@
   said they left the serial out (taken out since). Both guards read the same AGENTS.md sentence as the lists do.
 - Several tests pin facts in `docs/devices/` notes, `PROMPT.md` and `docs/TROUBLESHOOTING.md` (the
   `tests/test_*_note.py` files). If you reword one of those passages, run the suite and keep the fact.
+- Two of them judge where a passage sits, not only what it says, so a true sentence can still red the suite.
+  `tests/test_g09_key_repeat_note.py` wants the `key_filter` switch named in exactly one section, the one that
+  carries the G09/MOSR4 bisect, so a second bullet that mentions it fails with
+  `key_filter is documented in 2 sections`: write the behaviour where the switch is not the point.
+  `tests/test_connecting_no_wireless_note.py` reads the *first* bullet naming both `adb tcpip 5555` and
+  `adb devices` as its cable route, so a Connecting bullet placed above that one takes its place and three
+  cases fail against the old bullet's requirements (#1489, `TV_PORT`, `over USB`): add yours below it, or name
+  only one of the two commands.
 - Docs and the README stay in step: a new list gets its `tv.json` (the TV tables are generated from it), and a
   theme, add-on or tool its row where the others are.
 
