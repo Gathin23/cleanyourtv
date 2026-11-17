@@ -46,6 +46,7 @@ public class SettingsActivity extends Activity {
         list.addView(title);
 
         list.addView(toggle(Options.CLOCK, R.string.option_clock, null));
+        list.addView(toggle(Options.CLOCK_FADES, R.string.option_clock_fades, null));
         list.addView(toggle(Options.DATES, R.string.option_dates, null));
         list.addView(toggle(Options.PRINTS, R.string.option_prints, on -> skySwitch.setEnabled(on)));
         skySwitch = toggle(Options.SKY, R.string.option_sky, null);

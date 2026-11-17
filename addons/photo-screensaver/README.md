@@ -18,6 +18,7 @@ slideshow. Google TV has no settings entry for other screensavers, so there it i
 | Option | What it does |
 |---|---|
 | Time and date | A line along the bottom with the time and the date, moved a little every minute against burn-in |
+| The time with each picture | The line shows for 10 seconds as each picture comes in, then fades away, so nothing stays on screen. Full screen only: with three prints the line stays |
 | When a picture was taken | Month and year, from a name ending in the date (`trip-20231202.jpg`) or else the camera's EXIF date |
 | Three prints | Three pictures at a time as tilted prints, the whole picture, never cropped; clips are skipped |
 | Sky | Behind the prints, a sky that follows the time of day |

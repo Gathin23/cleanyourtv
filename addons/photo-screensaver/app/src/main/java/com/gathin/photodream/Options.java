@@ -6,12 +6,14 @@ import android.content.SharedPreferences;
 /** The switches in SettingsActivity. All off by default: then it is the plain full-screen slideshow. */
 final class Options {
     static final String CLOCK = "clock";
+    static final String CLOCK_FADES = "clock_fades";
     static final String DATES = "photo_dates";
     static final String SKY = "sky";
     static final String PRINTS = "prints";
     static final String WEATHER = "weather";
 
     final boolean clock;
+    final boolean clockFades;
     final boolean dates;
     final boolean sky;
     final boolean prints;
@@ -19,6 +21,7 @@ final class Options {
 
     private Options(SharedPreferences p) {
         clock = p.getBoolean(CLOCK, false);
+        clockFades = p.getBoolean(CLOCK_FADES, false);
         dates = p.getBoolean(DATES, false);
         sky = p.getBoolean(SKY, false);
         prints = p.getBoolean(PRINTS, false);

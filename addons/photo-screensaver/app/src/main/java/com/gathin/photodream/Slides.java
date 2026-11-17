@@ -63,6 +63,8 @@ final class Slides {
     private final int width;
     private final int height;
     private boolean running;
+    /** Called as each picture or clip starts to fade in (Scene shows the time then); null for none. */
+    private Runnable onShown;
 
     private final Runnable advance = this::showNext;
 
@@ -183,6 +185,10 @@ final class Slides {
         }).start();
     }
 
+    void onShown(Runnable listener) {
+        onShown = listener;
+    }
+
     private void crossfade(Bitmap bitmap) {
         ImageView incoming = back;
         ImageView outgoing = front;
@@ -212,6 +218,7 @@ final class Slides {
         set.playTogether(fade, drift);
         incoming.setTag(R.id.animation, set);
         set.start();
+        if (onShown != null) onShown.run();
         boolean afterClip = player != null;
         handler.postDelayed(() -> {
             cancel(outgoing);
@@ -242,6 +249,7 @@ final class Slides {
                 if (generation != clipGeneration || !running) return;
                 p.start();
                 video.bringToFront();
+                if (onShown != null) onShown.run();
                 if (clipShowing) video.setAlpha(1f);
                 else video.animate().alpha(1f).setDuration(FADE_MS).start();
                 handler.postDelayed(() -> {
