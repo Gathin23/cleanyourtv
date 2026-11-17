@@ -100,10 +100,11 @@ class RootTest(unittest.TestCase):
             self.assertIn(f"--root '{root}'", err)
 
     def test_a_root_the_filesystem_refuses_to_stat_is_the_not_read_exit(self):
-        # `Path.is_dir()` re-raises every OSError except ENOENT and ENOTDIR, so a --root whose name is
-        # longer than NAME_MAX - or one under a folder this user may not traverse - ended the run in
-        # that OSError as a traceback, exit 1: the answer the README-tables job reads as "the tables
-        # are out of date", over a run that read nothing at all.
+        # A --root whose name is longer than NAME_MAX - or one under a folder this user may not
+        # traverse - used to end the run in an OSError as a traceback, exit 1: the answer the
+        # README-tables job reads as "the tables are out of date", over a run that read nothing at all.
+        # It is a stat this run asks for itself (stat_folder), not `Path.is_dir()`, which on Python
+        # 3.14 answers False for this name instead of raising: the case holds on every version.
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / ("a" * 300)
             try:
@@ -122,9 +123,11 @@ class RootTest(unittest.TestCase):
 
     def test_an_os_error_from_the_root_check_is_the_same_reason(self):
         # The same branch without a filesystem that refuses one: a root this user may not look at, on
-        # any platform, in-process - the shape MetadataReadTest injects for the same reason.
+        # any platform, in-process - the shape MetadataReadTest injects for the same reason. The stat
+        # is what read_inputs asks (stat_folder), not `Path.is_dir()`, which on Python 3.14 answers
+        # False for this error instead of raising it.
         refused = PermissionError(errno.EACCES, "Permission denied")
-        with mock.patch.object(Path, "is_dir", side_effect=refused):
+        with mock.patch.object(Path, "stat", side_effect=refused):
             patch, reason = gen_tables.read_inputs(Path("/somebody elses checkout"), None)
         self.assertIsNone(patch)
         self.assertIn("/somebody elses checkout", reason)
