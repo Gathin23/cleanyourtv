@@ -9,6 +9,22 @@
 # Known quirk on this firmware: default_input_method points at com.baidu.input, which is not
 # installed, so no keyboard appears in search fields. Set Gboard as the IME
 # (docs/TROUBLESHOOTING.md, "No on-screen keyboard").
+#
+# Second Android TV 10 unit: MiTV-MOOQ1, firmware QTG3.200305.006.6148, ADB over Wi-Fi. Applied in one session in
+# seven batches with a screenshot after each and reboot-checked three times; not yet lived with for days. The
+# remote's buttons worked on the real remote afterwards, with no key helper (owner's report).
+# - com.xiaomi.floatingframe holds TV_INPUT_HARDWARE on this build, so tools/disable.sh keeps it: it stayed on.
+# - com.duokan.factorytest/.FactoryLauncher also answers HOME here, at priority 0. It was disabled, never
+#   launched, before the stock launcher went (same quirk as examples/xiaomi-mitv-mooq0/debloat.txt).
+# - Netflix and Prime Video, disabled by the owner's choice, came back enabled after every reboot (checked twice,
+#   with a wait for the package state to be written first); every other disabled package held. Their tiles were
+#   hidden with hidden_apps in the theme instead.
+# - com.xiaomi.mitv.updateservice was kept for firmware updates; com.mitv.tvlock (parental PIN for Live TV) and
+#   com.xiaomo.tv.milegal (Xiaomi privacy consent screens) were left on.
+# - Also off on that unit by the owner's choice, not added below: Chromecast (com.google.android.apps.mediashell),
+#   Play Movies, Mi Gallery, the USB media player, the on-screen manual, Google Backdrop, Google Partner Setup,
+#   Miracast (com.xiaomi.wfdsinkhelperservice) and six preloaded Russian streaming apps.
+# - The firmware opens Live TV at power-on by itself, before and after the launcher handover.
 
 # Xiaomi telemetry
 com.miui.tv.analytics
@@ -40,3 +56,6 @@ fusion.android.tv.demo
 com.google.android.tvlauncher
 com.google.android.tvrecommendations
 com.google.android.leanbacklauncher.recommendations
+
+# Factory test app that also answers HOME (firmware .6148); disabled so Home can never land on it
+com.duokan.factorytest
