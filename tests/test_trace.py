@@ -604,6 +604,39 @@ class RecordPreservationTest(unittest.TestCase):
             self.assertEqual(self.snapshot(path.parent), before)
 
 
+    def test_a_folder_name_the_console_cannot_encode_is_printed_with_replacement_characters(self):
+        """docs/workflows/perf-ab.md has a reader compare `traces/before` with `traces/after`.
+
+        Named in the reader's own language - `trước` and `sau` - those folders are what the last two lines
+        of a run print, and the name went to stdout as it is: a cp1252 window, which is what a Windows
+        console hands a script that does not ask for UTF-8, raised UnicodeEncodeError after every trace had
+        been recorded and pulled. The exit status was 1, the one this file keeps for a recording that
+        failed, while the trace and its sidecar sat on disk.
+        """
+        device = self.device()
+        with tempfile.TemporaryDirectory() as tmp, self.main_modules(device), \
+             mock.patch.object(trace.time, "sleep"):
+            folder = Path(tmp) / "đô-trước"
+            folder.mkdir()
+            path = folder / "home-1.pftrace"
+            raw = io.BytesIO()
+            console = io.TextIOWrapper(raw, encoding="cp1252", newline="")
+            real = sys.stdout
+            self.addCleanup(setattr, sys, "stdout", real)
+            sys.stdout = console
+            try:
+                self.assertIsNone(self.main(path))
+            finally:
+                console.flush()
+                sys.stdout = real
+            self.assertTrue(path.exists(), "the trace was recorded before its name was printed")
+        printed = raw.getvalue().decode("cp1252")
+        expected = str(path).encode("cp1252", "replace").decode("cp1252")
+        self.assertIn(f"{expected}: {len(b'trace')} bytes", printed)
+        where = str(folder).encode("cp1252", "replace").decode("cp1252")
+        self.assertIn(f"trace_report.py {where}   (see tools/trace.md)", printed)
+
+
 class OtherAppTest(unittest.TestCase):
     def shell(self, answers):
         return lambda cmd: next((v for k, v in answers.items() if k in cmd), "")
