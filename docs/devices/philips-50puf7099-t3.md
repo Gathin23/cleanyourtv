@@ -133,8 +133,11 @@ Applied with `tools/disable.sh`, then the launcher handover, then a reboot:
   answers, but no cable was plugged in and no picture was seen.
 - **Standby and wake were not tested.** Whether the set comes back to the launcher after a long
   standby is unknown.
-- The launcher installed is the repo's own build, `com.gathin.tvhome` version 3.0 (versionCode 9),
-  built locally with `-PlauncherMinSdk` left at the default 26.
+- The launcher installed is the repo's own build, `com.gathin.tvhome` version 3.0 (versionCode 9).
+  It was built from a clone of this repo, where `minSdk` is the literal 26 in
+  `launcher/app/build.gradle` and `launcherApplicationId` is the only project property the build reads,
+  so `-PlauncherMinSdk` is not a flag this repo answers. A set below Android 8 needs a fork that builds
+  lower - [`xiaomi-mitv4-ansm0.md`](xiaomi-mitv4-ansm0.md) keeps one at 23 for its Android 6 unit.
 - Only one unit and one build. Nothing here says another `EBONY_V560` behaves the same.
 
 ## Turning it back
